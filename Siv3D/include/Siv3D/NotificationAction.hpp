@@ -10,3 +10,15 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
+# include "String.hpp"
+
+namespace s3d
+{
+	struct NotificationAction
+	{
+		String id;
+
+		String label;
+	};
+}

@@ -10,3 +10,23 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
+# include "String.hpp"
+# include "Array.hpp"
+# include "NotificationAction.hpp"
+
+namespace s3d
+{
+	struct NotificationRequest
+	{
+		String title;
+
+		String body;
+		
+		FilePath imagePath;
+		
+		Array<NotificationAction> actions;
+		
+		bool playSound = true;
+	};
+}

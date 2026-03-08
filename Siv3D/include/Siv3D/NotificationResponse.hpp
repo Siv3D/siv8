@@ -10,3 +10,20 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
+# include "String.hpp"
+# include "NotificationResponseType.hpp"
+
+namespace s3d
+{
+	using NotificationID = uint64;
+
+	struct NotificationResponse
+	{
+		NotificationID id = 0;
+		
+		NotificationResponseType type = NotificationResponseType::Failed;
+		
+		String actionID;
+	};
+}

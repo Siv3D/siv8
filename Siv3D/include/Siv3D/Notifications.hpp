@@ -10,3 +10,29 @@
 //-----------------------------------------------
 
 # pragma once
+# include "Common.hpp"
+# include "NotificationAvailability.hpp"
+# include "NotificationRequest.hpp"
+# include "NotificationResponse.hpp"
+
+namespace s3d
+{
+	namespace Notifications
+	{
+		[[nodiscard]]
+		NotificationAvailability GetAvailability();
+
+		[[nodiscard]]
+		bool RequestPermission();
+
+		[[nodiscard]]
+		Optional<NotificationID> Show(const NotificationRequest& request);
+
+		void Dismiss(NotificationID id);
+
+		void DismissAll();
+
+		[[nodiscard]]
+		Array<NotificationResponse> DrainResponses();
+	}
+}
