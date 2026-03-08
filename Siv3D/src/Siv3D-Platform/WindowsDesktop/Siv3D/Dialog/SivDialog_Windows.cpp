@@ -67,13 +67,19 @@ namespace s3d
 		};
 
 		[[nodiscard]]
-		static DialogFilterData BuildFilterSpecs(Array<FileDialogFilter> filters)
+		static Array<FileDialogFilter> NormalizeFilters(Array<FileDialogFilter> filters)
 		{
 			if (filters.isEmpty())
 			{
 				filters = { FileDialogFilter::AllFiles() };
 			}
 
+			return filters;
+		}
+
+		[[nodiscard]]
+		static DialogFilterData BuildFilterSpecs(const Array<FileDialogFilter>& filters)
+		{
 			DialogFilterData data;
 			data.names.reserve(filters.size());
 			data.patterns.reserve(filters.size());
@@ -97,7 +103,7 @@ namespace s3d
 				data.specs.push_back(COMDLG_FILTERSPEC{
 					.pszName = data.names[i].c_str(),
 					.pszSpec = data.patterns[i].c_str()
-				});
+					});
 			}
 
 			return data;
@@ -145,8 +151,51 @@ namespace s3d
 			return FileSystem::FullPath(Unicode::FromWstring(path));
 		}
 
-		static void ApplyCommonOpenDialogOptions(IFileOpenDialog* dialog, const OpenFileDialogOptions& options, const bool multiSelect)
+		static void ApplyCommonFileDialogSettings(
+			IFileDialog* dialog,
+			const FilePath& initialDirectory,
+			const String& defaultFileName,
+			const String& title,
+			const String& acceptButtonText)
 		{
+			if (dialog == nullptr)
+			{
+				return;
+			}
+
+			if (not title.isEmpty())
+			{
+				(void)dialog->SetTitle(Unicode::ToWstring(title).c_str());
+			}
+
+			if (not defaultFileName.isEmpty())
+			{
+				(void)dialog->SetFileName(Unicode::ToWstring(defaultFileName).c_str());
+			}
+
+			if (not acceptButtonText.isEmpty())
+			{
+				(void)dialog->SetOkButtonLabel(Unicode::ToWstring(acceptButtonText).c_str());
+			}
+
+			// 空なら OS の最近使った場所を尊重
+			// 空でなければ、そのセッションでは必ずそこを初期フォルダにする
+			if (not initialDirectory.isEmpty())
+			{
+				if (auto folder = MakeShellItemFromPath(initialDirectory))
+				{
+					(void)dialog->SetFolder(folder.Get());
+				}
+			}
+		}
+
+		static void ApplyOpenDialogOptions(IFileOpenDialog* dialog, const OpenFileDialogOptions& options, const bool multiSelect)
+		{
+			if (dialog == nullptr)
+			{
+				return;
+			}
+
 			DWORD fos = 0;
 			if (SUCCEEDED(dialog->GetOptions(&fos)))
 			{
@@ -167,85 +216,130 @@ namespace s3d
 				(void)dialog->SetOptions(fos);
 			}
 
-			if (not options.title.isEmpty())
+			ApplyCommonFileDialogSettings(
+				dialog,
+				options.initialDirectory,
+				options.defaultFileName,
+				options.title,
+				options.acceptButtonText);
+		}
+
+		static void ApplySaveDialogOptions(IFileSaveDialog* dialog, const SaveFileDialogOptions& options)
+		{
+			if (dialog == nullptr)
 			{
-				(void)dialog->SetTitle(Unicode::ToWstring(options.title).c_str());
+				return;
 			}
 
-			if (not options.defaultFileName.isEmpty())
+			DWORD fos = 0;
+			if (SUCCEEDED(dialog->GetOptions(&fos)))
 			{
-				(void)dialog->SetFileName(Unicode::ToWstring(options.defaultFileName).c_str());
-			}
+				fos |= FOS_FORCEFILESYSTEM;
+				fos |= FOS_PATHMUSTEXIST;
+				fos |= FOS_OVERWRITEPROMPT;
 
-			if (not options.acceptButtonText.isEmpty())
-			{
-				(void)dialog->SetOkButtonLabel(Unicode::ToWstring(options.acceptButtonText).c_str());
-			}
-
-			// 空なら OS の最近使った場所を尊重
-			// 空でなければ、そのセッションでは必ずそこを初期フォルダにする
-			if (not options.initialDirectory.isEmpty())
-			{
-				if (auto folder = MakeShellItemFromPath(options.initialDirectory))
+				if (options.showHiddenFiles)
 				{
-					(void)dialog->SetFolder(folder.Get());
+					fos |= FOS_FORCESHOWHIDDEN;
 				}
+
+				(void)dialog->SetOptions(fos);
 			}
+
+			ApplyCommonFileDialogSettings(
+				dialog,
+				options.initialDirectory,
+				options.defaultFileName,
+				options.title,
+				options.acceptButtonText);
+		}
+
+		static void ApplySelectFolderDialogOptions(IFileOpenDialog* dialog, const SelectFolderDialogOptions& options)
+		{
+			if (dialog == nullptr)
+			{
+				return;
+			}
+
+			DWORD fos = 0;
+			if (SUCCEEDED(dialog->GetOptions(&fos)))
+			{
+				fos |= FOS_FORCEFILESYSTEM;
+				fos |= FOS_PATHMUSTEXIST;
+				fos |= FOS_PICKFOLDERS;
+
+				if (options.showHiddenFiles)
+				{
+					fos |= FOS_FORCESHOWHIDDEN;
+				}
+
+				(void)dialog->SetOptions(fos);
+			}
+
+			ApplyCommonFileDialogSettings(
+				dialog,
+				options.initialDirectory,
+				U"",
+				options.title,
+				options.acceptButtonText);
+		}
+
+		static void ApplyFilters(IFileDialog* dialog, const Array<FileDialogFilter>& filters)
+		{
+			if (dialog == nullptr)
+			{
+				return;
+			}
+
+			const DialogFilterData filterData = BuildFilterSpecs(filters);
+			if (filterData.specs.isEmpty())
+			{
+				return;
+			}
+
+			// SetFileTypes() は 1 回しか呼べない
+			(void)dialog->SetFileTypes(
+				static_cast<UINT>(filterData.specs.size()),
+				filterData.specs.data());
+
+			// 先頭を初期選択
+			(void)dialog->SetFileTypeIndex(1);
 		}
 
 		[[nodiscard]]
-		static Array<FilePath> ShowOpenDialogImpl(const OpenFileDialogOptions& options, const bool multiSelect)
+		static HRESULT ShowDialog(IFileDialog* dialog)
 		{
-			ComPtr<IFileOpenDialog> dialog;
-			if (FAILED(::CoCreateInstance(
-				CLSID_FileOpenDialog,
-				nullptr,
-				CLSCTX_INPROC_SERVER,
-				IID_PPV_ARGS(&dialog))))
+			if (dialog == nullptr)
 			{
-				return{};
+				return E_POINTER;
 			}
 
-			ApplyCommonOpenDialogOptions(dialog.Get(), options, multiSelect);
+			const HWND hWnd = static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle());
+			return dialog->Show(hWnd);
+		}
 
-			// SetFileTypes() は 1 回しか呼べないので、ここで一度だけ構築して設定する
-			const DialogFilterData filterData = BuildFilterSpecs(options.filters);
-			if (not filterData.specs.isEmpty())
-			{
-				(void)dialog->SetFileTypes(
-					static_cast<UINT>(filterData.specs.size()),
-					filterData.specs.data());
-			}
-
-			{
-				const HWND hWnd = static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle());
-				const HRESULT hr = dialog->Show(hWnd);
-
-				if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED))
-				{
-					return{};
-				}
-
-				if (FAILED(hr))
-				{
-					return{};
-				}
-			}
-
+		[[nodiscard]]
+		static Array<FilePath> GetOpenDialogResults(IFileOpenDialog* dialog, const bool multiSelect)
+		{
 			Array<FilePath> results;
+
+			if (dialog == nullptr)
+			{
+				return results;
+			}
 
 			if (multiSelect)
 			{
 				ComPtr<IShellItemArray> items;
 				if (FAILED(dialog->GetResults(&items)))
 				{
-					return{};
+					return results;
 				}
 
 				DWORD count = 0;
 				if (FAILED(items->GetCount(&count)))
 				{
-					return{};
+					return results;
 				}
 
 				results.reserve(count);
@@ -269,7 +363,7 @@ namespace s3d
 				ComPtr<IShellItem> item;
 				if (FAILED(dialog->GetResult(&item)))
 				{
-					return{};
+					return results;
 				}
 
 				if (auto path = GetFilePathFromShellItem(item.Get()))
@@ -279,6 +373,109 @@ namespace s3d
 			}
 
 			return results;
+		}
+
+		[[nodiscard]]
+		static String GetDefaultExtensionFromFilter(const Array<FileDialogFilter>& filters, const uint32 filterIndex)
+		{
+			// IFileDialog::GetFileTypeIndex() は 1-based
+			if ((filterIndex == 0) || (filters.size() < filterIndex))
+			{
+				return{};
+			}
+
+			for (const auto& extension : filters[filterIndex - 1].extensions)
+			{
+				if (not extension.isEmpty())
+				{
+					return extension;
+				}
+			}
+
+			return{};
+		}
+
+		[[nodiscard]]
+		static bool HasExtension(const FilePath& path)
+		{
+			return (not FileSystem::Extension(path).isEmpty());
+		}
+
+		[[nodiscard]]
+		static FilePath AppendExtension(const FilePath& path, const String& extension)
+		{
+			if (path.isEmpty() || extension.isEmpty())
+			{
+				return path;
+			}
+
+			return FileSystem::FullPath(path + U"." + extension);
+		}
+
+		[[nodiscard]]
+		static Array<FileDialogFilter> GetEffectiveSaveFilters(const SaveFileDialogOptions& options)
+		{
+			return NormalizeFilters(options.filters);
+		}
+
+		[[nodiscard]]
+		static Optional<FilePath> PostProcessSavePath(
+			IFileSaveDialog* dialog,
+			const Array<FileDialogFilter>& effectiveFilters,
+			const SaveFileDialogOptions& options,
+			FilePath path)
+		{
+			if (path.isEmpty())
+			{
+				return none;
+			}
+
+			if (options.addExtensionIfMissing && (not HasExtension(path)))
+			{
+				UINT filterIndex = 0;
+				if (SUCCEEDED(dialog->GetFileTypeIndex(&filterIndex)))
+				{
+					const String extension = GetDefaultExtensionFromFilter(effectiveFilters, filterIndex);
+
+					if (not extension.isEmpty())
+					{
+						path = AppendExtension(path, extension);
+					}
+				}
+			}
+
+			return path;
+		}
+
+		[[nodiscard]]
+		static Array<FilePath> ShowOpenDialogImpl(const OpenFileDialogOptions& options, const bool multiSelect)
+		{
+			ComPtr<IFileOpenDialog> dialog;
+			if (FAILED(::CoCreateInstance(
+				CLSID_FileOpenDialog,
+				nullptr,
+				CLSCTX_INPROC_SERVER,
+				IID_PPV_ARGS(&dialog))))
+			{
+				return{};
+			}
+
+			ApplyOpenDialogOptions(dialog.Get(), options, multiSelect);
+			ApplyFilters(dialog.Get(), NormalizeFilters(options.filters));
+
+			const HRESULT hr = ShowDialog(dialog.Get());
+
+			if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED))
+			{
+				return{};
+			}
+
+			if (FAILED(hr))
+			{
+				return{};
+			}
+
+			return GetOpenDialogResults(dialog.Get(), multiSelect);
 		}
 	}
 
@@ -305,6 +502,97 @@ namespace s3d
 		Array<FilePath> OpenFiles(const OpenFileDialogOptions& options)
 		{
 			return ShowOpenDialogImpl(options, true);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SaveFile
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<FilePath> SaveFile(const SaveFileDialogOptions& options)
+		{
+			ComPtr<IFileSaveDialog> dialog;
+			if (FAILED(::CoCreateInstance(
+				CLSID_FileSaveDialog,
+				nullptr,
+				CLSCTX_INPROC_SERVER,
+				IID_PPV_ARGS(&dialog))))
+			{
+				return none;
+			}
+
+			const Array<FileDialogFilter> effectiveFilters = GetEffectiveSaveFilters(options);
+
+			ApplySaveDialogOptions(dialog.Get(), options);
+			ApplyFilters(dialog.Get(), effectiveFilters);
+
+			const HRESULT hr = ShowDialog(dialog.Get());
+
+			if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED))
+			{
+				return none;
+			}
+
+			if (FAILED(hr))
+			{
+				return none;
+			}
+
+			ComPtr<IShellItem> item;
+			if (FAILED(dialog->GetResult(&item)))
+			{
+				return none;
+			}
+
+			auto path = GetFilePathFromShellItem(item.Get());
+			if (not path)
+			{
+				return none;
+			}
+
+			return PostProcessSavePath(dialog.Get(), effectiveFilters, options, std::move(*path));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SelectFolder
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<FilePath> SelectFolder(const SelectFolderDialogOptions& options)
+		{
+			ComPtr<IFileOpenDialog> dialog;
+			if (FAILED(::CoCreateInstance(
+				CLSID_FileOpenDialog,
+				nullptr,
+				CLSCTX_INPROC_SERVER,
+				IID_PPV_ARGS(&dialog))))
+			{
+				return none;
+			}
+
+			ApplySelectFolderDialogOptions(dialog.Get(), options);
+
+			const HRESULT hr = ShowDialog(dialog.Get());
+
+			if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED))
+			{
+				return none;
+			}
+
+			if (FAILED(hr))
+			{
+				return none;
+			}
+
+			ComPtr<IShellItem> item;
+			if (FAILED(dialog->GetResult(&item)))
+			{
+				return none;
+			}
+
+			return GetFilePathFromShellItem(item.Get());
 		}
 	}
 }
