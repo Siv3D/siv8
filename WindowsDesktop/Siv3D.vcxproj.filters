@@ -4821,9 +4821,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Effect.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Twitter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -4977,9 +4974,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IPv4Address.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IPv4Endpoint.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
@@ -5092,6 +5086,12 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Dialog.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
