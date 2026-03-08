@@ -496,6 +496,13 @@
 		F911712F2DCBBF67000A22E6 /* FontVariationAxis.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171262DCBBF67000A22E6 /* FontVariationAxis.hpp */; };
 		F91171312DCBBF6F000A22E6 /* Font.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91171302DCBBF6F000A22E6 /* Font.hpp */; };
 		F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9190F272B8EEDFB00667E3B /* Foundation.framework */; };
+		F91D413C2F5DA80500E7FEEF /* FileDialogFilter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41382F5DA80500E7FEEF /* FileDialogFilter.hpp */; };
+		F91D413D2F5DA80500E7FEEF /* Dialog.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41372F5DA80500E7FEEF /* Dialog.hpp */; };
+		F91D413E2F5DA80500E7FEEF /* OpenFileDialogOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41392F5DA80500E7FEEF /* OpenFileDialogOptions.hpp */; };
+		F91D413F2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D413B2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp */; };
+		F91D41402F5DA80500E7FEEF /* SaveFileDialogOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D413A2F5DA80500E7FEEF /* SaveFileDialogOptions.hpp */; };
+		F91D41422F5DA81F00E7FEEF /* FileDialogFilter.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41412F5DA81F00E7FEEF /* FileDialogFilter.ipp */; };
+		F91D41452F5DA84F00E7FEEF /* SivDialog_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */; };
 		F933ACF72E54A2A2005624D7 /* MSDFGlyphRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F933ACF52E54A2A2005624D7 /* MSDFGlyphRenderer.hpp */; };
 		F933ACF82E54A2A2005624D7 /* MSDFGlyphRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F933ACF62E54A2A2005624D7 /* MSDFGlyphRenderer.cpp */; };
 		F933ACFA2E54A2BA005624D7 /* MSDFGlyph.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F933ACF92E54A2BA005624D7 /* MSDFGlyph.hpp */; };
@@ -3391,6 +3398,13 @@
 		F91171282DCBBF67000A22E6 /* ResolvedGlyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResolvedGlyph.hpp; sourceTree = "<group>"; };
 		F91171302DCBBF6F000A22E6 /* Font.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Font.hpp; sourceTree = "<group>"; };
 		F9190F272B8EEDFB00667E3B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F91D41372F5DA80500E7FEEF /* Dialog.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Dialog.hpp; sourceTree = "<group>"; };
+		F91D41382F5DA80500E7FEEF /* FileDialogFilter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileDialogFilter.hpp; sourceTree = "<group>"; };
+		F91D41392F5DA80500E7FEEF /* OpenFileDialogOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OpenFileDialogOptions.hpp; sourceTree = "<group>"; };
+		F91D413A2F5DA80500E7FEEF /* SaveFileDialogOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SaveFileDialogOptions.hpp; sourceTree = "<group>"; };
+		F91D413B2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SelectFolderDialogOptions.hpp; sourceTree = "<group>"; };
+		F91D41412F5DA81F00E7FEEF /* FileDialogFilter.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileDialogFilter.ipp; sourceTree = "<group>"; };
+		F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivDialog_macOS.mm; sourceTree = "<group>"; };
 		F933ACF52E54A2A2005624D7 /* MSDFGlyphRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyphRenderer.hpp; sourceTree = "<group>"; };
 		F933ACF62E54A2A2005624D7 /* MSDFGlyphRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSDFGlyphRenderer.cpp; sourceTree = "<group>"; };
 		F933ACF92E54A2BA005624D7 /* MSDFGlyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyph.hpp; sourceTree = "<group>"; };
@@ -6438,6 +6452,7 @@
 				F9070B772B9F175000383E4D /* Endian.ipp */,
 				F9070B782B9F175000383E4D /* EscapedFormatter.ipp */,
 				F9070B792B9F175000383E4D /* FastMath.ipp */,
+				F91D41412F5DA81F00E7FEEF /* FileDialogFilter.ipp */,
 				F9070B7A2B9F175000383E4D /* FloatFormatter.ipp */,
 				F96F95E22C2B0F420033353E /* FloatQuad.ipp */,
 				F980C4922C04B43300A86B68 /* FloatRect.ipp */,
@@ -6678,6 +6693,7 @@
 				F9070BD52B9F175000383E4D /* Demangle.hpp */,
 				F980C4232C00D2B500A86B68 /* DepthStencilState.hpp */,
 				F980C4592C01B20F00A86B68 /* DepthStencilStateBuilder.hpp */,
+				F91D41372F5DA80500E7FEEF /* Dialog.hpp */,
 				F986060E2BEB75DB006A4C0F /* DirectoryWatcher.hpp */,
 				F9070BD62B9F175000383E4D /* DiscreteDistribution.hpp */,
 				F9070BD72B9F175000383E4D /* DisjointSet.hpp */,
@@ -6704,6 +6720,7 @@
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
 				F9070BE12B9F175000383E4D /* FileAction.hpp */,
 				F98606162BEB7651006A4C0F /* FileChange.hpp */,
+				F91D41382F5DA80500E7FEEF /* FileDialogFilter.hpp */,
 				F9070BE22B9F175000383E4D /* FileSystem.hpp */,
 				F9070BE32B9F175000383E4D /* FloatFormatter.hpp */,
 				F96F95E02C2B0F270033353E /* FloatQuad.hpp */,
@@ -6833,6 +6850,7 @@
 				F9070C062B9F175000383E4D /* Number.hpp */,
 				F9070C072B9F175000383E4D /* Obfuscation.hpp */,
 				F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */,
+				F91D41392F5DA80500E7FEEF /* OpenFileDialogOptions.hpp */,
 				F9070C082B9F175000383E4D /* OpenMode.hpp */,
 				F9070C092B9F175000383E4D /* Optional.hpp */,
 				F99881DC2F5808C500C8991D /* OSCArgument.hpp */,
@@ -6903,6 +6921,7 @@
 				F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */,
 				F980C4262C00D2B500A86B68 /* SamplerState.hpp */,
 				F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */,
+				F91D413A2F5DA80500E7FEEF /* SaveFileDialogOptions.hpp */,
 				F97202F52BEDF2D8000E21DD /* Scene.hpp */,
 				F9712A372C2572C60049CC26 /* ScopedColorAdd2D.hpp */,
 				F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */,
@@ -6912,6 +6931,7 @@
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */,
+				F91D413B2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp */,
 				F998819B2F48996200C8991D /* Serial.hpp */,
 				F998819C2F48996200C8991D /* SerialPortInfo.hpp */,
 				F9AEA5112E6B3E92003734E7 /* ShaderGroup.hpp */,
@@ -7755,6 +7775,7 @@
 				F998817C2F45A23900C8991D /* Clipboard */,
 				F9E794842C2493FF002615BA /* ConstantBuffer */,
 				F98605812BDA7E32006A4C0F /* Cursor */,
+				F91D41442F5DA84F00E7FEEF /* Dialog */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
 				F99881C52F56CAB700C8991D /* DriveInfo */,
 				F934BD912BF8824B0003EAD5 /* EngineShader */,
@@ -8055,6 +8076,14 @@
 				F91171112DCBBF0B000A22E6 /* SivFontStyle.cpp */,
 			);
 			path = FontStyle;
+			sourceTree = "<group>";
+		};
+		F91D41442F5DA84F00E7FEEF /* Dialog */ = {
+			isa = PBXGroup;
+			children = (
+				F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */,
+			);
+			path = Dialog;
 			sourceTree = "<group>";
 		};
 		F933AD0C2E54A2E7005624D7 /* TextEffect */ = {
@@ -12685,6 +12714,11 @@
 				F98600202BCFBB53006A4C0F /* SkImageInfo.h in Headers */,
 				F9070D082B9F175100383E4D /* Types.hpp in Headers */,
 				F986041E2BCFBB54006A4C0F /* SkSLIRNode.h in Headers */,
+				F91D413C2F5DA80500E7FEEF /* FileDialogFilter.hpp in Headers */,
+				F91D413D2F5DA80500E7FEEF /* Dialog.hpp in Headers */,
+				F91D413E2F5DA80500E7FEEF /* OpenFileDialogOptions.hpp in Headers */,
+				F91D413F2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp in Headers */,
+				F91D41402F5DA80500E7FEEF /* SaveFileDialogOptions.hpp in Headers */,
 				F98601D22BCFBB53006A4C0F /* SkImageFilterTypes.h in Headers */,
 				F9528BB02BBE7D1100222F45 /* MemoryReader.ipp in Headers */,
 				F98601452BCFBB53006A4C0F /* SkAAClip.h in Headers */,
@@ -13163,6 +13197,7 @@
 				F9E7947A2C248AEE002615BA /* Graphics2D.hpp in Headers */,
 				F90706BE2B9DAEC900383E4D /* phmap_dump.h in Headers */,
 				F98600742BCFBB53006A4C0F /* SkDeque.h in Headers */,
+				F91D41422F5DA81F00E7FEEF /* FileDialogFilter.ipp in Headers */,
 				F9070C4C2B9F175000383E4D /* Console.ipp in Headers */,
 				F98600332BCFBB53006A4C0F /* SkPixmap.h in Headers */,
 				F9070CFF2B9F175100383E4D /* StringView.hpp in Headers */,
@@ -14709,6 +14744,7 @@
 				F933ACF82E54A2A2005624D7 /* MSDFGlyphRenderer.cpp in Sources */,
 				F9070DE22B9F175E00383E4D /* SivParseInt.cpp in Sources */,
 				F98601552BCFBB53006A4C0F /* SkBitmap.cpp in Sources */,
+				F91D41452F5DA84F00E7FEEF /* SivDialog_macOS.mm in Sources */,
 				F9E5FCEB2BC59EB50081A4F7 /* SivJSONIterator.cpp in Sources */,
 				F943AACB2E2A09BB001B4D43 /* SivDrawableText.cpp in Sources */,
 				F9070DB92B9F175E00383E4D /* SivConsole.cpp in Sources */,
