@@ -1258,6 +1258,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Dialog">
       <UniqueIdentifier>{eb17716e-0585-4dc6-999d-480634ebd386}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Notifications">
+      <UniqueIdentifier>{3d1c0141-6558-4f3f-b488-3d3ae3723440}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications">
+      <UniqueIdentifier>{27d423d4-a4bf-4124-9a5d-9ba3d36e65f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5094,6 +5100,30 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Notifications.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Notifications\INotifications.hpp">
+      <Filter>src\Siv3D\Notifications</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications\CNotifications.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAvailability.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationRequest.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponse.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponseType.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAction.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7960,6 +7990,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Dialog\SivDialog_Windows.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Notifications\NotificationsFactory.cpp">
+      <Filter>src\Siv3D\Notifications</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Notifications\SivNotifications.cpp">
+      <Filter>src\Siv3D\Notifications</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications\CNotifications.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -192,6 +192,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Network.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAction.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAvailability.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationRequest.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponse.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponseType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Notifications.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OpenFileDialogOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OSCArgument.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OSCMessage.hpp" />
@@ -732,6 +738,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications\CNotifications.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet\CPentablet.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\BatchInfo2D.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.hpp" />
@@ -836,6 +843,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Notifications\INotifications.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\OSCMessage\OSCMessageDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCPacketListener.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCReceiverDetail.hpp" />
@@ -1325,6 +1333,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Network\SivNetwork.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications\CNotifications.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet\CPentablet.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\PowerStatus\SivPowerStatus.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.cpp" />
@@ -1567,6 +1576,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\NativeShareFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Notifications\NotificationsFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Notifications\SivNotifications.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\OSCMessage\OSCMessageDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\OSCMessage\SivOSCMessage.cpp" />

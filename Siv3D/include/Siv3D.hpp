@@ -1193,22 +1193,20 @@
 # include <Siv3D/MessageBoxStyle.hpp>
 
 // メッセージボックス | Message box
-# include <Siv3D/MessageBox.hpp>
+# include <Siv3D/MessageBox.hpp> // ToDo
 
 ////////////////////////////////////////////////////////////////
 //
-//	トースト通知 | Toast Notification
+//	通知 | Notifications
 //
 ////////////////////////////////////////////////////////////////
 
-//// トースト通知アイテム | Toast notification item
-//# include <Siv3D/ToastNotificationItem.hpp>
-//
-//// トースト通知の状態 | Toast notification state
-//# include <Siv3D/ToastNotificationState.hpp>
-//
-//// トースト通知 | Toast notification
-//# include <Siv3D/ToastNotification.hpp>
+# include <Siv3D/NotificationAction.hpp>
+# include <Siv3D/NotificationRequest.hpp>
+# include <Siv3D/NotificationAvailability.hpp>
+# include <Siv3D/NotificationResponseType.hpp>
+# include <Siv3D/NotificationResponse.hpp>
+# include <Siv3D/Notifications.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
