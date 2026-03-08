@@ -809,6 +809,12 @@ APACHE_2_LICENSE
 },
 
 {
+R"-(WinToast)-",
+R"-(Copyright (C) 2016-2025 WinToast v1.3.2 - Mohammed Boujemaoui <mohabouje@gmail.com>)-",
+MIT_LICENSE
+},
+
+{
 R"-(Xoshiro-cpp)-",
 R"-(Copyright (c) 2020 Ryo Suzuki <reputeless@gmail.com>)-",
 MIT_LICENSE

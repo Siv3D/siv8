@@ -1264,6 +1264,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications">
       <UniqueIdentifier>{27d423d4-a4bf-4124-9a5d-9ba3d36e65f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\WinToast">
+      <UniqueIdentifier>{f3fa33ee-c814-4404-ab15-01d164ea52b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5124,6 +5127,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAction.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.h">
+      <Filter>src\ThirdParty\WinToast</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -7999,6 +8005,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications\CNotifications.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.cpp">
+      <Filter>src\ThirdParty\WinToast</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

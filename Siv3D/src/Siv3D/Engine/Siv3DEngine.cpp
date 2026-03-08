@@ -41,6 +41,7 @@
 # include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/Effect/IEffect.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
+# include <Siv3D/Notifications/INotifications.hpp>
 
 namespace s3d
 {

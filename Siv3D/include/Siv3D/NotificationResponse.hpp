@@ -16,7 +16,7 @@
 
 namespace s3d
 {
-	using NotificationID = uint64;
+	using NotificationID = int64;
 
 	struct NotificationResponse
 	{

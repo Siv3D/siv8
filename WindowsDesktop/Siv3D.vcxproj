@@ -1255,6 +1255,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\MSGPACK.H" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\PKTDEF.H" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\WINTAB.H" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\wyhash\wyhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\xxHash\xxhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\common\allocations.h" />
@@ -3760,6 +3761,7 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level1</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level1</WarningLevel>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\debug.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\entropy_common.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\error_private.c" />

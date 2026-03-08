@@ -56,6 +56,7 @@ Name | Version
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
 [variant](https://github.com/mapbox/variant) | 
+[WinToast](https://github.com/mohabouje/WinToast) | v1.3.2
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2

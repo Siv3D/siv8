@@ -11,6 +11,11 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
+# include <Siv3D/Optional.hpp>
+# include <Siv3D/Array.hpp>
+# include <Siv3D/NotificationAvailability.hpp>
+# include <Siv3D/NotificationRequest.hpp>
+# include <Siv3D/NotificationResponse.hpp>
 
 namespace s3d
 {
@@ -22,5 +27,21 @@ namespace s3d
 		static ISiv3DNotifications* Create();
 
 		virtual ~ISiv3DNotifications() = default;
+
+		[[nodiscard]]
+		virtual NotificationAvailability getAvailability() = 0;
+
+		[[nodiscard]]
+		virtual bool requestPermission() = 0;
+
+		[[nodiscard]]
+		virtual Optional<NotificationID> show(const NotificationRequest& request) = 0;
+
+		virtual void dismiss(NotificationID id) = 0;
+
+		virtual void dismissAll() = 0;
+
+		[[nodiscard]]
+		virtual Array<NotificationResponse> drainResponses() = 0;
 	};
 }
