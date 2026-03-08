@@ -1368,26 +1368,30 @@ namespace s3d
 	template <class Type, class Allocator>
 	String Array<Type, Allocator>::join(const StringView sep, const StringView begin, const StringView end) const
 	{
-		String result;
-		result.append(begin);
+		const size_t n = m_container.size();
+		const size_t sepCount = (n > 1 ? (n - 1) : 0);
+
+		FormatData formatData;
+		formatData.string.reserve(begin.size() + end.size() + (sep.size() * sepCount));
+		formatData.string.append(begin);
 
 		auto it = m_container.begin();
 		const auto itEnd = m_container.end();
 
 		if (it != itEnd)
 		{
-			result.append(Format(*it));
+			Formatter(formatData, *it);
 			++it;
 
 			for (; it != itEnd; ++it)
 			{
-				result.append(sep);
-				result.append(Format(*it));
+				formatData.string.append(sep);
+				Formatter(formatData, *it);
 			}
 		}
 
-		result.append(end);
-		return result;
+		formatData.string.append(end);
+		return formatData.string;
 	}
 
 	////////////////////////////////////////////////////////////////

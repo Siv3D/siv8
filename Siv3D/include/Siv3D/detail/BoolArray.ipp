@@ -1761,35 +1761,45 @@ namespace s3d
 
 		/// @brief 配列の要素から文字列を生成します。
 		/// @param sep 要素の間に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		constexpr String join(const StringView sep = U", ") const
+		{
+			return join(sep, U"", U"");
+		}
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
 		/// @param begin 先頭に挿入する文字列
 		/// @param end 末尾に挿入する文字列
 		/// @return 生成された文字列
 		[[nodiscard]]
-		constexpr String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const
+		constexpr String join(const StringView sep, const StringView begin, const StringView end) const
 		{
-			String result;
+			const size_t n = m_container.size();
+			const size_t sepCount = (n > 1 ? (n - 1) : 0);
 
-			result.append(begin);
+			FormatData formatData;
+			formatData.string.reserve(begin.size() + end.size() + (sep.size() * sepCount) + (n * 5));
+			formatData.string.append(begin);
 
-			bool isFirst = true;
+			auto it = m_container.begin();
+			const auto itEnd = m_container.end();
 
-			for (const auto& value : m_container)
+			if (it != itEnd)
 			{
-				if (isFirst)
-				{
-					isFirst = false;
-				}
-				else
-				{
-					result.append(sep);
-				}
+				Formatter(formatData, *it);
+				++it;
 
-				result.append(Format(value));
+				for (; it != itEnd; ++it)
+				{
+					formatData.string.append(sep);
+					Formatter(formatData, *it);
+				}
 			}
 
-			result.append(end);
-
-			return result;
+			formatData.string.append(end);
+			return formatData.string;
 		}
 
 		////////////////////////////////////////////////////////////////
