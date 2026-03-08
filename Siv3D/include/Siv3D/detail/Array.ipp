@@ -1360,30 +1360,33 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr String Array<Type, Allocator>::join(const StringView sep, const StringView begin, const StringView end) const
+	String Array<Type, Allocator>::join(const StringView sep) const
+	{
+		return join(sep, U"", U"");
+	}
+
+	template <class Type, class Allocator>
+	String Array<Type, Allocator>::join(const StringView sep, const StringView begin, const StringView end) const
 	{
 		String result;
-
 		result.append(begin);
 
-		bool isFirst = true;
+		auto it = m_container.begin();
+		const auto itEnd = m_container.end();
 
-		for (const auto& value : m_container)
+		if (it != itEnd)
 		{
-			if (isFirst)
-			{
-				isFirst = false;
-			}
-			else
+			result.append(Format(*it));
+			++it;
+
+			for (; it != itEnd; ++it)
 			{
 				result.append(sep);
+				result.append(Format(*it));
 			}
-
-			result.append(Format(value));
 		}
 
 		result.append(end);
-
 		return result;
 	}
 

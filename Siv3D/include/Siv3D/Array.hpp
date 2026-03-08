@@ -1339,11 +1339,17 @@ namespace s3d
 
 		/// @brief 配列の要素から文字列を生成します。
 		/// @param sep 要素の間に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		String join(StringView sep = U", ") const;
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
 		/// @param begin 先頭に挿入する文字列
 		/// @param end 末尾に挿入する文字列
 		/// @return 生成された文字列
 		[[nodiscard]]
-		constexpr String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const;
+		String join(StringView sep, StringView begin, StringView end) const;
 
 		////////////////////////////////////////////////////////////////
 		//
