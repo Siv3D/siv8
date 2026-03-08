@@ -40,9 +40,6 @@ namespace s3d
 		/// @brief ダイアログの「保存」に相当する決定ボタンのテキスト。空の場合は OS のデフォルトになります。
 		String acceptButtonText = {};
 
-		/// @brief ユーザーが拡張子を入力しなかった場合、選択中のフィルタに基づいて自動的に拡張子を追加するかどうか。
-		bool addExtensionIfMissing = true;
-
 		/// @brief 隠しファイルや隠しフォルダをダイアログに表示するかどうか。
 		bool showHiddenFiles = false;
 	};

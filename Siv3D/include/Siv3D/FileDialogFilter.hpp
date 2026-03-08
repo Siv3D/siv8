@@ -141,7 +141,7 @@ namespace s3d
 		static constexpr FileDialogFilter WMA();
 
 		/// @brief すべてのオーディオファイル用の拡張子フィルタを返します。
-		/// @return `FileDialogFilter{ U"All Audio Files",{ U"wav", U"mp3", U"m4a", "aac", U"ogg", U"opus", U"mid", (+プラットフォームに応じた追加のフォーマット) } }`
+		/// @return `FileDialogFilter{ U"All Audio Files",{ U"wav", U"mp3", U"m4a", U"aac", U"ogg", U"opus", U"mid", (+プラットフォームに応じた追加のフォーマット) } }`
 		[[nodiscard]]
 		static constexpr FileDialogFilter AllAudioFiles();
 

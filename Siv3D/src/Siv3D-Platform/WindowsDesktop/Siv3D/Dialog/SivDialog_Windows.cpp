@@ -71,7 +71,38 @@ namespace s3d
 		{
 			if (filters.isEmpty())
 			{
-				filters = { FileDialogFilter::AllFiles() };
+				return{ FileDialogFilter::AllFiles() };
+			}
+
+			for (auto& filter : filters)
+			{
+				Array<String> extensions;
+				extensions.reserve(filter.extensions.size());
+
+				for (const auto& ext : filter.extensions)
+				{
+					if (ext.isEmpty())
+					{
+						continue;
+					}
+
+					// 重複追加を防ぐ
+					if (not extensions.contains(ext))
+					{
+						extensions.push_back(ext);
+					}
+				}
+
+				filter.extensions = std::move(extensions);
+
+				// 全部空だった場合は AllFiles 相当にする
+				if (filter.extensions.isEmpty())
+				{
+					if (filter.description.isEmpty())
+					{
+						filter.description = U"All Files";
+					}
+				}
 			}
 
 			return filters;
@@ -87,15 +118,14 @@ namespace s3d
 
 			for (const auto& filter : filters)
 			{
-				// description が空でも Windows 側で空表示にしないよう最低限補う
-				std::wstring name = filter.description.isEmpty()
+				const std::wstring name = filter.description.isEmpty()
 					? L"Files"
 					: Unicode::ToWstring(filter.description);
 
-				std::wstring pattern = MakeFilterPattern(filter.extensions);
+				const std::wstring pattern = MakeFilterPattern(filter.extensions);
 
-				data.names.push_back(std::move(name));
-				data.patterns.push_back(std::move(pattern));
+				data.names.push_back(name);
+				data.patterns.push_back(pattern);
 			}
 
 			for (size_t i = 0; i < data.names.size(); ++i)
@@ -246,6 +276,9 @@ namespace s3d
 				(void)dialog->SetOptions(fos);
 			}
 
+			// ファイルタイプに応じて自動で拡張子が付くようにする
+			(void)dialog->SetDefaultExtension(L"");
+
 			ApplyCommonFileDialogSettings(
 				dialog,
 				options.initialDirectory,
@@ -284,7 +317,7 @@ namespace s3d
 				options.acceptButtonText);
 		}
 
-		static void ApplyFilters(IFileDialog* dialog, const Array<FileDialogFilter>& filters)
+		static void ApplyFileTypeFilters(IFileDialog* dialog, const Array<FileDialogFilter>& filters)
 		{
 			if (dialog == nullptr)
 			{
@@ -302,7 +335,7 @@ namespace s3d
 				static_cast<UINT>(filterData.specs.size()),
 				filterData.specs.data());
 
-			// 先頭を初期選択
+			// 初期状態では先頭フィルタを選択
 			(void)dialog->SetFileTypeIndex(1);
 		}
 
@@ -374,81 +407,56 @@ namespace s3d
 
 			return results;
 		}
+	}
 
-		[[nodiscard]]
-		static String GetDefaultExtensionFromFilter(const Array<FileDialogFilter>& filters, const uint32 filterIndex)
+	namespace Dialog
+	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenFile, OpenFiles
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<FilePath> OpenFile(const OpenFileDialogOptions& options)
 		{
-			// IFileDialog::GetFileTypeIndex() は 1-based
-			if ((filterIndex == 0) || (filters.size() < filterIndex))
-			{
-				return{};
-			}
-
-			for (const auto& extension : filters[filterIndex - 1].extensions)
-			{
-				if (not extension.isEmpty())
-				{
-					return extension;
-				}
-			}
-
-			return{};
-		}
-
-		[[nodiscard]]
-		static bool HasExtension(const FilePath& path)
-		{
-			return (not FileSystem::Extension(path).isEmpty());
-		}
-
-		[[nodiscard]]
-		static FilePath AppendExtension(const FilePath& path, const String& extension)
-		{
-			if (path.isEmpty() || extension.isEmpty())
-			{
-				return path;
-			}
-
-			return FileSystem::FullPath(path + U"." + extension);
-		}
-
-		[[nodiscard]]
-		static Array<FileDialogFilter> GetEffectiveSaveFilters(const SaveFileDialogOptions& options)
-		{
-			return NormalizeFilters(options.filters);
-		}
-
-		[[nodiscard]]
-		static Optional<FilePath> PostProcessSavePath(
-			IFileSaveDialog* dialog,
-			const Array<FileDialogFilter>& effectiveFilters,
-			const SaveFileDialogOptions& options,
-			FilePath path)
-		{
-			if (path.isEmpty())
+			ComPtr<IFileOpenDialog> dialog;
+			if (FAILED(::CoCreateInstance(
+				CLSID_FileOpenDialog,
+				nullptr,
+				CLSCTX_INPROC_SERVER,
+				IID_PPV_ARGS(&dialog))))
 			{
 				return none;
 			}
 
-			if (options.addExtensionIfMissing && (not HasExtension(path)))
-			{
-				UINT filterIndex = 0;
-				if (SUCCEEDED(dialog->GetFileTypeIndex(&filterIndex)))
-				{
-					const String extension = GetDefaultExtensionFromFilter(effectiveFilters, filterIndex);
+			const Array<FileDialogFilter> effectiveFilters = NormalizeFilters(options.filters);
 
-					if (not extension.isEmpty())
-					{
-						path = AppendExtension(path, extension);
-					}
-				}
+			ApplyOpenDialogOptions(dialog.Get(), options, false);
+			ApplyFileTypeFilters(dialog.Get(), effectiveFilters);
+
+			const HRESULT hr = ShowDialog(dialog.Get());
+
+			if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED))
+			{
+				return none;
 			}
 
-			return path;
+			if (FAILED(hr))
+			{
+				return none;
+			}
+
+			Array<FilePath> results = GetOpenDialogResults(dialog.Get(), false);
+
+			if (results.isEmpty())
+			{
+				return none;
+			}
+
+			return std::move(results.front());
 		}
 
-		[[nodiscard]]
-		static Array<FilePath> ShowOpenDialogImpl(const OpenFileDialogOptions& options, const bool multiSelect)
+		Array<FilePath> OpenFiles(const OpenFileDialogOptions& options)
 		{
 			ComPtr<IFileOpenDialog> dialog;
 			if (FAILED(::CoCreateInstance(
@@ -460,8 +468,10 @@ namespace s3d
 				return{};
 			}
 
-			ApplyOpenDialogOptions(dialog.Get(), options, multiSelect);
-			ApplyFilters(dialog.Get(), NormalizeFilters(options.filters));
+			const Array<FileDialogFilter> effectiveFilters = NormalizeFilters(options.filters);
+
+			ApplyOpenDialogOptions(dialog.Get(), options, true);
+			ApplyFileTypeFilters(dialog.Get(), effectiveFilters);
 
 			const HRESULT hr = ShowDialog(dialog.Get());
 
@@ -475,33 +485,7 @@ namespace s3d
 				return{};
 			}
 
-			return GetOpenDialogResults(dialog.Get(), multiSelect);
-		}
-	}
-
-	namespace Dialog
-	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	OpenFile, OpenFiles
-		//
-		////////////////////////////////////////////////////////////////
-
-		Optional<FilePath> OpenFile(const OpenFileDialogOptions& options)
-		{
-			Array<FilePath> results = ShowOpenDialogImpl(options, false);
-
-			if (results.isEmpty())
-			{
-				return none;
-			}
-
-			return std::move(results.front());
-		}
-
-		Array<FilePath> OpenFiles(const OpenFileDialogOptions& options)
-		{
-			return ShowOpenDialogImpl(options, true);
+			return GetOpenDialogResults(dialog.Get(), true);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -522,10 +506,10 @@ namespace s3d
 				return none;
 			}
 
-			const Array<FileDialogFilter> effectiveFilters = GetEffectiveSaveFilters(options);
+			const Array<FileDialogFilter> effectiveFilters = NormalizeFilters(options.filters);
 
 			ApplySaveDialogOptions(dialog.Get(), options);
-			ApplyFilters(dialog.Get(), effectiveFilters);
+			ApplyFileTypeFilters(dialog.Get(), effectiveFilters);
 
 			const HRESULT hr = ShowDialog(dialog.Get());
 
@@ -545,13 +529,7 @@ namespace s3d
 				return none;
 			}
 
-			auto path = GetFilePathFromShellItem(item.Get());
-			if (not path)
-			{
-				return none;
-			}
-
-			return PostProcessSavePath(dialog.Get(), effectiveFilters, options, std::move(*path));
+			return GetFilePathFromShellItem(item.Get());
 		}
 
 		////////////////////////////////////////////////////////////////
