@@ -23,8 +23,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief ファイル選択ダイアログのフィルタを表す構造体
-    struct FileDialogFilter
-    {
+	struct FileDialogFilter
+	{
 		/// @brief ダイアログのドロップダウンに表示される説明文（例: "すべての画像ファイル"）
 		String description;
 

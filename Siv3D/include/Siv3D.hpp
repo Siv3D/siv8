@@ -1123,8 +1123,8 @@
 
 # include <Siv3D/SelectFolderDialogOptions.hpp>
 
-//// ファイルダイアログ | File dialog
-//# include <Siv3D/Dialog.hpp>
+// ファイルダイアログ | File dialog
+# include <Siv3D/Dialog.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
