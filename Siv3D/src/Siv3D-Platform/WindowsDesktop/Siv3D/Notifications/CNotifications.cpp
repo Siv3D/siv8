@@ -14,108 +14,114 @@
 # include <Siv3D/Notifications/CNotifications.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <ThirdParty/WinToast/wintoastlib.h>
 
 namespace s3d
 {
 	using namespace WinToastLib;
 
+	// シングルトンである CNotifications のインスタンスが生存しているかどうかを示すフラグ
+	static std::atomic<bool> g_CNotificationsAlive{ false };
+
 	class NotificationHandler final : public IWinToastHandler
 	{
 	public:
 
-		NotificationHandler(const Array<NotificationAction>& actions)
-			: m_actionIDs(actions.map([](const NotificationAction& action) { return action.id; })) {}
+		NotificationHandler(CNotifications* pNotifications, const Array<NotificationAction>& actions)
+			: m_pNotifications{ pNotifications }
+			, m_actionIDs(actions.map([](const NotificationAction& action) { return action.id; })) {}
 
 		void setID(const NotificationID id)
 		{
 			LOG_DEBUG(fmt::format("NotificationHandler::setID() [id: {}]", id));
+			
 			m_id = id;
 		}
 
 		void toastActivated() const override
 		{
-			if (not Siv3DEngine::isNull())
+			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated() [id: {}]", m_id));
+				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated() [id: {}]", m_id.load()));
 
-				if (auto p = dynamic_cast<CNotifications*>(SIV3D_ENGINE(Notifications)))
-				{
-					p->onStateUpdate(m_id, CNotifications::Notification::State::Activated);
-				}
+				m_pNotifications->enqueueResponse(m_id, NotificationResponseType::DefaultActivated);
 			}
 		}
 
 		void toastActivated(const int actionIndex) const override
 		{
-			if (not Siv3DEngine::isNull())
+			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated(int) [id: {}, actionIndex: {}]", m_id, actionIndex));
-
-				if (auto p = dynamic_cast<CNotifications*>(SIV3D_ENGINE(Notifications)))
+				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated(int) [id: {}, actionIndex: {}]", m_id.load(), actionIndex));
+			
+				if ((0 <= actionIndex) && (actionIndex < m_actionIDs.size()))
 				{
-					if ((0 <= actionIndex) && (actionIndex < m_actionIDs.size()))
-					{
-						p->onStateUpdate(m_id, CNotifications::Notification::State::Activated, m_actionIDs[actionIndex]);
-					}
-					else
-					{
-						p->onStateUpdate(m_id, CNotifications::Notification::State::Activated);
-					}
+					m_pNotifications->enqueueResponse(m_id, NotificationResponseType::ActionActivated, m_actionIDs[actionIndex]);
+				}
+				else
+				{
+					m_pNotifications->enqueueResponse(m_id, NotificationResponseType::DefaultActivated);
 				}
 			}
 		}
 
-		void toastActivated(const std::wstring) const override {} // 基本的には呼ばれない
+		void toastActivated(const std::wstring) const override // 基本的には呼ばれない
+		{
+			if (g_CNotificationsAlive)
+			{
+				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated(wstring) [id: {}]", m_id.load()));
+
+				m_pNotifications->enqueueResponse(m_id, NotificationResponseType::DefaultActivated);
+			}
+		}
 
 		void toastDismissed(const WinToastDismissalReason state) const override
 		{
-			if (not Siv3DEngine::isNull())
+			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format("NotificationHandler::toastDismissed() [id: {}, state: {}]", m_id, FromEnum(state)));
+				LOG_DEBUG(fmt::format("NotificationHandler::toastDismissed() [id: {}, state: {}]", m_id.load(), FromEnum(state)));
 
-				if (auto p = dynamic_cast<CNotifications*>(SIV3D_ENGINE(Notifications)))
+				switch (state)
 				{
-					switch (state)
-					{
-					case IWinToastHandler::UserCanceled:
-						p->onStateUpdate(m_id, CNotifications::Notification::State::UserCanceled);
-						break;
-					case IWinToastHandler::ApplicationHidden:
-						p->onStateUpdate(m_id, CNotifications::Notification::State::ApplicationHidden);
-						break;
-					case IWinToastHandler::TimedOut:
-						p->onStateUpdate(m_id, CNotifications::Notification::State::TimedOut);
-						break;
-					default:
-						break;
-					}
+				case IWinToastHandler::UserCanceled:
+				case IWinToastHandler::ApplicationHidden:
+				case IWinToastHandler::TimedOut:
+				default:
+					m_pNotifications->enqueueResponse(m_id, NotificationResponseType::Dismissed);
+					break;
 				}
 			}
 		}
 
 		void toastFailed() const override
 		{
-			if (not Siv3DEngine::isNull())
+			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format(U"ToastHandler::toastFailed() [index: {}]", m_id));
+				LOG_DEBUG(fmt::format(U"ToastHandler::toastFailed() [index: {}]", m_id.load()));
 
-				if (auto p = dynamic_cast<CNotifications*>(SIV3D_ENGINE(Notifications)))
-				{
-					p->onStateUpdate(m_id, CNotifications::Notification::State::Error);
-				}
+				m_pNotifications->enqueueResponse(m_id, NotificationResponseType::Failed);
 			}
 		}
 
 	private:
 
+		CNotifications* m_pNotifications = nullptr;
+
 		Array<String> m_actionIDs;
 
-		NotificationID m_id = -1;
+		std::atomic<NotificationID> m_id{ -1 };
 	};
+
+	CNotifications::CNotifications()
+	{
+		g_CNotificationsAlive = true;
+	}
 
 	CNotifications::~CNotifications()
 	{
 		LOG_SCOPED_DEBUG("CNotifications::~CNotifications()");
+
+		g_CNotificationsAlive = false; // 以降のイベントは捨てる
 
 		dismissAll();
 	}
@@ -178,17 +184,16 @@ namespace s3d
 		templ.setAudioOption(request.playSound ? WinToastLib::WinToastTemplate::AudioOption::Default : WinToastLib::WinToastTemplate::AudioOption::Silent);
 
 		WinToast::WinToastError error = WinToast::NoError;
-		NotificationHandler* handler = new NotificationHandler(request.actions);
+		NotificationHandler* handler = new NotificationHandler(this, request.actions);
+		
 		const NotificationID notificationID = WinToast::instance()->showToast(templ, handler, &error); // handler の所有権は WinToast に移る
-
-		if (notificationID != -1)
+		if (notificationID == -1)
 		{
-			handler->setID(notificationID);
-
-			std::lock_guard lock{ m_mutex };
-			m_notificationTable.emplace(notificationID, Notification{ {}, Notification::State::Shown});
+			LOG_FAIL(fmt::format("Failed to display the notification. WinToast returned an error: {}", Unicode::FromWstring(WinToast::strerror(error))));
+			return none;
 		}
 
+		handler->setID(notificationID);
 		return notificationID;
 	}
 
@@ -214,29 +219,19 @@ namespace s3d
 
 	Array<NotificationResponse> CNotifications::drainResponses()
 	{
-		return{};
+		std::lock_guard lock{ m_mutex };
+		return std::exchange(m_responseQueue, {});
 	}
 
-	void CNotifications::onStateUpdate(const NotificationID id, const Notification::State state)
+	void CNotifications::enqueueResponse(const NotificationID id, const NotificationResponseType responseType)
 	{
 		std::lock_guard lock{ m_mutex };
-
-		if (auto it = m_notificationTable.find(id);
-			it != m_notificationTable.end())
-		{
-			it->second.state = state;
-		}
+		m_responseQueue.push_back(NotificationResponse{ id, responseType });
 	}
 
-	void CNotifications::onStateUpdate(const NotificationID id, const Notification::State state, const String& actionID)
+	void CNotifications::enqueueResponse(const NotificationID id, const NotificationResponseType responseType, const String& actionID)
 	{
 		std::lock_guard lock{ m_mutex };
-
-		if (auto it = m_notificationTable.find(id); 
-			it != m_notificationTable.end())
-		{
-			it->second.state = state;
-			it->second.actionID = actionID;
-		}
+		m_responseQueue.push_back(NotificationResponse{ id, responseType, actionID });
 	}
 }

@@ -11,9 +11,7 @@
 
 # pragma once
 # include <mutex>
-# include <Siv3D/HashMap.hpp>
 # include <Siv3D/Notifications/INotifications.hpp>
-# include <ThirdParty/WinToast/wintoastlib.h>
 
 namespace s3d
 {
@@ -21,36 +19,7 @@ namespace s3d
 	{
 	public:
 
-		struct Notification
-		{
-			String actionID;
-
-			/// @brief トースト通知の状態
-			enum class State : uint8
-			{
-				/// @brief 無効
-				Invalid,
-
-				/// @brief 表示されている
-				Shown,
-
-				/// @brief ユーザによってアクティベートされた
-				Activated,
-
-				/// @brief ユーザによってキャンセルされた
-				UserCanceled,
-
-				/// @brief アプリケーションによって非表示にされた
-				ApplicationHidden,
-
-				/// @brief タイムアウトした
-				TimedOut,
-
-				/// @brief エラーが発生した
-				Error,
-
-			} state = State::Invalid;
-		};
+		CNotifications();
 
 		~CNotifications() override;
 
@@ -66,9 +35,9 @@ namespace s3d
 
 		Array<NotificationResponse> drainResponses() override;
 
-		void onStateUpdate(NotificationID id, Notification::State state);
+		void enqueueResponse(NotificationID id, NotificationResponseType responseType);
 
-		void onStateUpdate(NotificationID id, Notification::State state, const String& actionID);
+		void enqueueResponse(NotificationID id, NotificationResponseType responseType, const String& actionID);
 
 	private:
 
@@ -78,7 +47,7 @@ namespace s3d
 		//
 		std::mutex m_mutex;
 
-		HashMap<NotificationID, Notification> m_notificationTable;
+		Array<NotificationResponse> m_responseQueue;
 		//
 		////////////////////////////////////////////////////////////////
 	};
