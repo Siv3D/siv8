@@ -761,7 +761,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::clear() noexcept
 	{
-		m_size.clear();
+		m_size.setZero();
 		m_container.clear();
 	}
 

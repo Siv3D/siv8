@@ -380,12 +380,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	clear
+	//	setZero
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::FloatingPoint Float>
-	constexpr void Vector4D<Float>::clear() noexcept
+	constexpr void Vector4D<Float>::setZero() noexcept
 	{
 		x = 0;
 		y = 0;

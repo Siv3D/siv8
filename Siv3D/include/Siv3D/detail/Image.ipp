@@ -23,7 +23,7 @@ namespace s3d
 		: m_size{ image.m_size }
 		, m_pixels(std::move(image.m_pixels))
 	{
-		image.m_size.clear();
+		image.m_size.setZero();
 	}
 
 	inline Image::Image(const Concept::Integral auto size)
@@ -58,7 +58,7 @@ namespace s3d
 		{
 			m_pixels	= std::move(image.m_pixels);
 			m_size		= image.m_size;
-			image.m_size.clear();
+			image.m_size.setZero();
 		}
 
 		return *this;
@@ -178,7 +178,7 @@ namespace s3d
 	inline void Image::clear() noexcept
 	{
 		m_pixels.clear();
-		m_size.clear();
+		m_size.setZero();
 	}
 
 	////////////////////////////////////////////////////////////////

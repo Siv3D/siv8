@@ -126,6 +126,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StereoSampleFloat32.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StereoSampleInt16.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp" />
@@ -605,6 +607,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StereoSampleFloat32.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StereoSampleInt16.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Stopwatch.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringAlgorithm.hpp" />
@@ -681,6 +685,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\VoronoiCell.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Wave.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\WaveSample.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WebBrowser.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp" />

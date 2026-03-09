@@ -1695,8 +1695,9 @@
 
 
 
-
-
+# include <Siv3D/WaveSample.hpp>
+# include <Siv3D/StereoSampleInt16.hpp>
+# include <Siv3D/StereoSampleFloat32.hpp>
 # include <Siv3D/Wave.hpp>
 
 
