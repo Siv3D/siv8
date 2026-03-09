@@ -503,6 +503,20 @@
 		F91D41402F5DA80500E7FEEF /* SaveFileDialogOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D413A2F5DA80500E7FEEF /* SaveFileDialogOptions.hpp */; };
 		F91D41422F5DA81F00E7FEEF /* FileDialogFilter.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41412F5DA81F00E7FEEF /* FileDialogFilter.ipp */; };
 		F91D41452F5DA84F00E7FEEF /* SivDialog_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */; };
+		F91D414C2F5E995400E7FEEF /* NotificationRequest.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41482F5E995400E7FEEF /* NotificationRequest.hpp */; };
+		F91D414D2F5E995400E7FEEF /* NotificationResponseType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D414A2F5E995400E7FEEF /* NotificationResponseType.hpp */; };
+		F91D414E2F5E995400E7FEEF /* NotificationAction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41462F5E995400E7FEEF /* NotificationAction.hpp */; };
+		F91D414F2F5E995400E7FEEF /* NotificationResponse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41492F5E995400E7FEEF /* NotificationResponse.hpp */; };
+		F91D41502F5E995400E7FEEF /* Notifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D414B2F5E995400E7FEEF /* Notifications.hpp */; };
+		F91D41512F5E995400E7FEEF /* NotificationAvailability.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41472F5E995400E7FEEF /* NotificationAvailability.hpp */; };
+		F91D415A2F5E997F00E7FEEF /* NotificationsFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91D41572F5E997F00E7FEEF /* NotificationsFactory.cpp */; };
+		F91D415B2F5E997F00E7FEEF /* SivNotifications.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91D41582F5E997F00E7FEEF /* SivNotifications.cpp */; };
+		F91D415C2F5E997F00E7FEEF /* SivNotificationResponseType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91D41542F5E997F00E7FEEF /* SivNotificationResponseType.cpp */; };
+		F91D415D2F5E997F00E7FEEF /* SivNotificationAvailability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91D41522F5E997F00E7FEEF /* SivNotificationAvailability.cpp */; };
+		F91D415E2F5E997F00E7FEEF /* INotifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41562F5E997F00E7FEEF /* INotifications.hpp */; };
+		F91D41622F5E999A00E7FEEF /* CNotifications.mm in Sources */ = {isa = PBXBuildFile; fileRef = F91D41602F5E999A00E7FEEF /* CNotifications.mm */; };
+		F91D41632F5E999A00E7FEEF /* CNotifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D415F2F5E999A00E7FEEF /* CNotifications.hpp */; };
+		F91D41652F5E9BCE00E7FEEF /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F91D41642F5E9BCD00E7FEEF /* UserNotifications.framework */; };
 		F933ACF72E54A2A2005624D7 /* MSDFGlyphRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F933ACF52E54A2A2005624D7 /* MSDFGlyphRenderer.hpp */; };
 		F933ACF82E54A2A2005624D7 /* MSDFGlyphRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F933ACF62E54A2A2005624D7 /* MSDFGlyphRenderer.cpp */; };
 		F933ACFA2E54A2BA005624D7 /* MSDFGlyph.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F933ACF92E54A2BA005624D7 /* MSDFGlyph.hpp */; };
@@ -3405,6 +3419,20 @@
 		F91D413B2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SelectFolderDialogOptions.hpp; sourceTree = "<group>"; };
 		F91D41412F5DA81F00E7FEEF /* FileDialogFilter.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileDialogFilter.ipp; sourceTree = "<group>"; };
 		F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivDialog_macOS.mm; sourceTree = "<group>"; };
+		F91D41462F5E995400E7FEEF /* NotificationAction.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationAction.hpp; sourceTree = "<group>"; };
+		F91D41472F5E995400E7FEEF /* NotificationAvailability.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationAvailability.hpp; sourceTree = "<group>"; };
+		F91D41482F5E995400E7FEEF /* NotificationRequest.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationRequest.hpp; sourceTree = "<group>"; };
+		F91D41492F5E995400E7FEEF /* NotificationResponse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationResponse.hpp; sourceTree = "<group>"; };
+		F91D414A2F5E995400E7FEEF /* NotificationResponseType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationResponseType.hpp; sourceTree = "<group>"; };
+		F91D414B2F5E995400E7FEEF /* Notifications.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Notifications.hpp; sourceTree = "<group>"; };
+		F91D41522F5E997F00E7FEEF /* SivNotificationAvailability.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNotificationAvailability.cpp; sourceTree = "<group>"; };
+		F91D41542F5E997F00E7FEEF /* SivNotificationResponseType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNotificationResponseType.cpp; sourceTree = "<group>"; };
+		F91D41562F5E997F00E7FEEF /* INotifications.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INotifications.hpp; sourceTree = "<group>"; };
+		F91D41572F5E997F00E7FEEF /* NotificationsFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NotificationsFactory.cpp; sourceTree = "<group>"; };
+		F91D41582F5E997F00E7FEEF /* SivNotifications.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNotifications.cpp; sourceTree = "<group>"; };
+		F91D415F2F5E999A00E7FEEF /* CNotifications.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CNotifications.hpp; sourceTree = "<group>"; };
+		F91D41602F5E999A00E7FEEF /* CNotifications.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CNotifications.mm; sourceTree = "<group>"; };
+		F91D41642F5E9BCD00E7FEEF /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		F933ACF52E54A2A2005624D7 /* MSDFGlyphRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyphRenderer.hpp; sourceTree = "<group>"; };
 		F933ACF62E54A2A2005624D7 /* MSDFGlyphRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSDFGlyphRenderer.cpp; sourceTree = "<group>"; };
 		F933ACF92E54A2BA005624D7 /* MSDFGlyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MSDFGlyph.hpp; sourceTree = "<group>"; };
@@ -5864,6 +5892,7 @@
 				F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */,
 				F99881DB2F573BF700C8991D /* SystemConfiguration.framework in Frameworks */,
 				F99881842F476E8D00C8991D /* UniformTypeIdentifiers.framework in Frameworks */,
+				F91D41652F5E9BCE00E7FEEF /* UserNotifications.framework in Frameworks */,
 				F944BABC2CEAF38D00CC4D42 /* libboost_filesystem.a in Frameworks */,
 				F986FAA22BCFB875006A4C0F /* libfreetype.a in Frameworks */,
 				F986FAA42BCFBB2E006A4C0F /* libharfbuzz.a in Frameworks */,
@@ -5889,6 +5918,7 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F91D41642F5E9BCD00E7FEEF /* UserNotifications.framework */,
 				F99881DA2F573BF600C8991D /* SystemConfiguration.framework */,
 				F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */,
 				F9FD0D082D1DABA000A584CE /* libopencv_core.a */,
@@ -6847,6 +6877,12 @@
 				F98111CB2ECC088400C50DD1 /* NaturalSort.hpp */,
 				F99881C72F57180B00C8991D /* Network.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
+				F91D41462F5E995400E7FEEF /* NotificationAction.hpp */,
+				F91D41472F5E995400E7FEEF /* NotificationAvailability.hpp */,
+				F91D41482F5E995400E7FEEF /* NotificationRequest.hpp */,
+				F91D41492F5E995400E7FEEF /* NotificationResponse.hpp */,
+				F91D414A2F5E995400E7FEEF /* NotificationResponseType.hpp */,
+				F91D414B2F5E995400E7FEEF /* Notifications.hpp */,
 				F9070C062B9F175000383E4D /* Number.hpp */,
 				F9070C072B9F175000383E4D /* Obfuscation.hpp */,
 				F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */,
@@ -7652,6 +7688,9 @@
 				F998814D2F40B56800C8991D /* MultiPolygon */,
 				F98111D52ECC08CA00C50DD1 /* NativeShare */,
 				F98111D02ECC08C200C50DD1 /* NaturalSort */,
+				F91D41532F5E997F00E7FEEF /* NotificationAvailability */,
+				F91D41552F5E997F00E7FEEF /* NotificationResponseType */,
+				F91D41592F5E997F00E7FEEF /* Notifications */,
 				F9070D6E2B9F175E00383E4D /* Optional */,
 				F99881EF2F58091000C8991D /* OSCMessage */,
 				F99881F52F58091000C8991D /* OSCReceiver */,
@@ -7786,6 +7825,7 @@
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
 				F98111DB2ECC08E300C50DD1 /* NativeShare */,
 				F99881D82F57399D00C8991D /* Network */,
+				F91D41612F5E999A00E7FEEF /* Notifications */,
 				F998823C2F5809A900C8991D /* Pentablet */,
 				F99881992F4880B900C8991D /* PowerStatus */,
 				F97203202BF09E80000E21DD /* Renderer */,
@@ -8084,6 +8124,41 @@
 				F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */,
 			);
 			path = Dialog;
+			sourceTree = "<group>";
+		};
+		F91D41532F5E997F00E7FEEF /* NotificationAvailability */ = {
+			isa = PBXGroup;
+			children = (
+				F91D41522F5E997F00E7FEEF /* SivNotificationAvailability.cpp */,
+			);
+			path = NotificationAvailability;
+			sourceTree = "<group>";
+		};
+		F91D41552F5E997F00E7FEEF /* NotificationResponseType */ = {
+			isa = PBXGroup;
+			children = (
+				F91D41542F5E997F00E7FEEF /* SivNotificationResponseType.cpp */,
+			);
+			path = NotificationResponseType;
+			sourceTree = "<group>";
+		};
+		F91D41592F5E997F00E7FEEF /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				F91D41562F5E997F00E7FEEF /* INotifications.hpp */,
+				F91D41572F5E997F00E7FEEF /* NotificationsFactory.cpp */,
+				F91D41582F5E997F00E7FEEF /* SivNotifications.cpp */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		F91D41612F5E999A00E7FEEF /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				F91D415F2F5E999A00E7FEEF /* CNotifications.hpp */,
+				F91D41602F5E999A00E7FEEF /* CNotifications.mm */,
+			);
+			path = Notifications;
 			sourceTree = "<group>";
 		};
 		F933AD0C2E54A2E7005624D7 /* TextEffect */ = {
@@ -12675,6 +12750,12 @@
 				F98600242BCFBB53006A4C0F /* SkMatrix.h in Headers */,
 				F98600412BCFBB53006A4C0F /* SkSpan.h in Headers */,
 				F933ADB92E54A3DA005624D7 /* ScopedCustomShader2D.hpp in Headers */,
+				F91D414C2F5E995400E7FEEF /* NotificationRequest.hpp in Headers */,
+				F91D414D2F5E995400E7FEEF /* NotificationResponseType.hpp in Headers */,
+				F91D414E2F5E995400E7FEEF /* NotificationAction.hpp in Headers */,
+				F91D414F2F5E995400E7FEEF /* NotificationResponse.hpp in Headers */,
+				F91D41502F5E995400E7FEEF /* Notifications.hpp in Headers */,
+				F91D41512F5E995400E7FEEF /* NotificationAvailability.hpp in Headers */,
 				F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */,
 				F943AAE82E2A0A73001B4D43 /* TextStyle.ipp in Headers */,
 				F95122082CB62E4300151291 /* best_bin_finder.h in Headers */,
@@ -13299,6 +13380,7 @@
 				F9DD96562F09662C0026DFA5 /* URL.hpp in Headers */,
 				F981F6DC2D1BDF9B009F6627 /* MetalSamplerState.hpp in Headers */,
 				F98605292BD10459006A4C0F /* Triangle.hpp in Headers */,
+				F91D41632F5E999A00E7FEEF /* CNotifications.hpp in Headers */,
 				F96F95F12C359E7D0033353E /* nanoflann.hpp in Headers */,
 				F9070CB32B9F175000383E4D /* DLL.hpp in Headers */,
 				F986FA8C2BCFB53B006A4C0F /* ftmodapi.h in Headers */,
@@ -13327,6 +13409,7 @@
 				F9528C402BBF026F00222F45 /* cover.h in Headers */,
 				F9070CE02B9F175100383E4D /* Obfuscation.hpp in Headers */,
 				F9070C832B9F175000383E4D /* TupleFormatter.ipp in Headers */,
+				F91D415E2F5E997F00E7FEEF /* INotifications.hpp in Headers */,
 				F986FA762BCFB53B006A4C0F /* ftbitmap.h in Headers */,
 				F986005A2BCFBB53006A4C0F /* SkColorMatrix.h in Headers */,
 				F9DD96292F03C2280026DFA5 /* MultiPolygon.ipp in Headers */,
@@ -15113,6 +15196,10 @@
 				F99882352F58093E00C8991D /* IpEndpointName.cpp in Sources */,
 				F99882362F58093E00C8991D /* OscOutboundPacketStream.cpp in Sources */,
 				F99882372F58093E00C8991D /* UdpSocket.cpp in Sources */,
+				F91D415A2F5E997F00E7FEEF /* NotificationsFactory.cpp in Sources */,
+				F91D415B2F5E997F00E7FEEF /* SivNotifications.cpp in Sources */,
+				F91D415C2F5E997F00E7FEEF /* SivNotificationResponseType.cpp in Sources */,
+				F91D415D2F5E997F00E7FEEF /* SivNotificationAvailability.cpp in Sources */,
 				F99882382F58093E00C8991D /* NetworkingUtils.cpp in Sources */,
 				F9B7DA162D8C72C0002ABACE /* bc7enc.cpp in Sources */,
 				F9B7DA172D8C72C0002ABACE /* rdo_bc_encoder.cpp in Sources */,
@@ -15247,6 +15334,7 @@
 				F98603DD2BCFBB54006A4C0F /* SkSLSPIRVCodeGenerator.cpp in Sources */,
 				F9528C992BC1206E00222F45 /* PNGDecoder.cpp in Sources */,
 				F9E5FCE42BC59E7E0081A4F7 /* SivParse.cpp in Sources */,
+				F91D41622F5E999A00E7FEEF /* CNotifications.mm in Sources */,
 				F98601852BCFBB53006A4C0F /* SkColorFilter.cpp in Sources */,
 				F98602942BCFBB54006A4C0F /* SkUnPreMultiply.cpp in Sources */,
 				F9070E5C2B9F176B00383E4D /* CConsole.cpp in Sources */,

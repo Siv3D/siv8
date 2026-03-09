@@ -468,6 +468,17 @@ static GLFWbool initializeTIS(void)
         _glfwRestoreVideoModeCocoa(_glfw.monitors[i]);
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app
+{
+	return YES;
+}
+//
+//-----------------------------------------------
+
 @end // GLFWApplicationDelegate
 
 
