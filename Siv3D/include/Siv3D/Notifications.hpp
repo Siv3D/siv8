@@ -48,6 +48,6 @@ namespace s3d
 		/// @return 取得した通知応答の配列
 		/// @remark この関数は内部に蓄積された応答を取り出して返します
 		[[nodiscard]]
-		Array<NotificationResponse> TakeResponses();
+		Array<NotificationResponse> ExtractResponses();
 	}
 }

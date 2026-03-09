@@ -461,7 +461,7 @@ namespace s3d
 			return{};
 		}
 		
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -528,7 +528,7 @@ namespace s3d
 			return{};
 		}
 
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -595,7 +595,7 @@ namespace s3d
 			return{};
 		}
 
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -662,7 +662,7 @@ namespace s3d
 			return{};
 		}
 		
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -730,6 +730,6 @@ namespace s3d
 			return{};
 		}
 
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 }

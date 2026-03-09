@@ -68,15 +68,15 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	retrieveChanges
+	//	extractChanges
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<FileChange> DirectoryWatcher::retrieveChanges() const
+	Array<FileChange> DirectoryWatcher::extractChanges() const
 	{
 		Array<FileChange> changes;
 
-		if (not retrieveChanges(changes))
+		if (not extractChanges(changes))
 		{
 			return{};
 		}
@@ -84,7 +84,7 @@ namespace s3d
 		return changes;
 	}
 
-	bool DirectoryWatcher::retrieveChanges(Array<FileChange>& fileChanges) const
+	bool DirectoryWatcher::extractChanges(Array<FileChange>& fileChanges) const
 	{
 		if (not pImpl)
 		{
@@ -93,7 +93,7 @@ namespace s3d
 			return false;
 		}
 
-		pImpl->retrieveChanges(fileChanges);
+		pImpl->extractChanges(fileChanges);
 
 		return (not fileChanges.isEmpty());
 	}

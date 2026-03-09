@@ -1279,7 +1279,7 @@ namespace s3d
 //		/// @param closeRing 終点と始点を結ぶか
 //		/// @return 部分 LineString
 //		[[nodiscard]]
-//		LineString extractLineString(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
+//		LineString subLineString(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
 //
 //		/// @brief 部分 LineString を返します。
 //		/// @param distanceFromOrigin 始点からの距離
@@ -1287,7 +1287,7 @@ namespace s3d
 //		/// @param closeRing 終点と始点を結ぶか
 //		/// @return 部分 LineString
 //		[[nodiscard]]
-//		LineString extractLineString(double distanceFromOrigin, double length, CloseRing closeRing = CloseRing::No) const;
+//		LineString subLineString(double distanceFromOrigin, double length, CloseRing closeRing = CloseRing::No) const;
 //
 //		[[nodiscard]]
 //		Array<Vec2> computeNormals(CloseRing closeRing = CloseRing::No) const;

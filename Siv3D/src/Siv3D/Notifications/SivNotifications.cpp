@@ -42,9 +42,9 @@ namespace s3d
 			return SIV3D_ENGINE(Notifications)->dismissAll();
 		}
 
-		Array<NotificationResponse> TakeResponses()
+		Array<NotificationResponse> ExtractResponses()
 		{
-			return SIV3D_ENGINE(Notifications)->takeResponses();
+			return SIV3D_ENGINE(Notifications)->extractResponses();
 		}
 	}
 }

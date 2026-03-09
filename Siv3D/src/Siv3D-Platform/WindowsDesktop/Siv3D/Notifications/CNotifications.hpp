@@ -34,7 +34,7 @@ namespace s3d
 
 		void dismissAll() override;
 
-		Array<NotificationResponse> takeResponses() override;
+		Array<NotificationResponse> extractResponses() override;
 
 		void enqueueResponse(NotificationID id, NotificationResponseType responseType);
 

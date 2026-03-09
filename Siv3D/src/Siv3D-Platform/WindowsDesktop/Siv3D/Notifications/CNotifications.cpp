@@ -239,7 +239,7 @@ namespace s3d
 		WinToast::instance()->clear();
 	}
 
-	Array<NotificationResponse> CNotifications::takeResponses()
+	Array<NotificationResponse> CNotifications::extractResponses()
 	{
 		std::lock_guard lock{ m_mutex };
 		return std::exchange(m_responseQueue, {});

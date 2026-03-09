@@ -155,11 +155,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	retrieveChanges
+	//	extractChanges
 	//
 	////////////////////////////////////////////////////////////////
 
-	void DirectoryWatcher::DirectoryWatcherDetail::retrieveChanges(Array<FileChange>& fileChanges)
+	void DirectoryWatcher::DirectoryWatcherDetail::extractChanges(Array<FileChange>& fileChanges)
 	{
 		std::lock_guard lock{ m_fileChanges.mutex };
 
