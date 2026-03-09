@@ -16,14 +16,20 @@
 
 namespace s3d
 {
-	using NotificationID = int64;
+	/// @brief 通知 ID
+	using NotificationID = uint64;
 
+	/// @brief 通知に対する応答
 	struct NotificationResponse
 	{
+		/// @brief 応答元の通知 ID
 		NotificationID id = 0;
-		
-		NotificationResponseType type = NotificationResponseType::Failed;
-		
+
+		/// @brief 応答の種類
+		NotificationResponseType type = NotificationResponseType::Unspecified;
+
+		/// @brief 実行されたアクションの識別子
+		/// @remark type が NotificationResponseType::ActionActivated の場合に設定されます
 		String actionID;
 	};
 }

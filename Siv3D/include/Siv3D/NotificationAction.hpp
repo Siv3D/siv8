@@ -15,10 +15,14 @@
 
 namespace s3d
 {
+	/// @brief 通知アクション
 	struct NotificationAction
 	{
+		/// @brief アクションの識別子
+		/// @remark ユーザには表示されない、アプリケーション内部向けの安定した ID です
 		String id;
 
+		/// @brief アクションの表示名
 		String label;
 	};
 }

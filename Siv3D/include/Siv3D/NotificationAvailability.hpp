@@ -16,12 +16,16 @@ namespace s3d
 {
 	struct FormatData;
 
+	/// @brief 通知機能の利用可否
 	enum class NotificationAvailability : uint8
 	{
+		/// @brief 通知機能を利用できません
 		Unavailable,
-		
+
+		/// @brief 通知機能の利用が拒否されています
 		Denied,
-		
+
+		/// @brief 通知機能を利用できます
 		Available,
 	};
 

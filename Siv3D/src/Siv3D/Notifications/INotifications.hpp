@@ -42,6 +42,6 @@ namespace s3d
 		virtual void dismissAll() = 0;
 
 		[[nodiscard]]
-		virtual Array<NotificationResponse> drainResponses() = 0;
+		virtual Array<NotificationResponse> takeResponses() = 0;
 	};
 }

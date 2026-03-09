@@ -11,6 +11,7 @@
 
 # pragma once
 # include <mutex>
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/Notifications/INotifications.hpp>
 
 namespace s3d
@@ -33,13 +34,19 @@ namespace s3d
 
 		void dismissAll() override;
 
-		Array<NotificationResponse> drainResponses() override;
+		Array<NotificationResponse> takeResponses() override;
 
 		void enqueueResponse(NotificationID id, NotificationResponseType responseType);
 
 		void enqueueResponse(NotificationID id, NotificationResponseType responseType, const String& actionID);
 
+
 	private:
+
+		struct Entry
+		{
+			int64 platformID = -1;
+		};
 
 		Optional<NotificationAvailability> m_availability;
 
@@ -47,7 +54,11 @@ namespace s3d
 		//
 		std::mutex m_mutex;
 
+		HashMap<NotificationID, Entry> m_entries;
+
 		Array<NotificationResponse> m_responseQueue;
+
+		std::atomic<NotificationID> m_nextID{ 1 };
 		//
 		////////////////////////////////////////////////////////////////
 	};

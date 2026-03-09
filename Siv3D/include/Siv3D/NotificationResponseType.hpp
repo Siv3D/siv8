@@ -16,14 +16,24 @@ namespace s3d
 {
 	struct FormatData;
 
+	/// @brief 通知に対するユーザまたはシステムからの応答の種類
 	enum class NotificationResponseType : uint8
 	{
+		/// @brief 応答の種類が未指定です
+		/// @remark 主にデフォルト初期値として使用されます
+		Unspecified,
+
+		/// @brief 通知本体の既定アクションが実行されました
 		DefaultActivated,
-		
+
+		/// @brief 通知のアクションが実行されました
 		ActionActivated,
-		
+
+		/// @brief 通知が閉じられました
+		/// @remark ユーザ操作、アプリケーション操作、タイムアウトなどを含みます
 		Dismissed,
-		
+
+		/// @brief 通知の表示または処理に失敗しました
 		Failed,
 	};
 

@@ -27,22 +27,19 @@ namespace s3d
 	{
 	public:
 
-		NotificationHandler(CNotifications* pNotifications, const Array<NotificationAction>& actions)
+		NotificationHandler(CNotifications* pNotifications, const NotificationID id, const Array<NotificationAction>& actions)
 			: m_pNotifications{ pNotifications }
-			, m_actionIDs(actions.map([](const NotificationAction& action) { return action.id; })) {}
-
-		void setID(const NotificationID id)
+			, m_id{ id }
+			, m_actionIDs(actions.map([](const NotificationAction& action) { return action.id; }))
 		{
-			LOG_DEBUG(fmt::format("NotificationHandler::setID() [id: {}]", id));
-			
-			m_id = id;
+			LOG_DEBUG(fmt::format("NotificationHandler::NotificationHandler() [id: {}, actions: {}]", id, m_actionIDs.size()));
 		}
 
 		void toastActivated() const override
 		{
 			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated() [id: {}]", m_id.load()));
+				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated() [id: {}]", m_id));
 
 				m_pNotifications->enqueueResponse(m_id, NotificationResponseType::DefaultActivated);
 			}
@@ -52,9 +49,9 @@ namespace s3d
 		{
 			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated(int) [id: {}, actionIndex: {}]", m_id.load(), actionIndex));
+				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated(int) [id: {}, actionIndex: {}]", m_id, actionIndex));
 			
-				if ((0 <= actionIndex) && (actionIndex < m_actionIDs.size()))
+				if (InRange(actionIndex, 0, static_cast<int>(m_actionIDs.size())))
 				{
 					m_pNotifications->enqueueResponse(m_id, NotificationResponseType::ActionActivated, m_actionIDs[actionIndex]);
 				}
@@ -69,7 +66,7 @@ namespace s3d
 		{
 			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated(wstring) [id: {}]", m_id.load()));
+				LOG_DEBUG(fmt::format("NotificationHandler::toastActivated(wstring) [id: {}]", m_id));
 
 				m_pNotifications->enqueueResponse(m_id, NotificationResponseType::DefaultActivated);
 			}
@@ -79,7 +76,7 @@ namespace s3d
 		{
 			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format("NotificationHandler::toastDismissed() [id: {}, state: {}]", m_id.load(), FromEnum(state)));
+				LOG_DEBUG(fmt::format("NotificationHandler::toastDismissed() [id: {}, state: {}]", m_id, FromEnum(state)));
 
 				switch (state)
 				{
@@ -97,7 +94,7 @@ namespace s3d
 		{
 			if (g_CNotificationsAlive)
 			{
-				LOG_DEBUG(fmt::format(U"ToastHandler::toastFailed() [index: {}]", m_id.load()));
+				LOG_DEBUG(fmt::format(U"ToastHandler::toastFailed() [index: {}]", m_id));
 
 				m_pNotifications->enqueueResponse(m_id, NotificationResponseType::Failed);
 			}
@@ -107,9 +104,9 @@ namespace s3d
 
 		CNotifications* m_pNotifications = nullptr;
 
-		Array<String> m_actionIDs;
+		NotificationID m_id = 0;
 
-		std::atomic<NotificationID> m_id{ -1 };
+		Array<String> m_actionIDs;
 	};
 
 	CNotifications::CNotifications()
@@ -169,10 +166,12 @@ namespace s3d
 		}
 
 		WinToastTemplate templ = WinToastTemplate(WinToastTemplate::ImageAndText02);
+		
 		if (request.imagePath && FileSystem::Exists(request.imagePath))
 		{
 			templ.setImagePath(Unicode::ToWstring(FileSystem::FullPath(request.imagePath)));
 		}
+		
 		templ.setTextField(Unicode::ToWstring(request.title), WinToastTemplate::FirstLine);
 		templ.setTextField(Unicode::ToWstring(request.body), WinToastTemplate::SecondLine);
 		
@@ -181,20 +180,28 @@ namespace s3d
 			templ.addAction(Unicode::ToWstring(action.label));
 		}
 
-		templ.setAudioOption(request.playSound ? WinToastLib::WinToastTemplate::AudioOption::Default : WinToastLib::WinToastTemplate::AudioOption::Silent);
+		templ.setAudioOption(request.playSound
+			? WinToastLib::WinToastTemplate::AudioOption::Default
+			: WinToastLib::WinToastTemplate::AudioOption::Silent);
+
+		const NotificationID id = m_nextID.fetch_add(1);
 
 		WinToast::WinToastError error = WinToast::NoError;
-		NotificationHandler* handler = new NotificationHandler(this, request.actions);
+		NotificationHandler* handler = new NotificationHandler(this, id, request.actions);
 		
-		const NotificationID notificationID = WinToast::instance()->showToast(templ, handler, &error); // handler の所有権は WinToast に移る
-		if (notificationID == -1)
+		const int64 platformID = WinToast::instance()->showToast(templ, handler, &error); // handler の所有権は WinToast に移る
+		if (platformID == -1)
 		{
 			LOG_FAIL(fmt::format("Failed to display the notification. WinToast returned an error: {}", Unicode::FromWstring(WinToast::strerror(error))));
 			return none;
 		}
 
-		handler->setID(notificationID);
-		return notificationID;
+		{
+			std::lock_guard lock{ m_mutex };
+			m_entries.emplace(id, Entry{ .platformID = platformID });
+		}
+
+		return id;
 	}
 
 	void CNotifications::dismiss(const NotificationID id)
@@ -204,7 +211,22 @@ namespace s3d
 			return;
 		}
 
-		WinToast::instance()->hideToast(id);
+		int64 platformID = -1;
+		{
+			std::lock_guard lock{ m_mutex };
+
+			if (const auto it = m_entries.find(id);
+				it != m_entries.end())
+			{
+				platformID = it->second.platformID;
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		WinToast::instance()->hideToast(platformID);
 	}
 
 	void CNotifications::dismissAll()
@@ -217,7 +239,7 @@ namespace s3d
 		WinToast::instance()->clear();
 	}
 
-	Array<NotificationResponse> CNotifications::drainResponses()
+	Array<NotificationResponse> CNotifications::takeResponses()
 	{
 		std::lock_guard lock{ m_mutex };
 		return std::exchange(m_responseQueue, {});

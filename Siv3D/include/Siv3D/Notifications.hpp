@@ -19,20 +19,35 @@ namespace s3d
 {
 	namespace Notifications
 	{
+		/// @brief 通知機能の利用可否を返します
+		/// @return 通知機能の利用可否
 		[[nodiscard]]
 		NotificationAvailability GetAvailability();
 
+		/// @brief 通知の利用許可を要求します
+		/// @return 通知を利用可能な場合は true, それ以外の場合は false
+		/// @remark すでに利用可能な場合、この関数はそのまま true を返すことがあります
 		[[nodiscard]]
 		bool RequestPermission();
 
+		/// @brief 通知を表示します
+		/// @param request 表示する通知の内容
+		/// @return 通知の表示に成功した場合はその通知 ID, 失敗した場合は none
 		[[nodiscard]]
 		Optional<NotificationID> Show(const NotificationRequest& request);
 
+		/// @brief 指定した通知を閉じます
+		/// @param id 通知 ID
+		/// @remark すでに閉じられている通知や存在しない通知を指定した場合は何も行いません
 		void Dismiss(NotificationID id);
 
+		/// @brief すべての通知を閉じます
 		void DismissAll();
 
+		/// @brief 発生した通知応答を取得します
+		/// @return 取得した通知応答の配列
+		/// @remark この関数は内部に蓄積された応答を取り出して返します
 		[[nodiscard]]
-		Array<NotificationResponse> DrainResponses();
+		Array<NotificationResponse> TakeResponses();
 	}
 }
