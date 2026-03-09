@@ -1005,6 +1005,7 @@
 		F9766B822C29C7A700DE4107 /* SivCamera2DControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */; };
 		F9766B832C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */; };
 		F9797DBA2F5EC82500518D26 /* NotificationActionCategory.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DB92F5EC82500518D26 /* NotificationActionCategory.hpp */; };
+		F9797DBD2F5ED33900518D26 /* SivNotificationActionCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DBB2F5ED33900518D26 /* SivNotificationActionCategory.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -3948,6 +3949,7 @@
 		F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControl.cpp; sourceTree = "<group>"; };
 		F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControlBuilder.cpp; sourceTree = "<group>"; };
 		F9797DB92F5EC82500518D26 /* NotificationActionCategory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationActionCategory.hpp; sourceTree = "<group>"; };
+		F9797DBB2F5ED33900518D26 /* SivNotificationActionCategory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNotificationActionCategory.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -7688,6 +7690,7 @@
 				F998814D2F40B56800C8991D /* MultiPolygon */,
 				F98111D52ECC08CA00C50DD1 /* NativeShare */,
 				F98111D02ECC08C200C50DD1 /* NaturalSort */,
+				F9797DBC2F5ED33900518D26 /* NotificationActionCategory */,
 				F91D41532F5E997F00E7FEEF /* NotificationAvailability */,
 				F91D41552F5E997F00E7FEEF /* NotificationResponseType */,
 				F91D41592F5E997F00E7FEEF /* Notifications */,
@@ -9292,6 +9295,14 @@
 				F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */,
 			);
 			path = Camera2DControlBuilder;
+			sourceTree = "<group>";
+		};
+		F9797DBC2F5ED33900518D26 /* NotificationActionCategory */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DBB2F5ED33900518D26 /* SivNotificationActionCategory.cpp */,
+			);
+			path = NotificationActionCategory;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -14916,6 +14927,7 @@
 				F986019A2BCFBB53006A4C0F /* SkDescriptor.cpp in Sources */,
 				F9070DCF2B9F175E00383E4D /* SivFmtExtension.cpp in Sources */,
 				F9070DE12B9F175E00383E4D /* SivParseFloat.cpp in Sources */,
+				F9797DBD2F5ED33900518D26 /* SivNotificationActionCategory.cpp in Sources */,
 				F9070AF02B9DEB5900383E4D /* gaussian_distribution.cc in Sources */,
 				F98602962BCFBB54006A4C0F /* SkVertices.cpp in Sources */,
 				F986F9172BC8441F006A4C0F /* onig_init.c in Sources */,

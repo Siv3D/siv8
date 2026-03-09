@@ -33,7 +33,7 @@ namespace s3d
 		Array<NotificationAction> actions;
 	};
 
-	static const std::array<NotificationCategoryDefinition, 12> kCategoryDefinitions =
+	static const std::array<NotificationCategoryDefinition, 11> kCategoryDefinitions =
 	{{
 		{
 			NotificationActionCategory::Default,
