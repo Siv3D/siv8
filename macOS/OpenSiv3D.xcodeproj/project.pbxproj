@@ -505,7 +505,6 @@
 		F91D41452F5DA84F00E7FEEF /* SivDialog_macOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */; };
 		F91D414C2F5E995400E7FEEF /* NotificationRequest.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41482F5E995400E7FEEF /* NotificationRequest.hpp */; };
 		F91D414D2F5E995400E7FEEF /* NotificationResponseType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D414A2F5E995400E7FEEF /* NotificationResponseType.hpp */; };
-		F91D414E2F5E995400E7FEEF /* NotificationAction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41462F5E995400E7FEEF /* NotificationAction.hpp */; };
 		F91D414F2F5E995400E7FEEF /* NotificationResponse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41492F5E995400E7FEEF /* NotificationResponse.hpp */; };
 		F91D41502F5E995400E7FEEF /* Notifications.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D414B2F5E995400E7FEEF /* Notifications.hpp */; };
 		F91D41512F5E995400E7FEEF /* NotificationAvailability.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F91D41472F5E995400E7FEEF /* NotificationAvailability.hpp */; };
@@ -1005,6 +1004,7 @@
 		F9766B812C29C7A700DE4107 /* SivCamera2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7B2C29C7A600DE4107 /* SivCamera2D.cpp */; };
 		F9766B822C29C7A700DE4107 /* SivCamera2DControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */; };
 		F9766B832C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */; };
+		F9797DBA2F5EC82500518D26 /* NotificationActionCategory.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DB92F5EC82500518D26 /* NotificationActionCategory.hpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -3419,7 +3419,6 @@
 		F91D413B2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SelectFolderDialogOptions.hpp; sourceTree = "<group>"; };
 		F91D41412F5DA81F00E7FEEF /* FileDialogFilter.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileDialogFilter.ipp; sourceTree = "<group>"; };
 		F91D41432F5DA84F00E7FEEF /* SivDialog_macOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SivDialog_macOS.mm; sourceTree = "<group>"; };
-		F91D41462F5E995400E7FEEF /* NotificationAction.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationAction.hpp; sourceTree = "<group>"; };
 		F91D41472F5E995400E7FEEF /* NotificationAvailability.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationAvailability.hpp; sourceTree = "<group>"; };
 		F91D41482F5E995400E7FEEF /* NotificationRequest.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationRequest.hpp; sourceTree = "<group>"; };
 		F91D41492F5E995400E7FEEF /* NotificationResponse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationResponse.hpp; sourceTree = "<group>"; };
@@ -3948,6 +3947,7 @@
 		F9766B7B2C29C7A600DE4107 /* SivCamera2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2D.cpp; sourceTree = "<group>"; };
 		F9766B7D2C29C7A600DE4107 /* SivCamera2DControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControl.cpp; sourceTree = "<group>"; };
 		F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControlBuilder.cpp; sourceTree = "<group>"; };
+		F9797DB92F5EC82500518D26 /* NotificationActionCategory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationActionCategory.hpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6877,7 +6877,7 @@
 				F98111CB2ECC088400C50DD1 /* NaturalSort.hpp */,
 				F99881C72F57180B00C8991D /* Network.hpp */,
 				F9070C052B9F175000383E4D /* NonNull.hpp */,
-				F91D41462F5E995400E7FEEF /* NotificationAction.hpp */,
+				F9797DB92F5EC82500518D26 /* NotificationActionCategory.hpp */,
 				F91D41472F5E995400E7FEEF /* NotificationAvailability.hpp */,
 				F91D41482F5E995400E7FEEF /* NotificationRequest.hpp */,
 				F91D41492F5E995400E7FEEF /* NotificationResponse.hpp */,
@@ -12752,7 +12752,6 @@
 				F933ADB92E54A3DA005624D7 /* ScopedCustomShader2D.hpp in Headers */,
 				F91D414C2F5E995400E7FEEF /* NotificationRequest.hpp in Headers */,
 				F91D414D2F5E995400E7FEEF /* NotificationResponseType.hpp in Headers */,
-				F91D414E2F5E995400E7FEEF /* NotificationAction.hpp in Headers */,
 				F91D414F2F5E995400E7FEEF /* NotificationResponse.hpp in Headers */,
 				F91D41502F5E995400E7FEEF /* Notifications.hpp in Headers */,
 				F91D41512F5E995400E7FEEF /* NotificationAvailability.hpp in Headers */,
@@ -13173,6 +13172,7 @@
 				F986047C2BCFBB54006A4C0F /* SkSLMemoryLayout.h in Headers */,
 				F9528C462BBF026F00222F45 /* zstd_errors.h in Headers */,
 				F98603E92BCFBB54006A4C0F /* SkSLChildCall.h in Headers */,
+				F9797DBA2F5EC82500518D26 /* NotificationActionCategory.hpp in Headers */,
 				F9070C942B9F175000383E4D /* 2DShapes.hpp in Headers */,
 				F9DD96582F0966400026DFA5 /* Sample.hpp in Headers */,
 				F986052F2BD10478006A4C0F /* TGADecoder.hpp in Headers */,

@@ -17,21 +17,86 @@
 
 namespace s3d
 {
+	struct NotificationAction
+	{
+		// アクションの識別子
+		String id;
+
+		// アクションの表示名
+		String label;
+	};
+
+	struct NotificationCategoryDefinition
+	{
+		NotificationActionCategory category;
+		String categoryIdentifier;
+		Array<NotificationAction> actions;
+	};
+
+	static const std::array<NotificationCategoryDefinition, 12> kCategoryDefinitions =
+	{{
+		{
+			NotificationActionCategory::Default,
+			U"s3d.notification.default",
+			{}
+		},
+		{
+			NotificationActionCategory::Open,
+			U"s3d.notification.open",
+			{ { U"open", U"Open" } }
+		},
+		{
+			NotificationActionCategory::OpenDismiss,
+			U"s3d.notification.open_dismiss",
+			{ { U"open", U"Open" }, { U"dismiss", U"Dismiss" } }
+		},
+		{
+			NotificationActionCategory::OK,
+			U"s3d.notification.ok",
+			{ { U"ok", U"OK" } }
+		},
+		{
+			NotificationActionCategory::OKCancel,
+			U"s3d.notification.ok_cancel",
+			{ { U"ok", U"OK" }, { U"cancel", U"Cancel" } }
+		},
+		{
+			NotificationActionCategory::YesNo,
+			U"s3d.notification.yes_no",
+			{ { U"yes", U"Yes" }, { U"no", U"No" } }
+		},
+		{
+			NotificationActionCategory::YesNoCancel,
+			U"s3d.notification.yes_no_cancel",
+			{ { U"yes", U"Yes" }, { U"no", U"No" }, { U"cancel", U"Cancel" } }
+		},
+		{
+			NotificationActionCategory::AcceptDecline,
+			U"s3d.notification.accept_decline",
+			{ { U"accept", U"Accept" }, { U"decline", U"Decline" } }
+		},
+		{
+			NotificationActionCategory::AcceptDeclineLater,
+			U"s3d.notification.accept_decline_later",
+			{ { U"accept", U"Accept" }, { U"decline", U"Decline" }, { U"later", U"Later" } }
+		},
+		{
+			NotificationActionCategory::RetryCancel,
+			U"s3d.notification.retry_cancel",
+			{ { U"retry", U"Retry" }, { U"cancel", U"Cancel" } }
+		},
+		{
+			NotificationActionCategory::ViewDismiss,
+			U"s3d.notification.view_dismiss",
+			{ { U"view", U"View" }, { U"dismiss", U"Dismiss" } }
+		},
+	}};
+
 	namespace
 	{
 		static NSString* ToNSString(const String& s)
 		{
 			return [NSString stringWithUTF8String:Unicode::ToUTF8(s).c_str()];
-		}
-
-		static String ToSiv3DString(NSString* s)
-		{
-			if (s == nil)
-			{
-				return{};
-			}
-
-			return Unicode::FromUTF8([s UTF8String]);
 		}
 
 		static NotificationAvailability ToAvailability(const UNAuthorizationStatus status)
@@ -50,6 +115,19 @@ namespace s3d
 			default:
 				return NotificationAvailability::Unavailable;
 			}
+		}
+	
+		static const NotificationCategoryDefinition& GetCategoryDefinition(const NotificationActionCategory category)
+		{
+			for (const auto& def : kCategoryDefinitions)
+			{
+				if (def.category == category)
+				{
+					return def;
+				}
+			}
+
+			return kCategoryDefinitions[0]; // Default
 		}
 	}
 
@@ -163,6 +241,33 @@ namespace s3d
 		center.delegate = delegate;
 		m_delegate = CFBridgingRetain(delegate);
 
+		NSMutableSet<UNNotificationCategory*>* categories = [NSMutableSet set];
+
+		for (const auto& def : kCategoryDefinitions)
+		{
+			NSMutableArray<UNNotificationAction*>* nativeActions
+				= [NSMutableArray arrayWithCapacity:def.actions.size()];
+
+			for (const auto& action : def.actions)
+			{
+				UNNotificationAction* nativeAction =
+					[UNNotificationAction actionWithIdentifier:ToNSString(action.id)
+														 title:ToNSString(action.label)
+													   options:UNNotificationActionOptionNone];
+				[nativeActions addObject:nativeAction];
+			}
+
+			UNNotificationCategory* category =
+				[UNNotificationCategory categoryWithIdentifier:ToNSString(def.categoryIdentifier)
+													   actions:nativeActions
+											 intentIdentifiers:@[]
+													   options:UNNotificationCategoryOptionCustomDismissAction];
+
+			[categories addObject:category];
+		}
+
+		[center setNotificationCategories:categories];
+
 		m_availability = NotificationAvailability::NotDetermined;
 		refreshAvailabilityAsync();
 	}
@@ -233,24 +338,9 @@ namespace s3d
 		}
 
 		const NotificationID id = m_nextID.fetch_add(1);
-
 		const String requestIdentifier = U"s3d.notification.request.{}"_fmt(id);
-		const String categoryIdentifier = U"s3d.notification.category.{}"_fmt(id);
 
-		auto addRequest = [this, id](UNNotificationRequest* nativeRequest)
-		{
-			[[UNUserNotificationCenter currentNotificationCenter]
-				addNotificationRequest:nativeRequest
-				withCompletionHandler:^(NSError* _Nullable error)
-			{
-				if (error)
-				{
-					LOG_FAIL(fmt::format("addNotificationRequest failed: {}",
-						Unicode::FromUTF8([[error localizedDescription] UTF8String])));
-					this->enqueueResponse(id, NotificationResponseType::Failed);
-				}
-			}];
-		};
+		const auto& categoryDef = GetCategoryDefinition(request.actionCategory);
 
 		UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
 		content.title = ToNSString(request.title);
@@ -261,13 +351,9 @@ namespace s3d
 			content.sound = [UNNotificationSound defaultSound];
 		}
 
-		Array<NotificationAction> actions = request.actions;
-
-		// macOS / UserNotifications 系ではアクション数に制限があるため保守的に 4 件まで
-		if (actions.size() > 4)
+		if (request.actionCategory != NotificationActionCategory::Default)
 		{
-			actions.resize(4);
-			LOG_WARN("Notification actions were truncated to 4 items on macOS.");
+			content.categoryIdentifier = ToNSString(categoryDef.categoryIdentifier);
 		}
 
 		// 元の画像ファイルが削除される挙動になるため、macOS 版では imagePath は無効化
@@ -294,62 +380,34 @@ namespace s3d
 //			}
 //		}
 
-		if (not actions.isEmpty())
-		{
-			content.categoryIdentifier = ToNSString(categoryIdentifier);
-		}
-
-		UNNotificationRequest* nativeRequest
-			= [UNNotificationRequest requestWithIdentifier:ToNSString(requestIdentifier)
-												   content:content
-												   trigger:nil];
+		UNNotificationRequest* nativeRequest =
+			[UNNotificationRequest requestWithIdentifier:ToNSString(requestIdentifier)
+												 content:content
+												 trigger:nil];
 
 		{
 			std::lock_guard lock{ m_mutex };
 
 			m_entries.emplace(id, Entry{
 				.requestIdentifier = requestIdentifier,
-				.categoryIdentifier = categoryIdentifier,
-				.actionIDs = actions.map([](const NotificationAction& action) { return action.id; })
+				.categoryIdentifier = categoryDef.categoryIdentifier,
+				.actionIDs = categoryDef.actions.map([](const NotificationAction& action) { return action.id; })
 			});
 
 			m_requestIdentifierToID.emplace(requestIdentifier, id);
 		}
 
-		if (not actions.isEmpty())
+		[[UNUserNotificationCenter currentNotificationCenter]
+			addNotificationRequest:nativeRequest
+			withCompletionHandler:^(NSError* _Nullable error)
 		{
-			NSMutableArray<UNNotificationAction*>* nativeActions = [NSMutableArray arrayWithCapacity:actions.size()];
-
-			for (const auto& action : actions)
+			if (error)
 			{
-				UNNotificationAction* nativeAction
-					= [UNNotificationAction actionWithIdentifier:ToNSString(action.id)
-														   title:ToNSString(action.label)
-														 options:UNNotificationActionOptionNone];
-				[nativeActions addObject:nativeAction];
+				LOG_FAIL(fmt::format("addNotificationRequest failed: {}",
+					Unicode::FromUTF8([[error localizedDescription] UTF8String])));
+				this->enqueueResponse(id, NotificationResponseType::Failed);
 			}
-
-			UNNotificationCategory* category
-				= [UNNotificationCategory categoryWithIdentifier:ToNSString(categoryIdentifier)
-														actions:nativeActions
-											  intentIdentifiers:@[]
-														options:UNNotificationCategoryOptionCustomDismissAction];
-
-			UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-
-			[center getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory*>* _Nonnull categories)
-			{
-				NSMutableSet<UNNotificationCategory*>* merged = [categories mutableCopy];
-				[merged addObject:category];
-				[center setNotificationCategories:merged];
-
-				addRequest(nativeRequest);
-			}];
-		}
-		else
-		{
-			addRequest(nativeRequest);
-		}
+		}];
 
 		return id;
 	}

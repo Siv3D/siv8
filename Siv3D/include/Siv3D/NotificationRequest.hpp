@@ -13,7 +13,7 @@
 # include "Common.hpp"
 # include "String.hpp"
 # include "Array.hpp"
-# include "NotificationAction.hpp"
+# include "NotificationActionCategory.hpp"
 
 namespace s3d
 {
@@ -30,9 +30,7 @@ namespace s3d
 		/// @remark 対応状況や表示方法はプラットフォームによって異なります
 		FilePath imagePath;
 
-		/// @brief 通知に表示するアクション
-		/// @remark アクションの対応数や表示方法はプラットフォームによって異なります
-		Array<NotificationAction> actions;
+		NotificationActionCategory actionCategory = NotificationActionCategory::Default;
 
 		/// @brief 通知音を再生するか
 		/// @remark 対応状況はプラットフォームやユーザ設定によって異なります

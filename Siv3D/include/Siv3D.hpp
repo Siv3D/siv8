@@ -1202,7 +1202,7 @@
 ////////////////////////////////////////////////////////////////
 
 # include <Siv3D/NotificationAvailability.hpp>
-# include <Siv3D/NotificationAction.hpp>
+# include <Siv3D/NotificationActionCategory.hpp>
 # include <Siv3D/NotificationRequest.hpp>
 # include <Siv3D/NotificationResponseType.hpp>
 # include <Siv3D/NotificationResponse.hpp>
