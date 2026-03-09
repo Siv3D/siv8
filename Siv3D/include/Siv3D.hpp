@@ -1146,10 +1146,10 @@
 
 //// 言語コード | Language code
 //# include <Siv3D/LanguageCode.hpp>
-//
-//// 文章読み上げ | Text-to-speech
-//# include <Siv3D/TextToSpeech.hpp>
-//
+
+// 文章読み上げ | Text-to-speech
+# include <Siv3D/TextToSpeech.hpp>
+
 //// 文章読み上げオブジェクト | Text to speech object
 //# include <Siv3D/Say.hpp>
 //
@@ -1689,10 +1689,26 @@
 # include <Siv3D/Effect.hpp>
 
 
+
+
+
+
+
+
+
+
+# include <Siv3D/Wave.hpp>
+
+
+
+
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>
 
 # include <Siv3D/EngineOption.hpp>
+
+
+
 
 
 

@@ -45,6 +45,7 @@ namespace s3d
 	class ISiv3DGUI;
 	class ISiv3DPrint;
 	class ISiv3DEffect;
+	class ISiv3DTextToSpeech;
 	class ISiv3DNativeShare;
 	class ISiv3DNotifications;
 
@@ -85,6 +86,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DGUI>,
 			Siv3DComponent<ISiv3DPrint>,
 			Siv3DComponent<ISiv3DEffect>,
+			Siv3DComponent<ISiv3DTextToSpeech>,
 			Siv3DComponent<ISiv3DNativeShare>,
 			Siv3DComponent<ISiv3DNotifications>
 		> m_components;

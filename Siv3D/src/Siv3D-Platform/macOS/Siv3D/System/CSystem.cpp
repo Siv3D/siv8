@@ -34,6 +34,7 @@
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/Effect/IEffect.hpp>
+# include <Siv3D/TextToSpeech/ITextToSpeech.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
 # include <Siv3D/Notifications/INotifications.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -72,6 +73,7 @@ namespace s3d
 		SIV3D_ENGINE(GUI)->init();
 		SIV3D_ENGINE(Print)->init();
 		SIV3D_ENGINE(Effect)->init();
+		SIV3D_ENGINE(TextToSpeech)->init();
 		SIV3D_ENGINE(NativeShare)->init();
 		SIV3D_ENGINE(Notifications)->init();
 
