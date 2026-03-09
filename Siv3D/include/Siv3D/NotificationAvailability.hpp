@@ -23,6 +23,7 @@ namespace s3d
 		Unavailable,
 
 		/// @brief 通知機能の利用可否がまだ不明です
+		/// @remark 権限確認や許可要求の結果がまだ反映されていない場合を含みます
 		NotDetermined,
 
 		/// @brief 通知機能の利用が拒否されています

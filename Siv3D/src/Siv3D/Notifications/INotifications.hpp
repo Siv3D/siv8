@@ -28,6 +28,8 @@ namespace s3d
 
 		virtual ~ISiv3DNotifications() = default;
 
+		virtual void init() = 0;
+
 		[[nodiscard]]
 		virtual NotificationAvailability getAvailability() = 0;
 

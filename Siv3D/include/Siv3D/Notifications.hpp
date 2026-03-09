@@ -19,8 +19,9 @@ namespace s3d
 {
 	namespace Notifications
 	{
-		/// @brief 通知機能の利用可否を返します
+		/// @brief 通知機能の現在把握している利用可否を返します
 		/// @return 通知機能の利用可否
+		/// @remark プラットフォームによっては利用可否の取得や更新が非同期で行われるため、直前の要求結果がまだ反映されていない場合があります
 		[[nodiscard]]
 		NotificationAvailability GetAvailability();
 

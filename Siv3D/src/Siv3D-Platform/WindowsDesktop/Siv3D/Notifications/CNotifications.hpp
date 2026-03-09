@@ -24,6 +24,8 @@ namespace s3d
 
 		~CNotifications() override;
 
+		void init() override;
+
 		NotificationAvailability getAvailability() override;
 
 		void requestPermission() override;

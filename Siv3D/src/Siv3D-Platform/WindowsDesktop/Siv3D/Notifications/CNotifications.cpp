@@ -123,6 +123,11 @@ namespace s3d
 		dismissAll();
 	}
 
+	void CNotifications::init()
+	{
+		LOG_SCOPED_DEBUG("CNotifications::init()");
+	}
+
 	NotificationAvailability CNotifications::getAvailability()
 	{
 		if (not m_availability)
