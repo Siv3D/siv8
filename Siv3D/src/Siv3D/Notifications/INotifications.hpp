@@ -32,7 +32,7 @@ namespace s3d
 		virtual NotificationAvailability getAvailability() = 0;
 
 		[[nodiscard]]
-		virtual bool requestPermission() = 0;
+		virtual void requestPermission() = 0;
 
 		[[nodiscard]]
 		virtual Optional<NotificationID> show(const NotificationRequest& request) = 0;

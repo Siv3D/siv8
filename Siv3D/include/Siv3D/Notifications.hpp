@@ -25,10 +25,8 @@ namespace s3d
 		NotificationAvailability GetAvailability();
 
 		/// @brief 通知の利用許可を要求します
-		/// @return 通知を利用可能な場合は true, それ以外の場合は false
-		/// @remark すでに利用可能な場合、この関数はそのまま true を返すことがあります
 		[[nodiscard]]
-		bool RequestPermission();
+		void RequestPermission();
 
 		/// @brief 通知を表示します
 		/// @param request 表示する通知の内容

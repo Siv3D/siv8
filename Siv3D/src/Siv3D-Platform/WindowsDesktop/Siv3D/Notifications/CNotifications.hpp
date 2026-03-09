@@ -26,7 +26,7 @@ namespace s3d
 
 		NotificationAvailability getAvailability() override;
 
-		bool requestPermission() override;
+		void requestPermission() override;
 
 		Optional<NotificationID> show(const NotificationRequest& request) override;
 

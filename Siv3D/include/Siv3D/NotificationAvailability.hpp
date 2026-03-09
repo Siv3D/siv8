@@ -22,6 +22,9 @@ namespace s3d
 		/// @brief 通知機能を利用できません
 		Unavailable,
 
+		/// @brief 通知機能の利用可否がまだ不明です
+		NotDetermined,
+
 		/// @brief 通知機能の利用が拒否されています
 		Denied,
 

@@ -21,6 +21,7 @@ namespace s3d
 		static constexpr std::array NotificationAvailabilityStrings =
 		{
 			U"Unavailable"_sv,
+			U"NotDetermined"_sv,
 			U"Denied"_sv,
 			U"Available"_sv,
 		};

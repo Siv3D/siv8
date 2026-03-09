@@ -153,10 +153,7 @@ namespace s3d
 		return *m_availability;
 	}
 
-	bool CNotifications::requestPermission()
-	{
-		return (getAvailability() == NotificationAvailability::Available);
-	}
+	void CNotifications::requestPermission() {}
 
 	Optional<NotificationID> CNotifications::show(const NotificationRequest& request)
 	{

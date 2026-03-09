@@ -30,7 +30,7 @@ namespace s3d
 		ActionActivated,
 
 		/// @brief 通知が閉じられました
-		/// @remark ユーザ操作、アプリケーション操作、タイムアウトなどを含みます
+		/// @remark 発生条件や取得可否はプラットフォームによって異なります
 		Dismissed,
 
 		/// @brief 通知の表示または処理に失敗しました

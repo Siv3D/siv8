@@ -22,9 +22,9 @@ namespace s3d
 			return SIV3D_ENGINE(Notifications)->getAvailability();
 		}
 
-		bool RequestPermission()
+		void RequestPermission()
 		{
-			return SIV3D_ENGINE(Notifications)->requestPermission();
+			SIV3D_ENGINE(Notifications)->requestPermission();
 		}
 
 		Optional<NotificationID> Show(const NotificationRequest& request)
