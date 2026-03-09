@@ -825,7 +825,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 	
 	template <Concept::FloatingPoint Float>
-	constexpr const typename BasicPerlinNoise<Float>::state_type& BasicPerlinNoise<Float>::serialize() const noexcept
+	constexpr const typename BasicPerlinNoise<Float>::state_type BasicPerlinNoise<Float>::serialize() const noexcept
 	{
 		state_type state;
 		std::copy(m_perm.begin(), (m_perm.begin() + 256), state.begin());

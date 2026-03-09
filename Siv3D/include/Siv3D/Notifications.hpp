@@ -26,7 +26,6 @@ namespace s3d
 		NotificationAvailability GetAvailability();
 
 		/// @brief 通知の利用許可を要求します
-		[[nodiscard]]
 		void RequestPermission();
 
 		/// @brief 通知を表示します

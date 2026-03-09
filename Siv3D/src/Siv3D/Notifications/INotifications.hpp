@@ -33,7 +33,6 @@ namespace s3d
 		[[nodiscard]]
 		virtual NotificationAvailability getAvailability() = 0;
 
-		[[nodiscard]]
 		virtual void requestPermission() = 0;
 
 		[[nodiscard]]
