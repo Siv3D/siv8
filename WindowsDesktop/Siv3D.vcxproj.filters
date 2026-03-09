@@ -1273,6 +1273,9 @@
     <Filter Include="src\Siv3D\NotificationAvailability">
       <UniqueIdentifier>{d8b84752-28a6-4f72-8714-618bb7fd333c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\NotificationActionCategory">
+      <UniqueIdentifier>{ebdc5093-a130-482f-9de9-6c9e70c9a492}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5130,11 +5133,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponseType.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAction.hpp">
-      <Filter>include\Siv3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.h">
       <Filter>src\ThirdParty\WinToast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationActionCategory.hpp">
+      <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8020,6 +8023,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\NotificationAvailability\SivNotificationAvailability.cpp">
       <Filter>src\Siv3D\NotificationAvailability</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\NotificationActionCategory\SivNotificationActionCategory.cpp">
+      <Filter>src\Siv3D\NotificationActionCategory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

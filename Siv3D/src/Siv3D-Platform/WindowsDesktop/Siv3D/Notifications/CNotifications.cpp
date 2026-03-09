@@ -18,6 +18,30 @@
 
 namespace s3d
 {
+	struct NotificationAction
+	{
+		// アクションの識別子
+		String id;
+
+		// アクションの表示名
+		String label;
+	};
+
+	static const std::array<Array<NotificationAction>, 11> NotificationActionCategoryDefinitions =
+	{{
+		{{}},
+		{ { U"open", U"Open" } },
+		{ { U"open", U"Open" }, { U"dismiss", U"Dismiss" } },
+		{ { U"ok", U"OK" } },
+		{ { U"ok", U"OK" }, { U"cancel", U"Cancel" } },
+		{ { U"yes", U"Yes" }, { U"no", U"No" } },
+		{ { U"yes", U"Yes" }, { U"no", U"No" }, { U"cancel", U"Cancel" } },
+		{ { U"accept", U"Accept" }, { U"decline", U"Decline" } },
+		{ { U"accept", U"Accept" }, { U"decline", U"Decline" }, { U"later", U"Later" } },
+		{ { U"retry", U"Retry" }, { U"cancel", U"Cancel" } },
+		{ { U"view", U"View" }, { U"dismiss", U"Dismiss" } },
+	}};
+
 	using namespace WinToastLib;
 
 	// シングルトンである CNotifications のインスタンスが生存しているかどうかを示すフラグ
@@ -177,7 +201,8 @@ namespace s3d
 		templ.setTextField(Unicode::ToWstring(request.title), WinToastTemplate::FirstLine);
 		templ.setTextField(Unicode::ToWstring(request.body), WinToastTemplate::SecondLine);
 		
-		for (const auto& action : request.actions)
+		const auto& actions = NotificationActionCategoryDefinitions[FromEnum(request.actionCategory)];
+		for (const auto& action : actions)
 		{
 			templ.addAction(Unicode::ToWstring(action.label));
 		}
@@ -189,7 +214,7 @@ namespace s3d
 		const NotificationID id = m_nextID.fetch_add(1);
 
 		WinToast::WinToastError error = WinToast::NoError;
-		NotificationHandler* handler = new NotificationHandler(this, id, request.actions);
+		NotificationHandler* handler = new NotificationHandler(this, id, actions);
 		
 		const int64 platformID = WinToast::instance()->showToast(templ, handler, &error); // handler の所有権は WinToast に移る
 		if (platformID == -1)

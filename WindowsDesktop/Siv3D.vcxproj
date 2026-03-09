@@ -192,7 +192,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Network.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAction.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationActionCategory.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAvailability.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NotificationRequest.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponse.hpp" />
@@ -1577,6 +1577,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\NativeShareFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\NotificationActionCategory\SivNotificationActionCategory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NotificationAvailability\SivNotificationAvailability.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NotificationResponseType\SivNotificationResponseType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Notifications\NotificationsFactory.cpp" />

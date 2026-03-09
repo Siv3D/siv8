@@ -27,9 +27,10 @@ namespace s3d
 		String body;
 
 		/// @brief 通知に添付する画像のファイルパス
-		/// @remark 対応状況や表示方法はプラットフォームによって異なります
+		/// @remark Windows 版のみ対応しています
 		FilePath imagePath;
 
+		/// @brief 通知のアクションのカテゴリ
 		NotificationActionCategory actionCategory = NotificationActionCategory::Default;
 
 		/// @brief 通知音を再生するか
