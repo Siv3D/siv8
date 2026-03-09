@@ -2568,9 +2568,7 @@
 		F99881FD2F58091000C8991D /* OSCPacketListener.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881F02F58091000C8991D /* OSCPacketListener.hpp */; };
 		F99881FE2F58091000C8991D /* OSCReceiverDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881F22F58091000C8991D /* OSCReceiverDetail.hpp */; };
 		F99881FF2F58091000C8991D /* OSCMessageDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881EC2F58091000C8991D /* OSCMessageDetail.hpp */; };
-		F99882002F58091000C8991D /* IPentablet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99881FA2F58091000C8991D /* IPentablet.hpp */; };
 		F99882012F58091000C8991D /* OSCMessageDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881ED2F58091000C8991D /* OSCMessageDetail.cpp */; };
-		F99882022F58091000C8991D /* PentabletFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881FB2F58091000C8991D /* PentabletFactory.cpp */; };
 		F99882032F58091000C8991D /* SivOSCMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881EE2F58091000C8991D /* SivOSCMessage.cpp */; };
 		F99882042F58091000C8991D /* OSCReceiverDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881F32F58091000C8991D /* OSCReceiverDetail.cpp */; };
 		F99882052F58091000C8991D /* SivOSCTypeTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99881F82F58091000C8991D /* SivOSCTypeTag.cpp */; };
@@ -5532,8 +5530,6 @@
 		F99881F42F58091000C8991D /* SivOSCReceiver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivOSCReceiver.cpp; sourceTree = "<group>"; };
 		F99881F62F58091000C8991D /* SivOSCSender.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivOSCSender.cpp; sourceTree = "<group>"; };
 		F99881F82F58091000C8991D /* SivOSCTypeTag.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivOSCTypeTag.cpp; sourceTree = "<group>"; };
-		F99881FA2F58091000C8991D /* IPentablet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPentablet.hpp; sourceTree = "<group>"; };
-		F99881FB2F58091000C8991D /* PentabletFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PentabletFactory.cpp; sourceTree = "<group>"; };
 		F99882092F58093E00C8991D /* NetworkingUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkingUtils.cpp; sourceTree = "<group>"; };
 		F998820A2F58093E00C8991D /* UdpSocket.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UdpSocket.cpp; sourceTree = "<group>"; };
 		F998820F2F58093E00C8991D /* IpEndpointName.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IpEndpointName.h; sourceTree = "<group>"; };
@@ -7706,7 +7702,6 @@
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
 				F99882462F587C8000C8991D /* Pentablet */,
-				F99881FC2F58091000C8991D /* Pentablet */,
 				F9DD96482F0965D00026DFA5 /* PercentEncode */,
 				F944BAAF2CEACF6C00CC4D42 /* Pipe */,
 				F934BD772BF880620003EAD5 /* PixelShader */,
@@ -11808,15 +11803,6 @@
 			path = OSCTypeTag;
 			sourceTree = "<group>";
 		};
-		F99881FC2F58091000C8991D /* Pentablet */ = {
-			isa = PBXGroup;
-			children = (
-				F99881FA2F58091000C8991D /* IPentablet.hpp */,
-				F99881FB2F58091000C8991D /* PentabletFactory.cpp */,
-			);
-			path = Pentablet;
-			sourceTree = "<group>";
-		};
 		F998820B2F58093E00C8991D /* posix */ = {
 			isa = PBXGroup;
 			children = (
@@ -12614,7 +12600,6 @@
 				F99881FD2F58091000C8991D /* OSCPacketListener.hpp in Headers */,
 				F99881FE2F58091000C8991D /* OSCReceiverDetail.hpp in Headers */,
 				F99881FF2F58091000C8991D /* OSCMessageDetail.hpp in Headers */,
-				F99882002F58091000C8991D /* IPentablet.hpp in Headers */,
 				F98602FB2BCFBB54006A4C0F /* SkOpts_SetTarget.h in Headers */,
 				F986037D2BCFBB54006A4C0F /* SkOTTable_hmtx.h in Headers */,
 				F986052A2BD10459006A4C0F /* Quad.hpp in Headers */,
@@ -15242,7 +15227,6 @@
 				F99881442F40B51A00C8991D /* SivBezier3.cpp in Sources */,
 				F98603162BCFBB54006A4C0F /* SkOpSpan.cpp in Sources */,
 				F99882012F58091000C8991D /* OSCMessageDetail.cpp in Sources */,
-				F99882022F58091000C8991D /* PentabletFactory.cpp in Sources */,
 				F99882032F58091000C8991D /* SivOSCMessage.cpp in Sources */,
 				F99882042F58091000C8991D /* OSCReceiverDetail.cpp in Sources */,
 				F99882052F58091000C8991D /* SivOSCTypeTag.cpp in Sources */,
