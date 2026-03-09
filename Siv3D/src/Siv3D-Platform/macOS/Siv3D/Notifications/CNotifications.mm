@@ -270,28 +270,29 @@ namespace s3d
 			LOG_WARN("Notification actions were truncated to 4 items on macOS.");
 		}
 
-		if (request.imagePath && FileSystem::Exists(request.imagePath))
-		{
-			NSString* path = ToNSString(FileSystem::FullPath(request.imagePath));
-			NSURL* fileURL = [NSURL fileURLWithPath:path];
-
-			NSError* attachmentError = nil;
-			UNNotificationAttachment* attachment
-				= [UNNotificationAttachment attachmentWithIdentifier:@"image"
-																URL:fileURL
-															options:nil
-															  error:&attachmentError];
-
-			if (attachment)
-			{
-				content.attachments = @[ attachment ];
-			}
-			else if (attachmentError)
-			{
-				LOG_WARN(fmt::format("Failed to attach image to notification: {}",
-					Unicode::FromUTF8([[attachmentError localizedDescription] UTF8String])));
-			}
-		}
+		// 元の画像ファイルが削除される挙動になるため、macOS 版では imagePath は無効化
+//		if (request.imagePath && FileSystem::Exists(request.imagePath))
+//		{
+//			NSString* path = ToNSString(FileSystem::FullPath(request.imagePath));
+//			NSURL* fileURL = [NSURL fileURLWithPath:path];
+//
+//			NSError* attachmentError = nil;
+//			UNNotificationAttachment* attachment
+//				= [UNNotificationAttachment attachmentWithIdentifier:@"image"
+//																URL:fileURL
+//															options:nil
+//															  error:&attachmentError];
+//
+//			if (attachment)
+//			{
+//				content.attachments = @[ attachment ];
+//			}
+//			else if (attachmentError)
+//			{
+//				LOG_WARN(fmt::format("Failed to attach image to notification: {}",
+//					Unicode::FromUTF8([[attachmentError localizedDescription] UTF8String])));
+//			}
+//		}
 
 		if (not actions.isEmpty())
 		{

@@ -30,6 +30,6 @@ namespace s3d
 
 		/// @brief 実行されたアクションの識別子
 		/// @remark type が NotificationResponseType::ActionActivated の場合に設定されます
-		String actionID;
+		String actionID = {};
 	};
 }
