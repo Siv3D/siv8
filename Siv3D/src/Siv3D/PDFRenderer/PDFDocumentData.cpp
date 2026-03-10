@@ -136,7 +136,31 @@ namespace s3d
 		return U"(pageCount = {})"_fmt(pageCount);
 	}
 
-	bool PDFDocumentData::renderPage(const int32 pageIndex, PDFPage& result, const PDFRenderOptions& options)
+	Size PDFDocumentData::getPageSize(const int32 pageIndex, const double scale) const
+	{
+		if (not isOpen())
+		{
+			return{ 0,0 };
+		}
+
+		if ((pageIndex < 0) || (m_document.pageCount <= pageIndex))
+		{
+			return{ 0,0 };
+		}
+
+		FS_SIZEF pageSize{ 0.0f, 0.0f };
+		m_api->FPDF_GetPageSizeByIndexF(m_document.data, pageIndex, &pageSize);
+
+		const double pageWidthPt = pageSize.width;
+		const double pageHeightPt = pageSize.height;
+
+		const int32 width = Clamp(static_cast<int32>(Math::Round(pageWidthPt * scale)), 1, Image::MaxWidth);
+		const int32 height = Clamp(static_cast<int32>(Math::Round(pageHeightPt * scale)), 1, Image::MaxHeight);
+
+		return{ width, height };
+	}
+
+	bool PDFDocumentData::renderPage(const int32 pageIndex, PDFPage& result, const PDFRenderOptions& options) const
 	{
 		result.image.clear();
 		result.scale = Max(0.0, options.scale);

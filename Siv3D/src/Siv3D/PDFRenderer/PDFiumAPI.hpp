@@ -26,6 +26,7 @@ namespace s3d
 		decltype(::FPDF_LoadPage)* FPDF_LoadPage = nullptr;
 		decltype(::FPDF_GetPageWidthF)* FPDF_GetPageWidthF = nullptr;
 		decltype(::FPDF_GetPageHeightF)* FPDF_GetPageHeightF = nullptr;
+		decltype(::FPDF_GetPageSizeByIndexF)* FPDF_GetPageSizeByIndexF = nullptr;
 		decltype(::FPDFBitmap_Create)* FPDFBitmap_Create = nullptr;
 		decltype(::FPDFBitmap_FillRect)* FPDFBitmap_FillRect = nullptr;
 		decltype(::FPDF_RenderPageBitmap)* FPDF_RenderPageBitmap = nullptr;

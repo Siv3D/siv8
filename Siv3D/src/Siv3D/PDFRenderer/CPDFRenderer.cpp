@@ -110,6 +110,21 @@ namespace s3d
 		return m_documents[handleID]->getPageCount();
 	}
 
+	Size CPDFRenderer::getPageSize(const PDFDocument::IDType handleID, const int32 pageIndex, const double scale)
+	{
+		if (m_state == State::Uninitialized)
+		{
+			setup();
+		}
+
+		if (m_state != State::Ready)
+		{
+			return{ 0, 0 };
+		}
+
+		return m_documents[handleID]->getPageSize(pageIndex, scale);
+	}
+
 	bool CPDFRenderer::renderPage(const PDFDocument::IDType handleID, const int32 pageIndex, PDFPage& result, const PDFRenderOptions& options)
 	{
 		if (m_state == State::Uninitialized)

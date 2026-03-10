@@ -32,6 +32,8 @@ namespace s3d
 
 		int32 getPageCount(PDFDocument::IDType handleID) override;
 
+		Size getPageSize(PDFDocument::IDType handleID, int32 pageIndex, double scale) override;
+
 		bool renderPage(PDFDocument::IDType handleID, int32 pageIndex, PDFPage& result, const PDFRenderOptions& options) override;
 
 	private:

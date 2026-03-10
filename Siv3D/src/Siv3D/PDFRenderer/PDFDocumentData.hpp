@@ -43,7 +43,10 @@ namespace s3d
 		int32 getPageCount() const;
 
 		[[nodiscard]]
-		bool renderPage(int32 pageIndex, PDFPage& result, const PDFRenderOptions& options);
+		Size getPageSize(int32 pageIndex, double scale) const;
+
+		[[nodiscard]]
+		bool renderPage(int32 pageIndex, PDFPage& result, const PDFRenderOptions& options) const;
 
 	private:
 

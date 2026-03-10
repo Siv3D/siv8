@@ -35,6 +35,8 @@ namespace s3d
 
 		virtual int32 getPageCount(PDFDocument::IDType handleID) = 0;
 
+		virtual Size getPageSize(PDFDocument::IDType handleID, int32 pageIndex, double scale) = 0;
+
 		virtual bool renderPage(PDFDocument::IDType handleID, int32 pageIndex, PDFPage& result, const PDFRenderOptions& options) = 0;
 	};
 }
