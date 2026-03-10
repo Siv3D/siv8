@@ -15,6 +15,7 @@
 
 namespace s3d
 {
+	struct FormatData;
 	struct StereoSampleFloat32;
 
 	struct StereoSampleInt16
@@ -141,4 +142,16 @@ namespace s3d
 		[[nodiscard]]
 		static constexpr float Int16ToFloat32(value_type x) noexcept;
 	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 波形サンプルを文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value 波形サンプル
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
+	void Formatter(FormatData& formatData, StereoSampleInt16 value);
 }

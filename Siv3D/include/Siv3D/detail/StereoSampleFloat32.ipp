@@ -125,6 +125,11 @@ namespace s3d
 		return{ Int16ToFloat32(left), Int16ToFloat32(right) };
 	}
 
+	constexpr StereoSampleFloat32 StereoSampleFloat32::FromInt16(const StereoSampleInt16 sample) noexcept
+	{
+		return FromInt16(sample.left, sample.right);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Zero, Min, Max
