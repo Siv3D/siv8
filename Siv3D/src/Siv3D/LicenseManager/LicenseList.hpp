@@ -742,6 +742,14 @@ MIT_LICENSE
 },
 
 {
+R"-(PDFium)-",
+R"-(Copyright 2014 The PDFium Authors)-",
+BSD_3_LICENSE
+"\n"
+APACHE_2_LICENSE
+},
+
+{
 R"-(plutovg)-",
 R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu)-",
 MIT_LICENSE

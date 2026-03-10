@@ -22,6 +22,7 @@
 # include <Siv3D/Scene/IScene.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
+# include <Siv3D/PDFRenderer/IPDFRenderer.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/Console/IConsole.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>

@@ -1288,6 +1288,15 @@
     <Filter Include="src\Siv3D\StereoSampleInt16">
       <UniqueIdentifier>{efe274c3-3954-4cfa-8e0f-c773f8da03c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\PDFRenderer">
+      <UniqueIdentifier>{61836f82-0db0-40a5-b1f2-f36572f2e191}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty-prebuilt\PDFium">
+      <UniqueIdentifier>{afbbb08b-d10a-4d99-ab85-dca7ce2f6842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\PDFDocument">
+      <UniqueIdentifier>{9f6deada-80d3-4e75-8432-926df3188777}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5178,6 +5187,36 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StereoSampleInt16.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\CPDFRenderer.hpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\IPDFRenderer.hpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\PDFium\fpdf_doc.h">
+      <Filter>src\ThirdParty-prebuilt\PDFium</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\PDFium\fpdfview.h">
+      <Filter>src\ThirdParty-prebuilt\PDFium</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFiumAPI.hpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PDFDocument.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFDocumentData.hpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PDFRenderOptions.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PDFPage.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PDFPage.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8080,6 +8119,21 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\StereoSampleInt16\SivStereoSampleInt16.cpp">
       <Filter>src\Siv3D\StereoSampleInt16</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\CPDFRenderer.cpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFRendererFactory.cpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFDocument\SivPDFDocument.cpp">
+      <Filter>src\Siv3D\PDFDocument</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFiumAPI.cpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFDocumentData.cpp">
+      <Filter>src\Siv3D\PDFRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

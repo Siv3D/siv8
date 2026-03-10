@@ -20,6 +20,7 @@
 # include <Siv3D/Scene/CScene.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
+# include <Siv3D/PDFRenderer/IPDFRenderer.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
@@ -87,6 +88,7 @@ namespace s3d
 		SIV3D_ENGINE(RegExp)->init();
 		SIV3D_ENGINE(ImageDecoder)->init();
 		SIV3D_ENGINE(ImageEncoder)->init();
+		SIV3D_ENGINE(PDFRenderer)->init();
 		SIV3D_ENGINE(Emoji)->init();
 		SIV3D_ENGINE(Cursor)->init();
 		SIV3D_ENGINE(CursorStyle)->init();

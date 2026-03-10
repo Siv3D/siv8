@@ -27,6 +27,7 @@ namespace s3d
 	class ISiv3DScene;
 	class ISiv3DImageDecoder;
 	class ISiv3DImageEncoder;
+	class ISiv3DPDFRenderer;
 	class ISiv3DEmoji;
 	class ISiv3DConsole;
 	class ISiv3DCursor;
@@ -68,6 +69,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DScene>,
 			Siv3DComponent<ISiv3DImageDecoder>,
 			Siv3DComponent<ISiv3DImageEncoder>,
+			Siv3DComponent<ISiv3DPDFRenderer>,
 			Siv3DComponent<ISiv3DEmoji>,
 			Siv3DComponent<ISiv3DConsole>,
 			Siv3DComponent<ISiv3DCursor>,
