@@ -1673,6 +1673,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleDismissibleTooltip.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleTooltip.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\StereoSampleFloat32\SivStereoSampleFloat32.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\StereoSampleInt16\SivStereoSampleInt16.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp" />

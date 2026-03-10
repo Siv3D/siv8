@@ -1282,6 +1282,12 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\TextToSpeech">
       <UniqueIdentifier>{bdb2b50f-9aca-4e76-bee1-aee5b61d31fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\StereoSampleFloat32">
+      <UniqueIdentifier>{d45a3611-5485-4c57-a056-ec6f0572a60a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\StereoSampleInt16">
+      <UniqueIdentifier>{efe274c3-3954-4cfa-8e0f-c773f8da03c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -8068,6 +8074,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\TextToSpeech\CTextToSpeech.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\TextToSpeech</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\StereoSampleFloat32\SivStereoSampleFloat32.cpp">
+      <Filter>src\Siv3D\StereoSampleFloat32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\StereoSampleInt16\SivStereoSampleInt16.cpp">
+      <Filter>src\Siv3D\StereoSampleInt16</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
