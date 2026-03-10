@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -23,15 +23,12 @@ namespace s3d
 	void CTextToSpeech::init()
 	{
 		LOG_SCOPED_DEBUG("CTextToSpeech::init()");
-		assert(m_state == State::Uninitialized);
 		
 		m_ownerThreadID = std::this_thread::get_id();	
 	}
 
 	bool CTextToSpeech::synthesizeToWave(const StringView text, Wave& wave)
 	{
-		assert(m_state != State::Uninitialized);
-
 		wave.clear();
 
 		if (text.isEmpty())

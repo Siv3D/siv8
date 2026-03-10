@@ -70,7 +70,7 @@ namespace s3d
 		int32 lineCount = 1;
 		const int32 totalGlyphCount = static_cast<int32>(resolvedGlyphs.size());
 
-		for (const auto& [index, resolvedGlyph] : Indexed(resolvedGlyphs))
+		for (auto&& [index, resolvedGlyph] : Indexed(resolvedGlyphs))
 		{
 			// タブ, 空白, 制御文字
 			if (const char32 ch = s[resolvedGlyph.pos];
@@ -239,7 +239,7 @@ namespace s3d
 		int32 lineCount = 1;
 		const int32 totalGlyphCount = static_cast<int32>(resolvedGlyphs.size());
 
-		for (const auto& [index, resolvedGlyph] : Indexed(resolvedGlyphs))
+		for (auto&& [index, resolvedGlyph] : Indexed(resolvedGlyphs))
 		{
 			// タブ, 空白, 制御文字
 			if (const char32 ch = s[resolvedGlyph.pos];

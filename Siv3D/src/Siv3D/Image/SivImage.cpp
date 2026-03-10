@@ -261,7 +261,7 @@ namespace s3d
 		const int32 oldHeight = m_size.y;
 
 		// 高さが変更されない場合は何もしない
-		if (oldHeight == height)
+		if (oldHeight == static_cast<int32>(height))
 		{
 			return;
 		}

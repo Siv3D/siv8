@@ -98,7 +98,7 @@ namespace s3d
 					argument.value = static_cast<uint64>(arg->AsTimeTagUnchecked());
 					break;
 				case osc::TypeTagValues::RGBA_COLOR_TYPE_TAG:
-					argument.value = Color::FromRGBA(arg->AsRgbaColorUnchecked());
+					argument.value = Color::FromRGBA(static_cast<uint32>(arg->AsRgbaColorUnchecked()));
 					break;
 				case osc::TypeTagValues::STRING_TYPE_TAG:
 					argument.value = Unicode::FromUTF8(arg->AsStringUnchecked());

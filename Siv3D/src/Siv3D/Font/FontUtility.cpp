@@ -115,7 +115,7 @@ namespace s3d
 			properties.availableBitmapSizes << face->available_sizes[i].height;
 		}
 
-		properties.numGlyphs	= face->num_glyphs;
+		properties.numGlyphs	= static_cast<uint32>(face->num_glyphs);
 		properties.unitsPerEM	= face->units_per_EM;
 		properties.isBold		= ((face->style_flags & FT_STYLE_FLAG_BOLD) != 0);
 

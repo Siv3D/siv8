@@ -1006,6 +1006,20 @@
 		F9766B832C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */; };
 		F9797DBA2F5EC82500518D26 /* NotificationActionCategory.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DB92F5EC82500518D26 /* NotificationActionCategory.hpp */; };
 		F9797DBD2F5ED33900518D26 /* SivNotificationActionCategory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DBB2F5ED33900518D26 /* SivNotificationActionCategory.cpp */; };
+		F9797DC32F60272200518D26 /* StereoSampleFloat32.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DBE2F60272200518D26 /* StereoSampleFloat32.hpp */; };
+		F9797DC42F60272200518D26 /* StereoSampleInt16.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DBF2F60272200518D26 /* StereoSampleInt16.hpp */; };
+		F9797DC52F60272200518D26 /* TextToSpeech.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DC02F60272200518D26 /* TextToSpeech.hpp */; };
+		F9797DC62F60272200518D26 /* WaveSample.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DC22F60272200518D26 /* WaveSample.hpp */; };
+		F9797DC72F60272200518D26 /* Wave.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DC12F60272200518D26 /* Wave.hpp */; };
+		F9797DCA2F60275800518D26 /* StereoSampleInt16.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DC92F60275800518D26 /* StereoSampleInt16.ipp */; };
+		F9797DCB2F60275800518D26 /* StereoSampleFloat32.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DC82F60275800518D26 /* StereoSampleFloat32.ipp */; };
+		F9797DD02F60277E00518D26 /* TextToSpeechFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DCE2F60277E00518D26 /* TextToSpeechFactory.cpp */; };
+		F9797DD12F60277E00518D26 /* SivTextToSpeech.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DCD2F60277E00518D26 /* SivTextToSpeech.cpp */; };
+		F9797DD22F60277E00518D26 /* ITextToSpeech.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DCC2F60277E00518D26 /* ITextToSpeech.hpp */; };
+		F9797DD62F60279A00518D26 /* CTextToSpeech.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DD32F60279A00518D26 /* CTextToSpeech.hpp */; };
+		F9797DD72F60279A00518D26 /* CTextToSpeech.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797DD42F60279A00518D26 /* CTextToSpeech.mm */; };
+		F9797DDC2F6027C600518D26 /* SivStereoSampleInt16.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DDA2F6027C600518D26 /* SivStereoSampleInt16.cpp */; };
+		F9797DDD2F6027C600518D26 /* SivStereoSampleFloat32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DD82F6027C600518D26 /* SivStereoSampleFloat32.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -3948,6 +3962,20 @@
 		F9766B7F2C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivCamera2DControlBuilder.cpp; sourceTree = "<group>"; };
 		F9797DB92F5EC82500518D26 /* NotificationActionCategory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NotificationActionCategory.hpp; sourceTree = "<group>"; };
 		F9797DBB2F5ED33900518D26 /* SivNotificationActionCategory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivNotificationActionCategory.cpp; sourceTree = "<group>"; };
+		F9797DBE2F60272200518D26 /* StereoSampleFloat32.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StereoSampleFloat32.hpp; sourceTree = "<group>"; };
+		F9797DBF2F60272200518D26 /* StereoSampleInt16.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StereoSampleInt16.hpp; sourceTree = "<group>"; };
+		F9797DC02F60272200518D26 /* TextToSpeech.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextToSpeech.hpp; sourceTree = "<group>"; };
+		F9797DC12F60272200518D26 /* Wave.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Wave.hpp; sourceTree = "<group>"; };
+		F9797DC22F60272200518D26 /* WaveSample.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WaveSample.hpp; sourceTree = "<group>"; };
+		F9797DC82F60275800518D26 /* StereoSampleFloat32.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StereoSampleFloat32.ipp; sourceTree = "<group>"; };
+		F9797DC92F60275800518D26 /* StereoSampleInt16.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StereoSampleInt16.ipp; sourceTree = "<group>"; };
+		F9797DCC2F60277E00518D26 /* ITextToSpeech.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ITextToSpeech.hpp; sourceTree = "<group>"; };
+		F9797DCD2F60277E00518D26 /* SivTextToSpeech.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextToSpeech.cpp; sourceTree = "<group>"; };
+		F9797DCE2F60277E00518D26 /* TextToSpeechFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TextToSpeechFactory.cpp; sourceTree = "<group>"; };
+		F9797DD32F60279A00518D26 /* CTextToSpeech.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CTextToSpeech.hpp; sourceTree = "<group>"; };
+		F9797DD42F60279A00518D26 /* CTextToSpeech.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CTextToSpeech.mm; sourceTree = "<group>"; };
+		F9797DD82F6027C600518D26 /* SivStereoSampleFloat32.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivStereoSampleFloat32.cpp; sourceTree = "<group>"; };
+		F9797DDA2F6027C600518D26 /* SivStereoSampleInt16.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivStereoSampleInt16.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6595,6 +6623,8 @@
 				F9070B9F2B9F175000383E4D /* Step.ipp */,
 				F9528B852BBC5D4B00222F45 /* Step2D.ipp */,
 				F9528B972BBC76EA00222F45 /* Step3D.ipp */,
+				F9797DC82F60275800518D26 /* StereoSampleFloat32.ipp */,
+				F9797DC92F60275800518D26 /* StereoSampleInt16.ipp */,
 				F9070BA02B9F175000383E4D /* Stopwatch.ipp */,
 				F9070BA12B9F175000383E4D /* String.ipp */,
 				F9E7946C2C19B6F2002615BA /* StringAlgorithm.ipp */,
@@ -6981,6 +7011,8 @@
 				F9070C232B9F175000383E4D /* Step.hpp */,
 				F9528B832BBC5D3100222F45 /* Step2D.hpp */,
 				F9528B932BBC76D300222F45 /* Step3D.hpp */,
+				F9797DBE2F60272200518D26 /* StereoSampleFloat32.hpp */,
+				F9797DBF2F60272200518D26 /* StereoSampleInt16.hpp */,
 				F9070C242B9F175000383E4D /* Stopwatch.hpp */,
 				F9070C252B9F175000383E4D /* String.hpp */,
 				F9E794662C19B6D7002615BA /* StringAlgorithm.hpp */,
@@ -6996,6 +7028,7 @@
 				F902E0DD2E9E707F002C6B92 /* TextFileReader.hpp */,
 				F902E0DE2E9E707F002C6B92 /* TextFileWriter.hpp */,
 				F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */,
+				F9797DC02F60272200518D26 /* TextToSpeech.hpp */,
 				F90DA0442D1A91850003E1E8 /* Texture.hpp */,
 				F980C4492C00E27800A86B68 /* TextureAddressMode.hpp */,
 				F9FD0D152D215DB300A584CE /* TexturedCircle.hpp */,
@@ -7037,6 +7070,8 @@
 				F980C48D2C04B41300A86B68 /* Vertex2D.hpp */,
 				F934BD6F2BF880330003EAD5 /* VertexShader.hpp */,
 				F9DD96692F13EFDE0026DFA5 /* VoronoiCell.hpp */,
+				F9797DC12F60272200518D26 /* Wave.hpp */,
+				F9797DC22F60272200518D26 /* WaveSample.hpp */,
 				F9F00A832CE06CD50097C165 /* WebBrowser.hpp */,
 				F9070C3A2B9F175000383E4D /* Window.hpp */,
 				F9070C3B2B9F175000383E4D /* WindowState.hpp */,
@@ -7743,6 +7778,8 @@
 				F9F00A462CD298E60097C165 /* Shape2D */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F902E1152EA8B39D002C6B92 /* SimpleGUI */,
+				F9797DD92F6027C600518D26 /* StereoSampleFloat32 */,
+				F9797DDB2F6027C600518D26 /* StereoSampleInt16 */,
 				F9E7945A2C19743A002615BA /* Stopwatch */,
 				F9070D812B9F175E00383E4D /* String */,
 				F9070D832B9F175E00383E4D /* StringView */,
@@ -7754,6 +7791,7 @@
 				F9070D892B9F175E00383E4D /* TextEncoding */,
 				F902E0F22E9E715C002C6B92 /* TextFileReader */,
 				F902E0F62E9E715C002C6B92 /* TextFileWriter */,
+				F9797DCF2F60277E00518D26 /* TextToSpeech */,
 				F90DA0582D1A91D90003E1E8 /* Texture */,
 				F980C4512C00E2AE00A86B68 /* TextureAddressMode */,
 				F9FD0D1C2D215DE000A584CE /* TexturedCircle */,
@@ -7832,6 +7870,7 @@
 				F99881A22F48999600C8991D /* SerialPortInfo */,
 				F934BD862BF881110003EAD5 /* Shader */,
 				F9070E8E2B9F183100383E4D /* System */,
+				F9797DD52F60279A00518D26 /* TextToSpeech */,
 				F90DA06A2D1A934E0003E1E8 /* Texture */,
 				F9070E062B9F176B00383E4D /* Time */,
 				F986060C2BE71918006A4C0F /* UserInfo */,
@@ -9298,6 +9337,41 @@
 				F9797DBB2F5ED33900518D26 /* SivNotificationActionCategory.cpp */,
 			);
 			path = NotificationActionCategory;
+			sourceTree = "<group>";
+		};
+		F9797DCF2F60277E00518D26 /* TextToSpeech */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DCC2F60277E00518D26 /* ITextToSpeech.hpp */,
+				F9797DCD2F60277E00518D26 /* SivTextToSpeech.cpp */,
+				F9797DCE2F60277E00518D26 /* TextToSpeechFactory.cpp */,
+			);
+			path = TextToSpeech;
+			sourceTree = "<group>";
+		};
+		F9797DD52F60279A00518D26 /* TextToSpeech */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DD32F60279A00518D26 /* CTextToSpeech.hpp */,
+				F9797DD42F60279A00518D26 /* CTextToSpeech.mm */,
+			);
+			path = TextToSpeech;
+			sourceTree = "<group>";
+		};
+		F9797DD92F6027C600518D26 /* StereoSampleFloat32 */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DD82F6027C600518D26 /* SivStereoSampleFloat32.cpp */,
+			);
+			path = StereoSampleFloat32;
+			sourceTree = "<group>";
+		};
+		F9797DDB2F6027C600518D26 /* StereoSampleInt16 */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DDA2F6027C600518D26 /* SivStereoSampleInt16.cpp */,
+			);
+			path = StereoSampleInt16;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -12646,6 +12720,7 @@
 				F98603352BCFBB54006A4C0F /* SkPathWriter.h in Headers */,
 				F90706B72B9DAEC900383E4D /* mimalloc.h in Headers */,
 				F98603892BCFBB54006A4C0F /* SkOTTable_OS_2_VA.h in Headers */,
+				F9797DD62F60279A00518D26 /* CTextToSpeech.hpp in Headers */,
 				F9E794632C198147002615BA /* ListUtility.ipp in Headers */,
 				F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */,
 				F9DD965A2F1238B70026DFA5 /* FrameMetrics.hpp in Headers */,
@@ -12970,6 +13045,8 @@
 				F98111CC2ECC088400C50DD1 /* NaturalSort.hpp in Headers */,
 				F986002E2BCFBB53006A4C0F /* SkPathTypes.h in Headers */,
 				F986FA462BCFB53B006A4C0F /* svcfftl.h in Headers */,
+				F9797DCA2F60275800518D26 /* StereoSampleInt16.ipp in Headers */,
+				F9797DCB2F60275800518D26 /* StereoSampleFloat32.ipp in Headers */,
 				F98605662BD203D4006A4C0F /* muParserInt.h in Headers */,
 				F98600912BCFBB53006A4C0F /* GrSurfaceCharacterization.h in Headers */,
 				F98600302BCFBB53006A4C0F /* SkPicture.h in Headers */,
@@ -13579,6 +13656,11 @@
 				F9FD0B912D1D334700A584CE /* MTLBlitCommandEncoder.hpp in Headers */,
 				F9FD0B922D1D334700A584CE /* MTLVisibleFunctionTable.hpp in Headers */,
 				F9FD0B932D1D334700A584CE /* MTLPixelFormat.hpp in Headers */,
+				F9797DC32F60272200518D26 /* StereoSampleFloat32.hpp in Headers */,
+				F9797DC42F60272200518D26 /* StereoSampleInt16.hpp in Headers */,
+				F9797DC52F60272200518D26 /* TextToSpeech.hpp in Headers */,
+				F9797DC62F60272200518D26 /* WaveSample.hpp in Headers */,
+				F9797DC72F60272200518D26 /* Wave.hpp in Headers */,
 				F9FD0B942D1D334700A584CE /* MTLTypes.hpp in Headers */,
 				F9FD0B952D1D334700A584CE /* MTLPipeline.hpp in Headers */,
 				F9FD0B962D1D334700A584CE /* MTLCaptureScope.hpp in Headers */,
@@ -13900,6 +13982,7 @@
 				F98602722BCFBB54006A4C0F /* SkStrike.h in Headers */,
 				F98605BC2BE4B65B006A4C0F /* InputCombination.hpp in Headers */,
 				F95122192CB62E8400151291 /* LineString.ipp in Headers */,
+				F9797DD22F60277E00518D26 /* ITextToSpeech.hpp in Headers */,
 				F98602872BCFBB54006A4C0F /* SkTDynamicHash.h in Headers */,
 				F986F9232BC8441F006A4C0F /* regparse.h in Headers */,
 				F96F96082C359ED90033353E /* morton3D.h in Headers */,
@@ -14710,6 +14793,8 @@
 				F98602BD2BCFBB54006A4C0F /* SkCropImageFilter.cpp in Sources */,
 				F98604E92BCFBB54006A4C0F /* SkParse.cpp in Sources */,
 				F986F9BF2BCA9D0A006A4C0F /* svgelement.cpp in Sources */,
+				F9797DD02F60277E00518D26 /* TextToSpeechFactory.cpp in Sources */,
+				F9797DD12F60277E00518D26 /* SivTextToSpeech.cpp in Sources */,
 				F98604502BCFBB54006A4C0F /* SkSLDebugTracePriv.cpp in Sources */,
 				F986029C2BCFBB54006A4C0F /* SkWritePixelsRec.cpp in Sources */,
 				F98602262BCFBB54006A4C0F /* SkPixelRef.cpp in Sources */,
@@ -15014,8 +15099,11 @@
 				F943AADF2E2A0A14001B4D43 /* MSDFGlyphCache.cpp in Sources */,
 				F943AAE02E2A0A14001B4D43 /* BitmapGlyphCache.cpp in Sources */,
 				F9D41CF02C9AB1D500290998 /* SivEllipse.cpp in Sources */,
+				F9797DD72F60279A00518D26 /* CTextToSpeech.mm in Sources */,
 				F98602572BCFBB54006A4C0F /* SkRuntimeBlender.cpp in Sources */,
 				F98605192BCFF7DF006A4C0F /* SivEmoji.cpp in Sources */,
+				F9797DDC2F6027C600518D26 /* SivStereoSampleInt16.cpp in Sources */,
+				F9797DDD2F6027C600518D26 /* SivStereoSampleFloat32.cpp in Sources */,
 				F98601A62BCFBB53006A4C0F /* SkDrawable.cpp in Sources */,
 				F986F8FD2BC8441F006A4C0F /* ascii.c in Sources */,
 				F9070E602B9F176B00383E4D /* SivFileSystem_macOS_Linux.cpp in Sources */,
