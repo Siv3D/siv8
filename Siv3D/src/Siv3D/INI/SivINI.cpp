@@ -48,7 +48,7 @@ namespace s3d
 		load(path);
 	}
 
-	INI::INI(std::unique_ptr<IReader>&& reader)
+	INI::INI(std::unique_ptr<IReader> reader)
 	{
 		load(std::move(reader));
 	}
@@ -74,7 +74,7 @@ namespace s3d
 		return true;
 	}
 
-	bool INI::load(std::unique_ptr<IReader>&& reader)
+	bool INI::load(std::unique_ptr<IReader> reader)
 	{
 		try
 		{
@@ -515,7 +515,7 @@ namespace s3d
 		return Parse(textReader.readAll());
 	}
 
-	INI INI::Load(std::unique_ptr<IReader>&& reader)
+	INI INI::Load(std::unique_ptr<IReader> reader)
 	{
 		TextFileReader textReader{ std::move(reader) };
 

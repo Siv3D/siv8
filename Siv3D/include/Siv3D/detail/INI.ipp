@@ -25,8 +25,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Reader>
-		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	template <ReaderObject Reader>
 	INI::INI(Reader&& reader)
 	{
 		load(std::make_unique<Reader>(std::move(reader)));
@@ -38,8 +37,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Reader>
-		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	template <ReaderObject Reader>
 	bool INI::load(Reader&& reader)
 	{
 		return load(std::make_unique<Reader>(std::move(reader)));
@@ -144,8 +142,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Reader>
-		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	template <ReaderObject Reader>
 	INI INI::Load(Reader&& reader)
 	{
 		return Load(std::make_unique<Reader>(std::move(reader)));

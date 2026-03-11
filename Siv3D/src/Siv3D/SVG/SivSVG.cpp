@@ -30,7 +30,7 @@ namespace s3d
 		load(path);
 	}
 
-	SVG::SVG(std::unique_ptr<IReader>&& reader)
+	SVG::SVG(std::unique_ptr<IReader> reader)
 		: SVG{}
 	{
 		load(std::move(reader));
@@ -58,7 +58,7 @@ namespace s3d
 		return parse(source);
 	}
 
-	bool SVG::load(std::unique_ptr<IReader>&& reader)
+	bool SVG::load(std::unique_ptr<IReader> reader)
 	{
 		std::string source(static_cast<size_t>(reader->size()), '\0');
 
@@ -211,7 +211,7 @@ namespace s3d
 		return svg;
 	}
 
-	SVG SVG::Load(std::unique_ptr<IReader>&& reader)
+	SVG SVG::Load(std::unique_ptr<IReader> reader)
 	{
 		SVG svg;
 		svg.load(std::move(reader));

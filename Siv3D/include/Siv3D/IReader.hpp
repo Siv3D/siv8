@@ -161,6 +161,17 @@ namespace s3d
 		/// @return 読み込みに成功したら true, それ以外の場合は false | Returns true if the read was successful, otherwise false
 		bool lookahead(Concept::TriviallyCopyable auto& dst) const;
 	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ReaderObject
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class T>
+	concept ReaderObject = std::same_as<T, std::remove_cvref_t<T>>
+						&& std::derived_from<T, IReader>
+						&& std::move_constructible<T>;
 }
 
 # include "detail/IReader.ipp"

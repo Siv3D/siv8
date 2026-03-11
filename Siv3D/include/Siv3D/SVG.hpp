@@ -48,17 +48,16 @@ namespace s3d
 		explicit SVG(FilePathView path);
 
 		/// @brief SVG を Reader から読み込みます。
-		/// @tparam Reader IRader を継承したクラス
-		/// @param reader Reader オブジェクト
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
-		[[nodiscard]]
-		explicit SVG(Reader&& reader);
-
-		/// @brief SVG を Reader から読み込みます。
 		/// @param reader Reader オブジェクト
 		[[nodiscard]] 
-		explicit SVG(std::unique_ptr<IReader>&& reader);
+		explicit SVG(std::unique_ptr<IReader> reader);
+
+		/// @brief SVG を Reader から読み込みます。
+		/// @tparam Reader IRader を継承したクラス
+		/// @param reader Reader オブジェクト
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit SVG(Reader&& reader);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -72,17 +71,16 @@ namespace s3d
 		bool load(FilePathView path);
 
 		/// @brief SVG データを読み込みます。
+		/// @param reader Reader オブジェクト
+		/// @return 読み込みに成功した場合 true, それ以外の場合は false
+		bool load(std::unique_ptr<IReader> reader);
+
+		/// @brief SVG データを読み込みます。
 		/// @tparam Reader IRader を継承したクラス
 		/// @param reader Reader オブジェクト
 		/// @return 読み込みに成功した場合 true, それ以外の場合は false
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+		template <ReaderObject Reader>
 		bool load(Reader&& reader);
-
-		/// @brief SVG データを読み込みます。
-		/// @param reader Reader オブジェクト
-		/// @return 読み込みに成功した場合 true, それ以外の場合は false
-		bool load(std::unique_ptr<IReader>&& reader);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -228,19 +226,18 @@ namespace s3d
 		static SVG Load(FilePathView path);
 
 		/// @brief SVG データを読み込みます。
+		/// @param reader Reader オブジェクト
+		/// @return SVG オブジェクト
+		[[nodiscard]]
+		static SVG Load(std::unique_ptr<IReader> reader);
+
+		/// @brief SVG データを読み込みます。
 		/// @tparam Reader IRader を継承したクラス
 		/// @param reader Reader オブジェクト
 		/// @return SVG オブジェクト
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+		template <ReaderObject Reader>
 		[[nodiscard]]
 		static SVG Load(Reader&& reader);
-
-		/// @brief SVG データを読み込みます。
-		/// @param reader Reader オブジェクト
-		/// @return SVG オブジェクト
-		[[nodiscard]]
-		static SVG Load(std::unique_ptr<IReader>&& reader);
 
 		////////////////////////////////////////////////////////////////
 		//

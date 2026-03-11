@@ -19,16 +19,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Reader>
-		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	template <ReaderObject Reader>
 	TextFileReader::TextFileReader(Reader&& reader, const Optional<TextEncoding>& encoding)
 		: TextFileReader{}
 	{
 		open(std::forward<Reader>(reader), encoding);
 	}
 
-	template <class Reader>
-		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	template <ReaderObject Reader>
 	bool TextFileReader::open(Reader&& reader, const Optional<TextEncoding>& encoding)
 	{
 		return open(std::make_unique<Reader>(std::forward<Reader>(reader)), encoding);

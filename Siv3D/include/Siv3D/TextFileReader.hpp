@@ -47,20 +47,19 @@ namespace s3d
 		[[nodiscard]]
 		explicit TextFileReader(FilePathView path, const Optional<TextEncoding>& encoding = unspecified);
 
-		/// @brief テキストファイルを IReader 経由でオープンします。
-		/// @tparam Reader IReader オブジェクトの型
-		/// @param reader IReader オブジェクト
+		/// @brief テキストファイルを Reader オブジェクト経由でオープンします。
+		/// @param reader Reader オブジェクト
 		/// @param encoding テキストのエンコーディング形式
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+		[[nodiscard]]
+		explicit TextFileReader(std::unique_ptr<IReader> reader, const Optional<TextEncoding>& encoding = unspecified);
+
+		/// @brief テキストファイルを Reader オブジェクト経由でオープンします。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
+		/// @param encoding テキストのエンコーディング形式
+		template <ReaderObject Reader>
 		[[nodiscard]]
 		explicit TextFileReader(Reader&& reader, const Optional<TextEncoding>& encoding = unspecified);
-
-		/// @brief テキストファイルを IReader 経由でオープンします。
-		/// @param reader IReader オブジェクト
-		/// @param encoding テキストのエンコーディング形式
-		[[nodiscard]]
-		explicit TextFileReader(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding = unspecified);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -74,20 +73,19 @@ namespace s3d
 		/// @return ファイルのオープンに成功した場合 true, それ以外の場合は false
 		bool open(FilePathView path, const Optional<TextEncoding>& encoding = unspecified);
 
-		/// @brief テキストファイルを IReader 経由でオープンします。
-		/// @tparam Reader IReader オブジェクトの型
-		/// @param reader IReader オブジェクト
+		/// @brief テキストファイルを Reader オブジェクト経由でオープンします。
+		/// @param reader Reader オブジェクト
 		/// @param encoding テキストのエンコーディング形式
 		/// @return ファイルのオープンに成功した場合 true, それ以外の場合は false
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
-		bool open(Reader&& reader, const Optional<TextEncoding>& encoding = unspecified);
+		bool open(std::unique_ptr<IReader> reader, const Optional<TextEncoding>& encoding = unspecified);
 
-		/// @brief テキストファイルを IReader 経由でオープンします。
-		/// @param reader IReader オブジェクト
+		/// @brief テキストファイルを Reader オブジェクト経由でオープンします。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
 		/// @param encoding テキストのエンコーディング形式
 		/// @return ファイルのオープンに成功した場合 true, それ以外の場合は false
-		bool open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding = unspecified);
+		template <ReaderObject Reader>
+		bool open(Reader&& reader, const Optional<TextEncoding>& encoding = unspecified);
 
 		////////////////////////////////////////////////////////////////
 		//
