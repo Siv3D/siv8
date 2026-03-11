@@ -26,7 +26,7 @@ namespace s3d
 
 		void init() override;
 
-		PDFDocument::IDType createFromFile(FilePathView path) override;
+		PDFDocument::IDType createFromFile(FilePathView path, StringView password) override;
 
 		void release(PDFDocument::IDType handleID) override;
 

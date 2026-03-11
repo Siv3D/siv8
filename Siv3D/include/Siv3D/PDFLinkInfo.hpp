@@ -10,33 +10,28 @@
 //-----------------------------------------------
 
 # pragma once
+# include <variant>
 # include "Common.hpp"
-# include "Image.hpp"
-# include "PDFLinkInfo.hpp"
+# include "String.hpp"
+# include "2DShapes.hpp"
 
 namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	PDFPage
+	//	PDFLinkInfo
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief PDF のページのレンダリング結果
-	struct PDFPage
+	struct PDFLinkInfo
 	{
-		/// @brief レンダリングされたページの画像データ
-		Image image;
+		using ExternalLink = String;
 
-		/// @brief ページの拡大率
-		double scale = 1.0;
+		using InternalLink = int32;
 
-		/// @brief ページの回転
-		/// @remark 0: 回転なし、1: 90 度時計回り、2: 180 度、3: 270 度時計回り
-		int32 rotation = 0;
+		std::variant<std::monostate, ExternalLink, InternalLink> target;
 
-		/// @brief ページ内のリンク注釈情報
-		Array<PDFLinkInfo> links;
+		RectF region = RectF::Empty();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -58,13 +53,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	size
+		//	isExternalLink, isInternalLink
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Size size() const noexcept;
+		bool isExternalLink() const noexcept;
+
+		[[nodiscard]]
+		bool isInternalLink() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	getIfExternalLink, getIfInternalLink
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		const ExternalLink* getIfExternalLink() const noexcept;
+
+		[[nodiscard]]
+		const InternalLink* getIfInternalLink() const noexcept;
 	};
 }
 
-# include "detail/PDFPage.ipp"
+# include "detail/PDFLinkInfo.ipp"

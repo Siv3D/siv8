@@ -55,8 +55,8 @@ namespace s3d
 
 	PDFDocument::PDFDocument() {}
 
-	PDFDocument::PDFDocument(const FilePathView path)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(PDFRenderer)->createFromFile(path))) }
+	PDFDocument::PDFDocument(const FilePathView path, const StringView password)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(PDFRenderer)->createFromFile(path, password))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}

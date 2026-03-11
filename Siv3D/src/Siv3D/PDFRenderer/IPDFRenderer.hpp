@@ -29,7 +29,7 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual PDFDocument::IDType createFromFile(FilePathView path) = 0;
+		virtual PDFDocument::IDType createFromFile(FilePathView path, StringView password) = 0;
 
 		virtual void release(PDFDocument::IDType handleID) = 0;
 

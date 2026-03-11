@@ -39,7 +39,7 @@ namespace s3d
 		PDFDocument();
 
 		[[nodiscard]]
-		PDFDocument(FilePathView path);
+		PDFDocument(FilePathView path, StringView password = {});
 
 		////////////////////////////////////////////////////////////////
 		//

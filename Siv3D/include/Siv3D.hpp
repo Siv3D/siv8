@@ -1350,6 +1350,7 @@
 ////////////////////////////////////////////////////////////////
 
 # include <Siv3D/PDFRenderOptions.hpp>
+# include <Siv3D/PDFLinkInfo.hpp>
 # include <Siv3D/PDFPage.hpp>
 # include <Siv3D/PDFDocument.hpp>
 

@@ -52,7 +52,7 @@ namespace s3d
 		}
 	}
 
-	PDFDocument::IDType CPDFRenderer::createFromFile(const FilePathView path)
+	PDFDocument::IDType CPDFRenderer::createFromFile(const FilePathView path, const StringView password)
 	{
 		if (not path)
 		{
@@ -69,7 +69,7 @@ namespace s3d
 			return PDFDocument::IDType::Null();
 		}
 
-		std::unique_ptr<PDFDocumentData> document = std::make_unique<PDFDocumentData>(path, U"", & m_api);
+		std::unique_ptr<PDFDocumentData> document = std::make_unique<PDFDocumentData>(path, password, & m_api);
 
 		if (not document->isInitialized())
 		{
