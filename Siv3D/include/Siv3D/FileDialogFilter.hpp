@@ -202,7 +202,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 		//
 		//	テキスト・データファイル
-		//	CSV, INI, JSON, Markdown, Text, TOML, XML
+		//	CSV, INI, JSON, Markdown, Text, TOML, XML, PDF
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -240,6 +240,11 @@ namespace s3d
 		/// @return `FileDialogFilter{ U"XML",{ U"xml" } }`
 		[[nodiscard]]
 		static constexpr FileDialogFilter XML();
+
+		/// @brief PDF ファイル用の拡張子フィルタを返します。
+		/// @return `FileDialogFilter{ U"PDF",{ U"pdf" } }`
+		[[nodiscard]]
+		static constexpr FileDialogFilter PDF();
 
 		////////////////////////////////////////////////////////////////
 		//

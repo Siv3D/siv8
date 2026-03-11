@@ -30,6 +30,8 @@ namespace s3d
 
 		void release(PDFDocument::IDType handleID) override;
 
+		const String& getVersion(PDFDocument::IDType handleID) override;
+
 		int32 getPageCount(PDFDocument::IDType handleID) override;
 
 		Size getPageSize(PDFDocument::IDType handleID, int32 pageIndex, double scale) override;

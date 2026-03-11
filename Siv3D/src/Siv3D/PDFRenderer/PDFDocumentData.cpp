@@ -258,7 +258,20 @@ namespace s3d
 		}
 
 		m_document.data = document;
-		m_document.pageCount = m_api->FPDF_GetPageCount(document);
+
+		// バージョン
+		{
+			int32 version = 0;
+			m_api->FPDF_GetFileVersion(document, &version);
+			const int32 major = (version / 10);
+			const int32 minor = (version % 10);
+			m_document.version = U"{}.{}"_fmt(major, minor);
+		}
+
+		// ページ数
+		{
+			m_document.pageCount = m_api->FPDF_GetPageCount(document);
+		}
 
 		m_initialized = true;
 	}
@@ -311,6 +324,17 @@ namespace s3d
 	bool PDFDocumentData::isOpen() const noexcept
 	{
 		return static_cast<bool>(m_document);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getVersion
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String& PDFDocumentData::getVersion() const
+	{
+		return m_document.version;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -404,6 +428,6 @@ namespace s3d
 
 	String PDFDocumentData::Document::getInfo() const
 	{
-		return U"(pageCount = {})"_fmt(pageCount);
+		return U"(version = {}, pageCount = {})"_fmt(version, pageCount);
 	}
 }

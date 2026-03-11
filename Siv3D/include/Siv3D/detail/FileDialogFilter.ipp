@@ -196,7 +196,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 	//
 	//	テキスト・データファイル
-	//	CSV, INI, JSON, Markdown, Text, TOML, XML
+	//	CSV, INI, JSON, Markdown, Text, TOML, XML, PDF
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -233,6 +233,11 @@ namespace s3d
 	constexpr FileDialogFilter FileDialogFilter::XML()
 	{
 		return{ U"XML", { U"xml" } };
+	}
+
+	constexpr FileDialogFilter FileDialogFilter::PDF()
+	{
+		return{ U"PDF", { U"pdf" } };
 	}
 
 	////////////////////////////////////////////////////////////////

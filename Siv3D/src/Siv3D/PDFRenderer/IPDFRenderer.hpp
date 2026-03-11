@@ -33,6 +33,8 @@ namespace s3d
 
 		virtual void release(PDFDocument::IDType handleID) = 0;
 
+		virtual const String& getVersion(PDFDocument::IDType handleID) = 0;
+
 		virtual int32 getPageCount(PDFDocument::IDType handleID) = 0;
 
 		virtual Size getPageSize(PDFDocument::IDType handleID, int32 pageIndex, double scale) = 0;

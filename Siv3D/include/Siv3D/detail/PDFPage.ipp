@@ -45,4 +45,18 @@ namespace s3d
 	{
 		return image.size();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clear
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void PDFPage::clear() noexcept
+	{
+		image.clear();
+		scale = 1.0;
+		rotation = 0;
+		links.clear();
+	}
 }

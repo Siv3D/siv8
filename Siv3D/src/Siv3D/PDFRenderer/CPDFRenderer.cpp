@@ -95,6 +95,22 @@ namespace s3d
 		m_documents.erase(handleID);
 	}
 
+	const String& CPDFRenderer::getVersion(const PDFDocument::IDType handleID)
+	{
+		if (m_state == State::Uninitialized)
+		{
+			setup();
+		}
+		
+		if (m_state != State::Ready)
+		{
+			static const String nullVersion{};
+			return nullVersion;
+		}
+
+		return m_documents[handleID]->getVersion();
+	}
+
 	int32 CPDFRenderer::getPageCount(const PDFDocument::IDType handleID)
 	{
 		if (m_state == State::Uninitialized)
@@ -134,6 +150,7 @@ namespace s3d
 
 		if (m_state != State::Ready)
 		{
+			result.clear();
 			return false;
 		}
 
