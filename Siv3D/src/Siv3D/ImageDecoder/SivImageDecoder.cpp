@@ -49,19 +49,19 @@ namespace s3d
 
 		Image Decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 		{
-			BinaryFileReader reader{ path };
+			std::unique_ptr<BinaryFileReader> reader = std::make_unique<BinaryFileReader>(path);
 
-			if (not reader)
+			if (not reader->isOpen())
 			{
 				return{};
 			}
 
-			return SIV3D_ENGINE(ImageDecoder)->decode(reader, path, premultiplyAlpha, imageFormat);
+			return SIV3D_ENGINE(ImageDecoder)->decode(std::move(reader), path, premultiplyAlpha, imageFormat);
 		}
 
-		Image Decode(IReader& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
+		Image Decode(std::unique_ptr<IReader> reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 		{
-			return SIV3D_ENGINE(ImageDecoder)->decode(reader, {}, premultiplyAlpha, imageFormat);
+			return SIV3D_ENGINE(ImageDecoder)->decode(std::move(reader), {}, premultiplyAlpha, imageFormat);
 		}
 		
 		////////////////////////////////////////////////////////////////
@@ -72,19 +72,19 @@ namespace s3d
 
 		Grid<uint16> DecodeGray16(const FilePathView path, const ImageFormat imageFormat)
 		{
-			BinaryFileReader reader{ path };
+			std::unique_ptr<BinaryFileReader> reader = std::make_unique<BinaryFileReader>(path);
 
-			if (not reader)
+			if (not reader->isOpen())
 			{
 				return{};
 			}
 
-			return SIV3D_ENGINE(ImageDecoder)->decodeGray16(reader, path, imageFormat);
+			return SIV3D_ENGINE(ImageDecoder)->decodeGray16(std::move(reader), path, imageFormat);
 		}
 
-		Grid<uint16> DecodeGray16(IReader& reader, const ImageFormat imageFormat)
+		Grid<uint16> DecodeGray16(std::unique_ptr<IReader> reader, const ImageFormat imageFormat)
 		{
-			return SIV3D_ENGINE(ImageDecoder)->decodeGray16(reader, {}, imageFormat);
+			return SIV3D_ENGINE(ImageDecoder)->decodeGray16(std::move(reader), {}, imageFormat);
 		}
 		
 		////////////////////////////////////////////////////////////////

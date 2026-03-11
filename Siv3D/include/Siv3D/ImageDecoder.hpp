@@ -52,13 +52,23 @@ namespace s3d
 		Image Decode(FilePathView path, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
 
 		/// @brief 画像ファイルをデコードします。
-		/// @param reader 画像ファイルをさす IReader
+		/// @param reader Reader オブジェクト
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param imageFormat 画像フォーマット、指定しない場合はファイルの拡張子から判断
 		/// @return デコードされた画像、デコードに失敗した場合は空の画像
 		[[nodiscard]]
-		Image Decode(IReader& reader, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
-	
+		Image Decode(std::unique_ptr<IReader> reader, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
+
+		/// @brief 画像ファイルをデコードします。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		/// @param imageFormat 画像フォーマット、指定しない場合はファイルの拡張子から判断
+		/// @return デコードされた画像、デコードに失敗した場合は空の画像
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Image Decode(Reader&& reader, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	DecodeGray16
@@ -73,12 +83,21 @@ namespace s3d
 		Grid<uint16> DecodeGray16(FilePathView path, ImageFormat imageFormat = ImageFormat::Unspecified);
 
 		/// @brief 16-bit グレースケール画像をデコードします。
-		/// @param reader 画像ファイルをさす IReader
+		/// @param reader Reader オブジェクト
 		/// @param imageFormat 画像フォーマット、指定しない場合はファイルの拡張子から判断
 		/// @return デコードされた 16-bit グレースケール画像、デコードに失敗した場合は空の画像
 		[[nodiscard]]
-		Grid<uint16> DecodeGray16(IReader& reader, ImageFormat imageFormat = ImageFormat::Unspecified);
-	
+		Grid<uint16> DecodeGray16(std::unique_ptr<IReader> reader, ImageFormat imageFormat = ImageFormat::Unspecified);
+
+		/// @brief 16-bit グレースケール画像をデコードします。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
+		/// @param imageFormat 画像フォーマット、指定しない場合はファイルの拡張子から判断
+		/// @return デコードされた 16-bit グレースケール画像、デコードに失敗した場合は空の画像
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Grid<uint16> DecodeGray16(Reader&& reader, ImageFormat imageFormat = ImageFormat::Unspecified);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Add

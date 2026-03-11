@@ -87,7 +87,7 @@ namespace s3d
 		/// @param pathHint ファイルパス（オプション）
 		/// @return 画像情報。取得に失敗した場合は none
 		[[nodiscard]]
-		Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint = {}) const override;
+		Optional<ImageInfo> getImageInfo(const IReader& reader, FilePathView pathHint = {}) const override;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -103,12 +103,12 @@ namespace s3d
 		Image decode(FilePathView path, PremultiplyAlpha premultiplyAlpha) const override;
 
 		/// @brief PNG 形式の画像データをデコードして Image を作成します。
-		/// @param reader 画像データの IReader インタフェース
+		/// @param reader Reader オブジェクト
 		/// @param pathHint ファイルパス（オプション）
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @return 作成した Image
 		[[nodiscard]]
-		Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const override;
+		Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -123,10 +123,10 @@ namespace s3d
 		Grid<uint16> decodeGray16(FilePathView path) const override;
 
 		/// @brief 16-bit グレースケール PNG の画像データをデコードして Grid を作成します。
-		/// @param reader 画像データの IReader インタフェース
+		/// @param reader Reader オブジェクト
 		/// @param pathHint ファイルパス（オプション）
 		/// @return 作成した Grid
 		[[nodiscard]]
-		Grid<uint16> decodeGray16(IReader& reader, FilePathView pathHint = {}) const override;
+		Grid<uint16> decodeGray16(std::unique_ptr<IReader> reader, FilePathView pathHint = {}) const override;
 	};
 }

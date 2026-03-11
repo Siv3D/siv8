@@ -76,7 +76,7 @@ namespace s3d
 		/// @param reader Reader オブジェクト
 		/// @param desc テクスチャの設定
 		[[nodiscard]]
-		explicit Texture(IReader&& reader, TextureDesc desc = TextureDesc::Default2D);
+		explicit Texture(std::unique_ptr<IReader> reader, TextureDesc desc = TextureDesc::Default2D);
 
 		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んでテクスチャを作成します。
 		/// @param rgb RGB チャンネルの画像ファイルのパス

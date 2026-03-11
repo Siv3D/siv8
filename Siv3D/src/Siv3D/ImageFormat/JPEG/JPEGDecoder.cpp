@@ -83,7 +83,7 @@ namespace s3d
 		return IImageDecoder::getImageInfo(path);
 	}
 
-	Optional<ImageInfo> JPEGDecoder::getImageInfo(IReader& reader, const FilePathView) const
+	Optional<ImageInfo> JPEGDecoder::getImageInfo(const IReader& reader, const FilePathView) const
 	{
 		uint8 buf[24]{};
 
@@ -155,15 +155,15 @@ namespace s3d
 		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image JPEGDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha) const
+	Image JPEGDecoder::decode(std::unique_ptr<IReader> reader, const FilePathView, const PremultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("JPEGDecoder::decode()");
 
-		const int64 size = reader.size();
+		const int64 size = reader->size();
 
 		uint8* buffer = static_cast<uint8*>(std::malloc(static_cast<size_t>(size)));
 
-		reader.read(buffer, size);
+		reader->read(buffer, size);
 
 		int width, height;
 
@@ -171,7 +171,7 @@ namespace s3d
 
 		::tjDecompressHeader(tj, buffer, static_cast<unsigned long>(size), &width, &height);
 
-		Image image(width, height);
+		Image image{ width, height };
 
 		::tjDecompress(
 			tj,

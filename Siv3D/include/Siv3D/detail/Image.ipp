@@ -46,6 +46,10 @@ namespace s3d
 		: m_size{ ValidImageSizeOrEmpty(size) }
 		, m_pixels(m_size.area(), color) {}
 
+	template <ReaderObject Reader>
+	Image::Image(Reader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
+		: Image{ std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, format } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	operator =

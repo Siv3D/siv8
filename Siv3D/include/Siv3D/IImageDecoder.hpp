@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "String.hpp"
 # include "Array.hpp"
+# include "IReader.hpp"
 # include "ImageInfo.hpp"
 # include "Image.hpp"
 # include "Optional.hpp"
@@ -21,8 +22,6 @@
 
 namespace s3d
 {
-	class IReader;
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	IImageDecoder
@@ -102,7 +101,7 @@ namespace s3d
 		/// @param pathHint 画像ファイルのパス
 		/// @return 画像ファイルの情報、このデコーダがサポートしていないフォーマットの場合は none
 		[[nodiscard]]
-		virtual Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint) const = 0;
+		virtual Optional<ImageInfo> getImageInfo(const IReader& reader, FilePathView pathHint) const = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -118,12 +117,12 @@ namespace s3d
 		virtual Image decode(FilePathView path, PremultiplyAlpha premultiplyAlpha) const;
 
 		/// @brief 画像ファイルをデコードします。
-		/// @param reader IReader
+		/// @param reader Reader オブジェクト
 		/// @param pathHint 画像ファイルのパス（わかる場合）
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @return デコードされた画像
 		[[nodiscard]]
-		virtual Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const = 0;
+		virtual Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -140,12 +139,12 @@ namespace s3d
 		virtual Grid<uint16> decodeGray16(FilePathView path) const;
 
 		/// @brief 画像ファイルを 16-bit グレースケール画像としてデコードします。
-		/// @param reader IReader
+		/// @param reader Reader オブジェクト
 		/// @param pathHint 画像ファイルのパス（わかる場合）
 		/// @return デコードされた 16-bit グレースケール画像の二次元配列、デコードに失敗した場合は空の配列
 		/// @remark このデコーダが 16-bit グレースケール画像をサポートしていない場合は空の配列を返します。
 		/// @remark 画像が 16-bit グレースケール画像でない場合は空の配列を返します。
 		[[nodiscard]]
-		virtual Grid<uint16> decodeGray16(IReader&, FilePathView) const;
+		virtual Grid<uint16> decodeGray16(std::unique_ptr<IReader> reader, FilePathView) const;
 	};
 }

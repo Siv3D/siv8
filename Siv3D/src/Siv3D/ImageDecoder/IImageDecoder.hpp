@@ -34,8 +34,8 @@ namespace s3d
 
 		virtual Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) = 0;
 
-		virtual Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat) = 0;
+		virtual Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat) = 0;
 
-		virtual Grid<uint16> decodeGray16(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) = 0;
+		virtual Grid<uint16> decodeGray16(std::unique_ptr<IReader> reader, FilePathView pathHint, ImageFormat imageFormat) = 0;
 	};
 }

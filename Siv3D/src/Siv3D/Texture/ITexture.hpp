@@ -27,7 +27,7 @@ namespace s3d
 		virtual void init() = 0;
 
 		[[nodiscard]]
-		virtual Texture::IDType create(IReader&& reader, FilePathView pathHint, TextureDesc desc) = 0;
+		virtual Texture::IDType create(std::unique_ptr<IReader> reader, FilePathView pathHint, TextureDesc desc) = 0;
 
 		[[nodiscard]]
 		virtual Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) = 0;

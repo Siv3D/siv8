@@ -74,7 +74,7 @@ namespace s3d
 		return IImageDecoder::getImageInfo(path);
 	}
 
-	Optional<ImageInfo> TGADecoder::getImageInfo(IReader& reader, const FilePathView) const
+	Optional<ImageInfo> TGADecoder::getImageInfo(const IReader& reader, const FilePathView) const
 	{
 		TGAHeader header;
 
@@ -114,13 +114,13 @@ namespace s3d
 		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image TGADecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha) const
+	Image TGADecoder::decode(std::unique_ptr<IReader> reader, const FilePathView, const PremultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("TGADecoder::decode()");
 
 		TGAHeader header;
 			
-		if (not reader.read(header))
+		if (not reader->read(header))
 		{
 			return{};
 		}
@@ -133,7 +133,7 @@ namespace s3d
 
 		if (header.descLen)
 		{
-			reader.setPos(reader.getPos() + header.descLen);
+			reader->setPos(reader->getPos() + header.descLen);
 		}
 
 		const int32 width		= header.width;
@@ -152,7 +152,7 @@ namespace s3d
 			return{};
 		}
 
-		reader.read(readPixels.get(), data_bytes);
+		reader->read(readPixels.get(), data_bytes);
 
 		Image image{ Size{ width, height }, Color{ 255 } };
 

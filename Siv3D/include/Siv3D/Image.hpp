@@ -164,7 +164,11 @@ namespace s3d
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		[[nodiscard]]
-		explicit Image(IReader&& reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
+		explicit Image(std::unique_ptr<IReader> reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit Image(Reader&& reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
 		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んで画像データを作成します。
 		/// @param rgb RGB チャンネルの画像ファイルのパス

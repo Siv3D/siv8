@@ -78,7 +78,7 @@ namespace s3d
 		return IImageDecoder::getImageInfo(path);
 	}
 
-	Optional<ImageInfo> BMPDecoder::getImageInfo(IReader& reader, const FilePathView) const
+	Optional<ImageInfo> BMPDecoder::getImageInfo(const IReader& reader, const FilePathView) const
 	{
 		BMPHeader header;
 
@@ -112,13 +112,13 @@ namespace s3d
 		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image BMPDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha) const
+	Image BMPDecoder::decode(std::unique_ptr<IReader> reader, const FilePathView, const PremultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("BMPDecoder::decode()");
 
 		BMPHeader header;
 
-		if (not reader.read(header))
+		if (not reader->read(header))
 		{
 			LOG_FAIL("❌ BMPDecoder::decode(): Failed to read header");
 			return{};
@@ -153,12 +153,12 @@ namespace s3d
 
 		if (paletteSize)
 		{
-			reader.read(palette, paletteOwner.size());
+			reader->read(palette, paletteOwner.size());
 		}
 
 		if (header.bfOffBits > (sizeof(header) + paletteOwner.size()))
 		{
-			reader.setPos(header.bfOffBits);
+			reader->setPos(header.bfOffBits);
 		}
 
 		Image image(width, height);
@@ -180,11 +180,11 @@ namespace s3d
 				{
 					if (height - y < 4)
 					{
-						reader.read(buffer, rowSize * (height - y));
+						reader->read(buffer, rowSize * (height - y));
 					}
 					else if (y % 4 == 0)
 					{
-						reader.read(buffer, rowSize * 4);
+						reader->read(buffer, rowSize * 4);
 					}
 
 					uint8* tmp = &buffer[rowSize * (y % 4)];
@@ -223,11 +223,11 @@ namespace s3d
 				{
 					if (height - y < 4)
 					{
-						reader.read(buffer, rowSize * (height - y));
+						reader->read(buffer, rowSize * (height - y));
 					}
 					else if (y % 4 == 0)
 					{
-						reader.read(buffer, rowSize * 4);
+						reader->read(buffer, rowSize * 4);
 					}
 
 					uint8* tmp = &buffer[rowSize * (y % 4)];
@@ -273,11 +273,11 @@ namespace s3d
 				{
 					if (height - y < 4)
 					{
-						reader.read(buffer, rowSize * (height - y));
+						reader->read(buffer, rowSize * (height - y));
 					}
 					else if (y % 4 == 0)
 					{
-						reader.read(buffer, rowSize * 4);
+						reader->read(buffer, rowSize * 4);
 					}
 
 					uint8* tmp = &buffer[rowSize * (y % 4)];
@@ -309,11 +309,11 @@ namespace s3d
 				{
 					if (height - y < 4)
 					{
-						reader.read(buffer, rowSize * (height - y));
+						reader->read(buffer, rowSize * (height - y));
 					}
 					else if (y % 4 == 0)
 					{
-						reader.read(buffer, rowSize * 4);
+						reader->read(buffer, rowSize * 4);
 					}
 
 					const Color* const pDstEnd = pDstLine + width;
@@ -350,11 +350,11 @@ namespace s3d
 				{
 					if (height - y < 4)
 					{
-						reader.read(buffer, rowSize * (height - y));
+						reader->read(buffer, rowSize * (height - y));
 					}
 					else if (y % 4 == 0)
 					{
-						reader.read(buffer, rowSize * 4);
+						reader->read(buffer, rowSize * 4);
 					}
 
 					const Color* const pDstEnd = pDstLine + width;

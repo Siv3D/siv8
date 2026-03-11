@@ -147,9 +147,9 @@ namespace s3d
 		*this = ImageDecoder::Decode(path, premultiplyAlpha, format);
 	}
 
-	Image::Image(IReader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
+	Image::Image(std::unique_ptr<IReader> reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
 	{
-		*this = ImageDecoder::Decode(reader, premultiplyAlpha, format);
+		*this = ImageDecoder::Decode(std::move(reader), premultiplyAlpha, format);
 	}
 
 	Image::Image(const FilePathView rgb, const FilePathView alpha, const PremultiplyAlpha premultiplyAlpha)

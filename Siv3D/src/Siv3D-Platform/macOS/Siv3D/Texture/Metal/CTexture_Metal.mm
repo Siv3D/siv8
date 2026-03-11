@@ -79,19 +79,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Texture::IDType CTexture_Metal::create(IReader&& reader, FilePathView pathHint, const TextureDesc desc)
+	Texture::IDType CTexture_Metal::create(std::unique_ptr<IReader> reader, FilePathView pathHint, const TextureDesc desc)
 	{
-		if (not reader.isOpen())
+		if (not reader->isOpen())
 		{
 			return Texture::IDType::Null();
 		}
 
 		const BCnDecoder bcnDecoder{};
-		const bool isBCn = bcnDecoder.getImageInfo(reader).has_value();
+		const bool isBCn = bcnDecoder.getImageInfo(*reader).has_value();
 
 		if (isBCn)
 		{
-			return create(bcnDecoder.decodeNative(reader, desc.sRGB, pathHint));
+			return create(bcnDecoder.decodeNative(std::move(reader), desc.sRGB, pathHint));
 		}
 		else
 		{
