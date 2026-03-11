@@ -20,7 +20,7 @@ namespace s3d
 		: m_assetTypeName{ name } {}
 
 	template <class IDType, class Data>
-	void AssetHandleManager<IDType, Data>::setNullData(std::unique_ptr<Data>&& data)
+	void AssetHandleManager<IDType, Data>::setNullData(std::unique_ptr<Data> data)
 	{
 		m_data.emplace(IDType::Null(), std::move(data));
 
@@ -36,7 +36,7 @@ namespace s3d
 	}
 
 	template <class IDType, class Data>
-	IDType AssetHandleManager<IDType, Data>::add(std::unique_ptr<Data>&& data, [[maybe_unused]] const String& info)
+	IDType AssetHandleManager<IDType, Data>::add(std::unique_ptr<Data> data, [[maybe_unused]] const String& info)
 	{
 		std::lock_guard lock{ m_mutex };
 

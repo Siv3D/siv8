@@ -95,7 +95,7 @@ namespace s3d
 		/// @brief 画像デコーダを登録します。
 		/// @param decoder 画像デコーダ
 		/// @return 登録に成功した場合 true, それ以外の場合は false
-		bool Add(std::unique_ptr<IImageDecoder>&& decoder);
+		bool Add(std::unique_ptr<IImageDecoder> decoder);
 	
 		////////////////////////////////////////////////////////////////
 		//

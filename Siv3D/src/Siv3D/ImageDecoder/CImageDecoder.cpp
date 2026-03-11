@@ -138,7 +138,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CImageDecoder::add(std::unique_ptr<IImageDecoder>&& decoder)
+	bool CImageDecoder::add(std::unique_ptr<IImageDecoder> decoder)
 	{
 		const StringView name = decoder->name();
 

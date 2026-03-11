@@ -28,10 +28,10 @@ namespace s3d
 		createFromFile(path);
 	}
 
-	Blob::Blob(IReader& reader)
-		: m_data(reader.size())
+	Blob::Blob(std::unique_ptr<IReader> reader)
+		: m_data(reader->size())
 	{
-		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
+		const int64 readSize = reader->read(m_data.data(), m_data.size_bytes());
 
 		if (m_data.size() != static_cast<size_type>(readSize))
 		{

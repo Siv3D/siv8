@@ -123,7 +123,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CEffect::add(const Effect::IDType handleID, std::unique_ptr<IEffect>&& effect, const double initialElapsedTimeSec)
+	void CEffect::add(const Effect::IDType handleID, std::unique_ptr<IEffect> effect, const double initialElapsedTimeSec)
 	{
 		m_effects[handleID]->add(std::move(effect), initialElapsedTimeSec);
 	}

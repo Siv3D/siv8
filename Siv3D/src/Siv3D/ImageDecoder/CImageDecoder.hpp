@@ -24,7 +24,7 @@ namespace s3d
 
 		void init() override;
 
-		bool add(std::unique_ptr<IImageDecoder>&& decoder) override;
+		bool add(std::unique_ptr<IImageDecoder> decoder) override;
 
 		void remove(StringView decoderName) override;
 

@@ -93,7 +93,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Add(std::unique_ptr<IImageDecoder>&& decoder)
+		bool Add(std::unique_ptr<IImageDecoder> decoder)
 		{
 			return SIV3D_ENGINE(ImageDecoder)->add(std::move(decoder));
 		}

@@ -32,7 +32,7 @@ namespace s3d
 
 		virtual void release(Effect::IDType handleID) = 0;
 
-		virtual void add(Effect::IDType handleID, std::unique_ptr<IEffect>&& effect, double initialElapsedTimeSec) = 0;
+		virtual void add(Effect::IDType handleID, std::unique_ptr<IEffect> effect, double initialElapsedTimeSec) = 0;
 
 		virtual size_t size(Effect::IDType handleID) = 0;
 

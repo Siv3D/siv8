@@ -31,13 +31,13 @@ namespace s3d
 		[[nodiscard]]
 		explicit AssetHandleManager(const std::string& name);
 
-		void setNullData(std::unique_ptr<Data>&& data);
+		void setNullData(std::unique_ptr<Data> data);
 
 		[[nodiscard]]
 		Data* operator [](const IDType id);
 
 		[[nodiscard]]
-		IDType add(std::unique_ptr<Data>&& data, const String& info = U"");
+		IDType add(std::unique_ptr<Data> data, const String& info = U"");
 
 		void erase(const IDType id);
 

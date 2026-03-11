@@ -45,7 +45,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void EffectData::add(std::unique_ptr<IEffect>&& effect, const double initialElapsedTimeSec)
+	void EffectData::add(std::unique_ptr<IEffect> effect, const double initialElapsedTimeSec)
 	{
 		assert(effect != nullptr);
 

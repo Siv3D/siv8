@@ -25,6 +25,10 @@ namespace s3d
 	constexpr Blob::Blob(const Arg::reserve_<size_type> reserveSizeBytes)
 		: m_data(reserveSizeBytes) {}
 
+	template <ReaderObject Reader>
+	Blob::Blob(Reader&& reader)
+		: Blob{ std::make_unique<Reader>(std::forward<Reader>(reader)) } {}
+
 	inline Blob::Blob(const void* src, const size_type sizeBytes)
 		: m_data(static_cast<const Byte*>(src), (static_cast<const Byte*>(src) + sizeBytes)) {}
 

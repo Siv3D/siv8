@@ -26,7 +26,7 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual bool add(std::unique_ptr<IImageDecoder>&& decoder) = 0;
+		virtual bool add(std::unique_ptr<IImageDecoder> decoder) = 0;
 
 		virtual void remove(StringView decoderName) = 0;
 

@@ -71,10 +71,17 @@ namespace s3d
 		[[nodiscard]]
 		explicit Blob(FilePathView path);
 
-		/// @brief IReader からデータを読み込んでバイナリデータを作成します。
-		/// @param reader IReader
+		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
+		/// @param reader Reader オブジェクト
 		[[nodiscard]]
-		explicit Blob(IReader& reader);
+		explicit Blob(std::unique_ptr<IReader> reader);
+
+		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit Blob(Reader&& reader);
 
 		/// @brief メモリ上のデータをコピーして作成します。
 		/// @param src コピーするデータの先頭ポインタ

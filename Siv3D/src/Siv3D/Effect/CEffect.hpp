@@ -74,7 +74,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void add(Effect::IDType handleID, std::unique_ptr<IEffect>&& effect, double initialElapsedTimeSec) override;
+		void add(Effect::IDType handleID, std::unique_ptr<IEffect> effect, double initialElapsedTimeSec) override;
 
 		////////////////////////////////////////////////////////////////
 		//
