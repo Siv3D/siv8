@@ -200,7 +200,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<ImageInfo> CImageDecoder::getImageInfo(IReader& reader, const FilePathView pathHint, const ImageFormat imageFormat)
+	Optional<ImageInfo> CImageDecoder::getImageInfo(const IReader& reader, const FilePathView pathHint, const ImageFormat imageFormat)
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::getImageInfo()");
 

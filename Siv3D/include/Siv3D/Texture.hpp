@@ -78,6 +78,10 @@ namespace s3d
 		[[nodiscard]]
 		explicit Texture(std::unique_ptr<IReader> reader, TextureDesc desc = TextureDesc::Default2D);
 
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit Texture(Reader&& reader, TextureDesc desc = TextureDesc::Default2D);
+
 		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んでテクスチャを作成します。
 		/// @param rgb RGB チャンネルの画像ファイルのパス
 		/// @param alpha アルファチャンネルの画像ファイルのパス（R 成分がアルファチャンネルとして使用されます）

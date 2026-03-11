@@ -97,7 +97,7 @@ namespace s3d
 		virtual Optional<ImageInfo> getImageInfo(FilePathView path) const;
 
 		/// @brief 画像ファイルの情報を取得します。
-		/// @param reader 画像ファイルをさす IReader
+		/// @param reader Reader オブジェクト
 		/// @param pathHint 画像ファイルのパス
 		/// @return 画像ファイルの情報、このデコーダがサポートしていないフォーマットの場合は none
 		[[nodiscard]]

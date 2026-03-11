@@ -36,7 +36,7 @@ namespace s3d
 			return SIV3D_ENGINE(ImageDecoder)->getImageInfo(reader, path, imageFormat);
 		}
 
-		Optional<ImageInfo> GetImageInfo(IReader& reader, const ImageFormat imageFormat)
+		Optional<ImageInfo> GetImageInfo(const IReader& reader, const ImageFormat imageFormat)
 		{
 			return SIV3D_ENGINE(ImageDecoder)->getImageInfo(reader, {}, imageFormat);
 		}

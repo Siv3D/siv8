@@ -32,7 +32,7 @@ namespace s3d
 
 		virtual const Array<std::unique_ptr<IImageDecoder>>& enumDecoder() const noexcept = 0;
 
-		virtual Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) = 0;
+		virtual Optional<ImageInfo> getImageInfo(const IReader& reader, FilePathView pathHint, ImageFormat imageFormat) = 0;
 
 		virtual Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat) = 0;
 

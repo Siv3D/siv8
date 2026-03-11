@@ -83,7 +83,7 @@ namespace s3d
 		Optional<ImageInfo> getImageInfo(FilePathView path) const override;
 
 		/// @brief PNG 形式の画像データから画像情報を取得します。
-		/// @param reader 画像データの IReader インタフェース
+		/// @param reader Reader オブジェクト
 		/// @param pathHint ファイルパス（オプション）
 		/// @return 画像情報。取得に失敗した場合は none
 		[[nodiscard]]

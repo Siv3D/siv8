@@ -30,7 +30,7 @@ namespace s3d
 
 		const Array<std::unique_ptr<IImageDecoder>>& enumDecoder() const noexcept override;
 
-		Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) override;
+		Optional<ImageInfo> getImageInfo(const IReader& reader, FilePathView pathHint, ImageFormat imageFormat) override;
 
 		Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat) override;
 

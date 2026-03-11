@@ -31,11 +31,11 @@ namespace s3d
 		Optional<ImageInfo> GetImageInfo(FilePathView path, ImageFormat imageFormat = ImageFormat::Unspecified);
 
 		/// @brief 画像ファイルの情報を取得します。
-		/// @param reader 画像ファイルをさす IReader
+		/// @param reader Reader オブジェクト
 		/// @param imageFormat 画像フォーマット
 		/// @return 画像ファイルの情報、取得に失敗した場合は none
 		[[nodiscard]]
-		Optional<ImageInfo> GetImageInfo(IReader& reader, ImageFormat imageFormat = ImageFormat::Unspecified);
+		Optional<ImageInfo> GetImageInfo(const IReader& reader, ImageFormat imageFormat = ImageFormat::Unspecified);
 	
 		////////////////////////////////////////////////////////////////
 		//
