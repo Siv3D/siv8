@@ -1059,8 +1059,8 @@
 // URL | URL
 # include <Siv3D/URL.hpp>
 
-//# include <Siv3D/HTTPStatusCode.hpp>
-//
+# include <Siv3D/HTTPStatusCode.hpp>
+
 //# include <Siv3D/HTTPResponse.hpp>
 //
 //# include <Siv3D/HTTPAsyncStatus.hpp>
@@ -1629,7 +1629,7 @@
 ////////////////////////////////////////////////////////////////
 
 // スクリーンキャプチャ | Screen capture
-# include <Siv3D/ScreenCapture.hpp> // ToDo
+# include <Siv3D/ScreenCapture.hpp>
 
 
 # include <Siv3D/NativeShare.hpp>

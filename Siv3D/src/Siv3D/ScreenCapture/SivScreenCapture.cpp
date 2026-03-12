@@ -11,7 +11,7 @@
 
 # include <Siv3D/ScreenCapture.hpp>
 # include <Siv3D/Image.hpp>
-//# include <Siv3D/DynamicTexture.hpp>
+# include <Siv3D/DynamicTexture.hpp>
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -92,10 +92,10 @@ namespace s3d
 			return static_cast<bool>(image);
 		}
 
-		//bool GetFrame(DynamicTexture& texture)
-		//{
-		//	return texture.fill(SIV3D_ENGINE(ScreenCapture)->receiveScreenCapture());
-		//}
+		bool GetFrame(DynamicTexture& texture)
+		{
+			return texture.fill(SIV3D_ENGINE(ScreenCapture)->receiveScreenCapture());
+		}
 
 		////////////////////////////////////////////////////////////////
 		//

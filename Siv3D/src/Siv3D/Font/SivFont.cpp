@@ -131,7 +131,7 @@ namespace s3d
 
 		if (font.id() == id())
 		{
-			LOG_FAIL(U"Font::addFallback(): Cannot add self as fallback");
+			LOG_FAIL("Font::addFallback(): Cannot add self as fallback");
 			return false;
 		}
 

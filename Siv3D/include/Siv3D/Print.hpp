@@ -28,7 +28,7 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			void write(const char32_t* s) const;
+			void write(const char32* s) const;
 
 			void write(StringView s) const;
 

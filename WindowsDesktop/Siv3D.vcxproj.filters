@@ -1294,6 +1294,9 @@
     <Filter Include="src\Siv3D\PDFDocument">
       <UniqueIdentifier>{9f6deada-80d3-4e75-8432-926df3188777}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\HTTPStatusCode">
+      <UniqueIdentifier>{d3cecf6d-4308-4420-a529-0acbb335056a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5235,6 +5238,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Wave.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\HTTPStatusCode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\HTTPStatusCode.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8149,6 +8158,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFDocumentData.cpp">
       <Filter>src\Siv3D\PDFRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\HTTPStatusCode\SivHTTPStatusCode.cpp">
+      <Filter>src\Siv3D\HTTPStatusCode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
