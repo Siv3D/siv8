@@ -1039,6 +1039,8 @@
 		F9797E022F62766700518D26 /* fpdf_doc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797DFE2F62766700518D26 /* fpdf_doc.h */; };
 		F9797E052F62783C00518D26 /* SivDLL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E032F62783C00518D26 /* SivDLL.cpp */; };
 		F9797E122F62934500518D26 /* dll in CopyFiles */ = {isa = PBXBuildFile; fileRef = F9797E112F62934500518D26 /* dll */; };
+		F9797E152F629BD400518D26 /* PixelShader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E132F629BD400518D26 /* PixelShader.ipp */; };
+		F9797E162F629BD400518D26 /* VertexShader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E142F629BD400518D26 /* VertexShader.ipp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4027,6 +4029,8 @@
 		F9797DFF2F62766700518D26 /* fpdfview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fpdfview.h; sourceTree = "<group>"; };
 		F9797E032F62783C00518D26 /* SivDLL.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDLL.cpp; sourceTree = "<group>"; };
 		F9797E112F62934500518D26 /* dll */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dll; path = App/dll/dll; sourceTree = "<group>"; };
+		F9797E132F629BD400518D26 /* PixelShader.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.ipp; sourceTree = "<group>"; };
+		F9797E142F629BD400518D26 /* VertexShader.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.ipp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6639,6 +6643,7 @@
 				F9797DE72F62761400518D26 /* PDFPage.ipp */,
 				F9E7944E2C197417002615BA /* Periodic.ipp */,
 				F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */,
+				F9797E132F629BD400518D26 /* PixelShader.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
 				F9528B982BBC76EA00222F45 /* Point3D.ipp */,
 				F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */,
@@ -6716,6 +6721,7 @@
 				F986F93A2BCA7996006A4C0F /* Vector3D.ipp */,
 				F986F93C2BCA7996006A4C0F /* Vector4D.ipp */,
 				F980C4942C04B43300A86B68 /* Vertex2D.ipp */,
+				F9797E142F629BD400518D26 /* VertexShader.ipp */,
 				F9528A892BA0251E00222F45 /* Window.ipp */,
 				F9070BAF2B9F175000383E4D /* YesNo.ipp */,
 				F9712A4F2C269B9E0049CC26 /* Zip.ipp */,
@@ -13224,6 +13230,8 @@
 				F99881482F40B54A00C8991D /* PolynomialSolver.hpp in Headers */,
 				F9070C5F2B9F175000383E4D /* Indexed.ipp in Headers */,
 				F9070B072B9DEB5900383E4D /* simdutf.h in Headers */,
+				F9797E152F629BD400518D26 /* PixelShader.ipp in Headers */,
+				F9797E162F629BD400518D26 /* VertexShader.ipp in Headers */,
 				F90DA0612D1A92180003E1E8 /* ImageProcessing.ipp in Headers */,
 				F91171292DCBBF67000A22E6 /* GlyphInfo.hpp in Headers */,
 				F911712A2DCBBF67000A22E6 /* ResolvedGlyph.hpp in Headers */,
