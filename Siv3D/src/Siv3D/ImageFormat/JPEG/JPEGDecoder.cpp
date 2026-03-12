@@ -65,11 +65,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& JPEGDecoder::possibleExtensions() const
+	std::span<const StringView> JPEGDecoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"jpg", U"jpeg" };
-
-		return extensions;
+		static constexpr std::array<StringView, 2> Extensions = { U"jpg", U"jpeg" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////

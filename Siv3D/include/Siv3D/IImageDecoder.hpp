@@ -67,7 +67,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 与えらえたバイト列が、このデコーダがサポートする画像フォーマットのヘッダであるかを返します。
+		/// @brief 与えられたバイト列が、このデコーダがサポートする画像フォーマットのヘッダであるかを返します。
 		/// @param bytes バイト列
 		/// @return 与えられたバイト列が、このデコーダがサポートする画像フォーマットのヘッダである場合 true, それ以外の場合は false
 		[[nodiscard]]
@@ -82,7 +82,7 @@ namespace s3d
 		/// @brief このデコーダがサポートする画像ファイルの拡張子の一覧を返します。
 		/// @return このデコーダがサポートする画像ファイルの拡張子の一覧
 		[[nodiscard]]
-		virtual const Array<String>& possibleExtensions() const = 0;
+		virtual std::span<const StringView> possibleExtensions() const noexcept = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//

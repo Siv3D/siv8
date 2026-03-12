@@ -14,14 +14,22 @@
 
 namespace s3d
 {
+	struct FormatData;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	AudioFormat
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief 音声フォーマット
 	enum class AudioFormat : uint8
 	{
 		/// @brief 不明
 		Unknown,
 
-		/// @brief WAVE
-		WAVE,
+		/// @brief WAV
+		WAV,
 
 		/// @brief MP3
 		MP3,
@@ -50,4 +58,16 @@ namespace s3d
 		/// @brief 指定しない（データと拡張子から判断）
 		Unspecified = Unknown,
 	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 音声フォーマットを文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value 音声フォーマット
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
+	void Formatter(FormatData& formatData, AudioFormat value);
 }

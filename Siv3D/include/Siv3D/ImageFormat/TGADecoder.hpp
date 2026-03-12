@@ -68,7 +68,7 @@ namespace s3d
 		/// @brief TGA 形式のファイルに想定される拡張子一覧 `{ U"tga" }` を返します。
 		/// @return 配列 `{ U"tga" }`
 		[[nodiscard]]
-		const Array<String>& possibleExtensions() const override;
+		std::span<const StringView> possibleExtensions() const noexcept override;
 	
 		////////////////////////////////////////////////////////////////
 		//

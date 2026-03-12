@@ -68,7 +68,7 @@ namespace s3d
 		/// @brief PNG 形式のファイルに想定される拡張子一覧 `{ U"png" }` を返します。
 		/// @return 配列 `{ U"png" }`
 		[[nodiscard]]
-		const Array<String>& possibleExtensions() const override;
+		std::span<const StringView> possibleExtensions() const noexcept override;
 	
 		////////////////////////////////////////////////////////////////
 		//

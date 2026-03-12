@@ -87,11 +87,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& PNGDecoder::possibleExtensions() const
+	std::span<const StringView> PNGDecoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"png" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"png" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////

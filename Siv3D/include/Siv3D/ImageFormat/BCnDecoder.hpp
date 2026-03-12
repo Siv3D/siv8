@@ -69,7 +69,7 @@ namespace s3d
 		/// @brief BCn 形式のファイルに想定される拡張子一覧 `{ U"dds" }` を返します。
 		/// @return 配列 `{ U"dds" }`
 		[[nodiscard]]
-		const Array<String>& possibleExtensions() const override;
+		std::span<const StringView> possibleExtensions() const noexcept override;
 	
 		////////////////////////////////////////////////////////////////
 		//

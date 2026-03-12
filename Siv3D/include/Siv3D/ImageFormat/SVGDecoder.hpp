@@ -68,7 +68,7 @@ namespace s3d
 		/// @brief SVG 形式のファイルに想定される拡張子一覧 `{ U"svg" }` を返します。
 		/// @return 配列 `{ U"svg" }`
 		[[nodiscard]]
-		const Array<String>& possibleExtensions() const override;
+		std::span<const StringView> possibleExtensions() const noexcept override;
 	
 		////////////////////////////////////////////////////////////////
 		//

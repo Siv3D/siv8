@@ -81,7 +81,7 @@ namespace s3d
 
 				for (auto it = decoders.begin(); it != decoders.end(); ++it)
 				{
-					if ((*it)->possibleExtensions().contains(extension))
+					if (std::ranges::contains((*it)->possibleExtensions(), extension))
 					{
 						return it;
 					}

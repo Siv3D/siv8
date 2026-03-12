@@ -919,10 +919,13 @@ namespace s3d
 		if (std::addressof(other) == this)
 		{
 			Array tmp(other);
-			return append(tmp);
+			m_container.insert(m_container.end(), tmp.begin(), tmp.end());
+		}
+		else
+		{
+			m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
 		}
 
-		m_container.insert(m_container.end(), other.m_container.begin(), other.m_container.end());
 		return *this;
 	}
 
@@ -932,10 +935,13 @@ namespace s3d
 		if (std::addressof(other) == this)
 		{
 			Array tmp(other);
-			return append(tmp);
+			m_container.insert(m_container.end(), tmp.begin(), tmp.end());
+		}
+		else
+		{
+			m_container.insert(m_container.end(), std::make_move_iterator(other.m_container.begin()), std::make_move_iterator(other.m_container.end()));
 		}
 
-		m_container.insert(m_container.end(), std::make_move_iterator(other.m_container.begin()), std::make_move_iterator(other.m_container.end()));
 		return *this;
 	}
 

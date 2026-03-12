@@ -68,7 +68,7 @@ namespace s3d
 		/// @brief BMP 形式のファイルに想定される拡張子一覧 `{ U"bmp" }` を返します。
 		/// @return 配列 `{ U"bmp" }`
 		[[nodiscard]]
-		const Array<String>& possibleExtensions() const override;
+		std::span<const StringView> possibleExtensions() const noexcept override;
 	
 		////////////////////////////////////////////////////////////////
 		//

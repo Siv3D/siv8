@@ -1297,6 +1297,9 @@
     <Filter Include="src\Siv3D\HTTPStatusCode">
       <UniqueIdentifier>{d3cecf6d-4308-4420-a529-0acbb335056a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\AudioFormat">
+      <UniqueIdentifier>{6d4ef8b1-9c83-4cc9-a629-524d09fbd414}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -8176,6 +8179,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\HTTPStatusCode\SivHTTPStatusCode.cpp">
       <Filter>src\Siv3D\HTTPStatusCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\SivAudioFormat.cpp">
+      <Filter>src\Siv3D\AudioFormat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
