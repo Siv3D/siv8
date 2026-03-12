@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "AssetHandle.hpp"
 # include "StringView.hpp"
+# include "IReader.hpp"
 
 namespace s3d
 {
@@ -96,6 +97,13 @@ namespace s3d
 		[[nodiscard]]
 		static VertexShader HLSL(FilePathView path, StringView entryPoint);
 
+		[[nodiscard]]
+		static VertexShader HLSL(std::unique_ptr<IReader> reader, StringView entryPoint);
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		static VertexShader HLSL(Reader&& reader, StringView entryPoint);
+
 		/// @brief HLSL バイトコードから頂点シェーダを作成します。
 		/// @param bytecode HLSL バイトコード
 		/// @return 頂点シェーダ
@@ -128,6 +136,13 @@ namespace s3d
 		[[nodiscard]]
 		static VertexShader MSL(FilePathView path, StringView entryPoint);
 
+		[[nodiscard]]
+		static VertexShader MSL(std::unique_ptr<IReader> reader, StringView entryPoint);
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		static VertexShader MSL(Reader&& reader, StringView entryPoint);
+
 		/// @brief MSL ソースコードから頂点シェーダを作成します。
 		/// @param source MSL ソースコード
 		/// @param entryPoint エントリーポイント
@@ -141,9 +156,14 @@ namespace s3d
 		VertexShader(FilePathView path, StringView entryPoint);
 
 		[[nodiscard]]
+		VertexShader(std::unique_ptr<IReader> reader, StringView entryPoint);
+
+		[[nodiscard]]
 		explicit VertexShader(const Blob& bytecode);
 		
 		[[nodiscard]]
 		VertexShader(const std::string& source, StringView entryPoint);
 	};
 }
+
+# include "detail/VertexShader.ipp"

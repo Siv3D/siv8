@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "AssetHandle.hpp"
 # include "StringView.hpp"
+# include "IReader.hpp"
 
 namespace s3d
 {
@@ -87,6 +88,13 @@ namespace s3d
 		[[nodiscard]]
 		static PixelShader HLSL(FilePathView path, StringView entryPoint);
 
+		[[nodiscard]]
+		static PixelShader HLSL(std::unique_ptr<IReader> reader, StringView entryPoint);
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		static PixelShader HLSL(Reader&& reader, StringView entryPoint);
+
 		/// @brief HLSL バイトコードからピクセルシェーダを作成します。
 		/// @param bytecode HLSL バイトコード
 		/// @return ピクセルシェーダ
@@ -111,7 +119,14 @@ namespace s3d
 
 		[[nodiscard]]
 		static PixelShader MSL(FilePathView path, StringView entryPoint);
-		
+
+		[[nodiscard]]
+		static PixelShader MSL(std::unique_ptr<IReader> reader, StringView entryPoint);
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		static PixelShader MSL(Reader&& reader, StringView entryPoint);
+
 		/// @brief MSL ソースコードからピクセルシェーダを作成します。
 		/// @param source MSL ソースコード
 		/// @param entryPoint エントリーポイント
@@ -125,9 +140,14 @@ namespace s3d
 		PixelShader(FilePathView path, StringView entryPoint);
 
 		[[nodiscard]]
+		PixelShader(std::unique_ptr<IReader> reader, StringView entryPoint);
+
+		[[nodiscard]]
 		explicit PixelShader(const Blob& bytecode);
 
 		[[nodiscard]]
 		PixelShader(const std::string& source, StringView entryPoint);
 	};
 }
+
+# include "detail/PixelShader.ipp"
