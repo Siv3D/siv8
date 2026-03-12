@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Array.hpp"
+# include "Grid.hpp"
 # include "AlignedAllocator.hpp"
 # include "ColorHSV.hpp"
 # include "Emoji.hpp"
@@ -190,15 +191,15 @@ namespace s3d
 		//[[nodiscard]]
 		//explicit Image(const Icon& icon, int32 size);
 
-		///// @brief 二次元配列から画像データを作成します。
-		///// @param grid 二次元配列
-		//[[nodiscard]]
-		//explicit Image(const Grid<Color>& grid);
+		/// @brief 二次元配列から画像データを作成します。
+		/// @param grid 二次元配列
+		[[nodiscard]]
+		explicit Image(const Grid<Color>& grid);
 
-		///// @brief 二次元配列から画像データを作成します。
-		///// @param grid 二次元配列
-		//[[nodiscard]]
-		//explicit Image(const Grid<ColorF>& grid);
+		/// @brief 二次元配列から画像データを作成します。
+		/// @param grid 二次元配列
+		[[nodiscard]]
+		explicit Image(const Grid<ColorF>& grid);
 
 		//template <class Type, class Fty, std::enable_if_t<std::is_invocable_r_v<Color, Fty, Type>>* = nullptr>
 		//[[nodiscard]]

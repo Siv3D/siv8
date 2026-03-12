@@ -204,6 +204,32 @@ namespace s3d
 		*this = Emoji::CreateImage(emoji.codePoints, size);
 	}
 
+	Image::Image(const Grid<Color>& grid)
+		: Image{ grid.size()}
+	{
+		const Color* pSrc = grid.data();
+		const Color* const pSrcEnd = (pSrc + num_pixels());
+		Color* pDst = m_pixels.data();
+
+		while (pSrc != pSrcEnd)
+		{
+			*pDst++ = *pSrc++;
+		}
+	}
+
+	Image::Image(const Grid<ColorF>& grid)
+		: Image{ grid.size() }
+	{
+		const ColorF* pSrc = grid.data();
+		const ColorF* const pSrcEnd = (pSrc + num_pixels());
+		Color* pDst = m_pixels.data();
+
+		while (pSrc != pSrcEnd)
+		{
+			*pDst++ = *pSrc++;
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	fill
