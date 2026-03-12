@@ -241,12 +241,12 @@ namespace s3d
 			return{};
 		}
 
-		if (info.style & FontStyle::Bold)
+		if (info.options.bold)
 		{
 			::FT_GlyphSlot_Embolden(face->glyph);
 		}
 
-		if (info.style & FontStyle::Italic)
+		if (info.options.italic)
 		{
 			::FT_GlyphSlot_Oblique(face->glyph);
 		}

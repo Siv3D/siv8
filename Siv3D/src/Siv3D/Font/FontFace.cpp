@@ -72,7 +72,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool FontFace::init(const ::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, const StringView styleName, const FontMethod fontMethod, int32 baseSize, const FontStyle style)
+	bool FontFace::init(const ::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, const FontMethod fontMethod, int32 baseSize, const FontOptions& options)
 	{
 		assert(m_face == nullptr);
 
@@ -99,7 +99,7 @@ namespace s3d
 			{
 				bool found = false;
 
-				if (styleName)
+				if (options.styleName)
 				{
 					for (::FT_UInt styleIndex = 0; styleIndex < mmVar->num_namedstyles; ++styleIndex)
 					{
@@ -110,7 +110,7 @@ namespace s3d
 
 						const FontFaceProperties properties = GetFontFaceProperties(face, mmVar->namedstyle[styleIndex].coords);
 
-						if (properties.styleName == styleName)
+						if (properties.styleName == options.styleName)
 						{
 							m_info.properties = properties;
 							found = true;
@@ -217,7 +217,7 @@ namespace s3d
 
 		m_face					= face;
 		m_info.baseSize			= static_cast<int16>(baseSize);
-		m_info.style			= style;
+		m_info.options			= options;
 		m_info.ascender			= (m_face->size->metrics.ascender / 64.0f);
 		m_info.descender		= -(m_face->size->metrics.descender / 64.0f);
 
@@ -335,14 +335,13 @@ namespace s3d
 		}
 
 		{
-			if (not((m_info.renderingMethod == FontMethod::Bitmap)
-				&& (m_info.style & FontStyle::Bitmap)))
+			if (not((m_info.renderingMethod == FontMethod::Bitmap) && m_info.options.preferEmbeddedBitmap))
 			{
 				loadFlag |= FT_LOAD_NO_BITMAP;
 			}
 
 			// スタイル合成が必要
-			if (m_info.style & (FontStyle::Bold | FontStyle::Italic))
+			if (m_info.options.bold || m_info.options.italic)
 			{
 				// ロード失敗時は none
 				if (::FT_Load_Glyph(m_face, glyphIndex, loadFlag))
@@ -350,12 +349,12 @@ namespace s3d
 					return none;
 				}
 
-				if (m_info.style & FontStyle::Bold)
+				if (m_info.options.bold)
 				{
 					::FT_GlyphSlot_Embolden(m_face->glyph);
 				}
 
-				if (m_info.style & FontStyle::Italic)
+				if (m_info.options.italic)
 				{
 					::FT_GlyphSlot_Oblique(m_face->glyph);
 				}

@@ -18,6 +18,7 @@
 
 namespace s3d
 {
+	struct FontOptions;
 	struct FontFaceInfo;
 	struct ITextEffect;
 	class PixelShader;
@@ -67,10 +68,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual Font::IDType create(Typeface typeface, FontMethod fontMethod, int32 baseSize, FontStyle style) = 0;
+		virtual Font::IDType create(FontMethod fontMethod, int32 baseSize, Typeface typeface, const FontOptions& options) = 0;
 
 		[[nodiscard]]
-		virtual Font::IDType create(FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style) = 0;
+		virtual Font::IDType create(FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//

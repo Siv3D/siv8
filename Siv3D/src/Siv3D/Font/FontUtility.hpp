@@ -13,7 +13,7 @@
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/GlyphInfo.hpp>
 # include <Siv3D/FontMethod.hpp>
-# include <Siv3D/FontStyle.hpp>
+# include <Siv3D/FontOptions.hpp>
 # include <Siv3D/ReadingDirection.hpp>
 # include "FontCommon.hpp"
 
@@ -29,7 +29,7 @@ namespace s3d
 
 		EnableHinting hinting = EnableHinting::Yes;
 
-		FontStyle style = FontStyle::Normal;
+		FontOptions options = {};
 
 		int16 tabSize = 8;
 

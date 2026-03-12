@@ -191,7 +191,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Font::IDType CFont::create(const Typeface typeface, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)
+	Font::IDType CFont::create(const FontMethod fontMethod, const int32 baseSize, const Typeface typeface, const FontOptions& options)
 	{
 		const TypefaceInfo typefaceInfo = GetTypefaceInfo(typeface, fontMethod);
 
@@ -200,17 +200,17 @@ namespace s3d
 			return Font::IDType::Null();
 		}
 
-		return create(typefaceInfo.path, typefaceInfo.faceIndex, typefaceInfo.styleName, fontMethod, baseSize, style);
+		return create(fontMethod, baseSize, typefaceInfo.path, options);
 	}
 
-	Font::IDType CFont::create(const FilePathView path, const size_t faceIndex, const StringView styleName, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)
+	Font::IDType CFont::create(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontOptions& options)
 	{
 		if (not path)
 		{
 			return Font::IDType::Null();
 		}
 
-		std::unique_ptr<FontData> font = std::make_unique<FontData>(m_freeType, path, faceIndex, styleName, fontMethod, baseSize, style);
+		std::unique_ptr<FontData> font = std::make_unique<FontData>(m_freeType, fontMethod, baseSize, path, options);
 
 		if (not font->isInitialized())
 		{
