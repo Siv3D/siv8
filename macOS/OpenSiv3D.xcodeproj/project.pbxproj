@@ -1051,6 +1051,7 @@
 		F9797E2B2F631E6500518D26 /* AudioFormat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E252F631E6500518D26 /* AudioFormat.hpp */; };
 		F9797E2C2F631E6500518D26 /* IAudioDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E262F631E6500518D26 /* IAudioDecoder.hpp */; };
 		F9797E2F2F631E9600518D26 /* SivHTTPStatusCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E2D2F631E9600518D26 /* SivHTTPStatusCode.cpp */; };
+		F9797E322F63314300518D26 /* SivAudioFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E302F63314300518D26 /* SivAudioFormat.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4051,6 +4052,7 @@
 		F9797E262F631E6500518D26 /* IAudioDecoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAudioDecoder.hpp; sourceTree = "<group>"; };
 		F9797E272F631E6500518D26 /* IAudioEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAudioEncoder.hpp; sourceTree = "<group>"; };
 		F9797E2D2F631E9600518D26 /* SivHTTPStatusCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivHTTPStatusCode.cpp; sourceTree = "<group>"; };
+		F9797E302F63314300518D26 /* SivAudioFormat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAudioFormat.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -7678,6 +7680,7 @@
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9FD0D282D21693100A584CE /* AssetMonitor */,
+				F9797E312F63314300518D26 /* AudioFormat */,
 				F9528B222BAFB68400222F45 /* Base64Value */,
 				F99881932F48800700C8991D /* BatteryChargeStatus */,
 				F99881402F40B51200C8991D /* Bezier2 */,
@@ -9510,6 +9513,14 @@
 				F9797E2D2F631E9600518D26 /* SivHTTPStatusCode.cpp */,
 			);
 			path = HTTPStatusCode;
+			sourceTree = "<group>";
+		};
+		F9797E312F63314300518D26 /* AudioFormat */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E302F63314300518D26 /* SivAudioFormat.cpp */,
+			);
+			path = AudioFormat;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -15780,6 +15791,7 @@
 				F9070DBD2B9F175E00383E4D /* SivDateTime.cpp in Sources */,
 				F98604112BCFBB54006A4C0F /* SkSLFunctionDeclaration.cpp in Sources */,
 				F98603262BCFBB54006A4C0F /* SkPathOpsOp.cpp in Sources */,
+				F9797E322F63314300518D26 /* SivAudioFormat.cpp in Sources */,
 				F98601702BCFBB53006A4C0F /* SkBlitter.cpp in Sources */,
 				F986F9B92BCA9D0A006A4C0F /* stopelement.cpp in Sources */,
 				F9ED45C42CC2B06D006BA10F /* CScreenCapture.cpp in Sources */,
