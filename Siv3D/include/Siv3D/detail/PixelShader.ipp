@@ -20,7 +20,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <ReaderObject Reader>
-	static PixelShader PixelShader::HLSL(Reader&& reader, const StringView entryPoint)
+	PixelShader PixelShader::HLSL(Reader&& reader, const StringView entryPoint)
 	{
 		return PixelShader{ std::make_unique<Reader>(std::forward<Reader>(reader)), entryPoint };
 	}
@@ -32,7 +32,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <ReaderObject Reader>
-	static PixelShader PixelShader::MSL(Reader&& reader, const StringView entryPoint)
+	PixelShader PixelShader::MSL(Reader&& reader, const StringView entryPoint)
 	{
 		return PixelShader{ std::make_unique<Reader>(std::forward<Reader>(reader)), entryPoint };
 	}

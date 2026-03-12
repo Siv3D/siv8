@@ -20,7 +20,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <ReaderObject Reader>
-	static VertexShader VertexShader::HLSL(Reader&& reader, const StringView entryPoint)
+	VertexShader VertexShader::HLSL(Reader&& reader, const StringView entryPoint)
 	{
 		return VertexShader{ std::make_unique<Reader>(std::forward<Reader>(reader)), entryPoint };
 	}
@@ -32,7 +32,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <ReaderObject Reader>
-	static VertexShader VertexShader::MSL(Reader&& reader, const StringView entryPoint)
+	VertexShader VertexShader::MSL(Reader&& reader, const StringView entryPoint)
 	{
 		return VertexShader{ std::make_unique<Reader>(std::forward<Reader>(reader)), entryPoint };
 	}
