@@ -44,11 +44,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& TGAEncoder::possibleExtensions() const
+	std::span<const StringView> TGAEncoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"tga" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"tga" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////

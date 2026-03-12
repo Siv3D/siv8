@@ -45,7 +45,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SVGDecoder::isHeader(const uint8(&bytes)[16]) const noexcept
+	bool SVGDecoder::isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept
 	{
 		static constexpr uint8 signature1[] = { '<', 's', 'v', 'g', ' ', 'x', 'm', 'l', 'n', 's' };
 		static constexpr uint8 signature2[] = { '<', 's', 'v', 'g', ':', 's', 'v', 'g', ' ', 'x', 'm', 'l', 'n', 's' };

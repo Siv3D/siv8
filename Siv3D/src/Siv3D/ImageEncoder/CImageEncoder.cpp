@@ -133,11 +133,9 @@ namespace s3d
 			return{};
 		}
 
-		const String ext{ extension };
-
 		for (const auto& encoder : m_encoders)
 		{
-			if (encoder->possibleExtensions().contains(ext))
+			if (std::ranges::contains(encoder->possibleExtensions(), extension))
 			{
 				return String{ encoder->name() };
 			}

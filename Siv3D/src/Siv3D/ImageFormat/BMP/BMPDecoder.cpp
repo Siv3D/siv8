@@ -47,7 +47,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BMPDecoder::isHeader(const uint8(&bytes)[16]) const noexcept
+	bool BMPDecoder::isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept
 	{
 		static constexpr uint8 signature[] = { 0x42, 0x4d };
 

@@ -58,7 +58,7 @@ namespace s3d
 		/// @param bytes データの先頭 16 バイト
 		/// @return BCn 形式と推測される場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool isHeader(const uint8(&bytes)[16]) const noexcept override;
+		bool isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept override;
 	
 		////////////////////////////////////////////////////////////////
 		//

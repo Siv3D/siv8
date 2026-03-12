@@ -74,7 +74,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BCnDecoder::isHeader(const uint8(&bytes)[16]) const noexcept
+	bool BCnDecoder::isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept
 	{
 		static constexpr uint8 signature[] = { 'D', 'D', 'S', ' ' };
 

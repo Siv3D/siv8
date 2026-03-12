@@ -44,7 +44,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TGADecoder::isHeader(const uint8(&)[16]) const noexcept
+	bool TGADecoder::isHeader(const uint8(&)[RequiredHeaderBytes]) const noexcept
 	{
 		// [Siv3D ToDo]
 		return false;

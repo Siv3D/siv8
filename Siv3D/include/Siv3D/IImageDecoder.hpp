@@ -29,7 +29,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	struct IImageDecoder
-	{		
+	{
+		static constexpr size_t RequiredHeaderBytes = 16;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)
@@ -71,7 +73,7 @@ namespace s3d
 		/// @param bytes バイト列
 		/// @return 与えられたバイト列が、このデコーダがサポートする画像フォーマットのヘッダである場合 true, それ以外の場合は false
 		[[nodiscard]]
-		virtual bool isHeader(const uint8(&bytes)[16]) const noexcept = 0;
+		virtual bool isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//

@@ -48,7 +48,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool JPEGDecoder::isHeader(const uint8(&bytes)[16]) const noexcept
+	bool JPEGDecoder::isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept
 	{
 		static constexpr uint8 JFIF_SIGN0[] = { 0xFF, 0xD8, 0xFF, 0xE0 };
 		static constexpr uint8 JFIF_SIGN1[] = { 'J', 'F', 'I', 'F' };

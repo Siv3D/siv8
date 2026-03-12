@@ -356,11 +356,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& BCnEncoder::possibleExtensions() const
+	std::span<const StringView> BCnEncoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"dds" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"dds" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
