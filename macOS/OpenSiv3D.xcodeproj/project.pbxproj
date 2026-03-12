@@ -1040,6 +1040,7 @@
 		F9797E152F629BD400518D26 /* PixelShader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E132F629BD400518D26 /* PixelShader.ipp */; };
 		F9797E162F629BD400518D26 /* VertexShader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E142F629BD400518D26 /* VertexShader.ipp */; };
 		F9797E182F62AFEC00518D26 /* FontOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E172F62AFEC00518D26 /* FontOptions.hpp */; };
+		F9797E1A2F62B58700518D26 /* Font.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E192F62B58700518D26 /* Font.ipp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4029,6 +4030,7 @@
 		F9797E132F629BD400518D26 /* PixelShader.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PixelShader.ipp; sourceTree = "<group>"; };
 		F9797E142F629BD400518D26 /* VertexShader.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.ipp; sourceTree = "<group>"; };
 		F9797E172F62AFEC00518D26 /* FontOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontOptions.hpp; sourceTree = "<group>"; };
+		F9797E192F62B58700518D26 /* Font.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Font.ipp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6568,6 +6570,7 @@
 				F96F95E22C2B0F420033353E /* FloatQuad.ipp */,
 				F980C4922C04B43300A86B68 /* FloatRect.ipp */,
 				F9070B7B2B9F175000383E4D /* FmtHelper.ipp */,
+				F9797E192F62B58700518D26 /* Font.ipp */,
 				F9070B7C2B9F175000383E4D /* Format.ipp */,
 				F9070B7D2B9F175000383E4D /* FormatData.ipp */,
 				F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */,
@@ -13598,6 +13601,7 @@
 				F99881C02F56CA5400C8991D /* DriveType.hpp in Headers */,
 				F98601D72BCFBB53006A4C0F /* SkIPoint16.h in Headers */,
 				F98600AB2BCFBB53006A4C0F /* SkNullCanvas.h in Headers */,
+				F9797E1A2F62B58700518D26 /* Font.ipp in Headers */,
 				F986FA752BCFB53B006A4C0F /* ftbdf.h in Headers */,
 				F9070C7A2B9F175000383E4D /* Shuffle.ipp in Headers */,
 				F980C4632C01B22900A86B68 /* DepthStencilStateBuilder.ipp in Headers */,
