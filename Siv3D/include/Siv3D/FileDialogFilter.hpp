@@ -91,7 +91,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 		//
 		//	音声ファイル
-		//	AAC, AIFF, FLAC, MIDI, MP3, Ogg Vorbis, Opus, WAVE, WMA, AllAudioFiles
+		//	AAC, AIFF, FLAC, MIDI, MP3, Ogg Vorbis, Opus, WAV, WMA, AllAudioFiles
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -130,10 +130,10 @@ namespace s3d
 		[[nodiscard]]
 		static constexpr FileDialogFilter Opus();
 
-		/// @brief WAVE ファイル用の拡張子フィルタを返します。
-		/// @return `FileDialogFilter{ U"WAVE",{ U"wav" } }`
+		/// @brief WAV ファイル用の拡張子フィルタを返します。
+		/// @return `FileDialogFilter{ U"WAV",{ U"wav" } }`
 		[[nodiscard]]
-		static constexpr FileDialogFilter WAVE();
+		static constexpr FileDialogFilter WAV();
 
 		/// @brief WMA ファイル用の拡張子フィルタを返します。
 		/// @return `FileDialogFilter{ U"WMA",{ U"wma" } }`

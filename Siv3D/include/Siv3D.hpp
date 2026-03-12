@@ -1313,7 +1313,6 @@
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 # include <Siv3D/ImageFormat/BCnEncoder.hpp>
 
-
 // SVG 画像 | SVG image
 # include <Siv3D/SVG.hpp>
 # include <Siv3D/ImageFormat/SVGDecoder.hpp>
@@ -1332,8 +1331,6 @@
 //// アニメーション GIF の書き出し | Animated GIF writer
 //# include <Siv3D/AnimatedGIFWriter.hpp>
 //
-////# include <Siv3D/ImageFormat/DDSDecoder.hpp>
-////# include <Siv3D/ImageFormat/DDSEncoder.hpp>
 ////# include <Siv3D/ImageFormat/JPEG2000Decoder.hpp>
 ////# include <Siv3D/ImageFormat/JPEG2000Encoder.hpp>
 
@@ -1421,13 +1418,6 @@
 
 //// Leap デバイス | Leap Device
 //# include <Siv3D/Leap.hpp>
-
-
-
-
-
-
-
 
 
 # include <Siv3D/AssetID.hpp>
@@ -1707,8 +1697,13 @@
 # include <Siv3D/WaveSample.hpp>
 # include <Siv3D/StereoSampleInt16.hpp>
 # include <Siv3D/StereoSampleFloat32.hpp>
-# include <Siv3D/Wave.hpp>
+# include <Siv3D/Wave.hpp> // ToDo
 
+# include <Siv3D/AudioFormat.hpp> // ToDo
+# include <Siv3D/IAudioDecoder.hpp> // ToDo
+# include <Siv3D/IAudioEncoder.hpp> // ToDo
+# include <Siv3D/AudioDecoder.hpp> // ToDo
+# include <Siv3D/AudioEncoder.hpp> // ToDo
 
 
 

@@ -24,6 +24,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AssetID.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AssetIDWrapper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Base64Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BasicCamera2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BatteryChargeStatus.hpp" />
@@ -191,6 +194,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIColorStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIShapeStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HTTPStatusCode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IAudioDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IAudioEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Address.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp" />

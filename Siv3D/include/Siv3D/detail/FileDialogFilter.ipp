@@ -112,9 +112,9 @@ namespace s3d
 		return{ U"Opus", { U"opus" } };
 	}
 
-	constexpr FileDialogFilter FileDialogFilter::WAVE()
+	constexpr FileDialogFilter FileDialogFilter::WAV()
 	{
-		return{ U"WAVE", { U"wav" } };
+		return{ U"WAV", { U"wav" } };
 	}
 
 	constexpr FileDialogFilter FileDialogFilter::WMA()
