@@ -213,7 +213,7 @@ namespace s3d
 
 		Image& operator =(const Image&) = default;
 
-		Image& operator =(Image&& image) noexcept;
+		Image& operator =(Image&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

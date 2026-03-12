@@ -590,8 +590,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 二次元配列の要素の合計サイズ（バイト）を返します。
-		/// @return 二次元配列の要素の合計サイズ（バイト）
+		/// @brief 二次元配列の合計サイズ（バイト）を返します。
+		/// @return 二次元配列の合計サイズ（バイト）
 		[[nodiscard]]
 		constexpr size_t size_bytes() const noexcept
 			requires (Concept::TriviallyCopyable<value_type>);

@@ -56,13 +56,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Image& Image::operator =(Image&& image) noexcept
+	inline Image& Image::operator =(Image&& other) noexcept
 	{
-		if (&image != this)
+		if (&other != this)
 		{
-			m_pixels	= std::move(image.m_pixels);
-			m_size		= image.m_size;
-			image.m_size.setZero();
+			m_pixels	= std::move(other.m_pixels);
+			m_size		= other.m_size;
+			other.m_size.setZero();
 		}
 
 		return *this;
