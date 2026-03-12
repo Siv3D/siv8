@@ -1042,6 +1042,15 @@
 		F9797E182F62AFEC00518D26 /* FontOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E172F62AFEC00518D26 /* FontOptions.hpp */; };
 		F9797E1A2F62B58700518D26 /* Font.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E192F62B58700518D26 /* Font.ipp */; };
 		F9797E1C2F62C1B200518D26 /* PDFDocument.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E1B2F62C1B200518D26 /* PDFDocument.ipp */; };
+		F9797E1E2F631E2300518D26 /* Wave.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E1D2F631E2300518D26 /* Wave.ipp */; };
+		F9797E202F631E3400518D26 /* HTTPStatusCode.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E1F2F631E3400518D26 /* HTTPStatusCode.ipp */; };
+		F9797E222F631E4800518D26 /* HTTPStatusCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E212F631E4800518D26 /* HTTPStatusCode.hpp */; };
+		F9797E282F631E6500518D26 /* IAudioEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E272F631E6500518D26 /* IAudioEncoder.hpp */; };
+		F9797E292F631E6500518D26 /* AudioEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E242F631E6500518D26 /* AudioEncoder.hpp */; };
+		F9797E2A2F631E6500518D26 /* AudioDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E232F631E6500518D26 /* AudioDecoder.hpp */; };
+		F9797E2B2F631E6500518D26 /* AudioFormat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E252F631E6500518D26 /* AudioFormat.hpp */; };
+		F9797E2C2F631E6500518D26 /* IAudioDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E262F631E6500518D26 /* IAudioDecoder.hpp */; };
+		F9797E2F2F631E9600518D26 /* SivHTTPStatusCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E2D2F631E9600518D26 /* SivHTTPStatusCode.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4033,6 +4042,15 @@
 		F9797E172F62AFEC00518D26 /* FontOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontOptions.hpp; sourceTree = "<group>"; };
 		F9797E192F62B58700518D26 /* Font.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Font.ipp; sourceTree = "<group>"; };
 		F9797E1B2F62C1B200518D26 /* PDFDocument.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFDocument.ipp; sourceTree = "<group>"; };
+		F9797E1D2F631E2300518D26 /* Wave.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Wave.ipp; sourceTree = "<group>"; };
+		F9797E1F2F631E3400518D26 /* HTTPStatusCode.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HTTPStatusCode.ipp; sourceTree = "<group>"; };
+		F9797E212F631E4800518D26 /* HTTPStatusCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HTTPStatusCode.hpp; sourceTree = "<group>"; };
+		F9797E232F631E6500518D26 /* AudioDecoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioDecoder.hpp; sourceTree = "<group>"; };
+		F9797E242F631E6500518D26 /* AudioEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioEncoder.hpp; sourceTree = "<group>"; };
+		F9797E252F631E6500518D26 /* AudioFormat.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AudioFormat.hpp; sourceTree = "<group>"; };
+		F9797E262F631E6500518D26 /* IAudioDecoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAudioDecoder.hpp; sourceTree = "<group>"; };
+		F9797E272F631E6500518D26 /* IAudioEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAudioEncoder.hpp; sourceTree = "<group>"; };
+		F9797E2D2F631E9600518D26 /* SivHTTPStatusCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivHTTPStatusCode.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6584,6 +6602,7 @@
 				F9070B802B9F175000383E4D /* HardwareRNG.ipp */,
 				F9070B812B9F175000383E4D /* Hash.ipp */,
 				F9070B822B9F175000383E4D /* HSV.ipp */,
+				F9797E1F2F631E3400518D26 /* HTTPStatusCode.ipp */,
 				F9DD96362F0965A30026DFA5 /* IEffect.ipp */,
 				F9528B3B2BB69C2800222F45 /* Image.ipp */,
 				F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */,
@@ -6726,6 +6745,7 @@
 				F986F93C2BCA7996006A4C0F /* Vector4D.ipp */,
 				F980C4942C04B43300A86B68 /* Vertex2D.ipp */,
 				F9797E142F629BD400518D26 /* VertexShader.ipp */,
+				F9797E1D2F631E2300518D26 /* Wave.ipp */,
 				F9528A892BA0251E00222F45 /* Window.ipp */,
 				F9070BAF2B9F175000383E4D /* YesNo.ipp */,
 				F9712A4F2C269B9E0049CC26 /* Zip.ipp */,
@@ -6757,6 +6777,9 @@
 				F9807D832BF6676100D9B590 /* AssetID.hpp */,
 				F9807D822BF6676100D9B590 /* AssetIDWrapper.hpp */,
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
+				F9797E232F631E6500518D26 /* AudioDecoder.hpp */,
+				F9797E242F631E6500518D26 /* AudioEncoder.hpp */,
+				F9797E252F631E6500518D26 /* AudioFormat.hpp */,
 				F9528B1F2BAFB66200222F45 /* Base64Value.hpp */,
 				F9766B742C29C75F00DE4107 /* BasicCamera2D.hpp */,
 				F99881892F487FCE00C8991D /* BatteryChargeStatus.hpp */,
@@ -6882,6 +6905,9 @@
 				F9070BF12B9F175000383E4D /* HeterogeneousLookupHelper.hpp */,
 				F934BD9E2BFA59320003EAD5 /* HLSL.hpp */,
 				F9070BF22B9F175000383E4D /* HSV.hpp */,
+				F9797E212F631E4800518D26 /* HTTPStatusCode.hpp */,
+				F9797E262F631E6500518D26 /* IAudioDecoder.hpp */,
+				F9797E272F631E6500518D26 /* IAudioEncoder.hpp */,
 				F980C48C2C04B41300A86B68 /* IConstantBuffer.hpp */,
 				F9DD96342F0965890026DFA5 /* IEffect.hpp */,
 				F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */,
@@ -7736,6 +7762,7 @@
 				F9070D5A2B9F175E00383E4D /* Hash */,
 				F934BD9A2BFA59000003EAD5 /* HLSL */,
 				F9070D5C2B9F175E00383E4D /* HSV */,
+				F9797E2E2F631E9600518D26 /* HTTPStatusCode */,
 				F9528C702BC05B5A00222F45 /* IImageDecoder */,
 				F9528B402BB69C8200222F45 /* Image */,
 				F9528C812BC05B5B00222F45 /* ImageDecoder */,
@@ -9475,6 +9502,14 @@
 				F9797E032F62783C00518D26 /* SivDLL.cpp */,
 			);
 			path = DLL;
+			sourceTree = "<group>";
+		};
+		F9797E2E2F631E9600518D26 /* HTTPStatusCode */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E2D2F631E9600518D26 /* SivHTTPStatusCode.cpp */,
+			);
+			path = HTTPStatusCode;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -13110,6 +13145,7 @@
 				F998822F2F58093E00C8991D /* OscReceivedElements.h in Headers */,
 				F99882302F58093E00C8991D /* OscTypes.h in Headers */,
 				F98605FA2BE61586006A4C0F /* RandomVec4.ipp in Headers */,
+				F9797E222F631E4800518D26 /* HTTPStatusCode.hpp in Headers */,
 				F902E0DF2E9E707F002C6B92 /* TextFileReader.hpp in Headers */,
 				F902E0E02E9E707F002C6B92 /* BinaryFileWriter.hpp in Headers */,
 				F902E0E12E9E707F002C6B92 /* BinaryFileReader.hpp in Headers */,
@@ -13161,6 +13197,7 @@
 				F986F99B2BCA9D0A006A4C0F /* plutovg.h in Headers */,
 				F98605E82BE50394006A4C0F /* FallbackNameList.hpp in Headers */,
 				F9070CC22B9F175000383E4D /* FormatLiteral.hpp in Headers */,
+				F9797E1E2F631E2300518D26 /* Wave.ipp in Headers */,
 				F9D41B5F2C4FCE4600290998 /* LineCap.hpp in Headers */,
 				F98600042BCFBB53006A4C0F /* SkCapabilities.h in Headers */,
 				F9070AF62B9DEB5900383E4D /* cached-powers.h in Headers */,
@@ -13731,6 +13768,11 @@
 				F90706B42B9DAEC900383E4D /* core.h in Headers */,
 				F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */,
 				F986FA842BCFB53B006A4C0F /* ftimage.h in Headers */,
+				F9797E282F631E6500518D26 /* IAudioEncoder.hpp in Headers */,
+				F9797E292F631E6500518D26 /* AudioEncoder.hpp in Headers */,
+				F9797E2A2F631E6500518D26 /* AudioDecoder.hpp in Headers */,
+				F9797E2B2F631E6500518D26 /* AudioFormat.hpp in Headers */,
+				F9797E2C2F631E6500518D26 /* IAudioDecoder.hpp in Headers */,
 				F9070CCF2B9F175100383E4D /* IntToString.hpp in Headers */,
 				F986048F2BCFBB54006A4C0F /* SkSLStringStream.h in Headers */,
 				F98600802BCFBB53006A4C0F /* SkPoint_impl.h in Headers */,
@@ -13868,6 +13910,7 @@
 				F933AD892E54A375005624D7 /* pixel-conversion.hpp in Headers */,
 				F933AD8A2E54A375005624D7 /* export-svg.h in Headers */,
 				F933AD8B2E54A375005624D7 /* edge-coloring.h in Headers */,
+				F9797E202F631E3400518D26 /* HTTPStatusCode.ipp in Headers */,
 				F933AD8C2E54A375005624D7 /* base.h in Headers */,
 				F933AD8D2E54A375005624D7 /* save-fl32.h in Headers */,
 				F933AD8E2E54A375005624D7 /* Bitmap.hpp in Headers */,
@@ -15667,6 +15710,7 @@
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
 				F9528C242BBF026F00222F45 /* zstd_compress_sequences.c in Sources */,
 				F97203072BEDF2FF000E21DD /* CScene.cpp in Sources */,
+				F9797E2F2F631E9600518D26 /* SivHTTPStatusCode.cpp in Sources */,
 				F98605832BDA7E32006A4C0F /* CCursor.mm in Sources */,
 				F98603F62BCFBB54006A4C0F /* SkSLConstructorMatrixResize.cpp in Sources */,
 				F9528C8B2BC05B5B00222F45 /* CImageDecoder.cpp in Sources */,
