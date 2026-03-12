@@ -1041,6 +1041,7 @@
 		F9797E162F629BD400518D26 /* VertexShader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E142F629BD400518D26 /* VertexShader.ipp */; };
 		F9797E182F62AFEC00518D26 /* FontOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E172F62AFEC00518D26 /* FontOptions.hpp */; };
 		F9797E1A2F62B58700518D26 /* Font.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E192F62B58700518D26 /* Font.ipp */; };
+		F9797E1C2F62C1B200518D26 /* PDFDocument.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E1B2F62C1B200518D26 /* PDFDocument.ipp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4031,6 +4032,7 @@
 		F9797E142F629BD400518D26 /* VertexShader.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexShader.ipp; sourceTree = "<group>"; };
 		F9797E172F62AFEC00518D26 /* FontOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontOptions.hpp; sourceTree = "<group>"; };
 		F9797E192F62B58700518D26 /* Font.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Font.ipp; sourceTree = "<group>"; };
+		F9797E1B2F62C1B200518D26 /* PDFDocument.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFDocument.ipp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6640,6 +6642,7 @@
 				F9070B942B9F175000383E4D /* Parse.ipp */,
 				F9070B952B9F175000383E4D /* ParseInt.ipp */,
 				F9070B962B9F175000383E4D /* PCG64.ipp */,
+				F9797E1B2F62C1B200518D26 /* PDFDocument.ipp */,
 				F9797DE62F62761400518D26 /* PDFLinkInfo.ipp */,
 				F9797DE72F62761400518D26 /* PDFPage.ipp */,
 				F9E7944E2C197417002615BA /* Periodic.ipp */,
@@ -13823,6 +13826,7 @@
 				F9528C132BBF026F00222F45 /* portability_macros.h in Headers */,
 				F9070C9D2B9F175000383E4D /* BoolToString.hpp in Headers */,
 				F986F8B62BC843CF006A4C0F /* MatchResults.hpp in Headers */,
+				F9797E1C2F62C1B200518D26 /* PDFDocument.ipp in Headers */,
 				F986F82C2BC7B00A006A4C0F /* INI.hpp in Headers */,
 				F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */,
 				F998816C2F42F50100C8991D /* JitterEndpointSettings.ipp in Headers */,
