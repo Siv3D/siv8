@@ -1038,7 +1038,7 @@
 		F9797E012F62766700518D26 /* fpdfview.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797DFF2F62766700518D26 /* fpdfview.h */; };
 		F9797E022F62766700518D26 /* fpdf_doc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797DFE2F62766700518D26 /* fpdf_doc.h */; };
 		F9797E052F62783C00518D26 /* SivDLL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E032F62783C00518D26 /* SivDLL.cpp */; };
-		F9797E082F627F0700518D26 /* dll in CopyFiles */ = {isa = PBXBuildFile; fileRef = F9797E072F627F0700518D26 /* dll */; };
+		F9797E122F62934500518D26 /* dll in CopyFiles */ = {isa = PBXBuildFile; fileRef = F9797E112F62934500518D26 /* dll */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -2956,7 +2956,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F9797E082F627F0700518D26 /* dll in CopyFiles */,
+				F9797E122F62934500518D26 /* dll in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4026,7 +4026,7 @@
 		F9797DFE2F62766700518D26 /* fpdf_doc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fpdf_doc.h; sourceTree = "<group>"; };
 		F9797DFF2F62766700518D26 /* fpdfview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fpdfview.h; sourceTree = "<group>"; };
 		F9797E032F62783C00518D26 /* SivDLL.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDLL.cpp; sourceTree = "<group>"; };
-		F9797E072F627F0700518D26 /* dll */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dll; path = App/dll; sourceTree = "<group>"; };
+		F9797E112F62934500518D26 /* dll */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dll; path = App/dll/dll; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6016,7 +6016,6 @@
 		2CA7F7321CA7F34200495647 = {
 			isa = PBXGroup;
 			children = (
-				F9797E072F627F0700518D26 /* dll */,
 				2C8588EB1F929277000DA815 /* icon.icns */,
 				2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */,
 				2CA7F7641CA7F44F00495647 /* Siv3D */,
@@ -6038,6 +6037,7 @@
 		2CA7F74D1CA7F43D00495647 /* macOS */ = {
 			isa = PBXGroup;
 			children = (
+				F9797E112F62934500518D26 /* dll */,
 				F9807D782BF1092600D9B590 /* shader */,
 				F986F83F2BC7DF26006A4C0F /* engine */,
 				F90702CF2B9DAEB900383E4D /* Test */,

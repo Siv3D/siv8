@@ -57,7 +57,8 @@ namespace s3d
 	VertexShader::VertexShader() {}
 
 	VertexShader::VertexShader(const FilePathView path, const StringView entryPoint)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromReader(std::make_unique<BinaryFileReader>(path), path, entryPoint))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromReader(
+			 (path ? std::make_unique<BinaryFileReader>(path) : nullptr), path, entryPoint))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}

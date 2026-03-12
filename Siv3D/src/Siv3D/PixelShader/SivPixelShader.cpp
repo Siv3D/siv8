@@ -57,7 +57,8 @@ namespace s3d
 	PixelShader::PixelShader() {}
 
 	PixelShader::PixelShader(const FilePathView path, const StringView entryPoint)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromReader(std::make_unique<BinaryFileReader>(path), path, entryPoint))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromReader(
+			(path ? std::make_unique<BinaryFileReader>(path) : nullptr), path, entryPoint))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}

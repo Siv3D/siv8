@@ -98,20 +98,21 @@ namespace s3d
 		}
 	}
 
-	VertexShader::IDType CShader_Metal::createVSFromFile(const FilePathView path, StringView entryPoint)
+	VertexShader::IDType CShader_Metal::createVSFromReader(std::unique_ptr<IReader> reader, [[maybe_unused]] const FilePathView pathHint, StringView entryPoint)
 	{
-		if (path)
+		// Reader オブジェクトからシェーダを作成する
+		if (reader)
 		{
-			TextFileReader reader{ path };
+			TextFileReader textFileReader{ std::move(reader) };
 			
-			if (not reader)
+			if (not textFileReader)
 			{
 				return VertexShader::IDType::Null();
 			}
 			
 			std::string source;
 			
-			if (not reader.readAll(source))
+			if (not textFileReader.readAll(source))
 			{
 				return VertexShader::IDType::Null();
 			}
@@ -119,6 +120,7 @@ namespace s3d
 			return createVSFromSource(source, entryPoint);
 		}
 
+		// デフォルトライブラリからシェーダを作成する
 		auto vertexShader = std::make_unique<MetalVertexShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
 
 		if (not vertexShader->isInitialized())
@@ -146,20 +148,21 @@ namespace s3d
 		return(VertexShader::IDType::Null());
 	}
 
-	PixelShader::IDType CShader_Metal::createPSFromFile(const FilePathView path, StringView entryPoint)
+	PixelShader::IDType CShader_Metal::createPSFromReader(std::unique_ptr<IReader> reader, [[maybe_unused]] const FilePathView pathHint, StringView entryPoint)
 	{
-		if (path)
+		// Reader オブジェクトからシェーダを作成する
+		if (reader)
 		{
-			TextFileReader reader{ path };
+			TextFileReader textFileReader{ std::move(reader) };
 			
-			if (not reader)
+			if (not textFileReader)
 			{
 				return PixelShader::IDType::Null();
 			}
 			
 			std::string source;
 			
-			if (not reader.readAll(source))
+			if (not textFileReader.readAll(source))
 			{
 				return PixelShader::IDType::Null();
 			}
