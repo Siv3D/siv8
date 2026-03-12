@@ -82,6 +82,34 @@ namespace s3d
 		return m_documents.add(std::move(document), info);
 	}
 
+	PDFDocument::IDType CPDFRenderer::createFromReader(std::unique_ptr<IReader> reader, const StringView password)
+	{
+		if (not reader)
+		{
+			return PDFDocument::IDType::Null();
+		}
+
+		if (m_state == State::Uninitialized)
+		{
+			setup();
+		}
+
+		if (m_state != State::Ready)
+		{
+			return PDFDocument::IDType::Null();
+		}
+
+		std::unique_ptr<PDFDocumentData> document = std::make_unique<PDFDocumentData>(std::move(reader), password, &m_api);
+
+		if (not document->isInitialized())
+		{
+			return PDFDocument::IDType::Null();
+		}
+
+		const String info = document->getInfo();
+		return m_documents.add(std::move(document), info);
+	}
+
 	void CPDFRenderer::release(const PDFDocument::IDType handleID)
 	{
 		if (m_state == State::Uninitialized)

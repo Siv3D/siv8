@@ -34,6 +34,8 @@ namespace s3d
 
 		PDFDocumentData(FilePathView path, StringView password, const PDFiumAPI* api);
 
+		PDFDocumentData(std::unique_ptr<IReader> reader, StringView password, const PDFiumAPI* api);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)
@@ -113,6 +115,9 @@ namespace s3d
 
 		struct Document
 		{
+			// The memory buffer must remain valid when the document is open
+			Blob blob;
+
 			FPDF_DOCUMENT data = nullptr;
 
 			String version = {};

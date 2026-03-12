@@ -31,6 +31,8 @@ namespace s3d
 
 		virtual PDFDocument::IDType createFromFile(FilePathView path, StringView password) = 0;
 
+		virtual PDFDocument::IDType createFromReader(std::unique_ptr<IReader> reader, StringView password) = 0;
+
 		virtual void release(PDFDocument::IDType handleID) = 0;
 
 		virtual const String& getVersion(PDFDocument::IDType handleID) = 0;

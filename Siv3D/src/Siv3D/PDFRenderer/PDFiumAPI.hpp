@@ -21,6 +21,7 @@ namespace s3d
 		decltype(::FPDF_InitLibrary)* FPDF_InitLibrary = nullptr;
 		decltype(::FPDF_DestroyLibrary)* FPDF_DestroyLibrary = nullptr;
 		decltype(::FPDF_LoadDocument)* FPDF_LoadDocument = nullptr;
+		decltype(::FPDF_LoadMemDocument)* FPDF_LoadMemDocument = nullptr;
 		decltype(::FPDF_GetLastError)* FPDF_GetLastError = nullptr;
 		decltype(::FPDF_GetFileVersion)* FPDF_GetFileVersion = nullptr;
 		decltype(::FPDF_GetPageCount)* FPDF_GetPageCount = nullptr;

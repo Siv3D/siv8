@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "AssetHandle.hpp"
 # include "StringView.hpp"
+# include "IReader.hpp"
 # include "PDFRenderOptions.hpp"
 # include "PDFPage.hpp"
 
@@ -39,7 +40,14 @@ namespace s3d
 		PDFDocument();
 
 		[[nodiscard]]
-		PDFDocument(FilePathView path, StringView password = {});
+		explicit PDFDocument(FilePathView path, StringView password = {});
+
+		[[nodiscard]]
+		explicit PDFDocument(std::unique_ptr<IReader> reader, StringView password = {});
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit PDFDocument(Reader&& reader, StringView password = {});
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -107,3 +115,5 @@ namespace s3d
 		}
 	};
 }
+
+# include "detail/PDFDocument.ipp"

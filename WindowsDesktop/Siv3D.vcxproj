@@ -109,6 +109,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OffsetCircular.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OSCArgument.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PDFDocument.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PDFLinkInfo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PDFPage.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />

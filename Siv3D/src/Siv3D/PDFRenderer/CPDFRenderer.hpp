@@ -28,6 +28,8 @@ namespace s3d
 
 		PDFDocument::IDType createFromFile(FilePathView path, StringView password) override;
 
+		PDFDocument::IDType createFromReader(std::unique_ptr<IReader> reader, StringView password) override;
+
 		void release(PDFDocument::IDType handleID) override;
 
 		const String& getVersion(PDFDocument::IDType handleID) override;

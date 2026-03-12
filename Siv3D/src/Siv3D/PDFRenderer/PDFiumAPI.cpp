@@ -21,6 +21,7 @@ namespace s3d
 			FPDF_InitLibrary			= DLL::GetFunction(lib, "FPDF_InitLibrary");
 			FPDF_DestroyLibrary			= DLL::GetFunction(lib, "FPDF_DestroyLibrary");
 			FPDF_LoadDocument			= DLL::GetFunction(lib, "FPDF_LoadDocument");
+			FPDF_LoadMemDocument		= DLL::GetFunction(lib, "FPDF_LoadMemDocument");
 			FPDF_GetLastError			= DLL::GetFunction(lib, "FPDF_GetLastError");
 			FPDF_GetFileVersion			= DLL::GetFunction(lib, "FPDF_GetFileVersion");
 			FPDF_GetPageCount			= DLL::GetFunction(lib, "FPDF_GetPageCount");

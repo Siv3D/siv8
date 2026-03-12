@@ -61,6 +61,12 @@ namespace s3d
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
+	PDFDocument::PDFDocument(std::unique_ptr<IReader> reader, const StringView password)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(PDFRenderer)->createFromReader(std::move(reader), password)))}
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(destructor)

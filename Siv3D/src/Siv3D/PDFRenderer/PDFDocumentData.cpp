@@ -22,6 +22,64 @@ namespace s3d
 {
 	namespace
 	{
+		static void LogPDFiumError(const PDFiumAPI* api, const bool hasPasword)
+		{
+			const int32 errorCode = api->FPDF_GetLastError();
+
+			switch (errorCode)
+			{
+				default:
+				case 1: // unknown error
+				{
+					LOG_FAIL(fmt::format("Unknown error while opening PDF document: (error code: {})", errorCode));
+					break;
+				}
+				case 2: // file not found or could not be opened
+				{
+					LOG_FAIL("File not found or could not be opened");
+					break;
+				}
+				case 3: // file not in PDF format or corrupted
+				{
+					LOG_FAIL("File not in PDF format or corrupted");
+					break;
+				}
+				case 4: // password required or incorrect password
+				{
+					if (hasPasword)
+					{
+						LOG_FAIL("Incorrect password for PDF document");
+					}
+					else
+					{
+						LOG_FAIL("Password required to open PDF document");
+					}
+
+					break;
+				}
+				case 5: // unsupported security scheme
+				{
+					LOG_FAIL("Unsupported security scheme for PDF document");
+					break;
+				}
+				case 6: // page not found or content error
+				{
+					LOG_FAIL("Page not found or content error in PDF document");
+					break;
+				}
+			}
+		}
+
+		[[nodiscard]]
+		static String GetVersion(const PDFiumAPI* api, const FPDF_DOCUMENT document)
+		{
+			int32 version = 0;
+			api->FPDF_GetFileVersion(document, &version);
+			const int32 major = (version / 10);
+			const int32 minor = (version % 10);
+			return U"{}.{}"_fmt(major, minor);
+		}
+
 		[[nodiscard]]
 		static bool RenderImage(const PDFiumAPI* api, const FPDF_PAGE page, const PDFRenderOptions& options, PDFPage& result)
 		{
@@ -197,7 +255,6 @@ namespace s3d
 
 		const std::string pathUTF8 = Unicode::ToUTF8(path);
 		FPDF_DOCUMENT document = nullptr;
-
 		if (password)
 		{
 			document = m_api->FPDF_LoadDocument(pathUTF8.c_str(), Unicode::ToUTF8(password).c_str());
@@ -209,69 +266,48 @@ namespace s3d
 
 		if (not document)
 		{
-			const auto error = m_api->FPDF_GetLastError();
-
-			switch (error)
-			{
-			default:
-			case 1: // unknown error
-				{
-					LOG_FAIL(U"Unknown error while opening PDF document: `{}` (error code: {})"_fmt(path, error));
-					break;
-				}
-			case 2: // file not found or could not be opened
-				{
-					LOG_FAIL(U"File not found or could not be opened: `{}`"_fmt(path));
-					break;
-				}
-			case 3: // file not in PDF format or corrupted
-				{
-					LOG_FAIL(U"File not in PDF format or corrupted: `{}`"_fmt(path));
-					break;
-				}
-			case 4: // password required or incorrect password
-				{
-					if (password)
-					{
-						LOG_FAIL(U"Incorrect password for PDF document: `{}`"_fmt(path));
-					}
-					else
-					{
-						LOG_FAIL(U"Password required to open PDF document: `{}`"_fmt(path));
-					}
-
-					break;
-				}
-			case 5: // unsupported security scheme
-				{
-					LOG_FAIL(U"Unsupported security scheme for PDF document: `{}`"_fmt(path));
-					break;
-				}
-			case 6: // page not found or content error
-				{
-					LOG_FAIL(U"Page not found or content error in PDF document: `{}`"_fmt(path));
-					break;
-				}
-			}
-
+			LogPDFiumError(m_api, static_cast<bool>(password));
 			return;
 		}
 
 		m_document.data = document;
+		m_document.version = GetVersion(m_api, document);
+		m_document.pageCount = m_api->FPDF_GetPageCount(document);
 
-		// バージョン
+		m_initialized = true;
+	}
+
+	PDFDocumentData::PDFDocumentData(std::unique_ptr<IReader> reader, const StringView password, const PDFiumAPI* api)
+	{
+		m_api = api;
+
+		FPDF_DOCUMENT document = nullptr;
 		{
-			int32 version = 0;
-			m_api->FPDF_GetFileVersion(document, &version);
-			const int32 major = (version / 10);
-			const int32 minor = (version % 10);
-			m_document.version = U"{}.{}"_fmt(major, minor);
+			Blob blob{ std::move(reader) };
+			const void* data = blob.data();
+			const int32 size_bytes = static_cast<int32>(blob.size_bytes());
+
+			if (password)
+			{
+				document = m_api->FPDF_LoadMemDocument(data, size_bytes, Unicode::ToUTF8(password).c_str());
+			}
+			else
+			{
+				document = m_api->FPDF_LoadMemDocument(data, size_bytes, nullptr);
+			}
+
+			if (not document)
+			{
+				LogPDFiumError(m_api, static_cast<bool>(password));
+				return;
+			}
+
+			m_document.blob = std::move(blob);
 		}
 
-		// ページ数
-		{
-			m_document.pageCount = m_api->FPDF_GetPageCount(document);
-		}
+		m_document.data = document;
+		m_document.version = GetVersion(m_api, document);
+		m_document.pageCount = m_api->FPDF_GetPageCount(document);
 
 		m_initialized = true;
 	}
