@@ -63,19 +63,28 @@ namespace s3d
 		explicit Font(int32 baseSize, Typeface typeface = Typeface::Regular, const FontOptions& options = {});
 
 		/// @brief フォントを作成します。
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param options フォントのオプション
-		[[nodiscard]]
-		Font(int32 baseSize, FilePathView path, const FontOptions& options = {});
-
-		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
 		/// @param baseSize 基本サイズ
 		/// @param typeface 標準同梱フォントの種類
 		/// @param options フォントのオプション
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, Typeface typeface = Typeface::Regular, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness MSDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param typeface 標準同梱フォントの種類
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Typeface typeface = Typeface::Regular, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(int32 baseSize, FilePathView path, const FontOptions& options = {});
 
 		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
@@ -88,20 +97,65 @@ namespace s3d
 		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
 		/// @param baseSize 基本サイズ
-		/// @param bufferThickness MSDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
-		/// @param typeface 標準同梱フォントの種類
-		/// @param options フォントのオプション
-		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Typeface typeface = Typeface::Regular, const FontOptions& options = {});
-
-		/// @brief フォントを作成します。
-		/// @param fontMethod フォントのレンダリング方式
-		/// @param baseSize 基本サイズ
 		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
 		/// @param path フォントファイルのパス
 		/// @param options フォントのオプション
 		[[nodiscard]]
 		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, std::unique_ptr<IReader> reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Font(int32 baseSize, Reader&& reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, Reader&& reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Reader&& reader, const FontOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -893,3 +947,5 @@ namespace s3d
 		static const PixelShader& GetPixelShader(FontMethod method, TextStyle::Type type = TextStyle::Type::Default);
 	};
 }
+
+# include "detail/Font.ipp"

@@ -221,6 +221,24 @@ namespace s3d
 		return m_fonts.add(std::move(font), info);
 	}
 
+	Font::IDType CFont::create(const FontMethod fontMethod, const int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options)
+	{
+		if (not reader)
+		{
+			return Font::IDType::Null();
+		}
+
+		std::unique_ptr<FontData> font = std::make_unique<FontData>(m_freeType, fontMethod, baseSize, std::move(reader), options);
+
+		if (not font->isInitialized())
+		{
+			return Font::IDType::Null();
+		}
+
+		const String info = font->toString();
+		return m_fonts.add(std::move(font), info);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	release

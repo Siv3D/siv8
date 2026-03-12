@@ -63,17 +63,8 @@ namespace s3d
 	Font::Font(const int32 baseSize, const Typeface typeface, const FontOptions& options)
 		: Font{ FontMethod::Bitmap, baseSize, typeface, options } {}
 
-	Font::Font(const int32 baseSize, const FilePathView path, const FontOptions& options)
-		: Font{ FontMethod::Bitmap, baseSize, path, options } {}
-
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const Typeface typeface, const FontOptions & options)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(fontMethod, baseSize, typeface, options))) }
-	{
-		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
-	}
-
-	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontOptions& options)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(fontMethod, baseSize, path, options))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -84,8 +75,34 @@ namespace s3d
 		setBufferThickness(bufferThickness);
 	}
 
+	Font::Font(const int32 baseSize, const FilePathView path, const FontOptions& options)
+		: Font{ FontMethod::Bitmap, baseSize, path, options } {
+	}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontOptions& options)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(fontMethod, baseSize, path, options))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, const FilePathView path, const FontOptions& options)
 		: Font{ fontMethod, baseSize, path, options }
+	{
+		setBufferThickness(bufferThickness);
+	}
+
+	Font::Font(const int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options)
+		: Font{ FontMethod::Bitmap, baseSize, std::move(reader), options} {
+	}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Font)->create(fontMethod, baseSize, std::move(reader), options))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, std::unique_ptr<IReader> reader, const FontOptions& options)
+		: Font{ fontMethod, baseSize, std::move(reader), options }
 	{
 		setBufferThickness(bufferThickness);
 	}

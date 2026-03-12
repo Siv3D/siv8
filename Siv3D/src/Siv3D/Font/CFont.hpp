@@ -68,6 +68,9 @@ namespace s3d
 		[[nodiscard]]
 		Font::IDType create(FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options) override;
 
+		[[nodiscard]]
+		Font::IDType create(FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	release

@@ -37,6 +37,8 @@ namespace s3d
 
 		FontData(::FT_Library library, FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options);
 
+		FontData(::FT_Library library, FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)

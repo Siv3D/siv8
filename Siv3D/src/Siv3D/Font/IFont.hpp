@@ -73,6 +73,9 @@ namespace s3d
 		[[nodiscard]]
 		virtual Font::IDType create(FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options) = 0;
 
+		[[nodiscard]]
+		virtual Font::IDType create(FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options) = 0;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	release

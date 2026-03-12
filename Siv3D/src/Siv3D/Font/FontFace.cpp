@@ -72,7 +72,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool FontFace::init(const ::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, const FontMethod fontMethod, int32 baseSize, const FontOptions& options)
+	bool FontFace::init(const ::FT_Library library, const std::span<const Byte> memory, ::FT_Face face, const FontMethod fontMethod, int32 baseSize, const FontOptions& options)
 	{
 		assert(m_face == nullptr);
 
@@ -187,7 +187,7 @@ namespace s3d
 			m_info.renderingMethod = FontMethod::Bitmap;
 
 			m_colrv1 = std::make_unique<COLRv1>();
-			std::unique_ptr<SkStreamAsset> stream = SkMemoryStream::MakeDirect(memoryView.data, memoryView.size);
+			std::unique_ptr<SkStreamAsset> stream = SkMemoryStream::MakeDirect(memory.data(), memory.size_bytes());
 
 			for (const auto& axes : m_info.properties.variationAxes)
 			{

@@ -45,7 +45,7 @@ namespace s3d
 		~FontFace();
 
 		[[nodiscard]]
-		bool init(::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, FontMethod fontMethod, int32 baseSize, const FontOptions& options);
+		bool init(::FT_Library library, std::span<const Byte> memory, ::FT_Face face, FontMethod fontMethod, int32 baseSize, const FontOptions& options);
 
 		[[nodiscard]]
 		const FontFaceInfo& getInfo() const noexcept;
