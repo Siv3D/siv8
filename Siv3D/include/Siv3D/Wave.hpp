@@ -121,7 +121,7 @@ namespace s3d
 		explicit constexpr Wave(const Duration& duration, Arg::generator_<FunctionRef<double(double)>> generator, Arg::sampleRate_<uint32> sampleRate = DefaultSampleRate);
 
 		[[nodiscard]]
-		explicit Wave(Arg::reserve_<size_type> size, Arg::sampleRate_<uint32> sampleRate = DefaultSampleRate);
+		explicit constexpr Wave(Arg::reserve_<size_type> size, Arg::sampleRate_<uint32> sampleRate = DefaultSampleRate);
 
 		//[[nodiscard]]
 		//explicit Wave(FilePathView path, AudioFormat format = AudioFormat::Unspecified);
@@ -143,7 +143,7 @@ namespace s3d
 
 		Wave& operator =(const Wave&) = default;
 
-		Wave& operator =(Wave&& other) noexcept;
+		constexpr Wave& operator =(Wave&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -187,11 +187,44 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 要素にアクセスします。
+		/// @param index 要素へのインデックス
+		/// @return 要素への参照
+		[[nodiscard]]
+		constexpr const value_type& operator [](size_type index) const& noexcept;
+
+		/// @brief 要素にアクセスします。
+		/// @param index 要素へのインデックス
+		/// @return 要素への参照
+		[[nodiscard]]
+		constexpr value_type& operator [](size_type index) & noexcept;
+
+		/// @brief 要素にアクセスします。
+		/// @param index 要素へのインデックス
+		/// @return 要素
+		[[nodiscard]]
+		constexpr value_type operator [](size_type index) && noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	front
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭の要素への参照を返します。
+		/// @return 先頭の要素への参照
+		[[nodiscard]]
+		constexpr reference front() & noexcept;
+
+		/// @brief 先頭の要素への参照を返します。
+		/// @return 先頭の要素への参照
+		[[nodiscard]]
+		constexpr const_reference front() const& noexcept;
+
+		/// @brief 先頭の要素を返します。
+		/// @return 先頭の要素
+		[[nodiscard]]
+		constexpr value_type front() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -199,11 +232,36 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 末尾の要素への参照を返します。
+		/// @return 末尾の要素への参照
+		[[nodiscard]]
+		constexpr reference back() & noexcept;
+
+		/// @brief 末尾の要素への参照を返します。
+		/// @return 末尾の要素への参照
+		[[nodiscard]]
+		constexpr const_reference back() const& noexcept;
+
+		/// @brief 末尾の要素を返します。
+		/// @return 末尾の要素
+		[[nodiscard]]
+		constexpr value_type back() && noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	data
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭の要素を指すポインタを返します。
+		/// @return 先頭の要素を指すポインタ
+		[[nodiscard]]
+		constexpr value_type* data() noexcept;
+
+		/// @brief 先頭の要素を指すポインタを返します。
+		/// @return 先頭の要素を指すポインタ
+		[[nodiscard]]
+		constexpr const value_type* data() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -211,11 +269,44 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の先頭位置を指すイテレータを返します。
+		/// @return 配列の先頭位置を指すイテレータ
+		[[nodiscard]]
+		constexpr iterator begin() noexcept;
+
+		/// @brief 配列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 配列の終端位置を指すイテレータ
+		[[nodiscard]]
+		constexpr iterator end() noexcept;
+
+		/// @brief 配列の先頭位置を指すイテレータを返します。
+		/// @return 配列の先頭位置を指すイテレータ
+		[[nodiscard]]
+		constexpr const_iterator begin() const noexcept;
+
+		/// @brief 配列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 配列の終端位置を指すイテレータ
+		[[nodiscard]]
+		constexpr const_iterator end() const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	cbegin, cend
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の先頭位置を指すイテレータを返します。
+		/// @return 配列の先頭位置を指すイテレータ
+		[[nodiscard]]
+		constexpr const_iterator cbegin() const noexcept;
+
+		/// @brief 配列の終端位置を指すイテレータを返します。
+		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
+		/// @return 配列の終端位置を指すイテレータ
+		[[nodiscard]]
+		constexpr const_iterator cend() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -223,17 +314,56 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 配列の末尾位置を指すリバース・イテレータ
+		[[nodiscard]]
+		constexpr reverse_iterator rbegin() noexcept;
+
+		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 配列の先端位置を指すリバース・イテレータ
+		[[nodiscard]]
+		constexpr reverse_iterator rend() noexcept;
+
+		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 配列の末尾位置を指すリバース・イテレータ
+		[[nodiscard]]
+		constexpr const_reverse_iterator rbegin() const noexcept;
+
+		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 配列の先端位置を指すリバース・イテレータ
+		[[nodiscard]]
+		constexpr const_reverse_iterator rend() const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	crbegin, crend
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
+		/// @return 配列の末尾位置を指すリバース・イテレータ
+		[[nodiscard]]
+		constexpr const_reverse_iterator crbegin() const noexcept;
+
+		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
+		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
+		/// @return 配列の先端位置を指すリバース・イテレータ
+		[[nodiscard]]
+		constexpr const_reverse_iterator crend() const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	empty, isEmpty
 		//
 		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr bool empty() const noexcept;
+
+		[[nodiscard]]
+		constexpr bool isEmpty() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -246,6 +376,9 @@ namespace s3d
 		//	operator bool
 		//
 		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr explicit operator bool() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -313,10 +446,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr void clear() noexcept
-		{
-			m_container.clear();
-		}
+		constexpr void clear() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -378,17 +508,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 配列の要素数を変更します。
+		/// @param count 新しい要素数
+		constexpr void resize(size_type count);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	swap
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr void swap(Wave& other) noexcept
-		{
-			m_container.swap(other.m_container);
-			std::ranges::swap(m_sampleRate, other.m_sampleRate);
-		}
+		constexpr void swap(Wave& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -621,3 +751,5 @@ namespace s3d
 		uint32 m_sampleRate = DefaultSampleRate;
 	};
 }
+
+# include "detail/Wave.ipp"

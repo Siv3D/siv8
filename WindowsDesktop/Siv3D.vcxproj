@@ -149,6 +149,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex32.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\VertexShader.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Wave.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Dialog.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DrawableText.hpp" />
