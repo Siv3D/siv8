@@ -11,6 +11,7 @@
 
 # include <cstdlib>
 # include <Siv3D/PixelShader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
@@ -56,7 +57,7 @@ namespace s3d
 	PixelShader::PixelShader() {}
 
 	PixelShader::PixelShader(const FilePathView path, const StringView entryPoint)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromFile(path, entryPoint))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromReader(std::make_unique<BinaryFileReader>(path), path, entryPoint))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
