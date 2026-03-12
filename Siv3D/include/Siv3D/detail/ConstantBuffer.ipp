@@ -170,7 +170,7 @@ namespace s3d
 			return false;
 		}
 
-		if (const bool result = m_base->_internal_update(std::addressof(m_wrapper->data), Size))
+		if (m_base->_internal_update(std::addressof(m_wrapper->data), Size))
 		{
 			m_isDirty = false;
 			return true;

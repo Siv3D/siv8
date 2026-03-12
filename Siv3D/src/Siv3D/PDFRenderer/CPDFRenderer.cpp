@@ -162,17 +162,25 @@ namespace s3d
 		assert(m_state == State::Uninitialized);
 		assert(not m_library);
 		
-		m_library = DLL::Load(U"engine/dll/pdfium.dll");
+	# if SIV3D_PLATFORM(WINDOWS)
+		const FilePath dllPath = U"engine/dll/pdfium.dll";
+	# elif SIV3D_PLATFORM(MACOS)
+		const FilePath dllPath = U"engine/dll/libpdfium.dylib";
+	# else
+		const FilePath dllPath = U"";
+	# endif
+		
+		m_library = DLL::Load(dllPath);
 		if (not m_library)
 		{
-			LOG_FAIL(U"Failed to load `engine/dll/pdfium.dll`");
+			LOG_FAIL(fmt::format("Failed to load `{}`", dllPath));
 			m_state = State::Failed;
 			return;
 		}
 
 		if (not m_api.init(m_library))
 		{
-			LOG_FAIL(U"Failed to initialize PDFiumAPI");
+			LOG_FAIL("Failed to initialize PDFiumAPI");
 			DLL::Unload(m_library);
 			m_library = nullptr;
 			m_state = State::Failed;

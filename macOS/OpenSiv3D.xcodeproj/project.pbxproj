@@ -1020,6 +1020,24 @@
 		F9797DD72F60279A00518D26 /* CTextToSpeech.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797DD42F60279A00518D26 /* CTextToSpeech.mm */; };
 		F9797DDC2F6027C600518D26 /* SivStereoSampleInt16.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DDA2F6027C600518D26 /* SivStereoSampleInt16.cpp */; };
 		F9797DDD2F6027C600518D26 /* SivStereoSampleFloat32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DD82F6027C600518D26 /* SivStereoSampleFloat32.cpp */; };
+		F9797DE22F6275F900518D26 /* PDFDocument.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DDE2F6275F900518D26 /* PDFDocument.hpp */; };
+		F9797DE32F6275F900518D26 /* PDFLinkInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DDF2F6275F900518D26 /* PDFLinkInfo.hpp */; };
+		F9797DE42F6275F900518D26 /* PDFPage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DE02F6275F900518D26 /* PDFPage.hpp */; };
+		F9797DE52F6275F900518D26 /* PDFRenderOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DE12F6275F900518D26 /* PDFRenderOptions.hpp */; };
+		F9797DE82F62761400518D26 /* PDFPage.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DE72F62761400518D26 /* PDFPage.ipp */; };
+		F9797DE92F62761400518D26 /* PDFLinkInfo.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DE62F62761400518D26 /* PDFLinkInfo.ipp */; };
+		F9797DEC2F62764400518D26 /* SivPDFDocument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DEA2F62764400518D26 /* SivPDFDocument.cpp */; };
+		F9797DF62F62764B00518D26 /* IPDFRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DEF2F62764B00518D26 /* IPDFRenderer.hpp */; };
+		F9797DF72F62764B00518D26 /* PDFDocumentData.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DF02F62764B00518D26 /* PDFDocumentData.hpp */; };
+		F9797DF82F62764B00518D26 /* CPDFRenderer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DED2F62764B00518D26 /* CPDFRenderer.hpp */; };
+		F9797DF92F62764B00518D26 /* PDFiumAPI.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797DF22F62764B00518D26 /* PDFiumAPI.hpp */; };
+		F9797DFA2F62764B00518D26 /* PDFDocumentData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DF12F62764B00518D26 /* PDFDocumentData.cpp */; };
+		F9797DFB2F62764B00518D26 /* PDFiumAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DF32F62764B00518D26 /* PDFiumAPI.cpp */; };
+		F9797DFC2F62764B00518D26 /* PDFRendererFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DF42F62764B00518D26 /* PDFRendererFactory.cpp */; };
+		F9797DFD2F62764B00518D26 /* CPDFRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797DEE2F62764B00518D26 /* CPDFRenderer.cpp */; };
+		F9797E012F62766700518D26 /* fpdfview.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797DFF2F62766700518D26 /* fpdfview.h */; };
+		F9797E022F62766700518D26 /* fpdf_doc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797DFE2F62766700518D26 /* fpdf_doc.h */; };
+		F9797E052F62783C00518D26 /* SivDLL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E032F62783C00518D26 /* SivDLL.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -2930,6 +2948,18 @@
 		F9FD0D2C2D21693100A584CE /* AssetMonitorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		F9797E062F627E8500518D26 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siv3D-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -3976,6 +4006,24 @@
 		F9797DD42F60279A00518D26 /* CTextToSpeech.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CTextToSpeech.mm; sourceTree = "<group>"; };
 		F9797DD82F6027C600518D26 /* SivStereoSampleFloat32.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivStereoSampleFloat32.cpp; sourceTree = "<group>"; };
 		F9797DDA2F6027C600518D26 /* SivStereoSampleInt16.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivStereoSampleInt16.cpp; sourceTree = "<group>"; };
+		F9797DDE2F6275F900518D26 /* PDFDocument.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFDocument.hpp; sourceTree = "<group>"; };
+		F9797DDF2F6275F900518D26 /* PDFLinkInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFLinkInfo.hpp; sourceTree = "<group>"; };
+		F9797DE02F6275F900518D26 /* PDFPage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFPage.hpp; sourceTree = "<group>"; };
+		F9797DE12F6275F900518D26 /* PDFRenderOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFRenderOptions.hpp; sourceTree = "<group>"; };
+		F9797DE62F62761400518D26 /* PDFLinkInfo.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFLinkInfo.ipp; sourceTree = "<group>"; };
+		F9797DE72F62761400518D26 /* PDFPage.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFPage.ipp; sourceTree = "<group>"; };
+		F9797DEA2F62764400518D26 /* SivPDFDocument.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPDFDocument.cpp; sourceTree = "<group>"; };
+		F9797DED2F62764B00518D26 /* CPDFRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CPDFRenderer.hpp; sourceTree = "<group>"; };
+		F9797DEE2F62764B00518D26 /* CPDFRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CPDFRenderer.cpp; sourceTree = "<group>"; };
+		F9797DEF2F62764B00518D26 /* IPDFRenderer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPDFRenderer.hpp; sourceTree = "<group>"; };
+		F9797DF02F62764B00518D26 /* PDFDocumentData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFDocumentData.hpp; sourceTree = "<group>"; };
+		F9797DF12F62764B00518D26 /* PDFDocumentData.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PDFDocumentData.cpp; sourceTree = "<group>"; };
+		F9797DF22F62764B00518D26 /* PDFiumAPI.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PDFiumAPI.hpp; sourceTree = "<group>"; };
+		F9797DF32F62764B00518D26 /* PDFiumAPI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PDFiumAPI.cpp; sourceTree = "<group>"; };
+		F9797DF42F62764B00518D26 /* PDFRendererFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PDFRendererFactory.cpp; sourceTree = "<group>"; };
+		F9797DFE2F62766700518D26 /* fpdf_doc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fpdf_doc.h; sourceTree = "<group>"; };
+		F9797DFF2F62766700518D26 /* fpdfview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fpdfview.h; sourceTree = "<group>"; };
+		F9797E032F62783C00518D26 /* SivDLL.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDLL.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6438,6 +6486,7 @@
 				F9E5FC262BC13CF00081A4F7 /* libjpeg-turbo */,
 				F9528C9E2BC1208B00222F45 /* libpng */,
 				F9070A812B9DEB5900383E4D /* mimalloc */,
+				F9797E002F62766700518D26 /* PDFium */,
 				F9528CA42BC1209900222F45 /* zlib */,
 			);
 			path = "ThirdParty-prebuilt";
@@ -6582,6 +6631,8 @@
 				F9070B942B9F175000383E4D /* Parse.ipp */,
 				F9070B952B9F175000383E4D /* ParseInt.ipp */,
 				F9070B962B9F175000383E4D /* PCG64.ipp */,
+				F9797DE62F62761400518D26 /* PDFLinkInfo.ipp */,
+				F9797DE72F62761400518D26 /* PDFPage.ipp */,
 				F9E7944E2C197417002615BA /* Periodic.ipp */,
 				F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */,
 				F9070B972B9F175000383E4D /* Point.ipp */,
@@ -6932,6 +6983,10 @@
 				F9070C112B9F175000383E4D /* ParseFloat.hpp */,
 				F9070C122B9F175000383E4D /* ParseInt.hpp */,
 				F9070C132B9F175000383E4D /* PCG64.hpp */,
+				F9797DDE2F6275F900518D26 /* PDFDocument.hpp */,
+				F9797DDF2F6275F900518D26 /* PDFLinkInfo.hpp */,
+				F9797DE02F6275F900518D26 /* PDFPage.hpp */,
+				F9797DE12F6275F900518D26 /* PDFRenderOptions.hpp */,
 				F998823F2F587C6800C8991D /* PenCaps.hpp */,
 				F99882402F587C6800C8991D /* PenState.hpp */,
 				F99881E22F5808C500C8991D /* Pentablet.hpp */,
@@ -7736,6 +7791,8 @@
 				F9070D742B9F175E00383E4D /* ParseErrorReason */,
 				F9070D762B9F175E00383E4D /* ParseFloat */,
 				F9070D782B9F175E00383E4D /* ParseInt */,
+				F9797DEB2F62764400518D26 /* PDFDocument */,
+				F9797DF52F62764B00518D26 /* PDFRenderer */,
 				F99882462F587C8000C8991D /* Pentablet */,
 				F9DD96482F0965D00026DFA5 /* PercentEncode */,
 				F944BAAF2CEACF6C00CC4D42 /* Pipe */,
@@ -7947,6 +8004,7 @@
 				F98605982BE3314D006A4C0F /* CursorStyle */,
 				F9070E142B9F176B00383E4D /* Date */,
 				F9070E162B9F176B00383E4D /* DateTime */,
+				F9797E042F62783C00518D26 /* DLL */,
 				F986F8A72BC80193006A4C0F /* EnvironmentVariable */,
 				F9070E182B9F176B00383E4D /* FileSystem */,
 				F98605D02BE4BE67006A4C0F /* Keyboard */,
@@ -9372,6 +9430,46 @@
 				F9797DDA2F6027C600518D26 /* SivStereoSampleInt16.cpp */,
 			);
 			path = StereoSampleInt16;
+			sourceTree = "<group>";
+		};
+		F9797DEB2F62764400518D26 /* PDFDocument */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DEA2F62764400518D26 /* SivPDFDocument.cpp */,
+			);
+			path = PDFDocument;
+			sourceTree = "<group>";
+		};
+		F9797DF52F62764B00518D26 /* PDFRenderer */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DED2F62764B00518D26 /* CPDFRenderer.hpp */,
+				F9797DEE2F62764B00518D26 /* CPDFRenderer.cpp */,
+				F9797DEF2F62764B00518D26 /* IPDFRenderer.hpp */,
+				F9797DF02F62764B00518D26 /* PDFDocumentData.hpp */,
+				F9797DF12F62764B00518D26 /* PDFDocumentData.cpp */,
+				F9797DF22F62764B00518D26 /* PDFiumAPI.hpp */,
+				F9797DF32F62764B00518D26 /* PDFiumAPI.cpp */,
+				F9797DF42F62764B00518D26 /* PDFRendererFactory.cpp */,
+			);
+			path = PDFRenderer;
+			sourceTree = "<group>";
+		};
+		F9797E002F62766700518D26 /* PDFium */ = {
+			isa = PBXGroup;
+			children = (
+				F9797DFE2F62766700518D26 /* fpdf_doc.h */,
+				F9797DFF2F62766700518D26 /* fpdfview.h */,
+			);
+			path = PDFium;
+			sourceTree = "<group>";
+		};
+		F9797E042F62783C00518D26 /* DLL */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E032F62783C00518D26 /* SivDLL.cpp */,
+			);
+			path = DLL;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -13235,6 +13333,8 @@
 				F986023F2BCFBB54006A4C0F /* SkRecord.h in Headers */,
 				F99881462F40B53300C8991D /* Bezier.hpp in Headers */,
 				F9712A422C2599090049CC26 /* ScopedRenderStates2D.hpp in Headers */,
+				F9797DE82F62761400518D26 /* PDFPage.ipp in Headers */,
+				F9797DE92F62761400518D26 /* PDFLinkInfo.ipp in Headers */,
 				F9FD0B312D1D315D00A584CE /* TextureRegion.hpp in Headers */,
 				F98600A42BCFBB53006A4C0F /* SkSLVersion.h in Headers */,
 				F986FFEE2BCFBB53006A4C0F /* SkEncodedImageFormat.h in Headers */,
@@ -13558,6 +13658,10 @@
 				F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */,
 				F98600882BCFBB53006A4C0F /* SkThreadAnnotations.h in Headers */,
 				F943AAE42E2A0A3F001B4D43 /* ImagePainting.hpp in Headers */,
+				F9797DE22F6275F900518D26 /* PDFDocument.hpp in Headers */,
+				F9797DE32F6275F900518D26 /* PDFLinkInfo.hpp in Headers */,
+				F9797DE42F6275F900518D26 /* PDFPage.hpp in Headers */,
+				F9797DE52F6275F900518D26 /* PDFRenderOptions.hpp in Headers */,
 				F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */,
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
 				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
@@ -13576,6 +13680,10 @@
 				F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */,
 				F986024C2BCFBB54006A4C0F /* SkRectPriv.h in Headers */,
 				F980C4952C04B43300A86B68 /* FloatRect.ipp in Headers */,
+				F9797DF62F62764B00518D26 /* IPDFRenderer.hpp in Headers */,
+				F9797DF72F62764B00518D26 /* PDFDocumentData.hpp in Headers */,
+				F9797DF82F62764B00518D26 /* CPDFRenderer.hpp in Headers */,
+				F9797DF92F62764B00518D26 /* PDFiumAPI.hpp in Headers */,
 				F986042C2BCFBB54006A4C0F /* SkSLPostfixExpression.h in Headers */,
 				F9E794492C1973FD002615BA /* ArrayRandom.hpp in Headers */,
 				F9F00A6A2CD299C10097C165 /* polygon.hpp in Headers */,
@@ -13822,6 +13930,8 @@
 				F95122262CB8229400151291 /* TriangleIndex.ipp in Headers */,
 				F986046A2BCFBB54006A4C0F /* SkSLCompiler.h in Headers */,
 				F98604232BCFBB54006A4C0F /* SkSLMethodReference.h in Headers */,
+				F9797E012F62766700518D26 /* fpdfview.h in Headers */,
+				F9797E022F62766700518D26 /* fpdf_doc.h in Headers */,
 				F986016B2BCFBB53006A4C0F /* SkBlitRow.h in Headers */,
 				F998817E2F45A23900C8991D /* CClipboard.hpp in Headers */,
 				F980C42F2C00D2B500A86B68 /* BlendFactor.hpp in Headers */,
@@ -14457,6 +14567,7 @@
 				2C1778AE1CE0D5DB00BB8AD0 /* Sources */,
 				2C1778AF1CE0D5DB00BB8AD0 /* Frameworks */,
 				2C1778B01CE0D5DB00BB8AD0 /* Resources */,
+				F9797E062F627E8500518D26 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -14894,6 +15005,10 @@
 				F98603112BCFBB54006A4C0F /* SkOpCubicHull.cpp in Sources */,
 				F986F91E2BC8441F006A4C0F /* regexec.c in Sources */,
 				F9F00A822CE06CC20097C165 /* SivWebBrowser.cpp in Sources */,
+				F9797DFA2F62764B00518D26 /* PDFDocumentData.cpp in Sources */,
+				F9797DFB2F62764B00518D26 /* PDFiumAPI.cpp in Sources */,
+				F9797DFC2F62764B00518D26 /* PDFRendererFactory.cpp in Sources */,
+				F9797DFD2F62764B00518D26 /* CPDFRenderer.cpp in Sources */,
 				F98603D52BCFBB54006A4C0F /* SkSLMetalCodeGenerator.cpp in Sources */,
 				F986045B2BCFBB54006A4C0F /* SkSLFindAndDeclareBuiltinFunctions.cpp in Sources */,
 				F98602422BCFBB54006A4C0F /* SkRecordedDrawable.cpp in Sources */,
@@ -15411,6 +15526,7 @@
 				F986F94C2BCA9CD7006A4C0F /* SivSVG.cpp in Sources */,
 				F98601F72BCFBB53006A4C0F /* SkMemset_opts_erms.cpp in Sources */,
 				F98603E32BCFBB54006A4C0F /* SkSLBinaryExpression.cpp in Sources */,
+				F9797E052F62783C00518D26 /* SivDLL.cpp in Sources */,
 				F9070E022B9F175E00383E4D /* WindowFactory.cpp in Sources */,
 				F98602012BCFBB53006A4C0F /* SkMipmapBuilder.cpp in Sources */,
 				F99881882F4829D000C8991D /* DockProgressBar.mm in Sources */,
@@ -15437,6 +15553,7 @@
 				F986055D2BD203D4006A4C0F /* muParserBytecode.cpp in Sources */,
 				F986F9A22BCA9D0A006A4C0F /* element.cpp in Sources */,
 				F98600B92BCFBB53006A4C0F /* skcms_TransformSkx.cc in Sources */,
+				F9797DEC2F62764400518D26 /* SivPDFDocument.cpp in Sources */,
 				F98605322BD10495006A4C0F /* SivImageFormat.cpp in Sources */,
 				F9070ED92B9F1C8900383E4D /* cocoa_window.m in Sources */,
 				F9528C202BBF026F00222F45 /* huf_compress.c in Sources */,
