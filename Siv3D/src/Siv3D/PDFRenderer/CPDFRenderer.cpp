@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include "CPDFRenderer.hpp"
+# include <Siv3D/FileSystem.hpp>
+# include <Siv3D/Resource.hpp>
 # include <Siv3D/PDFPage.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 
@@ -165,7 +167,7 @@ namespace s3d
 	# if SIV3D_PLATFORM(WINDOWS)
 		const FilePath dllPath = U"engine/dll/pdfium.dll";
 	# elif SIV3D_PLATFORM(MACOS)
-		const FilePath dllPath = U"engine/dll/libpdfium.dylib";
+		const FilePath dllPath = (FileSystem::ParentPath(Resource(U"")) + U"Frameworks/dll/libpdfium.dylib");
 	# else
 		const FilePath dllPath = U"";
 	# endif
