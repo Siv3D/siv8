@@ -46,7 +46,7 @@ namespace s3d
 				return decoders.end();
 			}
 
-			uint8 header[16]{};
+			uint8 header[IImageDecoder::RequiredHeaderBytes]{};
 
 			if (not reader.lookahead(header))
 			{

@@ -22,6 +22,7 @@
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/PDFRenderer/IPDFRenderer.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
+# include <Siv3D/AudioDecoder/IAudioDecoder.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
@@ -90,6 +91,7 @@ namespace s3d
 		SIV3D_ENGINE(ImageEncoder)->init();
 		SIV3D_ENGINE(PDFRenderer)->init();
 		SIV3D_ENGINE(Emoji)->init();
+		SIV3D_ENGINE(AudioDecoder)->init();
 		SIV3D_ENGINE(Cursor)->init();
 		SIV3D_ENGINE(CursorStyle)->init();
 		SIV3D_ENGINE(Keyboard)->init();
