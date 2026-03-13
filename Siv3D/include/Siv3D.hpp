@@ -1693,7 +1693,6 @@
 
 
 
-
 # include <Siv3D/WaveSample.hpp>
 # include <Siv3D/StereoSampleInt16.hpp>
 # include <Siv3D/StereoSampleFloat32.hpp>
@@ -1705,7 +1704,18 @@
 # include <Siv3D/AudioDecoder.hpp> // ToDo
 # include <Siv3D/AudioEncoder.hpp> // ToDo
 
-
+# include <Siv3D/AudioFormat/WAVDecoder.hpp>
+# include <Siv3D/AudioFormat/WAVEncoder.hpp>
+//# include <Siv3D/AudioFormat/OggVorbisDecoder.hpp>
+//# include <Siv3D/AudioFormat/OggVorbisEncoder.hpp>
+//# include <Siv3D/AudioFormat/OpusDecoder.hpp>
+//# include <Siv3D/AudioFormat/OpusEncoder.hpp>
+//# include <Siv3D/AudioFormat/AACDecoder.hpp>
+//# include <Siv3D/AudioFormat/AIFFDecoder.hpp>
+//# include <Siv3D/AudioFormat/FLACDecoder.hpp>
+//# include <Siv3D/AudioFormat/MIDIDecoder.hpp>
+//# include <Siv3D/AudioFormat/MP3Decoder.hpp>
+//# include <Siv3D/AudioFormat/WMADecoder.hpp>
 
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>

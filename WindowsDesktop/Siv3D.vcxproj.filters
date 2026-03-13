@@ -1309,6 +1309,9 @@
     <Filter Include="src\Siv3D\AudioEncoder">
       <UniqueIdentifier>{224b4f27-f745-4be4-af4a-d3c682923966}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Siv3D\AudioFormat">
+      <UniqueIdentifier>{960c19e4-59a9-4c1f-b67c-fb096b787c63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5288,6 +5291,12 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\AudioEncoder\IAudioEncoder.hpp">
       <Filter>src\Siv3D\AudioEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\WAVDecoder.hpp">
+      <Filter>include\Siv3D\AudioFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\WAVEncoder.hpp">
+      <Filter>include\Siv3D\AudioFormat</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
