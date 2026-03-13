@@ -30,6 +30,7 @@ namespace s3d
 	class ISiv3DPDFRenderer;
 	class ISiv3DEmoji;
 	class ISiv3DAudioDecoder;
+	class ISiv3DAudioEncoder;
 	class ISiv3DConsole;
 	class ISiv3DCursor;
 	class ISiv3DCursorStyle;
@@ -73,6 +74,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DPDFRenderer>,
 			Siv3DComponent<ISiv3DEmoji>,
 			Siv3DComponent<ISiv3DAudioDecoder>,
+			Siv3DComponent<ISiv3DAudioEncoder>,
 			Siv3DComponent<ISiv3DConsole>,
 			Siv3DComponent<ISiv3DCursor>,
 			Siv3DComponent<ISiv3DCursorStyle>,
