@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <memory>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/IAudioDecoder.hpp>
 
