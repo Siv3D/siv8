@@ -21,7 +21,7 @@ namespace s3d
 		static constexpr std::array ImageFormatStrings =
 		{
 			U"Unknown"_sv,
-			U"DDS"_sv,
+			U"BCn"_sv,
 			U"PNG"_sv,
 			U"JPEG"_sv,
 			U"JPEG2000"_sv,

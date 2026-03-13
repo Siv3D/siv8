@@ -1300,6 +1300,15 @@
     <Filter Include="src\Siv3D\AudioFormat">
       <UniqueIdentifier>{6d4ef8b1-9c83-4cc9-a629-524d09fbd414}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\IAudioDecoder">
+      <UniqueIdentifier>{769fb4eb-0ec2-495b-a55c-308bae060267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\AudioDecoder">
+      <UniqueIdentifier>{60bb9bd2-90e8-4d0c-91f4-959d9058ef8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\AudioEncoder">
+      <UniqueIdentifier>{224b4f27-f745-4be4-af4a-d3c682923966}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5262,6 +5271,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IAudioEncoder.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AudioDecoder.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AudioEncoder.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8182,6 +8197,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\SivAudioFormat.cpp">
       <Filter>src\Siv3D\AudioFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\IAudioDecoder\SivIAudioDecoder.cpp">
+      <Filter>src\Siv3D\IAudioDecoder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

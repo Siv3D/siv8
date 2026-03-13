@@ -31,12 +31,26 @@ namespace s3d
 		Optional<ImageInfo> GetImageInfo(FilePathView path, ImageFormat imageFormat = ImageFormat::Unspecified);
 
 		/// @brief 画像ファイルの情報を取得します。
+		/// @param path 画像ファイルのパス
+		/// @param decoderName 使用するデコーダの名前
+		/// @return 画像ファイルの情報、取得に失敗した場合は none
+		[[nodiscard]]
+		Optional<ImageInfo> GetImageInfo(FilePathView path, StringView decoderName);
+
+		/// @brief 画像ファイルの情報を取得します。
 		/// @param reader Reader オブジェクト
 		/// @param imageFormat 画像フォーマット
 		/// @return 画像ファイルの情報、取得に失敗した場合は none
 		[[nodiscard]]
 		Optional<ImageInfo> GetImageInfo(const IReader& reader, ImageFormat imageFormat = ImageFormat::Unspecified);
-	
+
+		/// @brief 画像ファイルの情報を取得します。
+		/// @param reader Reader オブジェクト
+		/// @param decoderName 使用するデコーダの名前
+		/// @return 画像ファイルの情報、取得に失敗した場合は none
+		[[nodiscard]]
+		Optional<ImageInfo> GetImageInfo(const IReader& reader, StringView decoderName);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Decode
@@ -50,6 +64,14 @@ namespace s3d
 		/// @return デコードされた画像、デコードに失敗した場合は空の画像
 		[[nodiscard]]
 		Image Decode(FilePathView path, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
+	
+		/// @brief 画像ファイルをデコードします。
+		/// @param path 画像ファイルのパス
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		/// @param decoderName 使用するデコーダの名前
+		/// @return デコードされた画像、デコードに失敗した場合は空の画像
+		[[nodiscard]]
+		Image Decode(FilePathView path, PremultiplyAlpha premultiplyAlpha, StringView decoderName);
 
 		/// @brief 画像ファイルをデコードします。
 		/// @param reader Reader オブジェクト
@@ -58,6 +80,14 @@ namespace s3d
 		/// @return デコードされた画像、デコードに失敗した場合は空の画像
 		[[nodiscard]]
 		Image Decode(std::unique_ptr<IReader> reader, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
+		
+		/// @brief 画像ファイルをデコードします。
+		/// @param reader Reader オブジェクト
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		/// @param decoderName 使用するデコーダの名前
+		/// @return デコードされた画像、デコードに失敗した場合は空の画像
+		[[nodiscard]]
+		Image Decode(std::unique_ptr<IReader> reader, PremultiplyAlpha premultiplyAlpha, StringView decoderName);
 
 		/// @brief 画像ファイルをデコードします。
 		/// @tparam Reader Reader オブジェクトの型
@@ -68,6 +98,16 @@ namespace s3d
 		template <ReaderObject Reader>
 		[[nodiscard]]
 		Image Decode(Reader&& reader, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat = ImageFormat::Unspecified);
+
+		/// @brief 画像ファイルをデコードします。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
+		/// @param premultiplyAlpha アルファ乗算処理を適用するか
+		/// @param decoderName 使用するデコーダの名前
+		/// @return デコードされた画像、デコードに失敗した場合は空の画像
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Image Decode(Reader&& reader, PremultiplyAlpha premultiplyAlpha, StringView decoderName);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -83,11 +123,25 @@ namespace s3d
 		Grid<uint16> DecodeGray16(FilePathView path, ImageFormat imageFormat = ImageFormat::Unspecified);
 
 		/// @brief 16-bit グレースケール画像をデコードします。
+		/// @param path 画像ファイルのパス
+		/// @param decoderName 使用するデコーダの名前
+		/// @return デコードされた 16-bit グレースケール画像、デコードに失敗した場合は空の画像
+		[[nodiscard]]
+		Grid<uint16> DecodeGray16(FilePathView path, StringView decoderName);
+
+		/// @brief 16-bit グレースケール画像をデコードします。
 		/// @param reader Reader オブジェクト
 		/// @param imageFormat 画像フォーマット、指定しない場合はファイルの拡張子から判断
 		/// @return デコードされた 16-bit グレースケール画像、デコードに失敗した場合は空の画像
 		[[nodiscard]]
 		Grid<uint16> DecodeGray16(std::unique_ptr<IReader> reader, ImageFormat imageFormat = ImageFormat::Unspecified);
+
+		/// @brief 16-bit グレースケール画像をデコードします。
+		/// @param reader Reader オブジェクト
+		/// @param decoderName 使用するデコーダの名前
+		/// @return デコードされた 16-bit グレースケール画像、デコードに失敗した場合は空の画像
+		[[nodiscard]]
+		Grid<uint16> DecodeGray16(std::unique_ptr<IReader> reader, StringView decoderName);
 
 		/// @brief 16-bit グレースケール画像をデコードします。
 		/// @tparam Reader Reader オブジェクトの型
@@ -97,6 +151,15 @@ namespace s3d
 		template <ReaderObject Reader>
 		[[nodiscard]]
 		Grid<uint16> DecodeGray16(Reader&& reader, ImageFormat imageFormat = ImageFormat::Unspecified);
+	
+		/// @brief 16-bit グレースケール画像をデコードします。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
+		/// @param decoderName 使用するデコーダの名前
+		/// @return デコードされた 16-bit グレースケール画像、デコードに失敗した場合は空の画像
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Grid<uint16> DecodeGray16(Reader&& reader, StringView decoderName);
 
 		////////////////////////////////////////////////////////////////
 		//

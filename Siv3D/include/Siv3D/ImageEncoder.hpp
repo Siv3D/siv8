@@ -109,7 +109,7 @@ namespace s3d
 		/// @param encoderName 画像エンコーダの名前
 		/// @return 登録されている場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool IsRegistered(StringView encoderName);
+		bool IsRegistered(StringView encoderName) noexcept;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -120,7 +120,7 @@ namespace s3d
 		/// @brief 登録されている画像エンコーダの一覧を返します。
 		/// @return 登録されている画像エンコーダの一覧
 		[[nodiscard]]
-		const Array<std::unique_ptr<IImageEncoder>>& Enum();
+		const Array<std::unique_ptr<IImageEncoder>>& Enum() noexcept;
 	}
 }
 

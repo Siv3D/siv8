@@ -12,7 +12,6 @@
 # pragma once
 # include "Common.hpp"
 # include "String.hpp"
-# include "Array.hpp"
 # include "IReader.hpp"
 # include "ImageInfo.hpp"
 # include "Image.hpp"

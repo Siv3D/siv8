@@ -34,21 +34,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Array<std::unique_ptr<IImageDecoder>>::const_iterator FindDecoder_impl(const Array<std::unique_ptr<IImageDecoder>>& decoders, const ImageFormat imageFormat) noexcept
-		{
-			if (imageFormat == ImageFormat::Unknown)
-			{
-				return decoders.end();
-			}
-
-			return std::find_if(decoders.begin(), decoders.end(), [imageFormat](const std::unique_ptr<IImageDecoder>& decoder)
-				{
-					return (decoder->imageFormat() == imageFormat);
-				});
-		}
-
-		[[nodiscard]]
-		static Array<std::unique_ptr<IImageDecoder>>::const_iterator FindDecoder_impl(const Array<std::unique_ptr<IImageDecoder>>& decoders, const IReader& reader, const FilePathView pathHint)
+		static Array<std::unique_ptr<IImageDecoder>>::const_iterator FindDecoderWithReader(const Array<std::unique_ptr<IImageDecoder>>& decoders, const IReader& reader, const FilePathView pathHint)
 		{
 			if (not reader)
 			{
@@ -92,14 +78,17 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Array<std::unique_ptr<IImageDecoder>>::const_iterator FindDecoder(const Array<std::unique_ptr<IImageDecoder>>& decoders, const ImageFormat imageFormat, const IReader& reader, const FilePathView pathHint)
+		static Array<std::unique_ptr<IImageDecoder>>::const_iterator FindDecoder(const Array<std::unique_ptr<IImageDecoder>>& decoders, const StringView decoderName, const IReader& reader, const FilePathView pathHint)
 		{
-			if (const auto it = FindDecoder_impl(decoders, imageFormat); it != decoders.end())
+			if (decoderName)
 			{
-				return it;
+				if (const auto it = FindDecoderByName(decoders, decoderName); it != decoders.end())
+				{
+					return it;
+				}
 			}
 
-			return FindDecoder_impl(decoders, reader, pathHint);
+			return FindDecoderWithReader(decoders, reader, pathHint);
 		}
 	}
 
@@ -200,11 +189,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Optional<ImageInfo> CImageDecoder::getImageInfo(const IReader& reader, const FilePathView pathHint, const ImageFormat imageFormat)
+	Optional<ImageInfo> CImageDecoder::getImageInfo(const IReader& reader, const FilePathView pathHint, const StringView decoderName)
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::getImageInfo()");
 
-		const auto it = FindDecoder(m_decoders, imageFormat, reader, pathHint);
+		const auto it = FindDecoder(m_decoders, decoderName, reader, pathHint);
 
 		if (it == m_decoders.end())
 		{
@@ -222,11 +211,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image CImageDecoder::decode(std::unique_ptr<IReader> reader, const FilePathView pathHint, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
+	Image CImageDecoder::decode(std::unique_ptr<IReader> reader, const FilePathView pathHint, const PremultiplyAlpha premultiplyAlpha, const StringView decoderName)
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::decode()");
 
-		const auto it = FindDecoder(m_decoders, imageFormat, *reader, pathHint);
+		const auto it = FindDecoder(m_decoders, decoderName, *reader, pathHint);
 
 		if (it == m_decoders.end())
 		{
@@ -244,11 +233,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Grid<uint16> CImageDecoder::decodeGray16(std::unique_ptr<IReader> reader, const FilePathView pathHint, const ImageFormat imageFormat)
+	Grid<uint16> CImageDecoder::decodeGray16(std::unique_ptr<IReader> reader, const FilePathView pathHint, const StringView decoderName)
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::decodeGray16()");
 
-		const auto it = FindDecoder(m_decoders, imageFormat, *reader, pathHint);
+		const auto it = FindDecoder(m_decoders, decoderName, *reader, pathHint);
 
 		if (it == m_decoders.end())
 		{

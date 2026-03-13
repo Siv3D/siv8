@@ -27,6 +27,12 @@ namespace s3d
 			return Decode(std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, imageFormat);
 		}
 
+		template <ReaderObject Reader>
+		Image Decode(Reader&& reader, const PremultiplyAlpha premultiplyAlpha, const StringView decoderName)
+		{
+			return Decode(std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, decoderName);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	DecodeGray16
@@ -37,6 +43,12 @@ namespace s3d
 		Grid<uint16> DecodeGray16(Reader&& reader, const ImageFormat imageFormat)
 		{
 			return DecodeGray16(std::make_unique<Reader>(std::forward<Reader>(reader)), imageFormat);
+		}
+
+		template <ReaderObject Reader>
+		Grid<uint16> DecodeGray16(Reader&& reader, StringView decoderName)
+		{
+			return DecodeGray16(std::make_unique<Reader>(std::forward<Reader>(reader)), decoderName);
 		}
 
 		////////////////////////////////////////////////////////////////

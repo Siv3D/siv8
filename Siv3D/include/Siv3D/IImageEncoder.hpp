@@ -12,7 +12,6 @@
 # pragma once
 # include "Common.hpp"
 # include "String.hpp"
-# include "Array.hpp"
 # include "ImageFormat.hpp"
 # include "Image.hpp"
 # include "Blob.hpp"

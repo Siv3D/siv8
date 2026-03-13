@@ -1700,8 +1700,8 @@
 # include <Siv3D/Wave.hpp> // ToDo
 
 # include <Siv3D/AudioFormat.hpp>
-# include <Siv3D/IAudioDecoder.hpp> // ToDo
-# include <Siv3D/IAudioEncoder.hpp> // ToDo
+# include <Siv3D/IAudioDecoder.hpp>
+# include <Siv3D/IAudioEncoder.hpp>
 # include <Siv3D/AudioDecoder.hpp> // ToDo
 # include <Siv3D/AudioEncoder.hpp> // ToDo
 

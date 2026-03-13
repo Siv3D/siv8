@@ -76,6 +76,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayParallel.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AudioDecoder.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AudioEncoder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicCamera2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BCnData.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2.ipp" />
@@ -1535,6 +1537,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\HLSL\SivHLSL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HTTPStatusCode\SivHTTPStatusCode.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\IAudioDecoder\SivIAudioDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IImageDecoder\SivIImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\ImageDecoderFactory.cpp" />

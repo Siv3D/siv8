@@ -158,7 +158,7 @@ namespace s3d
 
 		if (it == m_encoders.end())
 		{
-			return{};
+			return false;
 		}
 
 		return (*it)->save(image, path);
