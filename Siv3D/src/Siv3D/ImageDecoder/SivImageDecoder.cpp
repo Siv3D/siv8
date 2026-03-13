@@ -16,6 +16,20 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static String GetDecoderName(const ImageFormat imageFormat)
+		{
+			if (imageFormat == ImageFormat::Unspecified)
+			{
+				return{};
+			}
+
+			return Format(imageFormat);
+		}
+	}
+
 	namespace ImageDecoder
 	{
 		////////////////////////////////////////////////////////////////
@@ -26,7 +40,7 @@ namespace s3d
 
 		Optional<ImageInfo> GetImageInfo(const FilePathView path, const ImageFormat imageFormat)
 		{
-			return GetImageInfo(path, Format(imageFormat));
+			return GetImageInfo(path, GetDecoderName(imageFormat));
 		}
 
 		Optional<ImageInfo> GetImageInfo(const FilePathView path, const StringView decoderName)
@@ -43,7 +57,7 @@ namespace s3d
 
 		Optional<ImageInfo> GetImageInfo(const IReader& reader, const ImageFormat imageFormat)
 		{
-			return GetImageInfo(reader, Format(imageFormat));
+			return GetImageInfo(reader, GetDecoderName(imageFormat));
 		}
 
 		Optional<ImageInfo> GetImageInfo(const IReader& reader, const StringView decoderName)
@@ -59,7 +73,7 @@ namespace s3d
 
 		Image Decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 		{
-			return Decode(path, premultiplyAlpha, Format(imageFormat));
+			return Decode(path, premultiplyAlpha, GetDecoderName(imageFormat));
 		}
 
 		Image Decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha, const StringView decoderName)
@@ -76,7 +90,7 @@ namespace s3d
 
 		Image Decode(std::unique_ptr<IReader> reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
 		{
-			return Decode(std::move(reader), premultiplyAlpha, Format(imageFormat));
+			return Decode(std::move(reader), premultiplyAlpha, GetDecoderName(imageFormat));
 		}
 
 		Image Decode(std::unique_ptr<IReader> reader, const PremultiplyAlpha premultiplyAlpha, const StringView decoderName)
@@ -92,7 +106,7 @@ namespace s3d
 
 		Grid<uint16> DecodeGray16(const FilePathView path, const ImageFormat imageFormat)
 		{
-			return DecodeGray16(path, Format(imageFormat));
+			return DecodeGray16(path, GetDecoderName(imageFormat));
 		}
 
 		Grid<uint16> DecodeGray16(const FilePathView path, const StringView decoderName)
@@ -109,7 +123,7 @@ namespace s3d
 
 		Grid<uint16> DecodeGray16(std::unique_ptr<IReader> reader, const ImageFormat imageFormat)
 		{
-			return DecodeGray16(std::move(reader), Format(imageFormat));
+			return DecodeGray16(std::move(reader), GetDecoderName(imageFormat));
 		}
 
 		Grid<uint16> DecodeGray16(std::unique_ptr<IReader> reader, const StringView decoderName)

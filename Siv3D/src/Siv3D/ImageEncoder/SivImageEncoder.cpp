@@ -17,6 +17,20 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static String GetEncoderName(const ImageFormat imageFormat)
+		{
+			if (imageFormat == ImageFormat::Unspecified)
+			{
+				return{};
+			}
+
+			return Format(imageFormat);
+		}
+	}
+
 	namespace ImageEncoder
 	{		
 		////////////////////////////////////////////////////////////////
@@ -59,7 +73,7 @@ namespace s3d
 
 		bool Encode(const Image& image, const ImageFormat format, IWriter& writer)
 		{
-			return Encode(image, Format(format), writer);
+			return Encode(image, GetEncoderName(format), writer);
 		}
 
 		bool Encode(const Image& image, const StringView encoderName, IWriter& writer)
@@ -69,7 +83,7 @@ namespace s3d
 
 		Blob Encode(const Image& image, const ImageFormat format)
 		{
-			return Encode(image, Format(format));
+			return Encode(image, GetEncoderName(format));
 		}
 
 		Blob Encode(const Image& image, const StringView encoderName)
