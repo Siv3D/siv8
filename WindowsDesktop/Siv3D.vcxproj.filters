@@ -1324,6 +1324,15 @@
     <Filter Include="src\Siv3D\WaveProcessing">
       <UniqueIdentifier>{361ba507-65d9-4739-9066-b116b5210ff7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\r8brain-free-src">
+      <UniqueIdentifier>{e9361196-e2f3-496a-ae45-e44552f330d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\PFFFT">
+      <UniqueIdentifier>{58ca6053-74d0-4386-baa1-5175f34cb993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\PFFFT\simd">
+      <UniqueIdentifier>{437bc5e1-1c07-492b-8f4b-b44c19c8619d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5319,6 +5328,36 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\WaveProcessing.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_avx_double.h">
+      <Filter>src\ThirdParty\PFFFT\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_double.h">
+      <Filter>src\ThirdParty\PFFFT\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_neon_double.h">
+      <Filter>src\ThirdParty\PFFFT\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_neon_double_from_avx.h">
+      <Filter>src\ThirdParty\PFFFT\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_scalar_double.h">
+      <Filter>src\ThirdParty\PFFFT\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_sse2_double.h">
+      <Filter>src\ThirdParty\PFFFT\simd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\fft4g.h">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft.h">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_double.h">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_priv_impl.h">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8275,6 +8314,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\WaveProcessing\SivWaveProcessing.cpp">
       <Filter>src\Siv3D\WaveProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\PFFFT\pffft.c">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_double.c">
+      <Filter>src\ThirdParty\PFFFT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
