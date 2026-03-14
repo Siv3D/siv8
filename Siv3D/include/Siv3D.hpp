@@ -1697,6 +1697,8 @@
 # include <Siv3D/StereoSampleInt16.hpp>
 # include <Siv3D/StereoSampleFloat32.hpp>
 # include <Siv3D/Wave.hpp> // ToDo
+# include <Siv3D/WaveProcessing.hpp> // ToDo
+
 
 # include <Siv3D/AudioFormat.hpp>
 # include <Siv3D/IAudioDecoder.hpp>
@@ -1717,6 +1719,9 @@
 //# include <Siv3D/AudioFormat/MIDIDecoder.hpp>
 //# include <Siv3D/AudioFormat/MP3Decoder.hpp>
 //# include <Siv3D/AudioFormat/WMADecoder.hpp>
+
+
+
 
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>

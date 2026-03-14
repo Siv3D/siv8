@@ -707,6 +707,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\VoronoiCell.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Wave.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\WaveProcessing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WaveSample.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WAVSaveFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WebBrowser.hpp" />
@@ -1783,6 +1784,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector3D\SivVector3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector4D\SivVector4D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\VertexShader\SivVertexShader.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\WaveProcessing\SivWaveProcessing.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Wave\SivWave.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\WAVSaveFormat\SivWAVSaveFormat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\WebBrowser\SivWebBrowser.cpp" />
