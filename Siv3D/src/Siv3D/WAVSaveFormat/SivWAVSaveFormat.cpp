@@ -19,10 +19,15 @@ namespace s3d
 	{
 		static constexpr std::array WAVSaveFormatStrings =
 		{
+			U"PCM8Mono"_sv,
 			U"PCM8Stereo"_sv,
+			U"PCM16Mono"_sv,
 			U"PCM16Stereo"_sv,
+			U"PCM24Mono"_sv,
 			U"PCM24Stereo"_sv,
+			U"PCM32Mono"_sv,
 			U"PCM32Stereo"_sv,
+			U"Float32Mono"_sv,
 			U"Float32Stereo"_sv,
 		};
 	}

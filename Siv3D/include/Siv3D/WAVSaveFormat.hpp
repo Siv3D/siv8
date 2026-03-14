@@ -18,13 +18,23 @@ namespace s3d
 
 	enum class WAVSaveFormat
 	{
+		PCM8Mono,
+
 		PCM8Stereo,
+
+		PCM16Mono,
 	
 		PCM16Stereo,
 	
+		PCM24Mono,
+
 		PCM24Stereo,
 	
+		PCM32Mono,
+
 		PCM32Stereo,
+
+		Float32Mono,
 
 		Float32Stereo,
 

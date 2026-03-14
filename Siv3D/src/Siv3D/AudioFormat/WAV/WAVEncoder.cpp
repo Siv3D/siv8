@@ -94,19 +94,49 @@ namespace s3d
 		{
 			switch (format)
 			{
+			case WAVSaveFormat::PCM8Mono:
 			case WAVSaveFormat::PCM8Stereo:
 				return 8;
+
+			case WAVSaveFormat::PCM16Mono:
 			case WAVSaveFormat::PCM16Stereo:
 				return 16;
+
+			case WAVSaveFormat::PCM24Mono:
 			case WAVSaveFormat::PCM24Stereo:
 				return 24;
+
+			case WAVSaveFormat::PCM32Mono:
 			case WAVSaveFormat::PCM32Stereo:
-				return 32;
+			case WAVSaveFormat::Float32Mono:
 			case WAVSaveFormat::Float32Stereo:
 				return 32;
+
 			default:
 				return 16;
 			}
+		}
+
+		[[nodiscard]]
+		static constexpr uint16 GetChannels(const WAVSaveFormat format) noexcept
+		{
+			switch (format)
+			{
+			case WAVSaveFormat::PCM8Mono:
+			case WAVSaveFormat::PCM16Mono:
+			case WAVSaveFormat::PCM24Mono:
+			case WAVSaveFormat::PCM32Mono:
+			case WAVSaveFormat::Float32Mono:
+				return 1;
+			default:
+				return 2;
+			}
+		}
+
+		[[nodiscard]]
+		static constexpr float ToMono(const StereoSampleFloat32& s) noexcept
+		{
+			return ((s.left + s.right) * 0.5f);
 		}
 
 		[[nodiscard]]
@@ -192,10 +222,10 @@ namespace s3d
 			return false;
 		}
 
-		constexpr uint16 Channels = 2;
+		const uint16 channels = GetChannels(format);
 		const uint16 bitsPerSample = static_cast<uint16>(GetBitsPerSample(format));
 		const uint16 bytesPerSample = static_cast<uint16>(bitsPerSample / 8);
-		const uint16 blockAlign = static_cast<uint16>(Channels * bytesPerSample);
+		const uint16 blockAlign = static_cast<uint16>(channels * bytesPerSample);
 		const uint32 bytePerSec = (wave.sampleRate() * blockAlign);
 		const uint32 dataChunkSize = static_cast<uint32>(wave.samples() * blockAlign);
 		const uint32 riffFileSize = (4 + sizeof(ChunkHeader) + sizeof(FormatHeader) + sizeof(ChunkHeader) + dataChunkSize);
@@ -216,7 +246,7 @@ namespace s3d
 		const FormatHeader formatHeader
 		{
 			.formatID = GetFormatID(format),
-			.channels = Channels,
+			.channels = channels,
 			.sampleRate = wave.sampleRate(),
 			.bytePerSec = bytePerSec,
 			.blockAlign = blockAlign,
@@ -243,6 +273,30 @@ namespace s3d
 
 		switch (format)
 		{
+		case WAVSaveFormat::PCM8Mono:
+			{
+				auto buffer = std::make_unique_for_overwrite<MonoSampleUint8[]>(FramesPerChunk);
+
+				while (pSrc < pSrcEnd)
+				{
+					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
+
+					for (size_t i = 0; i < framesToWrite; ++i)
+					{
+						buffer[i] = MonoSampleUint8{ Float32ToPCMUint8(ToMono(pSrc[i])) };
+					}
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(MonoSampleUint8));
+						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
+					{
+						return false;
+					}
+
+					pSrc += framesToWrite;
+				}
+
+				break;
+			}
 		case WAVSaveFormat::PCM8Stereo:
 			{
 				auto buffer = std::make_unique_for_overwrite<StereoSampleUint8[]>(FramesPerChunk);
@@ -256,7 +310,31 @@ namespace s3d
 						buffer[i] = StereoSampleUint8{ Float32ToPCMUint8(pSrc[i].left), Float32ToPCMUint8(pSrc[i].right) };
 					}
 
-					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleUint8)); 
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleUint8));
+						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
+					{
+						return false;
+					}
+
+					pSrc += framesToWrite;
+				}
+
+				break;
+			}
+		case WAVSaveFormat::PCM16Mono:
+			{
+				auto buffer = std::make_unique_for_overwrite<MonoSampleInt16[]>(FramesPerChunk);
+
+				while (pSrc < pSrcEnd)
+				{
+					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
+
+					for (size_t i = 0; i < framesToWrite; ++i)
+					{
+						buffer[i] = MonoSampleInt16{ Float32ToPCMInt16(ToMono(pSrc[i])) };
+					}
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(MonoSampleInt16));
 						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
 					{
 						return false;
@@ -274,18 +352,45 @@ namespace s3d
 				while (pSrc < pSrcEnd)
 				{
 					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
-					
+
 					for (size_t i = 0; i < framesToWrite; ++i)
 					{
 						buffer[i] = StereoSampleInt16{ Float32ToPCMInt16(pSrc[i].left), Float32ToPCMInt16(pSrc[i].right) };
 					}
-					
-					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleInt16)); 
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleInt16));
 						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
 					{
 						return false;
 					}
-					
+
+					pSrc += framesToWrite;
+				}
+
+				break;
+			}
+		case WAVSaveFormat::PCM24Mono:
+			{
+				auto buffer = std::make_unique_for_overwrite<MonoSampleInt24[]>(FramesPerChunk);
+
+				while (pSrc < pSrcEnd)
+				{
+					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
+
+					for (size_t i = 0; i < framesToWrite; ++i)
+					{
+						buffer[i] = MonoSampleInt24
+						{
+							.value = Int32ToPCMInt24(Float32ToPCMInt24(ToMono(pSrc[i]))),
+						};
+					}
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(MonoSampleInt24));
+						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
+					{
+						return false;
+					}
+
 					pSrc += framesToWrite;
 				}
 
@@ -298,7 +403,7 @@ namespace s3d
 				while (pSrc < pSrcEnd)
 				{
 					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
-					
+
 					for (size_t i = 0; i < framesToWrite; ++i)
 					{
 						buffer[i] = StereoSampleInt24
@@ -307,13 +412,37 @@ namespace s3d
 							.right	= Int32ToPCMInt24(Float32ToPCMInt24(pSrc[i].right)),
 						};
 					}
-					
-					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleInt24)); 
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleInt24));
 						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
 					{
 						return false;
 					}
-					
+
+					pSrc += framesToWrite;
+				}
+
+				break;
+			}
+		case WAVSaveFormat::PCM32Mono:
+			{
+				auto buffer = std::make_unique_for_overwrite<MonoSampleInt32[]>(FramesPerChunk);
+
+				while (pSrc < pSrcEnd)
+				{
+					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
+
+					for (size_t i = 0; i < framesToWrite; ++i)
+					{
+						buffer[i] = MonoSampleInt32{ Float32ToPCMInt32(ToMono(pSrc[i])) };
+					}
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(MonoSampleInt32));
+						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
+					{
+						return false;
+					}
+
 					pSrc += framesToWrite;
 				}
 
@@ -326,18 +455,42 @@ namespace s3d
 				while (pSrc < pSrcEnd)
 				{
 					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
-					
+
 					for (size_t i = 0; i < framesToWrite; ++i)
 					{
 						buffer[i] = StereoSampleInt32{ Float32ToPCMInt32(pSrc[i].left), Float32ToPCMInt32(pSrc[i].right) };
 					}
-					
-					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleInt32)); 
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleInt32));
 						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
 					{
 						return false;
 					}
-					
+
+					pSrc += framesToWrite;
+				}
+
+				break;
+			}
+		case WAVSaveFormat::Float32Mono:
+			{
+				auto buffer = std::make_unique_for_overwrite<float[]>(FramesPerChunk);
+
+				while (pSrc < pSrcEnd)
+				{
+					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
+
+					for (size_t i = 0; i < framesToWrite; ++i)
+					{
+						buffer[i] = ClampSample(ToMono(pSrc[i]));
+					}
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(float));
+						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
+					{
+						return false;
+					}
+
 					pSrc += framesToWrite;
 				}
 
@@ -350,18 +503,18 @@ namespace s3d
 				while (pSrc < pSrcEnd)
 				{
 					const size_t framesToWrite = Min<size_t>(FramesPerChunk, static_cast<size_t>(pSrcEnd - pSrc));
-					
+
 					for (size_t i = 0; i < framesToWrite; ++i)
 					{
 						buffer[i] = StereoSampleFloat32{ ClampSample(pSrc[i].left), ClampSample(pSrc[i].right) };
 					}
-					
-					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleFloat32)); 
+
+					if (const size_t bytesToWrite = (framesToWrite * sizeof(StereoSampleFloat32));
 						writer.write(buffer.get(), bytesToWrite) != static_cast<int64>(bytesToWrite))
 					{
 						return false;
 					}
-					
+
 					pSrc += framesToWrite;
 				}
 
