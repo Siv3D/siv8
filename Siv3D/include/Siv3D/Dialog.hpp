@@ -14,6 +14,10 @@
 # include "OpenFileDialogOptions.hpp"
 # include "SaveFileDialogOptions.hpp"
 # include "SelectFolderDialogOptions.hpp"
+# include "Image.hpp"
+# include "Texture.hpp"
+# include "Wave.hpp"
+//# include "Audio.hpp"
 
 namespace s3d
 {
@@ -60,5 +64,62 @@ namespace s3d
 		/// @return ユーザーが選択したフォルダのパス。選択されなかった場合は none
 		[[nodiscard]]
 		Optional<FilePath> SelectFolder(const SelectFolderDialogOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenImage
+		//
+		////////////////////////////////////////////////////////////////
+		
+		[[nodiscard]]
+		Image OpenImage(const OpenFileDialogOptions& options = {});
+
+		[[nodiscard]]
+		Image OpenImage(PremultiplyAlpha premultiplyAlpha, const OpenFileDialogOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenTexture
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Texture OpenTexture(const OpenFileDialogOptions& options = {});
+
+		[[nodiscard]]
+		Texture OpenTexture(TextureDesc textureDesc, const OpenFileDialogOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenWave
+		//
+		////////////////////////////////////////////////////////////////
+		
+		[[nodiscard]]
+		Wave OpenWave(const OpenFileDialogOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenAudio
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SaveImage
+		//
+		////////////////////////////////////////////////////////////////
+	
+		[[nodiscard]]
+		Optional<FilePath> SaveImage(const SaveFileDialogOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	SaveWave
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Optional<FilePath> SaveWave(const SaveFileDialogOptions& options = {});
 	}
 }

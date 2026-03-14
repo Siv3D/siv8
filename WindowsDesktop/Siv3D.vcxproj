@@ -1507,6 +1507,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Demangle\SivDemangle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilStateBuilder\SivDepthStencilStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilState\SivDepthStencilState.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Dialog\SivDialog.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DrawableText\SivDrawableText.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DriveType\SivDriveType.cpp" />
