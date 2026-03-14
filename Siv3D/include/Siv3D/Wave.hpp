@@ -75,11 +75,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		static constexpr uint32 MinSampleRate		= 4'000;
+		static constexpr uint32 MinSampleRate		= 1'000;
 
 		static constexpr uint32 DefaultSampleRate	= 48'000;
 
-		static constexpr uint32 MaxSampleRate		= 192'000;
+		static constexpr uint32 MaxSampleRate		= 384'000;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -100,6 +100,9 @@ namespace s3d
 		/// @param other ムーブする配列
 		[[nodiscard]]
 		Wave(Wave&& other) = default;
+
+		[[nodiscard]]
+		explicit constexpr Wave(Arg::sampleRate_<uint32> sampleRate);
 
 		[[nodiscard]]
 		constexpr Wave(const container_type& other, Arg::sampleRate_<uint32> sampleRate = DefaultSampleRate);
@@ -471,6 +474,8 @@ namespace s3d
 		//	reserve
 		//
 		////////////////////////////////////////////////////////////////
+
+		constexpr void reserve(size_type n);
 
 		////////////////////////////////////////////////////////////////
 		//

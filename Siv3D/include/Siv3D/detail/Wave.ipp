@@ -19,6 +19,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	constexpr Wave::Wave(const Arg::sampleRate_<uint32> sampleRate)
+		: m_sampleRate{ Clamp(*sampleRate, MinSampleRate, MaxSampleRate) } {}
+
 	constexpr Wave::Wave(const container_type& other, const Arg::sampleRate_<uint32> sampleRate)
 		: m_container{ other }
 		, m_sampleRate{ Clamp(*sampleRate, MinSampleRate, MaxSampleRate) } {}
@@ -324,6 +327,17 @@ namespace s3d
 	constexpr void Wave::setSampleRate(const uint32 sampleRate) noexcept
 	{
 		m_sampleRate = Clamp(sampleRate, MinSampleRate, MaxSampleRate);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reserve
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr void Wave::reserve(const size_type n)
+	{
+		m_container.reserve(n);
 	}
 
 

@@ -5328,6 +5328,48 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\WaveProcessing.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPResampler.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPBlockConvolver.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPFracInterpolator.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBDownsampler.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBUpsampler.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPFIRFilter.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPProcessor.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\r8bbase.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\r8bconf.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPSincFilterGen.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPRealFFT.h">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft.h">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_double.h">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_priv_impl.h">
+      <Filter>src\ThirdParty\PFFFT</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_avx_double.h">
       <Filter>src\ThirdParty\PFFFT\simd</Filter>
     </ClInclude>
@@ -5345,18 +5387,6 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_sse2_double.h">
       <Filter>src\ThirdParty\PFFFT\simd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\fft4g.h">
-      <Filter>src\ThirdParty\PFFFT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft.h">
-      <Filter>src\ThirdParty\PFFFT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_double.h">
-      <Filter>src\ThirdParty\PFFFT</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_priv_impl.h">
-      <Filter>src\ThirdParty\PFFFT</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8358,6 +8388,12 @@
     </None>
     <None Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkSwizzler_opts.inc">
       <Filter>src\ThirdParty\skia\src\opts</Filter>
+    </None>
+    <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBDownsampler.inc">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </None>
+    <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBUpsampler.inc">
+      <Filter>src\ThirdParty\r8brain-free-src</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -17,6 +17,6 @@ namespace s3d
 	namespace WaveProcessing
 	{
 		[[nodiscard]]
-		Wave Resample(const Wave& wave, int32 newSampleRate);
+		Wave Resample(const Wave& input, uint32 newSampleRate);
 	}
 }

@@ -158,7 +158,7 @@ namespace s3d
 			reader.LoadAsync(size).get();
 
 			Array<uint8> bytes(size);
-			reader.ReadBytes(winrt::array_view<uint8>(bytes.data(), bytes.size()));
+			reader.ReadBytes(winrt::array_view<uint8>(bytes.data(), static_cast<uint32>(bytes.size())));
 
 			BinaryFileWriter writer{ U"test.wav" };
 			writer.write(bytes.data(), bytes.size());
