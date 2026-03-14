@@ -14,6 +14,7 @@
 # include "WaveSample.hpp"
 # include "Duration.hpp"
 # include "IReader.hpp"
+# include "Blob.hpp"
 # include "PredefinedNamedParameter.hpp"
 # include "AudioFormat.hpp"
 # include "WAVSaveFormat.hpp"
@@ -390,6 +391,7 @@ namespace s3d
 
 		/// @brief 波形のサンプル数を返します。
 		/// @return 波形のサンプル数
+		/// @remark `.size()` と同じ値を返します。
 		[[nodiscard]]
 		constexpr size_t samples() const noexcept;
 
@@ -401,8 +403,31 @@ namespace s3d
 
 		/// @brief 波形のサンプル数を符号付き整数型で返します。
 		/// @return 波形のサンプル数
+		/// @remark `.ssize()` と同じ値を返します。
 		[[nodiscard]]
 		constexpr isize ssamples() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	size
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素数を返します。
+		/// @return 配列の要素数
+		[[nodiscard]]
+		constexpr size_t size() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ssize
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素数を符号付き整数型で返します。
+		/// @return 配列の要素数
+		[[nodiscard]]
+		constexpr isize ssize() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -639,9 +664,11 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	saveWAVE
+		//	saveWAV
 		//
 		////////////////////////////////////////////////////////////////
+
+		bool saveWAV(FilePathView path, WAVSaveFormat format = WAVSaveFormat::Default) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -655,11 +682,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		[[nodiscard]]
+		Blob encode(AudioFormat format) const;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	encodeWAVE
+		//	encodeWAV
 		//
 		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		Blob encodeWAV(WAVSaveFormat format = WAVSaveFormat::Default) const;
 
 		////////////////////////////////////////////////////////////////
 		//

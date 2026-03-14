@@ -12,6 +12,7 @@
 # include <Siv3D/Wave.hpp>
 # include <Siv3D/AudioDecoder.hpp>
 # include <Siv3D/AudioEncoder.hpp>
+# include <Siv3D/AudioFormat/WAVEncoder.hpp>
 
 namespace s3d
 {
@@ -41,4 +42,40 @@ namespace s3d
 	{
 		return AudioEncoder::Save(*this, format, path);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	saveWAV
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Wave::saveWAV(const FilePathView path, const WAVSaveFormat format) const
+	{
+		return WAVEncoder{}.save(*this, path, format);
+	}
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encode
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob Wave::encode(const AudioFormat format) const
+	{
+		return AudioEncoder::Encode(*this, format);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encodeWAV
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob Wave::encodeWAV(const WAVSaveFormat format) const
+	{
+		return WAVEncoder{}.encode(*this, format);
+	}
+
 }
