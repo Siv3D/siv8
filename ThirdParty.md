@@ -44,8 +44,12 @@ Name | Version
 [OpenCV](https://github.com/opencv/opencv) | 4.10.0
 [oscpack](http://www.rossbencina.com/code/oscpack) | 1.1.0
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
+[PDFium](https://pdfium.googlesource.com/pdfium/) | 
+[PFFFT](https://bitbucket.org/jpommier/pffft/src/master/) | 
+[PFFFT DOUBLE](https://github.com/marton78/pffft) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
+[r8brain-free-src](https://github.com/avaneev/r8brain-free-src) | 7.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
 [serial_cpp](https://github.com/gbionics/serial_cpp) | 
