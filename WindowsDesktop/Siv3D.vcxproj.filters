@@ -1318,6 +1318,9 @@
     <Filter Include="src\Siv3D\Wave">
       <UniqueIdentifier>{875f9626-e4cc-441f-9720-61b559cf929f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\WAVSaveFormat">
+      <UniqueIdentifier>{443101bd-f88b-4919-9577-3f655de59b58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -8260,6 +8263,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVEncoder.cpp">
       <Filter>src\Siv3D\AudioFormat\WAV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\WAVSaveFormat\SivWAVSaveFormat.cpp">
+      <Filter>src\Siv3D\WAVSaveFormat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

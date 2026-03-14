@@ -9,27 +9,23 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include "Types.hpp"
+# include <array>
+# include <Siv3D/WAVSaveFormat.hpp>
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
-	struct FormatData;
-
-	enum class WAVSaveFormat
+	namespace
 	{
-		PCM8Stereo,
-	
-		PCM16Stereo,
-	
-		PCM24Stereo,
-	
-		PCM32Stereo,
-
-		Float32Stereo,
-
-		Default = PCM16Stereo,
-	};
+		static constexpr std::array WAVSaveFormatStrings =
+		{
+			U"PCM8Stereo"_sv,
+			U"PCM16Stereo"_sv,
+			U"PCM24Stereo"_sv,
+			U"PCM32Stereo"_sv,
+			U"Float32Stereo"_sv,
+		};
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -37,5 +33,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const WAVSaveFormat value);
+	void Formatter(FormatData& formatData, const WAVSaveFormat value)
+	{
+		formatData.string.append(WAVSaveFormatStrings[FromEnum(value)]);
+	}
 }
