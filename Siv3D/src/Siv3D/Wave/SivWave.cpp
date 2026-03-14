@@ -11,9 +11,16 @@
 
 # include <Siv3D/Wave.hpp>
 # include <Siv3D/AudioDecoder.hpp>
+# include <Siv3D/AudioEncoder.hpp>
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	Wave::Wave(const FilePathView path, const AudioFormat format)
 	{
 		*this = AudioDecoder::Decode(path, format);
@@ -22,5 +29,16 @@ namespace s3d
 	Wave::Wave(std::unique_ptr<IReader> reader, const AudioFormat format)
 	{
 		*this = AudioDecoder::Decode(std::move(reader), format);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	save
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Wave::save(const FilePathView path, const AudioFormat format) const
+	{
+		return AudioEncoder::Save(*this, format, path);
 	}
 }

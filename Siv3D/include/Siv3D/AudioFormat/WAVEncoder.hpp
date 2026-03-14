@@ -64,11 +64,11 @@ namespace s3d
 		/// @return 保存に成功した場合 true, それ以外の場合は false
 		bool save(const Wave& wave, FilePathView path) const override;
 
-		//bool save(const Wave& wave, FilePathView path, WAVEFormat format) const;
+		bool save(const Wave& wave, FilePathView path, WAVSaveFormat format) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	sencodeave
+		//	encode
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -78,7 +78,7 @@ namespace s3d
 		/// @return  書き出しに成功した場合 true, それ以外の場合は false
 		bool encode(const Wave& wave, IWriter& writer) const override;
 
-		//bool encode(const Wave& wave, IWriter& writer, WAVEFormat format) const;
+		bool encode(const Wave& wave, IWriter& writer, WAVSaveFormat format) const;
 
 		/// @brief Wave を WAV 形式でエンコードした結果を Blob で返します。
 		/// @param wave エンコードする Wave
@@ -86,7 +86,7 @@ namespace s3d
 		[[nodiscard]]
 		Blob encode(const Wave& wave) const override;
 
-		//[[nodiscard]]
-		//Blob encode(const Wave& wave, WAVEFormat format) const;
+		[[nodiscard]]
+		Blob encode(const Wave& wave, WAVSaveFormat format) const;
 	};
 }

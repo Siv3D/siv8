@@ -16,6 +16,7 @@
 # include "IReader.hpp"
 # include "PredefinedNamedParameter.hpp"
 # include "AudioFormat.hpp"
+# include "WAVSaveFormat.hpp"
 
 namespace s3d
 {
@@ -633,6 +634,8 @@ namespace s3d
 		//	save
 		//
 		////////////////////////////////////////////////////////////////
+
+		bool save(FilePathView path, AudioFormat format = AudioFormat::Unspecified) const;
 
 		////////////////////////////////////////////////////////////////
 		//

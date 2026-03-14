@@ -65,14 +65,14 @@ namespace s3d
 
 		static void ReadMono8(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<MonoSampleUint8> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<MonoSampleUint8[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(MonoSampleUint8)));
+				reader.read(buffer.get(), (framesToRead * sizeof(MonoSampleUint8)));
 
-				const MonoSampleUint8* pSrc = buffer.data();
+				const MonoSampleUint8* pSrc = buffer.get();
 				const MonoSampleUint8* const pSrcEnd = (pSrc + framesToRead);
 
 				while (pSrc != pSrcEnd)
@@ -90,14 +90,14 @@ namespace s3d
 
 		static void ReadStereo8(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<StereoSampleUint8> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<StereoSampleUint8[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(StereoSampleUint8)));
+				reader.read(buffer.get(), (framesToRead * sizeof(StereoSampleUint8)));
 
-				const StereoSampleUint8* pSrc = buffer.data();
+				const StereoSampleUint8* pSrc = buffer.get();
 				const StereoSampleUint8* const pSrcEnd = (pSrc + framesToRead);
 
 				while (pSrc != pSrcEnd)
@@ -114,14 +114,14 @@ namespace s3d
 
 		static void ReadMono16(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<MonoSampleInt16> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<MonoSampleInt16[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(MonoSampleInt16)));
+				reader.read(buffer.get(), (framesToRead * sizeof(MonoSampleInt16)));
 
-				const MonoSampleInt16* pSrc = buffer.data();
+				const MonoSampleInt16* pSrc = buffer.get();
 				const MonoSampleInt16* const pSrcEnd = (pSrc + framesToRead);
 
 				while (pSrc != pSrcEnd)
@@ -139,14 +139,14 @@ namespace s3d
 
 		static void ReadStereo16(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<StereoSampleInt16> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<StereoSampleInt16[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(StereoSampleInt16)));
+				reader.read(buffer.get(), (framesToRead * sizeof(StereoSampleInt16)));
 
-				const StereoSampleInt16* pSrc = buffer.data();
+				const StereoSampleInt16* pSrc = buffer.get();
 				const StereoSampleInt16* const pSrcEnd = (pSrc + framesToRead);
 
 				while (pSrc != pSrcEnd)
@@ -163,14 +163,14 @@ namespace s3d
 
 		static void ReadMono24(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<MonoSampleInt24> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<MonoSampleInt24[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(MonoSampleInt24)));
+				reader.read(buffer.get(), (framesToRead * sizeof(MonoSampleInt24)));
 
-				const MonoSampleInt24* pSrc = buffer.data();
+				const MonoSampleInt24* pSrc = buffer.get();
 				const MonoSampleInt24* const pSrcEnd = (pSrc + framesToRead);
 
 				while (pSrc != pSrcEnd)
@@ -188,14 +188,14 @@ namespace s3d
 
 		static void ReadStereo24(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<StereoSampleInt24> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<StereoSampleInt24[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(StereoSampleInt24)));
+				reader.read(buffer.get(), (framesToRead * sizeof(StereoSampleInt24)));
 
-				const StereoSampleInt24* pSrc = buffer.data();
+				const StereoSampleInt24* pSrc = buffer.get();
 				const StereoSampleInt24* const pSrcEnd = (pSrc + framesToRead);
 
 				while (pSrc != pSrcEnd)
@@ -212,14 +212,14 @@ namespace s3d
 
 		static void ReadMono32(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<MonoSampleInt32> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<MonoSampleInt32[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(MonoSampleInt32)));
+				reader.read(buffer.get(), (framesToRead * sizeof(MonoSampleInt32)));
 
-				const MonoSampleInt32* pSrc = buffer.data();
+				const MonoSampleInt32* pSrc = buffer.get();
 				const MonoSampleInt32* const pSrcEnd = (pSrc + framesToRead);
 				
 				while (pSrc != pSrcEnd)
@@ -237,14 +237,14 @@ namespace s3d
 
 		static void ReadStereo32(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<StereoSampleInt32> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<StereoSampleInt32[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(StereoSampleInt32)));
+				reader.read(buffer.get(), (framesToRead * sizeof(StereoSampleInt32)));
 				
-				const StereoSampleInt32* pSrc = buffer.data();
+				const StereoSampleInt32* pSrc = buffer.get();
 				const StereoSampleInt32* const pSrcEnd = (pSrc + framesToRead);
 				
 				while (pSrc != pSrcEnd)
@@ -261,14 +261,14 @@ namespace s3d
 
 		static void ReadMonoFloat32(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<float> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<float[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(float)));
+				reader.read(buffer.get(), (framesToRead * sizeof(float)));
 
-				const float* pSrc = buffer.data();
+				const float* pSrc = buffer.get();
 				const float* const pSrcEnd = (pSrc + framesToRead);
 
 				while (pSrc != pSrcEnd)
@@ -291,14 +291,14 @@ namespace s3d
 
 		static void ReadMonoFloat64(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<double> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<double[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(double)));
+				reader.read(buffer.get(), (framesToRead * sizeof(double)));
 				
-				const double* pSrc = buffer.data();
+				const double* pSrc = buffer.get();
 				const double* const pSrcEnd = (pSrc + framesToRead);
 				
 				while (pSrc != pSrcEnd)
@@ -316,14 +316,14 @@ namespace s3d
 
 		static void ReadStereoFloat64(IReader& reader, size_t numFrames, StereoSampleFloat32* pDst)
 		{
-			Array<StereoSampleFloat64> buffer(BufferFrameCount);
+			auto buffer = std::make_unique_for_overwrite<StereoSampleFloat64[]>(BufferFrameCount);
 
 			while (0 < numFrames)
 			{
 				const size_t framesToRead = Min(numFrames, BufferFrameCount);
-				reader.read(buffer.data(), (framesToRead * sizeof(StereoSampleFloat64)));
+				reader.read(buffer.get(), (framesToRead * sizeof(StereoSampleFloat64)));
 				
-				const StereoSampleFloat64* pSrc = buffer.data();
+				const StereoSampleFloat64* pSrc = buffer.get();
 				const StereoSampleFloat64* const pSrcEnd = (pSrc + framesToRead);
 				
 				while (pSrc != pSrcEnd)
@@ -503,8 +503,8 @@ namespace s3d
 		const uint16 bitsPerSample = formatHeader.bitsPerSample;
 		const uint16 channels = formatHeader.channels;
 
-		const bool isPCM = (actualFormatID == 0x0001);
-		const bool isFloat = (actualFormatID == 0x0003);
+		const bool isPCM = (actualFormatID == WAVE_FORMAT_PCM);
+		const bool isFloat = (actualFormatID == WAVE_FORMAT_IEEE_FLOAT);
 
 		Wave wave{ numFrames, Arg::sampleRate = sampleRate };
 		StereoSampleFloat32* pDst = wave.data();

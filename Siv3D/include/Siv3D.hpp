@@ -1704,6 +1704,7 @@
 # include <Siv3D/AudioDecoder.hpp> // ToDo
 # include <Siv3D/AudioEncoder.hpp> // ToDo
 
+# include <Siv3D/WAVSaveFormat.hpp>
 # include <Siv3D/AudioFormat/WAVDecoder.hpp>
 # include <Siv3D/AudioFormat/WAVEncoder.hpp>
 //# include <Siv3D/AudioFormat/OggVorbisDecoder.hpp>

@@ -708,6 +708,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\VoronoiCell.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Wave.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WaveSample.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\WAVSaveFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WebBrowser.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp" />
@@ -1433,6 +1434,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\AudioEncoder\SivAudioEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\SivAudioFormat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVDecoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVEncoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BatteryChargeStatus\SivBatteryChargeStatus.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Bezier2Walker\SivBezier2Walker.cpp" />

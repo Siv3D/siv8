@@ -95,6 +95,9 @@ namespace s3d
 		double right = 0.0;
 	};
 
+	inline constexpr uint16 WAVE_FORMAT_PCM = 0x0001;
+	inline constexpr uint16 WAVE_FORMAT_IEEE_FLOAT = 0x0003;
+
 	template <size_t Size>
 	[[nodiscard]]
 	bool MemEqual(const uint8(&lhs)[Size], const uint8(&rhs)[Size]) noexcept
