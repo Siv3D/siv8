@@ -1312,6 +1312,12 @@
     <Filter Include="include\Siv3D\AudioFormat">
       <UniqueIdentifier>{960c19e4-59a9-4c1f-b67c-fb096b787c63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\AudioFormat\WAV">
+      <UniqueIdentifier>{7cc1afa5-9a2a-486b-b9f5-ffa479f72239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Wave">
+      <UniqueIdentifier>{875f9626-e4cc-441f-9720-61b559cf929f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5298,6 +5304,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\WAVEncoder.hpp">
       <Filter>include\Siv3D\AudioFormat</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVFormat.hpp">
+      <Filter>src\Siv3D\AudioFormat\WAV</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8239,6 +8248,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\AudioEncoder\AudioEncoderFactory.cpp">
       <Filter>src\Siv3D\AudioEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVDecoder.cpp">
+      <Filter>src\Siv3D\AudioFormat\WAV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Wave\SivWave.cpp">
+      <Filter>src\Siv3D\Wave</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

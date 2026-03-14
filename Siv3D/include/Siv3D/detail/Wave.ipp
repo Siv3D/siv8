@@ -21,15 +21,15 @@ namespace s3d
 
 	constexpr Wave::Wave(const container_type& other, const Arg::sampleRate_<uint32> sampleRate)
 		: m_container{ other }
-		, m_sampleRate{ *sampleRate } {}
+		, m_sampleRate{ Clamp(*sampleRate, MinSampleRate, MaxSampleRate) } {}
 
 	constexpr Wave::Wave(container_type&& other, const Arg::sampleRate_<uint32> sampleRate)
 		: m_container{ std::move(other) }
-		, m_sampleRate{ *sampleRate } {}
+		, m_sampleRate{ Clamp(*sampleRate, MinSampleRate, MaxSampleRate) } {}
 
 	constexpr Wave::Wave(const size_type count, const Arg::sampleRate_<uint32> sampleRate)
 		: m_container(count)
-		, m_sampleRate{ *sampleRate } {}
+		, m_sampleRate{ Clamp(*sampleRate, MinSampleRate, MaxSampleRate) } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -270,6 +270,34 @@ namespace s3d
 	{
 		return m_container.size_bytes();
 	}
+
+
+
+
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sampleRate
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint32 Wave::sampleRate() const noexcept
+	{
+		return m_sampleRate;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setSampleRate
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr void Wave::setSampleRate(const uint32 sampleRate) noexcept
+	{
+		m_sampleRate = Clamp(sampleRate, MinSampleRate, MaxSampleRate);
+	}
+
 
 
 

@@ -15,6 +15,7 @@
 # include "Duration.hpp"
 # include "IReader.hpp"
 # include "PredefinedNamedParameter.hpp"
+# include "AudioFormat.hpp"
 
 namespace s3d
 {
@@ -123,11 +124,11 @@ namespace s3d
 		[[nodiscard]]
 		explicit constexpr Wave(Arg::reserve_<size_type> size, Arg::sampleRate_<uint32> sampleRate = DefaultSampleRate);
 
-		//[[nodiscard]]
-		//explicit Wave(FilePathView path, AudioFormat format = AudioFormat::Unspecified);
+		[[nodiscard]]
+		explicit Wave(FilePathView path, AudioFormat format = AudioFormat::Unspecified);
 
-		//[[nodiscard]]
-		//explicit Wave(std::unique_ptr<IReader> reader, AudioFormat format = AudioFormat::Unspecified);
+		[[nodiscard]]
+		explicit Wave(std::unique_ptr<IReader> reader, AudioFormat format = AudioFormat::Unspecified);
 
 		//[[nodiscard]]
 		//Wave(GMInstrument instrument, uint8 key, const Duration& duration, double velocity = 1.0, Arg::sampleRate_<uint32> sampleRate = DefaultSampleRate);
@@ -421,6 +422,23 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr Duration duration() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sampleRate
+		//
+		////////////////////////////////////////////////////////////////
+
+		[[nodiscard]]
+		constexpr uint32 sampleRate() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	setSampleRate
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr void setSampleRate(uint32 sampleRate) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
