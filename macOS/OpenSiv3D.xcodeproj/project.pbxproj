@@ -1063,6 +1063,49 @@
 		F9797E4B2F643FC500518D26 /* SivAudioEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E412F643FC500518D26 /* SivAudioEncoder.cpp */; };
 		F9797E4C2F643FC500518D26 /* CAudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E392F643FC500518D26 /* CAudioDecoder.cpp */; };
 		F9797E4F2F643FDC00518D26 /* SivIAudioDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E4D2F643FDC00518D26 /* SivIAudioDecoder.cpp */; };
+		F9797E532F667DC200518D26 /* WAVEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E512F667DC200518D26 /* WAVEncoder.hpp */; };
+		F9797E542F667DC200518D26 /* WAVDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E502F667DC200518D26 /* WAVDecoder.hpp */; };
+		F9797E592F667DEF00518D26 /* WAVFormat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E572F667DEF00518D26 /* WAVFormat.hpp */; };
+		F9797E5A2F667DEF00518D26 /* WAVDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E552F667DEF00518D26 /* WAVDecoder.cpp */; };
+		F9797E5B2F667DEF00518D26 /* WAVEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E562F667DEF00518D26 /* WAVEncoder.cpp */; };
+		F9797E5E2F667E0400518D26 /* SivWave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E5C2F667E0400518D26 /* SivWave.cpp */; };
+		F9797E602F667E2F00518D26 /* WAVSaveFormat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E5F2F667E2F00518D26 /* WAVSaveFormat.hpp */; };
+		F9797E632F667E4A00518D26 /* SivWAVSaveFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E612F667E4A00518D26 /* SivWAVSaveFormat.cpp */; };
+		F9797E652F667E6100518D26 /* WaveProcessing.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797E642F667E6100518D26 /* WaveProcessing.hpp */; };
+		F9797E682F667E7300518D26 /* SivWaveProcessing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E662F667E7300518D26 /* SivWaveProcessing.cpp */; };
+		F9797E842F667E9900518D26 /* CDSPHBDownsampler.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E792F667E9900518D26 /* CDSPHBDownsampler.h */; };
+		F9797E852F667E9900518D26 /* pf_avx_double.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E692F667E9900518D26 /* pf_avx_double.h */; };
+		F9797E862F667E9900518D26 /* pf_neon_double.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E6B2F667E9900518D26 /* pf_neon_double.h */; };
+		F9797E872F667E9900518D26 /* CDSPBlockConvolver.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E762F667E9900518D26 /* CDSPBlockConvolver.h */; };
+		F9797E882F667E9900518D26 /* CDSPFracInterpolator.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E782F667E9900518D26 /* CDSPFracInterpolator.h */; };
+		F9797E892F667E9900518D26 /* pffft.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E702F667E9900518D26 /* pffft.h */; };
+		F9797E8A2F667E9900518D26 /* r8bbase.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E812F667E9900518D26 /* r8bbase.h */; };
+		F9797E8B2F667E9900518D26 /* pffft_double.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E722F667E9900518D26 /* pffft_double.h */; };
+		F9797E8C2F667E9900518D26 /* r8bconf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E822F667E9900518D26 /* r8bconf.h */; };
+		F9797E8D2F667E9900518D26 /* pf_neon_double_from_avx.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E6C2F667E9900518D26 /* pf_neon_double_from_avx.h */; };
+		F9797E8E2F667E9900518D26 /* CDSPFIRFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E772F667E9900518D26 /* CDSPFIRFilter.h */; };
+		F9797E8F2F667E9900518D26 /* pffft_priv_impl.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E742F667E9900518D26 /* pffft_priv_impl.h */; };
+		F9797E902F667E9900518D26 /* CDSPProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E7D2F667E9900518D26 /* CDSPProcessor.h */; };
+		F9797E912F667E9900518D26 /* CDSPHBUpsampler.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E7B2F667E9900518D26 /* CDSPHBUpsampler.h */; };
+		F9797E922F667E9900518D26 /* CDSPRealFFT.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E7E2F667E9900518D26 /* CDSPRealFFT.h */; };
+		F9797E932F667E9900518D26 /* CDSPResampler.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E7F2F667E9900518D26 /* CDSPResampler.h */; };
+		F9797E942F667E9900518D26 /* pf_double.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E6A2F667E9900518D26 /* pf_double.h */; };
+		F9797E952F667E9900518D26 /* pf_sse2_double.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E6E2F667E9900518D26 /* pf_sse2_double.h */; };
+		F9797E962F667E9900518D26 /* CDSPSincFilterGen.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E802F667E9900518D26 /* CDSPSincFilterGen.h */; };
+		F9797E972F667E9900518D26 /* pf_scalar_double.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797E6D2F667E9900518D26 /* pf_scalar_double.h */; };
+		F9797E982F667E9900518D26 /* CDSPHBDownsampler.inc in Sources */ = {isa = PBXBuildFile; fileRef = F9797E7A2F667E9900518D26 /* CDSPHBDownsampler.inc */; };
+		F9797E992F667E9900518D26 /* pffft.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797E712F667E9900518D26 /* pffft.c */; };
+		F9797E9A2F667E9900518D26 /* pffft_double.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797E732F667E9900518D26 /* pffft_double.c */; };
+		F9797E9B2F667E9900518D26 /* CDSPHBUpsampler.inc in Sources */ = {isa = PBXBuildFile; fileRef = F9797E7C2F667E9900518D26 /* CDSPHBUpsampler.inc */; };
+		F9797E9E2F667EC600518D26 /* SivDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E9C2F667EC600518D26 /* SivDialog.cpp */; };
+		F9797EA62F667ED800518D26 /* IMediaTranscoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EA12F667ED800518D26 /* IMediaTranscoder.hpp */; };
+		F9797EA72F667ED800518D26 /* SivMP3Quality.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EA42F667ED800518D26 /* SivMP3Quality.cpp */; };
+		F9797EA82F667ED800518D26 /* MediaTranscoderFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EA22F667ED800518D26 /* MediaTranscoderFactory.cpp */; };
+		F9797EA92F667ED800518D26 /* SivAACQuality.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797E9F2F667ED800518D26 /* SivAACQuality.cpp */; };
+		F9797EAC2F667F0F00518D26 /* MP3Quality.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EAB2F667F0F00518D26 /* MP3Quality.hpp */; };
+		F9797EAD2F667F0F00518D26 /* AACQuality.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EAA2F667F0F00518D26 /* AACQuality.hpp */; };
+		F9797EB12F667F3300518D26 /* CMediaTranscoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EAE2F667F3300518D26 /* CMediaTranscoder.hpp */; };
+		F9797EB22F667F3300518D26 /* CMediaTranscoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EAF2F667F3300518D26 /* CMediaTranscoder.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4077,6 +4120,49 @@
 		F9797E402F643FC500518D26 /* IAudioEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAudioEncoder.hpp; sourceTree = "<group>"; };
 		F9797E412F643FC500518D26 /* SivAudioEncoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAudioEncoder.cpp; sourceTree = "<group>"; };
 		F9797E4D2F643FDC00518D26 /* SivIAudioDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivIAudioDecoder.cpp; sourceTree = "<group>"; };
+		F9797E502F667DC200518D26 /* WAVDecoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WAVDecoder.hpp; sourceTree = "<group>"; };
+		F9797E512F667DC200518D26 /* WAVEncoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WAVEncoder.hpp; sourceTree = "<group>"; };
+		F9797E552F667DEF00518D26 /* WAVDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WAVDecoder.cpp; sourceTree = "<group>"; };
+		F9797E562F667DEF00518D26 /* WAVEncoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WAVEncoder.cpp; sourceTree = "<group>"; };
+		F9797E572F667DEF00518D26 /* WAVFormat.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WAVFormat.hpp; sourceTree = "<group>"; };
+		F9797E5C2F667E0400518D26 /* SivWave.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivWave.cpp; sourceTree = "<group>"; };
+		F9797E5F2F667E2F00518D26 /* WAVSaveFormat.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WAVSaveFormat.hpp; sourceTree = "<group>"; };
+		F9797E612F667E4A00518D26 /* SivWAVSaveFormat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivWAVSaveFormat.cpp; sourceTree = "<group>"; };
+		F9797E642F667E6100518D26 /* WaveProcessing.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WaveProcessing.hpp; sourceTree = "<group>"; };
+		F9797E662F667E7300518D26 /* SivWaveProcessing.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivWaveProcessing.cpp; sourceTree = "<group>"; };
+		F9797E692F667E9900518D26 /* pf_avx_double.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pf_avx_double.h; sourceTree = "<group>"; };
+		F9797E6A2F667E9900518D26 /* pf_double.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pf_double.h; sourceTree = "<group>"; };
+		F9797E6B2F667E9900518D26 /* pf_neon_double.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pf_neon_double.h; sourceTree = "<group>"; };
+		F9797E6C2F667E9900518D26 /* pf_neon_double_from_avx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pf_neon_double_from_avx.h; sourceTree = "<group>"; };
+		F9797E6D2F667E9900518D26 /* pf_scalar_double.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pf_scalar_double.h; sourceTree = "<group>"; };
+		F9797E6E2F667E9900518D26 /* pf_sse2_double.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pf_sse2_double.h; sourceTree = "<group>"; };
+		F9797E702F667E9900518D26 /* pffft.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pffft.h; sourceTree = "<group>"; };
+		F9797E712F667E9900518D26 /* pffft.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pffft.c; sourceTree = "<group>"; };
+		F9797E722F667E9900518D26 /* pffft_double.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pffft_double.h; sourceTree = "<group>"; };
+		F9797E732F667E9900518D26 /* pffft_double.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pffft_double.c; sourceTree = "<group>"; };
+		F9797E742F667E9900518D26 /* pffft_priv_impl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pffft_priv_impl.h; sourceTree = "<group>"; };
+		F9797E762F667E9900518D26 /* CDSPBlockConvolver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPBlockConvolver.h; sourceTree = "<group>"; };
+		F9797E772F667E9900518D26 /* CDSPFIRFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPFIRFilter.h; sourceTree = "<group>"; };
+		F9797E782F667E9900518D26 /* CDSPFracInterpolator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPFracInterpolator.h; sourceTree = "<group>"; };
+		F9797E792F667E9900518D26 /* CDSPHBDownsampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPHBDownsampler.h; sourceTree = "<group>"; };
+		F9797E7A2F667E9900518D26 /* CDSPHBDownsampler.inc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = CDSPHBDownsampler.inc; sourceTree = "<group>"; };
+		F9797E7B2F667E9900518D26 /* CDSPHBUpsampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPHBUpsampler.h; sourceTree = "<group>"; };
+		F9797E7C2F667E9900518D26 /* CDSPHBUpsampler.inc */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; path = CDSPHBUpsampler.inc; sourceTree = "<group>"; };
+		F9797E7D2F667E9900518D26 /* CDSPProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPProcessor.h; sourceTree = "<group>"; };
+		F9797E7E2F667E9900518D26 /* CDSPRealFFT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPRealFFT.h; sourceTree = "<group>"; };
+		F9797E7F2F667E9900518D26 /* CDSPResampler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPResampler.h; sourceTree = "<group>"; };
+		F9797E802F667E9900518D26 /* CDSPSincFilterGen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CDSPSincFilterGen.h; sourceTree = "<group>"; };
+		F9797E812F667E9900518D26 /* r8bbase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = r8bbase.h; sourceTree = "<group>"; };
+		F9797E822F667E9900518D26 /* r8bconf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = r8bconf.h; sourceTree = "<group>"; };
+		F9797E9C2F667EC600518D26 /* SivDialog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDialog.cpp; sourceTree = "<group>"; };
+		F9797E9F2F667ED800518D26 /* SivAACQuality.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAACQuality.cpp; sourceTree = "<group>"; };
+		F9797EA12F667ED800518D26 /* IMediaTranscoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IMediaTranscoder.hpp; sourceTree = "<group>"; };
+		F9797EA22F667ED800518D26 /* MediaTranscoderFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MediaTranscoderFactory.cpp; sourceTree = "<group>"; };
+		F9797EA42F667ED800518D26 /* SivMP3Quality.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMP3Quality.cpp; sourceTree = "<group>"; };
+		F9797EAA2F667F0F00518D26 /* AACQuality.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AACQuality.hpp; sourceTree = "<group>"; };
+		F9797EAB2F667F0F00518D26 /* MP3Quality.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MP3Quality.hpp; sourceTree = "<group>"; };
+		F9797EAE2F667F3300518D26 /* CMediaTranscoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CMediaTranscoder.hpp; sourceTree = "<group>"; };
+		F9797EAF2F667F3300518D26 /* CMediaTranscoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CMediaTranscoder.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6508,8 +6594,10 @@
 				F98605582BD203D4006A4C0F /* muparser */,
 				F986F8FC2BC8441F006A4C0F /* Oniguruma */,
 				F99882232F58093E00C8991D /* oscpack */,
+				F9797E752F667E9900518D26 /* PFFFT */,
 				F986F9622BCA9D0A006A4C0F /* plutovg */,
 				F97204172BF0A25B000E21DD /* QuartzCore */,
+				F9797E832F667E9900518D26 /* r8brain-free-src */,
 				F9D41CEC2C9AB1BB00290998 /* rapidhash */,
 				F95122072CB62E4300151291 /* rectpack2D */,
 				F9070A752B9DEB5900383E4D /* RFC1321 */,
@@ -6795,6 +6883,7 @@
 			children = (
 				F9070BBB2B9F175000383E4D /* 2DShapes.hpp */,
 				F9070BBC2B9F175000383E4D /* 2DShapesFwd.hpp */,
+				F9797EAA2F667F0F00518D26 /* AACQuality.hpp */,
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
 				F981118E2EC8C5D800C50DD1 /* Anchor.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
@@ -7015,6 +7104,7 @@
 				F9E794652C19B6D7002615BA /* MinMax.hpp */,
 				F9070C032B9F175000383E4D /* MonitorInfo.hpp */,
 				F96F95E82C359E390033353E /* Morton.hpp */,
+				F9797EAB2F667F0F00518D26 /* MP3Quality.hpp */,
 				F980C41D2C004B3000A86B68 /* MSAASampleCount.hpp */,
 				F933ACF92E54A2BA005624D7 /* MSDFGlyph.hpp */,
 				F9E794292C12B861002615BA /* MSL.hpp */,
@@ -7194,13 +7284,16 @@
 				F934BD6F2BF880330003EAD5 /* VertexShader.hpp */,
 				F9DD96692F13EFDE0026DFA5 /* VoronoiCell.hpp */,
 				F9797DC12F60272200518D26 /* Wave.hpp */,
+				F9797E642F667E6100518D26 /* WaveProcessing.hpp */,
 				F9797DC22F60272200518D26 /* WaveSample.hpp */,
+				F9797E5F2F667E2F00518D26 /* WAVSaveFormat.hpp */,
 				F9F00A832CE06CD50097C165 /* WebBrowser.hpp */,
 				F9070C3A2B9F175000383E4D /* Window.hpp */,
 				F9070C3B2B9F175000383E4D /* WindowState.hpp */,
 				F9070C3C2B9F175000383E4D /* WindowStyle.hpp */,
 				F9070C3D2B9F175000383E4D /* YesNo.hpp */,
 				F9712A4C2C269B850049CC26 /* Zip.hpp */,
+				F9797E522F667DC200518D26 /* AudioFormat */,
 				F9070BB02B9F175000383E4D /* detail */,
 				F9070BB32B9F175000383E4D /* Error */,
 				F96F960B2C359F070033353E /* Geometry2D */,
@@ -7702,6 +7795,7 @@
 		F9070DAC2B9F175E00383E4D /* Siv3D */ = {
 			isa = PBXGroup;
 			children = (
+				F9797EA02F667ED800518D26 /* AACQuality */,
 				F98111932EC8C60200C50DD1 /* Anchor */,
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
@@ -7754,6 +7848,7 @@
 				F9070D392B9F175E00383E4D /* Demangle */,
 				F980C4682C01B4B500A86B68 /* DepthStencilState */,
 				F980C46C2C01B4B600A86B68 /* DepthStencilStateBuilder */,
+				F9797E9D2F667EC600518D26 /* Dialog */,
 				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
 				F943AACA2E2A09BB001B4D43 /* DrawableText */,
 				F99881C22F56CA7600C8991D /* DriveType */,
@@ -7833,6 +7928,7 @@
 				F9FD0BB42D1DA6EA00A584CE /* Mat3x3 */,
 				F98605422BD203BC006A4C0F /* MathParser */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
+				F9797EA32F667ED800518D26 /* MediaTranscoder */,
 				F9528C4B2BBFEC2400222F45 /* MemoryMappedFile */,
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
 				F9528BB22BBE7D3400222F45 /* MemoryReader */,
@@ -7843,6 +7939,7 @@
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
 				F96F95F52C359EB80033353E /* Morton */,
 				F98605AD2BE49BE0006A4C0F /* Mouse */,
+				F9797EA52F667ED800518D26 /* MP3Quality */,
 				F980C4202C004B5000A86B68 /* MSAASampleCount */,
 				F9E794352C12BAC5002615BA /* MSL */,
 				F998814D2F40B56800C8991D /* MultiPolygon */,
@@ -7948,6 +8045,9 @@
 				F9070DA62B9F175E00383E4D /* Vector3D */,
 				F9070DA82B9F175E00383E4D /* Vector4D */,
 				F934BD752BF880620003EAD5 /* VertexShader */,
+				F9797E5D2F667E0400518D26 /* Wave */,
+				F9797E672F667E7300518D26 /* WaveProcessing */,
+				F9797E622F667E4A00518D26 /* WAVSaveFormat */,
 				F9F00A812CE06CC20097C165 /* WebBrowser */,
 				F9070DAB2B9F175E00383E4D /* Window */,
 			);
@@ -7986,6 +8086,7 @@
 				F9070E042B9F176B00383E4D /* FileSystem */,
 				F9807D9C2BF667E600D9B590 /* FreestandingMessageBox */,
 				F95289C62B9FEA0D00222F45 /* GLFW */,
+				F9797EB02F667F3300518D26 /* MediaTranscoder */,
 				F9807D9F2BF6690B00D9B590 /* MessageBox */,
 				F986058D2BDCAF65006A4C0F /* MonitorInfo */,
 				F98111DB2ECC08E300C50DD1 /* NativeShare */,
@@ -9547,6 +9648,7 @@
 		F9797E312F63314300518D26 /* AudioFormat */ = {
 			isa = PBXGroup;
 			children = (
+				F9797E582F667DEF00518D26 /* WAV */,
 				F9797E302F63314300518D26 /* SivAudioFormat.cpp */,
 			);
 			path = AudioFormat;
@@ -9582,6 +9684,137 @@
 				F9797E4D2F643FDC00518D26 /* SivIAudioDecoder.cpp */,
 			);
 			path = IAudioDecoder;
+			sourceTree = "<group>";
+		};
+		F9797E522F667DC200518D26 /* AudioFormat */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E502F667DC200518D26 /* WAVDecoder.hpp */,
+				F9797E512F667DC200518D26 /* WAVEncoder.hpp */,
+			);
+			path = AudioFormat;
+			sourceTree = "<group>";
+		};
+		F9797E582F667DEF00518D26 /* WAV */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E552F667DEF00518D26 /* WAVDecoder.cpp */,
+				F9797E562F667DEF00518D26 /* WAVEncoder.cpp */,
+				F9797E572F667DEF00518D26 /* WAVFormat.hpp */,
+			);
+			path = WAV;
+			sourceTree = "<group>";
+		};
+		F9797E5D2F667E0400518D26 /* Wave */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E5C2F667E0400518D26 /* SivWave.cpp */,
+			);
+			path = Wave;
+			sourceTree = "<group>";
+		};
+		F9797E622F667E4A00518D26 /* WAVSaveFormat */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E612F667E4A00518D26 /* SivWAVSaveFormat.cpp */,
+			);
+			path = WAVSaveFormat;
+			sourceTree = "<group>";
+		};
+		F9797E672F667E7300518D26 /* WaveProcessing */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E662F667E7300518D26 /* SivWaveProcessing.cpp */,
+			);
+			path = WaveProcessing;
+			sourceTree = "<group>";
+		};
+		F9797E6F2F667E9900518D26 /* simd */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E692F667E9900518D26 /* pf_avx_double.h */,
+				F9797E6A2F667E9900518D26 /* pf_double.h */,
+				F9797E6B2F667E9900518D26 /* pf_neon_double.h */,
+				F9797E6C2F667E9900518D26 /* pf_neon_double_from_avx.h */,
+				F9797E6D2F667E9900518D26 /* pf_scalar_double.h */,
+				F9797E6E2F667E9900518D26 /* pf_sse2_double.h */,
+			);
+			path = simd;
+			sourceTree = "<group>";
+		};
+		F9797E752F667E9900518D26 /* PFFFT */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E6F2F667E9900518D26 /* simd */,
+				F9797E702F667E9900518D26 /* pffft.h */,
+				F9797E712F667E9900518D26 /* pffft.c */,
+				F9797E722F667E9900518D26 /* pffft_double.h */,
+				F9797E732F667E9900518D26 /* pffft_double.c */,
+				F9797E742F667E9900518D26 /* pffft_priv_impl.h */,
+			);
+			path = PFFFT;
+			sourceTree = "<group>";
+		};
+		F9797E832F667E9900518D26 /* r8brain-free-src */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E762F667E9900518D26 /* CDSPBlockConvolver.h */,
+				F9797E772F667E9900518D26 /* CDSPFIRFilter.h */,
+				F9797E782F667E9900518D26 /* CDSPFracInterpolator.h */,
+				F9797E792F667E9900518D26 /* CDSPHBDownsampler.h */,
+				F9797E7A2F667E9900518D26 /* CDSPHBDownsampler.inc */,
+				F9797E7B2F667E9900518D26 /* CDSPHBUpsampler.h */,
+				F9797E7C2F667E9900518D26 /* CDSPHBUpsampler.inc */,
+				F9797E7D2F667E9900518D26 /* CDSPProcessor.h */,
+				F9797E7E2F667E9900518D26 /* CDSPRealFFT.h */,
+				F9797E7F2F667E9900518D26 /* CDSPResampler.h */,
+				F9797E802F667E9900518D26 /* CDSPSincFilterGen.h */,
+				F9797E812F667E9900518D26 /* r8bbase.h */,
+				F9797E822F667E9900518D26 /* r8bconf.h */,
+			);
+			path = "r8brain-free-src";
+			sourceTree = "<group>";
+		};
+		F9797E9D2F667EC600518D26 /* Dialog */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E9C2F667EC600518D26 /* SivDialog.cpp */,
+			);
+			path = Dialog;
+			sourceTree = "<group>";
+		};
+		F9797EA02F667ED800518D26 /* AACQuality */ = {
+			isa = PBXGroup;
+			children = (
+				F9797E9F2F667ED800518D26 /* SivAACQuality.cpp */,
+			);
+			path = AACQuality;
+			sourceTree = "<group>";
+		};
+		F9797EA32F667ED800518D26 /* MediaTranscoder */ = {
+			isa = PBXGroup;
+			children = (
+				F9797EA12F667ED800518D26 /* IMediaTranscoder.hpp */,
+				F9797EA22F667ED800518D26 /* MediaTranscoderFactory.cpp */,
+			);
+			path = MediaTranscoder;
+			sourceTree = "<group>";
+		};
+		F9797EA52F667ED800518D26 /* MP3Quality */ = {
+			isa = PBXGroup;
+			children = (
+				F9797EA42F667ED800518D26 /* SivMP3Quality.cpp */,
+			);
+			path = MP3Quality;
+			sourceTree = "<group>";
+		};
+		F9797EB02F667F3300518D26 /* MediaTranscoder */ = {
+			isa = PBXGroup;
+			children = (
+				F9797EAE2F667F3300518D26 /* CMediaTranscoder.hpp */,
+				F9797EAF2F667F3300518D26 /* CMediaTranscoder.cpp */,
+			);
+			path = MediaTranscoder;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -13247,6 +13480,7 @@
 				F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */,
 				F98604122BCFBB54006A4C0F /* SkSLFunctionDeclaration.h in Headers */,
 				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
+				F9797E602F667E2F00518D26 /* WAVSaveFormat.hpp in Headers */,
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
 				F98603252BCFBB54006A4C0F /* SkPathOpsLine.h in Headers */,
 				F9070DC72B9F175E00383E4D /* Siv3DEngine.hpp in Headers */,
@@ -13409,6 +13643,7 @@
 				F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */,
 				F9070CC72B9F175000383E4D /* Hash.hpp in Headers */,
 				F98600832BCFBB53006A4C0F /* SkSpan_impl.h in Headers */,
+				F9797E592F667DEF00518D26 /* WAVFormat.hpp in Headers */,
 				F90DA05B2D1A91D90003E1E8 /* ITexture.hpp in Headers */,
 				F97203222BF09E80000E21DD /* CRenderer_Metal.hpp in Headers */,
 				F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */,
@@ -13457,6 +13692,7 @@
 				F986FFEE2BCFBB53006A4C0F /* SkEncodedImageFormat.h in Headers */,
 				F9070DF82B9F175E00383E4D /* UnicodeUtility.hpp in Headers */,
 				F986FA9A2BCFB53B006A4C0F /* ftwinfnt.h in Headers */,
+				F9797EB12F667F3300518D26 /* CMediaTranscoder.hpp in Headers */,
 				F986031F2BCFBB54006A4C0F /* SkPathOpsCubic.h in Headers */,
 				F980C45D2C01B20F00A86B68 /* DepthStencilStateBuilder.hpp in Headers */,
 				F986047C2BCFBB54006A4C0F /* SkSLMemoryLayout.h in Headers */,
@@ -13691,6 +13927,8 @@
 				F998816A2F42F4EE00C8991D /* JitterEndpointMode.hpp in Headers */,
 				F98600212BCFBB53006A4C0F /* SkM44.h in Headers */,
 				F98601902BCFBB53006A4C0F /* SkConvertPixels.h in Headers */,
+				F9797EAC2F667F0F00518D26 /* MP3Quality.hpp in Headers */,
+				F9797EAD2F667F0F00518D26 /* AACQuality.hpp in Headers */,
 				F9070CFC2B9F175100383E4D /* Step.hpp in Headers */,
 				F9070CA82B9F175000383E4D /* ConsoleBuffer.hpp in Headers */,
 				F98601EC2BCFBB53006A4C0F /* SkMaskGamma.h in Headers */,
@@ -13746,6 +13984,7 @@
 				F9CD6A2C2DE2276B00EFA782 /* agg_basics.h in Headers */,
 				F9CD6A2D2DE2276B00EFA782 /* agg_math.h in Headers */,
 				F9CD6A2E2DE2276B00EFA782 /* agg_array.h in Headers */,
+				F9797EA62F667ED800518D26 /* IMediaTranscoder.hpp in Headers */,
 				F9CD6A2F2DE2276B00EFA782 /* OutlineGlyphRenderer.hpp in Headers */,
 				F9CD6A302DE2276B00EFA782 /* agg_config.h in Headers */,
 				F9CD6A312DE2276B00EFA782 /* BitmapGlyphRenderer.hpp in Headers */,
@@ -13967,6 +14206,7 @@
 				F933AD772E54A375005624D7 /* msdf-error-correction.h in Headers */,
 				F933AD782E54A375005624D7 /* MSDFErrorCorrection.h in Headers */,
 				F933AD792E54A375005624D7 /* DistanceMapping.h in Headers */,
+				F9797E652F667E6100518D26 /* WaveProcessing.hpp in Headers */,
 				F933AD7A2E54A375005624D7 /* BitmapRef.hpp in Headers */,
 				F933AD7B2E54A375005624D7 /* sdf-error-estimation.h in Headers */,
 				F933AD7C2E54A375005624D7 /* msdfgen.h in Headers */,
@@ -14207,6 +14447,26 @@
 				F90706BB2B9DAEC900383E4D /* phmap_base.h in Headers */,
 				F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */,
 				F9E7943F2C158B8F002615BA /* Circular.hpp in Headers */,
+				F9797E842F667E9900518D26 /* CDSPHBDownsampler.h in Headers */,
+				F9797E852F667E9900518D26 /* pf_avx_double.h in Headers */,
+				F9797E862F667E9900518D26 /* pf_neon_double.h in Headers */,
+				F9797E872F667E9900518D26 /* CDSPBlockConvolver.h in Headers */,
+				F9797E882F667E9900518D26 /* CDSPFracInterpolator.h in Headers */,
+				F9797E892F667E9900518D26 /* pffft.h in Headers */,
+				F9797E8A2F667E9900518D26 /* r8bbase.h in Headers */,
+				F9797E8B2F667E9900518D26 /* pffft_double.h in Headers */,
+				F9797E8C2F667E9900518D26 /* r8bconf.h in Headers */,
+				F9797E8D2F667E9900518D26 /* pf_neon_double_from_avx.h in Headers */,
+				F9797E8E2F667E9900518D26 /* CDSPFIRFilter.h in Headers */,
+				F9797E8F2F667E9900518D26 /* pffft_priv_impl.h in Headers */,
+				F9797E902F667E9900518D26 /* CDSPProcessor.h in Headers */,
+				F9797E912F667E9900518D26 /* CDSPHBUpsampler.h in Headers */,
+				F9797E922F667E9900518D26 /* CDSPRealFFT.h in Headers */,
+				F9797E932F667E9900518D26 /* CDSPResampler.h in Headers */,
+				F9797E942F667E9900518D26 /* pf_double.h in Headers */,
+				F9797E952F667E9900518D26 /* pf_sse2_double.h in Headers */,
+				F9797E962F667E9900518D26 /* CDSPSincFilterGen.h in Headers */,
+				F9797E972F667E9900518D26 /* pf_scalar_double.h in Headers */,
 				F980C4882C04B3EB00A86B68 /* Vertex2DBuilder.hpp in Headers */,
 				F98601542BCFBB53006A4C0F /* SkBigPicture.h in Headers */,
 				F98601E82BCFBB53006A4C0F /* SkMaskCache.h in Headers */,
@@ -14571,6 +14831,8 @@
 				F986FA902BCFB53B006A4C0F /* ftparams.h in Headers */,
 				F9528C192BBF026F00222F45 /* zstd_deps.h in Headers */,
 				F980C4652C01B22900A86B68 /* BlendStateBuilder.ipp in Headers */,
+				F9797E532F667DC200518D26 /* WAVEncoder.hpp in Headers */,
+				F9797E542F667DC200518D26 /* WAVDecoder.hpp in Headers */,
 				F98602672BCFBB54006A4C0F /* SkScan.h in Headers */,
 				F90DA05F2D1A91FB0003E1E8 /* ImageProcessing.hpp in Headers */,
 				F986FA732BCFB53B006A4C0F /* ftadvanc.h in Headers */,
@@ -14897,6 +15159,7 @@
 				F933AD2C2E54A30E005624D7 /* TextEffect_VerticalGradient.cpp in Sources */,
 				F933AD2D2E54A30E005624D7 /* TextEffect_BasicTextEffect.cpp in Sources */,
 				F933AD2E2E54A30E005624D7 /* TextEffect_Reflection.cpp in Sources */,
+				F9797E632F667E4A00518D26 /* SivWAVSaveFormat.cpp in Sources */,
 				F97204352BF0A39F000E21DD /* Metal.cpp in Sources */,
 				F986F83C2BC7B043006A4C0F /* SivINISection.cpp in Sources */,
 				F98602882BCFBB54006A4C0F /* SkTextBlob.cpp in Sources */,
@@ -15052,6 +15315,8 @@
 				F98601F02BCFBB53006A4C0F /* SkMatrixInvert.cpp in Sources */,
 				F986023E2BCFBB54006A4C0F /* SkRecord.cpp in Sources */,
 				F9E794332C12B899002615BA /* SivInterpolation.cpp in Sources */,
+				F9797E5A2F667DEF00518D26 /* WAVDecoder.cpp in Sources */,
+				F9797E5B2F667DEF00518D26 /* WAVEncoder.cpp in Sources */,
 				F98603D72BCFBB54006A4C0F /* SkSLPipelineStageCodeGenerator.cpp in Sources */,
 				F9807DA02BF6690B00D9B590 /* SivMessageBox_macOS.mm in Sources */,
 				F9E7945B2C19743A002615BA /* SivTimer.cpp in Sources */,
@@ -15129,6 +15394,7 @@
 				F98604692BCFBB54006A4C0F /* SkSLCompiler.cpp in Sources */,
 				F98602782BCFBB54006A4C0F /* SkStringUtils.cpp in Sources */,
 				F98603242BCFBB54006A4C0F /* SkPathOpsLine.cpp in Sources */,
+				F9797E682F667E7300518D26 /* SivWaveProcessing.cpp in Sources */,
 				F98603BB2BCFBB54006A4C0F /* SkWorkingColorSpaceShader.cpp in Sources */,
 				F98603112BCFBB54006A4C0F /* SkOpCubicHull.cpp in Sources */,
 				F986F91E2BC8441F006A4C0F /* regexec.c in Sources */,
@@ -15237,6 +15503,9 @@
 				F98603AB2BCFBB54006A4C0F /* SkLocalMatrixShader.cpp in Sources */,
 				F986F9A42BCA9D0A006A4C0F /* gelement.cpp in Sources */,
 				F98600E92BCFBB53006A4C0F /* SkTDArray.cpp in Sources */,
+				F9797EA72F667ED800518D26 /* SivMP3Quality.cpp in Sources */,
+				F9797EA82F667ED800518D26 /* MediaTranscoderFactory.cpp in Sources */,
+				F9797EA92F667ED800518D26 /* SivAACQuality.cpp in Sources */,
 				F986050D2BCFBE42006A4C0F /* SkOSFile_stdio.cpp in Sources */,
 				F986019A2BCFBB53006A4C0F /* SkDescriptor.cpp in Sources */,
 				F9070DCF2B9F175E00383E4D /* SivFmtExtension.cpp in Sources */,
@@ -15394,6 +15663,10 @@
 				F986015B2BCFBB53006A4C0F /* SkBitmapProcState_opts_ssse3.cpp in Sources */,
 				F9528C312BBF026F00222F45 /* zstd_ldm.c in Sources */,
 				F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */,
+				F9797E982F667E9900518D26 /* CDSPHBDownsampler.inc in Sources */,
+				F9797E992F667E9900518D26 /* pffft.c in Sources */,
+				F9797E9A2F667E9900518D26 /* pffft_double.c in Sources */,
+				F9797E9B2F667E9900518D26 /* CDSPHBUpsampler.inc in Sources */,
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F98600D62BCFBB53006A4C0F /* SkMalloc.cpp in Sources */,
 				F9F00A522CD2995D0097C165 /* SivQualityFactor.cpp in Sources */,
@@ -15440,6 +15713,7 @@
 				F911711B2DCBBF0B000A22E6 /* SivFontMethod.cpp in Sources */,
 				F98605A92BE4887C006A4C0F /* SivRegExp.cpp in Sources */,
 				F9528C082BBF026F00222F45 /* debug.c in Sources */,
+				F9797E9E2F667EC600518D26 /* SivDialog.cpp in Sources */,
 				F98605D12BE4BE67006A4C0F /* CKeyboard.cpp in Sources */,
 				F98603282BCFBB54006A4C0F /* SkPathOpsQuad.cpp in Sources */,
 				F9712A4A2C25B8500049CC26 /* SivTransformer2D.cpp in Sources */,
@@ -15701,6 +15975,7 @@
 				F934BD782BF880620003EAD5 /* SivVertexShader.cpp in Sources */,
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F98601D82BCFBB53006A4C0F /* SkKnownRuntimeEffects.cpp in Sources */,
+				F9797E5E2F667E0400518D26 /* SivWave.cpp in Sources */,
 				F98603362BCFBB54006A4C0F /* SkReduceOrder.cpp in Sources */,
 				F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */,
 				F98600D22BCFBB53006A4C0F /* SkFloatingPoint.cpp in Sources */,
@@ -15851,6 +16126,7 @@
 				F98605382BD1049D006A4C0F /* TGAEncoder.cpp in Sources */,
 				F986046D2BCFBB54006A4C0F /* SkSLContext.cpp in Sources */,
 				F986015A2BCFBB53006A4C0F /* SkBitmapProcState_matrixProcs.cpp in Sources */,
+				F9797EB22F667F3300518D26 /* CMediaTranscoder.cpp in Sources */,
 				F98602612BCFBB54006A4C0F /* SkScan_AAAPath.cpp in Sources */,
 				F9528C262BBF026F00222F45 /* zstd_compress_superblock.c in Sources */,
 				F98605992BE3314D006A4C0F /* CCursorStyle.cpp in Sources */,
@@ -16155,6 +16431,7 @@
 					SK_ENABLE_OPTIMIZE_SIZE,
 					SK_DISABLE_TRACING,
 					SK_DISABLE_EFFECT_DESERIALIZATION,
+					R8B_PFFFT_DOUBLE,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -16232,6 +16509,7 @@
 					SK_ENABLE_OPTIMIZE_SIZE,
 					SK_DISABLE_TRACING,
 					SK_DISABLE_EFFECT_DESERIALIZATION,
+					R8B_PFFFT_DOUBLE,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
