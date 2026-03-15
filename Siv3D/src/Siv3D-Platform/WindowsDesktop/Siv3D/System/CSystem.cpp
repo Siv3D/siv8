@@ -18,6 +18,7 @@
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/CWindow.hpp>
 # include <Siv3D/Scene/CScene.hpp>
+# include <Siv3D/MediaTranscoder/IMediaTranscoder.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/PDFRenderer/IPDFRenderer.hpp>
@@ -88,6 +89,7 @@ namespace s3d
 		m_setupProgress = SetupProgress::EngineInitialized;
 
 		SIV3D_ENGINE(RegExp)->init();
+		SIV3D_ENGINE(MediaTranscoder)->init();
 		SIV3D_ENGINE(ImageDecoder)->init();
 		SIV3D_ENGINE(ImageEncoder)->init();
 		SIV3D_ENGINE(PDFRenderer)->init();

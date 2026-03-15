@@ -1336,6 +1336,18 @@
     <Filter Include="src\Siv3D\Dialog">
       <UniqueIdentifier>{8d46a492-fa1f-4fb5-9eac-a5f511cf2a9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder">
+      <UniqueIdentifier>{b8c49a22-e16e-445a-8a81-54358306c288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MediaTranscoder">
+      <UniqueIdentifier>{565437f3-9d5f-4ea3-bc98-7ebf0a5594a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MP3Quality">
+      <UniqueIdentifier>{a9e079c1-144d-47c9-b1cb-c2f3fe6b5776}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\AACQuality">
+      <UniqueIdentifier>{37ceab37-fa93-482d-b0ec-0710d1c0b6e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5391,6 +5403,18 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_sse2_double.h">
       <Filter>src\ThirdParty\PFFFT\simd</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\CMediaTranscoder.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\MediaTranscoder\IMediaTranscoder.hpp">
+      <Filter>src\Siv3D\MediaTranscoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AACQuality.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\MP3Quality.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8356,6 +8380,18 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Dialog\SivDialog.cpp">
       <Filter>src\Siv3D\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\CMediaTranscoder.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MediaTranscoder\MediaTranscoderFactory.cpp">
+      <Filter>src\Siv3D\MediaTranscoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MP3Quality\SivMP3Quality.cpp">
+      <Filter>src\Siv3D\MP3Quality</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AACQuality\SivAACQuality.cpp">
+      <Filter>src\Siv3D\AACQuality</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

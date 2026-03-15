@@ -14,6 +14,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\2DShapes.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AACQuality.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AlignedAllocator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Anchor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointSettings.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterSettings.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MP3Quality.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
@@ -765,6 +767,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\CMediaTranscoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp" />
@@ -878,6 +881,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseList.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\MediaTranscoder\IMediaTranscoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Notifications\INotifications.hpp" />
@@ -1388,6 +1392,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL\SivHLSL_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\CMediaTranscoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
@@ -1443,6 +1448,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AACQuality\SivAACQuality.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Anchor\SivAnchor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Array\SivArray.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\AssetMonitorFactory.cpp" />
@@ -1636,6 +1642,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\SivMathParser.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MediaTranscoder\MediaTranscoderFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFileView\SivMemoryMappedFileView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFile\SivMemoryMappedFile.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryReader\SivMemoryReader.cpp" />
@@ -1647,6 +1654,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Morton\SivMorton.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\MouseFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\SivMouse.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MP3Quality\SivMP3Quality.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSAASampleCount\SivMSAASampleCount.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSL\SivMSL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MultiPolygon\SivMultiPolygon.cpp" />
