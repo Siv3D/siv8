@@ -29,5 +29,5 @@ namespace s3d
 
 	template <ReaderObject Reader>
 	Font::Font(const FontMethod fontMethod, const int32 baseSize, const int32 bufferThickness, Reader&& reader, const FontOptions& options)
-		: Font{ fontMethod, baseSize, std::make_unique<Reader>(std::forward<Reader>(reader)), options } {}
+		: Font{ fontMethod, baseSize, bufferThickness, std::make_unique<Reader>(std::forward<Reader>(reader)), options } {}
 }

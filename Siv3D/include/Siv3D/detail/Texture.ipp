@@ -21,7 +21,7 @@ namespace s3d
 
 	template <ReaderObject Reader>
 	Texture::Texture(Reader&& reader, const TextureDesc desc)
-		: Texture{ std::make_unique<Reader>(std::forward<Reader>(reader)) } {}
+		: Texture{ std::make_unique<Reader>(std::forward<Reader>(reader)), desc } {}
 
 	////////////////////////////////////////////////////////////////
 	//
