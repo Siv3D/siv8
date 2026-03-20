@@ -91,19 +91,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 		//
 		//	音声ファイル
-		//	AAC, AIFF, FLAC, MIDI, MP3, Ogg Vorbis, Opus, WAV, WMA, AllAudioFiles
+		//	AAC, FLAC, MIDI, MP3, Ogg Vorbis, Opus, WAV, WMA, AllAudioFiles
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief AAC ファイル用の拡張子フィルタを返します。
-		/// @return `FileDialogFilter{ U"AAC",{ U"m4a", U"aac" } }`
+		/// @return `FileDialogFilter{ U"AAC",{ U"aac", U"m4a" } }`
 		[[nodiscard]]
 		static constexpr FileDialogFilter AAC();
-
-		/// @brief AIFF ファイル用の拡張子フィルタを返します。
-		/// @return `FileDialogFilter{ U"AIFF",{ U"aif", U"aiff", U"aifc" } }`
-		[[nodiscard]]
-		static constexpr FileDialogFilter AIFF();
 
 		/// @brief FLAC ファイル用の拡張子フィルタを返します。
 		/// @return `FileDialogFilter{ U"FLAC",{ U"flac" } }`
@@ -141,7 +136,7 @@ namespace s3d
 		static constexpr FileDialogFilter WMA();
 
 		/// @brief すべてのオーディオファイル用の拡張子フィルタを返します。
-		/// @return `FileDialogFilter{ U"All Audio Files",{ U"wav", U"mp3", U"m4a", U"aac", U"ogg", U"opus", U"mid", (+プラットフォームに応じた追加のフォーマット) } }`
+		/// @return `FileDialogFilter{ U"All Audio Files",{ U"wav", U"mp3", U"aac", U"m4a", U"ogg", U"opus", U"mid", (+プラットフォームに応じた追加のフォーマット) } }`
 		[[nodiscard]]
 		static constexpr FileDialogFilter AllAudioFiles();
 

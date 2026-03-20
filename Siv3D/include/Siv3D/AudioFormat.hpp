@@ -46,9 +46,6 @@ namespace s3d
 		/// @brief WMA
 		WMA,
 
-		/// @brief AIFF
-		AIFF,
-
 		/// @brief FLAC
 		FLAC,
 

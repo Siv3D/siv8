@@ -79,12 +79,7 @@ namespace s3d
 
 	constexpr FileDialogFilter FileDialogFilter::AAC()
 	{
-		return{ U"AAC", { U"m4a", U"aac" } };
-	}
-
-	constexpr FileDialogFilter FileDialogFilter::AIFF()
-	{
-		return{ U"AIFF", { U"aif", U"aiff", U"aifc" } };
+		return{ U"AAC", { U"aac", U"m4a" } };
 	}
 
 	constexpr FileDialogFilter FileDialogFilter::FLAC()
@@ -124,12 +119,11 @@ namespace s3d
 
 	constexpr FileDialogFilter FileDialogFilter::AllAudioFiles()
 	{
-		return{ U"All Audio Files",{ U"wav", U"mp3", U"m4a", U"aac", U"ogg", U"opus", U"mid",
+		return{ U"All Audio Files",{ U"wav", U"mp3", U"aac", U"m4a", U"ogg", U"opus", U"mid",
 		# if SIV3D_PLATFORM(WINDOWS)
 				U"wma",
 				U"flac"
 		# elif SIV3D_PLATFORM(MACOS)
-				U"aiff",
 				U"flac"
 		# elif SIV3D_PLATFORM(LINUX)
 

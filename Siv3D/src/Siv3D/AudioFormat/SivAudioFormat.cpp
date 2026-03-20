@@ -27,7 +27,6 @@ namespace s3d
 			U"Ogg Vorbis"_sv,
 			U"Opus"_sv,
 			U"WMA"_sv,
-			U"AIFF"_sv,
 			U"FLAC"_sv,
 			U"MIDI"_sv,
 		};
