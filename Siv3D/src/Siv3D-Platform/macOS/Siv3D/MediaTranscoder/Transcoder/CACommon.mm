@@ -96,12 +96,15 @@ namespace s3d
 			44100, 48000, 64000, 88200, 96000, 176400, 192000,
 		};
 
-		static Array<AudioValueRange> GetFormatValueRanges(const AudioFormatPropertyID propertyID, const AudioFormatID formatID)
+		static Array<AudioValueRange> GetFormatValueRanges(
+			const AudioFormatPropertyID propertyID,
+			const AudioStreamBasicDescription& specifier,
+			const char* what)
 		{
 			UInt32 size = 0;
 			CA::ThrowIfFailed(
-				::AudioFormatGetPropertyInfo(propertyID, sizeof(formatID), &formatID, &size),
-				"AudioFormatGetPropertyInfo");
+				::AudioFormatGetPropertyInfo(propertyID, sizeof(specifier), &specifier, &size),
+				what);
 
 			if ((size == 0) || (size % sizeof(AudioValueRange) != 0))
 			{
@@ -110,8 +113,8 @@ namespace s3d
 
 			Array<AudioValueRange> result(size / sizeof(AudioValueRange));
 			CA::ThrowIfFailed(
-				::AudioFormatGetProperty(propertyID, sizeof(formatID), &formatID, &size, result.data()),
-				"AudioFormatGetProperty");
+				::AudioFormatGetProperty(propertyID, sizeof(specifier), &specifier, &size, result.data()),
+				what);
 			return result;
 		}
 
@@ -130,7 +133,13 @@ namespace s3d
 
 		static Array<uint32> GetAvailableEncodeSampleRatesByFormat(const AudioFormatID formatID)
 		{
-			const Array<AudioValueRange> ranges = GetFormatValueRanges(kAudioFormatProperty_AvailableEncodeSampleRates, formatID);
+			AudioStreamBasicDescription specifier = {};
+			specifier.mFormatID = formatID;
+
+			const Array<AudioValueRange> ranges = GetFormatValueRanges(
+				kAudioFormatProperty_AvailableEncodeSampleRates,
+				specifier,
+				"AudioFormatGetPropertyInfo/Property(kAudioFormatProperty_AvailableEncodeSampleRates)");
 
 			Array<uint32> result;
 
@@ -147,10 +156,17 @@ namespace s3d
 
 		static Array<uint32> GetAvailableEncodeChannelCountsByFormat(const AudioFormatID formatID)
 		{
+			AudioStreamBasicDescription specifier = {};
+			specifier.mFormatID = formatID;
+
 			UInt32 size = 0;
 			CA::ThrowIfFailed(
-				::AudioFormatGetPropertyInfo(kAudioFormatProperty_AvailableEncodeNumberChannels, sizeof(formatID), &formatID, &size),
-				"AudioFormatGetPropertyInfo");
+				::AudioFormatGetPropertyInfo(
+					kAudioFormatProperty_AvailableEncodeNumberChannels,
+					sizeof(specifier),
+					&specifier,
+					&size),
+				"AudioFormatGetPropertyInfo(kAudioFormatProperty_AvailableEncodeNumberChannels)");
 
 			if ((size == 0) || (size % sizeof(UInt32) != 0))
 			{
@@ -159,8 +175,13 @@ namespace s3d
 
 			Array<UInt32> values(size / sizeof(UInt32));
 			CA::ThrowIfFailed(
-				::AudioFormatGetProperty(kAudioFormatProperty_AvailableEncodeNumberChannels, sizeof(formatID), &formatID, &size, values.data()),
-				"AudioFormatGetProperty");
+				::AudioFormatGetProperty(
+					kAudioFormatProperty_AvailableEncodeNumberChannels,
+					sizeof(specifier),
+					&specifier,
+					&size,
+					values.data()),
+				"AudioFormatGetProperty(kAudioFormatProperty_AvailableEncodeNumberChannels)");
 
 			Array<uint32> result;
 			for (const UInt32 value : values)
@@ -188,9 +209,20 @@ namespace s3d
 			}
 		}
 
-		static Array<uint32> GetRepresentativeEncodeBitRatesByFormat(const AudioFormatID formatID)
+		static Array<uint32> GetRepresentativeEncodeBitRates(
+			const AudioFormatID formatID,
+			const uint32 sampleRate,
+			const uint32 channels)
 		{
-			const Array<AudioValueRange> ranges = GetFormatValueRanges(kAudioFormatProperty_AvailableEncodeBitRates, formatID);
+			AudioStreamBasicDescription specifier = {};
+			specifier.mFormatID = formatID;
+			specifier.mSampleRate = static_cast<Float64>(sampleRate);
+			specifier.mChannelsPerFrame = channels;
+
+			const Array<AudioValueRange> ranges = GetFormatValueRanges(
+				kAudioFormatProperty_AvailableEncodeBitRates,
+				specifier,
+				"AudioFormatGetPropertyInfo/Property(kAudioFormatProperty_AvailableEncodeBitRates)");
 
 			Array<uint32> result;
 
@@ -271,21 +303,6 @@ namespace s3d
 			return profiles;
 		}
 
-		static const AudioEncodingProfile& SelectEncodingProfile(const Array<AudioEncodingProfile>& profiles, const CA::AudioQuality quality)
-		{
-			switch (quality)
-			{
-			case CA::AudioQuality::Low:
-				return profiles.front();
-
-			case CA::AudioQuality::Medium:
-				return profiles[profiles.size() / 2];
-
-			case CA::AudioQuality::High:
-			default:
-				return profiles.back();
-			}
-		}
 
 		static AudioConverterHolder CreateConfiguredAudioConverter(
 			const CA::AudioEncoderCodecConfig& codec,
@@ -309,13 +326,6 @@ namespace s3d
 					codec.name) };
 			}
 
-			const AudioEncodingProfile& selectedProfile = SelectEncodingProfile(profiles, quality);
-			LOG_DEBUG(fmt::format(
-				"Selected audio encoding profile: codec={}, sampleRate={} Hz, channels={}, bitRate={}",
-				codec.name,
-				sampleRate,
-				channels,
-				selectedProfile.bitRate));
 
 			const Array<AudioClassDescription> encoderDescriptions = CA::GetEncoderDescriptions(codec.outputFormatID);
 			if (encoderDescriptions.isEmpty())
@@ -442,13 +452,13 @@ namespace s3d
 		{
 			const Array<uint32> sampleRates = GetAvailableEncodeSampleRatesByFormat(codec.outputFormatID);
 			const Array<uint32> channelCounts = GetAvailableEncodeChannelCountsByFormat(codec.outputFormatID);
-			const Array<uint32> bitRates = GetRepresentativeEncodeBitRatesByFormat(codec.outputFormatID);
 
 			Array<AudioEncoderCapability> capabilities;
 			for (const uint32 channels : channelCounts)
 			{
 				for (const uint32 sampleRate : sampleRates)
 				{
+					const Array<uint32> bitRates = GetRepresentativeEncodeBitRates(codec.outputFormatID, sampleRate, channels);
 					for (const uint32 bitRate : bitRates)
 					{
 						capabilities << AudioEncoderCapability{ sampleRate, channels, bitRate };

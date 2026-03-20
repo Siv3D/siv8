@@ -57,57 +57,93 @@ namespace s3d
 			}
 		}
 
+
+		static Array<AudioValueRange> GetApplicableEncodeBitRateRanges(AudioConverterRef converter)
+		{
+			UInt32 size = 0;
+			const OSStatus infoStatus = ::AudioConverterGetPropertyInfo(
+				converter,
+				kAudioConverterApplicableEncodeBitRates,
+				&size,
+				nullptr);
+
+			if ((infoStatus != noErr) || (size == 0) || (size % sizeof(AudioValueRange) != 0))
+			{
+				return {};
+			}
+
+			Array<AudioValueRange> ranges(size / sizeof(AudioValueRange));
+			const OSStatus getStatus = ::AudioConverterGetProperty(
+				converter,
+				kAudioConverterApplicableEncodeBitRates,
+				&size,
+				ranges.data());
+
+			if (getStatus != noErr)
+			{
+				return {};
+			}
+
+			return ranges;
+		}
+
+		static uint32 ChooseBitRateFromRanges(const Array<AudioValueRange>& ranges, const CA::AudioQuality quality)
+		{
+			Array<uint32> candidates;
+			for (const auto& range : ranges)
+			{
+				const uint32 minimum = static_cast<uint32>(range.mMinimum);
+				const uint32 maximum = static_cast<uint32>(range.mMaximum);
+				const uint32 midpoint = static_cast<uint32>((range.mMinimum + range.mMaximum) * 0.5);
+				if ((minimum != 0) && (not candidates.contains(minimum))) candidates << minimum;
+				if ((midpoint != 0) && (not candidates.contains(midpoint))) candidates << midpoint;
+				if ((maximum != 0) && (not candidates.contains(maximum))) candidates << maximum;
+			}
+
+			if (candidates.isEmpty())
+			{
+				return 0;
+			}
+
+			candidates.sort();
+			switch (quality)
+			{
+			case CA::AudioQuality::Low:
+				return candidates.front();
+			case CA::AudioQuality::Medium:
+				return candidates[candidates.size() / 2];
+			case CA::AudioQuality::High:
+			default:
+				return candidates.back();
+			}
+		}
+
 		static void ConfigureAACConverter(
 			AudioConverterRef converter,
-			const uint32 sampleRate,
-			const uint32 channels,
+			const uint32,
+			const uint32,
 			const CA::AudioQuality quality,
-			const Array<CA::AudioEncoderCapability>& capabilities)
+			const Array<CA::AudioEncoderCapability>&)
 		{
-			Array<uint32> bitRates;
-			for (const auto& capability : capabilities)
+			const Array<AudioValueRange> applicableRanges = GetApplicableEncodeBitRateRanges(converter);
+			const uint32 selectedBitRate = ChooseBitRateFromRanges(applicableRanges, quality);
+
+			if (selectedBitRate == 0)
 			{
-				if ((capability.sampleRate == sampleRate)
-					&& (capability.channels == channels)
-					&& (capability.bitRate != 0)
-					&& (not bitRates.contains(capability.bitRate)))
-				{
-					bitRates << capability.bitRate;
-				}
+				return;
 			}
-
-			if (bitRates.isEmpty())
-			{
-				throw Error{ fmt::format(
-					"No AAC bitrate profile is available (sampleRate={} Hz, channels={}).",
-					sampleRate,
-					channels) };
-			}
-
-			bitRates.sort();
-
-			const uint32 selectedBitRate = [&]() -> uint32
-			{
-				switch (quality)
-				{
-				case CA::AudioQuality::Low:
-					return bitRates.front();
-				case CA::AudioQuality::Medium:
-					return bitRates[bitRates.size() / 2];
-				case CA::AudioQuality::High:
-				default:
-					return bitRates.back();
-				}
-			}();
 
 			UInt32 propertySize = sizeof(selectedBitRate);
-			CA::ThrowIfFailed(
-				::AudioConverterSetProperty(
-					converter,
-					kAudioConverterEncodeBitRate,
-					propertySize,
-					&selectedBitRate),
-				"AudioConverterSetProperty(kAudioConverterEncodeBitRate)");
+			const OSStatus setStatus = ::AudioConverterSetProperty(
+				converter,
+				kAudioConverterEncodeBitRate,
+				propertySize,
+				&selectedBitRate);
+
+			if (setStatus != noErr)
+			{
+				return;
+			}
 		}
 
 		static void WriteAACPacket(
@@ -190,7 +226,28 @@ namespace s3d
 
 	const Array<CA::AudioEncoderCapability>& AACEncoder_CA::GetAllCapabilities()
 	{
-		static const Array<CA::AudioEncoderCapability> capabilities = CA::EnumerateEncoderCapabilities(Codec());
+		static const Array<CA::AudioEncoderCapability> capabilities = []()
+		{
+			try
+			{
+				return CA::EnumerateEncoderCapabilities(Codec());
+			}
+			catch (const Error& e)
+			{
+				LOG_FAIL(fmt::format("{} GetAllCapabilities(): {}", Codec().name, e.messageUTF8()));
+				return Array<CA::AudioEncoderCapability>{};
+			}
+			catch (const std::exception& e)
+			{
+				LOG_FAIL(fmt::format("{} GetAllCapabilities(): {}", Codec().name, e.what()));
+				return Array<CA::AudioEncoderCapability>{};
+			}
+			catch (...)
+			{
+				LOG_FAIL(fmt::format("{} GetAllCapabilities(): unknown error", Codec().name));
+				return Array<CA::AudioEncoderCapability>{};
+			}
+		}();
 		return capabilities;
 	}
 }
