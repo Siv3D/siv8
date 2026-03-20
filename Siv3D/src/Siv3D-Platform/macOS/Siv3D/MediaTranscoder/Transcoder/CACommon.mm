@@ -1,4 +1,4 @@
-//-----------------------------------------------
+﻿//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -304,6 +304,30 @@ namespace s3d
 		}
 
 
+		static Optional<uint32> GetConfiguredEncodeBitRate(AudioConverterRef converter)
+		{
+			if (converter == nullptr)
+			{
+				return unspecified;
+			}
+
+			UInt32 bitRate = 0;
+			UInt32 size = sizeof(bitRate);
+			const OSStatus status = ::AudioConverterGetProperty(
+				converter,
+				kAudioConverterEncodeBitRate,
+				&size,
+				&bitRate);
+
+			if ((status != noErr) || (size != sizeof(bitRate)) || (bitRate == 0))
+			{
+				return unspecified;
+			}
+
+			return static_cast<uint32>(bitRate);
+		}
+
+
 		static AudioConverterHolder CreateConfiguredAudioConverter(
 			const CA::AudioEncoderCodecConfig& codec,
 			const Array<CA::AudioEncoderCapability>& capabilities,
@@ -514,6 +538,24 @@ namespace s3d
 					sampleRate,
 					codec.channels,
 					quality);
+
+				if (const auto configuredBitRate = GetConfiguredEncodeBitRate(converter.get()))
+				{
+					LOG_DEBUG(fmt::format(
+						"Selected audio encoding profile: codec={}, sampleRate={} Hz, channels={}, bitRate={}",
+						codec.name,
+						sampleRate,
+						codec.channels,
+						*configuredBitRate));
+				}
+				else
+				{
+					LOG_DEBUG(fmt::format(
+						"Selected audio encoding profile: codec={}, sampleRate={} Hz, channels={}, bitRate=default",
+						codec.name,
+						sampleRate,
+						codec.channels));
+				}
 
 				UInt32 maxOutputPacketSize = 0;
 				UInt32 propertySize = sizeof(maxOutputPacketSize);
