@@ -1115,6 +1115,9 @@
 		F9797EC92F6DADCC00518D26 /* AACEncoder_CA.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797EC32F6DADCC00518D26 /* AACEncoder_CA.mm */; };
 		F9797ECA2F6DADCC00518D26 /* CACommon.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797EC52F6DADCC00518D26 /* CACommon.mm */; };
 		F9797ECC2F6DAF1C00518D26 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9797ECB2F6DAF1C00518D26 /* AudioToolbox.framework */; };
+		F9797ECE2F6DCC4500518D26 /* MP3Decoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ECD2F6DCC4500518D26 /* MP3Decoder.hpp */; };
+		F9797ED12F6DCC5D00518D26 /* dr_mp3.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */; };
+		F9797ED32F6DCC7600518D26 /* MP3Decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797ED22F6DCC7600518D26 /* MP3Decoder.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4181,6 +4184,9 @@
 		F9797EC42F6DADCC00518D26 /* CACommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CACommon.hpp; sourceTree = "<group>"; };
 		F9797EC52F6DADCC00518D26 /* CACommon.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CACommon.mm; sourceTree = "<group>"; };
 		F9797ECB2F6DAF1C00518D26 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		F9797ECD2F6DCC4500518D26 /* MP3Decoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MP3Decoder.hpp; sourceTree = "<group>"; };
+		F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dr_mp3.h; sourceTree = "<group>"; };
+		F9797ED22F6DCC7600518D26 /* MP3Decoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MP3Decoder.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6598,6 +6604,7 @@
 				F9B7DA0B2D8C72C0002ABACE /* bc7enc_rdo */,
 				F9ED45AE2CC156EC006BA10F /* boost */,
 				F9070A6A2B9DEB5900383E4D /* double-conversion */,
+				F9797ED02F6DCC5D00518D26 /* dr_mp3 */,
 				F951223D2CB822D600151291 /* Earcut */,
 				F986F8B02BC806DB006A4C0F /* easyexif */,
 				F9070A6C2B9DEB5900383E4D /* fast_float */,
@@ -9711,6 +9718,7 @@
 		F9797E522F667DC200518D26 /* AudioFormat */ = {
 			isa = PBXGroup;
 			children = (
+				F9797ECD2F6DCC4500518D26 /* MP3Decoder.hpp */,
 				F9797EB32F6DA42700518D26 /* AACEncoder.hpp */,
 				F9797EB42F6DA42700518D26 /* MP3Encoder.hpp */,
 				F9797E502F667DC200518D26 /* WAVDecoder.hpp */,
@@ -9853,6 +9861,7 @@
 		F9797EBA2F6DA46100518D26 /* MP3 */ = {
 			isa = PBXGroup;
 			children = (
+				F9797ED22F6DCC7600518D26 /* MP3Decoder.cpp */,
 				F9797EB92F6DA46100518D26 /* MP3Encoder.cpp */,
 			);
 			path = MP3;
@@ -9867,6 +9876,14 @@
 				F9797EC52F6DADCC00518D26 /* CACommon.mm */,
 			);
 			path = Transcoder;
+			sourceTree = "<group>";
+		};
+		F9797ED02F6DCC5D00518D26 /* dr_mp3 */ = {
+			isa = PBXGroup;
+			children = (
+				F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */,
+			);
+			path = dr_mp3;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -13816,6 +13833,7 @@
 				F98606282BEBA1B5006A4C0F /* ExtensionFilter.hpp in Headers */,
 				F986021D2BCFBB54006A4C0F /* SkPictureData.h in Headers */,
 				F9DD96662F13EFC00026DFA5 /* Subdivision2D.ipp in Headers */,
+				F9797ED12F6DCC5D00518D26 /* dr_mp3.h in Headers */,
 				F9DD96672F13EFC00026DFA5 /* PoissonDiskSampler2D.ipp in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				F986FFEC2BCFBB53006A4C0F /* SkCodec.h in Headers */,
@@ -14527,6 +14545,7 @@
 				F98600B62BCFBB53006A4C0F /* skcms_Transform.h in Headers */,
 				F9070CF32B9F175100383E4D /* Random.hpp in Headers */,
 				F9070CDB2B9F175100383E4D /* Memory.hpp in Headers */,
+				F9797ECE2F6DCC4500518D26 /* MP3Decoder.hpp in Headers */,
 				F98602072BCFBB53006A4C0F /* SkOpts.h in Headers */,
 				F9E7943D2C12F35F002615BA /* LineStyle.ipp in Headers */,
 				F98600672BCFBB53006A4C0F /* SkTableMaskFilter.h in Headers */,
@@ -15237,6 +15256,7 @@
 				F933ADA02E54A375005624D7 /* shape-description.cpp in Sources */,
 				F933ADA12E54A375005624D7 /* save-tiff.cpp in Sources */,
 				F98111DC2ECC08E300C50DD1 /* CNativeShare.mm in Sources */,
+				F9797ED32F6DCC7600518D26 /* MP3Decoder.cpp in Sources */,
 				F933ADA22E54A375005624D7 /* resolve-shape-geometry.cpp in Sources */,
 				F933ADA32E54A375005624D7 /* contour-combiners.cpp in Sources */,
 				F933ADA42E54A375005624D7 /* EdgeHolder.cpp in Sources */,

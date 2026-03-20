@@ -42,7 +42,6 @@ namespace s3d
 			FileDialogFilter::WMA(),
 			FileDialogFilter::FLAC(),
 		# elif SIV3D_PLATFORM(MACOS)
-			FileDialogFilter::AIFF(),
 			FileDialogFilter::FLAC(),
 		# elif SIV3D_PLATFORM(LINUX)
 
@@ -66,7 +65,16 @@ namespace s3d
 		static const Array<FileDialogFilter> DefaultSaveAudioFileFilters =
 		{
 			FileDialogFilter::WAV(),
-			//FileFilter::MP3(),
+		# if SIV3D_PLATFORM(WINDOWS)
+			FileDialogFilter::AAC(),
+			FileDialogFilter::MP3(),
+		# elif SIV3D_PLATFORM(MACOS)
+			FileDialogFilter::AAC(),
+		# elif SIV3D_PLATFORM(LINUX)
+
+		# elif SIV3D_PLATFORM(WEB)
+
+		# endif
 			FileDialogFilter::OggVorbis(),
 			//FileFilter::Opus(),
 		};

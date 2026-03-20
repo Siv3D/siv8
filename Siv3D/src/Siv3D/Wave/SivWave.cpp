@@ -73,11 +73,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+# if SIV3D_PLATFORM(WINDOWS)
+		
 	bool Wave::saveMP3(const FilePathView path, const MP3Quality quality) const
 	{
 		return MP3Encoder{}.save(*this, path, quality);
 	}
 
+# endif
 
 
 	////////////////////////////////////////////////////////////////
@@ -119,9 +122,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+# if SIV3D_PLATFORM(WINDOWS)
+		
 	Blob Wave::encodeMP3(const MP3Quality quality) const
 	{
 		return MP3Encoder{}.encode(*this, quality);
 	}
 
+# endif
 }
