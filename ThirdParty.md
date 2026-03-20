@@ -11,6 +11,7 @@ Name | Version
 [DirectXMath](https://github.com/microsoft/DirectXMath) | April 2025
 [doctest](https://github.com/doctest/doctest) | v2.4.12
 [double-conversion](https://github.com/google/double-conversion) | v3.4.0
+[dr_mp3](https://github.com/mackron/dr_libs) | v0.7.4
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 

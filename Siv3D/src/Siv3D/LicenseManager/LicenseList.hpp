@@ -210,6 +210,12 @@ BSD_3_LICENSE
 },
 
 {
+R"-(dr_mp3)-",
+R"-(Copyright 2020 David Reid)-",
+MIT_LICENSE
+},
+
+{
 R"-(Earcut)-",
 R"-(Copyright (c) 2015, Mapbox)-",
 ISC_LICENSE

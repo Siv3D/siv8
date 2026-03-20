@@ -1714,7 +1714,7 @@
 # include <Siv3D/AudioFormat/WAVEncoder.hpp>
 //# include <Siv3D/AudioFormat/AACDecoder.hpp>
 # include <Siv3D/AudioFormat/AACEncoder.hpp>
-//# include <Siv3D/AudioFormat/MP3Decoder.hpp>
+# include <Siv3D/AudioFormat/MP3Decoder.hpp>
 # include <Siv3D/AudioFormat/MP3Encoder.hpp>
 
 //# include <Siv3D/AudioFormat/OggVorbisDecoder.hpp>

@@ -29,6 +29,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\AACEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\MP3Decoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\MP3Encoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\WAVDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\WAVEncoder.hpp" />
@@ -1120,6 +1121,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\ieee.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\utils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\dr_mp3\dr_mp3.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Earcut\earcut.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\easyexif\exif.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\fast_float\fast_float.h" />

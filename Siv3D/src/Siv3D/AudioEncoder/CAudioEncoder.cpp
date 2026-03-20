@@ -56,6 +56,8 @@ namespace s3d
 	# if SIV3D_PLATFORM(WINDOWS)
 		m_encoders.push_back(std::make_unique<AACEncoder>());
 		m_encoders.push_back(std::make_unique<MP3Encoder>());
+	# elif SIV3D_PLATFORM(MACOS)
+		m_encoders.push_back(std::make_unique<AACEncoder>());
 	# endif
 	}
 
