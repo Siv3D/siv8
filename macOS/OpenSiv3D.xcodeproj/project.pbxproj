@@ -1110,6 +1110,11 @@
 		F9797EB62F6DA42700518D26 /* AACEncoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EB32F6DA42700518D26 /* AACEncoder.hpp */; };
 		F9797EBB2F6DA46100518D26 /* MP3Encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EB92F6DA46100518D26 /* MP3Encoder.cpp */; };
 		F9797EBC2F6DA46100518D26 /* AACEncoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EB72F6DA46100518D26 /* AACEncoder.cpp */; };
+		F9797EC72F6DADCC00518D26 /* AACEncoder_CA.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EC22F6DADCC00518D26 /* AACEncoder_CA.hpp */; };
+		F9797EC82F6DADCC00518D26 /* CACommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EC42F6DADCC00518D26 /* CACommon.hpp */; };
+		F9797EC92F6DADCC00518D26 /* AACEncoder_CA.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797EC32F6DADCC00518D26 /* AACEncoder_CA.mm */; };
+		F9797ECA2F6DADCC00518D26 /* CACommon.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797EC52F6DADCC00518D26 /* CACommon.mm */; };
+		F9797ECC2F6DAF1C00518D26 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9797ECB2F6DAF1C00518D26 /* AudioToolbox.framework */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4171,6 +4176,11 @@
 		F9797EB42F6DA42700518D26 /* MP3Encoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MP3Encoder.hpp; sourceTree = "<group>"; };
 		F9797EB72F6DA46100518D26 /* AACEncoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AACEncoder.cpp; sourceTree = "<group>"; };
 		F9797EB92F6DA46100518D26 /* MP3Encoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MP3Encoder.cpp; sourceTree = "<group>"; };
+		F9797EC22F6DADCC00518D26 /* AACEncoder_CA.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AACEncoder_CA.hpp; sourceTree = "<group>"; };
+		F9797EC32F6DADCC00518D26 /* AACEncoder_CA.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AACEncoder_CA.mm; sourceTree = "<group>"; };
+		F9797EC42F6DADCC00518D26 /* CACommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CACommon.hpp; sourceTree = "<group>"; };
+		F9797EC52F6DADCC00518D26 /* CACommon.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CACommon.mm; sourceTree = "<group>"; };
+		F9797ECB2F6DAF1C00518D26 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6108,6 +6118,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9797ECC2F6DAF1C00518D26 /* AudioToolbox.framework in Frameworks */,
 				F9190F282B8EEDFB00667E3B /* Foundation.framework in Frameworks */,
 				F97204312BF0A314000E21DD /* Metal.framework in Frameworks */,
 				F97204332BF0A31C000E21DD /* QuartzCore.framework in Frameworks */,
@@ -6139,6 +6150,7 @@
 		2C15857F1F21FD87002687D2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F9797ECB2F6DAF1C00518D26 /* AudioToolbox.framework */,
 				F91D41642F5E9BCD00E7FEEF /* UserNotifications.framework */,
 				F99881DA2F573BF600C8991D /* SystemConfiguration.framework */,
 				F99881832F476E8D00C8991D /* UniformTypeIdentifiers.framework */,
@@ -9823,6 +9835,7 @@
 		F9797EB02F667F3300518D26 /* MediaTranscoder */ = {
 			isa = PBXGroup;
 			children = (
+				F9797EC62F6DADCC00518D26 /* Transcoder */,
 				F9797EAE2F667F3300518D26 /* CMediaTranscoder.hpp */,
 				F9797EAF2F667F3300518D26 /* CMediaTranscoder.cpp */,
 			);
@@ -9843,6 +9856,17 @@
 				F9797EB92F6DA46100518D26 /* MP3Encoder.cpp */,
 			);
 			path = MP3;
+			sourceTree = "<group>";
+		};
+		F9797EC62F6DADCC00518D26 /* Transcoder */ = {
+			isa = PBXGroup;
+			children = (
+				F9797EC22F6DADCC00518D26 /* AACEncoder_CA.hpp */,
+				F9797EC32F6DADCC00518D26 /* AACEncoder_CA.mm */,
+				F9797EC42F6DADCC00518D26 /* CACommon.hpp */,
+				F9797EC52F6DADCC00518D26 /* CACommon.mm */,
+			);
+			path = Transcoder;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -14589,6 +14613,8 @@
 				F9807D912BF6679000D9B590 /* AssetIDWrapper.ipp in Headers */,
 				F98600542BCFBB53006A4C0F /* SkPDFDocument.h in Headers */,
 				F98605B52BE49C00006A4C0F /* CMouse.hpp in Headers */,
+				F9797EC72F6DADCC00518D26 /* AACEncoder_CA.hpp in Headers */,
+				F9797EC82F6DADCC00518D26 /* CACommon.hpp in Headers */,
 				F9070C512B9F175000383E4D /* DisjointSet.ipp in Headers */,
 				F986F9D32BCFB514006A4C0F /* IEmoji.hpp in Headers */,
 				F9070CAB2B9F175000383E4D /* Date.hpp in Headers */,
@@ -15944,6 +15970,8 @@
 				F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */,
 				F9070DD52B9F175E00383E4D /* SivIntFormatter.cpp in Sources */,
 				F986026D2BCFBB54006A4C0F /* SkSpriteBlitter_ARGB32.cpp in Sources */,
+				F9797EC92F6DADCC00518D26 /* AACEncoder_CA.mm in Sources */,
+				F9797ECA2F6DADCC00518D26 /* CACommon.mm in Sources */,
 				F98111942EC8C60200C50DD1 /* SivAnchor.cpp in Sources */,
 				F98603942BCFBB54006A4C0F /* SkGradientBaseShader.cpp in Sources */,
 				F986030C2BCFBB54006A4C0F /* SkOpBuilder.cpp in Sources */,

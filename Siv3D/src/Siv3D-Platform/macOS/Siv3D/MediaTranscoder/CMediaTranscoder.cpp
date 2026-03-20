@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include "CMediaTranscoder.hpp"
+# include "Transcoder/AACEncoder_CA.hpp"
+# include <Siv3D/Wave.hpp>
 # include <Siv3D/EngineLog.hpp>
 
 namespace s3d
@@ -44,7 +46,7 @@ namespace s3d
 
 	bool CMediaTranscoder::encodeAAC(const Wave& wave, IWriter& writer, const AACQuality quality) const
 	{
-		return(false);
+		return AACEncoder_CA::EncodeWaveToAAC(wave.data(), wave.size(), wave.sampleRate(), writer, quality);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -55,7 +57,7 @@ namespace s3d
 
 	Array<uint32> CMediaTranscoder::getAvailableAACSampleRates(const uint32 channels) const
 	{
-		return{};
+		return AACEncoder_CA::GetAvailableSampleRates(channels);
 	}
 
 	////////////////////////////////////////////////////////////////
