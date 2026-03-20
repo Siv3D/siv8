@@ -14,6 +14,7 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/AudioFormat/WAVDecoder.hpp>
+# include <Siv3D/AudioFormat/MP3Decoder.hpp>
 
 namespace s3d
 {
@@ -109,6 +110,7 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CAudioDecoder::init()");
 
 		m_decoders.push_back(std::make_unique<WAVDecoder>());
+		m_decoders.push_back(std::make_unique<MP3Decoder>());
 	}
 
 	////////////////////////////////////////////////////////////////
