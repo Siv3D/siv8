@@ -13,6 +13,8 @@
 # include <Siv3D/IWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/AudioFormat/WAVEncoder.hpp>
+# include <Siv3D/AudioFormat/AACEncoder.hpp>
+# include <Siv3D/AudioFormat/MP3Encoder.hpp>
 
 namespace s3d
 {
@@ -50,6 +52,11 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CAudioEncoder::init()");
 
 		m_encoders.push_back(std::make_unique<WAVEncoder>());
+
+	# if SIV3D_PLATFORM(WINDOWS)
+		m_encoders.push_back(std::make_unique<AACEncoder>());
+		m_encoders.push_back(std::make_unique<MP3Encoder>());
+	# endif
 	}
 
 	////////////////////////////////////////////////////////////////

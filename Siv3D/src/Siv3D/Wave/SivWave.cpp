@@ -13,6 +13,8 @@
 # include <Siv3D/AudioDecoder.hpp>
 # include <Siv3D/AudioEncoder.hpp>
 # include <Siv3D/AudioFormat/WAVEncoder.hpp>
+# include <Siv3D/AudioFormat/AACEncoder.hpp>
+# include <Siv3D/AudioFormat/MP3Encoder.hpp>
 
 namespace s3d
 {
@@ -54,6 +56,28 @@ namespace s3d
 		return WAVEncoder{}.save(*this, path, format);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	saveAAC
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Wave::saveAAC(const FilePathView path, const AACQuality quality) const
+	{
+		return AACEncoder{}.save(*this, path, quality);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	saveMP3
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Wave::saveMP3(const FilePathView path, const MP3Quality quality) const
+	{
+		return MP3Encoder{}.save(*this, path, quality);
+	}
+
 
 
 	////////////////////////////////////////////////////////////////
@@ -76,6 +100,28 @@ namespace s3d
 	Blob Wave::encodeWAV(const WAVSaveFormat format) const
 	{
 		return WAVEncoder{}.encode(*this, format);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encodeAAC
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob Wave::encodeAAC(const AACQuality quality) const
+	{
+		return AACEncoder{}.encode(*this, quality);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	encodeMP3
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob Wave::encodeMP3(const MP3Quality quality) const
+	{
+		return MP3Encoder{}.encode(*this, quality);
 	}
 
 }

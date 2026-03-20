@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <memory>
+# include <Siv3D/Array.hpp>
 # include <Siv3D/MediaTranscoder/IMediaTranscoder.hpp>
 
 namespace s3d
@@ -22,7 +24,12 @@ namespace s3d
 
 		void init() override;
 
-	private:
+		bool encodeAAC(const Wave& wave, IWriter& writer, AACQuality quality) const;
 
+		Array<uint32> getAvailableAACSampleRates(uint32 channels = 2) const;
+
+		bool encodeMP3(const Wave& wave, IWriter& writer, MP3Quality quality) const;
+
+		Array<uint32> getAvailableMP3SampleRates(uint32 channels = 2) const;
 	};
 }
