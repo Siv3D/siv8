@@ -11,7 +11,6 @@
 
 # pragma once
 # include <memory>
-# include <Siv3D/Array.hpp>
 # include <Siv3D/MediaTranscoder/IMediaTranscoder.hpp>
 
 namespace s3d

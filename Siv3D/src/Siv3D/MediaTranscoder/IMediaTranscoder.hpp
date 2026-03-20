@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/Common.hpp>
+# include <Siv3D/Array.hpp>
 
 namespace s3d
 {
