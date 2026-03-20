@@ -188,7 +188,7 @@ namespace s3d
 			switch (quality)
 			{
 			case MF::AudioQuality::Low:
-				return profiles[1];
+				return profiles.front();
 
 			case MF::AudioQuality::Medium:
 				return profiles[profiles.size() / 2];
@@ -219,14 +219,12 @@ namespace s3d
 				GUID subtype = {};
 				UINT32 sr = 0;
 				UINT32 ch = 0;
-				UINT32 bitsPerSample = 0;
 				UINT32 avgBytesPerSec = 0;
 
 				if (FAILED(type->GetGUID(MF_MT_MAJOR_TYPE, &major))) continue;
 				if (FAILED(type->GetGUID(MF_MT_SUBTYPE, &subtype))) continue;
 				if (FAILED(type->GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, &sr))) continue;
 				if (FAILED(type->GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, &ch))) continue;
-				if (FAILED(type->GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, &bitsPerSample))) continue;
 				if (FAILED(type->GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, &avgBytesPerSec))) continue;
 
 				if (major != MFMediaType_Audio) continue;
@@ -423,6 +421,14 @@ namespace s3d
 				if (major != MFMediaType_Audio) continue;
 				if (subtype != codec.outputSubtype) continue;
 
+				// AAC エンコーダの場合、ペイロードタイプが 1 (ADTS) のもののみを対象とする
+				if (codec.outputSubtype == MFAudioFormat_AAC)
+				{
+					UINT32 aacPayloadType = 0;
+					if (FAILED(type->GetUINT32(MF_MT_AAC_PAYLOAD_TYPE, &aacPayloadType))) continue;
+					if (aacPayloadType != 1) continue;
+				}
+
 				capabilities << AudioEncoderCapability{ sr, ch, avgBytesPerSec };
 			}
 
@@ -440,12 +446,6 @@ namespace s3d
 
 				return a.avgBytesPerSec < b.avgBytesPerSec;
 			});
-
-			LOG_DEBUG(fmt::format("{} encoder capabilities:", codec.name));
-			for (const auto& cap : capabilities)
-			{
-				LOG_DEBUG(fmt::format("  - {} Hz, {} channels, {} avgBytesPerSec", cap.sampleRate, cap.channels, cap.avgBytesPerSec));
-			}
 
 			return capabilities;
 		}
