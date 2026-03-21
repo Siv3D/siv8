@@ -991,8 +991,10 @@ namespace s3d
 		{
 			LOG_WARN("RegisterDragDrop() failed");
 		}
-
-		m_registered = true;
+		else
+		{
+			m_registered = true;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
