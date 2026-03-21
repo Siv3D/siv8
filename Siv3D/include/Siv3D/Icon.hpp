@@ -40,7 +40,13 @@ namespace s3d
 		static Image CreateImage(char32 codePoint, int32 size);
 
 		[[nodiscard]]
+		static Image CreateImageByGlyphIndex(GlyphIndex glyphIndex, int32 size);
+
+		[[nodiscard]]
 		static Image CreateMSDFImage(char32 codePoint, int32 size, int32 bufferSize = 2);
+
+		[[nodiscard]]
+		static Image CreateMSDFImageByGlyphIndex(GlyphIndex glyphIndex, int32 size, int32 bufferSize = 2);
 	};
 
 	inline namespace Literals

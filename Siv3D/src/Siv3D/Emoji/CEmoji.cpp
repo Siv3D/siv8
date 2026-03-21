@@ -48,14 +48,14 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Image RenderEmoji(const GlyphIndex emoji, const int32 size, SkFont& font)
+		static Image RenderEmoji(const GlyphIndex glyphIndex, const int32 size, SkFont& font)
 		{
-			if (emoji == GlyphIndexNotdef)
+			if (glyphIndex == GlyphIndexNotdef)
 			{
 				return{};
 			}
 
-			const SkGlyphID glyphIndex = static_cast<SkGlyphID>(emoji);
+			const SkGlyphID glyphID = static_cast<SkGlyphID>(glyphIndex);
 
 			Image image{ size, Color{ 0, 0, 0, 0 } };
 			{
@@ -66,8 +66,8 @@ namespace s3d
 
 				SkFontMetrics metrics;
 				font.getMetrics(&metrics);
-				const SkScalar textWidth = font.measureText(&glyphIndex, sizeof(glyphIndex), SkTextEncoding::kGlyphID);
-				const auto blob = SkTextBlob::MakeFromText(&glyphIndex, sizeof(glyphIndex), font, SkTextEncoding::kGlyphID);
+				const SkScalar textWidth = font.measureText(&glyphID, sizeof(glyphID), SkTextEncoding::kGlyphID);
+				const auto blob = SkTextBlob::MakeFromText(&glyphID, sizeof(glyphID), font, SkTextEncoding::kGlyphID);
 				const SkScalar offsetX = ((size - textWidth) / 2);
 				const SkScalar offsetY = (size - metrics.fDescent);
 
@@ -191,14 +191,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image CEmoji::render(const GlyphIndex emoji, const int32 size)
+	Image CEmoji::render(const GlyphIndex glyphIndex, const int32 size)
 	{
 		if (not m_available)
 		{
 			return{};
 		}
 
-		Image image = RenderEmoji(emoji, size, m_font);
+		Image image = RenderEmoji(glyphIndex, size, m_font);
 		{
 		#if SK_PMCOLOR_BYTE_ORDER(B,G,R,A)
 
@@ -216,14 +216,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image CEmoji::renderSilhouette(const GlyphIndex emoji, const int32 size)
+	Image CEmoji::renderSilhouette(const GlyphIndex glyphIndex, const int32 size)
 	{
 		if (not m_available)
 		{
 			return{};
 		}
 
-		Image image = RenderEmoji(emoji, size, m_font);
+		Image image = RenderEmoji(glyphIndex, size, m_font);
 		{
 			for (auto& pixel : image)
 			{

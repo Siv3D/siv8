@@ -102,6 +102,9 @@ namespace s3d
 	Texture::Texture(const Emoji& emoji, const int32 size, const TextureDesc desc)
 		: Texture{ (CheckEngine(), Image{ emoji, size }), desc } {}
 
+	Texture::Texture(const Icon& icon, const int32 size, const TextureDesc desc)
+		: Texture{ (CheckEngine(), Image{ icon, size }), desc } {}
+
 	Texture::Texture(const Grid<uint8>& image, const TextureDesc desc)
 		: Texture{ CreateR8_Unorm(image, desc) } {}
 

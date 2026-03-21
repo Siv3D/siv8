@@ -27,11 +27,21 @@ namespace s3d
 
 	Image Icon::CreateImage(const char32 codePoint, const int32 size)
 	{
-		return SIV3D_ENGINE(Icon)->render(codePoint, size);
+		return SIV3D_ENGINE(Icon)->render(SIV3D_ENGINE(Icon)->getGlyphIndex(codePoint), size);
+	}
+
+	Image Icon::CreateImageByGlyphIndex(const GlyphIndex glyphIndex, const int32 size)
+	{
+		return SIV3D_ENGINE(Icon)->render(glyphIndex, size);
 	}
 
 	Image Icon::CreateMSDFImage(const char32 codePoint, const int32 size, const int32 bufferSize)
 	{
-		return SIV3D_ENGINE(Icon)->renderMSDF(codePoint, size, bufferSize);
+		return SIV3D_ENGINE(Icon)->renderMSDF(SIV3D_ENGINE(Icon)->getGlyphIndex(codePoint), size, bufferSize);
+	}
+
+	Image Icon::CreateMSDFImageByGlyphIndex(const GlyphIndex glyphIndex, const int32 size, const int32 bufferSize)
+	{
+		return SIV3D_ENGINE(Icon)->renderMSDF(glyphIndex, size, bufferSize);
 	}
 }

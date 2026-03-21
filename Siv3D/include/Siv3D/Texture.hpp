@@ -110,12 +110,12 @@ namespace s3d
 		[[nodiscard]]
 		explicit Texture(const Emoji& emoji, int32 size, TextureDesc desc = TextureDesc::Default2D);
 
-		///// @brief アイコンからテクスチャを作成します。
-		///// @param icon アイコン
-		///// @param size アイコンのサイズ
-		///// @param desc テクスチャの設定
-		//[[nodiscard]]
-		//explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Default2D);
+		/// @brief アイコンからテクスチャを作成します。
+		/// @param icon アイコン
+		/// @param size アイコンのサイズ
+		/// @param desc テクスチャの設定
+		[[nodiscard]]
+		explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
 		explicit Texture(const Grid<uint8>& image, TextureDesc desc = TextureDesc::Default2D);

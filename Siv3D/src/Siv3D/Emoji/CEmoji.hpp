@@ -39,9 +39,9 @@ namespace s3d
 
 		GlyphIndex getGlyphIndex(StringView emoji) const override;
 
-		Image render(GlyphIndex emoji, int32 size) override;
+		Image render(GlyphIndex glyphIndex, int32 size) override;
 
-		Image renderSilhouette(GlyphIndex emoji, int32 size) override;
+		Image renderSilhouette(GlyphIndex glyphIndex, int32 size) override;
 
 	private:
 

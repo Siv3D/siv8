@@ -15,6 +15,8 @@
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/CacheDirectory/CacheDirectory.hpp>
+# include <Siv3D/Font/GlyphRenderer/BitmapGlyphRenderer.hpp>
+# include <Siv3D/Font/GlyphRenderer/MSDFGlyphRenderer.hpp>
 
 namespace s3d
 {
@@ -144,9 +146,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image CIcon::render(const char32 icon, const int32 size)
+	Image CIcon::render(const GlyphIndex glyphIndex, const int32 size)
 	{
-		return{};
+		if (::FT_Set_Pixel_Sizes(m_face, 0, size))
+		{
+			return{};
+		}
+
+		{
+			m_faceInfo.baseSize		= size;
+			m_faceInfo.ascender		= static_cast<int16>(m_face->size->metrics.ascender / 64);
+			m_faceInfo.descender	= -static_cast<int16>(m_face->size->metrics.descender / 64);
+		}
+
+		return RenderBitmapGlyph(m_face, glyphIndex, m_faceInfo, ReadingDirection::LeftToRight, nullptr).image;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -155,7 +168,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image CIcon::renderMSDF(const char32 icon, const int32 size, const int32 bufferSize)
+	Image CIcon::renderMSDF(const GlyphIndex glyphIndex, const int32 size, const int32 bufferSize)
 	{
 		return{};
 	}

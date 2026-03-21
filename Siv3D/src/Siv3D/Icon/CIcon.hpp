@@ -11,6 +11,7 @@
 
 # pragma once
 # include "IIcon.hpp"
+# include <Siv3D/Font/FontUtility.hpp>
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
 #	include <ThirdParty-prebuilt/harfbuzz/hb.h>
 #	include <ThirdParty-prebuilt/harfbuzz/hb-ft.h>
@@ -27,15 +28,20 @@ namespace s3d
 
 		~CIcon() override;
 
+		[[nodiscard]]
 		void init() override;
 
+		[[nodiscard]]
 		bool hasGlyph(char32 icon) const override;
 
+		[[nodiscard]]
 		GlyphIndex getGlyphIndex(char32 icon) const override;
 
-		Image render(char32 icon, int32 size) override;
+		[[nodiscard]]
+		Image render(GlyphIndex glyphIndex, int32 size) override;
 
-		Image renderMSDF(char32 icon, int32 size, int32 bufferSize) override;
+		[[nodiscard]]
+		Image renderMSDF(GlyphIndex glyphIndex, int32 size, int32 bufferSize) override;
 
 	private:
 
@@ -46,5 +52,7 @@ namespace s3d
 		hb_font_t* m_hbFont = nullptr;
 
 		hb_buffer_t* m_hbBuffer = nullptr;
+
+		FontFaceInfo m_faceInfo{};
 	};
 }

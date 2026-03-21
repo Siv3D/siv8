@@ -27,12 +27,16 @@ namespace s3d
 
 		virtual void init() = 0;
 
+		[[nodiscard]]
 		virtual bool hasGlyph(char32 icon) const = 0;
 
+		[[nodiscard]]
 		virtual GlyphIndex getGlyphIndex(char32 icon) const = 0;
 
-		virtual Image render(char32 icon, int32 size) = 0;
+		[[nodiscard]]
+		virtual Image render(GlyphIndex glyphIndex, int32 size) = 0;
 
-		virtual Image renderMSDF(char32 icon, int32 size, int32 bufferSize) = 0;
+		[[nodiscard]]
+		virtual Image renderMSDF(GlyphIndex glyphIndex, int32 size, int32 bufferSize) = 0;
 	};
 }
