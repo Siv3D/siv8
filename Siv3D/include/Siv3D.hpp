@@ -1728,6 +1728,7 @@
 //# include <Siv3D/AudioFormat/WMADecoder.hpp>
 
 
+# include <Siv3D/MicrophoneInfo.hpp>
 
 
 # include <Siv3D/Print.hpp>

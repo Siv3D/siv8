@@ -220,6 +220,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointSettings.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterSettings.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MicrophoneInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MP3Quality.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
@@ -1686,6 +1687,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryReader\SivMemoryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryViewReader\SivMemoryViewReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MicrophoneInfo\SivMicrophoneInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrosecClock\SivMicrosecClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MillisecClock\SivMillisecClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp" />
