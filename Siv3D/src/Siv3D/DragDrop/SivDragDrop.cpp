@@ -32,12 +32,12 @@ namespace s3d
 			return SIV3D_ENGINE(DragDrop)->dragOver();
 		}
 
-		bool HasNewFilePaths()
+		bool HasDroppedFilePaths()
 		{
 			return SIV3D_ENGINE(DragDrop)->hasNewFilePaths();
 		}
 
-		bool HasNewText()
+		bool HasDroppedText()
 		{
 			return SIV3D_ENGINE(DragDrop)->hasNewText();
 		}

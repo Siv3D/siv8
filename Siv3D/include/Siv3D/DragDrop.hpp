@@ -42,12 +42,12 @@ namespace s3d
 		/// @brief 未回収のドロップ済みファイルパスが存在する場合に true を返します。
 		/// @return 未回収のファイルパスが 1 件以上ある場合 true
 		[[nodiscard]]
-		bool HasNewFilePaths();
+		bool HasDroppedFilePaths();
 
 		/// @brief 未回収のドロップ済みテキストが存在する場合に true を返します。
 		/// @return 未回収のテキストが 1 件以上ある場合 true
 		[[nodiscard]]
-		bool HasNewText();
+		bool HasDroppedText();
 
 		/// @brief 蓄積されているドロップ済みオブジェクトの情報を消去します。
 		/// @remark ファイルパス、テキストの両方の内部キューを空にします。
