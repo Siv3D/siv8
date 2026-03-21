@@ -11,6 +11,7 @@
 
 # include "CFont.hpp"
 # include <Siv3D/TextStyle.hpp>
+# include <Siv3D/TextLayoutResult.hpp>
 # include <Siv3D/Graphics2D.hpp>
 # include <Siv3D/ScopedCustomShader2D.hpp>
 # include <Siv3D/TextEffect/NullTextEffect.hpp>
@@ -790,7 +791,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CFont::fitsRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	TextLayoutResult CFont::fitsRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 
@@ -800,7 +801,7 @@ namespace s3d
 		//}
 		//else
 		//{
-			return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, rect, fontSize, textStyle, TextEffect::NullTextEffect{}, false, readingDirection).first;
+			return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, rect, fontSize, textStyle, TextEffect::NullTextEffect{}, false, readingDirection);
 		//}
 	}
 
@@ -810,7 +811,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CFont::drawRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
+	TextLayoutResult CFont::drawRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const auto& fontInfo = font->getInfo();
@@ -832,7 +833,7 @@ namespace s3d
 			//}
 			//else
 			//{
-				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection).first;
+				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection);
 			//}
 		}
 		else
@@ -845,7 +846,7 @@ namespace s3d
 			//}
 			//else
 			//{
-				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection).first;
+				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection);
 			//}
 		}
 	}

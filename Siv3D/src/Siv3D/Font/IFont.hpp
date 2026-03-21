@@ -24,6 +24,7 @@ namespace s3d
 	struct FontOptions;
 	struct FontFaceInfo;
 	struct ITextEffect;
+	struct TextLayoutResult;
 	class PixelShader;
 
 	class SIV3D_NOVTABLE ISiv3DFont
@@ -342,7 +343,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
+		virtual TextLayoutResult fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 		
 		////////////////////////////////////////////////////////////////
 		//
@@ -350,7 +351,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
+		virtual TextLayoutResult drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//

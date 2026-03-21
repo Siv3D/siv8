@@ -1649,6 +1649,7 @@
 # include <Siv3D/PolygonGlyph.hpp>
 # include <Siv3D/BitmapGlyph.hpp>
 
+# include <Siv3D/TextLayoutResult.hpp>
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
 

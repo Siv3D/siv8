@@ -11,6 +11,7 @@
 
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
+# include <Siv3D/TextLayoutResult.hpp>
 # include <Siv3D/TextEffect/BasicTextEffect.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -444,7 +445,7 @@ namespace s3d
 		return draw(TextStyle::Default(), font.baseSize(), center, color);
 	}
 
-	bool DrawableText::draw(const RectF& area, const ColorF& color) const
+	TextLayoutResult DrawableText::draw(const RectF& area, const ColorF& color) const
 	{
 		return draw(TextStyle::Default(), font.baseSize(), area, color);
 	}
@@ -504,7 +505,7 @@ namespace s3d
 		return draw(TextStyle::Default(), size, center, color);
 	}
 
-	bool DrawableText::draw(const double size, const RectF& area, const ColorF& color) const
+	TextLayoutResult DrawableText::draw(const double size, const RectF& area, const ColorF& color) const
 	{
 		return draw(TextStyle::Default(), size, area, color);
 	}
@@ -564,7 +565,7 @@ namespace s3d
 		return draw(textStyle, font.baseSize(), center, color);
 	}
 
-	bool DrawableText::draw(const TextStyle& textStyle, const RectF& area, const ColorF& color) const
+	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const RectF& area, const ColorF& color) const
 	{
 		return draw(textStyle, font.baseSize(), area, color);
 	}
@@ -628,7 +629,7 @@ namespace s3d
 		return drawAt(textStyle, size, *center, color);
 	}
 
-	bool DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ColorF& color) const
+	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ColorF& color) const
 	{
 		return SIV3D_ENGINE(Font)->drawRect(font.id(), text, resolvedGlyphs, area, size, textStyle, TextEffect::BasicTextEffect{ color }, readingDirection);
 	}
@@ -688,7 +689,7 @@ namespace s3d
 		return draw(TextStyle::Default(), font.baseSize(), center, textEffect);
 	}
 
-	bool DrawableText::draw(const RectF& area, const ITextEffect& textEffect) const
+	TextLayoutResult DrawableText::draw(const RectF& area, const ITextEffect& textEffect) const
 	{
 		return draw(TextStyle::Default(), font.baseSize(), area, textEffect);
 	}
@@ -748,7 +749,7 @@ namespace s3d
 		return draw(TextStyle::Default(), size, center, textEffect);
 	}
 
-	bool DrawableText::draw(const double size, const RectF& area, const ITextEffect& textEffect) const
+	TextLayoutResult DrawableText::draw(const double size, const RectF& area, const ITextEffect& textEffect) const
 	{
 		return draw(TextStyle::Default(), size, area, textEffect);
 	}
@@ -808,7 +809,7 @@ namespace s3d
 		return draw(textStyle, font.baseSize(), center, textEffect);
 	}
 
-	bool DrawableText::draw(const TextStyle& textStyle, const RectF& area, const ITextEffect& textEffect) const
+	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const RectF& area, const ITextEffect& textEffect) const
 	{
 		return draw(textStyle, font.baseSize(), area, textEffect);
 	}
@@ -872,7 +873,7 @@ namespace s3d
 		return drawAt(textStyle, size, *center, textEffect);
 	}
 
-	bool DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ITextEffect& textEffect) const
+	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ITextEffect& textEffect) const
 	{
 		return SIV3D_ENGINE(Font)->drawRect(font.id(), text, resolvedGlyphs, area, size, textStyle, textEffect, readingDirection);
 	}
@@ -1269,22 +1270,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool DrawableText::fits(const RectF& area) const
+	TextLayoutResult DrawableText::fits(const RectF& area) const
 	{
 		return fits(TextStyle::Default(), font.baseSize(), area);
 	}
 
-	bool DrawableText::fits(const double size, const RectF& area) const
+	TextLayoutResult DrawableText::fits(const double size, const RectF& area) const
 	{
 		return fits(TextStyle::Default(), size, area);
 	}
 
-	bool DrawableText::fits(const TextStyle& textStyle, const RectF& area) const
+	TextLayoutResult DrawableText::fits(const TextStyle& textStyle, const RectF& area) const
 	{
 		return fits(textStyle, font.baseSize(), area);
 	}
 
-	bool DrawableText::fits(const TextStyle& textStyle, const double size, const RectF& area) const
+	TextLayoutResult DrawableText::fits(const TextStyle& textStyle, const double size, const RectF& area) const
 	{
 		return SIV3D_ENGINE(Font)->fitsRect(font.id(), text, resolvedGlyphs, area, size, textStyle, readingDirection);
 	}

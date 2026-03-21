@@ -12,6 +12,7 @@
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/Indexed.hpp>
 # include <Siv3D/TextStyle.hpp>
+# include <Siv3D/TextLayoutResult.hpp>
 # include <Siv3D/ITextEffect.hpp>
 # include <Siv3D/GlyphContext.hpp>
 # include <Siv3D/Font/IFont.hpp>
@@ -376,7 +377,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::pair<bool, RectF> MSDFGlyphCache::processHorizontalRect(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
+	TextLayoutResult MSDFGlyphCache::processHorizontalRect(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		// 「...」用のグリフ
 		const ResolvedGlyph periodGlyph = font.getResolvedGlyphs(U".", readingDirection, EnableFallback::No, EnableLigatures::No).fetch(0, ResolvedGlyph{});
@@ -398,7 +399,23 @@ namespace s3d
 
 		const Vec2 areaBottomRight = area.br();
 		const double lineHeight = (info.height() * scale * textStyle.lineSpacing);
-		const int32 maxLines = Max(static_cast<int32>(area.h / (lineHeight ? lineHeight : 1)), 1);
+		const int32 maxLines = [&]()
+			{
+				const double denom = (lineHeight ? lineHeight : 1.0);
+				const double lines = (area.h / denom);
+
+				if (not IsFinite(lines))
+				{
+					return Largest<int32>;
+				}
+
+				if (static_cast<double>(Largest<int32>) <= lines)
+				{
+					return Largest<int32>;
+				}
+
+				return Max(static_cast<int32>(lines), 1);
+			}();
 		const Vec2 basePos{ area.pos };
 
 		// 描画がオーバーフローするかどうか
