@@ -22,25 +22,25 @@ namespace s3d
 	struct Icon
 	{
 		/// @brief アイコンのコードポイント
-		char32 code = 0;
+		char32 codePoint = 0;
 
 		[[nodiscard]]
 		Icon() = default;
 
 		[[nodiscard]]
-		explicit constexpr Icon(char32 _code) noexcept;
+		explicit constexpr Icon(char32 _codePoint) noexcept;
 
 		[[nodiscard]]
-		static bool HasGlyph(char32 code);
+		static bool HasGlyph(char32 codePoint);
 
 		[[nodiscard]]
-		static GlyphIndex GetGlyphIndex(char32 code);
+		static GlyphIndex GetGlyphIndex(char32 codePoint);
 
 		[[nodiscard]]
-		static Image CreateImage(char32 code, int32 size);
+		static Image CreateImage(char32 codePoint, int32 size);
 
 		[[nodiscard]]
-		static Image CreateMSDFImage(char32 code, int32 size, int32 bufferSize = 2);
+		static Image CreateMSDFImage(char32 codePoint, int32 size, int32 bufferSize = 2);
 	};
 
 	inline namespace Literals

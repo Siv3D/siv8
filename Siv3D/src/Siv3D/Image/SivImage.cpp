@@ -11,6 +11,7 @@
 
 # include <Siv3D/Image.hpp>
 # include <Siv3D/Emoji.hpp>
+# include <Siv3D/Icon.hpp>
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
@@ -202,6 +203,11 @@ namespace s3d
 	Image::Image(const Emoji& emoji, const int32 size)
 	{
 		*this = Emoji::CreateImage(emoji.codePoints, size);
+	}
+
+	Image::Image(const Icon& icon, const int32 size)
+	{
+		*this = Icon::CreateImage(icon.codePoint, size);
 	}
 
 	Image::Image(const Grid<Color>& grid)

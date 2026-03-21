@@ -24,6 +24,7 @@
 namespace s3d
 {
 	class IReader;
+	struct Icon;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -188,8 +189,8 @@ namespace s3d
 		[[nodiscard]]
 		explicit Image(const Emoji& emoji, int32 size = Emoji::DefaultSize);
 
-		//[[nodiscard]]
-		//explicit Image(const Icon& icon, int32 size);
+		[[nodiscard]]
+		Image(const Icon& icon, int32 size);
 
 		/// @brief 二次元配列から画像データを作成します。
 		/// @param grid 二次元配列

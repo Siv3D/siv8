@@ -19,8 +19,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Icon::Icon(const char32 _code) noexcept
-		: code{ _code } {}
+	constexpr Icon::Icon(const char32 _codePoint) noexcept
+		: codePoint{ _codePoint } {}
 
 	inline namespace Literals
 	{
