@@ -1131,6 +1131,15 @@
 		F9797EEB2F6E576F00518D26 /* CDragDropBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797EE72F6E576F00518D26 /* CDragDropBridge.mm */; };
 		F9797EED2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */; };
 		F9797EF02F6E60C200518D26 /* SivDragItemType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EEE2F6E60C200518D26 /* SivDragItemType.cpp */; };
+		F9797EF22F6EB6C700518D26 /* Icon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF12F6EB6C700518D26 /* Icon.hpp */; };
+		F9797EF42F6EB6CD00518D26 /* TextLayoutResult.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF32F6EB6CD00518D26 /* TextLayoutResult.hpp */; };
+		F9797EF72F6EB6E800518D26 /* Icon.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF52F6EB6E800518D26 /* Icon.ipp */; };
+		F9797EF82F6EB6E800518D26 /* TextLayoutResult.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF62F6EB6E800518D26 /* TextLayoutResult.ipp */; };
+		F9797EFF2F6EB70D00518D26 /* IIcon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EFC2F6EB70D00518D26 /* IIcon.hpp */; };
+		F9797F002F6EB70D00518D26 /* CIcon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF92F6EB70D00518D26 /* CIcon.hpp */; };
+		F9797F012F6EB70D00518D26 /* CIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EFA2F6EB70D00518D26 /* CIcon.cpp */; };
+		F9797F022F6EB70D00518D26 /* SivIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EFD2F6EB70D00518D26 /* SivIcon.cpp */; };
+		F9797F032F6EB70D00518D26 /* IconFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EFB2F6EB70D00518D26 /* IconFactory.cpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4213,6 +4222,15 @@
 		F9797EE72F6E576F00518D26 /* CDragDropBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CDragDropBridge.mm; sourceTree = "<group>"; };
 		F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GLFW_Siv3D_DragDropBridge.h; sourceTree = "<group>"; };
 		F9797EEE2F6E60C200518D26 /* SivDragItemType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDragItemType.cpp; sourceTree = "<group>"; };
+		F9797EF12F6EB6C700518D26 /* Icon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Icon.hpp; sourceTree = "<group>"; };
+		F9797EF32F6EB6CD00518D26 /* TextLayoutResult.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextLayoutResult.hpp; sourceTree = "<group>"; };
+		F9797EF52F6EB6E800518D26 /* Icon.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Icon.ipp; sourceTree = "<group>"; };
+		F9797EF62F6EB6E800518D26 /* TextLayoutResult.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextLayoutResult.ipp; sourceTree = "<group>"; };
+		F9797EF92F6EB70D00518D26 /* CIcon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CIcon.hpp; sourceTree = "<group>"; };
+		F9797EFA2F6EB70D00518D26 /* CIcon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CIcon.cpp; sourceTree = "<group>"; };
+		F9797EFB2F6EB70D00518D26 /* IconFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IconFactory.cpp; sourceTree = "<group>"; };
+		F9797EFC2F6EB70D00518D26 /* IIcon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IIcon.hpp; sourceTree = "<group>"; };
+		F9797EFD2F6EB70D00518D26 /* SivIcon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivIcon.cpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6772,6 +6790,7 @@
 				F9070B812B9F175000383E4D /* Hash.ipp */,
 				F9070B822B9F175000383E4D /* HSV.ipp */,
 				F9797E1F2F631E3400518D26 /* HTTPStatusCode.ipp */,
+				F9797EF52F6EB6E800518D26 /* Icon.ipp */,
 				F9DD96362F0965A30026DFA5 /* IEffect.ipp */,
 				F9528B3B2BB69C2800222F45 /* Image.ipp */,
 				F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */,
@@ -6890,6 +6909,7 @@
 				F9070BA32B9F175000383E4D /* TextEncoding.ipp */,
 				F902E0E52E9E70B3002C6B92 /* TextFileReader.ipp */,
 				F902E0E62E9E70B3002C6B92 /* TextFileWriter.ipp */,
+				F9797EF62F6EB6E800518D26 /* TextLayoutResult.ipp */,
 				F943AAE72E2A0A73001B4D43 /* TextStyle.ipp */,
 				F90DA04E2D1A91AB0003E1E8 /* Texture.ipp */,
 				F90DA04F2D1A91AB0003E1E8 /* TextureDesc.ipp */,
@@ -7083,6 +7103,7 @@
 				F9797E212F631E4800518D26 /* HTTPStatusCode.hpp */,
 				F9797E262F631E6500518D26 /* IAudioDecoder.hpp */,
 				F9797E272F631E6500518D26 /* IAudioEncoder.hpp */,
+				F9797EF12F6EB6C700518D26 /* Icon.hpp */,
 				F980C48C2C04B41300A86B68 /* IConstantBuffer.hpp */,
 				F9DD96342F0965890026DFA5 /* IEffect.hpp */,
 				F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */,
@@ -7298,6 +7319,7 @@
 				F9070C282B9F175000383E4D /* TextEncoding.hpp */,
 				F902E0DD2E9E707F002C6B92 /* TextFileReader.hpp */,
 				F902E0DE2E9E707F002C6B92 /* TextFileWriter.hpp */,
+				F9797EF32F6EB6CD00518D26 /* TextLayoutResult.hpp */,
 				F943AAE52E2A0A5F001B4D43 /* TextStyle.hpp */,
 				F9797DC02F60272200518D26 /* TextToSpeech.hpp */,
 				F90DA0442D1A91850003E1E8 /* Texture.hpp */,
@@ -7950,6 +7972,7 @@
 				F9070D5C2B9F175E00383E4D /* HSV */,
 				F9797E2E2F631E9600518D26 /* HTTPStatusCode */,
 				F9797E4E2F643FDC00518D26 /* IAudioDecoder */,
+				F9797EFE2F6EB70D00518D26 /* Icon */,
 				F9528C702BC05B5A00222F45 /* IImageDecoder */,
 				F9528B402BB69C8200222F45 /* Image */,
 				F9528C812BC05B5B00222F45 /* ImageDecoder */,
@@ -9947,6 +9970,18 @@
 				F9797EEE2F6E60C200518D26 /* SivDragItemType.cpp */,
 			);
 			path = DragItemType;
+			sourceTree = "<group>";
+		};
+		F9797EFE2F6EB70D00518D26 /* Icon */ = {
+			isa = PBXGroup;
+			children = (
+				F9797EF92F6EB70D00518D26 /* CIcon.hpp */,
+				F9797EFA2F6EB70D00518D26 /* CIcon.cpp */,
+				F9797EFB2F6EB70D00518D26 /* IconFactory.cpp */,
+				F9797EFC2F6EB70D00518D26 /* IIcon.hpp */,
+				F9797EFD2F6EB70D00518D26 /* SivIcon.cpp */,
+			);
+			path = Icon;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -13325,6 +13360,7 @@
 				F9070C872B9F175000383E4D /* Utility.ipp in Headers */,
 				F98602482BCFBB54006A4C0F /* SkRecordPattern.h in Headers */,
 				F9070DFA2B9F175E00383E4D /* CUserAction.hpp in Headers */,
+				F9797EF42F6EB6CD00518D26 /* TextLayoutResult.hpp in Headers */,
 				F98602812BCFBB54006A4C0F /* SkSwizzlePriv.h in Headers */,
 				F98601E62BCFBB53006A4C0F /* SkMaskBlurFilter.h in Headers */,
 				F9528C2F2BBF026F00222F45 /* zstd_lazy.h in Headers */,
@@ -13998,6 +14034,8 @@
 				F98600932BCFBB53006A4C0F /* SkChromeRemoteGlyphCache.h in Headers */,
 				F986F8312BC7B024006A4C0F /* INI.ipp in Headers */,
 				F9070CCC2B9F175100383E4D /* Indexed.hpp in Headers */,
+				F9797EFF2F6EB70D00518D26 /* IIcon.hpp in Headers */,
+				F9797F002F6EB70D00518D26 /* CIcon.hpp in Headers */,
 				F986023D2BCFBB54006A4C0F /* SkReadPixelsRec.h in Headers */,
 				F98605FE2BE61586006A4C0F /* Triangle.ipp in Headers */,
 				F98605732BDA7DB7006A4C0F /* Cursor.hpp in Headers */,
@@ -14760,6 +14798,7 @@
 				F986FA4A2BCFB53B006A4C0F /* svgxval.h in Headers */,
 				F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */,
 				F99881AC2F5587F800C8991D /* SerialDetail.hpp in Headers */,
+				F9797EF22F6EB6C700518D26 /* Icon.hpp in Headers */,
 				F980C48F2C04B41300A86B68 /* FloatRect.hpp in Headers */,
 				F9070C492B9F175000383E4D /* Char.ipp in Headers */,
 				F986031B2BCFBB54006A4C0F /* SkPathOpsCommon.h in Headers */,
@@ -14984,6 +15023,8 @@
 				F986FA732BCFB53B006A4C0F /* ftadvanc.h in Headers */,
 				F98605872BDA869C006A4C0F /* HighTemporalResolutionCursor.hpp in Headers */,
 				F9B7DA1B2D8C72DF002ABACE /* BCnData.hpp in Headers */,
+				F9797EF72F6EB6E800518D26 /* Icon.ipp in Headers */,
+				F9797EF82F6EB6E800518D26 /* TextLayoutResult.ipp in Headers */,
 				F9070C502B9F175000383E4D /* DiscreteDistribution.ipp in Headers */,
 				F98602472BCFBB54006A4C0F /* SkRecordOpts.h in Headers */,
 				F98603212BCFBB54006A4C0F /* SkPathOpsCurve.h in Headers */,
@@ -16006,6 +16047,9 @@
 				F986017A2BCFBB53006A4C0F /* SkCanvas.cpp in Sources */,
 				F98603C32BCFBB54006A4C0F /* SkSLGetReturnComplexity.cpp in Sources */,
 				F98604422BCFBB54006A4C0F /* SkSLTernaryExpression.cpp in Sources */,
+				F9797F012F6EB70D00518D26 /* CIcon.cpp in Sources */,
+				F9797F022F6EB70D00518D26 /* SivIcon.cpp in Sources */,
+				F9797F032F6EB70D00518D26 /* IconFactory.cpp in Sources */,
 				F986020F2BCFBB54006A4C0F /* SkPath_serial.cpp in Sources */,
 				F98605862BDA869C006A4C0F /* HighTemporalResolutionCursor.cpp in Sources */,
 				F98605052BCFBC12006A4C0F /* SkSampler.cpp in Sources */,

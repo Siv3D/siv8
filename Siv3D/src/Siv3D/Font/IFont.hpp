@@ -377,6 +377,6 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual void done_MM_Var(FT_MM_Var_* amaster);
+		virtual void done_MM_Var(FT_MM_Var_* amaster) = 0;
 	};
 }
