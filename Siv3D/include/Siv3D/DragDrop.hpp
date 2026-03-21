@@ -67,28 +67,19 @@ namespace s3d
 		/// @brief 1 つの既存ファイルを、外部アプリケーション向けの OS ドラッグとして開始します。
 		/// @param path 既存ファイルパス
 		/// @return OS ドラッグの開始に成功した場合 true
-		/// @remark 実際のポインタ drag gesture 中に呼び出すことを想定します。
-		/// @remark 任意タイミングでの開始は、プラットフォームによって失敗する場合があります。
 		/// @remark この関数は drag の開始可否のみを返します。完了結果は追跡しません。
-		[[nodiscard]]
 		bool BeginDragFile(FilePathView path);
 
 		/// @brief 複数の既存ファイルを、外部アプリケーション向けの OS ドラッグとして開始します。
 		/// @param paths 既存ファイルパスの配列
 		/// @return OS ドラッグの開始に成功した場合 true
-		/// @remark 実際のポインタ drag gesture 中に呼び出すことを想定します。
-		/// @remark 任意タイミングでの開始は、プラットフォームによって失敗する場合があります。
 		/// @remark この関数は drag の開始可否のみを返します。完了結果は追跡しません。
-		[[nodiscard]]
 		bool BeginDragFiles(const Array<FilePath>& paths);
 
 		/// @brief テキストを、外部アプリケーション向けの OS ドラッグとして開始します。
 		/// @param text 提供する文字列
 		/// @return OS ドラッグの開始に成功した場合 true
-		/// @remark 実際のポインタ drag gesture 中に呼び出すことを想定します。
-		/// @remark 任意タイミングでの開始は、プラットフォームによって失敗する場合があります。
 		/// @remark この関数は drag の開始可否のみを返します。完了結果は追跡しません。
-		[[nodiscard]]
 		bool BeginDragText(StringView text);
 	}
 }
