@@ -152,6 +152,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Subdivision2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SuperEllipse.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextLayoutResult.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />

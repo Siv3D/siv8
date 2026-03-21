@@ -14,6 +14,12 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	TextLayoutResult
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief テキストのレイアウト結果
 	struct TextLayoutResult
 	{
@@ -23,12 +29,17 @@ namespace s3d
 		/// @brief 実際に描画された、または描画可能なテキスト領域
 		RectF region{};
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator bool
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief テキスト全体が指定領域内に収まったかを返します。
 		/// @return テキスト全体が指定領域内に収まった場合 true, そうでない場合は false
 		[[nodiscard]]
-		explicit operator bool() const noexcept
-		{
-			return fits;
-		}
+		constexpr explicit operator bool() const noexcept;
 	};
 }
+
+# include "detail/TextLayoutResult.ipp"
