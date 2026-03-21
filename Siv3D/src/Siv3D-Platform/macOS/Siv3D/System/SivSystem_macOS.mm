@@ -51,7 +51,7 @@ namespace s3d
 
 	namespace System
 	{
-		bool LaunchBrowser(const URLView url)
+		bool OpenInBrowser(const URLView url)
 		{
 			if (const bool isWebPage = (url.starts_with(U"http://") || url.starts_with(U"https://"))) // Web ページ
 			{

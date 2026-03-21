@@ -86,14 +86,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	LaunchBrowser
+		//	OpenInBrowser
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した URL をデフォルトの Web ブラウザでオープンします。
 		/// @param url URL
 		/// @return オープンに成功した場合 true, それ以外の場合は false
-		bool LaunchBrowser(URLView url);
+		bool OpenInBrowser(URLView url);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -104,7 +104,7 @@ namespace s3d
 		/// @brief ファイルパスをファイルマネージャー上で表示します。
 		/// @param path ファイルパス
 		/// @return ファイルマネージャー上での表示に成功した場合 true, それ以外の場合は false
-		//bool ShowInFileManager(FilePathView path);
+		bool ShowInFileManager(FilePathView path);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -115,7 +115,7 @@ namespace s3d
 		/// @brief 指定したファイルをデフォルトのアプリケーションで開きます。 | Opens the specified file with the default application.
 		/// @param fileName ファイル名 | File name
 		/// @return アプリケーションの起動に成功した場合 true, それ以外の場合は false | Returns true if the application was launched successfully, otherwise false.
-		//bool LaunchFile(FilePathView fileName);
+		bool LaunchFile(FilePathView fileName);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -126,7 +126,7 @@ namespace s3d
 		/// @brief 指定したファイルをテキストエディタで開きます。 | Opens the specified file with the default text editor.
 		/// @param fileName ファイル名 | File name
 		/// @return テキストエディタの起動に成功した場合 true, それ以外の場合は false | Returns true if the text editor was launched successfully, otherwise false.
-		//bool LaunchFileWithTextEditor(FilePathView fileName);
+		bool LaunchFileWithTextEditor(FilePathView fileName);
 
 		////////////////////////////////////////////////////////////////
 		//

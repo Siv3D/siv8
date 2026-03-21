@@ -11,6 +11,7 @@
 
 # include <Siv3D/System.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 
@@ -18,6 +19,12 @@ namespace s3d
 {
 	namespace System
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	Sleep
+		//
+		////////////////////////////////////////////////////////////////
+
 		void Sleep(const int32 milliseconds)
 		{
 			if (milliseconds < 0)
@@ -33,7 +40,13 @@ namespace s3d
 			::timeEndPeriod(1);
 		}
 
-		bool LaunchBrowser(const URLView url)
+		////////////////////////////////////////////////////////////////
+		//
+		//	OpenInBrowser
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool OpenInBrowser(const URLView url)
 		{
 			String target;
 
@@ -43,7 +56,7 @@ namespace s3d
 			}
 			else // ローカルファイル
 			{
-				const String extension = FileSystem::Extension(url);
+				const String extension = FileSystem::Extension(url); // 小文字の拡張子を取得
 				
 				const bool isHTML = ((extension == U"html") || (extension == U"htm"));
 
@@ -52,10 +65,69 @@ namespace s3d
 					return false;
 				}
 
-				target = (U"file://" + FileSystem::FullPath(url));
+				target = (U"file:///" + FileSystem::FullPath(url));
 			}
 
-			return (32 < reinterpret_cast<size_t>(::ShellExecuteW(nullptr, L"open", Unicode::ToWstring(target).c_str(), nullptr, nullptr, SW_SHOWNORMAL)));
+			return (32 < reinterpret_cast<INT_PTR>(
+				::ShellExecuteW(nullptr, L"open", Unicode::ToWstring(target).c_str(), nullptr, nullptr, SW_SHOWNORMAL)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ShowInFileManager
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool ShowInFileManager(const FilePathView path)
+		{
+			const FilePath fullPath = FileSystem::FullPath(path);
+
+			if (FileSystem::IsFile(fullPath))
+			{
+				const auto native = fullPath.replaced(U'/', U'\\');
+				const String param = U"/select, \"{}\""_fmt(native);
+				const std::wstring wParam = Unicode::ToWstring(param);
+
+				return (32 < reinterpret_cast<INT_PTR>(
+					::ShellExecuteW(nullptr, L"open", L"explorer.exe", wParam.c_str(), nullptr, SW_SHOWNORMAL)));
+			}
+			else if (FileSystem::IsDirectory(fullPath))
+			{
+				const std::wstring wFullPath = Unicode::ToWstring(fullPath);
+
+				return (32 < reinterpret_cast<INT_PTR>(
+					::ShellExecuteW(nullptr, L"open", wFullPath.c_str(), nullptr, nullptr, SW_SHOWNORMAL)));
+			}
+
+			return false;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	LaunchFile
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool LaunchFile(const FilePathView fileName)
+		{
+			const NativeFilePath fullpath = FileSystem::NativePath(fileName);
+
+			return (32 < reinterpret_cast<INT_PTR>(
+				::ShellExecuteW(nullptr, nullptr, fullpath.c_str(), nullptr, nullptr, SW_SHOWNORMAL)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	LaunchFileWithTextEditor
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool LaunchFileWithTextEditor(const FilePathView fileName)
+		{
+			const auto params = (L"\"" + FileSystem::NativePath(fileName) + L"\"");
+
+			return (32 < reinterpret_cast<INT_PTR>(
+				::ShellExecuteW(nullptr, L"open", L"notepad.exe", params.c_str(), nullptr, SW_SHOWNORMAL)));
 		}
 	}
 }

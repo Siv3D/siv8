@@ -28,7 +28,7 @@ namespace s3d
 		bool OpenUserPage(const StringView screenName)
 		{
 			const URL url = (U"https://x.com/" + screenName);
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ namespace s3d
 		bool OpenTweetWindow(const StringView text)
 		{
 			const URL url = (U"https://x.com/intent/tweet?text=" + PercentEncode(text));
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace s3d
 		bool OpenSearchWindow(const StringView query)
 		{
 			const URL url = (U"https://x.com/search?q=" + PercentEncode(query));
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -75,13 +75,13 @@ namespace s3d
 		bool OpenMiniProfileWindow(const StringView screenName)
 		{
 			const URL url = (U"https://x.com/intent/user?screen_name=" + screenName);
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		bool OpenMiniProfileWindow(const uint64 userID)
 		{
 			const URL url = (U"https://x.com/intent/user?user_id=" + ToString(userID));
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -93,13 +93,13 @@ namespace s3d
 		bool OpenFollowWindow(const StringView screenName)
 		{
 			const URL url = (U"https://x.com/intent/follow?screen_name=" + screenName);
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		bool OpenFollowWindow(const uint64 userID)
 		{
 			const URL url = (U"https://x.com/intent/follow?user_id=" + ToString(userID));
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ namespace s3d
 		bool OpenLikeWindow(const uint64 tweetID)
 		{
 			const URL url = (U"https://x.com/intent/like?tweet_id=" + ToString(tweetID));
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ namespace s3d
 		bool OpenRepostWindow(const uint64 tweetID)
 		{
 			const URL url = (U"https://x.com/intent/retweet?tweet_id=" + ToString(tweetID));
-			return System::LaunchBrowser(url);
+			return System::OpenInBrowser(url);
 		}
 	}
 }

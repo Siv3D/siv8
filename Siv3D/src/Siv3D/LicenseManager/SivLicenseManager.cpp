@@ -181,7 +181,7 @@ R"-(<br>
 				writer.writeUTF8(Footer);
 			}
 
-			System::LaunchBrowser(path);
+			System::OpenInBrowser(path);
 		}
 	}
 }
