@@ -18,6 +18,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/UserAction/IUSerAction.hpp>
 # include <Siv3D/Pentablet/IPentablet.hpp>
+# include <Siv3D/DragDrop/CDragDrop.hpp>
 # include "CWindow.hpp"
 # include <windowsx.h>
 # include <ThirdParty/Wintab/WINTAB.H>
@@ -38,8 +39,8 @@ namespace s3d
 		// エンジンコンポーネントにアクセスできるか
 		const bool engineAvailable = Siv3DEngine::isAvailable();
 
-		//if (engineAvailable)
-		//{
+		if (engineAvailable)
+		{
 		//	if (auto textinput = static_cast<CTextInput*>(SIV3D_ENGINE(TextInput)))
 		//	{
 		//		if (textinput->process(message, wParam, &lParam))
@@ -48,11 +49,11 @@ namespace s3d
 		//		}
 		//	}
 
-		//	if (auto dragDrop = static_cast<CDragDrop*>(SIV3D_ENGINE(DragDrop)))
-		//	{
-		//		dragDrop->process();
-		//	}
-		//}
+			if (auto dragDrop = static_cast<CDragDrop*>(SIV3D_ENGINE(DragDrop)))
+			{
+				dragDrop->process();
+			}
+		}
 
 		switch (message)
 		{

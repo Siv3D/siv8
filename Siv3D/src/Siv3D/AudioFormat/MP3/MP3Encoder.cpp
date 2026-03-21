@@ -65,11 +65,17 @@ namespace s3d
 
 	bool MP3Encoder::save(const Wave& wave, const FilePathView path, const MP3Quality quality) const
 	{
+		if (not wave)
+		{
+			LOG_FAIL("❌ MP3Encoder::save(): wave is empty");
+			return false;
+		}
+
 		std::unique_ptr<BinaryFileWriter> writer = std::make_unique<BinaryFileWriter>();
 
 		if (not writer->open(path))
 		{
-			LOG_FAIL(U"❌ MP3Encoder::save(): Failed to open the file: {}"_fmt(path));
+			LOG_FAIL(fmt::format("❌ MP3Encoder::save(): Failed to open the file: {}", path));
 			return false;
 		}
 

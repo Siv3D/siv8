@@ -65,11 +65,17 @@ namespace s3d
 
 	bool AACEncoder::save(const Wave& wave, const FilePathView path, const AACQuality quality) const
 	{
+		if (not wave)
+		{
+			LOG_FAIL("❌ AACEncoder::save(): wave is empty");
+			return false;
+		}
+
 		std::unique_ptr<BinaryFileWriter> writer = std::make_unique<BinaryFileWriter>();
 
 		if (not writer->open(path))
 		{
-			LOG_FAIL(U"❌ AACEncoder::save(): Failed to open the file: {}"_fmt(path));
+			LOG_FAIL(fmt::format("❌ AACEncoder::save(): Failed to open the file: {}", path));
 			return false;
 		}
 

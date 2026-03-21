@@ -193,11 +193,17 @@ namespace s3d
 
 	bool WAVEncoder::save(const Wave& wave, const FilePathView path, const WAVSaveFormat format) const
 	{
+		if (not wave)
+		{
+			LOG_FAIL("❌ WAVEncoder::save(): wave is empty");
+			return false;
+		}
+
 		std::unique_ptr<BinaryFileWriter> writer = std::make_unique<BinaryFileWriter>();
 
 		if (not writer->open(path))
 		{
-			LOG_FAIL(U"❌ WAVEncoder::save(): Failed to open the file: {}"_fmt(path));
+			LOG_FAIL(fmt::format("❌ WAVEncoder::save(): Failed to open the file: {}", path));
 			return false;
 		}
 

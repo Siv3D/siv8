@@ -84,6 +84,12 @@ namespace s3d
 
 	bool PNGEncoder::save(const Image& image, const FilePathView path, const PNGFilter filter) const
 	{
+		if (not image)
+		{
+			LOG_FAIL("❌ PNGEncoder::save(): image is empty");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)

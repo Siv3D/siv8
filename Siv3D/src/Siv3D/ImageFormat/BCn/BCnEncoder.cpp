@@ -370,6 +370,12 @@ namespace s3d
 
 	bool BCnEncoder::save(const Image& image, const FilePathView path) const
 	{
+		if (not image)
+		{
+			LOG_FAIL("❌ BCnEncoder::save(): image is empty");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)

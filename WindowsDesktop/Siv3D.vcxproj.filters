@@ -1360,6 +1360,12 @@
     <Filter Include="src\ThirdParty\dr_mp3">
       <UniqueIdentifier>{a5f3911b-4013-45f3-b8fa-46bf301540a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\DragDrop">
+      <UniqueIdentifier>{1c320c63-1d32-4285-92f2-be9e9dcb39b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop">
+      <UniqueIdentifier>{3b9d483e-a8ef-4c48-bc0c-72347a5e3179}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5448,6 +5454,27 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\MP3Decoder.hpp">
       <Filter>include\Siv3D\AudioFormat</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragDrop.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragItemType.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragStatus.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DroppedFilePath.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DroppedText.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\DragDrop\IDragDrop.hpp">
+      <Filter>src\Siv3D\DragDrop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop\CDragDrop.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8443,6 +8470,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\MP3\MP3Decoder.cpp">
       <Filter>src\Siv3D\AudioFormat\MP3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\DragDropFactory.cpp">
+      <Filter>src\Siv3D\DragDrop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop\CDragDrop.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\SivDragDrop.cpp">
+      <Filter>src\Siv3D\DragDrop</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

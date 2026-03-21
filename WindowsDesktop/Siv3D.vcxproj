@@ -164,9 +164,14 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Wave.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Dialog.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragDrop.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragItemType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragStatus.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DrawableText.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DriveInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DriveType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DroppedFilePath.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DroppedText.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Effect.hpp" />
@@ -766,6 +771,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle\CCursorStyle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop\CDragDrop.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11\CEngineShader_D3D11.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.hpp" />
@@ -836,6 +842,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\CursorTransform.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\HighTemporalResolutionCursor.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\ICursor.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\DragDrop\IDragDrop.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Effect\CEffect.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Effect\EffectData.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Effect\IEffect.hpp" />
@@ -1389,6 +1396,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Dialog\SivDialog_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop\CDragDrop.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DriveInfo\SivDriveInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11\CEngineShader_D3D11.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\EngineShaderFactory.cpp" />
@@ -1528,6 +1536,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilState\SivDepthStencilState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Dialog\SivDialog.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\DragDropFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\SivDragDrop.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DrawableText\SivDrawableText.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DriveType\SivDriveType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />

@@ -1165,20 +1165,20 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// ドラッグするアイテムの種類 | Dragged item type
-//# include <Siv3D/DragItemType.hpp>
-//
-//// ドラッグの状態 | Dragging status
-//# include <Siv3D/DragStatus.hpp>
-//
-//// ドロップされたファイルパスの情報 | Dropped file path
-//# include <Siv3D/DroppedFilePath.hpp>
-//
-//// ドロップされたテキストの情報 | Dropped text
-//# include <Siv3D/DroppedText.hpp>
-//
-//// ドラッグ＆ドロップ | Drag & drop
-//# include <Siv3D/DragDrop.hpp>
+// ドラッグするアイテムの種類 | Dragged item type
+# include <Siv3D/DragItemType.hpp>
+
+// ドラッグの状態 | Dragging status
+# include <Siv3D/DragStatus.hpp>
+
+// ドロップされたファイルパスの情報 | Dropped file path
+# include <Siv3D/DroppedFilePath.hpp>
+
+// ドロップされたテキストの情報 | Dropped text
+# include <Siv3D/DroppedText.hpp>
+
+// ドラッグ＆ドロップ | Drag & drop
+# include <Siv3D/DragDrop.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
