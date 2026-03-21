@@ -1140,6 +1140,8 @@
 		F9797F012F6EB70D00518D26 /* CIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EFA2F6EB70D00518D26 /* CIcon.cpp */; };
 		F9797F022F6EB70D00518D26 /* SivIcon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EFD2F6EB70D00518D26 /* SivIcon.cpp */; };
 		F9797F032F6EB70D00518D26 /* IconFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EFB2F6EB70D00518D26 /* IconFactory.cpp */; };
+		F9797F072F6EC1D000518D26 /* miniaudio.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F042F6EC1D000518D26 /* miniaudio.h */; };
+		F9797F082F6EC1D000518D26 /* miniaudio.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F052F6EC1D000518D26 /* miniaudio.c */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4231,6 +4233,8 @@
 		F9797EFB2F6EB70D00518D26 /* IconFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IconFactory.cpp; sourceTree = "<group>"; };
 		F9797EFC2F6EB70D00518D26 /* IIcon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IIcon.hpp; sourceTree = "<group>"; };
 		F9797EFD2F6EB70D00518D26 /* SivIcon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivIcon.cpp; sourceTree = "<group>"; };
+		F9797F042F6EC1D000518D26 /* miniaudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = miniaudio.h; sourceTree = "<group>"; };
+		F9797F052F6EC1D000518D26 /* miniaudio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = miniaudio.c; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6660,6 +6664,7 @@
 				F986F98C2BCA9D0A006A4C0F /* lunasvg */,
 				F9F00A692CD299C10097C165 /* mapbox */,
 				F9FD0B702D1D334700A584CE /* Metal */,
+				F9797F062F6EC1D000518D26 /* miniaudio */,
 				F9070A732B9DEB5900383E4D /* miniutf */,
 				F933AD752E54A375005624D7 /* msdfgen */,
 				F98605582BD203D4006A4C0F /* muparser */,
@@ -9982,6 +9987,15 @@
 				F9797EFD2F6EB70D00518D26 /* SivIcon.cpp */,
 			);
 			path = Icon;
+			sourceTree = "<group>";
+		};
+		F9797F062F6EC1D000518D26 /* miniaudio */ = {
+			isa = PBXGroup;
+			children = (
+				F9797F042F6EC1D000518D26 /* miniaudio.h */,
+				F9797F052F6EC1D000518D26 /* miniaudio.c */,
+			);
+			path = miniaudio;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -14392,6 +14406,7 @@
 				F933AD7B2E54A375005624D7 /* sdf-error-estimation.h in Headers */,
 				F933AD7C2E54A375005624D7 /* msdfgen.h in Headers */,
 				F933AD7D2E54A375005624D7 /* Contour.h in Headers */,
+				F9797F072F6EC1D000518D26 /* miniaudio.h in Headers */,
 				F933AD7E2E54A375005624D7 /* contour-combiners.h in Headers */,
 				F933AD7F2E54A375005624D7 /* Shape.h in Headers */,
 				F933AD802E54A375005624D7 /* EdgeHolder.h in Headers */,
@@ -15876,6 +15891,7 @@
 				F98601BB2BCFBB53006A4C0F /* SkFontMetricsPriv.cpp in Sources */,
 				F9528BB32BBE7D3400222F45 /* SivMemoryReader.cpp in Sources */,
 				F98602622BCFBB54006A4C0F /* SkScan_Antihair.cpp in Sources */,
+				F9797F082F6EC1D000518D26 /* miniaudio.c in Sources */,
 				F96F95F72C359EB80033353E /* SivMorton.cpp in Sources */,
 				F9070DFF2B9F175E00383E4D /* SivVector3D.cpp in Sources */,
 				F98604672BCFBB54006A4C0F /* SkSLBuiltinTypes.cpp in Sources */,
