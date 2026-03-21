@@ -19,9 +19,6 @@
 
 namespace s3d
 {
-	class EmojiData;
-	class IconData;
-
 	class CFont final : public ISiv3DFont
 	{
 	public:
@@ -375,10 +372,6 @@ namespace s3d
 		AssetHandleManager<Font::IDType, FontData> m_fonts{ "Font" };
 
 		HashMap<Font::IDType, Array<Font>> m_fallbackFonts;
-
-		std::unique_ptr<EmojiData> m_emojiData;
-
-		std::unique_ptr<IconData> m_iconData;
 
 		std::unique_ptr<FontShader> m_shader;
 	};

@@ -857,7 +857,6 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Engine\Siv3DEngine.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\CFont.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D\Font\EmojiData.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontData.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\FontFace.hpp" />
@@ -878,7 +877,6 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\MSDFGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\OutlineGlyphRenderer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\PolygonGlyphRenderer.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D\Font\IconData.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\IFont.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
@@ -1572,7 +1570,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\FmtExtension\SivFmtExtension.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FontMethod\SivFontMethod.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\CFont.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\Font\EmojiData.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontData.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontFace.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontFactory.cpp" />
@@ -1586,7 +1583,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\MSDFGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\OutlineGlyphRenderer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\GlyphRenderer\PolygonGlyphRenderer.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\Font\IconData.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\SivFont.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\TypefaceUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Formatter\SivFormatter.cpp" />
