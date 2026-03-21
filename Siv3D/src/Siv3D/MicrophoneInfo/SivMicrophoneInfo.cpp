@@ -42,9 +42,11 @@ namespace s3d
 
 					switch (context->backend)
 					{
+				# if SIV3D_PLATFORM(WINDOWS)
 					case ma_backend_wasapi:
 						info.id = Unicode::FromWstring(src.id.wasapi);
 						break;
+				# endif
 					case ma_backend_coreaudio:
 						info.id = Unicode::FromUTF8(src.id.coreaudio);
 						break;

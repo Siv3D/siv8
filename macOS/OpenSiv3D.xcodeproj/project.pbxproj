@@ -1142,6 +1142,12 @@
 		F9797F032F6EB70D00518D26 /* IconFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EFB2F6EB70D00518D26 /* IconFactory.cpp */; };
 		F9797F072F6EC1D000518D26 /* miniaudio.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F042F6EC1D000518D26 /* miniaudio.h */; };
 		F9797F082F6EC1D000518D26 /* miniaudio.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F052F6EC1D000518D26 /* miniaudio.c */; };
+		F9797F0E2F6ED8CE00518D26 /* CAudio.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797F0A2F6ED8CE00518D26 /* CAudio.hpp */; };
+		F9797F0F2F6ED8CE00518D26 /* IAudio.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797F0C2F6ED8CE00518D26 /* IAudio.hpp */; };
+		F9797F102F6ED8CE00518D26 /* CAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F0B2F6ED8CE00518D26 /* CAudio.cpp */; };
+		F9797F112F6ED8CE00518D26 /* AudioFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F092F6ED8CE00518D26 /* AudioFactory.cpp */; };
+		F9797F142F6ED8DD00518D26 /* SivMicrophoneInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F122F6ED8DD00518D26 /* SivMicrophoneInfo.cpp */; };
+		F9797F162F6ED8F400518D26 /* MicrophoneInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797F152F6ED8F400518D26 /* MicrophoneInfo.hpp */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4235,6 +4241,12 @@
 		F9797EFD2F6EB70D00518D26 /* SivIcon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivIcon.cpp; sourceTree = "<group>"; };
 		F9797F042F6EC1D000518D26 /* miniaudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = miniaudio.h; sourceTree = "<group>"; };
 		F9797F052F6EC1D000518D26 /* miniaudio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = miniaudio.c; sourceTree = "<group>"; };
+		F9797F092F6ED8CE00518D26 /* AudioFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioFactory.cpp; sourceTree = "<group>"; };
+		F9797F0A2F6ED8CE00518D26 /* CAudio.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CAudio.hpp; sourceTree = "<group>"; };
+		F9797F0B2F6ED8CE00518D26 /* CAudio.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CAudio.cpp; sourceTree = "<group>"; };
+		F9797F0C2F6ED8CE00518D26 /* IAudio.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAudio.hpp; sourceTree = "<group>"; };
+		F9797F122F6ED8DD00518D26 /* SivMicrophoneInfo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMicrophoneInfo.cpp; sourceTree = "<group>"; };
+		F9797F152F6ED8F400518D26 /* MicrophoneInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MicrophoneInfo.hpp; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -7183,6 +7195,7 @@
 				F9807D882BF6677600D9B590 /* MessageBox.hpp */,
 				F9807D892BF6677600D9B590 /* MessageBoxResult.hpp */,
 				F9807D872BF6677600D9B590 /* MessageBoxStyle.hpp */,
+				F9797F152F6ED8F400518D26 /* MicrophoneInfo.hpp */,
 				F9528B512BB6DC2C00222F45 /* MicrosecClock.hpp */,
 				F9528B522BB6DC2C00222F45 /* MillisecClock.hpp */,
 				F9E794652C19B6D7002615BA /* MinMax.hpp */,
@@ -7885,6 +7898,7 @@
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9FD0D282D21693100A584CE /* AssetMonitor */,
+				F9797F0D2F6ED8CE00518D26 /* Audio */,
 				F9797E3C2F643FC500518D26 /* AudioDecoder */,
 				F9797E422F643FC500518D26 /* AudioEncoder */,
 				F9797E312F63314300518D26 /* AudioFormat */,
@@ -8022,6 +8036,7 @@
 				F9528BB22BBE7D3400222F45 /* MemoryReader */,
 				F9528BA72BBDA25E00222F45 /* MemoryViewReader */,
 				F9807D972BF667C300D9B590 /* MessageBox */,
+				F9797F132F6ED8DD00518D26 /* MicrophoneInfo */,
 				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
 				F9070D6C2B9F175E00383E4D /* MonitorInfo */,
@@ -9996,6 +10011,25 @@
 				F9797F052F6EC1D000518D26 /* miniaudio.c */,
 			);
 			path = miniaudio;
+			sourceTree = "<group>";
+		};
+		F9797F0D2F6ED8CE00518D26 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				F9797F092F6ED8CE00518D26 /* AudioFactory.cpp */,
+				F9797F0A2F6ED8CE00518D26 /* CAudio.hpp */,
+				F9797F0B2F6ED8CE00518D26 /* CAudio.cpp */,
+				F9797F0C2F6ED8CE00518D26 /* IAudio.hpp */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		F9797F132F6ED8DD00518D26 /* MicrophoneInfo */ = {
+			isa = PBXGroup;
+			children = (
+				F9797F122F6ED8DD00518D26 /* SivMicrophoneInfo.cpp */,
+			);
+			path = MicrophoneInfo;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -14175,6 +14209,7 @@
 				F98602F72BCFBB54006A4C0F /* SkBlitRow_opts.h in Headers */,
 				F9CD6A2B2DE2276B00EFA782 /* agg_curves_impl.hpp in Headers */,
 				F9CD6A2C2DE2276B00EFA782 /* agg_basics.h in Headers */,
+				F9797F162F6ED8F400518D26 /* MicrophoneInfo.hpp in Headers */,
 				F9CD6A2D2DE2276B00EFA782 /* agg_math.h in Headers */,
 				F9CD6A2E2DE2276B00EFA782 /* agg_array.h in Headers */,
 				F9797EA62F667ED800518D26 /* IMediaTranscoder.hpp in Headers */,
@@ -14907,6 +14942,8 @@
 				F91171202DCBBF0B000A22E6 /* CFont.hpp in Headers */,
 				F91171212DCBBF0B000A22E6 /* FontFace.hpp in Headers */,
 				F98604102BCFBB54006A4C0F /* SkSLFunctionCall.h in Headers */,
+				F9797F0E2F6ED8CE00518D26 /* CAudio.hpp in Headers */,
+				F9797F0F2F6ED8CE00518D26 /* IAudio.hpp in Headers */,
 				F98600682BCFBB53006A4C0F /* SkTrimPathEffect.h in Headers */,
 				F986F9B62BCA9D0A006A4C0F /* parserutils.h in Headers */,
 				F98600AD2BCFBB53006A4C0F /* SkOrderedFontMgr.h in Headers */,
@@ -16190,6 +16227,7 @@
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F98601D82BCFBB53006A4C0F /* SkKnownRuntimeEffects.cpp in Sources */,
 				F9797E5E2F667E0400518D26 /* SivWave.cpp in Sources */,
+				F9797F142F6ED8DD00518D26 /* SivMicrophoneInfo.cpp in Sources */,
 				F98603362BCFBB54006A4C0F /* SkReduceOrder.cpp in Sources */,
 				F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */,
 				F98600D22BCFBB53006A4C0F /* SkFloatingPoint.cpp in Sources */,
@@ -16319,6 +16357,8 @@
 				F9528C0A2BBF026F00222F45 /* entropy_common.c in Sources */,
 				F986F98D2BCA9D0A006A4C0F /* plutovg-blend.c in Sources */,
 				F9528B772BB708A700222F45 /* CLicenseManager.cpp in Sources */,
+				F9797F102F6ED8CE00518D26 /* CAudio.cpp in Sources */,
+				F9797F112F6ED8CE00518D26 /* AudioFactory.cpp in Sources */,
 				F9E794782C247C18002615BA /* MetalRenderer2DCommandManager.mm in Sources */,
 				F9528C3B2BBF026F00222F45 /* zstd_decompress_block.c in Sources */,
 				F986058A2BDBDB37006A4C0F /* WindowMisc.mm in Sources */,
