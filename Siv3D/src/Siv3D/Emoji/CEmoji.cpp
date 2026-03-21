@@ -25,6 +25,28 @@ namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static GlyphIndex GetSingleGlyphIndex(hb_font_t* hbFont, hb_buffer_t* hbBuffer, StringView emoji)
+		{
+			::hb_buffer_reset(hbBuffer);
+			::hb_buffer_add_utf32(hbBuffer,
+				reinterpret_cast<const uint32*>(emoji.data()),
+				static_cast<int32>(emoji.size()), 0, static_cast<int32>(emoji.size()));
+			::hb_buffer_guess_segment_properties(hbBuffer);
+			::hb_shape(hbFont, hbBuffer, nullptr, 0);
+
+			uint32 glyphCount = 0;
+			const hb_glyph_info_t* glyphInfo = ::hb_buffer_get_glyph_infos(hbBuffer, &glyphCount);
+
+			if ((glyphCount != 1) || (glyphInfo == nullptr))
+			{
+				return GlyphIndexNotdef;
+			}
+
+			return static_cast<GlyphIndex>(glyphInfo[0].codepoint);
+		}
+
+		[[nodiscard]]
 		static Image RenderEmoji(const GlyphIndex emoji, const int32 size, SkFont& font)
 		{
 			if (emoji == GlyphIndexNotdef)
@@ -163,17 +185,7 @@ namespace s3d
 			return false;
 		}
 
-		::hb_buffer_reset(m_hbBuffer);
-		::hb_buffer_add_utf32(m_hbBuffer,
-			reinterpret_cast<const uint32*>(emoji.data()),
-			static_cast<int32>(emoji.size()), 0, static_cast<int32>(emoji.size()));
-		::hb_buffer_guess_segment_properties(m_hbBuffer);
-		::hb_shape(m_hbFont, m_hbBuffer, nullptr, 0);
-
-		uint32 glyphCount;
-		::hb_buffer_get_glyph_infos(m_hbBuffer, &glyphCount);
-
-		return (glyphCount == 1);
+		return (GetSingleGlyphIndex(m_hbFont, m_hbBuffer, emoji) != GlyphIndexNotdef);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -189,22 +201,7 @@ namespace s3d
 			return GlyphIndexNotdef;
 		}
 
-		::hb_buffer_reset(m_hbBuffer);
-		::hb_buffer_add_utf32(m_hbBuffer,
-			reinterpret_cast<const uint32*>(emoji.data()),
-			static_cast<int32>(emoji.size()), 0, static_cast<int32>(emoji.size()));
-		::hb_buffer_guess_segment_properties(m_hbBuffer);
-		::hb_shape(m_hbFont, m_hbBuffer, nullptr, 0);
-
-		uint32 glyphCount;
-		hb_glyph_info_t* glyphInfo = ::hb_buffer_get_glyph_infos(m_hbBuffer, &glyphCount);
-
-		if (glyphCount != 1)
-		{
-			return GlyphIndexNotdef;
-		}
-
-		return static_cast<GlyphIndex>(glyphInfo[0].codepoint);
+		return GetSingleGlyphIndex(m_hbFont, m_hbBuffer, emoji);
 	}
 
 	////////////////////////////////////////////////////////////////

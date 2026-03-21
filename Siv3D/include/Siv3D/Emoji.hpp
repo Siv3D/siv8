@@ -25,16 +25,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief 絵文字
+	/// @brief 絵文字を表すオブジェクト
+	///
+	/// Unicode の絵文字シーケンスをコードポイント文字列として保持します。
+	/// また、絵文字グリフの有無の確認、グリフインデックスの取得、
+	/// 絵文字画像の生成を行うための静的関数を提供します。
 	struct Emoji
 	{
-		/// @brief 絵文字のデフォルトの大きさ（ピクセル）
+		/// @brief 絵文字画像生成時のデフォルトの大きさ（ピクセル）
 		static constexpr int32 DefaultSize = 128;
 
-		/// @brief 絵文字のデフォルト幅と高さ（ピクセル）
+		/// @brief デフォルトの絵文字画像サイズ（ピクセル）
 		static constexpr Size ImageSize{ DefaultSize, DefaultSize };
 
-		/// @brief 絵文字のコードポイント
+		/// @brief 絵文字を表す Unicode コードポイント列
 		String codePoints;
 
 		////////////////////////////////////////////////////////////////
@@ -43,25 +47,34 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief デフォルトコンストラクタ
+		/// @brief 空の Emoji オブジェクトを構築します。
 		[[nodiscard]]
 		Emoji() = default;
 
+		/// @brief 文字列リテラルから Emoji オブジェクトを構築します。
+		/// @param emoji 絵文字を表す UTF-32 文字列
 		[[nodiscard]]
 		explicit Emoji(const char32* emoji);
 
+		/// @brief 文字列ビューから Emoji オブジェクトを構築します。
+		/// @param emoji 絵文字を表す文字列ビュー
 		[[nodiscard]]
 		explicit Emoji(StringView emoji);
 
+		/// @brief 文字列から Emoji オブジェクトを構築します。
+		/// @param emoji 絵文字を表す文字列
 		[[nodiscard]]
 		explicit Emoji(String emoji);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	HassGlyph
+		//	HasGlyph
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した絵文字に対応するグリフが利用可能かを返します。
+		/// @param emoji 絵文字を表す文字列
+		/// @return 利用可能なグリフが存在する場合は true、存在しない場合は false
 		[[nodiscard]]
 		static bool HasGlyph(StringView emoji);
 
@@ -71,6 +84,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した絵文字に対応するグリフインデックスを返します。
+		/// @param emoji 絵文字を表す文字列
+		/// @return グリフインデックス。対応するグリフが存在しない場合は GlyphIndexNotdef
 		[[nodiscard]]
 		static GlyphIndex GetGlyphIndex(StringView emoji);
 
@@ -80,6 +96,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した絵文字からカラー画像を生成します。
+		/// @param emoji 絵文字を表す文字列
+		/// @param size 生成する画像の一辺の大きさ（ピクセル）
+		/// @return 生成された絵文字画像。生成に失敗した場合は空の Image
 		[[nodiscard]]
 		static Image CreateImage(StringView emoji, int32 size = DefaultSize);
 
@@ -89,26 +109,38 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief グリフインデックスからカラー画像を生成します。
+		/// @param glyphIndex 絵文字のグリフインデックス
+		/// @param size 生成する画像の一辺の大きさ（ピクセル）
+		/// @return 生成された絵文字画像。生成に失敗した場合は空の Image
 		[[nodiscard]]
 		static Image CreateImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	CreateFilledImage
+		//	CreateSilhouetteImage
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した絵文字からシルエット画像を生成します。
+		/// @param emoji 絵文字を表す文字列
+		/// @param size 生成する画像の一辺の大きさ（ピクセル）
+		/// @return 生成された絵文字のシルエット画像。生成に失敗した場合は空の Image
 		[[nodiscard]]
-		static Image CreateFilledImage(StringView emoji, int32 size = DefaultSize);
+		static Image CreateSilhouetteImage(StringView emoji, int32 size = DefaultSize);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	CreateFilledImageByGlyphIndex
+		//	CreateSilhouetteImageByGlyphIndex
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief グリフインデックスからシルエット画像を生成します。
+		/// @param glyphIndex 絵文字のグリフインデックス
+		/// @param size 生成する画像の一辺の大きさ（ピクセル）
+		/// @return 生成された絵文字のシルエット画像。生成に失敗した場合は空の Image
 		[[nodiscard]]
-		static Image CreateFilledImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
+		static Image CreateSilhouetteImageByGlyphIndex(GlyphIndex glyphIndex, int32 size = DefaultSize);
 	};
 
 	inline namespace Literals
@@ -121,12 +153,12 @@ namespace s3d
 			//
 			////////////////////////////////////////////////////////////////
 
-			/// @brief 絵文字（コードポイント）を記述した文字列から Emoji オブジェクトを作成します。
-			/// @param s 絵文字（コードポイント）を記述した文字列
+			/// @brief 絵文字を表す文字列リテラルから Emoji オブジェクトを作成します。
+			/// @param s 絵文字を表す UTF-32 文字列
 			/// @param length 文字列の長さ
-			/// @return Emoji オブジェクト
+			/// @return 作成された Emoji オブジェクト
 			[[nodiscard]]
-			Emoji operator ""_emoji(const char32* s, size_t length);
+			Emoji operator ""_emoji(const char32 * s, size_t length);
 		}
 	}
 }

@@ -76,22 +76,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	CreateFilledImage
+	//	CreateSilhouetteImage
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image Emoji::CreateFilledImage(const StringView emoji, const int32 size)
+	Image Emoji::CreateSilhouetteImage(const StringView emoji, const int32 size)
 	{
 		return SIV3D_ENGINE(Emoji)->renderFilledEmoji(SIV3D_ENGINE(Emoji)->getGlyphIndex(emoji), size);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	CreateFilledImageByGlyphIndex
+	//	CreateSilhouetteImageByGlyphIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image Emoji::CreateFilledImageByGlyphIndex(const GlyphIndex glyphIndex, const int32 size)
+	Image Emoji::CreateSilhouetteImageByGlyphIndex(const GlyphIndex glyphIndex, const int32 size)
 	{
 		return SIV3D_ENGINE(Emoji)->renderFilledEmoji(glyphIndex, size);
 	}
