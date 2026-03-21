@@ -36,6 +36,7 @@
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Emoji/IEmoji.hpp>
+# include <Siv3D/Icon/IIcon.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/Effect/IEffect.hpp>
@@ -80,6 +81,7 @@ namespace s3d
 		SIV3D_ENGINE(ScreenCapture)->init();
 		SIV3D_ENGINE(Font)->init();
 		SIV3D_ENGINE(Emoji)->init();
+		SIV3D_ENGINE(Icon)->init();
 		SIV3D_ENGINE(GUI)->init();
 		SIV3D_ENGINE(Print)->init();
 		SIV3D_ENGINE(Effect)->init();

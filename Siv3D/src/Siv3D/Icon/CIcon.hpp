@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include "IEmoji.hpp"
+# include "IIcon.hpp"
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
 #	include <ThirdParty-prebuilt/harfbuzz/hb.h>
 #	include <ThirdParty-prebuilt/harfbuzz/hb-ft.h>
@@ -18,30 +18,24 @@
 #	include <harfbuzz/hb.h>
 #	include <harfbuzz/hb-ft.h>
 # endif
-SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
-# include <ThirdParty/skia/include/core/SkFont.h>
-# include <ThirdParty/skia/include/core/SkStream.h>
-# include <ThirdParty/skia/include/core/SkBitmap.h>
-# include <ThirdParty/skia/src/ports/SkTypeface_FreeType.h>
-SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {
-	class CEmoji final : public ISiv3DEmoji
+	class CIcon final : public ISiv3DIcon
 	{
 	public:
 
-		~CEmoji() override;
+		~CIcon() override;
 
 		void init() override;
 
-		bool hasGlyph(StringView emoji) const override;
+		bool hasGlyph(char32 icon) const override;
 
-		GlyphIndex getGlyphIndex(StringView emoji) const override;
+		GlyphIndex getGlyphIndex(char32 icon) const override;
 
-		Image render(GlyphIndex emoji, int32 size) override;
+		Image render(char32 icon, int32 size) override;
 
-		Image renderSilhouette(GlyphIndex emoji, int32 size) override;
+		Image renderMSDF(char32 icon, int32 size, int32 bufferSize) override;
 
 	private:
 
@@ -52,9 +46,5 @@ namespace s3d
 		hb_font_t* m_hbFont = nullptr;
 
 		hb_buffer_t* m_hbBuffer = nullptr;
-
-		sk_sp<SkTypeface> m_typeface;
-
-		SkFont m_font;
 	};
 }

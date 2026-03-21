@@ -1369,6 +1369,9 @@
     <Filter Include="src\Siv3D\DragItemType">
       <UniqueIdentifier>{7d42a633-512c-4f86-b158-d0a54a4757fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Icon">
+      <UniqueIdentifier>{875a6315-5ea6-42f7-9fd1-19ffbae7ad77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5484,6 +5487,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Icon.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Icon\IIcon.hpp">
+      <Filter>src\Siv3D\Icon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Icon\CIcon.hpp">
+      <Filter>src\Siv3D\Icon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8491,6 +8500,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\DragItemType\SivDragItemType.cpp">
       <Filter>src\Siv3D\DragItemType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\IconFactory.cpp">
+      <Filter>src\Siv3D\Icon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\SivIcon.cpp">
+      <Filter>src\Siv3D\Icon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\CIcon.cpp">
+      <Filter>src\Siv3D\Icon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

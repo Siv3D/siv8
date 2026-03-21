@@ -40,7 +40,7 @@ namespace s3d
 		static Image CreateImage(char32 code, int32 size);
 
 		[[nodiscard]]
-		static Image CreateMSDFImage(char32 code, int32 size, int32 buffer = 2);
+		static Image CreateMSDFImage(char32 code, int32 size, int32 bufferSize = 2);
 	};
 
 	inline namespace Literals

@@ -15,7 +15,6 @@
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/CacheDirectory/CacheDirectory.hpp>
-# include <Siv3D/Error/InternalEngineError.hpp>
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4244)
 # include <ThirdParty/skia/include/core/SkCanvas.h>
@@ -28,7 +27,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static GlyphIndex GetSingleGlyphIndex(hb_font_t* hbFont, hb_buffer_t* hbBuffer, StringView emoji)
+		static GlyphIndex GetSingleGlyphIndex(hb_font_t* hbFont, hb_buffer_t* hbBuffer, const StringView emoji)
 		{
 			::hb_buffer_reset(hbBuffer);
 			::hb_buffer_add_utf32(hbBuffer,
@@ -156,11 +155,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	hasEmoji
+	//	hasGlyph
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CEmoji::hasEmoji(StringView emoji) const
+	bool CEmoji::hasGlyph(StringView emoji) const
 	{
 		if (not m_available)
 		{
@@ -188,11 +187,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderEmoji
+	//	render
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image CEmoji::renderEmoji(const GlyphIndex emoji, const int32 size)
+	Image CEmoji::render(const GlyphIndex emoji, const int32 size)
 	{
 		if (not m_available)
 		{
@@ -213,11 +212,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	renderFilledEmoji
+	//	renderSilhouette
 	//
 	////////////////////////////////////////////////////////////////
 
-	Image CEmoji::renderFilledEmoji(const GlyphIndex emoji, const int32 size)
+	Image CEmoji::renderSilhouette(const GlyphIndex emoji, const int32 size)
 	{
 		if (not m_available)
 		{

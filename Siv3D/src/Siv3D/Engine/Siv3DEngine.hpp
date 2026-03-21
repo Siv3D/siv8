@@ -47,6 +47,7 @@ namespace s3d
 	class ISiv3DScreenCapture;
 	class ISiv3DFont;
 	class ISiv3DEmoji;
+	class ISiv3DIcon;
 	class ISiv3DGUI;
 	class ISiv3DPrint;
 	class ISiv3DEffect;
@@ -93,6 +94,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DScreenCapture>,
 			Siv3DComponent<ISiv3DFont>,
 			Siv3DComponent<ISiv3DEmoji>,
+			Siv3DComponent<ISiv3DIcon>,
 			Siv3DComponent<ISiv3DGUI>,
 			Siv3DComponent<ISiv3DPrint>,
 			Siv3DComponent<ISiv3DEffect>,

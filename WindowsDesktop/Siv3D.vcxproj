@@ -882,6 +882,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\GUI\CGUI.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\GUI\IGUI.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Icon\CIcon.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Icon\IIcon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\IImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageEncoder\CImageEncoder.hpp" />
@@ -1608,6 +1610,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HTTPStatusCode\SivHTTPStatusCode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IAudioDecoder\SivIAudioDecoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\CIcon.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\IconFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\SivIcon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IImageDecoder\SivIImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\ImageDecoderFactory.cpp" />
