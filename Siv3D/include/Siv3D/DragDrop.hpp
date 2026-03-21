@@ -20,13 +20,25 @@ namespace s3d
 {
 	namespace DragDrop
 	{
-		/// @brief ドラッグ＆ドロップでファイルパスを受け付けるかを設定します。
+		/// @brief ドラッグ & ドロップでファイルパスを受け付ける設定になっている場合 true を返します。
+		/// @return ファイルパスを受け付ける設定になっている場合 true
+		/// @remark デフォルトでは true です。
+		[[nodiscard]]
+		bool IsAcceptingFilePaths();
+
+		/// @brief ドラッグ & ドロップでテキストを受け付ける設定になっている場合 true を返します。
+		/// @return テキストを受け付ける設定になっている場合 true
+		/// @remark デフォルトでは false です。
+		[[nodiscard]]
+		bool IsAcceptingText();
+
+		/// @brief ドラッグ & ドロップでファイルパスを受け付けるかを設定します。
 		/// @param accept ファイルパスを受け付ける場合は true
 		/// @remark デフォルトでは true を想定します。
 		/// @remark この設定は受け側の挙動にのみ影響します。
 		void AcceptFilePaths(bool accept);
 
-		/// @brief ドラッグ＆ドロップでテキストを受け付けるかを設定します。
+		/// @brief ドラッグ & ドロップでテキストを受け付けるかを設定します。
 		/// @param accept テキストを受け付ける場合は true
 		/// @remark デフォルトでは false を想定します。
 		/// @remark この設定は受け側の挙動にのみ影響します。

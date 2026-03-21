@@ -33,6 +33,12 @@ namespace s3d
 		void init() override;
 
 		void update() override;
+		
+		[[nodiscard]]
+		bool isAcceptingFilePaths() const override;
+
+		[[nodiscard]]
+		bool isAcceptingText() const override;
 
 		void acceptFilePaths(bool accept) override;
 

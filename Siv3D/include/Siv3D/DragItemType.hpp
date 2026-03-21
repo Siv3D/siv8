@@ -14,6 +14,8 @@
 
 namespace s3d
 {
+	struct FormatData;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	DragItemType
@@ -31,4 +33,16 @@ namespace s3d
 		/// @brief テキストとして扱うアイテムです。
 		Text,
 	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief DragItemType を文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value DragItemType
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
+	void Formatter(FormatData& formatData, DragItemType value);
 }

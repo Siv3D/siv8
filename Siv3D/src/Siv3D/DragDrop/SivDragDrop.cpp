@@ -17,6 +17,16 @@ namespace s3d
 {
 	namespace DragDrop
 	{
+		bool IsAcceptingFilePaths()
+		{
+			return SIV3D_ENGINE(DragDrop)->isAcceptingFilePaths();
+		}
+
+		bool IsAcceptingText()
+		{
+			return SIV3D_ENGINE(DragDrop)->isAcceptingText();
+		}
+
 		void AcceptFilePaths(const bool accept)
 		{
 			SIV3D_ENGINE(DragDrop)->acceptFilePaths(accept);

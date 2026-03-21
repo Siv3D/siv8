@@ -1366,6 +1366,9 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop">
       <UniqueIdentifier>{3b9d483e-a8ef-4c48-bc0c-72347a5e3179}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\DragItemType">
+      <UniqueIdentifier>{7d42a633-512c-4f86-b158-d0a54a4757fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -8479,6 +8482,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\SivDragDrop.cpp">
       <Filter>src\Siv3D\DragDrop</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragItemType\SivDragItemType.cpp">
+      <Filter>src\Siv3D\DragItemType</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -31,6 +31,12 @@ namespace s3d
 		virtual void init() = 0;
 
 		virtual void update() = 0;
+		
+		[[nodiscard]]
+		virtual bool isAcceptingFilePaths() const = 0;
+
+		[[nodiscard]]
+		virtual bool isAcceptingText() const = 0;
 
 		virtual void acceptFilePaths(bool accept) = 0;
 
