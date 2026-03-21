@@ -1372,6 +1372,9 @@
     <Filter Include="src\Siv3D\Icon">
       <UniqueIdentifier>{875a6315-5ea6-42f7-9fd1-19ffbae7ad77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\miniaudio">
+      <UniqueIdentifier>{dc3cc25a-a02d-498f-91c5-ad15722839d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5499,6 +5502,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextLayoutResult.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.h">
+      <Filter>src\ThirdParty\miniaudio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8515,6 +8521,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Icon\CIcon.cpp">
       <Filter>src\Siv3D\Icon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.c">
+      <Filter>src\ThirdParty\miniaudio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

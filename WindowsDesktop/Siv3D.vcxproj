@@ -1188,6 +1188,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\recursive_wrapper.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant_visitor.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniutf\miniutf.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\arithmetics.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\base.h" />
@@ -1908,6 +1909,7 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgelement.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\contour-combiners.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\Contour.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\convergent-curve-ordering.cpp" />

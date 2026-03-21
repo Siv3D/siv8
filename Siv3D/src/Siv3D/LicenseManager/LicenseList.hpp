@@ -668,6 +668,12 @@ MIT_LICENSE
 },
 
 {
+R"-(miniaudio)-",
+R"-(Copyright 2025 David Reid)-",
+MIT_LICENSE
+},
+
+{
 R"-(miniutf)-",
 R"-(Copyright (c) 2013 Dropbox, Inc.)-",
 MIT_LICENSE

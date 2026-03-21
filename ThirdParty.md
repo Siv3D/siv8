@@ -16,7 +16,7 @@ Name | Version
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 8.1.0
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.2.4
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
@@ -32,6 +32,7 @@ Name | Version
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
+[miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
 [miniutf](https://github.com/dropbox/miniutf) | 
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
 [msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
@@ -56,7 +57,7 @@ Name | Version
 [serial_cpp](https://github.com/gbionics/serial_cpp) | 
 [simdutf](https://github.com/simdutf/simdutf) | Version 7.7.0
 [skia](https://github.com/google/skia) |
-[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.17
+[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.18
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
