@@ -20,6 +20,8 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "FontUtility.hpp"
 # include "TypefaceUtility.hpp"
+# include "EmojiData.hpp"
+# include "IconData.hpp"
 # include "GlyphRenderer/OutlineGlyphRenderer.hpp"
 # include "GlyphRenderer/PolygonGlyphRenderer.hpp"
 # include "GlyphCache/IGlyphCache.hpp"
@@ -86,10 +88,10 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CFont::~CFont()");
 
+		m_iconData.reset();
+		m_emojiData.reset();
 		m_fallbackFonts.clear();
-
 		m_fonts.destroy();
-
 		m_freeType = nullptr;
 	}
 
@@ -120,6 +122,12 @@ namespace s3d
 
 			// 管理に登録
 			m_fonts.setNullData(std::move(nullFont));
+		}
+
+		// 絵文字データ・アイコンデータの作成
+		{
+			m_emojiData = std::make_unique<EmojiData>();
+			m_iconData = std::make_unique<IconData>();
 		}
 
 		// フォント用シェーダ
