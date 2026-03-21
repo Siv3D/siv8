@@ -800,7 +800,7 @@ namespace s3d
 		//}
 		//else
 		//{
-			return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, rect, fontSize, textStyle, TextEffect::NullTextEffect{}, false, readingDirection);
+			return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Region, *font, s, resolvedGlyphs, rect, fontSize, textStyle, TextEffect::NullTextEffect{}, false, readingDirection).first;
 		//}
 	}
 
@@ -832,7 +832,7 @@ namespace s3d
 			//}
 			//else
 			//{
-				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection).first;
 			//}
 		}
 		else
@@ -845,7 +845,7 @@ namespace s3d
 			//}
 			//else
 			//{
-				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection);
+				return font->getGlyphCache().processHorizontalRect(IGlyphCache::TextOperation::Draw, *font, s, resolvedGlyphs, rect, fontSize, textStyle, textEffect, isColorFont, readingDirection).first;
 			//}
 		}
 	}

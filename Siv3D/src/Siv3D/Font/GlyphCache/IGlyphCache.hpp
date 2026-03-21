@@ -104,7 +104,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& pos, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, bool isColorGlyph, ReadingDirection readingDirection) = 0;
+		virtual std::pair<bool, RectF> processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, bool isColorGlyph, ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
