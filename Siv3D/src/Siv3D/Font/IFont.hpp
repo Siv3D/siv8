@@ -17,6 +17,7 @@
 # include <Siv3D/TextStyle.hpp>
 
 typedef struct FT_FaceRec_* FT_Face;
+struct FT_MM_Var_;
 
 namespace s3d
 {
@@ -61,7 +62,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual Array<FontFaceProperties> getFontFaces(FilePathView path) const = 0;
+		virtual Array<FontFaceProperties> getFontFaces(FilePathView path) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -366,5 +367,15 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		virtual bool newFace(FilePathView path, uint32 faceIndex, FT_Face& face) = 0;
+		
+		virtual bool newFace(const void* data, size_t size_bytes, uint32 faceIndex, FT_Face& face) = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	done_MM_Var
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual void done_MM_Var(FT_MM_Var_* amaster);
 	};
 }

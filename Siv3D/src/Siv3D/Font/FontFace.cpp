@@ -11,6 +11,8 @@
 
 # include "FontFace.hpp"
 # include "FontUtility.hpp"
+# include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/GlyphIndex.hpp>
 # include <Siv3D/ScopeExit.hpp>
 
@@ -72,7 +74,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool FontFace::init(const ::FT_Library library, const std::span<const Byte> memory, ::FT_Face face, const FontMethod fontMethod, int32 baseSize, const FontOptions& options)
+	bool FontFace::init(const std::span<const Byte> memory, ::FT_Face face, const FontMethod fontMethod, int32 baseSize, const FontOptions& options)
 	{
 		assert(m_face == nullptr);
 
@@ -89,7 +91,7 @@ namespace s3d
 			{
 				if (mmVar)
 				{
-					::FT_Done_MM_Var(library, mmVar);
+					SIV3D_ENGINE(Font)->done_MM_Var(mmVar);
 					mmVar = nullptr;
 				}
 			});

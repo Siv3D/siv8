@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <mutex>
 # include "IFont.hpp"
 # include <Siv3D/HashMap.hpp>
 # include <Siv3D/Font.hpp>
@@ -54,7 +55,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<FontFaceProperties> getFontFaces(FilePathView path) const override;
+		Array<FontFaceProperties> getFontFaces(FilePathView path) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -373,9 +374,25 @@ namespace s3d
 
 		bool newFace(FilePathView path, uint32 faceIndex, FT_Face& face) override;
 
+		bool newFace(const void* data, size_t size_bytes, uint32 faceIndex, FT_Face& face) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	done_MM_Var
+		//
+		////////////////////////////////////////////////////////////////
+
+		void done_MM_Var(FT_MM_Var_* amaster) override;
+
 	private:
 
+		////////////////////////////////////////////////////////////////
+		//
+		std::mutex m_freeTypeMutex;
+
 		FT_Library m_freeType = nullptr;
+		//
+		////////////////////////////////////////////////////////////////
 
 		AssetHandleManager<Font::IDType, FontData> m_fonts{ "Font" };
 

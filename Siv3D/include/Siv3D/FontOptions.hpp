@@ -19,7 +19,7 @@ namespace s3d
 	struct FontOptions
 	{
 		/// @brief コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
-		size_t faceIndex = 0;
+		uint32 faceIndex = 0;
 
 		/// @brief Variable Font の場合の定義済みスタイル名
 		String styleName = U"";

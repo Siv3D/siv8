@@ -35,7 +35,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	FontData::FontData(const ::FT_Library library, const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontOptions& options)
+	FontData::FontData(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontOptions& options)
 	{
 		if (not m_mappedFileView.open(path))
 		{
@@ -51,14 +51,14 @@ namespace s3d
 
 		FT_Face baseFace = nullptr;
 
-		if (const FT_Error error = ::FT_New_Memory_Face(library, static_cast<const FT_Byte*>(view.data), static_cast<FT_Long>(view.size), static_cast<::FT_Long>(options.faceIndex), &baseFace))
+		if (not SIV3D_ENGINE(Font)->newFace(view.data, view.size, options.faceIndex, baseFace))
 		{
 			return;
 		}
 
 		m_face = std::make_unique<FontFace>();
 
-		if (not m_face->init(library, { static_cast<const Byte*>(view.data), view.size }, baseFace, fontMethod, baseSize, options))
+		if (not m_face->init({ static_cast<const Byte*>(view.data), view.size }, baseFace, fontMethod, baseSize, options))
 		{
 			return;
 		}
@@ -77,7 +77,7 @@ namespace s3d
 		m_initialized	= true;
 	}
 
-	FontData::FontData(const ::FT_Library library, const FontMethod fontMethod, const int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options)
+	FontData::FontData(const FontMethod fontMethod, const int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options)
 	{
 		const Blob blob{ std::move(reader) };
 
@@ -88,14 +88,14 @@ namespace s3d
 
 		FT_Face baseFace = nullptr;
 
-		if (const FT_Error error = ::FT_New_Memory_Face(library, static_cast<const FT_Byte*>(static_cast<const void*>(blob.data())), static_cast<FT_Long>(blob.size_bytes()), static_cast<::FT_Long>(options.faceIndex), &baseFace))
+		if (not SIV3D_ENGINE(Font)->newFace(blob.data(), blob.size_bytes(), options.faceIndex, baseFace))
 		{
 			return;
 		}
 
 		m_face = std::make_unique<FontFace>();
 
-		if (not m_face->init(library, { blob.data(), blob.size_bytes() }, baseFace, fontMethod, baseSize, options))
+		if (not m_face->init({ blob.data(), blob.size_bytes() }, baseFace, fontMethod, baseSize, options))
 		{
 			return;
 		}
