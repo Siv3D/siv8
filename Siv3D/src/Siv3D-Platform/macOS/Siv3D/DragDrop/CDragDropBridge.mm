@@ -139,7 +139,7 @@ extern "C"
 			return;
 		}
 
-		p->setDragOverFromNative(Point{ x, y }, type);
+		p->setDragOverFromNative(s3d::Point{ x, y }, type);
 	}
 
 	void GLFW_Siv3D_DragDropClearDragOver(void* glfwWindow)
@@ -172,7 +172,7 @@ extern "C"
 			filePaths.push_back(Unicode::FromUTF8(paths[i]));
 		}
 
-		p->appendDroppedFilePathsFromNative(filePaths, Point{ x, y }, Time::GetMillisec());
+		p->appendDroppedFilePathsFromNative(filePaths, s3d::Point{ x, y }, Time::GetMillisec());
 	}
 
 	void GLFW_Siv3D_DragDropAppendText(void* glfwWindow, const int x, const int y, const char* text)
@@ -184,7 +184,7 @@ extern "C"
 			return;
 		}
 
-		p->appendDroppedTextFromNative(Unicode::FromUTF8(text), Point{ x, y }, Time::GetMillisec());
+		p->appendDroppedTextFromNative(Unicode::FromUTF8(text), s3d::Point{ x, y }, Time::GetMillisec());
 	}
 
 	int GLFW_Siv3D_DragDropProcessMouseDragged(void* glfwWindow, void* nsView, void* nsEvent)

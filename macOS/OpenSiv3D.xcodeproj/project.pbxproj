@@ -1118,6 +1118,18 @@
 		F9797ECE2F6DCC4500518D26 /* MP3Decoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ECD2F6DCC4500518D26 /* MP3Decoder.hpp */; };
 		F9797ED12F6DCC5D00518D26 /* dr_mp3.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */; };
 		F9797ED32F6DCC7600518D26 /* MP3Decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797ED22F6DCC7600518D26 /* MP3Decoder.cpp */; };
+		F9797ED92F6E572500518D26 /* DragItemType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED52F6E572500518D26 /* DragItemType.hpp */; };
+		F9797EDA2F6E572500518D26 /* DroppedFilePath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED72F6E572500518D26 /* DroppedFilePath.hpp */; };
+		F9797EDB2F6E572500518D26 /* DragDrop.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED42F6E572500518D26 /* DragDrop.hpp */; };
+		F9797EDC2F6E572500518D26 /* DroppedText.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED82F6E572500518D26 /* DroppedText.hpp */; };
+		F9797EDD2F6E572500518D26 /* DragStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED62F6E572500518D26 /* DragStatus.hpp */; };
+		F9797EE22F6E574E00518D26 /* IDragDrop.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EDF2F6E574E00518D26 /* IDragDrop.hpp */; };
+		F9797EE32F6E574E00518D26 /* SivDragDrop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EE02F6E574E00518D26 /* SivDragDrop.cpp */; };
+		F9797EE42F6E574E00518D26 /* DragDropFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EDE2F6E574E00518D26 /* DragDropFactory.cpp */; };
+		F9797EE92F6E576F00518D26 /* CDragDrop.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EE52F6E576F00518D26 /* CDragDrop.hpp */; };
+		F9797EEA2F6E576F00518D26 /* CDragDrop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EE62F6E576F00518D26 /* CDragDrop.cpp */; };
+		F9797EEB2F6E576F00518D26 /* CDragDropBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797EE72F6E576F00518D26 /* CDragDropBridge.mm */; };
+		F9797EED2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -4187,6 +4199,18 @@
 		F9797ECD2F6DCC4500518D26 /* MP3Decoder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MP3Decoder.hpp; sourceTree = "<group>"; };
 		F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dr_mp3.h; sourceTree = "<group>"; };
 		F9797ED22F6DCC7600518D26 /* MP3Decoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MP3Decoder.cpp; sourceTree = "<group>"; };
+		F9797ED42F6E572500518D26 /* DragDrop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DragDrop.hpp; sourceTree = "<group>"; };
+		F9797ED52F6E572500518D26 /* DragItemType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DragItemType.hpp; sourceTree = "<group>"; };
+		F9797ED62F6E572500518D26 /* DragStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DragStatus.hpp; sourceTree = "<group>"; };
+		F9797ED72F6E572500518D26 /* DroppedFilePath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DroppedFilePath.hpp; sourceTree = "<group>"; };
+		F9797ED82F6E572500518D26 /* DroppedText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DroppedText.hpp; sourceTree = "<group>"; };
+		F9797EDE2F6E574E00518D26 /* DragDropFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DragDropFactory.cpp; sourceTree = "<group>"; };
+		F9797EDF2F6E574E00518D26 /* IDragDrop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IDragDrop.hpp; sourceTree = "<group>"; };
+		F9797EE02F6E574E00518D26 /* SivDragDrop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDragDrop.cpp; sourceTree = "<group>"; };
+		F9797EE52F6E576F00518D26 /* CDragDrop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CDragDrop.hpp; sourceTree = "<group>"; };
+		F9797EE62F6E576F00518D26 /* CDragDrop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CDragDrop.cpp; sourceTree = "<group>"; };
+		F9797EE72F6E576F00518D26 /* CDragDropBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CDragDropBridge.mm; sourceTree = "<group>"; };
+		F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GLFW_Siv3D_DragDropBridge.h; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -6990,9 +7014,14 @@
 				F9070BD82B9F175000383E4D /* DisplayResolution.hpp */,
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
+				F9797ED42F6E572500518D26 /* DragDrop.hpp */,
+				F9797ED52F6E572500518D26 /* DragItemType.hpp */,
+				F9797ED62F6E572500518D26 /* DragStatus.hpp */,
 				F943AAC72E2A099E001B4D43 /* DrawableText.hpp */,
 				F99881BD2F56CA5400C8991D /* DriveInfo.hpp */,
 				F99881BE2F56CA5400C8991D /* DriveType.hpp */,
+				F9797ED72F6E572500518D26 /* DroppedFilePath.hpp */,
+				F9797ED82F6E572500518D26 /* DroppedText.hpp */,
 				F9070BDB2B9F175000383E4D /* Duration.hpp */,
 				F9B7D9EB2D8C71ED002ABACE /* DynamicTexture.hpp */,
 				F9E794282C12B861002615BA /* Easing.hpp */,
@@ -7877,6 +7906,7 @@
 				F980C46C2C01B4B600A86B68 /* DepthStencilStateBuilder */,
 				F9797E9D2F667EC600518D26 /* Dialog */,
 				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
+				F9797EE12F6E574E00518D26 /* DragDrop */,
 				F943AACA2E2A09BB001B4D43 /* DrawableText */,
 				F99881C22F56CA7600C8991D /* DriveType */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
@@ -8108,6 +8138,7 @@
 				F98605812BDA7E32006A4C0F /* Cursor */,
 				F91D41442F5DA84F00E7FEEF /* Dialog */,
 				F98606212BEB7CFF006A4C0F /* DirectoryWatcher */,
+				F9797EE82F6E576F00518D26 /* DragDrop */,
 				F99881C52F56CAB700C8991D /* DriveInfo */,
 				F934BD912BF8824B0003EAD5 /* EngineShader */,
 				F9070E042B9F176B00383E4D /* FileSystem */,
@@ -8262,45 +8293,46 @@
 		F9070ED12B9F1C8900383E4D /* GLFW */ = {
 			isa = PBXGroup;
 			children = (
-				F9070E942B9F1C8900383E4D /* cocoa_init.m */,
-				F9070E952B9F1C8900383E4D /* cocoa_joystick.h */,
-				F9070E962B9F1C8900383E4D /* cocoa_joystick.m */,
-				F9070E972B9F1C8900383E4D /* cocoa_monitor.m */,
-				F9070E982B9F1C8900383E4D /* cocoa_platform.h */,
 				F9070E992B9F1C8900383E4D /* cocoa_time.c */,
-				F9070E9A2B9F1C8900383E4D /* cocoa_time.h */,
-				F9070E9B2B9F1C8900383E4D /* cocoa_window.m */,
 				F9070E9C2B9F1C8900383E4D /* context.c */,
 				F9070E9D2B9F1C8900383E4D /* egl_context.c */,
-				F9070E9E2B9F1C8900383E4D /* glfw3.h */,
-				F9070E9F2B9F1C8900383E4D /* glfw3native.h */,
 				F9070EA02B9F1C8900383E4D /* glx_context.c */,
 				F9070EA12B9F1C8900383E4D /* init.c */,
 				F9070EA22B9F1C8900383E4D /* input.c */,
-				F9070EA32B9F1C8900383E4D /* internal.h */,
-				F9070EA62B9F1C8900383E4D /* mappings.h */,
 				F9070EA72B9F1C8900383E4D /* monitor.c */,
 				F9070F292B9F252D00383E4D /* null_init.c */,
 				F9070F2F2B9F252E00383E4D /* null_joystick.c */,
-				F9070F2D2B9F252E00383E4D /* null_joystick.h */,
 				F9070F2C2B9F252E00383E4D /* null_monitor.c */,
-				F9070F2E2B9F252E00383E4D /* null_platform.h */,
 				F9070F2B2B9F252D00383E4D /* null_window.c */,
 				F9070F2A2B9F252D00383E4D /* osmesa_context.c */,
 				F9070EB02B9F1C8900383E4D /* platform.c */,
-				F9070EB12B9F1C8900383E4D /* platform.h */,
 				F9070EB22B9F1C8900383E4D /* posix_module.c */,
 				F9070EB32B9F1C8900383E4D /* posix_poll.c */,
-				F9070EB42B9F1C8900383E4D /* posix_poll.h */,
 				F9070EB52B9F1C8900383E4D /* posix_thread.c */,
-				F9070EB62B9F1C8900383E4D /* posix_thread.h */,
 				F9070EB72B9F1C8900383E4D /* posix_time.c */,
-				F9070EB82B9F1C8900383E4D /* posix_time.h */,
 				F9070EB92B9F1C8900383E4D /* vulkan.c */,
 				F9070EBA2B9F1C8900383E4D /* wgl_context.c */,
 				F9070EC62B9F1C8900383E4D /* window.c */,
 				F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */,
+				F9070E952B9F1C8900383E4D /* cocoa_joystick.h */,
+				F9070E982B9F1C8900383E4D /* cocoa_platform.h */,
+				F9070E9A2B9F1C8900383E4D /* cocoa_time.h */,
+				F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */,
+				F9070E9E2B9F1C8900383E4D /* glfw3.h */,
+				F9070E9F2B9F1C8900383E4D /* glfw3native.h */,
+				F9070EA32B9F1C8900383E4D /* internal.h */,
+				F9070EA62B9F1C8900383E4D /* mappings.h */,
+				F9070F2D2B9F252E00383E4D /* null_joystick.h */,
+				F9070F2E2B9F252E00383E4D /* null_platform.h */,
+				F9070EB12B9F1C8900383E4D /* platform.h */,
+				F9070EB42B9F1C8900383E4D /* posix_poll.h */,
+				F9070EB62B9F1C8900383E4D /* posix_thread.h */,
+				F9070EB82B9F1C8900383E4D /* posix_time.h */,
 				F9070ED02B9F1C8900383E4D /* xkb_unicode.h */,
+				F9070E942B9F1C8900383E4D /* cocoa_init.m */,
+				F9070E962B9F1C8900383E4D /* cocoa_joystick.m */,
+				F9070E972B9F1C8900383E4D /* cocoa_monitor.m */,
+				F9070E9B2B9F1C8900383E4D /* cocoa_window.m */,
 			);
 			path = GLFW;
 			sourceTree = "<group>";
@@ -9884,6 +9916,26 @@
 				F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */,
 			);
 			path = dr_mp3;
+			sourceTree = "<group>";
+		};
+		F9797EE12F6E574E00518D26 /* DragDrop */ = {
+			isa = PBXGroup;
+			children = (
+				F9797EDE2F6E574E00518D26 /* DragDropFactory.cpp */,
+				F9797EDF2F6E574E00518D26 /* IDragDrop.hpp */,
+				F9797EE02F6E574E00518D26 /* SivDragDrop.cpp */,
+			);
+			path = DragDrop;
+			sourceTree = "<group>";
+		};
+		F9797EE82F6E576F00518D26 /* DragDrop */ = {
+			isa = PBXGroup;
+			children = (
+				F9797EE52F6E576F00518D26 /* CDragDrop.hpp */,
+				F9797EE62F6E576F00518D26 /* CDragDrop.cpp */,
+				F9797EE72F6E576F00518D26 /* CDragDropBridge.mm */,
+			);
+			path = DragDrop;
 			sourceTree = "<group>";
 		};
 		F9807D772BF1092600D9B590 /* metal */ = {
@@ -13213,6 +13265,7 @@
 				F98602702BCFBB54006A4C0F /* SkStreamPriv.h in Headers */,
 				F9E7946F2C19B6F2002615BA /* StringAlgorithm.ipp in Headers */,
 				F98602FD2BCFBB54006A4C0F /* SkRasterPipeline_opts.h in Headers */,
+				F9797EE22F6E574E00518D26 /* IDragDrop.hpp in Headers */,
 				F98602A12BCFBB54006A4C0F /* SkYUVAInfoLocation.h in Headers */,
 				F9070C532B9F175000383E4D /* Endian.ipp in Headers */,
 				F98604432BCFBB54006A4C0F /* SkSLTernaryExpression.h in Headers */,
@@ -13590,6 +13643,11 @@
 				F943AB2F2E2A2E4F001B4D43 /* distribution_caller.h in Headers */,
 				F943AB302E2A2E4F001B4D43 /* policy_checks.h in Headers */,
 				F943AB312E2A2E4F001B4D43 /* nullability.h in Headers */,
+				F9797ED92F6E572500518D26 /* DragItemType.hpp in Headers */,
+				F9797EDA2F6E572500518D26 /* DroppedFilePath.hpp in Headers */,
+				F9797EDB2F6E572500518D26 /* DragDrop.hpp in Headers */,
+				F9797EDC2F6E572500518D26 /* DroppedText.hpp in Headers */,
+				F9797EDD2F6E572500518D26 /* DragStatus.hpp in Headers */,
 				F943AB322E2A2E4F001B4D43 /* exponential_distribution.h in Headers */,
 				F943AB332E2A2E4F001B4D43 /* optimization.h in Headers */,
 				F943AB342E2A2E4F001B4D43 /* endian.h in Headers */,
@@ -14025,6 +14083,7 @@
 				F99881C02F56CA5400C8991D /* DriveType.hpp in Headers */,
 				F98601D72BCFBB53006A4C0F /* SkIPoint16.h in Headers */,
 				F98600AB2BCFBB53006A4C0F /* SkNullCanvas.h in Headers */,
+				F9797EE92F6E576F00518D26 /* CDragDrop.hpp in Headers */,
 				F9797E1A2F62B58700518D26 /* Font.ipp in Headers */,
 				F986FA752BCFB53B006A4C0F /* ftbdf.h in Headers */,
 				F9070C7A2B9F175000383E4D /* Shuffle.ipp in Headers */,
@@ -14041,6 +14100,7 @@
 				F986025B2BCFBB54006A4C0F /* SkSafeRange.h in Headers */,
 				F9070C8D2B9F175000383E4D /* ParseError.hpp in Headers */,
 				F97203122BF09DA4000E21DD /* IRenderer.hpp in Headers */,
+				F9797EED2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h in Headers */,
 				F9070C5D2B9F175000383E4D /* Hash.ipp in Headers */,
 				F986FA7E2BCFB53B006A4C0F /* fterrors.h in Headers */,
 				F986024F2BCFBB54006A4C0F /* SkRegionPriv.h in Headers */,
@@ -15561,6 +15621,8 @@
 				F986044A2BCFBB54006A4C0F /* SkSLVariable.cpp in Sources */,
 				F9070DCC2B9F175E00383E4D /* SivFileSystem.cpp in Sources */,
 				F902E0D82E9E5ECD002C6B92 /* SivJSONSerialization.cpp in Sources */,
+				F9797EEA2F6E576F00518D26 /* CDragDrop.cpp in Sources */,
+				F9797EEB2F6E576F00518D26 /* CDragDropBridge.mm in Sources */,
 				F998814E2F40B56800C8991D /* SivMultiPolygon.cpp in Sources */,
 				F986015C2BCFBB53006A4C0F /* SkBitmapProcState_opts.cpp in Sources */,
 				F9070DBB2B9F175E00383E4D /* SivCPUInfo.cpp in Sources */,
@@ -15852,6 +15914,8 @@
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
 				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
+				F9797EE32F6E574E00518D26 /* SivDragDrop.cpp in Sources */,
+				F9797EE42F6E574E00518D26 /* DragDropFactory.cpp in Sources */,
 				F96F95E62C2B0F640033353E /* SivQuad.cpp in Sources */,
 				F98601582BCFBB53006A4C0F /* SkBitmapDevice.cpp in Sources */,
 				F9528C2C2BBF026F00222F45 /* zstd_fast.c in Sources */,

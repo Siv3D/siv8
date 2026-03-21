@@ -239,24 +239,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (instancetype)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
     self = [super init];
-    //-----------------------------------------------
-    //
-    //	[Siv3D]
-    //    
     if (self != nil)
-    {
         window = initWindow;
-        trackingArea = nil;
-        markedText = [[NSMutableAttributedString alloc] init];
-
-        [self updateTrackingAreas];
-        [self registerForDraggedTypes:@[
-            NSPasteboardTypeURL,
-            NSPasteboardTypeString
-        ]];
-    }
-    //
-    //-----------------------------------------------
 
     return self;
 }
@@ -410,7 +394,17 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         markedText = [[NSMutableAttributedString alloc] init];
 
         [self updateTrackingAreas];
-        [self registerForDraggedTypes:@[NSPasteboardTypeURL]];
+
+		//-----------------------------------------------
+		//
+		//	[Siv3D]
+		//
+		[self registerForDraggedTypes:@[
+			NSPasteboardTypeURL,
+			NSPasteboardTypeString
+		]];
+		//
+		//-----------------------------------------------
     }
 
     return self;
@@ -911,6 +905,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwInputScroll(window, deltaX, deltaY);
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+/*
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
     // HACK: We don't know what to say here because we don't know what the
@@ -946,6 +945,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     return YES;
 }
+*/
+//
+//-----------------------------------------------
 
 - (BOOL)hasMarkedText
 {
