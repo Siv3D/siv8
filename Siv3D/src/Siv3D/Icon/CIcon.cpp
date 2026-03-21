@@ -148,15 +148,20 @@ namespace s3d
 
 	Image CIcon::render(const GlyphIndex glyphIndex, const int32 size)
 	{
+		if (not m_available)
+		{
+			return{};
+		}
+
 		if (::FT_Set_Pixel_Sizes(m_face, 0, size))
 		{
 			return{};
 		}
 
 		{
-			m_faceInfo.baseSize		= size;
-			m_faceInfo.ascender		= static_cast<int16>(m_face->size->metrics.ascender / 64);
-			m_faceInfo.descender	= -static_cast<int16>(m_face->size->metrics.descender / 64);
+			m_faceInfo.baseSize		= static_cast<int16>(size);
+			m_faceInfo.ascender		= (m_face->size->metrics.ascender / 64.0f);
+			m_faceInfo.descender	= -(m_face->size->metrics.descender / 64.0f);
 		}
 
 		return RenderBitmapGlyph(m_face, glyphIndex, m_faceInfo, ReadingDirection::LeftToRight, nullptr).image;
@@ -170,6 +175,22 @@ namespace s3d
 
 	Image CIcon::renderMSDF(const GlyphIndex glyphIndex, const int32 size, const int32 bufferSize)
 	{
-		return{};
+		if (not m_available)
+		{
+			return{};
+		}
+
+		if (::FT_Set_Pixel_Sizes(m_face, 0, size))
+		{
+			return{};
+		}
+
+		{
+			m_faceInfo.baseSize		= static_cast<int16>(size);
+			m_faceInfo.ascender		= (m_face->size->metrics.ascender / 64.0f);
+			m_faceInfo.descender	= -(m_face->size->metrics.descender / 64.0f);
+		}
+
+		return RenderMSDFGlyph(m_face, glyphIndex, m_faceInfo, bufferSize, ReadingDirection::LeftToRight).image;
 	}
 }
