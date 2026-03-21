@@ -51,6 +51,9 @@
 //
 //	[Siv3D]
 //
+#include <math.h>
+#include "GLFW_Siv3D_DragDropBridge.h"
+
 void GLFW_Siv3D_ReportPenEnter(bool enter, bool isPen);
 
 void GLFW_Siv3D_ReportTabletPoint(double normalPressure, double tangentialPressure, double tiltX, double tiltY);
@@ -236,8 +239,24 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (instancetype)initWithGlfwWindow:(_GLFWwindow *)initWindow
 {
     self = [super init];
+    //-----------------------------------------------
+    //
+    //	[Siv3D]
+    //    
     if (self != nil)
+    {
         window = initWindow;
+        trackingArea = nil;
+        markedText = [[NSMutableAttributedString alloc] init];
+
+        [self updateTrackingAreas];
+        [self registerForDraggedTypes:@[
+            NSPasteboardTypeURL,
+            NSPasteboardTypeString
+        ]];
+    }
+    //
+    //-----------------------------------------------
 
     return self;
 }
@@ -367,6 +386,16 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (instancetype)initWithGlfwWindow:(_GLFWwindow *)initWindow;
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+- (NSInteger)s3d_detectDragItemType:(id<NSDraggingInfo>)sender;
+- (NSPoint)s3d_rawClientPosFromDraggingInfo:(id<NSDraggingInfo>)sender;
+- (NSDragOperation)s3d_updateDraggingState:(id<NSDraggingInfo>)sender;
+//
+//-----------------------------------------------
+
 @end
 
 @implementation GLFWContentView
@@ -451,6 +480,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)mouseDragged:(NSEvent *)event
 {
     [self mouseMoved:event];
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+    if (GLFW_Siv3D_DragDropProcessMouseDragged(window, self, event))
+        return;
+	//
+	//-----------------------------------------------
 }
 
 - (void)mouseUp:(NSEvent *)event
@@ -605,6 +642,162 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 		default:
 			return;
 	}
+}
+
+- (NSInteger)s3d_detectDragItemType:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard* pasteboard = [sender draggingPasteboard];
+
+    NSDictionary* urlOptions = @{ NSPasteboardURLReadingFileURLsOnlyKey:@YES };
+    NSArray* urls = [pasteboard readObjectsForClasses:@[[NSURL class]]
+                                              options:urlOptions];
+
+    if ([urls count] > 0)
+    {
+        return GLFW_SIV3D_DRAG_ITEM_FILE_PATHS;
+    }
+
+    NSString* text = [pasteboard stringForType:NSPasteboardTypeString];
+
+    if ((text != nil) && ([text length] > 0))
+    {
+        return GLFW_SIV3D_DRAG_ITEM_TEXT;
+    }
+
+    return GLFW_SIV3D_DRAG_ITEM_NONE;
+}
+
+- (NSPoint)s3d_rawClientPosFromDraggingInfo:(id<NSDraggingInfo>)sender
+{
+    const NSPoint pointInWindow = [sender draggingLocation];
+    const NSPoint localPoint = [self convertPoint:pointInWindow fromView:nil];
+
+    const NSRect pointRect = NSMakeRect(localPoint.x, localPoint.y, 0.0, 0.0);
+    const NSRect backingPointRect = [self convertRectToBacking:pointRect];
+    const NSRect backingBounds = [self convertRectToBacking:[self bounds]];
+
+    return NSMakePoint((CGFloat) llround(backingPointRect.origin.x),
+                       (CGFloat) llround(backingBounds.size.height - backingPointRect.origin.y));
+}
+
+- (NSDragOperation)s3d_updateDraggingState:(id<NSDraggingInfo>)sender
+{
+    const NSInteger itemType = [self s3d_detectDragItemType:sender];
+    const NSPoint rawClientPos = [self s3d_rawClientPosFromDraggingInfo:sender];
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_FILE_PATHS) &&
+        GLFW_Siv3D_DragDropAcceptsFilePaths(window))
+    {
+        GLFW_Siv3D_DragDropSetDragOver(window,
+                                       (int) rawClientPos.x,
+                                       (int) rawClientPos.y,
+                                       (int) itemType);
+        return NSDragOperationCopy;
+    }
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_TEXT) &&
+        GLFW_Siv3D_DragDropAcceptsText(window))
+    {
+        GLFW_Siv3D_DragDropSetDragOver(window,
+                                       (int) rawClientPos.x,
+                                       (int) rawClientPos.y,
+                                       (int) itemType);
+        return NSDragOperationCopy;
+    }
+
+    GLFW_Siv3D_DragDropClearDragOver(window);
+    return NSDragOperationNone;
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+    return [self s3d_updateDraggingState:sender];
+}
+
+- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
+{
+    return [self s3d_updateDraggingState:sender];
+}
+
+- (void)draggingExited:(id<NSDraggingInfo>)sender
+{
+    GLFW_Siv3D_DragDropClearDragOver(window);
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    const NSInteger itemType = [self s3d_detectDragItemType:sender];
+    const NSPoint rawClientPos = [self s3d_rawClientPosFromDraggingInfo:sender];
+    NSPasteboard* pasteboard = [sender draggingPasteboard];
+
+    GLFW_Siv3D_DragDropClearDragOver(window);
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_FILE_PATHS) &&
+        GLFW_Siv3D_DragDropAcceptsFilePaths(window))
+    {
+        NSDictionary* urlOptions = @{ NSPasteboardURLReadingFileURLsOnlyKey:@YES };
+        NSArray* urls = [pasteboard readObjectsForClasses:@[[NSURL class]]
+                                                  options:urlOptions];
+        const NSUInteger count = [urls count];
+
+        if (count == 0)
+        {
+            return NO;
+        }
+
+        char** paths = _glfw_calloc(count, sizeof(char*));
+
+        for (NSUInteger i = 0; i < count; ++i)
+        {
+            paths[i] = _glfw_strdup([urls[i] fileSystemRepresentation]);
+        }
+
+        GLFW_Siv3D_DragDropAppendFilePaths(window,
+                                           (int) rawClientPos.x,
+                                           (int) rawClientPos.y,
+                                           (const char* const*) paths,
+                                           (size_t) count);
+
+        for (NSUInteger i = 0; i < count; ++i)
+        {
+            _glfw_free(paths[i]);
+        }
+
+        _glfw_free(paths);
+        return YES;
+    }
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_TEXT) &&
+        GLFW_Siv3D_DragDropAcceptsText(window))
+    {
+        NSString* text = [pasteboard stringForType:NSPasteboardTypeString];
+
+        if ((text == nil) || ([text length] == 0))
+        {
+            return NO;
+        }
+
+        GLFW_Siv3D_DragDropAppendText(window,
+                                      (int) rawClientPos.x,
+                                      (int) rawClientPos.y,
+                                      [text UTF8String]);
+        return YES;
+    }
+
+    return NO;
+}
+
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session
+       sourceOperationMaskForDraggingContext:(NSDraggingContext)context
+{
+    return NSDragOperationCopy;
+}
+
+- (void)draggingSession:(NSDraggingSession *)session
+            endedAtPoint:(NSPoint)screenPoint
+               operation:(NSDragOperation)operation
+{
+    GLFW_Siv3D_DragDropSourceEnded(window);
 }
 //
 //-----------------------------------------------
