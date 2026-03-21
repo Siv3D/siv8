@@ -34,6 +34,7 @@
 # include <Siv3D/Pentablet/IPentablet.hpp>
 # include <Siv3D/Clipboard/IClipboard.hpp>
 # include <Siv3D/DragDrop/IDragDrop.hpp>
+# include <Siv3D/Audio/IAudio.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Shader/IShader.hpp>

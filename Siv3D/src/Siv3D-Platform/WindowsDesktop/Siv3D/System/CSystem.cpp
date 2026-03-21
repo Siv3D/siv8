@@ -31,6 +31,7 @@
 # include <Siv3D/Pentablet/IPentablet.hpp>
 # include <Siv3D/Clipboard/IClipboard.hpp>
 # include <Siv3D/DragDrop/IDragDrop.hpp>
+# include <Siv3D/Audio/IAudio.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
@@ -103,6 +104,7 @@ namespace s3d
 		SIV3D_ENGINE(Mouse)->init();
 		SIV3D_ENGINE(Clipboard)->init();
 		SIV3D_ENGINE(DragDrop)->init();
+		SIV3D_ENGINE(Audio)->init();
 		SIV3D_ENGINE(Renderer)->init();
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();
