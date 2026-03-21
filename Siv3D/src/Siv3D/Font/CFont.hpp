@@ -365,6 +365,14 @@ namespace s3d
 		[[nodiscard]]
 		const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	newFace
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool newFace(FilePathView path, uint32 faceIndex, FT_Face& face) override;
+
 	private:
 
 		FT_Library m_freeType = nullptr;

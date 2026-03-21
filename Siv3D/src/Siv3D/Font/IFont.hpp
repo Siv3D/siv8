@@ -16,6 +16,8 @@
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/TextStyle.hpp>
 
+typedef struct FT_FaceRec_* FT_Face;
+
 namespace s3d
 {
 	struct FontOptions;
@@ -356,5 +358,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		virtual const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	newFace
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual bool newFace(FilePathView path, uint32 faceIndex, FT_Face& face) = 0;
 	};
 }

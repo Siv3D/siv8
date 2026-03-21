@@ -47,8 +47,6 @@ namespace s3d
 
 		bool m_available = false;
 
-		FT_Library m_freeType = nullptr;
-
 		FT_Face m_face = nullptr;
 
 		hb_font_t* m_hbFont = nullptr;

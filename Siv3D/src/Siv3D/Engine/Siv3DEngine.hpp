@@ -29,7 +29,6 @@ namespace s3d
 	class ISiv3DImageDecoder;
 	class ISiv3DImageEncoder;
 	class ISiv3DPDFRenderer;
-	class ISiv3DEmoji;
 	class ISiv3DAudioDecoder;
 	class ISiv3DAudioEncoder;
 	class ISiv3DConsole;
@@ -47,6 +46,7 @@ namespace s3d
 	class ISiv3DRenderer2D;
 	class ISiv3DScreenCapture;
 	class ISiv3DFont;
+	class ISiv3DEmoji;
 	class ISiv3DGUI;
 	class ISiv3DPrint;
 	class ISiv3DEffect;
@@ -75,7 +75,6 @@ namespace s3d
 			Siv3DComponent<ISiv3DImageDecoder>,
 			Siv3DComponent<ISiv3DImageEncoder>,
 			Siv3DComponent<ISiv3DPDFRenderer>,
-			Siv3DComponent<ISiv3DEmoji>,
 			Siv3DComponent<ISiv3DAudioDecoder>,
 			Siv3DComponent<ISiv3DAudioEncoder>,
 			Siv3DComponent<ISiv3DConsole>,
@@ -93,6 +92,7 @@ namespace s3d
 			Siv3DComponent<ISiv3DRenderer2D>,
 			Siv3DComponent<ISiv3DScreenCapture>,
 			Siv3DComponent<ISiv3DFont>,
+			Siv3DComponent<ISiv3DEmoji>,
 			Siv3DComponent<ISiv3DGUI>,
 			Siv3DComponent<ISiv3DPrint>,
 			Siv3DComponent<ISiv3DEffect>,

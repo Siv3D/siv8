@@ -860,4 +860,31 @@ namespace s3d
 	{
 		return m_shader->getFontShader(method, type);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	newFace
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CFont::newFace(const FilePathView path, const uint32 faceIndex, FT_Face& face)
+	{
+		const std::string pathUTF8 = Unicode::ToUTF8(path);
+
+		if (const FT_Error error = ::FT_New_Face(m_freeType, pathUTF8.c_str(), static_cast<FT_Long>(faceIndex), &face))
+		{
+			if (error == FT_Err_Unknown_File_Format)
+			{
+				LOG_FAIL("FT_New_Face(): FT_Err_Unknown_File_Format");
+			}
+			else
+			{
+				LOG_FAIL("FT_New_Face(): failed");
+			}
+
+			return false;
+		}
+
+		return true;
+	}
 }

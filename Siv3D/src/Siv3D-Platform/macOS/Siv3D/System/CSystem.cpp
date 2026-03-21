@@ -22,7 +22,6 @@
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
 # include <Siv3D/PDFRenderer/IPDFRenderer.hpp>
-# include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/AudioDecoder/IAudioDecoder.hpp>
 # include <Siv3D/AudioEncoder/IAudioEncoder.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
@@ -36,6 +35,7 @@
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 # include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/Emoji/IEmoji.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/Effect/IEffect.hpp>
@@ -67,7 +67,6 @@ namespace s3d
 		SIV3D_ENGINE(ImageDecoder)->init();
 		SIV3D_ENGINE(ImageEncoder)->init();
 		SIV3D_ENGINE(PDFRenderer)->init();
-		SIV3D_ENGINE(Emoji)->init();
 		SIV3D_ENGINE(AudioDecoder)->init();
 		SIV3D_ENGINE(AudioEncoder)->init();
 		SIV3D_ENGINE(Cursor)->init();
@@ -80,6 +79,7 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->init();
 		SIV3D_ENGINE(ScreenCapture)->init();
 		SIV3D_ENGINE(Font)->init();
+		SIV3D_ENGINE(Emoji)->init();
 		SIV3D_ENGINE(GUI)->init();
 		SIV3D_ENGINE(Print)->init();
 		SIV3D_ENGINE(Effect)->init();

@@ -12,6 +12,8 @@
 # include "CEmoji.hpp"
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/CacheDirectory/CacheDirectory.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 
@@ -109,11 +111,6 @@ namespace s3d
 			::FT_Done_Face(m_face);
 			m_face = nullptr;
 		}
-
-		if (m_freeType)
-		{
-			::FT_Done_FreeType(m_freeType);
-		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -134,24 +131,9 @@ namespace s3d
 			return;
 		}
 
-		if (const FT_Error error = ::FT_Init_FreeType(&m_freeType))
+		if (not SIV3D_ENGINE(Font)->newFace(emojiFilePath, 0, m_face))
 		{
-			throw InternalEngineError{ "FT_Init_FreeType() failed" };
-		}
-
-		const std::string emojiFontPathUTF8 = Unicode::ToUTF8(emojiFilePath);
-
-		if (const FT_Error error = ::FT_New_Face(m_freeType, emojiFontPathUTF8.c_str(), static_cast<FT_Long>(0), &m_face))
-		{
-			if (error == FT_Err_Unknown_File_Format)
-			{
-				LOG_FAIL("FT_New_Face(): FT_Err_Unknown_File_Format");
-			}
-			else
-			{
-				LOG_FAIL("FT_New_Face(): failed");
-			}
-
+			LOG_FAIL(U"Failed to load the emoji font file: {}"_fmt(emojiFilePath));
 			return;
 		}
 
@@ -165,7 +147,7 @@ namespace s3d
 
 		m_hbBuffer = ::hb_buffer_create();
 
-		std::unique_ptr<SkStreamAsset> fileStream = SkFILEStream::Make(emojiFontPathUTF8.c_str());
+		std::unique_ptr<SkStreamAsset> fileStream = SkFILEStream::Make(Unicode::ToUTF8(emojiFilePath).c_str());
 		m_typeface = SkTypeface_FreeType::MakeFromStream(std::move(fileStream), SkFontArguments{});
 		m_font.setTypeface(m_typeface);
 
