@@ -1635,6 +1635,7 @@
 
 // 絵文字 | Emoji
 # include <Siv3D/Emoji.hpp>
+# include <Siv3D/Icon.hpp>
 
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/FontFaceProperties.hpp>

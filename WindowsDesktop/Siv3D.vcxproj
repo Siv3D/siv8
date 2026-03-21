@@ -105,6 +105,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIColorStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIShapeStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\HTTPStatusCode.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Icon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IEffect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\HTTPStatusCode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IAudioDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IAudioEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Icon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Address.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp" />
