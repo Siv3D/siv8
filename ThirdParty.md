@@ -9,7 +9,7 @@ Name | Version
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | v0.10.1
 [DirectXMath](https://github.com/microsoft/DirectXMath) | April 2025
-[doctest](https://github.com/doctest/doctest) | v2.4.12
+[doctest](https://github.com/doctest/doctest) | v2.5.2
 [double-conversion](https://github.com/google/double-conversion) | v3.4.0
 [dr_mp3](https://github.com/mackron/dr_libs) | v0.7.4
 [Easing Equations](http://robertpenner.com/easing/) | 
