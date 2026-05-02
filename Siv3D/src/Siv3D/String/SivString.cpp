@@ -32,6 +32,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	erase_all
+	//
+	////////////////////////////////////////////////////////////////
+
+	String& String::erase_all(const value_type ch) & noexcept
+	{
+		m_string.erase(std::remove(m_string.begin(), m_string.end(), ch), m_string.end());
+		return *this;
+	}
+
+	String& String::erase_all(const StringView s) & noexcept
+	{
+		return (*this = without(s));
+	}
+
+	String String::erase_all(const value_type ch) && noexcept
+	{
+		return std::move(erase_all(ch));
+	}
+
+	String String::erase_all(const StringView s) && noexcept
+	{
+		return std::move(erase_all(s));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	toUTF8
 	//
 	////////////////////////////////////////////////////////////////
@@ -271,86 +298,6 @@ namespace s3d
 	String String::leftTrimmed(const StringView chars) && noexcept
 	{
 		return std::move(leftTrim(chars));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	remove, removed
-	//
-	////////////////////////////////////////////////////////////////
-
-	String& String::remove(const value_type ch) & noexcept
-	{
-		m_string.erase(std::remove(m_string.begin(), m_string.end(), ch), m_string.end());
-		return *this;
-	}
-
-	String& String::remove(const StringView s) & noexcept
-	{
-		return (*this = removed(s));
-	}
-
-	String String::remove(const value_type ch) && noexcept
-	{
-		return std::move(remove(ch));
-	}
-
-	String String::remove(const StringView s) && noexcept
-	{
-		return std::move(remove(s));
-	}
-
-	String String::removed(const value_type ch) const&
-	{
-		return StringView{ m_string }.removed(ch);
-	}
-
-	String String::removed(const StringView s) const&
-	{
-		return StringView{ m_string }.removed(s);
-	}
-
-	String String::removed(const value_type ch) && noexcept
-	{
-		return std::move(remove(ch));
-	}
-
-	String String::removed(const StringView s) && noexcept
-	{
-		return std::move(remove(s));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	remove_at, removed_at
-	//
-	////////////////////////////////////////////////////////////////
-
-	String& String::remove_at(const size_type index) & noexcept
-	{
-		if (m_string.size() <= index)
-		{
-			return *this;
-		}
-
-		m_string.erase(index, 1);
-
-		return *this;
-	}
-
-	String String::remove_at(const size_type index) && noexcept
-	{
-		return std::move(remove_at(index));
-	}
-
-	String String::removed_at(const size_type index) const&
-	{
-		return StringView{ m_string }.removed_at(index);
-	}
-
-	String String::removed_at(const size_type index) && noexcept
-	{
-		return std::move(remove_at(index));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -936,6 +883,48 @@ namespace s3d
 		}
 
 		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without
+	//
+	////////////////////////////////////////////////////////////////
+
+	String String::without(const value_type ch) const&
+	{
+		return StringView{ m_string }.without(ch);
+	}
+
+	String String::without(const StringView s) const&
+	{
+		return StringView{ m_string }.without(s);
+	}
+
+	String String::without(const value_type ch) && noexcept
+	{
+		return std::move(erase_all(ch));
+	}
+
+	String String::without(const StringView s) && noexcept
+	{
+		return std::move(erase_all(s));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	String String::without_at(const size_type index) const&
+	{
+		return StringView{ m_string }.without_at(index);
+	}
+
+	String String::without_at(const size_type index) && noexcept
+	{
+		return std::move(without_at(index));
 	}
 
 	////////////////////////////////////////////////////////////////

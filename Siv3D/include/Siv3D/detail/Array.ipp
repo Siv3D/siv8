@@ -1326,7 +1326,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::filter(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		Array result;
+		Array result(Arg::reserve = m_container.size());
 
 		for (const auto& value : m_container)
 		{
@@ -1580,9 +1580,7 @@ namespace s3d
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
-		Array<result_value_type> result;
-
-		result.reserve(m_container.size());
+		Array<result_value_type> result(Arg::reserve = m_container.size());
 
 		for (const auto& value : m_container)
 		{
@@ -2279,8 +2277,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::values_at(const std::initializer_list<size_type> indices) const
 	{
-		Array result;
-		result.reserve(indices.size());
+		Array result(Arg::reserve = indices.size());
 
 		for (auto index : indices)
 		{
@@ -2363,7 +2360,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_if(Fty f) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		Array result;
+		Array result(Arg::reserve = m_container.size());
 
 		for (const auto& v : m_container)
 		{

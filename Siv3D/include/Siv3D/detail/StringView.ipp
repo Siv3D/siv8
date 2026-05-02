@@ -652,7 +652,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::u32string StringView::toUTF32() const noexcept
+	constexpr std::u32string StringView::toUTF32() const
 	{
 		return std::u32string{ m_view };
 	}

@@ -827,6 +827,88 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を文字列から削除します。
+		/// @param index インデックス
+		/// @remark 範囲外のインデックスを指定した場合、何もしません。
+		/// @return *this
+		constexpr String& erase_at(size_type index) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
+		/// @param index インデックス
+		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
+		/// @return 新しい文字列
+		[[nodiscard]]
+		constexpr String erase_at(size_type index) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した文字を文字列から削除します。
+		/// @param ch 削除する文字
+		/// @return *this
+		String& erase_all(value_type ch) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した文字列をもとの文字列から削除します。
+		/// @param s 削除する文字列
+		/// @return *this
+		String& erase_all(StringView s) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
+		/// @param ch 削除する文字
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String erase_all(value_type ch) && noexcept;
+
+		/// @brief 指定した文字列を削除した新しい文字列を返します。
+		/// @param s 削除する文字列
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String erase_all(StringView s) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素を削除します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return *this
+		template <class Fty>
+		constexpr String& erase_all_if(Fty f) & noexcept SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい文字列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr String erase_all_if(Fty f) && noexcept
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	push_front
 		//
 		////////////////////////////////////////////////////////////////
@@ -2025,129 +2107,33 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	remove, removed
+		//	without
 		//
 		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した文字を文字列から削除します。
-		/// @param ch 削除する文字
-		/// @return *this
-		String& remove(value_type ch) & noexcept SIV3D_LIFETIMEBOUND;
-
-		/// @brief 指定した文字列をもとの文字列から削除します。
-		/// @param s 削除する文字列
-		/// @return *this
-		String& remove(StringView s) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
 		/// @param ch 削除する文字
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String remove(value_type ch) && noexcept;
+		String without(value_type ch) const&;
 
 		/// @brief 指定した文字列を削除した新しい文字列を返します。
 		/// @param s 削除する文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String remove(StringView s) && noexcept;
+		String without(StringView s) const&;
 
 		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
 		/// @param ch 削除する文字
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String removed(value_type ch) const&;
+		String without(value_type ch) && noexcept;
 
 		/// @brief 指定した文字列を削除した新しい文字列を返します。
 		/// @param s 削除する文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String removed(StringView s) const&;
-
-		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
-		/// @param ch 削除する文字
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed(value_type ch) && noexcept;
-
-		/// @brief 指定した文字列を削除した新しい文字列を返します。
-		/// @param s 削除する文字列
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed(StringView s) && noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_at, removed_at
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定したインデックスにある要素を文字列から削除します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何もしません。
-		/// @return *this
-		String& remove_at(size_type index) & noexcept SIV3D_LIFETIMEBOUND;
-
-		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String remove_at(size_type index) && noexcept;
-
-		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed_at(size_type index) const&;
-
-		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed_at(size_type index) && noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_if, removed_if
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した条件を満たす要素を削除します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return *this
-		template <class Fty>
-		constexpr String& remove_if(Fty f) & noexcept SIV3D_LIFETIMEBOUND
-			requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい文字列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr String remove_if(Fty f) && noexcept
-			requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい文字列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr String removed_if(Fty f) const&
-			requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい文字列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr String removed_if(Fty f) && noexcept
-			requires std::predicate<Fty&, const value_type&>;
+		String without(StringView s) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2926,6 +2912,50 @@ namespace s3d
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
+		/// @param index インデックス
+		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String without_at(size_type index) const&;
+
+		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
+		/// @param index インデックス
+		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String without_at(size_type index) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい文字列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr String without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい文字列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr String without_if(Fty f) && noexcept
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
