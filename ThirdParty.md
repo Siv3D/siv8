@@ -27,7 +27,7 @@ Name | Version
 [libcpprime](https://github.com/Rac75116/libcpprime) | v1.3.2
 [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
 [libmorton](https://github.com/Forceflow/libmorton) | 
-[libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
+[libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.58
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.4.1
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
@@ -66,5 +66,5 @@ Name | Version
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
-[zlib](https://www.zlib.net/) | 1.3.1
+[zlib](https://www.zlib.net/) | 1.3.2
 [Zstandard](https://github.com/facebook/zstd) | v1.5.7

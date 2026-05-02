@@ -510,8 +510,8 @@ MIT_LICENSE
 {
 R"-(libpng)-",
 
-R"-(Copyright (c) 1995-2024 The PNG Reference Library Authors.
-Copyright (c) 2018-2024 Cosmin Truta.
+R"-(Copyright (c) 1995-2026 The PNG Reference Library Authors.
+Copyright (c) 2018-2026 Cosmin Truta.
 Copyright (c) 2000-2002, 2004, 2006-2018 Glenn Randers-Pehrson.
 Copyright (c) 1996-1997 Andreas Dilger.
 Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.)-",
@@ -943,7 +943,7 @@ BSD_2_LICENSE
 
 {
 R"-(zlib)-",
-R"-((C) 1995-2022 Jean-loup Gailly and Mark Adler)-",
+R"-((C) 1995-2026 Jean-loup Gailly and Mark Adler)-",
 ZLIB_LICENSE
 },
 
