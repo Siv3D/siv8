@@ -915,7 +915,7 @@ namespace s3d
 	constexpr bool Array<Type, Allocator>::all(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::all_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::all_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -929,7 +929,7 @@ namespace s3d
 	constexpr bool Array<Type, Allocator>::any(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::any_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1031,7 +1031,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr bool Array<Type, Allocator>::contains(const value_type& value) const
 	{
-		return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
+		return (std::ranges::find(m_container, value) != m_container.end());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1045,7 +1045,7 @@ namespace s3d
 	constexpr bool Array<Type, Allocator>::contains_if(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::any_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1057,7 +1057,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr isize Array<Type, Allocator>::count(const value_type& value) const
 	{
-		return std::count(m_container.begin(), m_container.end(), value);
+		return std::ranges::count(m_container, value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1071,7 +1071,7 @@ namespace s3d
 	constexpr isize Array<Type, Allocator>::count_if(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::count_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1085,7 +1085,7 @@ namespace s3d
 	constexpr void Array<Type, Allocator>::each(Fty f)
 		requires std::invocable<Fty&, value_type&>
 	{
-		std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::for_each(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
@@ -1093,7 +1093,7 @@ namespace s3d
 	constexpr void Array<Type, Allocator>::each(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
 	{
-		std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::for_each(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1181,7 +1181,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::fill(const value_type& value)
 	{
-		std::fill(m_container.begin(), m_container.end(), value);
+		std::ranges::fill(m_container, value);
 		return *this;
 	}
 
@@ -1393,7 +1393,7 @@ namespace s3d
 	constexpr bool Array<Type, Allocator>::isSorted() const
 		requires Concept::LessThanComparable<value_type>
 	{
-		return std::is_sorted(m_container.begin(), m_container.end());
+		return std::ranges::is_sorted(m_container);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1473,7 +1473,7 @@ namespace s3d
 	constexpr bool Array<Type, Allocator>::none(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::none_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::none_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1487,7 +1487,7 @@ namespace s3d
 	constexpr auto Array<Type, Allocator>::partition(Fty f)
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::partition(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1499,7 +1499,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::replace(const value_type& oldValue, const value_type& newValue)&
 	{
-		std::replace(m_container.begin(), m_container.end(), oldValue, newValue);
+		std::ranges::replace(m_container, oldValue, newValue);
 		return *this;
 	}
 
@@ -1539,7 +1539,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::replace_if(Fty f, const value_type& newValue)&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		std::replace_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)), newValue);
+		std::ranges::replace_if(m_container, detail::PassFunction(std::forward<Fty>(f)), newValue);
 		return *this;
 	}
 
@@ -1583,7 +1583,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::reverse()&
 	{
-		std::reverse(m_container.begin(), m_container.end());
+		std::ranges::reverse(m_container);
 		return *this;
 	}
 
@@ -1602,7 +1602,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::reversed()&&
 	{
-		std::reverse(m_container.begin(), m_container.end());
+		std::ranges::reverse(m_container);
 		return std::move(*this);
 	}
 
@@ -1617,7 +1617,7 @@ namespace s3d
 	constexpr void Array<Type, Allocator>::reverse_each(Fty f)
 		requires std::invocable<Fty&, value_type&>
 	{
-		std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
@@ -1625,7 +1625,7 @@ namespace s3d
 	constexpr void Array<Type, Allocator>::reverse_each(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
 	{
-		std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1699,7 +1699,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::rsort()&
 		requires Concept::LessThanComparable<value_type>
 	{
-		std::sort(m_container.begin(), m_container.end(), [](const Type& a, const Type& b) { return b < a; });
+		std::ranges::sort(m_container, [](const Type& a, const Type& b) { return b < a; });
 		return *this;
 	}
 
@@ -1778,7 +1778,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort()&
 		requires Concept::LessThanComparable<value_type>
 	{
-		std::sort(m_container.begin(), m_container.end());
+		std::ranges::sort(m_container);
 		return *this;
 	}
 
@@ -1815,8 +1815,9 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_and_unique() &
 		requires Concept::LessThanComparable<value_type>
 	{
-		std::sort(m_container.begin(), m_container.end());
-		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
+		std::ranges::sort(m_container);
+		auto result = std::ranges::unique(m_container);
+		m_container.erase(result.begin(), result.end());
 		return *this;
 	}
 
@@ -1854,7 +1855,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_by(Fty f)&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		std::sort(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::sort(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
 	}
 
@@ -1895,7 +1896,7 @@ namespace s3d
 	constexpr auto Array<Type, Allocator>::stable_partition(Fty f)
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::stable_partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::stable_partition(m_container, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1908,7 +1909,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort()&
 		requires Concept::LessThanComparable<value_type>
 	{
-		std::stable_sort(m_container.begin(), m_container.end());
+		std::ranges::stable_sort(m_container);
 		return *this;
 	}
 
@@ -1946,7 +1947,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort_by(Fty f)&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		std::stable_sort(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::stable_sort(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
 	}
 

@@ -65,15 +65,15 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reduce
+	//	fold_left
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	template <class Fty, class R>
-	constexpr auto Array<Type, Allocator>::reduce(Fty f, R init) const
+	template <class R, class Fty>
+	constexpr auto Array<Type, Allocator>::fold_left(R init, Fty f) const
 	{
-		return std::reduce(m_container.begin(), m_container.end(), init, f);
+		return std::ranges::fold_left(m_container, init, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ namespace s3d
 		detail::ArrayStableUniqueHelper<value_type> pred;
 		pred.reserve(m_container.size());
 
-		std::copy_if(m_container.begin(), m_container.end(), std::back_inserter(result), std::ref(pred));
+		std::ranges::copy_if(m_container, std::back_inserter(result), std::ref(pred));
 
 		return result;
 	}
@@ -116,7 +116,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() &
 	{
-		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
+		auto result = std::ranges::unique(m_container);
+		m_container.erase(result.begin(), result.end());
 		return *this;
 	}
 
@@ -130,7 +131,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() const&
 	{
 		Array result;
-		std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
+		std::ranges::unique_copy(m_container, std::back_inserter(result));
 		return result;
 	}
 
@@ -142,15 +143,15 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reduce
+	//	fold_left
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Allocator>
-	template <class Fty, class R>
-	constexpr auto Array<bool, Allocator>::reduce(Fty f, R init) const
+	template <class R, class Fty>
+	constexpr auto Array<bool, Allocator>::fold_left(R init, Fty f) const
 	{
-		return std::reduce(m_container.begin(), m_container.end(), init, f);
+		return std::ranges::fold_left(m_container.begin(), m_container.end(), init, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -162,7 +163,8 @@ namespace s3d
 	template <class Allocator>
 	constexpr Array<bool, Allocator>& Array<bool, Allocator>::unique_consecutive() & noexcept
 	{
-		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
+		auto result = std::ranges::unique(m_container);
+		m_container.erase(result.begin(), result.end());
 		return *this;
 	}
 
@@ -176,7 +178,7 @@ namespace s3d
 	constexpr Array<bool, Allocator> Array<bool, Allocator>::uniqued_consecutive() const&
 	{
 		Array result;
-		std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
+		std::ranges::unique_copy(m_container, std::back_inserter(result));
 		return result;
 	}
 

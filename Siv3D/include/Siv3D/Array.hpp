@@ -1261,6 +1261,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	fold_left
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
+		/// @tparam R 結果の型
+		/// @tparam Fty 関数の型
+		/// @param init 初期値
+		/// @param f 関数
+		/// @return まとめられた値
+		template <class R, class Fty>
+		constexpr auto fold_left(R init, Fty f) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	head
 		//
 		////////////////////////////////////////////////////////////////
@@ -1437,21 +1452,6 @@ namespace s3d
 		template <class Fty>
 		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND
 			requires std::predicate<Fty&, const value_type&>;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	reduce
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
-		/// @tparam Fty 関数の型
-		/// @tparam R 結果の型
-		/// @param f 関数
-		/// @param init 初期値
-		/// @return まとめられた値
-		template <class Fty, class R>
-		constexpr auto reduce(Fty f, R init) const;
 
 		////////////////////////////////////////////////////////////////
 		//

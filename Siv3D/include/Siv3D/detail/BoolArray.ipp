@@ -1336,7 +1336,7 @@ namespace s3d
 		constexpr bool all(Fty f = Identity) const
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::all_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::all_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1354,7 +1354,7 @@ namespace s3d
 		constexpr bool any(Fty f = Identity) const
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::any_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1482,7 +1482,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool contains(const value_type& value) const
 		{
-			return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
+			return (std::ranges::find(m_container, value) != m_container.end());
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1501,7 +1501,7 @@ namespace s3d
 		constexpr bool contains_if(Fty f) const
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::any_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1516,7 +1516,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr isize count(const value_type& value) const
 		{
-			return std::count(m_container.begin(), m_container.end(), value);
+			return std::ranges::count(m_container, value);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1534,7 +1534,7 @@ namespace s3d
 		constexpr isize count_if(Fty f) const
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::count_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1551,7 +1551,7 @@ namespace s3d
 		constexpr void each(Fty f)
 			requires std::invocable<Fty&, value_type&>
 		{
-			std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			std::ranges::for_each(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		/// @brief すべての要素を順番に引数にして関数を呼び出します。
@@ -1562,7 +1562,7 @@ namespace s3d
 		constexpr void each(Fty f) const
 			requires std::invocable<Fty&, const value_type&>
 		{
-			std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			std::ranges::for_each(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1668,7 +1668,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& fill(const value_type& value) SIV3D_LIFETIMEBOUND
 		{
-			std::fill(m_container.begin(), m_container.end(), value);
+			std::ranges::fill(m_container, value);
 			return *this;
 		}
 
@@ -1700,6 +1700,21 @@ namespace s3d
 
 			return result;
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fold_left
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
+		/// @tparam R 結果の型
+		/// @tparam Fty 関数の型
+		/// @param init 初期値
+		/// @param f 関数
+		/// @return まとめられた値
+		template <class R, class Fty>
+		constexpr auto fold_left(R init, Fty f) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1809,7 +1824,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool isSorted() const
 		{
-			return std::is_sorted(m_container.begin(), m_container.end());
+			return std::ranges::is_sorted(m_container);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1924,7 +1939,7 @@ namespace s3d
 		constexpr bool none(Fty f = Identity) const
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::none_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::none_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1941,23 +1956,8 @@ namespace s3d
 		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::partition(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	reduce
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
-		/// @tparam Fty 関数の型
-		/// @tparam R 結果の型
-		/// @param f 関数
-		/// @param init 初期値
-		/// @return まとめられた値
-		template <class Fty, class R>
-		constexpr auto reduce(Fty f, R init) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1977,7 +1977,7 @@ namespace s3d
 			}
 			else
 			{
-				std::fill(m_container.begin(), m_container.end(), newValue);
+				std::ranges::fill(m_container, newValue);
 				return *this;
 			}
 		}
@@ -2034,7 +2034,7 @@ namespace s3d
 		constexpr Array& replace_if(Fty f, const value_type& newValue)& SIV3D_LIFETIMEBOUND
 			requires std::predicate<Fty&, const value_type&>
 		{
-			std::replace_if(m_container.begin(), m_container.end(), f, newValue);
+			std::ranges::replace_if(m_container, f, newValue);
 			return *this;
 		}
 
@@ -2094,7 +2094,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& reverse()& SIV3D_LIFETIMEBOUND
 		{
-			std::reverse(m_container.begin(), m_container.end());
+			std::ranges::reverse(m_container);
 			return *this;
 		}
 
@@ -2224,7 +2224,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& rsort()& SIV3D_LIFETIMEBOUND
 		{
-			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+			const isize trueCount = std::ranges::count(m_container, true);
 
 			std::fill(m_container.begin(), (m_container.begin() + trueCount), true);
 			std::fill((m_container.begin() + trueCount), m_container.end(), false);
@@ -2245,7 +2245,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array rsorted() const&
 		{
-			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+			const isize trueCount = std::ranges::count(m_container, true);
 
 			Array result(m_container.size(), false);
 			std::fill(result.begin(), (result.begin() + trueCount), true);
@@ -2348,7 +2348,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& sort()& SIV3D_LIFETIMEBOUND
 		{
-			const isize falseCount = std::count(m_container.begin(), m_container.end(), false);
+			const isize falseCount = std::ranges::count(m_container, false);
 
 			std::fill(m_container.begin(), (m_container.begin() + falseCount), false);
 			std::fill((m_container.begin() + falseCount), m_container.end(), true);
@@ -2369,7 +2369,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array sorted() const&
 		{
-			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+			const isize trueCount = std::ranges::count(m_container, true);
 
 			Array result(m_container.size(), true);
 			std::fill(result.begin(), (result.begin() + trueCount), false);
@@ -2395,8 +2395,8 @@ namespace s3d
 		/// @return *this
 		constexpr Array& sort_and_unique() & SIV3D_LIFETIMEBOUND
 		{
-			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
-			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
+			const bool hasTrue = (std::ranges::find(m_container, true) != m_container.end());
+			const bool hasFalse = (std::ranges::find(m_container, false) != m_container.end());
 
 			if (hasTrue && hasFalse)
 			{
@@ -2427,8 +2427,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array sorted_and_uniqued() const&
 		{
-			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
-			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
+			const bool hasTrue = (std::ranges::find(m_container, true) != m_container.end());
+			const bool hasFalse = (std::ranges::find(m_container, false) != m_container.end());
 
 			if (hasTrue && hasFalse)
 			{
@@ -2518,8 +2518,8 @@ namespace s3d
 		/// @return *this
 		constexpr Array& stable_unique() & noexcept SIV3D_LIFETIMEBOUND
 		{
-			const auto itTrue = std::find(m_container.begin(), m_container.end(), true);
-			const auto itFalse = std::find(m_container.begin(), m_container.end(), false);
+			const auto itTrue = std::ranges::find(m_container, true);
+			const auto itFalse = std::ranges::find(m_container, false);
 
 			const bool hasTrue = (itTrue != m_container.end());
 			const bool hasFalse = (itFalse != m_container.end());
@@ -2560,8 +2560,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array stable_uniqued() const
 		{
-			const auto itTrue = std::find(m_container.begin(), m_container.end(), true);
-			const auto itFalse = std::find(m_container.begin(), m_container.end(), false);
+			const auto itTrue = std::ranges::find(m_container, true);
+			const auto itFalse = std::ranges::find(m_container, false);
 
 			const bool hasTrue = (itTrue != m_container.end());
 			const bool hasFalse = (itFalse != m_container.end());
@@ -2600,7 +2600,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr isize sum() const
 		{
-			return std::count(m_container.begin(), m_container.end(), true);
+			return std::ranges::count(m_container, true);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2787,7 +2787,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array without(const value_type& value) const&
 		{
-			const isize newSize = std::count(m_container.begin(), m_container.end(), (not value));
+			const isize newSize = std::ranges::count(m_container, (not value));
 
 			return Array(newSize, (not value));
 		}
