@@ -62,68 +62,6 @@ namespace s3d
 		//	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		//	SOFTWARE.
 
-	# if SIV3D_PLATFORM(MACOS)
-
-		static void PremultiplyAlpha_NEON(Color* pixels, const size_t num_pixels)
-		{
-			using u8x16 = __attribute__((ext_vector_type(16))) uint8_t;
-			using u16x8 = __attribute__((ext_vector_type(8))) uint16_t;
-
-			size_t const loopCount = ((num_pixels + 3) / 4);
-
-			const u16x8 mask_00ff{
-				0x00FF, 0x00FF, 0x00FF, 0x00FF,
-				0x00FF, 0x00FF, 0x00FF, 0x00FF
-			};
-
-			const u16x8 mask_alpha_keep{
-				0x0000, 0x00FF, 0x0000, 0x00FF,
-				0x0000, 0x00FF, 0x0000, 0x00FF
-			};
-
-			const u16x8 div255_bias{
-				128, 128, 128, 128,
-				128, 128, 128, 128
-			};
-
-			auto div255Round = [div255_bias](u16x8 x) -> u16x8
-				{
-					// Equivalent to:
-					//   ((x + 128) * 257) >> 16
-					//
-					// but keeps the computation inside uint16 lanes.
-					x = x + div255_bias;
-					x = x + (x >> 8);
-					x = x >> 8;
-					return x;
-				};
-
-			for (u8x16* ptr = reinterpret_cast<u8x16*>(pixels), *end = (ptr + loopCount); ptr != end; ++ptr)
-			{
-				const auto p = *ptr;
-
-				u16x8 const alpha{
-					p[3],  p[3],
-					p[7],  p[7],
-					p[11], p[11],
-					p[15], p[15]
-				};
-
-				u16x8 color_even = (reinterpret_cast<u16x8>(p) >> 8) | mask_alpha_keep;
-				u16x8 color_odd = reinterpret_cast<u16x8>(p) & mask_00ff;
-
-				color_even = color_even * alpha;
-				color_odd = color_odd * alpha;
-
-				color_even = div255Round(color_even);
-				color_odd = div255Round(color_odd);
-
-				*ptr = reinterpret_cast<u8x16>((color_even << 8) | color_odd);
-			}
-		}
-
-	# endif
-
 	# if SIV3D_INTRINSIC(SSE)
 
 		static void PremultiplyAlpha_SSE41(Color* pixels, const size_t num_pixels)
@@ -298,74 +236,6 @@ namespace s3d
 				++p;
 			}
 		}
-
-	# if SIV3D_INTRINSIC(NEON)
-
-		static void UnmultiplyAlpha_NEON(Color* pixels, const size_t num_pixels)
-		{
-			const size_t loopCount = ((num_pixels + 3) / 4);
-
-			uint32_t* p = reinterpret_cast<uint32_t*>(pixels);
-
-			const uint32x4_t mask_00ff = vdupq_n_u32(0x000000FFu);
-			const uint32x4_t mask_alpha = vdupq_n_u32(0xFF000000u);
-			const uint32x4_t bias = vdupq_n_u32(0x00008000u);
-			const uint32x4_t max_255 = vdupq_n_u32(255u);
-
-			auto Unpremul4 = [bias, max_255](uint32x4_t c, uint32x4_t invQ16) -> uint32x4_t
-				{
-					// Equivalent to plain:
-					//   v = (c * invQ16 + 0x8000) >> 16;
-					//   min(v, 255)
-					uint32x4_t v = vmulq_u32(c, invQ16);
-					v = vaddq_u32(v, bias);
-					v = vshrq_n_u32(v, 16);
-					v = vminq_u32(v, max_255);
-					return v;
-				};
-
-			for (uint32x4_t* ptr = reinterpret_cast<uint32x4_t*>(p), *end = (ptr + loopCount); ptr != end; ++ptr)
-			{
-				const uint32x4_t color = vld1q_u32(reinterpret_cast<const uint32_t*>(ptr));
-
-				const uint32x4_t alpha = vandq_u32(color, mask_alpha);
-
-				const uint32x4_t alphaIndex = vshrq_n_u32(color, 24);
-
-				const uint32_t a0 = vgetq_lane_u32(alphaIndex, 0);
-				const uint32_t a1 = vgetq_lane_u32(alphaIndex, 1);
-				const uint32_t a2 = vgetq_lane_u32(alphaIndex, 2);
-				const uint32_t a3 = vgetq_lane_u32(alphaIndex, 3);
-
-				const uint32x4_t invQ16 = {
-					g_unpremultiplyAlphaTable[a0],
-					g_unpremultiplyAlphaTable[a1],
-					g_unpremultiplyAlphaTable[a2],
-					g_unpremultiplyAlphaTable[a3]
-				};
-
-				uint32x4_t r = vandq_u32(color, mask_00ff);
-				uint32x4_t g = vandq_u32(vshrq_n_u32(color, 8), mask_00ff);
-				uint32x4_t b = vandq_u32(vshrq_n_u32(color, 16), mask_00ff);
-
-				r = Unpremul4(r, invQ16);
-				g = Unpremul4(g, invQ16);
-				b = Unpremul4(b, invQ16);
-
-				const uint32x4_t result =
-					vorrq_u32(
-						vorrq_u32(
-							vorrq_u32(r, vshlq_n_u32(g, 8)),
-							vshlq_n_u32(b, 16)
-						),
-						alpha
-					);
-
-				vst1q_u32(reinterpret_cast<uint32_t*>(ptr), result);
-			}
-		}
-			
-	# endif
 
 	# if SIV3D_INTRINSIC(SSE)
 
@@ -614,13 +484,6 @@ namespace s3d
 			}
 		}
 
-	# elif SIV3D_PLATFORM(MACOS)
-
-		if (useSIMD)
-		{
-			return PremultiplyAlpha_NEON(m_pixels.data(), m_pixels.size());
-		}
-		
 	# endif
 
 		return PremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
@@ -640,7 +503,7 @@ namespace s3d
 		{
 			if (SupportsAVX2())
 			{
-				return UnpremultiplyAlpha_SSE41(m_pixels.data(), m_pixels.size());
+				return UnpremultiplyAlpha_AVX2(m_pixels.data(), m_pixels.size());
 			}
 			else
 			{
@@ -648,13 +511,6 @@ namespace s3d
 			}
 		}
 
-	# elif SIV3D_PLATFORM(MACOS)
-
-		if (useSIMD)
-		{
-			return UnpremultiplyAlpha_NEON(m_pixels.data(), m_pixels.size());
-		}
-		
 	# endif
 
 		return UnpremultiplyAlpha_plain(m_pixels.data(), m_pixels.size());
