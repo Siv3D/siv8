@@ -1012,14 +1012,14 @@ namespace s3d
 		/// @param n 選択する個数
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n) const;
+		Array choice(size_t n) const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @param rbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const;
+		Array choice(size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1317,7 +1317,8 @@ namespace s3d
 		/// @param value 検索する値
 		/// @return 指定した値と等しい最初の要素のインデックス。見つからなかった場合は none
 		[[nodiscard]]
-		constexpr Optional<size_t> indexOf(const value_type& value) const noexcept;
+		constexpr Optional<size_t> indexOf(const value_type& value) const
+			noexcept(std::declval<const value_type&>() == std::declval<const value_type&>());
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1820,22 +1821,26 @@ namespace s3d
 
 		/// @brief 配列をソートしたあとに重複する要素を削除します。
 		/// @return *this
-		constexpr Array& sort_and_unique() & noexcept SIV3D_LIFETIMEBOUND;
+		constexpr Array& sort_and_unique() & SIV3D_LIFETIMEBOUND
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sort_and_unique() && noexcept;
+		constexpr Array sort_and_unique() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted_and_uniqued() const&;
+		constexpr Array sorted_and_uniqued() const&
+			requires Concept::LessThanComparable<value_type>;
 
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted_and_uniqued() && noexcept;
+		constexpr Array sorted_and_uniqued() &&
+			requires Concept::LessThanComparable<value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//

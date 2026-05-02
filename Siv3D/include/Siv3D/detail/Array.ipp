@@ -802,7 +802,7 @@ namespace s3d
 	template <class... Args>
 	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::emplace_front(Args&&... args)
 	{
-		return m_container.emplace(m_container.begin(), std::forward<Args>(args)...);
+		return *m_container.emplace(m_container.begin(), std::forward<Args>(args)...);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1197,6 +1197,16 @@ namespace s3d
 		using element_type = typename value_type::value_type;
 
 		Array<element_type> result;
+		{
+			size_type total = 0;
+
+			for (const auto& inner : m_container)
+			{
+				total += inner.size();
+			}
+
+			result.reserve(total);
+		}
 
 		for (const auto& inner : m_container)
 		{
@@ -1239,8 +1249,9 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::head(const size_type n) &&
 	{
 		const auto k = Min(n, m_container.size());
-		m_container.resize(k);
-		return std::move(*this);
+		return Array(
+			std::make_move_iterator(m_container.begin()),
+			std::make_move_iterator(m_container.begin() + k));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1333,7 +1344,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Optional<size_t> Array<Type, Allocator>::indexOf(const value_type& value) const noexcept
+	constexpr Optional<size_t> Array<Type, Allocator>::indexOf(const value_type& value) const
+		noexcept(std::declval<const value_type&>() == std::declval<const value_type&>())
 	{
 		if (const auto it = std::ranges::find(m_container, value); 
 			it != m_container.end())
@@ -1911,7 +1923,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_and_unique() & noexcept
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_and_unique() &
+		requires Concept::LessThanComparable<value_type>
 	{
 		std::sort(m_container.begin(), m_container.end());
 		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
@@ -1919,13 +1932,15 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort_and_unique() && noexcept
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort_and_unique() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(sort_and_unique());
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_and_uniqued() const&
+		requires Concept::LessThanComparable<value_type>
 	{
 		Array result(*this);
 		result.sort_and_unique();
@@ -1933,7 +1948,8 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_and_uniqued() && noexcept
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_and_uniqued() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(sort_and_unique());
 	}
@@ -2138,7 +2154,10 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::tail(const size_type n) &&
 	{
 		const auto k = Min(n, m_container.size());
-		m_container.erase(m_container.begin(), (m_container.end() - k));
+		return Array(
+			std::make_move_iterator(m_container.end() - k),
+			std::make_move_iterator(m_container.end()),
+			m_container.get_allocator());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2334,8 +2353,9 @@ namespace s3d
 		return Array<Elem>(std::from_range, std::forward<Range>(range));
 	
 	# else
-		
-		 return Array<Elem>(std::ranges::begin(range), std::ranges::end(range));
+
+		auto common_range = std::views::common(std::forward<Range>(range));
+		return Array<Elem>(std::ranges::begin(common_range), std::ranges::end(common_range));
 	 
 	# endif
 	}

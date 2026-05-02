@@ -26,6 +26,11 @@ namespace s3d
 				return m_set.insert(value).second;
 			}
 
+			void reserve(size_t n)
+			{
+				m_set.reserve(n);
+			}
+
 		private:
 
 			HashSet<Type> m_set;
@@ -66,9 +71,10 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const
 	{
-		Array result;
+		Array result(Arg::reserve = m_container.size());
 
 		detail::ArrayStableUniqueHelper<value_type> pred;
+		pred.reserve(m_container.size());
 
 		std::copy_if(m_container.begin(), m_container.end(), std::back_inserter(result), std::ref(pred));
 

@@ -1182,6 +1182,7 @@ namespace s3d
 		{
 			const value_type value(std::forward<Args>(args)...);
 			m_container.insert(m_container.begin(), value);
+			return m_container.front();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1378,14 +1379,14 @@ namespace s3d
 		/// @param n 選択する個数
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n) const;
+		Array choice(size_t n) const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @param rbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const;
+		Array choice(size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1668,7 +1669,10 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array head(size_type n)&&
 		{
-			return std::move(*this).take(n);
+			const auto k = Min(n, m_container.size());
+			return Array(
+				std::make_move_iterator(m_container.begin()),
+				std::make_move_iterator(m_container.begin() + k));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1751,6 +1755,25 @@ namespace s3d
 		constexpr bool isSorted() const
 		{
 			return std::is_sorted(m_container.begin(), m_container.end());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	indexOf
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Optional<size_t> indexOf(const value_type& value) const noexcept
+		{
+			if (const auto it = std::ranges::find(m_container, value); 
+				it != m_container.end())
+			{
+				return std::ranges::distance(m_container.begin(), it);
+			}
+			else
+			{
+				return s3d::none;
+			}
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2480,7 +2503,7 @@ namespace s3d
 
 		/// @brief 配列をソートしたあとに重複する要素を削除します。
 		/// @return *this
-		constexpr Array& sort_and_unique() & noexcept SIV3D_LIFETIMEBOUND
+		constexpr Array& sort_and_unique() & SIV3D_LIFETIMEBOUND
 		{
 			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
 			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
@@ -2504,7 +2527,7 @@ namespace s3d
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sort_and_unique() && noexcept
+		constexpr Array sort_and_unique() &&
 		{
 			return std::move(sort_and_unique());
 		}
@@ -2536,7 +2559,7 @@ namespace s3d
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted_and_uniqued() && noexcept
+		constexpr Array sorted_and_uniqued() &&
 		{
 			return std::move(sort_and_unique());
 		}
@@ -2715,7 +2738,10 @@ namespace s3d
 		constexpr Array tail(size_type n)&&
 		{
 			const auto k = Min(n, m_container.size());
-			return Array(std::make_move_iterator(m_container.end() - k), std::make_move_iterator(m_container.end()));
+			return Array(
+				std::make_move_iterator(m_container.end() - k),
+				std::make_move_iterator(m_container.end()),
+				m_container.get_allocator());
 		}
 
 		////////////////////////////////////////////////////////////////
