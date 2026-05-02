@@ -51,16 +51,60 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	erase_if
+	//	erase_first
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Array<Type, Allocator>::erase_first(const value_type& value)
+	{
+		if (const auto it = std::ranges::find(m_container, value);
+			it != m_container.end())
+		{
+			m_container.erase(it);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all_if
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_if(Fty f)
+	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all_if(Fty f)
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::erase_first_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			it != m_container.end())
+		{
+			m_container.erase(it);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

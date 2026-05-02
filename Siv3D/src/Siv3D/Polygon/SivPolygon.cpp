@@ -487,7 +487,7 @@ namespace s3d
 			return false;
 		}
 
-		holes.erase_if([](const Array<Vec2>& hole) { return (hole.size() < 3); });
+		holes.erase_all_if([](const Array<Vec2>& hole) { return (hole.size() < 3); });
 
 		if (not holes)
 		{

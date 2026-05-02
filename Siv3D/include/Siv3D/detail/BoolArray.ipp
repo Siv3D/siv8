@@ -1113,7 +1113,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr size_type erase_all(const bool value)
+		constexpr size_type erase_all(const value_type value)
 		{
 			const size_type erasedCount = static_cast<size_type>(std::ranges::count(m_container, value));
 			m_container.assing((m_container.size() - erasedCount), (not value));
@@ -1122,14 +1122,55 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	erase_if
+		//	erase_first
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr bool erase_first(const value_type value)
+		{
+			if (const auto it = std::ranges::find(m_container, value);
+				it != m_container.end())
+			{
+				m_container.erase(it);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
 		//
 		////////////////////////////////////////////////////////////////
 
 		template <class Fty>
-		constexpr size_type erase_if(Fty f)
+		constexpr size_type erase_all_if(Fty f)
 		{
 			return std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Fty>
+		constexpr bool erase_first_if(Fty f)
+		{
+			if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+				it != m_container.end())
+			{
+				m_container.erase(it);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		////////////////////////////////////////////////////////////////
