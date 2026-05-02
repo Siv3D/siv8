@@ -217,6 +217,11 @@ namespace s3d
 
 	String StringView::expandTabs(const size_type tabSize) const
 	{
+		if (tabSize == 0)
+		{
+			return String{ m_view };
+		}
+
 		const size_t tabs = std::ranges::count(m_view, U'\t');
 		const size_t extra = (tabs * (tabSize - 1));
 

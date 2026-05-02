@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <iostream>
+# include <algorithm>
 # include <stdexcept>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Char.hpp>
@@ -648,7 +649,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<StringView> String::splitView(const value_type ch) const SIV3D_LIFETIMEBOUND
+	Array<StringView> String::splitView(const value_type ch) const& SIV3D_LIFETIMEBOUND
 	{
 		return StringView{ m_string }.splitView(ch);
 	}
@@ -675,7 +676,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<StringView, std::allocator<StringView>> String::splitLines() const SIV3D_LIFETIMEBOUND
+	Array<StringView, std::allocator<StringView>> String::splitLines() const& SIV3D_LIFETIMEBOUND
 	{
 		return StringView{ m_string }.splitLines();
 	}
@@ -726,7 +727,28 @@ namespace s3d
 
 	String& String::trim() & noexcept
 	{
-		return rightTrim().leftTrim();
+		if (m_string.empty())
+		{
+			return *this;
+		}
+
+		size_t first = 0;
+		size_t last = m_string.size();
+
+		while (first < last && IsTrimmable(m_string[first]))
+		{
+			++first;
+		}
+
+		while (first < last && IsTrimmable(m_string[last - 1]))
+		{
+			--last;
+		}
+
+		m_string.erase((m_string.begin() + last), m_string.end());
+		m_string.erase(m_string.begin(), (m_string.begin() + first));
+
+		return *this;
 	}
 
 	String String::trim() && noexcept
@@ -736,7 +758,28 @@ namespace s3d
 
 	String& String::trim(const StringView chars) & noexcept
 	{
-		return rightTrim(chars).leftTrim(chars);
+		if (m_string.empty() || chars.empty())
+		{
+			return *this;
+		}
+
+		size_t first = 0;
+		size_t last = m_string.size();
+
+		while ((first < last) && chars.contains(m_string[first]))
+		{
+			++first;
+		}
+
+		while ((first < last) && chars.contains(m_string[last - 1]))
+		{
+			--last;
+		}
+
+		m_string.erase((m_string.begin() + last), m_string.end());
+		m_string.erase(m_string.begin(), (m_string.begin() + first));
+
+		return *this;
 	}
 
 	String String::trim(const StringView chars) && noexcept
@@ -920,7 +963,7 @@ namespace s3d
 		return std::move(erase_all(ch));
 	}
 
-	String String::without(const StringView s) && noexcept
+	String String::without(const StringView s) &&
 	{
 		return std::move(erase_all(s));
 	}
@@ -938,7 +981,13 @@ namespace s3d
 
 	String String::without_at(const size_type index) &&
 	{
-		return std::move(without_at(index));
+		if (m_string.size() <= index)
+		{
+			ThrowWithoutAtOutOfRange();
+		}
+
+		m_string.erase(index, 1);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1030,5 +1079,10 @@ namespace s3d
 	void String::ThrowValuesAtOutOfRange()
 	{
 		throw std::out_of_range{ "String::values_at(): index out of range" };
+	}
+
+	void String::ThrowWithoutAtOutOfRange()
+	{
+		throw std::out_of_range{ "String::without_at(): index out of range" };
 	}
 }

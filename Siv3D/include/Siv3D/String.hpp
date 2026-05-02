@@ -140,7 +140,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr String(const StringViewLike auto& s, size_type pos, size_type count);
 
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 		
 		/// @brief 範囲から新しい文字列を作成します。
 		/// @tparam Range 範囲の型
@@ -702,7 +702,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 要素をすべて消去し、メモリも解放します。
+		/// @brief 要素をすべて消去し、メモリ解放を試みます。
 		constexpr void release();
 
 		////////////////////////////////////////////////////////////////
@@ -2133,7 +2133,7 @@ namespace s3d
 		/// @param s 削除する文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String without(StringView s) && noexcept;
+		String without(StringView s) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2590,7 +2590,7 @@ namespace s3d
 		/// @return *this
 		template <class Fty>
 		String& sort_by(Fty f) & noexcept SIV3D_LIFETIMEBOUND
-			requires std::predicate<Fty&, const value_type&, const value_type&>;
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 		
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -2599,7 +2599,7 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		String sort_by(Fty f) && noexcept
-			requires std::predicate<Fty&, const value_type&, const value_type&>;
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -2608,7 +2608,7 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		String sorted_by(Fty f) const&
-			requires std::predicate<Fty&, const value_type&, const value_type&>;
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -2617,7 +2617,7 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		String sorted_by(Fty f) && noexcept
-			requires std::predicate<Fty&, const value_type&, const value_type&>;
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2642,7 +2642,9 @@ namespace s3d
 		/// @return 分割された文字列
 		/// @remark 戻り値は元の文字列を参照します。元の文字列のライフタイムに注意してください。
 		[[nodiscard]]
-		Array<StringView, std::allocator<StringView>> splitView(value_type ch) const SIV3D_LIFETIMEBOUND;
+		Array<StringView, std::allocator<StringView>> splitView(value_type ch) const& SIV3D_LIFETIMEBOUND;
+
+		Array<StringView, std::allocator<StringView>> splitView(value_type ch) && = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2666,7 +2668,9 @@ namespace s3d
 		/// @brief 文字列を行ごとに分割します。
 		/// @return 分割された文字列
 		[[nodiscard]]
-		Array<StringView, std::allocator<StringView>> splitLines() const SIV3D_LIFETIMEBOUND;
+		Array<StringView, std::allocator<StringView>> splitLines() const& SIV3D_LIFETIMEBOUND;
+		
+		Array<StringView, std::allocator<StringView>> splitLines() && = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -3298,6 +3302,9 @@ namespace s3d
 
 		[[noreturn]]
 		static void ThrowValuesAtOutOfRange();
+
+		[[noreturn]]
+		static void ThrowWithoutAtOutOfRange();
 	};
 
 	inline namespace Literals

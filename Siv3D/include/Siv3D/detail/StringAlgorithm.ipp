@@ -208,6 +208,7 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		String result;
+		result.reserve(m_string.size());
 
 		for (const auto ch : m_string)
 		{
@@ -407,7 +408,7 @@ namespace s3d
 
 	template <class Fty>
 	String& String::sort_by(Fty f) & noexcept
-		requires std::predicate<Fty&, const value_type&, const value_type&>
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		std::ranges::sort(m_string, detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
@@ -415,7 +416,7 @@ namespace s3d
 
 	template <class Fty>
 	String String::sort_by(Fty f) && noexcept
-		requires std::predicate<Fty&, const value_type&, const value_type&>
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		std::ranges::sort(m_string, detail::PassFunction(std::forward<Fty>(f)));
 		return std::move(*this);
@@ -423,7 +424,7 @@ namespace s3d
 
 	template <class Fty>
 	String String::sorted_by(Fty f) const&
-		requires std::predicate<Fty&, const value_type&, const value_type&>
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		String result{ m_string };
 		result.sort_by(std::forward<Fty>(f));
@@ -432,7 +433,7 @@ namespace s3d
 
 	template <class Fty>
 	String String::sorted_by(Fty f) && noexcept
-		requires std::predicate<Fty&, const value_type&, const value_type&>
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(std::forward<Fty>(f)));
 	}
@@ -492,7 +493,7 @@ namespace s3d
 	String String::take_while(Fty f) && noexcept
 		requires std::predicate<Fty&, const value_type&>
 	{
-		const auto it = std::find_if_not(m_string.begin(), m_string.end(), f);
+		const auto it = std::find_if_not(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
 		m_string.erase(it, m_string.end());
 		return std::move(*this);
 	}
@@ -508,6 +509,7 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		String result;
+		result.reserve(m_string.size());
 
 		for (const auto ch : m_string)
 		{

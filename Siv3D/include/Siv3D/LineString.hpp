@@ -141,7 +141,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(std::initializer_list<value_type> list);
 
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 		
 		/// @brief 範囲から点の配列を作成します。
 		/// @tparam Range 範囲の型
