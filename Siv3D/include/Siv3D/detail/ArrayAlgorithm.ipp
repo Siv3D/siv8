@@ -39,6 +39,32 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	erase_all
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all(const value_type& value)
+	{
+		return std::erase(m_container, value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	reduce
 	//
 	////////////////////////////////////////////////////////////////

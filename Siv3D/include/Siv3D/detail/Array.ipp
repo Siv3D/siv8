@@ -16,10 +16,10 @@ namespace s3d
 	namespace detail
 	{
 		[[noreturn]]
-		void ThrowArrayRemoveAtIndexOutOfRange();
+		void ThrowArrayEraseAtIndexOutOfRange();
 
 		[[noreturn]]
-		void ThrowArrayRemovedAtIndexOutOfRange();
+		void ThrowArrayWithoutAtIndexOutOfRange();
 
 		[[noreturn]]
 		void ThrowArraySliceIndexOutOfRange();
@@ -699,6 +699,31 @@ namespace s3d
 	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::erase(const_iterator first, const_iterator last)
 	{
 		return m_container.erase(first, last);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::erase_at(const size_type index)&
+	{
+		if (m_container.size() <= index)
+		{
+			detail::ThrowArrayEraseAtIndexOutOfRange();
+		}
+
+		erase(m_container.begin() + index);
+
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::erase_at(const size_type index)&&
+	{
+		return std::move(erase_at(index));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1467,142 +1492,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	remove, removed
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove(const value_type& value)&
-	{
-		m_container.erase(std::remove(m_container.begin(), m_container.end(), value), m_container.end());
-		return *this;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove(const value_type& value)&&
-	{
-		return std::move(remove(value));
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed(const value_type& value) const&
-	{
-		Array result(Arg::reserve = m_container.size());
-
-		for (const auto& v : m_container)
-		{
-			if (v != value)
-			{
-				result.push_back(v);
-			}
-		}
-
-		return result;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed(const value_type& value)&&
-	{
-		return std::move(remove(value));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	remove_at, removed_at
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove_at(const size_type index)&
-	{
-		if (m_container.size() <= index)
-		{
-			detail::ThrowArrayRemoveAtIndexOutOfRange();
-		}
-
-		erase(m_container.begin() + index);
-
-		return *this;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove_at(const size_type index)&&
-	{
-		return std::move(remove_at(index));
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_type index) const&
-	{
-		if (m_container.size() <= index)
-		{
-			detail::ThrowArrayRemovedAtIndexOutOfRange();
-		}
-
-		Array result(Arg::reserve = m_container.size() - 1);
-		result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
-		result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
-
-		return result;
-	}
-
-	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_at(const size_type index)&&
-	{
-		return std::move(remove_at(index));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	remove_if, removed_if
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::remove_if(Fty f)&
-		requires std::predicate<Fty&, const value_type&>
-	{
-		erase(std::remove_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.end());
-		return *this;
-	}
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::remove_if(Fty f) &&
-		requires std::predicate<Fty&, const value_type&>
-	{
-		return std::move(remove_if(std::forward<Fty>(f)));
-	}
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_if(Fty f) const&
-		requires std::predicate<Fty&, const value_type&>
-	{
-		Array result;
-
-		for (const auto& v : m_container)
-		{
-			if (not f(v))
-			{
-				result.push_back(v);
-			}
-		}
-
-		return result;
-	}
-
-	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::removed_if(Fty f) &&
-		requires std::predicate<Fty&, const value_type&>
-	{
-		return std::move(remove_if(std::forward<Fty>(f)));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	replace, replaced
 	//
 	////////////////////////////////////////////////////////////////
@@ -2275,6 +2164,93 @@ namespace s3d
 		}
 
 		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::without(const value_type& value) const&
+	{
+		Array result(Arg::reserve = m_container.size());
+
+		for (const auto& v : m_container)
+		{
+			if (v != value)
+			{
+				result.push_back(v);
+			}
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::without(const value_type& value)&&
+	{
+		return std::move(without(value));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_at(const size_type index) const&
+	{
+		if (m_container.size() <= index)
+		{
+			detail::ThrowArrayWithoutAtIndexOutOfRange();
+		}
+
+		Array result(Arg::reserve = m_container.size() - 1);
+		result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
+		result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_at(const size_type index)&&
+	{
+		return std::move(without_at(index));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_if(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		Array result;
+
+		for (const auto& v : m_container)
+		{
+			if (not f(v))
+			{
+				result.push_back(v);
+			}
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_if(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return std::move(without_if(detail::PassFunction(std::forward<Fty>(f))));
 	}
 
 	////////////////////////////////////////////////////////////////

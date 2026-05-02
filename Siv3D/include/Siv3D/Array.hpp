@@ -761,6 +761,48 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
+		constexpr Array& erase_at(size_type index)& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array erase_at(size_type index)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素をすべて削除します。
+		/// @param value 値
+		/// @return 削除した要素の個数
+		constexpr size_type erase_all(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素をすべて削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除した要素の個数
+		template <class Fty>
+		constexpr size_type erase_if(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	push_back
 		//
 		////////////////////////////////////////////////////////////////
@@ -1410,105 +1452,6 @@ namespace s3d
 		/// @return まとめられた値
 		template <class Fty, class R>
 		constexpr auto reduce(Fty f, R init) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove, removed
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した値と等しいすべての要素を削除します。
-		/// @param value 削除する値
-		/// @return *this
-		constexpr Array& remove(const value_type& value) & SIV3D_LIFETIMEBOUND;
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array remove(const value_type& value) &&;
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed(const value_type& value) const&;
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed(const value_type& value) &&;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_at, removed_at
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定したインデックスにある要素を削除します。
-		/// @param index インデックス
-		/// @return *this
-		constexpr Array& remove_at(size_type index) & SIV3D_LIFETIMEBOUND;
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array remove_at(size_type index) &&;
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed_at(size_type index) const&;
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed_at(size_type index) &&;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_if, removed_if
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 条件を満たす要素を配列から削除します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return *this
-		template <class Fty>
-		constexpr Array& remove_if(Fty f) & SIV3D_LIFETIMEBOUND
-			requires std::predicate<Fty&, const value_type&> ;
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array remove_if(Fty f) &&
-			requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array removed_if(Fty f) const&
-			requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array removed_if(Fty f) &&
-			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2168,6 +2111,66 @@ namespace s3d
 		/// @return 新しい配列
 		[[nodiscard]]
 		constexpr Array values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without(const value_type& value) const&;
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without(const value_type& value)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without_at(size_type index) const&;
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without_at(size_type index)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array without_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -1079,6 +1079,61 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
+		constexpr Array& erase_at(size_type index)& SIV3D_LIFETIMEBOUND
+		{
+			if (m_container.size() <= index)
+			{
+				detail::ThrowArrayEraseAtIndexOutOfRange();
+			}
+
+			erase(m_container.begin() + index);
+
+			return *this;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array erase_at(size_type index)&&
+		{
+			return std::move(erase_at(index));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr size_type erase_all(const bool value)
+		{
+			const size_type erasedCount = static_cast<size_type>(std::ranges::count(m_container, value));
+			m_container.assing((m_container.size() - erasedCount), (not value));
+			return erasedCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <class Fty>
+		constexpr size_type erase_if(Fty f)
+		{
+			return std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	push_back
 		//
 		////////////////////////////////////////////////////////////////
@@ -1906,171 +1961,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	remove, removed
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した値と等しいすべての要素を削除します。
-		/// @param value 削除する値
-		/// @return *this
-		constexpr Array& remove(const value_type& value)& SIV3D_LIFETIMEBOUND
-		{
-			m_container.erase(std::remove(m_container.begin(), m_container.end(), value), m_container.end());
-			return *this;
-		}
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array remove(const value_type& value)&&
-		{
-			return std::move(remove(value));
-		}
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed(const value_type& value) const&
-		{
-			const isize newSize = std::count(m_container.begin(), m_container.end(), (not value));
-
-			return Array(newSize, (not value));
-		}
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed(const value_type& value)&&
-		{
-			return std::move(remove(value));
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_at, removed_at
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定したインデックスにある要素を削除します。
-		/// @param index インデックス
-		/// @return *this
-		constexpr Array& remove_at(size_type index)& SIV3D_LIFETIMEBOUND
-		{
-			if (m_container.size() <= index)
-			{
-				detail::ThrowArrayRemoveAtIndexOutOfRange();
-			}
-
-			erase(m_container.begin() + index);
-
-			return *this;
-		}
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array remove_at(size_type index)&&
-		{
-			return std::move(remove_at(index));
-		}
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed_at(size_type index) const&
-		{
-			if (m_container.size() <= index)
-			{
-				detail::ThrowArrayRemovedAtIndexOutOfRange();
-			}
-
-			Array result(Arg::reserve = m_container.size() - 1);
-			result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
-			result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
-
-			return result;
-		}
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed_at(size_type index)&&
-		{
-			return std::move(remove_at(index));
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_if, removed_if
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 条件を満たす要素を配列から削除します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return *this
-		template <class Fty>
-		constexpr Array& remove_if(Fty f)& SIV3D_LIFETIMEBOUND
-			requires std::predicate<Fty&, const value_type&>
-		{
-			erase(std::remove_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.end());
-			return *this;
-		}
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array remove_if(Fty f) &&
-			requires std::predicate<Fty&, const value_type&>
-		{
-			return std::move(remove_if(std::forward<Fty>(f)));
-		}
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array removed_if(Fty f) const&
-			requires std::predicate<Fty&, const value_type&>
-		{
-			Array result;
-
-			for (const auto& v : m_container)
-			{
-				if (not f(v))
-				{
-					result.push_back(v);
-				}
-			}
-
-			return result;
-		}
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array removed_if(Fty f) &&
-			requires std::predicate<Fty&, const value_type&>
-		{
-			return std::move(remove_if(std::forward<Fty>(f)));
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	replace, replaced
 		//
 		////////////////////////////////////////////////////////////////
@@ -2883,6 +2773,105 @@ namespace s3d
 			}
 
 			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without(const value_type& value) const&
+		{
+			const isize newSize = std::count(m_container.begin(), m_container.end(), (not value));
+
+			return Array(newSize, (not value));
+		}
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without(const value_type& value)&&
+		{
+			return std::move(without(value));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without_at(size_type index) const&
+		{
+			if (m_container.size() <= index)
+			{
+				detail::ThrowArrayWithoutAtIndexOutOfRange();
+			}
+
+			Array result(Arg::reserve = m_container.size() - 1);
+			result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
+			result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
+
+			return result;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without_at(size_type index)&&
+		{
+			return std::move(without_at(index));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>
+		{
+			Array result;
+
+			for (const auto& v : m_container)
+			{
+				if (not f(v))
+				{
+					result.push_back(v);
+				}
+			}
+
+			return result;
+		}
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array without_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>
+		{
+			return std::move(without_if(detail::PassFunction(std::forward<Fty>(f))));
 		}
 
 		////////////////////////////////////////////////////////////////

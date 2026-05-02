@@ -16,14 +16,14 @@ namespace s3d
 {
 	namespace detail
 	{
-		void ThrowArrayRemoveAtIndexOutOfRange()
+		void ThrowArrayEraseAtIndexOutOfRange()
 		{
-			throw std::out_of_range{ "Array::remove_at(): index out of range" };
+			throw std::out_of_range{ "Array::erase_at(): index out of range" };
 		}
 
-		void ThrowArrayRemovedAtIndexOutOfRange()
+		void ThrowArrayWithoutAtIndexOutOfRange()
 		{
-			throw std::out_of_range{ "Array::removed_at(): index out of range" };
+			throw std::out_of_range{ "Array::without_at(): index out of range" };
 		}
 
 		void ThrowArraySliceIndexOutOfRange()
