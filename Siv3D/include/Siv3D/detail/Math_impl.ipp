@@ -1319,7 +1319,9 @@ namespace s3d
 					if constexpr (std::conjunction_v<std::is_integral<T1>, std::is_integral<T2>>)
 					{
 						using U = std::make_unsigned_t<std::common_type_t<T1, T2>>;
-						return (x > y) ? (static_cast<U>(x) - static_cast<U>(y))
+
+						return std::cmp_greater(x, y)
+							? (static_cast<U>(x) - static_cast<U>(y))
 							: (static_cast<U>(y) - static_cast<U>(x));
 					}
 					else
@@ -4067,32 +4069,40 @@ namespace s3d
 
 			struct Normalize_impl
 			{
-				/// @brief 正規化した値を返します。
+				/// @brief 値を符号方向に正規化した値を返します。
 				/// @param x 入力値
-				/// @return 正規化値（0 の場合は 0, それ以外は 1）
+				/// @return x < 0 の場合は -1, x == 0 の場合は 0, x > 0 の場合は 1
 				[[nodiscard]]
 				static constexpr float operator ()(const float x) noexcept
 				{
-					if (x == 0.0f)
+					if (x < 0.0f)
 					{
-						return 0.0f;
+						return -1.0f;
+					}
+					else if (0.0f < x)
+					{
+						return 1.0f;
 					}
 
-					return 1.0f;
+					return 0.0f;
 				}
 
-				/// @brief 正規化した値を返します。
+				/// @brief 値を符号方向に正規化した値を返します。
 				/// @param x 入力値
-				/// @return 正規化値（0 の場合は 0, それ以外は 1）
+				/// @return x < 0 の場合は -1, x == 0 の場合は 0, x > 0 の場合は 1
 				[[nodiscard]]
 				static constexpr double operator ()(const double x) noexcept
 				{
-					if (x == 0.0)
+					if (x < 0.0)
 					{
-						return 0.0;
+						return -1.0;
+					}
+					else if (0.0 < x)
+					{
+						return 1.0;
 					}
 
-					return 1.0;
+					return 0.0;
 				}
 
 				/// @brief 正規化したベクトルを返します。
@@ -4348,7 +4358,7 @@ namespace s3d
 				/// @param min 範囲の最小値
 				/// @param max 範囲の最大値
 				/// @param t 補間パラメータ
-				/// @return 補間ベクトルs
+				/// @return 補間ベクトル
 				[[nodiscard]]
 				static Vec4 operator ()(const Vec4 min, const Vec4 max, const Vec4 t) noexcept
 				{
