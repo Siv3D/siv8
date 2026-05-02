@@ -642,6 +642,11 @@ namespace s3d
 
 	String StringView::trimmed() const
 	{
+		if (m_view.empty())
+		{
+			return {};
+		}
+
 		const char32* start = m_view.data();
 		const char32* end = (start + m_view.size());
 

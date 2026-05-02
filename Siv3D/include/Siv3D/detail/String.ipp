@@ -1324,7 +1324,7 @@ namespace s3d
 			offset = strSize;
 		}
 
-		if ((count == npos) || (strSize < (offset + count)))
+		if ((count == npos) || ((strSize - offset) < count))
 		{
 			count = (strSize - offset);
 		}

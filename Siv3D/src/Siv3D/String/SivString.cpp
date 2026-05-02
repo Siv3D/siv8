@@ -38,12 +38,18 @@ namespace s3d
 
 	String& String::erase_all(const value_type ch) & noexcept
 	{
-		m_string.erase(std::remove(m_string.begin(), m_string.end(), ch), m_string.end());
+		auto result = std::ranges::remove(m_string, ch);
+		m_string.erase(result.begin(), result.end());
 		return *this;
 	}
 
-	String& String::erase_all(const StringView s) & noexcept
+	String& String::erase_all(const StringView s) &
 	{
+		if (s.isEmpty() || (m_string.find(s) == npos))
+		{
+			return *this;
+		}
+
 		return (*this = without(s));
 	}
 
@@ -52,7 +58,7 @@ namespace s3d
 		return std::move(erase_all(ch));
 	}
 
-	String String::erase_all(const StringView s) && noexcept
+	String String::erase_all(const StringView s) &&
 	{
 		return std::move(erase_all(s));
 	}
@@ -186,7 +192,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String& String::leftPad(const size_type length, const value_type fillChar) & noexcept
+	String& String::leftPad(const size_type length, const value_type fillChar) &
 	{
 		if (length <= m_string.size())
 		{
@@ -198,7 +204,7 @@ namespace s3d
 		return *this;
 	}
 
-	String String::leftPad(const size_type length, const value_type fillChar) && noexcept
+	String String::leftPad(const size_type length, const value_type fillChar) &&
 	{
 		return std::move(leftPad(length, fillChar));
 	}
@@ -208,7 +214,7 @@ namespace s3d
 		return StringView{ m_string }.leftPadded(length, fillChar);
 	}
 
-	String String::leftPadded(const size_type length, const value_type fillChar) && noexcept
+	String String::leftPadded(const size_type length, const value_type fillChar) &&
 	{
 		return std::move(leftPad(length, fillChar));
 	}
@@ -252,7 +258,8 @@ namespace s3d
 
 	String& String::leftTrim() & noexcept
 	{
-		m_string.erase(m_string.begin(), std::find_if_not(m_string.begin(), m_string.end(), IsTrimmable));
+		auto it = std::ranges::find_if_not(m_string, IsTrimmable);
+		m_string.erase(m_string.begin(), it);
 		return *this;
 	}
 
@@ -319,7 +326,7 @@ namespace s3d
 
 	String& String::replace(const value_type oldChar, const value_type newChar) & noexcept
 	{
-		std::replace(m_string.begin(), m_string.end(), oldChar, newChar);
+		std::ranges::replace(m_string, oldChar, newChar);
 		return *this;
 	}
 
@@ -403,7 +410,7 @@ namespace s3d
 
 	String& String::reverse() & noexcept
 	{
-		std::reverse(m_string.begin(), m_string.end());
+		std::ranges::reverse(m_string);
 		return *this;
 	}
 
@@ -428,7 +435,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String& String::rightPad(const size_type length, const value_type fillChar) & noexcept
+	String& String::rightPad(const size_type length, const value_type fillChar) &
 	{
 		if (length <= m_string.size())
 		{
@@ -440,7 +447,7 @@ namespace s3d
 		return *this;
 	}
 
-	String String::rightPad(const size_type length, const value_type fillChar) && noexcept
+	String String::rightPad(const size_type length, const value_type fillChar) &&
 	{
 		return std::move(rightPad(length, fillChar));
 	}
@@ -450,7 +457,7 @@ namespace s3d
 		return StringView{ m_string }.rightPadded(length, fillChar);
 	}
 
-	String String::rightPadded(const size_type length, const value_type fillChar) && noexcept
+	String String::rightPadded(const size_type length, const value_type fillChar) &&
 	{
 		return std::move(rightPad(length, fillChar));
 	}
@@ -552,7 +559,7 @@ namespace s3d
 
 	String& String::rsort() & noexcept
 	{
-		std::sort(m_string.begin(), m_string.end(), std::greater<value_type>());
+		std::ranges::sort(m_string, std::greater<value_type>());
 		return *this;
 	}
 
@@ -605,7 +612,7 @@ namespace s3d
 
 	String& String::sort() & noexcept
 	{
-		std::sort(m_string.begin(), m_string.end());
+		std::ranges::sort(m_string);
 		return *this;
 	}
 
@@ -654,6 +661,11 @@ namespace s3d
 
 	std::pair<String, String> String::splitAt(const size_type pos) const
 	{
+		if (m_string.size() <= pos)
+		{
+			return{ *this, String{} };
+		}
+
 		return{ substr(0, pos), substr(pos) };
 	}
 
@@ -789,7 +801,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String& String::stable_unique() & noexcept
+	String& String::stable_unique() &
 	{
 		return (*this = stable_uniqued());
 	}
@@ -812,8 +824,9 @@ namespace s3d
 
 	String& String::sort_and_unique() & noexcept
 	{
-		std::sort(m_string.begin(), m_string.end());
-		m_string.erase(std::unique(m_string.begin(), m_string.end()), m_string.end());
+		std::ranges::sort(m_string);
+		auto result = std::ranges::unique(m_string);
+		m_string.erase(result.begin(), result.end());
 		return *this;
 	}
 
@@ -840,7 +853,8 @@ namespace s3d
 
 	String& String::unique_consecutive() & noexcept
 	{
-		m_string.erase(std::unique(m_string.begin(), m_string.end()), m_string.end());
+		auto result = std::ranges::unique(m_string);
+		m_string.erase(result.begin(), result.end());
 		return *this;
 	}
 
@@ -922,7 +936,7 @@ namespace s3d
 		return StringView{ m_string }.without_at(index);
 	}
 
-	String String::without_at(const size_type index) && noexcept
+	String String::without_at(const size_type index) &&
 	{
 		return std::move(without_at(index));
 	}

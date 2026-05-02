@@ -858,7 +858,7 @@ namespace s3d
 		/// @brief 指定した文字列をもとの文字列から削除します。
 		/// @param s 削除する文字列
 		/// @return *this
-		String& erase_all(StringView s) & noexcept SIV3D_LIFETIMEBOUND;
+		String& erase_all(StringView s) & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
 		/// @param ch 削除する文字
@@ -870,7 +870,7 @@ namespace s3d
 		/// @param s 削除する文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String erase_all(StringView s) && noexcept;
+		String erase_all(StringView s) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1950,7 +1950,7 @@ namespace s3d
 		/// @param fillChar 埋め文字
 		/// @remark 元の文字列の長さが `length` より大きい場合、変更は行われません。 
 		/// @return *this
-		String& leftPad(size_type length, value_type fillChar = U' ') & noexcept SIV3D_LIFETIMEBOUND;
+		String& leftPad(size_type length, value_type fillChar = U' ') & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の左を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の左を埋め文字で埋めた後の文字列の長さ
@@ -1958,7 +1958,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String leftPad(size_type length, value_type fillChar = U' ') && noexcept;
+		String leftPad(size_type length, value_type fillChar = U' ') &&;
 
 		/// @brief 文字列の左を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の左を埋め文字で埋めた後の文字列の長さ
@@ -1974,7 +1974,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String leftPadded(size_type length, value_type fillChar = U' ') && noexcept;
+		String leftPadded(size_type length, value_type fillChar = U' ') &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2372,7 +2372,7 @@ namespace s3d
 		/// @param fillChar 埋め文字
 		/// @remark 元の文字列の長さが `length` より大きい場合、変更は行われません。 
 		/// @return *this
-		String& rightPad(size_type length, value_type fillChar = U' ') & noexcept SIV3D_LIFETIMEBOUND;
+		String& rightPad(size_type length, value_type fillChar = U' ') & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の右を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の右を埋め文字で埋めた後の文字列の長さ
@@ -2380,7 +2380,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String rightPad(size_type length, value_type fillChar = U' ') && noexcept;
+		String rightPad(size_type length, value_type fillChar = U' ') &&;
 
 		/// @brief 文字列の右を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の右を埋め文字で埋めた後の文字列の長さ
@@ -2396,7 +2396,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String rightPadded(size_type length, value_type fillChar = U' ') && noexcept;
+		String rightPadded(size_type length, value_type fillChar = U' ') &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2838,7 +2838,7 @@ namespace s3d
 		
 		/// @brief 文字列をソートせずに、重複する文字を削除します。
 		/// @return *this
-		String& stable_unique() & noexcept SIV3D_LIFETIMEBOUND;
+		String& stable_unique() & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2921,17 +2921,17 @@ namespace s3d
 
 		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
 		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
 		/// @return 新しい文字列
+		/// @throws std::out_of_range index が文字列の長さ以上の場合
 		[[nodiscard]]
 		String without_at(size_type index) const&;
 
 		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
 		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
 		/// @return 新しい文字列
+		/// @throws std::out_of_range index が文字列の長さ以上の場合
 		[[nodiscard]]
-		String without_at(size_type index) && noexcept;
+		String without_at(size_type index) &&;
 
 		////////////////////////////////////////////////////////////////
 		//

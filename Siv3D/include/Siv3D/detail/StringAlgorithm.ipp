@@ -524,6 +524,6 @@ namespace s3d
 	constexpr String String::without_if(Fty f) && noexcept
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::move(erase_if(std::forward<Fty>(f)));
+		return std::move(erase_all_if(std::forward<Fty>(f)));
 	}
 }

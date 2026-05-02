@@ -377,6 +377,11 @@ namespace s3d
 			ThrowSubstrOutOfRange();
 		}
 
+		if (pos == m_view.size())
+		{
+			return {};
+		}
+
 		return StringView{ (m_view.data() + pos), Min(n, (m_view.size() - pos)) };
 	}
 
