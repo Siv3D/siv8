@@ -19,6 +19,9 @@ namespace s3d
 		void ThrowArrayEraseAtIndexOutOfRange();
 
 		[[noreturn]]
+		void ThrowArrayEraseAtUnstableIndexOutOfRange();
+
+		[[noreturn]]
 		void ThrowArrayWithoutAtIndexOutOfRange();
 
 		[[noreturn]]
@@ -724,6 +727,133 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::erase_at(const size_type index)&&
 	{
 		return std::move(erase_at(index));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_at_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::erase_at_unstable(const size_type index)&
+	{
+		if (m_container.size() <= index)
+		{
+			detail::ThrowArrayEraseAtUnstableIndexOutOfRange();
+		}
+
+		if (const size_type lastIndex = (m_container.size() - 1); 
+			index != lastIndex)
+		{
+			std::ranges::iter_swap((m_container.begin() + index), (m_container.begin() + lastIndex));
+		}
+
+		m_container.pop_back();
+
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::erase_at_unstable(const size_type index)&&
+	{
+		return std::move(erase_at_unstable(index));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all(const value_type& value)
+	{
+		return std::erase(m_container, value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all_unstable(const value_type& value)
+	{
+		size_type count = 0;
+
+		for (size_type i = 0; i < m_container.size();)
+		{
+			if (m_container[i] == value)
+			{
+				if (const size_type lastIndex = (m_container.size() - 1);
+					i != lastIndex)
+				{
+					std::ranges::iter_swap((m_container.begin() + i), (m_container.begin() + lastIndex));
+				}
+
+				m_container.pop_back();
+				++count;
+			}
+			else
+			{
+				++i;
+			}
+		}
+
+		return count;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all_if_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all_if_unstable(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		size_type count = 0;
+
+		auto pred = detail::PassFunction(std::forward<Fty>(f));
+
+		for (size_type i = 0; i < m_container.size();)
+		{
+			if (pred(m_container[i]))
+			{
+				if (const size_type lastIndex = (m_container.size() - 1);
+					i != lastIndex)
+				{
+					std::ranges::iter_swap(m_container.begin() + i, m_container.begin() + lastIndex);
+				}
+
+				m_container.pop_back();
+				++count;
+			}
+			else
+			{
+				++i;
+			}
+		}
+
+		return count;
 	}
 
 	////////////////////////////////////////////////////////////////

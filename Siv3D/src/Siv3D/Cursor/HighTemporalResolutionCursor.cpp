@@ -29,7 +29,7 @@ namespace s3d
 		const int64 timePoint = (currentTime - deltaTimeMicrosec);
 
 		std::lock_guard lock{ m_mutex };
-		m_buffer.remove_if([timePoint](const auto& data) { return (data.first < timePoint); });
+		m_buffer.erase_all_if([timePoint](const auto& data) { return (data.first < timePoint); });
 	}
 
 	Array<std::pair<int64, Point>> HighTemporalResolutionCursor::get() const

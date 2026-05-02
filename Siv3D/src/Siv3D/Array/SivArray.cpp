@@ -21,6 +21,11 @@ namespace s3d
 			throw std::out_of_range{ "Array::erase_at(): index out of range" };
 		}
 
+		void ThrowArrayEraseAtUnstableIndexOutOfRange()
+		{
+			throw std::out_of_range{ "Array::erase_at_unstable(): index out of range" };
+		}
+
 		void ThrowArrayWithoutAtIndexOutOfRange()
 		{
 			throw std::out_of_range{ "Array::without_at(): index out of range" };

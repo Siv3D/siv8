@@ -247,7 +247,7 @@ namespace s3d
 
 		// エフェクトの実行・不要なエフェクトの削除
 		{
-			m_effects.remove_if([&](const auto& effect)
+			m_effects.erase_all_if([&](const auto& effect)
 			{
 				if (m_maxLifeTimeSec <= effect.elapsedTimeSec)
 				{

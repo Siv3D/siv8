@@ -39,18 +39,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	erase_all
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all(const value_type& value)
-	{
-		return std::erase(m_container, value);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	erase_first
 	//
 	////////////////////////////////////////////////////////////////
@@ -72,16 +60,31 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	erase_all_if
+	//	erase_first_unstable
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	template <class Fty>
-	constexpr typename Array<Type, Allocator>::size_type Array<Type, Allocator>::erase_all_if(Fty f)
-		requires std::predicate<Fty&, const value_type&>
+	constexpr bool Array<Type, Allocator>::erase_first_unstable(const value_type& value)
 	{
-		return std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		if (const auto it = std::ranges::find(m_container, value);
+			it != m_container.end())
+		{
+			const auto last = (m_container.end() - 1);
+
+			if (it != last)
+			{
+				std::ranges::iter_swap(it, last);
+			}
+
+			m_container.pop_back();
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -99,6 +102,37 @@ namespace s3d
 			it != m_container.end())
 		{
 			m_container.erase(it);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_if_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::erase_first_if_unstable(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			it != m_container.end())
+		{
+			const auto last = (m_container.end() - 1);
+
+			if (it != last)
+			{
+				std::ranges::iter_swap(it, last);
+			}
+
+			m_container.pop_back();
+
 			return true;
 		}
 		else

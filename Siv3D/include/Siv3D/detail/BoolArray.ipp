@@ -1109,10 +1109,50 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_at_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。削除後の要素の順序は保証されません。
+		/// @param index インデックス
+		/// @return *this
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr Array& erase_at_unstable(size_type index)& SIV3D_LIFETIMEBOUND
+		{
+			if (m_container.size() <= index)
+			{
+				detail::ThrowArrayEraseAtUnstableIndexOutOfRange();
+			}
+
+			if (const size_type lastIndex = (m_container.size() - 1);
+				index != lastIndex)
+			{
+				std::ranges::swap(m_container[index], m_container[lastIndex]);
+			}
+
+			m_container.pop_back();
+
+			return *this;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。削除後の要素の順序は保証されません。
+		/// @param index インデックス
+		/// @return 新しい配列
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr Array erase_at_unstable(size_type index)&&
+		{
+			return std::move(erase_at_unstable(index));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	erase_all
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した値と等しい要素をすべて削除します。
+		/// @param value 値
+		/// @return 削除した要素の個数
 		constexpr size_type erase_all(const value_type value)
 		{
 			const size_type erasedCount = static_cast<size_type>(std::ranges::count(m_container, value));
@@ -1122,10 +1162,49 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_all_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素をすべて削除します。削除後の要素の順序は保証されません。
+		/// @param value 値
+		/// @return 削除した要素の個数
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr size_type erase_all_unstable(const value_type value)
+		{
+			size_type count = 0;
+
+			for (size_type i = 0; i < m_container.size();)
+			{
+				if (m_container[i] == value)
+				{
+					if (const size_type lastIndex = (m_container.size() - 1);
+						i != lastIndex)
+					{
+						std::ranges::iter_swap((m_container.begin() + i), (m_container.begin() + lastIndex));
+					}
+
+					m_container.pop_back();
+					++count;
+				}
+				else
+				{
+					++i;
+				}
+			}
+
+			return count;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	erase_first
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 先頭から見て、最初に指定した値と等しい要素を削除します。
+		/// @param value 値
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
 		constexpr bool erase_first(const value_type value)
 		{
 			if (const auto it = std::ranges::find(m_container, value);
@@ -1142,10 +1221,46 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_first_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した値と等しい要素を削除します。削除後の要素の順序は保証されません。
+		/// @param value 値
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr bool erase_first_unstable(const value_type value)
+		{
+			if (const auto it = std::ranges::find(m_container, value);
+				it != m_container.end())
+			{
+				const auto last = (m_container.end() - 1);
+
+				if (it != last)
+				{
+					std::ranges::iter_swap(it, last);
+				}
+
+				m_container.pop_back();
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	erase_all_if
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した条件を満たす要素をすべて削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除した要素の個数
 		template <class Fty>
 		constexpr size_type erase_all_if(Fty f)
 		{
@@ -1154,10 +1269,54 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_all_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素をすべて削除します。削除後の要素の順序は保証されません。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除した要素の個数
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		template <class Fty>
+		constexpr size_type erase_all_if_unstable(Fty f)
+		{
+			size_type count = 0;
+
+			auto pred = detail::PassFunction(std::forward<Fty>(f));
+
+			for (size_type i = 0; i < m_container.size();)
+			{
+				if (pred(m_container[i]))
+				{
+					if (const size_type lastIndex = (m_container.size() - 1);
+						i != lastIndex)
+					{
+						std::ranges::iter_swap(m_container.begin() + i, m_container.begin() + lastIndex);
+					}
+
+					m_container.pop_back();
+					++count;
+				}
+				else
+				{
+					++i;
+				}
+			}
+
+			return count;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	erase_first_if
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 先頭から見て、最初に指定した条件を満たす要素を削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
 		template <class Fty>
 		constexpr bool erase_first_if(Fty f)
 		{
@@ -1165,6 +1324,40 @@ namespace s3d
 				it != m_container.end())
 			{
 				m_container.erase(it);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した条件を満たす要素を削除します。削除後の要素の順序は保証されません。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		template <class Fty>
+		constexpr bool erase_first_if_unstable(Fty f)
+		{
+			if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+				it != m_container.end())
+			{
+				const auto last = (m_container.end() - 1);
+
+				if (it != last)
+				{
+					std::ranges::iter_swap(it, last);
+				}
+
+				m_container.pop_back();
+
 				return true;
 			}
 			else
