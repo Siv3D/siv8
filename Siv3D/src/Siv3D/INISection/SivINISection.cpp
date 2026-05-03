@@ -21,7 +21,7 @@ namespace s3d
 		[[noreturn]]
 		static void ThrowGetProperty(const StringView section, const StringView key)
 		{
-			throw Error{ fmt::format("INISection::operator []: Section `{}` does not contain the key `{}`", section, key) };
+			throw Error{ fmt::format("INISection::operator []: Section `{}` does not contain the key `{}`", section.toUTF8(), key.toUTF8()) };
 		}
 	}
 
@@ -29,7 +29,7 @@ namespace s3d
 	{
 		void ThrowINISectionGetError(const char* type, const StringView section, const StringView key)
 		{
-			throw Error{ fmt::format("INI[{}]::get<{}>({}) failed", DemangleUTF8(type), section, key) };
+			throw Error{ fmt::format("INI[{}]::get<{}>({}) failed", DemangleUTF8(type), section.toUTF8(), key.toUTF8()) };
 		}
 	}
 

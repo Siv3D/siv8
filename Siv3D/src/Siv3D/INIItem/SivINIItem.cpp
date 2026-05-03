@@ -19,7 +19,7 @@ namespace s3d
 	{
 		void ThrowINIItemParseError(const char* type, const StringView value)
 		{
-			throw Error{ fmt::format("INIItem::get<{}>(): Failed to parse value `{}`", DemangleUTF8(type), value) };
+			throw Error{ fmt::format("INIItem::get<{}>(): Failed to parse value `{}`", DemangleUTF8(type), value.toUTF8()) };
 		}
 	}
 }

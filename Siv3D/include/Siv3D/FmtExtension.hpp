@@ -27,9 +27,9 @@ struct fmt::formatter<s3d::StringView>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::StringView value, format_context& ctx)
+	format_context::iterator format(const s3d::StringView value, format_context& ctx) const
 	{
-		return s3d::FmtHelper::FormatString(ctx, std::move(tag), value);
+		return s3d::FmtHelper::FormatString(ctx, tag, value);
 	}
 };
 
@@ -49,9 +49,9 @@ struct fmt::formatter<s3d::String>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::String& value, format_context& ctx)
+	format_context::iterator format(const s3d::String& value, format_context& ctx) const
 	{
-		return s3d::FmtHelper::FormatString(ctx, std::move(tag), value);
+		return s3d::FmtHelper::FormatString(ctx, tag, value);
 	}
 };
 
@@ -68,7 +68,7 @@ struct fmt::formatter<s3d::StringView, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(s3d::StringView value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(s3d::StringView value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ struct fmt::formatter<s3d::String, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::String& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::String& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////
@@ -93,21 +93,21 @@ struct fmt::formatter<s3d::String, s3d::char32>
 //
 ////////////////////////////////////////////////////////////////
 
-template <class Type>
-struct fmt::formatter<std::span<const Type>, s3d::char32>
-{
-	std::u32string tag;
-
-	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx)
-	{
-		return s3d::FmtHelper::GetFormatTag(tag, ctx);
-	}
-
-	s3d::BufferContext::iterator format(const std::span<Type> v, s3d::BufferContext& ctx)
-	{
-		return s3d::FmtHelper::FormatSequence(tag, v, ctx);
-	}
-};
+//template <class Type>
+//struct fmt::formatter<std::span<const Type>, s3d::char32>
+//{
+//	std::u32string tag;
+//
+//	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx)
+//	{
+//		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+//	}
+//
+//	s3d::BufferContext::iterator format(const std::span<Type> v, s3d::BufferContext& ctx) const
+//	{
+//		return s3d::FmtHelper::FormatSequence(tag, v, ctx);
+//	}
+//};
 
 ////////////////////////////////////////////////////////////////
 //
@@ -115,21 +115,21 @@ struct fmt::formatter<std::span<const Type>, s3d::char32>
 //
 ////////////////////////////////////////////////////////////////
 
-template <class Type, size_t N>
-struct fmt::formatter<std::array<Type, N>, s3d::char32>
-{
-	std::u32string tag;
-
-	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx)
-	{
-		return s3d::FmtHelper::GetFormatTag(tag, ctx);
-	}
-
-	s3d::BufferContext::iterator format(const std::array<Type, N>& v, s3d::BufferContext& ctx)
-	{
-		return s3d::FmtHelper::FormatSequence(tag, std::span<const Type>(v), ctx);
-	}
-};
+//template <class Type, size_t N>
+//struct fmt::formatter<std::array<Type, N>, s3d::char32>
+//{
+//	std::u32string tag;
+//
+//	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx)
+//	{
+//		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+//	}
+//
+//	s3d::BufferContext::iterator format(const std::array<Type, N>& v, s3d::BufferContext& ctx) const
+//	{
+//		return s3d::FmtHelper::FormatSequence(tag, std::span<const Type>(v), ctx);
+//	}
+//};
 
 ////////////////////////////////////////////////////////////////
 //
@@ -137,21 +137,21 @@ struct fmt::formatter<std::array<Type, N>, s3d::char32>
 //
 ////////////////////////////////////////////////////////////////
 
-template <class Type, class Allocator>
-struct fmt::formatter<s3d::Array<Type, Allocator>, s3d::char32>
-{
-	std::u32string tag;
-
-	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx)
-	{
-		return s3d::FmtHelper::GetFormatTag(tag, ctx);
-	}
-
-	s3d::BufferContext::iterator format(const s3d::Array<Type, Allocator>& v, s3d::BufferContext& ctx)
-	{
-		return s3d::FmtHelper::FormatSequence(tag, std::span(v), ctx);
-	}
-};
+//template <class Type, class Allocator>
+//struct fmt::formatter<s3d::Array<Type, Allocator>, s3d::char32>
+//{
+//	std::u32string tag;
+//
+//	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx)
+//	{
+//		return s3d::FmtHelper::GetFormatTag(tag, ctx);
+//	}
+//
+//	s3d::BufferContext::iterator format(const s3d::Array<Type, Allocator>& v, s3d::BufferContext& ctx) const
+//	{
+//		return s3d::FmtHelper::FormatSequence(tag, std::span(v), ctx);
+//	}
+//};
 
 ////////////////////////////////////////////////////////////////
 //
@@ -173,8 +173,8 @@ struct fmt::formatter<Type, s3d::char32>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	s3d::BufferContext::iterator format(const Type& value, s3d::BufferContext& ctx)
+	s3d::BufferContext::iterator format(const Type& value, s3d::BufferContext& ctx) const
 	{
-		return s3d::FmtHelper::FormatString(ctx, std::move(tag), s3d::Format(value));
+		return s3d::FmtHelper::FormatString(ctx, tag, s3d::Format(value));
 	}
 };

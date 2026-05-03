@@ -46,7 +46,7 @@ namespace s3d
 
 	bool MemoryMappedFileView::MemoryMappedFileViewDetail::open(const FilePathView path)
 	{
-		LOG_DEBUG(fmt::format("MemoryMappedFileView::MemoryMappedFileViewDetail::open(\"{0}\")", path));
+		LOG_DEBUG(fmt::format("MemoryMappedFileView::MemoryMappedFileViewDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
 
@@ -64,7 +64,7 @@ namespace s3d
 
 			if (not hrs)
 			{
-				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open resource \"{0}\"", path));
+				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open resource \"{0}\"", path.toUTF8()));
 				return false;
 			}
 
@@ -72,7 +72,7 @@ namespace s3d
 
 			if (not pResource)
 			{
-				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to load resource \"{0}\"", path));
+				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to load resource \"{0}\"", path.toUTF8()));
 				return false;
 			}
 
@@ -98,7 +98,7 @@ namespace s3d
 
 			if (fileHandle == INVALID_HANDLE_VALUE)
 			{
-				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open file `{0}`", path));
+				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open file `{0}`", path.toUTF8()));
 				return false;
 			}
 

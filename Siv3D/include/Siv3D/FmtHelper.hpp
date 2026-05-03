@@ -35,9 +35,9 @@ namespace s3d
 
 		ParseContext::iterator GetFormatTag(std::u32string& representation, ParseContext& parseContext);
 
-		fmt::format_context::iterator FormatString(fmt::format_context& ctx, std::string&& tag, const s3d::StringView value);
+		fmt::format_context::iterator FormatString(fmt::format_context& ctx, const std::string& tag, const s3d::StringView value);
 
-		BufferContext::iterator FormatString(BufferContext& ctx, std::u32string&& tag, const s3d::StringView value);
+		BufferContext::iterator FormatString(BufferContext& ctx, const std::u32string& tag, const s3d::StringView value);
 
 		template <class Type>
 		auto FormatSequence(const std::u32string& tag, const std::span<Type> sequence, auto& ctx);

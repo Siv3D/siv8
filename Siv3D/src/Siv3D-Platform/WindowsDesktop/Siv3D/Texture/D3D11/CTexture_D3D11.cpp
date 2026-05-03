@@ -52,11 +52,11 @@ namespace s3d
 				if (UINT quality = 0; SUCCEEDED(device->CheckMultisampleQualityLevels(format, 4, &quality)) && (0 < quality))
 				{
 					multiSampleSupportTable[i] = true;
-					logText += fmt::format("{} ✔\n", name);
+					logText += fmt::format("{} ✔\n", name.toUTF8());
 				}
 				else
 				{
-					logText += fmt::format("{} ✘\n", name);
+					logText += fmt::format("{} ✘\n", name.toUTF8());
 				}
 			}
 

@@ -869,7 +869,7 @@ namespace s3d
 		{
 			if (allowExceptions)
 			{
-				throw Error{ fmt::format("JSON::load(): failed to open `{}`", path) };
+				throw Error{ fmt::format("JSON::load(): failed to open `{}`", path.toUTF8()) };
 			}
 
 			return JSON::Invalid();

@@ -71,13 +71,13 @@ namespace s3d
 			if (isError) // エラーの場合
 			{
 				logMessage = U"Error (E{}) | {}\nFor more information, see: {}"_fmt(number, messageBody, url);
-				displayMessage = fmt::format("Error | E{}\n\n{}\n\n{}", number, messageBody, messageFooter);
+				displayMessage = fmt::format("Error | E{}\n\n{}\n\n{}", number, messageBody.toUTF8(), messageFooter.toUTF8());
 				LOG_ERROR(logMessage);
 			}
 			else // 警告の場合
 			{
 				logMessage = U"Warning (W{}) | {}\nFor more information, see: {}"_fmt(number, messageBody, url);
-				displayMessage = fmt::format("Warning | W{}\n\n{}\n\n{}", number, messageBody, messageFooter);
+				displayMessage = fmt::format("Warning | W{}\n\n{}\n\n{}", number, messageBody.toUTF8(), messageFooter.toUTF8());
 				LOG_WARN(logMessage);
 			}
 

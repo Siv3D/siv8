@@ -494,7 +494,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Ellipse>::format(const s3d::Ellipse& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Ellipse>::format(const s3d::Ellipse& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -513,7 +513,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::parse(s3d
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::format(const s3d::Ellipse& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::format(const s3d::Ellipse& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

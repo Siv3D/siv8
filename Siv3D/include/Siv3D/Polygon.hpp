@@ -1179,7 +1179,7 @@ struct fmt::formatter<s3d::Polygon, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Polygon& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Polygon& value, s3d::BufferContext& ctx) const;
 };
 
 # include "detail/Polygon.ipp"

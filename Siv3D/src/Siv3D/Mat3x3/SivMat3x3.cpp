@@ -145,7 +145,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Mat3x3, s3d::char32>::parse(s3d:
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Mat3x3, s3d::char32>::format(const s3d::Mat3x3& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Mat3x3, s3d::char32>::format(const s3d::Mat3x3& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

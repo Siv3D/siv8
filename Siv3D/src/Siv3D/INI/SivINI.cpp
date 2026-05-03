@@ -25,7 +25,7 @@ namespace s3d
 		[[noreturn]]
 		static void ThrowGetSection(const StringView section)
 		{
-			throw Error{ fmt::format("INI::getSection(): Section `{}` not found", section) };
+			throw Error{ fmt::format("INI::getSection(): Section `{}` not found", section.toUTF8()) };
 		}
 	}
 
@@ -33,7 +33,7 @@ namespace s3d
 	{
 		void ThrowINIGetError(const char* type, const StringView section, const StringView key)
 		{
-			throw Error{ fmt::format("INI::get<{}>({}, {}) failed", DemangleUTF8(type), section, key) };
+			throw Error{ fmt::format("INI::get<{}>({}, {}) failed", DemangleUTF8(type), section.toUTF8(), key.toUTF8()) };
 		}
 	}
 
@@ -509,7 +509,7 @@ namespace s3d
 
 		if (not textReader)
 		{
-			throw Error{ fmt::format("INI::Load(): Failed to open file `{}`", path) };
+			throw Error{ fmt::format("INI::Load(): Failed to open file `{}`", path.toUTF8()) };
 		}
 
 		return Parse(textReader.readAll());

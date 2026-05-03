@@ -75,7 +75,7 @@ namespace s3d
 
 		if (not writer->open(path))
 		{
-			LOG_FAIL(fmt::format("❌ AACEncoder::save(): Failed to open the file: {}", path));
+			LOG_FAIL(fmt::format("❌ AACEncoder::save(): Failed to open the file: {}", path.toUTF8()));
 			return false;
 		}
 

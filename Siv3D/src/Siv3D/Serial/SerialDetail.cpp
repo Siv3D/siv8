@@ -32,7 +32,7 @@ namespace s3d
 		}
 		catch (const serial_cpp::IOException& e)
 		{
-			LOG_FAIL(fmt::format("❌ Failed to open Serial `{0}`. {1}", port, e.what()));
+			LOG_FAIL(fmt::format("❌ Failed to open Serial `{0}`. {1}", port.toUTF8(), e.what()));
 			return false;
 		}
 

@@ -76,7 +76,7 @@ namespace s3d
 
 		if (exists) // すでに登録されている場合は失敗
 		{
-			LOG_FAIL(fmt::format("❌ AudioEncoder: {} is already registered", name));
+			LOG_FAIL(fmt::format("❌ AudioEncoder: {} is already registered", name.toUTF8()));
 
 			return false;
 		}
@@ -84,7 +84,7 @@ namespace s3d
 		{
 			m_encoders.push_back(std::move(encoder));
 
-			LOG_INFO(fmt::format("🆕 AudioEncoder: {} has been registered", name));
+			LOG_INFO(fmt::format("🆕 AudioEncoder: {} has been registered", name.toUTF8()));
 
 			return true;
 		}
@@ -104,11 +104,11 @@ namespace s3d
 		{
 			m_encoders.erase(it);
 
-			LOG_INFO(fmt::format("🗑️ AudioEncoder: {} has been removed", encoderName));
+			LOG_INFO(fmt::format("🗑️ AudioEncoder: {} has been removed", encoderName.toUTF8()));
 		}
 		else
 		{
-			LOG_DEBUG(fmt::format("AudioEncoder: {} not found", encoderName));
+			LOG_DEBUG(fmt::format("AudioEncoder: {} not found", encoderName.toUTF8()));
 		}
 	}
 
@@ -155,7 +155,7 @@ namespace s3d
 
 	bool CAudioEncoder::save(const Wave& wave, const StringView encoderName, const FilePathView path) const
 	{
-		LOG_SCOPED_DEBUG(fmt::format("CAudioEncoder::save({}, {})", encoderName, path));
+		LOG_SCOPED_DEBUG(fmt::format("CAudioEncoder::save({}, {})", encoderName.toUTF8(), path.toUTF8()));
 
 		const auto it = FindEncoderByName(m_encoders, encoderName);
 
@@ -175,7 +175,7 @@ namespace s3d
 
 	bool CAudioEncoder::encode(const Wave& wave, const StringView encoderName, IWriter& writer) const
 	{
-		LOG_SCOPED_DEBUG(fmt::format("CAudioEncoder::encode({})", encoderName));
+		LOG_SCOPED_DEBUG(fmt::format("CAudioEncoder::encode({})", encoderName.toUTF8()));
 
 		const auto it = FindEncoderByName(m_encoders, encoderName);
 
@@ -189,7 +189,7 @@ namespace s3d
 
 	Blob CAudioEncoder::encode(const Wave& wave, const StringView encoderName) const
 	{
-		LOG_SCOPED_DEBUG(fmt::format("CAudioEncoder::encode({})", encoderName));
+		LOG_SCOPED_DEBUG(fmt::format("CAudioEncoder::encode({})", encoderName.toUTF8()));
 
 		const auto it = FindEncoderByName(m_encoders, encoderName);
 

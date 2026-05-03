@@ -136,7 +136,7 @@ namespace s3d
 
 		if (exists) // すでに登録されている場合は失敗
 		{
-			LOG_FAIL(fmt::format("❌ ImageDecoder: {} is already registered", name));
+			LOG_FAIL(fmt::format("❌ ImageDecoder: {} is already registered", name.toUTF8()));
 			
 			return false;
 		}
@@ -144,7 +144,7 @@ namespace s3d
 		{
 			m_decoders.push_back(std::move(decoder));
 
-			LOG_INFO(fmt::format("🆕 ImageDecoder: {} has been registered", name));
+			LOG_INFO(fmt::format("🆕 ImageDecoder: {} has been registered", name.toUTF8()));
 
 			return true;
 		}
@@ -164,11 +164,11 @@ namespace s3d
 		{
 			m_decoders.erase(it);
 
-			LOG_INFO(fmt::format("🗑️ ImageDecoder: {} has been removed", decoderName));
+			LOG_INFO(fmt::format("🗑️ ImageDecoder: {} has been removed", decoderName.toUTF8()));
 		}
 		else
 		{
-			LOG_DEBUG(fmt::format("ImageDecoder: {} not found", decoderName));
+			LOG_DEBUG(fmt::format("ImageDecoder: {} not found", decoderName.toUTF8()));
 		}
 	}
 
@@ -200,7 +200,7 @@ namespace s3d
 			return{};
 		}
 
-		LOG_TRACE(fmt::format("Image decoder name: {}", (*it)->name()));
+		LOG_TRACE(fmt::format("Image decoder name: {}", (*it)->name().toUTF8()));
 
 		return (*it)->getImageInfo(reader, pathHint);
 	}
@@ -222,7 +222,7 @@ namespace s3d
 			return{};
 		}
 
-		LOG_TRACE(fmt::format("Image decoder name: {}", (*it)->name()));
+		LOG_TRACE(fmt::format("Image decoder name: {}", (*it)->name().toUTF8()));
 
 		return (*it)->decode(std::move(reader), pathHint, premultiplyAlpha);
 	}
@@ -244,7 +244,7 @@ namespace s3d
 			return{};
 		}
 
-		LOG_TRACE(fmt::format("Image decoder name: {}", (*it)->name()));
+		LOG_TRACE(fmt::format("Image decoder name: {}", (*it)->name().toUTF8()));
 
 		return (*it)->decodeGray16(std::move(reader), pathHint);
 	}

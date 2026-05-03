@@ -1538,7 +1538,7 @@ struct fmt::formatter<s3d::LineString, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::LineString& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::LineString& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

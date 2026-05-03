@@ -1156,7 +1156,7 @@ struct fmt::formatter<s3d::Line>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Line& value, format_context& ctx);
+	format_context::iterator format(const s3d::Line& value, format_context& ctx) const;
 };
 
 template <>
@@ -1166,7 +1166,7 @@ struct fmt::formatter<s3d::Line, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Line& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Line& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

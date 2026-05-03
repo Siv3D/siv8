@@ -108,7 +108,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Float2>::format(const s3d::Float2& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Float2>::format(const s3d::Float2& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -122,7 +122,7 @@ fmt::format_context::iterator fmt::formatter<s3d::Float2>::format(const s3d::Flo
 	}
 }
 
-fmt::format_context::iterator fmt::formatter<s3d::Vec2>::format(const s3d::Vec2& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Vec2>::format(const s3d::Vec2& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -141,7 +141,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Float2, s3d::char32>::parse(s3d:
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Float2, s3d::char32>::format(const s3d::Float2& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Float2, s3d::char32>::format(const s3d::Float2& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{
@@ -160,7 +160,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Vec2, s3d::char32>::parse(s3d::P
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Vec2, s3d::char32>::format(const s3d::Vec2& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Vec2, s3d::char32>::format(const s3d::Vec2& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{
