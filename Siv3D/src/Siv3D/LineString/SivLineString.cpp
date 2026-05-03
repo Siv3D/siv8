@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -409,7 +409,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			color.toFloat4());
@@ -420,7 +420,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			colorStart.toFloat4(),
 			colorEnd.toFloat4());
@@ -431,7 +431,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			pattern);
@@ -457,7 +457,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, double thickness, std::span<const ColorF> colors) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			colors);
@@ -484,7 +484,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			color.toFloat4());
@@ -495,7 +495,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			pattern);
@@ -511,7 +511,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const std::span<const ColorF> colors) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			colors);

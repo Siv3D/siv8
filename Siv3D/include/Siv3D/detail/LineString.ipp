@@ -820,6 +820,126 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	all
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::all(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.all(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	any
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::any(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.any(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool LineString::contains(const value_type& value) const
+	{
+		return m_points.contains(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::contains_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.contains_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr isize LineString::count(const value_type& value) const
+	{
+		return m_points.count(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr isize LineString::count_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.count_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fetch
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class U>
+	constexpr LineString::value_type LineString::fetch(const size_type index, U&& defaultValue) const
+		noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+		requires std::constructible_from<value_type, U>
+	{
+		return m_points.fetch(index, std::forward<U>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	indexOf
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Optional<size_t> LineString::indexOf(const value_type& value) const
+	{
+		if (const auto it = std::ranges::find(m_points, value);
+			it != m_points.end())
+		{
+			return std::ranges::distance(m_points.begin(), it);
+		}
+		else
+		{
+			return s3d::none;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	none
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::none(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.none(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	hash
 	//
 	////////////////////////////////////////////////////////////////
