@@ -27,7 +27,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	using BufferContext = fmt::buffer_context<s3d::char32>;
+	using BufferContext = fmt::buffered_context<s3d::char32>;
 
 	namespace FmtHelper
 	{
