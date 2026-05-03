@@ -9,7 +9,7 @@
 /*                                                                         */
 /*  This file is part of the FreeType project, and may only be used,       */
 /*  modified, and distributed under the terms of the FreeType project      */
-/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
+/*  license, FTL.TXT.  By continuing to use, modify, or distribute     */
 /*  this file you indicate that you have read the license and              */
 /*  understand and accept it fully.                                        */
 /*                                                                         */
@@ -176,6 +176,9 @@ PVG_FT_END_STMNT
 
     PVG_FT_Outline  outline;
     PVG_FT_BBox     clip_box;
+
+    int clip_flags;
+    int clipping;
 
     PVG_FT_Span     gray_spans[PVG_FT_MAX_GRAY_SPANS];
     int         num_gray_spans;
@@ -492,39 +495,38 @@ PVG_FT_END_STMNT
   /* Render a given line as a series of scanlines.                         */
   /*                                                                       */
   static void
-  gray_render_line( RAS_ARG_ TPos  to_x,
-                             TPos  to_y )
+  gray_render_line( RAS_ARG_ TPos from_x, TPos from_y, TPos  to_x, TPos  to_y )
   {
     TCoord  ey1, ey2, fy1, fy2, first, delta, mod;
     TPos    p, dx, dy, x, x2;
     int     incr;
 
-    ey1 = TRUNC( ras.y );
+    ey1 = TRUNC( from_y );
     ey2 = TRUNC( to_y );     /* if (ey2 >= ras.max_ey) ey2 = ras.max_ey-1; */
 
     /* perform vertical clipping */
     if ( ( ey1 >= ras.max_ey && ey2 >= ras.max_ey ) ||
          ( ey1 <  ras.min_ey && ey2 <  ras.min_ey ) )
-      goto End;
+      return;
 
-    fy1 = FRACT( ras.y );
+    fy1 = FRACT( from_y );
     fy2 = FRACT( to_y );
 
     /* everything is on a single scanline */
     if ( ey1 == ey2 )
     {
-      gray_render_scanline( RAS_VAR_ ey1, ras.x, fy1, to_x, fy2 );
-      goto End;
+      gray_render_scanline( RAS_VAR_ ey1, from_x, fy1, to_x, fy2 );
+      return;
     }
 
-    dx = to_x - ras.x;
-    dy = to_y - ras.y;
+    dx = to_x - from_x;
+    dy = to_y - from_y;
 
     /* vertical line - avoid calling gray_render_scanline */
     if ( dx == 0 )
     {
-      TCoord  ex     = TRUNC( ras.x );
-      TCoord  two_fx = FRACT( ras.x ) << 1;
+      TCoord  ex     = TRUNC( from_x );
+      TCoord  two_fx = FRACT( from_x ) << 1;
       TPos    area, max_ey1;
 
 
@@ -590,7 +592,7 @@ PVG_FT_END_STMNT
       ras.area  += (TArea)two_fx * delta;
       ras.cover += delta;
 
-      goto End;
+      return;
     }
 
     /* ok, we have to render several scanlines */
@@ -612,8 +614,8 @@ PVG_FT_END_STMNT
     /* keep track of its accumulation for accurate rendering.       */
     PVG_FT_DIV_MOD( TCoord, p, dy, delta, mod );
 
-    x = ras.x + delta;
-    gray_render_scanline( RAS_VAR_ ey1, ras.x, fy1, x, (TCoord)first );
+    x = from_x + delta;
+    gray_render_scanline( RAS_VAR_ ey1, from_x, fy1, x, (TCoord)first );
 
     ey1 += incr;
     gray_set_cell( RAS_VAR_ TRUNC( x ), ey1 );
@@ -650,10 +652,6 @@ PVG_FT_END_STMNT
     gray_render_scanline( RAS_VAR_ ey1,
                                    x, ONE_PIXEL - first,
                                    to_x, fy2 );
-
-  End:
-    ras.x       = to_x;
-    ras.y       = to_y;
   }
 
 
@@ -664,28 +662,27 @@ PVG_FT_END_STMNT
   /* Render a straight line across multiple cells in any direction.        */
   /*                                                                       */
   static void
-  gray_render_line( RAS_ARG_ TPos  to_x,
-                             TPos  to_y )
+  gray_render_line( RAS_ARG_ TPos from_x, TPos from_y, TPos  to_x, TPos  to_y )
   {
     TPos    dx, dy, fx1, fy1, fx2, fy2;
     TCoord  ex1, ex2, ey1, ey2;
 
 
-    ex1 = TRUNC( ras.x );
+    ex1 = TRUNC( from_x );
     ex2 = TRUNC( to_x );
-    ey1 = TRUNC( ras.y );
+    ey1 = TRUNC( from_y );
     ey2 = TRUNC( to_y );
 
     /* perform vertical clipping */
     if ( ( ey1 >= ras.max_ey && ey2 >= ras.max_ey ) ||
          ( ey1 <  ras.min_ey && ey2 <  ras.min_ey ) )
-      goto End;
+      return;
 
-    dx = to_x - ras.x;
-    dy = to_y - ras.y;
+    dx = to_x - from_x;
+    dy = to_y - from_y;
 
-    fx1 = FRACT( ras.x );
-    fy1 = FRACT( ras.y );
+    fx1 = FRACT( from_x );
+    fy1 = FRACT( from_y );
 
     if ( ex1 == ex2 && ey1 == ey2 )       /* inside one cell */
       ;
@@ -787,13 +784,175 @@ PVG_FT_END_STMNT
 
     ras.cover += ( fy2 - fy1 );
     ras.area  += ( fy2 - fy1 ) * ( fx1 + fx2 );
-
-  End:
-    ras.x       = to_x;
-    ras.y       = to_y;
   }
 
 #endif
+
+  static int
+  gray_clip_flags( RAS_ARG_ TPos x, TPos y )
+  {
+      return ((x > ras.clip_box.xMax) << 0) | ((y > ras.clip_box.yMax) << 1) |
+             ((x < ras.clip_box.xMin) << 2) | ((y < ras.clip_box.yMin) << 3);
+  }
+
+  static int
+  gray_clip_vflags( RAS_ARG_ TPos y )
+  {
+      return ((y > ras.clip_box.yMax) << 1) | ((y < ras.clip_box.yMin) << 3);
+  }
+
+  static void
+  gray_vline( RAS_ARG_ TPos x1, TPos y1, TPos x2, TPos y2, int f1, int f2 )
+  {
+      f1 &= 10;
+      f2 &= 10;
+      if((f1 | f2) == 0) /* Fully visible */
+      {
+          gray_render_line( RAS_VAR_ x1, y1, x2, y2 );
+      }
+      else if(f1 == f2) /* Invisible by Y */
+      {
+          return;
+      }
+      else
+      {
+          TPos tx1, ty1, tx2, ty2;
+          TPos clip_y1, clip_y2;
+
+          tx1 = x1;
+          ty1 = y1;
+          tx2 = x2;
+          ty2 = y2;
+
+          clip_y1 = ras.clip_box.yMin;
+          clip_y2 = ras.clip_box.yMax;
+
+          if(f1 & 8) /* y1 < clip_y1 */
+          {
+              tx1 = x1 + PVG_FT_MulDiv(clip_y1-y1, x2-x1, y2-y1);
+              ty1 = clip_y1;
+          }
+
+          if(f1 & 2) /* y1 > clip_y2 */
+          {
+              tx1 = x1 + PVG_FT_MulDiv(clip_y2-y1, x2-x1, y2-y1);
+              ty1 = clip_y2;
+          }
+
+          if(f2 & 8) /* y2 < clip_y1 */
+          {
+              tx2 = x1 + PVG_FT_MulDiv(clip_y1-y1, x2-x1, y2-y1);
+              ty2 = clip_y1;
+          }
+
+          if(f2 & 2) /* y2 > clip_y2 */
+          {
+              tx2 = x1 + PVG_FT_MulDiv(clip_y2-y1, x2-x1, y2-y1);
+              ty2 = clip_y2;
+          }
+
+          gray_render_line( RAS_VAR_ tx1, ty1, tx2, ty2 );
+      }
+  }
+
+  static void
+  gray_line_to( RAS_ARG_ TPos x2, TPos y2 )
+  {
+      if ( !ras.clipping )
+      {
+          gray_render_line( RAS_VAR_ ras.x, ras.y, x2, y2 );
+      }
+      else
+      {
+          TPos x1, y1, y3, y4;
+          TPos clip_x1, clip_x2;
+          int f1, f2, f3, f4;
+
+          f1 = ras.clip_flags;
+          f2 = gray_clip_flags( RAS_VAR_ x2, y2 );
+
+          if((f1 & 10) == (f2 & 10) && (f1 & 10) != 0) /* Invisible by Y */
+          {
+              ras.clip_flags = f2;
+              goto End;
+          }
+
+          x1 = ras.x;
+          y1 = ras.y;
+
+          clip_x1 = ras.clip_box.xMin;
+          clip_x2 = ras.clip_box.xMax;
+
+          switch(((f1 & 5) << 1) | (f2 & 5))
+          {
+          case 0: /* Visible by X */
+              gray_vline( RAS_VAR_ x1, y1, x2, y2, f1, f2);
+              break;
+
+          case 1: /* x2 > clip_x2 */
+              y3 = y1 + PVG_FT_MulDiv(clip_x2-x1, y2-y1, x2-x1);
+              f3 = gray_clip_vflags( RAS_VAR_ y3 );
+              gray_vline( RAS_VAR_ x1, y1, clip_x2, y3, f1, f3);
+              gray_vline( RAS_VAR_ clip_x2, y3, clip_x2, y2, f3, f2);
+              break;
+
+          case 2: /* x1 > clip_x2 */
+              y3 = y1 + PVG_FT_MulDiv(clip_x2-x1, y2-y1, x2-x1);
+              f3 = gray_clip_vflags( RAS_VAR_ y3 );
+              gray_vline( RAS_VAR_ clip_x2, y1, clip_x2, y3, f1, f3);
+              gray_vline( RAS_VAR_ clip_x2, y3, x2, y2, f3, f2);
+              break;
+
+          case 3: /* x1 > clip_x2 && x2 > clip_x2 */
+              gray_vline( RAS_VAR_ clip_x2, y1, clip_x2, y2, f1, f2);
+              break;
+
+          case 4: /* x2 < clip_x1 */
+              y3 = y1 + PVG_FT_MulDiv(clip_x1-x1, y2-y1, x2-x1);
+              f3 = gray_clip_vflags( RAS_VAR_ y3 );
+              gray_vline( RAS_VAR_ x1, y1, clip_x1, y3, f1, f3);
+              gray_vline( RAS_VAR_ clip_x1, y3, clip_x1, y2, f3, f2);
+              break;
+
+          case 6: /* x1 > clip_x2 && x2 < clip_x1 */
+              y3 = y1 + PVG_FT_MulDiv(clip_x2-x1, y2-y1, x2-x1);
+              y4 = y1 + PVG_FT_MulDiv(clip_x1-x1, y2-y1, x2-x1);
+              f3 = gray_clip_vflags( RAS_VAR_ y3 );
+              f4 = gray_clip_vflags( RAS_VAR_ y4 );
+              gray_vline( RAS_VAR_ clip_x2, y1, clip_x2, y3, f1, f3);
+              gray_vline( RAS_VAR_ clip_x2, y3, clip_x1, y4, f3, f4);
+              gray_vline( RAS_VAR_ clip_x1, y4, clip_x1, y2, f4, f2);
+              break;
+
+          case 8: /* x1 < clip_x1 */
+              y3 = y1 + PVG_FT_MulDiv(clip_x1-x1, y2-y1, x2-x1);
+              f3 = gray_clip_vflags( RAS_VAR_ y3 );
+              gray_vline( RAS_VAR_ clip_x1, y1, clip_x1, y3, f1, f3);
+              gray_vline( RAS_VAR_ clip_x1, y3, x2, y2, f3, f2);
+              break;
+
+          case 9:  /* x1 < clip_x1 && x2 > clip_x2 */
+              y3 = y1 + PVG_FT_MulDiv(clip_x1-x1, y2-y1, x2-x1);
+              y4 = y1 + PVG_FT_MulDiv(clip_x2-x1, y2-y1, x2-x1);
+              f3 = gray_clip_vflags( RAS_VAR_ y3 );
+              f4 = gray_clip_vflags( RAS_VAR_ y4 );
+              gray_vline( RAS_VAR_ clip_x1, y1, clip_x1, y3, f1, f3);
+              gray_vline( RAS_VAR_ clip_x1, y3, clip_x2, y4, f3, f4);
+              gray_vline( RAS_VAR_ clip_x2, y4, clip_x2, y2, f4, f2);
+              break;
+
+          case 12: /* x1 < clip_x1 && x2 < clip_x1 */
+              gray_vline( RAS_VAR_ clip_x1, y1, clip_x1, y2, f1, f2);
+              break;
+          }
+
+          ras.clip_flags = f2;
+      }
+
+  End:
+      ras.x = x2;
+      ras.y = y2;
+  }
 
   static void
   gray_split_conic( PVG_FT_Vector*  base )
@@ -840,6 +999,8 @@ PVG_FT_END_STMNT
            TRUNC( arc[1].y ) <  ras.min_ey &&
            TRUNC( arc[2].y ) <  ras.min_ey ) )
     {
+      if ( ras.clipping )
+        ras.clip_flags = gray_clip_flags ( RAS_VAR_ arc[0].x, arc[0].y );
       ras.x = arc[0].x;
       ras.y = arc[0].y;
       return;
@@ -873,7 +1034,7 @@ PVG_FT_END_STMNT
         split <<= 1;
       }
 
-      gray_render_line( RAS_VAR_ arc[0].x, arc[0].y );
+      gray_line_to( RAS_VAR_ arc[0].x, arc[0].y );
       arc -= 2;
 
     } while ( --draw );
@@ -915,6 +1076,7 @@ PVG_FT_END_STMNT
   {
     PVG_FT_Vector   bez_stack[16 * 3 + 1];  /* enough to accommodate bisections */
     PVG_FT_Vector*  arc = bez_stack;
+    PVG_FT_Vector*  limit = bez_stack + 45;
     TPos        dx, dy, dx_, dy_;
     TPos        dx1, dy1, dx2, dy2;
     TPos        L, s, s_limit;
@@ -939,6 +1101,8 @@ PVG_FT_END_STMNT
            TRUNC( arc[2].y ) <  ras.min_ey &&
            TRUNC( arc[3].y ) <  ras.min_ey ) )
     {
+      if ( ras.clipping )
+        ras.clip_flags = gray_clip_flags ( RAS_VAR_ arc[0].x, arc[0].y );
       ras.x = arc[0].x;
       ras.y = arc[0].y;
       return;
@@ -988,7 +1152,7 @@ PVG_FT_END_STMNT
            dx2 * ( dx2 - dx ) + dy2 * ( dy2 - dy ) > 0 )
         goto Split;
 
-      gray_render_line( RAS_VAR_ arc[0].x, arc[0].y );
+      gray_line_to( RAS_VAR_ arc[0].x, arc[0].y );
 
       if ( arc == bez_stack )
         return;
@@ -997,6 +1161,8 @@ PVG_FT_END_STMNT
       continue;
 
     Split:
+      if( arc == limit )
+        return;
       gray_split_cubic( arc );
       arc += 3;
     }
@@ -1021,6 +1187,8 @@ PVG_FT_END_STMNT
 
     gray_start_cell( worker, TRUNC( x ), TRUNC( y ) );
 
+    if ( ras.clipping )
+        ras.clip_flags = gray_clip_flags( worker, x, y );
     ras.x = x;
     ras.y = y;
     return 0;
@@ -1161,6 +1329,77 @@ PVG_FT_END_STMNT
     }
   }
 
+PVG_FT_Error PVG_FT_Outline_Check(PVG_FT_Outline* outline)
+{
+    if (outline) {
+        PVG_FT_Int n_points = outline->n_points;
+        PVG_FT_Int n_contours = outline->n_contours;
+        PVG_FT_Int end0, end;
+        PVG_FT_Int n;
+
+        /* empty glyph? */
+        if (n_points == 0 && n_contours == 0) return 0;
+
+        /* check point and contour counts */
+        if (n_points <= 0 || n_contours <= 0) goto Bad;
+
+        end0 = end = -1;
+        for (n = 0; n < n_contours; n++) {
+            end = outline->contours[n];
+
+            /* note that we don't accept empty contours */
+            if (end <= end0 || end >= n_points) goto Bad;
+
+            end0 = end;
+        }
+
+        if (end != n_points - 1) goto Bad;
+
+        /* XXX: check the tags array */
+        return 0;
+    }
+
+Bad:
+    return ErrRaster_Invalid_Outline;
+}
+
+void PVG_FT_Outline_Get_CBox(const PVG_FT_Outline* outline, PVG_FT_BBox* acbox)
+{
+    PVG_FT_Pos xMin, yMin, xMax, yMax;
+
+    if (outline && acbox) {
+        if (outline->n_points == 0) {
+            xMin = 0;
+            yMin = 0;
+            xMax = 0;
+            yMax = 0;
+        } else {
+            PVG_FT_Vector* vec = outline->points;
+            PVG_FT_Vector* limit = vec + outline->n_points;
+
+            xMin = xMax = vec->x;
+            yMin = yMax = vec->y;
+            vec++;
+
+            for (; vec < limit; vec++) {
+                PVG_FT_Pos x, y;
+
+                x = vec->x;
+                if (x < xMin) xMin = x;
+                if (x > xMax) xMax = x;
+
+                y = vec->y;
+                if (y < yMin) yMin = y;
+                if (y > yMax) yMax = y;
+            }
+        }
+        acbox->xMin = xMin;
+        acbox->xMax = xMax;
+        acbox->yMin = yMin;
+        acbox->yMax = yMax;
+    }
+}
+
   /*************************************************************************/
   /*                                                                       */
   /*  The following function should only compile in stand_alone mode,      */
@@ -1287,7 +1526,7 @@ PVG_FT_END_STMNT
             vec.x = SCALED( point->x );
             vec.y = SCALED( point->y );
 
-            gray_render_line(user, UPSCALE(vec.x), UPSCALE(vec.y));
+            gray_line_to(user, UPSCALE(vec.x), UPSCALE(vec.y));
             continue;
           }
 
@@ -1369,7 +1608,7 @@ PVG_FT_END_STMNT
       }
 
       /* close the contour with a line segment */
-      gray_render_line(user, UPSCALE(v_start.x), UPSCALE(v_start.y));
+      gray_line_to(user, UPSCALE(v_start.x), UPSCALE(v_start.y));
 
    Close:
       first = last + 1;
@@ -1432,11 +1671,32 @@ PVG_FT_END_STMNT
          ras.max_ey <= clip->yMin || ras.min_ey >= clip->yMax )
       return 0;
 
-    if ( ras.min_ex < clip->xMin ) ras.min_ex = clip->xMin;
-    if ( ras.min_ey < clip->yMin ) ras.min_ey = clip->yMin;
+    ras.clip_flags = ras.clipping = 0;
 
-    if ( ras.max_ex > clip->xMax ) ras.max_ex = clip->xMax;
-    if ( ras.max_ey > clip->yMax ) ras.max_ey = clip->yMax;
+    if ( ras.min_ex < clip->xMin ) {
+        ras.min_ex = clip->xMin;
+        ras.clipping = 1;
+    }
+
+    if ( ras.min_ey < clip->yMin ) {
+        ras.min_ey = clip->yMin;
+        ras.clipping = 1;
+    }
+
+    if ( ras.max_ex > clip->xMax ) {
+        ras.max_ex = clip->xMax;
+        ras.clipping = 1;
+    }
+
+    if ( ras.max_ey > clip->yMax ) {
+        ras.max_ey = clip->yMax;
+        ras.clipping = 1;
+    }
+
+    clip->xMin = (ras.min_ex - 1) * ONE_PIXEL;
+    clip->yMin = (ras.min_ey - 1) * ONE_PIXEL;
+    clip->xMax = (ras.max_ex + 1) * ONE_PIXEL;
+    clip->yMax = (ras.max_ey + 1) * ONE_PIXEL;
 
     ras.count_ex = ras.max_ex - ras.min_ex;
     ras.count_ey = ras.max_ey - ras.min_ey;
@@ -1612,7 +1872,7 @@ PVG_FT_END_STMNT
   PVG_FT_Raster_Render(const PVG_FT_Raster_Params *params)
   {
       char stack[PVG_FT_MINIMUM_POOL_SIZE];
-      long length = PVG_FT_MINIMUM_POOL_SIZE;
+      size_t length = PVG_FT_MINIMUM_POOL_SIZE;
 
       TWorker worker;
       worker.skip_spans = 0;
@@ -1623,7 +1883,7 @@ PVG_FT_END_STMNT
               rendered_spans += -worker.skip_spans;
           worker.skip_spans = rendered_spans;
           length *= 2;
-          void* heap = malloc((size_t)(length));
+          void* heap = malloc(length);
           error = gray_raster_render(&worker, heap, length, params);
           free(heap);
       }

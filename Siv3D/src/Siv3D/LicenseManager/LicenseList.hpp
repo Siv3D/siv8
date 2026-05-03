@@ -645,7 +645,7 @@ be appreciated.)-"
 
 {
 R"-(lunasvg)-",
-R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu <sammycageagle@gmail.com>)-",
+R"-(Copyright (c) 2020-2025 Samuel Ugochukwu <sammycageagle@gmail.com>)-",
 MIT_LICENSE
 },
 
@@ -851,7 +851,7 @@ APACHE_2_LICENSE
 
 {
 R"-(plutovg)-",
-R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu)-",
+R"-(Copyright (c) 2020-2025 Samuel Ugochukwu <sammycageagle@gmail.com>)-",
 MIT_LICENSE
 },
 

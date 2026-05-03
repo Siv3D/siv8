@@ -100,12 +100,17 @@ namespace s3d
 		const uint32 color = background.abgr().asUint32();
 
 		lunasvg::Bitmap bitmap = m_document->renderToBitmap(maxImageWidth, maxImageHeight, color);
-		bitmap.convert(0, 1, 2, 3, (not premultiplyAlpha.getBool()));
 
 		Image image{ bitmap.width(), bitmap.height() };
 		assert(image.size_bytes() == (bitmap.stride() * bitmap.height()));
 		
 		std::memcpy(image.data(), bitmap.data(), image.size_bytes());
+		image.bgraToRGBA();
+
+		if (not premultiplyAlpha)
+		{
+			image.unpremultiplyAlpha();
+		}
 
 		return image;
 	}
