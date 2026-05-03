@@ -733,6 +733,73 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
+		constexpr LineString& erase_at(size_type index)&;
+
+		/// @brief 指定したインデックスにある要素を削除した新しい LineString を返します。
+		/// @param index インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString erase_at(size_type index)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素をすべて削除します。
+		/// @param value 値
+		/// @return 削除した要素の個数
+		constexpr size_type erase_all(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した値と等しい要素を削除します。
+		/// @param value 値
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		constexpr bool erase_first(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素をすべて削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除した要素の個数
+		template <class Fty>
+		constexpr size_type erase_all_if(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した条件を満たす要素を削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		template <class Fty>
+		constexpr bool erase_first_if(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	push_back
 		//
 		////////////////////////////////////////////////////////////////
