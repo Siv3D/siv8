@@ -15,14 +15,37 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	erase_all_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr String& String::erase_all_if(Fty f) & noexcept
+		requires std::predicate<Fty&, const value_type&>
+	{
+		auto result = std::ranges::remove_if(m_string, detail::PassFunction(std::forward<Fty>(f)));
+		m_string.erase(result.begin(), result.end());
+		return *this;
+	}
+
+	template <class Fty>
+	constexpr String String::erase_all_if(Fty f) && noexcept
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return std::move(erase_all_if(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	all
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr bool String::all(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool String::all(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::all_of(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::all_of(m_string, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -32,9 +55,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr bool String::any(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool String::any(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::any_of(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::any_of(m_string, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -44,7 +68,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr bool String::contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool String::contains_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return any(std::forward<Fty>(f));
 	}
@@ -57,7 +82,7 @@ namespace s3d
 
 	constexpr int64 String::count(const value_type ch) const noexcept
 	{
-		return std::count(m_string.begin(), m_string.end(), ch);
+		return std::ranges::count(m_string, ch);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -67,9 +92,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr int64 String::count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr int64 String::count_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::count_if(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::count_if(m_string, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -79,15 +105,17 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr void String::each(Fty f) requires std::invocable<Fty&, value_type&>
+	constexpr void String::each(Fty f)
+		requires std::invocable<Fty&, value_type&>
 	{
-		std::for_each(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::for_each(m_string, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	template <class Fty>
-	constexpr void String::each(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr void String::each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
-		std::for_each(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::for_each(m_string, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -97,7 +125,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr void String::each_index(Fty f) requires std::invocable<Fty&, size_t, value_type&>
+	constexpr void String::each_index(Fty f)
+		requires std::invocable<Fty&, size_t, value_type&>
 	{
 		for (size_t i = 0; auto& ch : m_string)
 		{
@@ -106,7 +135,8 @@ namespace s3d
 	}
 
 	template <class Fty>
-	constexpr void String::each_index(Fty f) const requires std::invocable<Fty&, size_t, const value_type&>
+	constexpr void String::each_index(Fty f) const
+		requires std::invocable<Fty&, size_t, const value_type&>
 	{
 		for (size_t i = 0; auto ch : m_string)
 		{
@@ -121,7 +151,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr void String::each_sindex(Fty f) requires std::invocable<Fty&, isize, value_type&>
+	constexpr void String::each_sindex(Fty f)
+		requires std::invocable<Fty&, isize, value_type&>
 	{
 		for (isize i = 0; auto& ch : m_string)
 		{
@@ -130,7 +161,8 @@ namespace s3d
 	}
 
 	template <class Fty>
-	constexpr void String::each_sindex(Fty f) const requires std::invocable<Fty&, isize, const value_type&>
+	constexpr void String::each_sindex(Fty f) const
+		requires std::invocable<Fty&, isize, const value_type&>
 	{
 		for (isize i = 0; auto ch : m_string)
 		{
@@ -162,7 +194,7 @@ namespace s3d
 
 	constexpr void String::fill(const value_type value)
 	{
-		return std::fill(m_string.begin(), m_string.end(), value);
+		std::ranges::fill(m_string, value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -172,9 +204,11 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr String String::filter(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr String String::filter(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		String result;
+		result.reserve(m_string.size());
 
 		for (const auto ch : m_string)
 		{
@@ -189,13 +223,32 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	head
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String String::head(const size_type n) const&
+	{
+		const auto k = Min(n, m_string.size());
+		return String(m_string, 0, k);
+	}
+
+	constexpr String String::head(const size_type n) && noexcept
+	{
+		const auto k = Min(n, m_string.size());
+		m_string.resize(k);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isSorted
 	//
 	////////////////////////////////////////////////////////////////
 
 	constexpr bool String::isSorted() const noexcept
 	{
-		return std::is_sorted(m_string.begin(), m_string.end());
+		return std::ranges::is_sorted(m_string);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -205,9 +258,11 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr String& String::keep_if(Fty f) requires std::predicate<Fty&, const value_type&>
+	constexpr String& String::keep_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
 	{
-		m_string.erase(std::remove_if(m_string.begin(), m_string.end(), std::not_fn(std::forward<Fty>(f))), m_string.end());
+		auto result = std::ranges::remove_if(m_string, std::not_fn(detail::PassFunction(std::forward<Fty>(f))));
+		m_string.erase(result.begin(), result.end());
 		return *this;
 	}
 
@@ -218,7 +273,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr auto String::map(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr auto String::map(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
@@ -241,50 +297,10 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr bool String::none(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool String::none(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::none_of(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	remove_if, removed_if
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Fty>
-	constexpr String& String::remove_if(Fty f) & noexcept requires std::predicate<Fty&, const value_type&>
-	{
-		m_string.erase(std::remove_if(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f))), m_string.end());
-		return *this;
-	}
-
-	template <class Fty>
-	constexpr String String::remove_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>
-	{
-		return std::move(remove_if(std::forward<Fty>(f)));
-	}
-
-	template <class Fty>
-	constexpr String String::removed_if(Fty f) const& requires std::predicate<Fty&, const value_type&>
-	{
-		String result;
-
-		for (const auto ch : m_string)
-		{
-			if (not f(ch))
-			{
-				result.push_back(ch);
-			}
-		}
-
-		return result;
-	}
-
-	template <class Fty>
-	constexpr String String::removed_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>
-	{
-		return std::move(remove_if(std::forward<Fty>(f)));
+		return std::ranges::none_of(m_string, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -294,7 +310,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr String& String::replace_if(Fty f, const value_type newChar) & noexcept requires std::predicate<Fty&, const value_type&>
+	constexpr String& String::replace_if(Fty f, const value_type newChar) & noexcept
+		requires std::predicate<Fty&, const value_type&>
 	{
 		for (auto& c : m_string)
 		{
@@ -308,13 +325,15 @@ namespace s3d
 	}
 
 	template <class Fty>
-	constexpr String String::replace_if(Fty f, const value_type newChar) && noexcept requires std::predicate<Fty&, const value_type&>
+	constexpr String String::replace_if(Fty f, const value_type newChar) && noexcept
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return std::move(replace_if(f, newChar));
 	}
 
 	template <class Fty>
-	constexpr String String::replaced_if(Fty f, const value_type newChar) const& requires std::predicate<Fty&, const value_type&>
+	constexpr String String::replaced_if(Fty f, const value_type newChar) const&
+		requires std::predicate<Fty&, const value_type&>
 	{
 		String result{ m_string };
 		result.replace_if(f, newChar);
@@ -322,7 +341,8 @@ namespace s3d
 	}
 
 	template <class Fty>
-	constexpr String String::replaced_if(Fty f, const value_type newChar) && noexcept requires std::predicate<Fty&, const value_type&>
+	constexpr String String::replaced_if(Fty f, const value_type newChar) && noexcept
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return std::move(replace_if(f, newChar));
 	}
@@ -334,7 +354,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr void String::reverse_each(Fty f) requires std::invocable<Fty&, value_type&>
+	constexpr void String::reverse_each(Fty f)
+		requires std::invocable<Fty&, value_type&>
 	{
 		auto it = m_string.rbegin();
 		const auto itEnd = m_string.rend();
@@ -346,7 +367,8 @@ namespace s3d
 	}
 
 	template <class Fty>
-	constexpr void String::reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr void String::reverse_each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		auto it = m_string.rbegin();
 		const auto itEnd = m_string.rend();
@@ -355,6 +377,27 @@ namespace s3d
 		{
 			f(*it++);
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto String::reverse_view() &
+	{
+		return std::views::reverse(m_string);
+	}
+
+	constexpr auto String::reverse_view() const&
+	{
+		return std::views::reverse(m_string);
+	}
+
+	constexpr auto String::reverse_view() &&
+	{
+		return std::views::reverse(std::move(*this));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -364,21 +407,24 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	String& String::sort_by(Fty f) & noexcept requires std::predicate<Fty&, const value_type&, const value_type&>
+	String& String::sort_by(Fty f) & noexcept
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		std::sort(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::sort(m_string, detail::PassFunction(std::forward<Fty>(f)));
 		return *this;
 	}
 
 	template <class Fty>
-	String String::sort_by(Fty f) && noexcept requires std::predicate<Fty&, const value_type&, const value_type&>
+	String String::sort_by(Fty f) && noexcept
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		std::sort(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::ranges::sort(m_string, detail::PassFunction(std::forward<Fty>(f)));
 		return std::move(*this);
 	}
 
 	template <class Fty>
-	String String::sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
+	String String::sorted_by(Fty f) const&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		String result{ m_string };
 		result.sort_by(std::forward<Fty>(f));
@@ -386,9 +432,48 @@ namespace s3d
 	}
 
 	template <class Fty>
-	String String::sorted_by(Fty f) && noexcept requires std::predicate<Fty&, const value_type&, const value_type&>
+	String String::sorted_by(Fty f) && noexcept
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String String::tail(const size_type n) const&
+	{
+		const auto k = Min(n, m_string.size());
+		return String(m_string, (m_string.size() - k), k);
+	}
+
+	constexpr String String::tail(const size_type n) && noexcept
+	{
+		const auto k = Min(n, m_string.size());
+		m_string.erase(0, (m_string.size() - k));
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String String::take(const size_type n) const&
+	{
+		const auto k = Min(n, m_string.size());
+		return String(m_string, 0, k);
+	}
+
+	constexpr String String::take(const size_type n) && noexcept
+	{
+		const auto k = Min(n, m_string.size());
+		m_string.resize(k);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -398,16 +483,49 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	String String::take_while(Fty f) const& requires std::predicate<Fty&, const value_type&>
+	String String::take_while(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return String(m_string.begin(), std::find_if_not(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f))));
 	}
 
 	template <class Fty>
-	String String::take_while(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>
+	String String::take_while(Fty f) && noexcept
+		requires std::predicate<Fty&, const value_type&>
 	{
-		const auto it = std::find_if_not(m_string.begin(), m_string.end(), f);
+		const auto it = std::find_if_not(m_string.begin(), m_string.end(), detail::PassFunction(std::forward<Fty>(f)));
 		m_string.erase(it, m_string.end());
 		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr String String::without_if(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		String result;
+		result.reserve(m_string.size());
+
+		for (const auto ch : m_string)
+		{
+			if (not f(ch))
+			{
+				result.push_back(ch);
+			}
+		}
+
+		return result;
+	}
+
+	template <class Fty>
+	constexpr String String::without_if(Fty f) && noexcept
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return std::move(erase_all_if(std::forward<Fty>(f)));
 	}
 }

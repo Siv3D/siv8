@@ -20,35 +20,14 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr StringView ToString(const ImageFormat imageFormat) noexcept
+		static String GetEncoderName(const ImageFormat imageFormat)
 		{
-			switch (imageFormat)
+			if (imageFormat == ImageFormat::Unspecified)
 			{
-			case ImageFormat::BCn:
-				return U"BCn"_sv;
-			case ImageFormat::PNG:
-				return U"PNG"_sv;
-			case ImageFormat::JPEG:
-				return U"JPEG"_sv;
-			case ImageFormat::JPEG_XL:
-				return U"JPEG_XL"_sv;
-			case ImageFormat::BMP:
-				return U"BMP"_sv;
-			case ImageFormat::WebP:
-				return U"WebP"_sv;
-			case ImageFormat::GIF:
-				return U"GIF"_sv;
-			case ImageFormat::TIFF:
-				return U"TIFF"_sv;
-			case ImageFormat::TGA:
-				return U"TGA"_sv;
-			case ImageFormat::PPM:
-				return U"PPM"_sv;
-			case ImageFormat::SVG:
-				return U"SVG"_sv;
-			default:
-				return U""_sv;
+				return{};
 			}
+
+			return Format(imageFormat);
 		}
 	}
 
@@ -75,7 +54,7 @@ namespace s3d
 			}
 			else
 			{
-				encoderName = ToString(format);
+				encoderName = Format(format);
 			}
 
 			return Save(image, encoderName, path);
@@ -94,7 +73,7 @@ namespace s3d
 
 		bool Encode(const Image& image, const ImageFormat format, IWriter& writer)
 		{
-			return Encode(image, ToString(format), writer);
+			return Encode(image, GetEncoderName(format), writer);
 		}
 
 		bool Encode(const Image& image, const StringView encoderName, IWriter& writer)
@@ -104,7 +83,7 @@ namespace s3d
 
 		Blob Encode(const Image& image, const ImageFormat format)
 		{
-			return Encode(image, ToString(format));
+			return Encode(image, GetEncoderName(format));
 		}
 
 		Blob Encode(const Image& image, const StringView encoderName)
@@ -118,7 +97,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Add(std::unique_ptr<IImageEncoder>&& Encoder)
+		bool Add(std::unique_ptr<IImageEncoder> Encoder)
 		{
 			return SIV3D_ENGINE(ImageEncoder)->add(std::move(Encoder));
 		}
@@ -140,7 +119,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool IsRegistered(const StringView encoderName)
+		bool IsRegistered(const StringView encoderName) noexcept
 		{
 			for (const auto& encoder : SIV3D_ENGINE(ImageEncoder)->enumEncoder())
 			{
@@ -159,7 +138,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		const Array<std::unique_ptr<IImageEncoder>>& Enum()
+		const Array<std::unique_ptr<IImageEncoder>>& Enum() noexcept
 		{
 			return SIV3D_ENGINE(ImageEncoder)->enumEncoder();
 		}

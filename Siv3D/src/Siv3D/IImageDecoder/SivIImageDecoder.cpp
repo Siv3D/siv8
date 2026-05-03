@@ -40,14 +40,14 @@ namespace s3d
 
 	Image IImageDecoder::decode(const FilePathView path, const PremultiplyAlpha premultiplyAlpha) const
 	{
-		BinaryFileReader reader{ path };
+		std::unique_ptr<BinaryFileReader> reader = std::make_unique<BinaryFileReader>(path);
 
-		if (not reader)
+		if (not reader->isOpen())
 		{
 			return{};
 		}
 
-		return decode(reader, path, premultiplyAlpha);
+		return decode(std::move(reader), path, premultiplyAlpha);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -58,17 +58,17 @@ namespace s3d
 
 	Grid<uint16> IImageDecoder::decodeGray16(const FilePathView path) const
 	{
-		BinaryFileReader reader{ path };
+		std::unique_ptr<BinaryFileReader> reader = std::make_unique<BinaryFileReader>(path);
 
 		if (not reader)
 		{
 			return{};
 		}
 
-		return decodeGray16(reader, path);
+		return decodeGray16(std::move(reader), path);
 	}
 
-	Grid<uint16> IImageDecoder::decodeGray16(IReader&, FilePathView) const
+	Grid<uint16> IImageDecoder::decodeGray16(std::unique_ptr<IReader>, FilePathView) const
 	{
 		return{};
 	}

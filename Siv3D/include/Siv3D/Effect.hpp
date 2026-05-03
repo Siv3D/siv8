@@ -79,7 +79,7 @@ namespace s3d
 		/// @brief エフェクトグループに新しいエフェクトを追加します
 		/// @param effect 追加するエフェクト
 		/// @param initialElapsedTimeSec エフェクト追加時点での経過時間オフセット（秒）
-		const Effect& add(std::unique_ptr<IEffect>&& effect, double initialElapsedTimeSec = 0.0) const;
+		const Effect& add(std::unique_ptr<IEffect> effect, double initialElapsedTimeSec = 0.0) const;
 
 		/// @brief エフェクトグループに新しいエフェクトを追加します
 		/// @tparam IEffectType 追加するエフェクトの型

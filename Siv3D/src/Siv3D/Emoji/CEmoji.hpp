@@ -35,19 +35,17 @@ namespace s3d
 
 		void init() override;
 
-		bool hasEmoji(StringView emoji) const override;
+		bool hasGlyph(StringView emoji) const override;
 
 		GlyphIndex getGlyphIndex(StringView emoji) const override;
 
-		Image renderEmoji(GlyphIndex emoji, int32 size) override;
+		Image render(GlyphIndex glyphIndex, int32 size) override;
 
-		Image renderFilledEmoji(GlyphIndex emoji, int32 size) override;
+		Image renderSilhouette(GlyphIndex glyphIndex, int32 size) override;
 
 	private:
 
 		bool m_available = false;
-
-		FT_Library m_freeType = nullptr;
 
 		FT_Face m_face = nullptr;
 

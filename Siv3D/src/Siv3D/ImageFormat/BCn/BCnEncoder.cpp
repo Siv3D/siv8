@@ -356,11 +356,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& BCnEncoder::possibleExtensions() const
+	std::span<const StringView> BCnEncoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"dds" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"dds" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -371,6 +370,12 @@ namespace s3d
 
 	bool BCnEncoder::save(const Image& image, const FilePathView path) const
 	{
+		if (not image)
+		{
+			LOG_FAIL("❌ BCnEncoder::save(): image is empty");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)
@@ -461,7 +466,7 @@ namespace s3d
 			return{};
 		}
 		
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -528,7 +533,7 @@ namespace s3d
 			return{};
 		}
 
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -595,7 +600,7 @@ namespace s3d
 			return{};
 		}
 
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -662,7 +667,7 @@ namespace s3d
 			return{};
 		}
 		
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -730,6 +735,6 @@ namespace s3d
 			return{};
 		}
 
-		return writer.retrieve();
+		return writer.extractBlob();
 	}
 }

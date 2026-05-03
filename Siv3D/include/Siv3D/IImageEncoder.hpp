@@ -12,7 +12,6 @@
 # pragma once
 # include "Common.hpp"
 # include "String.hpp"
-# include "Array.hpp"
 # include "ImageFormat.hpp"
 # include "Image.hpp"
 # include "Blob.hpp"
@@ -69,7 +68,7 @@ namespace s3d
 		/// @brief このエンコーダがサポートするファイルの拡張子一覧を返します。
 		/// @return このエンコーダがサポートするファイルの拡張子一覧
 		[[nodiscard]]
-		virtual const Array<String>& possibleExtensions() const = 0;
+		virtual std::span<const StringView> possibleExtensions() const noexcept = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//

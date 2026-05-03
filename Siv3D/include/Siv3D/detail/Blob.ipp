@@ -25,6 +25,10 @@ namespace s3d
 	constexpr Blob::Blob(const Arg::reserve_<size_type> reserveSizeBytes)
 		: m_data(reserveSizeBytes) {}
 
+	template <ReaderObject Reader>
+	Blob::Blob(Reader&& reader)
+		: Blob{ std::make_unique<Reader>(std::forward<Reader>(reader)) } {}
+
 	inline Blob::Blob(const void* src, const size_type sizeBytes)
 		: m_data(static_cast<const Byte*>(src), (static_cast<const Byte*>(src) + sizeBytes)) {}
 
@@ -434,7 +438,7 @@ namespace s3d
 		return m_data.insert(pos, value);
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr Blob::iterator Blob::insert(const_iterator pos, Iterator first, Iterator last)
 	{
 		return m_data.insert(pos, first, last);

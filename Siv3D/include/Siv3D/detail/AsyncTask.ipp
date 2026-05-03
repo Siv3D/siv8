@@ -29,7 +29,8 @@ namespace s3d
 
 	template <class Type>
 	template <class Fty, class... Args>
-	AsyncTask<Type>::AsyncTask(Fty&& f, Args&&... args) requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
+	AsyncTask<Type>::AsyncTask(Fty&& f, Args&&... args)
+		requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
 # if !SIV3D_PLATFORM(WEB) || defined(__EMSCRIPTEN_PTHREADS__)
 		: m_data{ std::async(std::launch::async, std::forward<Fty>(f), std::forward<Args>(args)...) } {}
 # else
@@ -149,7 +150,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Fty, class... Args> requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
+	template <class Fty, class... Args>
+		requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
 	auto Async(Fty&& f, Args&&... args)
 	{
 		return AsyncTask<std::invoke_result_t<std::decay_t<Fty>, std::decay_t<Args>...>>{ std::forward<Fty>(f), std::forward<Args>(args)... };

@@ -85,7 +85,7 @@ namespace s3d
 			FreestandingMessageBox::ShowError(displayMessage);
 
 			// Web ブラウザで開く
-			System::LaunchBrowser(url);
+			System::OpenInBrowser(url);
 		}
 	}
 

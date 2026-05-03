@@ -11,6 +11,7 @@
 
 # include <cstdlib>
 # include <Siv3D/VertexShader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
@@ -56,7 +57,14 @@ namespace s3d
 	VertexShader::VertexShader() {}
 
 	VertexShader::VertexShader(const FilePathView path, const StringView entryPoint)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromFile(path, entryPoint))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromReader(
+			 (path ? std::make_unique<BinaryFileReader>(path) : nullptr), path, entryPoint))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	VertexShader::VertexShader(std::unique_ptr<IReader> reader, const StringView entryPoint)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createVSFromReader(std::move(reader), {}, entryPoint))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -113,17 +121,27 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return VertexShader{ path, entryPoint };
+	}
+
+	VertexShader VertexShader::HLSL(std::unique_ptr<IReader> reader, const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
+		//{
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//}
+
+		return VertexShader{ std::move(reader), entryPoint };
 	}
 
 	VertexShader VertexShader::HLSL(const Blob& bytecode)
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return VertexShader{ bytecode };
@@ -133,7 +151,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return VertexShader{ source, entryPoint };
@@ -149,7 +167,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return VertexShader{ FilePathView{}, entryPoint };
@@ -159,17 +177,27 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return VertexShader{ path, entryPoint };
+	}
+
+	VertexShader VertexShader::MSL(std::unique_ptr<IReader> reader, const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
+		//{
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
+		//}
+
+		return VertexShader{ std::move(reader), entryPoint };
 	}
 
 	VertexShader VertexShader::MSL(const std::string& source, const StringView entryPoint)
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return VertexShader{ source, entryPoint };

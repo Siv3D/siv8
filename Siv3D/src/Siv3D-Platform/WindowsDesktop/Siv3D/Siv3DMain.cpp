@@ -14,6 +14,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/AsyncTask.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/System/CSystem.hpp>
 # include <Siv3D/Window/CWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -67,6 +68,19 @@ namespace s3d
 
 		static void MainThread()
 		{
+			if (FAILED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
+			{
+				::OutputDebugStringW(L"CoInitializeEx() failed\n");
+				FreestandingMessageBox::ShowError("CoInitializeEx() failed");
+				g_hasCriticalError = true;
+				std::unique_lock lock{ g_mutex };
+				lock.unlock();
+				g_cv.notify_one();
+				return;
+			}
+
+			ScopeExit coUninitialize = [] { ::CoUninitialize(); };
+
 			Siv3DEngine engine;
 
 			std::unique_lock lock{ g_mutex }; // (1)--
@@ -159,7 +173,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 	SetWorkingDirectory();
 
-	WinMainInit();
+	if (not WinMainInit())
+	{
+		return -1;
+	}
+
+	ScopeExit cleanup = []{	WinMainExit(); };
 
 	std::unique_lock lock{ g_mutex }; // (0)--
 
@@ -214,8 +233,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 
 		::Sleep(1);
 	}
-
-	WinMainExit();
 
 	return GetExitCode();
 }

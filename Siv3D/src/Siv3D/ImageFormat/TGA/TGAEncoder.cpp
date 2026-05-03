@@ -44,11 +44,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& TGAEncoder::possibleExtensions() const
+	std::span<const StringView> TGAEncoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"tga" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"tga" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -59,6 +58,12 @@ namespace s3d
 
 	bool TGAEncoder::save(const Image& image, const FilePathView path) const
 	{
+		if (not image)
+		{
+			LOG_FAIL("❌ TGAEncoder::save(): image is empty");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)

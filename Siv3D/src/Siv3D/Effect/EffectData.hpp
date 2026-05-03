@@ -47,7 +47,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void add(std::unique_ptr<IEffect>&& effect, double initialElapsedTimeSec);
+		void add(std::unique_ptr<IEffect> effect, double initialElapsedTimeSec);
 
 		////////////////////////////////////////////////////////////////
 		//

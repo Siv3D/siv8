@@ -26,7 +26,7 @@ namespace s3d
 		bool open(FilePathView path, const Optional<TextEncoding>& encoding);
 
 		[[nodiscard]]
-		bool open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding);
+		bool open(std::unique_ptr<IReader> reader, const Optional<TextEncoding>& encoding);
 
 		void close();
 

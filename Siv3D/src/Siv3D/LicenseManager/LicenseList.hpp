@@ -210,6 +210,12 @@ BSD_3_LICENSE
 },
 
 {
+R"-(dr_mp3)-",
+R"-(Copyright 2020 David Reid)-",
+MIT_LICENSE
+},
+
+{
 R"-(Earcut)-",
 R"-(Copyright (c) 2015, Mapbox)-",
 ISC_LICENSE
@@ -490,7 +496,7 @@ R"-(This software is based in part on the work of the Independent JPEG Group.)-"
 
 {
 R"-(libjpeg-turbo)-",
-R"-(Copyright (C)2009-2023 D. R. Commander. All Rights Reserved.
+R"-(Copyright (C)2009-2026 D. R. Commander. All Rights Reserved.
 Copyright (C)2015 Viktor Szathmáry. All Rights Reserved.)-",
 BSD_3_LICENSE
 },
@@ -504,8 +510,8 @@ MIT_LICENSE
 {
 R"-(libpng)-",
 
-R"-(Copyright (c) 1995-2024 The PNG Reference Library Authors.
-Copyright (c) 2018-2024 Cosmin Truta.
+R"-(Copyright (c) 1995-2026 The PNG Reference Library Authors.
+Copyright (c) 2018-2026 Cosmin Truta.
 Copyright (c) 2000-2002, 2004, 2006-2018 Glenn Randers-Pehrson.
 Copyright (c) 1996-1997 Andreas Dilger.
 Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.)-",
@@ -639,7 +645,7 @@ be appreciated.)-"
 
 {
 R"-(lunasvg)-",
-R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu <sammycageagle@gmail.com>)-",
+R"-(Copyright (c) 2020-2025 Samuel Ugochukwu <sammycageagle@gmail.com>)-",
 MIT_LICENSE
 },
 
@@ -658,6 +664,12 @@ APACHE_2_LICENSE
 {
 R"-(mimalloc)-",
 R"-(Copyright (c) 2018-2021 Microsoft Corporation, Daan Leijen)-",
+MIT_LICENSE
+},
+
+{
+R"-(miniaudio)-",
+R"-(Copyright 2025 David Reid)-",
 MIT_LICENSE
 },
 
@@ -730,14 +742,116 @@ APACHE_2_LICENSE
 },
 
 {
+R"-(oscpack)-",
+R"-(Copyright (c) 2004-2013 Ross Bencina <rossb@audiomulch.com>)-",
+MIT_LICENSE
+},
+
+{
 R"-(pcg-cpp)-",
 R"-(Copyright (c) 2014-2017 Melissa O'Neill and PCG Project contributors)-",
 MIT_LICENSE
 },
 
 {
+R"-(PFFFT)-",
+R"-(Copyright (c) 2013  Julien Pommier ( pommier@modartt.com ))-",
+R"-(Based on original fortran 77 code from FFTPACKv4 from NETLIB
+(http://www.netlib.org/fftpack), authored by Dr Paul Swarztrauber
+of NCAR, in 1985.
+
+As confirmed by the NCAR fftpack software curators, the following
+FFTPACKv5 license applies to FFTPACKv4 sources. My changes are
+released under the same terms.
+
+FFTPACK license:
+
+http://www.cisl.ucar.edu/css/software/fftpack5/ftpk.html
+
+Copyright (c) 2004 the University Corporation for Atmospheric
+Research ("UCAR"). All rights reserved. Developed by NCAR's
+Computational and Information Systems Laboratory, UCAR,
+www.cisl.ucar.edu.
+
+Redistribution and use of the Software in source and binary forms,
+with or without modification, is permitted provided that the
+following conditions are met:
+
+- Neither the names of NCAR's Computational and Information Systems
+Laboratory, the University Corporation for Atmospheric Research,
+nor the names of its sponsors or contributors may be used to
+endorse or promote products derived from this Software without
+specific prior written permission.  
+
+- Redistributions of source code must retain the above copyright
+notices, this list of conditions, and the disclaimer below.
+
+- Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions, and the disclaimer below in the
+documentation and/or other materials provided with the
+distribution.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
+SOFTWARE.)-"
+},
+
+{
+R"-(PFFFT DOUBLE)-",
+R"-(Copyright (c) 2020  Dario Mambro ( dario.mambro@gmail.com )
+Copyright (c) 2019  Hayati Ayguen ( h_ayguen@web.de )
+Copyright (c) 2013  Julien Pommier ( pommier@modartt.com ))-",
+R"-(Copyright (c) 2004 the University Corporation for Atmospheric
+Research ("UCAR"). All rights reserved. Developed by NCAR's
+Computational and Information Systems Laboratory, UCAR,
+www.cisl.ucar.edu.
+
+Redistribution and use of the Software in source and binary forms,
+with or without modification, is permitted provided that the
+following conditions are met:
+
+- Neither the names of NCAR's Computational and Information Systems
+Laboratory, the University Corporation for Atmospheric Research,
+nor the names of its sponsors or contributors may be used to
+endorse or promote products derived from this Software without
+specific prior written permission.  
+
+- Redistributions of source code must retain the above copyright
+notices, this list of conditions, and the disclaimer below.
+
+- Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions, and the disclaimer below in the
+documentation and/or other materials provided with the
+distribution.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
+SOFTWARE.)-"
+},
+
+{
+R"-(PDFium)-",
+R"-(Copyright 2014 The PDFium Authors)-",
+BSD_3_LICENSE
+"\n"
+APACHE_2_LICENSE
+},
+
+{
 R"-(plutovg)-",
-R"-(Copyright (c) 2020 Nwutobo Samuel Ugochukwu)-",
+R"-(Copyright (c) 2020-2025 Samuel Ugochukwu <sammycageagle@gmail.com>)-",
 MIT_LICENSE
 },
 
@@ -745,6 +859,12 @@ MIT_LICENSE
 R"-(polylabel)-",
 R"-(Copyright (c) 2016 Mapbox)-",
 ISC_LICENSE
+},
+
+{
+R"-(r8brain-free-src)-",
+R"-(Copyright (c) 2013-2025 Aleksey Vaneev)-",
+MIT_LICENSE
 },
 
 {
@@ -803,6 +923,12 @@ APACHE_2_LICENSE
 },
 
 {
+R"-(WinToast)-",
+R"-(Copyright (C) 2016-2025 WinToast v1.3.2 - Mohammed Boujemaoui <mohabouje@gmail.com>)-",
+MIT_LICENSE
+},
+
+{
 R"-(Xoshiro-cpp)-",
 R"-(Copyright (c) 2020 Ryo Suzuki <reputeless@gmail.com>)-",
 MIT_LICENSE
@@ -817,7 +943,7 @@ BSD_2_LICENSE
 
 {
 R"-(zlib)-",
-R"-((C) 1995-2022 Jean-loup Gailly and Mark Adler)-",
+R"-((C) 1995-2026 Jean-loup Gailly and Mark Adler)-",
 ZLIB_LICENSE
 },
 

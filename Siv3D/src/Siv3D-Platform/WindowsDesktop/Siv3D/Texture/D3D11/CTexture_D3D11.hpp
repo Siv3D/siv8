@@ -33,7 +33,7 @@ namespace s3d
 		void init() override;
 
 		[[nodiscard]]
-		Texture::IDType create(IReader&& reader, FilePathView pathHint, TextureDesc desc) override;
+		Texture::IDType create(std::unique_ptr<IReader> reader, FilePathView pathHint, TextureDesc desc) override;
 
 		[[nodiscard]]
 		Texture::IDType create(const Image& image, const Array<Image>& mipmaps, TextureDesc desc) override;

@@ -114,7 +114,7 @@ namespace s3d
 		return true;
 	}
 
-	bool TextFileReader::TextFileReaderDetail::open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+	bool TextFileReader::TextFileReaderDetail::open(std::unique_ptr<IReader> reader, const Optional<TextEncoding>& encoding)
 	{
 		if (m_info.isOpen)
 		{

@@ -71,10 +71,17 @@ namespace s3d
 		[[nodiscard]]
 		explicit Blob(FilePathView path);
 
-		/// @brief IReader からデータを読み込んでバイナリデータを作成します。
-		/// @param reader IReader
+		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
+		/// @param reader Reader オブジェクト
 		[[nodiscard]]
-		explicit Blob(IReader& reader);
+		explicit Blob(std::unique_ptr<IReader> reader);
+
+		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit Blob(Reader&& reader);
 
 		/// @brief メモリ上のデータをコピーして作成します。
 		/// @param src コピーするデータの先頭ポインタ
@@ -444,6 +451,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 末尾に 1 バイトを追加します。
+		/// @param value 追加するバイト値
 		constexpr void push_back(Byte value);
 
 		////////////////////////////////////////////////////////////////
@@ -452,6 +461,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 末尾の 1 バイトを削除します。
 		constexpr void pop_back();
 
 		////////////////////////////////////////////////////////////////
@@ -460,6 +470,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 末尾にバイナリデータを追加します。
+		/// @param other 追加するデータ
 		constexpr void append(const Blob& other);
 
 		/// @brief 末尾にバイナリデータを追加します。
@@ -473,9 +485,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した位置に 1 バイトを挿入します。
+		/// @param pos 挿入位置を指すイテレータ
+		/// @param value 挿入するバイト値
+		/// @return 挿入されたバイトを指すイテレータ
 		constexpr iterator insert(const_iterator pos, Byte value);
 
-		template <class Iterator>
+		/// @brief 指定した位置にバイナリデータを挿入します。
+		/// @tparam Iterator 挿入するデータのイテレータの型
+		/// @param pos 挿入位置を指すイテレータ
+		/// @param first 挿入するデータの先頭を指すイテレータ
+		/// @param last 挿入するデータの終端を指すイテレータ
+		/// @return 挿入された最初のバイトを指すイテレータ
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
 
 		////////////////////////////////////////////////////////////////

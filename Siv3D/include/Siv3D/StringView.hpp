@@ -16,6 +16,7 @@
 # include "Hash.hpp"
 # include "Utility.hpp"
 # include "FunctionRef.hpp"
+# include "PredefinedNamedParameter.hpp"
 
 namespace s3d
 {
@@ -442,6 +443,7 @@ namespace s3d
 		/// @param pos 開始位置 (デフォルトは 0)
 		/// @param n 文字数 (npos の場合は末尾まで)
 		/// @return 部分文字列を表す StringView
+		/// @throw std::out_of_range pos が範囲外の場合
 		[[nodiscard]]
 		constexpr StringView substr(size_type pos = 0, size_type n = npos) const;
 
@@ -833,7 +835,7 @@ namespace s3d
 		/// @brief 文字列を UTF-32 文字列に変換します。 | Converts the string to a UTF-32 string.
 		/// @return 変換された文字列 | Converted string
 		[[nodiscard]]
-		constexpr std::u32string toUTF32() const noexcept;
+		constexpr std::u32string toUTF32() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -868,7 +870,8 @@ namespace s3d
 		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool all(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool all(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -883,7 +886,8 @@ namespace s3d
 		/// @remark `.contains_if(f)` と同じです。
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool any(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool any(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -928,6 +932,7 @@ namespace s3d
 
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素への参照
+		/// @throws std::out_of_range 文字列が空の場合
 		[[nodiscard]]
 		value_type choice() const;
 
@@ -935,6 +940,7 @@ namespace s3d
 		/// @tparam URBG 乱数生成器の型
 		/// @param rbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
+		/// @throws std::out_of_range 文字列が空の場合
 		[[nodiscard]]
 		value_type choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
 
@@ -951,7 +957,8 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -984,7 +991,8 @@ namespace s3d
 		/// @return 条件を満たす要素の個数	
 		template <class Fty>
 		[[nodiscard]]
-		constexpr int64 count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr int64 count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -997,7 +1005,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& ch : s) f(ch);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1010,7 +1019,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) const requires std::invocable<Fty&, size_t, const value_type&>;
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1023,7 +1033,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) const requires std::invocable<Fty&, isize, const value_type&>;
+		constexpr void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1062,7 +1073,21 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String filter(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr String filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr String head(size_type n) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1167,7 +1192,8 @@ namespace s3d
 		/// @return 文字列の各要素に関数を適用した戻り値からなる配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr auto map(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1181,52 +1207,8 @@ namespace s3d
 		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool none(Fty f) const requires std::predicate<Fty&, const value_type&>;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	removed
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
-		/// @param ch 削除する文字
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed(value_type ch) const;
-
-		/// @brief 指定した文字列を削除した新しい文字列を返します。
-		/// @param s 削除する文字列
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed(StringView s) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	removed_at
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed_at(size_type index) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	removed_if
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい文字列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr String removed_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool none(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1273,7 +1255,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String replaced_if(Fty f, value_type newChar) const requires std::predicate<Fty&, const value_type&>;
+		constexpr String replaced_if(Fty f, value_type newChar) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1329,7 +1312,8 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		template <class Fty>
-		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1427,7 +1411,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sorted_by(Fty f) const requires std::predicate<Fty&, const value_type&, const value_type&>;
+		String sorted_by(Fty f) const
+			requires std::predicate<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1491,16 +1476,29 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾の最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr String tail(size_type n) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	take
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 文字列の先頭から指定された文字数分取り出した新しい文字列ビューを返します。
-		/// @param n 取り出す文字数
-		/// @return 新しい文字列
-		/// @remark n が文字列の長さ以上の場合、元の文字列のコピーが返ります。
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
 		[[nodiscard]]
-		String take(size_t n) const;
+		constexpr String take(size_type n) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1514,7 +1512,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String take_while(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		String take_while(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1587,8 +1586,55 @@ namespace s3d
 		/// @param indices インデックス
 		/// @remark `StringView{ U"abcde" }.values_at({0, 3, 4}); // U"ade"`
 		/// @return 新しい文字列
+		/// @throws std::out_of_range indices のいずれかが文字列の長さ以上の場合
 		[[nodiscard]]
 		String values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
+		/// @param ch 削除する文字
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String without(value_type ch) const;
+
+		/// @brief 指定した文字列を削除した新しい文字列を返します。
+		/// @param s 削除する文字列
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String without(StringView s) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
+		/// @param index インデックス
+		/// @return 新しい文字列
+		/// @throws std::out_of_range index が文字列の長さ以上の場合
+		[[nodiscard]]
+		String without_at(size_type index) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい文字列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr String without_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1739,6 +1785,12 @@ namespace s3d
 
 		[[noreturn]]
 		static void ThrowValuesAtOutOfRange();
+
+		[[noreturn]]
+		static void ThrowWithoutAtOutOfRange();
+
+		[[noreturn]]
+		static void ThrowRepeatLengthError();
 
 		string_view_type m_view;
 	};

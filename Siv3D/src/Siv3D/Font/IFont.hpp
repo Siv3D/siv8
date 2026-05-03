@@ -16,10 +16,15 @@
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/TextStyle.hpp>
 
+typedef struct FT_FaceRec_* FT_Face;
+struct FT_MM_Var_;
+
 namespace s3d
 {
+	struct FontOptions;
 	struct FontFaceInfo;
 	struct ITextEffect;
+	struct TextLayoutResult;
 	class PixelShader;
 
 	class SIV3D_NOVTABLE ISiv3DFont
@@ -58,7 +63,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual Array<FontFaceProperties> getFontFaces(FilePathView path) const = 0;
+		virtual Array<FontFaceProperties> getFontFaces(FilePathView path) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -67,10 +72,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual Font::IDType create(Typeface typeface, FontMethod fontMethod, int32 baseSize, FontStyle style) = 0;
+		virtual Font::IDType create(FontMethod fontMethod, int32 baseSize, Typeface typeface, const FontOptions& options) = 0;
 
 		[[nodiscard]]
-		virtual Font::IDType create(FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style) = 0;
+		virtual Font::IDType create(FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options) = 0;
+
+		[[nodiscard]]
+		virtual Font::IDType create(FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -335,7 +343,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
+		virtual TextLayoutResult fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) = 0;
 		
 		////////////////////////////////////////////////////////////////
 		//
@@ -343,7 +351,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		virtual bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
+		virtual TextLayoutResult drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -352,5 +360,23 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		virtual const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	newFace
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual bool newFace(FilePathView path, uint32 faceIndex, FT_Face& face) = 0;
+		
+		virtual bool newFace(const void* data, size_t size_bytes, uint32 faceIndex, FT_Face& face) = 0;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	done_MM_Var
+		//
+		////////////////////////////////////////////////////////////////
+
+		virtual void done_MM_Var(FT_MM_Var_* amaster) = 0;
 	};
 }

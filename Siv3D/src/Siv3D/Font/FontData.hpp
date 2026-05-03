@@ -35,7 +35,9 @@ namespace s3d
 
 		explicit FontData(Null);
 
-		FontData(::FT_Library library, FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style);
+		FontData(FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options);
+
+		FontData(FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options);
 
 		////////////////////////////////////////////////////////////////
 		//

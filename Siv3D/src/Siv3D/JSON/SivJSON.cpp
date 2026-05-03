@@ -134,7 +134,7 @@ namespace s3d
 		return (not isInvalid());
 	}
 
-	bool JSON::load(std::unique_ptr<IReader>&& reader, const AllowExceptions allowExceptions)
+	bool JSON::load(std::unique_ptr<IReader> reader, const AllowExceptions allowExceptions)
 	{
 		try
 		{
@@ -878,7 +878,7 @@ namespace s3d
 		return Parse(reader.readAllUTF8(), allowExceptions);
 	}
 
-	JSON JSON::Load(std::unique_ptr<IReader>&& reader, const AllowExceptions allowExceptions)
+	JSON JSON::Load(std::unique_ptr<IReader> reader, const AllowExceptions allowExceptions)
 	{
 		TextFileReader textReader{ std::move(reader) };
 

@@ -46,6 +46,20 @@
 //       having been (according to documentation) added in Mac OS X 10.7
 #define NSWindowCollectionBehaviorFullScreenNone (1 << 9)
 
+
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+#include <math.h>
+#include "GLFW_Siv3D_DragDropBridge.h"
+
+void GLFW_Siv3D_ReportPenEnter(bool enter, bool isPen);
+
+void GLFW_Siv3D_ReportTabletPoint(double normalPressure, double tangentialPressure, double tiltX, double tiltY);
+//
+//-----------------------------------------------
+
 // Returns whether the cursor is in the content area of the specified window
 //
 static GLFWbool cursorInContentArea(_GLFWwindow* window)
@@ -356,6 +370,16 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (instancetype)initWithGlfwWindow:(_GLFWwindow *)initWindow;
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+- (NSInteger)s3d_detectDragItemType:(id<NSDraggingInfo>)sender;
+- (NSPoint)s3d_rawClientPosFromDraggingInfo:(id<NSDraggingInfo>)sender;
+- (NSDragOperation)s3d_updateDraggingState:(id<NSDraggingInfo>)sender;
+//
+//-----------------------------------------------
+
 @end
 
 @implementation GLFWContentView
@@ -370,7 +394,17 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         markedText = [[NSMutableAttributedString alloc] init];
 
         [self updateTrackingAreas];
-        [self registerForDraggedTypes:@[NSPasteboardTypeURL]];
+
+		//-----------------------------------------------
+		//
+		//	[Siv3D]
+		//
+		[self registerForDraggedTypes:@[
+			NSPasteboardTypeURL,
+			NSPasteboardTypeString
+		]];
+		//
+		//-----------------------------------------------
     }
 
     return self;
@@ -423,6 +457,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseDown:(NSEvent *)event
 {
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	[self handlePointerEvent:event];
+	//
+	//-----------------------------------------------
+	
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_PRESS,
@@ -432,10 +474,26 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)mouseDragged:(NSEvent *)event
 {
     [self mouseMoved:event];
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+    if (GLFW_Siv3D_DragDropProcessMouseDragged(window, self, event))
+        return;
+	//
+	//-----------------------------------------------
 }
 
 - (void)mouseUp:(NSEvent *)event
 {
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	[self handlePointerEvent:event];
+	//
+	//-----------------------------------------------
+	
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_RELEASE,
@@ -444,6 +502,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseMoved:(NSEvent *)event
 {
+	//-----------------------------------------------
+	//
+	//	[Siv3D]
+	//
+	[self handlePointerEvent:event];
+	//
+	//-----------------------------------------------
+	
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         const double dx = [event deltaX] - window->ns.cursorWarpDeltaX;
@@ -523,6 +589,212 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
+
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+- (void)tabletPoint:(NSEvent *)event {
+	[self handlePointerEvent:event];
+}
+
+- (void)tabletProximity:(NSEvent *)event {
+	const bool enter = event.isEnteringProximity;
+	const bool isPen = (event.pointingDeviceType != NSPointingDeviceTypeEraser);
+	GLFW_Siv3D_ReportPenEnter(enter, isPen);
+	[self handlePointerEvent:event];
+}
+
+- (void)handleTabletPointEvent:(NSEvent *)event {
+	CGFloat normalPressure		= event.pressure; // 0.0 ... 1.0
+	CGFloat tangentialPressure	= event.tangentialPressure; // 対応デバイスのみ
+	NSPoint tilt				= event.tilt; // x, y は -1.0 ... 1.0
+	GLFW_Siv3D_ReportTabletPoint(normalPressure, tangentialPressure, tilt.x, tilt.y);
+}
+
+- (void)handlePointerEvent:(NSEvent *)event {
+	// ネイティブ tablet proximity
+	if (event.type == NSEventTypeTabletProximity) {
+		return;
+	}
+
+	// ネイティブ tablet point
+	if (event.type == NSEventTypeTabletPoint) {
+		[self handleTabletPointEvent:event];
+		return;
+	}
+
+	// mouse event に tablet subtype が載っているケース
+	switch (event.subtype) {
+		case NSEventSubtypeTabletProximity:
+			return;
+
+		case NSEventSubtypeTabletPoint:
+			[self handleTabletPointEvent:event];
+			return;
+
+		default:
+			return;
+	}
+}
+
+- (NSInteger)s3d_detectDragItemType:(id<NSDraggingInfo>)sender
+{
+    NSPasteboard* pasteboard = [sender draggingPasteboard];
+
+    NSDictionary* urlOptions = @{ NSPasteboardURLReadingFileURLsOnlyKey:@YES };
+    NSArray* urls = [pasteboard readObjectsForClasses:@[[NSURL class]]
+                                              options:urlOptions];
+
+    if ([urls count] > 0)
+    {
+        return GLFW_SIV3D_DRAG_ITEM_FILE_PATHS;
+    }
+
+    NSString* text = [pasteboard stringForType:NSPasteboardTypeString];
+
+    if ((text != nil) && ([text length] > 0))
+    {
+        return GLFW_SIV3D_DRAG_ITEM_TEXT;
+    }
+
+    return GLFW_SIV3D_DRAG_ITEM_NONE;
+}
+
+- (NSPoint)s3d_rawClientPosFromDraggingInfo:(id<NSDraggingInfo>)sender
+{
+    const NSPoint pointInWindow = [sender draggingLocation];
+    const NSPoint localPoint = [self convertPoint:pointInWindow fromView:nil];
+
+    const NSRect pointRect = NSMakeRect(localPoint.x, localPoint.y, 0.0, 0.0);
+    const NSRect backingPointRect = [self convertRectToBacking:pointRect];
+    const NSRect backingBounds = [self convertRectToBacking:[self bounds]];
+
+    return NSMakePoint((CGFloat) llround(backingPointRect.origin.x),
+                       (CGFloat) llround(backingBounds.size.height - backingPointRect.origin.y));
+}
+
+- (NSDragOperation)s3d_updateDraggingState:(id<NSDraggingInfo>)sender
+{
+    const NSInteger itemType = [self s3d_detectDragItemType:sender];
+    const NSPoint rawClientPos = [self s3d_rawClientPosFromDraggingInfo:sender];
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_FILE_PATHS) &&
+        GLFW_Siv3D_DragDropAcceptsFilePaths(window))
+    {
+        GLFW_Siv3D_DragDropSetDragOver(window,
+                                       (int) rawClientPos.x,
+                                       (int) rawClientPos.y,
+                                       (int) itemType);
+        return NSDragOperationCopy;
+    }
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_TEXT) &&
+        GLFW_Siv3D_DragDropAcceptsText(window))
+    {
+        GLFW_Siv3D_DragDropSetDragOver(window,
+                                       (int) rawClientPos.x,
+                                       (int) rawClientPos.y,
+                                       (int) itemType);
+        return NSDragOperationCopy;
+    }
+
+    GLFW_Siv3D_DragDropClearDragOver(window);
+    return NSDragOperationNone;
+}
+
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
+{
+    return [self s3d_updateDraggingState:sender];
+}
+
+- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
+{
+    return [self s3d_updateDraggingState:sender];
+}
+
+- (void)draggingExited:(id<NSDraggingInfo>)sender
+{
+    GLFW_Siv3D_DragDropClearDragOver(window);
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
+{
+    const NSInteger itemType = [self s3d_detectDragItemType:sender];
+    const NSPoint rawClientPos = [self s3d_rawClientPosFromDraggingInfo:sender];
+    NSPasteboard* pasteboard = [sender draggingPasteboard];
+
+    GLFW_Siv3D_DragDropClearDragOver(window);
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_FILE_PATHS) &&
+        GLFW_Siv3D_DragDropAcceptsFilePaths(window))
+    {
+        NSDictionary* urlOptions = @{ NSPasteboardURLReadingFileURLsOnlyKey:@YES };
+        NSArray* urls = [pasteboard readObjectsForClasses:@[[NSURL class]]
+                                                  options:urlOptions];
+        const NSUInteger count = [urls count];
+
+        if (count == 0)
+        {
+            return NO;
+        }
+
+        char** paths = _glfw_calloc(count, sizeof(char*));
+
+        for (NSUInteger i = 0; i < count; ++i)
+        {
+            paths[i] = _glfw_strdup([urls[i] fileSystemRepresentation]);
+        }
+
+        GLFW_Siv3D_DragDropAppendFilePaths(window,
+                                           (int) rawClientPos.x,
+                                           (int) rawClientPos.y,
+                                           (const char* const*) paths,
+                                           (size_t) count);
+
+        for (NSUInteger i = 0; i < count; ++i)
+        {
+            _glfw_free(paths[i]);
+        }
+
+        _glfw_free(paths);
+        return YES;
+    }
+
+    if ((itemType == GLFW_SIV3D_DRAG_ITEM_TEXT) &&
+        GLFW_Siv3D_DragDropAcceptsText(window))
+    {
+        NSString* text = [pasteboard stringForType:NSPasteboardTypeString];
+
+        if ((text == nil) || ([text length] == 0))
+        {
+            return NO;
+        }
+
+        GLFW_Siv3D_DragDropAppendText(window,
+                                      (int) rawClientPos.x,
+                                      (int) rawClientPos.y,
+                                      [text UTF8String]);
+        return YES;
+    }
+
+    return NO;
+}
+
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session
+       sourceOperationMaskForDraggingContext:(NSDraggingContext)context
+{
+    return NSDragOperationCopy;
+}
+
+- (void)draggingSession:(NSDraggingSession *)session
+            endedAtPoint:(NSPoint)screenPoint
+               operation:(NSDragOperation)operation
+{
+    GLFW_Siv3D_DragDropSourceEnded(window);
+}
+//
+//-----------------------------------------------
 
 - (void)viewDidChangeBackingProperties
 {
@@ -633,6 +905,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwInputScroll(window, deltaX, deltaY);
 }
 
+//-----------------------------------------------
+//
+//	[Siv3D]
+//
+/*
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
     // HACK: We don't know what to say here because we don't know what the
@@ -668,6 +945,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     return YES;
 }
+*/
+//
+//-----------------------------------------------
 
 - (BOOL)hasMarkedText
 {

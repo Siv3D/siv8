@@ -124,7 +124,7 @@ namespace s3d
 		/// @tparam Iterator イテレータの型
 		/// @param first イテレータの開始位置
 		/// @param last イテレータの終端位置
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		constexpr String(Iterator first, Iterator last);
 
@@ -140,12 +140,13 @@ namespace s3d
 		[[nodiscard]]
 		constexpr String(const StringViewLike auto& s, size_type pos, size_type count);
 
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 		
 		/// @brief 範囲から新しい文字列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
-		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+		template <class Range>
+			requires Concept::ContainerCompatibleRange<String::value_type, Range>
 		[[nodiscard]]
 		constexpr String(std::from_range_t, Range&& range);
 	
@@ -260,7 +261,7 @@ namespace s3d
 		/// @param first イテレータの開始位置
 		/// @param last イテレータの終端位置
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr String& assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字のリストを文字列に代入します。
@@ -290,7 +291,8 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 代入する範囲
 		/// @return *this
-		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+		template <class Range>
+			requires Concept::ContainerCompatibleRange<String::value_type, Range>
 		constexpr String& assign_range(Range&& range) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
@@ -700,7 +702,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 要素をすべて消去し、メモリも解放します。
+		/// @brief 要素をすべて消去し、メモリ解放を試みます。
 		constexpr void release();
 
 		////////////////////////////////////////////////////////////////
@@ -762,7 +764,7 @@ namespace s3d
 		/// @param first 範囲の開始イテレータ
 		/// @param last 範囲の終端イテレータ
 		/// @return 最初に挿入された要素を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した位置に文字のリストを挿入します。
@@ -796,7 +798,8 @@ namespace s3d
 		/// @param pos 挿入位置のイテレータ
 		/// @param range 挿入する範囲
 		/// @return 最初に挿入された要素を指すイテレータ
-		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+		template <class Range>
+			requires Concept::ContainerCompatibleRange<String::value_type, Range>
 		constexpr iterator insert_range(const_iterator pos, Range&& range) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
@@ -821,6 +824,88 @@ namespace s3d
 		/// @param last 削除する範囲の終端位置を指すイテレータ
 		/// @return 削除された範囲の次の位置を指すイテレータ
 		constexpr iterator erase(const_iterator first, const_iterator last) noexcept SIV3D_LIFETIMEBOUND;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を文字列から削除します。
+		/// @param index インデックス
+		/// @remark 範囲外のインデックスを指定した場合、何もしません。
+		/// @return *this
+		constexpr String& erase_at(size_type index) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
+		/// @param index インデックス
+		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
+		/// @return 新しい文字列
+		[[nodiscard]]
+		constexpr String erase_at(size_type index) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した文字を文字列から削除します。
+		/// @param ch 削除する文字
+		/// @return *this
+		String& erase_all(value_type ch) & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した文字列をもとの文字列から削除します。
+		/// @param s 削除する文字列
+		/// @return *this
+		String& erase_all(StringView s) & SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
+		/// @param ch 削除する文字
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String erase_all(value_type ch) && noexcept;
+
+		/// @brief 指定した文字列を削除した新しい文字列を返します。
+		/// @param s 削除する文字列
+		/// @return 新しい文字列
+		[[nodiscard]]
+		String erase_all(StringView s) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first
+		//
+		////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素を削除します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return *this
+		template <class Fty>
+		constexpr String& erase_all_if(Fty f) & noexcept SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい文字列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr String erase_all_if(Fty f) && noexcept
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -943,7 +1028,7 @@ namespace s3d
 		/// @param first 範囲の開始イテレータ
 		/// @param last 範囲の終端イテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr String& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字のリストを末尾に追加します。
@@ -973,7 +1058,8 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 追加する範囲
 		/// @return *this
-		template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+		template <class Range>
+			requires Concept::ContainerCompatibleRange<String::value_type, Range>
 		constexpr String& append_range(Range&& range) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
@@ -1522,7 +1608,8 @@ namespace s3d
 		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool all(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool all(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1537,7 +1624,8 @@ namespace s3d
 		/// @remark `.contains_if(f)` と同じです。
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool any(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool any(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1640,7 +1728,8 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1673,7 +1762,8 @@ namespace s3d
 		/// @return 条件を満たす要素の個数	
 		template <class Fty>
 		[[nodiscard]]
-		constexpr int64 count_if(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr int64 count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1686,14 +1776,16 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& ch : s) f(ch);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) requires std::invocable<Fty&, value_type&>;
+		constexpr void each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
 
 		/// @brief すべての要素を順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& ch : s) f(ch);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1706,14 +1798,16 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) requires std::invocable<Fty&, size_t, value_type&>;
+		constexpr void each_index(Fty f)
+			requires std::invocable<Fty&, size_t, value_type&>;
 
 		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) const requires std::invocable<Fty&, size_t, const value_type&>;
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1726,14 +1820,16 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) requires std::invocable<Fty&, isize, value_type&>;
+		constexpr void each_sindex(Fty f)
+			requires std::invocable<Fty&, isize, value_type&>;
 
 		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto ch : s) f(i++, ch);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) const requires std::invocable<Fty&, isize, const value_type&>;
+		constexpr void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1783,7 +1879,28 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String filter(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr String filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr String head(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr String head(size_type n) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1807,7 +1924,8 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return *this
 		template <class Fty>
-		constexpr String& keep_if(Fty f) SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
+		constexpr String& keep_if(Fty f) SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1832,7 +1950,7 @@ namespace s3d
 		/// @param fillChar 埋め文字
 		/// @remark 元の文字列の長さが `length` より大きい場合、変更は行われません。 
 		/// @return *this
-		String& leftPad(size_type length, value_type fillChar = U' ') & noexcept SIV3D_LIFETIMEBOUND;
+		String& leftPad(size_type length, value_type fillChar = U' ') & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の左を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の左を埋め文字で埋めた後の文字列の長さ
@@ -1840,7 +1958,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String leftPad(size_type length, value_type fillChar = U' ') && noexcept;
+		String leftPad(size_type length, value_type fillChar = U' ') &&;
 
 		/// @brief 文字列の左を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の左を埋め文字で埋めた後の文字列の長さ
@@ -1856,7 +1974,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String leftPadded(size_type length, value_type fillChar = U' ') && noexcept;
+		String leftPadded(size_type length, value_type fillChar = U' ') &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1969,7 +2087,8 @@ namespace s3d
 		/// @return 文字列の各要素に関数を適用した戻り値からなる配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr auto map(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1983,129 +2102,38 @@ namespace s3d
 		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool none(Fty f) const requires std::predicate<Fty&, const value_type&>;
+		constexpr bool none(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	remove, removed
+		//	without
 		//
 		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した文字を文字列から削除します。
-		/// @param ch 削除する文字
-		/// @return *this
-		String& remove(value_type ch) & noexcept SIV3D_LIFETIMEBOUND;
-
-		/// @brief 指定した文字列をもとの文字列から削除します。
-		/// @param s 削除する文字列
-		/// @return *this
-		String& remove(StringView s) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
 		/// @param ch 削除する文字
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String remove(value_type ch) && noexcept;
+		String without(value_type ch) const&;
 
 		/// @brief 指定した文字列を削除した新しい文字列を返します。
 		/// @param s 削除する文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String remove(StringView s) && noexcept;
+		String without(StringView s) const&;
 
 		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
 		/// @param ch 削除する文字
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String removed(value_type ch) const&;
+		String without(value_type ch) && noexcept;
 
 		/// @brief 指定した文字列を削除した新しい文字列を返します。
 		/// @param s 削除する文字列
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String removed(StringView s) const&;
-
-		/// @brief 指定した文字を文字列から削除した新しい文字列を返します。
-		/// @param ch 削除する文字
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed(value_type ch) && noexcept;
-
-		/// @brief 指定した文字列を削除した新しい文字列を返します。
-		/// @param s 削除する文字列
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed(StringView s) && noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_at, removed_at
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定したインデックスにある要素を文字列から削除します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何もしません。
-		/// @return *this
-		String& remove_at(size_type index) & noexcept SIV3D_LIFETIMEBOUND;
-
-		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String remove_at(size_type index) && noexcept;
-
-		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed_at(size_type index) const&;
-
-		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
-		/// @param index インデックス
-		/// @remark 範囲外のインデックスを指定した場合、何も削除しません。
-		/// @return 新しい文字列
-		[[nodiscard]]
-		String removed_at(size_type index) && noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_if, removed_if
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した条件を満たす要素を削除します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return *this
-		template <class Fty>
-		constexpr String& remove_if(Fty f) & noexcept SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい文字列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr String remove_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい文字列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr String removed_if(Fty f) const& requires std::predicate<Fty&, const value_type&>;
-
-		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい文字列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr String removed_if(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>;
+		String without(StringView s) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2183,7 +2211,8 @@ namespace s3d
 		/// @param newChar 置換後の文字
 		/// @return *this
 		template <class Fty>
-		constexpr String& replace_if(Fty f, value_type newChar) & noexcept SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>;
+		constexpr String& replace_if(Fty f, value_type newChar) & noexcept SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たす要素を別の文字に置き換えた新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -2192,7 +2221,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String replace_if(Fty f, value_type newChar) && noexcept requires std::predicate<Fty&, const value_type&>;
+		constexpr String replace_if(Fty f, value_type newChar) && noexcept
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たす要素を別の文字に置き換えた新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -2201,7 +2231,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String replaced_if(Fty f, value_type newChar) const& requires std::predicate<Fty&, const value_type&>;
+		constexpr String replaced_if(Fty f, value_type newChar) const&
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 指定した条件を満たす要素を別の文字に置き換えた新しい文字列を返します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -2210,7 +2241,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr String replaced_if(Fty f, value_type newChar) && noexcept requires std::predicate<Fty&, const value_type&>;
+		constexpr String replaced_if(Fty f, value_type newChar) && noexcept
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2298,13 +2330,36 @@ namespace s3d
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		template <class Fty>
-		constexpr void reverse_each(Fty f) requires std::invocable<Fty&, value_type&>;
+		constexpr void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
 
 		/// @brief 各要素を引数にして関数を呼び出します。順番は後ろからです。
 		/// @tparam Fty 呼び出す関数の型
 		/// @param f 呼び出す関数
 		template <class Fty>
-		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 文字列の逆順ビューを返します。
+		/// @return 文字列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() &;
+
+		/// @brief 文字列の逆順ビューを返します。
+		/// @return 文字列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() const&;
+
+		/// @brief 文字列の逆順ビューを返します。
+		/// @return 文字列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2317,7 +2372,7 @@ namespace s3d
 		/// @param fillChar 埋め文字
 		/// @remark 元の文字列の長さが `length` より大きい場合、変更は行われません。 
 		/// @return *this
-		String& rightPad(size_type length, value_type fillChar = U' ') & noexcept SIV3D_LIFETIMEBOUND;
+		String& rightPad(size_type length, value_type fillChar = U' ') & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列の右を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の右を埋め文字で埋めた後の文字列の長さ
@@ -2325,7 +2380,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String rightPad(size_type length, value_type fillChar = U' ') && noexcept;
+		String rightPad(size_type length, value_type fillChar = U' ') &&;
 
 		/// @brief 文字列の右を埋め文字で埋めた新しい文字列を返します。
 		/// @param length 文字列の右を埋め文字で埋めた後の文字列の長さ
@@ -2341,7 +2396,7 @@ namespace s3d
 		/// @remark 元の文字列の長さが `length` より大きい場合、元の文字列のコピーが返ります。
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String rightPadded(size_type length, value_type fillChar = U' ') && noexcept;
+		String rightPadded(size_type length, value_type fillChar = U' ') &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2534,7 +2589,8 @@ namespace s3d
 		/// @param f 比較関数
 		/// @return *this
 		template <class Fty>
-		String& sort_by(Fty f) & noexcept SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&, const value_type&>;
+		String& sort_by(Fty f) & noexcept SIV3D_LIFETIMEBOUND
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 		
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -2542,7 +2598,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sort_by(Fty f) && noexcept requires std::predicate<Fty&, const value_type&, const value_type&>;
+		String sort_by(Fty f) && noexcept
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -2550,7 +2607,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>;
+		String sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を昇順にソートした新しい文字列を返します。
 		/// @tparam Fty 比較関数の型
@@ -2558,7 +2616,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String sorted_by(Fty f) && noexcept requires std::predicate<Fty&, const value_type&, const value_type&>;
+		String sorted_by(Fty f) && noexcept
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2583,7 +2642,9 @@ namespace s3d
 		/// @return 分割された文字列
 		/// @remark 戻り値は元の文字列を参照します。元の文字列のライフタイムに注意してください。
 		[[nodiscard]]
-		Array<StringView, std::allocator<StringView>> splitView(value_type ch) const SIV3D_LIFETIMEBOUND;
+		Array<StringView, std::allocator<StringView>> splitView(value_type ch) const& SIV3D_LIFETIMEBOUND;
+
+		Array<StringView, std::allocator<StringView>> splitView(value_type ch) && = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2607,7 +2668,9 @@ namespace s3d
 		/// @brief 文字列を行ごとに分割します。
 		/// @return 分割された文字列
 		[[nodiscard]]
-		Array<StringView, std::allocator<StringView>> splitLines() const SIV3D_LIFETIMEBOUND;
+		Array<StringView, std::allocator<StringView>> splitLines() const& SIV3D_LIFETIMEBOUND;
+		
+		Array<StringView, std::allocator<StringView>> splitLines() && = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2636,25 +2699,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾の最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr String tail(size_type n) const&;
+
+		/// @brief 末尾の最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾の最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		[[nodiscard]]
+		constexpr String tail(size_type n)&& noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	take
 		//
 		////////////////////////////////////////////////////////////////
 		
-		/// @brief 文字列の先頭から指定された文字数分取り出した新しい文字列を返します。
-		/// @param n 取り出す文字数
-		/// @return 新しい文字列
-		/// @remark n が文字列の長さ以上の場合、元の文字列のコピーが返ります。
-		/// @remark この関数は `.substr(0, n)` と同じです。
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
 		[[nodiscard]]
-		String take(size_t n) const&;
+		constexpr String take(size_t n) const&;
 
-		/// @brief 文字列の先頭から指定された文字数分取り出した新しい文字列を返します。
-		/// @param n 取り出す文字数
-		/// @return 新しい文字列
-		/// @remark n が文字列の長さ以上の場合、元の文字列のコピーが返ります。
-		/// @remark この関数は `.substr(0, n)` と同じです。
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい文字列を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい文字列
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
 		[[nodiscard]]
-		String take(size_t n) && noexcept;
+		constexpr String take(size_t n) && noexcept;
 		
 		////////////////////////////////////////////////////////////////
 		//
@@ -2668,7 +2749,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String take_while(Fty f) const& requires std::predicate<Fty&, const value_type&>;
+		String take_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 先頭から指定された条件を満たし続ける間、要素を取り出します。
 		/// @tparam Fty 条件を記述した関数の型
@@ -2676,7 +2758,8 @@ namespace s3d
 		/// @return 新しい文字列
 		template <class Fty>
 		[[nodiscard]]
-		String take_while(Fty f) && noexcept requires std::predicate<Fty&, const value_type&>;
+		String take_while(Fty f) && noexcept
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2759,7 +2842,7 @@ namespace s3d
 		
 		/// @brief 文字列をソートせずに、重複する文字を削除します。
 		/// @return *this
-		String& stable_unique() & noexcept SIV3D_LIFETIMEBOUND;
+		String& stable_unique() & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 文字列をソートせずに、重複する文字を削除した新しい文字列を返します。
 		/// @return 新しい文字列
@@ -2833,6 +2916,50 @@ namespace s3d
 		/// @return 新しい文字列
 		[[nodiscard]]
 		String values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
+		/// @param index インデックス
+		/// @return 新しい文字列
+		/// @throws std::out_of_range index が文字列の長さ以上の場合
+		[[nodiscard]]
+		String without_at(size_type index) const&;
+
+		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
+		/// @param index インデックス
+		/// @return 新しい文字列
+		/// @throws std::out_of_range index が文字列の長さ以上の場合
+		[[nodiscard]]
+		String without_at(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい文字列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr String without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たす要素を削除した新しい文字列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい文字列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr String without_if(Fty f) && noexcept
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -3175,6 +3302,9 @@ namespace s3d
 
 		[[noreturn]]
 		static void ThrowValuesAtOutOfRange();
+
+		[[noreturn]]
+		static void ThrowWithoutAtOutOfRange();
 	};
 
 	inline namespace Literals

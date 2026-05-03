@@ -45,7 +45,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool SVGDecoder::isHeader(const uint8(&bytes)[16]) const noexcept
+	bool SVGDecoder::isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept
 	{
 		static constexpr uint8 signature1[] = { '<', 's', 'v', 'g', ' ', 'x', 'm', 'l', 'n', 's' };
 		static constexpr uint8 signature2[] = { '<', 's', 'v', 'g', ':', 's', 'v', 'g', ' ', 'x', 'm', 'l', 'n', 's' };
@@ -62,11 +62,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& SVGDecoder::possibleExtensions() const
+	std::span<const StringView> SVGDecoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"svg" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"svg" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -80,11 +79,11 @@ namespace s3d
 		return IImageDecoder::getImageInfo(path);
 	}
 
-	Optional<ImageInfo> SVGDecoder::getImageInfo(IReader& reader, const FilePathView) const
+	Optional<ImageInfo> SVGDecoder::getImageInfo(const IReader& reader, const FilePathView) const
 	{
 		std::string source(reader.size(), '\0');
 
-		if (reader.read(source.data(), source.size())
+		if (reader.lookahead(source.data(), source.size())
 			!= static_cast<int64>(source.size()))
 		{
 			LOG_FAIL("❌ SVGDecoder::getImageInfo(): Failed to read the source");
@@ -116,13 +115,13 @@ namespace s3d
 		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image SVGDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
+	Image SVGDecoder::decode(std::unique_ptr<IReader> reader, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("SVGDecoder::decode()");
 
-		std::string source(reader.size(), '\0');
+		std::string source(reader->size(), '\0');
 
-		if (reader.read(source.data(), source.size())
+		if (reader->read(source.data(), source.size())
 			!= static_cast<int64>(source.size()))
 		{
 			LOG_FAIL("❌ SVGDecoder::decode(): Failed to read the source");

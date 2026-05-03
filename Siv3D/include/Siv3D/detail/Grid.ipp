@@ -690,7 +690,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr uint32 Grid<Type, Allocator>::bytesPerRow() const noexcept requires (Concept::TriviallyCopyable<value_type>)
+	constexpr uint32 Grid<Type, Allocator>::bytesPerRow() const noexcept
+		requires (Concept::TriviallyCopyable<value_type>)
 	{
 		return static_cast<uint32>(m_size.x * sizeof(value_type));
 	}
@@ -702,7 +703,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr size_t Grid<Type, Allocator>::size_bytes() const noexcept requires (Concept::TriviallyCopyable<value_type>)
+	constexpr size_t Grid<Type, Allocator>::size_bytes() const noexcept
+		requires (Concept::TriviallyCopyable<value_type>)
 	{
 		return (m_container.size() * sizeof(value_type));
 	}
@@ -759,7 +761,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::clear() noexcept
 	{
-		m_size.clear();
+		m_size.setZero();
 		m_container.clear();
 	}
 
@@ -1633,7 +1635,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Grid<Type, Allocator>::all(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool Grid<Type, Allocator>::all(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_container.all(std::forward<Fty>(f));
 	}
@@ -1646,7 +1649,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Grid<Type, Allocator>::any(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool Grid<Type, Allocator>::any(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_container.any(std::forward<Fty>(f));
 	}
@@ -1671,7 +1675,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Grid<Type, Allocator>::contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool Grid<Type, Allocator>::contains_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_container.contains_if(std::forward<Fty>(f));
 	}
@@ -1696,7 +1701,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr isize Grid<Type, Allocator>::count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr isize Grid<Type, Allocator>::count_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_container.count_if(std::forward<Fty>(f));
 	}
@@ -1709,14 +1715,16 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr void Grid<Type, Allocator>::each(Fty f) requires std::invocable<Fty&, value_type&>
+	constexpr void Grid<Type, Allocator>::each(Fty f)
+		requires std::invocable<Fty&, value_type&>
 	{
 		m_container.each(std::forward<Fty>(f));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr void Grid<Type, Allocator>::each(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr void Grid<Type, Allocator>::each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		m_container.each(std::forward<Fty>(f));
 	}
@@ -1729,7 +1737,9 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class U>
-	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const size_type y, const size_type x, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const size_type y, const size_type x, U&& defaultValue) const
+		noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+		requires std::constructible_from<value_type, U>
 	{
 		if (not indexInBounds(y, x))
 		{
@@ -1741,7 +1751,9 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class U>
-	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const Point pos, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::fetch(const Point pos, U&& defaultValue) const
+		noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+		requires std::constructible_from<value_type, U>
 	{
 		return fetch(pos.y, pos.x, std::forward<U>(defaultValue));
 	}
@@ -1766,7 +1778,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr bool Grid<Type, Allocator>::isSorted() const requires Concept::LessThanComparable<value_type>
+	constexpr bool Grid<Type, Allocator>::isSorted() const
+		requires Concept::LessThanComparable<value_type>
 	{
 		return m_container.isSorted();
 	}
@@ -1779,7 +1792,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr auto Grid<Type, Allocator>::map(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr auto Grid<Type, Allocator>::map(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
@@ -1803,7 +1817,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr bool Grid<Type, Allocator>::none(Fty f) const requires std::predicate<Fty&, const value_type&>
+	constexpr bool Grid<Type, Allocator>::none(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_container.none(std::forward<Fty>(f));
 	}
@@ -1851,7 +1866,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::replace_if(Fty f, const value_type& newValue)& requires std::predicate<Fty&, const value_type&>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::replace_if(Fty f, const value_type& newValue)&
+		requires std::predicate<Fty&, const value_type&>
 	{
 		m_container.replace_if(std::forward<Fty>(f), newValue);
 		return *this;
@@ -1859,14 +1875,16 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replace_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replace_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return std::move(replace_if(f, newValue));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) const&
+		requires std::predicate<Fty&, const value_type&>
 	{
 		Grid result(*this);
 
@@ -1877,7 +1895,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return std::move(replace_if(f, newValue));
 	}
@@ -2015,20 +2034,23 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::rsort()& requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::rsort()&
+		requires Concept::LessThanComparable<value_type>
 	{
 		m_container.rsort();
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsort() && requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsort() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(rsort());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsorted() const& requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsorted() const&
+		requires Concept::LessThanComparable<value_type>
 	{
 		Grid result(*this);
 		result.rsort();
@@ -2036,7 +2058,8 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsorted() && requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rsorted() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(rsort());
 	}
@@ -2108,20 +2131,23 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::sort()& requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::sort()&
+		requires Concept::LessThanComparable<value_type>
 	{
 		m_container.sort();
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sort() && requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sort() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(sort());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted() const& requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted() const&
+		requires Concept::LessThanComparable<value_type>
 	{
 		Grid result(*this);
 		result.sort();
@@ -2129,7 +2155,8 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted() && requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(sort());
 	}
@@ -2142,7 +2169,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::sort_by(Fty f)&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		m_container.sort_by(std::forward<Fty>(f));
 		return *this;
@@ -2150,14 +2178,16 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sort_by(Fty f) &&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted_by(Fty f) const&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		Grid result(*this);
 		result.sort_by(std::forward<Fty>(f));
@@ -2166,7 +2196,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::sorted_by(Fty f) &&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(sort_by(std::forward<Fty>(f)));
 	}
@@ -2178,20 +2209,23 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::stable_sort()& requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::stable_sort()&
+		requires Concept::LessThanComparable<value_type>
 	{
 		m_container.stable_sort();
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sort() && requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sort() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(stable_sort());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted() const& requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted() const&
+		requires Concept::LessThanComparable<value_type>
 	{
 		Grid result(*this);
 		result.stable_sort();
@@ -2199,7 +2233,8 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted() && requires Concept::LessThanComparable<value_type>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted() &&
+		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(stable_sort());
 	}
@@ -2212,7 +2247,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::stable_sort_by(Fty f)& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::stable_sort_by(Fty f)&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		m_container.stable_sort_by(std::forward<Fty>(f));
 		return *this;
@@ -2220,14 +2256,16 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sort_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sort_by(Fty f) &&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(stable_sort_by(std::forward<Fty>(f)));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted_by(Fty f) const& requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted_by(Fty f) const&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		Grid result(*this);
 		result.stable_sort_by(std::forward<Fty>(f));
@@ -2236,7 +2274,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted_by(Fty f) && requires std::predicate<Fty&, const value_type&, const value_type&>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::stable_sorted_by(Fty f) &&
+		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(stable_sort_by(std::forward<Fty>(f)));
 	}
@@ -2248,7 +2287,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::sum() const requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>)
+	constexpr auto Grid<Type, Allocator>::sum() const
+		requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>)
 	{
 		return m_container.sum();
 	}
@@ -2260,7 +2300,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::sumF() const requires Concept::FloatingPoint<value_type>
+	constexpr auto Grid<Type, Allocator>::sumF() const
+		requires Concept::FloatingPoint<value_type>
 	{
 		return m_container.sumF();
 	}
@@ -2349,7 +2390,8 @@ namespace s3d
 	
 	template <class Type, class Allocator>
 	template <class Fty>
-	isize Grid<Type, Allocator>::parallel_count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+	isize Grid<Type, Allocator>::parallel_count_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_container.parallel_count_if(std::forward<Fty>(f));
 	}
@@ -2362,14 +2404,16 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	void Grid<Type, Allocator>::parallel_each(Fty f) requires std::invocable<Fty&, value_type&>
+	void Grid<Type, Allocator>::parallel_each(Fty f)
+		requires std::invocable<Fty&, value_type&>
 	{
 		m_container.parallel_each(std::forward<Fty>(f));
 	}
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	void Grid<Type, Allocator>::parallel_each(Fty f) const requires std::invocable<Fty&, const value_type&>
+	void Grid<Type, Allocator>::parallel_each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		m_container.parallel_each(std::forward<Fty>(f));
 	}
@@ -2382,7 +2426,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	auto Grid<Type, Allocator>::parallel_map(Fty f) const requires std::invocable<Fty&, const value_type&>
+	auto Grid<Type, Allocator>::parallel_map(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		return Grid(m_size, m_container.parallel_map(std::forward<Fty>(f)));
 	}
@@ -2395,7 +2440,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr auto Grid<Type, Allocator>::operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr auto Grid<Type, Allocator>::operator >>(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 

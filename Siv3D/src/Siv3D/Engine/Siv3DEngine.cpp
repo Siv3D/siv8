@@ -20,15 +20,21 @@
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Scene/IScene.hpp>
+# include <Siv3D/MediaTranscoder/IMediaTranscoder.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
-# include <Siv3D/Emoji/IEmoji.hpp>
+# include <Siv3D/PDFRenderer/IPDFRenderer.hpp>
+# include <Siv3D/AudioDecoder/IAudioDecoder.hpp>
+# include <Siv3D/AudioEncoder/IAudioEncoder.hpp>
 # include <Siv3D/Console/IConsole.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
+# include <Siv3D/Pentablet/IPentablet.hpp>
 # include <Siv3D/Clipboard/IClipboard.hpp>
+# include <Siv3D/DragDrop/IDragDrop.hpp>
+# include <Siv3D/Audio/IAudio.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Shader/IShader.hpp>
@@ -36,10 +42,14 @@
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 # include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/Emoji/IEmoji.hpp>
+# include <Siv3D/Icon/IIcon.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/Effect/IEffect.hpp>
+# include <Siv3D/TextToSpeech/ITextToSpeech.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
+# include <Siv3D/Notifications/INotifications.hpp>
 
 namespace s3d
 {

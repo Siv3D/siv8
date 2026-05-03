@@ -16,6 +16,7 @@
 
 namespace s3d
 {
+	class IReader;
 	class IConstantBuffer;
 
 	class SIV3D_NOVTABLE ISiv3DShader
@@ -29,13 +30,13 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual VertexShader::IDType createVSFromFile(FilePathView path, StringView entryPoint) = 0;
+		virtual VertexShader::IDType createVSFromReader(std::unique_ptr<IReader> reader, FilePathView pathHint, StringView entryPoint) = 0;
 
 		virtual VertexShader::IDType createVSFromSource(const std::string& source, StringView entryPoint) = 0;
 
 		virtual VertexShader::IDType createVSFromBytecode(const Blob& bytecode) = 0;
 
-		virtual PixelShader::IDType createPSFromFile(FilePathView path, StringView entryPoint) = 0;
+		virtual PixelShader::IDType createPSFromReader(std::unique_ptr<IReader> reader, FilePathView pathHint, StringView entryPoint) = 0;
 
 		virtual PixelShader::IDType createPSFromSource(const std::string& source, StringView entryPoint) = 0;
 

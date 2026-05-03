@@ -64,7 +64,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CImageEncoder::add(std::unique_ptr<IImageEncoder>&& encoder)
+	bool CImageEncoder::add(std::unique_ptr<IImageEncoder> encoder)
 	{
 		const StringView name = encoder->name();
 
@@ -133,11 +133,9 @@ namespace s3d
 			return{};
 		}
 
-		const String ext{ extension };
-
 		for (const auto& encoder : m_encoders)
 		{
-			if (encoder->possibleExtensions().contains(ext))
+			if (std::ranges::contains(encoder->possibleExtensions(), extension))
 			{
 				return String{ encoder->name() };
 			}
@@ -160,7 +158,7 @@ namespace s3d
 
 		if (it == m_encoders.end())
 		{
-			return{};
+			return false;
 		}
 
 		return (*it)->save(image, path);

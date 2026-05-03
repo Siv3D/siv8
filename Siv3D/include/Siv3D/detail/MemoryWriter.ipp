@@ -140,11 +140,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	retrieve
+	//	extractBlob
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Blob MemoryWriter::retrieve() noexcept
+	constexpr Blob MemoryWriter::extractBlob() noexcept
 	{
 		m_writePos = 0;
 		return std::move(m_blob);

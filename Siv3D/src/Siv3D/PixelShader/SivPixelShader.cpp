@@ -11,6 +11,7 @@
 
 # include <cstdlib>
 # include <Siv3D/PixelShader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/AssetMonitor/IAssetMonitor.hpp>
 # include <Siv3D/Troubleshooting/Troubleshooting.hpp>
@@ -56,7 +57,14 @@ namespace s3d
 	PixelShader::PixelShader() {}
 
 	PixelShader::PixelShader(const FilePathView path, const StringView entryPoint)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromFile(path, entryPoint))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromReader(
+			(path ? std::make_unique<BinaryFileReader>(path) : nullptr), path, entryPoint))) }
+	{
+		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
+	}
+
+	PixelShader::PixelShader(std::unique_ptr<IReader> reader, const StringView entryPoint)
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Shader)->createPSFromReader(std::move(reader), {}, entryPoint))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
@@ -113,17 +121,27 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return PixelShader{ path, entryPoint };
+	}
+
+	PixelShader PixelShader::HLSL(std::unique_ptr<IReader> reader, const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
+		//{
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//}
+
+		return PixelShader{ std::move(reader), entryPoint};
 	}
 
 	PixelShader PixelShader::HLSL(const Blob& bytecode)
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return PixelShader{ bytecode };
@@ -133,7 +151,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Direct3D11)
 		//{
-		//	throw Error{ U"HLSL must be used with EngineOption::Renderer::Direct3D11" };
+		//	throw Error{ "HLSL must be used with EngineOption::Renderer::Direct3D11" };
 		//}
 
 		return PixelShader{ source, entryPoint };
@@ -149,7 +167,7 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return PixelShader{ FilePathView{}, entryPoint};
@@ -159,17 +177,27 @@ namespace s3d
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 
 		return PixelShader{ path, entryPoint };
+	}
+
+	PixelShader PixelShader::MSL(std::unique_ptr<IReader> reader, const StringView entryPoint)
+	{
+		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
+		//{
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
+		//}
+
+		return PixelShader{ std::move(reader), entryPoint};
 	}
 
 	PixelShader PixelShader::MSL(const std::string& source, const StringView entryPoint)
 	{
 		//if (System::GetRendererType() != EngineOption::Renderer::Metal)
 		//{
-		//	throw Error{ U"MSL must be used with EngineOption::Renderer::Metal" };
+		//	throw Error{ "MSL must be used with EngineOption::Renderer::Metal" };
 		//}
 	
 		return PixelShader{ source, entryPoint };

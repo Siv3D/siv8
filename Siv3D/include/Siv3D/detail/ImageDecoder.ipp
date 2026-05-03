@@ -17,11 +17,48 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
+		//	Decode
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <ReaderObject Reader>
+		Image Decode(Reader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat imageFormat)
+		{
+			return Decode(std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, imageFormat);
+		}
+
+		template <ReaderObject Reader>
+		Image Decode(Reader&& reader, const PremultiplyAlpha premultiplyAlpha, const StringView decoderName)
+		{
+			return Decode(std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, decoderName);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	DecodeGray16
+		//
+		////////////////////////////////////////////////////////////////
+
+		template <ReaderObject Reader>
+		Grid<uint16> DecodeGray16(Reader&& reader, const ImageFormat imageFormat)
+		{
+			return DecodeGray16(std::make_unique<Reader>(std::forward<Reader>(reader)), imageFormat);
+		}
+
+		template <ReaderObject Reader>
+		Grid<uint16> DecodeGray16(Reader&& reader, StringView decoderName)
+		{
+			return DecodeGray16(std::make_unique<Reader>(std::forward<Reader>(reader)), decoderName);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Add
 		//
 		////////////////////////////////////////////////////////////////
 
-		template <class ImageDecoder> requires std::derived_from<ImageDecoder, IImageDecoder>
+		template <class ImageDecoder>
+			requires std::derived_from<ImageDecoder, IImageDecoder>
 		bool Add()
 		{
 			return Add(std::make_unique<ImageDecoder>());

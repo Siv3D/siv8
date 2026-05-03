@@ -97,57 +97,45 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr float InvSqrt(float x) noexcept
+		inline float InvSqrt(const float value) noexcept
 		{
-			const float xhalf = (x * 0.5f);
-			int32 i = std::bit_cast<int32>(x);
-			i = 0x5f375a86 - (i >> 1);
-			x = std::bit_cast<float>(i);
-			x = x * (1.5f - (xhalf * x * x));
-			return x;
-		}
-
-		constexpr double InvSqrt(double x) noexcept
-		{
-			const double xhalf = (x * 0.5);
-			int64 i = std::bit_cast<int64>(x);
-			i = 0x5fe6eb50c7b537a9 - (i >> 1);
-			x = std::bit_cast<double>(i);
-			x = x * (1.5 - (xhalf * x * x));
-			return x;
-		}
+		# if SIV3D_INTRINSIC(SSE)
 		
-		////////////////////////////////////////////////////////////////
-		//
-		//	InvSqrtQuality
-		//
-		////////////////////////////////////////////////////////////////
+			const __m128 half = _mm_set_ss(0.5f);
+			const __m128 threeHalves = _mm_set_ss(1.5f);
 
-		constexpr double InvSqrtQuality(double x) noexcept
-		{
-			const double xhalf = (x * 0.5);
-			int64 i = std::bit_cast<int64>(x);
-			i = 0x5fe6eb50c7b537a9 - (i >> 1);
-			x = std::bit_cast<double>(i);
-			x = x * (1.5 - (xhalf * x * x));
-			x = x * (1.5 - (xhalf * x * x));
-			return x;
-		}
+			const __m128 x = _mm_set_ss(value);
+			__m128 y = _mm_rsqrt_ss(x);
+			y = _mm_mul_ss(y, _mm_sub_ss(threeHalves, _mm_mul_ss(_mm_mul_ss(half, x), _mm_mul_ss(y, y))));
+
+			return _mm_cvtss_f32(y);
 		
-		////////////////////////////////////////////////////////////////
-		//
-		//	Sqrt
-		//
-		////////////////////////////////////////////////////////////////
+		# elif SIV3D_INTRINSIC(NEON)
 
-		constexpr float Sqrt(const float x) noexcept
-		{
-			return (x * InvSqrt(x));
+			float32_t y = vrsqrtes_f32(value);
+			y *= vrsqrtss_f32(value * y, y);
+			return y;
+
+		# else
+
+			return (1.0f / std::sqrt(value));
+
+		# endif
 		}
 
-		constexpr double Sqrt(const double x) noexcept
+		inline double InvSqrt(const double value) noexcept
 		{
-			return (x * InvSqrt(x));
+		# if SIV3D_INTRINSIC(NEON)
+
+			float64_t y = vrsqrted_f64(value);
+			y *= vrsqrtsd_f64(value * y, y);
+			return y;
+
+		# else
+
+			return (1.0 / std::sqrt(value));
+
+		# endif
 		}
 	}
 }

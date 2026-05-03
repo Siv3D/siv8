@@ -23,7 +23,7 @@ namespace s3d
 		: m_size{ image.m_size }
 		, m_pixels(std::move(image.m_pixels))
 	{
-		image.m_size.clear();
+		image.m_size.setZero();
 	}
 
 	inline Image::Image(const Concept::Integral auto size)
@@ -46,19 +46,23 @@ namespace s3d
 		: m_size{ ValidImageSizeOrEmpty(size) }
 		, m_pixels(m_size.area(), color) {}
 
+	template <ReaderObject Reader>
+	Image::Image(Reader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
+		: Image{ std::make_unique<Reader>(std::forward<Reader>(reader)), premultiplyAlpha, format } {}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	operator =
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Image& Image::operator =(Image&& image) noexcept
+	inline Image& Image::operator =(Image&& other) noexcept
 	{
-		if (&image != this)
+		if (&other != this)
 		{
-			m_pixels	= std::move(image.m_pixels);
-			m_size		= image.m_size;
-			image.m_size.clear();
+			m_pixels	= std::move(other.m_pixels);
+			m_size		= other.m_size;
+			other.m_size.setZero();
 		}
 
 		return *this;
@@ -178,7 +182,7 @@ namespace s3d
 	inline void Image::clear() noexcept
 	{
 		m_pixels.clear();
-		m_size.clear();
+		m_size.setZero();
 	}
 
 	////////////////////////////////////////////////////////////////

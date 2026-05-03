@@ -44,11 +44,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& BMPEncoder::possibleExtensions() const
+	std::span<const StringView> BMPEncoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"bmp" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"bmp" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -59,6 +58,12 @@ namespace s3d
 
 	bool BMPEncoder::save(const Image& image, const FilePathView path) const
 	{
+		if (not image)
+		{
+			LOG_FAIL("❌ BMPEncoder::save(): image is empty");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)

@@ -19,25 +19,29 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Range> requires std::permutable<std::ranges::iterator_t<Range>>
+	template <class Range>
+		requires std::permutable<std::ranges::iterator_t<Range>>
 	void Shuffle(Range&& range)
 	{
 		Shuffle(std::ranges::begin(range), std::ranges::end(range), DefaultRNG());
 	}
 
-	template <class Range> requires std::permutable<std::ranges::iterator_t<Range>>
+	template <class Range>
+		requires std::permutable<std::ranges::iterator_t<Range>>
 	void Shuffle(Range&& range, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		Shuffle(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(urbg)>(urbg));
 	}
 
-	template <class RandomIt> requires std::permutable<RandomIt>
+	template <class RandomIt>
+		requires std::permutable<RandomIt>
 	void Shuffle(RandomIt first, RandomIt last)
 	{
 		Shuffle(first, last, DefaultRNG());
 	}
 
-	template <class RandomIt> requires std::permutable<RandomIt>
+	template <class RandomIt>
+		requires std::permutable<RandomIt>
 	void Shuffle(RandomIt first, RandomIt last, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		if (first == last)

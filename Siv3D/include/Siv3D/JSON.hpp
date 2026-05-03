@@ -67,7 +67,7 @@ namespace s3d
 		[[nodiscard]]
 		JSON(JSON::json_base::initializer_list_t init, bool typeDeduction = true, JSONValueType manualType = JSONValueType::Array);
 
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		JSON(Iterator first, Iterator last);
 
@@ -96,19 +96,18 @@ namespace s3d
 		bool load(FilePathView path, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
-		/// @tparam Reader JSON ファイルを指す IReader の派生クラスの型
-		/// @param reader JSON ファイルを指す IReader の派生クラスのインスタンス
+		/// @param reader Reader オブジェクトの型
 		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
 		/// @return ロードに成功した場合 true, それ以外の場合は false
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
-		bool load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+		bool load(std::unique_ptr<IReader> reader, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
-		/// @param reader JSON ファイルを指す IReader のインスタンス
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
 		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
 		/// @return ロードに成功した場合 true, それ以外の場合は false
-		bool load(std::unique_ptr<IReader>&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+		template <ReaderObject Reader>
+		bool load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -755,21 +754,20 @@ namespace s3d
 		static JSON Load(FilePathView path, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
-		/// @tparam Reader JSON ファイルを指す IReader の派生クラスの型
-		/// @param reader JSON ファイルを指す IReader の派生クラスのインスタンス
+		/// @param reader Reader オブジェクト
 		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
 		/// @return JSON オブジェクト
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
 		[[nodiscard]]
-		static JSON Load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+		static JSON Load(std::unique_ptr<IReader> reader, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		/// @brief JSON ファイルをロードして JSON オブジェクトを返します。
-		/// @param reader JSON ファイルを指す IReader のインスタンス
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param reader Reader オブジェクト
 		/// @param allowExceptions ロードに失敗した場合に例外を発生させるか
 		/// @return JSON オブジェクト
+		template <ReaderObject Reader>
 		[[nodiscard]]
-		static JSON Load(std::unique_ptr<IReader>&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
+		static JSON Load(Reader&& reader, AllowExceptions allowExceptions = AllowExceptions::No);
 
 		////////////////////////////////////////////////////////////////
 		//

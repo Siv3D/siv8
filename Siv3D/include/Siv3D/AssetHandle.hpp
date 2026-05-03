@@ -45,7 +45,7 @@ namespace s3d
 		AssetHandle();
 
 		[[nodiscard]]
-		explicit AssetHandle(std::shared_ptr<AssetIDWrapperType>&& id);
+		explicit AssetHandle(std::shared_ptr<AssetIDWrapperType> id);
 
 		////////////////////////////////////////////////////////////////
 		//

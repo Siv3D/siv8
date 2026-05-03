@@ -39,21 +39,24 @@
 
 void RunTest();
 
-class ScopedLogSilencer
+namespace s3d
 {
-public:
-
-	ScopedLogSilencer()
+	class ScopedLogSilencer
 	{
-		Logger.setOutputLevel(LogType::Error);
-	}
+	public:
 
-	~ScopedLogSilencer()
-	{
-		Logger.setOutputLevel(m_oldOutputLevel);
-	}
+		ScopedLogSilencer()
+		{
+			Logger.setOutputLevel(LogType::Error);
+		}
 
-private:
+		~ScopedLogSilencer()
+		{
+			Logger.setOutputLevel(m_oldOutputLevel);
+		}
 
-	LogType m_oldOutputLevel = Logger.getOutputLevel();
-};
+	private:
+
+		LogType m_oldOutputLevel = Logger.getOutputLevel();
+	};
+}

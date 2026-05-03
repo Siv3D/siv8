@@ -83,8 +83,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, bool isColorGlyph, ReadingDirection readingDirection) override;
-
+		TextLayoutResult processHorizontalRect(TextOperation textOperation, FontData& font, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, bool isColorGlyph, ReadingDirection readingDirection) override;
+		
 		////////////////////////////////////////////////////////////////
 		//
 		//	getXAdvances

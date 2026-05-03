@@ -24,6 +24,20 @@ namespace s3d
 {
 	namespace
 	{
+		struct LookAheadReader
+		{
+			int64 pos = 0;
+			const IReader* reader = nullptr;
+		};
+
+		static void PngLookAheadCallback(png_structp png_ptr, png_bytep buf, png_size_t length)
+		{
+			const auto lookAheadReader = static_cast<LookAheadReader*>(::png_get_io_ptr(png_ptr));
+			const int64 startPos = lookAheadReader->pos;
+			lookAheadReader->reader->lookahead(buf, startPos, length);
+			lookAheadReader->pos += length;
+		}
+
 		static void PngReadCallback(png_structp png_ptr, png_bytep buf, png_size_t length)
 		{
 			const auto reader = static_cast<IReader*>(::png_get_io_ptr(png_ptr));
@@ -60,7 +74,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool PNGDecoder::isHeader(const uint8(&bytes)[16]) const noexcept
+	bool PNGDecoder::isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept
 	{
 		static constexpr uint8 signature[] = { 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A };
 
@@ -73,11 +87,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& PNGDecoder::possibleExtensions() const
+	std::span<const StringView> PNGDecoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"png" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"png" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -91,7 +104,7 @@ namespace s3d
 		return IImageDecoder::getImageInfo(path);
 	}
 
-	Optional<ImageInfo> PNGDecoder::getImageInfo(IReader& reader, const FilePathView) const
+	Optional<ImageInfo> PNGDecoder::getImageInfo(const IReader& reader, const FilePathView) const
 	{
 		// png_ptr
 		png_structp png_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
@@ -122,7 +135,8 @@ namespace s3d
 		};
 
 		// decode
-		::png_set_read_fn(png_ptr, &reader, PngReadCallback);
+		LookAheadReader lookAheadReader{ 0, &reader };
+		::png_set_read_fn(png_ptr, &lookAheadReader, PngLookAheadCallback);
 		::png_read_info(png_ptr, info_ptr);
 
 		png_uint_32 width = 0, height = 0;
@@ -173,7 +187,7 @@ namespace s3d
 		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image PNGDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
+	Image PNGDecoder::decode(std::unique_ptr<IReader> reader2, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("PNGDecoder::decode()");
 
@@ -206,7 +220,7 @@ namespace s3d
 		};
 
 		// decode
-		::png_set_read_fn(png_ptr, &reader, PngReadCallback);
+		::png_set_read_fn(png_ptr, reader2.get(), PngReadCallback);
 
 		::png_read_info(png_ptr, info_ptr);
 
@@ -314,7 +328,7 @@ namespace s3d
 		return IImageDecoder::decodeGray16(path);
 	}
 
-	Grid<uint16> PNGDecoder::decodeGray16(IReader& reader, FilePathView) const
+	Grid<uint16> PNGDecoder::decodeGray16(std::unique_ptr<IReader> reader2, FilePathView) const
 	{
 		LOG_SCOPED_DEBUG("PNGDecoder::decode()");
 
@@ -347,7 +361,7 @@ namespace s3d
 		};
 
 		// decode
-		::png_set_read_fn(png_ptr, &reader, PngReadCallback);
+		::png_set_read_fn(png_ptr, reader2.get(), PngReadCallback);
 
 		::png_read_info(png_ptr, info_ptr);
 

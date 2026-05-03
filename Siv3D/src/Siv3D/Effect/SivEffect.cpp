@@ -78,7 +78,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Effect& Effect::add(std::unique_ptr<IEffect>&& effect, const double initialElapsedTimeSec) const
+	const Effect& Effect::add(std::unique_ptr<IEffect> effect, const double initialElapsedTimeSec) const
 	{
 		if (effect)
 		{

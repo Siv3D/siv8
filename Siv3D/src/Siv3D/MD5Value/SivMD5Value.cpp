@@ -30,7 +30,7 @@ namespace s3d
 
 		for (size_t i = 0; i < 16; ++i)
 		{
-			const std::array<char8, 2> hex = ToHex(Byte{ m_values[i] });
+			const std::array<char8, 2> hex = ToHex(Byte{ m_digest[i] });
 			*pDst++ = hex[0];
 			*pDst++ = hex[1];
 		}
@@ -51,7 +51,7 @@ namespace s3d
 
 		for (size_t i = 0; i < 16; ++i)
 		{
-			const std::array<char8, 2> hex = ToHex(Byte{ m_values[i] });
+			const std::array<char8, 2> hex = ToHex(Byte{ m_digest[i] });
 			*pDst++ = hex[0];
 			*pDst++ = hex[1];
 		}
@@ -72,7 +72,7 @@ namespace s3d
 
 		MD5_Init(&ctx);
 		MD5_Update(&ctx, data, static_cast<unsigned long>(size));
-		MD5_Final(result.m_values.data(), &ctx);
+		MD5_Final(result.m_digest.data(), &ctx);
 
 		return result;
 	}
@@ -138,7 +138,7 @@ namespace s3d
 			MD5_Update(&ctx, buffer.get(), static_cast<uint32>(readSize));
 		}
 
-		MD5_Final(result.m_values.data(), &ctx);
+		MD5_Final(result.m_digest.data(), &ctx);
 
 		return result;
 	}

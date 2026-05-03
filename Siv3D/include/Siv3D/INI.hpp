@@ -46,14 +46,13 @@ namespace s3d
 		/// @remark コンストラクタでファイルの内容を読み取り、以降はファイルにはアクセスしません。
 		[[nodiscard]]
 		explicit INI(FilePathView path);
-		
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	
+		[[nodiscard]]
+		explicit INI(std::unique_ptr<IReader> reader);
+
+		template <ReaderObject Reader>
 		[[nodiscard]]
 		explicit INI(Reader&& reader);
-
-		[[nodiscard]]
-		explicit INI(std::unique_ptr<IReader>&& reader);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -63,11 +62,10 @@ namespace s3d
 
 		bool load(FilePathView path);
 
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
-		bool load(Reader&& reader);
+		bool load(std::unique_ptr<IReader> reader);
 
-		bool load(std::unique_ptr<IReader>&& reader);
+		template <ReaderObject Reader>
+		bool load(Reader&& reader);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -408,11 +406,10 @@ namespace s3d
 
 		static INI Load(FilePathView path);
 
-		template <class Reader>
-			requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
-		static INI Load(Reader&& reader);
+		static INI Load(std::unique_ptr<IReader> reader);
 
-		static INI Load(std::unique_ptr<IReader>&& reader);
+		template <ReaderObject Reader>
+		static INI Load(Reader&& reader);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -971,11 +971,11 @@
 // クリップボード | Clipboard
 # include <Siv3D/Clipboard.hpp>
 
-//// ドライブの種類 | Drive type
-//# include <Siv3D/DriveType.hpp>
-//
-//// ドライブの情報 | Drive information
-//# include <Siv3D/DriveInfo.hpp>
+// ドライブの種類 | Drive type
+# include <Siv3D/DriveType.hpp>
+
+// ドライブの情報 | Drive information
+# include <Siv3D/DriveInfo.hpp>
 
 // UUID | UUID
 # include <Siv3D/UUIDValue.hpp>
@@ -1002,11 +1002,14 @@
 // Twitter | Twitter
 # include <Siv3D/Twitter.hpp>
 
-//// IPv4 アドレス | IPv4 address
-//# include <Siv3D/IPv4Address.hpp>
-//
-//// ネットワーク | Networking
-//# include <Siv3D/Network.hpp>
+// IPv4 アドレス | IPv4 address
+# include <Siv3D/IPv4Address.hpp>
+
+// IPv4 エンドポイント | IPv4 endpoint
+# include <Siv3D/IPv4Endpoint.hpp>
+
+// ネットワーク | Networking
+# include <Siv3D/Network.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1029,23 +1032,23 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// OSC 型タグ
-//# include <Siv3D/OSCTypeTag.hpp>
-//
-//// OSC 送信メッセージ
-//# include <Siv3D/OSCMessage.hpp>
-//
-//// OSC 送信クラス
-//# include <Siv3D/OSCSender.hpp>
-//
-//// OSC 受信メッセージの引数
-//# include <Siv3D/OSCArgument.hpp>
-//
-//// OSC 受信メッセージ
-//# include <Siv3D/ReceivedOSCMessage.hpp>
-//
-//// OSC 受信クラス
-//# include <Siv3D/OSCReceiver.hpp>
+// OSC 型タグ
+# include <Siv3D/OSCTypeTag.hpp>
+
+// OSC 送信メッセージ
+# include <Siv3D/OSCMessage.hpp>
+
+// OSC 送信クラス
+# include <Siv3D/OSCSender.hpp>
+
+// OSC 受信メッセージの引数
+# include <Siv3D/OSCArgument.hpp>
+
+// OSC 受信メッセージ
+# include <Siv3D/OSCReceivedMessage.hpp>
+
+// OSC 受信クラス
+# include <Siv3D/OSCReceiver.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1056,8 +1059,8 @@
 // URL | URL
 # include <Siv3D/URL.hpp>
 
-//# include <Siv3D/HTTPStatusCode.hpp>
-//
+# include <Siv3D/HTTPStatusCode.hpp>
+
 //# include <Siv3D/HTTPResponse.hpp>
 //
 //# include <Siv3D/HTTPAsyncStatus.hpp>
@@ -1087,8 +1090,8 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// パイプ通信 | Interprocess communication (Pipe)
-//# include <Siv3D/Pipe.hpp>
+// パイプ通信 | Interprocess communication (Pipe)
+# include <Siv3D/Pipe.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1111,11 +1114,17 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// ファイルダイアログ | File dialog
-//# include <Siv3D/Dialog.hpp>
-//
-//// ファイル拡張子フィルタ | File extension filter
-//# include <Siv3D/FileFilter.hpp>
+// ファイルダイアログのフィルタ | File dialog filter
+# include <Siv3D/FileDialogFilter.hpp>
+
+# include <Siv3D/OpenFileDialogOptions.hpp>
+
+# include <Siv3D/SaveFileDialogOptions.hpp>
+
+# include <Siv3D/SelectFolderDialogOptions.hpp>
+
+// ファイルダイアログ | File dialog
+# include <Siv3D/Dialog.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1137,10 +1146,10 @@
 
 //// 言語コード | Language code
 //# include <Siv3D/LanguageCode.hpp>
-//
-//// 文章読み上げ | Text-to-speech
-//# include <Siv3D/TextToSpeech.hpp>
-//
+
+// 文章読み上げ | Text-to-speech
+# include <Siv3D/TextToSpeech.hpp>
+
 //// 文章読み上げオブジェクト | Text to speech object
 //# include <Siv3D/Say.hpp>
 //
@@ -1156,20 +1165,20 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// ドラッグするアイテムの種類 | Dragged item type
-//# include <Siv3D/DragItemType.hpp>
-//
-//// ドラッグの状態 | Dragging status
-//# include <Siv3D/DragStatus.hpp>
-//
-//// ドロップされたファイルパスの情報 | Dropped file path
-//# include <Siv3D/DroppedFilePath.hpp>
-//
-//// ドロップされたテキストの情報 | Dropped text
-//# include <Siv3D/DroppedText.hpp>
-//
-//// ドラッグ＆ドロップ | Drag & drop
-//# include <Siv3D/DragDrop.hpp>
+// ドラッグするアイテムの種類 | Dragged item type
+# include <Siv3D/DragItemType.hpp>
+
+// ドラッグの状態 | Dragging status
+# include <Siv3D/DragStatus.hpp>
+
+// ドロップされたファイルパスの情報 | Dropped file path
+# include <Siv3D/DroppedFilePath.hpp>
+
+// ドロップされたテキストの情報 | Dropped text
+# include <Siv3D/DroppedText.hpp>
+
+// ドラッグ＆ドロップ | Drag & drop
+# include <Siv3D/DragDrop.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1184,22 +1193,20 @@
 # include <Siv3D/MessageBoxStyle.hpp>
 
 // メッセージボックス | Message box
-# include <Siv3D/MessageBox.hpp>
+# include <Siv3D/MessageBox.hpp> // ToDo
 
 ////////////////////////////////////////////////////////////////
 //
-//	トースト通知 | Toast Notification
+//	通知 | Notifications
 //
 ////////////////////////////////////////////////////////////////
 
-//// トースト通知アイテム | Toast notification item
-//# include <Siv3D/ToastNotificationItem.hpp>
-//
-//// トースト通知の状態 | Toast notification state
-//# include <Siv3D/ToastNotificationState.hpp>
-//
-//// トースト通知 | Toast notification
-//# include <Siv3D/ToastNotification.hpp>
+# include <Siv3D/NotificationAvailability.hpp>
+# include <Siv3D/NotificationActionCategory.hpp>
+# include <Siv3D/NotificationRequest.hpp>
+# include <Siv3D/NotificationResponseType.hpp>
+# include <Siv3D/NotificationResponse.hpp>
+# include <Siv3D/Notifications.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1306,7 +1313,6 @@
 # include <Siv3D/ImageFormat/BCnDecoder.hpp>
 # include <Siv3D/ImageFormat/BCnEncoder.hpp>
 
-
 // SVG 画像 | SVG image
 # include <Siv3D/SVG.hpp>
 # include <Siv3D/ImageFormat/SVGDecoder.hpp>
@@ -1325,8 +1331,6 @@
 //// アニメーション GIF の書き出し | Animated GIF writer
 //# include <Siv3D/AnimatedGIFWriter.hpp>
 //
-////# include <Siv3D/ImageFormat/DDSDecoder.hpp>
-////# include <Siv3D/ImageFormat/DDSEncoder.hpp>
 ////# include <Siv3D/ImageFormat/JPEG2000Decoder.hpp>
 ////# include <Siv3D/ImageFormat/JPEG2000Encoder.hpp>
 
@@ -1336,7 +1340,16 @@
 
 
 
+///////////////////////////////////////////////////////////////
+//
+//	PDF | PDF
+//
+////////////////////////////////////////////////////////////////
 
+# include <Siv3D/PDFRenderOptions.hpp>
+# include <Siv3D/PDFLinkInfo.hpp>
+# include <Siv3D/PDFPage.hpp>
+# include <Siv3D/PDFDocument.hpp>
 
 
 
@@ -1397,19 +1410,14 @@
 //
 //// XInput コントローラ | XInput controller
 //# include <Siv3D/XInput.hpp>
-//
-//// ペンタブレット | Digitizer
-//# include <Siv3D/Pentablet.hpp>
-//
+
+// ペンタブレット | Digitizer
+# include <Siv3D/PenCaps.hpp>
+# include <Siv3D/PenState.hpp>
+# include <Siv3D/Pentablet.hpp>
+
 //// Leap デバイス | Leap Device
 //# include <Siv3D/Leap.hpp>
-
-
-
-
-
-
-
 
 
 # include <Siv3D/AssetID.hpp>
@@ -1611,7 +1619,7 @@
 ////////////////////////////////////////////////////////////////
 
 // スクリーンキャプチャ | Screen capture
-# include <Siv3D/ScreenCapture.hpp> // ToDo
+# include <Siv3D/ScreenCapture.hpp>
 
 
 # include <Siv3D/NativeShare.hpp>
@@ -1627,12 +1635,13 @@
 
 // 絵文字 | Emoji
 # include <Siv3D/Emoji.hpp>
+# include <Siv3D/Icon.hpp>
 
-# include <Siv3D/FontStyle.hpp>
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/GlyphInfo.hpp>
 # include <Siv3D/ResolvedGlyph.hpp>
+# include <Siv3D/FontOptions.hpp>
 # include <Siv3D/Font.hpp>
 
 # include <Siv3D/ReadingDirection.hpp>
@@ -1640,6 +1649,7 @@
 # include <Siv3D/PolygonGlyph.hpp>
 # include <Siv3D/BitmapGlyph.hpp>
 
+# include <Siv3D/TextLayoutResult.hpp>
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/TextStyle.hpp>
 
@@ -1680,16 +1690,54 @@
 # include <Siv3D/Effect.hpp>
 
 
+
+
+
+
+
+# include <Siv3D/WaveSample.hpp>
+# include <Siv3D/StereoSampleInt16.hpp>
+# include <Siv3D/StereoSampleFloat32.hpp>
+# include <Siv3D/Wave.hpp> // ToDo
+# include <Siv3D/WaveProcessing.hpp> // ToDo
+
+
+# include <Siv3D/AudioFormat.hpp>
+# include <Siv3D/IAudioDecoder.hpp>
+# include <Siv3D/IAudioEncoder.hpp>
+# include <Siv3D/AudioDecoder.hpp> // ToDo
+# include <Siv3D/AudioEncoder.hpp> // ToDo
+
+# include <Siv3D/WAVSaveFormat.hpp>
+# include <Siv3D/MP3Quality.hpp>
+# include <Siv3D/AACQuality.hpp>
+
+# include <Siv3D/AudioFormat/WAVDecoder.hpp>
+# include <Siv3D/AudioFormat/WAVEncoder.hpp>
+//# include <Siv3D/AudioFormat/AACDecoder.hpp>
+# include <Siv3D/AudioFormat/AACEncoder.hpp>
+# include <Siv3D/AudioFormat/MP3Decoder.hpp>
+# include <Siv3D/AudioFormat/MP3Encoder.hpp>
+
+//# include <Siv3D/AudioFormat/OggVorbisDecoder.hpp>
+//# include <Siv3D/AudioFormat/OggVorbisEncoder.hpp>
+//# include <Siv3D/AudioFormat/OpusDecoder.hpp>
+//# include <Siv3D/AudioFormat/OpusEncoder.hpp>
+//# include <Siv3D/AudioFormat/FLACDecoder.hpp>
+//# include <Siv3D/AudioFormat/MIDIDecoder.hpp>
+//# include <Siv3D/AudioFormat/WMADecoder.hpp>
+
+
+# include <Siv3D/MicrophoneInfo.hpp>
+
+
 # include <Siv3D/Print.hpp>
 # include <Siv3D/PrintBuffer.hpp>
 
-
-# include <Siv3D/Pipe.hpp>
-
-# include <Siv3D/URL.hpp>
-# include <Siv3D/Twitter.hpp>
-
 # include <Siv3D/EngineOption.hpp>
+
+
+
 
 
 

@@ -9,13 +9,14 @@ Name | Version
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | v0.10.1
 [DirectXMath](https://github.com/microsoft/DirectXMath) | April 2025
-[doctest](https://github.com/doctest/doctest) | v2.4.12
+[doctest](https://github.com/doctest/doctest) | v2.5.2
 [double-conversion](https://github.com/google/double-conversion) | v3.4.0
+[dr_mp3](https://github.com/mackron/dr_libs) | v0.7.4
 [Easing Equations](http://robertpenner.com/easing/) | 
 [easyexif](https://github.com/mayanklahiri/easyexif) | 
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
-[fast_float](https://github.com/fastfloat/fast_float) | Version 8.1.0
+[fast_float](https://github.com/fastfloat/fast_float) | Version 8.2.4
 [fmt](https://github.com/fmtlib/fmt) | 10.2.1
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
@@ -24,13 +25,14 @@ Name | Version
 [JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libcpprime](https://github.com/Rac75116/libcpprime) | v1.3.2
-[libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
+[libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.1.4.1
 [libmorton](https://github.com/Forceflow/libmorton) | 
-[libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.43
-[lunasvg](https://github.com/sammycage/lunasvg) | v2.4.1
+[libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.58
+[lunasvg](https://github.com/sammycage/lunasvg) | v3.5.0
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
+[miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
 [miniutf](https://github.com/dropbox/miniutf) | 
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
 [msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
@@ -42,21 +44,27 @@ Name | Version
 [Obfuscate](https://github.com/adamyaxley/Obfuscate) | 
 [Oniguruma](https://github.com/kkos/oniguruma) | v6.9.9
 [OpenCV](https://github.com/opencv/opencv) | 4.10.0
+[oscpack](http://www.rossbencina.com/code/oscpack) | 1.1.0
 [pcg-cpp](https://github.com/imneme/pcg-cpp) | 
+[PDFium](https://pdfium.googlesource.com/pdfium/) | 
+[PFFFT](https://bitbucket.org/jpommier/pffft/src/master/) | 
+[PFFFT DOUBLE](https://github.com/marton78/pffft) | 
 [plutovg](https://github.com/sammycage/plutovg) | 
 [polylabel](https://github.com/mapbox/polylabel) | v2.0.1
+[r8brain-free-src](https://github.com/avaneev/r8brain-free-src) | 7.1
 [rapidhash](https://github.com/Nicoshev/rapidhash) | v1.0
 [rectpack2D](https://github.com/TeamHypersomnia/rectpack2D) | 
 [serial_cpp](https://github.com/gbionics/serial_cpp) | 
-[simdutf](https://github.com/simdutf/simdutf) | Version 7.7.0
+[simdutf](https://github.com/simdutf/simdutf) | Version 7.7.1
 [skia](https://github.com/google/skia) |
-[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.17
+[stb_image_resize2.h](https://github.com/nothings/stb/blob/master/stb_image_resize2.h) | 2.18
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
 [variant](https://github.com/mapbox/variant) | 
+[WinToast](https://github.com/mohabouje/WinToast) | v1.3.2
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
-[zlib](https://www.zlib.net/) | 1.3.1
+[zlib](https://www.zlib.net/) | 1.3.2
 [Zstandard](https://github.com/facebook/zstd) | v1.5.7

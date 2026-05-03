@@ -57,7 +57,8 @@ namespace s3d
 		/// @remark 参照を渡す場合は `std::ref()` を使ってください。
 		template <class Fty, class... Args>
 		[[nodiscard]]
-		explicit AsyncTask(Fty&& f, Args&&... args) requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>;
+		explicit AsyncTask(Fty&& f, Args&&... args)
+			requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>;
 
 		AsyncTask(const base_type&) = delete;
 
@@ -163,7 +164,8 @@ namespace s3d
 		base_type m_data;
 	};
 
-	template <class Fty, class... Args> requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
+	template <class Fty, class... Args>
+		requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
 	AsyncTask(Fty, Args...) -> AsyncTask<std::invoke_result_t<std::decay_t<Fty>, std::decay_t<Args>...>>;
 
 	////////////////////////////////////////////////////////////////
@@ -180,7 +182,8 @@ namespace s3d
 	/// @remark 作成と同時にタスクが非同期で実行されます。
 	/// @remark 参照を渡す場合は `std::ref()` を使ってください。
 	/// @return 作成された非同期処理のタスク
-	template <class Fty, class... Args> requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
+	template <class Fty, class... Args>
+		requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
 	[[nodiscard]]
 	auto Async(Fty&& f, Args&&... args);
 }

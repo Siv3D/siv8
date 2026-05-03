@@ -1,4 +1,4 @@
-/* auto-generated on 2025-11-21 22:27:43 -0500. Do not edit! */
+/* auto-generated on 2025-12-20 11:48:09 -0500. Do not edit! */
 /* begin file include/simdutf.h */
 #ifndef SIMDUTF_H
 #define SIMDUTF_H
@@ -526,6 +526,13 @@
 
 #endif // MSC_VER
 
+// Conditional constexpr macro: expands to constexpr for C++17+, empty otherwise
+#if SIMDUTF_CPLUSPLUS17
+  #define simdutf_constexpr constexpr
+#else
+  #define simdutf_constexpr
+#endif
+
 #ifndef SIMDUTF_DLLIMPORTEXPORT
   #if defined(SIMDUTF_VISUAL_STUDIO) // Visual Studio
                                      /**
@@ -768,7 +775,7 @@ SIMDUTF_DISABLE_UNDESIRED_WARNINGS
 #define SIMDUTF_SIMDUTF_VERSION_H
 
 /** The version of simdutf being used (major.minor.revision) */
-#define SIMDUTF_VERSION "7.7.0"
+#define SIMDUTF_VERSION "7.7.1"
 
 namespace simdutf {
 enum {
@@ -783,7 +790,7 @@ enum {
   /**
    * The revision (major.minor.REVISION) of simdutf being used.
    */
-  SIMDUTF_VERSION_REVISION = 0
+  SIMDUTF_VERSION_REVISION = 1
 };
 } // namespace simdutf
 
@@ -1165,10 +1172,11 @@ namespace detail {
  * are all distinct types.
  */
 template <typename T>
-concept byte_like = std::is_same_v<T, std::byte> ||   //
-                    std::is_same_v<T, char> ||        //
-                    std::is_same_v<T, signed char> || //
-                    std::is_same_v<T, unsigned char>;
+concept byte_like = std::is_same_v<T, std::byte> ||     //
+                    std::is_same_v<T, char> ||          //
+                    std::is_same_v<T, signed char> ||   //
+                    std::is_same_v<T, unsigned char> || //
+                    std::is_same_v<T, char8_t>;
 
 template <typename T>
 concept is_byte_like = byte_like<std::remove_cvref_t<T>>;
@@ -1396,7 +1404,6 @@ validate_utf16be_as_ascii(std::span<const char16_t> input) noexcept {
   return validate_utf16be_as_ascii(input.data(), input.size());
 }
   #endif // SIMDUTF_SPAN
-#endif   // SIMDUTF_FEATURE_UTF16 && SIMDUTF_FEATURE_ASCII
 
 /**
  * Validate the ASCII string as a UTF-16LE sequence.
@@ -1411,12 +1418,13 @@ validate_utf16be_as_ascii(std::span<const char16_t> input) noexcept {
  */
 simdutf_warn_unused bool validate_utf16le_as_ascii(const char16_t *buf,
                                                    size_t len) noexcept;
-#if SIMDUTF_SPAN
+  #if SIMDUTF_SPAN
 simdutf_really_inline simdutf_warn_unused bool
 validate_utf16le_as_ascii(std::span<const char16_t> input) noexcept {
   return validate_utf16le_as_ascii(input.data(), input.size());
 }
-#endif // SIMDUTF_SPAN
+  #endif // SIMDUTF_SPAN
+#endif   // SIMDUTF_FEATURE_UTF16 && SIMDUTF_FEATURE_ASCII
 
 #if SIMDUTF_FEATURE_UTF16
 /**
@@ -4169,8 +4177,12 @@ inline std::string_view to_string(last_chunk_handling_options options) {
 
 /**
  * Provide the maximal binary length in bytes given the base64 input.
- * In general, if the input contains ASCII spaces, the result will be less than
- * the maximum length.
+ * As long as the input does not contain ignorable characters (e.g., ASCII
+ * spaces or linefeed characters), the result is exact. In particular, the
+ * function checks for padding characters.
+ *
+ * The function is fast (constant time). It checks up to two characters at
+ * the end of the string. The input is not otherwise validated or read.
  *
  * @param input         the base64 input to process
  * @param length        the length of the base64 input in bytes
@@ -4189,8 +4201,12 @@ maximal_binary_length_from_base64(
 
 /**
  * Provide the maximal binary length in bytes given the base64 input.
- * In general, if the input contains ASCII spaces, the result will be less than
- * the maximum length.
+ * As long as the input does not contain ignorable characters (e.g., ASCII
+ * spaces or linefeed characters), the result is exact. In particular, the
+ * function checks for padding characters.
+ *
+ * The function is fast (constant time). It checks up to two characters at
+ * the end of the string. The input is not otherwise validated or read.
  *
  * @param input         the base64 input to process, in ASCII stored as 16-bit
  * units
@@ -6366,9 +6382,12 @@ public:
 #if SIMDUTF_FEATURE_BASE64
   /**
    * Provide the maximal binary length in bytes given the base64 input.
-   * In general, if the input contains ASCII spaces, the result will be less
-   * than the maximum length. It is acceptable to pass invalid base64 strings
-   * but in such cases the result is implementation defined.
+   * As long as the input does not contain ignorable characters (e.g., ASCII
+   * spaces or linefeed characters), the result is exact. In particular, the
+   * function checks for padding characters.
+   *
+   * The function is fast (constant time). It checks up to two characters at
+   * the end of the string. The input is not otherwise validated or read..
    *
    * @param input         the base64 input to process
    * @param length        the length of the base64 input in bytes
@@ -6379,9 +6398,12 @@ public:
 
   /**
    * Provide the maximal binary length in bytes given the base64 input.
-   * In general, if the input contains ASCII spaces, the result will be less
-   * than the maximum length. It is acceptable to pass invalid base64 strings
-   * but in such cases the result is implementation defined.
+   * As long as the input does not contain ignorable characters (e.g., ASCII
+   * spaces or linefeed characters), the result is exact. In particular, the
+   * function checks for padding characters.
+   *
+   * The function is fast (constant time). It checks up to two characters at
+   * the end of the string. The input is not otherwise validated or read.
    *
    * @param input         the base64 input to process, in ASCII stored as 16-bit
    * units

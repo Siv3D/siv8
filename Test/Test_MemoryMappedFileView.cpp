@@ -98,7 +98,7 @@ TEST_CASE("MemoryMappedFileView.ImageFileTest")
 		MemoryMappedFileView file{ U"example/windmill.png" };
 		CHECK(file.isOpen());
 		CHECK(static_cast<bool>(file));
-		CHECK_EQ(file.size(), testData.size());
+		CHECK_EQ(file.size(), static_cast<int64>(testData.size()));
 
 		{
 			const auto mapped = file.mapAll();
@@ -118,7 +118,7 @@ TEST_CASE("MemoryMappedFileView.ImageFileTest")
 		MemoryMappedFileView file{ U"example/windmill.png" };
 		CHECK(file.isOpen());
 		CHECK(static_cast<bool>(file));
-		CHECK_EQ(file.size(), testData.size());
+		CHECK_EQ(file.size(), static_cast<int64>(testData.size()));
 
 		{
 			const auto mapped = file.map(100'000, 100'000);

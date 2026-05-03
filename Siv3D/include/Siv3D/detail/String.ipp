@@ -43,7 +43,7 @@ namespace s3d
 	constexpr String::String(const std::initializer_list<value_type> list)
 		: m_string(list) {}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String::String(Iterator first, Iterator last)
 		: m_string(first, last) {}
 
@@ -55,7 +55,8 @@ namespace s3d
 
 # if __cpp_lib_containers_ranges >= 202202L
 
-	template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+	template <class Range>
+		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String::String(std::from_range_t, Range&& range)
 		: m_string(std::from_range, std::forward<Range>(range)) {}
 
@@ -169,7 +170,7 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String& String::assign(Iterator first, Iterator last)
 	{
 		m_string.assign(first, last);
@@ -200,7 +201,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+	template <class Range>
+		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String& String::assign_range(Range&& range)
 	{
 	# if __cpp_lib_containers_ranges >= 202202L
@@ -666,7 +668,7 @@ namespace s3d
 		return m_string.insert(pos, count, ch);
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String::iterator String::insert(const_iterator pos, Iterator first, Iterator last)
 	{
 		return m_string.insert(pos, first, last);
@@ -695,7 +697,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+	template <class Range>
+		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String::iterator String::insert_range(const_iterator pos, Range&& range)
 	{
 	# if __cpp_lib_containers_ranges >= 202202L
@@ -730,6 +733,29 @@ namespace s3d
 	constexpr String::iterator String::erase(const_iterator first, const_iterator last) noexcept
 	{
 		return m_string.erase(first, last);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String& String::erase_at(const size_type index) & noexcept
+	{
+		if (m_string.size() <= index)
+		{
+			return *this;
+		}
+
+		m_string.erase(index, 1);
+
+		return *this;
+	}
+
+	constexpr String String::erase_at(const size_type index) && noexcept
+	{
+		return std::move(erase_at(index));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -858,7 +884,7 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr String& String::append(Iterator first, Iterator last)
 	{
 		m_string.append(first, last);
@@ -889,7 +915,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Range> requires Concept::ContainerCompatibleRange<String::value_type, Range>
+	template <class Range>
+		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String& String::append_range(Range&& range)
 	{
 	# if __cpp_lib_containers_ranges >= 202202L
@@ -1297,7 +1324,7 @@ namespace s3d
 			offset = strSize;
 		}
 
-		if ((count == npos) || (strSize < (offset + count)))
+		if ((count == npos) || ((strSize - offset) < count))
 		{
 			count = (strSize - offset);
 		}

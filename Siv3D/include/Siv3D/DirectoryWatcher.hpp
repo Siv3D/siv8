@@ -77,19 +77,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	retrieveChanges
+		//	extractChanges
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 変更のあったファイルパスの一覧を取得します。
 		/// @return 変更のあったファイルパスの一覧
 		[[nodiscard]]
-		Array<FileChange> retrieveChanges() const;
+		Array<FileChange> extractChanges() const;
 
 		/// @brief 変更のあったファイルパスの一覧を取得します。
 		/// @param fileChanges 変更のあったファイルパスの一覧の格納先
 		/// @return 変更のあったファイルパスが 1 つ以上ある場合 true, それ以外の場合は false
-		bool retrieveChanges(Array<FileChange>& fileChanges) const;
+		bool extractChanges(Array<FileChange>& fileChanges) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -31,7 +31,7 @@ namespace s3d
 	constexpr LineString::LineString(const size_type count)
 		: m_points(count) {}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr LineString::LineString(Iterator first, Iterator last)
 		: m_points(first, last) {}
 
@@ -116,7 +116,7 @@ namespace s3d
 		return *this;
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr LineString& LineString::assign(Iterator first, Iterator last)
 	{
 		m_points.assign(first, last);
@@ -538,7 +538,7 @@ namespace s3d
 		return m_points.insert(pos, count, value);
 	}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	constexpr LineString::iterator LineString::insert(const_iterator pos, Iterator first, Iterator last)
 	{
 		return m_points.insert(pos, first, last);
@@ -1184,7 +1184,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr auto LineString::operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>
+	constexpr auto LineString::operator >>(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 

@@ -36,11 +36,13 @@ namespace s3d
 		NamedParameter() = default;
 
 		[[nodiscard]]
-		constexpr NamedParameter(const Type& value) noexcept(std::is_nothrow_copy_constructible_v<Type>)
+		constexpr NamedParameter(const Type& value)
+			noexcept(std::is_nothrow_copy_constructible_v<Type>)
 			: m_value{ value } {}
 
 		[[nodiscard]]
-		constexpr NamedParameter(Type&& value) noexcept(std::is_nothrow_move_constructible_v<Type>)
+		constexpr NamedParameter(Type&& value)
+			noexcept(std::is_nothrow_move_constructible_v<Type>)
 			: m_value{ std::move(value) } {}
 
 		template <class U>

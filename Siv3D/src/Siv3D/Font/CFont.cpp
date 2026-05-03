@@ -11,6 +11,7 @@
 
 # include "CFont.hpp"
 # include <Siv3D/TextStyle.hpp>
+# include <Siv3D/TextLayoutResult.hpp>
 # include <Siv3D/Graphics2D.hpp>
 # include <Siv3D/ScopedCustomShader2D.hpp>
 # include <Siv3D/TextEffect/NullTextEffect.hpp>
@@ -29,7 +30,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Array<FontFaceProperties> GetFontFaces(const ::FT_Library library, const ::FT_Face face)
+		static Array<FontFaceProperties> GetFontFaces(const ::FT_Face face)
 		{
 			Array<FontFaceProperties> faces;
 
@@ -44,7 +45,7 @@ namespace s3d
 					faces << GetFontFaceProperties(face, mmVar->namedstyle[styleIndex].coords);
 				}
 
-				::FT_Done_MM_Var(library, mmVar);
+				SIV3D_ENGINE(Font)->done_MM_Var(mmVar);
 			}
 			else
 			{
@@ -87,9 +88,7 @@ namespace s3d
 		LOG_SCOPED_DEBUG("CFont::~CFont()");
 
 		m_fallbackFonts.clear();
-
 		m_fonts.destroy();
-
 		m_freeType = nullptr;
 	}
 
@@ -140,7 +139,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<FontFaceProperties> CFont::getFontFaces(const FilePathView path) const
+	Array<FontFaceProperties> CFont::getFontFaces(const FilePathView path)
 	{
 		MemoryMappedFileView file{ path };
 
@@ -155,26 +154,26 @@ namespace s3d
 		{
 			::FT_Face face0 = nullptr;
 
-			if (const ::FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const ::FT_Byte*>(view.data), static_cast<::FT_Long>(view.size), 0, &face0))
+			if (not newFace(view.data, view.size, 0, face0))
 			{
 				return{};
 			}
 
 			const ::FT_Long numFaces = face0->num_faces;
 
-			faces.append(GetFontFaces(m_freeType, face0));
+			faces.append(GetFontFaces(face0));
 
 			for (::FT_Long index = 1; index < numFaces; ++index)
 			{
 				::FT_Face face = nullptr;
 
-				if (const FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const ::FT_Byte*>(view.data), static_cast<::FT_Long>(view.size), index, &face))
+				if (not newFace(view.data, view.size, index, face))
 				{
 					faces.emplace_back();
 					continue;
 				}
 
-				faces.append(GetFontFaces(m_freeType, face));
+				faces.append(GetFontFaces(face));
 
 				::FT_Done_Face(face);
 			}
@@ -191,7 +190,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Font::IDType CFont::create(const Typeface typeface, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)
+	Font::IDType CFont::create(const FontMethod fontMethod, const int32 baseSize, const Typeface typeface, const FontOptions& options)
 	{
 		const TypefaceInfo typefaceInfo = GetTypefaceInfo(typeface, fontMethod);
 
@@ -200,17 +199,35 @@ namespace s3d
 			return Font::IDType::Null();
 		}
 
-		return create(typefaceInfo.path, typefaceInfo.faceIndex, typefaceInfo.styleName, fontMethod, baseSize, style);
+		return create(fontMethod, baseSize, typefaceInfo.path, options);
 	}
 
-	Font::IDType CFont::create(const FilePathView path, const size_t faceIndex, const StringView styleName, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)
+	Font::IDType CFont::create(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontOptions& options)
 	{
 		if (not path)
 		{
 			return Font::IDType::Null();
 		}
 
-		std::unique_ptr<FontData> font = std::make_unique<FontData>(m_freeType, path, faceIndex, styleName, fontMethod, baseSize, style);
+		std::unique_ptr<FontData> font = std::make_unique<FontData>(fontMethod, baseSize, path, options);
+
+		if (not font->isInitialized())
+		{
+			return Font::IDType::Null();
+		}
+
+		const String info = font->toString();
+		return m_fonts.add(std::move(font), info);
+	}
+
+	Font::IDType CFont::create(const FontMethod fontMethod, const int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options)
+	{
+		if (not reader)
+		{
+			return Font::IDType::Null();
+		}
+
+		std::unique_ptr<FontData> font = std::make_unique<FontData>(fontMethod, baseSize, std::move(reader), options);
 
 		if (not font->isInitialized())
 		{
@@ -774,7 +791,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CFont::fitsRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
+	TextLayoutResult CFont::fitsRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 
@@ -794,7 +811,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool CFont::drawRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
+	TextLayoutResult CFont::drawRect(const Font::IDType handleID, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const ReadingDirection readingDirection)
 	{
 		const auto& font = m_fonts[handleID];
 		const auto& fontInfo = font->getInfo();
@@ -843,5 +860,68 @@ namespace s3d
 	const PixelShader& CFont::getFontShader(const FontMethod method, const TextStyle::Type type) const
 	{
 		return m_shader->getFontShader(method, type);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	newFace
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool CFont::newFace(const FilePathView path, const uint32 faceIndex, FT_Face& face)
+	{
+		const std::string pathUTF8 = Unicode::ToUTF8(path);
+
+		std::lock_guard lock{ m_freeTypeMutex };
+
+		if (const ::FT_Error error = ::FT_New_Face(m_freeType, pathUTF8.c_str(), static_cast<::FT_Long>(faceIndex), &face))
+		{
+			if (error == ::FT_Err_Unknown_File_Format)
+			{
+				LOG_FAIL("FT_New_Face(): FT_Err_Unknown_File_Format");
+			}
+			else
+			{
+				LOG_FAIL("FT_New_Face(): failed");
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	bool CFont::newFace(const void* data, const size_t size_bytes, const uint32 faceIndex, FT_Face& face)
+	{
+		std::lock_guard lock{ m_freeTypeMutex };
+
+		if (const ::FT_Error error = ::FT_New_Memory_Face(m_freeType, static_cast<const ::FT_Byte*>(data), static_cast<::FT_Long>(size_bytes), static_cast<::FT_Long>(faceIndex), &face))
+		{
+			if (error == ::FT_Err_Unknown_File_Format)
+			{
+				LOG_FAIL("FT_New_Memory_Face(): FT_Err_Unknown_File_Format");
+			}
+			else
+			{
+				LOG_FAIL("FT_New_Memory_Face(): failed");
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	done_MM_Var
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CFont::done_MM_Var(FT_MM_Var_* amaster)
+	{
+		std::lock_guard lock{ m_freeTypeMutex };
+
+		::FT_Done_MM_Var(m_freeType, amaster);
 	}
 }

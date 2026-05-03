@@ -27,12 +27,12 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual bool hasEmoji(StringView emoji) const = 0;
+		virtual bool hasGlyph(StringView emoji) const = 0;
 
 		virtual GlyphIndex getGlyphIndex(StringView emoji) const = 0;
 
-		virtual Image renderEmoji(GlyphIndex emoji, int32 size) = 0;
+		virtual Image render(GlyphIndex glyphIndex, int32 size) = 0;
 
-		virtual Image renderFilledEmoji(GlyphIndex emoji, int32 size) = 0;
+		virtual Image renderSilhouette(GlyphIndex glyphIndex, int32 size) = 0;
 	};
 }

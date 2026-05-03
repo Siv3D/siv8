@@ -22,7 +22,7 @@ namespace s3d::detail
 	struct Abs_impl
 	{
 		[[nodiscard]]
-		constexpr auto operator ()(const Concept::Signed auto x) const noexcept
+		static constexpr auto operator ()(const Concept::Signed auto x) noexcept
 		{
 			return ((x < 0) ? -x : x);
 		}
@@ -37,7 +37,7 @@ namespace s3d::detail
 	struct FromEnum_impl
 	{
 		[[nodiscard]]
-		constexpr auto operator ()(const Concept::Enum auto x) const noexcept
+		static constexpr auto operator ()(const Concept::Enum auto x) noexcept
 		{
 			return static_cast<std::underlying_type_t<decltype(x)>>(x);
 		}
@@ -54,7 +54,7 @@ namespace s3d::detail
 	{
 		[[nodiscard]]
 		SIV3D_MSVC_INTRINSIC
-		constexpr auto operator ()(const std::underlying_type_t<Enum> x) const noexcept
+		static constexpr auto operator ()(const std::underlying_type_t<Enum> x) noexcept
 		{
 			return Enum{ x };
 		}
@@ -72,7 +72,7 @@ namespace s3d::detail
 		/// @param x 数 | Number
 		/// @return 数が奇数の場合 true, それ以外の場合は false | Returns true if the number is odd, false otherwise
 		[[nodiscard]]
-		constexpr bool operator()(const Concept::Integral auto x) const noexcept
+		static constexpr bool operator()(const Concept::Integral auto x) noexcept
 		{
 			return ((x % 2) != 0);
 		}
@@ -90,7 +90,7 @@ namespace s3d::detail
 		/// @param x 数 | Number
 		/// @return 数が偶数の場合 true, それ以外の場合は false | Returns true if the number is even, false otherwise
 		[[nodiscard]]
-		constexpr bool operator()(const Concept::Integral auto x) const noexcept
+		static constexpr bool operator()(const Concept::Integral auto x) noexcept
 		{
 			return ((x % 2) == 0);
 		}
@@ -109,7 +109,7 @@ namespace s3d::detail
 		template <class Type>
 		[[nodiscard]]
 		SIV3D_MSVC_INTRINSIC
-		constexpr Type&& operator()(Type&& x) const noexcept
+		static constexpr Type&& operator()(Type&& x) noexcept
 		{
 			return std::forward<Type>(x);
 		}

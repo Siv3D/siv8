@@ -48,11 +48,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& JPEGEncoder::possibleExtensions() const
+	std::span<const StringView> JPEGEncoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"jpg", U"jpeg" };
-
-		return extensions;
+		static constexpr std::array<StringView, 2> Extensions = { U"jpg", U"jpeg" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -63,6 +62,12 @@ namespace s3d
 
 	bool JPEGEncoder::save(const Image& image, const FilePathView path) const
 	{
+		if (not image)
+		{
+			LOG_FAIL("❌ JPEGEncoder::save(): image is empty");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)

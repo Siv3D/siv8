@@ -11,6 +11,7 @@
 
 # include <Siv3D/Image.hpp>
 # include <Siv3D/Emoji.hpp>
+# include <Siv3D/Icon.hpp>
 # include <Siv3D/ImageDecoder.hpp>
 # include <Siv3D/ImageEncoder.hpp>
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
@@ -147,9 +148,9 @@ namespace s3d
 		*this = ImageDecoder::Decode(path, premultiplyAlpha, format);
 	}
 
-	Image::Image(IReader&& reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
+	Image::Image(std::unique_ptr<IReader> reader, const PremultiplyAlpha premultiplyAlpha, const ImageFormat format)
 	{
-		*this = ImageDecoder::Decode(reader, premultiplyAlpha, format);
+		*this = ImageDecoder::Decode(std::move(reader), premultiplyAlpha, format);
 	}
 
 	Image::Image(const FilePathView rgb, const FilePathView alpha, const PremultiplyAlpha premultiplyAlpha)
@@ -202,6 +203,37 @@ namespace s3d
 	Image::Image(const Emoji& emoji, const int32 size)
 	{
 		*this = Emoji::CreateImage(emoji.codePoints, size);
+	}
+
+	Image::Image(const Icon& icon, const int32 size)
+	{
+		*this = Icon::CreateImage(icon.codePoint, size);
+	}
+
+	Image::Image(const Grid<Color>& grid)
+		: Image{ grid.size()}
+	{
+		const Color* pSrc = grid.data();
+		const Color* const pSrcEnd = (pSrc + num_pixels());
+		Color* pDst = m_pixels.data();
+
+		while (pSrc != pSrcEnd)
+		{
+			*pDst++ = *pSrc++;
+		}
+	}
+
+	Image::Image(const Grid<ColorF>& grid)
+		: Image{ grid.size() }
+	{
+		const ColorF* pSrc = grid.data();
+		const ColorF* const pSrcEnd = (pSrc + num_pixels());
+		Color* pDst = m_pixels.data();
+
+		while (pSrc != pSrcEnd)
+		{
+			*pDst++ = *pSrc++;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -261,7 +293,7 @@ namespace s3d
 		const int32 oldHeight = m_size.y;
 
 		// 高さが変更されない場合は何もしない
-		if (oldHeight == height)
+		if (oldHeight == static_cast<int32>(height))
 		{
 			return;
 		}

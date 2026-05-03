@@ -12,7 +12,7 @@
 # pragma once
 # include <Siv3D/PredefinedYesNo.hpp>
 # include <Siv3D/StringView.hpp>
-# include <Siv3D/FontStyle.hpp>
+# include <Siv3D/FontOptions.hpp>
 # include <Siv3D/ReadingDirection.hpp>
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/GlyphIndex.hpp>
@@ -45,7 +45,7 @@ namespace s3d
 		~FontFace();
 
 		[[nodiscard]]
-		bool init(::FT_Library library, const MappedMemoryView& memoryView, ::FT_Face face, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style);
+		bool init(std::span<const Byte> memory, ::FT_Face face, FontMethod fontMethod, int32 baseSize, const FontOptions& options);
 
 		[[nodiscard]]
 		const FontFaceInfo& getInfo() const noexcept;

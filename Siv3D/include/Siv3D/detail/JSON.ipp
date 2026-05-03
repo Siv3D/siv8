@@ -30,7 +30,7 @@ namespace s3d
 	JSON::JSON(Type&& value)
 		: m_json(std::forward<Type>(value)) {}
 
-	template <class Iterator>
+	template <std::input_iterator Iterator>
 	JSON::JSON(Iterator first, Iterator last)
 		: m_json(first, last) {}
 
@@ -40,8 +40,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Reader>
-		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	template <ReaderObject Reader>
 	bool JSON::load(Reader&& reader, const AllowExceptions allowExceptions)
 	{
 		return load(std::make_unique<Reader>(std::move(reader)), allowExceptions);
@@ -113,8 +112,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Reader>
-		requires (std::is_base_of_v<IReader, Reader> && (not std::is_lvalue_reference_v<Reader>))
+	template <ReaderObject Reader>
 	JSON JSON::Load(Reader&& reader, const AllowExceptions allowExceptions)
 	{
 		return Load(std::make_unique<Reader>(std::move(reader)), allowExceptions);

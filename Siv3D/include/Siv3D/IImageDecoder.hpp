@@ -12,7 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "String.hpp"
-# include "Array.hpp"
+# include "IReader.hpp"
 # include "ImageInfo.hpp"
 # include "Image.hpp"
 # include "Optional.hpp"
@@ -21,8 +21,6 @@
 
 namespace s3d
 {
-	class IReader;
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	IImageDecoder
@@ -30,7 +28,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	struct IImageDecoder
-	{		
+	{
+		static constexpr size_t RequiredHeaderBytes = 16;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)
@@ -68,11 +68,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 与えらえたバイト列が、このデコーダがサポートする画像フォーマットのヘッダであるかを返します。
+		/// @brief 与えられたバイト列が、このデコーダがサポートする画像フォーマットのヘッダであるかを返します。
 		/// @param bytes バイト列
 		/// @return 与えられたバイト列が、このデコーダがサポートする画像フォーマットのヘッダである場合 true, それ以外の場合は false
 		[[nodiscard]]
-		virtual bool isHeader(const uint8(&bytes)[16]) const noexcept = 0;
+		virtual bool isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -83,7 +83,7 @@ namespace s3d
 		/// @brief このデコーダがサポートする画像ファイルの拡張子の一覧を返します。
 		/// @return このデコーダがサポートする画像ファイルの拡張子の一覧
 		[[nodiscard]]
-		virtual const Array<String>& possibleExtensions() const = 0;
+		virtual std::span<const StringView> possibleExtensions() const noexcept = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -98,11 +98,11 @@ namespace s3d
 		virtual Optional<ImageInfo> getImageInfo(FilePathView path) const;
 
 		/// @brief 画像ファイルの情報を取得します。
-		/// @param reader 画像ファイルをさす IReader
+		/// @param reader Reader オブジェクト
 		/// @param pathHint 画像ファイルのパス
 		/// @return 画像ファイルの情報、このデコーダがサポートしていないフォーマットの場合は none
 		[[nodiscard]]
-		virtual Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint) const = 0;
+		virtual Optional<ImageInfo> getImageInfo(const IReader& reader, FilePathView pathHint) const = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -118,12 +118,12 @@ namespace s3d
 		virtual Image decode(FilePathView path, PremultiplyAlpha premultiplyAlpha) const;
 
 		/// @brief 画像ファイルをデコードします。
-		/// @param reader IReader
+		/// @param reader Reader オブジェクト
 		/// @param pathHint 画像ファイルのパス（わかる場合）
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @return デコードされた画像
 		[[nodiscard]]
-		virtual Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const = 0;
+		virtual Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha) const = 0;
 	
 		////////////////////////////////////////////////////////////////
 		//
@@ -140,12 +140,12 @@ namespace s3d
 		virtual Grid<uint16> decodeGray16(FilePathView path) const;
 
 		/// @brief 画像ファイルを 16-bit グレースケール画像としてデコードします。
-		/// @param reader IReader
+		/// @param reader Reader オブジェクト
 		/// @param pathHint 画像ファイルのパス（わかる場合）
 		/// @return デコードされた 16-bit グレースケール画像の二次元配列、デコードに失敗した場合は空の配列
 		/// @remark このデコーダが 16-bit グレースケール画像をサポートしていない場合は空の配列を返します。
 		/// @remark 画像が 16-bit グレースケール画像でない場合は空の配列を返します。
 		[[nodiscard]]
-		virtual Grid<uint16> decodeGray16(IReader&, FilePathView) const;
+		virtual Grid<uint16> decodeGray16(std::unique_ptr<IReader> reader, FilePathView) const;
 	};
 }

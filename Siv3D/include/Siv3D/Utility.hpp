@@ -37,9 +37,11 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち小さい方の値。等しい場合は a | The lesser of a and b. If they are equivalent, returns a
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND) noexcept(noexcept(b < a));
+	constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND)
+		noexcept(noexcept(b < a));
 
 	/// @brief 3 つの値のうち最小の値を返します。 | Returns the smallest of the three.
 	/// @tparam Scalar 比較する値の型 | The type of the values to compare
@@ -57,9 +59,11 @@ namespace s3d
 	/// @param b 比較する値 | Another value to compare
 	/// @param c 比較する値 | Another value to compare
 	/// @return 3 つの値のうち最小の値 | The smallest of the three
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND) noexcept(noexcept(b < a));
+	constexpr const Type& Min(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND)
+		noexcept(noexcept(b < a));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -81,9 +85,11 @@ namespace s3d
 	/// @param a 比較する値 | A value to compare
 	/// @param b 比較する値 | Another value to compare
 	/// @return 2 つの値のうち大きい方の値。等しい場合は a | The greater of a and b. If they are equivalent, returns a
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND) noexcept(noexcept(a < b));
+	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND)
+		noexcept(noexcept(a < b));
 
 	/// @brief 3 つの値のうち最大の値を返します。 | Returns the greatest of the three.
 	/// @tparam Scalar 比較する値の型 | The type of the values to compare
@@ -101,9 +107,11 @@ namespace s3d
 	/// @param b 比較する値 | Another value to compare
 	/// @param c 比較する値 | Another value to compare
 	/// @return 3 つの値のうち最大の値 | The greatest of the three
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND) noexcept(noexcept(a < b));
+	constexpr const Type& Max(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND, const Type& c SIV3D_LIFETIMEBOUND)
+		noexcept(noexcept(a < b));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -127,9 +135,11 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return v をクランプした値 | The clamped value for the v
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND) noexcept(noexcept(max < v) && noexcept(v < min));
+	constexpr const Type& Clamp(const Type& v SIV3D_LIFETIMEBOUND, const Type& min SIV3D_LIFETIMEBOUND, const Type& max SIV3D_LIFETIMEBOUND)
+		noexcept(noexcept(max < v) && noexcept(v < min));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -153,9 +163,11 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 閉区間 [min, max] にある場合 true, それ以外の場合は false | Returns true if the value is in the closed interval [min, max], false otherwise
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr bool InRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(min <= v) && noexcept(v <= max));
+	constexpr bool InRange(const Type& v, const Type& min, const Type& max)
+		noexcept(noexcept(min <= v) && noexcept(v <= max));
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -179,9 +191,11 @@ namespace s3d
 	/// @param min 範囲の最小値 | The specified minimum range
 	/// @param max 範囲の最大値 | The specified maximum range
 	/// @return 開区間 (min, max) にある場合 true, それ以外の場合は false | Returns true if the value is in the open interval (min, max), false otherwise
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	[[nodiscard]]
-	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max) noexcept(noexcept(min < v) && noexcept(v < max));
+	constexpr bool InOpenRange(const Type& v, const Type& min, const Type& max)
+		noexcept(noexcept(min < v) && noexcept(v < max));
 
 	////////////////////////////////////////////////////////////////
 	//

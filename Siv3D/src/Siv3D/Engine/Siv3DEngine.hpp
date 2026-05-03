@@ -25,15 +25,21 @@ namespace s3d
 	class ISiv3DUserAction;
 	class ISiv3DWindow;
 	class ISiv3DScene;
+	class ISiv3DMediaTranscoder;
 	class ISiv3DImageDecoder;
 	class ISiv3DImageEncoder;
-	class ISiv3DEmoji;
+	class ISiv3DPDFRenderer;
+	class ISiv3DAudioDecoder;
+	class ISiv3DAudioEncoder;
 	class ISiv3DConsole;
 	class ISiv3DCursor;
 	class ISiv3DCursorStyle;
 	class ISiv3DKeyboard;
 	class ISiv3DMouse;
+	class ISiv3DPentablet;
 	class ISiv3DClipboard;
+	class ISiv3DDragDrop;
+	class ISiv3DAudio;
 	class ISiv3DRenderer;
 	class ISiv3DTexture;
 	class ISiv3DShader;
@@ -41,10 +47,14 @@ namespace s3d
 	class ISiv3DRenderer2D;
 	class ISiv3DScreenCapture;
 	class ISiv3DFont;
+	class ISiv3DEmoji;
+	class ISiv3DIcon;
 	class ISiv3DGUI;
 	class ISiv3DPrint;
 	class ISiv3DEffect;
+	class ISiv3DTextToSpeech;
 	class ISiv3DNativeShare;
+	class ISiv3DNotifications;
 
 	class Siv3DEngine
 	{
@@ -63,15 +73,21 @@ namespace s3d
 			Siv3DComponent<ISiv3DUserAction>,
 			Siv3DComponent<ISiv3DWindow>,
 			Siv3DComponent<ISiv3DScene>,
+			Siv3DComponent<ISiv3DMediaTranscoder>,
 			Siv3DComponent<ISiv3DImageDecoder>,
 			Siv3DComponent<ISiv3DImageEncoder>,
-			Siv3DComponent<ISiv3DEmoji>,
+			Siv3DComponent<ISiv3DPDFRenderer>,
+			Siv3DComponent<ISiv3DAudioDecoder>,
+			Siv3DComponent<ISiv3DAudioEncoder>,
 			Siv3DComponent<ISiv3DConsole>,
 			Siv3DComponent<ISiv3DCursor>,
 			Siv3DComponent<ISiv3DCursorStyle>,
 			Siv3DComponent<ISiv3DKeyboard>,
 			Siv3DComponent<ISiv3DMouse>,
+			Siv3DComponent<ISiv3DPentablet>,
 			Siv3DComponent<ISiv3DClipboard>,
+			Siv3DComponent<ISiv3DDragDrop>,
+			Siv3DComponent<ISiv3DAudio>,
 			Siv3DComponent<ISiv3DRenderer>,
 			Siv3DComponent<ISiv3DTexture>,
 			Siv3DComponent<ISiv3DShader>,
@@ -79,10 +95,14 @@ namespace s3d
 			Siv3DComponent<ISiv3DRenderer2D>,
 			Siv3DComponent<ISiv3DScreenCapture>,
 			Siv3DComponent<ISiv3DFont>,
+			Siv3DComponent<ISiv3DEmoji>,
+			Siv3DComponent<ISiv3DIcon>,
 			Siv3DComponent<ISiv3DGUI>,
 			Siv3DComponent<ISiv3DPrint>,
 			Siv3DComponent<ISiv3DEffect>,
-			Siv3DComponent<ISiv3DNativeShare>
+			Siv3DComponent<ISiv3DTextToSpeech>,
+			Siv3DComponent<ISiv3DNativeShare>,
+			Siv3DComponent<ISiv3DNotifications>
 		> m_components;
 
 	public:

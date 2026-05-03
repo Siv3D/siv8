@@ -29,13 +29,13 @@ namespace s3d
 
 		void init() override;
 
-		VertexShader::IDType createVSFromFile(FilePathView path, StringView entryPoint) override;
+		VertexShader::IDType createVSFromReader(std::unique_ptr<IReader> reader, FilePathView pathHint, StringView entryPoint) override;
 
 		VertexShader::IDType createVSFromSource(const std::string& source, StringView entryPoint) override;
 
 		VertexShader::IDType createVSFromBytecode(const Blob& bytecode) override;
 
-		PixelShader::IDType createPSFromFile(FilePathView path, StringView entryPoint) override;
+		PixelShader::IDType createPSFromReader(std::unique_ptr<IReader> reader, FilePathView pathHint, StringView entryPoint) override;
 
 		PixelShader::IDType createPSFromSource(const std::string& source, StringView entryPoint) override;
 

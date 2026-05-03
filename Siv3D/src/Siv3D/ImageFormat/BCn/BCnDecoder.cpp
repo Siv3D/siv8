@@ -74,7 +74,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BCnDecoder::isHeader(const uint8(&bytes)[16]) const noexcept
+	bool BCnDecoder::isHeader(const uint8(&bytes)[RequiredHeaderBytes]) const noexcept
 	{
 		static constexpr uint8 signature[] = { 'D', 'D', 'S', ' ' };
 
@@ -111,11 +111,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& BCnDecoder::possibleExtensions() const
+	std::span<const StringView> BCnDecoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"dds" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"dds" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -129,7 +128,7 @@ namespace s3d
 		return IImageDecoder::getImageInfo(path);
 	}
 
-	Optional<ImageInfo> BCnDecoder::getImageInfo(IReader& reader, const FilePathView) const
+	Optional<ImageInfo> BCnDecoder::getImageInfo(const IReader& reader, const FilePathView) const
 	{
 		DDSURFACEDESC2 desc{};
 		
@@ -163,13 +162,13 @@ namespace s3d
 		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image BCnDecoder::decode(IReader& reader, const FilePathView, const PremultiplyAlpha) const
+	Image BCnDecoder::decode(std::unique_ptr<IReader> reader, const FilePathView, const PremultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("BCnDecoder::decode()");
 
 		DDSURFACEDESC2 desc{};
 
-		if (reader.read(&desc, 4, sizeof(desc)) != sizeof(desc))
+		if (reader->read(&desc, 4, sizeof(desc)) != sizeof(desc))
 		{
 			LOG_FAIL("❌ BCnDecoder::decode(): Failed to read header");
 			return{};
@@ -221,7 +220,7 @@ namespace s3d
 
 		if (hasDX10Header)
 		{
-			if (reader.read(&hdr10, sizeof(hdr10)) != sizeof(hdr10))
+			if (reader->read(&hdr10, sizeof(hdr10)) != sizeof(hdr10))
 			{
 				LOG_FAIL("❌ BCnDecoder::decode(): Failed to read DXT10 header");
 				return{};
@@ -263,7 +262,7 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader.read(lineBuffer.data(), lineSize);
+				reader->read(lineBuffer.data(), lineSize);
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -305,7 +304,7 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader.read(lineBuffer.data(), lineSize);
+				reader->read(lineBuffer.data(), lineSize);
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -347,7 +346,7 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader.read(lineBuffer.data(), lineSize);
+				reader->read(lineBuffer.data(), lineSize);
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -389,7 +388,7 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader.read(lineBuffer.data(), lineSize);
+				reader->read(lineBuffer.data(), lineSize);
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -431,7 +430,7 @@ namespace s3d
 
 			for (uint32 by = 0; by < yBlocks; ++by)
 			{
-				reader.read(lineBuffer.data(), lineSize);
+				reader->read(lineBuffer.data(), lineSize);
 
 				for (uint32 bx = 0; bx < xBlocks; ++bx)
 				{
@@ -484,23 +483,23 @@ namespace s3d
 
 	BCnData BCnDecoder::decodeNative(const FilePathView path, const bool sRGB) const
 	{
-		BinaryFileReader reader{ path };
+		std::unique_ptr<BinaryFileReader> reader = std::make_unique<BinaryFileReader>(path);
 
-		if (not reader)
+		if (not reader->isOpen())
 		{
 			return{};
 		}
 
-		return decodeNative(reader, sRGB, path);
+		return decodeNative(std::move(reader), sRGB, path);
 	}
 
-	BCnData BCnDecoder::decodeNative(IReader& reader, const bool sRGB, const FilePathView) const
+	BCnData BCnDecoder::decodeNative(std::unique_ptr<IReader> reader, const bool sRGB, const FilePathView) const
 	{
 		LOG_SCOPED_DEBUG("BCnDecoder::decodeNative()");
 
 		DDSURFACEDESC2 desc{};
 
-		if (reader.read(&desc, 4, sizeof(desc)) != sizeof(desc))
+		if (reader->read(&desc, 4, sizeof(desc)) != sizeof(desc))
 		{
 			LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read header");
 			return{};
@@ -553,7 +552,7 @@ namespace s3d
 
 		if (hasDX10Header)
 		{
-			if (reader.read(&hdr10, sizeof(hdr10)) != sizeof(hdr10))
+			if (reader->read(&hdr10, sizeof(hdr10)) != sizeof(hdr10))
 			{
 				LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read DXT10 header");
 				return{};
@@ -598,7 +597,7 @@ namespace s3d
 			const size_t textureSize = (xBlocks * yBlocks * blockSize);
 
 			Blob blob{ textureSize };
-			if (reader.read(blob.data(), textureSize) != static_cast<int64>(textureSize))
+			if (reader->read(blob.data(), textureSize) != static_cast<int64>(textureSize))
 			{
 				LOG_FAIL("❌ BCnDecoder::decodeNative(): Failed to read texture data");
 				return{};

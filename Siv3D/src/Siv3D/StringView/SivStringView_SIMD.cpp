@@ -55,6 +55,11 @@ namespace s3d
 
 	# else
 
+		if (length == 0)
+		{
+			return true;
+		}
+
 		return (std::memcmp(s1, s2, (length * sizeof(char32))) == 0);
 
 	# endif

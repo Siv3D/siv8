@@ -63,7 +63,8 @@ namespace s3d
 		constexpr Point(Concept::Integral auto _x, Concept::Integral auto _y) noexcept;
 
 		template <class X, class Y>
-		constexpr Point(X _x, Y _y) noexcept requires((not Concept::Integral<X>) || (not Concept::Integral<Y>)) = delete;
+		constexpr Point(X _x, Y _y) noexcept
+			requires((not Concept::Integral<X>) || (not Concept::Integral<Y>)) = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -289,12 +290,12 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	clear
+		//	setZero
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief すべての成分を 0 にします。
-		constexpr void clear() noexcept;
+		constexpr void setZero() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

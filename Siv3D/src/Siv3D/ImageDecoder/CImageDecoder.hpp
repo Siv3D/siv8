@@ -24,17 +24,17 @@ namespace s3d
 
 		void init() override;
 
-		bool add(std::unique_ptr<IImageDecoder>&& decoder) override;
+		bool add(std::unique_ptr<IImageDecoder> decoder) override;
 
 		void remove(StringView decoderName) override;
 
 		const Array<std::unique_ptr<IImageDecoder>>& enumDecoder() const noexcept override;
 
-		Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) override;
+		Optional<ImageInfo> getImageInfo(const IReader& reader, FilePathView pathHint, StringView decoderName) override;
 
-		Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat) override;
+		Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, StringView decoderName) override;
 
-		Grid<uint16> decodeGray16(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) override;
+		Grid<uint16> decodeGray16(std::unique_ptr<IReader> reader, FilePathView pathHint, StringView decoderName) override;
 
 	private:
 

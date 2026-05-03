@@ -14,13 +14,25 @@
 # include "Concepts.hpp"
 
 namespace s3d
-{
+{		
+	////////////////////////////////////////////////////////////////
+	//
+	//	CommonFloat
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief 異なる数値型どうしの計算結果として使う浮動小数点数型
 	template <Concept::Arithmetic T, Concept::Arithmetic U>
 	struct CommonFloat
 	{
 		using type = std::conditional_t<(not std::is_floating_point_v<T>) && (not std::is_floating_point_v<U>), double, std::common_type_t<T, U>>;
 	};
+		
+	////////////////////////////////////////////////////////////////
+	//
+	//	CommonFloat_t
+	//
+	////////////////////////////////////////////////////////////////
 
 	/// @brief 異なる数値型どうしの計算結果として使う浮動小数点数型
 	template <Concept::Arithmetic T, Concept::Arithmetic U>

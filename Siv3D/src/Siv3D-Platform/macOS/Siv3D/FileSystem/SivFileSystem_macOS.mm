@@ -14,6 +14,8 @@
 # include <mach-o/dyld.h>
 # include <filesystem>
 # include <Foundation/Foundation.h>
+# include <Siv3D/Array.hpp>
+# include <Siv3D/ArrayAlgorithm.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/StringAlgorithm.hpp>
 # include <Siv3D/FileSystem.hpp>
@@ -238,9 +240,9 @@ namespace s3d
 
 				Array<FilePath> paths = FileSystem::DirectoryContents(resourcePath, Recursive::Yes);
 
-				paths.remove_if(FileSystem::IsDirectory);
+				paths.erase_all_if(FileSystem::IsDirectory);
 				
-				paths.remove(resourcePath + U"icon.icns");
+				paths.erase_first(resourcePath + U"icon.icns");
 
 				paths.sort();
 				
@@ -362,7 +364,7 @@ namespace s3d
 			
 			const FilePath fullpath = FullPath(path);
 			
-			return detail::MacOS_FullPath(Unicode::ToUTF8(fullpath).c_str());			
+			return detail::MacOS_FullPath(Unicode::ToUTF8(fullpath).c_str());
 		}
 
 		////////////////////////////////////////////////////////////////

@@ -18,7 +18,6 @@
 # include <Siv3D/String.hpp>
 # include <Siv3D/Char.hpp>
 # include <Siv3D/Unicode.hpp>
-# include <Siv3D/Random.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/HashSet.hpp>
 # include <Siv3D/RegExp.hpp>
@@ -41,6 +40,11 @@ namespace s3d
 			bool operator()(const char32 value)
 			{
 				return m_set.insert(value).second;
+			}
+
+			void reserve(const size_t size)
+			{
+				m_set.reserve(size);
 			}
 
 		private:
@@ -187,6 +191,11 @@ namespace s3d
 
 	int64 StringView::count(const StringView s) const
 	{
+		if (s.isEmpty())
+		{
+			return 0;
+		}
+
 		int64 count = 0;
 
 		for (auto it = begin();; ++it, ++count)
@@ -208,7 +217,16 @@ namespace s3d
 
 	String StringView::expandTabs(const size_type tabSize) const
 	{
+		if (tabSize == 0)
+		{
+			return String{ m_view };
+		}
+
+		const size_t tabs = std::ranges::count(m_view, U'\t');
+		const size_t extra = (tabs * (tabSize - 1));
+
 		String expanded;
+		expanded.reserve(m_view.size() + extra);
 
 		for (auto ch : m_view)
 		{
@@ -279,6 +297,11 @@ namespace s3d
 
 	String StringView::leftPadded(const size_type length, const value_type fillChar) const
 	{
+		if (length <= m_view.size())
+		{
+			return String{ m_view };
+		}
+
 		String result;
 		result.reserve(Max(m_view.size(), length));
 
@@ -314,7 +337,7 @@ namespace s3d
 
 	String StringView::leftTrimmed() const
 	{
-		auto it = std::find_if(m_view.begin(), m_view.end(), IsTrimmable);
+		auto it = std::ranges::find_if_not(m_view, IsTrimmable);
 		return String(it, m_view.end());
 	}
 
@@ -332,53 +355,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	remove, removed
-	//
-	////////////////////////////////////////////////////////////////
-
-	String StringView::removed(const value_type ch) const
-	{
-		String result;
-		result.reserve(m_view.size());
-
-		for (auto c : m_view)
-		{
-			if (c != ch)
-			{
-				result.push_back(c);
-			}
-		}
-
-		return result;
-	}
-
-	String StringView::removed(const StringView s) const
-	{
-		if (s.isEmpty())
-		{
-			return{};
-		}
-
-		String result;
-
-		const auto itEnd = m_view.end();
-		auto itCurrent = m_view.begin();
-		auto itNext = std::search(itCurrent, itEnd, s.begin(), s.end());
-
-		while (itNext != itEnd)
-		{
-			result.append(itCurrent, itNext);
-			itCurrent = (itNext + s.size());
-			itNext = std::search(itCurrent, itEnd, s.begin(), s.end());
-		}
-
-		result.append(itCurrent, itNext);
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	repeat
 	//
 	////////////////////////////////////////////////////////////////
@@ -386,15 +362,29 @@ namespace s3d
 	String StringView::repeat(const size_t count) const
 	{
 		const size_t blockLength = m_view.size();
-		const size_t blockMemorySize = (blockLength * sizeof(value_type));
 
-		String result((blockLength * count), U'\0');
+		if ((blockLength == 0) || (count == 0))
+		{
+			return{};
+		}
+
+		String result;
+
+		if ((result.max_size() / blockLength) < count)
+		{
+			ThrowRepeatLengthError();
+		}
+
+		const size_t totalLength = (blockLength * count);
+		result.resize(totalLength);
+
 		value_type* pDst = result.data();
 		const value_type* pSrc = m_view.data();
+		const size_t bytes = (blockLength * sizeof(value_type));
 
 		for (size_t i = 0; i < count; ++i)
 		{
-			std::memcpy(pDst, pSrc, blockMemorySize);
+			std::memcpy(pDst, pSrc, bytes);
 			pDst += blockLength;
 		}
 
@@ -416,47 +406,27 @@ namespace s3d
 
 	String StringView::replaced(const StringView oldStr, const StringView newStr) const
 	{
-		String result;
-
-		if (oldStr.size() <= newStr.size())
+		if (oldStr.isEmpty())
 		{
-			result.reserve(m_view.size());
+			return String{ m_view };
 		}
 
-		const auto itEnd = m_view.end();
-		auto itCurrent = m_view.begin();
-		auto itNext = std::search(itCurrent, itEnd, oldStr.begin(), oldStr.end());
+		String result;
+		result.reserve(m_view.size());
 
-		while (itNext != itEnd)
+		size_type currentPos = 0;
+		size_type foundPos = m_view.find(oldStr.m_view, currentPos);
+
+		while (foundPos != npos)
 		{
-			result.append(itCurrent, itNext);
+			result.append(m_view.begin() + currentPos, m_view.begin() + foundPos);
 			result.append(newStr);
-			itCurrent = (itNext + oldStr.size());
-			itNext = std::search(itCurrent, itEnd, oldStr.begin(), oldStr.end());
+
+			currentPos = (foundPos + oldStr.size());
+			foundPos = m_view.find(oldStr.m_view, currentPos);
 		}
 
-		result.append(itCurrent, itNext);
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	removed_at
-	//
-	////////////////////////////////////////////////////////////////
-
-	String StringView::removed_at(const size_type index) const
-	{
-		if (m_view.size() <= index)
-		{
-			return{};
-		}
-
-		String result;
-		result.reserve(m_view.size() - 1);
-		result.append(m_view.begin(), (m_view.begin() + index));
-		result.append((m_view.begin() + index + 1), m_view.end());
+		result.append(m_view.begin() + currentPos, m_view.end());
 
 		return result;
 	}
@@ -507,6 +477,11 @@ namespace s3d
 
 	String StringView::rightPadded(const size_type length, const value_type fillChar) const
 	{
+		if (length <= m_view.size())
+		{
+			return String{ m_view };
+		}
+
 		String result;
 		result.reserve(Max(m_view.size(), length));
 
@@ -550,15 +525,13 @@ namespace s3d
 	{
 		if (m_view.size() <= index)
 		{
-			return{};
+			return String{ m_view };
 		}
 
 		String result;
 		result.reserve(m_view.size());
-
 		result.append((m_view.begin() + index), m_view.end());
 		result.append(m_view.begin(), (m_view.begin() + index));
-
 		return result;
 	}
 
@@ -622,6 +595,11 @@ namespace s3d
 
 	std::pair<StringView, StringView> StringView::splitAt(const size_type pos) const SIV3D_LIFETIMEBOUND
 	{
+		if (m_view.size() <= pos)
+		{
+			return{ *this, StringView{} };
+		}
+
 		return{ substr(0, pos), substr(pos) };
 	}
 
@@ -663,23 +641,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	take
-	//
-	////////////////////////////////////////////////////////////////
-
-	String StringView::take(const size_t n) const
-	{
-		return String(m_view.begin(), (m_view.begin() + Min(n, m_view.size())));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	trimmed
 	//
 	////////////////////////////////////////////////////////////////
 
 	String StringView::trimmed() const
 	{
+		if (m_view.empty())
+		{
+			return {};
+		}
+
 		const char32* start = m_view.data();
 		const char32* end = (start + m_view.size());
 
@@ -741,10 +713,12 @@ namespace s3d
 	String StringView::stable_uniqued() const
 	{
 		String result;
+		result.reserve(m_view.size());
 
 		StringStableUniqueHelper pred;
+		pred.reserve(m_view.size());
 
-		std::copy_if(m_view.begin(), m_view.end(), std::back_inserter(result), std::ref(pred));
+		std::ranges::copy_if(m_view, std::back_inserter(result), std::ref(pred));
 
 		return result;
 	}
@@ -771,7 +745,8 @@ namespace s3d
 	String StringView::uniqued_consecutive() const
 	{
 		String result;
-		std::unique_copy(m_view.begin(), m_view.end(), std::back_inserter(result));
+		result.reserve(m_view.size());
+		std::ranges::unique_copy(m_view, std::back_inserter(result));
 		return result;
 	}
 
@@ -797,6 +772,75 @@ namespace s3d
 				ThrowValuesAtOutOfRange();
 			}
 		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without
+	//
+	////////////////////////////////////////////////////////////////
+
+	String StringView::without(const value_type ch) const
+	{
+		String result;
+		result.reserve(m_view.size());
+
+		for (auto c : m_view)
+		{
+			if (c != ch)
+			{
+				result.push_back(c);
+			}
+		}
+
+		return result;
+	}
+
+	String StringView::without(const StringView s) const
+	{
+		if (s.isEmpty())
+		{
+			return String{ m_view };
+		}
+
+		String result;
+		result.reserve(m_view.size());
+
+		size_type currentPos = 0;
+		size_type foundPos = m_view.find(s.m_view, currentPos);
+
+		while (foundPos != npos)
+		{
+			result.append(m_view.begin() + currentPos, m_view.begin() + foundPos);
+
+			currentPos = (foundPos + s.size());
+			foundPos = m_view.find(s.m_view, currentPos);
+		}
+
+		result.append(m_view.begin() + currentPos, m_view.end());
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	String StringView::without_at(const size_type index) const
+	{
+		if (m_view.size() <= index)
+		{
+			ThrowWithoutAtOutOfRange();
+		}
+
+		String result;
+		result.reserve(m_view.size() - 1);
+		result.append(m_view.begin(), (m_view.begin() + index));
+		result.append((m_view.begin() + index + 1), m_view.end());
 
 		return result;
 	}
@@ -936,5 +980,15 @@ namespace s3d
 	void StringView::ThrowValuesAtOutOfRange()
 	{
 		throw std::out_of_range{ "StringView::values_at(): index out of range" };
+	}
+
+	void StringView::ThrowWithoutAtOutOfRange()
+	{
+		throw std::out_of_range{ "StringView::without_at(): index out of range" };
+	}
+
+	void StringView::ThrowRepeatLengthError()
+	{
+		throw std::length_error{ "StringView::repeat(): result too long" };
 	}
 }

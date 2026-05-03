@@ -18,24 +18,34 @@
 # include <Siv3D/UserAction/IUserAction.hpp>
 # include <Siv3D/Window/CWindow.hpp>
 # include <Siv3D/Scene/CScene.hpp>
+# include <Siv3D/MediaTranscoder/IMediaTranscoder.hpp>
 # include <Siv3D/ImageDecoder/IImageDecoder.hpp>
 # include <Siv3D/ImageEncoder/IImageEncoder.hpp>
-# include <Siv3D/Emoji/IEmoji.hpp>
+# include <Siv3D/PDFRenderer/IPDFRenderer.hpp>
+# include <Siv3D/AudioDecoder/IAudioDecoder.hpp>
+# include <Siv3D/AudioEncoder/IAudioEncoder.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/CursorStyle/ICursorStyle.hpp>
 # include <Siv3D/Keyboard/IKeyboard.hpp>
 # include <Siv3D/Mouse/IMouse.hpp>
+# include <Siv3D/Pentablet/IPentablet.hpp>
 # include <Siv3D/Clipboard/IClipboard.hpp>
+# include <Siv3D/DragDrop/IDragDrop.hpp>
+# include <Siv3D/Audio/IAudio.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Shader/IShader.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/ScreenCapture/IScreenCapture.hpp>
 # include <Siv3D/Font/IFont.hpp>
+# include <Siv3D/Emoji/IEmoji.hpp>
+# include <Siv3D/Icon/IIcon.hpp>
 # include <Siv3D/GUI/IGUI.hpp>
 # include <Siv3D/Print/IPrint.hpp>
 # include <Siv3D/Effect/IEffect.hpp>
+# include <Siv3D/TextToSpeech/ITextToSpeech.hpp>
 # include <Siv3D/NativeShare/INativeShare.hpp>
+# include <Siv3D/Notifications/INotifications.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/CacheDirectory/CacheDirectory.hpp>
@@ -82,24 +92,33 @@ namespace s3d
 		m_setupProgress = SetupProgress::EngineInitialized;
 
 		SIV3D_ENGINE(RegExp)->init();
+		SIV3D_ENGINE(MediaTranscoder)->init();
 		SIV3D_ENGINE(ImageDecoder)->init();
 		SIV3D_ENGINE(ImageEncoder)->init();
-		SIV3D_ENGINE(Emoji)->init();
+		SIV3D_ENGINE(PDFRenderer)->init();
+		SIV3D_ENGINE(AudioDecoder)->init();
+		SIV3D_ENGINE(AudioEncoder)->init();
 		SIV3D_ENGINE(Cursor)->init();
 		SIV3D_ENGINE(CursorStyle)->init();
 		SIV3D_ENGINE(Keyboard)->init();
 		SIV3D_ENGINE(Mouse)->init();
 		SIV3D_ENGINE(Clipboard)->init();
+		SIV3D_ENGINE(DragDrop)->init();
+		SIV3D_ENGINE(Audio)->init();
 		SIV3D_ENGINE(Renderer)->init();
 		SIV3D_ENGINE(Shader)->init();
 		SIV3D_ENGINE(EngineShader)->init();
 		SIV3D_ENGINE(Renderer2D)->init();
 		SIV3D_ENGINE(ScreenCapture)->init();
 		SIV3D_ENGINE(Font)->init();
+		SIV3D_ENGINE(Emoji)->init();
+		SIV3D_ENGINE(Icon)->init();
 		SIV3D_ENGINE(GUI)->init();
 		SIV3D_ENGINE(Print)->init();
 		SIV3D_ENGINE(Effect)->init();
+		SIV3D_ENGINE(TextToSpeech)->init();
 		SIV3D_ENGINE(NativeShare)->init();
+		SIV3D_ENGINE(Notifications)->init();
 
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}
@@ -185,7 +204,9 @@ namespace s3d
 			SIV3D_ENGINE(CursorStyle)->update();
 			SIV3D_ENGINE(Keyboard)->update();
 			SIV3D_ENGINE(Mouse)->update();
+			SIV3D_ENGINE(Pentablet)->update();
 			SIV3D_ENGINE(LicenseManager)->update();
+			SIV3D_ENGINE(DragDrop)->update();
 			SIV3D_ENGINE(Effect)->update();
 
 			SIV3D_ENGINE(Profiler)->reportEvent(ProfilerEvent::EngineBegin_End);

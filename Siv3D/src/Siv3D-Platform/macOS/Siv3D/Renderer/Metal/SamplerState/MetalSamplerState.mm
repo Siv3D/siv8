@@ -157,13 +157,13 @@ namespace s3d
 		samplerDescriptor->setBorderColor(SamplerBorderColorTable[FromEnum(state.borderColor)]);
 		samplerDescriptor->setLodMinClamp(state.minLOD);
 
-		LOG_TRACE(U"MTL::Device::newSamplerState()");
+		LOG_TRACE("MTL::Device::newSamplerState()");
 
 		NS::SharedPtr<MTL::SamplerState> samplerState = NS::TransferPtr(m_device->newSamplerState(samplerDescriptor.get()));
 
 		if (not samplerState)
 		{
-			LOG_FAIL(U"✖ MTL::Device::newSamplerState() failed");
+			LOG_FAIL("✖ MTL::Device::newSamplerState() failed");
 			return m_states.end();
 		}
 				

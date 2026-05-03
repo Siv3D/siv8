@@ -65,11 +65,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<String>& PNGEncoder::possibleExtensions() const
+	std::span<const StringView> PNGEncoder::possibleExtensions() const noexcept
 	{
-		static const Array<String> extensions{ U"png" };
-
-		return extensions;
+		static constexpr std::array<StringView, 1> Extensions = { U"png" };
+		return Extensions;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -85,6 +84,12 @@ namespace s3d
 
 	bool PNGEncoder::save(const Image& image, const FilePathView path, const PNGFilter filter) const
 	{
+		if (not image)
+		{
+			LOG_FAIL("❌ PNGEncoder::save(): image is empty");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)

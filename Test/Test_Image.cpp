@@ -38,6 +38,19 @@ TEST_CASE("Image.premultiplyAlpha")
 	CHECK_EQ(image1, image2);
 }
 
+TEST_CASE("Image.unpremultiplyAlpha")
+{
+	const Image testImage = MakeTestImage(512);
+	Image image1 = testImage;
+	Image image2 = testImage;
+	image1.premultiplyAlpha();
+	image2.premultiplyAlpha();
+	image1.unpremultiplyAlpha(false);
+	image2.unpremultiplyAlpha(true);
+
+	CHECK_EQ(image1, image2);
+}
+
 TEST_CASE("Image.bgraToRGBA")
 {
 	const Image testImage = MakeTestImage(512);
@@ -63,6 +76,22 @@ TEST_CASE("Image.premultiplyAlpha.Benchmark")
 	{
 		Bench{}.title("Image::premultiplyAlpha").run("SIMD off", [&]() { image1.premultiplyAlpha(false); });
 		Bench{}.title("Image::premultiplyAlpha").run("SIMD on", [&]() { image2.premultiplyAlpha(true); });
+	}
+}
+
+TEST_CASE("Image.unpremultiplyAlpha.Benchmark")
+{
+	const ScopedLogSilencer logSilencer;
+
+	const Image testImage = MakeTestImage(512);
+	Image image1 = testImage;
+	Image image2 = testImage;
+	image1.premultiplyAlpha();
+	image2.premultiplyAlpha();
+
+	{
+		Bench{}.title("Image::unpremultiplyAlpha").run("SIMD off", [&]() { image1.unpremultiplyAlpha(false); });
+		Bench{}.title("Image::unpremultiplyAlpha").run("SIMD on", [&]() { image2.unpremultiplyAlpha(true); });
 	}
 }
 

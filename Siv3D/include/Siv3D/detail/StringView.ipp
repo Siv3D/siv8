@@ -377,6 +377,11 @@ namespace s3d
 			ThrowSubstrOutOfRange();
 		}
 
+		if (pos == m_view.size())
+		{
+			return {};
+		}
+
 		return StringView{ (m_view.data() + pos), Min(n, (m_view.size() - pos)) };
 	}
 
@@ -652,7 +657,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::u32string StringView::toUTF32() const noexcept
+	constexpr std::u32string StringView::toUTF32() const
 	{
 		return std::u32string{ m_view };
 	}

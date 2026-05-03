@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Array.hpp"
+# include "Grid.hpp"
 # include "AlignedAllocator.hpp"
 # include "ColorHSV.hpp"
 # include "Emoji.hpp"
@@ -23,6 +24,7 @@
 namespace s3d
 {
 	class IReader;
+	struct Icon;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -164,7 +166,11 @@ namespace s3d
 		/// @param premultiplyAlpha アルファ乗算処理を適用するか
 		/// @param format 画像ファイルのフォーマット。`ImageFormat::Unspecified` の場合は自動で判断
 		[[nodiscard]]
-		explicit Image(IReader&& reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
+		explicit Image(std::unique_ptr<IReader> reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit Image(Reader&& reader, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes, ImageFormat format = ImageFormat::Unspecified);
 
 		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んで画像データを作成します。
 		/// @param rgb RGB チャンネルの画像ファイルのパス
@@ -183,18 +189,18 @@ namespace s3d
 		[[nodiscard]]
 		explicit Image(const Emoji& emoji, int32 size = Emoji::DefaultSize);
 
-		//[[nodiscard]]
-		//explicit Image(const Icon& icon, int32 size);
+		[[nodiscard]]
+		Image(const Icon& icon, int32 size);
 
-		///// @brief 二次元配列から画像データを作成します。
-		///// @param grid 二次元配列
-		//[[nodiscard]]
-		//explicit Image(const Grid<Color>& grid);
+		/// @brief 二次元配列から画像データを作成します。
+		/// @param grid 二次元配列
+		[[nodiscard]]
+		explicit Image(const Grid<Color>& grid);
 
-		///// @brief 二次元配列から画像データを作成します。
-		///// @param grid 二次元配列
-		//[[nodiscard]]
-		//explicit Image(const Grid<ColorF>& grid);
+		/// @brief 二次元配列から画像データを作成します。
+		/// @param grid 二次元配列
+		[[nodiscard]]
+		explicit Image(const Grid<ColorF>& grid);
 
 		//template <class Type, class Fty, std::enable_if_t<std::is_invocable_r_v<Color, Fty, Type>>* = nullptr>
 		//[[nodiscard]]
@@ -208,7 +214,7 @@ namespace s3d
 
 		Image& operator =(const Image&) = default;
 
-		Image& operator =(Image&& image) noexcept;
+		Image& operator =(Image&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -688,7 +694,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void unpremultiplyAlpha();
+		void unpremultiplyAlpha(bool useSIMD = true);
 
 		////////////////////////////////////////////////////////////////
 		//

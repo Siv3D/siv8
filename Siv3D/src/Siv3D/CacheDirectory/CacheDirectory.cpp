@@ -26,7 +26,7 @@ namespace s3d
 		[[nodiscard]]
 		static String GetUniqueID(const StringView applicationName)
 		{
-			if (const auto name = applicationName.removed_if([](char32 c)
+			if (const auto name = applicationName.without_if([](char32 c)
 				{
 					return (c == U'\\')
 						|| (c == U'/')

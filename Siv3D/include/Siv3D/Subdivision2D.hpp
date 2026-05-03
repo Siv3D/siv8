@@ -28,9 +28,9 @@ namespace s3d
 	{
 	public:
 		
-		using EdgeID = s3d::int32;
+		using EdgeID	= int32;
 
-		using VertexID = s3d::int32;
+		using VertexID	= int32;
 
 		enum class PointLocation : int32
 		{

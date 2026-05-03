@@ -26,16 +26,16 @@ namespace s3d
 
 		virtual void init() = 0;
 
-		virtual bool add(std::unique_ptr<IImageDecoder>&& decoder) = 0;
+		virtual bool add(std::unique_ptr<IImageDecoder> decoder) = 0;
 
 		virtual void remove(StringView decoderName) = 0;
 
 		virtual const Array<std::unique_ptr<IImageDecoder>>& enumDecoder() const noexcept = 0;
 
-		virtual Optional<ImageInfo> getImageInfo(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) = 0;
+		virtual Optional<ImageInfo> getImageInfo(const IReader& reader, FilePathView pathHint, StringView decoderName) = 0;
 
-		virtual Image decode(IReader& reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, ImageFormat imageFormat) = 0;
+		virtual Image decode(std::unique_ptr<IReader> reader, FilePathView pathHint, PremultiplyAlpha premultiplyAlpha, StringView decoderName) = 0;
 
-		virtual Grid<uint16> decodeGray16(IReader& reader, FilePathView pathHint, ImageFormat imageFormat) = 0;
+		virtual Grid<uint16> decodeGray16(std::unique_ptr<IReader> reader, FilePathView pathHint, StringView decoderName) = 0;
 	};
 }

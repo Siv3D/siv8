@@ -24,7 +24,7 @@ namespace s3d
 		: m_handle{ std::make_shared<AssetIDWrapperType>() } {}
 
 	template <class AssetType>
-	AssetHandle<AssetType>::AssetHandle(std::shared_ptr<AssetIDWrapperType>&& id)
+	AssetHandle<AssetType>::AssetHandle(std::shared_ptr<AssetIDWrapperType> id)
 		: m_handle{ std::move(id) } {}
 
 	////////////////////////////////////////////////////////////////

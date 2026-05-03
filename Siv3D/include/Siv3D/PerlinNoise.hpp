@@ -288,7 +288,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr const state_type& serialize() const noexcept;
+		constexpr const state_type serialize() const noexcept;
 
 		constexpr void deserialize(const state_type& state) noexcept;
 

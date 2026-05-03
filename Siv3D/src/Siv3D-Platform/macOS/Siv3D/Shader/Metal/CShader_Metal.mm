@@ -98,20 +98,27 @@ namespace s3d
 		}
 	}
 
-	VertexShader::IDType CShader_Metal::createVSFromFile(const FilePathView path, StringView entryPoint)
+	////////////////////////////////////////////////////////////////
+	//
+	//	createVSFromReader
+	//
+	////////////////////////////////////////////////////////////////
+
+	VertexShader::IDType CShader_Metal::createVSFromReader(std::unique_ptr<IReader> reader, [[maybe_unused]] const FilePathView pathHint, StringView entryPoint)
 	{
-		if (path)
+		// Reader オブジェクトからシェーダを作成する
+		if (reader)
 		{
-			TextFileReader reader{ path };
+			TextFileReader textFileReader{ std::move(reader) };
 			
-			if (not reader)
+			if (not textFileReader)
 			{
 				return VertexShader::IDType::Null();
 			}
 			
 			std::string source;
 			
-			if (not reader.readAll(source))
+			if (not textFileReader.readAll(source))
 			{
 				return VertexShader::IDType::Null();
 			}
@@ -119,6 +126,7 @@ namespace s3d
 			return createVSFromSource(source, entryPoint);
 		}
 
+		// デフォルトライブラリからシェーダを作成する
 		auto vertexShader = std::make_unique<MetalVertexShader>(m_defaultLibrary.get(), Unicode::ToUTF8(entryPoint));
 
 		if (not vertexShader->isInitialized())
@@ -128,6 +136,12 @@ namespace s3d
 
 		return m_vertexShaders.add(std::move(vertexShader));
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	createVSFromSource
+	//
+	////////////////////////////////////////////////////////////////
 
 	VertexShader::IDType CShader_Metal::createVSFromSource(const std::string& source, StringView entryPoint)
 	{
@@ -141,25 +155,38 @@ namespace s3d
 		return m_vertexShaders.add(std::move(vertexShader));
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	createVSFromBytecode
+	//
+	////////////////////////////////////////////////////////////////
+
 	VertexShader::IDType CShader_Metal::createVSFromBytecode(const Blob&)
 	{
 		return(VertexShader::IDType::Null());
 	}
 
-	PixelShader::IDType CShader_Metal::createPSFromFile(const FilePathView path, StringView entryPoint)
+	////////////////////////////////////////////////////////////////
+	//
+	//	createPSFromReader
+	//
+	////////////////////////////////////////////////////////////////
+
+	PixelShader::IDType CShader_Metal::createPSFromReader(std::unique_ptr<IReader> reader, [[maybe_unused]] const FilePathView pathHint, StringView entryPoint)
 	{
-		if (path)
+		// Reader オブジェクトからシェーダを作成する
+		if (reader)
 		{
-			TextFileReader reader{ path };
+			TextFileReader textFileReader{ std::move(reader) };
 			
-			if (not reader)
+			if (not textFileReader)
 			{
 				return PixelShader::IDType::Null();
 			}
 			
 			std::string source;
 			
-			if (not reader.readAll(source))
+			if (not textFileReader.readAll(source))
 			{
 				return PixelShader::IDType::Null();
 			}
@@ -177,6 +204,12 @@ namespace s3d
 		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	createPSFromSource
+	//
+	////////////////////////////////////////////////////////////////
+
 	PixelShader::IDType CShader_Metal::createPSFromSource(const std::string& source, StringView entryPoint)
 	{
 		auto pixelShader = std::make_unique<MetalPixelShader>(m_device, source, Unicode::ToUTF8(entryPoint));
@@ -189,40 +222,88 @@ namespace s3d
 		return m_pixelShaders.add(std::move(pixelShader));
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	createPSFromBytecode
+	//
+	////////////////////////////////////////////////////////////////
+
 	PixelShader::IDType CShader_Metal::createPSFromBytecode(const Blob&)
 	{
 		return(PixelShader::IDType::Null());
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	releaseVS
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CShader_Metal::releaseVS(const VertexShader::IDType handleID)
 	{
 		m_vertexShaders.erase(handleID);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	releasePS
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CShader_Metal::releasePS(const PixelShader::IDType handleID)
 	{
 		m_pixelShaders.erase(handleID);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setVS
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CShader_Metal::setVS(const VertexShader::IDType handleID)
 	{
 		//m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setVSNull
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CShader_Metal::setVSNull()
 	{
 		//m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPS
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CShader_Metal::setPS(const PixelShader::IDType handleID)
 	{
 		//m_context->PSSetShader(m_pixelShaders[handleID]->getShader(), nullptr, 0);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPSNull
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CShader_Metal::setPSNull()
 	{
 		//m_context->VSSetShader(m_vertexShaders[handleID]->getShader(), nullptr, 0);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBytecodeVS
+	//
+	////////////////////////////////////////////////////////////////
 
 	const Blob& CShader_Metal::getBytecodeVS(const VertexShader::IDType handleID)
 	{
@@ -230,26 +311,56 @@ namespace s3d
 		return blob;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getBytecodePS
+	//
+	////////////////////////////////////////////////////////////////
+
 	const Blob& CShader_Metal::getBytecodePS(const PixelShader::IDType handleID)
 	{
 		static const Blob blob;
 		return blob;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	setConstantBufferVS
+	//
+	////////////////////////////////////////////////////////////////
+
 	void CShader_Metal::setConstantBufferVS(const uint32 slot, IConstantBuffer* cb)
 	{
 
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setConstantBufferPS
+	//
+	////////////////////////////////////////////////////////////////
 
 	void CShader_Metal::setConstantBufferPS(const uint32 slot, IConstantBuffer* cb)
 	{
 
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getShaderVS
+	//
+	////////////////////////////////////////////////////////////////
+
 	MTL::Function* CShader_Metal::getShaderVS(const VertexShader::IDType handleID)
 	{
 		return m_vertexShaders[handleID]->getShader();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getShaderPS
+	//
+	////////////////////////////////////////////////////////////////
 
 	MTL::Function* CShader_Metal::getShaderPS(const PixelShader::IDType handleID)
 	{

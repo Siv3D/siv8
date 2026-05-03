@@ -114,7 +114,7 @@ namespace s3d
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		constexpr LineString(Iterator first, Iterator last);
 
@@ -141,7 +141,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(std::initializer_list<value_type> list);
 
-	# ifdef __cpp_lib_containers_ranges
+	# if __cpp_lib_containers_ranges >= 202202L
 		
 		/// @brief 範囲から点の配列を作成します。
 		/// @tparam Range 範囲の型
@@ -229,7 +229,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr LineString& assign(Iterator first, Iterator last);
 
 		/// @brief リストから配列を作成します。
@@ -569,8 +569,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 配列の要素の合計サイズ（バイト）を返します。
-		/// @return 配列の要素の合計サイズ（バイト）
+		/// @brief 配列の合計サイズ（バイト）を返します。
+		/// @return 配列の合計サイズ（バイト）
 		[[nodiscard]]
 		constexpr size_t size_bytes() const noexcept;
 
@@ -659,7 +659,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
 
 		/// @brief 指定した位置にリストの要素を挿入します。
@@ -1279,7 +1279,7 @@ namespace s3d
 //		/// @param closeRing 終点と始点を結ぶか
 //		/// @return 部分 LineString
 //		[[nodiscard]]
-//		LineString extractLineString(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
+//		LineString subLineString(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
 //
 //		/// @brief 部分 LineString を返します。
 //		/// @param distanceFromOrigin 始点からの距離
@@ -1287,7 +1287,7 @@ namespace s3d
 //		/// @param closeRing 終点と始点を結ぶか
 //		/// @return 部分 LineString
 //		[[nodiscard]]
-//		LineString extractLineString(double distanceFromOrigin, double length, CloseRing closeRing = CloseRing::No) const;
+//		LineString subLineString(double distanceFromOrigin, double length, CloseRing closeRing = CloseRing::No) const;
 //
 //		[[nodiscard]]
 //		Array<Vec2> computeNormals(CloseRing closeRing = CloseRing::No) const;
@@ -1363,7 +1363,8 @@ namespace s3d
 		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
 		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
 		template <class Fty>
-		constexpr auto operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>;
+		constexpr auto operator >>(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

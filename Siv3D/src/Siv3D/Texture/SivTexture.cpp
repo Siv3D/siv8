@@ -79,12 +79,12 @@ namespace s3d
 	}
 
 	Texture::Texture(const FilePathView path, const TextureDesc desc)
-		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(BinaryFileReader{ path }, path, desc))) }
+		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(std::make_unique<BinaryFileReader>(path), path, desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
 	}
 
-	Texture::Texture(IReader&& reader, const TextureDesc desc)
+	Texture::Texture(std::unique_ptr<IReader> reader, const TextureDesc desc)
 		: AssetHandle{ (CheckEngine(), std::make_shared<AssetIDWrapperType>(SIV3D_ENGINE(Texture)->create(std::move(reader), {}, desc))) }
 	{
 		SIV3D_ENGINE(AssetMonitor)->reportAssetCreation();
@@ -101,6 +101,9 @@ namespace s3d
 
 	Texture::Texture(const Emoji& emoji, const int32 size, const TextureDesc desc)
 		: Texture{ (CheckEngine(), Image{ emoji, size }), desc } {}
+
+	Texture::Texture(const Icon& icon, const int32 size, const TextureDesc desc)
+		: Texture{ (CheckEngine(), Image{ icon, size }), desc } {}
 
 	Texture::Texture(const Grid<uint8>& image, const TextureDesc desc)
 		: Texture{ CreateR8_Unorm(image, desc) } {}

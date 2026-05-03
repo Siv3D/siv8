@@ -12,6 +12,7 @@
 # include "CShader_D3D11.hpp"
 # include <Siv3D/ShaderStage.hpp>
 # include <Siv3D/TextFileReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/ConstantBuffer/D3D11/ConstantBuffer_D3D11.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -21,19 +22,25 @@ namespace s3d
 {
 	namespace
 	{
-		// 4 バイトの FourCC が、コンパイル済みシェーダ "DXBC" かを調べる
+		/// @brief Reader オブジェクトがコンパイル済みシェーダであるかを判定します。
+		/// @param reader Reader オブジェクト
+		/// @return Reader オブジェクトがコンパイル済みシェーダである場合 true, それ以外の場合は false
 		[[nodiscard]]
-		static bool IsPrecompiledHLSL(const Blob& blob) noexcept
+		static bool IsPrecompiledHLSL(const IReader& reader) noexcept
 		{
-			if (blob.size() < 4)
+			if (reader.size() < 4)
 			{
 				return false;
 			}
 
-			return ((blob[0] == Byte{ 'D' })
-				 && (blob[1] == Byte{ 'X' })
-				 && (blob[2] == Byte{ 'B' })
-				 && (blob[3] == Byte{ 'C' }));
+			char fourCC[4]{};
+			
+			if (not reader.lookahead(fourCC))
+			{
+				return false;
+			}
+
+			return ((fourCC[0] == 'D') && (fourCC[1] == 'X') && (fourCC[2] == 'B') && (fourCC[3] == 'C'));
 		}
 
 		static constexpr const char* ToTargetName(const ShaderStage stage) noexcept
@@ -50,23 +57,38 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Blob CompileHLSLFromFile(HLSLCompiler& shaderCompiler, const FilePathView path, const ShaderStage stage, const StringView entryPoint, const uint32 flags)
+		static Blob CompileHLSLFromReader(HLSLCompiler& shaderCompiler, std::unique_ptr<IReader> reader, const ShaderStage stage, const StringView entryPoint, const uint32 flags, const FilePathView pathHint)
 		{
-			LOG_DEBUG(fmt::format("CompileHLSLFromFile(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", path, ToTargetName(stage), entryPoint, flags));
-
-			TextFileReader reader{ path };
-
-			if (not reader)
+			if (pathHint)
 			{
-				LOG_FAIL(fmt::format("CompileHLSLFromFile: Failed to open file `{}`", path));
-				
+				LOG_DEBUG(fmt::format("CompileHLSLFromReader(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", pathHint, ToTargetName(stage), entryPoint, flags));
+			}
+			else
+			{
+				LOG_DEBUG(fmt::format("CompileHLSLFromReader(stage = {}, entryPoint = {}, flags = {:#X})", ToTargetName(stage), entryPoint, flags));
+			}
+			
+			TextFileReader textReader{ std::move(reader) };
+
+			if (not textReader)
+			{
+				if (pathHint)
+				{
+					LOG_FAIL(fmt::format("CompileHLSLFromReader(): failed to read `{}`", pathHint));
+
+				}
+				else
+				{
+					LOG_FAIL("CompileHLSLFromReader(): failed to read the shader source");
+				}
+
 				return{};
 			}
 
-			const std::string source = reader.readAllUTF8();
+			const std::string source = textReader.readAllUTF8();
+			const std::string sourceName = (pathHint ? Unicode::ToUTF8(pathHint) : "shader");
 			std::string message;
-
-			return shaderCompiler.compile(source, Unicode::ToUTF8(path), Unicode::ToUTF8(entryPoint), ToTargetName(stage), flags, message);
+			return shaderCompiler.compile(source, sourceName, Unicode::ToUTF8(entryPoint), ToTargetName(stage), flags, message);
 		}
 	}
 
@@ -136,29 +158,43 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	createVSFromFile
+	//	createVSFromReader
 	//
 	////////////////////////////////////////////////////////////////
 
-	VertexShader::IDType CShader_D3D11::createVSFromFile(const FilePathView path, StringView entryPoint)
+	VertexShader::IDType CShader_D3D11::createVSFromReader(std::unique_ptr<IReader> reader, const FilePathView pathHint, StringView entryPoint)
 	{
-		Blob blob{ path };
-
-		if (not blob)
+		if (not reader->isOpen())
 		{
-			LOG_FAIL(fmt::format("CShader_D3D11::createVSFromFile(): failed to load `{}`", path));
-			
+			if (pathHint) // ファイルの場合
+			{
+				LOG_FAIL(fmt::format("CShader_D3D11::createVSFromFile(): failed to open `{}`", pathHint));
+			}
+			else // その他の Reader オブジェクトの場合
+			{
+				LOG_FAIL("CShader_D3D11::createVSFromFile(): failed to read the shader source");
+			}
+
 			return VertexShader::IDType::Null();
 		}
 
-		if (IsPrecompiledHLSL(blob))
+		// コンパイル済みシェーダであれば、そのまま VS を作成して返す
+		if (IsPrecompiledHLSL(*reader))
 		{
-			LOG_DEBUG(fmt::format("CShader_D3D11::createVSFromFile(): `{}` is a precompiled shader file", path));
-			
-			return createVS(std::move(blob));
-		}
+			if (pathHint) // ファイルの場合
+			{
+				LOG_DEBUG(fmt::format("CShader_D3D11::createVSFromFile(): `{}` is a precompiled shader file", pathHint));
+			}
+			else // その他の Reader オブジェクトの場合
+			{
+				LOG_DEBUG("CShader_D3D11::createVSFromFile(): the shader source is a precompiled shader");
+			}
 
-		if (Blob byteCode = CompileHLSLFromFile(m_shaderCompiler, path, ShaderStage::Vertex, entryPoint, (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS)))
+			return createVS(Blob{ std::move(reader) });
+		}
+		
+		// ソースコードであれば、コンパイルしてから VS を作成して返す
+		if (Blob byteCode = CompileHLSLFromReader(m_shaderCompiler, std::move(reader), ShaderStage::Vertex, entryPoint, (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS), pathHint))
 		{
 			return createVS(std::move(byteCode));
 		}
@@ -199,29 +235,43 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	createPSFromFile
+	//	createPSFromReader
 	//
 	////////////////////////////////////////////////////////////////
 
-	PixelShader::IDType CShader_D3D11::createPSFromFile(const FilePathView path, StringView entryPoint)
+	PixelShader::IDType CShader_D3D11::createPSFromReader(std::unique_ptr<IReader> reader, const FilePathView pathHint, StringView entryPoint)
 	{
-		Blob blob{ path };
-
-		if (not blob)
+		if (not reader->isOpen())
 		{
-			LOG_FAIL(fmt::format("CShader_D3D11::createPSFromFile(): failed to load `{}`", path));
-			
+			if (pathHint) // ファイルの場合
+			{
+				LOG_FAIL(fmt::format("CShader_D3D11::createPSFromFile(): failed to open `{}`", pathHint));
+			}
+			else // その他の Reader オブジェクトの場合
+			{
+				LOG_FAIL("CShader_D3D11::createPSFromFile(): failed to read the shader source");
+			}
+
 			return PixelShader::IDType::Null();
 		}
 
-		if (IsPrecompiledHLSL(blob))
+		// コンパイル済みシェーダであれば、そのまま PS を作成して返す
+		if (IsPrecompiledHLSL(*reader))
 		{
-			LOG_DEBUG(fmt::format("CShader_D3D11::createPSFromFile(): `{}` is a precompiled shader file", path));
+			if (pathHint) // ファイルの場合
+			{
+				LOG_DEBUG(fmt::format("CShader_D3D11::createPSFromFile(): `{}` is a precompiled shader file", pathHint));
+			}
+			else // その他の Reader オブジェクトの場合
+			{
+				LOG_DEBUG("CShader_D3D11::createPSFromFile(): the shader source is a precompiled shader");
+			}
 			
-			return createPS(std::move(blob));
+			return createPS(Blob{ std::move(reader) });
 		}
 
-		if (Blob byteCode = CompileHLSLFromFile(m_shaderCompiler, path, ShaderStage::Pixel, entryPoint, (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS)))
+		// ソースコードであれば、コンパイルしてから PS を作成して返す
+		if (Blob byteCode = CompileHLSLFromReader(m_shaderCompiler, std::move(reader), ShaderStage::Pixel, entryPoint, (D3DCOMPILE_OPTIMIZATION_LEVEL3 | D3DCOMPILE_WARNINGS_ARE_ERRORS), pathHint))
 		{
 			return createPS(std::move(byteCode));
 		}

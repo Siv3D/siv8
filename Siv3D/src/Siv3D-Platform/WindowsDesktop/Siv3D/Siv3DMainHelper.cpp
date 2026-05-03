@@ -193,15 +193,18 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void WinMainInit()
+	bool WinMainInit()
 	{
+		if (FAILED(::OleInitialize(nullptr)))
+		{
+			::OutputDebugStringW(L"OleInitialize() failed\n");
+			return false;
+		}
+
 		// タイマーの解像度を上げることで Sleep() の精度を上げる
 		::timeBeginPeriod(1);
 
-		if (FAILED(::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
-		{
-			::OutputDebugStringW(L"CoInitializeEx() failed\n");
-		}
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -212,10 +215,10 @@ namespace s3d
 
 	void WinMainExit()
 	{
-		::CoUninitialize();
-
 		// タイマーの解像度を戻す
 		::timeEndPeriod(1);
+
+		::OleUninitialize();
 	}
 
 	////////////////////////////////////////////////////////////////

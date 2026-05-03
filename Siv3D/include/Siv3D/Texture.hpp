@@ -76,7 +76,11 @@ namespace s3d
 		/// @param reader Reader オブジェクト
 		/// @param desc テクスチャの設定
 		[[nodiscard]]
-		explicit Texture(IReader&& reader, TextureDesc desc = TextureDesc::Default2D);
+		explicit Texture(std::unique_ptr<IReader> reader, TextureDesc desc = TextureDesc::Default2D);
+
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		explicit Texture(Reader&& reader, TextureDesc desc = TextureDesc::Default2D);
 
 		/// @brief 一方の画像ファイルから RGB チャンネルを、もう一方の画像ファイルからアルファチャンネルを読み込んでテクスチャを作成します。
 		/// @param rgb RGB チャンネルの画像ファイルのパス
@@ -106,12 +110,12 @@ namespace s3d
 		[[nodiscard]]
 		explicit Texture(const Emoji& emoji, int32 size, TextureDesc desc = TextureDesc::Default2D);
 
-		///// @brief アイコンからテクスチャを作成します。
-		///// @param icon アイコン
-		///// @param size アイコンのサイズ
-		///// @param desc テクスチャの設定
-		//[[nodiscard]]
-		//explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Default2D);
+		/// @brief アイコンからテクスチャを作成します。
+		/// @param icon アイコン
+		/// @param size アイコンのサイズ
+		/// @param desc テクスチャの設定
+		[[nodiscard]]
+		explicit Texture(const Icon& icon, int32 size, TextureDesc desc = TextureDesc::Default2D);
 		
 		[[nodiscard]]
 		explicit Texture(const Grid<uint8>& image, TextureDesc desc = TextureDesc::Default2D);

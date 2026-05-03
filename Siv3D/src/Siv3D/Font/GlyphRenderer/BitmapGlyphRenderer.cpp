@@ -108,7 +108,7 @@ namespace s3d
 		{
 			uint32 loadFlags = FT_LOAD_NO_HINTING;
 
-			if (not(info.style & FontStyle::Bitmap))
+			if (not info.options.bold)
 			{
 				loadFlags |= FT_LOAD_NO_BITMAP;
 			}
@@ -123,12 +123,12 @@ namespace s3d
 				return{};
 			}
 
-			if (info.style & FontStyle::Bold)
+			if (info.options.bold)
 			{
 				::FT_GlyphSlot_Embolden(face->glyph);
 			}
 
-			if (info.style & FontStyle::Italic)
+			if (info.options.italic)
 			{
 				::FT_GlyphSlot_Oblique(face->glyph);
 			}
@@ -141,7 +141,7 @@ namespace s3d
 			}
 			else
 			{
-				const FT_Render_Mode renderMode = ((info.style & FontStyle::Bitmap) ? FT_RENDER_MODE_MONO : FT_RENDER_MODE_NORMAL);
+				const FT_Render_Mode renderMode = (info.options.preferEmbeddedBitmap ? FT_RENDER_MODE_MONO : FT_RENDER_MODE_NORMAL);
 
 				if (::FT_Render_Glyph(face->glyph, renderMode))
 				{

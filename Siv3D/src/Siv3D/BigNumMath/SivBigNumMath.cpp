@@ -34,7 +34,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Fmod_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			BigFloat Fmod_impl::operator ()(const BigFloat& x, const BigFloat& y)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::fmod(x._detail().value, y._detail().value);
@@ -47,7 +47,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Fraction_impl::operator ()(const BigFloat& x) const
+			BigFloat Fraction_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = (x._detail().value - boost::multiprecision::floor(x._detail().value));
@@ -60,7 +60,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Frexp_impl::operator ()(const BigFloat& x, int32& exp) const
+			BigFloat Frexp_impl::operator ()(const BigFloat& x, int32& exp)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::frexp(x._detail().value, &exp);
@@ -73,7 +73,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Ldexp_impl::operator ()(const BigFloat& x, const BigFloat& exp) const
+			BigFloat Ldexp_impl::operator ()(const BigFloat& x, const BigFloat& exp)
 			{
 				BigFloat result;
 				result._detail().value = (x._detail().value * boost::multiprecision::exp2(exp._detail().value));
@@ -86,7 +86,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Log_impl::operator ()(const BigFloat& x) const
+			BigFloat Log_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::log(x._detail().value);
@@ -99,7 +99,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Log2_impl::operator ()(const BigFloat& x) const
+			BigFloat Log2_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::log2(x._detail().value);
@@ -112,7 +112,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Log10_impl::operator ()(const BigFloat& x) const
+			BigFloat Log10_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::log10(x._detail().value);
@@ -125,7 +125,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Modf_impl::operator ()(const BigFloat& x, BigFloat& ip) const
+			BigFloat Modf_impl::operator ()(const BigFloat& x, BigFloat& ip)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::modf(x._detail().value, &ip._detail().value);
@@ -138,14 +138,14 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigInt Pow_impl::operator ()(const BigInt& x, const uint32 exp) const
+			BigInt Pow_impl::operator ()(const BigInt& x, const uint32 exp)
 			{
 				BigInt result;
 				result._detail().value = boost::multiprecision::pow(x._detail().value, exp);
 				return result;
 			}
 
-			BigFloat Pow_impl::operator ()(const BigFloat& x, const BigFloat& exp) const
+			BigFloat Pow_impl::operator ()(const BigFloat& x, const BigFloat& exp)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::pow(x._detail().value, exp._detail().value);
@@ -158,12 +158,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			int32 Sign_impl::operator ()(const BigInt& x) const
+			int32 Sign_impl::operator ()(const BigInt& x)
 			{
 				return x._detail().value.sign();
 			}
 
-			int32 Sign_impl::operator ()(const BigFloat& x) const
+			int32 Sign_impl::operator ()(const BigFloat& x)
 			{
 				return x._detail().value.sign();
 			}
@@ -174,12 +174,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat ToRadians_impl::operator ()(const BigInt& x) const
+			BigFloat ToRadians_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat ToRadians_impl::operator ()(const BigFloat& x) const
+			BigFloat ToRadians_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = (x._detail().value * cRad);
@@ -192,12 +192,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat ToDegrees_impl::operator ()(const BigInt& x) const
+			BigFloat ToDegrees_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat ToDegrees_impl::operator ()(const BigFloat& x) const
+			BigFloat ToDegrees_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = (x._detail().value * cDeg);
@@ -210,12 +210,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigInt Abs_impl::operator ()(const BigInt& x) const
+			BigInt Abs_impl::operator ()(const BigInt& x)
 			{
 				return x.abs();
 			}
 
-			BigFloat Abs_impl::operator ()(const BigFloat& x) const
+			BigFloat Abs_impl::operator ()(const BigFloat& x)
 			{
 				return x.abs();
 			}
@@ -226,12 +226,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigInt AbsDiff_impl::operator ()(const BigInt& x, const BigInt& y) const
+			BigInt AbsDiff_impl::operator ()(const BigInt& x, const BigInt& y)
 			{
 				return (x - y).abs();
 			}
 
-			BigFloat AbsDiff_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			BigFloat AbsDiff_impl::operator ()(const BigFloat& x, const BigFloat& y)
 			{
 				return (x - y).abs();
 			}
@@ -242,12 +242,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigInt Square_impl::operator ()(const BigInt& x) const
+			BigInt Square_impl::operator ()(const BigInt& x)
 			{
 				return (x * x);
 			}
 
-			BigFloat Square_impl::operator ()(const BigFloat& x) const
+			BigFloat Square_impl::operator ()(const BigFloat& x)
 			{
 				return (x * x);
 			}
@@ -258,12 +258,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Exp_impl::operator ()(const BigInt& x) const
+			BigFloat Exp_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Exp_impl::operator ()(const BigFloat& x) const
+			BigFloat Exp_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::exp(x._detail().value);
@@ -276,12 +276,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Exp2_impl::operator ()(const BigInt& x) const
+			BigFloat Exp2_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Exp2_impl::operator ()(const BigFloat& x) const
+			BigFloat Exp2_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::exp2(x._detail().value);
@@ -294,12 +294,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Rsqrt_impl::operator ()(const BigInt& x) const
+			BigFloat Rsqrt_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Rsqrt_impl::operator ()(const BigFloat& x) const
+			BigFloat Rsqrt_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = (1 / boost::multiprecision::sqrt(x._detail().value));
@@ -312,12 +312,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Sqrt_impl::operator ()(const BigInt& x) const
+			BigFloat Sqrt_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Sqrt_impl::operator ()(const BigFloat& x) const
+			BigFloat Sqrt_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::sqrt(x._detail().value);
@@ -330,7 +330,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Ceil_impl::operator ()(const BigFloat& x) const
+			BigFloat Ceil_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::ceil(x._detail().value);
@@ -343,7 +343,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Floor_impl::operator ()(const BigFloat& x) const
+			BigFloat Floor_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::floor(x._detail().value);
@@ -356,7 +356,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Round_impl::operator ()(const BigFloat& x) const
+			BigFloat Round_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::round(x._detail().value);
@@ -369,7 +369,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Trunc_impl::operator ()(const BigFloat& x) const
+			BigFloat Trunc_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::trunc(x._detail().value);
@@ -382,12 +382,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			const BigInt& Max_impl::operator ()(const BigInt& x, const BigInt& y) const
+			const BigInt& Max_impl::operator ()(const BigInt& x, const BigInt& y)
 			{
 				return std::max(x, y);
 			}
 
-			const BigFloat& Max_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			const BigFloat& Max_impl::operator ()(const BigFloat& x, const BigFloat& y)
 			{
 				return std::max(x, y);
 			}
@@ -398,12 +398,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			const BigInt& Min_impl::operator ()(const BigInt& x, const BigInt& y) const
+			const BigInt& Min_impl::operator ()(const BigInt& x, const BigInt& y)
 			{
 				return std::min(x, y);
 			}
 
-			const BigFloat& Min_impl::operator ()(const BigFloat& x, const BigFloat& y) const
+			const BigFloat& Min_impl::operator ()(const BigFloat& x, const BigFloat& y)
 			{
 				return std::min(x, y);
 			}
@@ -414,12 +414,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			const BigInt& Clamp_impl::operator ()(const BigInt& x, const BigInt& min, const BigInt& max) const
+			const BigInt& Clamp_impl::operator ()(const BigInt& x, const BigInt& min, const BigInt& max)
 			{
 				return s3d::Clamp(x, min, max);
 			}
 
-			const BigFloat& Clamp_impl::operator ()(const BigFloat& x, const BigFloat& min, const BigFloat& max) const
+			const BigFloat& Clamp_impl::operator ()(const BigFloat& x, const BigFloat& min, const BigFloat& max)
 			{
 				return s3d::Clamp(x, min, max);
 			}
@@ -430,7 +430,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Saturate_impl::operator ()(const BigFloat& x) const
+			BigFloat Saturate_impl::operator ()(const BigFloat& x)
 			{
 				if (1 < x)
 				{
@@ -450,12 +450,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Acos_impl::operator ()(const BigInt& x) const
+			BigFloat Acos_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Acos_impl::operator ()(const BigFloat& x) const
+			BigFloat Acos_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::acos(x._detail().value);
@@ -468,12 +468,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 			
-			BigFloat Asin_impl::operator ()(const BigInt& x) const
+			BigFloat Asin_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Asin_impl::operator ()(const BigFloat& x) const
+			BigFloat Asin_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::asin(x._detail().value);
@@ -486,12 +486,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Atan_impl::operator ()(const BigInt& x) const
+			BigFloat Atan_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Atan_impl::operator ()(const BigFloat& x) const
+			BigFloat Atan_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::atan(x._detail().value);
@@ -504,12 +504,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Atan2_impl::operator ()(const BigInt& y, const BigInt& x) const
+			BigFloat Atan2_impl::operator ()(const BigInt& y, const BigInt& x)
 			{
 				return operator()(BigFloat{ y }, BigFloat{ x });
 			}
 
-			BigFloat Atan2_impl::operator ()(const BigFloat& y, const BigFloat& x) const
+			BigFloat Atan2_impl::operator ()(const BigFloat& y, const BigFloat& x)
 			{
 				if (x.isZero() && y.isZero())
 				{
@@ -527,12 +527,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Cos_impl::operator ()(const BigInt& x) const
+			BigFloat Cos_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Cos_impl::operator ()(const BigFloat& x) const
+			BigFloat Cos_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::cos(x._detail().value);
@@ -545,12 +545,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Cosh_impl::operator ()(const BigInt& x) const
+			BigFloat Cosh_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Cosh_impl::operator ()(const BigFloat& x) const
+			BigFloat Cosh_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::cosh(x._detail().value);
@@ -563,12 +563,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Sin_impl::operator ()(const BigInt& x) const
+			BigFloat Sin_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Sin_impl::operator ()(const BigFloat& x) const
+			BigFloat Sin_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::sin(x._detail().value);
@@ -581,12 +581,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Sinh_impl::operator ()(const BigInt& x) const
+			BigFloat Sinh_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Sinh_impl::operator ()(const BigFloat& x) const
+			BigFloat Sinh_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::sinh(x._detail().value);
@@ -599,12 +599,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Tan_impl::operator ()(const BigInt& x) const
+			BigFloat Tan_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Tan_impl::operator ()(const BigFloat& x) const
+			BigFloat Tan_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::tan(x._detail().value);
@@ -617,12 +617,12 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Tanh_impl::operator ()(const BigInt& x) const
+			BigFloat Tanh_impl::operator ()(const BigInt& x)
 			{
 				return operator()(BigFloat{ x });
 			}
 
-			BigFloat Tanh_impl::operator ()(const BigFloat& x) const
+			BigFloat Tanh_impl::operator ()(const BigFloat& x)
 			{
 				BigFloat result;
 				result._detail().value = boost::multiprecision::tanh(x._detail().value);
@@ -635,7 +635,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Normalize_impl::operator ()(const BigFloat& x) const
+			BigFloat Normalize_impl::operator ()(const BigFloat& x)
 			{
 				if (x.isZero())
 				{
@@ -651,7 +651,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 
-			BigFloat Smoothstep_impl::operator ()(const BigFloat& min, const BigFloat& max, const BigFloat& t) const
+			BigFloat Smoothstep_impl::operator ()(const BigFloat& min, const BigFloat& max, const BigFloat& t)
 			{
 				if (t <= min)
 				{
@@ -667,7 +667,7 @@ namespace s3d
 				return (_t * _t * (3 - 2 * _t));
 			}
 
-			BigFloat Smoothstep_impl::operator ()(const BigFloat& x) const
+			BigFloat Smoothstep_impl::operator ()(const BigFloat& x)
 			{
 				if (x <= 0)
 				{
@@ -687,7 +687,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 			
-			BigInt GCD_impl::operator ()(const BigInt& a, const BigInt& b) const
+			BigInt GCD_impl::operator ()(const BigInt& a, const BigInt& b)
 			{
 				return a.gcd(b);
 			}
@@ -698,7 +698,7 @@ namespace s3d
 			//
 			//////////////////////////////////////////////////
 			
-			BigInt LCM_impl::operator ()(const BigInt& a, const BigInt& b) const
+			BigInt LCM_impl::operator ()(const BigInt& a, const BigInt& b)
 			{
 				return a.lcm(b);
 			}

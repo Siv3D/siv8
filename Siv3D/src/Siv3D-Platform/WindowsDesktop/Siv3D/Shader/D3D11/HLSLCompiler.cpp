@@ -46,13 +46,13 @@ namespace s3d
 
 		if (FAILED(hr)) // 失敗したら
 		{
-			LOG_FAIL("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile():\n" + message);
+			LOG_FAIL("HLSLCompiler::compile(): D3DCompile():\n" + message);
 
 			return{};
 		}
 		else if (error)
 		{
-			LOG_WARN("CShader_D3D11::ShaderCompiler::compileShader(): D3DCompile():\n" + message);
+			LOG_WARN("HLSLCompiler::compile(): D3DCompile():\n" + message);
 		}
 
 		return Blob{ binary->GetBufferPointer(), binary->GetBufferSize() };

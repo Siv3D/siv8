@@ -29,7 +29,7 @@ namespace s3d
 		open(path, encoding);
 	}
 
-	TextFileReader::TextFileReader(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+	TextFileReader::TextFileReader(std::unique_ptr<IReader> reader, const Optional<TextEncoding>& encoding)
 		: TextFileReader{}
 	{
 		open(std::move(reader), encoding);
@@ -46,7 +46,7 @@ namespace s3d
 		return pImpl->open(path, encoding);
 	}
 
-	bool TextFileReader::open(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+	bool TextFileReader::open(std::unique_ptr<IReader> reader, const Optional<TextEncoding>& encoding)
 	{
 		return pImpl->open(std::move(reader), encoding);
 	}

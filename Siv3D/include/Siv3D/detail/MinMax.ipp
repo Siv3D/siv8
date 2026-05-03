@@ -19,7 +19,8 @@ namespace s3d
 		return ((b < a) ? std::pair<Scalar, Scalar>{ b, a } : std::pair<Scalar, Scalar>{ a, b });
 	}
 
-	template <class Type> requires (not Concept::Scalar<Type>)
+	template <class Type>
+		requires (not Concept::Scalar<Type>)
 	constexpr std::pair<const Type&, const Type&> MinMax(const Type& a SIV3D_LIFETIMEBOUND, const Type& b SIV3D_LIFETIMEBOUND)
 	{
 		return ((b < a) ? std::pair<const Type&, const Type&>{ b, a } : std::pair<const Type&, const Type&>{ a, b });

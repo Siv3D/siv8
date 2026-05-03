@@ -16,17 +16,42 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	BCnData
+	//
+	////////////////////////////////////////////////////////////////
+
 	struct BCnData
 	{
+		/// @brief 画像のサイズ
 		Size size{ 0, 0 };
 
+		/// @brief テクスチャフォーマット（例: BC1_RGBA_Unorm）
 		TextureFormat format = TextureFormat::Unknown;
 
+		/// @brief 圧縮されたテクスチャデータ（mip level ごと）
 		Array<Blob> textures;
+		
+		////////////////////////////////////////////////////////////////
+		//
+		//	isEmpty
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief データが空であるかを返します。
+		/// @return データが空である場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isEmpty() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator bool
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief データが空でないかを返します。
+		/// @return データが空でない場合 true, それ以外の場合は false
 		[[nodiscard]]
 		explicit operator bool() const noexcept;
 	};

@@ -14,6 +14,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\2DShapes.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\2DShapesFwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AACQuality.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AlignedAllocator.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Anchor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
@@ -24,6 +25,14 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AssetID.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AssetIDWrapper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\AACEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\MP3Decoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\MP3Encoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\WAVDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AudioFormat\WAVEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Base64Value.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BasicCamera2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BatteryChargeStatus.hpp" />
@@ -73,6 +82,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayParallel.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayRandom.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AudioDecoder.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AudioEncoder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BasicCamera2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\BCnData.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2.ipp" />
@@ -85,15 +96,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\DrawableText.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Easing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Effect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\FileDialogFilter.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatQuad.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Font.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GlyphInfo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIColorStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIShapeStyle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\HTTPStatusCode.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Icon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IEffect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImageProcessing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Interpolation.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IPv4Address.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\IPv4Endpoint.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\JitterEndpointSettings.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\KDTree.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LineString.ipp" />
@@ -104,8 +121,13 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OffsetCircular.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\OSCArgument.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PDFDocument.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PDFLinkInfo.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PDFPage.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Periodic.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PerlinNoise.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PixelShader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PointsPerCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PoissonDiskSampler2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp" />
@@ -122,12 +144,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimpleGUI.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Smooth.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Spline.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StereoSampleFloat32.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\StereoSampleInt16.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\StringViewRandom.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Subdivision2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\SuperEllipse.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextLayoutResult.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextStyle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Texture.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDesc.ipp" />
@@ -137,20 +162,31 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Transition.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex32.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\VertexShader.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Wave.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Zip.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Dialog.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragDrop.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragItemType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragStatus.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DrawableText.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DriveInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DriveType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DroppedFilePath.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\DroppedText.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\DynamicTexture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Easing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Effect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ExternalPowerStatus.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileDialogFilter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatQuad.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FloatRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtOptional.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Font.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FontOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontVariationAxis.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontFaceProperties.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FontMethod.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\FontStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\BoundingRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Center.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.hpp" />
@@ -172,16 +208,45 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIColorStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIShapeStyle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\HTTPStatusCode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IAudioDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IAudioEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Icon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Address.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointSettings.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JitterSettings.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MicrophoneInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MP3Quality.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NativeShare.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\NaturalSort.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Network.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationActionCategory.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationAvailability.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationRequest.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponse.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\NotificationResponseType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Notifications.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OpenFileDialogOptions.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCArgument.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCMessage.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCReceivedMessage.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCReceiver.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCSender.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\OSCTypeTag.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OutlineGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PDFDocument.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PDFLinkInfo.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PDFPage.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PDFRenderOptions.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PenCaps.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PenState.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pentablet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PercentEncode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PoissonDiskSampler2D.hpp" />
@@ -537,6 +602,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerStateBuilder.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SaveFileDialogOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Scene.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedColorAdd2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedColorMul2D.hpp" />
@@ -547,6 +613,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ScreenCapture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RangeFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopeExit.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SelectFolderDialogOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Serial.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SerialPortInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ShaderGroup.hpp" />
@@ -576,6 +643,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Step.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Step3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StereoSampleFloat32.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\StereoSampleInt16.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Stopwatch.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\String.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\StringAlgorithm.hpp" />
@@ -606,7 +675,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEffect\VerticalScale.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextEncoding.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextFileReader.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextLayoutResult.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextStyle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TextToSpeech.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Texture.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureAddressMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\TexturedCircle.hpp" />
@@ -650,6 +721,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Vertex2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\VertexShader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\VoronoiCell.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Wave.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\WaveProcessing.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\WaveSample.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\WAVSaveFormat.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WebBrowser.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp" />
@@ -701,14 +776,21 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\CursorStyle\CCursorStyle.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop\CDragDrop.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11\CEngineShader_D3D11.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\FileSystem\WindowsFileSystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\CMediaTranscoder.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\Transcoder\AACEncoder_MF.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\Transcoder\MFCommon.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\Transcoder\MP3Encoder_MF.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications\CNotifications.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet\CPentablet.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\BatchInfo2D.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11Renderer2DCommand.hpp" />
@@ -736,6 +818,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Shader\D3D11\VertexShader\D3D11VertexShader.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\TextToSpeech\CTextToSpeech.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\CTexture_D3D11.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture2DDesc.hpp" />
@@ -749,6 +832,13 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\AssetHandleManager\AssetHandleManager.ipp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\AssetMonitor\IAssetMonitor.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\AudioDecoder\CAudioDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\AudioDecoder\IAudioDecoder.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\AudioEncoder\CAudioEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\AudioEncoder\IAudioEncoder.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVFormat.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Audio\CAudio.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Audio\IAudio.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\BigFloat\BigFloatDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\BigInt\BigIntDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\CacheDirectory\CacheDirectory.hpp" />
@@ -759,6 +849,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\CursorTransform.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\HighTemporalResolutionCursor.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Cursor\ICursor.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\DragDrop\IDragDrop.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Effect\CEffect.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Effect\EffectData.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Effect\IEffect.hpp" />
@@ -796,6 +887,8 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\FreestandingMessageBox\FreestandingMessageBox.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\GUI\CGUI.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\GUI\IGUI.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Icon\CIcon.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Icon\IIcon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageDecoder\IImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageEncoder\CImageEncoder.hpp" />
@@ -810,8 +903,18 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseList.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\MediaTranscoder\IMediaTranscoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Notifications\INotifications.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\OSCMessage\OSCMessageDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCPacketListener.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCReceiverDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\CPDFRenderer.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\IPDFRenderer.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFDocumentData.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFiumAPI.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Pentablet\IPentablet.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp" />
@@ -848,6 +951,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\System\ISystem.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\TextFileWriter\TextFileWriterDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\TextToSpeech\ITextToSpeech.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\ITexture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp" />
@@ -1005,6 +1109,8 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\libpng\pngconf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\libpng\pnglibconf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\PDFium\fpdfview.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\PDFium\fpdf_doc.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\zlib\zconf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\zlib\zlib.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\bc7enc_rdo\bc7decomp.h" />
@@ -1031,6 +1137,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\ieee.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\utils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\dr_mp3\dr_mp3.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Earcut\earcut.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\easyexif\exif.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\fast_float\fast_float.h" />
@@ -1044,27 +1151,16 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_AVX512BITALG.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_BMI.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_common.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\canvas.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\clippathelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\defselement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\element.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\gelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\geometryelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\graphicselement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\layoutcontext.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\graphics.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\lunasvg.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\markerelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\maskelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\paintelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\parser.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\parserutils.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\property.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\stopelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\styledelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\styleelement.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svggeometryelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svglayoutstate.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgpaintelement.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgparserutils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgproperty.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgrenderstate.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgtextelement.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\feature.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\geometry\box.hpp" />
@@ -1084,6 +1180,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\recursive_wrapper.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant_visitor.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniutf\miniutf.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\arithmetics.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\base.h" />
@@ -1140,12 +1237,49 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\regint.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\regparse.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\Oniguruma\st.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\IpEndpointName.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\NetworkingUtils.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\PacketListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\TimerListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\ip\UdpSocket.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\MessageMappingOscPacketListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscException.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscHostEndianness.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscOutboundPacketStream.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscPacketListener.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscPrintReceivedElements.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscReceivedElements.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscTypes.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_double.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_priv_impl.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_avx_double.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_double.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_neon_double.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_neon_double_from_avx.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_scalar_double.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\PFFFT\simd\pf_sse2_double.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-math.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-raster.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-stroker.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-types.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-private.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-stb-image-write.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-stb-image.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-stb-truetype.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-utils.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\plutovg\plutovg.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPBlockConvolver.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPFIRFilter.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPFracInterpolator.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBDownsampler.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBUpsampler.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPProcessor.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPRealFFT.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPResampler.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPSincFilterGen.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\r8bbase.h" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\r8brain-free-src\r8bconf.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\rapidhash\rapidhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\best_bin_finder.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\rectpack2D\empty_spaces.h" />
@@ -1203,6 +1337,10 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\stb\stb_image_resize2.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\stduuid\uuid.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\tinycolormap\tinycolormap.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\MSGPACK.H" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\PKTDEF.H" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\Wintab\WINTAB.H" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\wyhash\wyhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\xxHash\xxhash.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\zstd\common\allocations.h" />
@@ -1258,8 +1396,11 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Cursor\CCursor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DateTime\SivDateTime_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Date\SivDate_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Dialog\SivDialog_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DirectoryWatcher\DirectoryWatcherDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DLL\SivDLL.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop\CDragDrop.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\DriveInfo\SivDriveInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\D3D11\CEngineShader_D3D11.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EngineShader\EngineShaderFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\EnvironmentVariable\SivEnvironmentVariable.cpp" />
@@ -1269,6 +1410,10 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL\SivHLSL_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Keyboard\CKeyboard.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Logger\CLogger.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\CMediaTranscoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\Transcoder\AACEncoder_MF.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\Transcoder\MFCommon.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MediaTranscoder\Transcoder\MP3Encoder_MF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFileView\MemoryMappedFileViewDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MemoryMappedFile\MemoryMappedFileDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Memory\SivMemory.cpp">
@@ -1278,6 +1423,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\MonitorInfo\SivMonitorInfo_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Mouse\CMouse.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\NativeShare\CNativeShare.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Network\SivNetwork.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Notifications\CNotifications.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Pentablet\CPentablet.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\PowerStatus\SivPowerStatus.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\CRenderer2D_D3D11.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer2D\D3D11\D3D11Renderer2DCommandManager.cpp" />
@@ -1306,6 +1454,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMainHelper.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\CSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\System\SivSystem_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\TextToSpeech\CTextToSpeech.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\CTexture_D3D11.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\D3D11\D3D11Texture2DDesc.cpp" />
@@ -1320,10 +1469,25 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowMisc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowProc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\WindowTitle.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AACQuality\SivAACQuality.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Anchor\SivAnchor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Array\SivArray.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\AssetMonitorFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\AssetMonitor\CAssetMonitor.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioDecoder\AudioDecoderFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioDecoder\CAudioDecoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioDecoder\SivAudioDecoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioEncoder\AudioEncoderFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioEncoder\CAudioEncoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioEncoder\SivAudioEncoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\AAC\AACEncoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\MP3\MP3Decoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\MP3\MP3Encoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\SivAudioFormat.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVDecoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\AudioFormat\WAV\WAVEncoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Audio\AudioFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Audio\CAudio.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Base64Value\SivBase64Value.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\BatteryChargeStatus\SivBatteryChargeStatus.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Bezier2Walker\SivBezier2Walker.cpp" />
@@ -1375,8 +1539,13 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Demangle\SivDemangle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilStateBuilder\SivDepthStencilStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DepthStencilState\SivDepthStencilState.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Dialog\SivDialog.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DirectoryWatcher\SivDirectoryWatcher.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\DragDropFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\SivDragDrop.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragItemType\SivDragItemType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DrawableText\SivDrawableText.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\DriveType\SivDriveType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Duration\SivDuration.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\DynamicTexture\SivDynamicTexture.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Effect\CEffect.cpp" />
@@ -1403,7 +1572,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatToString\SivFloatToString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FmtExtension\SivFmtExtension.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FontMethod\SivFontMethod.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\FontStyle\SivFontStyle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\CFont.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontData.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Font\FontFace.cpp" />
@@ -1441,6 +1609,11 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Hash\SivHash.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HLSL\SivHLSL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\HSV\SivHSV.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\HTTPStatusCode\SivHTTPStatusCode.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\IAudioDecoder\SivIAudioDecoder.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\CIcon.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\IconFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Icon\SivIcon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IImageDecoder\SivIImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\CImageDecoder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageDecoder\ImageDecoderFactory.cpp" />
@@ -1477,6 +1650,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Interpolation\SivInterpolation.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntFormatter\SivIntFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\IntToString\SivIntToString.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\IPv4Address\SivIPv4Address.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\IPv4Endpoint\SivIPv4Endpoint.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JoinStyle\SivJoinStyle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONIterator\SivJSONIterator.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\JSONSerialization\SivJSONSerialization.cpp" />
@@ -1499,30 +1674,52 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MathParser\SivMathParser.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MD5Value\SivMD5Value.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MediaTranscoder\MediaTranscoderFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFileView\SivMemoryMappedFileView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryMappedFile\SivMemoryMappedFile.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryReader\SivMemoryReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryViewReader\SivMemoryViewReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MicrophoneInfo\SivMicrophoneInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrosecClock\SivMicrosecClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MillisecClock\SivMillisecClock.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MonitorInfo\SivMonitorInfo.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Morton\SivMorton.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\MouseFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mouse\SivMouse.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\MP3Quality\SivMP3Quality.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSAASampleCount\SivMSAASampleCount.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MSL\SivMSL.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MultiPolygon\SivMultiPolygon.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\NativeShareFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NativeShare\SivNativeShare.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\NaturalSort\SivNaturalSort.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\NotificationActionCategory\SivNotificationActionCategory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\NotificationAvailability\SivNotificationAvailability.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\NotificationResponseType\SivNotificationResponseType.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Notifications\NotificationsFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Notifications\SivNotifications.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Optional\SivOptional.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCMessage\OSCMessageDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCMessage\SivOSCMessage.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCPacketListener.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCReceiver\OSCReceiverDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCReceiver\SivOSCReceiver.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCSender\SivOSCSender.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\OSCTypeTag\SivOSCTypeTag.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBoolExtended\SivParseBoolExtended.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseBool\SivParseBool.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseErrorReason\SivParseErrorReason.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseFloat\SivParseFloat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ParseInt\SivParseInt.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Parse\SivParse.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFDocument\SivPDFDocument.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\CPDFRenderer.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFDocumentData.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFiumAPI.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\PDFRenderer\PDFRendererFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\PentabletFactory.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\SivPentablet.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PercentEncode\SivPercentEncode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Pipe\SivPipe.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PixelShader\SivPixelShader.cpp" />
@@ -1588,6 +1785,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleDismissibleTooltip.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleGUI.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SimpleGUI\SivSimpleTooltip.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\StereoSampleFloat32\SivStereoSampleFloat32.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\StereoSampleInt16\SivStereoSampleInt16.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Stopwatch\SivStopwatch.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\StringView\SivStringView_SIMD.cpp" />
@@ -1613,6 +1812,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\TextFileReader\TextFileReaderDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextFileWriter\SivTextFileWriter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextFileWriter\TextFileWriterDetail.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextToSpeech\SivTextToSpeech.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TextToSpeech\TextToSpeechFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TextureAddressMode\SivTextureAddressMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TexturedCircle\SivTexturedCircle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TexturedQuad\SivTexturedQuad.cpp" />
@@ -1645,6 +1846,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector3D\SivVector3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Vector4D\SivVector4D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\VertexShader\SivVertexShader.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\WaveProcessing\SivWaveProcessing.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Wave\SivWave.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\WAVSaveFormat\SivWAVSaveFormat.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\WebBrowser\SivWebBrowser.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Window\SivWindow.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Window\WindowFactory.cpp" />
@@ -1669,41 +1873,17 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\fixed-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\easyexif\exif.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\fmt\format.cc" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\canvas.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\clippathelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\defselement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\element.cpp">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\gelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\geometryelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\graphicselement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\layoutcontext.cpp">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\lunasvg.cpp">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\markerelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\maskelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\paintelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\parser.cpp">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\property.cpp">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\stopelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\styledelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\styleelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\graphics.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\lunasvg.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\symbolelement.cpp" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\useelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svggeometryelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svglayoutstate.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgpaintelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgparser.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgproperty.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgrenderstate.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgtextelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\contour-combiners.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\Contour.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\convergent-curve-ordering.cpp" />
@@ -1807,21 +1987,26 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-blend.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level3</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level3</WarningLevel>
-    </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-dash.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\ip\IpEndpointName.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\ip\win32\NetworkingUtils.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\ip\win32\UdpSocket.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscOutboundPacketStream.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscPrintReceivedElements.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscReceivedElements.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\oscpack\osc\OscTypes.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\PFFFT\pffft.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\PFFFT\pffft_double.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-blend.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-canvas.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-font.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-math.c" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-raster.c">
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level2</WarningLevel>
-      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level2</WarningLevel>
-    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-raster.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-ft-stroker.c" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-geometry.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-matrix.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-paint.c" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-rle.c" />
-    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-path.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-rasterize.c" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\plutovg\plutovg-surface.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\impl\win.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\serial_cpp\serial.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\simdutf\simdutf.cpp">
@@ -3682,6 +3867,7 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level1</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level1</WarningLevel>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\debug.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\entropy_common.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\error_private.c" />
@@ -3724,6 +3910,8 @@
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\define_introspection.inl" />
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\equals.inl" />
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl" />
+    <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBDownsampler.inc" />
+    <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBUpsampler.inc" />
     <None Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkSwizzler_opts.inc" />
     <None Include="..\Siv3D\src\ThirdParty\zstd\decompress\huf_decompress_amd64.S" />
   </ItemGroup>
@@ -3782,7 +3970,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;R8B_PFFFT_DOUBLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -3807,7 +3995,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;R8B_PFFFT_DOUBLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>

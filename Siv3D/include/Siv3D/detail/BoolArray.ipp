@@ -253,7 +253,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @param alloc アロケータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		[[nodiscard]]
 		constexpr Array(Iterator first, Iterator last, const Allocator& alloc = Allocator{})
 			: m_container(first, last, alloc) {}
@@ -423,7 +423,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			m_container.assign(first, last);
@@ -863,8 +863,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 配列の要素の合計サイズ（バイト）を返します。
-		/// @return 配列の要素の合計サイズ（バイト）
+		/// @brief 配列の合計サイズ（バイト）を返します。
+		/// @return 配列の合計サイズ（バイト）
 		[[nodiscard]]
 		constexpr size_t size_bytes() const noexcept
 		{
@@ -981,7 +981,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, first, last);
@@ -1075,6 +1075,295 @@ namespace s3d
 		constexpr iterator erase(const_iterator first, const_iterator last) SIV3D_LIFETIMEBOUND
 		{
 			return m_container.erase(first, last);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
+		constexpr Array& erase_at(size_type index)& SIV3D_LIFETIMEBOUND
+		{
+			if (m_container.size() <= index)
+			{
+				detail::ThrowArrayEraseAtIndexOutOfRange();
+			}
+
+			erase(m_container.begin() + index);
+
+			return *this;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array erase_at(size_type index)&&
+		{
+			return std::move(erase_at(index));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_at_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。削除後の要素の順序は保証されません。
+		/// @param index インデックス
+		/// @return *this
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr Array& erase_at_unstable(size_type index)& SIV3D_LIFETIMEBOUND
+		{
+			if (m_container.size() <= index)
+			{
+				detail::ThrowArrayEraseAtUnstableIndexOutOfRange();
+			}
+
+			if (const size_type lastIndex = (m_container.size() - 1);
+				index != lastIndex)
+			{
+				std::ranges::swap(m_container[index], m_container[lastIndex]);
+			}
+
+			m_container.pop_back();
+
+			return *this;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。削除後の要素の順序は保証されません。
+		/// @param index インデックス
+		/// @return 新しい配列
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr Array erase_at_unstable(size_type index)&&
+		{
+			return std::move(erase_at_unstable(index));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素をすべて削除します。
+		/// @param value 値
+		/// @return 削除した要素の個数
+		constexpr size_type erase_all(const value_type value)
+		{
+			const size_type erasedCount = static_cast<size_type>(std::ranges::count(m_container, value));
+			m_container.assing((m_container.size() - erasedCount), (not value));
+			return erasedCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素をすべて削除します。削除後の要素の順序は保証されません。
+		/// @param value 値
+		/// @return 削除した要素の個数
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr size_type erase_all_unstable(const value_type value)
+		{
+			size_type count = 0;
+
+			for (size_type i = 0; i < m_container.size();)
+			{
+				if (m_container[i] == value)
+				{
+					if (const size_type lastIndex = (m_container.size() - 1);
+						i != lastIndex)
+					{
+						std::ranges::iter_swap((m_container.begin() + i), (m_container.begin() + lastIndex));
+					}
+
+					m_container.pop_back();
+					++count;
+				}
+				else
+				{
+					++i;
+				}
+			}
+
+			return count;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した値と等しい要素を削除します。
+		/// @param value 値
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		constexpr bool erase_first(const value_type value)
+		{
+			if (const auto it = std::ranges::find(m_container, value);
+				it != m_container.end())
+			{
+				m_container.erase(it);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した値と等しい要素を削除します。削除後の要素の順序は保証されません。
+		/// @param value 値
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		constexpr bool erase_first_unstable(const value_type value)
+		{
+			if (const auto it = std::ranges::find(m_container, value);
+				it != m_container.end())
+			{
+				const auto last = (m_container.end() - 1);
+
+				if (it != last)
+				{
+					std::ranges::iter_swap(it, last);
+				}
+
+				m_container.pop_back();
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素をすべて削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除した要素の個数
+		template <class Fty>
+		constexpr size_type erase_all_if(Fty f)
+		{
+			return std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素をすべて削除します。削除後の要素の順序は保証されません。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除した要素の個数
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		template <class Fty>
+		constexpr size_type erase_all_if_unstable(Fty f)
+		{
+			size_type count = 0;
+
+			auto pred = detail::PassFunction(std::forward<Fty>(f));
+
+			for (size_type i = 0; i < m_container.size();)
+			{
+				if (pred(m_container[i]))
+				{
+					if (const size_type lastIndex = (m_container.size() - 1);
+						i != lastIndex)
+					{
+						std::ranges::iter_swap(m_container.begin() + i, m_container.begin() + lastIndex);
+					}
+
+					m_container.pop_back();
+					++count;
+				}
+				else
+				{
+					++i;
+				}
+			}
+
+			return count;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した条件を満たす要素を削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		template <class Fty>
+		constexpr bool erase_first_if(Fty f)
+		{
+			if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+				it != m_container.end())
+			{
+				m_container.erase(it);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した条件を満たす要素を削除します。削除後の要素の順序は保証されません。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		/// @remark 削除対象を末尾の要素と入れ替えてから末尾を削除します。
+		template <class Fty>
+		constexpr bool erase_first_if_unstable(Fty f)
+		{
+			if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+				it != m_container.end())
+			{
+				const auto last = (m_container.end() - 1);
+
+				if (it != last)
+				{
+					std::ranges::iter_swap(it, last);
+				}
+
+				m_container.pop_back();
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1182,6 +1471,7 @@ namespace s3d
 		{
 			const value_type value(std::forward<Args>(args)...);
 			m_container.insert(m_container.begin(), value);
+			return m_container.front();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1277,9 +1567,10 @@ namespace s3d
 		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool all(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>
+		constexpr bool all(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::all_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::all_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1294,9 +1585,10 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool any(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>
+		constexpr bool any(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::any_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1328,7 +1620,7 @@ namespace s3d
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
-		template <class Iterator>
+		template <std::input_iterator Iterator>
 		constexpr Array& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
 		{
 			m_container.insert(m_container.end(), first, last);
@@ -1376,14 +1668,14 @@ namespace s3d
 		/// @param n 選択する個数
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n) const;
+		Array choice(size_t n) const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @param rbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const;
+		Array choice(size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1424,7 +1716,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool contains(const value_type& value) const
 		{
-			return (std::find(m_container.begin(), m_container.end(), value) != m_container.end());
+			return (std::ranges::find(m_container, value) != m_container.end());
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1440,9 +1732,10 @@ namespace s3d
 		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
 		template <class Fty>
 		[[nodiscard]]
-		constexpr bool contains_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+		constexpr bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::any_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::any_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1457,7 +1750,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr isize count(const value_type& value) const
 		{
-			return std::count(m_container.begin(), m_container.end(), value);
+			return std::ranges::count(m_container, value);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1472,9 +1765,10 @@ namespace s3d
 		/// @return 条件を満たす要素の個数
 		template <class Fty>
 		[[nodiscard]]
-		constexpr isize count_if(Fty f) const requires std::predicate<Fty&, const value_type&>
+		constexpr isize count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::count_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1488,9 +1782,10 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) requires std::invocable<Fty&, value_type&>
+		constexpr void each(Fty f)
+			requires std::invocable<Fty&, value_type&>
 		{
-			std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			std::ranges::for_each(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		/// @brief すべての要素を順番に引数にして関数を呼び出します。
@@ -1498,9 +1793,10 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void each(Fty f) const requires std::invocable<Fty&, const value_type&>
+		constexpr void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>
 		{
-			std::for_each(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			std::ranges::for_each(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1514,7 +1810,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) requires std::invocable<Fty&, size_t, value_type&>
+		constexpr void each_index(Fty f)
+			requires std::invocable<Fty&, size_t, value_type&>
 		{
 			for (size_t i = 0; auto & elem : m_container)
 			{
@@ -1527,7 +1824,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (size_t i = 0; const auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_index(Fty f) const requires std::invocable<Fty&, size_t, const value_type&>
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>
 		{
 			for (size_t i = 0; const auto & elem : m_container)
 			{
@@ -1546,7 +1844,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto& x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) requires std::invocable<Fty&, isize, value_type&>
+		constexpr void each_sindex(Fty f)
+			requires std::invocable<Fty&, isize, value_type&>
 		{
 			for (isize i = 0; auto & elem : m_container)
 			{
@@ -1559,7 +1858,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (isize i = 0; auto x : xs) f(i++, x);` と同じです。
 		template <class Fty>
-		constexpr void each_sindex(Fty f) const requires std::invocable<Fty&, isize, const value_type&>
+		constexpr void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>
 		{
 			for (isize i = 0; const auto & elem : m_container)
 			{
@@ -1579,7 +1879,9 @@ namespace s3d
 		/// @return 指定したインデックスにある要素、範囲外の場合 defaultValue
 		template <class U>
 		[[nodiscard]]
-		constexpr value_type fetch(size_type index, U&& defaultValue) const noexcept(std::is_nothrow_constructible_v<value_type, U>) requires std::constructible_from<value_type, U>
+		constexpr value_type fetch(size_type index, U&& defaultValue) const
+			noexcept(std::is_nothrow_constructible_v<value_type, U>)
+			requires std::constructible_from<value_type, U>
 		{
 			if (m_container.size() <= index)
 			{
@@ -1600,7 +1902,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& fill(const value_type& value) SIV3D_LIFETIMEBOUND
 		{
-			std::fill(m_container.begin(), m_container.end(), value);
+			std::ranges::fill(m_container, value);
 			return *this;
 		}
 
@@ -1617,7 +1919,8 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array filter(Fty f) const requires std::predicate<Fty&, const value_type&>
+		constexpr Array filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>
 		{
 			Array result;
 
@@ -1630,6 +1933,76 @@ namespace s3d
 			}
 
 			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fold_left
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
+		/// @tparam R 結果の型
+		/// @tparam Fty 関数の型
+		/// @param init 初期値
+		/// @param f 関数
+		/// @return まとめられた値
+		template <class R, class Fty>
+		constexpr auto fold_left(R init, Fty f) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 先頭から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array head(size_type n) const&
+		{
+			return take(n);
+		}
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 先頭から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array head(size_type n)&&
+		{
+			const auto k = Min(n, m_container.size());
+			return Array(
+				std::make_move_iterator(m_container.begin()),
+				std::make_move_iterator(m_container.begin() + k));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	headView
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 先頭から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<value_type> headView(size_type n) & noexcept
+		{
+			return std::span<value_type>{ m_container }.first(Min(n, size()));
+		}
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 先頭から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<const value_type> headView(size_type n) const& noexcept
+		{
+			return std::span<const value_type>{ m_container }.first(Min(n, size()));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1651,16 +2024,23 @@ namespace s3d
 				return result;
 			}
 
-			const size_t div = (m_container.size() / group);
-			const size_t mod = (m_container.size() % group);
-			size_t index = 0;
-
-			for (size_t i = 0; i < group; ++i)
+			const size_type s = size();
+			if (s == 0)
 			{
-				const size_t length = (div + ((0 < mod) && (i < mod)));
+				return result;
+			}
 
-				result.push_back(slice(index, length));
+			const size_type g = ((group < s) ? group : s); // 空グループを作らない
+			result.reserve(g);
 
+			const size_type div = s / g;
+			const size_type mod = s % g;
+
+			size_type index = 0;
+			for (size_type i = 0; i < g; ++i)
+			{
+				const size_type length = div + (i < mod ? 1 : 0);
+				result.emplace_back(slice(index, length));
 				index += length;
 			}
 
@@ -1678,7 +2058,26 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool isSorted() const
 		{
-			return std::is_sorted(m_container.begin(), m_container.end());
+			return std::ranges::is_sorted(m_container);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	indexOf
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr Optional<size_t> indexOf(const value_type& value) const noexcept
+		{
+			if (const auto it = std::ranges::find(m_container, value); 
+				it != m_container.end())
+			{
+				return std::ranges::distance(m_container.begin(), it);
+			}
+			else
+			{
+				return s3d::none;
+			}
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1689,35 +2088,45 @@ namespace s3d
 
 		/// @brief 配列の要素から文字列を生成します。
 		/// @param sep 要素の間に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		constexpr String join(const StringView sep = U", ") const
+		{
+			return join(sep, U"", U"");
+		}
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
 		/// @param begin 先頭に挿入する文字列
 		/// @param end 末尾に挿入する文字列
 		/// @return 生成された文字列
 		[[nodiscard]]
-		constexpr String join(StringView sep = U", ", StringView begin = U"{", StringView end = U"}") const
+		constexpr String join(const StringView sep, const StringView begin, const StringView end) const
 		{
-			String result;
+			const size_t n = m_container.size();
+			const size_t sepCount = (n > 1 ? (n - 1) : 0);
 
-			result.append(begin);
+			FormatData formatData;
+			formatData.string.reserve(begin.size() + end.size() + (sep.size() * sepCount) + (n * 5));
+			formatData.string.append(begin);
 
-			bool isFirst = true;
+			auto it = m_container.begin();
+			const auto itEnd = m_container.end();
 
-			for (const auto& value : m_container)
+			if (it != itEnd)
 			{
-				if (isFirst)
-				{
-					isFirst = false;
-				}
-				else
-				{
-					result.append(sep);
-				}
+				Formatter(formatData, *it);
+				++it;
 
-				result.append(Format(value));
+				for (; it != itEnd; ++it)
+				{
+					formatData.string.append(sep);
+					Formatter(formatData, *it);
+				}
 			}
 
-			result.append(end);
-
-			return result;
+			formatData.string.append(end);
+			return formatData.string;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1732,7 +2141,8 @@ namespace s3d
 		/// @return 各要素に関数を適用した戻り値からなる新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr auto map(Fty f) const requires std::invocable<Fty&, const value_type&>
+		constexpr auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>
 		{
 			using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
@@ -1760,9 +2170,10 @@ namespace s3d
 		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
 		template <class Fty = decltype(Identity)>
 		[[nodiscard]]
-		constexpr bool none(Fty f = Identity) const requires std::predicate<Fty&, const value_type&>
+		constexpr bool none(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::none_of(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::none_of(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1776,185 +2187,10 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
+		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::partition(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	reduce
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 配列の要素を左から順に関数に適用していき、1 つの値にまとめます。
-		/// @tparam Fty 関数の型
-		/// @tparam R 結果の型
-		/// @param f 関数
-		/// @param init 初期値
-		/// @return まとめられた値
-		template <class Fty, class R>
-		constexpr auto reduce(Fty f, R init) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove, removed
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した値と等しいすべての要素を削除します。
-		/// @param value 削除する値
-		/// @return *this
-		constexpr Array& remove(const value_type& value)& SIV3D_LIFETIMEBOUND
-		{
-			m_container.erase(std::remove(m_container.begin(), m_container.end(), value), m_container.end());
-			return *this;
-		}
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array remove(const value_type& value)&&
-		{
-			return std::move(remove(value));
-		}
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed(const value_type& value) const&
-		{
-			const isize newSize = std::count(m_container.begin(), m_container.end(), (not value));
-
-			return Array(newSize, (not value));
-		}
-
-		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
-		/// @param value 削除する値
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed(const value_type& value)&&
-		{
-			return std::move(remove(value));
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_at, removed_at
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定したインデックスにある要素を削除します。
-		/// @param index インデックス
-		/// @return *this
-		constexpr Array& remove_at(size_type index)& SIV3D_LIFETIMEBOUND
-		{
-			if (m_container.size() <= index)
-			{
-				detail::ThrowArrayRemoveAtIndexOutOfRange();
-			}
-
-			erase(m_container.begin() + index);
-
-			return *this;
-		}
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array remove_at(size_type index)&&
-		{
-			return std::move(remove_at(index));
-		}
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed_at(size_type index) const&
-		{
-			if (m_container.size() <= index)
-			{
-				detail::ThrowArrayRemovedAtIndexOutOfRange();
-			}
-
-			Array result(Arg::reserve = m_container.size() - 1);
-			result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
-			result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
-
-			return result;
-		}
-
-		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
-		/// @param index インデックス
-		/// @return 新しい配列
-		[[nodiscard]]
-		constexpr Array removed_at(size_type index)&&
-		{
-			return std::move(remove_at(index));
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	remove_if, removed_if
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 条件を満たす要素を配列から削除します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return *this
-		template <class Fty>
-		constexpr Array& remove_if(Fty f)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
-		{
-			erase(std::remove_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.end());
-			return *this;
-		}
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array remove_if(Fty f) && requires std::predicate<Fty&, const value_type&>
-		{
-			return std::move(remove_if(std::forward<Fty>(f)));
-		}
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array removed_if(Fty f) const& requires std::predicate<Fty&, const value_type&>
-		{
-			Array result;
-
-			for (const auto& v : m_container)
-			{
-				if (not f(v))
-				{
-					result.push_back(v);
-				}
-			}
-
-			return result;
-		}
-
-		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
-		/// @tparam Fty 条件を記述した関数の型
-		/// @param f 条件を記述した関数
-		/// @return 新しい配列
-		template <class Fty>
-		[[nodiscard]]
-		constexpr Array removed_if(Fty f) && requires std::predicate<Fty&, const value_type&>
-		{
-			return std::move(remove_if(std::forward<Fty>(f)));
+			return std::ranges::partition(m_container, detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1975,7 +2211,7 @@ namespace s3d
 			}
 			else
 			{
-				std::fill(m_container.begin(), m_container.end(), newValue);
+				std::ranges::fill(m_container, newValue);
 				return *this;
 			}
 		}
@@ -2029,9 +2265,10 @@ namespace s3d
 		/// @param newValue 新しい値
 		/// @return *this
 		template <class Fty>
-		constexpr Array& replace_if(Fty f, const value_type& newValue)& SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
+		constexpr Array& replace_if(Fty f, const value_type& newValue)& SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>
 		{
-			std::replace_if(m_container.begin(), m_container.end(), f, newValue);
+			std::ranges::replace_if(m_container, f, newValue);
 			return *this;
 		}
 
@@ -2042,7 +2279,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replace_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>
+		constexpr Array replace_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>
 		{
 			return std::move(replace_if(f, newValue));
 		}
@@ -2054,7 +2292,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replaced_if(Fty f, const value_type& newValue) const& requires std::predicate<Fty&, const value_type&>
+		constexpr Array replaced_if(Fty f, const value_type& newValue) const&
+			requires std::predicate<Fty&, const value_type&>
 		{
 			Array result(Arg::reserve = m_container.size());
 
@@ -2073,7 +2312,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array replaced_if(Fty f, const value_type& newValue) && requires std::predicate<Fty&, const value_type&>
+		constexpr Array replaced_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>
 		{
 			return std::move(replace_if(f, newValue));
 		}
@@ -2088,7 +2328,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& reverse()& SIV3D_LIFETIMEBOUND
 		{
-			std::reverse(m_container.begin(), m_container.end());
+			std::ranges::reverse(m_container);
 			return *this;
 		}
 
@@ -2127,7 +2367,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void reverse_each(Fty f) requires std::invocable<Fty&, value_type&>
+		constexpr void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>
 		{
 			std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 		}
@@ -2137,7 +2378,8 @@ namespace s3d
 		/// @param f 呼び出す関数
 		/// @remark `for (const auto& x : xs) f(x);` と同じです。
 		template <class Fty>
-		constexpr void reverse_each(Fty f) const requires std::invocable<Fty&, const value_type&>
+		constexpr void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>
 		{
 			std::for_each(m_container.rbegin(), m_container.rend(), detail::PassFunction(std::forward<Fty>(f)));
 		}
@@ -2216,7 +2458,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& rsort()& SIV3D_LIFETIMEBOUND
 		{
-			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+			const isize trueCount = std::ranges::count(m_container, true);
 
 			std::fill(m_container.begin(), (m_container.begin() + trueCount), true);
 			std::fill((m_container.begin() + trueCount), m_container.end(), false);
@@ -2237,7 +2479,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array rsorted() const&
 		{
-			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+			const isize trueCount = std::ranges::count(m_container, true);
 
 			Array result(m_container.size(), false);
 			std::fill(result.begin(), (result.begin() + trueCount), true);
@@ -2340,7 +2582,7 @@ namespace s3d
 		/// @return *this
 		constexpr Array& sort()& SIV3D_LIFETIMEBOUND
 		{
-			const isize falseCount = std::count(m_container.begin(), m_container.end(), false);
+			const isize falseCount = std::ranges::count(m_container, false);
 
 			std::fill(m_container.begin(), (m_container.begin() + falseCount), false);
 			std::fill((m_container.begin() + falseCount), m_container.end(), true);
@@ -2361,7 +2603,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array sorted() const&
 		{
-			const isize trueCount = std::count(m_container.begin(), m_container.end(), true);
+			const isize trueCount = std::ranges::count(m_container, true);
 
 			Array result(m_container.size(), true);
 			std::fill(result.begin(), (result.begin() + trueCount), false);
@@ -2385,10 +2627,10 @@ namespace s3d
 
 		/// @brief 配列をソートしたあとに重複する要素を削除します。
 		/// @return *this
-		constexpr Array& sort_and_unique() & noexcept SIV3D_LIFETIMEBOUND
+		constexpr Array& sort_and_unique() & SIV3D_LIFETIMEBOUND
 		{
-			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
-			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
+			const bool hasTrue = (std::ranges::find(m_container, true) != m_container.end());
+			const bool hasFalse = (std::ranges::find(m_container, false) != m_container.end());
 
 			if (hasTrue && hasFalse)
 			{
@@ -2409,7 +2651,7 @@ namespace s3d
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sort_and_unique() && noexcept
+		constexpr Array sort_and_unique() &&
 		{
 			return std::move(sort_and_unique());
 		}
@@ -2419,8 +2661,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array sorted_and_uniqued() const&
 		{
-			const bool hasTrue = (std::find(m_container.begin(), m_container.end(), true) != m_container.end());
-			const bool hasFalse = (std::find(m_container.begin(), m_container.end(), false) != m_container.end());
+			const bool hasTrue = (std::ranges::find(m_container, true) != m_container.end());
+			const bool hasFalse = (std::ranges::find(m_container, false) != m_container.end());
 
 			if (hasTrue && hasFalse)
 			{
@@ -2441,7 +2683,7 @@ namespace s3d
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array sorted_and_uniqued() && noexcept
+		constexpr Array sorted_and_uniqued() &&
 		{
 			return std::move(sort_and_unique());
 		}
@@ -2494,7 +2736,8 @@ namespace s3d
 		/// @param f 条件を記述した関数
 		/// @return 区分化された境界を指すイテレータ
 		template <class Fty>
-		constexpr auto stable_partition(Fty f) SIV3D_LIFETIMEBOUND requires std::predicate<Fty&, const value_type&>
+		constexpr auto stable_partition(Fty f) SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>
 		{
 			return partition(std::forward<Fty>(f));
 		}
@@ -2509,8 +2752,8 @@ namespace s3d
 		/// @return *this
 		constexpr Array& stable_unique() & noexcept SIV3D_LIFETIMEBOUND
 		{
-			const auto itTrue = std::find(m_container.begin(), m_container.end(), true);
-			const auto itFalse = std::find(m_container.begin(), m_container.end(), false);
+			const auto itTrue = std::ranges::find(m_container, true);
+			const auto itFalse = std::ranges::find(m_container, false);
 
 			const bool hasTrue = (itTrue != m_container.end());
 			const bool hasFalse = (itFalse != m_container.end());
@@ -2551,8 +2794,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array stable_uniqued() const
 		{
-			const auto itTrue = std::find(m_container.begin(), m_container.end(), true);
-			const auto itFalse = std::find(m_container.begin(), m_container.end(), false);
+			const auto itTrue = std::ranges::find(m_container, true);
+			const auto itFalse = std::ranges::find(m_container, false);
 
 			const bool hasTrue = (itTrue != m_container.end());
 			const bool hasFalse = (itFalse != m_container.end());
@@ -2591,9 +2834,68 @@ namespace s3d
 		[[nodiscard]]
 		constexpr isize sum() const
 		{
-			return std::count(m_container.begin(), m_container.end(), true);
+			return std::ranges::count(m_container, true);
 		}
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 末尾から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array tail(size_type n) const&
+		{
+			const auto k = Min(n, m_container.size());
+			return Array(m_container.end() - k, m_container.end());
+		}
+
+		/// @brief 末尾から最大 n 個の要素を取り出した新しい配列を返します。
+		/// @param n 取り出す要素数
+		/// @return 末尾から最大 n 個を含む新しい配列
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr Array tail(size_type n)&&
+		{
+			const auto k = Min(n, m_container.size());
+			return Array(
+				std::make_move_iterator(m_container.end() - k),
+				std::make_move_iterator(m_container.end()),
+				m_container.get_allocator());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tailView
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 末尾から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<value_type> tailView(size_type n) & noexcept
+		{
+			const auto k = Min(n, m_container.size());
+			return std::span<value_type>{ m_container }.last(k);
+		}
+
+		/// @brief 末尾から最大 n 個の要素を参照するビューを返します。
+		/// @param n 参照する要素数
+		/// @return 末尾から最大 n 個を参照する span
+		/// @remark n が size() を超える場合は size() にクランプされます。
+		[[nodiscard]]
+		constexpr std::span<const value_type> tailView(size_type n) const& noexcept
+		{
+			const auto k = Min(n, m_container.size());
+			return std::span<const value_type>{ m_container }.last(k);
+		}
+		
 		////////////////////////////////////////////////////////////////
 		//
 		//	take
@@ -2634,7 +2936,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array take_while(Fty f) const& requires std::predicate<Fty&, const value_type&>
+		constexpr Array take_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>
 		{
 			return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))));
 		}
@@ -2645,7 +2948,8 @@ namespace s3d
 		/// @return 新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array take_while(Fty f) && requires std::predicate<Fty&, const value_type&>
+		constexpr Array take_while(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>
 		{
 			return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)))));
 		}
@@ -2707,6 +3011,105 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	without
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without(const value_type& value) const&
+		{
+			const isize newSize = std::ranges::count(m_container, (not value));
+
+			return Array(newSize, (not value));
+		}
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
+		/// @param value 削除する値
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without(const value_type& value)&&
+		{
+			return std::move(without(value));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without_at(size_type index) const&
+		{
+			if (m_container.size() <= index)
+			{
+				detail::ThrowArrayWithoutAtIndexOutOfRange();
+			}
+
+			Array result(Arg::reserve = m_container.size() - 1);
+			result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
+			result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
+
+			return result;
+		}
+
+		/// @brief 指定したインデックスにある要素を削除した新しい配列を返します。
+		/// @param index インデックス
+		/// @return 新しい配列
+		[[nodiscard]]
+		constexpr Array without_at(size_type index)&&
+		{
+			return std::move(without_at(index));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>
+		{
+			Array result;
+
+			for (const auto& v : m_container)
+			{
+				if (not f(v))
+				{
+					result.push_back(v);
+				}
+			}
+
+			return result;
+		}
+
+		/// @brief 条件を満たす要素を配列から削除した新しい配列を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array without_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>
+		{
+			return std::move(without_if(detail::PassFunction(std::forward<Fty>(f))));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator >>
 		//
 		////////////////////////////////////////////////////////////////
@@ -2717,7 +3120,8 @@ namespace s3d
 		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
 		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
 		template <class Fty>
-		constexpr auto operator >>(Fty f) const requires std::invocable<Fty&, const value_type&>
+		constexpr auto operator >>(Fty f) const
+			requires std::invocable<Fty&, const value_type&>
 		{
 			using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 

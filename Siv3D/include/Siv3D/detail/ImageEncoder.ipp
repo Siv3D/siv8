@@ -21,7 +21,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		template <class ImageEncoder> requires std::derived_from<ImageEncoder, IImageEncoder>
+		template <class ImageEncoder>
+			requires std::derived_from<ImageEncoder, IImageEncoder>
 		bool Add()
 		{
 			return Add(std::make_unique<ImageEncoder>());

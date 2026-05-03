@@ -20,7 +20,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <detail::ExitFunction ExitFunction>
-	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other) noexcept(std::is_nothrow_copy_constructible_v<ExitFunction>)
+	constexpr ScopeExit<ExitFunction>::ScopeExit(ScopeExit&& other)
+		noexcept(std::is_nothrow_copy_constructible_v<ExitFunction>)
 		: m_exitFunction{ other.m_exitFunction }
 		, m_active{ std::exchange(other.m_active, false) } {}
 
@@ -32,7 +33,8 @@ namespace s3d
 
 	template <detail::ExitFunction ExitFunction>
 	template <class Fty>
-	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction) noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
+	constexpr ScopeExit<ExitFunction>::ScopeExit(Fty&& exitFunction)
+		noexcept(std::is_nothrow_constructible_v<ExitFunction, Fty&>)
 		requires detail::not_same_as<std::remove_cvref_t<Fty>, ScopeExit>
 		: m_exitFunction{ exitFunction } {}
 
@@ -49,7 +51,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <detail::ExitFunction ExitFunction>
-	constexpr ScopeExit<ExitFunction>::~ScopeExit() noexcept(std::is_nothrow_invocable_v<ExitFunction&>
+	constexpr ScopeExit<ExitFunction>::~ScopeExit()
+		noexcept(std::is_nothrow_invocable_v<ExitFunction&>
 		&& std::is_nothrow_destructible_v<ExitFunction>)
 	{
 		if (m_active)

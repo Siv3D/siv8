@@ -23,7 +23,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void Print_impl::write(const char32_t* s) const
+		void Print_impl::write(const char32* s) const
 		{
 			SIV3D_ENGINE(Print)->write(s);
 		}
@@ -44,7 +44,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void Print_impl::writeln(const char32_t* s) const
+		void Print_impl::writeln(const char32* s) const
 		{
 			SIV3D_ENGINE(Print)->writeln(s);
 		}
@@ -65,7 +65,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void Print_impl::operator ()(const char32_t* s) const
+		void Print_impl::operator ()(const char32* s) const
 		{
 			writeln(s);
 		}

@@ -14,7 +14,7 @@
 # include "Array.hpp"
 # include "AssetHandle.hpp"
 # include "FontMethod.hpp"
-# include "FontStyle.hpp"
+# include "FontOptions.hpp"
 # include "ReadingDirection.hpp"
 # include "GlyphIndex.hpp"
 # include "GlyphInfo.hpp"
@@ -58,134 +58,104 @@ namespace s3d
 		/// @brief フォントを作成します。
 		/// @param baseSize 基本サイズ
 		/// @param typeface 標準同梱フォントの種類
-		/// @param style フォントスタイル
+		/// @param options フォントのオプション
 		[[nodiscard]]
-		explicit Font(int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(int32 baseSize, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param styleName Variable Font の定義済みスタイル名
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(int32 baseSize, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
-		/// @param styleName Variable Font の定義済みスタイル名
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
+		explicit Font(int32 baseSize, Typeface typeface = Typeface::Regular, const FontOptions& options = {});
 
 		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
 		/// @param baseSize 基本サイズ
 		/// @param typeface 標準同梱フォントの種類
-		/// @param style フォントスタイル
+		/// @param options フォントのオプション
 		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
+		Font(FontMethod fontMethod, int32 baseSize, Typeface typeface = Typeface::Regular, const FontOptions& options = {});
 
 		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
 		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param fontMethod フォントのレンダリング方式
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param fontMethod フォントのレンダリング方式
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param styleName Variable Font の定義済みスタイル名
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param fontMethod フォントのレンダリング方式
-		/// @param baseSize 基本サイズ
-		/// @param path フォントファイルのパス
-		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
-		/// @param styleName Variable Font の定義済みスタイル名
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param fontMethod フォントのレンダリング方式
-		/// @param baseSize 基本サイズ
-		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
+		/// @param bufferThickness MSDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
 		/// @param typeface 標準同梱フォントの種類
-		/// @param style フォントスタイル
+		/// @param options フォントのオプション
 		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Typeface typeface = Typeface::Regular, FontStyle style = FontStyle::Normal);
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Typeface typeface = Typeface::Regular, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(int32 baseSize, FilePathView path, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param path フォントファイルのパス
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options = {});
 
 		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
 		/// @param baseSize 基本サイズ
 		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
 		/// @param path フォントファイルのパス
-		/// @param style フォントスタイル
+		/// @param options フォントのオプション
 		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, FontStyle style = FontStyle::Normal);
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options = {});
 
 		/// @brief フォントを作成します。
 		/// @param fontMethod フォントのレンダリング方式
 		/// @param baseSize 基本サイズ
 		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
-		/// @param path フォントファイルのパス
-		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
-		/// @param style フォントスタイル
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
 		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, FontStyle style = FontStyle::Normal);
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, std::unique_ptr<IReader> reader, const FontOptions& options = {});
 
 		/// @brief フォントを作成します。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Font(int32 baseSize, Reader&& reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @tparam Reader Reader オブジェクトの型
+		/// @param fontMethod フォントのレンダリング方式
+		/// @param baseSize 基本サイズ
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		template <ReaderObject Reader>
+		[[nodiscard]]
+		Font(FontMethod fontMethod, int32 baseSize, Reader&& reader, const FontOptions& options = {});
+
+		/// @brief フォントを作成します。
+		/// @tparam Reader Reader オブジェクトの型
 		/// @param fontMethod フォントのレンダリング方式
 		/// @param baseSize 基本サイズ
 		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
-		/// @param path フォントファイルのパス
-		/// @param styleName Variable Font の定義済みスタイル名
-		/// @param style フォントスタイル
+		/// @param reader Reader オブジェクト
+		/// @param options フォントのオプション
+		template <ReaderObject Reader>
 		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, StringView styleName, FontStyle style = FontStyle::Normal);
-
-		/// @brief フォントを作成します。
-		/// @param fontMethod フォントのレンダリング方式
-		/// @param baseSize 基本サイズ
-		/// @param bufferThickness SDF バッファの大きさ（ピクセル）。オフセットの大きいシャドウや広い輪郭が必要な場合は大きくする
-		/// @param path フォントファイルのパス
-		/// @param faceIndex コレクション（1 ファイルに複数の書体が含まれる場合）のインデックス
-		/// @param styleName Variable Font の定義済みスタイル名
-		/// @param style フォントスタイル
-		[[nodiscard]]
-		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, FilePathView path, size_t faceIndex, StringView styleName, FontStyle style = FontStyle::Normal);
+		Font(FontMethod fontMethod, int32 baseSize, int32 bufferThickness, Reader&& reader, const FontOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -231,14 +201,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	style
+		//	options
 		//
 		////////////////////////////////////////////////////////////////
 		
-		/// @brief フォントのスタイルを返します。
-		/// @return フォントのスタイル
+		/// @brief フォントのオプションを返します。
+		/// @return フォントのオプション
 		[[nodiscard]]
-		FontStyle style() const;
+		const FontOptions& options() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -977,3 +947,5 @@ namespace s3d
 		static const PixelShader& GetPixelShader(FontMethod method, TextStyle::Type type = TextStyle::Type::Default);
 	};
 }
+
+# include "detail/Font.ipp"

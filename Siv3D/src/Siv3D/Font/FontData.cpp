@@ -35,7 +35,7 @@ namespace s3d
 		m_initialized = true;
 	}
 
-	FontData::FontData(const ::FT_Library library, const FilePathView path, const size_t faceIndex, const StringView styleName, const FontMethod fontMethod, const int32 baseSize, const FontStyle style)
+	FontData::FontData(const FontMethod fontMethod, const int32 baseSize, const FilePathView path, const FontOptions& options)
 	{
 		if (not m_mappedFileView.open(path))
 		{
@@ -51,14 +51,14 @@ namespace s3d
 
 		FT_Face baseFace = nullptr;
 
-		if (const FT_Error error = ::FT_New_Memory_Face(library, static_cast<const FT_Byte*>(view.data), static_cast<FT_Long>(view.size), static_cast<::FT_Long>(faceIndex), &baseFace))
+		if (not SIV3D_ENGINE(Font)->newFace(view.data, view.size, options.faceIndex, baseFace))
 		{
 			return;
 		}
 
 		m_face = std::make_unique<FontFace>();
 
-		if (not m_face->init(library, view, baseFace, styleName, fontMethod, baseSize, style))
+		if (not m_face->init({ static_cast<const Byte*>(view.data), view.size }, baseFace, fontMethod, baseSize, options))
 		{
 			return;
 		}
@@ -75,6 +75,43 @@ namespace s3d
 			break;
 		}
 		m_initialized	= true;
+	}
+
+	FontData::FontData(const FontMethod fontMethod, const int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options)
+	{
+		const Blob blob{ std::move(reader) };
+
+		if (not blob)
+		{
+			return;
+		}
+
+		FT_Face baseFace = nullptr;
+
+		if (not SIV3D_ENGINE(Font)->newFace(blob.data(), blob.size_bytes(), options.faceIndex, baseFace))
+		{
+			return;
+		}
+
+		m_face = std::make_unique<FontFace>();
+
+		if (not m_face->init({ blob.data(), blob.size_bytes() }, baseFace, fontMethod, baseSize, options))
+		{
+			return;
+		}
+
+		m_renderingMethod = m_face->getInfo().renderingMethod;
+
+		switch (m_renderingMethod)
+		{
+		case FontMethod::Bitmap:
+			m_glyphCache = std::make_unique<BitmapGlyphCache>();
+			break;
+		case FontMethod::MSDF:
+			m_glyphCache = std::make_unique<MSDFGlyphCache>();
+			break;
+		}
+		m_initialized = true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -105,7 +142,7 @@ namespace s3d
 	String FontData::toString() const
 	{
 		const auto& info = m_face->getInfo();
-		return U"({0}, {1}, {2}, {3})"_fmt(info.properties.postscriptName, info.renderingMethod, info.baseSize, info.style);
+		return U"({0}, {1}, baseSize = {2}, bold = {3}, italic = {4}, preferEmbeddedBitmap = {5})"_fmt(info.properties.postscriptName, info.renderingMethod, info.baseSize, info.options.bold, info.options.italic, info.options.preferEmbeddedBitmap);
 	}
 
 	////////////////////////////////////////////////////////////////

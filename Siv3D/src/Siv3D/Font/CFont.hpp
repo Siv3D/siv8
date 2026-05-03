@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <mutex>
 # include "IFont.hpp"
 # include <Siv3D/HashMap.hpp>
 # include <Siv3D/Font.hpp>
@@ -54,7 +55,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<FontFaceProperties> getFontFaces(FilePathView path) const override;
+		Array<FontFaceProperties> getFontFaces(FilePathView path) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -63,10 +64,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 		
 		[[nodiscard]]
-		Font::IDType create(Typeface typeface, FontMethod fontMethod, int32 baseSize, FontStyle style) override;
+		Font::IDType create(FontMethod fontMethod, int32 baseSize, Typeface typeface, const FontOptions& options) override;
 
 		[[nodiscard]]
-		Font::IDType create(FilePathView path, size_t faceIndex, StringView styleName, FontMethod fontMethod, int32 baseSize, FontStyle style) override;
+		Font::IDType create(FontMethod fontMethod, int32 baseSize, FilePathView path, const FontOptions& options) override;
+
+		[[nodiscard]]
+		Font::IDType create(FontMethod fontMethod, int32 baseSize, std::unique_ptr<IReader> reader, const FontOptions& options) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -343,7 +347,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		bool fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
+		TextLayoutResult fitsRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -351,7 +355,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
+		TextLayoutResult drawRect(Font::IDType handleID, StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& rect, double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, ReadingDirection readingDirection) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -362,9 +366,33 @@ namespace s3d
 		[[nodiscard]]
 		const PixelShader& getFontShader(FontMethod method, TextStyle::Type type) const override;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	newFace
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool newFace(FilePathView path, uint32 faceIndex, FT_Face& face) override;
+
+		bool newFace(const void* data, size_t size_bytes, uint32 faceIndex, FT_Face& face) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	done_MM_Var
+		//
+		////////////////////////////////////////////////////////////////
+
+		void done_MM_Var(FT_MM_Var_* amaster) override;
+
 	private:
 
+		////////////////////////////////////////////////////////////////
+		//
+		std::mutex m_freeTypeMutex;
+
 		FT_Library m_freeType = nullptr;
+		//
+		////////////////////////////////////////////////////////////////
 
 		AssetHandleManager<Font::IDType, FontData> m_fonts{ "Font" };
 

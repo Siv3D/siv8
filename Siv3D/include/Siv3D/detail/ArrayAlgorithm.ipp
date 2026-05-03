@@ -26,6 +26,11 @@ namespace s3d
 				return m_set.insert(value).second;
 			}
 
+			void reserve(size_t n)
+			{
+				m_set.reserve(n);
+			}
+
 		private:
 
 			HashSet<Type> m_set;
@@ -34,15 +39,119 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reduce
+	//	erase_first
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	template <class Fty, class R>
-	constexpr auto Array<Type, Allocator>::reduce(Fty f, R init) const
+	constexpr bool Array<Type, Allocator>::erase_first(const value_type& value)
 	{
-		return std::reduce(m_container.begin(), m_container.end(), init, f);
+		if (const auto it = std::ranges::find(m_container, value);
+			it != m_container.end())
+		{
+			m_container.erase(it);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr bool Array<Type, Allocator>::erase_first_unstable(const value_type& value)
+	{
+		if (const auto it = std::ranges::find(m_container, value);
+			it != m_container.end())
+		{
+			const auto last = (m_container.end() - 1);
+
+			if (it != last)
+			{
+				std::ranges::iter_swap(it, last);
+			}
+
+			m_container.pop_back();
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::erase_first_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			it != m_container.end())
+		{
+			m_container.erase(it);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_if_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr bool Array<Type, Allocator>::erase_first_if_unstable(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		if (const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			it != m_container.end())
+		{
+			const auto last = (m_container.end() - 1);
+
+			if (it != last)
+			{
+				std::ranges::iter_swap(it, last);
+			}
+
+			m_container.pop_back();
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fold_left
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class R, class Fty>
+	constexpr auto Array<Type, Allocator>::fold_left(R init, Fty f) const
+	{
+		return std::ranges::fold_left(m_container, init, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -52,13 +161,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() & noexcept
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() &
 	{
 		return (*this = stable_uniqued());
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() && noexcept
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() &&
 	{
 		return stable_uniqued();
 	}
@@ -66,11 +175,12 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const
 	{
-		Array result;
+		Array result(Arg::reserve = m_container.size());
 
 		detail::ArrayStableUniqueHelper<value_type> pred;
+		pred.reserve(m_container.size());
 
-		std::copy_if(m_container.begin(), m_container.end(), std::back_inserter(result), std::ref(pred));
+		std::ranges::copy_if(m_container, std::back_inserter(result), std::ref(pred));
 
 		return result;
 	}
@@ -82,14 +192,15 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() & noexcept
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() &
 	{
-		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
+		auto result = std::ranges::unique(m_container);
+		m_container.erase(result.begin(), result.end());
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::unique_consecutive() && noexcept
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::unique_consecutive() &&
 	{
 		return std::move(unique_consecutive());
 	}
@@ -98,7 +209,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() const&
 	{
 		Array result;
-		std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
+		std::ranges::unique_copy(m_container, std::back_inserter(result));
 		return result;
 	}
 
@@ -110,15 +221,15 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reduce
+	//	fold_left
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Allocator>
-	template <class Fty, class R>
-	constexpr auto Array<bool, Allocator>::reduce(Fty f, R init) const
+	template <class R, class Fty>
+	constexpr auto Array<bool, Allocator>::fold_left(R init, Fty f) const
 	{
-		return std::reduce(m_container.begin(), m_container.end(), init, f);
+		return std::ranges::fold_left(m_container.begin(), m_container.end(), init, detail::PassFunction(std::forward<Fty>(f)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -130,7 +241,8 @@ namespace s3d
 	template <class Allocator>
 	constexpr Array<bool, Allocator>& Array<bool, Allocator>::unique_consecutive() & noexcept
 	{
-		m_container.erase(std::unique(m_container.begin(), m_container.end()), m_container.end());
+		auto result = std::ranges::unique(m_container);
+		m_container.erase(result.begin(), result.end());
 		return *this;
 	}
 
@@ -144,7 +256,7 @@ namespace s3d
 	constexpr Array<bool, Allocator> Array<bool, Allocator>::uniqued_consecutive() const&
 	{
 		Array result;
-		std::unique_copy(m_container.begin(), m_container.end(), std::back_inserter(result));
+		std::ranges::unique_copy(m_container, std::back_inserter(result));
 		return result;
 	}
 

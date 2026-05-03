@@ -15,20 +15,32 @@
 # include "Font.hpp"
 # include "Format.hpp"
 # include "ReadingDirection.hpp"
+# include "TextLayoutResult.hpp"
 
 namespace s3d
 {
 	struct TextStyle;
 	struct ITextEffect;
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	DrawableText
+	//
+	////////////////////////////////////////////////////////////////
 
+	/// @brief 描画可能なテキスト
 	struct DrawableText
 	{
+		/// @brief フォント
 		Font font;
 
+		/// @brief テキスト
 		String text;
 
+		/// @brief グリフの解決結果
 		Array<ResolvedGlyph> resolvedGlyphs;
 
+		/// @brief 読み方向
 		ReadingDirection readingDirection = ReadingDirection::LeftToRight;
 
 		////////////////////////////////////////////////////////////////
@@ -303,7 +315,7 @@ namespace s3d
 
 		RectF draw(Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		bool draw(const RectF& area, const ColorF& color = Palette::White) const;
+		TextLayoutResult draw(const RectF& area, const ColorF& color = Palette::White) const;
 
 		RectF draw(double size, double x, double y, const ColorF& color = Palette::White) const;
 
@@ -327,7 +339,7 @@ namespace s3d
 
 		RectF draw(double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		bool draw(double size, const RectF& area, const ColorF& color = Palette::White) const;
+		TextLayoutResult draw(double size, const RectF& area, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, double x, double y, const ColorF& color = Palette::White) const;
 
@@ -351,7 +363,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		bool draw(const TextStyle& textStyle, const RectF& area, const ColorF& color = Palette::White) const;
+		TextLayoutResult draw(const TextStyle& textStyle, const RectF& area, const ColorF& color = Palette::White) const;
 
 		RectF draw(const TextStyle& textStyle, double size, double x, double y, const ColorF& color = Palette::White) const;
 
@@ -375,7 +387,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ColorF& color = Palette::White) const;
 
-		bool draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
+		TextLayoutResult draw(const TextStyle& textStyle, double size, const RectF& area, const ColorF& color = Palette::White) const;
 
 		RectF draw(double x, double y, const ITextEffect& textEffect) const;
 
@@ -399,7 +411,7 @@ namespace s3d
 
 		RectF draw(Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 
-		bool draw(const RectF& area, const ITextEffect& textEffect) const;
+		TextLayoutResult draw(const RectF& area, const ITextEffect& textEffect) const;
 
 		RectF draw(double size, double x, double y, const ITextEffect& textEffect) const;
 
@@ -423,7 +435,7 @@ namespace s3d
 
 		RectF draw(double size, Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 
-		bool draw(double size, const RectF& area, const ITextEffect& textEffect) const;
+		TextLayoutResult draw(double size, const RectF& area, const ITextEffect& textEffect) const;
 
 		RectF draw(const TextStyle& textStyle, double x, double y, const ITextEffect& textEffect) const;
 
@@ -447,7 +459,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 
-		bool draw(const TextStyle& textStyle, const RectF& area, const ITextEffect& textEffect) const;
+		TextLayoutResult draw(const TextStyle& textStyle, const RectF& area, const ITextEffect& textEffect) const;
 
 		RectF draw(const TextStyle& textStyle, double size, double x, double y, const ITextEffect& textEffect) const;
 
@@ -471,7 +483,7 @@ namespace s3d
 
 		RectF draw(const TextStyle& textStyle, double size, Arg::center_<Vec2> center, const ITextEffect& textEffect) const;
 
-		bool draw(const TextStyle& textStyle, double size, const RectF& area, const ITextEffect& textEffect) const;
+		TextLayoutResult draw(const TextStyle& textStyle, double size, const RectF& area, const ITextEffect& textEffect) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -641,13 +653,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool fits(const RectF& area) const;
+		TextLayoutResult fits(const RectF& area) const;
 
-		bool fits(double size, const RectF& area) const;
+		TextLayoutResult fits(double size, const RectF& area) const;
 
-		bool fits(const TextStyle& textStyle, const RectF& area) const;
+		TextLayoutResult fits(const TextStyle& textStyle, const RectF& area) const;
 
-		bool fits(const TextStyle& textStyle, double size, const RectF& area) const;
+		TextLayoutResult fits(const TextStyle& textStyle, double size, const RectF& area) const;
 
 		////////////////////////////////////////////////////////////////
 		//

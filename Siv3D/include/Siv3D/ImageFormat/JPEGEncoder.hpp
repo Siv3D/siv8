@@ -59,7 +59,7 @@ namespace s3d
 		/// @brief JPEG 形式のファイルに想定される拡張子一覧 `{ U"jpg", U"jpeg" }` を返します。
 		/// @return 配列 `{ U"jpg", U"jpeg" }` 
 		[[nodiscard]]
-		const Array<String>& possibleExtensions() const override;
+		std::span<const StringView> possibleExtensions() const noexcept override;
 	
 		////////////////////////////////////////////////////////////////
 		//

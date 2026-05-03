@@ -58,15 +58,15 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n) const
+	Array<Type, Allocator> Array<Type, Allocator>::choice(const size_t n) const
 	{
 		return choice(n, GetDefaultRNG());
 	}
 
 	template <class Type, class Allocator>
-	Array<Type, Allocator> Array<Type, Allocator>::choice(const Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	Array<Type, Allocator> Array<Type, Allocator>::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
 	{
-		Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
+		Array result(Arg::reserve = Min(n, m_container.size()));
 
 		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
 
@@ -178,15 +178,15 @@ namespace s3d
 	}
 
 	template <class Allocator>
-	Array<bool, Allocator> Array<bool, Allocator>::choice(Concept::Integral auto n) const
+	Array<bool, Allocator> Array<bool, Allocator>::choice(const size_t n) const
 	{
 		return choice(n, GetDefaultRNG());
 	}
 
 	template <class Allocator>
-	Array<bool, Allocator> Array<bool, Allocator>::choice(Concept::Integral auto n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	Array<bool, Allocator> Array<bool, Allocator>::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
 	{
-		Array result(Arg::reserve = Min<size_t>(n, m_container.size()));
+		Array result(Arg::reserve = Min(n, m_container.size()));
 
 		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
 
