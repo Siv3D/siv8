@@ -479,6 +479,7 @@
 		F90F79E12FA7B6590077F398 /* ostream.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D82FA7B6590077F398 /* ostream.h */; };
 		F90F79E22FA7B6590077F398 /* format.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D72FA7B6590077F398 /* format.h */; };
 		F90F79E32FA7B6590077F398 /* ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D92FA7B6590077F398 /* ranges.h */; };
+		F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3539,6 +3540,7 @@
 		F90F79D82FA7B6590077F398 /* ostream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ostream.h; sourceTree = "<group>"; };
 		F90F79D92FA7B6590077F398 /* ranges.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ranges.h; sourceTree = "<group>"; };
 		F90F79DA2FA7B6590077F398 /* xchar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xchar.h; sourceTree = "<group>"; };
+		F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_LineString.cpp; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6374,6 +6376,7 @@
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
 				F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */,
+				F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */,
 				F90702C12B9DAEB900383E4D /* Test_Memory.cpp */,
 				F9528C512BC029E800222F45 /* Test_MemoryMappedFile.cpp */,
 				F9528B312BB0564800222F45 /* Test_MemoryMappedFileView.cpp */,
@@ -15307,6 +15310,7 @@
 				F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */,
 				F90703032B9DAEB900383E4D /* Test_Platform.cpp in Sources */,
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
+				F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */,
 				F90703082B9DAEB900383E4D /* Test_TextFileReader.cpp in Sources */,
 				F90702FF2B9DAEB900383E4D /* Test_Hash.cpp in Sources */,
 				F90702FE2B9DAEB900383E4D /* Test_FunctionRef.cpp in Sources */,
