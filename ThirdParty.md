@@ -25,7 +25,7 @@ Name | Version
 [JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 
 [libcpprime](https://github.com/Rac75116/libcpprime) | v1.3.2
-[libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.0.2
+[libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo) | 3.1.4.1
 [libmorton](https://github.com/Forceflow/libmorton) | 
 [libpng](http://www.libpng.org/pub/png/libpng.html) | 1.6.58
 [lunasvg](https://github.com/sammycage/lunasvg) | v2.4.1
