@@ -496,7 +496,7 @@ R"-(This software is based in part on the work of the Independent JPEG Group.)-"
 
 {
 R"-(libjpeg-turbo)-",
-R"-(Copyright (C)2009-2023 D. R. Commander. All Rights Reserved.
+R"-(Copyright (C)2009-2026 D. R. Commander. All Rights Reserved.
 Copyright (C)2015 Viktor Szathmáry. All Rights Reserved.)-",
 BSD_3_LICENSE
 },
