@@ -973,6 +973,41 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	append
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の末尾に別の LineString を追加します。
+		/// @param other 追加する LineString
+		/// @return *this
+		constexpr LineString& append(const LineString& other);
+
+		/// @brief 配列の末尾に別の配列を追加します。
+		/// @param other 追加する配列
+		/// @return *this
+		constexpr LineString& append(const container_type& other);
+
+		/// @brief 配列の末尾に別の範囲の要素を追加します。
+		/// @tparam Iterator イテレータ
+		/// @param first 範囲の開始位置を指すイテレータ
+		/// @param last 範囲の終端位置を指すイテレータ
+		/// @return *this
+		template <std::input_iterator Iterator>
+		constexpr LineString& append(Iterator first, Iterator last);
+
+		/// @brief 配列の末尾にリストの要素を追加します。
+		/// @param list リスト
+		/// @return *this
+		constexpr LineString& append(std::initializer_list<value_type> list);
+
+		/// @brief 配列の末尾に要素を追加します。
+		/// @param count 追加する個数
+		/// @param value 追加する値
+		/// @return *this
+		constexpr LineString& append(size_type count, const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	contains
 		//
 		////////////////////////////////////////////////////////////////
@@ -1113,10 +1148,6 @@ namespace s3d
 //
 //		[[nodiscard]]
 //		String join(StringView sep = U", "_sv, StringView begin = U"{"_sv, StringView end = U"}"_sv) const;
-//
-//		LineString& append(const Array<value_type>& other);
-//
-//		LineString& append(const LineString& other);
 //
 //		LineString& remove(const value_type& value);
 //

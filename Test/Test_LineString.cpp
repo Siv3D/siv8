@@ -87,6 +87,48 @@ TEST_CASE("LineString.all_any_none")
 	CHECK_FALSE(line.none([](const Vec2& p) { return (p.y == 1); }));
 }
 
+TEST_CASE("LineString.append")
+{
+	{
+		LineString line{ Vec2{ 0, 0 } };
+		const LineString other{ Vec2{ 1, 1 }, Vec2{ 2, 2 } };
+		CHECK_EQ(&(line.append(other)), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	}
+
+	{
+		LineString line{ Vec2{ 0, 0 } };
+		const LineString::container_type points{ Vec2{ 1, 1 }, Vec2{ 2, 2 } };
+		CHECK_EQ(&(line.append(points)), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	}
+
+	{
+		LineString line{ Vec2{ 0, 0 } };
+		const Array<Point> points{ Point{ 1, 1 }, Point{ 2, 2 } };
+		CHECK_EQ(&(line.append(points.begin(), points.end())), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	}
+
+	{
+		LineString line{ Vec2{ 0, 0 } };
+		CHECK_EQ(&(line.append({ Vec2{ 1, 1 }, Vec2{ 2, 2 } })), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	}
+
+	{
+		LineString line{ Vec2{ 0, 0 } };
+		CHECK_EQ(&(line.append(2, Vec2{ 1, 1 })), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 1, 1 } });
+	}
+
+	{
+		LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 } };
+		line.append(line);
+		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	}
+}
+
 TEST_CASE("LineString.contains_count")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 } };

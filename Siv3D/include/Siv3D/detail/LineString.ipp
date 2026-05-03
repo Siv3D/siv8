@@ -846,6 +846,43 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	append
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::append(const LineString& other)
+	{
+		m_points.append(other.m_points);
+		return *this;
+	}
+
+	constexpr LineString& LineString::append(const container_type& other)
+	{
+		m_points.append(other);
+		return *this;
+	}
+
+	template <std::input_iterator Iterator>
+	constexpr LineString& LineString::append(Iterator first, Iterator last)
+	{
+		m_points.append(first, last);
+		return *this;
+	}
+
+	constexpr LineString& LineString::append(std::initializer_list<value_type> list)
+	{
+		m_points.append(list);
+		return *this;
+	}
+
+	constexpr LineString& LineString::append(const size_type count, const value_type& value)
+	{
+		m_points.append(count, value);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	contains
 	//
 	////////////////////////////////////////////////////////////////
