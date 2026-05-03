@@ -23,7 +23,7 @@ namespace s3d
 
 	bool BinaryFileWriter::BinaryFileWriterDetail::open(const FilePathView path, const OpenMode openMode)
 	{
-		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path, FromEnum(openMode)));
+		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path.toUTF8(), FromEnum(openMode)));
 
 		close();
 
@@ -44,7 +44,7 @@ namespace s3d
 
 		if (parentFilePath && (not FileSystem::Exists(parentFilePath)) && (not FileSystem::CreateDirectories(parentFilePath)))
 		{
-			LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to create parent directories \"{0}\"", parentFilePath));
+			LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to create parent directories \"{0}\"", parentFilePath.toUTF8()));
 			return false;
 		}
 
@@ -56,7 +56,7 @@ namespace s3d
 
 			if (not file)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to open the file `{0}`", path));
+				LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to open the file `{0}`", path.toUTF8()));
 				return false;
 			}
 
@@ -76,7 +76,7 @@ namespace s3d
 				.isOpen = true,
 			};
 
-			LOG_INFO(fmt::format("📤 BinaryFileWriter: File `{0}` opened", m_info.fullPath));
+			LOG_INFO(fmt::format("📤 BinaryFileWriter: File `{0}` opened", m_info.fullPath.toUTF8()));
 		}
 
 		return true;
@@ -96,7 +96,7 @@ namespace s3d
 		std::fclose(m_file.file);
 		m_file = {};
 
-		LOG_INFO(fmt::format("📥 BinaryFileWriter: File `{0}` closed", m_info.fullPath));
+		LOG_INFO(fmt::format("📥 BinaryFileWriter: File `{0}` closed", m_info.fullPath.toUTF8()));
 
 		m_info = {};
 	}

@@ -270,18 +270,18 @@ namespace s3d
 		/// @brief 指定した個数の要素からなる配列を作成します。
 		/// @param count 要素数
 		/// @param value 要素の値
-		constexpr void assign(size_type count, const value_type& value) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(size_type count, const value_type& value);
 
 		/// @brief イテレータが指す範囲の要素から配列を作成します。
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		template <std::input_iterator Iterator>
-		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(Iterator first, Iterator last);
 
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
-		constexpr void assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -293,7 +293,7 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		template <Concept::ContainerCompatibleRange<Type> Range>
-		constexpr void assign_range(Range&& range) SIV3D_LIFETIMEBOUND;
+		constexpr void assign_range(Range&& range);
 
 		////////////////////////////////////////////////////////////////
 		//

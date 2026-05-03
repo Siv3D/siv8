@@ -23,7 +23,7 @@ namespace s3d
 
 	bool BinaryFileReader::BinaryFileReaderDetail::open(const FilePathView path)
 	{
-		LOG_DEBUG(fmt::format("BinaryFileReader::BinaryFileReaderDetail::open(\"{0}\")", path));
+		LOG_DEBUG(fmt::format("BinaryFileReader::BinaryFileReaderDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
 
@@ -35,7 +35,7 @@ namespace s3d
 
 				if (not m_file.file) [[unlikely]]
 					{
-						LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{0}`", path));
+						LOG_FAIL(fmt::format("❌ BinaryFileReader: Failed to open file `{0}`", path.toUTF8()));
 						return false;
 					}
 			}
@@ -47,7 +47,7 @@ namespace s3d
 				.isOpen = true,
 			};
 
-			LOG_INFO(fmt::format("📤 BinaryFileReader: File `{0}` opened (size: {1})", m_info.fullPath, FormatDataSize(m_info.fileSize)));
+			LOG_INFO(fmt::format("📤 BinaryFileReader: File `{0}` opened (size: {1})", m_info.fullPath, FormatDataSize(m_info.fileSize).toUTF8()));
 		}
 
 		return true;
@@ -64,7 +64,7 @@ namespace s3d
 		{
 			m_file.file.close();
 			m_file.readPos = 0;
-			LOG_INFO(fmt::format("📥 BinaryFileReader: File `{0}` closed", m_info.fullPath));
+			LOG_INFO(fmt::format("📥 BinaryFileReader: File `{0}` closed", m_info.fullPath.toUTF8()));
 		}
 
 		m_info = {};
@@ -169,7 +169,7 @@ namespace s3d
 				return readBytes;
 			}
 
-			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath));
+			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath.toUTF8()));
 			return 0;
 		}
 

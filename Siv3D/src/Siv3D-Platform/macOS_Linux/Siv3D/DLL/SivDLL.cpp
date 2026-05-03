@@ -26,7 +26,7 @@ namespace s3d
 
 		LibraryHandle Load(const StringView path)
 		{
-			LOG_DEBUG(fmt::format("DLL::Load(\"path = `{}`\")", path));
+			LOG_DEBUG(fmt::format("DLL::Load(\"path = `{}`\")", path.toUTF8()));
 
 			return ::dlopen(Unicode::ToUTF8(path).c_str(), RTLD_LOCAL | RTLD_LAZY);
 		}

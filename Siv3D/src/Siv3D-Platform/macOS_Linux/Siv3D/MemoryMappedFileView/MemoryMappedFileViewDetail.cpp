@@ -32,7 +32,7 @@ namespace s3d
 
 	bool MemoryMappedFileView::MemoryMappedFileViewDetail::open(const FilePathView path)
 	{
-		LOG_DEBUG(fmt::format("MemoryMappedFileView::MemoryMappedFileViewDetail::open(\"{0}\")", path));
+		LOG_DEBUG(fmt::format("MemoryMappedFileView::MemoryMappedFileViewDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
 
@@ -41,7 +41,7 @@ namespace s3d
 
 			if (fileHandle == -1)
 			{
-				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open file `{0}`", path));
+				LOG_FAIL(fmt::format("❌ MemoryMappedFileView: Failed to open file `{0}`", path.toUTF8()));
 				return false;
 			}
 

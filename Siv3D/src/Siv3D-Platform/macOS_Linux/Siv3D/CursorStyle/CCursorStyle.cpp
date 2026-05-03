@@ -127,7 +127,7 @@ namespace s3d
 	{
 		if (m_customCursors.contains(name))
 		{
-			LOG_FAIL(fmt::format("❌ CCursorStyle::registerCustomStyle(): `{}` is already registered", name));
+			LOG_FAIL(fmt::format("❌ CCursorStyle::registerCustomStyle(): `{}` is already registered", name.toUTF8()));
 			return false;
 		}
 

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -32,13 +32,13 @@ namespace s3d
 
 	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
 	{
-		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path));
+		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
 		
 		if (FileSystem::IsResourcePath(path))
 		{
-			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Resource `{0}` cannot be opened as writable", path));
+			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Resource `{0}` cannot be opened as writable", path.toUTF8()));
 			return false;
 		}
 
@@ -74,7 +74,7 @@ namespace s3d
 
 			if (fileHandle == -1)
 			{
-				LOG_FAIL(fmt::format("❌ MemoryMappedFile: Failed to open file `{0}`", path));
+				LOG_FAIL(fmt::format("❌ MemoryMappedFile: Failed to open file `{0}`", path.toUTF8()));
 				return false;
 			}
 
@@ -96,7 +96,7 @@ namespace s3d
 				.isOpen = true,
 			};
 
-			LOG_INFO(fmt::format("📤 MemoryMappedFile: Opened file `{0}` size: {1}", m_info.fullPath, FormatDataSize(m_info.fileSize)));
+			LOG_INFO(fmt::format("📤 MemoryMappedFile: Opened file `{0}` size: {1}", m_info.fullPath.toUTF8(), FormatDataSize(m_info.fileSize).toUTF8()));
 		}
 
 		return true;
@@ -115,7 +115,7 @@ namespace s3d
 			::close(m_file.fileHandle);
 			m_file = {};
 
-			LOG_INFO(fmt::format("📥 MemoryMappedFile: File `{0}` closed", m_info.fullPath));
+			LOG_INFO(fmt::format("📥 MemoryMappedFile: File `{0}` closed", m_info.fullPath.toUTF8()));
 		}
 
 		m_info = {};
