@@ -68,9 +68,6 @@
 		F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */; };
 		F90706B22B9DAEC900383E4D /* doctest.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704162B9DAEC900383E4D /* doctest.h */; };
 		F90706B32B9DAEC900383E4D /* EnumBitmask.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90704182B9DAEC900383E4D /* EnumBitmask.hpp */; };
-		F90706B42B9DAEC900383E4D /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = F907041B2B9DAEC900383E4D /* core.h */; };
-		F90706B52B9DAEC900383E4D /* format.h in Headers */ = {isa = PBXBuildFile; fileRef = F907041C2B9DAEC900383E4D /* format.h */; };
-		F90706B62B9DAEC900383E4D /* xchar.h in Headers */ = {isa = PBXBuildFile; fileRef = F907041D2B9DAEC900383E4D /* xchar.h */; };
 		F90706B72B9DAEC900383E4D /* mimalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = F907041F2B9DAEC900383E4D /* mimalloc.h */; };
 		F90706B82B9DAEC900383E4D /* nanobench.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704212B9DAEC900383E4D /* nanobench.h */; };
 		F90706B92B9DAEC900383E4D /* obfuscate.h in Headers */ = {isa = PBXBuildFile; fileRef = F90704232B9DAEC900383E4D /* obfuscate.h */; };
@@ -474,6 +471,14 @@
 		F90F2BE72D9278BB00CC89CA /* IsPrime_impl.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */; };
 		F90F2BEC2D9278DE00CC89CA /* IsPrimeNoTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */; };
 		F90F2BED2D9278DE00CC89CA /* IsPrimeCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */; };
+		F90F79DC2FA7B6590077F398 /* xchar.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79DA2FA7B6590077F398 /* xchar.h */; };
+		F90F79DD2FA7B6590077F398 /* base.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D32FA7B6590077F398 /* base.h */; };
+		F90F79DE2FA7B6590077F398 /* color.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D52FA7B6590077F398 /* color.h */; };
+		F90F79DF2FA7B6590077F398 /* chrono.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D42FA7B6590077F398 /* chrono.h */; };
+		F90F79E02FA7B6590077F398 /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D62FA7B6590077F398 /* core.h */; };
+		F90F79E12FA7B6590077F398 /* ostream.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D82FA7B6590077F398 /* ostream.h */; };
+		F90F79E22FA7B6590077F398 /* format.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D72FA7B6590077F398 /* format.h */; };
+		F90F79E32FA7B6590077F398 /* ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D92FA7B6590077F398 /* ranges.h */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3123,9 +3128,6 @@
 		F90704162B9DAEC900383E4D /* doctest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = doctest.h; sourceTree = "<group>"; };
 		F90704182B9DAEC900383E4D /* EnumBitmask.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EnumBitmask.hpp; sourceTree = "<group>"; };
 		F90704192B9DAEC900383E4D /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		F907041B2B9DAEC900383E4D /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
-		F907041C2B9DAEC900383E4D /* format.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = format.h; sourceTree = "<group>"; };
-		F907041D2B9DAEC900383E4D /* xchar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xchar.h; sourceTree = "<group>"; };
 		F907041F2B9DAEC900383E4D /* mimalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mimalloc.h; sourceTree = "<group>"; };
 		F90704212B9DAEC900383E4D /* nanobench.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nanobench.h; sourceTree = "<group>"; };
 		F90704232B9DAEC900383E4D /* obfuscate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = obfuscate.h; sourceTree = "<group>"; };
@@ -3529,6 +3531,14 @@
 		F90F2BE62D9278BB00CC89CA /* IsPrime_impl.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrime_impl.ipp; sourceTree = "<group>"; };
 		F90F2BE82D9278DE00CC89CA /* IsPrimeCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrimeCommon.hpp; sourceTree = "<group>"; };
 		F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IsPrimeNoTable.hpp; sourceTree = "<group>"; };
+		F90F79D32FA7B6590077F398 /* base.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = base.h; sourceTree = "<group>"; };
+		F90F79D42FA7B6590077F398 /* chrono.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = chrono.h; sourceTree = "<group>"; };
+		F90F79D52FA7B6590077F398 /* color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = color.h; sourceTree = "<group>"; };
+		F90F79D62FA7B6590077F398 /* core.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
+		F90F79D72FA7B6590077F398 /* format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = format.h; sourceTree = "<group>"; };
+		F90F79D82FA7B6590077F398 /* ostream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ostream.h; sourceTree = "<group>"; };
+		F90F79D92FA7B6590077F398 /* ranges.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ranges.h; sourceTree = "<group>"; };
+		F90F79DA2FA7B6590077F398 /* xchar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xchar.h; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6406,16 +6416,6 @@
 			path = EnumBitmask;
 			sourceTree = "<group>";
 		};
-		F907041E2B9DAEC900383E4D /* fmt */ = {
-			isa = PBXGroup;
-			children = (
-				F907041B2B9DAEC900383E4D /* core.h */,
-				F907041C2B9DAEC900383E4D /* format.h */,
-				F907041D2B9DAEC900383E4D /* xchar.h */,
-			);
-			path = fmt;
-			sourceTree = "<group>";
-		};
 		F90704202B9DAEC900383E4D /* mimalloc */ = {
 			isa = PBXGroup;
 			children = (
@@ -6480,7 +6480,7 @@
 				F9E5FC3B2BC15B260081A4F7 /* DirectXMath */,
 				F90704172B9DAEC900383E4D /* doctest */,
 				F907041A2B9DAEC900383E4D /* EnumBitmask */,
-				F907041E2B9DAEC900383E4D /* fmt */,
+				F90F79DB2FA7B6590077F398 /* fmt */,
 				F90F2BEB2D9278DE00CC89CA /* libcpprime */,
 				F90704202B9DAEC900383E4D /* mimalloc */,
 				F90704222B9DAEC900383E4D /* nanobench */,
@@ -8419,6 +8419,21 @@
 				F90F2BEA2D9278DE00CC89CA /* IsPrimeNoTable.hpp */,
 			);
 			path = libcpprime;
+			sourceTree = "<group>";
+		};
+		F90F79DB2FA7B6590077F398 /* fmt */ = {
+			isa = PBXGroup;
+			children = (
+				F90F79D32FA7B6590077F398 /* base.h */,
+				F90F79D42FA7B6590077F398 /* chrono.h */,
+				F90F79D52FA7B6590077F398 /* color.h */,
+				F90F79D62FA7B6590077F398 /* core.h */,
+				F90F79D72FA7B6590077F398 /* format.h */,
+				F90F79D82FA7B6590077F398 /* ostream.h */,
+				F90F79D92FA7B6590077F398 /* ranges.h */,
+				F90F79DA2FA7B6590077F398 /* xchar.h */,
+			);
+			path = fmt;
 			sourceTree = "<group>";
 		};
 		F911710C2DCBBF0B000A22E6 /* Font */ = {
@@ -13998,7 +14013,6 @@
 				F98600772BCFBB53006A4C0F /* SkFloatBits.h in Headers */,
 				F9528C072BBF026F00222F45 /* cpu.h in Headers */,
 				F9070C882B9F175000383E4D /* UtilityClass.ipp in Headers */,
-				F90706B52B9DAEC900383E4D /* format.h in Headers */,
 				F9070C572B9F175000383E4D /* FmtHelper.ipp in Headers */,
 				F9070CA92B9F175000383E4D /* CopyOption.hpp in Headers */,
 				F986014A2BCFBB53006A4C0F /* SkAnalyticEdge.h in Headers */,
@@ -14247,7 +14261,6 @@
 				F9528C342BBF026F00222F45 /* zstd_opt.h in Headers */,
 				F90706BF2B9DAEC900383E4D /* phmap_fwd_decl.h in Headers */,
 				F9070CD02B9F175100383E4D /* IReader.hpp in Headers */,
-				F90706B42B9DAEC900383E4D /* core.h in Headers */,
 				F9528CA12BC1208B00222F45 /* pnglibconf.h in Headers */,
 				F986FA842BCFB53B006A4C0F /* ftimage.h in Headers */,
 				F9797E282F631E6500518D26 /* IAudioEncoder.hpp in Headers */,
@@ -14522,6 +14535,14 @@
 				F986040E2BCFBB54006A4C0F /* SkSLForStatement.h in Headers */,
 				F98600622BCFBB53006A4C0F /* SkLumaColorFilter.h in Headers */,
 				F9070C742B9F175000383E4D /* Random.ipp in Headers */,
+				F90F79DC2FA7B6590077F398 /* xchar.h in Headers */,
+				F90F79DD2FA7B6590077F398 /* base.h in Headers */,
+				F90F79DE2FA7B6590077F398 /* color.h in Headers */,
+				F90F79DF2FA7B6590077F398 /* chrono.h in Headers */,
+				F90F79E02FA7B6590077F398 /* core.h in Headers */,
+				F90F79E12FA7B6590077F398 /* ostream.h in Headers */,
+				F90F79E22FA7B6590077F398 /* format.h in Headers */,
+				F90F79E32FA7B6590077F398 /* ranges.h in Headers */,
 				F95122252CB8229400151291 /* TriangleIndex32.ipp in Headers */,
 				F986042E2BCFBB54006A4C0F /* SkSLPrefixExpression.h in Headers */,
 				F98600432BCFBB53006A4C0F /* SkString.h in Headers */,
@@ -14581,7 +14602,6 @@
 				F986015F2BCFBB53006A4C0F /* SkBlenderBase.h in Headers */,
 				F98600102BCFBB53006A4C0F /* SkDataTable.h in Headers */,
 				F9E7942C2C12B861002615BA /* MSL.hpp in Headers */,
-				F90706B62B9DAEC900383E4D /* xchar.h in Headers */,
 				F97E6DBF2D7B3BEA0066E408 /* HashMap.hpp in Headers */,
 				F98111992EC8C68700C50DD1 /* GUIColorStyle.hpp in Headers */,
 				F981119A2EC8C68700C50DD1 /* GUIShapeStyle.hpp in Headers */,
