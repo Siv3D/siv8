@@ -1148,6 +1148,47 @@
 		F9797F112F6ED8CE00518D26 /* AudioFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F092F6ED8CE00518D26 /* AudioFactory.cpp */; };
 		F9797F142F6ED8DD00518D26 /* SivMicrophoneInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F122F6ED8DD00518D26 /* SivMicrophoneInfo.cpp */; };
 		F9797F162F6ED8F400518D26 /* MicrophoneInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797F152F6ED8F400518D26 /* MicrophoneInfo.hpp */; };
+		F9797F3F2FA73DB200518D26 /* svgrenderstate.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F3A2FA73DB200518D26 /* svgrenderstate.h */; };
+		F9797F402FA73DB200518D26 /* lunasvg.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F2C2FA73DB200518D26 /* lunasvg.h */; };
+		F9797F412FA73DB200518D26 /* svggeometryelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F302FA73DB200518D26 /* svggeometryelement.h */; };
+		F9797F422FA73DB200518D26 /* svglayoutstate.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F322FA73DB200518D26 /* svglayoutstate.h */; };
+		F9797F432FA73DB200518D26 /* svgparserutils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F372FA73DB200518D26 /* svgparserutils.h */; };
+		F9797F442FA73DB200518D26 /* svgproperty.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F382FA73DB200518D26 /* svgproperty.h */; };
+		F9797F452FA73DB200518D26 /* svgtextelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F3C2FA73DB200518D26 /* svgtextelement.h */; };
+		F9797F462FA73DB200518D26 /* svgpaintelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F342FA73DB200518D26 /* svgpaintelement.h */; };
+		F9797F472FA73DB200518D26 /* svgelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F2E2FA73DB200518D26 /* svgelement.h */; };
+		F9797F482FA73DB200518D26 /* graphics.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F2A2FA73DB200518D26 /* graphics.h */; };
+		F9797F492FA73DB200518D26 /* svgtextelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F3D2FA73DB200518D26 /* svgtextelement.cpp */; };
+		F9797F4A2FA73DB200518D26 /* svgpaintelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F352FA73DB200518D26 /* svgpaintelement.cpp */; };
+		F9797F4B2FA73DB200518D26 /* svgproperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F392FA73DB200518D26 /* svgproperty.cpp */; };
+		F9797F4C2FA73DB200518D26 /* graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F2B2FA73DB200518D26 /* graphics.cpp */; };
+		F9797F4D2FA73DB200518D26 /* svglayoutstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F332FA73DB200518D26 /* svglayoutstate.cpp */; };
+		F9797F4E2FA73DB200518D26 /* svgelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F2F2FA73DB200518D26 /* svgelement.cpp */; };
+		F9797F4F2FA73DB200518D26 /* svgparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F362FA73DB200518D26 /* svgparser.cpp */; };
+		F9797F502FA73DB200518D26 /* svggeometryelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F312FA73DB200518D26 /* svggeometryelement.cpp */; };
+		F9797F512FA73DB200518D26 /* svgrenderstate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F3B2FA73DB200518D26 /* svgrenderstate.cpp */; };
+		F9797F522FA73DB200518D26 /* lunasvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797F2D2FA73DB200518D26 /* lunasvg.cpp */; };
+		F9797F6A2FA73DBB00518D26 /* plutovg-utils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F682FA73DBB00518D26 /* plutovg-utils.h */; };
+		F9797F6B2FA73DBB00518D26 /* plutovg-stb-truetype.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F662FA73DBB00518D26 /* plutovg-stb-truetype.h */; };
+		F9797F6C2FA73DBB00518D26 /* plutovg-stb-image-write.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F652FA73DBB00518D26 /* plutovg-stb-image-write.h */; };
+		F9797F6D2FA73DBB00518D26 /* plutovg-stb-image.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F642FA73DBB00518D26 /* plutovg-stb-image.h */; };
+		F9797F6E2FA73DBB00518D26 /* plutovg-ft-math.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F582FA73DBB00518D26 /* plutovg-ft-math.h */; };
+		F9797F6F2FA73DBB00518D26 /* plutovg-ft-stroker.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F5C2FA73DBB00518D26 /* plutovg-ft-stroker.h */; };
+		F9797F702FA73DBB00518D26 /* plutovg-ft-types.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F5E2FA73DBB00518D26 /* plutovg-ft-types.h */; };
+		F9797F712FA73DBB00518D26 /* plutovg-private.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F622FA73DBB00518D26 /* plutovg-private.h */; };
+		F9797F722FA73DBB00518D26 /* plutovg.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F542FA73DBB00518D26 /* plutovg.h */; };
+		F9797F732FA73DBB00518D26 /* plutovg-ft-raster.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797F5A2FA73DBB00518D26 /* plutovg-ft-raster.h */; };
+		F9797F742FA73DBB00518D26 /* plutovg-path.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F612FA73DBB00518D26 /* plutovg-path.c */; };
+		F9797F752FA73DBB00518D26 /* plutovg-font.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F572FA73DBB00518D26 /* plutovg-font.c */; };
+		F9797F762FA73DBB00518D26 /* plutovg-ft-stroker.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F5D2FA73DBB00518D26 /* plutovg-ft-stroker.c */; };
+		F9797F772FA73DBB00518D26 /* plutovg-ft-raster.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F5B2FA73DBB00518D26 /* plutovg-ft-raster.c */; };
+		F9797F782FA73DBB00518D26 /* plutovg-rasterize.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F632FA73DBB00518D26 /* plutovg-rasterize.c */; };
+		F9797F792FA73DBB00518D26 /* plutovg-matrix.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F5F2FA73DBB00518D26 /* plutovg-matrix.c */; };
+		F9797F7A2FA73DBB00518D26 /* plutovg-canvas.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F562FA73DBB00518D26 /* plutovg-canvas.c */; };
+		F9797F7B2FA73DBB00518D26 /* plutovg-paint.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F602FA73DBB00518D26 /* plutovg-paint.c */; };
+		F9797F7C2FA73DBB00518D26 /* plutovg-surface.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F672FA73DBB00518D26 /* plutovg-surface.c */; };
+		F9797F7D2FA73DBB00518D26 /* plutovg-blend.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F552FA73DBB00518D26 /* plutovg-blend.c */; };
+		F9797F7E2FA73DBB00518D26 /* plutovg-ft-math.c in Sources */ = {isa = PBXBuildFile; fileRef = F9797F592FA73DBB00518D26 /* plutovg-ft-math.c */; };
 		F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */; };
 		F97E6DAD2D79D68E0066E408 /* StringViewRandom.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */; };
 		F97E6DB02D79D6A80066E408 /* StringViewRandom.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97E6DAF2D79D6A80066E408 /* StringViewRandom.ipp */; };
@@ -2442,62 +2483,6 @@
 		F986F94D2BCA9CD7006A4C0F /* SVGDetail.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9492BCA9CD7006A4C0F /* SVGDetail.cpp */; };
 		F986F94E2BCA9CD7006A4C0F /* SVGDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F94A2BCA9CD7006A4C0F /* SVGDetail.hpp */; };
 		F986F9512BCA9CEC006A4C0F /* SVGDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F94F2BCA9CEC006A4C0F /* SVGDecoder.cpp */; };
-		F986F98D2BCA9D0A006A4C0F /* plutovg-blend.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F9532BCA9D0A006A4C0F /* plutovg-blend.c */; };
-		F986F98E2BCA9D0A006A4C0F /* plutovg-dash.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F9542BCA9D0A006A4C0F /* plutovg-dash.c */; };
-		F986F98F2BCA9D0A006A4C0F /* plutovg-ft-math.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F9552BCA9D0A006A4C0F /* plutovg-ft-math.c */; };
-		F986F9902BCA9D0A006A4C0F /* plutovg-ft-math.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9562BCA9D0A006A4C0F /* plutovg-ft-math.h */; };
-		F986F9912BCA9D0A006A4C0F /* plutovg-ft-raster.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F9572BCA9D0A006A4C0F /* plutovg-ft-raster.c */; };
-		F986F9922BCA9D0A006A4C0F /* plutovg-ft-raster.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9582BCA9D0A006A4C0F /* plutovg-ft-raster.h */; };
-		F986F9932BCA9D0A006A4C0F /* plutovg-ft-stroker.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F9592BCA9D0A006A4C0F /* plutovg-ft-stroker.c */; };
-		F986F9942BCA9D0A006A4C0F /* plutovg-ft-stroker.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F95A2BCA9D0A006A4C0F /* plutovg-ft-stroker.h */; };
-		F986F9952BCA9D0A006A4C0F /* plutovg-ft-types.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F95B2BCA9D0A006A4C0F /* plutovg-ft-types.h */; };
-		F986F9962BCA9D0A006A4C0F /* plutovg-geometry.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F95C2BCA9D0A006A4C0F /* plutovg-geometry.c */; };
-		F986F9972BCA9D0A006A4C0F /* plutovg-paint.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F95D2BCA9D0A006A4C0F /* plutovg-paint.c */; };
-		F986F9982BCA9D0A006A4C0F /* plutovg-private.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F95E2BCA9D0A006A4C0F /* plutovg-private.h */; };
-		F986F9992BCA9D0A006A4C0F /* plutovg-rle.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F95F2BCA9D0A006A4C0F /* plutovg-rle.c */; };
-		F986F99A2BCA9D0A006A4C0F /* plutovg.c in Sources */ = {isa = PBXBuildFile; fileRef = F986F9602BCA9D0A006A4C0F /* plutovg.c */; };
-		F986F99B2BCA9D0A006A4C0F /* plutovg.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9612BCA9D0A006A4C0F /* plutovg.h */; };
-		F986F99C2BCA9D0A006A4C0F /* canvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9632BCA9D0A006A4C0F /* canvas.cpp */; };
-		F986F99D2BCA9D0A006A4C0F /* canvas.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9642BCA9D0A006A4C0F /* canvas.h */; };
-		F986F99E2BCA9D0A006A4C0F /* clippathelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9652BCA9D0A006A4C0F /* clippathelement.cpp */; };
-		F986F99F2BCA9D0A006A4C0F /* clippathelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9662BCA9D0A006A4C0F /* clippathelement.h */; };
-		F986F9A02BCA9D0A006A4C0F /* defselement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9672BCA9D0A006A4C0F /* defselement.cpp */; };
-		F986F9A12BCA9D0A006A4C0F /* defselement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9682BCA9D0A006A4C0F /* defselement.h */; };
-		F986F9A22BCA9D0A006A4C0F /* element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9692BCA9D0A006A4C0F /* element.cpp */; };
-		F986F9A32BCA9D0A006A4C0F /* element.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F96A2BCA9D0A006A4C0F /* element.h */; };
-		F986F9A42BCA9D0A006A4C0F /* gelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F96B2BCA9D0A006A4C0F /* gelement.cpp */; };
-		F986F9A52BCA9D0A006A4C0F /* gelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F96C2BCA9D0A006A4C0F /* gelement.h */; };
-		F986F9A62BCA9D0A006A4C0F /* geometryelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F96D2BCA9D0A006A4C0F /* geometryelement.cpp */; };
-		F986F9A72BCA9D0A006A4C0F /* geometryelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F96E2BCA9D0A006A4C0F /* geometryelement.h */; };
-		F986F9A82BCA9D0A006A4C0F /* graphicselement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F96F2BCA9D0A006A4C0F /* graphicselement.cpp */; };
-		F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9702BCA9D0A006A4C0F /* graphicselement.h */; };
-		F986F9AA2BCA9D0A006A4C0F /* layoutcontext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9712BCA9D0A006A4C0F /* layoutcontext.cpp */; };
-		F986F9AB2BCA9D0A006A4C0F /* layoutcontext.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9722BCA9D0A006A4C0F /* layoutcontext.h */; };
-		F986F9AC2BCA9D0A006A4C0F /* lunasvg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9732BCA9D0A006A4C0F /* lunasvg.cpp */; };
-		F986F9AD2BCA9D0A006A4C0F /* lunasvg.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9742BCA9D0A006A4C0F /* lunasvg.h */; };
-		F986F9AE2BCA9D0A006A4C0F /* markerelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9752BCA9D0A006A4C0F /* markerelement.cpp */; };
-		F986F9AF2BCA9D0A006A4C0F /* markerelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9762BCA9D0A006A4C0F /* markerelement.h */; };
-		F986F9B02BCA9D0A006A4C0F /* maskelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9772BCA9D0A006A4C0F /* maskelement.cpp */; };
-		F986F9B12BCA9D0A006A4C0F /* maskelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9782BCA9D0A006A4C0F /* maskelement.h */; };
-		F986F9B22BCA9D0A006A4C0F /* paintelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9792BCA9D0A006A4C0F /* paintelement.cpp */; };
-		F986F9B32BCA9D0A006A4C0F /* paintelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F97A2BCA9D0A006A4C0F /* paintelement.h */; };
-		F986F9B42BCA9D0A006A4C0F /* parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F97B2BCA9D0A006A4C0F /* parser.cpp */; };
-		F986F9B52BCA9D0A006A4C0F /* parser.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F97C2BCA9D0A006A4C0F /* parser.h */; };
-		F986F9B62BCA9D0A006A4C0F /* parserutils.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F97D2BCA9D0A006A4C0F /* parserutils.h */; };
-		F986F9B72BCA9D0A006A4C0F /* property.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F97E2BCA9D0A006A4C0F /* property.cpp */; };
-		F986F9B82BCA9D0A006A4C0F /* property.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F97F2BCA9D0A006A4C0F /* property.h */; };
-		F986F9B92BCA9D0A006A4C0F /* stopelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9802BCA9D0A006A4C0F /* stopelement.cpp */; };
-		F986F9BA2BCA9D0A006A4C0F /* stopelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9812BCA9D0A006A4C0F /* stopelement.h */; };
-		F986F9BB2BCA9D0A006A4C0F /* styledelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9822BCA9D0A006A4C0F /* styledelement.cpp */; };
-		F986F9BC2BCA9D0A006A4C0F /* styledelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9832BCA9D0A006A4C0F /* styledelement.h */; };
-		F986F9BD2BCA9D0A006A4C0F /* styleelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9842BCA9D0A006A4C0F /* styleelement.cpp */; };
-		F986F9BE2BCA9D0A006A4C0F /* styleelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9852BCA9D0A006A4C0F /* styleelement.h */; };
-		F986F9BF2BCA9D0A006A4C0F /* svgelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9862BCA9D0A006A4C0F /* svgelement.cpp */; };
-		F986F9C02BCA9D0A006A4C0F /* svgelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9872BCA9D0A006A4C0F /* svgelement.h */; };
-		F986F9C12BCA9D0A006A4C0F /* symbolelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9882BCA9D0A006A4C0F /* symbolelement.cpp */; };
-		F986F9C22BCA9D0A006A4C0F /* symbolelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F9892BCA9D0A006A4C0F /* symbolelement.h */; };
-		F986F9C32BCA9D0A006A4C0F /* useelement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F98A2BCA9D0A006A4C0F /* useelement.cpp */; };
-		F986F9C42BCA9D0A006A4C0F /* useelement.h in Headers */ = {isa = PBXBuildFile; fileRef = F986F98B2BCA9D0A006A4C0F /* useelement.h */; };
 		F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9C52BCA9D25006A4C0F /* SVG.hpp */; };
 		F986F9C82BCA9D3E006A4C0F /* SVG.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F986F9C72BCA9D3E006A4C0F /* SVG.ipp */; };
 		F986F9CA2BCBEC36006A4C0F /* SivImage_SIMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F9C92BCBEC36006A4C0F /* SivImage_SIMD.cpp */; };
@@ -4247,6 +4232,47 @@
 		F9797F0C2F6ED8CE00518D26 /* IAudio.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAudio.hpp; sourceTree = "<group>"; };
 		F9797F122F6ED8DD00518D26 /* SivMicrophoneInfo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMicrophoneInfo.cpp; sourceTree = "<group>"; };
 		F9797F152F6ED8F400518D26 /* MicrophoneInfo.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MicrophoneInfo.hpp; sourceTree = "<group>"; };
+		F9797F2A2FA73DB200518D26 /* graphics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graphics.h; sourceTree = "<group>"; };
+		F9797F2B2FA73DB200518D26 /* graphics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graphics.cpp; sourceTree = "<group>"; };
+		F9797F2C2FA73DB200518D26 /* lunasvg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lunasvg.h; sourceTree = "<group>"; };
+		F9797F2D2FA73DB200518D26 /* lunasvg.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = lunasvg.cpp; sourceTree = "<group>"; };
+		F9797F2E2FA73DB200518D26 /* svgelement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgelement.h; sourceTree = "<group>"; };
+		F9797F2F2FA73DB200518D26 /* svgelement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgelement.cpp; sourceTree = "<group>"; };
+		F9797F302FA73DB200518D26 /* svggeometryelement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svggeometryelement.h; sourceTree = "<group>"; };
+		F9797F312FA73DB200518D26 /* svggeometryelement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svggeometryelement.cpp; sourceTree = "<group>"; };
+		F9797F322FA73DB200518D26 /* svglayoutstate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svglayoutstate.h; sourceTree = "<group>"; };
+		F9797F332FA73DB200518D26 /* svglayoutstate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svglayoutstate.cpp; sourceTree = "<group>"; };
+		F9797F342FA73DB200518D26 /* svgpaintelement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgpaintelement.h; sourceTree = "<group>"; };
+		F9797F352FA73DB200518D26 /* svgpaintelement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgpaintelement.cpp; sourceTree = "<group>"; };
+		F9797F362FA73DB200518D26 /* svgparser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgparser.cpp; sourceTree = "<group>"; };
+		F9797F372FA73DB200518D26 /* svgparserutils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgparserutils.h; sourceTree = "<group>"; };
+		F9797F382FA73DB200518D26 /* svgproperty.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgproperty.h; sourceTree = "<group>"; };
+		F9797F392FA73DB200518D26 /* svgproperty.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgproperty.cpp; sourceTree = "<group>"; };
+		F9797F3A2FA73DB200518D26 /* svgrenderstate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgrenderstate.h; sourceTree = "<group>"; };
+		F9797F3B2FA73DB200518D26 /* svgrenderstate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgrenderstate.cpp; sourceTree = "<group>"; };
+		F9797F3C2FA73DB200518D26 /* svgtextelement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = svgtextelement.h; sourceTree = "<group>"; };
+		F9797F3D2FA73DB200518D26 /* svgtextelement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = svgtextelement.cpp; sourceTree = "<group>"; };
+		F9797F542FA73DBB00518D26 /* plutovg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = plutovg.h; sourceTree = "<group>"; };
+		F9797F552FA73DBB00518D26 /* plutovg-blend.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-blend.c"; sourceTree = "<group>"; };
+		F9797F562FA73DBB00518D26 /* plutovg-canvas.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-canvas.c"; sourceTree = "<group>"; };
+		F9797F572FA73DBB00518D26 /* plutovg-font.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-font.c"; sourceTree = "<group>"; };
+		F9797F582FA73DBB00518D26 /* plutovg-ft-math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-math.h"; sourceTree = "<group>"; };
+		F9797F592FA73DBB00518D26 /* plutovg-ft-math.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-ft-math.c"; sourceTree = "<group>"; };
+		F9797F5A2FA73DBB00518D26 /* plutovg-ft-raster.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-raster.h"; sourceTree = "<group>"; };
+		F9797F5B2FA73DBB00518D26 /* plutovg-ft-raster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-ft-raster.c"; sourceTree = "<group>"; };
+		F9797F5C2FA73DBB00518D26 /* plutovg-ft-stroker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-stroker.h"; sourceTree = "<group>"; };
+		F9797F5D2FA73DBB00518D26 /* plutovg-ft-stroker.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-ft-stroker.c"; sourceTree = "<group>"; };
+		F9797F5E2FA73DBB00518D26 /* plutovg-ft-types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-types.h"; sourceTree = "<group>"; };
+		F9797F5F2FA73DBB00518D26 /* plutovg-matrix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-matrix.c"; sourceTree = "<group>"; };
+		F9797F602FA73DBB00518D26 /* plutovg-paint.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-paint.c"; sourceTree = "<group>"; };
+		F9797F612FA73DBB00518D26 /* plutovg-path.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-path.c"; sourceTree = "<group>"; };
+		F9797F622FA73DBB00518D26 /* plutovg-private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-private.h"; sourceTree = "<group>"; };
+		F9797F632FA73DBB00518D26 /* plutovg-rasterize.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-rasterize.c"; sourceTree = "<group>"; };
+		F9797F642FA73DBB00518D26 /* plutovg-stb-image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-stb-image.h"; sourceTree = "<group>"; };
+		F9797F652FA73DBB00518D26 /* plutovg-stb-image-write.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-stb-image-write.h"; sourceTree = "<group>"; };
+		F9797F662FA73DBB00518D26 /* plutovg-stb-truetype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-stb-truetype.h"; sourceTree = "<group>"; };
+		F9797F672FA73DBB00518D26 /* plutovg-surface.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "plutovg-surface.c"; sourceTree = "<group>"; };
+		F9797F682FA73DBB00518D26 /* plutovg-utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "plutovg-utils.h"; sourceTree = "<group>"; };
 		F97E6DAA2D79D68E0066E408 /* StringViewAlgorithm.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.hpp; sourceTree = "<group>"; };
 		F97E6DAB2D79D68E0066E408 /* StringViewRandom.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewRandom.hpp; sourceTree = "<group>"; };
 		F97E6DAE2D79D6A80066E408 /* StringViewAlgorithm.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = StringViewAlgorithm.ipp; sourceTree = "<group>"; };
@@ -4625,63 +4651,6 @@
 		F986F9492BCA9CD7006A4C0F /* SVGDetail.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SVGDetail.cpp; sourceTree = "<group>"; };
 		F986F94A2BCA9CD7006A4C0F /* SVGDetail.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SVGDetail.hpp; sourceTree = "<group>"; };
 		F986F94F2BCA9CEC006A4C0F /* SVGDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SVGDecoder.cpp; sourceTree = "<group>"; };
-		F986F9522BCA9D0A006A4C0F /* FTL.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FTL.TXT; sourceTree = "<group>"; };
-		F986F9532BCA9D0A006A4C0F /* plutovg-blend.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-blend.c"; sourceTree = "<group>"; };
-		F986F9542BCA9D0A006A4C0F /* plutovg-dash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-dash.c"; sourceTree = "<group>"; };
-		F986F9552BCA9D0A006A4C0F /* plutovg-ft-math.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-ft-math.c"; sourceTree = "<group>"; };
-		F986F9562BCA9D0A006A4C0F /* plutovg-ft-math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-math.h"; sourceTree = "<group>"; };
-		F986F9572BCA9D0A006A4C0F /* plutovg-ft-raster.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-ft-raster.c"; sourceTree = "<group>"; };
-		F986F9582BCA9D0A006A4C0F /* plutovg-ft-raster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-raster.h"; sourceTree = "<group>"; };
-		F986F9592BCA9D0A006A4C0F /* plutovg-ft-stroker.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-ft-stroker.c"; sourceTree = "<group>"; };
-		F986F95A2BCA9D0A006A4C0F /* plutovg-ft-stroker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-stroker.h"; sourceTree = "<group>"; };
-		F986F95B2BCA9D0A006A4C0F /* plutovg-ft-types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "plutovg-ft-types.h"; sourceTree = "<group>"; };
-		F986F95C2BCA9D0A006A4C0F /* plutovg-geometry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-geometry.c"; sourceTree = "<group>"; };
-		F986F95D2BCA9D0A006A4C0F /* plutovg-paint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-paint.c"; sourceTree = "<group>"; };
-		F986F95E2BCA9D0A006A4C0F /* plutovg-private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "plutovg-private.h"; sourceTree = "<group>"; };
-		F986F95F2BCA9D0A006A4C0F /* plutovg-rle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "plutovg-rle.c"; sourceTree = "<group>"; };
-		F986F9602BCA9D0A006A4C0F /* plutovg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = plutovg.c; sourceTree = "<group>"; };
-		F986F9612BCA9D0A006A4C0F /* plutovg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plutovg.h; sourceTree = "<group>"; };
-		F986F9632BCA9D0A006A4C0F /* canvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = canvas.cpp; sourceTree = "<group>"; };
-		F986F9642BCA9D0A006A4C0F /* canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = canvas.h; sourceTree = "<group>"; };
-		F986F9652BCA9D0A006A4C0F /* clippathelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = clippathelement.cpp; sourceTree = "<group>"; };
-		F986F9662BCA9D0A006A4C0F /* clippathelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clippathelement.h; sourceTree = "<group>"; };
-		F986F9672BCA9D0A006A4C0F /* defselement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = defselement.cpp; sourceTree = "<group>"; };
-		F986F9682BCA9D0A006A4C0F /* defselement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defselement.h; sourceTree = "<group>"; };
-		F986F9692BCA9D0A006A4C0F /* element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = element.cpp; sourceTree = "<group>"; };
-		F986F96A2BCA9D0A006A4C0F /* element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = element.h; sourceTree = "<group>"; };
-		F986F96B2BCA9D0A006A4C0F /* gelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gelement.cpp; sourceTree = "<group>"; };
-		F986F96C2BCA9D0A006A4C0F /* gelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gelement.h; sourceTree = "<group>"; };
-		F986F96D2BCA9D0A006A4C0F /* geometryelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = geometryelement.cpp; sourceTree = "<group>"; };
-		F986F96E2BCA9D0A006A4C0F /* geometryelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geometryelement.h; sourceTree = "<group>"; };
-		F986F96F2BCA9D0A006A4C0F /* graphicselement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graphicselement.cpp; sourceTree = "<group>"; };
-		F986F9702BCA9D0A006A4C0F /* graphicselement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graphicselement.h; sourceTree = "<group>"; };
-		F986F9712BCA9D0A006A4C0F /* layoutcontext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = layoutcontext.cpp; sourceTree = "<group>"; };
-		F986F9722BCA9D0A006A4C0F /* layoutcontext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = layoutcontext.h; sourceTree = "<group>"; };
-		F986F9732BCA9D0A006A4C0F /* lunasvg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lunasvg.cpp; sourceTree = "<group>"; };
-		F986F9742BCA9D0A006A4C0F /* lunasvg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lunasvg.h; sourceTree = "<group>"; };
-		F986F9752BCA9D0A006A4C0F /* markerelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = markerelement.cpp; sourceTree = "<group>"; };
-		F986F9762BCA9D0A006A4C0F /* markerelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = markerelement.h; sourceTree = "<group>"; };
-		F986F9772BCA9D0A006A4C0F /* maskelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = maskelement.cpp; sourceTree = "<group>"; };
-		F986F9782BCA9D0A006A4C0F /* maskelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = maskelement.h; sourceTree = "<group>"; };
-		F986F9792BCA9D0A006A4C0F /* paintelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = paintelement.cpp; sourceTree = "<group>"; };
-		F986F97A2BCA9D0A006A4C0F /* paintelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = paintelement.h; sourceTree = "<group>"; };
-		F986F97B2BCA9D0A006A4C0F /* parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parser.cpp; sourceTree = "<group>"; };
-		F986F97C2BCA9D0A006A4C0F /* parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parser.h; sourceTree = "<group>"; };
-		F986F97D2BCA9D0A006A4C0F /* parserutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parserutils.h; sourceTree = "<group>"; };
-		F986F97E2BCA9D0A006A4C0F /* property.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = property.cpp; sourceTree = "<group>"; };
-		F986F97F2BCA9D0A006A4C0F /* property.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = property.h; sourceTree = "<group>"; };
-		F986F9802BCA9D0A006A4C0F /* stopelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stopelement.cpp; sourceTree = "<group>"; };
-		F986F9812BCA9D0A006A4C0F /* stopelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stopelement.h; sourceTree = "<group>"; };
-		F986F9822BCA9D0A006A4C0F /* styledelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styledelement.cpp; sourceTree = "<group>"; };
-		F986F9832BCA9D0A006A4C0F /* styledelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styledelement.h; sourceTree = "<group>"; };
-		F986F9842BCA9D0A006A4C0F /* styleelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = styleelement.cpp; sourceTree = "<group>"; };
-		F986F9852BCA9D0A006A4C0F /* styleelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = styleelement.h; sourceTree = "<group>"; };
-		F986F9862BCA9D0A006A4C0F /* svgelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = svgelement.cpp; sourceTree = "<group>"; };
-		F986F9872BCA9D0A006A4C0F /* svgelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svgelement.h; sourceTree = "<group>"; };
-		F986F9882BCA9D0A006A4C0F /* symbolelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = symbolelement.cpp; sourceTree = "<group>"; };
-		F986F9892BCA9D0A006A4C0F /* symbolelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = symbolelement.h; sourceTree = "<group>"; };
-		F986F98A2BCA9D0A006A4C0F /* useelement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = useelement.cpp; sourceTree = "<group>"; };
-		F986F98B2BCA9D0A006A4C0F /* useelement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = useelement.h; sourceTree = "<group>"; };
 		F986F9C52BCA9D25006A4C0F /* SVG.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SVG.hpp; sourceTree = "<group>"; };
 		F986F9C72BCA9D3E006A4C0F /* SVG.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SVG.ipp; sourceTree = "<group>"; };
 		F986F9C92BCBEC36006A4C0F /* SivImage_SIMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImage_SIMD.cpp; sourceTree = "<group>"; };
@@ -6673,7 +6642,7 @@
 				F9070ED12B9F1C8900383E4D /* GLFW */,
 				F9070A712B9DEB5900383E4D /* levenshtein-sse */,
 				F96F96002C359ED90033353E /* libmorton */,
-				F986F98C2BCA9D0A006A4C0F /* lunasvg */,
+				F9797F3E2FA73DB200518D26 /* lunasvg */,
 				F9F00A692CD299C10097C165 /* mapbox */,
 				F9FD0B702D1D334700A584CE /* Metal */,
 				F9797F062F6EC1D000518D26 /* miniaudio */,
@@ -6683,7 +6652,7 @@
 				F986F8FC2BC8441F006A4C0F /* Oniguruma */,
 				F99882232F58093E00C8991D /* oscpack */,
 				F9797E752F667E9900518D26 /* PFFFT */,
-				F986F9622BCA9D0A006A4C0F /* plutovg */,
+				F9797F692FA73DBB00518D26 /* plutovg */,
 				F97204172BF0A25B000E21DD /* QuartzCore */,
 				F9797E832F667E9900518D26 /* r8brain-free-src */,
 				F9D41CEC2C9AB1BB00290998 /* rapidhash */,
@@ -10032,6 +10001,61 @@
 			path = MicrophoneInfo;
 			sourceTree = "<group>";
 		};
+		F9797F3E2FA73DB200518D26 /* lunasvg */ = {
+			isa = PBXGroup;
+			children = (
+				F9797F2A2FA73DB200518D26 /* graphics.h */,
+				F9797F2B2FA73DB200518D26 /* graphics.cpp */,
+				F9797F2C2FA73DB200518D26 /* lunasvg.h */,
+				F9797F2D2FA73DB200518D26 /* lunasvg.cpp */,
+				F9797F2E2FA73DB200518D26 /* svgelement.h */,
+				F9797F2F2FA73DB200518D26 /* svgelement.cpp */,
+				F9797F302FA73DB200518D26 /* svggeometryelement.h */,
+				F9797F312FA73DB200518D26 /* svggeometryelement.cpp */,
+				F9797F322FA73DB200518D26 /* svglayoutstate.h */,
+				F9797F332FA73DB200518D26 /* svglayoutstate.cpp */,
+				F9797F342FA73DB200518D26 /* svgpaintelement.h */,
+				F9797F352FA73DB200518D26 /* svgpaintelement.cpp */,
+				F9797F362FA73DB200518D26 /* svgparser.cpp */,
+				F9797F372FA73DB200518D26 /* svgparserutils.h */,
+				F9797F382FA73DB200518D26 /* svgproperty.h */,
+				F9797F392FA73DB200518D26 /* svgproperty.cpp */,
+				F9797F3A2FA73DB200518D26 /* svgrenderstate.h */,
+				F9797F3B2FA73DB200518D26 /* svgrenderstate.cpp */,
+				F9797F3C2FA73DB200518D26 /* svgtextelement.h */,
+				F9797F3D2FA73DB200518D26 /* svgtextelement.cpp */,
+			);
+			path = lunasvg;
+			sourceTree = "<group>";
+		};
+		F9797F692FA73DBB00518D26 /* plutovg */ = {
+			isa = PBXGroup;
+			children = (
+				F9797F542FA73DBB00518D26 /* plutovg.h */,
+				F9797F552FA73DBB00518D26 /* plutovg-blend.c */,
+				F9797F562FA73DBB00518D26 /* plutovg-canvas.c */,
+				F9797F572FA73DBB00518D26 /* plutovg-font.c */,
+				F9797F582FA73DBB00518D26 /* plutovg-ft-math.h */,
+				F9797F592FA73DBB00518D26 /* plutovg-ft-math.c */,
+				F9797F5A2FA73DBB00518D26 /* plutovg-ft-raster.h */,
+				F9797F5B2FA73DBB00518D26 /* plutovg-ft-raster.c */,
+				F9797F5C2FA73DBB00518D26 /* plutovg-ft-stroker.h */,
+				F9797F5D2FA73DBB00518D26 /* plutovg-ft-stroker.c */,
+				F9797F5E2FA73DBB00518D26 /* plutovg-ft-types.h */,
+				F9797F5F2FA73DBB00518D26 /* plutovg-matrix.c */,
+				F9797F602FA73DBB00518D26 /* plutovg-paint.c */,
+				F9797F612FA73DBB00518D26 /* plutovg-path.c */,
+				F9797F622FA73DBB00518D26 /* plutovg-private.h */,
+				F9797F632FA73DBB00518D26 /* plutovg-rasterize.c */,
+				F9797F642FA73DBB00518D26 /* plutovg-stb-image.h */,
+				F9797F652FA73DBB00518D26 /* plutovg-stb-image-write.h */,
+				F9797F662FA73DBB00518D26 /* plutovg-stb-truetype.h */,
+				F9797F672FA73DBB00518D26 /* plutovg-surface.c */,
+				F9797F682FA73DBB00518D26 /* plutovg-utils.h */,
+			);
+			path = plutovg;
+			sourceTree = "<group>";
+		};
 		F9807D772BF1092600D9B590 /* metal */ = {
 			isa = PBXGroup;
 			children = (
@@ -10822,77 +10846,6 @@
 				F986F94F2BCA9CEC006A4C0F /* SVGDecoder.cpp */,
 			);
 			path = SVG;
-			sourceTree = "<group>";
-		};
-		F986F9622BCA9D0A006A4C0F /* plutovg */ = {
-			isa = PBXGroup;
-			children = (
-				F986F9522BCA9D0A006A4C0F /* FTL.TXT */,
-				F986F9532BCA9D0A006A4C0F /* plutovg-blend.c */,
-				F986F9542BCA9D0A006A4C0F /* plutovg-dash.c */,
-				F986F9552BCA9D0A006A4C0F /* plutovg-ft-math.c */,
-				F986F9562BCA9D0A006A4C0F /* plutovg-ft-math.h */,
-				F986F9572BCA9D0A006A4C0F /* plutovg-ft-raster.c */,
-				F986F9582BCA9D0A006A4C0F /* plutovg-ft-raster.h */,
-				F986F9592BCA9D0A006A4C0F /* plutovg-ft-stroker.c */,
-				F986F95A2BCA9D0A006A4C0F /* plutovg-ft-stroker.h */,
-				F986F95B2BCA9D0A006A4C0F /* plutovg-ft-types.h */,
-				F986F95C2BCA9D0A006A4C0F /* plutovg-geometry.c */,
-				F986F95D2BCA9D0A006A4C0F /* plutovg-paint.c */,
-				F986F95E2BCA9D0A006A4C0F /* plutovg-private.h */,
-				F986F95F2BCA9D0A006A4C0F /* plutovg-rle.c */,
-				F986F9602BCA9D0A006A4C0F /* plutovg.c */,
-				F986F9612BCA9D0A006A4C0F /* plutovg.h */,
-			);
-			path = plutovg;
-			sourceTree = "<group>";
-		};
-		F986F98C2BCA9D0A006A4C0F /* lunasvg */ = {
-			isa = PBXGroup;
-			children = (
-				F986F9632BCA9D0A006A4C0F /* canvas.cpp */,
-				F986F9642BCA9D0A006A4C0F /* canvas.h */,
-				F986F9652BCA9D0A006A4C0F /* clippathelement.cpp */,
-				F986F9662BCA9D0A006A4C0F /* clippathelement.h */,
-				F986F9672BCA9D0A006A4C0F /* defselement.cpp */,
-				F986F9682BCA9D0A006A4C0F /* defselement.h */,
-				F986F9692BCA9D0A006A4C0F /* element.cpp */,
-				F986F96A2BCA9D0A006A4C0F /* element.h */,
-				F986F96B2BCA9D0A006A4C0F /* gelement.cpp */,
-				F986F96C2BCA9D0A006A4C0F /* gelement.h */,
-				F986F96D2BCA9D0A006A4C0F /* geometryelement.cpp */,
-				F986F96E2BCA9D0A006A4C0F /* geometryelement.h */,
-				F986F96F2BCA9D0A006A4C0F /* graphicselement.cpp */,
-				F986F9702BCA9D0A006A4C0F /* graphicselement.h */,
-				F986F9712BCA9D0A006A4C0F /* layoutcontext.cpp */,
-				F986F9722BCA9D0A006A4C0F /* layoutcontext.h */,
-				F986F9732BCA9D0A006A4C0F /* lunasvg.cpp */,
-				F986F9742BCA9D0A006A4C0F /* lunasvg.h */,
-				F986F9752BCA9D0A006A4C0F /* markerelement.cpp */,
-				F986F9762BCA9D0A006A4C0F /* markerelement.h */,
-				F986F9772BCA9D0A006A4C0F /* maskelement.cpp */,
-				F986F9782BCA9D0A006A4C0F /* maskelement.h */,
-				F986F9792BCA9D0A006A4C0F /* paintelement.cpp */,
-				F986F97A2BCA9D0A006A4C0F /* paintelement.h */,
-				F986F97B2BCA9D0A006A4C0F /* parser.cpp */,
-				F986F97C2BCA9D0A006A4C0F /* parser.h */,
-				F986F97D2BCA9D0A006A4C0F /* parserutils.h */,
-				F986F97E2BCA9D0A006A4C0F /* property.cpp */,
-				F986F97F2BCA9D0A006A4C0F /* property.h */,
-				F986F9802BCA9D0A006A4C0F /* stopelement.cpp */,
-				F986F9812BCA9D0A006A4C0F /* stopelement.h */,
-				F986F9822BCA9D0A006A4C0F /* styledelement.cpp */,
-				F986F9832BCA9D0A006A4C0F /* styledelement.h */,
-				F986F9842BCA9D0A006A4C0F /* styleelement.cpp */,
-				F986F9852BCA9D0A006A4C0F /* styleelement.h */,
-				F986F9862BCA9D0A006A4C0F /* svgelement.cpp */,
-				F986F9872BCA9D0A006A4C0F /* svgelement.h */,
-				F986F9882BCA9D0A006A4C0F /* symbolelement.cpp */,
-				F986F9892BCA9D0A006A4C0F /* symbolelement.h */,
-				F986F98A2BCA9D0A006A4C0F /* useelement.cpp */,
-				F986F98B2BCA9D0A006A4C0F /* useelement.h */,
-			);
-			path = lunasvg;
 			sourceTree = "<group>";
 		};
 		F986F9CF2BCFB514006A4C0F /* Emoji */ = {
@@ -13302,7 +13255,6 @@
 				F9528C3C2BBF026F00222F45 /* zstd_decompress_block.h in Headers */,
 				F98601FB2BCFBB53006A4C0F /* SkMeshPriv.h in Headers */,
 				F98600AF2BCFBB53006A4C0F /* SkParse.h in Headers */,
-				F986F9AD2BCA9D0A006A4C0F /* lunasvg.h in Headers */,
 				F90706BD2B9DAEC900383E4D /* phmap_config.h in Headers */,
 				F9070B012B9DEB5900383E4D /* format-inl.h in Headers */,
 				F9070CA12B9F175000383E4D /* ColorF.hpp in Headers */,
@@ -13449,7 +13401,6 @@
 				F986046C2BCFBB54006A4C0F /* SkSLConstantFolder.h in Headers */,
 				F9528C682BC05B0200222F45 /* IImageDecoder.hpp in Headers */,
 				F95122212CB8227F00151291 /* TriangleIndex32.hpp in Headers */,
-				F986F9A72BCA9D0A006A4C0F /* geometryelement.h in Headers */,
 				F9070CD82B9F175100383E4D /* MapFormatter.hpp in Headers */,
 				F9070C952B9F175000383E4D /* 2DShapesFwd.hpp in Headers */,
 				F9528C152BBF026F00222F45 /* threading.h in Headers */,
@@ -13552,7 +13503,6 @@
 				F98601F12BCFBB53006A4C0F /* SkMatrixInvert.h in Headers */,
 				F9D41B822C56057700290998 /* Checker.hpp in Headers */,
 				F9070AF92B9DEB5900383E4D /* double-to-string.h in Headers */,
-				F986F9952BCA9D0A006A4C0F /* plutovg-ft-types.h in Headers */,
 				F98603902BCFBB54006A4C0F /* SkSFNTHeader.h in Headers */,
 				F96F960C2C359F070033353E /* Intersect.hpp in Headers */,
 				F9070C712B9F175000383E4D /* ParseInt.ipp in Headers */,
@@ -13569,7 +13519,6 @@
 				F9070C8A2B9F175000383E4D /* Vector2D.ipp in Headers */,
 				F98603D42BCFBB54006A4C0F /* SkSLHLSLCodeGenerator.h in Headers */,
 				F986016D2BCFBB53006A4C0F /* SkBlitter_A8.h in Headers */,
-				F986F9C22BCA9D0A006A4C0F /* symbolelement.h in Headers */,
 				F986027F2BCFBB54006A4C0F /* SkSurfacePriv.h in Headers */,
 				F98601CD2BCFBB53006A4C0F /* SkImageFilter_Base.h in Headers */,
 				F9070C5E2B9F175000383E4D /* HSV.ipp in Headers */,
@@ -13624,7 +13573,6 @@
 				F9FD0D112D204FA000A584CE /* SampleBorderColor.hpp in Headers */,
 				F9070DC22B9F175E00383E4D /* CEmpty.hpp in Headers */,
 				F9E794412C158BA1002615BA /* Circular.ipp in Headers */,
-				F986F9902BCA9D0A006A4C0F /* plutovg-ft-math.h in Headers */,
 				F98603772BCFBB54006A4C0F /* SkOTTable_EBSC.h in Headers */,
 				F9070CC02B9F175000383E4D /* Format.hpp in Headers */,
 				F98602F62BCFBB54006A4C0F /* SkBlitMask_opts.h in Headers */,
@@ -13701,7 +13649,6 @@
 				F9070E012B9F175E00383E4D /* IWindow.hpp in Headers */,
 				F98603252BCFBB54006A4C0F /* SkPathOpsLine.h in Headers */,
 				F9070DC72B9F175E00383E4D /* Siv3DEngine.hpp in Headers */,
-				F986F9A12BCA9D0A006A4C0F /* defselement.h in Headers */,
 				F98602022BCFBB53006A4C0F /* SkMipmapBuilder.h in Headers */,
 				F9070F342B9F252E00383E4D /* null_joystick.h in Headers */,
 				F98605642BD203D4006A4C0F /* muParserFixes.h in Headers */,
@@ -13719,7 +13666,6 @@
 				F986FA532BCFB53B006A4C0F /* svpsinfo.h in Headers */,
 				F9070CB92B9F175000383E4D /* FastMath.hpp in Headers */,
 				F986055C2BD203D4006A4C0F /* muParserBase.h in Headers */,
-				F986F99B2BCA9D0A006A4C0F /* plutovg.h in Headers */,
 				F98605E82BE50394006A4C0F /* FallbackNameList.hpp in Headers */,
 				F9070CC22B9F175000383E4D /* FormatLiteral.hpp in Headers */,
 				F9797E1E2F631E2300518D26 /* Wave.ipp in Headers */,
@@ -13728,7 +13674,6 @@
 				F9070AF62B9DEB5900383E4D /* cached-powers.h in Headers */,
 				F986FA572BCFB53B006A4C0F /* svttglyf.h in Headers */,
 				F9528B5B2BB6DC6800222F45 /* MicrosecClock.ipp in Headers */,
-				F986F9BE2BCA9D0A006A4C0F /* styleelement.h in Headers */,
 				F986043B2BCFBB54006A4C0F /* SkSLSwitchStatement.h in Headers */,
 				F943AB2A2E2A2E4F001B4D43 /* zipf_distribution.h in Headers */,
 				F943AB2B2E2A2E4F001B4D43 /* unaligned_access.h in Headers */,
@@ -13786,8 +13731,6 @@
 				F986022E2BCFBB54006A4C0F /* SkPtrRecorder.h in Headers */,
 				F90706B22B9DAEC900383E4D /* doctest.h in Headers */,
 				F986037A2BCFBB54006A4C0F /* SkOTTable_glyf.h in Headers */,
-				F986F9C42BCA9D0A006A4C0F /* useelement.h in Headers */,
-				F986F9B82BCA9D0A006A4C0F /* property.h in Headers */,
 				F9528C452BBF026F00222F45 /* zdict.h in Headers */,
 				F99881482F40B54A00C8991D /* PolynomialSolver.hpp in Headers */,
 				F9070C5F2B9F175000383E4D /* Indexed.ipp in Headers */,
@@ -13924,7 +13867,6 @@
 				F9070C942B9F175000383E4D /* 2DShapes.hpp in Headers */,
 				F9DD96582F0966400026DFA5 /* Sample.hpp in Headers */,
 				F986052F2BD10478006A4C0F /* TGADecoder.hpp in Headers */,
-				F986F9982BCA9D0A006A4C0F /* plutovg-private.h in Headers */,
 				F9528C0E2BBF026F00222F45 /* fse.h in Headers */,
 				F9070D122B9F175100383E4D /* Version.hpp in Headers */,
 				F9E7946D2C19B6F2002615BA /* MinMax.ipp in Headers */,
@@ -13972,7 +13914,6 @@
 				F98601DF2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.h in Headers */,
 				F980C4772C01BA5600A86B68 /* DepthStencilState.ipp in Headers */,
 				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
-				F986F9A92BCA9D0A006A4C0F /* graphicselement.h in Headers */,
 				F9AEA5122E6B3E92003734E7 /* ShaderGroup.hpp in Headers */,
 				F9E7944B2C1973FD002615BA /* Periodic.hpp in Headers */,
 				F9F00A842CE06CD50097C165 /* WebBrowser.hpp in Headers */,
@@ -14088,7 +14029,6 @@
 				F98605FE2BE61586006A4C0F /* Triangle.ipp in Headers */,
 				F98605732BDA7DB7006A4C0F /* Cursor.hpp in Headers */,
 				F98605DD2BE50013006A4C0F /* InputState.ipp in Headers */,
-				F986F9922BCA9D0A006A4C0F /* plutovg-ft-raster.h in Headers */,
 				F986014E2BCFBB53006A4C0F /* SkATrace.h in Headers */,
 				F986042A2BCFBB54006A4C0F /* SkSLPoison.h in Headers */,
 				F986FA622BCFB53B006A4C0F /* ftmemory.h in Headers */,
@@ -14226,7 +14166,6 @@
 				F986FFEF2BCFBB53006A4C0F /* SkEncodedOrigin.h in Headers */,
 				F986FA4B2BCFB53B006A4C0F /* svkern.h in Headers */,
 				F9070C992B9F175000383E4D /* BigInt.hpp in Headers */,
-				F986F9B32BCA9D0A006A4C0F /* paintelement.h in Headers */,
 				F9070F352B9F252E00383E4D /* null_platform.h in Headers */,
 				F986FA4F2BCFB53B006A4C0F /* svpfr.h in Headers */,
 				F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */,
@@ -14326,6 +14265,16 @@
 				F9FD0B732D1D334700A584CE /* MTLDepthStencil.hpp in Headers */,
 				F9FD0B742D1D334700A584CE /* MTLFunctionConstantValues.hpp in Headers */,
 				F9FD0B752D1D334700A584CE /* MTLDynamicLibrary.hpp in Headers */,
+				F9797F3F2FA73DB200518D26 /* svgrenderstate.h in Headers */,
+				F9797F402FA73DB200518D26 /* lunasvg.h in Headers */,
+				F9797F412FA73DB200518D26 /* svggeometryelement.h in Headers */,
+				F9797F422FA73DB200518D26 /* svglayoutstate.h in Headers */,
+				F9797F432FA73DB200518D26 /* svgparserutils.h in Headers */,
+				F9797F442FA73DB200518D26 /* svgproperty.h in Headers */,
+				F9797F452FA73DB200518D26 /* svgtextelement.h in Headers */,
+				F9797F462FA73DB200518D26 /* svgpaintelement.h in Headers */,
+				F9797F472FA73DB200518D26 /* svgelement.h in Headers */,
+				F9797F482FA73DB200518D26 /* graphics.h in Headers */,
 				F9FD0B762D1D334700A584CE /* MTLPrivate.hpp in Headers */,
 				F9FD0B772D1D334700A584CE /* MTLParallelRenderCommandEncoder.hpp in Headers */,
 				F9FD0B782D1D334700A584CE /* MTLRenderPipeline.hpp in Headers */,
@@ -14425,7 +14374,6 @@
 				F986002D2BCFBB53006A4C0F /* SkPathMeasure.h in Headers */,
 				F9070CB12B9F175000383E4D /* DisplayResolution.hpp in Headers */,
 				F9070CBB2B9F175000383E4D /* FileSystem.hpp in Headers */,
-				F986F9BC2BCA9D0A006A4C0F /* styledelement.h in Headers */,
 				F9D41B852C56057700290998 /* PatternParameters.hpp in Headers */,
 				F986008D2BCFBB53006A4C0F /* SkTypeTraits.h in Headers */,
 				F986001C2BCFBB53006A4C0F /* SkGraphics.h in Headers */,
@@ -14575,8 +14523,6 @@
 				F98600622BCFBB53006A4C0F /* SkLumaColorFilter.h in Headers */,
 				F9070C742B9F175000383E4D /* Random.ipp in Headers */,
 				F95122252CB8229400151291 /* TriangleIndex32.ipp in Headers */,
-				F986F9942BCA9D0A006A4C0F /* plutovg-ft-stroker.h in Headers */,
-				F986F9B52BCA9D0A006A4C0F /* parser.h in Headers */,
 				F986042E2BCFBB54006A4C0F /* SkSLPrefixExpression.h in Headers */,
 				F98600432BCFBB53006A4C0F /* SkString.h in Headers */,
 				F9B7DA1D2D8C72F5002ABACE /* BCnData.ipp in Headers */,
@@ -14601,7 +14547,6 @@
 				F98601782BCFBB53006A4C0F /* SkCachedData.h in Headers */,
 				F986FA422BCFB53B006A4C0F /* integer-types.h in Headers */,
 				F986029F2BCFBB54006A4C0F /* SkWriter32.h in Headers */,
-				F986F9A52BCA9D0A006A4C0F /* gelement.h in Headers */,
 				F9528C692BC05B0200222F45 /* ImageFormat.hpp in Headers */,
 				F9DD96502F0965F50026DFA5 /* Sample.ipp in Headers */,
 				F97E6DB32D7A89CF0066E408 /* RangeFormatter.hpp in Headers */,
@@ -14626,7 +14571,6 @@
 				F98111D82ECC08CA00C50DD1 /* INativeShare.hpp in Headers */,
 				F9070CCE2B9F175100383E4D /* IntFormatter.hpp in Headers */,
 				F9070CC32B9F175000383E4D /* Formatter.hpp in Headers */,
-				F986F9B12BCA9D0A006A4C0F /* maskelement.h in Headers */,
 				F9528B842BBC5D3100222F45 /* Step2D.hpp in Headers */,
 				F986003A2BCFBB53006A4C0F /* SkRRect.h in Headers */,
 				F99881D32F57387E00C8991D /* IPv4Endpoint.ipp in Headers */,
@@ -14755,7 +14699,6 @@
 				F986FA482BCFB53B006A4C0F /* svfntfmt.h in Headers */,
 				F9D41B892C56057700290998 /* Stripe.hpp in Headers */,
 				F951225A2CB8239800151291 /* Triangulate.hpp in Headers */,
-				F986F99D2BCA9D0A006A4C0F /* canvas.h in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
 				F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */,
@@ -14804,7 +14747,6 @@
 				F98604412BCFBB54006A4C0F /* SkSLSymbolTable.h in Headers */,
 				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
 				F98606042BE7173F006A4C0F /* UserInfo.hpp in Headers */,
-				F986F99F2BCA9D0A006A4C0F /* clippathelement.h in Headers */,
 				F986038B2BCFBB54006A4C0F /* SkOTTable_post.h in Headers */,
 				F98605242BD0E2A3006A4C0F /* IEngineResource.hpp in Headers */,
 				F98602892BCFBB54006A4C0F /* SkTextBlobPriv.h in Headers */,
@@ -14928,7 +14870,6 @@
 				F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */,
 				F98604262BCFBB54006A4C0F /* SkSLModifiers.h in Headers */,
 				F986057C2BDA7DFC006A4C0F /* CursorState.hpp in Headers */,
-				F986F9BA2BCA9D0A006A4C0F /* stopelement.h in Headers */,
 				F98600502BCFBB53006A4C0F /* SkVertices.h in Headers */,
 				F98111912EC8C5E900C50DD1 /* Anchor.ipp in Headers */,
 				F98605C52BE4B680006A4C0F /* InputCombination.ipp in Headers */,
@@ -14945,7 +14886,6 @@
 				F9797F0E2F6ED8CE00518D26 /* CAudio.hpp in Headers */,
 				F9797F0F2F6ED8CE00518D26 /* IAudio.hpp in Headers */,
 				F98600682BCFBB53006A4C0F /* SkTrimPathEffect.h in Headers */,
-				F986F9B62BCA9D0A006A4C0F /* parserutils.h in Headers */,
 				F98600AD2BCFBB53006A4C0F /* SkOrderedFontMgr.h in Headers */,
 				F98603842BCFBB54006A4C0F /* SkOTTable_OS_2_V0.h in Headers */,
 				F986044B2BCFBB54006A4C0F /* SkSLVariable.h in Headers */,
@@ -15036,7 +14976,6 @@
 				F980C4862C04B3EB00A86B68 /* Vertex2DBufferPointer.hpp in Headers */,
 				F9070DE92B9F175E00383E4D /* ISystem.hpp in Headers */,
 				F986FA912BCFB53B006A4C0F /* ftpfr.h in Headers */,
-				F986F9AB2BCA9D0A006A4C0F /* layoutcontext.h in Headers */,
 				F943AAEA2E2A0AB1001B4D43 /* Typeface.hpp in Headers */,
 				F98604642BCFBB54006A4C0F /* GLSL.std.450.h in Headers */,
 				F986FFF72BCFBB53006A4C0F /* SkRawDecoder.h in Headers */,
@@ -15046,11 +14985,20 @@
 				F980C4302C00D2B500A86B68 /* RasterizerState.hpp in Headers */,
 				F98603802BCFBB54006A4C0F /* SkOTTable_maxp_TT.h in Headers */,
 				F96F96072C359ED90033353E /* morton3D_LUTs.h in Headers */,
+				F9797F6A2FA73DBB00518D26 /* plutovg-utils.h in Headers */,
+				F9797F6B2FA73DBB00518D26 /* plutovg-stb-truetype.h in Headers */,
+				F9797F6C2FA73DBB00518D26 /* plutovg-stb-image-write.h in Headers */,
+				F9797F6D2FA73DBB00518D26 /* plutovg-stb-image.h in Headers */,
+				F9797F6E2FA73DBB00518D26 /* plutovg-ft-math.h in Headers */,
+				F9797F6F2FA73DBB00518D26 /* plutovg-ft-stroker.h in Headers */,
+				F9797F702FA73DBB00518D26 /* plutovg-ft-types.h in Headers */,
+				F9797F712FA73DBB00518D26 /* plutovg-private.h in Headers */,
+				F9797F722FA73DBB00518D26 /* plutovg.h in Headers */,
+				F9797F732FA73DBB00518D26 /* plutovg-ft-raster.h in Headers */,
 				F986FA662BCFB53B006A4C0F /* ftrfork.h in Headers */,
 				F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */,
 				F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */,
 				F9FD0D1A2D215DB300A584CE /* TexturedRoundRect.hpp in Headers */,
-				F986F9C02BCA9D0A006A4C0F /* svgelement.h in Headers */,
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
 				F980C44B2C00E27800A86B68 /* TextureAddressMode.hpp in Headers */,
@@ -15140,7 +15088,6 @@
 				F986FA3E2BCFB53B006A4C0F /* ftheader.h in Headers */,
 				F90706B92B9DAEC900383E4D /* obfuscate.h in Headers */,
 				F90706BC2B9DAEC900383E4D /* phmap_bits.h in Headers */,
-				F986F9AF2BCA9D0A006A4C0F /* markerelement.h in Headers */,
 				F98603FB2BCFBB54006A4C0F /* SkSLConstructorSplat.h in Headers */,
 				F98600652BCFBB53006A4C0F /* SkRuntimeEffect.h in Headers */,
 				F986FA502BCFB53B006A4C0F /* svpostnm.h in Headers */,
@@ -15151,7 +15098,6 @@
 				F98600512BCFBB53006A4C0F /* SkYUVAInfo.h in Headers */,
 				F9070C7D2B9F175000383E4D /* String.ipp in Headers */,
 				F99881C82F57180B00C8991D /* Network.hpp in Headers */,
-				F986F9A32BCA9D0A006A4C0F /* element.h in Headers */,
 				F98603302BCFBB54006A4C0F /* SkPathOpsTSect.h in Headers */,
 				F9E5FC2F2BC15B060081A4F7 /* HalfFloat.ipp in Headers */,
 				F9070C7E2B9F175000383E4D /* StringView.ipp in Headers */,
@@ -15411,7 +15357,6 @@
 				F98602732BCFBB54006A4C0F /* SkStrikeCache.cpp in Sources */,
 				F99881D62F57389500C8991D /* SivIPv4Endpoint.cpp in Sources */,
 				F98603CE2BCFBB54006A4C0F /* SkSLSwitchCaseContainsExit.cpp in Sources */,
-				F986F9AA2BCA9D0A006A4C0F /* layoutcontext.cpp in Sources */,
 				F98601A22BCFBB53006A4C0F /* SkDraw_text.cpp in Sources */,
 				F98111BE2EC8C75300C50DD1 /* SivTheme.cpp in Sources */,
 				F986F8B12BC806DB006A4C0F /* exif.cpp in Sources */,
@@ -15534,7 +15479,6 @@
 				F98603012BCFBB54006A4C0F /* SkDConicLineIntersection.cpp in Sources */,
 				F98602BD2BCFBB54006A4C0F /* SkCropImageFilter.cpp in Sources */,
 				F98604E92BCFBB54006A4C0F /* SkParse.cpp in Sources */,
-				F986F9BF2BCA9D0A006A4C0F /* svgelement.cpp in Sources */,
 				F9797DD02F60277E00518D26 /* TextToSpeechFactory.cpp in Sources */,
 				F9797DD12F60277E00518D26 /* SivTextToSpeech.cpp in Sources */,
 				F98604502BCFBB54006A4C0F /* SkSLDebugTracePriv.cpp in Sources */,
@@ -15630,7 +15574,6 @@
 				F9807D9A2BF667C300D9B590 /* SivMessageBox.cpp in Sources */,
 				F98605A82BE4887C006A4C0F /* RegExpFactory.cpp in Sources */,
 				F972030D2BEDF2FF000E21DD /* SivScene.cpp in Sources */,
-				F986F99C2BCA9D0A006A4C0F /* canvas.cpp in Sources */,
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
 				F98604692BCFBB54006A4C0F /* SkSLCompiler.cpp in Sources */,
 				F98602782BCFBB54006A4C0F /* SkStringUtils.cpp in Sources */,
@@ -15652,6 +15595,16 @@
 				F9528C3E2BBF026F00222F45 /* zstd_decompress.c in Sources */,
 				F9B7D9F32D8C722A002ABACE /* SivDynamicTexture.cpp in Sources */,
 				F98602AD2BCFBB54006A4C0F /* SkComposeColorFilter.cpp in Sources */,
+				F9797F492FA73DB200518D26 /* svgtextelement.cpp in Sources */,
+				F9797F4A2FA73DB200518D26 /* svgpaintelement.cpp in Sources */,
+				F9797F4B2FA73DB200518D26 /* svgproperty.cpp in Sources */,
+				F9797F4C2FA73DB200518D26 /* graphics.cpp in Sources */,
+				F9797F4D2FA73DB200518D26 /* svglayoutstate.cpp in Sources */,
+				F9797F4E2FA73DB200518D26 /* svgelement.cpp in Sources */,
+				F9797F4F2FA73DB200518D26 /* svgparser.cpp in Sources */,
+				F9797F502FA73DB200518D26 /* svggeometryelement.cpp in Sources */,
+				F9797F512FA73DB200518D26 /* svgrenderstate.cpp in Sources */,
+				F9797F522FA73DB200518D26 /* lunasvg.cpp in Sources */,
 				F98604882BCFBB54006A4C0F /* SkSLPosition.cpp in Sources */,
 				F986019C2BCFBB53006A4C0F /* SkDevice.cpp in Sources */,
 				F9528C3F2BBF026F00222F45 /* cover.c in Sources */,
@@ -15683,11 +15636,9 @@
 				F980C4442C00D31000A86B68 /* SivBlendState.cpp in Sources */,
 				F980C4472C00D31000A86B68 /* SivBlendFactor.cpp in Sources */,
 				F9528B652BB6DC9200222F45 /* SivCycleClock.cpp in Sources */,
-				F986F9AE2BCA9D0A006A4C0F /* markerelement.cpp in Sources */,
 				F98602592BCFBB54006A4C0F /* SkRuntimeEffect.cpp in Sources */,
 				F9070DB32B9F175E00383E4D /* SivBoolToString.cpp in Sources */,
 				F98604172BCFBB54006A4C0F /* SkSLIfStatement.cpp in Sources */,
-				F986F9962BCA9D0A006A4C0F /* plutovg-geometry.c in Sources */,
 				F98605112BCFBEA4006A4C0F /* SkFontHost_FreeType_common.cpp in Sources */,
 				F9070B022B9DEB5900383E4D /* format.cc in Sources */,
 				F99881A32F48999600C8991D /* SivSerialPortInfo.cpp in Sources */,
@@ -15698,7 +15649,6 @@
 				F98601B02BCFBB53006A4C0F /* SkEdgeClipper.cpp in Sources */,
 				F98603B02BCFBB54006A4C0F /* SkPictureShader.cpp in Sources */,
 				F98604742BCFBB54006A4C0F /* SkSLInliner.cpp in Sources */,
-				F986F9C12BCA9D0A006A4C0F /* symbolelement.cpp in Sources */,
 				F98602912BCFBB54006A4C0F /* SkTypeface.cpp in Sources */,
 				F98601B82BCFBB53006A4C0F /* SkFont.cpp in Sources */,
 				F986F9292BC8441F006A4C0F /* st.c in Sources */,
@@ -15744,7 +15694,6 @@
 				F97203212BF09E80000E21DD /* CRenderer_Metal.mm in Sources */,
 				F986F89B2BC7FB4D006A4C0F /* SivColormap.cpp in Sources */,
 				F98603AB2BCFBB54006A4C0F /* SkLocalMatrixShader.cpp in Sources */,
-				F986F9A42BCA9D0A006A4C0F /* gelement.cpp in Sources */,
 				F98600E92BCFBB53006A4C0F /* SkTDArray.cpp in Sources */,
 				F9797EA72F667ED800518D26 /* SivMP3Quality.cpp in Sources */,
 				F9797EA82F667ED800518D26 /* MediaTranscoderFactory.cpp in Sources */,
@@ -15870,9 +15819,7 @@
 				F972030A2BEDF2FF000E21DD /* SceneFactory.cpp in Sources */,
 				F98600D32BCFBB53006A4C0F /* SkHalf.cpp in Sources */,
 				F9070E5E2B9F176B00383E4D /* SivDate_macOS_Linux.cpp in Sources */,
-				F986F99E2BCA9D0A006A4C0F /* clippathelement.cpp in Sources */,
 				F986023C2BCFBB54006A4C0F /* SkReadPixelsRec.cpp in Sources */,
-				F986F9BB2BCA9D0A006A4C0F /* styledelement.cpp in Sources */,
 				F98600CF2BCFBB53006A4C0F /* SkDeque.cpp in Sources */,
 				F981F6DB2D1BDF9B009F6627 /* MetalSamplerState.mm in Sources */,
 				F986040D2BCFBB54006A4C0F /* SkSLForStatement.cpp in Sources */,
@@ -15979,11 +15926,9 @@
 				F986039E2BCFBB54006A4C0F /* SkBlendShader.cpp in Sources */,
 				F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */,
 				F98600F32BCFBB53006A4C0F /* SkUTF.cpp in Sources */,
-				F986F9B72BCA9D0A006A4C0F /* property.cpp in Sources */,
 				F98603A02BCFBB54006A4C0F /* SkColorFilterShader.cpp in Sources */,
 				F9070DB52B9F175E00383E4D /* SivColor.cpp in Sources */,
 				F986030F2BCFBB54006A4C0F /* SkOpContour.cpp in Sources */,
-				F986F98F2BCA9D0A006A4C0F /* plutovg-ft-math.c in Sources */,
 				F986029A2BCFBB54006A4C0F /* SkWriteBuffer.cpp in Sources */,
 				F99881542F40B57F00C8991D /* SivBezier3Walker.cpp in Sources */,
 				F9528C0B2BBF026F00222F45 /* error_private.c in Sources */,
@@ -15991,7 +15936,6 @@
 				F9528C0D2BBF026F00222F45 /* fse_decompress.c in Sources */,
 				F98601602BCFBB53006A4C0F /* SkBlendMode.cpp in Sources */,
 				F98603142BCFBB54006A4C0F /* SkOpSegment.cpp in Sources */,
-				F986F9BD2BCA9D0A006A4C0F /* styleelement.cpp in Sources */,
 				F980C4542C00E2AE00A86B68 /* SivCompareFunction.cpp in Sources */,
 				F98600C72BCFBB53006A4C0F /* SkBlockAllocator.cpp in Sources */,
 				F98600C42BCFBB53006A4C0F /* SkBezierCurves.cpp in Sources */,
@@ -16071,7 +16015,6 @@
 				F98600CE2BCFBB53006A4C0F /* SkDebug.cpp in Sources */,
 				F986F9262BC8441F006A4C0F /* regversion.c in Sources */,
 				F98603F22BCFBB54006A4C0F /* SkSLConstructorCompoundCast.cpp in Sources */,
-				F986F9C32BCA9D0A006A4C0F /* useelement.cpp in Sources */,
 				F98603022BCFBB54006A4C0F /* SkDCubicLineIntersection.cpp in Sources */,
 				F98603D32BCFBB54006A4C0F /* SkSLHLSLCodeGenerator.cpp in Sources */,
 				F98604AE2BCFBB54006A4C0F /* SlugFromBuffer.cpp in Sources */,
@@ -16090,7 +16033,6 @@
 				F99882062F58091000C8991D /* OSCPacketListener.cpp in Sources */,
 				F99882072F58091000C8991D /* SivOSCReceiver.cpp in Sources */,
 				F99882082F58091000C8991D /* SivOSCSender.cpp in Sources */,
-				F986F9A02BCA9D0A006A4C0F /* defselement.cpp in Sources */,
 				F98602E82BCFBB54006A4C0F /* SkImage.cpp in Sources */,
 				F9FD0D2B2D21693100A584CE /* CAssetMonitor.cpp in Sources */,
 				F9FD0D2C2D21693100A584CE /* AssetMonitorFactory.cpp in Sources */,
@@ -16127,7 +16069,6 @@
 				F986F91F2BC8441F006A4C0F /* regext.c in Sources */,
 				F9070DC82B9F175E00383E4D /* SivEngineLog.cpp in Sources */,
 				F9070DE52B9F175E00383E4D /* SivRect.cpp in Sources */,
-				F986F99A2BCA9D0A006A4C0F /* plutovg.c in Sources */,
 				F98601802BCFBB53006A4C0F /* SkClipStack.cpp in Sources */,
 				F98601E32BCFBB53006A4C0F /* SkMask.cpp in Sources */,
 				F98602822BCFBB54006A4C0F /* SkSwizzler_opts_hsw.cpp in Sources */,
@@ -16153,9 +16094,7 @@
 				F9528C8F2BC05B5B00222F45 /* SivImageDecoder.cpp in Sources */,
 				F986020B2BCFBB54006A4C0F /* SkPaint.cpp in Sources */,
 				F9070AF12B9DEB5900383E4D /* bignum-dtoa.cc in Sources */,
-				F986F98E2BCA9D0A006A4C0F /* plutovg-dash.c in Sources */,
 				F9D41CE32C9972D800290998 /* SivGrid.cpp in Sources */,
-				F986F9AC2BCA9D0A006A4C0F /* lunasvg.cpp in Sources */,
 				F9E794362C12BAC5002615BA /* SivMSL.cpp in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
@@ -16210,7 +16149,6 @@
 				F9070EDF2B9F1C8900383E4D /* init.c in Sources */,
 				F986F9312BC8441F006A4C0F /* unicode_unfold_key.c in Sources */,
 				F986055D2BD203D4006A4C0F /* muParserBytecode.cpp in Sources */,
-				F986F9A22BCA9D0A006A4C0F /* element.cpp in Sources */,
 				F98600B92BCFBB53006A4C0F /* skcms_TransformSkx.cc in Sources */,
 				F9797DEC2F62764400518D26 /* SivPDFDocument.cpp in Sources */,
 				F98605322BD10495006A4C0F /* SivImageFormat.cpp in Sources */,
@@ -16222,7 +16160,6 @@
 				F9070DD42B9F175E00383E4D /* SivInt128.cpp in Sources */,
 				F98604DA2BCFBB54006A4C0F /* SkJSON.cpp in Sources */,
 				F98603EE2BCFBB54006A4C0F /* SkSLConstructorArrayCast.cpp in Sources */,
-				F986F9992BCA9D0A006A4C0F /* plutovg-rle.c in Sources */,
 				F934BD782BF880620003EAD5 /* SivVertexShader.cpp in Sources */,
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F98601D82BCFBB53006A4C0F /* SkKnownRuntimeEffects.cpp in Sources */,
@@ -16231,6 +16168,17 @@
 				F98603362BCFBB54006A4C0F /* SkReduceOrder.cpp in Sources */,
 				F934BD922BF8824B0003EAD5 /* CEngineShader_Metal.cpp in Sources */,
 				F98600D22BCFBB53006A4C0F /* SkFloatingPoint.cpp in Sources */,
+				F9797F742FA73DBB00518D26 /* plutovg-path.c in Sources */,
+				F9797F752FA73DBB00518D26 /* plutovg-font.c in Sources */,
+				F9797F762FA73DBB00518D26 /* plutovg-ft-stroker.c in Sources */,
+				F9797F772FA73DBB00518D26 /* plutovg-ft-raster.c in Sources */,
+				F9797F782FA73DBB00518D26 /* plutovg-rasterize.c in Sources */,
+				F9797F792FA73DBB00518D26 /* plutovg-matrix.c in Sources */,
+				F9797F7A2FA73DBB00518D26 /* plutovg-canvas.c in Sources */,
+				F9797F7B2FA73DBB00518D26 /* plutovg-paint.c in Sources */,
+				F9797F7C2FA73DBB00518D26 /* plutovg-surface.c in Sources */,
+				F9797F7D2FA73DBB00518D26 /* plutovg-blend.c in Sources */,
+				F9797F7E2FA73DBB00518D26 /* plutovg-ft-math.c in Sources */,
 				F99881D92F57399D00C8991D /* SivNetwork.cpp in Sources */,
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
@@ -16250,7 +16198,6 @@
 				F986022F2BCFBB54006A4C0F /* SkQuadClipper.cpp in Sources */,
 				F98601FA2BCFBB53006A4C0F /* SkMesh.cpp in Sources */,
 				F980C4742C01B4B600A86B68 /* SivBlendStateBuilder.cpp in Sources */,
-				F986F9B02BCA9D0A006A4C0F /* maskelement.cpp in Sources */,
 				F98602062BCFBB53006A4C0F /* SkOpts.cpp in Sources */,
 				F98601AE2BCFBB53006A4C0F /* SkEdgeBuilder.cpp in Sources */,
 				F9070DCD2B9F175E00383E4D /* SivFloatFormatter.cpp in Sources */,
@@ -16262,7 +16209,6 @@
 				F9528C1E2BBF026F00222F45 /* hist.c in Sources */,
 				F98603182BCFBB54006A4C0F /* SkPathOpsAsWinding.cpp in Sources */,
 				F98604012BCFBB54006A4C0F /* SkSLDoStatement.cpp in Sources */,
-				F986F9A82BCA9D0A006A4C0F /* graphicselement.cpp in Sources */,
 				F98603122BCFBB54006A4C0F /* SkOpEdgeBuilder.cpp in Sources */,
 				F98603F82BCFBB54006A4C0F /* SkSLConstructorScalarCast.cpp in Sources */,
 				F98605072BCFBC12006A4C0F /* SkPixmapUtils.cpp in Sources */,
@@ -16305,8 +16251,6 @@
 				F972030E2BEDF2FF000E21DD /* SivResizeMode.cpp in Sources */,
 				F98604332BCFBB54006A4C0F /* SkSLSetting.cpp in Sources */,
 				F9528C332BBF026F00222F45 /* zstd_opt.c in Sources */,
-				F986F9B42BCA9D0A006A4C0F /* parser.cpp in Sources */,
-				F986F9A62BCA9D0A006A4C0F /* geometryelement.cpp in Sources */,
 				F986F91D2BC8441F006A4C0F /* regerror.c in Sources */,
 				F98604192BCFBB54006A4C0F /* SkSLIndexExpression.cpp in Sources */,
 				F986F9202BC8441F006A4C0F /* reggnu.c in Sources */,
@@ -16315,7 +16259,6 @@
 				F98603BE2BCFBB54006A4C0F /* SkSLCheckProgramStructure.cpp in Sources */,
 				F9E5FC232BC13CD00081A4F7 /* JPEGDecoder.cpp in Sources */,
 				F98605232BD0E2A3006A4C0F /* EngineResourceFactory.cpp in Sources */,
-				F986F9912BCA9D0A006A4C0F /* plutovg-ft-raster.c in Sources */,
 				F9070DDE2B9F175E00383E4D /* SivParseBool.cpp in Sources */,
 				F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */,
 				F9528C242BBF026F00222F45 /* zstd_compress_sequences.c in Sources */,
@@ -16328,7 +16271,6 @@
 				F90F2BE32D91861F00CC89CA /* SivImageProcessing.cpp in Sources */,
 				F98601CC2BCFBB53006A4C0F /* SkIDChangeListener.cpp in Sources */,
 				F9528B302BB0562C00222F45 /* SivMemoryMappedFileView.cpp in Sources */,
-				F986F9972BCA9D0A006A4C0F /* plutovg-paint.c in Sources */,
 				F98603B52BCFBB54006A4C0F /* SkShaderBase.cpp in Sources */,
 				F98600C92BCFBB53006A4C0F /* SkBuffer.cpp in Sources */,
 				F98602122BCFBB54006A4C0F /* SkPathEffect.cpp in Sources */,
@@ -16350,12 +16292,10 @@
 				F986F94D2BCA9CD7006A4C0F /* SVGDetail.cpp in Sources */,
 				F98606332BEBBBC7006A4C0F /* SivProfiler.cpp in Sources */,
 				F986031A2BCFBB54006A4C0F /* SkPathOpsCommon.cpp in Sources */,
-				F986F9932BCA9D0A006A4C0F /* plutovg-ft-stroker.c in Sources */,
 				F9070DB42B9F175E00383E4D /* SivByte.cpp in Sources */,
 				F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */,
 				F9528C8E2BC05B5B00222F45 /* ImageDecoderFactory.cpp in Sources */,
 				F9528C0A2BBF026F00222F45 /* entropy_common.c in Sources */,
-				F986F98D2BCA9D0A006A4C0F /* plutovg-blend.c in Sources */,
 				F9528B772BB708A700222F45 /* CLicenseManager.cpp in Sources */,
 				F9797F102F6ED8CE00518D26 /* CAudio.cpp in Sources */,
 				F9797F112F6ED8CE00518D26 /* AudioFactory.cpp in Sources */,
@@ -16397,10 +16337,8 @@
 				F98603262BCFBB54006A4C0F /* SkPathOpsOp.cpp in Sources */,
 				F9797E322F63314300518D26 /* SivAudioFormat.cpp in Sources */,
 				F98601702BCFBB53006A4C0F /* SkBlitter.cpp in Sources */,
-				F986F9B92BCA9D0A006A4C0F /* stopelement.cpp in Sources */,
 				F9ED45C42CC2B06D006BA10F /* CScreenCapture.cpp in Sources */,
 				F9712A3F2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp in Sources */,
-				F986F9B22BCA9D0A006A4C0F /* paintelement.cpp in Sources */,
 				F98603C12BCFBB54006A4C0F /* SkSLGetLoopControlFlowInfo.cpp in Sources */,
 				F9528C372BBF026F00222F45 /* huf_decompress_amd64.S in Sources */,
 			);
