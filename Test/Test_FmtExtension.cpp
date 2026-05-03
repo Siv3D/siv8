@@ -48,7 +48,7 @@ TEST_CASE("FmtExtension._fmt")
 		CHECK_EQ(U"{}"_fmt(vd), U"[1.111, 2.222, 3.333]");
 		CHECK_EQ(U"{}"_fmt(vs), U"[aaa, bbb, あああ, いいい]");
 
-		//CHECK_EQ(U"{:.1f}"_fmt(vd), U"[1.1, 2.2, 3.3]");
+		CHECK_EQ(U"{::.1f}"_fmt(vd), U"[1.1, 2.2, 3.3]");
 	}
 
 	{
@@ -60,7 +60,7 @@ TEST_CASE("FmtExtension._fmt")
 		CHECK_EQ(U"{}"_fmt(vd), U"[1.111, 2.222, 3.333]");
 		CHECK_EQ(U"{}"_fmt(vs), U"[aaa, bbb, あああ, いいい]");
 
-		//CHECK_EQ(U"{:.1f}"_fmt(vd), U"[1.1, 2.2, 3.3]");
+		CHECK_EQ(U"{::.1f}"_fmt(vd), U"[1.1, 2.2, 3.3]");
 	}
 
 	{

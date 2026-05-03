@@ -744,8 +744,13 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\sal.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\EnumBitmask\EnumBitmask.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\base.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\chrono.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\color.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\ostream.h" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\ranges.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\IsPrimeCommon.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Utils.hpp" />
