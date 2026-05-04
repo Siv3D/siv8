@@ -100,6 +100,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatQuad.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\FloatRect.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Font.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Glyph.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GlyphInfo.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\GUIColorStyle.ipp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PoleOfInaccessibility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Glyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphContext.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GUIColorStyle.hpp" />

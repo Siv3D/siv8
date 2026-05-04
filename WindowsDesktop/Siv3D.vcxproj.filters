@@ -5514,6 +5514,12 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h">
       <Filter>include\ThirdParty\fmt</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Glyph.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Glyph.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
