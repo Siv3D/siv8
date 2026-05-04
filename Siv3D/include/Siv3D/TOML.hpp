@@ -238,7 +238,6 @@ namespace s3d
 		[[nodiscard]]
 		std::string formatUTF8() const;
 
-		[[nodiscard]]
 		friend bool operator ==(const TOML& lhs, const TOML& rhs);
 
 		////////////////////////////////////////////////////////////////
@@ -385,7 +384,6 @@ namespace s3d
 			[[nodiscard]]
 			TOML operator *() const;
 
-			[[nodiscard]]
 			friend bool operator ==(const Iterator& lhs, const Iterator& rhs) noexcept;
 
 		private:
@@ -451,7 +449,6 @@ namespace s3d
 
 			[[nodiscard]] TableMember operator *() const;
 
-			[[nodiscard]]
 			friend bool operator ==(const Iterator& lhs, const Iterator& rhs) noexcept;
 
 		private:

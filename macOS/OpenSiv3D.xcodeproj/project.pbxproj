@@ -482,6 +482,15 @@
 		F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */; };
 		F90F79E72FA85F6E0077F398 /* Test_Step2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79E62FA85F6E0077F398 /* Test_Step2D.cpp */; };
 		F90F79E92FA868F30077F398 /* Glyph.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79E82FA868F30077F398 /* Glyph.ipp */; };
+		F90F79ED2FA9044D0077F398 /* TOMLValueType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79EC2FA9044D0077F398 /* TOMLValueType.hpp */; };
+		F90F79EE2FA9044D0077F398 /* TOMLParseErrorReason.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79EB2FA9044D0077F398 /* TOMLParseErrorReason.hpp */; };
+		F90F79EF2FA9044D0077F398 /* TOML.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79EA2FA9044D0077F398 /* TOML.hpp */; };
+		F90F79F12FA904650077F398 /* TOML.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79F02FA904650077F398 /* TOML.ipp */; };
+		F90F79F42FA904910077F398 /* toml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79F22FA904910077F398 /* toml.hpp */; };
+		F90F79FB2FA904CD0077F398 /* SivTOMLValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F92FA904CD0077F398 /* SivTOMLValueType.cpp */; };
+		F90F79FC2FA904CD0077F398 /* SivTOMLParseErrorReason.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F72FA904CD0077F398 /* SivTOMLParseErrorReason.cpp */; };
+		F90F79FD2FA904CD0077F398 /* SivTOML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F52FA904CD0077F398 /* SivTOML.cpp */; };
+		F90F79FF2FA9053B0077F398 /* Test_TOML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79FE2FA9053B0077F398 /* Test_TOML.cpp */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3545,6 +3554,15 @@
 		F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_LineString.cpp; sourceTree = "<group>"; };
 		F90F79E62FA85F6E0077F398 /* Test_Step2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Step2D.cpp; sourceTree = "<group>"; };
 		F90F79E82FA868F30077F398 /* Glyph.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Glyph.ipp; sourceTree = "<group>"; };
+		F90F79EA2FA9044D0077F398 /* TOML.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TOML.hpp; sourceTree = "<group>"; };
+		F90F79EB2FA9044D0077F398 /* TOMLParseErrorReason.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TOMLParseErrorReason.hpp; sourceTree = "<group>"; };
+		F90F79EC2FA9044D0077F398 /* TOMLValueType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TOMLValueType.hpp; sourceTree = "<group>"; };
+		F90F79F02FA904650077F398 /* TOML.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TOML.ipp; sourceTree = "<group>"; };
+		F90F79F22FA904910077F398 /* toml.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = toml.hpp; sourceTree = "<group>"; };
+		F90F79F52FA904CD0077F398 /* SivTOML.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOML.cpp; sourceTree = "<group>"; };
+		F90F79F72FA904CD0077F398 /* SivTOMLParseErrorReason.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOMLParseErrorReason.cpp; sourceTree = "<group>"; };
+		F90F79F92FA904CD0077F398 /* SivTOMLValueType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOMLValueType.cpp; sourceTree = "<group>"; };
+		F90F79FE2FA9053B0077F398 /* Test_TOML.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TOML.cpp; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6394,6 +6412,7 @@
 				F9528B152BAC58A300222F45 /* Test_String.cpp */,
 				F90702C72B9DAEB900383E4D /* Test_StringView.cpp */,
 				F90702C82B9DAEB900383E4D /* Test_TextFileReader.cpp */,
+				F90F79FE2FA9053B0077F398 /* Test_TOML.cpp */,
 				F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */,
 				F90702CA2B9DAEB900383E4D /* Test_Types.cpp */,
 				F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */,
@@ -6497,6 +6516,7 @@
 				F90704242B9DAEC900383E4D /* Obfuscate */,
 				F907042D2B9DAEC900383E4D /* parallel_hashmap */,
 				F90704312B9DAEC900383E4D /* pcg */,
+				F90F79F32FA904910077F398 /* toml11 */,
 				F90704CB2B9DAEC900383E4D /* Xoshiro-cpp */,
 			);
 			path = ThirdParty;
@@ -6913,6 +6933,7 @@
 				F98111B82EC8C70600C50DD1 /* Theme.ipp */,
 				F9070BA62B9F175000383E4D /* ThousandSeparate.ipp */,
 				F9528BA02BBD6F8800222F45 /* Timer.ipp */,
+				F90F79F02FA904650077F398 /* TOML.ipp */,
 				F99881632F40B62400C8991D /* Transition.ipp */,
 				F98605F72BE61586006A4C0F /* Triangle.ipp */,
 				F95122232CB8229300151291 /* TriangleIndex.ipp */,
@@ -7333,6 +7354,9 @@
 				F9070C2B2B9F175000383E4D /* ThousandSeparate.hpp */,
 				F9070C2C2B9F175000383E4D /* Threading.hpp */,
 				F9070C2D2B9F175000383E4D /* Time.hpp */,
+				F90F79EA2FA9044D0077F398 /* TOML.hpp */,
+				F90F79EB2FA9044D0077F398 /* TOMLParseErrorReason.hpp */,
+				F90F79EC2FA9044D0077F398 /* TOMLValueType.hpp */,
 				F9712A462C25B8360049CC26 /* Transformer2D.hpp */,
 				F99881612F40B61700C8991D /* Transition.hpp */,
 				F98605252BD10459006A4C0F /* Triangle.hpp */,
@@ -8111,6 +8135,9 @@
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
 				F9070D952B9F175E00383E4D /* Threading */,
 				F9E794562C19743A002615BA /* Timer */,
+				F90F79F62FA904CD0077F398 /* TOML */,
+				F90F79F82FA904CD0077F398 /* TOMLParseErrorReason */,
+				F90F79FA2FA904CD0077F398 /* TOMLValueType */,
 				F9712A492C25B8500049CC26 /* Transformer2D */,
 				F980C4812C04B3EB00A86B68 /* Triangle */,
 				F980C4392C00D31000A86B68 /* TriangleFillMode */,
@@ -8443,6 +8470,38 @@
 				F90F79DA2FA7B6590077F398 /* xchar.h */,
 			);
 			path = fmt;
+			sourceTree = "<group>";
+		};
+		F90F79F32FA904910077F398 /* toml11 */ = {
+			isa = PBXGroup;
+			children = (
+				F90F79F22FA904910077F398 /* toml.hpp */,
+			);
+			path = toml11;
+			sourceTree = "<group>";
+		};
+		F90F79F62FA904CD0077F398 /* TOML */ = {
+			isa = PBXGroup;
+			children = (
+				F90F79F52FA904CD0077F398 /* SivTOML.cpp */,
+			);
+			path = TOML;
+			sourceTree = "<group>";
+		};
+		F90F79F82FA904CD0077F398 /* TOMLParseErrorReason */ = {
+			isa = PBXGroup;
+			children = (
+				F90F79F72FA904CD0077F398 /* SivTOMLParseErrorReason.cpp */,
+			);
+			path = TOMLParseErrorReason;
+			sourceTree = "<group>";
+		};
+		F90F79FA2FA904CD0077F398 /* TOMLValueType */ = {
+			isa = PBXGroup;
+			children = (
+				F90F79F92FA904CD0077F398 /* SivTOMLValueType.cpp */,
+			);
+			path = TOMLValueType;
 			sourceTree = "<group>";
 		};
 		F911710C2DCBBF0B000A22E6 /* Font */ = {
@@ -13667,6 +13726,7 @@
 				F99881E92F5808C500C8991D /* OSCReceivedMessage.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
 				F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */,
+				F90F79F42FA904910077F398 /* toml.hpp in Headers */,
 				F98604122BCFBB54006A4C0F /* SkSLFunctionDeclaration.h in Headers */,
 				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
 				F9797E602F667E2F00518D26 /* WAVSaveFormat.hpp in Headers */,
@@ -13914,6 +13974,7 @@
 				F9070AF22B9DEB5900383E4D /* bignum-dtoa.h in Headers */,
 				F98603762BCFBB54006A4C0F /* SkOTTable_EBLC.h in Headers */,
 				F9070CB72B9F175000383E4D /* Error.hpp in Headers */,
+				F90F79F12FA904650077F398 /* TOML.ipp in Headers */,
 				F986028D2BCFBB54006A4C0F /* SkTraceEvent.h in Headers */,
 				F98603752BCFBB54006A4C0F /* SkOTTable_EBDT.h in Headers */,
 				F9CD6A192DE2274400EFA782 /* BitmapGlyph.hpp in Headers */,
@@ -14432,6 +14493,9 @@
 				F933AD8D2E54A375005624D7 /* save-fl32.h in Headers */,
 				F933AD8E2E54A375005624D7 /* Bitmap.hpp in Headers */,
 				F933AD8F2E54A375005624D7 /* arithmetics.hpp in Headers */,
+				F90F79ED2FA9044D0077F398 /* TOMLValueType.hpp in Headers */,
+				F90F79EE2FA9044D0077F398 /* TOMLParseErrorReason.hpp in Headers */,
+				F90F79EF2FA9044D0077F398 /* TOML.hpp in Headers */,
 				F933AD902E54A375005624D7 /* SignedDistance.hpp in Headers */,
 				F933AD912E54A375005624D7 /* Range.hpp in Headers */,
 				F933AD922E54A375005624D7 /* EdgeColor.h in Headers */,
@@ -15300,6 +15364,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F90703022B9DAEB900383E4D /* Test_NamedParameter.cpp in Sources */,
+				F90F79FF2FA9053B0077F398 /* Test_TOML.cpp in Sources */,
 				F90703062B9DAEB900383E4D /* Test_Step.cpp in Sources */,
 				F90702FB2B9DAEB900383E4D /* Test_Concepts.cpp in Sources */,
 				F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */,
@@ -15938,6 +16003,9 @@
 				F9528C082BBF026F00222F45 /* debug.c in Sources */,
 				F9797E9E2F667EC600518D26 /* SivDialog.cpp in Sources */,
 				F98605D12BE4BE67006A4C0F /* CKeyboard.cpp in Sources */,
+				F90F79FB2FA904CD0077F398 /* SivTOMLValueType.cpp in Sources */,
+				F90F79FC2FA904CD0077F398 /* SivTOMLParseErrorReason.cpp in Sources */,
+				F90F79FD2FA904CD0077F398 /* SivTOML.cpp in Sources */,
 				F98603282BCFBB54006A4C0F /* SkPathOpsQuad.cpp in Sources */,
 				F9712A4A2C25B8500049CC26 /* SivTransformer2D.cpp in Sources */,
 				F933ADBC2E54A3F0005624D7 /* SivScopedCustomShader2D.cpp in Sources */,
