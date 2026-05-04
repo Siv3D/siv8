@@ -258,19 +258,19 @@ namespace s3d
 
 		/// @brief テーブルから指定したキーの値を取得します。
 		/// @param key キー（UTF-8）
-		/// @return 指定したキーの TOML 値。存在しない場合は無効な TOML 値
+		/// @return 指定したキーの TOML 値。テーブルでない場合、または存在しない場合は無効な TOML 値
 		[[nodiscard]]
 		TOML operator [](const std::string& key) const;
 
 		/// @brief テーブルから指定したキーの値を取得します。
 		/// @param key キー
-		/// @return 指定したキーの TOML 値。存在しない場合は無効な TOML 値
+		/// @return 指定したキーの TOML 値。テーブルでない場合、または存在しない場合は無効な TOML 値
 		[[nodiscard]]
 		TOML operator [](const StringView key) const;
 
 		/// @brief 配列から指定したインデックスの値を取得します。
 		/// @param index インデックス
-		/// @return 指定したインデックスの TOML 値。範囲外の場合は無効な TOML 値
+		/// @return 指定したインデックスの TOML 値。配列でない場合、または範囲外の場合は無効な TOML 値
 		[[nodiscard]]
 		TOML operator [](const size_t index) const;
 
@@ -468,19 +468,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief TOML ファイルをロードします。
+		/// @brief UTF-8 の TOML ファイルをロードします。
 		/// @param path ファイルパス
 		/// @return ロードとパースに成功した場合は TOML, それ以外の場合は無効な TOML 値
 		[[nodiscard]]
 		static TOML Load(const FilePathView path);
 
-		/// @brief Reader から TOML をロードします。
+		/// @brief Reader から UTF-8 の TOML をロードします。
 		/// @param reader Reader
 		/// @return ロードとパースに成功した場合は TOML, それ以外の場合は無効な TOML 値
 		[[nodiscard]]
 		static TOML Load(std::unique_ptr<IReader> reader);
 
-		/// @brief Reader から TOML をロードします。
+		/// @brief Reader から UTF-8 の TOML をロードします。
 		/// @tparam Reader Reader オブジェクトの型
 		/// @param reader Reader
 		/// @return ロードとパースに成功した場合は TOML, それ以外の場合は無効な TOML 値
@@ -494,19 +494,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief TOML ファイルをロードし、結果またはエラー理由を返します。
+		/// @brief UTF-8 の TOML ファイルをロードし、結果またはエラー理由を返します。
 		/// @param path ファイルパス
 		/// @return ロードとパースに成功した場合は TOML, それ以外の場合はエラー理由の配列
 		[[nodiscard]]
 		static Result<TOML, Array<TOMLParseErrorReason>> LoadResult(const FilePathView path);
 
-		/// @brief Reader から TOML をロードし、結果またはエラー理由を返します。
+		/// @brief Reader から UTF-8 の TOML をロードし、結果またはエラー理由を返します。
 		/// @param reader Reader
 		/// @return ロードとパースに成功した場合は TOML, それ以外の場合はエラー理由の配列
 		[[nodiscard]]
 		static Result<TOML, Array<TOMLParseErrorReason>> LoadResult(std::unique_ptr<IReader> reader);
 
-		/// @brief Reader から TOML をロードし、結果またはエラー理由を返します。
+		/// @brief Reader から UTF-8 の TOML をロードし、結果またはエラー理由を返します。
 		/// @tparam Reader Reader オブジェクトの型
 		/// @param reader Reader
 		/// @return ロードとパースに成功した場合は TOML, それ以外の場合はエラー理由の配列
