@@ -215,6 +215,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		const auto it = FindDecoder(m_decoders, decoderName, *reader, pathHint);
 
 		if (it == m_decoders.end())
@@ -236,6 +241,11 @@ namespace s3d
 	Grid<uint16> CImageDecoder::decodeGray16(std::unique_ptr<IReader> reader, const FilePathView pathHint, const StringView decoderName)
 	{
 		LOG_SCOPED_DEBUG("CImageDecoder::decodeGray16()");
+
+		if (not reader)
+		{
+			return{};
+		}
 
 		const auto it = FindDecoder(m_decoders, decoderName, *reader, pathHint);
 

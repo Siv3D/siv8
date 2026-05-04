@@ -115,6 +115,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("BMPDecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		BMPHeader header;
 
 		if (not reader->read(header))

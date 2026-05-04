@@ -187,9 +187,14 @@ namespace s3d
 		return IImageDecoder::decode(path, premultiplyAlpha);
 	}
 
-	Image PNGDecoder::decode(std::unique_ptr<IReader> reader2, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
+	Image PNGDecoder::decode(std::unique_ptr<IReader> reader, const FilePathView, const PremultiplyAlpha premultiplyAlpha) const
 	{
 		LOG_SCOPED_DEBUG("PNGDecoder::decode()");
+
+		if (not reader)
+		{
+			return{};
+		}
 
 		// png_ptr
 		png_structp png_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
@@ -220,7 +225,7 @@ namespace s3d
 		};
 
 		// decode
-		::png_set_read_fn(png_ptr, reader2.get(), PngReadCallback);
+		::png_set_read_fn(png_ptr, reader.get(), PngReadCallback);
 
 		::png_read_info(png_ptr, info_ptr);
 
@@ -328,9 +333,14 @@ namespace s3d
 		return IImageDecoder::decodeGray16(path);
 	}
 
-	Grid<uint16> PNGDecoder::decodeGray16(std::unique_ptr<IReader> reader2, FilePathView) const
+	Grid<uint16> PNGDecoder::decodeGray16(std::unique_ptr<IReader> reader, FilePathView) const
 	{
 		LOG_SCOPED_DEBUG("PNGDecoder::decode()");
+
+		if (not reader)
+		{
+			return{};
+		}
 
 		// png_ptr
 		png_structp png_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
@@ -361,7 +371,7 @@ namespace s3d
 		};
 
 		// decode
-		::png_set_read_fn(png_ptr, reader2.get(), PngReadCallback);
+		::png_set_read_fn(png_ptr, reader.get(), PngReadCallback);
 
 		::png_read_info(png_ptr, info_ptr);
 

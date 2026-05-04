@@ -281,6 +281,11 @@ namespace s3d
 	{
 		m_api = api;
 
+		if (not reader)
+		{
+			return;
+		}
+
 		FPDF_DOCUMENT document = nullptr;
 		{
 			Blob blob{ std::move(reader) };

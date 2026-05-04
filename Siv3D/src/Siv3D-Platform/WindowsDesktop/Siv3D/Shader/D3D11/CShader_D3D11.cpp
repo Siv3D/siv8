@@ -164,6 +164,11 @@ namespace s3d
 
 	VertexShader::IDType CShader_D3D11::createVSFromReader(std::unique_ptr<IReader> reader, const FilePathView pathHint, StringView entryPoint)
 	{
+		if (not reader)
+		{
+			return VertexShader::IDType::Null();
+		}
+
 		if (not reader->isOpen())
 		{
 			if (pathHint) // ファイルの場合
@@ -241,6 +246,11 @@ namespace s3d
 
 	PixelShader::IDType CShader_D3D11::createPSFromReader(std::unique_ptr<IReader> reader, const FilePathView pathHint, StringView entryPoint)
 	{
+		if (not reader)
+		{
+			return PixelShader::IDType::Null();
+		}
+
 		if (not reader->isOpen())
 		{
 			if (pathHint) // ファイルの場合

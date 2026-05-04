@@ -207,6 +207,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CAudioDecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		const auto it = FindDecoder(m_decoders, decoderName, *reader, pathHint);
 
 		if (it == m_decoders.end())

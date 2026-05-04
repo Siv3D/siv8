@@ -119,6 +119,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("SVGDecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		std::string source(reader->size(), '\0');
 
 		if (reader->read(source.data(), source.size())

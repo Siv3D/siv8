@@ -135,6 +135,11 @@ namespace s3d
 
 	Texture::IDType CTexture_D3D11::create(std::unique_ptr<IReader> reader, FilePathView pathHint, const TextureDesc desc)
 	{
+		if (not reader)
+		{
+			return Texture::IDType::Null();
+		}
+
 		if (not reader->isOpen())
 		{
 			return Texture::IDType::Null();
