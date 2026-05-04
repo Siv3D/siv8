@@ -129,6 +129,38 @@ TEST_CASE("LineString.append")
 	}
 }
 
+TEST_CASE("LineString.choice")
+{
+	const LineString source{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 4, 4 } };
+
+	{
+		LineString line{ source };
+		std::mt19937 rng{ 12345 };
+		line.choice(rng) = Vec2{ 99, 99 };
+		CHECK(line.contains(Vec2{ 99, 99 }));
+		CHECK_EQ(line.size(), source.size());
+	}
+
+	{
+		std::mt19937 rng{ 12345 };
+		const Vec2& point = source.choice(rng);
+		CHECK(source.contains(point));
+	}
+
+	{
+		std::mt19937 rng1{ 12345 };
+		std::mt19937 rng2{ 12345 };
+		CHECK_EQ(source.choice(3, rng1), LineString{ source.asArray().choice(3, rng2) });
+		CHECK_EQ(source.choice(10).size(), source.size());
+	}
+
+	{
+		LineString line{ Vec2{ 42, 42 } };
+		CHECK_EQ(line.choice(), Vec2{ 42, 42 });
+		CHECK_EQ(std::as_const(line).choice(), Vec2{ 42, 42 });
+	}
+}
+
 TEST_CASE("LineString.contains_count")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 } };

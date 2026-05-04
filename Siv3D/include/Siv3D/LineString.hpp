@@ -1009,6 +1009,47 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	choice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の要素を 1 つランダムに返します。
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice();
+
+		/// @brief 点列の要素を 1 つランダムに返します。
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
+
+		/// @brief 指定した乱数エンジンを用いて、点列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
+
+		/// @brief 点列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @return ランダムに選ばれた要素の LineString
+		[[nodiscard]]
+		LineString choice(size_t n) const;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @param rbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素の LineString
+		[[nodiscard]]
+		LineString choice(size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	contains
 		//
 		////////////////////////////////////////////////////////////////
@@ -1662,33 +1703,6 @@ namespace s3d
 		uint64 hash() const noexcept;
 
 
-//		[[nodiscard]]
-//		value_type& choice();
-//
-//		[[nodiscard]]
-//		const value_type& choice() const;
-//
-//		SIV3D_CONCEPT_URBG
-//			[[nodiscard]]
-//		value_type& choice(URBG&& rbg);
-//
-//		SIV3D_CONCEPT_URBG
-//			[[nodiscard]]
-//		const value_type& choice(URBG&& rbg) const;
-//
-//		SIV3D_CONCEPT_INTEGRAL
-//			[[nodiscard]]
-//		LineString choice(Int n) const;
-//
-//# if __cpp_lib_concepts
-//		template <Concept::Integral Size_t, Concept::UniformRandomBitGenerator URBG>
-//# else
-//		template <class Size_t, class URBG, std::enable_if_t<std::is_integral_v<Size_t>>* = nullptr,
-//			std::enable_if_t<std::conjunction_v<std::is_invocable<URBG&>, std::is_unsigned<std::invoke_result_t<URBG&>>>>* = nullptr>
-//# endif
-//		[[nodiscard]]
-//		LineString choice(Size_t n, URBG&& rbg) const;
-//
 //		LineString& remove(const value_type& value);
 //
 //		LineString& remove_at(size_t index);

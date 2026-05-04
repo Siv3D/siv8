@@ -883,6 +883,42 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	choice
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline LineString::value_type& LineString::choice()
+	{
+		return m_points.choice();
+	}
+
+	inline const LineString::value_type& LineString::choice() const
+	{
+		return m_points.choice();
+	}
+
+	inline LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg)
+	{
+		return m_points.choice(std::forward<decltype(rbg)>(rbg));
+	}
+
+	inline const LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		return m_points.choice(std::forward<decltype(rbg)>(rbg));
+	}
+
+	inline LineString LineString::choice(const size_t n) const
+	{
+		return LineString{ m_points.choice(n) };
+	}
+
+	inline LineString LineString::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		return LineString{ m_points.choice(n, std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	contains
 	//
 	////////////////////////////////////////////////////////////////
