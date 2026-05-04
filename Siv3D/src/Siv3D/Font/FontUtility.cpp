@@ -97,7 +97,7 @@ namespace s3d
 			{
 				::FT_SfntName name;
 
-				if (const ::FT_Error error = ::FT_Get_Sfnt_Name(face, i, &name))
+				if (::FT_Get_Sfnt_Name(face, i, &name))
 				{
 					continue;
 				}

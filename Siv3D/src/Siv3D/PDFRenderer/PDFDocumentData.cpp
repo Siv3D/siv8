@@ -24,7 +24,7 @@ namespace s3d
 	{
 		static void LogPDFiumError(const PDFiumAPI* api, const bool hasPasword)
 		{
-			const int32 errorCode = api->FPDF_GetLastError();
+			const auto errorCode = api->FPDF_GetLastError();
 
 			switch (errorCode)
 			{

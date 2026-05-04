@@ -33,9 +33,6 @@ namespace s3d
 				const DistanceType& buffer_distance,
 				RangeOut& range_out) const
 			{
-				typedef typename boost::geometry::coordinate_type<Point>::type coordinate_type;
-				typedef typename boost::range_value<RangeOut>::type output_point_type;
-
 				boost::geometry::equal_to<Point> equals;
 				if (equals(perp1, perp2))
 				{

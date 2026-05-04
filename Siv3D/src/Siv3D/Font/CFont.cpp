@@ -102,7 +102,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CFont::init()");
 
-		if (const FT_Error error = ::FT_Init_FreeType(&m_freeType))
+		if (::FT_Init_FreeType(&m_freeType))
 		{
 			throw InternalEngineError{ "FT_Init_FreeType() failed" };
 		}
@@ -163,7 +163,7 @@ namespace s3d
 
 			faces.append(GetFontFaces(face0));
 
-			for (::FT_Long index = 1; index < numFaces; ++index)
+			for (uint32 index = 1; index < numFaces; ++index)
 			{
 				::FT_Face face = nullptr;
 

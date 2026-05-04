@@ -189,7 +189,7 @@ namespace s3d
 
 		const GlyphBBox bbox = GetBound(shape);
 		
-		if (const bool isInf = (std::isinf(bbox.xMin) || std::isinf(bbox.xMax) || std::isinf(bbox.yMin) || std::isinf(bbox.yMax)))
+		if (std::isinf(bbox.xMin) || std::isinf(bbox.xMax) || std::isinf(bbox.yMin) || std::isinf(bbox.yMax))
 		{
 			MSDFGlyph glyph;
 			glyph.glyphIndex		= glyphIndex;

@@ -102,7 +102,7 @@ namespace s3d
 		lunasvg::Bitmap bitmap = m_document->renderToBitmap(maxImageWidth, maxImageHeight, color);
 
 		Image image{ bitmap.width(), bitmap.height() };
-		assert(image.size_bytes() == (bitmap.stride() * bitmap.height()));
+		assert(static_cast<int64>(image.size_bytes()) == (bitmap.stride() * bitmap.height()));
 		
 		std::memcpy(image.data(), bitmap.data(), image.size_bytes());
 		image.bgraToRGBA();
