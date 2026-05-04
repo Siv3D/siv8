@@ -45,8 +45,14 @@ namespace s3d
 
 		BufferContext::iterator FormatString(BufferContext& ctx, const std::u32string& tag, const s3d::StringView value)
 		{
-			return fmt::format_to(ctx.out(), (tag.empty() ? U"{}" : (U"{:" + tag + U'}')),
-				fmt::basic_string_view<s3d::char32>{ value.data(), value.size() });
+			if (tag.empty())
+			{
+				return fmt::format_to(ctx.out(), U"{}", fmt::basic_string_view<s3d::char32>{ value.data(), value.size() });
+			}
+			else
+			{
+				return fmt::format_to(ctx.out(), (U"{:" + tag + U'}'), fmt::basic_string_view<s3d::char32>{ value.data(), value.size() });
+			}
 		}
 	}
 }
@@ -56,9 +62,9 @@ s3d::ParseContext::iterator fmt::formatter<s3d::StringView, s3d::char32>::parse(
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::StringView, s3d::char32>::format(const s3d::StringView value, s3d::BufferContext& ctx) const
+s3d::BufferContext::iterator fmt::formatter<s3d::StringView, s3d::char32>::format(const s3d::StringView& value, s3d::BufferContext& ctx) const
 {
-	return s3d::FmtHelper::FormatString(ctx, std::move(tag), value);
+	return s3d::FmtHelper::FormatString(ctx, tag, value);
 }
 
 s3d::ParseContext::iterator fmt::formatter<s3d::String, s3d::char32>::parse(s3d::ParseContext& ctx)
@@ -68,5 +74,5 @@ s3d::ParseContext::iterator fmt::formatter<s3d::String, s3d::char32>::parse(s3d:
 
 s3d::BufferContext::iterator fmt::formatter<s3d::String, s3d::char32>::format(const s3d::String& value, s3d::BufferContext& ctx) const
 {
-	return s3d::FmtHelper::FormatString(ctx, std::move(tag), value);
+	return s3d::FmtHelper::FormatString(ctx, tag, value);
 }
