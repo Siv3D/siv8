@@ -65,7 +65,7 @@ namespace s3d
 
 		template <class Char>
 		[[nodiscard]]
-		Result<bool, ParseErrorReason> ParseBoolExtendedWithReason(Char* start, Char* end) noexcept
+		Result<bool, ParseErrorReason> ParseBoolExtendedResult(Char* start, Char* end) noexcept
 		{
 			while ((start < end) && IsSpace(start[0]))
 			{
@@ -169,7 +169,7 @@ namespace s3d
 
 	bool ParseBoolExtended(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto reason = ParseBoolExtendedWithReason(s))
+		if (const auto reason = ParseBoolExtendedResult(s))
 		{
 			return *reason;
 		}
@@ -185,7 +185,7 @@ namespace s3d
 
 	bool ParseBoolExtended(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto reason = ParseBoolExtendedWithReason(s))
+		if (const auto reason = ParseBoolExtendedResult(s))
 		{
 			return *reason;
 		}
@@ -207,7 +207,7 @@ namespace s3d
 
 	Optional<bool> ParseBoolExtendedOpt(const std::string_view s) noexcept
 	{
-		if (const auto checked = ParseBoolExtendedWithReason(s))
+		if (const auto checked = ParseBoolExtendedResult(s))
 		{
 			return *checked;
 		}
@@ -219,7 +219,7 @@ namespace s3d
 
 	Optional<bool> ParseBoolExtendedOpt(const StringView s) noexcept
 	{
-		if (const auto checked = ParseBoolExtendedWithReason(s))
+		if (const auto checked = ParseBoolExtendedResult(s))
 		{
 			return *checked;
 		}
@@ -231,21 +231,21 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ParseBoolExtendedWithReason
+	//	ParseBoolExtendedResult
 	//
 	////////////////////////////////////////////////////////////////
 
-	Result<bool, ParseErrorReason> ParseBoolExtendedWithReason(const std::string_view s) noexcept
+	Result<bool, ParseErrorReason> ParseBoolExtendedResult(const std::string_view s) noexcept
 	{
 		const char8* start = s.data();
 		const char8* end = (start + s.size());
-		return ParseBoolExtendedWithReason(start, end);
+		return ParseBoolExtendedResult(start, end);
 	}
 
-	Result<bool, ParseErrorReason> ParseBoolExtendedWithReason(const StringView s) noexcept
+	Result<bool, ParseErrorReason> ParseBoolExtendedResult(const StringView s) noexcept
 	{
 		const char32* start = s.data();
 		const char32* end = (start + s.size());
-		return ParseBoolExtendedWithReason(start, end);
+		return ParseBoolExtendedResult(start, end);
 	}
 }

@@ -378,7 +378,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<int8, ParseErrorReason> ParseInt8WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<int8, ParseErrorReason> ParseInt8Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -407,7 +407,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<uint8, ParseErrorReason> ParseUint8WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<uint8, ParseErrorReason> ParseUint8Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -435,7 +435,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<int16, ParseErrorReason> ParseInt16WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<int16, ParseErrorReason> ParseInt16Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -464,7 +464,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<uint16, ParseErrorReason> ParseUint16WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<uint16, ParseErrorReason> ParseUint16Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -492,7 +492,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<int32, ParseErrorReason> ParseInt32WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<int32, ParseErrorReason> ParseInt32Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -516,7 +516,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<uint32, ParseErrorReason> ParseUint32WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<uint32, ParseErrorReason> ParseUint32Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -539,7 +539,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<int64, ParseErrorReason> ParseInt64WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<int64, ParseErrorReason> ParseInt64Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -563,7 +563,7 @@ namespace s3d
 		}
 
 		template <class SV>
-		Result<uint64, ParseErrorReason> ParseUint64WithReason_impl(const SV s, const int32 radix) noexcept
+		Result<uint64, ParseErrorReason> ParseUint64Result_impl(const SV s, const int32 radix) noexcept
 		{
 			if (not IsValidRadix(radix)) [[unlikely]]
 			{
@@ -588,103 +588,103 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ParseIntWithReason
+	//	ParseIntResult
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <>
-	Result<int8, ParseErrorReason> ParseIntWithReason<int8>(const std::string_view s, const int32 radix) noexcept
+	Result<int8, ParseErrorReason> ParseIntResult<int8>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseInt8WithReason_impl(s, radix);
+		return ParseInt8Result_impl(s, radix);
 	}
 
 	template <>
-	Result<int8, ParseErrorReason> ParseIntWithReason<int8>(const StringView s, const int32 radix) noexcept
+	Result<int8, ParseErrorReason> ParseIntResult<int8>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseInt8WithReason_impl(s, radix);
+		return ParseInt8Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint8, ParseErrorReason> ParseIntWithReason<uint8>(const std::string_view s, const int32 radix) noexcept
+	Result<uint8, ParseErrorReason> ParseIntResult<uint8>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseUint8WithReason_impl(s, radix);
+		return ParseUint8Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint8, ParseErrorReason> ParseIntWithReason<uint8>(const StringView s, const int32 radix) noexcept
+	Result<uint8, ParseErrorReason> ParseIntResult<uint8>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseUint8WithReason_impl(s, radix);
+		return ParseUint8Result_impl(s, radix);
 	}
 
 	template <>
-	Result<int16, ParseErrorReason> ParseIntWithReason<int16>(const std::string_view s, const int32 radix) noexcept
+	Result<int16, ParseErrorReason> ParseIntResult<int16>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseInt16WithReason_impl(s, radix);
+		return ParseInt16Result_impl(s, radix);
 	}
 
 	template <>
-	Result<int16, ParseErrorReason> ParseIntWithReason<int16>(const StringView s, const int32 radix) noexcept
+	Result<int16, ParseErrorReason> ParseIntResult<int16>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseInt16WithReason_impl(s, radix);
+		return ParseInt16Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint16, ParseErrorReason> ParseIntWithReason<uint16>(const std::string_view s, const int32 radix) noexcept
+	Result<uint16, ParseErrorReason> ParseIntResult<uint16>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseUint16WithReason_impl(s, radix);
+		return ParseUint16Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint16, ParseErrorReason> ParseIntWithReason<uint16>(const StringView s, const int32 radix) noexcept
+	Result<uint16, ParseErrorReason> ParseIntResult<uint16>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseUint16WithReason_impl(s, radix);
+		return ParseUint16Result_impl(s, radix);
 	}
 
 	template <>
-	Result<int32, ParseErrorReason> ParseIntWithReason<int32>(const std::string_view s, const int32 radix) noexcept
+	Result<int32, ParseErrorReason> ParseIntResult<int32>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseInt32WithReason_impl(s, radix);
+		return ParseInt32Result_impl(s, radix);
 	}
 
 	template <>
-	Result<int32, ParseErrorReason> ParseIntWithReason<int32>(const StringView s, const int32 radix) noexcept
+	Result<int32, ParseErrorReason> ParseIntResult<int32>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseInt32WithReason_impl(s, radix);
+		return ParseInt32Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint32, ParseErrorReason> ParseIntWithReason<uint32>(const std::string_view s, const int32 radix) noexcept
+	Result<uint32, ParseErrorReason> ParseIntResult<uint32>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseUint32WithReason_impl(s, radix);
+		return ParseUint32Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint32, ParseErrorReason> ParseIntWithReason<uint32>(const StringView s, const int32 radix) noexcept
+	Result<uint32, ParseErrorReason> ParseIntResult<uint32>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseUint32WithReason_impl(s, radix);
+		return ParseUint32Result_impl(s, radix);
 	}
 
 	template <>
-	Result<int64, ParseErrorReason> ParseIntWithReason<int64>(const std::string_view s, const int32 radix) noexcept
+	Result<int64, ParseErrorReason> ParseIntResult<int64>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseInt64WithReason_impl(s, radix);
+		return ParseInt64Result_impl(s, radix);
 	}
 
 	template <>
-	Result<int64, ParseErrorReason> ParseIntWithReason<int64>(const StringView s, const int32 radix) noexcept
+	Result<int64, ParseErrorReason> ParseIntResult<int64>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseInt64WithReason_impl(s, radix);
+		return ParseInt64Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint64, ParseErrorReason> ParseIntWithReason<uint64>(const std::string_view s, const int32 radix) noexcept
+	Result<uint64, ParseErrorReason> ParseIntResult<uint64>(const std::string_view s, const int32 radix) noexcept
 	{
-		return ParseUint64WithReason_impl(s, radix);
+		return ParseUint64Result_impl(s, radix);
 	}
 
 	template <>
-	Result<uint64, ParseErrorReason> ParseIntWithReason<uint64>(const StringView s, const int32 radix) noexcept
+	Result<uint64, ParseErrorReason> ParseIntResult<uint64>(const StringView s, const int32 radix) noexcept
 	{
-		return ParseUint64WithReason_impl(s, radix);
+		return ParseUint64Result_impl(s, radix);
 	}
 }

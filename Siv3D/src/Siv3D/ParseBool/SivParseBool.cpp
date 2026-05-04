@@ -65,7 +65,7 @@ namespace s3d
 
 		template <class Char>
 		[[nodiscard]]
-		Result<bool, ParseErrorReason> ParseBoolWithReason(Char* start, Char* end) noexcept
+		Result<bool, ParseErrorReason> ParseBoolResult(Char* start, Char* end) noexcept
 		{
 			while ((start < end) && IsSpace(start[0]))
 			{
@@ -117,7 +117,7 @@ namespace s3d
 
 	bool ParseBool(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto reason = ParseBoolWithReason(s))
+		if (const auto reason = ParseBoolResult(s))
 		{
 			return *reason;
 		}
@@ -133,7 +133,7 @@ namespace s3d
 
 	bool ParseBool(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto reason = ParseBoolWithReason(s))
+		if (const auto reason = ParseBoolResult(s))
 		{
 			return *reason;
 		}
@@ -155,7 +155,7 @@ namespace s3d
 
 	Optional<bool> ParseBoolOpt(const std::string_view s) noexcept
 	{
-		if (const auto reason = ParseBoolWithReason(s))
+		if (const auto reason = ParseBoolResult(s))
 		{
 			return *reason;
 		}
@@ -167,7 +167,7 @@ namespace s3d
 
 	Optional<bool> ParseBoolOpt(const StringView s) noexcept
 	{
-		if (const auto reason = ParseBoolWithReason(s))
+		if (const auto reason = ParseBoolResult(s))
 		{
 			return *reason;
 		}
@@ -179,21 +179,21 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ParseBoolWithReason
+	//	ParseBoolResult
 	//
 	////////////////////////////////////////////////////////////////
 
-	Result<bool, ParseErrorReason> ParseBoolWithReason(const std::string_view s) noexcept
+	Result<bool, ParseErrorReason> ParseBoolResult(const std::string_view s) noexcept
 	{
 		const char8* start = s.data();
 		const char8* end = (start + s.size());
-		return ParseBoolWithReason(start, end);
+		return ParseBoolResult(start, end);
 	}
 
-	Result<bool, ParseErrorReason> ParseBoolWithReason(const StringView s) noexcept
+	Result<bool, ParseErrorReason> ParseBoolResult(const StringView s) noexcept
 	{
 		const char32* start = s.data();
 		const char32* end = (start + s.size());
-		return ParseBoolWithReason(start, end);
+		return ParseBoolResult(start, end);
 	}
 }
