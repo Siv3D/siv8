@@ -1559,6 +1559,84 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	replace, replaced
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えます。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return *this
+		constexpr LineString& replace(const value_type& oldValue, const value_type& newValue)&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString replace(const value_type& oldValue, const value_type& newValue) &&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString replaced(const value_type& oldValue, const value_type& newValue) const&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString replaced(const value_type& oldValue, const value_type& newValue) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace_if, replaced_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return *this
+		template <class Fty>
+		constexpr LineString& replace_if(Fty f, const value_type& newValue)&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString replace_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString replaced_if(Fty f, const value_type& newValue) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString replaced_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	rotate, rotated
 		//
 		////////////////////////////////////////////////////////////////

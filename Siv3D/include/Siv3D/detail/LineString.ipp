@@ -1417,6 +1417,68 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	replace, replaced
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::replace(const value_type& oldValue, const value_type& newValue)&
+	{
+		m_points.replace(oldValue, newValue);
+		return *this;
+	}
+
+	constexpr LineString LineString::replace(const value_type& oldValue, const value_type& newValue) &&
+	{
+		return LineString{ std::move(m_points).replace(oldValue, newValue) };
+	}
+
+	constexpr LineString LineString::replaced(const value_type& oldValue, const value_type& newValue) const&
+	{
+		return LineString{ m_points.replaced(oldValue, newValue) };
+	}
+
+	constexpr LineString LineString::replaced(const value_type& oldValue, const value_type& newValue) &&
+	{
+		return LineString{ std::move(m_points).replaced(oldValue, newValue) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace_if, replaced_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString& LineString::replace_if(Fty f, const value_type& newValue)&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		m_points.replace_if(std::forward<Fty>(f), newValue);
+		return *this;
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::replace_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).replace_if(std::forward<Fty>(f), newValue) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::replaced_if(Fty f, const value_type& newValue) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.replaced_if(std::forward<Fty>(f), newValue) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::replaced_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).replaced_if(std::forward<Fty>(f), newValue) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	rotate, rotated
 	//
 	////////////////////////////////////////////////////////////////

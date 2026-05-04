@@ -437,6 +437,38 @@ TEST_CASE("LineString.without_if")
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.without_if([](const Vec2& p) { return (p.x == 0); }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
 }
 
+TEST_CASE("LineString.replace")
+{
+	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
+	CHECK_EQ(&(line.replace(Vec2{ 0, 0 }, Vec2{ 9, 9 })), &line);
+	CHECK_EQ(line, LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 }, Vec2{ 2, 2 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } }.replace(Vec2{ 0, 0 }, Vec2{ 9, 9 }), LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 } });
+}
+
+TEST_CASE("LineString.replaced")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
+	CHECK_EQ(line.replaced(Vec2{ 0, 0 }, Vec2{ 9, 9 }), LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 }, Vec2{ 2, 2 } });
+	CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } }.replaced(Vec2{ 0, 0 }, Vec2{ 9, 9 }), LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 } });
+}
+
+TEST_CASE("LineString.replace_if")
+{
+	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 }, Vec2{ 3, 1 } };
+	CHECK_EQ(&(line.replace_if([](const Vec2& p) { return (p.y == 0); }, Vec2{ 9, 9 })), &line);
+	CHECK_EQ(line, LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 }, Vec2{ 3, 1 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } }.replace_if([](const Vec2& p) { return (p.y == 0); }, Vec2{ 9, 9 }), LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 } });
+}
+
+TEST_CASE("LineString.replaced_if")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 }, Vec2{ 3, 1 } };
+	CHECK_EQ(line.replaced_if([](const Vec2& p) { return (p.y == 0); }, Vec2{ 9, 9 }), LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 }, Vec2{ 3, 1 } });
+	CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 }, Vec2{ 3, 1 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } }.replaced_if([](const Vec2& p) { return (p.y == 0); }, Vec2{ 9, 9 }), LineString{ Vec2{ 9, 9 }, Vec2{ 1, 1 }, Vec2{ 9, 9 } });
+}
+
 TEST_CASE("LineString.rotate")
 {
 	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
