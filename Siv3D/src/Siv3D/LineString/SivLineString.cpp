@@ -339,6 +339,12 @@ namespace s3d
 	double LineString::computeLength(const CloseRing closeRing) const noexcept
 	{
 		const size_t n = m_points.size();
+
+		if (n < 2)
+		{
+			return 0.0;
+		}
+
 		const Vec2* pData = m_points.data();
 
 		double length = 0.0;

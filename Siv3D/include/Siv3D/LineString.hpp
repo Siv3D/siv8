@@ -1830,7 +1830,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr LineString& reverse() noexcept;
+		/// @brief 連続する線分の向きを反転します。
+		/// @return *this
+		constexpr LineString& reverse() & noexcept;
+
+		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
+		/// @return 連続する線分の向きを反転した新しい LineString
+		[[nodiscard]]
+		constexpr LineString reverse() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1848,7 +1855,20 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString reversed() && noexcept;
 
-		constexpr LineString& unique_consecutive();
+		////////////////////////////////////////////////////////////////
+		//
+		//	unique_consecutive, uniqued_consecutive
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
+		/// @return *this
+		constexpr LineString& unique_consecutive() &;
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString unique_consecutive() &&;
 
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい LineString を返します。
 		/// @return 新しい LineString
@@ -2241,7 +2261,7 @@ namespace s3d
 		/// @brief 各要素に関数を適用します。
 		/// @tparam Fty 適用する関数の型
 		/// @param f 適用する関数
-		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
+		/// @remark Fty が戻り値を持たない場合 `.each(f)`, 戻り値を持つ場合は `.map(f)` と同じです。
 		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
 		template <class Fty>
 		constexpr auto operator >>(Fty f) const

@@ -1656,10 +1656,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::reverse() noexcept
+	constexpr LineString& LineString::reverse() & noexcept
 	{
 		m_points.reverse();
 		return *this;
+	}
+
+	constexpr LineString LineString::reverse() && noexcept
+	{
+		m_points.reverse();
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1685,10 +1691,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::unique_consecutive()
+	constexpr LineString& LineString::unique_consecutive() &
 	{
 		m_points.unique_consecutive();
 		return *this;
+	}
+
+	constexpr LineString LineString::unique_consecutive() &&
+	{
+		m_points.unique_consecutive();
+		return std::move(*this);
 	}
 
 	constexpr LineString LineString::uniqued_consecutive() const&
