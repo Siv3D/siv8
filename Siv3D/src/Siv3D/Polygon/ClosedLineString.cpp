@@ -36,11 +36,6 @@ namespace s3d
 				typedef typename boost::geometry::coordinate_type<Point>::type coordinate_type;
 				typedef typename boost::range_value<RangeOut>::type output_point_type;
 
-				typedef typename boost::geometry::select_most_precise
-					<typename boost::geometry::select_most_precise
-					<coordinate_type, typename  boost::geometry::coordinate_type<output_point_type>::type
-					>::type, double>::type promoted_type;
-
 				boost::geometry::equal_to<Point> equals;
 				if (equals(perp1, perp2))
 				{

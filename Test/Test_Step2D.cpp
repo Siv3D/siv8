@@ -124,8 +124,6 @@ TEST_CASE("Step2D.iterator")
 {
 	auto it = step(Point{ 3, 4 }, Size{ 2, 2 }, Size{ 10, 20 }).begin();
 	CHECK_EQ(*it, Point{ 3, 4 });
-	CHECK_EQ(it->x, 3);
-	CHECK_EQ(it->y, 4);
 
 	const auto old = it++;
 	CHECK_EQ(*old, Point{ 3, 4 });

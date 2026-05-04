@@ -156,8 +156,11 @@ namespace s3d
 
 	constexpr auto step(const Size n) noexcept
 	{
-		const auto x_view = std::views::iota(0, n.x);
-		const auto y_view = std::views::iota(0, n.y);
+		const int32 x_count = Max(n.x, 0);
+		const int32 y_count = Max(n.y, 0);
+
+		const auto x_view = std::views::iota(0, x_count);
+		const auto y_view = std::views::iota(0, y_count);
 
 		return (std::views::cartesian_product(y_view, x_view)
 			| std::views::transform([](const auto& p) -> Point
@@ -166,18 +169,29 @@ namespace s3d
 
 	constexpr auto step(const Point start, const Size n) noexcept
 	{
-		const auto x_view = std::views::iota(start.x, (start.x + n.x));
-		const auto y_view = std::views::iota(start.y, (start.y + n.y));
+		const int32 x_count = Max(n.x, 0);
+		const int32 y_count = Max(n.y, 0);
+
+		const auto x_view = std::views::iota(0, x_count);
+		const auto y_view = std::views::iota(0, y_count);
 
 		return (std::views::cartesian_product(y_view, x_view)
-			| std::views::transform([](const auto& p) -> Point
-				{ return{ std::get<1>(p), std::get<0>(p) }; }));
+			| std::views::transform([=](const auto& p) -> Point
+				{
+					return{
+						(start.x + std::get<1>(p)),
+						(start.y + std::get<0>(p))
+					};
+				}));
 	}
 
 	constexpr auto step(const Point start, const Size n, const Size stride) noexcept
 	{
-		const auto x_view = std::views::iota(0, n.x);
-		const auto y_view = std::views::iota(0, n.y);
+		const int32 x_count = Max(n.x, 0);
+		const int32 y_count = Max(n.y, 0);
+
+		const auto x_view = std::views::iota(0, x_count);
+		const auto y_view = std::views::iota(0, y_count);
 
 		return (std::views::cartesian_product(y_view, x_view)
 			| std::views::transform([=](const auto& p) -> Point
@@ -218,8 +232,11 @@ namespace s3d
 
 	constexpr auto step_backward(const Size n) noexcept
 	{
-		const auto x_view = std::views::iota(0, n.x);
-		const auto y_view = std::views::iota(0, n.y);
+		const int32 x_count = Max(n.x, 0);
+		const int32 y_count = Max(n.y, 0);
+
+		const auto x_view = std::views::iota(0, x_count);
+		const auto y_view = std::views::iota(0, y_count);
 
 		return (std::views::cartesian_product(y_view, x_view)
 			| std::views::reverse
