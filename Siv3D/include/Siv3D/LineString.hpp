@@ -1267,6 +1267,53 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	head_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<value_type> head_span(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<const value_type> head_span(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		constexpr std::span<value_type> head_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	tail
 		//
 		////////////////////////////////////////////////////////////////
@@ -1282,6 +1329,53 @@ namespace s3d
 		/// @return 末尾の最大 n 個の要素を含む新しい LineString
 		[[nodiscard]]
 		constexpr LineString tail(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<value_type> tail_span(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<const value_type> tail_span(size_type n) const& noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		constexpr std::span<value_type> tail_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) const& noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1445,6 +1539,27 @@ namespace s3d
 		template <class Fty>
 		constexpr void reverse_each(Fty f) const
 			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の逆順ビューを返します。
+		/// @return 点列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() &;
+
+		/// @brief 点列の逆順ビューを返します。
+		/// @return 点列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() const&;
+
+		/// @brief 点列の逆順ビューを返します。
+		/// @return 点列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() &&;
 
 		////////////////////////////////////////////////////////////////
 		//

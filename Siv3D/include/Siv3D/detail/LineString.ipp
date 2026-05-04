@@ -1123,6 +1123,43 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	head_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::span<LineString::value_type> LineString::head_span(const size_type n) & noexcept
+	{
+		return m_points.head_span(n);
+	}
+
+	constexpr std::span<const LineString::value_type> LineString::head_span(const size_type n) const& noexcept
+	{
+		return m_points.head_span(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto LineString::head_view(const size_type n) & noexcept
+	{
+		return m_points.head_view(n);
+	}
+
+	constexpr auto LineString::head_view(const size_type n) const& noexcept
+	{
+		return m_points.head_view(n);
+	}
+
+	constexpr auto LineString::head_view(const size_type n) && noexcept
+	{
+		return std::move(m_points).head_view(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	tail
 	//
 	////////////////////////////////////////////////////////////////
@@ -1135,6 +1172,43 @@ namespace s3d
 	constexpr LineString LineString::tail(const size_type n) &&
 	{
 		return LineString{ std::move(m_points).tail(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::span<LineString::value_type> LineString::tail_span(const size_type n) & noexcept
+	{
+		return m_points.tail_span(n);
+	}
+
+	constexpr std::span<const LineString::value_type> LineString::tail_span(const size_type n) const& noexcept
+	{
+		return m_points.tail_span(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto LineString::tail_view(const size_type n) & noexcept
+	{
+		return m_points.tail_view(n);
+	}
+
+	constexpr auto LineString::tail_view(const size_type n) const& noexcept
+	{
+		return m_points.tail_view(n);
+	}
+
+	constexpr auto LineString::tail_view(const size_type n) && noexcept
+	{
+		return std::move(m_points).tail_view(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1281,6 +1355,27 @@ namespace s3d
 		requires std::invocable<Fty&, const value_type&>
 	{
 		m_points.reverse_each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto LineString::reverse_view() &
+	{
+		return m_points.reverse_view();
+	}
+
+	constexpr auto LineString::reverse_view() const&
+	{
+		return m_points.reverse_view();
+	}
+
+	constexpr auto LineString::reverse_view() &&
+	{
+		return std::move(m_points).reverse_view();
 	}
 
 	////////////////////////////////////////////////////////////////

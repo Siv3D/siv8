@@ -234,6 +234,55 @@ TEST_CASE("LineString.take_while_values_at")
 	CHECK_EQ(line.values_at({ 3, 1 }), LineString{ Vec2{ 3, 3 }, Vec2{ 1, 1 } });
 }
 
+TEST_CASE("LineString.span_view")
+{
+	{
+		LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+		auto head = line.head_span(2);
+		CHECK_EQ(head.size(), 2);
+		head[0] = Vec2{ 9, 9 };
+		CHECK_EQ(line.front(), Vec2{ 9, 9 });
+
+		const LineString& cref = line;
+		const auto tail = cref.tail_span(2);
+		CHECK_EQ(tail.size(), 2);
+		CHECK_EQ(tail[0], Vec2{ 2, 2 });
+	}
+
+	{
+		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+		const auto head = line.head_view(2);
+		const auto tail = line.tail_view(2);
+		const auto reversed = line.reverse_view();
+		CHECK_EQ(LineString{ head.begin(), head.end() }, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+		CHECK_EQ(LineString{ tail.begin(), tail.end() }, LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 } });
+		CHECK_EQ(LineString{ reversed.begin(), reversed.end() }, LineString{ Vec2{ 3, 3 }, Vec2{ 2, 2 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+	}
+
+	{
+		Array<Vec2> head;
+		for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.head_view(2))
+		{
+			head << p;
+		}
+		CHECK_EQ(head, Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+
+		Array<Vec2> tail;
+		for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.tail_view(2))
+		{
+			tail << p;
+		}
+		CHECK_EQ(tail, Array<Vec2>{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+
+		Array<Vec2> reversed;
+		for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.reverse_view())
+		{
+			reversed << p;
+		}
+		CHECK_EQ(reversed, Array<Vec2>{ Vec2{ 2, 2 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+	}
+}
+
 TEST_CASE("LineString.without")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
