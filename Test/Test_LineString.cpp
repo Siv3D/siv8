@@ -521,6 +521,12 @@ TEST_CASE("LineString.uniqued_consecutive")
 	CHECK_EQ(LineString{ line }.uniqued_consecutive(), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
 }
 
+TEST_CASE("LineString.sum")
+{
+	CHECK_EQ(LineString{ Vec2{ 0, 1 }, Vec2{ 2, 3 }, Vec2{ 4, 5 } }.sum(), Vec2{ 6, 9 });
+	CHECK_EQ(LineString{}.sum(), Vec2{ 0, 0 });
+}
+
 TEST_CASE("LineString.sort_by")
 {
 	const auto compareX = [](const Vec2& a, const Vec2& b) { return (a.x < b.x); };
