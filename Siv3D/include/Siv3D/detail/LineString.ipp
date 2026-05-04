@@ -977,6 +977,153 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	slice
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::slice(const size_type index, const size_type length) const&
+	{
+		return LineString{ m_points.slice(index, length) };
+	}
+
+	constexpr LineString LineString::slice(const size_type index, const size_type length) &&
+	{
+		return LineString{ std::move(m_points).slice(index, length) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::head(const size_type n) const&
+	{
+		return LineString{ m_points.head(n) };
+	}
+
+	constexpr LineString LineString::head(const size_type n) &&
+	{
+		return LineString{ std::move(m_points).head(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::tail(const size_type n) const&
+	{
+		return LineString{ m_points.tail(n) };
+	}
+
+	constexpr LineString LineString::tail(const size_type n) &&
+	{
+		return LineString{ std::move(m_points).tail(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::take(const size_type n) const&
+	{
+		return LineString{ m_points.take(n) };
+	}
+
+	constexpr LineString LineString::take(const size_type n) &&
+	{
+		return LineString{ std::move(m_points).take(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take_while
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString LineString::take_while(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.take_while(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::take_while(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).take_while(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	values_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::values_at(const std::initializer_list<size_type> indices) const
+	{
+		return LineString{ m_points.values_at(indices) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::without(const value_type& value) const&
+	{
+		return LineString{ m_points.without(value) };
+	}
+
+	constexpr LineString LineString::without(const value_type& value) &&
+	{
+		return LineString{ std::move(m_points).without(value) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::without_at(const size_type index) const&
+	{
+		return LineString{ m_points.without_at(index) };
+	}
+
+	constexpr LineString LineString::without_at(const size_type index) &&
+	{
+		return LineString{ std::move(m_points).without_at(index) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString LineString::without_if(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.without_if(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::without_if(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).without_if(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	hash
 	//
 	////////////////////////////////////////////////////////////////

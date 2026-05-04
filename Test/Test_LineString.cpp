@@ -152,3 +152,33 @@ TEST_CASE("LineString.fetch_indexOf")
 	CHECK_EQ(*index, 1);
 	CHECK_FALSE(line.indexOf(Vec2{ 9, 9 }).has_value());
 }
+
+TEST_CASE("LineString.slice_head_tail_take")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	CHECK_EQ(line.slice(1, 2), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.slice(1, 2), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	CHECK_EQ(line.head(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	CHECK_EQ(line.tail(2), LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 } });
+	CHECK_EQ(line.take(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.take(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+}
+
+TEST_CASE("LineString.take_while_values_at")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	CHECK_EQ(line.take_while([](const Vec2& p) { return (p.x < 2); }), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.take_while([](const Vec2& p) { return (p.x < 2); }), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	CHECK_EQ(line.values_at({ 3, 1 }), LineString{ Vec2{ 3, 3 }, Vec2{ 1, 1 } });
+}
+
+TEST_CASE("LineString.without")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
+	CHECK_EQ(line.without(Vec2{ 0, 0 }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } }.without(Vec2{ 0, 0 }), LineString{ Vec2{ 1, 1 } });
+	CHECK_EQ(line.without_at(1), LineString{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.without_at(1), LineString{ Vec2{ 0, 0 }, Vec2{ 2, 2 } });
+	CHECK_EQ(line.without_if([](const Vec2& p) { return (p.x == 0); }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.without_if([](const Vec2& p) { return (p.x == 0); }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+}

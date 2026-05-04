@@ -1107,6 +1107,176 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した範囲の要素からなる新しい LineString を返します。
+		/// @param index インデックス
+		/// @param length 長さ
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString slice(size_type index, size_type length) const&;
+
+		/// @brief 指定した範囲の要素からなる新しい LineString を返します。
+		/// @param index インデックス
+		/// @param length 長さ
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString slice(size_type index, size_type length) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString head(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString head(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾の最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString tail(size_type n) const&;
+
+		/// @brief 末尾の最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾の最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString tail(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString take(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString take(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take_while
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString take_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString take_while(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	values_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素からなる新しい LineString を返します。
+		/// @param indices インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい LineString を返します。
+		/// @param value 削除する値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without(const value_type& value) const&;
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい LineString を返します。
+		/// @param value 削除する値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without(const value_type& value) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除した新しい LineString を返します。
+		/// @param index インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without_at(size_type index) const&;
+
+		/// @brief 指定したインデックスにある要素を削除した新しい LineString を返します。
+		/// @param index インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without_at(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を配列から削除した新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たす要素を配列から削除した新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString without_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	hash
 		//
 		////////////////////////////////////////////////////////////////
@@ -1185,12 +1355,6 @@ namespace s3d
 //		SIV3D_CONCEPT_URBG
 //			LineString& shuffle(URBG&& rbg);
 //
-//		[[nodiscard]]
-//		LineString slice(size_t index) const;
-//
-//		[[nodiscard]]
-//		LineString slice(size_t index, size_t length) const;
-
 		constexpr LineString& unique_consecutive();
 
 //		[[nodiscard]]
