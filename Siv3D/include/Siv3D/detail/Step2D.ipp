@@ -31,15 +31,15 @@ namespace s3d
 					, m_startX{ 0 }
 					, m_step_counter{ 0, 0 }
 					, m_counter{ 0, 0 }
-					, m_step{ 0, 0 } {}
+					, m_stride{ 0, 0 } {}
 
 				[[nodiscard]]
-				constexpr Iterator(Size steps_count, Size start, Size step) noexcept
-					: m_countX{ steps_count.x }
+				constexpr Iterator(Size step_count, Point start, Size stride) noexcept
+					: m_countX{ step_count.x }
 					, m_startX{ start.x }
-					, m_step_counter{ steps_count }
+					, m_step_counter{ step_count }
 					, m_counter{ start }
-					, m_step{ step } {}
+					, m_stride{ stride } {}
 
 				constexpr Iterator& operator ++() noexcept
 				{
@@ -51,13 +51,13 @@ namespace s3d
 
 						m_counter.x = m_startX;
 
-						m_counter.y = (m_counter.y + m_step.y);
+						m_counter.y = (m_counter.y + m_stride.y);
 					}
 					else
 					{
 						--m_step_counter.x;
 
-						m_counter.x = (m_counter.x + m_step.x);
+						m_counter.x = (m_counter.x + m_stride.x);
 					}
 
 					return *this;
@@ -90,6 +90,12 @@ namespace s3d
 					return (m_step_counter == r.m_step_counter);
 				}
 
+				[[nodiscard]]
+				constexpr bool operator !=(const Iterator& r) const noexcept
+				{
+					return !(*this == r);
+				}
+
 			private:
 
 				int32 m_countX;
@@ -98,31 +104,34 @@ namespace s3d
 
 				Size m_step_counter;
 
-				Size m_counter;
+				Point m_counter;
 
-				Size m_step;
+				Size m_stride;
 			};
 
 			using iterator = Iterator;
 
 			[[nodiscard]]
-			constexpr Step2D(Point start, Size step_count, Size step) noexcept
+			constexpr Step2D(Point start, Size step_count, Size stride) noexcept
 				: m_start{ start }
 				, m_step_count{ step_count }
-				, m_step_length{ step }
-				, m_end_iterator{ { step_count.x, 0 }, Size{ 0, 0 }, Size{ 0, 0 } }
-				, m_start_iterator{ step_count, start, step } {}
+				, m_stride{ stride } {}
 
 			[[nodiscard]]
 			constexpr iterator begin() const noexcept
 			{
-				return m_start_iterator;
+				if ((m_step_count.x <= 0) || (m_step_count.y <= 0))
+				{
+					return end();
+				}
+
+				return iterator{ m_step_count, m_start, m_stride };
 			}
 
 			[[nodiscard]]
 			constexpr iterator end() const noexcept
 			{
-				return m_end_iterator;
+				return iterator{ Size{ m_step_count.x, 0 }, Point{ 0, 0 }, Size{ 0, 0 } };
 			}
 
 		private:
@@ -131,11 +140,7 @@ namespace s3d
 
 			Size m_step_count;
 
-			Size m_step_length;
-
-			iterator m_end_iterator;
-
-			iterator m_start_iterator;
+			Size m_stride;
 		};
 	}
 
@@ -153,6 +158,7 @@ namespace s3d
 	{
 		const auto x_view = std::views::iota(0, n.x);
 		const auto y_view = std::views::iota(0, n.y);
+
 		return (std::views::cartesian_product(y_view, x_view)
 			| std::views::transform([](const auto& p) -> Point
 				{ return{ std::get<1>(p), std::get<0>(p) }; }));
@@ -162,35 +168,42 @@ namespace s3d
 	{
 		const auto x_view = std::views::iota(start.x, (start.x + n.x));
 		const auto y_view = std::views::iota(start.y, (start.y + n.y));
+
 		return (std::views::cartesian_product(y_view, x_view)
-			| std::views::transform([](const auto& p) -> Point 
+			| std::views::transform([](const auto& p) -> Point
 				{ return{ std::get<1>(p), std::get<0>(p) }; }));
 	}
 
-	constexpr auto step(const Point start, const Size n, const Size step) noexcept
+	constexpr auto step(const Point start, const Size n, const Size stride) noexcept
 	{
 		const auto x_view = std::views::iota(0, n.x);
 		const auto y_view = std::views::iota(0, n.y);
+
 		return (std::views::cartesian_product(y_view, x_view)
-			| std::views::transform([=](const auto& p) -> Point 
-				{ return{ (start.x + std::get<1>(p) * step.x),  (start.y + std::get<0>(p) * step.y) }; }));
+			| std::views::transform([=](const auto& p) -> Point
+				{
+					return{
+						(start.x + std::get<1>(p) * stride.x),
+						(start.y + std::get<0>(p) * stride.y)
+					};
+				}));
 	}
 
 # else
 
 	constexpr auto step(const Size n) noexcept
 	{
-		return detail::Step2D{ Point{ 0, 0 }, n, Point{ 1, 1 } };
+		return detail::Step2D{ Point{ 0, 0 }, n, Size{ 1, 1 } };
 	}
 
 	constexpr auto step(const Point start, const Size n) noexcept
 	{
-		return detail::Step2D{ start, n, Point{ 1, 1 } };
+		return detail::Step2D{ start, n, Size{ 1, 1 } };
 	}
 
-	constexpr auto step(const Point start, const Size n, const Size step) noexcept
+	constexpr auto step(const Point start, const Size n, const Size stride) noexcept
 	{
-		return detail::Step2D{ start, n, step };
+		return detail::Step2D{ start, n, stride };
 	}
 
 # endif
@@ -203,14 +216,14 @@ namespace s3d
 
 # ifdef __cpp_lib_ranges_cartesian_product
 
-	[[nodiscard]]
 	constexpr auto step_backward(const Size n) noexcept
 	{
 		const auto x_view = std::views::iota(0, n.x);
 		const auto y_view = std::views::iota(0, n.y);
+
 		return (std::views::cartesian_product(y_view, x_view)
 			| std::views::reverse
-			| std::views::transform([](const auto& p) -> Point 
+			| std::views::transform([](const auto& p) -> Point
 				{ return{ std::get<1>(p), std::get<0>(p) }; }));
 	}
 
