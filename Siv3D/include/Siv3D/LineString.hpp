@@ -1064,6 +1064,66 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_index
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_index(Fty f)
+			requires std::invocable<Fty&, size_t, value_type&>;
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_sindex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_sindex(Fty f)
+			requires std::invocable<Fty&, isize, value_type&>;
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	fetch
 		//
 		////////////////////////////////////////////////////////////////
@@ -1081,6 +1141,32 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	fill
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値をすべての要素に代入します。
+		/// @param value 代入する値
+		/// @return *this
+		constexpr LineString& fill(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	filter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素だけを集めた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 指定した条件を満たす要素を集めた新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	indexOf
 		//
 		////////////////////////////////////////////////////////////////
@@ -1090,6 +1176,41 @@ namespace s3d
 		/// @return 指定した値と等しい最初の要素のインデックス。見つからなかった場合は none
 		[[nodiscard]]
 		constexpr Optional<size_t> indexOf(const value_type& value) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	join
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		String join(StringView sep = U", ") const;
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
+		/// @param begin 先頭に挿入する文字列
+		/// @param end 末尾に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		String join(StringView sep, StringView begin, StringView end) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	map
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素に関数を適用した戻り値からなる新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1307,6 +1428,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から順番に、すべての要素に対して関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief 末尾から順番に、すべての要素に対して関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	shuffle, shuffled
 		//
 		////////////////////////////////////////////////////////////////
@@ -1392,11 +1533,6 @@ namespace s3d
 //		[[nodiscard]]
 //		LineString choice(Size_t n, URBG&& rbg) const;
 //
-//		LineString& fill(const value_type& value);
-//
-//		[[nodiscard]]
-//		String join(StringView sep = U", "_sv, StringView begin = U"{"_sv, StringView end = U"}"_sv) const;
-//
 //		LineString& remove(const value_type& value);
 //
 //		LineString& remove_at(size_t index);
@@ -1430,11 +1566,15 @@ namespace s3d
 
 		constexpr LineString& unique_consecutive();
 
-//		[[nodiscard]]
-//		LineString uniqued_consecutive() const&;
-//
-//		[[nodiscard]]
-//		LineString uniqued_consecutive()&&;
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString uniqued_consecutive() const&;
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString uniqued_consecutive() && noexcept;
 
 
 		////////////////////////////////////////////////////////////////

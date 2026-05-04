@@ -153,6 +153,68 @@ TEST_CASE("LineString.fetch_indexOf")
 	CHECK_FALSE(line.indexOf(Vec2{ 9, 9 }).has_value());
 }
 
+TEST_CASE("LineString.each")
+{
+	{
+		LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 } };
+		line.each([](Vec2& p) { p.x += 10; });
+		CHECK_EQ(line, LineString{ Vec2{ 10, 0 }, Vec2{ 11, 1 } });
+	}
+
+	{
+		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 } };
+		double sum = 0;
+		line.each([&](const Vec2& p) { sum += p.x; });
+		CHECK_EQ(sum, 1);
+	}
+
+	{
+		LineString line{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } };
+		line.each_index([](size_t i, Vec2& p) { p.x = static_cast<double>(i); });
+		line.each_sindex([](isize i, Vec2& p) { p.y = static_cast<double>(i); });
+		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+	}
+
+	{
+		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } };
+		size_t indexSum = 0;
+		isize sindexSum = 0;
+		line.each_index([&](size_t i, const Vec2&) { indexSum += i; });
+		line.each_sindex([&](isize i, const Vec2&) { sindexSum += i; });
+		CHECK_EQ(indexSum, 3);
+		CHECK_EQ(sindexSum, 3);
+	}
+}
+
+TEST_CASE("LineString.fill_filter_map_join")
+{
+	{
+		LineString line(3);
+		CHECK_EQ(&(line.fill(Vec2{ 1, 1 })), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 1, 1 } });
+	}
+
+	{
+		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
+		CHECK_EQ(line.filter([](const Vec2& p) { return (p.y == 0); }), LineString{ Vec2{ 0, 0 }, Vec2{ 2, 0 } });
+		CHECK_EQ(line.map([](const Vec2& p) { return p.x; }), Array<double>{ 0, 1, 2 });
+		CHECK_EQ(line.join(U" / "), line.asArray().join(U" / "));
+		CHECK_EQ(line.join(U" / ", U"[", U"]"), line.asArray().join(U" / ", U"[", U"]"));
+	}
+}
+
+TEST_CASE("LineString.reverse_each")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } };
+	Array<Vec2> visited;
+	line.reverse_each([&](const Vec2& p) { visited << p; });
+	CHECK_EQ(visited, Array<Vec2>{ Vec2{ 2, 2 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+
+	LineString moved{ line };
+	moved.reverse_each([](Vec2& p) { p.y += 10; });
+	CHECK_EQ(moved, LineString{ Vec2{ 0, 10 }, Vec2{ 1, 11 }, Vec2{ 2, 12 } });
+}
+
 TEST_CASE("LineString.slice_head_tail_take")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
@@ -219,4 +281,12 @@ TEST_CASE("LineString.shuffle")
 	CHECK_EQ(LineString{ source }.shuffle(rng3), LineString{ source }.shuffled(rng4));
 	CHECK_EQ(source.shuffled().size(), source.size());
 	CHECK_EQ(LineString{ source }.shuffle().size(), source.size());
+}
+
+TEST_CASE("LineString.uniqued_consecutive")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } };
+	CHECK_EQ(line.uniqued_consecutive(), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+	CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+	CHECK_EQ(LineString{ line }.uniqued_consecutive(), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
 }

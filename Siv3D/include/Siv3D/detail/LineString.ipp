@@ -931,6 +931,66 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::each(Fty f)
+		requires std::invocable<Fty&, value_type&>
+	{
+		m_points.each(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		m_points.each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_index
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::each_index(Fty f)
+		requires std::invocable<Fty&, size_t, value_type&>
+	{
+		m_points.each_index(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::each_index(Fty f) const
+		requires std::invocable<Fty&, size_t, const value_type&>
+	{
+		m_points.each_index(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_sindex
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::each_sindex(Fty f)
+		requires std::invocable<Fty&, isize, value_type&>
+	{
+		m_points.each_sindex(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::each_sindex(Fty f) const
+		requires std::invocable<Fty&, isize, const value_type&>
+	{
+		m_points.each_sindex(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	fetch
 	//
 	////////////////////////////////////////////////////////////////
@@ -941,6 +1001,31 @@ namespace s3d
 		requires std::constructible_from<value_type, U>
 	{
 		return m_points.fetch(index, std::forward<U>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::fill(const value_type& value)
+	{
+		m_points.fill(value);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	filter
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString LineString::filter(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.filter(std::forward<Fty>(f)) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -960,6 +1045,35 @@ namespace s3d
 		{
 			return s3d::none;
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	join
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline String LineString::join(const StringView sep) const
+	{
+		return m_points.join(sep);
+	}
+
+	inline String LineString::join(const StringView sep, const StringView begin, const StringView end) const
+	{
+		return m_points.join(sep, begin, end);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	map
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr auto LineString::map(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		return m_points.map(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1151,6 +1265,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	reverse_each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::reverse_each(Fty f)
+		requires std::invocable<Fty&, value_type&>
+	{
+		m_points.reverse_each(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::reverse_each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		m_points.reverse_each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	shuffle, shuffled
 	//
 	////////////////////////////////////////////////////////////////
@@ -1247,6 +1381,16 @@ namespace s3d
 	{
 		m_points.unique_consecutive();
 		return *this;
+	}
+
+	constexpr LineString LineString::uniqued_consecutive() const&
+	{
+		return LineString{ m_points.uniqued_consecutive() };
+	}
+
+	constexpr LineString LineString::uniqued_consecutive() && noexcept
+	{
+		return LineString{ std::move(m_points).uniqued_consecutive() };
 	}
 
 	////////////////////////////////////////////////////////////////
