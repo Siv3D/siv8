@@ -182,3 +182,41 @@ TEST_CASE("LineString.without")
 	CHECK_EQ(line.without_if([](const Vec2& p) { return (p.x == 0); }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.without_if([](const Vec2& p) { return (p.x == 0); }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
 }
+
+TEST_CASE("LineString.rotate")
+{
+	{
+		LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+		CHECK_EQ(&(line.rotate(2)), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	}
+
+	{
+		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+		CHECK_EQ(line.rotated(1), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 0, 0 } });
+		CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.rotate(1), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 0, 0 } });
+		CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.rotated(2), LineString{ Vec2{ 2, 2 }, Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	}
+}
+
+TEST_CASE("LineString.shuffle")
+{
+	const LineString source{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 4, 4 } };
+	std::mt19937 rng1{ 12345 };
+	std::mt19937 rng2{ 12345 };
+	LineString shuffled = source;
+	CHECK_EQ(&(shuffled.shuffle(rng1)), &shuffled);
+	CHECK_EQ(shuffled, source.shuffled(rng2));
+	CHECK_EQ(source, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 4, 4 } });
+
+	for (const auto& point : source)
+	{
+		CHECK_EQ(shuffled.count(point), 1);
+	}
+
+	std::mt19937 rng3{ 12345 };
+	std::mt19937 rng4{ 12345 };
+	CHECK_EQ(LineString{ source }.shuffle(rng3), LineString{ source }.shuffled(rng4));
+	CHECK_EQ(source.shuffled().size(), source.size());
+	CHECK_EQ(LineString{ source }.shuffle().size(), source.size());
+}

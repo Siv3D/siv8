@@ -15,6 +15,7 @@
 # include "ColorHSV.hpp"
 # include "Array.hpp"
 # include "ArrayAlgorithm.hpp"
+# include "ArrayRandom.hpp"
 # include "2DShapes.hpp"
 # include "PredefinedYesNo.hpp"
 # include "RangeFormatter.hpp"
@@ -1277,6 +1278,83 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	rotate, rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えます。
+		/// @param middle 境の位置
+		/// @return *this
+		constexpr LineString& rotate(size_type middle)&;
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @param middle 境の位置
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString rotate(size_type middle) &&;
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @param middle 境の位置
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString rotated(size_type middle) const&;
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @param middle 境の位置
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString rotated(size_type middle) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shuffle, shuffled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の並び順をランダムにシャッフルします。
+		/// @return *this
+		constexpr LineString& shuffle()&;
+
+		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffle() &&;
+
+		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled() const&;
+
+		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled() &&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルします。
+		/// @param rbg 使用する乱数エンジン
+		/// @return *this
+		constexpr LineString& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	hash
 		//
 		////////////////////////////////////////////////////////////////
@@ -1350,11 +1428,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString reversed() && noexcept;
 
-//		LineString& shuffle();
-//
-//		SIV3D_CONCEPT_URBG
-//			LineString& shuffle(URBG&& rbg);
-//
 		constexpr LineString& unique_consecutive();
 
 //		[[nodiscard]]

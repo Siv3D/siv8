@@ -1124,6 +1124,81 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rotate, rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::rotate(const size_type middle)&
+	{
+		m_points.rotate(middle);
+		return *this;
+	}
+
+	constexpr LineString LineString::rotate(const size_type middle) &&
+	{
+		return LineString{ std::move(m_points).rotate(middle) };
+	}
+
+	constexpr LineString LineString::rotated(const size_type middle) const&
+	{
+		return LineString{ m_points.rotated(middle) };
+	}
+
+	constexpr LineString LineString::rotated(const size_type middle) &&
+	{
+		return LineString{ std::move(m_points).rotated(middle) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shuffle, shuffled
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::shuffle()&
+	{
+		m_points.shuffle();
+		return *this;
+	}
+
+	constexpr LineString LineString::shuffle() &&
+	{
+		return LineString{ std::move(m_points).shuffle() };
+	}
+
+	constexpr LineString LineString::shuffled() const&
+	{
+		return LineString{ m_points.shuffled() };
+	}
+
+	constexpr LineString LineString::shuffled() &&
+	{
+		return LineString{ std::move(m_points).shuffled() };
+	}
+
+	constexpr LineString& LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	{
+		m_points.shuffle(std::forward<decltype(rbg)>(rbg));
+		return *this;
+	}
+
+	constexpr LineString LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&
+	{
+		return LineString{ std::move(m_points).shuffle(std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	{
+		return LineString{ m_points.shuffled(std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&
+	{
+		return LineString{ std::move(m_points).shuffled(std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	hash
 	//
 	////////////////////////////////////////////////////////////////
