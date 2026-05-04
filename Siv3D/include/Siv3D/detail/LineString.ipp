@@ -919,6 +919,35 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	chunk
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Array<LineString> LineString::chunk(const size_type n) const
+	{
+		Array<LineString> result;
+
+		if (n == 0)
+		{
+			return result;
+		}
+
+		const size_type s = size();
+		const size_type chunkCount = (s + n - 1) / n;
+		result.reserve(chunkCount);
+
+		for (size_type i = 0; i < chunkCount; ++i)
+		{
+			const size_type index = (i * n);
+			const size_type length = Min((s - index), n);
+			result.push_back(slice(index, length));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	contains
 	//
 	////////////////////////////////////////////////////////////////
@@ -1062,6 +1091,46 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return LineString{ m_points.filter(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	in_groups
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Array<LineString> LineString::in_groups(const size_type group) const
+	{
+		Array<LineString> result;
+
+		if (group == 0)
+		{
+			return result;
+		}
+
+		const size_type s = size();
+
+		if (s == 0)
+		{
+			return result;
+		}
+
+		const size_type g = Min(group, s);
+		result.reserve(g);
+
+		const size_type div = (s / g);
+		const size_type mod = (s % g);
+
+		size_type index = 0;
+
+		for (size_type i = 0; i < g; ++i)
+		{
+			const size_type length = (div + (i < mod ? 1 : 0));
+			result.push_back(slice(index, length));
+			index += length;
+		}
+
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////

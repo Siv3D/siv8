@@ -76,13 +76,23 @@ TEST_CASE("LineString.erase_first_if")
 	CHECK_FALSE(line.erase_first_if([](const Vec2& p) { return (p.x == 9); }));
 }
 
-TEST_CASE("LineString.all_any_none")
+TEST_CASE("LineString.all")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
 	CHECK(line.all([](const Vec2& p) { return (0 <= p.x); }));
 	CHECK_FALSE(line.all([](const Vec2& p) { return (p.y == 0); }));
+}
+
+TEST_CASE("LineString.any")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
 	CHECK(line.any([](const Vec2& p) { return (p.y == 1); }));
 	CHECK_FALSE(line.any([](const Vec2& p) { return (p.x == 9); }));
+}
+
+TEST_CASE("LineString.none")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
 	CHECK(line.none([](const Vec2& p) { return (p.x == 9); }));
 	CHECK_FALSE(line.none([](const Vec2& p) { return (p.y == 1); }));
 }
@@ -161,24 +171,73 @@ TEST_CASE("LineString.choice")
 	}
 }
 
-TEST_CASE("LineString.contains_count")
+TEST_CASE("LineString.chunk")
+{
+	const LineString source{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 4, 4 }, Vec2{ 5, 5 }, Vec2{ 6, 6 } };
+
+	CHECK_EQ(source.chunk(3), Array<LineString>{
+		LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } },
+		LineString{ Vec2{ 3, 3 }, Vec2{ 4, 4 }, Vec2{ 5, 5 } },
+		LineString{ Vec2{ 6, 6 } },
+	});
+	CHECK(source.chunk(0).isEmpty());
+	CHECK(LineString{}.chunk(3).isEmpty());
+}
+
+TEST_CASE("LineString.in_groups")
+{
+	const LineString source{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 4, 4 }, Vec2{ 5, 5 }, Vec2{ 6, 6 } };
+
+	CHECK_EQ(source.in_groups(3), Array<LineString>{
+		LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } },
+		LineString{ Vec2{ 3, 3 }, Vec2{ 4, 4 } },
+		LineString{ Vec2{ 5, 5 }, Vec2{ 6, 6 } },
+	});
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } }.in_groups(5), Array<LineString>{
+		LineString{ Vec2{ 0, 0 } },
+		LineString{ Vec2{ 1, 1 } },
+	});
+	CHECK(source.in_groups(0).isEmpty());
+	CHECK(LineString{}.in_groups(3).isEmpty());
+}
+
+TEST_CASE("LineString.contains")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 } };
 	CHECK(line.contains(Vec2{ 1, 1 }));
 	CHECK_FALSE(line.contains(Vec2{ 9, 9 }));
+}
+
+TEST_CASE("LineString.contains_if")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 } };
 	CHECK(line.contains_if([](const Vec2& p) { return (p.x == 2); }));
 	CHECK_FALSE(line.contains_if([](const Vec2& p) { return (p.y == 9); }));
+}
+
+TEST_CASE("LineString.count")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 } };
 	CHECK_EQ(line.count(Vec2{ 0, 0 }), 2);
 	CHECK_EQ(line.count(Vec2{ 9, 9 }), 0);
+}
+
+TEST_CASE("LineString.count_if")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 } };
 	CHECK_EQ(line.count_if([](const Vec2& p) { return (p.y == 0); }), 3);
 }
 
-TEST_CASE("LineString.fetch_indexOf")
+TEST_CASE("LineString.fetch")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
 	CHECK_EQ(line.fetch(1, Vec2{ 9, 9 }), Vec2{ 1, 1 });
 	CHECK_EQ(line.fetch(9, Vec2{ 9, 9 }), Vec2{ 9, 9 });
+}
 
+TEST_CASE("LineString.indexOf")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
 	const auto index = line.indexOf(Vec2{ 1, 1 });
 	CHECK(index.has_value());
 	CHECK_EQ(*index, 1);
@@ -187,52 +246,64 @@ TEST_CASE("LineString.fetch_indexOf")
 
 TEST_CASE("LineString.each")
 {
-	{
-		LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 } };
-		line.each([](Vec2& p) { p.x += 10; });
-		CHECK_EQ(line, LineString{ Vec2{ 10, 0 }, Vec2{ 11, 1 } });
-	}
+	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 } };
+	line.each([](Vec2& p) { p.x += 10; });
+	CHECK_EQ(line, LineString{ Vec2{ 10, 0 }, Vec2{ 11, 1 } });
 
-	{
-		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 } };
-		double sum = 0;
-		line.each([&](const Vec2& p) { sum += p.x; });
-		CHECK_EQ(sum, 1);
-	}
-
-	{
-		LineString line{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } };
-		line.each_index([](size_t i, Vec2& p) { p.x = static_cast<double>(i); });
-		line.each_sindex([](isize i, Vec2& p) { p.y = static_cast<double>(i); });
-		CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } });
-	}
-
-	{
-		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } };
-		size_t indexSum = 0;
-		isize sindexSum = 0;
-		line.each_index([&](size_t i, const Vec2&) { indexSum += i; });
-		line.each_sindex([&](isize i, const Vec2&) { sindexSum += i; });
-		CHECK_EQ(indexSum, 3);
-		CHECK_EQ(sindexSum, 3);
-	}
+	const LineString constLine{ Vec2{ 0, 0 }, Vec2{ 1, 1 } };
+	double sum = 0;
+	constLine.each([&](const Vec2& p) { sum += p.x; });
+	CHECK_EQ(sum, 1);
 }
 
-TEST_CASE("LineString.fill_filter_map_join")
+TEST_CASE("LineString.each_index")
 {
-	{
-		LineString line(3);
-		CHECK_EQ(&(line.fill(Vec2{ 1, 1 })), &line);
-		CHECK_EQ(line, LineString{ Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 1, 1 } });
-	}
+	LineString line{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } };
+	line.each_index([](size_t i, Vec2& p) { p.x = static_cast<double>(i); });
+	CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 0 }, Vec2{ 2, 0 } });
 
-	{
-		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
-		CHECK_EQ(line.filter([](const Vec2& p) { return (p.y == 0); }), LineString{ Vec2{ 0, 0 }, Vec2{ 2, 0 } });
-		CHECK_EQ(line.map([](const Vec2& p) { return p.x; }), Array<double>{ 0, 1, 2 });
-		CHECK_EQ(line.join(U" / "), line.asArray().join(U" / "));
-		CHECK_EQ(line.join(U" / ", U"[", U"]"), line.asArray().join(U" / ", U"[", U"]"));
-	}
+	const LineString constLine{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } };
+	size_t indexSum = 0;
+	constLine.each_index([&](size_t i, const Vec2&) { indexSum += i; });
+	CHECK_EQ(indexSum, 3);
+}
+
+TEST_CASE("LineString.each_sindex")
+{
+	LineString line{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } };
+	line.each_sindex([](isize i, Vec2& p) { p.y = static_cast<double>(i); });
+	CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 0, 1 }, Vec2{ 0, 2 } });
+
+	const LineString constLine{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } };
+	isize sindexSum = 0;
+	constLine.each_sindex([&](isize i, const Vec2&) { sindexSum += i; });
+	CHECK_EQ(sindexSum, 3);
+}
+
+TEST_CASE("LineString.fill")
+{
+	LineString line(3);
+	CHECK_EQ(&(line.fill(Vec2{ 1, 1 })), &line);
+	CHECK_EQ(line, LineString{ Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 1, 1 } });
+}
+
+TEST_CASE("LineString.filter")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
+	CHECK_EQ(line.filter([](const Vec2& p) { return (p.y == 0); }), LineString{ Vec2{ 0, 0 }, Vec2{ 2, 0 } });
+}
+
+TEST_CASE("LineString.map")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
+	CHECK_EQ(line.map([](const Vec2& p) { return p.x; }), Array<double>{ 0, 1, 2 });
+}
+
+TEST_CASE("LineString.join")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
+	CHECK_EQ(line.join(U" / "), line.asArray().join(U" / "));
+	CHECK_EQ(line.join(U" / ", U"[", U"]"), line.asArray().join(U" / ", U"[", U"]"));
 }
 
 TEST_CASE("LineString.reverse_each")
@@ -247,72 +318,102 @@ TEST_CASE("LineString.reverse_each")
 	CHECK_EQ(moved, LineString{ Vec2{ 0, 10 }, Vec2{ 1, 11 }, Vec2{ 2, 12 } });
 }
 
-TEST_CASE("LineString.slice_head_tail_take")
+TEST_CASE("LineString.slice")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	CHECK_EQ(line.slice(1, 2), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.slice(1, 2), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+}
+
+TEST_CASE("LineString.head")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	CHECK_EQ(line.head(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+}
+
+TEST_CASE("LineString.tail")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	CHECK_EQ(line.tail(2), LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 } });
+}
+
+TEST_CASE("LineString.take")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	CHECK_EQ(line.take(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.take(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
 }
 
-TEST_CASE("LineString.take_while_values_at")
+TEST_CASE("LineString.take_while")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	CHECK_EQ(line.take_while([](const Vec2& p) { return (p.x < 2); }), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.take_while([](const Vec2& p) { return (p.x < 2); }), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+}
+
+TEST_CASE("LineString.values_at")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	CHECK_EQ(line.values_at({ 3, 1 }), LineString{ Vec2{ 3, 3 }, Vec2{ 1, 1 } });
 }
 
-TEST_CASE("LineString.span_view")
+TEST_CASE("LineString.head_span")
 {
+	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	auto head = line.head_span(2);
+	CHECK_EQ(head.size(), 2);
+	head[0] = Vec2{ 9, 9 };
+	CHECK_EQ(line.front(), Vec2{ 9, 9 });
+}
+
+TEST_CASE("LineString.tail_span")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	const auto tail = line.tail_span(2);
+	CHECK_EQ(tail.size(), 2);
+	CHECK_EQ(tail[0], Vec2{ 2, 2 });
+}
+
+TEST_CASE("LineString.head_view")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	const auto head = line.head_view(2);
+	CHECK_EQ(LineString{ head.begin(), head.end() }, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+
+	Array<Vec2> rvalueHead;
+	for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.head_view(2))
 	{
-		LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
-		auto head = line.head_span(2);
-		CHECK_EQ(head.size(), 2);
-		head[0] = Vec2{ 9, 9 };
-		CHECK_EQ(line.front(), Vec2{ 9, 9 });
-
-		const LineString& cref = line;
-		const auto tail = cref.tail_span(2);
-		CHECK_EQ(tail.size(), 2);
-		CHECK_EQ(tail[0], Vec2{ 2, 2 });
+		rvalueHead << p;
 	}
+	CHECK_EQ(rvalueHead, Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+}
 
+TEST_CASE("LineString.tail_view")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	const auto tail = line.tail_view(2);
+	CHECK_EQ(LineString{ tail.begin(), tail.end() }, LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 } });
+
+	Array<Vec2> rvalueTail;
+	for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.tail_view(2))
 	{
-		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
-		const auto head = line.head_view(2);
-		const auto tail = line.tail_view(2);
-		const auto reversed = line.reverse_view();
-		CHECK_EQ(LineString{ head.begin(), head.end() }, LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
-		CHECK_EQ(LineString{ tail.begin(), tail.end() }, LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 } });
-		CHECK_EQ(LineString{ reversed.begin(), reversed.end() }, LineString{ Vec2{ 3, 3 }, Vec2{ 2, 2 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+		rvalueTail << p;
 	}
+	CHECK_EQ(rvalueTail, Array<Vec2>{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
+}
 
+TEST_CASE("LineString.reverse_view")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	const auto reversed = line.reverse_view();
+	CHECK_EQ(LineString{ reversed.begin(), reversed.end() }, LineString{ Vec2{ 3, 3 }, Vec2{ 2, 2 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+
+	Array<Vec2> rvalueReversed;
+	for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.reverse_view())
 	{
-		Array<Vec2> head;
-		for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.head_view(2))
-		{
-			head << p;
-		}
-		CHECK_EQ(head, Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
-
-		Array<Vec2> tail;
-		for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.tail_view(2))
-		{
-			tail << p;
-		}
-		CHECK_EQ(tail, Array<Vec2>{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
-
-		Array<Vec2> reversed;
-		for (const auto& p : LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.reverse_view())
-		{
-			reversed << p;
-		}
-		CHECK_EQ(reversed, Array<Vec2>{ Vec2{ 2, 2 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
+		rvalueReversed << p;
 	}
+	CHECK_EQ(rvalueReversed, Array<Vec2>{ Vec2{ 2, 2 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
 }
 
 TEST_CASE("LineString.without")
@@ -320,26 +421,35 @@ TEST_CASE("LineString.without")
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
 	CHECK_EQ(line.without(Vec2{ 0, 0 }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } }.without(Vec2{ 0, 0 }), LineString{ Vec2{ 1, 1 } });
+}
+
+TEST_CASE("LineString.without_at")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
 	CHECK_EQ(line.without_at(1), LineString{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } });
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.without_at(1), LineString{ Vec2{ 0, 0 }, Vec2{ 2, 2 } });
+}
+
+TEST_CASE("LineString.without_if")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
 	CHECK_EQ(line.without_if([](const Vec2& p) { return (p.x == 0); }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
 	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.without_if([](const Vec2& p) { return (p.x == 0); }), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
 }
 
 TEST_CASE("LineString.rotate")
 {
-	{
-		LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
-		CHECK_EQ(&(line.rotate(2)), &line);
-		CHECK_EQ(line, LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 0, 0 }, Vec2{ 1, 1 } });
-	}
+	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	CHECK_EQ(&(line.rotate(2)), &line);
+	CHECK_EQ(line, LineString{ Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.rotate(1), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 0, 0 } });
+}
 
-	{
-		const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
-		CHECK_EQ(line.rotated(1), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 0, 0 } });
-		CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.rotate(1), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 0, 0 } });
-		CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.rotated(2), LineString{ Vec2{ 2, 2 }, Vec2{ 0, 0 }, Vec2{ 1, 1 } });
-	}
+TEST_CASE("LineString.rotated")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
+	CHECK_EQ(line.rotated(1), LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 0, 0 } });
+	CHECK_EQ(LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } }.rotated(2), LineString{ Vec2{ 2, 2 }, Vec2{ 0, 0 }, Vec2{ 1, 1 } });
 }
 
 TEST_CASE("LineString.shuffle")
@@ -358,10 +468,17 @@ TEST_CASE("LineString.shuffle")
 	}
 
 	std::mt19937 rng3{ 12345 };
-	std::mt19937 rng4{ 12345 };
-	CHECK_EQ(LineString{ source }.shuffle(rng3), LineString{ source }.shuffled(rng4));
-	CHECK_EQ(source.shuffled().size(), source.size());
 	CHECK_EQ(LineString{ source }.shuffle().size(), source.size());
+	CHECK_EQ(LineString{ source }.shuffle(rng3).size(), source.size());
+}
+
+TEST_CASE("LineString.shuffled")
+{
+	const LineString source{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 }, Vec2{ 4, 4 } };
+	std::mt19937 rng1{ 12345 };
+	std::mt19937 rng2{ 12345 };
+	CHECK_EQ(LineString{ source }.shuffled(rng1), source.shuffled(rng2));
+	CHECK_EQ(source.shuffled().size(), source.size());
 }
 
 TEST_CASE("LineString.uniqued_consecutive")
@@ -375,22 +492,18 @@ TEST_CASE("LineString.uniqued_consecutive")
 TEST_CASE("LineString.sort_by")
 {
 	const auto compareX = [](const Vec2& a, const Vec2& b) { return (a.x < b.x); };
+
+	LineString line{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } };
+	CHECK_EQ(&(line.sort_by(compareX)), &line);
+	CHECK_EQ(line, LineString{ Vec2{ 0, 2 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } });
+	CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sort_by(compareX), LineString{ Vec2{ 0, 2 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } });
+}
+
+TEST_CASE("LineString.sorted_by")
+{
 	const auto compareY = [](const Vec2& a, const Vec2& b) { return (a.y < b.y); };
-
-	{
-		LineString line{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } };
-		CHECK_EQ(&(line.sort_by(compareX)), &line);
-		CHECK_EQ(line, LineString{ Vec2{ 0, 2 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } });
-	}
-
-	{
-		const LineString line{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } };
-		CHECK_EQ(line.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
-		CHECK_EQ(line, LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } });
-	}
-
-	{
-		CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sort_by(compareX), LineString{ Vec2{ 0, 2 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } });
-		CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
-	}
+	const LineString line{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } };
+	CHECK_EQ(line.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
+	CHECK_EQ(line, LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } });
+	CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
 }
