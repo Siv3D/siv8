@@ -944,6 +944,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	hash
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列のハッシュ値を返します。
+		/// @return 配列のハッシュ値
+		[[nodiscard]]
+		uint64 hash() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	all
 		//
 		////////////////////////////////////////////////////////////////
@@ -1807,25 +1818,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	hash
-		//
-		////////////////////////////////////////////////////////////////
-	
-		/// @brief 配列のハッシュ値を返します。
-		/// @return 配列のハッシュ値
-		[[nodiscard]]
-		uint64 hash() const noexcept;
-
-
-//		LineString& remove(const value_type& value);
-//
-//		LineString& remove_at(size_t index);
-//
-//		template <class Fty>
-//		LineString& remove_if(Fty f);
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	reverse
 		//
 		////////////////////////////////////////////////////////////////
@@ -1969,8 +1961,6 @@ namespace s3d
 		/// @return 指定した線分における進行方向の単位ベクトル
 		[[nodiscard]]
 		Vec2 getTangentAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
-
-
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2248,10 +2238,6 @@ namespace s3d
 //
 //		const LineString& overwriteClosed(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
-
-
-
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator >>
@@ -2352,9 +2338,6 @@ namespace s3d
 		const LineString& drawPointsFrame(double r, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		const LineString& drawPointsFrame(double r, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
-
-
-
 
 		////////////////////////////////////////////////////////////////
 		//
