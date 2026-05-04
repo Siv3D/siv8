@@ -1,0 +1,13 @@
+# Empty tables and comments
+
+[empty_table]
+
+[config] # inline comment
+value = 42
+
+# Deliberate spacing
+array = [
+  1,
+  2,
+  3,
+]

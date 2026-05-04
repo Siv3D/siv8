@@ -1,0 +1,28 @@
+# TOML scalar types
+
+bool_true = true
+bool_false = false
+
+int_zero = 0
+int_positive = 123456
+int_negative = -98765
+int_with_underscores = 1_000_000
+
+float_plain = 3.14159
+float_negative = -0.25
+float_exponent = 6.02e23
+float_inf = inf
+float_nan = nan
+
+string_basic = "hello"
+string_unicode = "こんにちは Siv3D 🌏"
+string_multiline = """
+line 1
+line 2
+"""
+
+local_date = 2026-05-04
+local_time = 12:34:56.789123456
+local_datetime = 2026-05-04T12:34:56.789
+offset_datetime_utc = 2026-05-04T12:34:56Z
+offset_datetime_jst = 2026-05-04T21:34:56+09:00

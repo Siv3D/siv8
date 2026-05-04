@@ -1,0 +1,26 @@
+# Basic configuration
+
+title = "TOML test"
+
+[server]
+host = "localhost"
+port = 8080
+enabled = true
+
+[database]
+user = "test_user"
+password = "secret"
+max_connections = 10
+timeout_seconds = 30.5
+
+[features]
+items = ["login", "search", "export"]
+retry_counts = [1, 2, 3]
+
+[[users]]
+name = "Alice"
+admin = true
+
+[[users]]
+name = "Bob"
+admin = false

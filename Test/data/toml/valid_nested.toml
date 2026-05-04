@@ -1,0 +1,24 @@
+# Nested tables, arrays, inline tables, and arrays of tables
+
+[window]
+title = "Game"
+size = [1280, 720]
+fullscreen = false
+
+[graphics]
+vsync = true
+clear_color = { r = 0.1, g = 0.2, b = 0.3, a = 1.0 }
+
+[paths]
+assets = "asset/"
+textures = ["asset/texture/player.png", "asset/texture/enemy.png"]
+
+[[stages]]
+name = "forest"
+difficulty = 1
+spawn_points = [[0, 0], [100, 50], [240, 120]]
+
+[[stages]]
+name = "desert"
+difficulty = 3
+spawn_points = [[10, 20], [200, 160]]

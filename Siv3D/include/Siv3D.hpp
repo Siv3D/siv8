@@ -566,8 +566,12 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// TOML ファイルの読み込み | TOML reader/writer
-//# include <Siv3D/TOML>
+# include <Siv3D/TOMLValueType.hpp>
+
+# include <Siv3D/TOMLParseErrorReason.hpp>
+
+// TOML ファイルの読み込み | TOML reader
+# include <Siv3D/TOML.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

@@ -1,0 +1,3 @@
+﻿title = "UTF-8 BOM test"
+value = 42
+message = "BOM 付き UTF-8"

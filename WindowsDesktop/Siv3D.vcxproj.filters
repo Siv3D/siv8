@@ -1381,6 +1381,18 @@
     <Filter Include="src\Siv3D\MicrophoneInfo">
       <UniqueIdentifier>{eaba3a27-5399-43f1-9d19-69a773661cd6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\toml11">
+      <UniqueIdentifier>{265b188a-37e9-45fe-bf84-6c7b8e6ff10a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TOMLValueType">
+      <UniqueIdentifier>{638a8d80-4fc8-48cf-80c3-458498171243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TOMLParseErrorReason">
+      <UniqueIdentifier>{32a91018-70c8-4a78-89f7-2728c5cb5f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TOML">
+      <UniqueIdentifier>{640d12af-c05f-46e9-aa4c-7d6f59946288}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5520,6 +5532,21 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Glyph.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml.hpp">
+      <Filter>include\ThirdParty\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOML.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOMLValueType.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOMLParseErrorReason.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TOML.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8524,6 +8551,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgtextelement.cpp">
       <Filter>src\ThirdParty\lunasvg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOMLValueType\SivTOMLValueType.cpp">
+      <Filter>src\Siv3D\TOMLValueType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOMLParseErrorReason\SivTOMLParseErrorReason.cpp">
+      <Filter>src\Siv3D\TOMLParseErrorReason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOML\SivTOML.cpp">
+      <Filter>src\Siv3D\TOML</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -160,6 +160,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureDescBuilder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TextureFormat.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Theme.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TOML.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Transition.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TriangleIndex32.ipp" />
@@ -697,6 +698,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Threading.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Time.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Timer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOML.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOMLParseErrorReason.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOMLValueType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Transformer2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Transition.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Triangle.hpp" />
@@ -773,6 +777,7 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_extras.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_random.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_uint128.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\Xoshiro-cpp\XoshiroCpp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.hpp" />
@@ -1834,6 +1839,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\ThousandSeparate\SivThousandSeparate.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Threading\SivThreading.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Timer\SivTimer.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOMLParseErrorReason\SivTOMLParseErrorReason.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOMLValueType\SivTOMLValueType.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOML\SivTOML.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Transformer2D\SivTransformer2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TriangleFillMode\SivTriangleFillMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\TriangleIndex32\SivTriangleIndex32.cpp" />

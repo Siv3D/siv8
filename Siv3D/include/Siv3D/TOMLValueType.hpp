@@ -18,30 +18,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	LineType
+	//	TOMLValueType
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief 線の種類
-	enum class LineType : uint8
+	enum class TOMLValueType : uint8
 	{
-		/// @brief 実線
-		Solid,
-
-		/// @brief ドット
-		Dotted,
-
-		/// @brief ダッシュ
-		Dashed,
-
-		/// @brief 長いダッシュ
-		LongDash,
-
-		/// @brief ダッシュとドット
-		DashDot,
-
-		/// @brief 丸いドット
-		RoundDot,
+		Invalid,
+		
+		Bool,
+		
+		Int,
+		
+		Float,
+		
+		String,
+		
+		OffsetDateTime,
+		
+		LocalDateTime,
+		
+		LocalDate,
+		
+		LocalTime,
+		
+		Array,
+		
+		Table,
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -50,5 +53,5 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, LineType value);
+	void Formatter(FormatData& formatData, TOMLValueType value);
 }

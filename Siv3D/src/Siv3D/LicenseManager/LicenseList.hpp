@@ -923,6 +923,12 @@ APACHE_2_LICENSE
 },
 
 {
+R"-(toml11)-",
+R"-(Copyright (c) 2017 Toru Niina)-",
+MIT_LICENSE
+},
+
+{
 R"-(WinToast)-",
 R"-(Copyright (C) 2016-2025 WinToast v1.3.2 - Mohammed Boujemaoui <mohabouje@gmail.com>)-",
 MIT_LICENSE

@@ -1,0 +1,11 @@
+# Valid TOML, intended for getOpt/get/getOr type-mismatch tests
+
+as_string_number = "123"
+as_int = 123
+as_float = 123.0
+as_bool = true
+as_array_mixed = [1, "2", 3]
+as_array_ints = [1, 2, 3]
+
+[table]
+value = "not an array"

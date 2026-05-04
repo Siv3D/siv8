@@ -1,0 +1,12 @@
+# UTF-8 without BOM
+
+title = "日本語タイトル"
+description = "Unicode / 絵文字 / 記号のテスト: あいうえお、αβγ、🎮"
+
+[names]
+player = "太郎"
+enemy = "ドラゴン"
+
+[messages]
+start = "ゲーム開始"
+game_over = "ゲームオーバー"
