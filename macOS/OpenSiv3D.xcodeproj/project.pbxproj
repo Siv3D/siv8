@@ -481,6 +481,7 @@
 		F90F79E32FA7B6590077F398 /* ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = F90F79D92FA7B6590077F398 /* ranges.h */; };
 		F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */; };
 		F90F79E72FA85F6E0077F398 /* Test_Step2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79E62FA85F6E0077F398 /* Test_Step2D.cpp */; };
+		F90F79E92FA868F30077F398 /* Glyph.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79E82FA868F30077F398 /* Glyph.ipp */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3543,6 +3544,7 @@
 		F90F79DA2FA7B6590077F398 /* xchar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xchar.h; sourceTree = "<group>"; };
 		F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_LineString.cpp; sourceTree = "<group>"; };
 		F90F79E62FA85F6E0077F398 /* Test_Step2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Step2D.cpp; sourceTree = "<group>"; };
+		F90F79E82FA868F30077F398 /* Glyph.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Glyph.ipp; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6774,6 +6776,7 @@
 				F9070B7D2B9F175000383E4D /* FormatData.ipp */,
 				F98605FF2BE615B4006A4C0F /* FormatLiteralObject.ipp */,
 				F9070B7F2B9F175000383E4D /* FormatUtility.ipp */,
+				F90F79E82FA868F30077F398 /* Glyph.ipp */,
 				F9CD6A122DE2270000EFA782 /* GlyphInfo.ipp */,
 				F9E7947B2C248B03002615BA /* Graphics2D.ipp */,
 				F9528B1B2BADCC9900222F45 /* Grid.ipp */,
@@ -14896,6 +14899,7 @@
 				F907075B2B9DAEC900383E4D /* Siv3D.hpp in Headers */,
 				F98604262BCFBB54006A4C0F /* SkSLModifiers.h in Headers */,
 				F986057C2BDA7DFC006A4C0F /* CursorState.hpp in Headers */,
+				F90F79E92FA868F30077F398 /* Glyph.ipp in Headers */,
 				F98600502BCFBB53006A4C0F /* SkVertices.h in Headers */,
 				F98111912EC8C5E900C50DD1 /* Anchor.ipp in Headers */,
 				F98605C52BE4B680006A4C0F /* InputCombination.ipp in Headers */,
