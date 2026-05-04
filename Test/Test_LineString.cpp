@@ -290,3 +290,26 @@ TEST_CASE("LineString.uniqued_consecutive")
 	CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
 	CHECK_EQ(LineString{ line }.uniqued_consecutive(), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 } });
 }
+
+TEST_CASE("LineString.sort_by")
+{
+	const auto compareX = [](const Vec2& a, const Vec2& b) { return (a.x < b.x); };
+	const auto compareY = [](const Vec2& a, const Vec2& b) { return (a.y < b.y); };
+
+	{
+		LineString line{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } };
+		CHECK_EQ(&(line.sort_by(compareX)), &line);
+		CHECK_EQ(line, LineString{ Vec2{ 0, 2 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } });
+	}
+
+	{
+		const LineString line{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } };
+		CHECK_EQ(line.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
+		CHECK_EQ(line, LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } });
+	}
+
+	{
+		CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sort_by(compareX), LineString{ Vec2{ 0, 2 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } });
+		CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
+	}
+}

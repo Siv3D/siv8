@@ -1333,6 +1333,41 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	sort_by, sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString& LineString::sort_by(Fty f)&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		m_points.sort_by(std::forward<Fty>(f));
+		return *this;
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::sort_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return LineString{ std::move(m_points).sort_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::sorted_by(Fty f) const&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return LineString{ m_points.sorted_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::sorted_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return LineString{ std::move(m_points).sorted_by(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	hash
 	//
 	////////////////////////////////////////////////////////////////

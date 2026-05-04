@@ -1496,6 +1496,47 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	sort_by, sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		constexpr LineString& sort_by(Fty f)&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	hash
 		//
 		////////////////////////////////////////////////////////////////
