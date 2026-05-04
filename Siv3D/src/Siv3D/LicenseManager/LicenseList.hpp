@@ -911,15 +911,15 @@ APACHE_2_LICENSE
 },
 
 {
-R"-(tinycolormap)-",
-R"-(Copyright (c) 2018 Yuki Koyama)-",
-MIT_LICENSE
-},
-
-{
 R"-(The Parallel Hashmap)-",
 R"-(Copyright 2018 The Abseil Authors.)-",
 APACHE_2_LICENSE
+},
+
+{
+R"-(tinycolormap)-",
+R"-(Copyright (c) 2018 Yuki Koyama)-",
+MIT_LICENSE
 },
 
 {
