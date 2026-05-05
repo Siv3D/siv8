@@ -222,6 +222,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IAudioEncoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Icon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIDuplicatePolicy.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIParseErrorCode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIParseErrorReason.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIReadOptions.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIWriteOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Address.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -26,21 +26,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <ReaderObject Reader>
-	INI::INI(Reader&& reader)
+	INI::INI(Reader&& reader, const INIReadOptions& options)
 	{
-		load(std::make_unique<Reader>(std::move(reader)));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	load
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <ReaderObject Reader>
-	bool INI::load(Reader&& reader)
-	{
-		return load(std::make_unique<Reader>(std::move(reader)));
+		*this = Load(std::move(reader), options);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -52,7 +40,7 @@ namespace s3d
 	template <class Type>
 	Type INI::get(const StringView section, const StringView key) const
 	{
-		if (const auto opt = getOpt<Type>())
+		if (const auto opt = getOpt<Type>(section, key))
 		{
 			return *opt;
 		}
@@ -138,13 +126,31 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	Load
+	//	Load / LoadResult
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <ReaderObject Reader>
-	INI INI::Load(Reader&& reader)
+	INI INI::Load(Reader&& reader, const INIReadOptions& options)
 	{
-		return Load(std::make_unique<Reader>(std::move(reader)));
+		return Load(std::make_unique<Reader>(std::move(reader)), options);
+	}
+
+	template <ReaderObject Reader>
+	Result<INI, Array<INIParseErrorReason>> INI::LoadResult(Reader&& reader, const INIReadOptions& options)
+	{
+		return LoadResult(std::make_unique<Reader>(std::move(reader)), options);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	load
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <ReaderObject Reader>
+	bool INI::load(Reader&& reader, const INIReadOptions& options)
+	{
+		return load(std::make_unique<Reader>(std::move(reader)), options);
 	}
 }

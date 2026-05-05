@@ -547,6 +547,11 @@
 ////////////////////////////////////////////////////////////////
 
 // INI データの読み書き | INI reader/writer
+# include <Siv3D/INIReadOptions.hpp>
+# include <Siv3D/INIWriteOptions.hpp>
+# include <Siv3D/INIParseErrorCode.hpp>
+# include <Siv3D/INIParseErrorReason.hpp>
+# include <Siv3D/INIDuplicatePolicy.hpp>
 # include <Siv3D/INI.hpp>
 # include <Siv3D/INIItem.hpp>
 # include <Siv3D/INISection.hpp>

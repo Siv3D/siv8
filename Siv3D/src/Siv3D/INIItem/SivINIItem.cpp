@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -12,6 +12,7 @@
 # include <Siv3D/INIItem.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/Demangle.hpp>
+# include <Siv3D/Unicode.hpp>
 
 namespace s3d
 {
@@ -21,5 +22,27 @@ namespace s3d
 		{
 			throw Error{ fmt::format("INIItem::get<{}>(): Failed to parse value `{}`", DemangleUTF8(type), value.toUTF8()) };
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getString
+	//
+	////////////////////////////////////////////////////////////////
+
+	const String& INIItem::getString() const noexcept
+	{
+		return value;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getUTF8
+	//
+	////////////////////////////////////////////////////////////////
+
+	std::string INIItem::getUTF8() const
+	{
+		return Unicode::ToUTF8(value);
 	}
 }
