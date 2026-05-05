@@ -61,6 +61,34 @@ namespace s3d
 		[[nodiscard]]
 		explicit TextFileReader(Reader&& reader, const Optional<TextEncoding>& encoding = unspecified);
 
+		TextFileReader(const TextFileReader& other) = delete;
+
+		/// @brief ムーブコンストラクタ
+		/// @param other ムーブする TextFileReader
+		TextFileReader(TextFileReader&& other) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief デストラクタ
+		~TextFileReader();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		TextFileReader& operator =(const TextFileReader& other) = delete;
+
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする TextFileReader
+		/// @return *this
+		TextFileReader& operator =(TextFileReader&& other) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	open
@@ -261,7 +289,7 @@ namespace s3d
 
 		class TextFileReaderDetail;
 
-		std::shared_ptr<TextFileReaderDetail> pImpl;
+		std::unique_ptr<TextFileReaderDetail> pImpl;
 	};
 }
 

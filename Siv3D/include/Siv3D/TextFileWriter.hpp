@@ -83,6 +83,34 @@ namespace s3d
 		[[nodiscard]]
 		explicit TextFileWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc, TextEncoding encoding = TextEncoding::UTF8_WITH_BOM);
 
+		TextFileWriter(const TextFileWriter& other) = delete;
+
+		/// @brief ムーブコンストラクタ
+		/// @param other ムーブする TextFileWriter
+		TextFileWriter(TextFileWriter&& other) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief デストラクタ
+		~TextFileWriter();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		TextFileWriter& operator =(const TextFileWriter& other) = delete;
+
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする TextFileReader
+		/// @return *this
+		TextFileWriter& operator =(TextFileWriter&& other) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	open
@@ -260,7 +288,7 @@ namespace s3d
 
 		class TextFileWriterDetail;
 
-		std::shared_ptr<TextFileWriterDetail> pImpl;
+		std::unique_ptr<TextFileWriterDetail> pImpl;
 	};
 }
 
