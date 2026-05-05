@@ -486,7 +486,6 @@
 		F90F79EE2FA9044D0077F398 /* TOMLParseErrorReason.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79EB2FA9044D0077F398 /* TOMLParseErrorReason.hpp */; };
 		F90F79EF2FA9044D0077F398 /* TOML.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79EA2FA9044D0077F398 /* TOML.hpp */; };
 		F90F79F12FA904650077F398 /* TOML.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79F02FA904650077F398 /* TOML.ipp */; };
-		F90F79F42FA904910077F398 /* toml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F79F22FA904910077F398 /* toml.hpp */; };
 		F90F79FB2FA904CD0077F398 /* SivTOMLValueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F92FA904CD0077F398 /* SivTOMLValueType.cpp */; };
 		F90F79FC2FA904CD0077F398 /* SivTOMLParseErrorReason.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F72FA904CD0077F398 /* SivTOMLParseErrorReason.cpp */; };
 		F90F79FD2FA904CD0077F398 /* SivTOML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F52FA904CD0077F398 /* SivTOML.cpp */; };
@@ -504,6 +503,23 @@
 		F90F7A172FA9DB510077F398 /* INIDuplicatePolicy.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A0F2FA9DB510077F398 /* INIDuplicatePolicy.hpp */; };
 		F90F7A182FA9DB510077F398 /* INIWriteOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A132FA9DB510077F398 /* INIWriteOptions.hpp */; };
 		F90F7A1A2FA9DB730077F398 /* Test_INI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A192FA9DB730077F398 /* Test_INI.cpp */; };
+		F90F7A2D2FAA3BF20077F398 /* toml11_serializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A262FAA3BF20077F398 /* toml11_serializer.cpp */; };
+		F90F7A2E2FAA3BF20077F398 /* toml11_skip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A272FAA3BF20077F398 /* toml11_skip.cpp */; };
+		F90F7A2F2FAA3BF20077F398 /* toml11_format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A202FAA3BF20077F398 /* toml11_format.cpp */; };
+		F90F7A302FAA3BF20077F398 /* toml11_context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A1D2FAA3BF20077F398 /* toml11_context.cpp */; };
+		F90F7A312FAA3BF20077F398 /* toml11_syntax.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A292FAA3BF20077F398 /* toml11_syntax.cpp */; };
+		F90F7A322FAA3BF20077F398 /* toml11_source_location.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A282FAA3BF20077F398 /* toml11_source_location.cpp */; };
+		F90F7A332FAA3BF20077F398 /* toml11_region.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A242FAA3BF20077F398 /* toml11_region.cpp */; };
+		F90F7A342FAA3BF20077F398 /* toml11_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A232FAA3BF20077F398 /* toml11_parser.cpp */; };
+		F90F7A352FAA3BF20077F398 /* toml11_literal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A212FAA3BF20077F398 /* toml11_literal.cpp */; };
+		F90F7A362FAA3BF20077F398 /* toml11_comments.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A1C2FAA3BF20077F398 /* toml11_comments.cpp */; };
+		F90F7A372FAA3BF20077F398 /* toml11_error_info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A1F2FAA3BF20077F398 /* toml11_error_info.cpp */; };
+		F90F7A382FAA3BF20077F398 /* toml11_location.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A222FAA3BF20077F398 /* toml11_location.cpp */; };
+		F90F7A392FAA3BF20077F398 /* toml11_value_t.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A2B2FAA3BF20077F398 /* toml11_value_t.cpp */; };
+		F90F7A3A2FAA3BF20077F398 /* toml11_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A1B2FAA3BF20077F398 /* toml11_color.cpp */; };
+		F90F7A3B2FAA3BF20077F398 /* toml11_datetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A1E2FAA3BF20077F398 /* toml11_datetime.cpp */; };
+		F90F7A3C2FAA3BF20077F398 /* toml11_scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A252FAA3BF20077F398 /* toml11_scanner.cpp */; };
+		F90F7A3D2FAA3BF20077F398 /* toml11_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A2A2FAA3BF20077F398 /* toml11_types.cpp */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3571,7 +3587,6 @@
 		F90F79EB2FA9044D0077F398 /* TOMLParseErrorReason.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TOMLParseErrorReason.hpp; sourceTree = "<group>"; };
 		F90F79EC2FA9044D0077F398 /* TOMLValueType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TOMLValueType.hpp; sourceTree = "<group>"; };
 		F90F79F02FA904650077F398 /* TOML.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TOML.ipp; sourceTree = "<group>"; };
-		F90F79F22FA904910077F398 /* toml.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = toml.hpp; sourceTree = "<group>"; };
 		F90F79F52FA904CD0077F398 /* SivTOML.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOML.cpp; sourceTree = "<group>"; };
 		F90F79F72FA904CD0077F398 /* SivTOMLParseErrorReason.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOMLParseErrorReason.cpp; sourceTree = "<group>"; };
 		F90F79F92FA904CD0077F398 /* SivTOMLValueType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOMLValueType.cpp; sourceTree = "<group>"; };
@@ -3589,6 +3604,82 @@
 		F90F7A122FA9DB510077F398 /* INIReadOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INIReadOptions.hpp; sourceTree = "<group>"; };
 		F90F7A132FA9DB510077F398 /* INIWriteOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INIWriteOptions.hpp; sourceTree = "<group>"; };
 		F90F7A192FA9DB730077F398 /* Test_INI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_INI.cpp; sourceTree = "<group>"; };
+		F90F7A1B2FAA3BF20077F398 /* toml11_color.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_color.cpp; sourceTree = "<group>"; };
+		F90F7A1C2FAA3BF20077F398 /* toml11_comments.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_comments.cpp; sourceTree = "<group>"; };
+		F90F7A1D2FAA3BF20077F398 /* toml11_context.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_context.cpp; sourceTree = "<group>"; };
+		F90F7A1E2FAA3BF20077F398 /* toml11_datetime.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_datetime.cpp; sourceTree = "<group>"; };
+		F90F7A1F2FAA3BF20077F398 /* toml11_error_info.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_error_info.cpp; sourceTree = "<group>"; };
+		F90F7A202FAA3BF20077F398 /* toml11_format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_format.cpp; sourceTree = "<group>"; };
+		F90F7A212FAA3BF20077F398 /* toml11_literal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_literal.cpp; sourceTree = "<group>"; };
+		F90F7A222FAA3BF20077F398 /* toml11_location.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_location.cpp; sourceTree = "<group>"; };
+		F90F7A232FAA3BF20077F398 /* toml11_parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_parser.cpp; sourceTree = "<group>"; };
+		F90F7A242FAA3BF20077F398 /* toml11_region.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_region.cpp; sourceTree = "<group>"; };
+		F90F7A252FAA3BF20077F398 /* toml11_scanner.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_scanner.cpp; sourceTree = "<group>"; };
+		F90F7A262FAA3BF20077F398 /* toml11_serializer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_serializer.cpp; sourceTree = "<group>"; };
+		F90F7A272FAA3BF20077F398 /* toml11_skip.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_skip.cpp; sourceTree = "<group>"; };
+		F90F7A282FAA3BF20077F398 /* toml11_source_location.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_source_location.cpp; sourceTree = "<group>"; };
+		F90F7A292FAA3BF20077F398 /* toml11_syntax.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_syntax.cpp; sourceTree = "<group>"; };
+		F90F7A2A2FAA3BF20077F398 /* toml11_types.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_types.cpp; sourceTree = "<group>"; };
+		F90F7A2B2FAA3BF20077F398 /* toml11_value_t.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = toml11_value_t.cpp; sourceTree = "<group>"; };
+		F90F7A3E2FAA3C2C0077F398 /* color_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = color_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A3F2FAA3C2C0077F398 /* comments_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = comments_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A402FAA3C2C0077F398 /* datetime_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = datetime_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A412FAA3C2C0077F398 /* error_info_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = error_info_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A422FAA3C2C0077F398 /* format_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = format_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A432FAA3C2C0077F398 /* literal_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = literal_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A442FAA3C2C0077F398 /* location_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = location_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A452FAA3C2C0077F398 /* region_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = region_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A462FAA3C2C0077F398 /* scanner_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scanner_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A472FAA3C2C0077F398 /* source_location_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_location_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A482FAA3C2C0077F398 /* syntax_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = syntax_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A492FAA3C2C0077F398 /* value_t_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = value_t_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A4B2FAA3C2C0077F398 /* color_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = color_impl.hpp; sourceTree = "<group>"; };
+		F90F7A4C2FAA3C2C0077F398 /* comments_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = comments_impl.hpp; sourceTree = "<group>"; };
+		F90F7A4D2FAA3C2C0077F398 /* datetime_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = datetime_impl.hpp; sourceTree = "<group>"; };
+		F90F7A4E2FAA3C2C0077F398 /* error_info_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = error_info_impl.hpp; sourceTree = "<group>"; };
+		F90F7A4F2FAA3C2C0077F398 /* format_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = format_impl.hpp; sourceTree = "<group>"; };
+		F90F7A502FAA3C2C0077F398 /* literal_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = literal_impl.hpp; sourceTree = "<group>"; };
+		F90F7A512FAA3C2C0077F398 /* location_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = location_impl.hpp; sourceTree = "<group>"; };
+		F90F7A522FAA3C2C0077F398 /* region_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = region_impl.hpp; sourceTree = "<group>"; };
+		F90F7A532FAA3C2C0077F398 /* scanner_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scanner_impl.hpp; sourceTree = "<group>"; };
+		F90F7A542FAA3C2C0077F398 /* source_location_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_location_impl.hpp; sourceTree = "<group>"; };
+		F90F7A552FAA3C2C0077F398 /* syntax_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = syntax_impl.hpp; sourceTree = "<group>"; };
+		F90F7A562FAA3C2C0077F398 /* value_t_impl.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = value_t_impl.hpp; sourceTree = "<group>"; };
+		F90F7A582FAA3C2C0077F398 /* color.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = color.hpp; sourceTree = "<group>"; };
+		F90F7A592FAA3C2C0077F398 /* comments.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = comments.hpp; sourceTree = "<group>"; };
+		F90F7A5A2FAA3C2C0077F398 /* compat.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = compat.hpp; sourceTree = "<group>"; };
+		F90F7A5B2FAA3C2C0077F398 /* context.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = context.hpp; sourceTree = "<group>"; };
+		F90F7A5C2FAA3C2C0077F398 /* conversion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = conversion.hpp; sourceTree = "<group>"; };
+		F90F7A5D2FAA3C2C0077F398 /* datetime.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = datetime.hpp; sourceTree = "<group>"; };
+		F90F7A5E2FAA3C2C0077F398 /* error_info.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = error_info.hpp; sourceTree = "<group>"; };
+		F90F7A5F2FAA3C2C0077F398 /* exception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = exception.hpp; sourceTree = "<group>"; };
+		F90F7A602FAA3C2C0077F398 /* find.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = find.hpp; sourceTree = "<group>"; };
+		F90F7A612FAA3C2C0077F398 /* format.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = format.hpp; sourceTree = "<group>"; };
+		F90F7A622FAA3C2C0077F398 /* from.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = from.hpp; sourceTree = "<group>"; };
+		F90F7A632FAA3C2C0077F398 /* get.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = get.hpp; sourceTree = "<group>"; };
+		F90F7A642FAA3C2C0077F398 /* into.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = into.hpp; sourceTree = "<group>"; };
+		F90F7A652FAA3C2C0077F398 /* literal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = literal.hpp; sourceTree = "<group>"; };
+		F90F7A662FAA3C2C0077F398 /* location.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = location.hpp; sourceTree = "<group>"; };
+		F90F7A672FAA3C2C0077F398 /* ordered_map.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ordered_map.hpp; sourceTree = "<group>"; };
+		F90F7A682FAA3C2C0077F398 /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parser.hpp; sourceTree = "<group>"; };
+		F90F7A692FAA3C2C0077F398 /* region.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = region.hpp; sourceTree = "<group>"; };
+		F90F7A6A2FAA3C2C0077F398 /* result.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = result.hpp; sourceTree = "<group>"; };
+		F90F7A6B2FAA3C2C0077F398 /* scanner.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scanner.hpp; sourceTree = "<group>"; };
+		F90F7A6C2FAA3C2C0077F398 /* serializer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = serializer.hpp; sourceTree = "<group>"; };
+		F90F7A6D2FAA3C2C0077F398 /* skip.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = skip.hpp; sourceTree = "<group>"; };
+		F90F7A6E2FAA3C2C0077F398 /* source_location.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = source_location.hpp; sourceTree = "<group>"; };
+		F90F7A6F2FAA3C2C0077F398 /* spec.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = spec.hpp; sourceTree = "<group>"; };
+		F90F7A702FAA3C2C0077F398 /* storage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = storage.hpp; sourceTree = "<group>"; };
+		F90F7A712FAA3C2C0077F398 /* syntax.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = syntax.hpp; sourceTree = "<group>"; };
+		F90F7A722FAA3C2C0077F398 /* traits.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = traits.hpp; sourceTree = "<group>"; };
+		F90F7A732FAA3C2C0077F398 /* types.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = types.hpp; sourceTree = "<group>"; };
+		F90F7A742FAA3C2C0077F398 /* utility.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = utility.hpp; sourceTree = "<group>"; };
+		F90F7A752FAA3C2C0077F398 /* value.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = value.hpp; sourceTree = "<group>"; };
+		F90F7A762FAA3C2C0077F398 /* value_t.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = value_t.hpp; sourceTree = "<group>"; };
+		F90F7A772FAA3C2C0077F398 /* version.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = version.hpp; sourceTree = "<group>"; };
+		F90F7A782FAA3C2C0077F398 /* visit.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = visit.hpp; sourceTree = "<group>"; };
+		F90F7A7A2FAA3C2C0077F398 /* toml.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = toml.hpp; sourceTree = "<group>"; };
+		F90F7A7B2FAA3C2C0077F398 /* toml_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = toml_fwd.hpp; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6543,7 +6634,7 @@
 				F90704242B9DAEC900383E4D /* Obfuscate */,
 				F907042D2B9DAEC900383E4D /* parallel_hashmap */,
 				F90704312B9DAEC900383E4D /* pcg */,
-				F90F79F32FA904910077F398 /* toml11 */,
+				F90F7A7C2FAA3C2C0077F398 /* toml11 */,
 				F90704CB2B9DAEC900383E4D /* Xoshiro-cpp */,
 			);
 			path = ThirdParty;
@@ -6718,6 +6809,7 @@
 				F986FFE82BCFBB53006A4C0F /* skia */,
 				F9070A7A2B9DEB5900383E4D /* stduuid */,
 				F986F89D2BC7FB74006A4C0F /* tinycolormap */,
+				F90F7A2C2FAA3BF20077F398 /* toml11 */,
 				F9070A7C2B9DEB5900383E4D /* wyhash */,
 				F9070A7E2B9DEB5900383E4D /* xxHash */,
 				F9528C022BBF026F00222F45 /* zstd */,
@@ -8511,14 +8603,6 @@
 			path = fmt;
 			sourceTree = "<group>";
 		};
-		F90F79F32FA904910077F398 /* toml11 */ = {
-			isa = PBXGroup;
-			children = (
-				F90F79F22FA904910077F398 /* toml.hpp */,
-			);
-			path = toml11;
-			sourceTree = "<group>";
-		};
 		F90F79F62FA904CD0077F398 /* TOML */ = {
 			isa = PBXGroup;
 			children = (
@@ -8549,6 +8633,120 @@
 				F90F7A0C2FA9B7DF0077F398 /* SivCSV.cpp */,
 			);
 			path = CSV;
+			sourceTree = "<group>";
+		};
+		F90F7A2C2FAA3BF20077F398 /* toml11 */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A1B2FAA3BF20077F398 /* toml11_color.cpp */,
+				F90F7A1C2FAA3BF20077F398 /* toml11_comments.cpp */,
+				F90F7A1D2FAA3BF20077F398 /* toml11_context.cpp */,
+				F90F7A1E2FAA3BF20077F398 /* toml11_datetime.cpp */,
+				F90F7A1F2FAA3BF20077F398 /* toml11_error_info.cpp */,
+				F90F7A202FAA3BF20077F398 /* toml11_format.cpp */,
+				F90F7A212FAA3BF20077F398 /* toml11_literal.cpp */,
+				F90F7A222FAA3BF20077F398 /* toml11_location.cpp */,
+				F90F7A232FAA3BF20077F398 /* toml11_parser.cpp */,
+				F90F7A242FAA3BF20077F398 /* toml11_region.cpp */,
+				F90F7A252FAA3BF20077F398 /* toml11_scanner.cpp */,
+				F90F7A262FAA3BF20077F398 /* toml11_serializer.cpp */,
+				F90F7A272FAA3BF20077F398 /* toml11_skip.cpp */,
+				F90F7A282FAA3BF20077F398 /* toml11_source_location.cpp */,
+				F90F7A292FAA3BF20077F398 /* toml11_syntax.cpp */,
+				F90F7A2A2FAA3BF20077F398 /* toml11_types.cpp */,
+				F90F7A2B2FAA3BF20077F398 /* toml11_value_t.cpp */,
+			);
+			path = toml11;
+			sourceTree = "<group>";
+		};
+		F90F7A4A2FAA3C2C0077F398 /* fwd */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A3E2FAA3C2C0077F398 /* color_fwd.hpp */,
+				F90F7A3F2FAA3C2C0077F398 /* comments_fwd.hpp */,
+				F90F7A402FAA3C2C0077F398 /* datetime_fwd.hpp */,
+				F90F7A412FAA3C2C0077F398 /* error_info_fwd.hpp */,
+				F90F7A422FAA3C2C0077F398 /* format_fwd.hpp */,
+				F90F7A432FAA3C2C0077F398 /* literal_fwd.hpp */,
+				F90F7A442FAA3C2C0077F398 /* location_fwd.hpp */,
+				F90F7A452FAA3C2C0077F398 /* region_fwd.hpp */,
+				F90F7A462FAA3C2C0077F398 /* scanner_fwd.hpp */,
+				F90F7A472FAA3C2C0077F398 /* source_location_fwd.hpp */,
+				F90F7A482FAA3C2C0077F398 /* syntax_fwd.hpp */,
+				F90F7A492FAA3C2C0077F398 /* value_t_fwd.hpp */,
+			);
+			path = fwd;
+			sourceTree = "<group>";
+		};
+		F90F7A572FAA3C2C0077F398 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A4B2FAA3C2C0077F398 /* color_impl.hpp */,
+				F90F7A4C2FAA3C2C0077F398 /* comments_impl.hpp */,
+				F90F7A4D2FAA3C2C0077F398 /* datetime_impl.hpp */,
+				F90F7A4E2FAA3C2C0077F398 /* error_info_impl.hpp */,
+				F90F7A4F2FAA3C2C0077F398 /* format_impl.hpp */,
+				F90F7A502FAA3C2C0077F398 /* literal_impl.hpp */,
+				F90F7A512FAA3C2C0077F398 /* location_impl.hpp */,
+				F90F7A522FAA3C2C0077F398 /* region_impl.hpp */,
+				F90F7A532FAA3C2C0077F398 /* scanner_impl.hpp */,
+				F90F7A542FAA3C2C0077F398 /* source_location_impl.hpp */,
+				F90F7A552FAA3C2C0077F398 /* syntax_impl.hpp */,
+				F90F7A562FAA3C2C0077F398 /* value_t_impl.hpp */,
+			);
+			path = impl;
+			sourceTree = "<group>";
+		};
+		F90F7A792FAA3C2C0077F398 /* toml11 */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A4A2FAA3C2C0077F398 /* fwd */,
+				F90F7A572FAA3C2C0077F398 /* impl */,
+				F90F7A582FAA3C2C0077F398 /* color.hpp */,
+				F90F7A592FAA3C2C0077F398 /* comments.hpp */,
+				F90F7A5A2FAA3C2C0077F398 /* compat.hpp */,
+				F90F7A5B2FAA3C2C0077F398 /* context.hpp */,
+				F90F7A5C2FAA3C2C0077F398 /* conversion.hpp */,
+				F90F7A5D2FAA3C2C0077F398 /* datetime.hpp */,
+				F90F7A5E2FAA3C2C0077F398 /* error_info.hpp */,
+				F90F7A5F2FAA3C2C0077F398 /* exception.hpp */,
+				F90F7A602FAA3C2C0077F398 /* find.hpp */,
+				F90F7A612FAA3C2C0077F398 /* format.hpp */,
+				F90F7A622FAA3C2C0077F398 /* from.hpp */,
+				F90F7A632FAA3C2C0077F398 /* get.hpp */,
+				F90F7A642FAA3C2C0077F398 /* into.hpp */,
+				F90F7A652FAA3C2C0077F398 /* literal.hpp */,
+				F90F7A662FAA3C2C0077F398 /* location.hpp */,
+				F90F7A672FAA3C2C0077F398 /* ordered_map.hpp */,
+				F90F7A682FAA3C2C0077F398 /* parser.hpp */,
+				F90F7A692FAA3C2C0077F398 /* region.hpp */,
+				F90F7A6A2FAA3C2C0077F398 /* result.hpp */,
+				F90F7A6B2FAA3C2C0077F398 /* scanner.hpp */,
+				F90F7A6C2FAA3C2C0077F398 /* serializer.hpp */,
+				F90F7A6D2FAA3C2C0077F398 /* skip.hpp */,
+				F90F7A6E2FAA3C2C0077F398 /* source_location.hpp */,
+				F90F7A6F2FAA3C2C0077F398 /* spec.hpp */,
+				F90F7A702FAA3C2C0077F398 /* storage.hpp */,
+				F90F7A712FAA3C2C0077F398 /* syntax.hpp */,
+				F90F7A722FAA3C2C0077F398 /* traits.hpp */,
+				F90F7A732FAA3C2C0077F398 /* types.hpp */,
+				F90F7A742FAA3C2C0077F398 /* utility.hpp */,
+				F90F7A752FAA3C2C0077F398 /* value.hpp */,
+				F90F7A762FAA3C2C0077F398 /* value_t.hpp */,
+				F90F7A772FAA3C2C0077F398 /* version.hpp */,
+				F90F7A782FAA3C2C0077F398 /* visit.hpp */,
+			);
+			path = toml11;
+			sourceTree = "<group>";
+		};
+		F90F7A7C2FAA3C2C0077F398 /* toml11 */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A792FAA3C2C0077F398 /* toml11 */,
+				F90F7A7A2FAA3C2C0077F398 /* toml.hpp */,
+				F90F7A7B2FAA3C2C0077F398 /* toml_fwd.hpp */,
+			);
+			path = toml11;
 			sourceTree = "<group>";
 		};
 		F911710C2DCBBF0B000A22E6 /* Font */ = {
@@ -13773,7 +13971,6 @@
 				F99881E92F5808C500C8991D /* OSCReceivedMessage.hpp in Headers */,
 				F9070C752B9F175000383E4D /* RandomDuration.ipp in Headers */,
 				F97203092BEDF2FF000E21DD /* IScene.hpp in Headers */,
-				F90F79F42FA904910077F398 /* toml.hpp in Headers */,
 				F98604122BCFBB54006A4C0F /* SkSLFunctionDeclaration.h in Headers */,
 				F98605612BD203D4006A4C0F /* muParserDef.h in Headers */,
 				F9797E602F667E2F00518D26 /* WAVSaveFormat.hpp in Headers */,
@@ -16254,6 +16451,23 @@
 				F9528C8F2BC05B5B00222F45 /* SivImageDecoder.cpp in Sources */,
 				F986020B2BCFBB54006A4C0F /* SkPaint.cpp in Sources */,
 				F9070AF12B9DEB5900383E4D /* bignum-dtoa.cc in Sources */,
+				F90F7A2D2FAA3BF20077F398 /* toml11_serializer.cpp in Sources */,
+				F90F7A2E2FAA3BF20077F398 /* toml11_skip.cpp in Sources */,
+				F90F7A2F2FAA3BF20077F398 /* toml11_format.cpp in Sources */,
+				F90F7A302FAA3BF20077F398 /* toml11_context.cpp in Sources */,
+				F90F7A312FAA3BF20077F398 /* toml11_syntax.cpp in Sources */,
+				F90F7A322FAA3BF20077F398 /* toml11_source_location.cpp in Sources */,
+				F90F7A332FAA3BF20077F398 /* toml11_region.cpp in Sources */,
+				F90F7A342FAA3BF20077F398 /* toml11_parser.cpp in Sources */,
+				F90F7A352FAA3BF20077F398 /* toml11_literal.cpp in Sources */,
+				F90F7A362FAA3BF20077F398 /* toml11_comments.cpp in Sources */,
+				F90F7A372FAA3BF20077F398 /* toml11_error_info.cpp in Sources */,
+				F90F7A382FAA3BF20077F398 /* toml11_location.cpp in Sources */,
+				F90F7A392FAA3BF20077F398 /* toml11_value_t.cpp in Sources */,
+				F90F7A3A2FAA3BF20077F398 /* toml11_color.cpp in Sources */,
+				F90F7A3B2FAA3BF20077F398 /* toml11_datetime.cpp in Sources */,
+				F90F7A3C2FAA3BF20077F398 /* toml11_scanner.cpp in Sources */,
+				F90F7A3D2FAA3BF20077F398 /* toml11_types.cpp in Sources */,
 				F9D41CE32C9972D800290998 /* SivGrid.cpp in Sources */,
 				F9E794362C12BAC5002615BA /* SivMSL.cpp in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
@@ -16788,6 +17002,7 @@
 					SK_DISABLE_TRACING,
 					SK_DISABLE_EFFECT_DESERIALIZATION,
 					R8B_PFFFT_DOUBLE,
+					TOML11_COMPILE_SOURCES,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -16866,6 +17081,7 @@
 					SK_DISABLE_TRACING,
 					SK_DISABLE_EFFECT_DESERIALIZATION,
 					R8B_PFFFT_DOUBLE,
+					TOML11_COMPILE_SOURCES,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
