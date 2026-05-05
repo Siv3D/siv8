@@ -43,7 +43,6 @@ TEST_CASE("CSV.default")
 	CHECK_EQ(csv.columns(0), 0);
 	CHECK(not csv.inBounds(0, 0));
 	CHECK(csv.data().isEmpty());
-	CHECK(csv.getData().isEmpty());
 	CHECK(csv.format().isEmpty());
 	CHECK(csv.formatUTF8().empty());
 
@@ -404,15 +403,13 @@ TEST_CASE("CSV.data_access")
 
 	REQUIRE(csv);
 	CHECK(csv.data() == CSV::Table{ CSV::Row{ U"a", U"b" }, CSV::Row{ U"1", U"2" } });
-	CHECK(csv.getData() == csv.data());
 	CHECK(csv.row(0) == CSV::Row{ U"a", U"b" });
-	CHECK(csv.getRow(1) == CSV::Row{ U"1", U"2" });
 	CHECK(csv[1] == CSV::Row{ U"1", U"2" });
 
 	csv.row(1)[1] = U"200";
 	CHECK_EQ(csv[1][1], U"200");
 
-	csv.getData()[0][0] = U"header";
+	csv.data()[0][0] = U"header";
 	CHECK_EQ(csv[0][0], U"header");
 }
 

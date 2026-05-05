@@ -190,7 +190,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	data, getData
+		//	data
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -204,19 +204,9 @@ namespace s3d
 		[[nodiscard]]
 		Table& data() noexcept;
 
-		/// @brief CSV データを返します。 | Returns the CSV table.
-		/// @return CSV データ | CSV table
-		[[nodiscard]]
-		const Table& getData() const noexcept;
-
-		/// @brief CSV データを返します。 | Returns the CSV table.
-		/// @return CSV データ | CSV table
-		[[nodiscard]]
-		Table& getData() noexcept;
-
 		////////////////////////////////////////////////////////////////
 		//
-		//	row, getRow, operator []
+		//	row, operator []
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -231,18 +221,6 @@ namespace s3d
 		/// @return 指定したレコード | The specified record
 		[[nodiscard]]
 		Row& row(size_t row);
-
-		/// @brief 指定したレコードを返します。 | Returns the specified record.
-		/// @param row レコードのインデックス | Record index
-		/// @return 指定したレコード | The specified record
-		[[nodiscard]]
-		const Row& getRow(size_t row) const;
-
-		/// @brief 指定したレコードを返します。 | Returns the specified record.
-		/// @param row レコードのインデックス | Record index
-		/// @return 指定したレコード | The specified record
-		[[nodiscard]]
-		Row& getRow(size_t row);
 
 		/// @brief 指定したレコードを返します。 | Returns the specified record.
 		/// @param row レコードのインデックス | Record index

@@ -694,7 +694,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	data, getData
+	//	data
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -708,19 +708,9 @@ namespace s3d
 		return m_data;
 	}
 
-	const CSV::Table& CSV::getData() const noexcept
-	{
-		return m_data;
-	}
-
-	CSV::Table& CSV::getData() noexcept
-	{
-		return m_data;
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
-	//	row, getRow, operator []
+	//	row, operator []
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -730,16 +720,6 @@ namespace s3d
 	}
 
 	CSV::Row& CSV::row(const size_t row)
-	{
-		return m_data[row];
-	}
-
-	const CSV::Row& CSV::getRow(const size_t row) const
-	{
-		return m_data[row];
-	}
-
-	CSV::Row& CSV::getRow(const size_t row)
 	{
 		return m_data[row];
 	}
