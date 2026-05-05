@@ -1545,12 +1545,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h">
-      <Filter>include\ThirdParty\mimalloc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h">
-      <Filter>src\ThirdParty-prebuilt\mimalloc</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Result.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -5768,6 +5762,12 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\value_t_fwd.hpp">
       <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h">
+      <Filter>src\ThirdParty-prebuilt\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h">
+      <Filter>include\ThirdParty\mimalloc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

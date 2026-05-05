@@ -31,7 +31,7 @@ Name | Version
 [lunasvg](https://github.com/sammycage/lunasvg) | v3.5.0
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
-[mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
+[mimalloc](https://github.com/microsoft/mimalloc) | v3.3.2
 [miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
 [miniutf](https://github.com/dropbox/miniutf) | 
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
