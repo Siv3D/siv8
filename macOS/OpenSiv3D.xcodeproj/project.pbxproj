@@ -498,6 +498,12 @@
 		F90F7A092FA9B7A90077F398 /* CSVParseErrorReason.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A022FA9B7A90077F398 /* CSVParseErrorReason.hpp */; };
 		F90F7A0B2FA9B7C60077F398 /* CSV.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A0A2FA9B7C60077F398 /* CSV.ipp */; };
 		F90F7A0E2FA9B7DF0077F398 /* SivCSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A0C2FA9B7DF0077F398 /* SivCSV.cpp */; };
+		F90F7A142FA9DB510077F398 /* INIParseErrorCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A102FA9DB510077F398 /* INIParseErrorCode.hpp */; };
+		F90F7A152FA9DB510077F398 /* INIParseErrorReason.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A112FA9DB510077F398 /* INIParseErrorReason.hpp */; };
+		F90F7A162FA9DB510077F398 /* INIReadOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A122FA9DB510077F398 /* INIReadOptions.hpp */; };
+		F90F7A172FA9DB510077F398 /* INIDuplicatePolicy.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A0F2FA9DB510077F398 /* INIDuplicatePolicy.hpp */; };
+		F90F7A182FA9DB510077F398 /* INIWriteOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A132FA9DB510077F398 /* INIWriteOptions.hpp */; };
+		F90F7A1A2FA9DB730077F398 /* Test_INI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A192FA9DB730077F398 /* Test_INI.cpp */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3577,6 +3583,12 @@
 		F90F7A042FA9B7A90077F398 /* CSVWriteOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSVWriteOptions.hpp; sourceTree = "<group>"; };
 		F90F7A0A2FA9B7C60077F398 /* CSV.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSV.ipp; sourceTree = "<group>"; };
 		F90F7A0C2FA9B7DF0077F398 /* SivCSV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSV.cpp; sourceTree = "<group>"; };
+		F90F7A0F2FA9DB510077F398 /* INIDuplicatePolicy.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INIDuplicatePolicy.hpp; sourceTree = "<group>"; };
+		F90F7A102FA9DB510077F398 /* INIParseErrorCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INIParseErrorCode.hpp; sourceTree = "<group>"; };
+		F90F7A112FA9DB510077F398 /* INIParseErrorReason.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INIParseErrorReason.hpp; sourceTree = "<group>"; };
+		F90F7A122FA9DB510077F398 /* INIReadOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INIReadOptions.hpp; sourceTree = "<group>"; };
+		F90F7A132FA9DB510077F398 /* INIWriteOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = INIWriteOptions.hpp; sourceTree = "<group>"; };
+		F90F7A192FA9DB730077F398 /* Test_INI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_INI.cpp; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6411,6 +6423,7 @@
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
+				F90F7A192FA9DB730077F398 /* Test_INI.cpp */,
 				F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */,
 				F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */,
 				F90702C12B9DAEB900383E4D /* Test_Memory.cpp */,
@@ -7153,8 +7166,13 @@
 				F90DA05E2D1A91FB0003E1E8 /* ImageProcessing.hpp */,
 				F9070BF32B9F175000383E4D /* Indexed.hpp */,
 				F986F8292BC7B00A006A4C0F /* INI.hpp */,
+				F90F7A0F2FA9DB510077F398 /* INIDuplicatePolicy.hpp */,
 				F986F82A2BC7B00A006A4C0F /* INIItem.hpp */,
+				F90F7A102FA9DB510077F398 /* INIParseErrorCode.hpp */,
+				F90F7A112FA9DB510077F398 /* INIParseErrorReason.hpp */,
+				F90F7A122FA9DB510077F398 /* INIReadOptions.hpp */,
 				F986F8282BC7B00A006A4C0F /* INISection.hpp */,
+				F90F7A132FA9DB510077F398 /* INIWriteOptions.hpp */,
 				F98605B72BE4B65A006A4C0F /* Input.hpp */,
 				F98605B62BE4B65A006A4C0F /* InputCombination.hpp */,
 				F96F95E72C359E390033353E /* InputDeviceType.hpp */,
@@ -13937,6 +13955,11 @@
 				F9070AF42B9DEB5900383E4D /* bignum.h in Headers */,
 				F986FA792BCFB53B006A4C0F /* ftchapters.h in Headers */,
 				F95122572CB8239800151291 /* PolygonDetail.hpp in Headers */,
+				F90F7A142FA9DB510077F398 /* INIParseErrorCode.hpp in Headers */,
+				F90F7A152FA9DB510077F398 /* INIParseErrorReason.hpp in Headers */,
+				F90F7A162FA9DB510077F398 /* INIReadOptions.hpp in Headers */,
+				F90F7A172FA9DB510077F398 /* INIDuplicatePolicy.hpp in Headers */,
+				F90F7A182FA9DB510077F398 /* INIWriteOptions.hpp in Headers */,
 				F986FA772BCFB53B006A4C0F /* ftbzip2.h in Headers */,
 				F986043F2BCFBB54006A4C0F /* SkSLSymbol.h in Headers */,
 				F99881A52F5587D800C8991D /* Serial.ipp in Headers */,
@@ -15418,6 +15441,7 @@
 				F90703032B9DAEB900383E4D /* Test_Platform.cpp in Sources */,
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
 				F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */,
+				F90F7A1A2FA9DB730077F398 /* Test_INI.cpp in Sources */,
 				F90703082B9DAEB900383E4D /* Test_TextFileReader.cpp in Sources */,
 				F90702FF2B9DAEB900383E4D /* Test_Hash.cpp in Sources */,
 				F90702FE2B9DAEB900383E4D /* Test_FunctionRef.cpp in Sources */,
