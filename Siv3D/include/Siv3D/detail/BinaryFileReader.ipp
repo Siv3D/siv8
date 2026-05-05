@@ -50,6 +50,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	readExact
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool BinaryFileReader::readExact(Concept::TriviallyCopyable auto& dst)
+	{
+		return readExact(std::addressof(dst), sizeof(dst));
+	}
+
+	template <Concept::TriviallyCopyable Type>
+	Optional<Type> BinaryFileReader::readExact()
+	{
+		Type value;
+
+		if (readExact(value))
+		{
+			return value;
+		}
+
+		return none;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	lookahead
 	//
 	////////////////////////////////////////////////////////////////

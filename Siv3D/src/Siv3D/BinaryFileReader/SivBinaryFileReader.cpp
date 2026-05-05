@@ -194,7 +194,7 @@ namespace s3d
 
 	bool BinaryFileReader::isEOF() const noexcept
 	{
-		return (remaining() == 0);
+		return (isOpen() && (remaining() == 0));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -290,13 +290,12 @@ namespace s3d
 			ThrowReadExactDstError();
 		}
 
-		const int64 previousPos = getPos();
-
 		if (remaining() < size)
 		{
 			return false;
 		}
 
+		const int64 previousPos = getPos();
 		const int64 readBytes = pImpl->read(NonNull{ dst }, size);
 
 		if (readBytes == size)
@@ -500,11 +499,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	lookaheadBlob
+	//	lookaheadBytes
 	//
 	////////////////////////////////////////////////////////////////
 
-	Blob BinaryFileReader::lookaheadBlob(const int64 requestedSize) const
+	Blob BinaryFileReader::lookaheadBytes(const int64 requestedSize) const
 	{
 		const int64 toReadBytes = ClampReadSize(requestedSize, remaining());
 
@@ -521,7 +520,7 @@ namespace s3d
 		return blob;
 	}
 
-	Blob BinaryFileReader::lookaheadBlob(const int64 pos, const int64 requestedSize) const
+	Blob BinaryFileReader::lookaheadBytes(const int64 pos, const int64 requestedSize) const
 	{
 		if (requestedSize <= 0)
 		{

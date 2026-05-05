@@ -396,10 +396,20 @@ namespace s3d
 	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookahead(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
 	{
 		const int64 previousReadPos = readPos;
+
 		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
-		readPos = previousReadPos;
+
 		file.clear();
 		file.seekg(previousReadPos);
+
+		if (not file)
+		{
+			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: Failed to restore the read position", fullPath));
+			file.clear();
+			return 0;
+		}
+
+		readPos = previousReadPos;
 		return readBytes;
 	}
 
@@ -407,10 +417,8 @@ namespace s3d
 	{
 		const int64 previousReadPos = readPos;
 
-		const auto RestoreReadPos = [&]()
+		const auto RestoreReadPos = [&]() -> bool
 		{
-			readPos = previousReadPos;
-
 			file.clear();
 			file.seekg(previousReadPos);
 
@@ -418,7 +426,11 @@ namespace s3d
 			{
 				LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: Failed to restore the read position", fullPath));
 				file.clear();
+				return false;
 			}
+
+			readPos = previousReadPos;
+			return true;
 		};
 
 		if (pos != previousReadPos)
@@ -430,7 +442,12 @@ namespace s3d
 			{
 				LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: seekg() failed", fullPath));
 				file.clear();
-				RestoreReadPos();
+
+				if (not RestoreReadPos())
+				{
+					return 0;
+				}
+
 				return 0;
 			}
 
@@ -439,7 +456,10 @@ namespace s3d
 
 		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
 
-		RestoreReadPos();
+		if (not RestoreReadPos())
+		{
+			return 0;
+		}
 
 		return readBytes;
 	}
