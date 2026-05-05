@@ -61,7 +61,7 @@ Name | Version
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
-[toml11](https://github.com/ToruNiina/toml11) | version 4.4.0
+[toml11](https://github.com/ToruNiina/toml11) | 
 [variant](https://github.com/mapbox/variant) | 
 [WinToast](https://github.com/mohabouje/WinToast) | v1.3.2
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 

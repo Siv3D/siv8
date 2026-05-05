@@ -789,6 +789,64 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_random.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\pcg\pcg_uint128.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\color.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\comments.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\compat.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\context.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\conversion.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\datetime.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\error_info.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\exception.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\find.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\format.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\from.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\color_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\comments_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\datetime_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\error_info_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\format_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\literal_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\location_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\region_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\scanner_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\source_location_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\syntax_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\value_t_fwd.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\get.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\color_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\comments_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\datetime_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\error_info_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\format_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\literal_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\location_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\region_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\scanner_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\source_location_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\syntax_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\value_t_impl.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\into.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\literal.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\location.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\ordered_map.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\parser.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\region.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\result.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\scanner.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\serializer.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\skip.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\source_location.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\spec.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\storage.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\syntax.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\traits.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\types.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\utility.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\value.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\value_t.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\version.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\visit.hpp" />
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml_fwd.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\Xoshiro-cpp\XoshiroCpp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileReader\BinaryFileReaderDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BinaryFileWriter\BinaryFileWriterDetail.hpp" />
@@ -3894,6 +3952,23 @@
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Level1</WarningLevel>
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Level1</WarningLevel>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_color.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_comments.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_context.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_datetime.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_error_info.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_format.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_literal.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_location.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_parser.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_region.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_scanner.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_serializer.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_skip.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_source_location.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_syntax.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_types.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_value_t.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\WinToast\wintoastlib.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\debug.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\zstd\common\entropy_common.c" />
@@ -3997,7 +4072,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;R8B_PFFFT_DOUBLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;R8B_PFFFT_DOUBLE;TOML11_COMPILE_SOURCES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
@@ -4022,7 +4097,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;R8B_PFFFT_DOUBLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_ENABLE_EXTENDED_ALIGNED_STORAGE;SIV3D_LIBRARY_BUILD;_CRT_SECURE_NO_WARNINGS;_SILENCE_CXX23_ALIGNED_STORAGE_DEPRECATION_WARNING;_SILENCE_CXX23_DENORM_DEPRECATION_WARNING;ZSTD_MULTITHREAD;ONIG_STATIC;MUPARSER_STATIC;SK_RELEASE;SK_ENABLE_OPTIMIZE_SIZE;SK_DISABLE_TRACING;SK_DISABLE_EFFECT_DESERIALIZATION;LUNASVG_BUILD_STATIC;OSC_HOST_LITTLE_ENDIAN;R8B_PFFFT_DOUBLE;TOML11_COMPILE_SOURCES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>

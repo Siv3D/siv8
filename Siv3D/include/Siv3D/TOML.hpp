@@ -18,9 +18,10 @@
 # include "IReader.hpp"
 # include "TOMLValueType.hpp"
 # include "TOMLParseErrorReason.hpp"
-SIV3D_DISABLE_MSVC_WARNINGS_PUSH(5311)
+# ifndef TOML11_COMPILE_SOURCES
+#	define TOML11_COMPILE_SOURCES
+# endif
 # include <ThirdParty/toml11/toml.hpp>
-SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 namespace s3d
 {
