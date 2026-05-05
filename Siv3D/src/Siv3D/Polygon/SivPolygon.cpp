@@ -1205,6 +1205,34 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawTransformed
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::drawTransformed(const double angle, const Vec2& pos, const ColorF& color) const
+	{
+		const auto [s, c] = FastMath::SinCos(angle);
+		drawTransformed(s, c, pos, color);
+	}
+
+	void Polygon::drawTransformed(const double s, const double c, const Vec2& pos, const ColorF& color) const
+	{
+		pImpl->drawTransformed(s, c, pos, color);
+	}
+
+	void Polygon::drawTransformed(const double angle, const Vec2& pos, const PatternParameters& pattern) const
+	{
+		const auto [s, c] = FastMath::SinCos(angle);
+		drawTransformed(s, c, pos, pattern);
+	}
+
+	void Polygon::drawTransformed(const double s, const double c, const Vec2& pos, const PatternParameters& pattern) const
+	{
+		pImpl->drawTransformed(s, c, pos, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawFrame
 	//
 	////////////////////////////////////////////////////////////////

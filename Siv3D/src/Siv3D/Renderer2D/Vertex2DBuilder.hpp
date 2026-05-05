@@ -103,6 +103,9 @@ namespace s3d
 		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildPolygonTransformed(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const Float4& color);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color, float scale);
 
 		[[nodiscard]]

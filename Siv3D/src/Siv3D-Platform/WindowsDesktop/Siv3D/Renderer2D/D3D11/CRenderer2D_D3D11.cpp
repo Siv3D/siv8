@@ -1100,6 +1100,50 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addPolygonTransformed
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addPolygonTransformed(const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const float s, const float c, const Float2& offset, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildPolygonTransformed(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, triangleIndices, s, c, offset, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_D3D11::addPolygonTransformed(const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const float s, const float c, const Float2& offset, const PatternParameters& pattern)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildPolygonTransformed(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, triangleIndices, s, c, offset, pattern.primaryColor))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
+			}
+
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addLineString
 	//
 	////////////////////////////////////////////////////////////////

@@ -1263,6 +1263,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawTransformed
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::PolygonDetail::drawTransformed(const double s, const double c, const Vec2& pos, const ColorF& color) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addPolygonTransformed(m_vertices, m_indices,
+			static_cast<float>(s), static_cast<float>(c), Float2{ pos }, color.toFloat4());
+	}
+
+	void Polygon::PolygonDetail::drawTransformed(const double s, const  double c, const Vec2& pos, const PatternParameters& pattern) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addPolygonTransformed(m_vertices, m_indices,
+			static_cast<float>(s), static_cast<float>(c), Float2{ pos }, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawFrame
 	//
 	////////////////////////////////////////////////////////////////

@@ -236,6 +236,16 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addPolygonTransformed
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addPolygonTransformed(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const Float4& color) override;
+
+		void addPolygonTransformed(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addLineString
 		//
 		////////////////////////////////////////////////////////////////

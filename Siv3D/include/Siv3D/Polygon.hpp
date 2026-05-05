@@ -947,18 +947,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形を回転 + 移動して描画します。
-		///// @param angle 回転角度（ラジアン）
-		///// @param pos 位置
-		///// @param color 色
-		//void drawTransformed(double angle, const Vec2& pos, const ColorF& color = Palette::White) const;
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param color 色
+		void drawTransformed(double angle, const Vec2& pos, const ColorF& color = Palette::White) const;
 
-		///// @brief 多角形を回転 + 移動して描画します。
-		///// @param s 回転角度のサイン
-		///// @param c 回転角度のコサイン
-		///// @param pos 位置
-		///// @param color 色
-		//void drawTransformed(double s, double c, const Vec2& pos, const ColorF& color = Palette::White) const;
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param color 色
+		void drawTransformed(double s, double c, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン 
+		void drawTransformed(double angle, const Vec2& pos, const PatternParameters& pattern) const;
+
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン
+		void drawTransformed(double s, double c, const Vec2& pos, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
