@@ -179,6 +179,12 @@ namespace s3d
 		[[nodiscard]]
 		explicit Serial(StringView port, int32 baudrate = 9600, const Config& config = {});
 
+		Serial(const Serial& other) = delete;
+
+		/// @brief ムーブコンストラクタ
+		/// @param other ムーブする Serial
+		Serial(Serial&& other) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)
@@ -188,6 +194,19 @@ namespace s3d
 		/// @brief デストラクタ
 		/// @remark シリアルポートに接続している場合は切断します。
 		~Serial();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		Serial& operator =(const Serial& other) = delete;
+
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする Serial
+		/// @return *this
+		Serial& operator =(Serial&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -488,7 +507,7 @@ namespace s3d
 
 		class SerialDetail;
 
-		std::shared_ptr<SerialDetail> pImpl;
+		std::unique_ptr<SerialDetail> pImpl;
 	};
 }
 
