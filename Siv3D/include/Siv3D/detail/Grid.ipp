@@ -400,8 +400,6 @@ namespace s3d
 		return *(m_container.data() + (pos.y * m_size.x + pos.x));
 	}
 
-# ifdef __cpp_multidimensional_subscript
-
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const size_type y, const size_type x)&
 	{
@@ -422,8 +420,6 @@ namespace s3d
 		assert(indexInBounds(y, x));
 		return *(m_container.data() + (y * m_size.x + x));
 	}
-
-# endif
 
 	////////////////////////////////////////////////////////////////
 	//

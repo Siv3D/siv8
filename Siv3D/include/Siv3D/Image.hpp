@@ -456,8 +456,6 @@ namespace s3d
 		[[nodiscard]]
 		Color operator [](Point pos)&&;
 
-	# ifdef __cpp_multidimensional_subscript
-
 		/// @brief 指定した位置のピクセルの参照を返します。
 		/// @param y 位置（行）
 		/// @param x 位置（列）
@@ -481,8 +479,6 @@ namespace s3d
 		/// @return 指定した位置のピクセル
 		[[nodiscard]]
 		Color operator [](size_t y, size_t x)&&;
-
-	# endif
 
 		////////////////////////////////////////////////////////////////
 		//

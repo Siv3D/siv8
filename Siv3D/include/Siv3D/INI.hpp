@@ -200,8 +200,6 @@ namespace s3d
 		[[nodiscard]]
 		INISection& operator [](StringView section);
 
-	# ifdef __cpp_multidimensional_subscript
-
 		/// @brief グローバル（無名）セクションへの参照を返します。
 		/// @return グローバル（無名）セクションへの参照
 		/// @throw Error グローバル（無名）セクションが存在しない場合
@@ -215,8 +213,6 @@ namespace s3d
 		/// @remark `getGlobalSection()` と同じです。
 		[[nodiscard]]
 		INISection& operator []();
-
-	# endif
 
 		////////////////////////////////////////////////////////////////
 		//

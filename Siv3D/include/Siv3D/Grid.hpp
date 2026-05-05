@@ -308,8 +308,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr value_type operator [](Point pos)&&;
 
-	# ifdef __cpp_multidimensional_subscript
-
 		/// @brief 指定した位置の要素にアクセスします。
 		/// @param y 行番号
 		/// @param x 列番号
@@ -330,8 +328,6 @@ namespace s3d
 		/// @return 要素
 		[[nodiscard]]
 		constexpr value_type operator [](size_type y, size_type x)&&;
-
-	# endif
 
 		////////////////////////////////////////////////////////////////
 		//

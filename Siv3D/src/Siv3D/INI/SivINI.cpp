@@ -270,8 +270,6 @@ namespace s3d
 		return getSection(section);
 	}
 
-# ifdef __cpp_multidimensional_subscript
-
 	const INISection& INI::operator []() const
 	{
 		return getSection(GlobalSection);
@@ -281,8 +279,6 @@ namespace s3d
 	{
 		return getSection(GlobalSection);
 	}
-
-# endif
 
 	////////////////////////////////////////////////////////////////
 	//
