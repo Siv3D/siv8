@@ -72,6 +72,8 @@ namespace s3d
 
 			int64 lookahead(NonNull<void*> dst, int64 readSize, int64 fileSize, const FilePath& fullPath);
 
+			int64 lookaheadAt(NonNull<void*> dst, int64 pos, int64 readSize, int64 fileSize, const FilePath& fullPath);
+
 		} m_file;
 
 		struct Info

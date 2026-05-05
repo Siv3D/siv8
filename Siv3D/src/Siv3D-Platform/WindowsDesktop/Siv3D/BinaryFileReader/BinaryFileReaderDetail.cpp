@@ -290,19 +290,7 @@ namespace s3d
 		}
 		else
 		{
-			const auto previousPos = getPos();
-
-			if (pos != setPos(pos))
-			{
-				setPos(previousPos);
-				return 0;
-			}
-
-			const int64 readBytes = m_file.lookahead(dst, readSize, m_info.fileSize, m_info.fullPath);
-
-			setPos(previousPos);
-
-			return readBytes;
+			return m_file.lookaheadAt(dst, pos, readSize, m_info.fileSize, m_info.fullPath);
 		}
 	}
 
@@ -383,6 +371,39 @@ namespace s3d
 		readPos = previousReadPos;
 		file.clear();
 		file.seekg(previousReadPos);
+		return readBytes;
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookaheadAt(const NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
+	{
+		const int64 previousReadPos = readPos;
+
+		if (pos != previousReadPos)
+		{
+			file.clear();
+			file.seekg(pos);
+
+			if (not file)
+			{
+				file.clear();
+				return 0;
+			}
+
+			readPos = pos;
+		}
+
+		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
+
+		readPos = previousReadPos;
+
+		file.clear();
+		file.seekg(previousReadPos);
+
+		if (not file)
+		{
+			file.clear();
+		}
+
 		return readBytes;
 	}
 }

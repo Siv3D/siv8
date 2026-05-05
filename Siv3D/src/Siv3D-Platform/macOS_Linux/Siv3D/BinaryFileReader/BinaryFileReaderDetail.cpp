@@ -16,10 +16,22 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
 	BinaryFileReader::BinaryFileReaderDetail::~BinaryFileReaderDetail()
 	{
 		close();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	open
+	//
+	////////////////////////////////////////////////////////////////
 
 	bool BinaryFileReader::BinaryFileReaderDetail::open(const FilePathView path)
 	{
@@ -53,6 +65,11 @@ namespace s3d
 		return true;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	close
+	//
+	////////////////////////////////////////////////////////////////
 
 	void BinaryFileReader::BinaryFileReaderDetail::close()
 	{
@@ -70,15 +87,33 @@ namespace s3d
 		m_info = {};
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	isOpen
+	//
+	////////////////////////////////////////////////////////////////
+
 	bool BinaryFileReader::BinaryFileReaderDetail::isOpen() const noexcept
 	{
 		return m_info.isOpen;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	size
+	//
+	////////////////////////////////////////////////////////////////
+
 	int64 BinaryFileReader::BinaryFileReaderDetail::size() const noexcept
 	{
 		return m_info.fileSize;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setPos
+	//
+	////////////////////////////////////////////////////////////////
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::setPos(const int64 pos)
 	{
@@ -92,6 +127,12 @@ namespace s3d
 		return (m_file.readPos = clampedPos);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	skip
+	//
+	////////////////////////////////////////////////////////////////
+
 	int64 BinaryFileReader::BinaryFileReaderDetail::skip(const int64 offset)
 	{
 		if (not m_info.isOpen)
@@ -104,10 +145,22 @@ namespace s3d
 		return (m_file.readPos = clampedPos);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	getPos
+	//
+	////////////////////////////////////////////////////////////////
+
 	int64 BinaryFileReader::BinaryFileReaderDetail::getPos()
 	{
 		return m_file.readPos;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	read
+	//
+	////////////////////////////////////////////////////////////////
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::read(const NonNull<void*> dst, const int64 readSize)
 	{
@@ -124,6 +177,12 @@ namespace s3d
 		return m_file.read(dst, readSize, m_info.fileSize, m_info.fullPath);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	lookahead
+	//
+	////////////////////////////////////////////////////////////////
+
 	int64 BinaryFileReader::BinaryFileReaderDetail::lookahead(const NonNull<void*> dst, const int64 readSize)
 	{
 		return m_file.lookahead(dst, readSize, m_info.fileSize, m_info.fullPath);
@@ -131,25 +190,25 @@ namespace s3d
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::lookahead(const NonNull<void*> dst, const int64 pos, const int64 readSize)
 	{
-		const auto previousPos = getPos();
-
-		if (pos != setPos(pos))
-		{
-			setPos(previousPos);
-			return 0;
-		}
-
-		const int64 readBytes = m_file.lookahead(dst, readSize, m_info.fileSize, m_info.fullPath);
-
-		setPos(previousPos);
-
-		return readBytes;
+		return m_file.lookaheadAt(dst, pos, readSize, m_info.fileSize, m_info.fullPath);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	path
+	//
+	////////////////////////////////////////////////////////////////
 
 	const FilePath& BinaryFileReader::BinaryFileReaderDetail::path() const noexcept
 	{
 		return m_info.fullPath;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::File::read(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
 	{
@@ -186,6 +245,39 @@ namespace s3d
 		readPos = previousReadPos;
 		file.clear();
 		file.seekg(previousReadPos);
+		return readBytes;
+	}
+
+	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookaheadAt(const NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
+	{
+		const int64 previousReadPos = readPos;
+
+		if (pos != previousReadPos)
+		{
+			file.clear();
+			file.seekg(pos);
+
+			if (not file)
+			{
+				file.clear();
+				return 0;
+			}
+
+			readPos = pos;
+		}
+
+		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
+
+		readPos = previousReadPos;
+
+		file.clear();
+		file.seekg(previousReadPos);
+
+		if (not file)
+		{
+			file.clear();
+		}
+
 		return readBytes;
 	}
 }

@@ -155,6 +155,28 @@ namespace s3d
 		
 	////////////////////////////////////////////////////////////////
 	//
+	//	remaining
+	//
+	////////////////////////////////////////////////////////////////
+
+	int64 BinaryFileReader::remaining() const
+	{
+		return Max<int64>((pImpl->size() - pImpl->getPos()), 0);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEOF
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool BinaryFileReader::isEOF() const
+	{
+		return (remaining() == 0);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	setPos
 	//
 	////////////////////////////////////////////////////////////////
@@ -236,7 +258,7 @@ namespace s3d
 
 	Blob BinaryFileReader::readBlob()
 	{
-		const int64 toReadBytes = ClampReadSize((pImpl->size() - pImpl->getPos()), (pImpl->size() - pImpl->getPos()));
+		const int64 toReadBytes = remaining();
 
 		if (toReadBytes == 0)
 		{
@@ -253,7 +275,7 @@ namespace s3d
 
 	Blob BinaryFileReader::readBlob(const int64 requestedSize)
 	{
-		const int64 toReadBytes = ClampReadSize(requestedSize, (pImpl->size() - pImpl->getPos()));
+		const int64 toReadBytes = ClampReadSize(requestedSize, remaining());
 
 		if (toReadBytes == 0)
 		{
@@ -353,7 +375,7 @@ namespace s3d
 
 	Blob BinaryFileReader::lookaheadBlob(const int64 requestedSize) const
 	{
-		const int64 toReadBytes = ClampReadSize(requestedSize, (pImpl->size() - pImpl->getPos()));
+		const int64 toReadBytes = ClampReadSize(requestedSize, remaining());
 
 		if (toReadBytes == 0)
 		{
