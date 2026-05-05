@@ -60,7 +60,7 @@ namespace s3d
 				return none;
 			}
 
-			if (D3D11AdapterCache cache{}; reader.read(cache))
+			if (D3D11AdapterCache cache{}; reader.readExact(cache))
 			{
 				const size_t adapterNameLength = (reader.size() - reader.getPos());
 				std::string adapterName(adapterNameLength, '\0');
