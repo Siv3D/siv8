@@ -32,6 +32,18 @@ namespace s3d
 		}
 
 		[[noreturn]]
+		static void ThrowReadExactDstError()
+		{
+			throw Error{ "BinaryFileReader::readExact(): A non-null destination pointer is required when size is greater than 0." };
+		}
+
+		[[noreturn]]
+		static void ThrowReadExactRangeError(const int64 pos, const int64 fileSize)
+		{
+			throw Error{ fmt::format("BinaryFileReader::readExact(): Position ({0}) is out of the valid range. The file size is {1} bytes.", pos, fileSize) };
+		}
+
+		[[noreturn]]
 		static void ThrowLookaheadDstError()
 		{
 			throw Error{ "BinaryFileReader::lookahead(): A non-null destination pointer is required when readSize is greater than 0." };
@@ -268,27 +280,83 @@ namespace s3d
 
 	bool BinaryFileReader::readExact(void* const dst, const int64 size)
 	{
-		return (read(dst, size) == size);
+		if (size <= 0)
+		{
+			return true;
+		}
+
+		if (dst == nullptr)
+		{
+			ThrowReadExactDstError();
+		}
+
+		const int64 previousPos = getPos();
+
+		if (remaining() < size)
+		{
+			return false;
+		}
+
+		const int64 readBytes = pImpl->read(NonNull{ dst }, size);
+
+		if (readBytes == size)
+		{
+			return true;
+		}
+
+		setPos(previousPos);
+		return false;
 	}
 
 	bool BinaryFileReader::readExact(void* const dst, const int64 pos, const int64 size)
 	{
-		return (read(dst, pos, size) == size);
+		if (size <= 0)
+		{
+			return true;
+		}
+
+		if (dst == nullptr)
+		{
+			ThrowReadExactDstError();
+		}
+
+		const int64 fileSize = this->size();
+
+		if (not InRange<int64>(pos, 0, fileSize))
+		{
+			ThrowReadExactRangeError(pos, fileSize);
+		}
+
+		if ((fileSize - pos) < size)
+		{
+			return false;
+		}
+
+		const int64 previousPos = getPos();
+		const int64 readBytes = pImpl->read(NonNull{ dst }, pos, size);
+
+		if (readBytes == size)
+		{
+			return true;
+		}
+
+		setPos(previousPos);
+		return false;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	readBlob
+	//	readToEnd
 	//
 	////////////////////////////////////////////////////////////////
 
-	Blob BinaryFileReader::readBlob()
+	Blob BinaryFileReader::readToEnd()
 	{
 		const int64 toReadBytes = remaining();
 
 		if (toReadBytes == 0)
 		{
-			return Blob{};
+			return{};
 		}
 
 		Blob blob(toReadBytes);
@@ -299,13 +367,19 @@ namespace s3d
 		return blob;
 	}
 
-	Blob BinaryFileReader::readBlob(const int64 requestedSize)
+	////////////////////////////////////////////////////////////////
+	//
+	//	readBytes
+	//
+	////////////////////////////////////////////////////////////////
+
+	Blob BinaryFileReader::readBytes(const int64 requestedSize)
 	{
 		const int64 toReadBytes = ClampReadSize(requestedSize, remaining());
 
 		if (toReadBytes == 0)
 		{
-			return Blob{};
+			return{};
 		}
 
 		Blob blob(toReadBytes);
@@ -316,8 +390,13 @@ namespace s3d
 		return blob;
 	}
 
-	Blob BinaryFileReader::readBlob(const int64 pos, const int64 requestedSize)
+	Blob BinaryFileReader::readBytes(const int64 pos, const int64 requestedSize)
 	{
+		if (requestedSize <= 0)
+		{
+			return{};
+		}
+
 		const int64 fileSize = size();
 
 		if (not InRange<int64>(pos, 0, fileSize))
@@ -325,11 +404,11 @@ namespace s3d
 			ThrowReadRangeError(pos, fileSize);
 		}
 
-		const int64 toReadBytes = ClampReadSize(requestedSize, (fileSize - pos));
+		const int64 toReadBytes = Min(requestedSize, (fileSize - pos));
 
 		if (toReadBytes == 0)
 		{
-			return Blob{};
+			return{};
 		}
 
 		Blob blob(toReadBytes);
@@ -401,11 +480,21 @@ namespace s3d
 
 	bool BinaryFileReader::lookaheadExact(void* const dst, const int64 size) const
 	{
+		if (size <= 0)
+		{
+			return true;
+		}
+
 		return (lookahead(dst, size) == size);
 	}
 
 	bool BinaryFileReader::lookaheadExact(void* const dst, const int64 pos, const int64 size) const
 	{
+		if (size <= 0)
+		{
+			return true;
+		}
+
 		return (lookahead(dst, pos, size) == size);
 	}
 
@@ -421,7 +510,7 @@ namespace s3d
 
 		if (toReadBytes == 0)
 		{
-			return Blob{};
+			return{};
 		}
 
 		Blob blob(toReadBytes);
@@ -434,6 +523,11 @@ namespace s3d
 
 	Blob BinaryFileReader::lookaheadBlob(const int64 pos, const int64 requestedSize) const
 	{
+		if (requestedSize <= 0)
+		{
+			return Blob{};
+		}
+
 		const int64 fileSize = size();
 
 		if (not InRange<int64>(pos, 0, fileSize))
@@ -441,11 +535,11 @@ namespace s3d
 			ThrowLookaheadRangeError(pos, fileSize);
 		}
 
-		const int64 toReadBytes = ClampReadSize(requestedSize, (fileSize - pos));
+		const int64 toReadBytes = Min(requestedSize, (fileSize - pos));
 
 		if (toReadBytes == 0)
 		{
-			return Blob{};
+			return{};
 		}
 
 		Blob blob(toReadBytes);

@@ -9,8 +9,8 @@
 //
 //-----------------------------------------------
 
+# pragma once
 # include <fstream>
-# include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Byte.hpp>

@@ -204,31 +204,39 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ファイルからデータを読み込みます。
-		/// @param dst 読み込み先
-		/// @param size 読み込むサイズ（バイト）
+		/// @brief ファイルから指定したサイズまでのデータを読み込みます。
+		/// @param dst 読み込み先の先頭ポインタ
+		/// @param size 読み込む最大サイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
+		/// @remark size が 0 以下の場合は 0 を返し、読み込み位置は変更されません。
+		/// @remark size が 0 より大きく、dst が nullptr の場合は Error を投げます。
+		/// @remark 実際に読み込んだサイズは、ファイル終端や読み込みエラーにより size より小さくなる場合があります。
 		/// @remark 読み込み位置は実際に読み込んだサイズ分だけ進みます。
 		int64 read(void* dst, int64 size) override;
 
-		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込みます。
-		/// @param dst 読み込み先
-		/// @param pos 先頭から数えた読み込み開始位置（バイト）
-		/// @param size 読み込むサイズ（バイト）
+		/// @brief ファイルの指定した位置から、指定したサイズまでのデータを読み込みます。
+		/// @param dst 読み込み先の先頭ポインタ
+		/// @param pos 読み込み開始位置（バイト）
+		/// @param size 読み込む最大サイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
+		/// @remark size が 0 以下の場合は 0 を返し、読み込み位置は変更されません。この場合、dst および pos は検証されません。
+		/// @remark size が 0 より大きく、dst が nullptr の場合は Error を投げます。
+		/// @remark size が 0 より大きく、pos が 0 以上ファイルサイズ以下の範囲にない場合は Error を投げます。
+		/// @remark 実際に読み込んだサイズは、ファイル終端や読み込みエラーにより size より小さくなる場合があります。
 		/// @remark 読み込み位置は pos + 実際に読み込んだサイズに移動します。
 		int64 read(void* dst, int64 pos, int64 size) override;
 
-		/// @brief ファイルからデータを読み込みます。
-		/// @param dst 読み込み先
-		/// @return 読み込みに成功したら true, それ以外の場合は false
-		/// @remark 読み込みに成功すると、読み込み位置は sizeof(Type) バイト進みます。
+		/// @brief ファイルから値を読み込みます。
+		/// @param dst 読み込み先の値
+		/// @return sizeof(dst) バイトをすべて読み込めた場合 true, それ以外の場合は false
+		/// @remark 読み込みに成功すると、読み込み位置は sizeof(dst) バイト進みます。
 		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
+		/// @remark 読み込みに失敗した場合、dst の内容は未規定です。
 		bool read(Concept::TriviallyCopyable auto& dst);
 
-		/// @brief ファイルからデータを読み込みます。
+		/// @brief ファイルから値を読み込みます。
 		/// @tparam Type 読み込む値の型
-		/// @return 読み込みに成功した場合は読み込んだ値。それ以外の場合は none
+		/// @return sizeof(Type) バイトをすべて読み込めた場合は読み込んだ値。それ以外の場合は none
 		/// @remark 読み込みに成功すると、読み込み位置は sizeof(Type) バイト進みます。
 		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
 		template <Concept::TriviallyCopyable Type>
@@ -241,47 +249,62 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief ファイルからデータを読み込みます。
-		/// @param dst 読み込み先
+		/// @brief ファイルから指定したサイズのデータを読み込みます。
+		/// @param dst 読み込み先の先頭ポインタ
 		/// @param size 読み込むサイズ（バイト）
-		/// @return 読み込みに成功したら true, それ以外の場合は false
-		/// @remark 読み込みに成功すると、読み込み位置は pos + size に移動します。
-		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
+		/// @return 指定したサイズのデータをすべて読み込めた場合 true, それ以外の場合は false
+		/// @remark size が 0 以下の場合は true を返し、読み込み位置は変更されません。
+		/// @remark 読み込みに成功すると、読み込み位置は現在位置 + size に移動します。
+		/// @remark 読み込みに失敗した場合、読み込み位置は変更されません。
+		/// @remark 読み込みに失敗した場合、dst が指すメモリの内容は未規定です。
+		[[nodiscard]]
 		bool readExact(void* dst, int64 size);
 
-		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込みます。
+		/// @brief ファイルの指定した位置から、指定したサイズのデータを読み込みます。
 		/// @param dst 読み込み先の先頭ポインタ
 		/// @param pos 読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 指定したサイズのデータをすべて読み込めた場合 true, それ以外の場合は false
+		/// @remark size が 0 以下の場合は true を返し、読み込み位置は変更されません。
 		/// @remark 読み込みに成功すると、読み込み位置は pos + size に移動します。
-		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
+		/// @remark 読み込みに失敗した場合、読み込み位置は変更されません。
+		/// @remark 読み込みに失敗した場合、dst が指すメモリの内容は未規定です。
+		[[nodiscard]]
 		bool readExact(void* dst, int64 pos, int64 size);
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	readBlob
+		//	readToEnd
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ファイルの終端までのデータを読み込み、Blob として返します。
 		/// @return 読み込んだデータ
 		[[nodiscard]]
-		Blob readBlob();
+		Blob readToEnd();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	readBytes
+		//
+		////////////////////////////////////////////////////////////////
 
 		/// @brief 現在の読み込み位置から指定したサイズのデータを読み込み、Blob として返します。
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
 		[[nodiscard]]
-		Blob readBlob(int64 size);
+		Blob readBytes(int64 size);
 
 		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込み、Blob として返します。
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
-		/// @remark 読み込みに成功すると、読み込み位置は pos + 実際に読み込んだサイズに移動します。
+		/// @remark 読み込み位置は pos + 戻り値の Blob のサイズに移動します。
+		/// @remark 読み込み位置を変更せずに読み込むには lookaheadBlob(pos, size) を使用してください。
+		/// @remark size が 0 以下の場合は空の Blob を返し、読み込み位置は変更されません。この場合、pos は検証されません。
+		/// @remark size が 0 より大きく、pos が 0 以上ファイルサイズ以下の範囲にない場合は Error を投げます。
 		[[nodiscard]]
-		Blob readBlob(int64 pos, int64 size);
+		Blob readBytes(int64 pos, int64 size);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -325,6 +348,9 @@ namespace s3d
 		/// @param dst 読み込み先
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込みに成功したら true, それ以外の場合は false
+		/// @remark size が 0 以下の場合は true を返します。この場合、dst は検証されません。
+		/// @remark size が 0 より大きく、dst が nullptr の場合は Error を投げます。
+		/// @remark 読み込み位置は変更されません。
 		bool lookaheadExact(void* dst, int64 size) const;
 
 		/// @brief ファイルの指定した位置から指定したサイズのデータを過不足なく読み込みます。読み込み位置は変更されません。
@@ -332,6 +358,10 @@ namespace s3d
 		/// @param pos 読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 指定したサイズのデータをすべて読み込めた場合 true, それ以外の場合は false
+		/// @remark size が 0 以下の場合は true を返します。この場合、dst および pos は検証されません。
+		/// @remark size が 0 より大きく、dst が nullptr の場合は Error を投げます。
+		/// @remark size が 0 より大きく、pos が 0 以上ファイルサイズ以下の範囲にない場合は Error を投げます。
+		/// @remark 読み込み位置は変更されません。
 		bool lookaheadExact(void* dst, int64 pos, int64 size) const;
 
 		////////////////////////////////////////////////////////////////
@@ -350,6 +380,8 @@ namespace s3d
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
+		/// @remark size が 0 以下の場合は空の Blob を返します。この場合、pos は検証されません。
+		/// @remark size が 0 より大きく、pos が 0 以上ファイルサイズ以下の範囲にない場合は Error を投げます。
 		[[nodiscard]]
 		Blob lookaheadBlob(int64 pos, int64 size) const;
 
