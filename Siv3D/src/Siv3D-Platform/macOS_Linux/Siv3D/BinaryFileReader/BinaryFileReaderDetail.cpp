@@ -166,10 +166,12 @@ namespace s3d
 
 			if (file.eof())
 			{
+				file.clear();
 				return readBytes;
 			}
 
 			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath.toUTF8()));
+			file.clear();
 			return 0;
 		}
 
@@ -182,6 +184,7 @@ namespace s3d
 		const int64 previousReadPos = readPos;
 		const int64 readBytes = read(dst, readSize, fileSize, fullPath);
 		readPos = previousReadPos;
+		file.clear();
 		file.seekg(previousReadPos);
 		return readBytes;
 	}

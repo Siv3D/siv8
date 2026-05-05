@@ -48,6 +48,34 @@ namespace s3d
 		[[nodiscard]]
 		explicit BinaryFileReader(FilePathView path);
 
+		BinaryFileReader(const BinaryFileReader& other) = delete;
+
+		/// @brief ムーブコンストラクタ
+		/// @param other ムーブする BinaryFileReader
+		BinaryFileReader(BinaryFileReader&& other) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief デストラクタ
+		~BinaryFileReader() override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		BinaryFileReader& operator =(const BinaryFileReader& other) = delete;
+
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする BinaryFileReader
+		/// @return *this
+		BinaryFileReader& operator =(BinaryFileReader&& other) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	supportsLookahead
@@ -163,12 +191,25 @@ namespace s3d
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
+		/// @remark 読み込みに成功すると、読み込み位置は pos + 実際に読み込んだサイズに移動します。
 		int64 read(void* dst, int64 pos, int64 size) override;
 
 		/// @brief ファイルからデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @return 読み込みに成功したら true, それ以外の場合は false
 		bool read(Concept::TriviallyCopyable auto& dst);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	readExact
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ファイルからデータを読み込みます。
+		/// @param dst 読み込み先
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 読み込みに成功したら true, それ以外の場合は false
+		bool readExact(void* dst, int64 size);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -221,6 +262,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	lookaheadExact
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
+		/// @param dst 読み込み先
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 読み込みに成功したら true, それ以外の場合は false
+		bool lookaheadExact(void* dst, int64 size) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	lookaheadBlob
 		//
 		////////////////////////////////////////////////////////////////
@@ -229,14 +282,14 @@ namespace s3d
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
 		[[nodiscard]]
-		Blob lookaheadBlob(int64 size);
+		Blob lookaheadBlob(int64 size) const;
 		
 		/// @brief 読み込み位置を動かさずにファイルからデータを読み込み、Blob として返します。
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
 		[[nodiscard]]
-		Blob lookaheadBlob(int64 pos, int64 size);
+		Blob lookaheadBlob(int64 pos, int64 size) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -253,7 +306,7 @@ namespace s3d
 
 		class BinaryFileReaderDetail;
 
-		std::shared_ptr<BinaryFileReaderDetail> pImpl;
+		std::unique_ptr<BinaryFileReaderDetail> pImpl;
 	};
 }
 
