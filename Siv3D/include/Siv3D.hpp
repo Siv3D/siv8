@@ -557,8 +557,13 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// CSV データの読み書き | CSV reader/writer
-//# include <Siv3D/CSV.hpp>
+// CSV データの読み書き | CSV reader/writer
+
+# include <Siv3D/CSVReadOptions.hpp>
+# include <Siv3D/CSVWriteOptions.hpp>
+# include <Siv3D/CSVParseErrorCode.hpp>
+# include <Siv3D/CSVParseErrorReason.hpp>
+# include <Siv3D/CSV.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

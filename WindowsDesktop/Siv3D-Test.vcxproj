@@ -24,6 +24,7 @@
     <ClCompile Include="..\Test\Test_ColorF.cpp" />
     <ClCompile Include="..\Test\Test_Compression.cpp" />
     <ClCompile Include="..\Test\Test_Concepts.cpp" />
+    <ClCompile Include="..\Test\Test_CSV.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Grid.cpp" />

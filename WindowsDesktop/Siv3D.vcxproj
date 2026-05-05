@@ -78,6 +78,11 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Console.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConsoleBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ConstantBuffer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSV.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVParseErrorCode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVParseErrorReason.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVReadOptions.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVWriteOptions.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Anchor.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayAlgorithm.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ArrayParallel.ipp" />
@@ -93,6 +98,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Choice.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Circular.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ConstantBuffer.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\CSV.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\DrawableText.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Easing.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Effect.ipp" />
@@ -1537,6 +1543,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\ConsoleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Console\SivConsole.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CPUInfo\SivCPUInfo.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\CSV\SivCSV.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CullMode\SivCullMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CursorStyle\CursorStyleFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\CursorStyle\SivCursorStyle.cpp" />
