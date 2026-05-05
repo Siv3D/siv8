@@ -47,8 +47,6 @@ namespace s3d
 	constexpr LineString::LineString(std::initializer_list<value_type> list)
 		: m_points(list) {}
 
-# ifdef __cpp_lib_containers_ranges
-
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
 	constexpr LineString::LineString(std::from_range_t, Range&& range)
 		: m_points(std::from_range, std::forward<Range>(range)) {}
@@ -56,8 +54,6 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Point> Range>
 	constexpr LineString::LineString(std::from_range_t, Range&& range)
 		: m_points(std::from_range, std::forward<Range>(range)) {}
-
-# endif
 
 	constexpr LineString::LineString(const Arg::reserve_<size_type> size)
 		: m_points{ size } {}

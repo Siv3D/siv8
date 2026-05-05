@@ -111,12 +111,7 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Byte> Range>
 	constexpr void Blob::assign_range(Range&& range)
 	{
-	# if __cpp_lib_containers_ranges >= 202202L
 		m_data.assign_range(std::forward<Range>(range));
-	# else
-		auto common_range = std::views::common(std::forward<Range>(range));
-		m_data.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
-	# endif
 	}
 
 	////////////////////////////////////////////////////////////////

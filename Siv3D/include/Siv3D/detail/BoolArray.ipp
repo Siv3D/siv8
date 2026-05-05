@@ -307,8 +307,6 @@ namespace s3d
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{})
 			: m_container(list, alloc) {}
 
-	# if __cpp_lib_containers_ranges >= 202202L
-
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -317,8 +315,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::from_range_t, Range&& range, const Allocator& alloc = Allocator{})
 			: m_container(std::from_range, std::forward<Range>(range), alloc) {}
-
-	# endif
 
 		/// @brief ジェネレータ関数を使って配列を作成します。
 		/// @param size 作成する配列の要素数
@@ -450,12 +446,7 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr void assign_range(Range&& range)
 		{
-		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.assign_range(std::forward<Range>(range));
-		# else
-			auto common_range = std::views::common(std::forward<Range>(range));
-			m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
-		# endif
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1007,13 +998,9 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		template <Concept::ContainerCompatibleRange<bool> Range>
-		constexpr iterator insert_range(const_iterator pos, Range&& range) {
-		# if __cpp_lib_containers_ranges >= 202202L
+		constexpr iterator insert_range(const_iterator pos, Range&& range)
+		{
 			return m_container.insert_range(pos, std::forward<Range>(range));
-		# else
-			auto common_range = std::views::common(std::forward<Range>(range));
-			return m_container.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
-		# endif
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1046,12 +1033,7 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr void append_range(Range&& range)
 		{
-		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.append_range(std::forward<Range>(range));
-		# else
-			auto common_range = std::views::common(std::forward<Range>(range));
-			m_container.insert(m_container.end(), std::ranges::begin(common_range), std::ranges::end(common_range));
-		# endif
 		}
 
 		////////////////////////////////////////////////////////////////

@@ -142,8 +142,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(std::initializer_list<value_type> list);
 
-	# if __cpp_lib_containers_ranges >= 202202L
-		
 		/// @brief 範囲から点の配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -159,8 +157,6 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<Point> Range>
 		[[nodiscard]]
 		constexpr LineString(std::from_range_t, Range&& range);
-
-	# endif
 
 		/// @brief 空の点の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ

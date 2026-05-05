@@ -140,8 +140,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr String(const StringViewLike auto& s, size_type pos, size_type count);
 
-	# if __cpp_lib_containers_ranges >= 202202L
-		
 		/// @brief 範囲から新しい文字列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -149,9 +147,7 @@ namespace s3d
 			requires Concept::ContainerCompatibleRange<String::value_type, Range>
 		[[nodiscard]]
 		constexpr String(std::from_range_t, Range&& range);
-	
-	# endif
-		
+
 		/// @brief nullptr からの構築は禁止されています。
 		constexpr String(std::nullptr_t) = delete;
 

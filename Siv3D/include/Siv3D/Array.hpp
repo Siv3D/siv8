@@ -191,8 +191,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{});
 
-	# if __cpp_lib_containers_ranges >= 202202L
-		
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -201,8 +199,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::from_range_t, Range&& range, const Allocator& alloc = Allocator{});
 
-	# endif
-		
 		/// @brief ジェネレータ関数を使って配列を作成します。
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
@@ -2455,13 +2451,9 @@ namespace s3d
 	Array(Iterator, Iterator, Allocator = Allocator{})
 		-> Array<typename std::iterator_traits<Iterator>::value_type, Allocator>;
 
-# if __cpp_lib_containers_ranges >= 202202L
-	
 	template<std::ranges::input_range Range, class Allocator = std::allocator<std::ranges::range_value_t<Range>>>
 	Array(std::from_range_t, Range&&, Allocator = Allocator{})
 		-> Array<std::ranges::range_value_t<Range>, Allocator>;
-
-# endif
 }
 
 # include "detail/Array.ipp"

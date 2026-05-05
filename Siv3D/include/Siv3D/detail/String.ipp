@@ -53,14 +53,10 @@ namespace s3d
 	constexpr String::String(const StringViewLike auto& s, const size_type pos, const size_type count)
 		: m_string(s, pos, count) {}
 
-# if __cpp_lib_containers_ranges >= 202202L
-
 	template <class Range>
 		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String::String(std::from_range_t, Range&& range)
 		: m_string(std::from_range, std::forward<Range>(range)) {}
-
-# endif
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -205,17 +201,7 @@ namespace s3d
 		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String& String::assign_range(Range&& range)
 	{
-	# if __cpp_lib_containers_ranges >= 202202L
-		
 		m_string.assign_range(std::forward<Range>(range));
-
-	# else
-
-		auto common_range = std::views::common(std::forward<Range>(range));
- 		m_string.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
-		
-	# endif
-
 		return *this;
 	}
 
@@ -701,16 +687,7 @@ namespace s3d
 		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String::iterator String::insert_range(const_iterator pos, Range&& range)
 	{
-	# if __cpp_lib_containers_ranges >= 202202L
-		
 		return m_string.insert_range(pos, std::forward<Range>(range));
-		
-	# else
-
-		auto common_range = std::views::common(std::forward<Range>(range));
-		return m_string.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
-		
-	# endif
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -919,17 +896,7 @@ namespace s3d
 		requires Concept::ContainerCompatibleRange<String::value_type, Range>
 	constexpr String& String::append_range(Range&& range)
 	{
-	# if __cpp_lib_containers_ranges >= 202202L
-	
 		m_string.append_range(std::forward<Range>(range));
-	
-	# else
-
-		auto common_range = std::views::common(std::forward<Range>(range));
-		m_string.append(std::ranges::begin(common_range), std::ranges::end(common_range));
-		
-	# endif
-		
 		return *this;
 	}
 
