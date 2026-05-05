@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <cstring>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/FormatUtility.hpp>
 # include <Siv3D/Resource.hpp>
@@ -187,7 +188,20 @@ namespace s3d
 		}
 		else
 		{
+			if (m_file.readPos == clampedPos)
+			{
+				return m_file.readPos;
+			}
+
+			m_file.file.clear();
 			m_file.file.seekg(clampedPos);
+
+			if (not m_file.file)
+			{
+				m_file.file.clear();
+				return m_file.readPos;
+			}
+
 			return (m_file.readPos = clampedPos);
 		}
 	}
@@ -205,17 +219,23 @@ namespace s3d
 			return 0;
 		}
 
-		const int64 clampedPos = Clamp<int64>((getPos() + offset), 0, m_info.fileSize);
+		const int64 current = getPos();
 
-		if (isResource())
+		int64 target;
+
+		if (0 <= offset)
 		{
-			return (m_resource.readPos = clampedPos);
+			const int64 room = (m_info.fileSize - current);
+			target = current + Min(offset, room);
 		}
 		else
 		{
-			m_file.file.seekg(clampedPos);
-			return (m_file.readPos = clampedPos);
+			// INT64_MIN の符号反転を避ける
+			const int64 backward = (offset == INT64_MIN) ? current : Min(current, -offset);
+			target = current - backward;
 		}
+
+		return setPos(target);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -224,7 +244,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryFileReader::BinaryFileReaderDetail::getPos()
+	int64 BinaryFileReader::BinaryFileReaderDetail::getPos() const
 	{
 		return (isResource() ? m_resource.readPos : m_file.readPos);
 	}
@@ -332,7 +352,12 @@ namespace s3d
 	int64 BinaryFileReader::BinaryFileReaderDetail::Resource::lookahead(NonNull<void*> dst, const int64 pos, const int64 readSize, const int64 fileSize)
 	{
 		const int64 readBytes = Clamp<int64>(readSize, 0, (fileSize - pos));
-		std::memcpy(dst.get(), (pointer + pos), static_cast<size_t>(readBytes));
+
+		if (0 < readBytes)
+		{
+			std::memcpy(dst.get(), (pointer + pos), static_cast<size_t>(readBytes));
+		}
+
 		return readBytes;
 	}
 
@@ -340,28 +365,31 @@ namespace s3d
 	{
 		const int64 readBytes = Clamp<int64>(readSize, 0, (fileSize - readPos));
 
-		if (readBytes == 0)
+		if (readBytes <= 0)
 		{
 			return 0;
 		}
 
-		if (not file.read(static_cast<char*>(dst.get()), readBytes))
+		file.read(static_cast<char*>(dst.get()), static_cast<std::streamsize>(readBytes));
+
+		const int64 actual = static_cast<int64>(file.gcount());
+		readPos += actual;
+
+		if (actual == readBytes)
 		{
-			readPos = file.tellg();
+			return actual;
+		}
 
-			if (file.eof())
-			{
-				file.clear();
-				return readBytes;
-			}
-
-			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath));
+		if (file.eof())
+		{
 			file.clear();
-			return 0;
+			return actual;
 		}
 
-		readPos += readBytes;
-		return readBytes;
+		LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath));
+		file.clear();
+
+		return actual;
 	}
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookahead(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)

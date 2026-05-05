@@ -14,7 +14,7 @@
 # include "Common.hpp"
 # include "IReader.hpp"
 # include "StringView.hpp"
-# include "OpenMode.hpp"
+# include "Optional.hpp"
 
 namespace s3d
 {
@@ -138,6 +138,8 @@ namespace s3d
 
 		/// @brief ファイルのサイズを返します。
 		/// @return ファイルのサイズ（バイト）
+		/// @remark ファイルサイズは open() 時点で取得されます。
+		/// @remark open() 後に外部からファイルが変更された場合の読み込み結果は保証されません。
 		[[nodiscard]]
 		int64 size() const override;
 
@@ -161,7 +163,7 @@ namespace s3d
 		/// @brief 現在の読み込み位置からファイル終端までの残りサイズを返します。
 		/// @return 残りサイズ（バイト）
 		[[nodiscard]]
-		int64 remaining() const;
+		int64 remaining() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -172,7 +174,7 @@ namespace s3d
 		/// @brief 現在の読み込み位置がファイル終端に達しているかを返します。
 		/// @return ファイル終端に達している場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool isEOF() const;
+		bool isEOF() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -206,20 +208,32 @@ namespace s3d
 		/// @param dst 読み込み先
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
+		/// @remark 読み込み位置は実際に読み込んだサイズ分だけ進みます。
 		int64 read(void* dst, int64 size) override;
 
-		/// @brief ファイルからデータを読み込みます。
+		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
-		/// @remark 読み込みに成功すると、読み込み位置は pos + 実際に読み込んだサイズに移動します。
+		/// @remark 読み込み位置は pos + 実際に読み込んだサイズに移動します。
 		int64 read(void* dst, int64 pos, int64 size) override;
 
 		/// @brief ファイルからデータを読み込みます。
 		/// @param dst 読み込み先
 		/// @return 読み込みに成功したら true, それ以外の場合は false
+		/// @remark 読み込みに成功すると、読み込み位置は sizeof(Type) バイト進みます。
+		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
 		bool read(Concept::TriviallyCopyable auto& dst);
+
+		/// @brief ファイルからデータを読み込みます。
+		/// @tparam Type 読み込む値の型
+		/// @return 読み込みに成功した場合は読み込んだ値。それ以外の場合は none
+		/// @remark 読み込みに成功すると、読み込み位置は sizeof(Type) バイト進みます。
+		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
+		template <Concept::TriviallyCopyable Type>
+		[[nodiscard]]
+		Optional<Type> read();
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -231,7 +245,18 @@ namespace s3d
 		/// @param dst 読み込み先
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込みに成功したら true, それ以外の場合は false
+		/// @remark 読み込みに成功すると、読み込み位置は pos + size に移動します。
+		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
 		bool readExact(void* dst, int64 size);
+
+		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込みます。
+		/// @param dst 読み込み先の先頭ポインタ
+		/// @param pos 読み込み開始位置（バイト）
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 指定したサイズのデータをすべて読み込めた場合 true, それ以外の場合は false
+		/// @remark 読み込みに成功すると、読み込み位置は pos + size に移動します。
+		/// @remark 読み込みに失敗した場合でも、部分的に読み込まれたバイト数だけ読み込み位置が進むことがあります。
+		bool readExact(void* dst, int64 pos, int64 size);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -244,16 +269,17 @@ namespace s3d
 		[[nodiscard]]
 		Blob readBlob();
 
-		/// @brief ファイルからデータを読み込み、Blob として返します。
+		/// @brief 現在の読み込み位置から指定したサイズのデータを読み込み、Blob として返します。
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
 		[[nodiscard]]
 		Blob readBlob(int64 size);
 
-		/// @brief ファイルからデータを読み込み、Blob として返します。
+		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込み、Blob として返します。
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
+		/// @remark 読み込みに成功すると、読み込み位置は pos + 実際に読み込んだサイズに移動します。
 		[[nodiscard]]
 		Blob readBlob(int64 pos, int64 size);
 
@@ -263,24 +289,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
+		/// @brief ファイルからデータを読み込みます。読み込み位置は変更されません。
 		/// @param dst 読み込み先
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
 		int64 lookahead(void* dst, int64 size) const override;
 
-		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
+		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込みます。読み込み位置は変更されません。
 		/// @param dst 読み込み先
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 実際に読み込んだサイズ（バイト）
 		int64 lookahead(void* dst, int64 pos, int64 size) const override;
 
-		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
+		/// @brief ファイルからデータを読み込みます。読み込み位置は変更されません。
 		/// @tparam TriviallyCopyable 読み込む値の型
 		/// @param dst 読み込み先
 		/// @return 読み込みに成功したら true, それ以外の場合は false
 		bool lookahead(Concept::TriviallyCopyable auto& dst) const;
+
+		/// @brief ファイルからデータを読み込みます。読み込み位置は変更されません。
+		/// @tparam Type 読み込む値の型
+		/// @return 読み込みに成功した場合は読み込んだ値。それ以外の場合は none
+		template <Concept::TriviallyCopyable Type>
+		[[nodiscard]]
+		Optional<Type> lookahead() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -288,11 +321,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 読み込み位置を動かさずにファイルからデータを読み込みます。
+		/// @brief ファイルからデータを読み込みます。読み込み位置は変更されません。
 		/// @param dst 読み込み先
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込みに成功したら true, それ以外の場合は false
 		bool lookaheadExact(void* dst, int64 size) const;
+
+		/// @brief ファイルの指定した位置から指定したサイズのデータを過不足なく読み込みます。読み込み位置は変更されません。
+		/// @param dst 読み込み先の先頭ポインタ
+		/// @param pos 読み込み開始位置（バイト）
+		/// @param size 読み込むサイズ（バイト）
+		/// @return 指定したサイズのデータをすべて読み込めた場合 true, それ以外の場合は false
+		bool lookaheadExact(void* dst, int64 pos, int64 size) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -300,13 +340,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 		
-		/// @brief 読み込み位置を動かさずにファイルからデータを読み込み、Blob として返します。
+		/// @brief 現在の読み込み位置から指定したサイズのデータを読み込み、Blob として返します。読み込み位置は変更されません。
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
 		[[nodiscard]]
 		Blob lookaheadBlob(int64 size) const;
 		
-		/// @brief 読み込み位置を動かさずにファイルからデータを読み込み、Blob として返します。
+		/// @brief ファイルの指定した位置から指定したサイズのデータを読み込み、Blob として返します。読み込み位置は変更されません。
 		/// @param pos 先頭から数えた読み込み開始位置（バイト）
 		/// @param size 読み込むサイズ（バイト）
 		/// @return 読み込んだデータ
@@ -320,7 +360,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 開いているファイルのパスを返します。
-		/// @return 開いているファイルのパス。ファイルが開いていない場合は空の文字列
+		/// @return 開いている通常ファイルのフルパス、またはリソースパス。開いていない場合は空文字列
 		[[nodiscard]]
 		const FilePath& path() const noexcept;
 

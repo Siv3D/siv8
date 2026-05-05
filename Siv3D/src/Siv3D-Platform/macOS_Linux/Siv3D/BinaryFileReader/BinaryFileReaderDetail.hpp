@@ -43,7 +43,7 @@ namespace s3d
 		int64 skip(int64 offset);
 
 		[[nodiscard]]
-		int64 getPos();
+		int64 getPos() const;
 
 		[[nodiscard]]
 		int64 read(NonNull<void*> dst, int64 readSize);

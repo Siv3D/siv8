@@ -123,7 +123,21 @@ namespace s3d
 		}
 
 		const int64 clampedPos = Clamp<int64>(pos, 0, m_info.fileSize);
+
+		if (m_file.readPos == clampedPos)
+		{
+			return m_file.readPos;
+		}
+
+		m_file.file.clear();
 		m_file.file.seekg(clampedPos);
+
+		if (not m_file.file)
+		{
+			m_file.file.clear();
+			return m_file.readPos;
+		}
+
 		return (m_file.readPos = clampedPos);
 	}
 
@@ -140,8 +154,35 @@ namespace s3d
 			return 0;
 		}
 
-		const int64 clampedPos = Clamp<int64>((getPos() + offset), 0, m_info.fileSize);
+		const int64 currentPos = getPos();
+
+		int64 clampedPos;
+
+		if (offset >= 0)
+		{
+			const int64 forwardLimit = (m_info.fileSize - currentPos);
+			clampedPos = (currentPos + Min(offset, forwardLimit));
+		}
+		else
+		{
+			const int64 backwardLimit = currentPos;
+
+			const int64 backward = (offset == INT64_MIN)
+				? backwardLimit
+				: Min<int64>(-offset, backwardLimit);
+
+			clampedPos = (currentPos - backward);
+		}
+
+		m_file.file.clear();
 		m_file.file.seekg(clampedPos);
+
+		if (not m_file.file)
+		{
+			m_file.file.clear();
+			return m_file.readPos;
+		}
+
 		return (m_file.readPos = clampedPos);
 	}
 
@@ -151,7 +192,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int64 BinaryFileReader::BinaryFileReaderDetail::getPos()
+	int64 BinaryFileReader::BinaryFileReaderDetail::getPos() const
 	{
 		return m_file.readPos;
 	}
@@ -214,28 +255,31 @@ namespace s3d
 	{
 		const int64 readBytes = Clamp<int64>(readSize, 0, (fileSize - readPos));
 
-		if (readBytes == 0)
+		if (readBytes <= 0)
 		{
 			return 0;
 		}
 
-		if (not file.read(static_cast<char*>(dst.get()), readBytes))
+		file.read(static_cast<char*>(dst.get()), static_cast<std::streamsize>(readBytes));
+
+		const int64 actual = static_cast<int64>(file.gcount());
+		readPos += actual;
+
+		if (actual == readBytes)
 		{
-			readPos = file.tellg();
+			return actual;
+		}
 
-			if (file.eof())
-			{
-				file.clear();
-				return readBytes;
-			}
-
-			LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath.toUTF8()));
+		if (file.eof())
+		{
 			file.clear();
-			return 0;
+			return actual;
 		}
 
-		readPos += readBytes;
-		return readBytes;
+		LOG_FAIL(fmt::format("❌ BinaryFileReader `{0}`: read() failed", fullPath));
+		file.clear();
+
+		return actual;
 	}
 
 	int64 BinaryFileReader::BinaryFileReaderDetail::File::lookahead(const NonNull<void*> dst, const int64 readSize, const int64 fileSize, const FilePath& fullPath)
