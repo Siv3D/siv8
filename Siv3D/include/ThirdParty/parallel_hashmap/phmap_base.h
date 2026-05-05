@@ -1261,8 +1261,8 @@ using GetPropagateOnContainerMoveAssignment =
 template <typename T>
 using GetPropagateOnContainerSwap = typename T::propagate_on_container_swap;
 
-template <typename T>
-using GetIsAlwaysEqual = typename T::is_always_equal;
+//template <typename T>
+//using GetIsAlwaysEqual = typename T::is_always_equal;
 
 template <typename T>
 struct GetFirstArg;
@@ -1451,8 +1451,9 @@ struct allocator_traits
     // is_always_equal:
     // Alloc::is_always_equal if present, otherwise std::is_empty<Alloc>::type
     using is_always_equal =
-        memory_internal::ExtractOrT<memory_internal::GetIsAlwaysEqual, Alloc,
-                                    typename std::is_empty<Alloc>::type>;
+//        memory_internal::ExtractOrT<memory_internal::GetIsAlwaysEqual, Alloc,
+//                                    typename std::is_empty<Alloc>::type>;
+          typename std::allocator_traits<Alloc>::is_always_equal;
 
     // rebind_alloc:
     // Alloc::rebind<T>::other if present, otherwise Alloc<T, Args> if this Alloc

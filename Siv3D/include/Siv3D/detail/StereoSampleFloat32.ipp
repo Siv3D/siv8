@@ -28,7 +28,8 @@ namespace s3d
 		, right{ _right } {}
 
 	constexpr StereoSampleFloat32::StereoSampleFloat32(const StereoSampleInt16 sample) noexcept
-		: StereoSampleFloat32{ sample.toFloat32() } {}
+		: left{ Int16ToFloat32(sample.left) }
+		, right{ Int16ToFloat32(sample.right) } {}
 
 	////////////////////////////////////////////////////////////////
 	//
