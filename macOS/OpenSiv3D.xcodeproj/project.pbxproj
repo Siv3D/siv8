@@ -491,6 +491,13 @@
 		F90F79FC2FA904CD0077F398 /* SivTOMLParseErrorReason.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F72FA904CD0077F398 /* SivTOMLParseErrorReason.cpp */; };
 		F90F79FD2FA904CD0077F398 /* SivTOML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79F52FA904CD0077F398 /* SivTOML.cpp */; };
 		F90F79FF2FA9053B0077F398 /* Test_TOML.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F79FE2FA9053B0077F398 /* Test_TOML.cpp */; };
+		F90F7A052FA9B7A90077F398 /* CSVReadOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A032FA9B7A90077F398 /* CSVReadOptions.hpp */; };
+		F90F7A062FA9B7A90077F398 /* CSVWriteOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A042FA9B7A90077F398 /* CSVWriteOptions.hpp */; };
+		F90F7A072FA9B7A90077F398 /* CSV.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A002FA9B7A90077F398 /* CSV.hpp */; };
+		F90F7A082FA9B7A90077F398 /* CSVParseErrorCode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A012FA9B7A90077F398 /* CSVParseErrorCode.hpp */; };
+		F90F7A092FA9B7A90077F398 /* CSVParseErrorReason.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A022FA9B7A90077F398 /* CSVParseErrorReason.hpp */; };
+		F90F7A0B2FA9B7C60077F398 /* CSV.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A0A2FA9B7C60077F398 /* CSV.ipp */; };
+		F90F7A0E2FA9B7DF0077F398 /* SivCSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A0C2FA9B7DF0077F398 /* SivCSV.cpp */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3563,6 +3570,13 @@
 		F90F79F72FA904CD0077F398 /* SivTOMLParseErrorReason.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOMLParseErrorReason.cpp; sourceTree = "<group>"; };
 		F90F79F92FA904CD0077F398 /* SivTOMLValueType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTOMLValueType.cpp; sourceTree = "<group>"; };
 		F90F79FE2FA9053B0077F398 /* Test_TOML.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TOML.cpp; sourceTree = "<group>"; };
+		F90F7A002FA9B7A90077F398 /* CSV.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSV.hpp; sourceTree = "<group>"; };
+		F90F7A012FA9B7A90077F398 /* CSVParseErrorCode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSVParseErrorCode.hpp; sourceTree = "<group>"; };
+		F90F7A022FA9B7A90077F398 /* CSVParseErrorReason.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSVParseErrorReason.hpp; sourceTree = "<group>"; };
+		F90F7A032FA9B7A90077F398 /* CSVReadOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSVReadOptions.hpp; sourceTree = "<group>"; };
+		F90F7A042FA9B7A90077F398 /* CSVWriteOptions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSVWriteOptions.hpp; sourceTree = "<group>"; };
+		F90F7A0A2FA9B7C60077F398 /* CSV.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CSV.ipp; sourceTree = "<group>"; };
+		F90F7A0C2FA9B7DF0077F398 /* SivCSV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSV.cpp; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6770,6 +6784,7 @@
 				F9070B702B9F175000383E4D /* Console.ipp */,
 				F9070B712B9F175000383E4D /* ConsoleBuffer.ipp */,
 				F980C4932C04B43300A86B68 /* ConstantBuffer.ipp */,
+				F90F7A0A2FA9B7C60077F398 /* CSV.ipp */,
 				F98605742BDA7DD2006A4C0F /* Cursor.ipp */,
 				F9528B5A2BB6DC6800222F45 /* CycleClock.ipp */,
 				F9070B722B9F175000383E4D /* Date.ipp */,
@@ -7036,6 +7051,11 @@
 				F980C48A2C04B41300A86B68 /* ConstantBuffer.hpp */,
 				F9070BD02B9F175000383E4D /* CopyOption.hpp */,
 				F9070BD12B9F175000383E4D /* CPUInfo.hpp */,
+				F90F7A002FA9B7A90077F398 /* CSV.hpp */,
+				F90F7A012FA9B7A90077F398 /* CSVParseErrorCode.hpp */,
+				F90F7A022FA9B7A90077F398 /* CSVParseErrorReason.hpp */,
+				F90F7A032FA9B7A90077F398 /* CSVReadOptions.hpp */,
+				F90F7A042FA9B7A90077F398 /* CSVWriteOptions.hpp */,
 				F980C4222C00D2B500A86B68 /* CullMode.hpp */,
 				F98605722BDA7DB7006A4C0F /* Cursor.hpp */,
 				F9528B562BB6DC3700222F45 /* CycleClock.hpp */,
@@ -7939,6 +7959,7 @@
 				F9070D2D2B9F175E00383E4D /* Console */,
 				F9070D2F2B9F175E00383E4D /* ConsoleBuffer */,
 				F9070D312B9F175E00383E4D /* CPUInfo */,
+				F90F7A0D2FA9B7DF0077F398 /* CSV */,
 				F980C4372C00D31000A86B68 /* CullMode */,
 				F986057A2BDA7DFC006A4C0F /* Cursor */,
 				F98605922BE33124006A4C0F /* CursorStyle */,
@@ -8502,6 +8523,14 @@
 				F90F79F92FA904CD0077F398 /* SivTOMLValueType.cpp */,
 			);
 			path = TOMLValueType;
+			sourceTree = "<group>";
+		};
+		F90F7A0D2FA9B7DF0077F398 /* CSV */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A0C2FA9B7DF0077F398 /* SivCSV.cpp */,
+			);
+			path = CSV;
 			sourceTree = "<group>";
 		};
 		F911710C2DCBBF0B000A22E6 /* Font */ = {
@@ -14674,6 +14703,7 @@
 				F9E5FCE82BC59EA00081A4F7 /* JSONPointer.hpp in Headers */,
 				F986015F2BCFBB53006A4C0F /* SkBlenderBase.h in Headers */,
 				F98600102BCFBB53006A4C0F /* SkDataTable.h in Headers */,
+				F90F7A0B2FA9B7C60077F398 /* CSV.ipp in Headers */,
 				F9E7942C2C12B861002615BA /* MSL.hpp in Headers */,
 				F97E6DBF2D7B3BEA0066E408 /* HashMap.hpp in Headers */,
 				F98111992EC8C68700C50DD1 /* GUIColorStyle.hpp in Headers */,
@@ -15186,6 +15216,11 @@
 				F98600652BCFBB53006A4C0F /* SkRuntimeEffect.h in Headers */,
 				F986FA502BCFB53B006A4C0F /* svpostnm.h in Headers */,
 				F98602352BCFBB54006A4C0F /* SkRasterPipeline.h in Headers */,
+				F90F7A052FA9B7A90077F398 /* CSVReadOptions.hpp in Headers */,
+				F90F7A062FA9B7A90077F398 /* CSVWriteOptions.hpp in Headers */,
+				F90F7A072FA9B7A90077F398 /* CSV.hpp in Headers */,
+				F90F7A082FA9B7A90077F398 /* CSVParseErrorCode.hpp in Headers */,
+				F90F7A092FA9B7A90077F398 /* CSVParseErrorReason.hpp in Headers */,
 				F9070C6C2B9F175000383E4D /* Memory.ipp in Headers */,
 				F9528BA52BBD707100222F45 /* MemoryViewReader.ipp in Headers */,
 				F98601B32BCFBB53006A4C0F /* SkEnumerate.h in Headers */,
@@ -15743,6 +15778,7 @@
 				F9B7D9F02D8C7215002ABACE /* TextureUtility.cpp in Sources */,
 				F98602DE2BCFBB54006A4C0F /* SkImage_Base.cpp in Sources */,
 				F98603B92BCFBB54006A4C0F /* SkTriColorShader.cpp in Sources */,
+				F90F7A0E2FA9B7DF0077F398 /* SivCSV.cpp in Sources */,
 				F98601B02BCFBB53006A4C0F /* SkEdgeClipper.cpp in Sources */,
 				F98603B02BCFBB54006A4C0F /* SkPictureShader.cpp in Sources */,
 				F98604742BCFBB54006A4C0F /* SkSLInliner.cpp in Sources */,
