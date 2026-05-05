@@ -487,9 +487,13 @@ TEST_CASE("INI.modify")
 	INI ini;
 
 	ini.addGlobalProperty(U"title", U"Game");
+	ini.addGlobalProperty(U"version", 3);
+	ini.addGlobalProperty(U"enabled", true);
 	ini.addSection(U"window");
-	ini.addProperty(U"window", U"width", U"1280");
-	ini.addProperty(U"window", U"height", U"720");
+	ini.addProperty(U"window", U"width", 1280);
+	ini.addProperty(U"window", U"height", 720);
+	ini.addProperty(U"window", U"fullscreen", false);
+	ini.addProperty(U"window", U"scale", 1.5);
 	ini.addProperty(U"player", U"name", U"Alice");
 
 	REQUIRE(ini);
@@ -497,7 +501,12 @@ TEST_CASE("INI.modify")
 	CHECK(ini.hasSection(U"window"));
 	CHECK(ini.hasSection(U"player"));
 	CHECK_EQ(ini.getGlobal<String>(U"title"), U"Game");
+	CHECK_EQ(ini.getGlobal<int32>(U"version"), 3);
+	CHECK_EQ(ini.getGlobal<bool>(U"enabled"), true);
 	CHECK_EQ(ini.get<int32>(U"window", U"width"), 1280);
+	CHECK_EQ(ini.get<int32>(U"window", U"height"), 720);
+	CHECK_EQ(ini.get<bool>(U"window", U"fullscreen"), false);
+	CHECK(ini.get<double>(U"window", U"scale") == doctest::Approx(1.5));
 	CHECK_EQ(ini.get<String>(U"player", U"name"), U"Alice");
 
 	ini[U"window"][U"width"] = 1920;
@@ -527,8 +536,8 @@ TEST_CASE("INI.format")
 {
 	INI ini;
 	ini.addGlobalProperty(U"title", U"Siv3D");
-	ini.addProperty(U"window", U"width", U"1280");
-	ini.addProperty(U"window", U"height", U"720");
+	ini.addProperty(U"window", U"width", 1280);
+	ini.addProperty(U"window", U"height", 720);
 
 	CHECK_EQ(ini.format(), U"title = Siv3D\n\n[window]\nwidth = 1280\nheight = 720\n");
 	CHECK_EQ(ini.formatUTF8(), std::string{ "title = Siv3D\n\n[window]\nwidth = 1280\nheight = 720\n" });

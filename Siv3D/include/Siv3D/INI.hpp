@@ -17,6 +17,7 @@
 # include "Result.hpp"
 # include "IReader.hpp"
 # include "HashMap.hpp"
+# include "Format.hpp"
 # include "INIItem.hpp"
 # include "INISection.hpp"
 # include "INIParseErrorReason.hpp"
@@ -391,6 +392,14 @@ namespace s3d
 		/// @remark 指定したセクションが存在しない場合は作成されます。 | If the specified section does not exist, it is created.
 		void addProperty(StringView section, StringView key, String value);
 
+		/// @brief 指定したセクションにプロパティを追加または更新します。 | Adds or updates a property in the specified section.
+		/// @param section セクション名。空文字列の場合はグローバル（無名）セクション | Section name. Empty string means the global section.
+		/// @param key プロパティのキー | Property key
+		/// @param value プロパティの値 | Property value
+		/// @remark value は Format() により文字列化されます。 | value is converted to a string by Format().
+		/// @remark 指定したセクションが存在しない場合は作成されます。 | If the specified section does not exist, it is created.
+		void addProperty(StringView section, StringView key, const Concept::Formattable auto& value);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addGlobalProperty
@@ -401,6 +410,12 @@ namespace s3d
 		/// @param key プロパティのキー | Property key
 		/// @param value プロパティの値 | Property value
 		void addGlobalProperty(StringView key, String value);
+
+		/// @brief グローバル（無名）セクションにプロパティを追加または更新します。 | Adds or updates a property in the global section.
+		/// @param key プロパティのキー | Property key
+		/// @param value プロパティの値 | Property value
+		/// @remark value は Format() により文字列化されます。 | value is converted to a string by Format().
+		void addGlobalProperty(StringView key, const Concept::Formattable auto& value);
 
 		////////////////////////////////////////////////////////////////
 		//
