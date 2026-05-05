@@ -30,9 +30,9 @@ namespace
 	constexpr FilePathView Nonexistent = U"../../Test/data/csv/nonexistent.csv";
 }
 
+// 空の CSV と invalid CSV の基本状態を確認する。
 TEST_CASE("CSV.default")
 {
-	// 空の CSV と invalid CSV の基本状態を確認する。
 	const CSV csv;
 
 	CHECK(csv);
@@ -64,9 +64,9 @@ TEST_CASE("CSV.default")
 	CHECK(invalid.isEmpty());
 }
 
+// CRLF 区切りの基本的な CSV ファイルを読み込めることを確認する。
 TEST_CASE("CSV.Load.basic")
 {
-	// CRLF 区切りの基本的な CSV ファイルを読み込めることを確認する。
 	const CSV csv = CSV::Load(ValidBasic);
 
 	REQUIRE(csv);
@@ -92,9 +92,9 @@ TEST_CASE("CSV.Load.basic")
 	CHECK_EQ(csv[2][2], U"88");
 }
 
+// StringView と std::string からのパース、および空入力と失敗時の invalid 化を確認する。
 TEST_CASE("CSV.Parse")
 {
-	// StringView と std::string からのパース、および空入力と失敗時の invalid 化を確認する。
 	{
 		const CSV csv = CSV::Parse(U"a,b,c\n1,2,3\n");
 
@@ -134,9 +134,9 @@ TEST_CASE("CSV.Parse")
 	}
 }
 
+// Result API が成功時に CSV、失敗時に CSVParseErrorReason の配列を返すことを確認する。
 TEST_CASE("CSV.LoadResult.ParseResult")
 {
-	// Result API が成功時に CSV、失敗時に CSVParseErrorReason の配列を返すことを確認する。
 	{
 		const auto result = CSV::LoadResult(ValidBasic);
 
@@ -178,9 +178,9 @@ TEST_CASE("CSV.LoadResult.ParseResult")
 	}
 }
 
+// 不正な CSV ファイルが Load では invalid、LoadResult では詳細エラーになることを確認する。
 TEST_CASE("CSV.Load.invalid")
 {
-	// 不正な CSV ファイルが Load では invalid、LoadResult では詳細エラーになることを確認する。
 	constexpr std::array InvalidFiles
 	{
 		InvalidUnexpectedQuote,
@@ -210,9 +210,9 @@ TEST_CASE("CSV.Load.invalid")
 	}
 }
 
+// comma, double quote, CRLF を含む quoted field を RFC 4180 形式で読み取れることを確認する。
 TEST_CASE("CSV.RFC4180_quoted_fields")
 {
-	// comma, double quote, CRLF を含む quoted field を RFC 4180 形式で読み取れることを確認する。
 	const CSV csv = CSV::Load(ValidQuoted);
 
 	REQUIRE(csv);
@@ -244,9 +244,9 @@ TEST_CASE("CSV.RFC4180_quoted_fields")
 	}
 }
 
+// 読み込み時の改行許容オプションが LF, CRLF, CR に対して機能することを確認する。
 TEST_CASE("CSV.newlines_options")
 {
-	// 読み込み時の改行許容オプションが LF, CRLF, CR に対して機能することを確認する。
 	{
 		const CSV csv = CSV::Load(ValidLF);
 
@@ -298,9 +298,9 @@ TEST_CASE("CSV.newlines_options")
 	}
 }
 
+// Unicode, UTF-8 BOM, 空ファイルの読み込みを確認する。
 TEST_CASE("CSV.unicode_bom_empty")
 {
-	// Unicode, UTF-8 BOM, 空ファイルの読み込みを確認する。
 	{
 		const CSV csv = CSV::Load(ValidUnicode);
 
@@ -337,9 +337,9 @@ TEST_CASE("CSV.unicode_bom_empty")
 	}
 }
 
+// 列数不一致を許容するデフォルト挙動と、検証オプション有効時の複数エラーを確認する。
 TEST_CASE("CSV.consistent_columns")
 {
-	// 列数不一致を許容するデフォルト挙動と、検証オプション有効時の複数エラーを確認する。
 	{
 		const CSV csv = CSV::Load(ValidRagged);
 
@@ -365,9 +365,9 @@ TEST_CASE("CSV.consistent_columns")
 	}
 }
 
+// セル値の型変換取得、Optional 取得、デフォルト値取得を確認する。
 TEST_CASE("CSV.get_getOpt_getOr")
 {
-	// セル値の型変換取得、Optional 取得、デフォルト値取得を確認する。
 	const CSV csv = CSV::Parse(U"int,float,text,bad\n123,3.5,Siv3D,abc\n");
 
 	REQUIRE(csv);
@@ -396,9 +396,9 @@ TEST_CASE("CSV.get_getOpt_getOr")
 	CHECK_EQ(csv.get<String>(99, 99), U"");
 }
 
+// data, getData, row, getRow, operator[] の参照アクセサを確認する。
 TEST_CASE("CSV.data_access")
 {
-	// data, getData, row, getRow, operator[] の参照アクセサを確認する。
 	CSV csv = CSV::Parse(U"a,b\n1,2\n");
 
 	REQUIRE(csv);
@@ -413,16 +413,17 @@ TEST_CASE("CSV.data_access")
 	CHECK_EQ(csv[0][0], U"header");
 }
 
+// addRow, write, writeRow, newLine によるインメモリ編集を確認する。
 TEST_CASE("CSV.modify")
 {
-	// addRow, write, writeRow, newLine によるインメモリ編集を確認する。
 	CSV csv;
 
 	csv.addRow(U"id", U"name");
 	csv.write(1);
 	csv.write(U"Alice");
 	csv.newLine();
-	csv.writeRow(2, U"Bob");
+	csv.write(2, U"Bob");
+	csv.newLine();
 	csv.addRow(CSV::Row{ U"3", U"Charlie" });
 
 	REQUIRE(csv);
@@ -441,9 +442,9 @@ TEST_CASE("CSV.modify")
 	CHECK_EQ(csv.rows(), 0);
 }
 
+// save を使わずに、CSVWriteOptions と RFC 4180 形式の文字列化を確認する。
 TEST_CASE("CSV.format")
 {
-	// save を使わずに、CSVWriteOptions と RFC 4180 形式の文字列化を確認する。
 	CSV csv;
 	csv.addRow(U"plain", U"comma,value", U"quote \" value", U"line\nbreak");
 
@@ -475,9 +476,9 @@ TEST_CASE("CSV.format")
 	}
 }
 
+// 代表的な構文エラーが対応する CSVParseErrorCode を返すことを確認する。
 TEST_CASE("CSV.error_codes")
 {
-	// 代表的な構文エラーが対応する CSVParseErrorCode を返すことを確認する。
 	{
 		const auto result = CSV::ParseResult(U"abc,d\"ef\r\n");
 

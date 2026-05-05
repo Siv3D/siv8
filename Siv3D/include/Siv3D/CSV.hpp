@@ -249,12 +249,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief レコードを追加します。 | Adds a record.
-		/// @param row 追加するレコード | Record to add
+		/// @brief 完成済みのレコードを CSV データの末尾に追加します。 | Appends a completed record to the CSV data.
+		/// @param row 追加するレコード | Record to append
+		/// @remark write() / newLine() による現在の書き込み位置には依存しません。 | This does not depend on the current write position used by write() / newLine().
 		void addRow(Row row);
 
-		/// @brief レコードを追加します。 | Adds a record.
-		/// @param records 追加する値 | Values to add
+		/// @brief 複数の値からレコードを作成し、CSV データの末尾に追加します。 | Creates a record from values and appends it to the CSV data.
+		/// @param records 追加するレコードの各フィールド値 | Field values of the record to append
+		/// @remark 各値は Format() により文字列化されます。 | Each value is converted to a string by Format().
+		/// @remark write() / newLine() による現在の書き込み位置には依存しません。 | This does not depend on the current write position used by write() / newLine().
 		template <class ... Args>
 		void addRow(const Args& ... records);
 
@@ -264,30 +267,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 現在のレコードにフィールドを追加します。 | Adds a field to the current record.
+		/// @brief 現在のレコードにフィールドを 1 つ追加します。 | Adds one field to the current record.
 		/// @param field 追加するフィールド | Field to add
+		/// @remark 現在のレコードが存在しない場合は、新しいレコードを開始します。 | If there is no current record, a new record is started.
+		/// @remark レコードを終了するには newLine() を呼びます。 | Call newLine() to end the record.
 		void write(const String& field);
 
-		/// @brief 現在のレコードにフィールドを追加します。 | Adds a field to the current record.
+		/// @brief 現在のレコードに値を 1 つ追加します。 | Adds one value to the current record.
 		/// @param value 追加する値 | Value to add
+		/// @remark value は Format() により文字列化されます。 | value is converted to a string by Format().
+		/// @remark 現在のレコードが存在しない場合は、新しいレコードを開始します。 | If there is no current record, a new record is started.
+		/// @remark レコードを終了するには newLine() を呼びます。 | Call newLine() to end the record.
 		template <class Type>
 		void write(const Type& value);
 
-		/// @brief 現在のレコードにフィールドを追加します。 | Adds fields to the current record.
+		/// @brief 現在のレコードに複数の値を追加します。 | Adds values to the current record.
 		/// @param records 追加する値 | Values to add
+		/// @remark 各値は Format() により文字列化されます。 | Each value is converted to a string by Format().
+		/// @remark 現在のレコードが存在しない場合は、新しいレコードを開始します。 | If there is no current record, a new record is started.
+		/// @remark レコードを終了するには newLine() を呼びます。 | Call newLine() to end the record.
 		template <class ... Args>
 		void write(const Args& ... records);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	writeRow
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief レコードを追加します。 | Adds a record.
-		/// @param records 追加する値 | Values to add
-		template <class ... Args>
-		void writeRow(const Args& ... records);
 
 		////////////////////////////////////////////////////////////////
 		//
