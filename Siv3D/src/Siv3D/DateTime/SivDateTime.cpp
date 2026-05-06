@@ -150,13 +150,13 @@ namespace s3d
 				result += Pad(dt.second, { 2, U'0' });
 				break;
 			case 18: // S	小数点以下 1 桁の秒 (0-9)
-				result += ToString(dt.milliseconds / 100);
+				result += ToString(dt.millisecond / 100);
 				break;
 			case 19: // SS	小数点以下 2 桁の秒 (00-99)
-				result += Pad(dt.milliseconds / 10, { 2, U'0' });
+				result += Pad(dt.millisecond / 10, { 2, U'0' });
 				break;
 			case 20: // SSS	小数点以下 3 桁の秒 (000-999)
-				result += Pad(dt.milliseconds, { 3, U'0' });
+				result += Pad(dt.millisecond, { 3, U'0' });
 				break;
 			}
 		}
@@ -313,7 +313,7 @@ namespace s3d
 			count -= (days * MilliSecIn1Day);
 		}
 
-		int64 newCount = (detail::TimeToMillisecCount(hour, minute, second, milliseconds) + count);
+		int64 newCount = (detail::TimeToMillisecCount(hour, minute, second, millisecond) + count);
 
 		if (MilliSecIn1Day <= newCount)
 		{
@@ -329,7 +329,7 @@ namespace s3d
 		hour = static_cast<int32>(newCount / (60LL * 60 * 1000));
 		minute = static_cast<int32>(newCount / (60LL * 1000) % 60);
 		second = static_cast<int32>(newCount / (1000) % 60);
-		milliseconds = static_cast<int32>(newCount % 1000);
+		millisecond = static_cast<int32>(newCount % 1000);
 		return *this;
 	}
 		
