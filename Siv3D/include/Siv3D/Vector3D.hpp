@@ -872,7 +872,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vec3 を Point3D 型に変換します。小数点数以下は切り捨てられます。
+		/// @brief Vec3 を Point3D 型に変換します。小数点以下は切り捨てられます。
 		/// @return Point3D
 		[[nodiscard]]
 		constexpr Point3D asPoint3D() const noexcept;

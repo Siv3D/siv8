@@ -234,14 +234,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 	
-		bool RemoveContents(const FilePathView path, const AllowUndo allowUndo)
+		bool RemoveContents(const FilePathView path, const MoveToTrash moveToTrash)
 		{
 			if (not IsDirectory(path))
 			{
 				return false;
 			}
 
-			if (not Remove(path, allowUndo))
+			if (not Remove(path, moveToTrash))
 			{
 				return false;
 			}

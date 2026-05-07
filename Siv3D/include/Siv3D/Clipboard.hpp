@@ -91,14 +91,14 @@ namespace s3d
 		void SetImage(const Image& image);
 
 		/// @brief クリップボードから画像を取得します。 | Retrieves an image from the clipboard.
-		/// @param premultiplyAlpha 取得した画像をアルファ乗算するかどうか | Whether to premultiply the alpha of the retrieved image
+		/// @param premultiplyAlpha 取得した画像にアルファ乗算処理を適用するか | Whether to premultiply alpha in the retrieved image
 		/// @return 画像を取得できた場合はその値、取得できない場合は none | The image if available, otherwise none
 		[[nodiscard]]
 		Optional<Image> GetImage(PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 
 		/// @brief クリップボードから画像を取得します。 | Retrieves an image from the clipboard.
 		/// @param image 取得した画像の格納先 | Destination for the retrieved image
-		/// @param premultiplyAlpha 取得した画像をアルファ乗算するかどうか | Whether to premultiply the alpha of the retrieved image
+		/// @param premultiplyAlpha 取得した画像にアルファ乗算処理を適用するか | Whether to premultiply alpha in the retrieved image
 		/// @return 取得に成功した場合 true, 失敗した場合 false | true on success, otherwise false
 		bool GetImage(Image& image, PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes);
 

@@ -460,9 +460,9 @@ namespace s3d
 
 		/// @brief 指定したファイルまたはディレクトリを削除します。
 		/// @param path 削除するパス
-		/// @param allowUndo 削除したファイルやディレクトリをゴミ箱に送る場合 `AllowUndo::Yes`, それ以外の場合は `AllowUndo::No`
+		/// @param moveToTrash 削除したファイルやディレクトリをゴミ箱に送る場合 `MoveToTrash::Yes`, それ以外の場合は `MoveToTrash::No`
 		/// @return 削除に成功した場合 true, それ以外の場合は false
-		bool Remove(FilePathView path, AllowUndo allowUndo = AllowUndo::No);
+		bool Remove(FilePathView path, MoveToTrash moveToTrash = MoveToTrash::No);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -472,10 +472,10 @@ namespace s3d
 
 		/// @brief 指定したディレクトリの中身を削除します。
 		/// @param path 中身を削除するディレクトリのパス
-		/// @param allowUndo 削除したファイルやディレクトリをゴミ箱に送る場合 `AllowUndo::Yes`, それ以外の場合は `AllowUndo::No`
+		/// @param moveToTrash 削除したファイルやディレクトリをゴミ箱に送る場合 `MoveToTrash::Yes`, それ以外の場合は `MoveToTrash::No`
 		/// @remark この関数の実行後、指定したディレクトリは空の状態になります。
 		/// @return 削除に成功した場合 true, それ以外の場合は false
-		bool RemoveContents(FilePathView path, AllowUndo allowUndo = AllowUndo::No);
+		bool RemoveContents(FilePathView path, MoveToTrash moveToTrash = MoveToTrash::No);
 
 		////////////////////////////////////////////////////////////////
 		//

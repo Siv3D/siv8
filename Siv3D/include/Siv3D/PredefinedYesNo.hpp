@@ -17,17 +17,17 @@ namespace s3d
 	/// @brief 即座に処理を開始するかどうかを指定 | Whether to start processing immediately
 	using StartImmediately = YesNo<struct StartImmediately_tag>;
 
-	/// @brief 大文字小文字の区別を保持するかどうかを指定 | Whether to preserve case sensitivity
+	/// @brief 大文字小文字を保持するかどうかを指定 | Whether to preserve letter case
 	using PreserveCase = YesNo<struct PreserveCase_tag>;
 
 	/// @brief サブディレクトリを含め再帰的に処理するかどうかを指定 | Whether to process subdirectories recursively
 	using Recursive = YesNo<struct Recursive_tag>;
 
-	/// @brief 操作の取り消しを許可するかどうかを指定 | Whether to allow operation undoing
-	using AllowUndo = YesNo<struct AllowUndo_tag>;
+	/// @brief 削除対象をゴミ箱へ移動するかどうかを指定 | Whether to move deleted items to the trash
+	using MoveToTrash = YesNo<struct MoveToTrash_tag>;
 
 	/// @brief 小数点以下の桁数を固定するかどうかを指定 | Whether to fix the number of decimal places
-	using FixDecimalPlace = YesNo<struct FixDecimalPlace_tag>;
+	using FixDecimalPlaces = YesNo<struct FixDecimalPlaces_tag>;
 
 	/// @brief エラー時に例外を発生させるかどうかを指定 | Whether to throw exceptions on errors
 	using AllowExceptions = YesNo<struct AllowExceptions_tag>;
@@ -41,8 +41,8 @@ namespace s3d
 	/// @brief 乗算済みアルファが使用されているかどうかを指定 | Whether premultiplied alpha is being used
 	using IsAlphaPremultiplied = YesNo<struct IsAlphaPremultiplied_tag>;
 
-	/// @brief 要素を中心に配置するかどうかを指定 | Whether to center elements
-	using Centering = YesNo<struct Centering_tag>;
+	/// @brief ウィンドウを画面中央へ移動するかどうかを指定 | Whether to center the window on the screen
+	using CenterWindow = YesNo<struct CenterWindow_tag>;
 
 	/// @brief カーソル座標を変換するかどうかを指定 | Whether to transform cursor coordinates
 	using TransformCursor = YesNo<struct TransformCursor_tag>;

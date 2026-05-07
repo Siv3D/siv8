@@ -167,18 +167,18 @@ namespace s3d
 
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param size 新しいサイズ（ピクセル）
-		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `ResizeVirtual(size, centering)` と同じです。
-		bool Resize(Size size, Centering centering = Centering::Yes);
+		/// @remark `ResizeVirtual(size, centerWindow)` と同じです。
+		bool Resize(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
-		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `ResizeVirtual(width, height, centering)` と同じです。
-		bool Resize(int32 width, int32 height, Centering centering = Centering::Yes);
+		/// @remark `ResizeVirtual(width, height, centerWindow)` と同じです。
+		bool Resize(int32 width, int32 height, CenterWindow centerWindow = CenterWindow::Yes);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -188,18 +188,18 @@ namespace s3d
 
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param size 新しいサイズ（ピクセル）
-		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `Resize(size, centering)` と同じです。
-		bool ResizeVirtual(Size size, Centering centering = Centering::Yes);
+		/// @remark `Resize(size, centerWindow)` と同じです。
+		bool ResizeVirtual(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを仮想サイズ基準で変更します。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
-		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		/// @remark `Resize(width, height, centering)` と同じです。
-		bool ResizeVirtual(int32 width, int32 height, Centering centering = Centering::Yes);
+		/// @remark `Resize(width, height, centerWindow)` と同じです。
+		bool ResizeVirtual(int32 width, int32 height, CenterWindow centerWindow = CenterWindow::Yes);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -209,16 +209,16 @@ namespace s3d
 
 		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
 		/// @param size 新しいサイズ（ピクセル）
-		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		bool ResizeActual(Size size, Centering centering = Centering::Yes);
+		bool ResizeActual(Size size, CenterWindow centerWindow = CenterWindow::Yes);
 
 		/// @brief ウィンドウのクライアントサイズを実サイズ基準で変更します。
 		/// @param width 新しい幅（ピクセル）
 		/// @param height 新しい高さ（ピクセル）
-		/// @param centering ウィンドウを画面の中心に移動させるか
+		/// @param centerWindow ウィンドウを画面中央へ移動させるか
 		/// @return サイズの変更に成功した場合 true, それ以外の場合は false
-		bool ResizeActual(int32 width, int32 height, Centering centering = Centering::Yes);
+		bool ResizeActual(int32 width, int32 height, CenterWindow centerWindow = CenterWindow::Yes);
 
 		////////////////////////////////////////////////////////////////
 		//
