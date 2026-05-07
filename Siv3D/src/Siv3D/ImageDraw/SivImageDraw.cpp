@@ -301,6 +301,61 @@ namespace s3d
             writer.write(dst, static_cast<size_t>(x1 - x0 + 1));
         }
 
+        void WriteCoverageSpan(
+            const ImagePixel::detail::SolidColorWriter& writer,
+            Color* dst,
+            const uint8* coverage,
+            size_t count)
+        {
+            if ((dst == nullptr) || (coverage == nullptr) || (count == 0))
+            {
+                return;
+            }
+
+            bool anyCoverage = false;
+            bool allFull = true;
+
+            for (size_t i = 0; i < count; ++i)
+            {
+                const uint8 c = coverage[i];
+                anyCoverage |= (c != 0);
+                allFull &= (c == 255);
+            }
+
+            if (!anyCoverage)
+            {
+                return;
+            }
+
+            if (allFull)
+            {
+                writer.write(dst, count);
+            }
+            else
+            {
+                writer.writeWithCoverage(dst, coverage, count);
+            }
+        }
+
+        void WriteCoverageRow(
+            const ImagePixel::detail::SolidColorWriter& writer,
+            Color* dstRow,
+            int32 x0,
+            const std::vector<uint8>& coverage)
+        {
+            if ((dstRow == nullptr) || coverage.empty())
+            {
+                return;
+            }
+
+            WriteCoverageSpan(
+                writer,
+                dstRow + static_cast<size_t>(x0),
+                coverage.data(),
+                coverage.size()
+            );
+        }
+
         void FillRectInteger(
             ImageView view,
             const Rect& rect,
@@ -401,15 +456,9 @@ namespace s3d
                     continue;
                 }
 
-                bool anyCoverage = false;
-
                 if (yCoverage == 255)
                 {
-                    for (size_t i = 0; i < rowLength; ++i)
-                    {
-                        rowCoverage[i] = xCoverage[i];
-                        anyCoverage |= (rowCoverage[i] != 0);
-                    }
+                    WriteCoverageSpan(writer, dstRow, xCoverage.data(), rowLength);
                 }
                 else
                 {
@@ -418,14 +467,9 @@ namespace s3d
                         rowCoverage[i] = ImagePixel::detail::Div255Round8(
                             static_cast<uint32>(xCoverage[i]) * static_cast<uint32>(yCoverage)
                         );
-
-                        anyCoverage |= (rowCoverage[i] != 0);
                     }
-                }
 
-                if (anyCoverage)
-                {
-                    writer.writeWithCoverage(dstRow, rowCoverage.data(), rowLength);
+                    WriteCoverageSpan(writer, dstRow, rowCoverage.data(), rowLength);
                 }
             }
         }
@@ -652,9 +696,6 @@ namespace s3d
 
                 const uint8 innerY = IntervalCoverage1D(innerTop, innerBottom, y);
 
-                bool anyCoverage = false;
-                bool allFull = true;
-
                 for (size_t i = 0; i < rowLength; ++i)
                 {
                     const uint8 outerCoverage = ImagePixel::detail::Div255Round8(
@@ -665,33 +706,16 @@ namespace s3d
                         static_cast<uint32>(innerX[i]) * static_cast<uint32>(innerY)
                     );
 
-                    const uint8 frameCoverage = static_cast<uint8>(
+                    coverage[i] = static_cast<uint8>(
                         (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
                         );
-
-                    coverage[i] = frameCoverage;
-
-                    anyCoverage |= (frameCoverage != 0);
-                    allFull &= (frameCoverage == 255);
-                }
-
-                if (!anyCoverage)
-                {
-                    continue;
                 }
 
                 Color* dstRow = view.data
                     + static_cast<size_t>(y) * view.stride
                     + static_cast<size_t>(x0);
 
-                if (allFull)
-                {
-                    writer.write(dstRow, rowLength);
-                }
-                else
-                {
-                    writer.writeWithCoverage(dstRow, coverage.data(), rowLength);
-                }
+                WriteCoverageSpan(writer, dstRow, coverage.data(), rowLength);
             }
         }
 
@@ -940,43 +964,6 @@ namespace s3d
             );
         }
 
-        void WriteCoverageRow(
-            const ImagePixel::detail::SolidColorWriter& writer,
-            Color* dstRow,
-            int32 x0,
-            std::vector<uint8>& coverage)
-        {
-            bool anyCoverage = false;
-            bool allFull = true;
-
-            for (const uint8 c : coverage)
-            {
-                anyCoverage |= (c != 0);
-                allFull &= (c == 255);
-            }
-
-            if (!anyCoverage)
-            {
-                return;
-            }
-
-            if (allFull)
-            {
-                writer.write(
-                    dstRow + static_cast<size_t>(x0),
-                    coverage.size()
-                );
-            }
-            else
-            {
-                writer.writeWithCoverage(
-                    dstRow + static_cast<size_t>(x0),
-                    coverage.data(),
-                    coverage.size()
-                );
-            }
-        }
-
         void WriteCircleCoverageSpan(
             const ImagePixel::detail::SolidColorWriter& writer,
             Color* dstRow,
@@ -1004,11 +991,7 @@ namespace s3d
                 coverageBuffer[i] = CircleCoverageAt(px, py, centerX, centerY, radius);
             }
 
-            writer.writeWithCoverage(
-                dstRow + static_cast<size_t>(x0),
-                coverageBuffer.data(),
-                count
-            );
+            WriteCoverageRow(writer, dstRow, x0, coverageBuffer);
         }
 
         void FillCircleAA(
@@ -1549,15 +1532,10 @@ namespace s3d
             {
                 const double py = static_cast<double>(y) + 0.5;
 
-                bool anyCoverage = false;
-                bool allFull = true;
-
                 for (size_t i = 0; i < count; ++i)
                 {
                     const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
                     const double sd = EllipseSignedDistance(px, py, ellipse.x, ellipse.y, ellipse.a, ellipse.b);
-
-                    uint8 c = 0;
 
                     if (antialiased)
                     {
@@ -1566,36 +1544,19 @@ namespace s3d
                             ? CoverageFromSignedDistance(sd + innerThickness)
                             : 0;
 
-                        c = static_cast<uint8>(
+                        coverage[i] = static_cast<uint8>(
                             (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
                             );
                     }
                     else
                     {
-                        c = ((sd <= outerThickness) && (!hasInner || (-innerThickness <= sd))) ? 255 : 0;
+                        coverage[i] = ((sd <= outerThickness) && (!hasInner || (-innerThickness <= sd))) ? 255 : 0;
                     }
-
-                    coverage[i] = c;
-
-                    anyCoverage |= (c != 0);
-                    allFull &= (c == 255);
-                }
-
-                if (!anyCoverage)
-                {
-                    continue;
                 }
 
                 Color* row = view.data + static_cast<size_t>(y) * view.stride;
 
-                if (allFull)
-                {
-                    writer.write(row + static_cast<size_t>(x0), count);
-                }
-                else
-                {
-                    writer.writeWithCoverage(row + static_cast<size_t>(x0), coverage.data(), count);
-                }
+                WriteCoverageRow(writer, row, x0, coverage);
             }
         }
 
@@ -2059,28 +2020,7 @@ namespace s3d
                         coverage.assign(count, 0);
                         AddOrientedRectCoverageToRange(squareBasis, y, span.x0, coverage);
 
-                        bool anyCoverage = false;
-                        bool allFull = true;
-
-                        for (const uint8 c : coverage)
-                        {
-                            anyCoverage |= (c != 0);
-                            allFull &= (c == 255);
-                        }
-
-                        if (!anyCoverage)
-                        {
-                            continue;
-                        }
-
-                        if (allFull)
-                        {
-                            writer.write(row + static_cast<size_t>(span.x0), count);
-                        }
-                        else
-                        {
-                            writer.writeWithCoverage(row + static_cast<size_t>(span.x0), coverage.data(), count);
-                        }
+                        WriteCoverageRow(writer, row, span.x0, coverage);
                     }
                 }
 
@@ -2192,32 +2132,7 @@ namespace s3d
                         AddCircleCoverageToRange(to, half, y, span.x0, coverage);
                     }
 
-                    bool anyCoverage = false;
-                    bool allFull = true;
-
-                    for (const uint8 c : coverage)
-                    {
-                        anyCoverage |= (c != 0);
-                        allFull &= (c == 255);
-                    }
-
-                    if (!anyCoverage)
-                    {
-                        continue;
-                    }
-
-                    if (allFull)
-                    {
-                        writer.write(row + static_cast<size_t>(span.x0), count);
-                    }
-                    else
-                    {
-                        writer.writeWithCoverage(
-                            row + static_cast<size_t>(span.x0),
-                            coverage.data(),
-                            count
-                        );
-                    }
+                    WriteCoverageRow(writer, row, span.x0, coverage);
                 }
             }
         }
@@ -2528,34 +2443,15 @@ namespace s3d
 
             for (int32 y = y0; y < y1; ++y)
             {
-                bool anyCoverage = false;
-                bool allFull = true;
-
                 for (size_t i = 0; i < rowLength; ++i)
                 {
                     const int32 x = x0 + static_cast<int32>(i);
-                    const uint8 c = PolygonCoverage4x4(x, y, contours, contourCount, offset);
-
-                    coverage[i] = c;
-                    anyCoverage |= (c != 0);
-                    allFull &= (c == 255);
-                }
-
-                if (!anyCoverage)
-                {
-                    continue;
+                    coverage[i] = PolygonCoverage4x4(x, y, contours, contourCount, offset);
                 }
 
                 Color* row = view.data + static_cast<size_t>(y) * view.stride + static_cast<size_t>(x0);
 
-                if (allFull)
-                {
-                    writer.write(row, rowLength);
-                }
-                else
-                {
-                    writer.writeWithCoverage(row, coverage.data(), rowLength);
-                }
+                WriteCoverageSpan(writer, row, coverage.data(), rowLength);
             }
         }
 
