@@ -15,6 +15,7 @@
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include "PolygonDetail.hpp"
 
 namespace s3d
@@ -1157,13 +1158,51 @@ namespace s3d
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
 
+	const Polygon& Polygon::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
 
+	const Polygon& Polygon::paint(Image& dst, const double x, const double y, const Color& color, EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, Vec2{ x, y }, color, enableAntialiasing);
+	}
 
+	const Polygon& Polygon::paint(Image& dst, const Vec2& pos, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	{
+		ImageDraw::Fill(dst, *this, pos, color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
 
+	const Polygon& Polygon::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
 
+	const Polygon& Polygon::overwrite(Image& dst, const double x, const double y, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, Vec2{ x, y }, color, enableAntialiasing);
+	}
 
+	const Polygon& Polygon::overwrite(Image& dst, const Vec2& pos, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, pos, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

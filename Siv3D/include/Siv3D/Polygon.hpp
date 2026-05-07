@@ -885,11 +885,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Polygon& paint(Image& dst, const Color& color) const;
+		const Polygon& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Polygon& paint(Image& dst, double x, double y, const Color& color) const;
+		const Polygon& paint(Image& dst, double x, double y, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Polygon& paint(Image& dst, const Vec2& pos, const Color& color) const;
+		const Polygon& paint(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -897,11 +897,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Polygon& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Polygon& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Polygon& overwrite(Image& dst, double x, double y, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Polygon& overwrite(Image& dst, double x, double y, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Polygon& overwrite(Image& dst, const Vec2& pos, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Polygon& overwrite(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

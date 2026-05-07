@@ -13,6 +13,7 @@
 # include "ImagePixel.hpp"
 # include "LineCap.hpp"
 # include "2DShapesFwd.hpp"
+# include "Polygon.hpp"
 
 namespace s3d
 {
@@ -190,6 +191,8 @@ namespace s3d
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             DstAlpha dstAlpha = DstAlpha::Preserve);
 
+
+
         /// @brief 三角形を描画します。
         /// @param image 描画先画像
         /// @param triangle 描画する三角形
@@ -232,7 +235,7 @@ namespace s3d
         /// @param dstAlpha 描画先 alpha の扱い
         /// @remark 頂点列の向き（時計回り / 反時計回り）は問いません。
         /// @remark winding rule は even-odd です。
-        /// @remark 自己交差を含む場合も even-odd rule に従って塗りつぶされます。
+		/// @remark 自己交差を含む場合も even-odd rule に従って塗りつぶされます。
         /// @remark 複数 contour や穴を持つ Polygon には Fill(Image&, const Polygon&, ...) を使用してください。
         /// @remark 画像の範囲外はクリップされます。
         /// @remark points が nullptr または count が 3 未満の場合、この関数は何もしません。
@@ -259,6 +262,29 @@ namespace s3d
         void Fill(
             Image& image,
             const Polygon& polygon,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief Polygon をオフセット付きで描画します。
+        /// @param image 描画先画像
+        /// @param polygon 描画する Polygon
+        /// @param offset polygon 全体に加算する平行移動量
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark Polygon の外周と穴を考慮して描画します。
+        /// @remark winding rule は even-odd です。
+        /// @remark offset は rasterize 時に適用され、polygon 自体は変更されません。
+        /// @remark 同じ Polygon を異なる位置に繰り返し描画する用途を想定しています。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark polygon が空の場合、この関数は何もしません。
+        void Fill(
+            Image& image,
+            const Polygon& polygon,
+            const Vec2& offset,
             Color color,
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
