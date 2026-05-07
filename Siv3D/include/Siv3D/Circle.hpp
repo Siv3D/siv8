@@ -860,7 +860,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& paintPie(Image& dst, double startAngle, double angle, const Color& color) const;
+		const Circle& paintPie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -868,7 +868,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& overwritePie(Image& dst, double startAngle, double angle, const Color& color) const;
+		const Circle& overwritePie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -876,7 +876,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color) const;
+		const Circle& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -884,7 +884,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color) const;
+		const Circle& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

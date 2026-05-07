@@ -150,6 +150,63 @@ namespace s3d
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             DstAlpha dstAlpha = DstAlpha::Preserve);
 
+        /// @brief 円の扇形を描画します。
+        /// @param image 描画先画像
+        /// @param circle 基準となる円
+        /// @param startAngle 開始角度（ラジアン）
+        /// @param angle 描画する角度（ラジアン）
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark startAngle は 12 時方向を 0 とし、時計回りに増加します。
+        /// @remark angle が正の場合は時計回り、負の場合は反時計回りに描画します。
+        /// @remark |angle| が 2π 以上の場合は円全体を描画します。
+        /// @remark 円弧境界と 2 本の半径境界を含む最終 coverage を作り、1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark circle.r が正でない場合、または angle が 0 の場合、この関数は何もしません。
+        void CirclePie(
+            Image& image,
+            const Circle& circle,
+            double startAngle,
+            double angle,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 円弧の枠を描画します。
+        /// @param image 描画先画像
+        /// @param circle 基準となる円
+        /// @param startAngle 開始角度（ラジアン）
+        /// @param angle 描画する角度（ラジアン）
+        /// @param innerThickness circle の内側に描画する太さ
+        /// @param outerThickness circle の外側に描画する太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark startAngle は 12 時方向を 0 とし、時計回りに増加します。
+        /// @remark angle が正の場合は時計回り、負の場合は反時計回りに描画します。
+        /// @remark 描画領域は、半径方向では circle.r - innerThickness から circle.r + outerThickness まで、角度方向では Siv3D の画像座標系で startAngle から startAngle + angle までの領域です。
+        /// @remark 内側半径が 0 以下になる場合は、中心までを含む扇形状として描画します。
+        /// @remark 円弧の両端は半径方向の直線で切り落とします。
+        /// @remark |angle| が 2π 以上の場合は CircleFrame() と同じ領域を描画します。
+        /// @remark 外側円弧、内側円弧、両端の半径境界を含む最終 coverage を作り、1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark circle.r が正でない場合、innerThickness または outerThickness が負の場合、または angle が 0 の場合、この関数は何もしません。
+        void CircleArc(
+            Image& image,
+            const Circle& circle,
+            double startAngle,
+            double angle,
+            double innerThickness,
+            double outerThickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
         /// @brief 楕円を描画します。
         /// @param image 描画先画像
         /// @param ellipse 描画する楕円
@@ -191,7 +248,46 @@ namespace s3d
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             DstAlpha dstAlpha = DstAlpha::Preserve);
 
+        /// @brief 角丸長方形を描画します。
+        /// @param image 描画先画像
+        /// @param roundRect 描画する角丸長方形
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 角丸長方形境界までの距離、またはそれと等価な coverage を使用します。
+        /// @remark 画像の範囲外はクリップされます。
+        void Fill(
+            Image& image,
+            const RoundRect& roundRect,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
 
+        /// @brief 角丸長方形の枠を描画します。
+        /// @param image 描画先画像
+        /// @param roundRect 基準となる角丸長方形
+        /// @param innerThickness roundRect の内側に描画する太さ
+        /// @param outerThickness roundRect の外側に描画する太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 描画領域は角丸長方形境界からの符号付き距離が -innerThickness 以上 outerThickness 以下の領域です。
+        /// @remark 実装は距離ベースまたは閉じた stroke の coverage 統合など、等価な結果を得られる方法を選択します。
+        /// @remark coverage は最終的な枠領域として作り、1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark innerThickness または outerThickness が負の場合、この関数は何もしません。
+        void RoundRectFrame(
+            Image& image,
+            const RoundRect& roundRect,
+            double innerThickness,
+            double outerThickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
 
         /// @brief 三角形を描画します。
         /// @param image 描画先画像
@@ -235,7 +331,7 @@ namespace s3d
         /// @param dstAlpha 描画先 alpha の扱い
         /// @remark 頂点列の向き（時計回り / 反時計回り）は問いません。
         /// @remark winding rule は even-odd です。
-		/// @remark 自己交差を含む場合も even-odd rule に従って塗りつぶされます。
+        /// @remark 自己交差を含む場合も even-odd rule に従って塗りつぶされます。
         /// @remark 複数 contour や穴を持つ Polygon には Fill(Image&, const Polygon&, ...) を使用してください。
         /// @remark 画像の範囲外はクリップされます。
         /// @remark points が nullptr または count が 3 未満の場合、この関数は何もしません。
@@ -319,6 +415,105 @@ namespace s3d
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             LineCap lineCap = LineCap::Round,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 点列を太さのある連続線として描画します。
+        /// @param image 描画先画像
+        /// @param points 頂点配列
+        /// @param count 頂点数
+        /// @param thickness 線の太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param lineCap 線端の形状
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 隣接する点を結ぶ線分列として描画します。
+        /// @remark lineCap は線列全体の始端と終端にのみ適用されます。
+        /// @remark 線分同士の接続部は round join として扱います。
+        /// @remark 各線分、join, cap の coverage を統合してから 1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark points が nullptr、count が 2 未満、または thickness が正でない場合、この関数は何もしません。
+        void LineString(
+            Image& image,
+            const Vec2* points,
+            size_t count,
+            double thickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            LineCap lineCap = LineCap::Round,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief LineString を太さのある連続線として描画します。
+        /// @param image 描画先画像
+        /// @param lineString 描画する LineString
+        /// @param thickness 線の太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param lineCap 線端の形状
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark lineCap は線列全体の始端と終端にのみ適用されます。
+        /// @remark 線分同士の接続部は round join として扱います。
+        /// @remark 各線分、join, cap の coverage を統合してから 1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark lineString の点数が 2 未満、または thickness が正でない場合、この関数は何もしません。
+        void LineString(
+            Image& image,
+            const s3d::LineString& lineString,
+            double thickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            LineCap lineCap = LineCap::Round,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 点列を太さのある閉じた連続線として描画します。
+        /// @param image 描画先画像
+        /// @param points 頂点配列
+        /// @param count 頂点数
+        /// @param thickness 線の太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 隣接する点を結ぶ線分列に加えて、最後の点から最初の点へ線分を結びます。
+        /// @remark 閉じた線列のため、線端 cap はありません。
+        /// @remark 線分同士の接続部は round join として扱います。
+        /// @remark 各線分と join の coverage を統合してから 1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark points が nullptr、count が 3 未満、または thickness が正でない場合、この関数は何もしません。
+        void ClosedLineString(
+            Image& image,
+            const Vec2* points,
+            size_t count,
+            double thickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief LineString を太さのある閉じた連続線として描画します。
+        /// @param image 描画先画像
+        /// @param lineString 描画する LineString
+        /// @param thickness 線の太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 最後の点から最初の点へ線分を結びます。
+        /// @remark 閉じた線列のため、線端 cap はありません。
+        /// @remark 線分同士の接続部は round join として扱います。
+        /// @remark 各線分と join の coverage を統合してから 1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark lineString の点数が 3 未満、または thickness が正でない場合、この関数は何もしません。
+        void ClosedLineString(
+            Image& image,
+            const s3d::LineString& lineString,
+            double thickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             DstAlpha dstAlpha = DstAlpha::Preserve);
     }
 }

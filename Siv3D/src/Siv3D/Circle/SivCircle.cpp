@@ -279,6 +279,54 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintPie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintPie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CirclePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwritePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwritePie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CirclePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleArc(dst, *this, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleArc(dst, *this, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

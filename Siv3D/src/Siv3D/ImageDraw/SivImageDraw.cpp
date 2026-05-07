@@ -1311,6 +1311,455 @@ namespace s3d
         }
 
         [[nodiscard]]
+        bool HasNonZeroSweep(double angle) noexcept
+        {
+            return ((angle < 0.0) || (0.0 < angle));
+        }
+
+        [[nodiscard]]
+        bool IsFullCircleSweep(double angle) noexcept
+        {
+            constexpr double TwoPi = 6.28318530717958647692;
+
+            return (TwoPi <= std::abs(angle));
+        }
+
+        struct CircleSectorData
+        {
+            Vec2 startDir{ 1.0, 0.0 };
+            Vec2 endDir{ 1.0, 0.0 };
+            double sweep = 0.0;
+            bool full = false;
+        };
+
+        [[nodiscard]]
+        Vec2 DirectionFromSiv3DAngle(double angle) noexcept
+        {
+            // Siv3D image-space angle: 0 points upward, positive angles rotate clockwise.
+            return Vec2{ std::sin(angle), -std::cos(angle) };
+        }
+
+        [[nodiscard]]
+        CircleSectorData MakeCircleSectorData(double startAngle, double angle) noexcept
+        {
+            CircleSectorData sector;
+            sector.full = IsFullCircleSweep(angle);
+            sector.sweep = sector.full ? 6.28318530717958647692 : std::abs(angle);
+
+            const double clockwiseStart = (0.0 <= angle) ? startAngle : (startAngle + angle);
+            const double clockwiseEnd = clockwiseStart + sector.sweep;
+
+            sector.startDir = DirectionFromSiv3DAngle(clockwiseStart);
+            sector.endDir = DirectionFromSiv3DAngle(clockwiseEnd);
+
+            return sector;
+        }
+
+        [[nodiscard]]
+        double Cross(const Vec2& a, const Vec2& b) noexcept
+        {
+            return (a.x * b.y - a.y * b.x);
+        }
+
+        [[nodiscard]]
+        bool VectorInSector(const Vec2& v, const CircleSectorData& sector) noexcept
+        {
+            if (sector.full)
+            {
+                return true;
+            }
+
+            if ((v.x == 0.0) && (v.y == 0.0))
+            {
+                return true;
+            }
+
+            const double c0 = Cross(sector.startDir, v);
+            const double c1 = Cross(v, sector.endDir);
+
+            constexpr double Pi = 3.14159265358979323846;
+
+            if (sector.sweep <= Pi)
+            {
+                return ((0.0 <= c0) && (0.0 <= c1));
+            }
+            else
+            {
+                return ((0.0 <= c0) || (0.0 <= c1));
+            }
+        }
+
+        [[nodiscard]]
+        double DistanceSqToSegment(
+            double px,
+            double py,
+            double ax,
+            double ay,
+            double bx,
+            double by) noexcept
+        {
+            const double vx = bx - ax;
+            const double vy = by - ay;
+            const double wx = px - ax;
+            const double wy = py - ay;
+            const double len2 = vx * vx + vy * vy;
+
+            if (len2 == 0.0)
+            {
+                return (wx * wx + wy * wy);
+            }
+
+            double t = (wx * vx + wy * vy) / len2;
+            t = Min(1.0, Max(0.0, t));
+
+            const double dx = px - (ax + vx * t);
+            const double dy = py - (ay + vy * t);
+
+            return (dx * dx + dy * dy);
+        }
+
+        [[nodiscard]]
+        bool NearRadialCut(
+            double px,
+            double py,
+            const Circle& circle,
+            const CircleSectorData& sector,
+            double innerRadius,
+            double outerRadius,
+            double threshold) noexcept
+        {
+            if (sector.full)
+            {
+                return false;
+            }
+
+            const double segmentStartRadius = Max(0.0, innerRadius);
+
+            const double sx0 = circle.x + sector.startDir.x * segmentStartRadius;
+            const double sy0 = circle.y + sector.startDir.y * segmentStartRadius;
+            const double sx1 = circle.x + sector.startDir.x * outerRadius;
+            const double sy1 = circle.y + sector.startDir.y * outerRadius;
+
+            const double thresholdSq = threshold * threshold;
+
+            if (DistanceSqToSegment(px, py, sx0, sy0, sx1, sy1) <= thresholdSq)
+            {
+                return true;
+            }
+
+            const double ex0 = circle.x + sector.endDir.x * segmentStartRadius;
+            const double ey0 = circle.y + sector.endDir.y * segmentStartRadius;
+            const double ex1 = circle.x + sector.endDir.x * outerRadius;
+            const double ey1 = circle.y + sector.endDir.y * outerRadius;
+
+            return (DistanceSqToSegment(px, py, ex0, ey0, ex1, ey1) <= thresholdSq);
+        }
+
+        [[nodiscard]]
+        bool PointInCirclePie(
+            double px,
+            double py,
+            const Circle& circle,
+            const CircleSectorData& sector) noexcept
+        {
+            const double dx = px - circle.x;
+            const double dy = py - circle.y;
+
+            if ((circle.r * circle.r) < (dx * dx + dy * dy))
+            {
+                return false;
+            }
+
+            return VectorInSector(Vec2{ dx, dy }, sector);
+        }
+
+        [[nodiscard]]
+        bool PointInCircleArc(
+            double px,
+            double py,
+            const Circle& circle,
+            const CircleSectorData& sector,
+            double innerRadius,
+            double outerRadius) noexcept
+        {
+            const double dx = px - circle.x;
+            const double dy = py - circle.y;
+            const double d2 = dx * dx + dy * dy;
+
+            if ((outerRadius * outerRadius) < d2)
+            {
+                return false;
+            }
+
+            if ((0.0 < innerRadius) && (d2 < (innerRadius * innerRadius)))
+            {
+                return false;
+            }
+
+            return VectorInSector(Vec2{ dx, dy }, sector);
+        }
+
+        uint8 CirclePieCoverageBySupersampling(
+            int32 x,
+            int32 y,
+            const Circle& circle,
+            const CircleSectorData& sector,
+            int32 sampleCount) noexcept
+        {
+            uint32 covered = 0;
+            const uint32 total = static_cast<uint32>(sampleCount * sampleCount);
+            const double invSamples = (1.0 / static_cast<double>(sampleCount));
+
+            for (int32 sy = 0; sy < sampleCount; ++sy)
+            {
+                const double py = static_cast<double>(y) + (static_cast<double>(sy) + 0.5) * invSamples;
+
+                for (int32 sx = 0; sx < sampleCount; ++sx)
+                {
+                    const double px = static_cast<double>(x) + (static_cast<double>(sx) + 0.5) * invSamples;
+
+                    covered += PointInCirclePie(px, py, circle, sector);
+                }
+            }
+
+            return static_cast<uint8>((covered * 255 + (total / 2)) / total);
+        }
+
+        uint8 CircleArcCoverageBySupersampling(
+            int32 x,
+            int32 y,
+            const Circle& circle,
+            const CircleSectorData& sector,
+            double innerRadius,
+            double outerRadius,
+            int32 sampleCount) noexcept
+        {
+            uint32 covered = 0;
+            const uint32 total = static_cast<uint32>(sampleCount * sampleCount);
+            const double invSamples = (1.0 / static_cast<double>(sampleCount));
+
+            for (int32 sy = 0; sy < sampleCount; ++sy)
+            {
+                const double py = static_cast<double>(y) + (static_cast<double>(sy) + 0.5) * invSamples;
+
+                for (int32 sx = 0; sx < sampleCount; ++sx)
+                {
+                    const double px = static_cast<double>(x) + (static_cast<double>(sx) + 0.5) * invSamples;
+
+                    covered += PointInCircleArc(px, py, circle, sector, innerRadius, outerRadius);
+                }
+            }
+
+            return static_cast<uint8>((covered * 255 + (total / 2)) / total);
+        }
+
+        uint8 CirclePieCoverageAt(
+            int32 x,
+            int32 y,
+            const Circle& circle,
+            const CircleSectorData& sector,
+            int32 sampleCount) noexcept
+        {
+            const double px = static_cast<double>(x) + 0.5;
+            const double py = static_cast<double>(y) + 0.5;
+            const double dx = px - circle.x;
+            const double dy = py - circle.y;
+            const double d2 = dx * dx + dy * dy;
+
+            constexpr double PixelHalfDiagonal = 0.70710678118654752440;
+
+            const double outerSafeR = circle.r + PixelHalfDiagonal;
+
+            if ((outerSafeR * outerSafeR) < d2)
+            {
+                return 0;
+            }
+
+            const double innerSafeR = Max(0.0, circle.r - PixelHalfDiagonal);
+            const bool nearOuterCircle = ((innerSafeR * innerSafeR) <= d2);
+            const bool nearRadialCut = NearRadialCut(px, py, circle, sector, 0.0, circle.r, PixelHalfDiagonal);
+
+            if ((sampleCount <= 1) || (!nearOuterCircle && !nearRadialCut))
+            {
+                return PointInCirclePie(px, py, circle, sector) ? 255 : 0;
+            }
+
+            return CirclePieCoverageBySupersampling(x, y, circle, sector, sampleCount);
+        }
+
+        uint8 CircleArcCoverageAt(
+            int32 x,
+            int32 y,
+            const Circle& circle,
+            const CircleSectorData& sector,
+            double innerRadius,
+            double outerRadius,
+            int32 sampleCount) noexcept
+        {
+            const double px = static_cast<double>(x) + 0.5;
+            const double py = static_cast<double>(y) + 0.5;
+            const double dx = px - circle.x;
+            const double dy = py - circle.y;
+            const double d2 = dx * dx + dy * dy;
+
+            constexpr double PixelHalfDiagonal = 0.70710678118654752440;
+
+            const double outerSafeR = outerRadius + PixelHalfDiagonal;
+
+            if ((outerSafeR * outerSafeR) < d2)
+            {
+                return 0;
+            }
+
+            if (PixelHalfDiagonal < innerRadius)
+            {
+                const double innerEmptyR = innerRadius - PixelHalfDiagonal;
+
+                if (d2 < (innerEmptyR * innerEmptyR))
+                {
+                    return 0;
+                }
+            }
+
+            const double outerFullR = Max(0.0, outerRadius - PixelHalfDiagonal);
+            const double innerMinR = Max(0.0, innerRadius - PixelHalfDiagonal);
+            const double innerMaxR = innerRadius + PixelHalfDiagonal;
+
+            const bool nearOuterCircle = ((outerFullR * outerFullR) <= d2);
+            const bool nearInnerCircle = ((0.0 < innerRadius) && ((innerMinR * innerMinR) <= d2) && (d2 <= (innerMaxR * innerMaxR)));
+            const bool nearRadialCut = NearRadialCut(px, py, circle, sector, innerRadius, outerRadius, PixelHalfDiagonal);
+
+            if ((sampleCount <= 1) || (!nearOuterCircle && !nearInnerCircle && !nearRadialCut))
+            {
+                return PointInCircleArc(px, py, circle, sector, innerRadius, outerRadius) ? 255 : 0;
+            }
+
+            return CircleArcCoverageBySupersampling(x, y, circle, sector, innerRadius, outerRadius, sampleCount);
+        }
+
+        void FillCirclePieByCoverage(
+            ImageView view,
+            const Circle& circle,
+            double startAngle,
+            double angle,
+            ImagePixel::BlendMode blendMode,
+            ImageDraw::DstAlpha dstAlpha,
+            Color color,
+            int32 sampleCount)
+        {
+            if (!(0.0 < circle.r) || !HasNonZeroSweep(angle))
+            {
+                return;
+            }
+
+            const double supportR = circle.r + 0.5;
+
+            int32 x0 = FloorToInt(circle.x - supportR - 0.5);
+            int32 y0 = FloorToInt(circle.y - supportR - 0.5);
+            int32 x1 = CeilToInt(circle.x + supportR - 0.5) + 1;
+            int32 y1 = CeilToInt(circle.y + supportR - 0.5) + 1;
+
+            if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
+            const size_t rowLength = static_cast<size_t>(x1 - x0);
+            std::vector<uint8> coverage(rowLength);
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                for (size_t i = 0; i < rowLength; ++i)
+                {
+                    coverage[i] = CirclePieCoverageAt(
+                        x0 + static_cast<int32>(i),
+                        y,
+                        circle,
+                        sector,
+                        sampleCount
+                    );
+                }
+
+                Color* row = view.data + static_cast<size_t>(y) * view.stride;
+                WriteCoverageRow(writer, row, x0, coverage);
+            }
+        }
+
+        void FillCircleArcByCoverage(
+            ImageView view,
+            const Circle& circle,
+            double startAngle,
+            double angle,
+            double innerThickness,
+            double outerThickness,
+            ImagePixel::BlendMode blendMode,
+            ImageDraw::DstAlpha dstAlpha,
+            Color color,
+            int32 sampleCount)
+        {
+            if (!(0.0 < circle.r) || !(0.0 <= innerThickness) || !(0.0 <= outerThickness) || !HasNonZeroSweep(angle))
+            {
+                return;
+            }
+
+            const double outerRadius = circle.r + outerThickness;
+
+            if (!(0.0 < outerRadius))
+            {
+                return;
+            }
+
+            const double innerRadius = circle.r - innerThickness;
+            const double supportR = outerRadius + 0.5;
+
+            int32 x0 = FloorToInt(circle.x - supportR - 0.5);
+            int32 y0 = FloorToInt(circle.y - supportR - 0.5);
+            int32 x1 = CeilToInt(circle.x + supportR - 0.5) + 1;
+            int32 y1 = CeilToInt(circle.y + supportR - 0.5) + 1;
+
+            if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
+            const size_t rowLength = static_cast<size_t>(x1 - x0);
+            std::vector<uint8> coverage(rowLength);
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                for (size_t i = 0; i < rowLength; ++i)
+                {
+                    coverage[i] = CircleArcCoverageAt(
+                        x0 + static_cast<int32>(i),
+                        y,
+                        circle,
+                        sector,
+                        innerRadius,
+                        outerRadius,
+                        sampleCount
+                    );
+                }
+
+                Color* row = view.data + static_cast<size_t>(y) * view.stride;
+                WriteCoverageRow(writer, row, x0, coverage);
+            }
+        }
+
+        [[nodiscard]]
         bool GetEllipseSpanAtY(
             double centerX,
             double centerY,
@@ -2687,6 +3136,100 @@ namespace s3d
             {
                 FillCircleFrameNoAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
             }
+        }
+
+        void CirclePie(
+            Image& image,
+            const Circle& circle,
+            const double startAngle,
+            const double angle,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !(0.0 < circle.r) || !HasNonZeroSweep(angle))
+            {
+                return;
+            }
+
+            if (IsFullCircleSweep(angle))
+            {
+                if (enableAntialiasing == EnableAntialiasing::Yes)
+                {
+                    FillCircleAA(view, circle, blendMode, dstAlpha, color);
+                }
+                else
+                {
+                    FillCircleNoAAFast(view, circle, blendMode, dstAlpha, color);
+                }
+
+                return;
+            }
+
+            const int32 sampleCount = (enableAntialiasing == EnableAntialiasing::Yes) ? 4 : 1;
+
+            FillCirclePieByCoverage(
+                view,
+                circle,
+                startAngle,
+                angle,
+                blendMode,
+                dstAlpha,
+                color,
+                sampleCount
+            );
+        }
+
+        void CircleArc(
+            Image& image,
+            const Circle& circle,
+            const double startAngle,
+            const double angle,
+            const double innerThickness,
+            const double outerThickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || !HasNonZeroSweep(angle))
+            {
+                return;
+            }
+
+            if (IsFullCircleSweep(angle))
+            {
+                if (enableAntialiasing == EnableAntialiasing::Yes)
+                {
+                    FillCircleFrameAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
+                }
+                else
+                {
+                    FillCircleFrameNoAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
+                }
+
+                return;
+            }
+
+            const int32 sampleCount = (enableAntialiasing == EnableAntialiasing::Yes) ? 4 : 1;
+
+            FillCircleArcByCoverage(
+                view,
+                circle,
+                startAngle,
+                angle,
+                innerThickness,
+                outerThickness,
+                blendMode,
+                dstAlpha,
+                color,
+                sampleCount
+            );
         }
 
         void Fill(
