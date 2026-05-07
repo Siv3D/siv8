@@ -18,6 +18,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Image.hpp>
+# include <Siv3D/ImagePixel.hpp>
 
 namespace s3d
 {
@@ -100,7 +101,7 @@ namespace s3d
 
 		Color* pDst = &dst[*this];
 
-		*pDst = Color::Blend(*pDst, color);
+		*pDst = ImagePixel::SourceOver(color, *pDst);
 
 		return *this;
 	}

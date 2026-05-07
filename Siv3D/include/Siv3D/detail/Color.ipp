@@ -737,26 +737,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	Blend
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Color Color::Blend(const Color dst, const Color src) noexcept
-	{
-		const uint32 srcAlpha = src.a;
-		const uint32 invSrcAlpha = (255u - srcAlpha);
-
-		return
-		{
-			Div255Round((dst.r * invSrcAlpha) + (src.r * srcAlpha)),
-			Div255Round((dst.g * invSrcAlpha) + (src.g * srcAlpha)),
-			Div255Round((dst.b * invSrcAlpha) + (src.b * srcAlpha)),
-			dst.a
-		};
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	Alpha
 	//
 	////////////////////////////////////////////////////////////////
