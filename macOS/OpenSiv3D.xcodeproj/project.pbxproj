@@ -520,6 +520,12 @@
 		F90F7A3B2FAA3BF20077F398 /* toml11_datetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A1E2FAA3BF20077F398 /* toml11_datetime.cpp */; };
 		F90F7A3C2FAA3BF20077F398 /* toml11_scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A252FAA3BF20077F398 /* toml11_scanner.cpp */; };
 		F90F7A3D2FAA3BF20077F398 /* toml11_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A2A2FAA3BF20077F398 /* toml11_types.cpp */; };
+		F90F7A7F2FACFB660077F398 /* ImagePixel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A7E2FACFB660077F398 /* ImagePixel.hpp */; };
+		F90F7A802FACFB660077F398 /* ImageDraw.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A7D2FACFB660077F398 /* ImageDraw.hpp */; };
+		F90F7A822FACFB7D0077F398 /* ImagePixel.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A812FACFB7D0077F398 /* ImagePixel.ipp */; };
+		F90F7A882FACFB9D0077F398 /* SivImageDraw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A832FACFB9D0077F398 /* SivImageDraw.cpp */; };
+		F90F7A892FACFB9D0077F398 /* SivImagePixel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90F7A852FACFB9D0077F398 /* SivImagePixel.cpp */; };
+		F90F7A8A2FACFB9D0077F398 /* SolidColorWriter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F90F7A862FACFB9D0077F398 /* SolidColorWriter.hpp */; };
 		F91171142DCBBF0B000A22E6 /* FontUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171092DCBBF0B000A22E6 /* FontUtility.cpp */; };
 		F91171152DCBBF0B000A22E6 /* FontFace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171062DCBBF0B000A22E6 /* FontFace.cpp */; };
 		F91171162DCBBF0B000A22E6 /* CFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F91171012DCBBF0B000A22E6 /* CFont.cpp */; };
@@ -3680,6 +3686,12 @@
 		F90F7A782FAA3C2C0077F398 /* visit.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = visit.hpp; sourceTree = "<group>"; };
 		F90F7A7A2FAA3C2C0077F398 /* toml.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = toml.hpp; sourceTree = "<group>"; };
 		F90F7A7B2FAA3C2C0077F398 /* toml_fwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = toml_fwd.hpp; sourceTree = "<group>"; };
+		F90F7A7D2FACFB660077F398 /* ImageDraw.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImageDraw.hpp; sourceTree = "<group>"; };
+		F90F7A7E2FACFB660077F398 /* ImagePixel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImagePixel.hpp; sourceTree = "<group>"; };
+		F90F7A812FACFB7D0077F398 /* ImagePixel.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImagePixel.ipp; sourceTree = "<group>"; };
+		F90F7A832FACFB9D0077F398 /* SivImageDraw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivImageDraw.cpp; sourceTree = "<group>"; };
+		F90F7A852FACFB9D0077F398 /* SivImagePixel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivImagePixel.cpp; sourceTree = "<group>"; };
+		F90F7A862FACFB9D0077F398 /* SolidColorWriter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SolidColorWriter.hpp; sourceTree = "<group>"; };
 		F91171002DCBBF0B000A22E6 /* CFont.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CFont.hpp; sourceTree = "<group>"; };
 		F91171012DCBBF0B000A22E6 /* CFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CFont.cpp; sourceTree = "<group>"; };
 		F91171022DCBBF0B000A22E6 /* FontCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FontCommon.hpp; sourceTree = "<group>"; };
@@ -6930,6 +6942,7 @@
 				F9528B3B2BB69C2800222F45 /* Image.ipp */,
 				F9528C6B2BC05B1A00222F45 /* ImageDecoder.ipp */,
 				F9528C6C2BC05B1A00222F45 /* ImageEncoder.ipp */,
+				F90F7A812FACFB7D0077F398 /* ImagePixel.ipp */,
 				F90DA0602D1A92180003E1E8 /* ImageProcessing.ipp */,
 				F9070B832B9F175000383E4D /* Indexed.ipp */,
 				F986F82E2BC7B024006A4C0F /* INI.ipp */,
@@ -7251,9 +7264,11 @@
 				F9528C612BC05B0200222F45 /* IImageEncoder.hpp */,
 				F9528B392BB69C1800222F45 /* Image.hpp */,
 				F9528C5B2BC05B0200222F45 /* ImageDecoder.hpp */,
+				F90F7A7D2FACFB660077F398 /* ImageDraw.hpp */,
 				F9528C5A2BC05B0200222F45 /* ImageEncoder.hpp */,
 				F9528C602BC05B0200222F45 /* ImageFormat.hpp */,
 				F9528C582BC05B0200222F45 /* ImageInfo.hpp */,
+				F90F7A7E2FACFB660077F398 /* ImagePixel.hpp */,
 				F9528C592BC05B0200222F45 /* ImagePixelFormat.hpp */,
 				F90DA05E2D1A91FB0003E1E8 /* ImageProcessing.hpp */,
 				F9070BF32B9F175000383E4D /* Indexed.hpp */,
@@ -8128,8 +8143,10 @@
 				F9528C702BC05B5A00222F45 /* IImageDecoder */,
 				F9528B402BB69C8200222F45 /* Image */,
 				F9528C812BC05B5B00222F45 /* ImageDecoder */,
+				F90F7A842FACFB9D0077F398 /* ImageDraw */,
 				F9528C7B2BC05B5A00222F45 /* ImageEncoder */,
 				F9528C752BC05B5A00222F45 /* ImageFormat */,
+				F90F7A872FACFB9D0077F398 /* ImagePixel */,
 				F986053B2BD104B4006A4C0F /* ImagePixelFormat */,
 				F90F2BE22D91861F00CC89CA /* ImageProcessing */,
 				F986F8372BC7B043006A4C0F /* INI */,
@@ -8747,6 +8764,23 @@
 				F90F7A7B2FAA3C2C0077F398 /* toml_fwd.hpp */,
 			);
 			path = toml11;
+			sourceTree = "<group>";
+		};
+		F90F7A842FACFB9D0077F398 /* ImageDraw */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A832FACFB9D0077F398 /* SivImageDraw.cpp */,
+			);
+			path = ImageDraw;
+			sourceTree = "<group>";
+		};
+		F90F7A872FACFB9D0077F398 /* ImagePixel */ = {
+			isa = PBXGroup;
+			children = (
+				F90F7A852FACFB9D0077F398 /* SivImagePixel.cpp */,
+				F90F7A862FACFB9D0077F398 /* SolidColorWriter.hpp */,
+			);
+			path = ImagePixel;
 			sourceTree = "<group>";
 		};
 		F911710C2DCBBF0B000A22E6 /* Font */ = {
@@ -15091,6 +15125,7 @@
 				F9528B862BBC5D4B00222F45 /* Step2D.ipp in Headers */,
 				F98606042BE7173F006A4C0F /* UserInfo.hpp in Headers */,
 				F986038B2BCFBB54006A4C0F /* SkOTTable_post.h in Headers */,
+				F90F7A822FACFB7D0077F398 /* ImagePixel.ipp in Headers */,
 				F98605242BD0E2A3006A4C0F /* IEngineResource.hpp in Headers */,
 				F98602892BCFBB54006A4C0F /* SkTextBlobPriv.h in Headers */,
 				F986058B2BDBDB37006A4C0F /* WindowMisc.hpp in Headers */,
@@ -15255,11 +15290,14 @@
 				F986FA8F2BCFB53B006A4C0F /* ftoutln.h in Headers */,
 				F986017C2BCFBB53006A4C0F /* SkCanvasPriv.h in Headers */,
 				F986014F2BCFBB53006A4C0F /* SkAutoBlitterChoose.h in Headers */,
+				F90F7A8A2FACFB9D0077F398 /* SolidColorWriter.hpp in Headers */,
 				F933AD0D2E54A2E7005624D7 /* BasicTextEffect.ipp in Headers */,
 				F933AD0E2E54A2E7005624D7 /* VerticalGradient.hpp in Headers */,
 				F933AD0F2E54A2E7005624D7 /* QuadWarp.ipp in Headers */,
 				F933AD102E54A2E7005624D7 /* BasicTextEffect.hpp in Headers */,
 				F933AD112E54A2E7005624D7 /* NullTextEffect.hpp in Headers */,
+				F90F7A7F2FACFB660077F398 /* ImagePixel.hpp in Headers */,
+				F90F7A802FACFB660077F398 /* ImageDraw.hpp in Headers */,
 				F933AD122E54A2E7005624D7 /* Reflection.hpp in Headers */,
 				F933AD132E54A2E7005624D7 /* FlipX.hpp in Headers */,
 				F933AD142E54A2E7005624D7 /* HorizontalGradientHSV.ipp in Headers */,
@@ -16641,6 +16679,8 @@
 				F98605832BDA7E32006A4C0F /* CCursor.mm in Sources */,
 				F98603F62BCFBB54006A4C0F /* SkSLConstructorMatrixResize.cpp in Sources */,
 				F9528C8B2BC05B5B00222F45 /* CImageDecoder.cpp in Sources */,
+				F90F7A882FACFB9D0077F398 /* SivImageDraw.cpp in Sources */,
+				F90F7A892FACFB9D0077F398 /* SivImagePixel.cpp in Sources */,
 				F9070E002B9F175E00383E4D /* SivVector4D.cpp in Sources */,
 				F90F2BE32D91861F00CC89CA /* SivImageProcessing.cpp in Sources */,
 				F98601CC2BCFBB53006A4C0F /* SkIDChangeListener.cpp in Sources */,
