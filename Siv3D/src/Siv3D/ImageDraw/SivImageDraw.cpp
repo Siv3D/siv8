@@ -2020,12 +2020,6 @@ namespace s3d
         };
 
         [[nodiscard]]
-        bool IsValidRoundRectDistanceParams(const RoundRectDistanceParams& params) noexcept
-        {
-            return ((0.0 < params.halfW) && (0.0 < params.halfH));
-        }
-
-        [[nodiscard]]
         RoundRectDistanceParams MakeRoundRectDistanceParams(const RoundRect& roundRect) noexcept
         {
             const double halfW = (roundRect.w * 0.5);
@@ -2042,37 +2036,13 @@ namespace s3d
         }
 
         [[nodiscard]]
-        RoundRectDistanceParams OffsetRoundRectDistanceParams(
-            const RoundRectDistanceParams& base,
-            double offset) noexcept
-        {
-            const double halfW = (base.halfW + offset);
-            const double halfH = (base.halfH + offset);
-
-            if (!(0.0 < halfW) || !(0.0 < halfH))
-            {
-                return RoundRectDistanceParams{};
-            }
-
-            const double radius = Max(0.0, Min(base.radius + offset, Min(halfW, halfH)));
-
-            return RoundRectDistanceParams{
-                base.centerX,
-                base.centerY,
-                halfW,
-                halfH,
-                radius
-            };
-        }
-
-        [[nodiscard]]
         double RoundRectSignedDistance(
             double px,
             double py,
             const RoundRectDistanceParams& params) noexcept
         {
-            const double innerHalfW = Max(0.0, params.halfW - params.radius);
-            const double innerHalfH = Max(0.0, params.halfH - params.radius);
+            const double innerHalfW = params.halfW - params.radius;
+            const double innerHalfH = params.halfH - params.radius;
 
             const double qx = std::abs(px - params.centerX) - innerHalfW;
             const double qy = std::abs(py - params.centerY) - innerHalfH;
@@ -2102,56 +2072,62 @@ namespace s3d
         [[nodiscard]]
         bool GetRoundRectSpanAtY(
             const RoundRectDistanceParams& params,
-            int32 y,
+            double py,
+            double signedDistanceLimit,
             int32& outX0,
             int32& outX1) noexcept
         {
-            if (!IsValidRoundRectDistanceParams(params))
+            const double innerHalfW = params.halfW - params.radius;
+            const double innerHalfH = params.halfH - params.radius;
+            const double qy = std::abs(py - params.centerY) - innerHalfH;
+
+            double halfX = 0.0;
+
+            if (qy <= 0.0)
             {
-                return false;
+                halfX = params.halfW + signedDistanceLimit;
             }
-
-            const double py = static_cast<double>(y) + 0.5;
-            const double dy = std::abs(py - params.centerY);
-
-            if (!(dy < params.halfH))
+            else
             {
-                return false;
-            }
+                const double r = params.radius + signedDistanceLimit;
 
-            const double innerHalfW = Max(0.0, params.halfW - params.radius);
-            const double innerHalfH = Max(0.0, params.halfH - params.radius);
-
-            double halfSpan = params.halfW;
-
-            if ((params.radius > 0.0) && (innerHalfH < dy))
-            {
-                const double cornerDy = (dy - innerHalfH);
-                const double rr = (params.radius * params.radius);
-                const double dy2 = (cornerDy * cornerDy);
-
-                if (!(dy2 < rr))
+                if ((r < 0.0) || (r < qy))
                 {
                     return false;
                 }
 
-                halfSpan = (innerHalfW + std::sqrt(rr - dy2));
+                const double dx = std::sqrt(Max(0.0, r * r - qy * qy));
+                halfX = innerHalfW + dx;
             }
 
-            outX0 = CeilToInt(params.centerX - halfSpan - 0.5);
-            outX1 = FloorToInt(params.centerX + halfSpan - 0.5) + 1;
+            if (!(0.0 <= halfX))
+            {
+                return false;
+            }
+
+            outX0 = CeilToInt(params.centerX - halfX - 0.5);
+            outX1 = FloorToInt(params.centerX + halfX - 0.5) + 1;
 
             return (outX0 < outX1);
         }
 
-        void WriteRoundRectCoverageSpan(
+        void ClipSpanToWidth(
+            int32& x0,
+            int32& x1,
+            int32 width) noexcept
+        {
+            x0 = ClampInt(x0, 0, width);
+            x1 = ClampInt(x1, 0, width);
+        }
+
+        void WriteRoundRectFillCoverageSpan(
             const ImagePixel::detail::SolidColorWriter& writer,
-            Color* dstRow,
+            Color* row,
             int32 x0,
             int32 x1,
-            int32 y,
+            double py,
             const RoundRectDistanceParams& params,
-            std::vector<uint8>& coverageBuffer)
+            std::vector<uint8>& coverage)
         {
             if (x0 >= x1)
             {
@@ -2159,35 +2135,30 @@ namespace s3d
             }
 
             const size_t count = static_cast<size_t>(x1 - x0);
-            coverageBuffer.resize(count);
+            coverage.resize(count);
 
-            const double py = static_cast<double>(y) + 0.5;
+            double px = static_cast<double>(x0) + 0.5;
 
             for (size_t i = 0; i < count; ++i)
             {
-                const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-                coverageBuffer[i] = RoundRectCoverageAt(px, py, params);
+                coverage[i] = RoundRectCoverageAt(px, py, params);
+                px += 1.0;
             }
 
-            WriteCoverageSpan(
-                writer,
-                dstRow + static_cast<size_t>(x0),
-                coverageBuffer.data(),
-                count
-            );
+            WriteCoverageRow(writer, row, x0, coverage);
         }
 
         void WriteRoundRectFrameCoverageSpan(
             const ImagePixel::detail::SolidColorWriter& writer,
-            Color* dstRow,
+            Color* row,
             int32 x0,
             int32 x1,
-            int32 y,
+            double py,
             const RoundRectDistanceParams& params,
             double innerThickness,
             double outerThickness,
             bool hasInner,
-            std::vector<uint8>& coverageBuffer)
+            std::vector<uint8>& coverage)
         {
             if (x0 >= x1)
             {
@@ -2195,49 +2166,188 @@ namespace s3d
             }
 
             const size_t count = static_cast<size_t>(x1 - x0);
-            coverageBuffer.resize(count);
+            coverage.resize(count);
 
-            const double py = static_cast<double>(y) + 0.5;
+            double px = static_cast<double>(x0) + 0.5;
 
             for (size_t i = 0; i < count; ++i)
             {
-                const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
                 const double sd = RoundRectSignedDistance(px, py, params);
                 const uint8 outerCoverage = CoverageFromSignedDistance(sd - outerThickness);
                 const uint8 innerCoverage = hasInner
                     ? CoverageFromSignedDistance(sd + innerThickness)
                     : 0;
 
-                coverageBuffer[i] = static_cast<uint8>(
+                coverage[i] = static_cast<uint8>(
                     (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
                     );
+
+                px += 1.0;
             }
 
-            WriteCoverageSpan(
-                writer,
-                dstRow + static_cast<size_t>(x0),
-                coverageBuffer.data(),
-                count
-            );
+            WriteCoverageRow(writer, row, x0, coverage);
         }
 
-        [[nodiscard]]
-        bool MakeRoundRectYRange(
+        void WriteRoundRectFrameRangeAA(
+            const ImagePixel::detail::SolidColorWriter& writer,
+            Color* row,
+            int32 x0,
+            int32 x1,
+            double py,
             const RoundRectDistanceParams& params,
-            int32& y0,
-            int32& y1) noexcept
+            double innerThickness,
+            double outerThickness,
+            bool hasInner,
+            std::vector<uint8>& coverage)
         {
-            if (!IsValidRoundRectDistanceParams(params))
+            if (x0 >= x1)
             {
-                return false;
+                return;
             }
 
-            const double top = (params.centerY - params.halfH);
-            const double bottom = (params.centerY + params.halfH);
+            int32 fullOuterX0 = 0;
+            int32 fullOuterX1 = 0;
+            const bool hasFullOuter = GetRoundRectSpanAtY(
+                params,
+                py,
+                outerThickness - 0.5,
+                fullOuterX0,
+                fullOuterX1
+            );
 
-            y0 = FloorToInt(top - 0.5);
-            y1 = CeilToInt(bottom - 0.5) + 1;
-            return (y0 < y1);
+            if (hasFullOuter)
+            {
+                fullOuterX0 = ClampInt(fullOuterX0, x0, x1);
+                fullOuterX1 = ClampInt(fullOuterX1, x0, x1);
+            }
+
+            int32 innerPartialX0 = 0;
+            int32 innerPartialX1 = 0;
+            const bool hasInnerPartial = hasInner
+                && GetRoundRectSpanAtY(
+                    params,
+                    py,
+                    -innerThickness + 0.5,
+                    innerPartialX0,
+                    innerPartialX1
+                );
+
+            if (hasInnerPartial)
+            {
+                innerPartialX0 = ClampInt(innerPartialX0, x0, x1);
+                innerPartialX1 = ClampInt(innerPartialX1, x0, x1);
+            }
+
+            int32 innerZeroX0 = 0;
+            int32 innerZeroX1 = 0;
+            const bool hasInnerZero = hasInner
+                && GetRoundRectSpanAtY(
+                    params,
+                    py,
+                    -innerThickness - 0.5,
+                    innerZeroX0,
+                    innerZeroX1
+                );
+
+            if (hasInnerZero)
+            {
+                innerZeroX0 = ClampInt(innerZeroX0, x0, x1);
+                innerZeroX1 = ClampInt(innerZeroX1, x0, x1);
+            }
+
+            SpanI fullSpans[2];
+            size_t fullSpanCount = 0;
+
+            if (hasFullOuter && (fullOuterX0 < fullOuterX1))
+            {
+                if (hasInnerPartial && (innerPartialX0 < innerPartialX1))
+                {
+                    const int32 leftX1 = Min(fullOuterX1, innerPartialX0);
+
+                    if (fullOuterX0 < leftX1)
+                    {
+                        fullSpans[fullSpanCount++] = SpanI{ fullOuterX0, leftX1 };
+                    }
+
+                    const int32 rightX0 = Max(fullOuterX0, innerPartialX1);
+
+                    if (rightX0 < fullOuterX1)
+                    {
+                        fullSpans[fullSpanCount++] = SpanI{ rightX0, fullOuterX1 };
+                    }
+                }
+                else
+                {
+                    fullSpans[fullSpanCount++] = SpanI{ fullOuterX0, fullOuterX1 };
+                }
+            }
+
+            int32 cursor = x0;
+
+            while (cursor < x1)
+            {
+                int32 next = x1;
+
+                auto updateNext = [&](const int32 boundary)
+                    {
+                        if ((cursor < boundary) && (boundary < next))
+                        {
+                            next = boundary;
+                        }
+                    };
+
+                if (hasInnerZero && (innerZeroX0 < innerZeroX1))
+                {
+                    updateNext(innerZeroX0);
+                    updateNext(innerZeroX1);
+                }
+
+                for (size_t i = 0; i < fullSpanCount; ++i)
+                {
+                    updateNext(fullSpans[i].x0);
+                    updateNext(fullSpans[i].x1);
+                }
+
+                const bool inInnerZero = hasInnerZero
+                    && (innerZeroX0 <= cursor)
+                    && (cursor < innerZeroX1);
+
+                bool inFullSpan = false;
+
+                for (size_t i = 0; i < fullSpanCount; ++i)
+                {
+                    inFullSpan |= (fullSpans[i].x0 <= cursor)
+                        && (cursor < fullSpans[i].x1);
+                }
+
+                if (!inInnerZero)
+                {
+                    if (inFullSpan)
+                    {
+                        writer.write(
+                            row + static_cast<size_t>(cursor),
+                            static_cast<size_t>(next - cursor)
+                        );
+                    }
+                    else
+                    {
+                        WriteRoundRectFrameCoverageSpan(
+                            writer,
+                            row,
+                            cursor,
+                            next,
+                            py,
+                            params,
+                            innerThickness,
+                            outerThickness,
+                            hasInner,
+                            coverage
+                        );
+                    }
+                }
+
+                cursor = next;
+            }
         }
 
         void FillRoundRectByDistance(
@@ -2255,7 +2365,28 @@ namespace s3d
 
             const RoundRectDistanceParams params = MakeRoundRectDistanceParams(roundRect);
 
-            if (!IsValidRoundRectDistanceParams(params))
+            if ((params.radius == 0.0) && antialiased)
+            {
+                FillRectFloat(
+                    view,
+                    RectF{ roundRect.x, roundRect.y, roundRect.w, roundRect.h },
+                    blendMode,
+                    dstAlpha,
+                    color
+                );
+
+                return;
+            }
+
+            const double support = antialiased ? 0.5 : 0.0;
+
+            int32 y0 = FloorToInt(roundRect.y - support - 0.5);
+            int32 y1 = CeilToInt(roundRect.y + roundRect.h + support - 0.5) + 1;
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
             {
                 return;
             }
@@ -2266,111 +2397,96 @@ namespace s3d
                 ToDstAlphaMode(dstAlpha)
             };
 
-            if (!antialiased)
+            std::vector<uint8> coverage;
+
+            for (int32 y = y0; y < y1; ++y)
             {
-                int32 y0 = 0;
-                int32 y1 = 0;
+                const double py = static_cast<double>(y) + 0.5;
 
-                if (!MakeRoundRectYRange(params, y0, y1))
+                if (antialiased)
                 {
-                    return;
-                }
+                    int32 supportX0 = 0;
+                    int32 supportX1 = 0;
 
-                y0 = ClampInt(y0, 0, view.height);
-                y1 = ClampInt(y1, 0, view.height);
-
-                for (int32 y = y0; y < y1; ++y)
-                {
-                    int32 spanX0 = 0;
-                    int32 spanX1 = 0;
-
-                    if (!GetRoundRectSpanAtY(params, y, spanX0, spanX1))
+                    if (!GetRoundRectSpanAtY(params, py, 0.5, supportX0, supportX1))
                     {
                         continue;
                     }
 
-                    spanX0 = ClampInt(spanX0, 0, view.width);
-                    spanX1 = ClampInt(spanX1, 0, view.width);
+                    ClipSpanToWidth(supportX0, supportX1, view.width);
 
-                    if (spanX0 >= spanX1)
+                    if (supportX0 >= supportX1)
+                    {
+                        continue;
+                    }
+
+                    int32 fullX0 = supportX1;
+                    int32 fullX1 = supportX0;
+
+                    if (GetRoundRectSpanAtY(params, py, -0.5, fullX0, fullX1))
+                    {
+                        fullX0 = ClampInt(fullX0, supportX0, supportX1);
+                        fullX1 = ClampInt(fullX1, supportX0, supportX1);
+                    }
+
+                    Color* row = view.data + static_cast<size_t>(y) * view.stride;
+
+                    if (supportX0 < fullX0)
+                    {
+                        WriteRoundRectFillCoverageSpan(
+                            writer,
+                            row,
+                            supportX0,
+                            fullX0,
+                            py,
+                            params,
+                            coverage
+                        );
+                    }
+
+                    if (fullX0 < fullX1)
+                    {
+                        writer.write(
+                            row + static_cast<size_t>(fullX0),
+                            static_cast<size_t>(fullX1 - fullX0)
+                        );
+                    }
+
+                    if (fullX1 < supportX1)
+                    {
+                        WriteRoundRectFillCoverageSpan(
+                            writer,
+                            row,
+                            fullX1,
+                            supportX1,
+                            py,
+                            params,
+                            coverage
+                        );
+                    }
+                }
+                else
+                {
+                    int32 x0 = 0;
+                    int32 x1 = 0;
+
+                    if (!GetRoundRectSpanAtY(params, py, 0.0, x0, x1))
+                    {
+                        continue;
+                    }
+
+                    ClipSpanToWidth(x0, x1, view.width);
+
+                    if (x0 >= x1)
                     {
                         continue;
                     }
 
                     Color* row = view.data + static_cast<size_t>(y) * view.stride;
                     writer.write(
-                        row + static_cast<size_t>(spanX0),
-                        static_cast<size_t>(spanX1 - spanX0)
+                        row + static_cast<size_t>(x0),
+                        static_cast<size_t>(x1 - x0)
                     );
-                }
-
-                return;
-            }
-
-            const RoundRectDistanceParams outerSupport = OffsetRoundRectDistanceParams(params, 0.5);
-            const RoundRectDistanceParams innerFull = OffsetRoundRectDistanceParams(params, -0.5);
-
-            int32 y0 = 0;
-            int32 y1 = 0;
-
-            if (!MakeRoundRectYRange(outerSupport, y0, y1))
-            {
-                return;
-            }
-
-            y0 = ClampInt(y0, 0, view.height);
-            y1 = ClampInt(y1, 0, view.height);
-
-            std::vector<uint8> coverageBuffer;
-
-            for (int32 y = y0; y < y1; ++y)
-            {
-                int32 outerX0 = 0;
-                int32 outerX1 = 0;
-
-                if (!GetRoundRectSpanAtY(outerSupport, y, outerX0, outerX1))
-                {
-                    continue;
-                }
-
-                outerX0 = ClampInt(outerX0, 0, view.width);
-                outerX1 = ClampInt(outerX1, 0, view.width);
-
-                if (outerX0 >= outerX1)
-                {
-                    continue;
-                }
-
-                int32 fullX0 = outerX1;
-                int32 fullX1 = outerX0;
-
-                if (GetRoundRectSpanAtY(innerFull, y, fullX0, fullX1))
-                {
-                    fullX0 = ClampInt(fullX0, outerX0, outerX1);
-                    fullX1 = ClampInt(fullX1, outerX0, outerX1);
-                }
-                else
-                {
-                    fullX0 = outerX1;
-                    fullX1 = outerX0;
-                }
-
-                Color* row = view.data + static_cast<size_t>(y) * view.stride;
-
-                if (fullX0 < fullX1)
-                {
-                    WriteRoundRectCoverageSpan(writer, row, outerX0, fullX0, y, params, coverageBuffer);
-
-                    writer.write(
-                        row + static_cast<size_t>(fullX0),
-                        static_cast<size_t>(fullX1 - fullX0)
-                    );
-
-                    WriteRoundRectCoverageSpan(writer, row, fullX1, outerX1, y, params, coverageBuffer);
-                }
-                else
-                {
-                    WriteRoundRectCoverageSpan(writer, row, outerX0, outerX1, y, params, coverageBuffer);
                 }
             }
         }
@@ -2401,8 +2517,35 @@ namespace s3d
             }
 
             const RoundRectDistanceParams params = MakeRoundRectDistanceParams(roundRect);
-            const RoundRectDistanceParams innerShape = OffsetRoundRectDistanceParams(params, -innerThickness);
-            const bool hasInner = IsValidRoundRectDistanceParams(innerShape);
+
+            if ((params.radius == 0.0) && antialiased)
+            {
+                FillRectFrameFloat(
+                    view,
+                    RectF{ roundRect.x, roundRect.y, roundRect.w, roundRect.h },
+                    innerThickness,
+                    outerThickness,
+                    blendMode,
+                    dstAlpha,
+                    color
+                );
+
+                return;
+            }
+
+            const bool hasInner = (innerThickness < Min(params.halfW, params.halfH));
+            const double support = outerThickness + (antialiased ? 0.5 : 0.0);
+
+            int32 y0 = FloorToInt(roundRect.y - support - 0.5);
+            int32 y1 = CeilToInt(roundRect.y + roundRect.h + support - 0.5) + 1;
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
 
             ImagePixel::detail::SolidColorWriter writer{
                 blendMode,
@@ -2410,103 +2553,26 @@ namespace s3d
                 ToDstAlphaMode(dstAlpha)
             };
 
-            if (!antialiased)
-            {
-                const RoundRectDistanceParams outerShape = OffsetRoundRectDistanceParams(params, outerThickness);
-
-                int32 y0 = 0;
-                int32 y1 = 0;
-
-                if (!MakeRoundRectYRange(outerShape, y0, y1))
-                {
-                    return;
-                }
-
-                y0 = ClampInt(y0, 0, view.height);
-                y1 = ClampInt(y1, 0, view.height);
-
-                for (int32 y = y0; y < y1; ++y)
-                {
-                    int32 outerX0 = 0;
-                    int32 outerX1 = 0;
-
-                    if (!GetRoundRectSpanAtY(outerShape, y, outerX0, outerX1))
-                    {
-                        continue;
-                    }
-
-                    outerX0 = ClampInt(outerX0, 0, view.width);
-                    outerX1 = ClampInt(outerX1, 0, view.width);
-
-                    if (outerX0 >= outerX1)
-                    {
-                        continue;
-                    }
-
-                    Color* row = view.data + static_cast<size_t>(y) * view.stride;
-
-                    int32 innerX0 = 0;
-                    int32 innerX1 = 0;
-
-                    if (!hasInner || !GetRoundRectSpanAtY(innerShape, y, innerX0, innerX1))
-                    {
-                        writer.write(
-                            row + static_cast<size_t>(outerX0),
-                            static_cast<size_t>(outerX1 - outerX0)
-                        );
-                        continue;
-                    }
-
-                    innerX0 = ClampInt(innerX0, outerX0, outerX1);
-                    innerX1 = ClampInt(innerX1, outerX0, outerX1);
-
-                    if (outerX0 < innerX0)
-                    {
-                        writer.write(
-                            row + static_cast<size_t>(outerX0),
-                            static_cast<size_t>(innerX0 - outerX0)
-                        );
-                    }
-
-                    if (innerX1 < outerX1)
-                    {
-                        writer.write(
-                            row + static_cast<size_t>(innerX1),
-                            static_cast<size_t>(outerX1 - innerX1)
-                        );
-                    }
-                }
-
-                return;
-            }
-
-            const RoundRectDistanceParams outerSupport = OffsetRoundRectDistanceParams(params, outerThickness + 0.5);
-
-            int32 y0 = 0;
-            int32 y1 = 0;
-
-            if (!MakeRoundRectYRange(outerSupport, y0, y1))
-            {
-                return;
-            }
-
-            y0 = ClampInt(y0, 0, view.height);
-            y1 = ClampInt(y1, 0, view.height);
-
-            std::vector<uint8> coverageBuffer;
+            std::vector<uint8> coverage;
 
             for (int32 y = y0; y < y1; ++y)
             {
+                const double py = static_cast<double>(y) + 0.5;
+
                 int32 outerX0 = 0;
                 int32 outerX1 = 0;
 
-                if (!GetRoundRectSpanAtY(outerSupport, y, outerX0, outerX1))
+                if (!GetRoundRectSpanAtY(
+                    params,
+                    py,
+                    outerThickness + (antialiased ? 0.5 : 0.0),
+                    outerX0,
+                    outerX1))
                 {
                     continue;
                 }
 
-                outerX0 = ClampInt(outerX0, 0, view.width);
-                outerX1 = ClampInt(outerX1, 0, view.width);
+                ClipSpanToWidth(outerX0, outerX1, view.width);
 
                 if (outerX0 >= outerX1)
                 {
@@ -2515,20 +2581,70 @@ namespace s3d
 
                 Color* row = view.data + static_cast<size_t>(y) * view.stride;
 
-                WriteRoundRectFrameCoverageSpan(
-                    writer,
-                    row,
-                    outerX0,
-                    outerX1,
-                    y,
-                    params,
-                    innerThickness,
-                    outerThickness,
-                    hasInner,
-                    coverageBuffer
-                );
+                int32 innerZeroX0 = outerX1;
+                int32 innerZeroX1 = outerX0;
+                bool hasInnerZero = false;
+
+                if (hasInner)
+                {
+                    const double innerZeroLimit = antialiased
+                        ? (-innerThickness - 0.5)
+                        : (-innerThickness);
+
+                    if (GetRoundRectSpanAtY(params, py, innerZeroLimit, innerZeroX0, innerZeroX1))
+                    {
+                        innerZeroX0 = ClampInt(innerZeroX0, outerX0, outerX1);
+                        innerZeroX1 = ClampInt(innerZeroX1, outerX0, outerX1);
+                        hasInnerZero = (innerZeroX0 < innerZeroX1);
+                    }
+                }
+
+                if (antialiased)
+                {
+                    WriteRoundRectFrameRangeAA(
+                        writer,
+                        row,
+                        outerX0,
+                        outerX1,
+                        py,
+                        params,
+                        innerThickness,
+                        outerThickness,
+                        hasInner,
+                        coverage
+                    );
+                }
+                else
+                {
+                    if (hasInnerZero)
+                    {
+                        if (outerX0 < innerZeroX0)
+                        {
+                            writer.write(
+                                row + static_cast<size_t>(outerX0),
+                                static_cast<size_t>(innerZeroX0 - outerX0)
+                            );
+                        }
+
+                        if (innerZeroX1 < outerX1)
+                        {
+                            writer.write(
+                                row + static_cast<size_t>(innerZeroX1),
+                                static_cast<size_t>(outerX1 - innerZeroX1)
+                            );
+                        }
+                    }
+                    else
+                    {
+                        writer.write(
+                            row + static_cast<size_t>(outerX0),
+                            static_cast<size_t>(outerX1 - outerX0)
+                        );
+                    }
+                }
             }
         }
+
 
         template <class PointType>
         bool GetConvexPolygonSpanAtY(
