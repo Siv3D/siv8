@@ -12,6 +12,7 @@
 # include <array>
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -767,6 +768,32 @@ namespace s3d
 	Polygon Shape2D::asPolygon() const
 	{
 		return Polygon{ *this };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Shape2D& Shape2D::paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasings) const
+	{
+		const Array<Vec2> points = m_vertices.asArray<Vec2>();
+		ImageDraw::FillPolygon(dst, points.data(), points.size(), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Shape2D& Shape2D::overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing) const
+	{
+		const Array<Vec2> points = m_vertices.asArray<Vec2>();
+		ImageDraw::FillPolygon(dst, points.data(), points.size(), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -975,7 +975,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Triangle& paint(Image& dst, const Color& color) const;
+		const Triangle& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -983,7 +983,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Triangle& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Triangle& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

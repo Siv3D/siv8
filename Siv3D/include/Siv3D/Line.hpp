@@ -890,7 +890,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& paintArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& paintArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& paintArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -898,7 +900,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& overwriteArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& overwriteArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& overwriteArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -906,7 +910,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& paintDoubleHeadedArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& paintDoubleHeadedArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& paintDoubleHeadedArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -914,7 +920,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& overwriteDoubleHeadedArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& overwriteDoubleHeadedArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& overwriteDoubleHeadedArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

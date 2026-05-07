@@ -223,6 +223,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	asArray
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class ElementType>
+	constexpr Array<ElementType> Array<Type, Allocator>::asArray() const
+		requires requires(const value_type& value) { static_cast<ElementType>(value); }
+	{
+		Array<ElementType> result(Arg::reserve = m_container.size());
+
+		for (const auto& value : m_container)
+		{
+			result.push_back(static_cast<ElementType>(value));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	at
 	//
 	////////////////////////////////////////////////////////////////

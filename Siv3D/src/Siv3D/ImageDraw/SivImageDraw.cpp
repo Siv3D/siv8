@@ -12,6 +12,7 @@
 # include <Siv3D/Image.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/Polygon.hpp>
 # include "../ImagePixel/SolidColorWriter.hpp"
 
 namespace s3d
@@ -30,6 +31,20 @@ namespace s3d
         {
             int32 x0 = 0;
             int32 x1 = 0; // exclusive
+        };
+
+        struct PolygonEdge
+        {
+            int32 y0 = 0;
+            int32 y1 = 0; // exclusive
+            double x = 0.0;
+            double dx = 0.0;
+        };
+
+        struct PolygonContourView
+        {
+            const Vec2* points = nullptr;
+            size_t count = 0;
         };
 
         struct BoundsD
@@ -1302,7 +1317,7 @@ namespace s3d
 
                     coverage[i] = static_cast<uint8>(
                         (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
-                        );
+                    );
                 }
 
                 Color* row = view.data + static_cast<size_t>(y) * view.stride;
@@ -1392,8 +1407,8 @@ namespace s3d
 
                 writer.write(
                     view.data
-                    + static_cast<size_t>(y) * view.stride
-                    + static_cast<size_t>(x0),
+                        + static_cast<size_t>(y) * view.stride
+                        + static_cast<size_t>(x0),
                     static_cast<size_t>(x1 - x0)
                 );
             }
@@ -1552,7 +1567,7 @@ namespace s3d
 
                         c = static_cast<uint8>(
                             (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
-                            );
+                        );
                     }
                     else
                     {
@@ -1692,6 +1707,481 @@ namespace s3d
 
                 WriteSpanHalfOpenClipped(writer, view, y, x0, x1);
             }
+        }
+
+        [[nodiscard]]
+        bool GetPolygonBounds(
+            const PolygonContourView* contours,
+            const size_t contourCount,
+            BoundsD& bounds) noexcept
+        {
+            bool found = false;
+
+            for (size_t c = 0; c < contourCount; ++c)
+            {
+                const PolygonContourView& contour = contours[c];
+
+                if ((contour.points == nullptr) || (contour.count == 0))
+                {
+                    continue;
+                }
+
+                for (size_t i = 0; i < contour.count; ++i)
+                {
+                    bounds.include(contour.points[i]);
+                    found = true;
+                }
+            }
+
+            return found && bounds.valid();
+        }
+
+        void CollectPolygonEdges(
+            const Vec2* points,
+            const size_t count,
+            std::vector<PolygonEdge>& edges)
+        {
+            if ((points == nullptr) || (count < 3))
+            {
+                return;
+            }
+
+            for (size_t i = 0; i < count; ++i)
+            {
+                const Vec2& p0 = points[i];
+                const Vec2& p1 = points[(i + 1) % count];
+
+                if (p0.y == p1.y)
+                {
+                    continue;
+                }
+
+                Vec2 a = p0;
+                Vec2 b = p1;
+
+                if (b.y < a.y)
+                {
+                    std::swap(a, b);
+                }
+
+                // Pixel center y = y + 0.5 が [a.y, b.y) に入る y を対象にします。
+                const int32 y0 = CeilToInt(a.y - 0.5);
+                const int32 y1 = CeilToInt(b.y - 0.5);
+
+                if (y0 >= y1)
+                {
+                    continue;
+                }
+
+                const double slope = (b.x - a.x) / (b.y - a.y);
+                const double firstScanY = static_cast<double>(y0) + 0.5;
+                const double x = a.x + (firstScanY - a.y) * slope;
+
+                edges.push_back(PolygonEdge{
+                    y0,
+                    y1,
+                    x,
+                    slope
+                });
+            }
+        }
+
+        void CollectPolygonEdges(
+            const PolygonContourView* contours,
+            const size_t contourCount,
+            std::vector<PolygonEdge>& edges)
+        {
+            if (contours == nullptr)
+            {
+                return;
+            }
+
+            for (size_t c = 0; c < contourCount; ++c)
+            {
+                CollectPolygonEdges(contours[c].points, contours[c].count, edges);
+            }
+        }
+
+        void FillPolygonNoAA(
+            const ImageView view,
+            const PolygonContourView* contours,
+            const size_t contourCount,
+            const ImagePixel::detail::SolidColorWriter& writer)
+        {
+            if ((view.data == nullptr) || (contours == nullptr) || (contourCount == 0))
+            {
+                return;
+            }
+
+            std::vector<PolygonEdge> edges;
+            edges.reserve(64);
+
+            CollectPolygonEdges(contours, contourCount, edges);
+
+            if (edges.empty())
+            {
+                return;
+            }
+
+            std::sort(edges.begin(), edges.end(), [](const PolygonEdge& a, const PolygonEdge& b)
+                {
+                    return (a.y0 < b.y0);
+                });
+
+            int32 y0 = edges.front().y0;
+            int32 y1 = edges.front().y1;
+
+            for (const PolygonEdge& e : edges)
+            {
+                y0 = Min(y0, e.y0);
+                y1 = Max(y1, e.y1);
+            }
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
+
+            std::vector<PolygonEdge> active;
+            active.reserve(16);
+
+            size_t nextEdge = 0;
+
+            // 画面上端より前から始まっている edge を y0 位置まで進めます。
+            while ((nextEdge < edges.size()) && (edges[nextEdge].y0 < y0))
+            {
+                PolygonEdge e = edges[nextEdge++];
+
+                if (y0 < e.y1)
+                {
+                    e.x += static_cast<double>(y0 - e.y0) * e.dx;
+                    e.y0 = y0;
+                    active.push_back(e);
+                }
+            }
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                while ((nextEdge < edges.size()) && (edges[nextEdge].y0 == y))
+                {
+                    active.push_back(edges[nextEdge++]);
+                }
+
+                size_t writeIndex = 0;
+
+                for (size_t readIndex = 0; readIndex < active.size(); ++readIndex)
+                {
+                    if (y < active[readIndex].y1)
+                    {
+                        active[writeIndex++] = active[readIndex];
+                    }
+                }
+
+                active.resize(writeIndex);
+
+                if (active.size() >= 2)
+                {
+                    std::sort(active.begin(), active.end(), [](const PolygonEdge& a, const PolygonEdge& b)
+                        {
+                            return (a.x < b.x);
+                        });
+
+                    Color* row = view.data + static_cast<size_t>(y) * view.stride;
+
+                    // even-odd rule: 交点を 2 個ずつ組にして span を塗ります。
+                    for (size_t i = 0; i + 1 < active.size(); i += 2)
+                    {
+                        int32 x0 = CeilToInt(active[i].x - 0.5);
+                        int32 x1 = CeilToInt(active[i + 1].x - 0.5);
+
+                        if ((x1 <= 0) || (view.width <= x0))
+                        {
+                            continue;
+                        }
+
+                        x0 = ClampInt(x0, 0, view.width);
+                        x1 = ClampInt(x1, 0, view.width);
+
+                        if (x0 < x1)
+                        {
+                            writer.write(
+                                row + static_cast<size_t>(x0),
+                                static_cast<size_t>(x1 - x0)
+                            );
+                        }
+                    }
+                }
+
+                for (PolygonEdge& e : active)
+                {
+                    e.x += e.dx;
+                }
+            }
+        }
+
+        [[nodiscard]]
+        bool IsPointInPolygonEvenOdd(
+            const Vec2& p,
+            const PolygonContourView* contours,
+            const size_t contourCount) noexcept
+        {
+            bool inside = false;
+
+            if (contours == nullptr)
+            {
+                return false;
+            }
+
+            for (size_t c = 0; c < contourCount; ++c)
+            {
+                const PolygonContourView& contour = contours[c];
+
+                if ((contour.points == nullptr) || (contour.count < 3))
+                {
+                    continue;
+                }
+
+                for (size_t i = 0, j = contour.count - 1; i < contour.count; j = i++)
+                {
+                    const Vec2& pi = contour.points[i];
+                    const Vec2& pj = contour.points[j];
+
+                    const bool intersect =
+                        ((pi.y > p.y) != (pj.y > p.y))
+                        && (p.x < (pj.x - pi.x) * (p.y - pi.y) / (pj.y - pi.y) + pi.x);
+
+                    if (intersect)
+                    {
+                        inside = !inside;
+                    }
+                }
+            }
+
+            return inside;
+        }
+
+        [[nodiscard]]
+        uint8 PolygonCoverage4x4(
+            const int32 x,
+            const int32 y,
+            const PolygonContourView* contours,
+            const size_t contourCount) noexcept
+        {
+            int32 covered = 0;
+
+            // Pixel-local sample positions: 1/8, 3/8, 5/8, 7/8
+            for (int32 sy = 0; sy < 4; ++sy)
+            {
+                const double py = static_cast<double>(y) + (static_cast<double>(sy) * 2.0 + 1.0) * 0.125;
+
+                for (int32 sx = 0; sx < 4; ++sx)
+                {
+                    const double px = static_cast<double>(x) + (static_cast<double>(sx) * 2.0 + 1.0) * 0.125;
+
+                    if (IsPointInPolygonEvenOdd(Vec2{ px, py }, contours, contourCount))
+                    {
+                        ++covered;
+                    }
+                }
+            }
+
+            return static_cast<uint8>((covered * 255 + 8) / 16);
+        }
+
+        void FillPolygonAA4x4InBounds(
+            const ImageView view,
+            const PolygonContourView* contours,
+            const size_t contourCount,
+            const RectF& boundingRect,
+            const ImagePixel::detail::SolidColorWriter& writer)
+        {
+            if ((view.data == nullptr) || (contours == nullptr) || (contourCount == 0))
+            {
+                return;
+            }
+
+            if (!(0.0 < boundingRect.w) || !(0.0 < boundingRect.h))
+            {
+                return;
+            }
+
+            int32 x0 = FloorToInt(boundingRect.x);
+            int32 y0 = FloorToInt(boundingRect.y);
+            int32 x1 = CeilToInt(boundingRect.x + boundingRect.w);
+            int32 y1 = CeilToInt(boundingRect.y + boundingRect.h);
+
+            // 4x4 supersampling のサポート領域として 1 pixel だけ広げます。
+            --x0;
+            --y0;
+            ++x1;
+            ++y1;
+
+            if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+            {
+                return;
+            }
+
+            const size_t rowLength = static_cast<size_t>(x1 - x0);
+
+            std::vector<uint8> coverage(rowLength);
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                bool anyCoverage = false;
+                bool allFull = true;
+
+                for (size_t i = 0; i < rowLength; ++i)
+                {
+                    const int32 x = x0 + static_cast<int32>(i);
+                    const uint8 c = PolygonCoverage4x4(x, y, contours, contourCount);
+
+                    coverage[i] = c;
+
+                    anyCoverage |= (c != 0);
+                    allFull &= (c == 255);
+                }
+
+                if (!anyCoverage)
+                {
+                    continue;
+                }
+
+                Color* row = view.data
+                    + static_cast<size_t>(y) * view.stride
+                    + static_cast<size_t>(x0);
+
+                if (allFull)
+                {
+                    writer.write(row, rowLength);
+                }
+                else
+                {
+                    writer.writeWithCoverage(row, coverage.data(), rowLength);
+                }
+            }
+        }
+
+        void FillPolygonAA4x4(
+            const ImageView view,
+            const PolygonContourView* contours,
+            const size_t contourCount,
+            const ImagePixel::detail::SolidColorWriter& writer)
+        {
+            BoundsD bounds;
+
+            if (!GetPolygonBounds(contours, contourCount, bounds))
+            {
+                return;
+            }
+
+            FillPolygonAA4x4InBounds(
+                view,
+                contours,
+                contourCount,
+                RectF{
+                    bounds.minX,
+                    bounds.minY,
+                    bounds.maxX - bounds.minX,
+                    bounds.maxY - bounds.minY
+                },
+                writer
+            );
+        }
+
+        void FillPolygonInternal(
+            const ImageView view,
+            const PolygonContourView* contours,
+            const size_t contourCount,
+            const RectF* boundingRect,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const ImageDraw::DstAlpha dstAlpha,
+            const Color color)
+        {
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
+            {
+                return;
+            }
+
+            if ((contours == nullptr) || (contourCount == 0))
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            if (enableAntialiasing == EnableAntialiasing::Yes)
+            {
+                if (boundingRect)
+                {
+                    FillPolygonAA4x4InBounds(view, contours, contourCount, *boundingRect, writer);
+                }
+                else
+                {
+                    FillPolygonAA4x4(view, contours, contourCount, writer);
+                }
+            }
+            else
+            {
+                FillPolygonNoAA(view, contours, contourCount, writer);
+            }
+        }
+
+        void FillPolygonInternal(
+            const ImageView view,
+            const PolygonContourView* contours,
+            const size_t contourCount,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const ImageDraw::DstAlpha dstAlpha,
+            const Color color)
+        {
+            FillPolygonInternal(
+                view,
+                contours,
+                contourCount,
+                nullptr,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha,
+                color
+            );
+        }
+
+        [[nodiscard]]
+        std::vector<PolygonContourView> MakePolygonContourViews(const Polygon& polygon)
+        {
+            std::vector<PolygonContourView> contours;
+
+            const Array<Vec2>& outer = polygon.outer();
+
+            if (outer.size() >= 3)
+            {
+                contours.push_back(PolygonContourView{
+                    outer.data(),
+                    outer.size()
+                });
+            }
+
+            for (const Array<Vec2>& inner : polygon.inners())
+            {
+                if (inner.size() >= 3)
+                {
+                    contours.push_back(PolygonContourView{
+                        inner.data(),
+                        inner.size()
+                    });
+                }
+            }
+
+            return contours;
         }
 
         void MakeOrientedRectPoints(
@@ -2400,6 +2890,171 @@ namespace s3d
                 dstAlpha,
                 color,
                 (enableAntialiasing == EnableAntialiasing::Yes)
+            );
+        }
+
+
+        void Fill(
+            Image& image,
+            const Triangle& triangle,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            const Vec2 points[3] =
+            {
+                triangle.p0,
+                triangle.p1,
+                triangle.p2,
+            };
+
+            const PolygonContourView contour{
+                points,
+                3
+            };
+
+            if (enableAntialiasing == EnableAntialiasing::No)
+            {
+                ImagePixel::detail::SolidColorWriter writer{
+                    blendMode,
+                    color,
+                    ToDstAlphaMode(dstAlpha)
+                };
+
+                FillConvexPolygonNoAA(view, points, 3, writer);
+                return;
+            }
+
+            FillPolygonInternal(
+                view,
+                &contour,
+                1,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha,
+                color
+            );
+        }
+
+        void Fill(
+            Image& image,
+            const Quad& quad,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            const Vec2 points[4] =
+            {
+                quad.p0,
+                quad.p1,
+                quad.p2,
+                quad.p3,
+            };
+
+            const PolygonContourView contour{
+                points,
+                4
+            };
+
+            if (enableAntialiasing == EnableAntialiasing::No)
+            {
+                ImagePixel::detail::SolidColorWriter writer{
+                    blendMode,
+                    color,
+                    ToDstAlphaMode(dstAlpha)
+                };
+
+                FillConvexPolygonNoAA(view, points, 4, writer);
+                return;
+            }
+
+            FillPolygonInternal(
+                view,
+                &contour,
+                1,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha,
+                color
+            );
+        }
+
+        void FillPolygon(
+            Image& image,
+            const Vec2* points,
+            const size_t count,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            if ((points == nullptr) || (count < 3))
+            {
+                return;
+            }
+
+            const ImageView view = MakeImageView(image);
+
+            const PolygonContourView contour{
+                points,
+                count
+            };
+
+            FillPolygonInternal(
+                view,
+                &contour,
+                1,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha,
+                color
+            );
+        }
+
+        void Fill(
+            Image& image,
+            const Polygon& polygon,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            if (polygon.isEmpty())
+            {
+                return;
+            }
+
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
+            {
+                return;
+            }
+
+            std::vector<PolygonContourView> contours = MakePolygonContourViews(polygon);
+
+            if (contours.empty())
+            {
+                return;
+            }
+
+            const RectF boundingRect = polygon.boundingRect();
+
+            FillPolygonInternal(
+                view,
+                contours.data(),
+                contours.size(),
+                &boundingRect,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha,
+                color
             );
         }
 

@@ -190,6 +190,80 @@ namespace s3d
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             DstAlpha dstAlpha = DstAlpha::Preserve);
 
+        /// @brief 三角形を描画します。
+        /// @param image 描画先画像
+        /// @param triangle 描画する三角形
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 画像の範囲外はクリップされます。
+        void Fill(
+            Image& image,
+            const Triangle& triangle,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 四角形を描画します。
+        /// @param image 描画先画像
+        /// @param quad 描画する四角形
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 画像の範囲外はクリップされます。
+        void Fill(
+            Image& image,
+            const Quad& quad,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 点列で表される polygon を描画します。
+        /// @param image 描画先画像
+        /// @param points polygon の頂点配列
+        /// @param count polygon の頂点数
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 頂点列の向き（時計回り / 反時計回り）は問いません。
+        /// @remark winding rule は even-odd です。
+        /// @remark 自己交差を含む場合も even-odd rule に従って塗りつぶされます。
+        /// @remark 複数 contour や穴を持つ Polygon には Fill(Image&, const Polygon&, ...) を使用してください。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark points が nullptr または count が 3 未満の場合、この関数は何もしません。
+        void FillPolygon(
+            Image& image,
+            const Vec2* points,
+            size_t count,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief Polygon を描画します。
+        /// @param image 描画先画像
+        /// @param polygon 描画する Polygon
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark Polygon の外周と穴を考慮して描画します。
+        /// @remark winding rule は even-odd です。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark polygon が空の場合、この関数は何もしません。
+        void Fill(
+            Image& image,
+            const Polygon& polygon,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
         //-------------------------------------------------------------------------
         //
         //  Lines

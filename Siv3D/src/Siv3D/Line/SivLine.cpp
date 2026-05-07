@@ -323,6 +323,74 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::paintArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::paintArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::Arrow(*this, width, headSize).paint(dst, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::overwriteArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwriteArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::Arrow(*this, width, headSize).overwrite(dst, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::paintDoubleHeadedArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintDoubleHeadedArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::paintDoubleHeadedArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::DoubleHeadedArrow(*this, width, headSize).paint(dst, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::overwriteDoubleHeadedArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteDoubleHeadedArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwriteDoubleHeadedArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::DoubleHeadedArrow(*this, width, headSize).overwrite(dst, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

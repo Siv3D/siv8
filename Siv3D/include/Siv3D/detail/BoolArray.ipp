@@ -489,6 +489,30 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	asArray
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素の型を変換した新しい配列を返します。
+		/// @tparam ElementType 変換後の要素の型
+		/// @return 要素の型を変換した新しい配列
+		template <class ElementType>
+		[[nodiscard]]
+		constexpr Array<ElementType> asArray() const
+			requires requires(const value_type& value) { static_cast<ElementType>(value); }
+		{
+			Array<ElementType> result(Arg::reserve = m_container.size());
+
+			for (const auto& value : m_container)
+			{
+				result.push_back(static_cast<ElementType>(value));
+			}
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	at
 		//
 		////////////////////////////////////////////////////////////////
