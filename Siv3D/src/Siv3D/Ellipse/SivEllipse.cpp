@@ -396,9 +396,10 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(axes.x) - innerThickness),
-			static_cast<float>(Abs(axes.y) - innerThickness),
-			thickness,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
 			color0,
 			color0
 		);
@@ -417,9 +418,10 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(axes.x) - innerThickness),
-			static_cast<float>(Abs(axes.y) - innerThickness),
-			thickness,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
 		);
@@ -443,9 +445,10 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(axes.x) - innerThickness),
-			static_cast<float>(Abs(axes.y) - innerThickness),
-			thickness,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
 			pattern
 		);
 
