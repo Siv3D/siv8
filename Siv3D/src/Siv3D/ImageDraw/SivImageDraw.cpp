@@ -312,28 +312,40 @@ namespace s3d
                 return;
             }
 
-            bool anyCoverage = false;
-            bool allFull = true;
+            size_t i = 0;
 
-            for (size_t i = 0; i < count; ++i)
+            while (i < count)
             {
-                const uint8 c = coverage[i];
-                anyCoverage |= (c != 0);
-                allFull &= (c == 255);
-            }
+                while ((i < count) && (coverage[i] == 0))
+                {
+                    ++i;
+                }
 
-            if (!anyCoverage)
-            {
-                return;
-            }
+                if (i == count)
+                {
+                    return;
+                }
 
-            if (allFull)
-            {
-                writer.write(dst, count);
-            }
-            else
-            {
-                writer.writeWithCoverage(dst, coverage, count);
+                const size_t runBegin = i;
+
+                if (coverage[i] == 255)
+                {
+                    do
+                    {
+                        ++i;
+                    } while ((i < count) && (coverage[i] == 255));
+
+                    writer.write(dst + runBegin, i - runBegin);
+                }
+                else
+                {
+                    do
+                    {
+                        ++i;
+                    } while ((i < count) && (coverage[i] != 0) && (coverage[i] != 255));
+
+                    writer.writeWithCoverage(dst + runBegin, coverage + runBegin, i - runBegin);
+                }
             }
         }
 
@@ -1389,6 +1401,114 @@ namespace s3d
             }
         }
 
+        void IncludeCircleSectorPoint(
+            BoundsD& bounds,
+            const Circle& circle,
+            const Vec2& direction,
+            double radius) noexcept
+        {
+            bounds.include(Vec2{
+                circle.x + direction.x * radius,
+                circle.y + direction.y * radius
+                });
+        }
+
+        void IncludeCircleSectorOuterBounds(
+            BoundsD& bounds,
+            const Circle& circle,
+            const CircleSectorData& sector,
+            double radius) noexcept
+        {
+            IncludeCircleSectorPoint(bounds, circle, sector.startDir, radius);
+            IncludeCircleSectorPoint(bounds, circle, sector.endDir, radius);
+
+            const Vec2 CardinalDirections[4] = {
+                Vec2{ 0.0, -1.0 },
+                Vec2{ 1.0, 0.0 },
+                Vec2{ 0.0, 1.0 },
+                Vec2{ -1.0, 0.0 }
+            };
+
+            for (const Vec2& direction : CardinalDirections)
+            {
+                if (VectorInSector(direction, sector))
+                {
+                    IncludeCircleSectorPoint(bounds, circle, direction, radius);
+                }
+            }
+        }
+
+        [[nodiscard]]
+        bool ClipBoundsToImage(
+            const BoundsD& bounds,
+            int32& x0,
+            int32& y0,
+            int32& x1,
+            int32& y1,
+            int32 width,
+            int32 height) noexcept
+        {
+            if (!bounds.valid())
+            {
+                return false;
+            }
+
+            // Conservative pixel coverage bounds for a shape-space AABB.
+            x0 = FloorToInt(bounds.minX - 1.0);
+            y0 = FloorToInt(bounds.minY - 1.0);
+            x1 = CeilToInt(bounds.maxX) + 1;
+            y1 = CeilToInt(bounds.maxY) + 1;
+
+            return ClipRectI(x0, y0, x1, y1, width, height);
+        }
+
+        [[nodiscard]]
+        bool GetCirclePieCoverageBounds(
+            const Circle& circle,
+            const CircleSectorData& sector,
+            int32& x0,
+            int32& y0,
+            int32& x1,
+            int32& y1,
+            int32 width,
+            int32 height) noexcept
+        {
+            BoundsD bounds;
+            bounds.include(Vec2{ circle.x, circle.y });
+            IncludeCircleSectorOuterBounds(bounds, circle, sector, circle.r);
+
+            return ClipBoundsToImage(bounds, x0, y0, x1, y1, width, height);
+        }
+
+        [[nodiscard]]
+        bool GetCircleArcCoverageBounds(
+            const Circle& circle,
+            const CircleSectorData& sector,
+            double innerRadius,
+            double outerRadius,
+            int32& x0,
+            int32& y0,
+            int32& x1,
+            int32& y1,
+            int32 width,
+            int32 height) noexcept
+        {
+            BoundsD bounds;
+            IncludeCircleSectorOuterBounds(bounds, circle, sector, outerRadius);
+
+            if (0.0 < innerRadius)
+            {
+                IncludeCircleSectorPoint(bounds, circle, sector.startDir, innerRadius);
+                IncludeCircleSectorPoint(bounds, circle, sector.endDir, innerRadius);
+            }
+            else
+            {
+                bounds.include(Vec2{ circle.x, circle.y });
+            }
+
+            return ClipBoundsToImage(bounds, x0, y0, x1, y1, width, height);
+        }
+
         [[nodiscard]]
         double DistanceSqToSegment(
             double px,
@@ -1652,14 +1772,14 @@ namespace s3d
                 return;
             }
 
-            const double supportR = circle.r + 0.5;
+            const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
 
-            int32 x0 = FloorToInt(circle.x - supportR - 0.5);
-            int32 y0 = FloorToInt(circle.y - supportR - 0.5);
-            int32 x1 = CeilToInt(circle.x + supportR - 0.5) + 1;
-            int32 y1 = CeilToInt(circle.y + supportR - 0.5) + 1;
+            int32 x0 = 0;
+            int32 y0 = 0;
+            int32 x1 = 0;
+            int32 y1 = 0;
 
-            if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+            if (!GetCirclePieCoverageBounds(circle, sector, x0, y0, x1, y1, view.width, view.height))
             {
                 return;
             }
@@ -1670,7 +1790,6 @@ namespace s3d
                 ToDstAlphaMode(dstAlpha)
             };
 
-            const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
             const size_t rowLength = static_cast<size_t>(x1 - x0);
             std::vector<uint8> coverage(rowLength);
 
@@ -1717,14 +1836,14 @@ namespace s3d
             }
 
             const double innerRadius = circle.r - innerThickness;
-            const double supportR = outerRadius + 0.5;
+            const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
 
-            int32 x0 = FloorToInt(circle.x - supportR - 0.5);
-            int32 y0 = FloorToInt(circle.y - supportR - 0.5);
-            int32 x1 = CeilToInt(circle.x + supportR - 0.5) + 1;
-            int32 y1 = CeilToInt(circle.y + supportR - 0.5) + 1;
+            int32 x0 = 0;
+            int32 y0 = 0;
+            int32 x1 = 0;
+            int32 y1 = 0;
 
-            if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+            if (!GetCircleArcCoverageBounds(circle, sector, innerRadius, outerRadius, x0, y0, x1, y1, view.width, view.height))
             {
                 return;
             }
@@ -1735,7 +1854,6 @@ namespace s3d
                 ToDstAlphaMode(dstAlpha)
             };
 
-            const CircleSectorData sector = MakeCircleSectorData(startAngle, angle);
             const size_t rowLength = static_cast<size_t>(x1 - x0);
             std::vector<uint8> coverage(rowLength);
 

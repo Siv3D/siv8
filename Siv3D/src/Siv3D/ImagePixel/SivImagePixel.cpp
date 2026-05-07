@@ -91,6 +91,51 @@ namespace s3d
                 size_t count,
                 const SourceOverPrecomputed& full) noexcept
             {
+                if (src.a == 255)
+                {
+                    for (size_t i = 0; i < count; ++i)
+                    {
+                        const uint8 c = coverage[i];
+
+                        if (c == 0)
+                        {
+                            continue;
+                        }
+
+                        if (c == 255)
+                        {
+                            dst[i] = src;
+                            continue;
+                        }
+
+                        const Color d = dst[i];
+                        const Color covered{ src.r, src.g, src.b, c };
+
+                        if (d.a == 0)
+                        {
+                            dst[i] = covered;
+                        }
+                        else if (d.a == 255)
+                        {
+                            dst[i] = Color{
+                                LerpChannel(src.r, d.r, c),
+                                LerpChannel(src.g, d.g, c),
+                                LerpChannel(src.b, d.b, c),
+                                255
+                            };
+                        }
+                        else
+                        {
+                            dst[i] = SourceOverGeneralFromPrecomputed(
+                                MakeSourceOverPrecomputed(covered),
+                                d
+                            );
+                        }
+                    }
+
+                    return;
+                }
+
                 for (size_t i = 0; i < count; ++i)
                 {
                     const uint8 c = coverage[i];
@@ -127,6 +172,37 @@ namespace s3d
                 size_t count,
                 const SourceOverPrecomputed& full) noexcept
             {
+                if (src.a == 255)
+                {
+                    for (size_t i = 0; i < count; ++i)
+                    {
+                        const uint8 c = coverage[i];
+
+                        if (c == 0)
+                        {
+                            continue;
+                        }
+
+                        if (c == 255)
+                        {
+                            dst[i] = src;
+                        }
+                        else
+                        {
+                            const Color d = dst[i];
+
+                            dst[i] = Color{
+                                LerpChannel(src.r, d.r, c),
+                                LerpChannel(src.g, d.g, c),
+                                LerpChannel(src.b, d.b, c),
+                                255
+                            };
+                        }
+                    }
+
+                    return;
+                }
+
                 for (size_t i = 0; i < count; ++i)
                 {
                     const uint8 c = coverage[i];
