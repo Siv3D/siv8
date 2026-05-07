@@ -1666,7 +1666,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const RectF& paintFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+		const RectF& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1674,7 +1674,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const RectF& overwriteFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+		const RectF& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//

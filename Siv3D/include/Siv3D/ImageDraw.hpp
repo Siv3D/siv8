@@ -11,6 +11,7 @@
 
 # pragma once
 # include "ImagePixel.hpp"
+# include "LineCap.hpp"
 # include "2DShapesFwd.hpp"
 
 namespace s3d
@@ -34,19 +35,6 @@ namespace s3d
             /// @remark 高速化のため、実行時には確認しません。
             /// @remark 仮定を満たさない場合の結果は保証されません。
             AssumeOpaque,
-        };
-
-        /// @brief 線分端点の形状
-        enum class LineCap : uint8
-        {
-            /// @brief 線分の端点で平らに切ります。
-            Flat,
-
-            /// @brief 線分方向に半径分だけ延長して、端を四角くします。
-            Square,
-
-            /// @brief 線分の端を丸くします。
-            Round,
         };
 
         //-------------------------------------------------------------------------
@@ -80,6 +68,48 @@ namespace s3d
         void Fill(
             Image& image,
             const RectF& rect,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 整数座標の長方形の枠を描画します。
+        /// @param image 描画先画像
+        /// @param rect 基準となる長方形
+        /// @param innerThickness rect の内側に描画する太さ
+        /// @param outerThickness rect の外側に描画する太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 描画領域は rect を外側に outerThickness 拡張した長方形から、rect を内側に innerThickness 縮小した長方形を除いた領域です。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark innerThickness または outerThickness が負の場合、この関数は何もしません。
+        void RectFrame(
+            Image& image,
+            const Rect& rect,
+            int32 innerThickness,
+            int32 outerThickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 浮動小数点座標の長方形の枠を描画します。
+        /// @param image 描画先画像
+        /// @param rect 基準となる長方形
+        /// @param innerThickness rect の内側に描画する太さ
+        /// @param outerThickness rect の外側に描画する太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 描画領域は rect を外側に outerThickness 拡張した長方形から、rect を内側に innerThickness 縮小した長方形を除いた領域です。
+        /// @remark 小数部分は coverage に変換されます。
+        /// @remark coverage は outer coverage から inner coverage を引いた値として 1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark innerThickness または outerThickness が負の場合、この関数は何もしません。
+        void RectFrame(
+            Image& image,
+            const RectF& rect,
+            double innerThickness,
+            double outerThickness,
             Color color,
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
             DstAlpha dstAlpha = DstAlpha::Preserve);

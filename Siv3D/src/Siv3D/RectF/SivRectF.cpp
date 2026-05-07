@@ -334,6 +334,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

@@ -414,6 +414,271 @@ namespace s3d
             }
         }
 
+        void FillRectClipped(
+            const ImageView view,
+            int32 x0,
+            int32 y0,
+            int32 x1,
+            int32 y1,
+            const ImagePixel::detail::SolidColorWriter& writer)
+        {
+            if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+            {
+                return;
+            }
+
+            writer.writeRows(
+                view.data
+                + static_cast<size_t>(y0) * view.stride
+                + static_cast<size_t>(x0),
+                static_cast<size_t>(x1 - x0),
+                static_cast<size_t>(y1 - y0),
+                view.stride
+            );
+        }
+
+        void FillRectFrameInteger(
+            const ImageView view,
+            const Rect& rect,
+            const int32 innerThickness,
+            const int32 outerThickness,
+            const ImagePixel::BlendMode blendMode,
+            const ImageDraw::DstAlpha dstAlpha,
+            const Color color)
+        {
+            if ((innerThickness < 0) || (outerThickness < 0))
+            {
+                return;
+            }
+
+            if ((rect.w <= 0) || (rect.h <= 0))
+            {
+                return;
+            }
+
+            if ((innerThickness == 0) && (outerThickness == 0))
+            {
+                return;
+            }
+
+            const int32 outerLeft = rect.x - outerThickness;
+            const int32 outerTop = rect.y - outerThickness;
+            const int32 outerRight = rect.x + rect.w + outerThickness;
+            const int32 outerBottom = rect.y + rect.h + outerThickness;
+
+            if ((outerLeft >= outerRight) || (outerTop >= outerBottom))
+            {
+                return;
+            }
+
+            const int32 innerLeft = rect.x + innerThickness;
+            const int32 innerTop = rect.y + innerThickness;
+            const int32 innerRight = rect.x + rect.w - innerThickness;
+            const int32 innerBottom = rect.y + rect.h - innerThickness;
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            // inner が消滅する場合は outer 全体を塗ります。
+            if ((innerLeft >= innerRight) || (innerTop >= innerBottom))
+            {
+                FillRectClipped(view, outerLeft, outerTop, outerRight, outerBottom, writer);
+                return;
+            }
+
+            // frame = outer - inner
+            // 4 つの矩形は互いに pixel 単位で重ならないように分解します。
+
+            // Top
+            FillRectClipped(
+                view,
+                outerLeft,
+                outerTop,
+                outerRight,
+                innerTop,
+                writer
+            );
+
+            // Bottom
+            FillRectClipped(
+                view,
+                outerLeft,
+                innerBottom,
+                outerRight,
+                outerBottom,
+                writer
+            );
+
+            // Left
+            FillRectClipped(
+                view,
+                outerLeft,
+                innerTop,
+                innerLeft,
+                innerBottom,
+                writer
+            );
+
+            // Right
+            FillRectClipped(
+                view,
+                innerRight,
+                innerTop,
+                outerRight,
+                innerBottom,
+                writer
+            );
+        }
+
+        void FillRectFrameFloat(
+            const ImageView view,
+            const RectF& rect,
+            const double innerThickness,
+            const double outerThickness,
+            const ImagePixel::BlendMode blendMode,
+            const ImageDraw::DstAlpha dstAlpha,
+            const Color color)
+        {
+            if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness))
+            {
+                return;
+            }
+
+            if (!(0.0 < rect.w) || !(0.0 < rect.h))
+            {
+                return;
+            }
+
+            if ((innerThickness == 0.0) && (outerThickness == 0.0))
+            {
+                return;
+            }
+
+            const double outerLeft = rect.x - outerThickness;
+            const double outerTop = rect.y - outerThickness;
+            const double outerRight = rect.x + rect.w + outerThickness;
+            const double outerBottom = rect.y + rect.h + outerThickness;
+
+            if (!(outerLeft < outerRight) || !(outerTop < outerBottom))
+            {
+                return;
+            }
+
+            const double innerLeft = rect.x + innerThickness;
+            const double innerTop = rect.y + innerThickness;
+            const double innerRight = rect.x + rect.w - innerThickness;
+            const double innerBottom = rect.y + rect.h - innerThickness;
+
+            const bool hasInner =
+                (innerLeft < innerRight)
+                && (innerTop < innerBottom);
+
+            // inner が消滅する場合は outer 全体を通常の RectF fill として描画します。
+            if (!hasInner)
+            {
+                FillRectFloat(
+                    view,
+                    RectF{
+                        outerLeft,
+                        outerTop,
+                        outerRight - outerLeft,
+                        outerBottom - outerTop
+                    },
+                    blendMode,
+                    dstAlpha,
+                    color
+                );
+
+                return;
+            }
+
+            int32 x0 = FloorToInt(outerLeft);
+            int32 y0 = FloorToInt(outerTop);
+            int32 x1 = CeilToInt(outerRight);
+            int32 y1 = CeilToInt(outerBottom);
+
+            if (!ClipRectI(x0, y0, x1, y1, view.width, view.height))
+            {
+                return;
+            }
+
+            const size_t rowLength = static_cast<size_t>(x1 - x0);
+
+            std::vector<uint8> outerX(rowLength);
+            std::vector<uint8> innerX(rowLength);
+            std::vector<uint8> coverage(rowLength);
+
+            for (size_t i = 0; i < rowLength; ++i)
+            {
+                const int32 x = x0 + static_cast<int32>(i);
+
+                outerX[i] = IntervalCoverage1D(outerLeft, outerRight, x);
+                innerX[i] = IntervalCoverage1D(innerLeft, innerRight, x);
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                const uint8 outerY = IntervalCoverage1D(outerTop, outerBottom, y);
+
+                if (outerY == 0)
+                {
+                    continue;
+                }
+
+                const uint8 innerY = IntervalCoverage1D(innerTop, innerBottom, y);
+
+                bool anyCoverage = false;
+                bool allFull = true;
+
+                for (size_t i = 0; i < rowLength; ++i)
+                {
+                    const uint8 outerCoverage = ImagePixel::detail::Div255Round8(
+                        static_cast<uint32>(outerX[i]) * static_cast<uint32>(outerY)
+                    );
+
+                    const uint8 innerCoverage = ImagePixel::detail::Div255Round8(
+                        static_cast<uint32>(innerX[i]) * static_cast<uint32>(innerY)
+                    );
+
+                    const uint8 frameCoverage = static_cast<uint8>(
+                        (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
+                        );
+
+                    coverage[i] = frameCoverage;
+
+                    anyCoverage |= (frameCoverage != 0);
+                    allFull &= (frameCoverage == 255);
+                }
+
+                if (!anyCoverage)
+                {
+                    continue;
+                }
+
+                Color* dstRow = view.data
+                    + static_cast<size_t>(y) * view.stride
+                    + static_cast<size_t>(x0);
+
+                if (allFull)
+                {
+                    writer.write(dstRow, rowLength);
+                }
+                else
+                {
+                    writer.writeWithCoverage(dstRow, coverage.data(), rowLength);
+                }
+            }
+        }
+
         void FillCircleNoAAFast(
             ImageView view,
             const Circle& circle,
@@ -928,7 +1193,7 @@ namespace s3d
             double thickness,
             Color color,
             ImagePixel::BlendMode blendMode,
-            ImageDraw::LineCap lineCap,
+            LineCap lineCap,
             ImageDraw::DstAlpha dstAlpha)
         {
             if (!(0.0 < thickness))
@@ -943,12 +1208,12 @@ namespace s3d
 
             if (!(0.0 < length))
             {
-                if (lineCap == ImageDraw::LineCap::Round)
+                if (lineCap == LineCap::Round)
                 {
                     const Circle circle{ from.x, from.y, half };
                     FillCircleNoAAFast(view, circle, blendMode, dstAlpha, color);
                 }
-                else if (lineCap == ImageDraw::LineCap::Square)
+                else if (lineCap == LineCap::Square)
                 {
                     const Vec2 quad[4] =
                     {
@@ -979,7 +1244,7 @@ namespace s3d
             Vec2 body0 = from;
             Vec2 body1 = to;
 
-            if (lineCap == ImageDraw::LineCap::Square)
+            if (lineCap == LineCap::Square)
             {
                 body0.x -= ux * half;
                 body0.y -= uy * half;
@@ -1001,7 +1266,7 @@ namespace s3d
                 ToDstAlphaMode(dstAlpha)
             };
 
-            if (lineCap != ImageDraw::LineCap::Round)
+            if (lineCap != LineCap::Round)
             {
                 FillConvexPolygonNoAA(view, quad, 4, writer);
                 return;
@@ -1066,7 +1331,7 @@ namespace s3d
             double thickness,
             Color color,
             ImagePixel::BlendMode blendMode,
-            ImageDraw::LineCap lineCap,
+            LineCap lineCap,
             ImageDraw::DstAlpha dstAlpha)
         {
             if (!(0.0 < thickness))
@@ -1081,12 +1346,12 @@ namespace s3d
 
             if (!(0.0 < length))
             {
-                if (lineCap == ImageDraw::LineCap::Flat)
+                if (lineCap == LineCap::Flat)
                 {
                     return;
                 }
 
-                if (lineCap == ImageDraw::LineCap::Round)
+                if (lineCap == LineCap::Round)
                 {
                     const Circle circle{ from.x, from.y, half };
                     FillCircleAA(view, circle, blendMode, dstAlpha, color);
@@ -1183,7 +1448,7 @@ namespace s3d
 
             double halfLength = length * 0.5;
 
-            if (lineCap == ImageDraw::LineCap::Square)
+            if (lineCap == LineCap::Square)
             {
                 halfLength += half;
             }
@@ -1199,7 +1464,7 @@ namespace s3d
             BoundsD bounds;
             IncludeOrientedRectBounds(bounds, body, 0.5, 0.5);
 
-            if (lineCap == ImageDraw::LineCap::Round)
+            if (lineCap == LineCap::Round)
             {
                 bounds.includeCircle(from, half + 0.5);
                 bounds.includeCircle(to, half + 0.5);
@@ -1244,7 +1509,7 @@ namespace s3d
                     AddSpanClipped(supportSpans, x0, x1, view.width);
                 }
 
-                if (lineCap == ImageDraw::LineCap::Round)
+                if (lineCap == LineCap::Round)
                 {
                     if (GetCircleSpanAtY(from, half + 0.5, y, x0, x1))
                     {
@@ -1274,7 +1539,7 @@ namespace s3d
 
                     AddOrientedRectCoverageToRange(body, y, span.x0, coverage);
 
-                    if (lineCap == ImageDraw::LineCap::Round)
+                    if (lineCap == LineCap::Round)
                     {
                         AddCircleCoverageToRange(from, half, y, span.x0, coverage);
                         AddCircleCoverageToRange(to, half, y, span.x0, coverage);
@@ -1345,6 +1610,60 @@ namespace s3d
             }
 
             FillRectFloat(view, rect, blendMode, dstAlpha, color);
+        }
+
+        void RectFrame(
+            Image& image,
+            const Rect& rect,
+            const int32 innerThickness,
+            const int32 outerThickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
+            {
+                return;
+            }
+
+            FillRectFrameInteger(
+                view,
+                rect,
+                innerThickness,
+                outerThickness,
+                blendMode,
+                dstAlpha,
+                color
+            );
+        }
+
+        void RectFrame(
+            Image& image,
+            const RectF& rect,
+            const double innerThickness,
+            const double outerThickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
+            {
+                return;
+            }
+
+            FillRectFrameFloat(
+                view,
+                rect,
+                innerThickness,
+                outerThickness,
+                blendMode,
+                dstAlpha,
+                color
+            );
         }
 
         void Fill(

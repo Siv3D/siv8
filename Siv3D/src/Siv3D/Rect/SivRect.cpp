@@ -333,6 +333,42 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::paintFrame(Image& dst, const int32 innerThickness, const int32 outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver);
+		return *this;
+	}
+
+	const Rect& Rect::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, RectF{ *this }, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::overwriteFrame(Image& dst, const int32 innerThickness, const int32 outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
+	}
+
+	const Rect& Rect::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, RectF{ *this }, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
