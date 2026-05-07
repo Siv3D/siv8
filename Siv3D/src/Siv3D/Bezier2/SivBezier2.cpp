@@ -11,6 +11,7 @@
 
 # include <Siv3D/Bezier.hpp>
 # include <Siv3D/ListUtility.hpp>
+# include <Siv3D/LineCap.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
@@ -580,6 +581,50 @@ namespace s3d
 		Update1D(p0.x, p1.x, p2.x, minX, maxX);
 		Update1D(p0.y, p1.y, p2.y, minY, maxY);
 		return{ minX, minY, (maxX - minX), (maxY - minY) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier2& Bezier2::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Bezier2& Bezier2::paint(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier2& Bezier2::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		getLineStringAdaptive().paint(dst, lineCap, thickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier2& Bezier2::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Bezier2& Bezier2::overwrite(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		getLineStringAdaptive().overwrite(dst, lineCap, thickness, color, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

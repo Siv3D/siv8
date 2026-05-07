@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Bezier.hpp>
+# include <Siv3D/LineCap.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
@@ -816,6 +817,50 @@ namespace s3d
 		}
 
 		return ts;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::paint(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		getLineStringAdaptive().paint(dst, lineCap, thickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::overwrite(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		getLineStringAdaptive().overwrite(dst, lineCap, thickness, color, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -13,6 +13,7 @@
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Spline.hpp>
 # include <Siv3D/RangeFormatter.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -359,6 +360,85 @@ namespace s3d
 		}
 
 		return length;
+	}
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paint(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paint(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, 1.0, color);
+	}
+
+	const LineString& LineString::overwrite(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, thickness, color);
+	}
+
+	const LineString& LineString::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintClosed
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paintClosed(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintClosed(dst, 1.0, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paintClosed(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteClosed
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwriteClosed(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteClosed(dst, 1.0, color);
+	}
+
+	const LineString& LineString::overwriteClosed(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

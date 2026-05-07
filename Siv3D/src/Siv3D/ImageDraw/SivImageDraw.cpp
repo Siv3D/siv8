@@ -13,6 +13,7 @@
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/LineString.hpp>
 # include "../ImagePixel/SolidColorWriter.hpp"
 
 namespace s3d
@@ -2927,6 +2928,18 @@ namespace s3d
             return GetConvexPolygonSpanAtY(points, 4, y, outX0, outX1);
         }
 
+        bool GetOrientedRectFillSpanAtY(
+            const OrientedRectBasis& basis,
+            int32 y,
+            int32& outX0,
+            int32& outX1) noexcept
+        {
+            Vec2 points[4];
+            MakeOrientedRectPoints(basis, 0.0, 0.0, points);
+
+            return GetConvexPolygonSpanAtY(points, 4, y, outX0, outX1);
+        }
+
         [[nodiscard]]
         double SignedDistanceToOrientedRect(
             Vec2 p,
@@ -2961,11 +2974,17 @@ namespace s3d
             const OrientedRectBasis& basis,
             int32 y,
             int32 x0,
-            std::vector<uint8>& coverage)
+            uint8* coverage,
+            size_t count)
         {
+            if ((coverage == nullptr) || (count == 0))
+            {
+                return;
+            }
+
             const double py = static_cast<double>(y) + 0.5;
 
-            for (size_t i = 0; i < coverage.size(); ++i)
+            for (size_t i = 0; i < count; ++i)
             {
                 const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
 
@@ -2980,6 +2999,45 @@ namespace s3d
             }
         }
 
+        void AddOrientedRectCoverageToRange(
+            const OrientedRectBasis& basis,
+            int32 y,
+            int32 x0,
+            std::vector<uint8>& coverage)
+        {
+            AddOrientedRectCoverageToRange(
+                basis,
+                y,
+                x0,
+                coverage.data(),
+                coverage.size()
+            );
+        }
+
+        void AddCircleCoverageToRange(
+            const Vec2& center,
+            double radius,
+            int32 y,
+            int32 x0,
+            uint8* coverage,
+            size_t count)
+        {
+            if ((coverage == nullptr) || (count == 0))
+            {
+                return;
+            }
+
+            const double py = static_cast<double>(y) + 0.5;
+
+            for (size_t i = 0; i < count; ++i)
+            {
+                const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
+                const uint8 c = CircleCoverageAt(px, py, center.x, center.y, radius);
+
+                MaxCoverage(coverage[i], c);
+            }
+        }
+
         void AddCircleCoverageToRange(
             const Vec2& center,
             double radius,
@@ -2987,15 +3045,14 @@ namespace s3d
             int32 x0,
             std::vector<uint8>& coverage)
         {
-            const double py = static_cast<double>(y) + 0.5;
-
-            for (size_t i = 0; i < coverage.size(); ++i)
-            {
-                const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-                const uint8 c = CircleCoverageAt(px, py, center.x, center.y, radius);
-
-                MaxCoverage(coverage[i], c);
-            }
+            AddCircleCoverageToRange(
+                center,
+                radius,
+                y,
+                x0,
+                coverage.data(),
+                coverage.size()
+            );
         }
 
         void DrawLineNoAA(
@@ -3338,6 +3395,652 @@ namespace s3d
 
                     WriteCoverageRow(writer, row, span.x0, coverage);
                 }
+            }
+        }
+
+        enum class StrokePrimitiveType : uint8
+        {
+            BodyRect,
+            RoundDisk,
+        };
+
+        enum class StrokeJoinStyle : uint8
+        {
+            Round,
+        };
+
+        struct StrokePrimitive
+        {
+            StrokePrimitiveType type = StrokePrimitiveType::BodyRect;
+            OrientedRectBasis rect;
+            Vec2 center{ 0.0, 0.0 };
+            double radius = 0.0;
+            int32 y0 = 0;
+            int32 y1 = 0; // exclusive
+        };
+
+        struct StrokeRowEvent
+        {
+            int32 y = 0;
+            size_t primitiveIndex = 0;
+            bool enter = true;
+        };
+
+        [[nodiscard]]
+        bool IsSamePoint(const Vec2& a, const Vec2& b) noexcept
+        {
+            return (a.x == b.x) && (a.y == b.y);
+        }
+
+        void AddStrokePrimitiveWithBounds(
+            ImageView view,
+            std::vector<StrokePrimitive>& primitives,
+            StrokePrimitive primitive,
+            const BoundsD& bounds)
+        {
+            if (!bounds.valid())
+            {
+                return;
+            }
+
+            int32 y0 = FloorToInt(bounds.minY - 0.5);
+            int32 y1 = CeilToInt(bounds.maxY - 0.5) + 1;
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
+
+            primitive.y0 = y0;
+            primitive.y1 = y1;
+
+            primitives.push_back(primitive);
+        }
+
+        void AddStrokeBodyPrimitive(
+            ImageView view,
+            std::vector<StrokePrimitive>& primitives,
+            const Vec2& from,
+            const Vec2& to,
+            const double halfThickness,
+            const double extendBegin,
+            const double extendEnd)
+        {
+            const double dx = to.x - from.x;
+            const double dy = to.y - from.y;
+            const double length = std::sqrt(dx * dx + dy * dy);
+
+            if (!(0.0 < length))
+            {
+                return;
+            }
+
+            const Vec2 dir{ dx / length, dy / length };
+            const Vec2 normal{ -dir.y, dir.x };
+
+            const Vec2 bodyBegin{
+                from.x - dir.x * extendBegin,
+                from.y - dir.y * extendBegin
+            };
+
+            const Vec2 bodyEnd{
+                to.x + dir.x * extendEnd,
+                to.y + dir.y * extendEnd
+            };
+
+            const OrientedRectBasis basis{
+                Vec2{ (bodyBegin.x + bodyEnd.x) * 0.5, (bodyBegin.y + bodyEnd.y) * 0.5 },
+                dir,
+                normal,
+                (length + extendBegin + extendEnd) * 0.5,
+                halfThickness
+            };
+
+            StrokePrimitive primitive;
+            primitive.type = StrokePrimitiveType::BodyRect;
+            primitive.rect = basis;
+
+            BoundsD bounds;
+            IncludeOrientedRectBounds(bounds, basis, 0.5, 0.5);
+
+            AddStrokePrimitiveWithBounds(view, primitives, primitive, bounds);
+        }
+
+        void AddStrokeDiskPrimitive(
+            ImageView view,
+            std::vector<StrokePrimitive>& primitives,
+            const Vec2& center,
+            const double radius)
+        {
+            if (!(0.0 < radius))
+            {
+                return;
+            }
+
+            StrokePrimitive primitive;
+            primitive.type = StrokePrimitiveType::RoundDisk;
+            primitive.center = center;
+            primitive.radius = radius;
+
+            BoundsD bounds;
+            bounds.includeCircle(center, radius + 0.5);
+
+            AddStrokePrimitiveWithBounds(view, primitives, primitive, bounds);
+        }
+
+        void AddStrokeJoinPrimitive(
+            ImageView view,
+            std::vector<StrokePrimitive>& primitives,
+            const Vec2& point,
+            const double halfThickness,
+            const StrokeJoinStyle joinStyle)
+        {
+            switch (joinStyle)
+            {
+            case StrokeJoinStyle::Round:
+                AddStrokeDiskPrimitive(view, primitives, point, halfThickness);
+                return;
+            }
+        }
+
+        [[nodiscard]]
+        bool BuildStrokeRowEvents(
+            const std::vector<StrokePrimitive>& primitives,
+            std::vector<StrokeRowEvent>& events,
+            int32& outY0,
+            int32& outY1)
+        {
+            if (primitives.empty())
+            {
+                return false;
+            }
+
+            outY0 = primitives.front().y0;
+            outY1 = primitives.front().y1;
+
+            events.clear();
+            events.reserve(primitives.size() * 2);
+
+            for (size_t i = 0; i < primitives.size(); ++i)
+            {
+                const StrokePrimitive& primitive = primitives[i];
+
+                if (primitive.y0 >= primitive.y1)
+                {
+                    continue;
+                }
+
+                outY0 = Min(outY0, primitive.y0);
+                outY1 = Max(outY1, primitive.y1);
+
+                events.push_back(StrokeRowEvent{ primitive.y0, i, true });
+                events.push_back(StrokeRowEvent{ primitive.y1, i, false });
+            }
+
+            if (events.empty() || (outY0 >= outY1))
+            {
+                return false;
+            }
+
+            std::sort(events.begin(), events.end(), [](const StrokeRowEvent& a, const StrokeRowEvent& b)
+                {
+                    if (a.y != b.y)
+                    {
+                        return (a.y < b.y);
+                    }
+
+                    return (static_cast<int32>(a.enter) < static_cast<int32>(b.enter));
+                });
+
+            return true;
+        }
+
+        void RemoveActiveStrokePrimitive(std::vector<size_t>& active, const size_t primitiveIndex)
+        {
+            const auto it = std::find(active.begin(), active.end(), primitiveIndex);
+
+            if (it != active.end())
+            {
+                *it = active.back();
+                active.pop_back();
+            }
+        }
+
+        void ApplyStrokeRowEvents(
+            const std::vector<StrokeRowEvent>& events,
+            size_t& eventIndex,
+            const int32 y,
+            std::vector<size_t>& active)
+        {
+            while ((eventIndex < events.size()) && (events[eventIndex].y == y))
+            {
+                const StrokeRowEvent& event = events[eventIndex];
+
+                if (event.enter)
+                {
+                    active.push_back(event.primitiveIndex);
+                }
+                else
+                {
+                    RemoveActiveStrokePrimitive(active, event.primitiveIndex);
+                }
+
+                ++eventIndex;
+            }
+        }
+
+        [[nodiscard]]
+        bool GetStrokePrimitiveSpanAtY(
+            const StrokePrimitive& primitive,
+            const bool antialiasingSupport,
+            const int32 y,
+            int32& outX0,
+            int32& outX1) noexcept
+        {
+            switch (primitive.type)
+            {
+            case StrokePrimitiveType::BodyRect:
+                return antialiasingSupport
+                    ? GetOrientedRectSupportSpanAtY(primitive.rect, y, outX0, outX1)
+                    : GetOrientedRectFillSpanAtY(primitive.rect, y, outX0, outX1);
+
+            case StrokePrimitiveType::RoundDisk:
+                return GetCircleSpanAtY(
+                    primitive.center,
+                    primitive.radius + (antialiasingSupport ? 0.5 : 0.0),
+                    y,
+                    outX0,
+                    outX1
+                );
+            }
+
+            return false;
+        }
+
+        void AddStrokePrimitiveCoverageToRange(
+            const StrokePrimitive& primitive,
+            const int32 y,
+            const int32 rangeX0,
+            std::vector<uint8>& coverage)
+        {
+            int32 x0 = 0;
+            int32 x1 = 0;
+
+            if (!GetStrokePrimitiveSpanAtY(primitive, true, y, x0, x1))
+            {
+                return;
+            }
+
+            const int32 rangeX1 = rangeX0 + static_cast<int32>(coverage.size());
+            x0 = Max(x0, rangeX0);
+            x1 = Min(x1, rangeX1);
+
+            if (x0 >= x1)
+            {
+                return;
+            }
+
+            const size_t offset = static_cast<size_t>(x0 - rangeX0);
+            const size_t count = static_cast<size_t>(x1 - x0);
+
+            switch (primitive.type)
+            {
+            case StrokePrimitiveType::BodyRect:
+                AddOrientedRectCoverageToRange(
+                    primitive.rect,
+                    y,
+                    x0,
+                    coverage.data() + offset,
+                    count
+                );
+                return;
+
+            case StrokePrimitiveType::RoundDisk:
+                AddCircleCoverageToRange(
+                    primitive.center,
+                    primitive.radius,
+                    y,
+                    x0,
+                    coverage.data() + offset,
+                    count
+                );
+                return;
+            }
+        }
+
+        void DrawStrokePrimitivesNoAA(
+            ImageView view,
+            const std::vector<StrokePrimitive>& primitives,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const ImageDraw::DstAlpha dstAlpha)
+        {
+            std::vector<StrokeRowEvent> events;
+            int32 y0 = 0;
+            int32 y1 = 0;
+
+            if (!BuildStrokeRowEvents(primitives, events, y0, y1))
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            std::vector<size_t> active;
+            active.reserve(primitives.size());
+
+            std::vector<SpanI> spans;
+            spans.reserve(primitives.size());
+
+            size_t eventIndex = 0;
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                ApplyStrokeRowEvents(events, eventIndex, y, active);
+
+                if (active.empty())
+                {
+                    continue;
+                }
+
+                spans.clear();
+
+                for (const size_t primitiveIndex : active)
+                {
+                    int32 x0 = 0;
+                    int32 x1 = 0;
+
+                    if (GetStrokePrimitiveSpanAtY(primitives[primitiveIndex], false, y, x0, x1))
+                    {
+                        AddSpanClipped(spans, x0, x1, view.width);
+                    }
+                }
+
+                WriteMergedSpans(writer, view, y, spans);
+            }
+        }
+
+        void DrawStrokePrimitivesAA(
+            ImageView view,
+            const std::vector<StrokePrimitive>& primitives,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const ImageDraw::DstAlpha dstAlpha)
+        {
+            std::vector<StrokeRowEvent> events;
+            int32 y0 = 0;
+            int32 y1 = 0;
+
+            if (!BuildStrokeRowEvents(primitives, events, y0, y1))
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            std::vector<size_t> active;
+            active.reserve(primitives.size());
+
+            std::vector<SpanI> supportSpans;
+            supportSpans.reserve(primitives.size());
+
+            std::vector<uint8> coverage;
+
+            size_t eventIndex = 0;
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                ApplyStrokeRowEvents(events, eventIndex, y, active);
+
+                if (active.empty())
+                {
+                    continue;
+                }
+
+                supportSpans.clear();
+
+                for (const size_t primitiveIndex : active)
+                {
+                    int32 x0 = 0;
+                    int32 x1 = 0;
+
+                    if (GetStrokePrimitiveSpanAtY(primitives[primitiveIndex], true, y, x0, x1))
+                    {
+                        AddSpanClipped(supportSpans, x0, x1, view.width);
+                    }
+                }
+
+                if (supportSpans.empty())
+                {
+                    continue;
+                }
+
+                SortAndMergeSpans(supportSpans);
+
+                Color* row = view.data + static_cast<size_t>(y) * view.stride;
+
+                for (const SpanI& span : supportSpans)
+                {
+                    const size_t count = static_cast<size_t>(span.x1 - span.x0);
+                    coverage.assign(count, 0);
+
+                    for (const size_t primitiveIndex : active)
+                    {
+                        AddStrokePrimitiveCoverageToRange(
+                            primitives[primitiveIndex],
+                            y,
+                            span.x0,
+                            coverage
+                        );
+                    }
+
+                    WriteCoverageRow(writer, row, span.x0, coverage);
+                }
+            }
+        }
+
+        void DrawStrokePrimitives(
+            ImageView view,
+            const std::vector<StrokePrimitive>& primitives,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const ImageDraw::DstAlpha dstAlpha)
+        {
+            if (enableAntialiasing == EnableAntialiasing::No)
+            {
+                DrawStrokePrimitivesNoAA(view, primitives, color, blendMode, dstAlpha);
+            }
+            else
+            {
+                DrawStrokePrimitivesAA(view, primitives, color, blendMode, dstAlpha);
+            }
+        }
+
+        void BuildZeroLengthOpenStrokePrimitives(
+            ImageView view,
+            std::vector<StrokePrimitive>& primitives,
+            const Vec2& point,
+            const double halfThickness,
+            const LineCap lineCap)
+        {
+            switch (lineCap)
+            {
+            case LineCap::Flat:
+                return;
+
+            case LineCap::Round:
+                AddStrokeDiskPrimitive(view, primitives, point, halfThickness);
+                return;
+
+            case LineCap::Square:
+            {
+                const OrientedRectBasis basis{
+                    point,
+                    Vec2{ 1.0, 0.0 },
+                    Vec2{ 0.0, 1.0 },
+                    halfThickness,
+                    halfThickness
+                };
+
+                StrokePrimitive primitive;
+                primitive.type = StrokePrimitiveType::BodyRect;
+                primitive.rect = basis;
+
+                BoundsD bounds;
+                IncludeOrientedRectBounds(bounds, basis, 0.5, 0.5);
+
+                AddStrokePrimitiveWithBounds(view, primitives, primitive, bounds);
+            }
+            return;
+            }
+        }
+
+        void BuildOpenStrokePrimitives(
+            ImageView view,
+            const Vec2* points,
+            const size_t count,
+            const double thickness,
+            const LineCap lineCap,
+            const StrokeJoinStyle joinStyle,
+            std::vector<StrokePrimitive>& primitives)
+        {
+            primitives.clear();
+
+            if ((points == nullptr) || (count < 2) || !(0.0 < thickness))
+            {
+                return;
+            }
+
+            std::vector<Vec2> effectivePoints;
+            effectivePoints.reserve(count);
+            effectivePoints.push_back(points[0]);
+
+            for (size_t i = 1; i < count; ++i)
+            {
+                if (!IsSamePoint(points[i], effectivePoints.back()))
+                {
+                    effectivePoints.push_back(points[i]);
+                }
+            }
+
+            const double half = thickness * 0.5;
+
+            if (effectivePoints.size() < 2)
+            {
+                BuildZeroLengthOpenStrokePrimitives(
+                    view,
+                    primitives,
+                    effectivePoints.front(),
+                    half,
+                    lineCap
+                );
+                return;
+            }
+
+            const size_t segmentCount = (effectivePoints.size() - 1);
+            primitives.reserve(segmentCount + effectivePoints.size() + 2);
+
+            for (size_t i = 0; i < segmentCount; ++i)
+            {
+                const double extendBegin = ((i == 0) && (lineCap == LineCap::Square)) ? half : 0.0;
+                const double extendEnd = (((i + 1) == segmentCount) && (lineCap == LineCap::Square)) ? half : 0.0;
+
+                AddStrokeBodyPrimitive(
+                    view,
+                    primitives,
+                    effectivePoints[i],
+                    effectivePoints[i + 1],
+                    half,
+                    extendBegin,
+                    extendEnd
+                );
+            }
+
+            for (size_t i = 1; (i + 1) < effectivePoints.size(); ++i)
+            {
+                AddStrokeJoinPrimitive(view, primitives, effectivePoints[i], half, joinStyle);
+            }
+
+            if (lineCap == LineCap::Round)
+            {
+                AddStrokeDiskPrimitive(view, primitives, effectivePoints.front(), half);
+                AddStrokeDiskPrimitive(view, primitives, effectivePoints.back(), half);
+            }
+        }
+
+        void BuildClosedStrokePrimitives(
+            ImageView view,
+            const Vec2* points,
+            const size_t count,
+            const double thickness,
+            const StrokeJoinStyle joinStyle,
+            std::vector<StrokePrimitive>& primitives)
+        {
+            primitives.clear();
+
+            if ((points == nullptr) || (count < 3) || !(0.0 < thickness))
+            {
+                return;
+            }
+
+            std::vector<Vec2> effectivePoints;
+            effectivePoints.reserve(count);
+            effectivePoints.push_back(points[0]);
+
+            for (size_t i = 1; i < count; ++i)
+            {
+                if (!IsSamePoint(points[i], effectivePoints.back()))
+                {
+                    effectivePoints.push_back(points[i]);
+                }
+            }
+
+            while ((1 < effectivePoints.size()) && IsSamePoint(effectivePoints.front(), effectivePoints.back()))
+            {
+                effectivePoints.pop_back();
+            }
+
+            if (effectivePoints.size() < 3)
+            {
+                return;
+            }
+
+            const double half = thickness * 0.5;
+            const size_t segmentCount = effectivePoints.size();
+
+            primitives.reserve(segmentCount * 2);
+
+            for (size_t i = 0; i < segmentCount; ++i)
+            {
+                const Vec2& from = effectivePoints[i];
+                const Vec2& to = effectivePoints[(i + 1) % segmentCount];
+
+                AddStrokeBodyPrimitive(
+                    view,
+                    primitives,
+                    from,
+                    to,
+                    half,
+                    0.0,
+                    0.0
+                );
+            }
+
+            for (const Vec2& p : effectivePoints)
+            {
+                AddStrokeJoinPrimitive(view, primitives, p, half, joinStyle);
             }
         }
 
@@ -4259,6 +4962,111 @@ namespace s3d
             {
                 DrawLineAA(view, from, to, thickness, color, blendMode, lineCap, dstAlpha);
             }
+        }
+
+        void LineString(
+            Image& image,
+            const Vec2* points,
+            const size_t count,
+            const double thickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const LineCap lineCap,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points == nullptr) || (count < 2) || !(0.0 < thickness))
+            {
+                return;
+            }
+
+            std::vector<StrokePrimitive> primitives;
+            BuildOpenStrokePrimitives(view, points, count, thickness, lineCap, StrokeJoinStyle::Round, primitives);
+
+            DrawStrokePrimitives(
+                view,
+                primitives,
+                color,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha
+            );
+        }
+
+        void LineString(
+            Image& image,
+            const s3d::LineString& lineString,
+            const double thickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const LineCap lineCap,
+            const DstAlpha dstAlpha)
+        {
+            LineString(
+                image,
+                lineString.data(),
+                lineString.size(),
+                thickness,
+                color,
+                blendMode,
+                enableAntialiasing,
+                lineCap,
+                dstAlpha
+            );
+        }
+
+        void ClosedLineString(
+            Image& image,
+            const Vec2* points,
+            const size_t count,
+            const double thickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points == nullptr) || (count < 3) || !(0.0 < thickness))
+            {
+                return;
+            }
+
+            std::vector<StrokePrimitive> primitives;
+            BuildClosedStrokePrimitives(view, points, count, thickness, StrokeJoinStyle::Round, primitives);
+
+            DrawStrokePrimitives(
+                view,
+                primitives,
+                color,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha
+            );
+        }
+
+        void ClosedLineString(
+            Image& image,
+            const s3d::LineString& lineString,
+            const double thickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            ClosedLineString(
+                image,
+                lineString.data(),
+                lineString.size(),
+                thickness,
+                color,
+                blendMode,
+                enableAntialiasing,
+                dstAlpha
+            );
         }
     }
 }
