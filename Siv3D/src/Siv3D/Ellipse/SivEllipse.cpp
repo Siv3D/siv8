@@ -16,6 +16,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -205,6 +206,54 @@ namespace s3d
 	bool Ellipse::mouseOver() const noexcept
 	{
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipseFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipseFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
