@@ -153,11 +153,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setSortingEnabled, isSortingEnabled
+	//	setOrderSortingEnabled, isOrderSortingEnabled
 	//
 	////////////////////////////////////////////////////////////////
 
-	void EffectData::setSortingEnabled(const bool enabled) noexcept
+	void EffectData::setOrderSortingEnabled(const bool enabled) noexcept
 	{
 		if ((not m_sortingEnabled) && enabled)
 		{
@@ -167,7 +167,7 @@ namespace s3d
 		m_sortingEnabled = enabled;
 	}
 
-	bool EffectData::isSortingEnabled() const noexcept
+	bool EffectData::isOrderSortingEnabled() const noexcept
 	{
 		return m_sortingEnabled;
 	}

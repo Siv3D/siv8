@@ -206,18 +206,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setSortingEnabled, isSortingEnabled
+	//	setOrderSortingEnabled, isOrderSortingEnabled
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CEffect::setSortingEnabled(const Effect::IDType handleID, const bool enabled)
+	void CEffect::setOrderSortingEnabled(const Effect::IDType handleID, const bool enabled)
 	{
-		m_effects[handleID]->setSortingEnabled(enabled);
+		m_effects[handleID]->setOrderSortingEnabled(enabled);
 	}
 
-	bool CEffect::isSortingEnabled(const Effect::IDType handleID)
+	bool CEffect::isOrderSortingEnabled(const Effect::IDType handleID)
 	{
-		return m_effects[handleID]->isSortingEnabled();
+		return m_effects[handleID]->isOrderSortingEnabled();
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -32,7 +32,7 @@ namespace s3d
 	/// @brief エラー時に例外を発生させるかどうかを指定 | Whether to throw exceptions on errors
 	using AllowExceptions = YesNo<struct AllowExceptions_tag>;
 
-	/// @brief ASCII 文字のみに変換するかどうかを指定 | Whether to convert to ASCII characters only
+	/// @brief ASCII 文字のみに変換するかどうかを指定 | Whether to convert to ASCII-only characters
 	using EnsureAscii = YesNo<struct EnsureAscii_tag>;
 
 	/// @brief 乗算済みアルファを使用するかどうかを指定 | Whether to use premultiplied alpha
@@ -60,7 +60,7 @@ namespace s3d
 	using CloseRing = YesNo<struct CloseRing_tag>;
 
 	/// @brief 画像の拡大処理を許可するかどうかを指定 | Whether to allow image upscaling
-	using AllowUpscale = YesNo<struct AllowUpscale_tag>;
+	using AllowUpscaling = YesNo<struct AllowUpscaling_tag>;
 
 	/// @brief ミップマップを生成するかどうかを指定 | Whether to generate mipmaps
 	using GenerateMipmaps = YesNo<struct GenerateMipmaps_tag>;
@@ -69,7 +69,7 @@ namespace s3d
 	using EnableLigatures = YesNo<struct EnableLigatures_tag>;
 
 	/// @brief フォントのフォールバックを使うかどうかを指定 | Whether to use font fallback
-	using EnableFallback = YesNo<struct EnableFallback_tag>;
+	using EnableFontFallback = YesNo<struct EnableFontFallback_tag>;
 
 	/// @brief ヒンティングを使うかどうかを指定 | Whether to use hinting
 	using EnableHinting = YesNo<struct EnableHinting_tag>;
@@ -79,4 +79,7 @@ namespace s3d
 
 	/// @brief 事前に計算を行うかどうかを指定 | Whether to perform precomputation
 	using Precompute = YesNo<struct Precompute_tag>;
+
+	/// @brief 画像への図形描画時にアンチエイリアシングを有効にするかどうかを指定 | Whether to enable antialiasing when drawing shapes on an image
+	using EnableAntialiasing = YesNo<struct EnableAntialiasing_tag>;
 }

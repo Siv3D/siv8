@@ -618,14 +618,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextureRegion TextureRegion::fitted(const double _size, const AllowUpscale allowUpscale) const
+	TextureRegion TextureRegion::fitted(const double _size, const AllowUpscaling allowUpscaling) const
 	{
-		return fitted(_size, _size, allowUpscale);
+		return fitted(_size, _size, allowUpscaling);
 	}
 
-	TextureRegion TextureRegion::fitted(double width, double height, const AllowUpscale allowUpscale) const
+	TextureRegion TextureRegion::fitted(double width, double height, const AllowUpscaling allowUpscaling) const
 	{
-		if (not allowUpscale)
+		if (not allowUpscaling)
 		{
 			width	= Min<double>(width, size.x);
 			height	= Min<double>(height, size.y);
@@ -650,9 +650,9 @@ namespace s3d
 		return{ texture, uvRect, targetWidth, targetHeight };
 	}
 
-	TextureRegion TextureRegion::fitted(const SizeF& _size, const AllowUpscale allowUpscale) const
+	TextureRegion TextureRegion::fitted(const SizeF& _size, const AllowUpscaling allowUpscaling) const
 	{
-		return fitted(_size.x, _size.y, allowUpscale);
+		return fitted(_size.x, _size.y, allowUpscaling);
 	}
 
 	////////////////////////////////////////////////////////////////

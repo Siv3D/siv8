@@ -496,9 +496,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	[[nodiscard]]
-	Array<ResolvedGlyph> Font::getResolvedGlyphs(const StringView s, const ReadingDirection readingDirection, const EnableFallback enableFallback, const EnableLigatures enableLigatures) const
+	Array<ResolvedGlyph> Font::getResolvedGlyphs(const StringView s, const ReadingDirection readingDirection, const EnableFontFallback enableFontFallback, const EnableLigatures enableLigatures) const
 	{
-		return SIV3D_ENGINE(Font)->getResolvedGlyphs(m_handle->id(), s, readingDirection, enableFallback, enableLigatures);
+		return SIV3D_ENGINE(Font)->getResolvedGlyphs(m_handle->id(), s, readingDirection, enableFontFallback, enableLigatures);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -647,7 +647,7 @@ namespace s3d
 
 	bool Font::preload(const StringView chars, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->preload(m_handle->id(), getResolvedGlyphs(chars, readingDirection, EnableFallback::No, enableLigatures), readingDirection);
+		return SIV3D_ENGINE(Font)->preload(m_handle->id(), getResolvedGlyphs(chars, readingDirection, EnableFontFallback::No, enableLigatures), readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -700,7 +700,7 @@ namespace s3d
 
 	Array<Glyph> Font::getGlyphs(const StringView s, const EnableLigatures enableLigatures, const ReadingDirection readingDirection) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphs(m_handle->id(), s, getResolvedGlyphs(s, readingDirection, EnableFallback::Yes, enableLigatures), readingDirection);
+		return SIV3D_ENGINE(Font)->getGlyphs(m_handle->id(), s, getResolvedGlyphs(s, readingDirection, EnableFontFallback::Yes, enableLigatures), readingDirection);
 	}
 
 	////////////////////////////////////////////////////////////////

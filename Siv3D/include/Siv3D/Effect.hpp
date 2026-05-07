@@ -199,19 +199,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	setSortingEnabled, isSortingEnabled
+		//	setOrderSortingEnabled, isOrderSortingEnabled
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief このエフェクトグループでの描画順序のソートを有効化または無効化します。
 		/// @param enabled 描画順序のソートを有効化する場合 true, 無効化する場合は false
 		/// @return *this
-		const Effect& setSortingEnabled(bool enabled) const;
+		const Effect& setOrderSortingEnabled(bool enabled) const;
 
 		/// @brief このエフェクトグループでの描画順序のソートが有効化されているかを返します。
 		/// @return 描画順序のソートが有効化されている場合 true, それ以外の場合は false
 		[[nodiscard]]
-		bool isSortingEnabled() const;
+		bool isOrderSortingEnabled() const;
 
 		////////////////////////////////////////////////////////////////
 		//

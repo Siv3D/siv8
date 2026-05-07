@@ -50,9 +50,9 @@ namespace s3d
 
 		virtual double getMaxLifeTime(Effect::IDType handleID) = 0;
 
-		virtual void setSortingEnabled(Effect::IDType handleID, bool enabled) = 0;
+		virtual void setOrderSortingEnabled(Effect::IDType handleID, bool enabled) = 0;
 
-		virtual bool isSortingEnabled(Effect::IDType handleID) = 0;
+		virtual bool isOrderSortingEnabled(Effect::IDType handleID) = 0;
 
 		virtual void updateEffect(Effect::IDType handleID) = 0;
 

@@ -18,13 +18,6 @@ namespace s3d
 {
     namespace ImageDraw
     {
-        /// @brief 図形のアンチエイリアス設定
-        enum class Antialiasing : uint8
-        {
-            No,
-            Yes,
-        };
-
         /// @brief 描画先 alpha の扱い
         enum class DstAlpha : uint8
         {
@@ -119,7 +112,7 @@ namespace s3d
         /// @param circle 描画する円
         /// @param color 描画色
         /// @param blendMode 合成方式
-        /// @param antialiasing アンチエイリアス設定
+        /// @param enableAntialiasing アンチエイリアス設定
         /// @param dstAlpha 描画先 alpha の扱い
         /// @remark アンチエイリアスありでは距離ベースの coverage を使用します。
         /// @remark 実行時性能を優先した近似です。
@@ -129,7 +122,7 @@ namespace s3d
             const Circle& circle,
             Color color,
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-            Antialiasing antialiasing = Antialiasing::Yes,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             DstAlpha dstAlpha = DstAlpha::Preserve);
 
         //-------------------------------------------------------------------------
@@ -145,7 +138,7 @@ namespace s3d
         /// @param thickness 線の太さ
         /// @param color 描画色
         /// @param blendMode 合成方式
-        /// @param antialiasing アンチエイリアス設定
+        /// @param enableAntialiasing アンチエイリアス設定
         /// @param lineCap 線端の形状
         /// @param dstAlpha 描画先 alpha の扱い
         /// @remark 非 AA では span ベースで描画します。
@@ -159,7 +152,7 @@ namespace s3d
             double thickness,
             Color color,
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-            Antialiasing antialiasing = Antialiasing::Yes,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             LineCap lineCap = LineCap::Round,
             DstAlpha dstAlpha = DstAlpha::Preserve);
 
@@ -203,27 +196,27 @@ namespace s3d
         //    Image& image,
         //    const Circle& circle,
         //    Color color,
-        //    Antialiasing antialiasing = Antialiasing::Yes)
+        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes)
         //{
-        //    Fill(image, circle, color, ImagePixel::BlendMode::Overwrite, antialiasing, DstAlpha::Preserve);
+        //    Fill(image, circle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, DstAlpha::Preserve);
         //}
 
         //inline void SourceOver(
         //    Image& image,
         //    const Circle& circle,
         //    Color color,
-        //    Antialiasing antialiasing = Antialiasing::Yes)
+        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes)
         //{
-        //    Fill(image, circle, color, ImagePixel::BlendMode::SourceOver, antialiasing, DstAlpha::Preserve);
+        //    Fill(image, circle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, DstAlpha::Preserve);
         //}
 
         //inline void SourceOverAssumeOpaqueDst(
         //    Image& image,
         //    const Circle& circle,
         //    Color color,
-        //    Antialiasing antialiasing = Antialiasing::Yes)
+        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes)
         //{
-        //    Fill(image, circle, color, ImagePixel::BlendMode::SourceOver, antialiasing, DstAlpha::AssumeOpaque);
+        //    Fill(image, circle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, DstAlpha::AssumeOpaque);
         //}
 
         //inline void Overwrite(
@@ -232,10 +225,10 @@ namespace s3d
         //    const Vec2& to,
         //    double thickness,
         //    Color color,
-        //    Antialiasing antialiasing = Antialiasing::Yes,
+        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
         //    LineCap lineCap = LineCap::Round)
         //{
-        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::Overwrite, antialiasing, lineCap, DstAlpha::Preserve);
+        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap, DstAlpha::Preserve);
         //}
 
         //inline void SourceOver(
@@ -244,10 +237,10 @@ namespace s3d
         //    const Vec2& to,
         //    double thickness,
         //    Color color,
-        //    Antialiasing antialiasing = Antialiasing::Yes,
+        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
         //    LineCap lineCap = LineCap::Round)
         //{
-        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::SourceOver, antialiasing, lineCap, DstAlpha::Preserve);
+        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap, DstAlpha::Preserve);
         //}
 
         //inline void SourceOverAssumeOpaqueDst(
@@ -256,10 +249,10 @@ namespace s3d
         //    const Vec2& to,
         //    double thickness,
         //    Color color,
-        //    Antialiasing antialiasing = Antialiasing::Yes,
+        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
         //    LineCap lineCap = LineCap::Round)
         //{
-        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::SourceOver, antialiasing, lineCap, DstAlpha::AssumeOpaque);
+        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap, DstAlpha::AssumeOpaque);
         //}
     }
 }

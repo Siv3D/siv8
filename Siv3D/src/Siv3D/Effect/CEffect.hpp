@@ -130,13 +130,13 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	setSortingEnabled, isSortingEnabled
+		//	setOrderSortingEnabled, isOrderSortingEnabled
 		//
 		////////////////////////////////////////////////////////////////
 
-		void setSortingEnabled(Effect::IDType handleID, bool enabled) override;
+		void setOrderSortingEnabled(Effect::IDType handleID, bool enabled) override;
 
-		bool isSortingEnabled(Effect::IDType handleID) override;
+		bool isOrderSortingEnabled(Effect::IDType handleID) override;
 
 		////////////////////////////////////////////////////////////////
 		//

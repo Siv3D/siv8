@@ -185,7 +185,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		virtual Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, ReadingDirection readingDirection, EnableFallback enableFallback, EnableLigatures enableLigatures) = 0;
+		virtual Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, ReadingDirection readingDirection, EnableFontFallback enableFontFallback, EnableLigatures enableLigatures) = 0;
 
 		////////////////////////////////////////////////////////////////
 		//

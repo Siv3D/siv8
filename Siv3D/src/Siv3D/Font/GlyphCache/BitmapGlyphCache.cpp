@@ -389,7 +389,7 @@ namespace s3d
 	TextLayoutResult BitmapGlyphCache::processHorizontalRect(const TextOperation textOperation, FontData& font, const StringView s, const Array<ResolvedGlyph>& resolvedGlyphs, const RectF& area, const double fontSize, const TextStyle& textStyle, const ITextEffect& textEffect, const bool isColorGlyph, const ReadingDirection readingDirection)
 	{
 		// 「...」用のグリフ
-		const ResolvedGlyph periodGlyph = font.getResolvedGlyphs(U".", readingDirection, EnableFallback::No, EnableLigatures::No).fetch(0, ResolvedGlyph{});
+		const ResolvedGlyph periodGlyph = font.getResolvedGlyphs(U".", readingDirection, EnableFontFallback::No, EnableLigatures::No).fetch(0, ResolvedGlyph{});
 		{
 			Array<ResolvedGlyph> resolvedGlyphsWithPeriod(Arg::reserve = resolvedGlyphs.size() + 1);
 			resolvedGlyphsWithPeriod.append(resolvedGlyphs);

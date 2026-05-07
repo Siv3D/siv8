@@ -991,13 +991,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		TextureRegion fitted(double size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
+		TextureRegion fitted(double size, AllowUpscaling allowUpscaling = AllowUpscaling::Yes) const;
 
 		[[nodiscard]]
-		TextureRegion fitted(double width, double height, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
+		TextureRegion fitted(double width, double height, AllowUpscaling allowUpscaling = AllowUpscaling::Yes) const;
 
 		[[nodiscard]]
-		TextureRegion fitted(const SizeF& size, AllowUpscale allowUpscale = AllowUpscale::Yes) const;
+		TextureRegion fitted(const SizeF& size, AllowUpscaling allowUpscaling = AllowUpscaling::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

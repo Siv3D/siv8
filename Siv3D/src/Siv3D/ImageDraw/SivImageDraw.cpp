@@ -1671,7 +1671,7 @@ namespace s3d
             const Circle& circle,
             const Color color,
             const ImagePixel::BlendMode blendMode,
-            const Antialiasing antialiasing,
+            const EnableAntialiasing enableAntialiasing,
             const DstAlpha dstAlpha)
         {
             const ImageView view = MakeImageView(image);
@@ -1681,7 +1681,7 @@ namespace s3d
                 return;
             }
 
-            if (antialiasing == Antialiasing::Yes)
+            if (enableAntialiasing == EnableAntialiasing::Yes)
             {
                 FillCircleAA(view, circle, blendMode, dstAlpha, color);
             }
@@ -1698,7 +1698,7 @@ namespace s3d
             const double thickness,
             const Color color,
             const ImagePixel::BlendMode blendMode,
-            const Antialiasing antialiasing,
+            const EnableAntialiasing enableAntialiasing,
             const LineCap lineCap,
             const DstAlpha dstAlpha)
         {
@@ -1709,7 +1709,7 @@ namespace s3d
                 return;
             }
 
-            if (antialiasing == Antialiasing::No)
+            if (enableAntialiasing == EnableAntialiasing::No)
             {
                 DrawLineNoAA(view, from, to, thickness, color, blendMode, lineCap, dstAlpha);
             }

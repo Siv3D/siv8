@@ -927,16 +927,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	TextureRegion Texture::fitted(const double size, const AllowUpscale allowUpscale) const
+	TextureRegion Texture::fitted(const double size, const AllowUpscaling allowUpscaling) const
 	{
-		return fitted(size, size, allowUpscale);
+		return fitted(size, size, allowUpscaling);
 	}
 
-	TextureRegion Texture::fitted(double width, double height, const AllowUpscale allowUpscale) const
+	TextureRegion Texture::fitted(double width, double height, const AllowUpscaling allowUpscaling) const
 	{
 		const Size baseSize = SIV3D_ENGINE(Texture)->getSize(m_handle->id());
 
-		if (not allowUpscale)
+		if (not allowUpscaling)
 		{
 			width	= Min<double>(width, baseSize.x);
 			height	= Min<double>(height, baseSize.y);
@@ -961,9 +961,9 @@ namespace s3d
 		return{ *this, targetWidth, targetHeight };
 	}
 
-	TextureRegion Texture::fitted(const SizeF& size, const AllowUpscale allowUpscale) const
+	TextureRegion Texture::fitted(const SizeF& size, const AllowUpscaling allowUpscaling) const
 	{
-		return fitted(size.x, size.y, allowUpscale);
+		return fitted(size.x, size.y, allowUpscaling);
 	}
 
 	////////////////////////////////////////////////////////////////

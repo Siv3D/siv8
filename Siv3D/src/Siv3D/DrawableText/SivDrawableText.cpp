@@ -30,7 +30,7 @@ namespace s3d
 	DrawableText::DrawableText(const Font& _font, String&& _text, const ReadingDirection _readingDirection, const EnableLigatures enableLigatures)
 		: font{ _font }
 		, text{ std::move(_text) }
-		, resolvedGlyphs{ font.getResolvedGlyphs(text, _readingDirection, EnableFallback::Yes, enableLigatures) }
+		, resolvedGlyphs{ font.getResolvedGlyphs(text, _readingDirection, EnableFontFallback::Yes, enableLigatures) }
 		, readingDirection{ _readingDirection } {}
 
 	////////////////////////////////////////////////////////////////
