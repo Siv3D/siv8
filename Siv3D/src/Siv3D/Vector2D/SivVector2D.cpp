@@ -74,6 +74,46 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <>
+	const Vector2D<float>& Vector2D<float>::paint(Image& dst, const Color& color) const
+	{
+		RectF{ movedBy(-0.5f, -0.5f), 1, 1 }.paint(dst, color);
+		return *this;
+	}
+
+	template <>
+	const Vector2D<double>& Vector2D<double>::paint(Image& dst, const Color& color) const
+	{
+		RectF{ movedBy(-0.5, -0.5), 1, 1 }.paint(dst, color);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <>
+	const Vector2D<float>& Vector2D<float>::overwrite(Image& dst, const Color& color) const
+	{
+		RectF{ movedBy(-0.5f, -0.5f), 1, 1 }.overwrite(dst, color);
+		return *this;
+	}
+
+	template <>
+	const Vector2D<double>& Vector2D<double>::overwrite(Image& dst, const Color& color) const
+	{
+		RectF{ movedBy(-0.5, -0.5), 1, 1 }.overwrite(dst, color);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	_Formatter
 	//
 	////////////////////////////////////////////////////////////////

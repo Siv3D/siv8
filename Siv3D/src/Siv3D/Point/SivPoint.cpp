@@ -92,7 +92,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Point& Point::paint(Image& dst, const Color& color) const
+	const Point& Point::paint(Image& dst, const Color& color) const noexcept
 	{
 		if (not dst.indexInBounds(*this))
 		{

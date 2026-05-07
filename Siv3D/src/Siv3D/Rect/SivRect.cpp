@@ -18,6 +18,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -304,6 +305,30 @@ namespace s3d
 	bool Rect::mouseOver() const noexcept
 	{
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::paint(Image& dst, const Color& color) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::overwrite(Image& dst, const Color& color) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
