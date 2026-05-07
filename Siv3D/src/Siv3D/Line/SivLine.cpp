@@ -14,6 +14,7 @@
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Shape2D.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -274,6 +275,50 @@ namespace s3d
 		}
 
 		return none;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Line& Line::paint(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Line& Line::paint(Image& dst, const  LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwrite(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -125,6 +125,71 @@ namespace s3d
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             DstAlpha dstAlpha = DstAlpha::Preserve);
 
+        /// @brief 円の枠を描画します。
+        /// @param image 描画先画像
+        /// @param circle 基準となる円
+        /// @param innerThickness circle の内側に描画する太さ
+        /// @param outerThickness circle の外側に描画する太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 描画領域は circle を外側に outerThickness 拡張した円から、circle を内側に innerThickness 縮小した円を除いた領域です。
+        /// @remark アンチエイリアスありでは距離ベースの coverage を使用します。
+        /// @remark coverage は outer coverage から inner coverage を引いた値として 1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark innerThickness または outerThickness が負の場合、この関数は何もしません。
+        void CircleFrame(
+            Image& image,
+            const Circle& circle,
+            double innerThickness,
+            double outerThickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 楕円を描画します。
+        /// @param image 描画先画像
+        /// @param ellipse 描画する楕円
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark アンチエイリアスありでは楕円境界までの距離に基づく coverage を使用します。
+        /// @remark 画像の範囲外はクリップされます。
+        void Fill(
+            Image& image,
+            const Ellipse& ellipse,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
+        /// @brief 楕円の枠を描画します。
+        /// @param image 描画先画像
+        /// @param ellipse 基準となる楕円
+        /// @param innerThickness ellipse の内側に描画する太さ
+        /// @param outerThickness ellipse の外側に描画する太さ
+        /// @param color 描画色
+        /// @param blendMode 合成方式
+        /// @param enableAntialiasing アンチエイリアス設定
+        /// @param dstAlpha 描画先 alpha の扱い
+        /// @remark 描画領域は楕円境界からの符号付き距離が -innerThickness 以上 outerThickness 以下の領域です。
+        /// @remark アンチエイリアスありでは楕円境界までの距離に基づく coverage を使用します。
+        /// @remark coverage は外側 offset coverage から内側 offset coverage を引いた値として 1 回だけ合成します。
+        /// @remark 画像の範囲外はクリップされます。
+        /// @remark innerThickness または outerThickness が負の場合、この関数は何もしません。
+        void EllipseFrame(
+            Image& image,
+            const Ellipse& ellipse,
+            double innerThickness,
+            double outerThickness,
+            Color color,
+            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+            DstAlpha dstAlpha = DstAlpha::Preserve);
+
         //-------------------------------------------------------------------------
         //
         //  Lines
@@ -155,104 +220,5 @@ namespace s3d
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
             LineCap lineCap = LineCap::Round,
             DstAlpha dstAlpha = DstAlpha::Preserve);
-
-        ////-------------------------------------------------------------------------
-        ////
-        ////  Convenience wrappers
-        ////
-        ////-------------------------------------------------------------------------
-
-        //inline void Overwrite(Image& image, const Rect& rect, Color color)
-        //{
-        //    Fill(image, rect, color, ImagePixel::BlendMode::Overwrite, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOver(Image& image, const Rect& rect, Color color)
-        //{
-        //    Fill(image, rect, color, ImagePixel::BlendMode::SourceOver, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOverAssumeOpaqueDst(Image& image, const Rect& rect, Color color)
-        //{
-        //    Fill(image, rect, color, ImagePixel::BlendMode::SourceOver, DstAlpha::AssumeOpaque);
-        //}
-
-        //inline void Overwrite(Image& image, const RectF& rect, Color color)
-        //{
-        //    Fill(image, rect, color, ImagePixel::BlendMode::Overwrite, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOver(Image& image, const RectF& rect, Color color)
-        //{
-        //    Fill(image, rect, color, ImagePixel::BlendMode::SourceOver, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOverAssumeOpaqueDst(Image& image, const RectF& rect, Color color)
-        //{
-        //    Fill(image, rect, color, ImagePixel::BlendMode::SourceOver, DstAlpha::AssumeOpaque);
-        //}
-
-        //inline void Overwrite(
-        //    Image& image,
-        //    const Circle& circle,
-        //    Color color,
-        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes)
-        //{
-        //    Fill(image, circle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOver(
-        //    Image& image,
-        //    const Circle& circle,
-        //    Color color,
-        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes)
-        //{
-        //    Fill(image, circle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOverAssumeOpaqueDst(
-        //    Image& image,
-        //    const Circle& circle,
-        //    Color color,
-        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes)
-        //{
-        //    Fill(image, circle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, DstAlpha::AssumeOpaque);
-        //}
-
-        //inline void Overwrite(
-        //    Image& image,
-        //    const Vec2& from,
-        //    const Vec2& to,
-        //    double thickness,
-        //    Color color,
-        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-        //    LineCap lineCap = LineCap::Round)
-        //{
-        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOver(
-        //    Image& image,
-        //    const Vec2& from,
-        //    const Vec2& to,
-        //    double thickness,
-        //    Color color,
-        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-        //    LineCap lineCap = LineCap::Round)
-        //{
-        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap, DstAlpha::Preserve);
-        //}
-
-        //inline void SourceOverAssumeOpaqueDst(
-        //    Image& image,
-        //    const Vec2& from,
-        //    const Vec2& to,
-        //    double thickness,
-        //    Color color,
-        //    EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-        //    LineCap lineCap = LineCap::Round)
-        //{
-        //    Line(image, from, to, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap, DstAlpha::AssumeOpaque);
-        //}
     }
 }

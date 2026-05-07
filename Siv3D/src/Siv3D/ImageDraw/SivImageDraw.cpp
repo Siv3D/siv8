@@ -771,7 +771,13 @@ namespace s3d
         }
 
         [[nodiscard]]
-        uint8 CircleCoverageAt(
+        uint8 CoverageFromSignedDistance(double signedDistance) noexcept
+        {
+            return ToCoverage(0.5 - signedDistance);
+        }
+
+        [[nodiscard]]
+        double CircleSignedDistance(
             double pixelCenterX,
             double pixelCenterY,
             double centerX,
@@ -780,9 +786,179 @@ namespace s3d
         {
             const double dx = pixelCenterX - centerX;
             const double dy = pixelCenterY - centerY;
+
+            return (std::sqrt(dx * dx + dy * dy) - radius);
+        }
+
+        bool GetCircleSpanAtY(
+            const Vec2& center,
+            double radius,
+            int32 y,
+            int32& outX0,
+            int32& outX1) noexcept
+        {
+            if (!(0.0 < radius))
+            {
+                return false;
+            }
+
+            const double py = static_cast<double>(y) + 0.5;
+            const double dy = py - center.y;
+            const double dy2 = dy * dy;
+            const double r2 = radius * radius;
+
+            if (r2 <= dy2)
+            {
+                return false;
+            }
+
+            const double dx = std::sqrt(r2 - dy2);
+
+            outX0 = CeilToInt(center.x - dx - 0.5);
+            outX1 = FloorToInt(center.x + dx - 0.5) + 1;
+
+            return (outX0 < outX1);
+        }
+
+        [[nodiscard]]
+        uint8 CircleCoverageAt(
+            double pixelCenterX,
+            double pixelCenterY,
+            double centerX,
+            double centerY,
+            double radius) noexcept
+        {
+            return CoverageFromSignedDistance(
+                CircleSignedDistance(pixelCenterX, pixelCenterY, centerX, centerY, radius)
+            );
+        }
+
+        [[nodiscard]]
+        double EllipseSignedDistance(
+            double pixelCenterX,
+            double pixelCenterY,
+            double centerX,
+            double centerY,
+            double radiusX,
+            double radiusY) noexcept
+        {
+            if (!(0.0 < radiusX) || !(0.0 < radiusY))
+            {
+                return 1.0;
+            }
+
+            const double x = std::abs(pixelCenterX - centerX);
+            const double y = std::abs(pixelCenterY - centerY);
+
+            if ((x == 0.0) && (y == 0.0))
+            {
+                return -Min(radiusX, radiusY);
+            }
+
+            constexpr double HalfPi = 1.57079632679489661923;
+
+            double t = std::atan2(y * radiusX, x * radiusY);
+            t = Min(HalfPi, Max(0.0, t));
+
+            for (int32 i = 0; i < 8; ++i)
+            {
+                const double cosT = std::cos(t);
+                const double sinT = std::sin(t);
+
+                const double ex = radiusX * cosT;
+                const double ey = radiusY * sinT;
+
+                const double qx = ex - x;
+                const double qy = ey - y;
+
+                const double dex = -radiusX * sinT;
+                const double dey = radiusY * cosT;
+                const double ddex = -radiusX * cosT;
+                const double ddey = -radiusY * sinT;
+
+                const double f = qx * dex + qy * dey;
+                const double df = dex * dex + qx * ddex + dey * dey + qy * ddey;
+
+                if (std::abs(df) <= 1.0e-12)
+                {
+                    break;
+                }
+
+                const double nextT = t - (f / df);
+                const double clampedT = Min(HalfPi, Max(0.0, nextT));
+
+                if (std::abs(clampedT - t) <= 1.0e-12)
+                {
+                    t = clampedT;
+                    break;
+                }
+
+                t = clampedT;
+            }
+
+            const double closestX = radiusX * std::cos(t);
+            const double closestY = radiusY * std::sin(t);
+
+            const double dx = x - closestX;
+            const double dy = y - closestY;
             const double distance = std::sqrt(dx * dx + dy * dy);
 
-            return ToCoverage(radius + 0.5 - distance);
+            const double nx = x / radiusX;
+            const double ny = y / radiusY;
+            const double implicit = nx * nx + ny * ny - 1.0;
+
+            return (implicit <= 0.0) ? -distance : distance;
+        }
+
+        [[nodiscard]]
+        uint8 EllipseCoverageAt(
+            double pixelCenterX,
+            double pixelCenterY,
+            double centerX,
+            double centerY,
+            double radiusX,
+            double radiusY) noexcept
+        {
+            return CoverageFromSignedDistance(
+                EllipseSignedDistance(pixelCenterX, pixelCenterY, centerX, centerY, radiusX, radiusY)
+            );
+        }
+
+        void WriteCoverageRow(
+            const ImagePixel::detail::SolidColorWriter& writer,
+            Color* dstRow,
+            int32 x0,
+            std::vector<uint8>& coverage)
+        {
+            bool anyCoverage = false;
+            bool allFull = true;
+
+            for (const uint8 c : coverage)
+            {
+                anyCoverage |= (c != 0);
+                allFull &= (c == 255);
+            }
+
+            if (!anyCoverage)
+            {
+                return;
+            }
+
+            if (allFull)
+            {
+                writer.write(
+                    dstRow + static_cast<size_t>(x0),
+                    coverage.size()
+                );
+            }
+            else
+            {
+                writer.writeWithCoverage(
+                    dstRow + static_cast<size_t>(x0),
+                    coverage.data(),
+                    coverage.size()
+                );
+            }
         }
 
         void WriteCircleCoverageSpan(
@@ -913,6 +1089,496 @@ namespace s3d
                 else
                 {
                     WriteCircleCoverageSpan(writer, dstRow, xOuter0, xOuter1, y, cx, cy, r, coverageBuffer);
+                }
+            }
+        }
+
+        void FillCircleFrameNoAA(
+            ImageView view,
+            const Circle& circle,
+            double innerThickness,
+            double outerThickness,
+            ImagePixel::BlendMode blendMode,
+            ImageDraw::DstAlpha dstAlpha,
+            Color color)
+        {
+            if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness))
+            {
+                return;
+            }
+
+            if (!(0.0 < circle.r))
+            {
+                return;
+            }
+
+            if ((innerThickness == 0.0) && (outerThickness == 0.0))
+            {
+                return;
+            }
+
+            const double outerR = circle.r + outerThickness;
+
+            if (!(0.0 < outerR))
+            {
+                return;
+            }
+
+            const double innerR = circle.r - innerThickness;
+
+            if (!(0.0 < innerR))
+            {
+                FillCircleNoAAFast(view, Circle{ circle.x, circle.y, outerR }, blendMode, dstAlpha, color);
+                return;
+            }
+
+            int32 y0 = FloorToInt(circle.y - outerR - 0.5);
+            int32 y1 = CeilToInt(circle.y + outerR - 0.5) + 1;
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            const Vec2 center{ circle.x, circle.y };
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                int32 outerX0 = 0;
+                int32 outerX1 = 0;
+
+                if (!GetCircleSpanAtY(center, outerR, y, outerX0, outerX1))
+                {
+                    continue;
+                }
+
+                outerX0 = ClampInt(outerX0, 0, view.width);
+                outerX1 = ClampInt(outerX1, 0, view.width);
+
+                if (outerX0 >= outerX1)
+                {
+                    continue;
+                }
+
+                int32 innerX0 = 0;
+                int32 innerX1 = 0;
+
+                Color* row = view.data + static_cast<size_t>(y) * view.stride;
+
+                if (!GetCircleSpanAtY(center, innerR, y, innerX0, innerX1))
+                {
+                    writer.write(
+                        row + static_cast<size_t>(outerX0),
+                        static_cast<size_t>(outerX1 - outerX0)
+                    );
+
+                    continue;
+                }
+
+                innerX0 = ClampInt(innerX0, outerX0, outerX1);
+                innerX1 = ClampInt(innerX1, outerX0, outerX1);
+
+                if (outerX0 < innerX0)
+                {
+                    writer.write(
+                        row + static_cast<size_t>(outerX0),
+                        static_cast<size_t>(innerX0 - outerX0)
+                    );
+                }
+
+                if (innerX1 < outerX1)
+                {
+                    writer.write(
+                        row + static_cast<size_t>(innerX1),
+                        static_cast<size_t>(outerX1 - innerX1)
+                    );
+                }
+            }
+        }
+
+        void FillCircleFrameAA(
+            ImageView view,
+            const Circle& circle,
+            double innerThickness,
+            double outerThickness,
+            ImagePixel::BlendMode blendMode,
+            ImageDraw::DstAlpha dstAlpha,
+            Color color)
+        {
+            if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness))
+            {
+                return;
+            }
+
+            if (!(0.0 < circle.r))
+            {
+                return;
+            }
+
+            if ((innerThickness == 0.0) && (outerThickness == 0.0))
+            {
+                return;
+            }
+
+            const double outerR = circle.r + outerThickness;
+
+            if (!(0.0 < outerR))
+            {
+                return;
+            }
+
+            const double innerR = circle.r - innerThickness;
+
+            if (!(0.0 < innerR))
+            {
+                FillCircleAA(view, Circle{ circle.x, circle.y, outerR }, blendMode, dstAlpha, color);
+                return;
+            }
+
+            const double supportR = outerR + 0.5;
+
+            int32 y0 = FloorToInt(circle.y - supportR - 0.5);
+            int32 y1 = CeilToInt(circle.y + supportR - 0.5) + 1;
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            std::vector<uint8> coverage;
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                int32 x0 = 0;
+                int32 x1 = 0;
+
+                if (!GetCircleSpanAtY(Vec2{ circle.x, circle.y }, supportR, y, x0, x1))
+                {
+                    continue;
+                }
+
+                x0 = ClampInt(x0, 0, view.width);
+                x1 = ClampInt(x1, 0, view.width);
+
+                if (x0 >= x1)
+                {
+                    continue;
+                }
+
+                const size_t count = static_cast<size_t>(x1 - x0);
+                coverage.assign(count, 0);
+
+                const double py = static_cast<double>(y) + 0.5;
+
+                for (size_t i = 0; i < count; ++i)
+                {
+                    const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
+
+                    const uint8 outerCoverage = CoverageFromSignedDistance(
+                        CircleSignedDistance(px, py, circle.x, circle.y, outerR)
+                    );
+
+                    const uint8 innerCoverage = CoverageFromSignedDistance(
+                        CircleSignedDistance(px, py, circle.x, circle.y, innerR)
+                    );
+
+                    coverage[i] = static_cast<uint8>(
+                        (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
+                        );
+                }
+
+                Color* row = view.data + static_cast<size_t>(y) * view.stride;
+
+                WriteCoverageRow(writer, row, x0, coverage);
+            }
+        }
+
+        [[nodiscard]]
+        bool GetEllipseSpanAtY(
+            double centerX,
+            double centerY,
+            double radiusX,
+            double radiusY,
+            int32 y,
+            int32& outX0,
+            int32& outX1) noexcept
+        {
+            if (!(0.0 < radiusX) || !(0.0 < radiusY))
+            {
+                return false;
+            }
+
+            const double py = static_cast<double>(y) + 0.5;
+            const double ny = (py - centerY) / radiusY;
+            const double yy = ny * ny;
+
+            if (1.0 <= yy)
+            {
+                return false;
+            }
+
+            const double dx = radiusX * std::sqrt(1.0 - yy);
+
+            outX0 = CeilToInt(centerX - dx - 0.5);
+            outX1 = FloorToInt(centerX + dx - 0.5) + 1;
+
+            return (outX0 < outX1);
+        }
+
+        void FillEllipseNoAA(
+            ImageView view,
+            const Ellipse& ellipse,
+            ImagePixel::BlendMode blendMode,
+            ImageDraw::DstAlpha dstAlpha,
+            Color color)
+        {
+            if (!(0.0 < ellipse.a) || !(0.0 < ellipse.b))
+            {
+                return;
+            }
+
+            int32 y0 = FloorToInt(ellipse.y - ellipse.b - 0.5);
+            int32 y1 = CeilToInt(ellipse.y + ellipse.b - 0.5) + 1;
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                int32 x0 = 0;
+                int32 x1 = 0;
+
+                if (!GetEllipseSpanAtY(ellipse.x, ellipse.y, ellipse.a, ellipse.b, y, x0, x1))
+                {
+                    continue;
+                }
+
+                x0 = ClampInt(x0, 0, view.width);
+                x1 = ClampInt(x1, 0, view.width);
+
+                if (x0 >= x1)
+                {
+                    continue;
+                }
+
+                writer.write(
+                    view.data
+                    + static_cast<size_t>(y) * view.stride
+                    + static_cast<size_t>(x0),
+                    static_cast<size_t>(x1 - x0)
+                );
+            }
+        }
+
+        void FillEllipseAA(
+            ImageView view,
+            const Ellipse& ellipse,
+            ImagePixel::BlendMode blendMode,
+            ImageDraw::DstAlpha dstAlpha,
+            Color color)
+        {
+            if (!(0.0 < ellipse.a) || !(0.0 < ellipse.b))
+            {
+                return;
+            }
+
+            int32 y0 = FloorToInt(ellipse.y - ellipse.b - 1.0);
+            int32 y1 = CeilToInt(ellipse.y + ellipse.b + 1.0);
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            std::vector<uint8> coverage;
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                int32 x0 = FloorToInt(ellipse.x - ellipse.a - 1.0);
+                int32 x1 = CeilToInt(ellipse.x + ellipse.a + 1.0);
+
+                x0 = ClampInt(x0, 0, view.width);
+                x1 = ClampInt(x1, 0, view.width);
+
+                if (x0 >= x1)
+                {
+                    continue;
+                }
+
+                const size_t count = static_cast<size_t>(x1 - x0);
+                coverage.assign(count, 0);
+
+                const double py = static_cast<double>(y) + 0.5;
+
+                for (size_t i = 0; i < count; ++i)
+                {
+                    const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
+
+                    coverage[i] = EllipseCoverageAt(
+                        px,
+                        py,
+                        ellipse.x,
+                        ellipse.y,
+                        ellipse.a,
+                        ellipse.b
+                    );
+                }
+
+                Color* row = view.data + static_cast<size_t>(y) * view.stride;
+
+                WriteCoverageRow(writer, row, x0, coverage);
+            }
+        }
+
+        void FillEllipseFrameByDistance(
+            ImageView view,
+            const Ellipse& ellipse,
+            double innerThickness,
+            double outerThickness,
+            ImagePixel::BlendMode blendMode,
+            ImageDraw::DstAlpha dstAlpha,
+            Color color,
+            bool antialiased)
+        {
+            if (!(0.0 <= innerThickness) || !(0.0 <= outerThickness))
+            {
+                return;
+            }
+
+            if (!(0.0 < ellipse.a) || !(0.0 < ellipse.b))
+            {
+                return;
+            }
+
+            if ((innerThickness == 0.0) && (outerThickness == 0.0))
+            {
+                return;
+            }
+
+            const bool hasInner = (innerThickness < Min(ellipse.a, ellipse.b));
+
+            const double support = outerThickness + (antialiased ? 0.5 : 0.0);
+
+            int32 y0 = FloorToInt(ellipse.y - ellipse.b - support - 0.5);
+            int32 y1 = CeilToInt(ellipse.y + ellipse.b + support - 0.5) + 1;
+
+            y0 = ClampInt(y0, 0, view.height);
+            y1 = ClampInt(y1, 0, view.height);
+
+            if (y0 >= y1)
+            {
+                return;
+            }
+
+            int32 x0 = FloorToInt(ellipse.x - ellipse.a - support - 0.5);
+            int32 x1 = CeilToInt(ellipse.x + ellipse.a + support - 0.5) + 1;
+
+            x0 = ClampInt(x0, 0, view.width);
+            x1 = ClampInt(x1, 0, view.width);
+
+            if (x0 >= x1)
+            {
+                return;
+            }
+
+            const size_t count = static_cast<size_t>(x1 - x0);
+
+            ImagePixel::detail::SolidColorWriter writer{
+                blendMode,
+                color,
+                ToDstAlphaMode(dstAlpha)
+            };
+
+            std::vector<uint8> coverage(count);
+
+            for (int32 y = y0; y < y1; ++y)
+            {
+                const double py = static_cast<double>(y) + 0.5;
+
+                bool anyCoverage = false;
+                bool allFull = true;
+
+                for (size_t i = 0; i < count; ++i)
+                {
+                    const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
+                    const double sd = EllipseSignedDistance(px, py, ellipse.x, ellipse.y, ellipse.a, ellipse.b);
+
+                    uint8 c = 0;
+
+                    if (antialiased)
+                    {
+                        const uint8 outerCoverage = CoverageFromSignedDistance(sd - outerThickness);
+                        const uint8 innerCoverage = hasInner
+                            ? CoverageFromSignedDistance(sd + innerThickness)
+                            : 0;
+
+                        c = static_cast<uint8>(
+                            (innerCoverage < outerCoverage) ? (outerCoverage - innerCoverage) : 0
+                            );
+                    }
+                    else
+                    {
+                        c = ((sd <= outerThickness) && (!hasInner || (-innerThickness <= sd))) ? 255 : 0;
+                    }
+
+                    coverage[i] = c;
+
+                    anyCoverage |= (c != 0);
+                    allFull &= (c == 255);
+                }
+
+                if (!anyCoverage)
+                {
+                    continue;
+                }
+
+                Color* row = view.data + static_cast<size_t>(y) * view.stride;
+
+                if (allFull)
+                {
+                    writer.write(row + static_cast<size_t>(x0), count);
+                }
+                else
+                {
+                    writer.writeWithCoverage(row + static_cast<size_t>(x0), coverage.data(), count);
                 }
             }
         }
@@ -1102,36 +1768,6 @@ namespace s3d
             return outsideDistance + insideDistance;
         }
 
-        bool GetCircleSpanAtY(
-            const Vec2& center,
-            double radius,
-            int32 y,
-            int32& outX0,
-            int32& outX1) noexcept
-        {
-            if (!(0.0 < radius))
-            {
-                return false;
-            }
-
-            const double py = static_cast<double>(y) + 0.5;
-            const double dy = py - center.y;
-            const double dy2 = dy * dy;
-            const double r2 = radius * radius;
-
-            if (r2 <= dy2)
-            {
-                return false;
-            }
-
-            const double dx = std::sqrt(r2 - dy2);
-
-            outX0 = CeilToInt(center.x - dx - 0.5);
-            outX1 = FloorToInt(center.x + dx - 0.5) + 1;
-
-            return (outX0 < outX1);
-        }
-
         void MaxCoverage(uint8& dst, uint8 src) noexcept
         {
             if (dst < src)
@@ -1175,12 +1811,7 @@ namespace s3d
             for (size_t i = 0; i < coverage.size(); ++i)
             {
                 const double px = static_cast<double>(x0) + static_cast<double>(i) + 0.5;
-
-                const double dx = px - center.x;
-                const double dy = py - center.y;
-                const double distance = std::sqrt(dx * dx + dy * dy);
-
-                const uint8 c = ToCoverage(radius + 0.5 - distance);
+                const uint8 c = CircleCoverageAt(px, py, center.x, center.y, radius);
 
                 MaxCoverage(coverage[i], c);
             }
@@ -1689,6 +2320,87 @@ namespace s3d
             {
                 FillCircleNoAAFast(view, circle, blendMode, dstAlpha, color);
             }
+        }
+
+        void CircleFrame(
+            Image& image,
+            const Circle& circle,
+            const double innerThickness,
+            const double outerThickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
+            {
+                return;
+            }
+
+            if (enableAntialiasing == EnableAntialiasing::Yes)
+            {
+                FillCircleFrameAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
+            }
+            else
+            {
+                FillCircleFrameNoAA(view, circle, innerThickness, outerThickness, blendMode, dstAlpha, color);
+            }
+        }
+
+        void Fill(
+            Image& image,
+            const Ellipse& ellipse,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
+            {
+                return;
+            }
+
+            if (enableAntialiasing == EnableAntialiasing::Yes)
+            {
+                FillEllipseAA(view, ellipse, blendMode, dstAlpha, color);
+            }
+            else
+            {
+                FillEllipseNoAA(view, ellipse, blendMode, dstAlpha, color);
+            }
+        }
+
+        void EllipseFrame(
+            Image& image,
+            const Ellipse& ellipse,
+            const double innerThickness,
+            const double outerThickness,
+            const Color color,
+            const ImagePixel::BlendMode blendMode,
+            const EnableAntialiasing enableAntialiasing,
+            const DstAlpha dstAlpha)
+        {
+            const ImageView view = MakeImageView(image);
+
+            if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0))
+            {
+                return;
+            }
+
+            FillEllipseFrameByDistance(
+                view,
+                ellipse,
+                innerThickness,
+                outerThickness,
+                blendMode,
+                dstAlpha,
+                color,
+                (enableAntialiasing == EnableAntialiasing::Yes)
+            );
         }
 
         void Line(
