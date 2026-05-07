@@ -1264,6 +1264,9 @@
 // 追加の画像処理 | Extra image processing
 # include <Siv3D/ImageProcessing.hpp>
 
+# include <Siv3D/ImagePixel.hpp>
+# include <Siv3D/ImageDraw.hpp>
+
 //// カスケード分類器 | Cascade classifier
 //# include <Siv3D/CascadeClassifier.hpp>
 //
