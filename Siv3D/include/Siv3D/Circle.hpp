@@ -844,6 +844,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const Circle& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		const Circle& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -851,6 +853,8 @@ namespace s3d
 		//	overwriteFrame
 		//
 		////////////////////////////////////////////////////////////////
+
+		const Circle& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		const Circle& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 

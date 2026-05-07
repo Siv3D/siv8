@@ -20,6 +20,7 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -285,6 +286,64 @@ namespace s3d
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+	
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
+	const RoundRect& RoundRect::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::RoundRectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RoundRect& RoundRect::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
+	const RoundRect& RoundRect::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::RoundRectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+	
 	////////////////////////////////////////////////////////////////
 	//
 	//	draw

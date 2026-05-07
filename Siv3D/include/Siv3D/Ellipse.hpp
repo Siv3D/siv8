@@ -795,6 +795,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const Ellipse& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		const Ellipse& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -802,6 +804,8 @@ namespace s3d
 		//	overwriteFrame
 		//
 		////////////////////////////////////////////////////////////////
+
+		const Ellipse& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		const Ellipse& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 

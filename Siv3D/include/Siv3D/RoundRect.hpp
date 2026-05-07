@@ -1067,11 +1067,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const RoundRect& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	overwrite
 		//
 		////////////////////////////////////////////////////////////////
+
+		const RoundRect& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1079,12 +1083,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const RoundRect& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const RoundRect& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	overwriteFrame
 		//
 		////////////////////////////////////////////////////////////////
 
+		const RoundRect& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const RoundRect& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -238,6 +238,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	const Ellipse& Ellipse::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
 	const Ellipse& Ellipse::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::EllipseFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
@@ -249,6 +254,11 @@ namespace s3d
 	//	overwriteFrame
 	//
 	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
 
 	const Ellipse& Ellipse::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{

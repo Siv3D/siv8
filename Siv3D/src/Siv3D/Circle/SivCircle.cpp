@@ -259,6 +259,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	const Circle& Circle::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
 	const Circle& Circle::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
 		ImageDraw::CircleFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
@@ -270,6 +275,11 @@ namespace s3d
 	//	overwriteFrame
 	//
 	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
 
 	const Circle& Circle::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
