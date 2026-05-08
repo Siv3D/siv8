@@ -402,6 +402,32 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Quad& Quad::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		const Vec2 points[4] = { p0, p1, p2, p3 };
+		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Quad& Quad::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		const Vec2 points[4] = { p0, p1, p2, p3 };
+		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

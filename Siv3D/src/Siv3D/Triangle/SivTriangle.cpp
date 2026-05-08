@@ -503,6 +503,32 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Triangle& Triangle::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		const Vec2 points[3] = { p0, p1, p2 };
+		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Triangle& Triangle::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		const Vec2 points[3] = { p0, p1, p2 };
+		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////

@@ -778,8 +778,7 @@ namespace s3d
 
 	const Shape2D& Shape2D::paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasings) const
 	{
-		const Array<Vec2> points = m_vertices.asArray<Vec2>();
-		ImageDraw::FillPolygon(dst, points.data(), points.size(), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
 		return *this;
 	}
 
@@ -791,8 +790,7 @@ namespace s3d
 
 	const Shape2D& Shape2D::overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing) const
 	{
-		const Array<Vec2> points = m_vertices.asArray<Vec2>();
-		ImageDraw::FillPolygon(dst, points.data(), points.size(), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
 		return *this;
 	}
 
@@ -805,14 +803,12 @@ namespace s3d
 	const Shape2D& Shape2D::draw(const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, color.toFloat4());
-
 		return *this;
 	}
 
 	const Shape2D& Shape2D::draw(const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, pattern);
-
 		return *this;
 	}
 

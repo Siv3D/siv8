@@ -811,7 +811,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Quad& paintFrame(Image& dst, int32 thickness, const Color& color) const;
+		const Quad& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -819,7 +819,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Quad& overwriteFrame(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Quad& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

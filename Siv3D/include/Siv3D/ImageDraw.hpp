@@ -324,7 +324,6 @@ namespace s3d
         /// @brief 点列で表される polygon を描画します。
         /// @param image 描画先画像
         /// @param points polygon の頂点配列
-        /// @param count polygon の頂点数
         /// @param color 描画色
         /// @param blendMode 合成方式
         /// @param enableAntialiasing アンチエイリアス設定
@@ -337,8 +336,7 @@ namespace s3d
         /// @remark points が nullptr または count が 3 未満の場合、この関数は何もしません。
         void FillPolygon(
             Image& image,
-            const Vec2* points,
-            size_t count,
+            std::span<const Vec2> points,
             Color color,
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
             EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
@@ -420,7 +418,6 @@ namespace s3d
         /// @brief 点列を太さのある連続線として描画します。
         /// @param image 描画先画像
         /// @param points 頂点配列
-        /// @param count 頂点数
         /// @param thickness 線の太さ
         /// @param color 描画色
         /// @param blendMode 合成方式
@@ -435,32 +432,7 @@ namespace s3d
         /// @remark points が nullptr、count が 2 未満、または thickness が正でない場合、この関数は何もしません。
         void LineString(
             Image& image,
-            const Vec2* points,
-            size_t count,
-            double thickness,
-            Color color,
-            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-            LineCap lineCap = LineCap::Round,
-            DstAlpha dstAlpha = DstAlpha::Preserve);
-
-        /// @brief LineString を太さのある連続線として描画します。
-        /// @param image 描画先画像
-        /// @param lineString 描画する LineString
-        /// @param thickness 線の太さ
-        /// @param color 描画色
-        /// @param blendMode 合成方式
-        /// @param enableAntialiasing アンチエイリアス設定
-        /// @param lineCap 線端の形状
-        /// @param dstAlpha 描画先 alpha の扱い
-        /// @remark lineCap は線列全体の始端と終端にのみ適用されます。
-        /// @remark 線分同士の接続部は round join として扱います。
-        /// @remark 各線分、join, cap の coverage を統合してから 1 回だけ合成します。
-        /// @remark 画像の範囲外はクリップされます。
-        /// @remark lineString の点数が 2 未満、または thickness が正でない場合、この関数は何もしません。
-        void LineString(
-            Image& image,
-            const s3d::LineString& lineString,
+			std::span<const Vec2> points,
             double thickness,
             Color color,
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
@@ -471,7 +443,6 @@ namespace s3d
         /// @brief 点列を太さのある閉じた連続線として描画します。
         /// @param image 描画先画像
         /// @param points 頂点配列
-        /// @param count 頂点数
         /// @param thickness 線の太さ
         /// @param color 描画色
         /// @param blendMode 合成方式
@@ -485,31 +456,7 @@ namespace s3d
         /// @remark points が nullptr、count が 3 未満、または thickness が正でない場合、この関数は何もしません。
         void ClosedLineString(
             Image& image,
-            const Vec2* points,
-            size_t count,
-            double thickness,
-            Color color,
-            ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
-            EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
-            DstAlpha dstAlpha = DstAlpha::Preserve);
-
-        /// @brief LineString を太さのある閉じた連続線として描画します。
-        /// @param image 描画先画像
-        /// @param lineString 描画する LineString
-        /// @param thickness 線の太さ
-        /// @param color 描画色
-        /// @param blendMode 合成方式
-        /// @param enableAntialiasing アンチエイリアス設定
-        /// @param dstAlpha 描画先 alpha の扱い
-        /// @remark 最後の点から最初の点へ線分を結びます。
-        /// @remark 閉じた線列のため、線端 cap はありません。
-        /// @remark 線分同士の接続部は round join として扱います。
-        /// @remark 各線分と join の coverage を統合してから 1 回だけ合成します。
-        /// @remark 画像の範囲外はクリップされます。
-        /// @remark lineString の点数が 3 未満、または thickness が正でない場合、この関数は何もしません。
-        void ClosedLineString(
-            Image& image,
-            const s3d::LineString& lineString,
+            std::span<const Vec2> points,
             double thickness,
             Color color,
             ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
