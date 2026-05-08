@@ -341,6 +341,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const Shape2D& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -348,6 +349,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		const Shape2D& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -387,6 +389,8 @@ namespace s3d
 		/// @param color 色
 		/// @return *this
 		const Shape2D& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		const Shape2D& drawWireframe(double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

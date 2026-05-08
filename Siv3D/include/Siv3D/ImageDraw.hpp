@@ -440,6 +440,33 @@ namespace s3d
 			LineCap lineCap = LineCap::Round,
 			DstAlpha dstAlpha = DstAlpha::Preserve);
 
+		/// @brief 点列を太さのある連続線として、offset を加えて描画します。
+		/// @param image 描画先画像
+		/// @param points 頂点配列
+		/// @param offset 各頂点に加算するオフセット
+		/// @param thickness 線の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param lineCap 線端の形状
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark points の内容は変更せず、primitive 構築時に offset を加算して扱います。
+		/// @remark lineCap は線列全体の始端と終端にのみ適用されます。
+		/// @remark 線分同士の接続部は round join として扱います。
+		/// @remark 各線分、join, cap の coverage を統合してから 1 回だけ合成します。
+		/// @remark 画像の範囲外はクリップされます。
+		/// @remark points.size() が 2 未満、または thickness が正でない場合、この関数は何もしません。
+		void LineString(
+			Image& image,
+			std::span<const Vec2> points,
+			const Vec2& offset,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			LineCap lineCap = LineCap::Round,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
 		/// @brief 点列を太さのある閉じた連続線として描画します。
 		/// @param image 描画先画像
 		/// @param points 頂点配列
@@ -453,10 +480,36 @@ namespace s3d
 		/// @remark 線分同士の接続部は round join として扱います。
 		/// @remark 各線分と join の coverage を統合してから 1 回だけ合成します。
 		/// @remark 画像の範囲外はクリップされます。
-		/// @remark points.size() が 2 未満、または thickness が正でない場合、この関数は何もしません。
+		/// @remark points.size() が 3 未満、または thickness が正でない場合、この関数は何もしません。
 		void ClosedLineString(
 			Image& image,
 			std::span<const Vec2> points,
+			double thickness,
+			Color color,
+			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,
+			EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes,
+			DstAlpha dstAlpha = DstAlpha::Preserve);
+
+		/// @brief 点列を太さのある閉じた連続線として、offset を加えて描画します。
+		/// @param image 描画先画像
+		/// @param points 頂点配列
+		/// @param offset 各頂点に加算するオフセット
+		/// @param thickness 線の太さ
+		/// @param color 描画色
+		/// @param blendMode 合成方式
+		/// @param enableAntialiasing アンチエイリアス設定
+		/// @param dstAlpha 描画先 alpha の扱い
+		/// @remark points の内容は変更せず、primitive 構築時に offset を加算して扱います。
+		/// @remark 隣接する点を結ぶ線分列に加えて、最後の点から最初の点へ線分を結びます。
+		/// @remark 閉じた線列のため、線端 cap はありません。
+		/// @remark 線分同士の接続部は round join として扱います。
+		/// @remark 各線分と join の coverage を統合してから 1 回だけ合成します。
+		/// @remark 画像の範囲外はクリップされます。
+		/// @remark points.size() が 3 未満、または thickness が正でない場合、この関数は何もしません。
+		void ClosedLineString(
+			Image& image,
+			std::span<const Vec2> points,
+			const Vec2& offset,
 			double thickness,
 			Color color,
 			ImagePixel::BlendMode blendMode = ImagePixel::BlendMode::SourceOver,

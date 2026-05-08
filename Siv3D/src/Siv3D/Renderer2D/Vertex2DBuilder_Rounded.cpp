@@ -549,22 +549,23 @@ namespace s3d
 			return{ std::move(posBuffer), std::move(colorBuffer) };
 		}
 
+		template <class PointType>
 		[[nodiscard]]
-		static Array<Float2> SimplifyClosed(const std::span<const Vec2> points, const float scale, const Optional<Float2>& offset)
+		static Array<Float2> SimplifyClosed(const std::span<const PointType> points, const float scale, const Optional<Float2>& offset)
 		{
-			const double threshold = (0.25f / scale);
-			const double thresholdSq = (threshold * threshold);
+			const float threshold = (0.25f / scale);
+			const float thresholdSq = (threshold * threshold);
 			const size_t size = points.size();
 
 			Array<Float2> buffer(Arg::reserve = size);
 			{
-				Vec2 previous = points.front();
+				Float2 previous = points.front();
 
 				buffer.push_back(previous);
 
 				for (size_t i = 1; i < (size - 1); ++i)
 				{
-					const Vec2 current = points[i];
+					const Float2 current = points[i];
 
 					if (previous.distanceFromSq(current) < thresholdSq)
 					{
@@ -576,7 +577,7 @@ namespace s3d
 					previous = current;
 				}
 
-				const Vec2 current = points.back();
+				const Float2 current = points.back();
 
 				if (previous != current)
 				{
@@ -1235,8 +1236,9 @@ namespace s3d
 			return indexSize;
 		}
 
+		template <class PointType>
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& color, const float scale)
+		static Vertex2D::IndexType BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const PointType> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& color, const float scale)
 		{
 			const Array<Float2> base = SimplifyClosed(points, scale, offset);
 			const Array<Float2> buffer = AdjustClosed(base, scale, inner);
@@ -3241,6 +3243,33 @@ namespace s3d
 			}
 
 			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildShape2DFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const float thickness, const Float4& color, const float scale)
+		{
+			const size_t num_points = vertices.size();
+
+			if (num_points < 3)
+			{
+				return 0;
+			}
+			else if (32760 <= num_points)
+			{
+				return 0;
+			}
+
+			if (thickness <= 0.0f)
+			{
+				return 0;
+			}
+
+			return BuildClosedLineString<Float2>(bufferCreator, vertices, none, thickness, false, color, scale);
 		}
 
 		////////////////////////////////////////////////////////////////

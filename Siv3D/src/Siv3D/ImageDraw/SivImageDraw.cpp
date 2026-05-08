@@ -3911,6 +3911,7 @@ namespace s3d
 			ImageView view,
 			const Vec2* points,
 			const size_t count,
+			const Vec2& offset,
 			const double thickness,
 			const LineCap lineCap,
 			const StrokeJoinStyle joinStyle,
@@ -3925,13 +3926,15 @@ namespace s3d
 
 			std::vector<Vec2> effectivePoints;
 			effectivePoints.reserve(count);
-			effectivePoints.push_back(points[0]);
+			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
 
 			for (size_t i = 1; i < count; ++i)
 			{
-				if (!IsSamePoint(points[i], effectivePoints.back()))
+				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
+
+				if (!IsSamePoint(p, effectivePoints.back()))
 				{
-					effectivePoints.push_back(points[i]);
+					effectivePoints.push_back(p);
 				}
 			}
 
@@ -3984,6 +3987,7 @@ namespace s3d
 			ImageView view,
 			const Vec2* points,
 			const size_t count,
+			const Vec2& offset,
 			const double thickness,
 			const StrokeJoinStyle joinStyle,
 			std::vector<StrokePrimitive>& primitives)
@@ -3997,13 +4001,15 @@ namespace s3d
 
 			std::vector<Vec2> effectivePoints;
 			effectivePoints.reserve(count);
-			effectivePoints.push_back(points[0]);
+			effectivePoints.push_back(Vec2{ points[0].x + offset.x, points[0].y + offset.y });
 
 			for (size_t i = 1; i < count; ++i)
 			{
-				if (!IsSamePoint(points[i], effectivePoints.back()))
+				const Vec2 p{ points[i].x + offset.x, points[i].y + offset.y };
+
+				if (!IsSamePoint(p, effectivePoints.back()))
 				{
-					effectivePoints.push_back(points[i]);
+					effectivePoints.push_back(p);
 				}
 			}
 
@@ -4973,6 +4979,30 @@ namespace s3d
 			const LineCap lineCap,
 			const DstAlpha dstAlpha)
 		{
+			LineString(
+				image,
+				points,
+				Vec2{ 0.0, 0.0 },
+				thickness,
+				color,
+				blendMode,
+				enableAntialiasing,
+				lineCap,
+				dstAlpha
+			);
+		}
+
+		void LineString(
+			Image& image,
+			const std::span<const Vec2> points,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const LineCap lineCap,
+			const DstAlpha dstAlpha)
+		{
 			const ImageView view = MakeImageView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points.size() < 2) || !(0.0 < thickness))
@@ -4981,7 +5011,7 @@ namespace s3d
 			}
 
 			std::vector<StrokePrimitive> primitives;
-			BuildOpenStrokePrimitives(view, points.data(), points.size(), thickness, lineCap, StrokeJoinStyle::Round, primitives);
+			BuildOpenStrokePrimitives(view, points.data(), points.size(), offset, thickness, lineCap, StrokeJoinStyle::Round, primitives);
 
 			DrawStrokePrimitives(
 				view,
@@ -5002,6 +5032,28 @@ namespace s3d
 			const EnableAntialiasing enableAntialiasing,
 			const DstAlpha dstAlpha)
 		{
+			ClosedLineString(
+				image,
+				points,
+				Vec2{ 0.0, 0.0 },
+				thickness,
+				color,
+				blendMode,
+				enableAntialiasing,
+				dstAlpha
+			);
+		}
+
+		void ClosedLineString(
+			Image& image,
+			const std::span<const Vec2> points,
+			const Vec2& offset,
+			const double thickness,
+			const Color color,
+			const ImagePixel::BlendMode blendMode,
+			const EnableAntialiasing enableAntialiasing,
+			const DstAlpha dstAlpha)
+		{
 			const ImageView view = MakeImageView(image);
 
 			if ((view.data == nullptr) || (view.width <= 0) || (view.height <= 0) || (points.size() < 3) || !(0.0 < thickness))
@@ -5010,7 +5062,7 @@ namespace s3d
 			}
 
 			std::vector<StrokePrimitive> primitives;
-			BuildClosedStrokePrimitives(view, points.data(), points.size(), thickness, StrokeJoinStyle::Round, primitives);
+			BuildClosedStrokePrimitives(view, points.data(), points.size(), offset, thickness, StrokeJoinStyle::Round, primitives);
 
 			DrawStrokePrimitives(
 				view,
