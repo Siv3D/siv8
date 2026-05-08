@@ -393,12 +393,12 @@ namespace s3d
 
 	const LineString& LineString::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		return overwrite(dst, LineCap::Round, 1.0, color);
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
 	}
 
 	const LineString& LineString::overwrite(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		return overwrite(dst, LineCap::Round, thickness, color);
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
 	}
 
 	const LineString& LineString::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
@@ -432,7 +432,7 @@ namespace s3d
 
 	const LineString& LineString::overwriteClosed(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		return overwriteClosed(dst, 1.0, color);
+		return overwriteClosed(dst, 1.0, color, enableAntialiasing);
 	}
 
 	const LineString& LineString::overwriteClosed(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
