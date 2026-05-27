@@ -15,6 +15,7 @@
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include <Siv3D/Hash.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -35,6 +36,64 @@ namespace s3d
 		static constexpr bool In01(const double t) noexcept
 		{
 			return ((-Epsilon <= t) && (t <= (1.0 + Epsilon)));
+		}
+
+		[[nodiscard]]
+		static constexpr uint64 ToBits(const double value) noexcept
+		{
+			return std::bit_cast<uint64>(value);
+		}
+
+		[[nodiscard]]
+		static constexpr int32 CompareBitwise(const double a, const double b) noexcept
+		{
+			const uint64 ua = ToBits(a);
+			const uint64 ub = ToBits(b);
+
+			if (ua < ub)
+			{
+				return -1;
+			}
+
+			if (ub < ua)
+			{
+				return 1;
+			}
+
+			return 0;
+		}
+
+		[[nodiscard]]
+		static constexpr int32 CompareBitwise(const Vec2& a, const Vec2& b) noexcept
+		{
+			if (const int32 c = CompareBitwise(a.x, b.x))
+			{
+				return c;
+			}
+
+			return CompareBitwise(a.y, b.y);
+		}
+
+		[[nodiscard]]
+		static constexpr int32 CompareBitwise(const Line& a, const Line& b) noexcept
+		{
+			if (const int32 c = CompareBitwise(a.start, b.start))
+			{
+				return c;
+			}
+
+			return CompareBitwise(a.end, b.end);
+		}
+
+		[[nodiscard]]
+		static Line CanonicalizeLine(Line line) noexcept
+		{
+			if (CompareBitwise(line.end, line.start) < 0)
+			{
+				line.reverse();
+			}
+
+			return line;
 		}
 	}
 
@@ -275,6 +334,25 @@ namespace s3d
 		}
 
 		return none;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAtCanonical
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Line::position_type> Line::intersectsAtCanonical(const Line& other) const
+	{
+		Line a = CanonicalizeLine(*this);
+		Line b = CanonicalizeLine(other);
+
+		if (CompareBitwise(b, a) < 0)
+		{
+			std::ranges::swap(a, b);
+		}
+
+		return a.intersectsAt(b);
 	}
 
 	////////////////////////////////////////////////////////////////
