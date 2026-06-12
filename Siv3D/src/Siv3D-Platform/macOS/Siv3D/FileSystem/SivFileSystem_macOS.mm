@@ -479,7 +479,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 	
-		bool Remove(const FilePathView path, const AllowUndo allowUndo)
+		bool Remove(const FilePathView path, const MoveToTrash moveToTrash)
 		{
 			if (not path)
 			{
@@ -491,7 +491,7 @@ namespace s3d
 				return false;
 			}
 			
-			if (allowUndo)
+			if (moveToTrash)
 			{
 				return detail::MacOS_TrashFile(Unicode::ToUTF8(path), IsDirectory(path));
 			}

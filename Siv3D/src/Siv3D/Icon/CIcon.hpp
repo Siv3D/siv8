@@ -28,7 +28,6 @@ namespace s3d
 
 		~CIcon() override;
 
-		[[nodiscard]]
 		void init() override;
 
 		[[nodiscard]]

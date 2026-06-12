@@ -828,7 +828,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& paint(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Circle& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -836,7 +836,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Circle& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -844,7 +844,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Circle& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Circle& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -852,7 +854,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Circle& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Circle& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -860,7 +864,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& paintPie(Image& dst, double startAngle, double angle, const Color& color) const;
+		const Circle& paintPie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -868,7 +872,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& overwritePie(Image& dst, double startAngle, double angle, const Color& color) const;
+		const Circle& overwritePie(Image& dst, double startAngle, double angle, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -876,7 +880,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color) const;
+		const Circle& paintArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -884,7 +888,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Circle& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color) const;
+		const Circle& overwriteArc(Image& dst, double startAngle, double angle, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1233,7 +1237,7 @@ struct fmt::formatter<s3d::Circle>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Circle& value, format_context& ctx);
+	format_context::iterator format(const s3d::Circle& value, format_context& ctx) const;
 };
 
 template <>
@@ -1243,7 +1247,7 @@ struct fmt::formatter<s3d::Circle, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Circle& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Circle& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

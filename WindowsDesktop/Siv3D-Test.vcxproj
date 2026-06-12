@@ -24,11 +24,14 @@
     <ClCompile Include="..\Test\Test_ColorF.cpp" />
     <ClCompile Include="..\Test\Test_Compression.cpp" />
     <ClCompile Include="..\Test\Test_Concepts.cpp" />
+    <ClCompile Include="..\Test\Test_CSV.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Grid.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
+    <ClCompile Include="..\Test\Test_INI.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
+    <ClCompile Include="..\Test\Test_LineString.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
@@ -41,9 +44,11 @@
     <ClCompile Include="..\Test\Test_Memory.cpp" />
     <ClCompile Include="..\Test\Test_NamedParameter.cpp" />
     <ClCompile Include="..\Test\Test_Step.cpp" />
+    <ClCompile Include="..\Test\Test_Step2D.cpp" />
     <ClCompile Include="..\Test\Test_String.cpp" />
     <ClCompile Include="..\Test\Test_StringView.cpp" />
     <ClCompile Include="..\Test\Test_TextFileReader.cpp" />
+    <ClCompile Include="..\Test\Test_TOML.cpp" />
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp" />
     <ClCompile Include="..\Test\Test_Types.cpp" />
     <ClCompile Include="..\Test\Test_Unicode.cpp" />

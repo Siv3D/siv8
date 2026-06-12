@@ -547,6 +547,11 @@
 ////////////////////////////////////////////////////////////////
 
 // INI データの読み書き | INI reader/writer
+# include <Siv3D/INIReadOptions.hpp>
+# include <Siv3D/INIWriteOptions.hpp>
+# include <Siv3D/INIParseErrorCode.hpp>
+# include <Siv3D/INIParseErrorReason.hpp>
+# include <Siv3D/INIDuplicatePolicy.hpp>
 # include <Siv3D/INI.hpp>
 # include <Siv3D/INIItem.hpp>
 # include <Siv3D/INISection.hpp>
@@ -557,8 +562,13 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// CSV データの読み書き | CSV reader/writer
-//# include <Siv3D/CSV.hpp>
+// CSV データの読み書き | CSV reader/writer
+
+# include <Siv3D/CSVReadOptions.hpp>
+# include <Siv3D/CSVWriteOptions.hpp>
+# include <Siv3D/CSVParseErrorCode.hpp>
+# include <Siv3D/CSVParseErrorReason.hpp>
+# include <Siv3D/CSV.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -566,8 +576,12 @@
 //
 ////////////////////////////////////////////////////////////////
 
-//// TOML ファイルの読み込み | TOML reader/writer
-//# include <Siv3D/TOML>
+# include <Siv3D/TOMLValueType.hpp>
+
+# include <Siv3D/TOMLParseErrorReason.hpp>
+
+// TOML ファイルの読み込み | TOML reader
+# include <Siv3D/TOML.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1250,6 +1264,9 @@
 // 追加の画像処理 | Extra image processing
 # include <Siv3D/ImageProcessing.hpp>
 
+# include <Siv3D/ImagePixel.hpp>
+# include <Siv3D/ImageDraw.hpp>
+
 //// カスケード分類器 | Cascade classifier
 //# include <Siv3D/CascadeClassifier.hpp>
 //
@@ -1640,6 +1657,7 @@
 # include <Siv3D/FontMethod.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/GlyphInfo.hpp>
+# include <Siv3D/Glyph.hpp>
 # include <Siv3D/ResolvedGlyph.hpp>
 # include <Siv3D/FontOptions.hpp>
 # include <Siv3D/Font.hpp>

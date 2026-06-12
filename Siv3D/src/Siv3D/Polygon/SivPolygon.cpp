@@ -15,6 +15,7 @@
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include "PolygonDetail.hpp"
 
 namespace s3d
@@ -1157,13 +1158,117 @@ namespace s3d
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
 
+	const Polygon& Polygon::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
 
+	const Polygon& Polygon::paint(Image& dst, const Vec2& pos, const Color& color, const EnableAntialiasing enableAntialiasings) const
+	{
+		ImageDraw::Fill(dst, *this, pos, color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
 
+	const Polygon& Polygon::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
 
+	const Polygon& Polygon::overwrite(Image& dst, const Vec2& pos, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, pos, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
 
+	const Polygon& Polygon::paintFrame(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, 1.0, color, enableAntialiasing);
+	}
+
+	const Polygon& Polygon::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, outline(), thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+
+		for (const auto& hole : inners())
+		{
+			ImageDraw::ClosedLineString(dst, hole, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	void Polygon::paintFrame(Image& dst, const Vec2& pos, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		paintFrame(dst, pos, 1.0, color, enableAntialiasing);
+	}
+
+	void Polygon::paintFrame(Image& dst, const Vec2& pos, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, outline(), pos, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+	
+		for (const auto& hole : inners())
+		{
+			ImageDraw::ClosedLineString(dst, hole, pos, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Polygon& Polygon::overwriteFrame(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, 1.0, color, enableAntialiasing);
+	}
+
+	const Polygon& Polygon::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, outline(), thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		
+		for (const auto& hole : inners())
+		{
+			ImageDraw::ClosedLineString(dst, hole, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		}
+	
+		return *this;
+	}
+
+	void Polygon::overwriteFrame(Image& dst, const Vec2& pos, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		overwriteFrame(dst, pos, 1.0, color, enableAntialiasing);
+	}
+
+	void Polygon::overwriteFrame(Image& dst, const Vec2& pos, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, outline(), pos, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		
+		for (const auto& hole : inners())
+		{
+			ImageDraw::ClosedLineString(dst, hole, pos, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		}
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1177,11 +1282,6 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::draw(const double x, const double y, const ColorF& color) const
-	{
-		pImpl->draw(Float2{ x, y }, color);
-	}
-
 	void Polygon::draw(const Vec2& pos, const ColorF& color) const
 	{
 		pImpl->draw(Float2{ pos }, color);
@@ -1193,14 +1293,37 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::draw(double x, double y, const PatternParameters& pattern) const
-	{
-		pImpl->draw(Float2{ x, y }, pattern);
-	}
-
 	void Polygon::draw(const Vec2& pos, const PatternParameters& pattern) const
 	{
 		pImpl->draw(Float2{ pos }, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawTransformed
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Polygon::drawTransformed(const double angle, const Vec2& pos, const ColorF& color) const
+	{
+		const auto [s, c] = FastMath::SinCos(angle);
+		drawTransformed(s, c, pos, color);
+	}
+
+	void Polygon::drawTransformed(const double s, const double c, const Vec2& pos, const ColorF& color) const
+	{
+		pImpl->drawTransformed(s, c, pos, color);
+	}
+
+	void Polygon::drawTransformed(const double angle, const Vec2& pos, const PatternParameters& pattern) const
+	{
+		const auto [s, c] = FastMath::SinCos(angle);
+		drawTransformed(s, c, pos, pattern);
+	}
+
+	void Polygon::drawTransformed(const double s, const double c, const Vec2& pos, const PatternParameters& pattern) const
+	{
+		pImpl->drawTransformed(s, c, pos, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1215,11 +1338,6 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawFrame(const double x, const double y, const double thickness, const ColorF& color) const
-	{
-		pImpl->drawFrame(Float2{ x, y }, thickness, color);
-	}
-
 	void Polygon::drawFrame(const Vec2& pos, const double thickness, const ColorF& color) const
 	{
 		pImpl->drawFrame(Float2{ pos }, thickness, color);
@@ -1229,11 +1347,6 @@ namespace s3d
 	{
 		pImpl->drawFrame(none, thickness, pattern);
 		return *this;
-	}
-
-	void Polygon::drawFrame(const double x, const double y, const double thickness, const PatternParameters& pattern) const
-	{
-		pImpl->drawFrame(Float2{ x, y }, thickness, pattern);
 	}
 
 	void Polygon::drawFrame(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
@@ -1253,11 +1366,6 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawWireframe(const double x, const double y, const double thickness, const ColorF& color) const
-	{
-		pImpl->drawWireframe(Float2{ x, y }, thickness, color);
-	}
-
 	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const ColorF& color) const
 	{
 		pImpl->drawWireframe(Float2{ pos }, thickness, color);
@@ -1267,11 +1375,6 @@ namespace s3d
 	{
 		pImpl->drawWireframe(none, thickness, pattern);
 		return *this;
-	}
-
-	void Polygon::drawWireframe(const double x, const double y, const double thickness, const PatternParameters& pattern) const
-	{
-		pImpl->drawWireframe(Float2{ x, y }, thickness, pattern);
 	}
 
 	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
@@ -1423,7 +1526,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Polygon, s3d::char32>::parse(s3d
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Polygon, s3d::char32>::format(const s3d::Polygon& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Polygon, s3d::char32>::format(const s3d::Polygon& value, s3d::BufferContext& ctx) const
 {
 	if (value.isEmpty())
 	{

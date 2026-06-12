@@ -45,13 +45,13 @@ namespace s3d
 
 	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
 	{
-		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path));
+		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path.toUTF8()));
 
 		close();
 
 		if (FileSystem::IsResourcePath(path))
 		{
-			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Resource `{0}` cannot be opened as writable", path));
+			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Resource `{0}` cannot be opened as writable", path.toUTF8()));
 
 			return false;
 		}
@@ -89,7 +89,7 @@ namespace s3d
 
 		if (fileHandle == INVALID_HANDLE_VALUE)
 		{
-			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Failed to open file `{0}`", path));
+			LOG_FAIL(fmt::format("❌ MemoryMappedFile: Failed to open file `{0}`", path.toUTF8()));
 			return false;
 		}
 

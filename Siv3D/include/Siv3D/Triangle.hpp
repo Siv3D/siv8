@@ -975,7 +975,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Triangle& paint(Image& dst, const Color& color) const;
+		const Triangle& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -983,7 +983,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Triangle& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Triangle& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -991,7 +991,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Triangle& paintFrame(Image& dst, int32 thickness, const Color& color) const;
+		const Triangle& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -999,7 +999,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Triangle& overwriteFrame(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Triangle& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1165,7 +1165,7 @@ struct fmt::formatter<s3d::Triangle>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Triangle& value, format_context& ctx);
+	format_context::iterator format(const s3d::Triangle& value, format_context& ctx) const;
 };
 
 template <>
@@ -1175,7 +1175,7 @@ struct fmt::formatter<s3d::Triangle, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Triangle& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Triangle& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

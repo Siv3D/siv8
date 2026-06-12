@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -9,23 +9,417 @@
 //
 //-----------------------------------------------
 
-# include <ranges>
+# include <algorithm>
 # include <Siv3D/INI.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
+# include <Siv3D/BinaryFileWriter.hpp>
+# include <Siv3D/Format.hpp>
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/Demangle.hpp>
-# include <Siv3D/TextFileReader.hpp>
-# include <Siv3D/TextFileWriter.hpp>
-# include <Siv3D/EngineLog.hpp>
+# include <Siv3D/Unicode.hpp>
 
 namespace s3d
 {
 	namespace
 	{
+		struct INILine
+		{
+			String text;
+			size_t line = 1;
+		};
+
 		[[noreturn]]
 		static void ThrowGetSection(const StringView section)
 		{
-			throw Error{ fmt::format("INI::getSection(): Section `{}` not found", section) };
+			throw Error{ fmt::format("INI::getSection(): Section `{}` not found", section.toUTF8()) };
+		}
+
+		[[nodiscard]]
+		static bool HasUTF8BOM(const std::string_view content) noexcept
+		{
+			return ((3 <= content.size())
+				&& (static_cast<uint8>(content[0]) == 0xEF)
+				&& (static_cast<uint8>(content[1]) == 0xBB)
+				&& (static_cast<uint8>(content[2]) == 0xBF));
+		}
+
+		[[nodiscard]]
+		static String MakeLocation(const FilePathView pathHint, const size_t line, const size_t character)
+		{
+			if (pathHint)
+			{
+				return Format(pathHint, U":", line, U":", character);
+			}
+
+			return Format(U"line ", line, U", character ", character);
+		}
+
+		[[nodiscard]]
+		static INIParseErrorReason MakeError(
+			const INIParseErrorCode code,
+			String title,
+			const FilePathView pathHint,
+			const size_t line,
+			const size_t character,
+			String section = U"",
+			String key = U"",
+			String hint = U"")
+		{
+			INIParseErrorReason reason;
+			reason.code = code;
+			reason.title = std::move(title);
+			reason.locations.push_back(MakeLocation(pathHint, line, character));
+			reason.hint = std::move(hint);
+			reason.line = line;
+			reason.character = character;
+			reason.section = std::move(section);
+			reason.key = std::move(key);
+			return reason;
+		}
+
+		[[nodiscard]]
+		static Array<INIParseErrorReason> MakeSingleError(
+			const INIParseErrorCode code,
+			String title,
+			const FilePathView pathHint,
+			const size_t line,
+			const size_t character,
+			String section = U"",
+			String key = U"",
+			String hint = U"")
+		{
+			return Array<INIParseErrorReason>{ MakeError(code, std::move(title), pathHint, line, character, std::move(section), std::move(key), std::move(hint)) };
+		}
+
+		[[nodiscard]]
+		static Array<INIParseErrorReason> MakeInvalidReaderError(const FilePathView pathHint)
+		{
+			return MakeSingleError(
+				INIParseErrorCode::InvalidReader,
+				U"Invalid INI reader",
+				pathHint,
+				1,
+				1,
+				U"",
+				U"",
+				U"Check that the file exists and the reader is open.");
+		}
+
+		[[nodiscard]]
+		static Array<INIParseErrorReason> MakeInvalidEncodingError(const FilePathView pathHint)
+		{
+			return MakeSingleError(
+				INIParseErrorCode::InvalidEncoding,
+				U"Invalid INI text encoding",
+				pathHint,
+				1,
+				1,
+				U"",
+				U"",
+				U"INI::Load() and INI::Parse(std::string_view) expect UTF-8 text.");
+		}
+
+		[[nodiscard]]
+		static Result<std::string, Array<INIParseErrorReason>> ReadAll(IReader& reader, const FilePathView pathHint)
+		{
+			if (not reader)
+			{
+				return Result<std::string, Array<INIParseErrorReason>>{ unexpect, MakeInvalidReaderError(pathHint) };
+			}
+
+			const int64 size = reader.size();
+			const int64 pos = reader.getPos();
+
+			if ((size < 0) || (pos < 0) || (size < pos))
+			{
+				return Result<std::string, Array<INIParseErrorReason>>{ unexpect, MakeInvalidReaderError(pathHint) };
+			}
+
+			const int64 remaining = (size - pos);
+			std::string content;
+			content.resize(static_cast<size_t>(remaining));
+
+			if (remaining == 0)
+			{
+				return content;
+			}
+
+			const int64 readSize = reader.read(content.data(), remaining);
+
+			if (readSize != remaining)
+			{
+				return Result<std::string, Array<INIParseErrorReason>>{ unexpect, MakeInvalidReaderError(pathHint) };
+			}
+
+			return content;
+		}
+
+		[[nodiscard]]
+		static Result<Array<INILine>, Array<INIParseErrorReason>> SplitLines(const StringView content, const INIReadOptions& options, const FilePathView pathHint)
+		{
+			Array<INILine> lines;
+			String currentLine;
+			size_t line = 1;
+			size_t character = 1;
+
+			for (size_t i = 0; i < content.size(); ++i)
+			{
+				const char32 ch = content[i];
+
+				if (ch == U'\r')
+				{
+					if (((i + 1) < content.size()) && (content[i + 1] == U'\n'))
+					{
+						lines.push_back(INILine{ .text = currentLine, .line = line });
+						currentLine.clear();
+						++i;
+						++line;
+						character = 1;
+					}
+					else if (options.allowLoneCR)
+					{
+						lines.push_back(INILine{ .text = currentLine, .line = line });
+						currentLine.clear();
+						++line;
+						character = 1;
+					}
+					else
+					{
+						return Result<Array<INILine>, Array<INIParseErrorReason>>{ unexpect, MakeSingleError(
+							INIParseErrorCode::BareCR,
+							U"Bare CR is not allowed in INI text",
+							pathHint,
+							line,
+							character,
+							U"",
+							U"",
+							U"Use LF or CRLF as a line separator, or set INIReadOptions::allowLoneCR to true.") };
+					}
+				}
+				else if (ch == U'\n')
+				{
+					lines.push_back(INILine{ .text = currentLine, .line = line });
+					currentLine.clear();
+					++line;
+					character = 1;
+				}
+				else
+				{
+					currentLine.push_back(ch);
+					++character;
+				}
+			}
+
+			if (currentLine || content.empty())
+			{
+				if (not content.empty())
+				{
+					lines.push_back(INILine{ .text = currentLine, .line = line });
+				}
+			}
+
+			return lines;
+		}
+
+		[[nodiscard]]
+		static bool IsCommentLine(const StringView line, const INIReadOptions& options) noexcept
+		{
+			if (line.empty())
+			{
+				return false;
+			}
+
+			const char32 firstChar = line[0];
+
+			return ((options.allowSemicolonComment && (firstChar == U';'))
+				|| (options.allowHashComment && (firstChar == U'#')));
+		}
+
+		[[nodiscard]]
+		static Result<INI, Array<INIParseErrorReason>> ParseINI(const StringView content, const INIReadOptions& options, const FilePathView pathHint)
+		{
+			StringView view = content;
+
+			if (options.skipUTF8BOM && (not view.empty()) && (view.front() == U'\uFEFF'))
+			{
+				view.remove_prefix(1);
+			}
+
+			auto splitResult = SplitLines(view, options, pathHint);
+
+			if (not splitResult)
+			{
+				return Result<INI, Array<INIParseErrorReason>>{ unexpect, std::move(splitResult.error()) };
+			}
+
+			INI ini;
+			String currentSection;
+			Array<INIParseErrorReason> errors;
+
+			for (const auto& sourceLine : splitResult.value())
+			{
+				String line = sourceLine.text;
+				line.trim();
+
+				if (line.isEmpty() || IsCommentLine(line, options))
+				{
+					continue;
+				}
+
+				const char32 firstChar = line[0];
+
+				if (firstChar == U'[')
+				{
+					const auto itRBracket = std::find((line.begin() + 1), line.end(), U']');
+
+					if (itRBracket == line.end())
+					{
+						return Result<INI, Array<INIParseErrorReason>>{ unexpect, MakeSingleError(
+							INIParseErrorCode::MissingClosingBracket,
+							U"Missing closing bracket in INI section",
+							pathHint,
+							sourceLine.line,
+							1,
+							U"",
+							U"",
+							U"Add `]` to close the section declaration.") };
+					}
+
+					const size_t rBracketIndex = static_cast<size_t>(itRBracket - line.begin());
+					String sectionName = line.substr(1, (rBracketIndex - 1));
+
+					if (options.trimSectionName)
+					{
+						sectionName.trim();
+					}
+
+					if (sectionName.isEmpty())
+					{
+						return Result<INI, Array<INIParseErrorReason>>{ unexpect, MakeSingleError(
+							INIParseErrorCode::EmptySectionName,
+							U"INI section name is empty",
+							pathHint,
+							sourceLine.line,
+							1,
+							U"",
+							U"",
+							U"Use properties before any section header for the global section. `[]` is not a valid section name.") };
+					}
+
+					String tail = line.substr(rBracketIndex + 1);
+					tail.trim();
+
+					if (tail)
+					{
+						return Result<INI, Array<INIParseErrorReason>>{ unexpect, MakeSingleError(
+							INIParseErrorCode::UnexpectedCharacterAfterSection,
+							U"Unexpected characters after INI section declaration",
+							pathHint,
+							sourceLine.line,
+							(rBracketIndex + 2),
+							sectionName,
+							U"",
+							U"Remove characters after `]`. Inline comments after a section header are not supported.") };
+					}
+
+					currentSection = sectionName;
+
+					if (ini.hasSection(sectionName))
+					{
+						if (options.duplicateSectionPolicy == INIDuplicateSectionPolicy::Error)
+						{
+							errors.push_back(MakeError(
+								INIParseErrorCode::DuplicateSection,
+								U"Duplicate INI section",
+								pathHint,
+								sourceLine.line,
+								1,
+								sectionName,
+								U"",
+								U"Use a unique section name, or set INIReadOptions::duplicateSectionPolicy to Merge."));
+						}
+
+						continue;
+					}
+
+					ini.addSection(sectionName);
+					continue;
+				}
+
+				const auto itEqual = std::find(line.begin(), line.end(), U'=');
+
+				if (itEqual == line.end())
+				{
+					return Result<INI, Array<INIParseErrorReason>>{ unexpect, MakeSingleError(
+						INIParseErrorCode::MissingAssignment,
+						U"Missing assignment character in INI property",
+						pathHint,
+						sourceLine.line,
+						1,
+						currentSection,
+						U"",
+						U"Add `=` between the key and the value.") };
+				}
+
+				const size_t equalIndex = static_cast<size_t>(itEqual - line.begin());
+				String key = line.substr(0, equalIndex);
+
+				if (options.trimKey)
+				{
+					key.trim();
+				}
+
+				if (key.isEmpty())
+				{
+					return Result<INI, Array<INIParseErrorReason>>{ unexpect, MakeSingleError(
+						INIParseErrorCode::EmptyKey,
+						U"INI key is empty",
+						pathHint,
+						sourceLine.line,
+						1,
+						currentSection,
+						U"",
+						U"Specify a non-empty key before `=`.") };
+				}
+
+				String value = line.substr(equalIndex + 1);
+
+				if (options.trimValue)
+				{
+					value.trim();
+				}
+
+				if (ini.hasProperty(currentSection, key))
+				{
+					if (options.duplicateKeyPolicy == INIDuplicateKeyPolicy::Error)
+					{
+						errors.push_back(MakeError(
+							INIParseErrorCode::DuplicateKey,
+							U"Duplicate INI key",
+							pathHint,
+							sourceLine.line,
+							1,
+							currentSection,
+							key,
+							U"Use a unique key, or set INIReadOptions::duplicateKeyPolicy to Overwrite or KeepFirst."));
+						continue;
+					}
+					else if (options.duplicateKeyPolicy == INIDuplicateKeyPolicy::KeepFirst)
+					{
+						continue;
+					}
+				}
+
+				ini.addProperty(currentSection, key, value);
+			}
+
+			if (errors)
+			{
+				return Result<INI, Array<INIParseErrorReason>>{ unexpect, std::move(errors) };
+			}
+
+			return ini;
 		}
 	}
 
@@ -33,7 +427,7 @@ namespace s3d
 	{
 		void ThrowINIGetError(const char* type, const StringView section, const StringView key)
 		{
-			throw Error{ fmt::format("INI::get<{}>({}, {}) failed", DemangleUTF8(type), section, key) };
+			throw Error{ fmt::format("INI::get<{}>({}, {}) failed", DemangleUTF8(type), section.toUTF8(), key.toUTF8()) };
 		}
 	}
 
@@ -43,86 +437,41 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	INI::INI(const FilePathView path)
+	INI::INI(const FilePathView path, const INIReadOptions& options)
 	{
-		load(path);
+		*this = Load(path, options);
 	}
 
-	INI::INI(std::unique_ptr<IReader> reader)
+	INI::INI(std::unique_ptr<IReader> reader, const INIReadOptions& options)
 	{
-		load(std::move(reader));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	load
-	//
-	////////////////////////////////////////////////////////////////
-
-	bool INI::load(const FilePathView path)
-	{
-		try
-		{
-			*this = Load(path);
-		}
-		catch (const Error&)
-		{
-			clear();
-			return false;
-		}
-
-		return true;
-	}
-
-	bool INI::load(std::unique_ptr<IReader> reader)
-	{
-		try
-		{
-			*this = Load(std::move(reader));
-		}
-		catch (const Error&)
-		{
-			clear();
-			return false;
-		}
-
-		return true;
+		*this = Load(std::move(reader), options);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	parse
+	//	isValid, isInvalid
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool INI::parse(const std::string_view s)
+	bool INI::isValid() const noexcept
 	{
-		try
-		{
-			*this = Parse(s);
-		}
-		catch (const Error&)
-		{
-			clear();
-			return false;
-		}
-
-		return true;
+		return m_isValid;
 	}
 
-	bool INI::parse(const StringView s)
+	bool INI::isInvalid() const noexcept
 	{
-		try
-		{
-			*this = Parse(s);
-		}
-		catch (const Error&)
-		{
-			clear();
-			return false;
-		}
+		return (not m_isValid);
+	}
 
-		return true;
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator bool
+	//
+	////////////////////////////////////////////////////////////////
+
+	INI::operator bool() const noexcept
+	{
+		return isValid();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -137,30 +486,16 @@ namespace s3d
 
 		if (sectionCount == 0)
 		{
-			// セクションが一つもない場合、INI ファイルは空
 			return true;
 		}
 		else if (sectionCount == 1)
 		{
-			// 唯一のセクションが無名セクションかつ空である場合、INI ファイルは空
 			return (m_sections.front().name.isEmpty() && m_sections.front().items.empty());
 		}
 		else
 		{
-			// 2 つ以上のセクションがある場合、INI ファイルは空ではない
 			return false;
 		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	operator bool
-	//
-	////////////////////////////////////////////////////////////////
-
-	INI::operator bool() const noexcept
-	{
-		return (not isEmpty());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -173,6 +508,7 @@ namespace s3d
 	{
 		m_sections.clear();
 		m_sectionIndex.clear();
+		m_isValid = true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -270,8 +606,6 @@ namespace s3d
 		return getSection(section);
 	}
 
-# ifdef __cpp_multidimensional_subscript
-
 	const INISection& INI::operator []() const
 	{
 		return getSection(GlobalSection);
@@ -281,8 +615,6 @@ namespace s3d
 	{
 		return getSection(GlobalSection);
 	}
-
-# endif
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -321,7 +653,6 @@ namespace s3d
 
 	void INI::addSection(const StringView section)
 	{
-		// すでに同名のセクションが存在する場合は何もしない
 		if (m_sectionIndex.contains(section))
 		{
 			return;
@@ -436,18 +767,41 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String INI::format() const
+	String INI::format(const INIWriteOptions& options) const
 	{
-		String result;
+		if (not isValid())
+		{
+			return String{};
+		}
 
-		// グローバル（無名）セクション
+		String result;
+		INIWriteOptions sectionOptions = options;
+		sectionOptions.trailingNewline = false;
+
+		const auto appendSection = [&](const INISection& section)
+		{
+			const String sectionText = section.format(sectionOptions);
+
+			if (sectionText.isEmpty())
+			{
+				return;
+			}
+
+			if (result)
+			{
+				result.append(options.newline);
+				result.append(options.newline);
+			}
+
+			result.append(sectionText);
+		};
+
 		if (const auto itGlobal = m_sectionIndex.find(GlobalSection);
 			itGlobal != m_sectionIndex.end())
 		{
-			result += m_sections[itGlobal->second].format();
+			appendSection(m_sections[itGlobal->second]);
 		}
 
-		// その他のセクション
 		for (const auto& section : m_sections)
 		{
 			if (section.name == GlobalSection)
@@ -455,12 +809,12 @@ namespace s3d
 				continue;
 			}
 
-			if (result)
-			{
-				result.push_back(U'\n');
-			}
+			appendSection(section);
+		}
 
-			result += section.format();
+		if (options.trailingNewline && result)
+		{
+			result.append(options.newline);
 		}
 	
 		return result;
@@ -472,9 +826,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	std::string INI::formatUTF8() const
+	std::string INI::formatUTF8(const INIWriteOptions& options) const
 	{
-		return Unicode::ToUTF8(format());
+		std::string result = Unicode::ToUTF8(format(options));
+
+		if (options.writeUTF8BOM)
+		{
+			result.insert(0, std::string{ "\xEF\xBB\xBF", 3 });
+		}
+
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -483,48 +844,28 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool INI::save(const FilePathView path) const
+	bool INI::save(const FilePathView path, const INIWriteOptions& options) const
 	{
-		TextFileWriter writer{ path };
+		if (not isValid())
+		{
+			return false;
+		}
+
+		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{
 			return false;
 		}
 
-		writer.writeUTF8(formatUTF8());
+		const std::string content = formatUTF8(options);
 
-		return true;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	Load
-	//
-	////////////////////////////////////////////////////////////////
-
-	INI INI::Load(const FilePathView path)
-	{
-		TextFileReader textReader{ path };
-
-		if (not textReader)
+		if (content.empty())
 		{
-			throw Error{ fmt::format("INI::Load(): Failed to open file `{}`", path) };
+			return true;
 		}
 
-		return Parse(textReader.readAll());
-	}
-
-	INI INI::Load(std::unique_ptr<IReader> reader)
-	{
-		TextFileReader textReader{ std::move(reader) };
-
-		if (not textReader)
-		{
-			throw Error{ "INI::Load(): Failed to open file" };
-		}
-
-		return Parse(textReader.readAll());
+		return (writer.write(content.data(), static_cast<int64>(content.size())) == static_cast<int64>(content.size()));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -533,85 +874,189 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	INI INI::Parse(const std::string_view s)
+	INI INI::Parse(const std::string_view s, const INIReadOptions& options, const FilePathView pathHint)
 	{
-		return Parse(Unicode::FromUTF8(s));
-	}
-
-	INI INI::Parse(const StringView s)
-	{
-		constexpr char32 Semicolon = U';';
-		constexpr char32 Hash = U'#';
-		constexpr char32 LBracket = U'[';
-		constexpr char32 RBracket = U']';
-
-		size_t lineIndex = 0;
-		INI ini;
-		String currentSection;
-
-		for (auto&& _line : std::views::split(s, U'\n'))
+		if (auto result = ParseResult(s, options, pathHint))
 		{
-			++lineIndex;
-
-			String line{ _line.begin(), _line.end() };
-
-			line.trim();
-
-			// 空白行
-			if (line.isEmpty())
-			{
-				continue;
-			}
-
-			const char32 firstChar = line[0];
-
-			// コメント
-			if ((firstChar == Semicolon)
-				|| (firstChar == Hash))
-			{
-				continue;
-			}
-
-			// セクション
-			if (firstChar == LBracket)
-			{
-				const auto itRBracket = std::find((line.begin() + 1), line.end(), RBracket);
-
-				if (itRBracket == line.end())
-				{
-					throw Error{ fmt::format("INI::Parse(): ({}) Unmatched '['", lineIndex) };
-				}
-
-				currentSection = line.substr(1, itRBracket - (line.begin() + 1)).trim();
-
-				ini.addSection(currentSection);
-
-				continue;
-			}
-
-			// プロパティ
-			{
-				const auto itEqual = std::find(line.begin(), line.end(), U'=');
-
-				if (itEqual == line.end())
-				{
-					// error: '=' character not found in line
-					throw Error{ fmt::format("INI::Parse(): ({}) '=' character not found in line", lineIndex) };
-				}
-
-				const String key = line.substr(0, (itEqual - line.begin())).trim();
-
-				if (key.isEmpty())
-				{
-					throw Error{ fmt::format("INI::Parse(): ({}) key is empty", lineIndex) };
-				}
-
-				const String value = line.substr(itEqual - line.begin() + 1).trim();
-
-				ini.addProperty(currentSection, key, value);
-			}
+			return std::move(result.value());
 		}
 
+		return Invalid();
+	}
+
+	INI INI::Parse(const StringView s, const INIReadOptions& options, const FilePathView pathHint)
+	{
+		if (auto result = ParseResult(s, options, pathHint))
+		{
+			return std::move(result.value());
+		}
+
+		return Invalid();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ParseResult
+	//
+	////////////////////////////////////////////////////////////////
+
+	Result<INI, Array<INIParseErrorReason>> INI::ParseResult(std::string_view s, const INIReadOptions& options, const FilePathView pathHint)
+	{
+		if (options.skipUTF8BOM && HasUTF8BOM(s))
+		{
+			s.remove_prefix(3);
+		}
+
+		const String content = Unicode::FromUTF8(s);
+
+		if ((not s.empty()) && content.isEmpty())
+		{
+			return Result<INI, Array<INIParseErrorReason>>{ unexpect, MakeInvalidEncodingError(pathHint) };
+		}
+
+		return ParseResult(StringView{ content }, options, pathHint);
+	}
+
+	Result<INI, Array<INIParseErrorReason>> INI::ParseResult(const StringView s, const INIReadOptions& options, const FilePathView pathHint)
+	{
+		return ParseINI(s, options, pathHint);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Load
+	//
+	////////////////////////////////////////////////////////////////
+
+	INI INI::Load(const FilePathView path, const INIReadOptions& options)
+	{
+		if (auto result = LoadResult(path, options))
+		{
+			return std::move(result.value());
+		}
+
+		return Invalid();
+	}
+
+	INI INI::Load(std::unique_ptr<IReader> reader, const INIReadOptions& options)
+	{
+		if (auto result = LoadResult(std::move(reader), options))
+		{
+			return std::move(result.value());
+		}
+
+		return Invalid();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	LoadResult
+	//
+	////////////////////////////////////////////////////////////////
+
+	Result<INI, Array<INIParseErrorReason>> INI::LoadResult(const FilePathView path, const INIReadOptions& options)
+	{
+		BinaryFileReader reader{ path };
+
+		if (auto content = ReadAll(reader, path))
+		{
+			return ParseResult(std::string_view{ content.value() }, options, path);
+		}
+		else
+		{
+			return Result<INI, Array<INIParseErrorReason>>{ unexpect, std::move(content.error()) };
+		}
+	}
+
+	Result<INI, Array<INIParseErrorReason>> INI::LoadResult(std::unique_ptr<IReader> reader, const INIReadOptions& options)
+	{
+		if (not reader)
+		{
+			return Result<INI, Array<INIParseErrorReason>>{ unexpect, MakeInvalidReaderError(U"") };
+		}
+
+		if (auto content = ReadAll(*reader, U""))
+		{
+			return ParseResult(std::string_view{ content.value() }, options, U"");
+		}
+		else
+		{
+			return Result<INI, Array<INIParseErrorReason>>{ unexpect, std::move(content.error()) };
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	load
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool INI::load(const FilePathView path, const INIReadOptions& options)
+	{
+		if (auto result = LoadResult(path, options))
+		{
+			*this = std::move(result.value());
+			return true;
+		}
+
+		*this = Invalid();
+		return false;
+	}
+
+	bool INI::load(std::unique_ptr<IReader> reader, const INIReadOptions& options)
+	{
+		if (auto result = LoadResult(std::move(reader), options))
+		{
+			*this = std::move(result.value());
+			return true;
+		}
+
+		*this = Invalid();
+		return false;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	parse
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool INI::parse(const std::string_view s, const INIReadOptions& options)
+	{
+		if (auto result = ParseResult(s, options))
+		{
+			*this = std::move(result.value());
+			return true;
+		}
+
+		*this = Invalid();
+		return false;
+	}
+
+	bool INI::parse(const StringView s, const INIReadOptions& options)
+	{
+		if (auto result = ParseResult(s, options))
+		{
+			*this = std::move(result.value());
+			return true;
+		}
+
+		*this = Invalid();
+		return false;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Invalid
+	//
+	////////////////////////////////////////////////////////////////
+
+	INI INI::Invalid()
+	{
+		INI ini;
+		ini.m_sections.clear();
+		ini.m_sectionIndex.clear();
+		ini.m_isValid = false;
 		return ini;
 	}
 

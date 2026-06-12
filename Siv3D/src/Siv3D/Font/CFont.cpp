@@ -102,7 +102,7 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CFont::init()");
 
-		if (const FT_Error error = ::FT_Init_FreeType(&m_freeType))
+		if (::FT_Init_FreeType(&m_freeType))
 		{
 			throw InternalEngineError{ "FT_Init_FreeType() failed" };
 		}
@@ -163,7 +163,7 @@ namespace s3d
 
 			faces.append(GetFontFaces(face0));
 
-			for (::FT_Long index = 1; index < numFaces; ++index)
+			for (uint32 index = 1; index < numFaces; ++index)
 			{
 				::FT_Face face = nullptr;
 
@@ -390,9 +390,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<ResolvedGlyph> CFont::getResolvedGlyphs(const Font::IDType handleID, const StringView s, const ReadingDirection readingDirection, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
+	Array<ResolvedGlyph> CFont::getResolvedGlyphs(const Font::IDType handleID, const StringView s, const ReadingDirection readingDirection, const EnableFontFallback enableFontFallback, const EnableLigatures enableLigatures)
 	{
-		return m_fonts[handleID]->getResolvedGlyphs(s, readingDirection, enableFallback, enableLigatures);
+		return m_fonts[handleID]->getResolvedGlyphs(s, readingDirection, enableFontFallback, enableLigatures);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -418,7 +418,7 @@ namespace s3d
 		const auto& font = m_fonts[handleID];
 		const FT_Face face = font->getFace();
 		const FontFaceInfo& fontInfo = font->getInfo();
-		const Array<ResolvedGlyph> resolvedGlyphs = font->getResolvedGlyphs(s, readingDirection, EnableFallback::Yes, enableLigatures);
+		const Array<ResolvedGlyph> resolvedGlyphs = font->getResolvedGlyphs(s, readingDirection, EnableFontFallback::Yes, enableLigatures);
 		
 		Array<OutlineGlyph> outlineGlyphs(Arg::reserve = resolvedGlyphs.size());
 		{
@@ -454,7 +454,7 @@ namespace s3d
 		const auto& font = m_fonts[handleID];
 		const FT_Face face = font->getFace();
 		const FontFaceInfo& fontInfo = font->getInfo();
-		const Array<ResolvedGlyph> resolvedGlyphs = font->getResolvedGlyphs(s, readingDirection, EnableFallback::Yes, enableLigatures);
+		const Array<ResolvedGlyph> resolvedGlyphs = font->getResolvedGlyphs(s, readingDirection, EnableFontFallback::Yes, enableLigatures);
 		
 		Array<PolygonGlyph> polygonGlyphs(Arg::reserve = resolvedGlyphs.size());
 		{

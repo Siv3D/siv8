@@ -81,6 +81,56 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static Float2 CalculateEllipseNormal(
+			const float a,
+			const float b,
+			const float ux,
+			const float uy) noexcept
+		{
+			// 基準楕円:
+			//   x = a * ux
+			//   y = b * uy
+			//   ux^2 + uy^2 = 1
+			//
+			// 楕円 x^2/a^2 + y^2/b^2 = 1 の外向き法線は
+			//   normalize({ x/a^2, y/b^2 })
+			// = normalize({ ux/a, uy/b })
+
+			const float nx = (ux / a);
+			const float ny = (uy / b);
+			const float lengthInv = (1.0f / std::sqrt(nx * nx + ny * ny));
+
+			return{ (nx * lengthInv), (ny * lengthInv) };
+		}
+
+		static void SetEllipseFrameVertexPair(
+			Vertex2D*& pDst,
+			const float centerX,
+			const float centerY,
+			const float a,
+			const float b,
+			const float ux,
+			const float uy,
+			const float innerThickness,
+			const float outerThickness) noexcept
+		{
+			const float baseX = (centerX + a * ux);
+			const float baseY = (centerY + b * uy);
+
+			const Float2 normal = CalculateEllipseNormal(a, b, ux, uy);
+
+			// outer vertex
+			(pDst++)->pos.set(
+				(baseX + normal.x * outerThickness),
+				(baseY + normal.y * outerThickness));
+
+			// inner vertex
+			(pDst++)->pos.set(
+				(baseX - normal.x * innerThickness),
+				(baseY - normal.y * innerThickness));
+		}
+
+		[[nodiscard]]
 		static Vertex2D::IndexType BuildRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& color, const float scale)
 		{
 			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
@@ -499,22 +549,23 @@ namespace s3d
 			return{ std::move(posBuffer), std::move(colorBuffer) };
 		}
 
+		template <class PointType>
 		[[nodiscard]]
-		static Array<Float2> SimplifyClosed(const std::span<const Vec2> points, const float scale, const Optional<Float2>& offset)
+		static Array<Float2> SimplifyClosed(const std::span<const PointType> points, const float scale, const Optional<Float2>& offset)
 		{
-			const double threshold = (0.25f / scale);
-			const double thresholdSq = (threshold * threshold);
+			const float threshold = (0.25f / scale);
+			const float thresholdSq = (threshold * threshold);
 			const size_t size = points.size();
 
 			Array<Float2> buffer(Arg::reserve = size);
 			{
-				Vec2 previous = points.front();
+				Float2 previous = points.front();
 
 				buffer.push_back(previous);
 
 				for (size_t i = 1; i < (size - 1); ++i)
 				{
-					const Vec2 current = points[i];
+					const Float2 current = points[i];
 
 					if (previous.distanceFromSq(current) < thresholdSq)
 					{
@@ -526,7 +577,7 @@ namespace s3d
 					previous = current;
 				}
 
-				const Vec2 current = points.back();
+				const Float2 current = points.back();
 
 				if (previous != current)
 				{
@@ -1185,8 +1236,9 @@ namespace s3d
 			return indexSize;
 		}
 
+		template <class PointType>
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& color, const float scale)
+		static Vertex2D::IndexType BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const PointType> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& color, const float scale)
 		{
 			const Array<Float2> base = SimplifyClosed(points, scale, offset);
 			const Array<Float2> buffer = AdjustClosed(base, scale, inner);
@@ -2136,11 +2188,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float aInner, const float bInner, const float thickness, const Float4& innerColor, const Float4& outerColor, const float scale)
+		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float innerThickness,	const float outerThickness,	const Float4& innerColor, const Float4& outerColor, const float scale)
 		{
-			const float aOuter = (aInner + thickness);
-			const float bOuter = (bInner + thickness);
-			const float majorAxis = Max(aOuter, bOuter);
+			if ((innerThickness <= 0.0f) && (outerThickness <= 0.0f))
+			{
+				return 0;
+			}
+
+			const float majorAxis = (Max(a, b) + Max(Abs(innerThickness), Abs(outerThickness)));
 			const Vertex2D::IndexType Quality = CalculateCircleQuality(majorAxis * scale); // 円周の 1/4 に相当する品質
 			const Vertex2D::IndexType FullQuality = (Quality * 4);
 			const Vertex2D::IndexType VertexCount = (FullQuality * 2);
@@ -2165,26 +2220,59 @@ namespace s3d
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
 				const Float2* cs = (pCS + i);
-				const float oxa = (cs->x * aOuter);
-				const float ixa = (cs->x * aInner);
-				const float oxb = (cs->x * bOuter);
-				const float ixb = (cs->x * bInner);
-				const float oya = (cs->y * aOuter);
-				const float iya = (cs->y * aInner);
-				const float oyb = (cs->y * bOuter);
-				const float iyb = (cs->y * bInner);
 
-				(pDst0++)->pos.set((centerX + oxa), (centerY + oyb));
-				(pDst0++)->pos.set((centerX + ixa), (centerY + iyb));
+				// 既存実装と同じ周回順:
+				// top -> right -> bottom -> left
+				//
+				// cs->x = sin(rad)
+				// cs->y = -cos(rad)
 
-				(pDst1++)->pos.set((centerX - oya), (centerY + oxb));
-				(pDst1++)->pos.set((centerX - iya), (centerY + ixb));
+				const float ux = cs->x;
+				const float uy = cs->y;
 
-				(pDst2++)->pos.set((centerX - oxa), (centerY - oyb));
-				(pDst2++)->pos.set((centerX - ixa), (centerY - iyb));
+				SetEllipseFrameVertexPair(
+					pDst0,
+					centerX,
+					centerY,
+					a,
+					b,
+					ux,
+					uy,
+					innerThickness,
+					outerThickness);
 
-				(pDst3++)->pos.set((centerX + oya), (centerY - oxb));
-				(pDst3++)->pos.set((centerX + iya), (centerY - ixb));
+				SetEllipseFrameVertexPair(
+					pDst1,
+					centerX,
+					centerY,
+					a,
+					b,
+					-uy,
+					ux,
+					innerThickness,
+					outerThickness);
+
+				SetEllipseFrameVertexPair(
+					pDst2,
+					centerX,
+					centerY,
+					a,
+					b,
+					-ux,
+					-uy,
+					innerThickness,
+					outerThickness);
+
+				SetEllipseFrameVertexPair(
+					pDst3,
+					centerX,
+					centerY,
+					a,
+					b,
+					uy,
+					-ux,
+					innerThickness,
+					outerThickness);
 			}
 
 			for (Vertex2D::IndexType i = 0; i < FullQuality; ++i)
@@ -3155,6 +3243,33 @@ namespace s3d
 			}
 
 			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildShape2DFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const float thickness, const Float4& color, const float scale)
+		{
+			const size_t num_points = vertices.size();
+
+			if (num_points < 3)
+			{
+				return 0;
+			}
+			else if (32760 <= num_points)
+			{
+				return 0;
+			}
+
+			if (thickness <= 0.0f)
+			{
+				return 0;
+			}
+
+			return BuildClosedLineString<Float2>(bufferCreator, vertices, none, thickness, false, color, scale);
 		}
 
 		////////////////////////////////////////////////////////////////

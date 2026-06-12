@@ -64,7 +64,7 @@ namespace s3d
 	# endif
 
 		template <Concept::FloatingPoint Float, class SV>
-		Result<Float, ParseErrorReason> ParseFloatWithReason_impl(const SV s) noexcept
+		Result<Float, ParseErrorReason> ParseFloatResult_impl(const SV s) noexcept
 		{
 			Float value;
 			auto [p, ec] = fast_float::from_chars(s.data(), (s.data() + s.size()), value);
@@ -97,7 +97,7 @@ namespace s3d
 	template <>
 	float ParseFloat<float>(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto result = ParseFloatWithReason<float>(s))
+		if (const auto result = ParseFloatResult<float>(s))
 		{
 			return *result;
 		}
@@ -114,7 +114,7 @@ namespace s3d
 	template <>
 	double ParseFloat<double>(const std::string_view s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto result = ParseFloatWithReason<double>(s))
+		if (const auto result = ParseFloatResult<double>(s))
 		{
 			return *result;
 		}
@@ -131,7 +131,7 @@ namespace s3d
 	template <>
 	float ParseFloat(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto result = ParseFloatWithReason<float>(s))
+		if (const auto result = ParseFloatResult<float>(s))
 		{
 			return *result;
 		}
@@ -148,7 +148,7 @@ namespace s3d
 	template <>
 	double ParseFloat(const StringView s, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto result = ParseFloatWithReason<double>(s))
+		if (const auto result = ParseFloatResult<double>(s))
 		{
 			return *result;
 		}
@@ -171,7 +171,7 @@ namespace s3d
 	template <>
 	Optional<float> ParseFloatOpt<float>(const std::string_view s) noexcept
 	{
-		if (const auto result = ParseFloatWithReason<float>(s))
+		if (const auto result = ParseFloatResult<float>(s))
 		{
 			return *result;
 		}
@@ -184,7 +184,7 @@ namespace s3d
 	template <>
 	Optional<double> ParseFloatOpt<double>(const std::string_view s) noexcept
 	{
-		if (const auto result = ParseFloatWithReason<double>(s))
+		if (const auto result = ParseFloatResult<double>(s))
 		{
 			return *result;
 		}
@@ -197,7 +197,7 @@ namespace s3d
 	template <>
 	Optional<float> ParseFloatOpt<float>(const StringView s) noexcept
 	{
-		if (const auto result = ParseFloatWithReason<float>(s))
+		if (const auto result = ParseFloatResult<float>(s))
 		{
 			return *result;
 		}
@@ -210,7 +210,7 @@ namespace s3d
 	template <>
 	Optional<double> ParseFloatOpt<double>(const StringView s) noexcept
 	{
-		if (const auto result = ParseFloatWithReason<double>(s))
+		if (const auto result = ParseFloatResult<double>(s))
 		{
 			return *result;
 		}
@@ -222,31 +222,31 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ParseFloatWithReason
+	//	ParseFloatResult
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <>
-	Result<float, ParseErrorReason> ParseFloatWithReason<float>(const std::string_view s) noexcept
+	Result<float, ParseErrorReason> ParseFloatResult<float>(const std::string_view s) noexcept
 	{
-		return ParseFloatWithReason_impl<float>(s);
+		return ParseFloatResult_impl<float>(s);
 	}
 
 	template <>
-	Result<float, ParseErrorReason> ParseFloatWithReason<float>(const StringView s) noexcept
+	Result<float, ParseErrorReason> ParseFloatResult<float>(const StringView s) noexcept
 	{
-		return ParseFloatWithReason_impl<float>(s);
+		return ParseFloatResult_impl<float>(s);
 	}
 
 	template <>
-	Result<double, ParseErrorReason> ParseFloatWithReason<double>(const std::string_view s) noexcept
+	Result<double, ParseErrorReason> ParseFloatResult<double>(const std::string_view s) noexcept
 	{
-		return ParseFloatWithReason_impl<double>(s);
+		return ParseFloatResult_impl<double>(s);
 	}
 
 	template <>
-	Result<double, ParseErrorReason> ParseFloatWithReason<double>(const StringView s) noexcept
+	Result<double, ParseErrorReason> ParseFloatResult<double>(const StringView s) noexcept
 	{
-		return ParseFloatWithReason_impl<double>(s);
+		return ParseFloatResult_impl<double>(s);
 	}
 }

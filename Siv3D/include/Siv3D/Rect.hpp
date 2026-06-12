@@ -1855,7 +1855,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Rect& paint(Image& dst, const Color& color) const;
+		const Rect& paint(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1863,7 +1863,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Rect& overwrite(Image& dst, const Color& color) const;
+		const Rect& overwrite(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1871,7 +1871,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Rect& paintFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+		const Rect& paintFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+
+		const Rect& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1879,7 +1881,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Rect& overwriteFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+		const Rect& overwriteFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+
+		const Rect& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2164,7 +2168,7 @@ struct fmt::formatter<s3d::Rect>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Rect& value, format_context& ctx);
+	format_context::iterator format(const s3d::Rect& value, format_context& ctx) const;
 };
 
 template <>
@@ -2174,7 +2178,7 @@ struct fmt::formatter<s3d::Rect, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Rect& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Rect& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

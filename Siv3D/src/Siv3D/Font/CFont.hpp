@@ -183,7 +183,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, ReadingDirection readingDirection, EnableFallback enableFallback, EnableLigatures enableLigatures) override;
+		Array<ResolvedGlyph> getResolvedGlyphs(Font::IDType handleID, StringView s, ReadingDirection readingDirection, EnableFontFallback enableFontFallback, EnableLigatures enableLigatures) override;
 
 		////////////////////////////////////////////////////////////////
 		//

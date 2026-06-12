@@ -134,7 +134,7 @@ struct fmt::formatter<s3d::Point3D, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Point3D& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Point3D& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

@@ -45,5 +45,10 @@ namespace s3d
 		{
 			throw std::out_of_range{ "Array::values_at(): index out of range" };
 		}
+
+		void ThrowArrayRotateMiddleOutOfRange()
+		{
+			throw std::out_of_range{ "Array::rotate(): middle index out of range" };
+		}
 	}
 }

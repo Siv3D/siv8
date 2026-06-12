@@ -16,6 +16,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -209,6 +210,64 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipseFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
+	const Ellipse& Ellipse::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::EllipseFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -337,9 +396,10 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(axes.x) - innerThickness),
-			static_cast<float>(Abs(axes.y) - innerThickness),
-			thickness,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
 			color0,
 			color0
 		);
@@ -358,9 +418,10 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(axes.x) - innerThickness),
-			static_cast<float>(Abs(axes.y) - innerThickness),
-			thickness,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
 		);
@@ -384,9 +445,10 @@ namespace s3d
 
 		SIV3D_ENGINE(Renderer2D)->addEllipseFrame(
 			center,
-			static_cast<float>(Abs(axes.x) - innerThickness),
-			static_cast<float>(Abs(axes.y) - innerThickness),
-			thickness,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
 			pattern
 		);
 
@@ -494,7 +556,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Ellipse>::format(const s3d::Ellipse& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Ellipse>::format(const s3d::Ellipse& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -513,7 +575,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::parse(s3d
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::format(const s3d::Ellipse& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::format(const s3d::Ellipse& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

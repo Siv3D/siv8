@@ -12,6 +12,7 @@
 # include <array>
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -771,6 +772,54 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Shape2D& Shape2D::paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasings) const
+	{
+		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::SourceOver, enableAntialiasings);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Shape2D& Shape2D::overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::FillPolygon(dst, m_vertices.asArray<Vec2>(), color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Shape2D& Shape2D::paintFrame(Image& dst, const double thickness, const Color& color, EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, m_vertices.asArray<Vec2>(), thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Shape2D& Shape2D::overwriteFrame(Image& dst, const double thickness, const Color& color, EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, m_vertices.asArray<Vec2>(), thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -778,14 +827,12 @@ namespace s3d
 	const Shape2D& Shape2D::draw(const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, color.toFloat4());
-
 		return *this;
 	}
 
 	const Shape2D& Shape2D::draw(const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, pattern);
-
 		return *this;
 	}
 
@@ -795,13 +842,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	// const Shape2D& Shape2D::drawFrame(const double thickness, const ColorF& color) const
-	// {
-	// 	SIV3D_ENGINE(Renderer2D)->addPolygonFrame(m_vertices.data(), m_vertices.size(),
-	// 		static_cast<float>(thickness), color.toFloat4());
+	 const Shape2D& Shape2D::drawFrame(const double thickness, const ColorF& color) const
+	 {
+	 	SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, static_cast<float>(thickness), color.toFloat4());
+	 	return *this;
+	 }
 
-	// 	return *this;
-	// }
+	 const Shape2D& Shape2D::drawFrame(const double thickness, const PatternParameters& pattern) const
+	 {
+		SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, static_cast<float>(thickness), pattern);
+		return *this;
+	 }
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -809,22 +860,38 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	// const Shape2D& Shape2D::drawWireframe(const double thickness, const ColorF& color) const
-	// {
-	// 	const Float2* pVertex = m_vertices.data();
-	// 	const TriangleIndex* pIndex = m_indices.data();
-	// 	const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
-	// 	const Float4 colorF = color.toFloat4();
+	const Shape2D& Shape2D::drawWireframe(const double thickness, const ColorF& color) const
+	{
+		const Float2* pVertex = m_vertices.data();
+		const TriangleIndex* pIndex = m_indices.data();
+		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
+		const float thicknessF = static_cast<float>(thickness);
+		const Float4 colorF = color.toFloat4();
+		
+		while (pIndex != pIndexEnd)
+		{
+			const Float2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
+			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, thicknessF, colorF);
+			++pIndex;
+		}
+		
+		return *this;
+	}
 
-	// 	while (pIndex != pIndexEnd)
-	// 	{
-	// 		const Float2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
-
-	// 		SIV3D_ENGINE(Renderer2D)->addPolygonFrame(points, 3, static_cast<float>(thickness), colorF);
-
-	// 		++pIndex;
-	// 	}
-
-	// 	return *this;
-	// }
+	const Shape2D& Shape2D::drawWireframe(const double thickness, const PatternParameters& pattern) const
+	{
+		const Float2* pVertex = m_vertices.data();
+		const TriangleIndex* pIndex = m_indices.data();
+		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
+		const float thicknessF = static_cast<float>(thickness);
+		
+		while (pIndex != pIndexEnd)
+		{
+			const Float2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
+			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, thicknessF, pattern);
+			++pIndex;
+		}
+		
+		return *this;
+	}
 }

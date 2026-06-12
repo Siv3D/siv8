@@ -1381,6 +1381,39 @@
     <Filter Include="src\Siv3D\MicrophoneInfo">
       <UniqueIdentifier>{eaba3a27-5399-43f1-9d19-69a773661cd6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ThirdParty\toml11">
+      <UniqueIdentifier>{265b188a-37e9-45fe-bf84-6c7b8e6ff10a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TOMLValueType">
+      <UniqueIdentifier>{638a8d80-4fc8-48cf-80c3-458498171243}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TOMLParseErrorReason">
+      <UniqueIdentifier>{32a91018-70c8-4a78-89f7-2728c5cb5f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TOML">
+      <UniqueIdentifier>{640d12af-c05f-46e9-aa4c-7d6f59946288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\CSV">
+      <UniqueIdentifier>{b1ddd428-3ebf-4d18-87f5-62190cf90e27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ThirdParty\toml11">
+      <UniqueIdentifier>{f521d966-7626-42f9-8e1f-999f308645c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\toml11\toml11">
+      <UniqueIdentifier>{dff23255-525c-4717-a61c-5a184f7c152c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\toml11\toml11\fwd">
+      <UniqueIdentifier>{dc289c39-b2a6-4119-bc7d-21cb55f0ef29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ThirdParty\toml11\toml11\impl">
+      <UniqueIdentifier>{31f71884-8138-4c95-9682-3d9477c4bcd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ImagePixel">
+      <UniqueIdentifier>{c67db7d1-92aa-47c7-8af8-5230a38c7473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ImageDraw">
+      <UniqueIdentifier>{e878034e-5f75-4988-8967-6f7e3f30bed7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -1517,12 +1550,6 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Memory.ipp">
       <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h">
-      <Filter>include\ThirdParty\mimalloc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h">
-      <Filter>src\ThirdParty-prebuilt\mimalloc</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Result.hpp">
       <Filter>include\Siv3D</Filter>
@@ -1664,15 +1691,6 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\TupleFormatter.ipp">
       <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h">
-      <Filter>include\ThirdParty\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h">
-      <Filter>include\ThirdParty\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h">
-      <Filter>include\ThirdParty\fmt</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\fmt\format-inl.h">
       <Filter>src\ThirdParty\fmt</Filter>
@@ -5499,6 +5517,276 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\lunasvg\svgtextelement.h">
       <Filter>src\ThirdParty\lunasvg</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\format.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\ostream.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\ranges.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\xchar.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\base.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\chrono.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\color.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\core.h">
+      <Filter>include\ThirdParty\fmt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Glyph.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Glyph.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOML.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOMLValueType.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\TOMLParseErrorReason.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\TOML.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSV.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVParseErrorCode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVParseErrorReason.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVReadOptions.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CSVWriteOptions.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\CSV.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIDuplicatePolicy.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIParseErrorCode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIParseErrorReason.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIReadOptions.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\INIWriteOptions.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\color.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\comments.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\compat.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\context.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\conversion.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\datetime.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\error_info.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\exception.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\find.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\format.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\from.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\get.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\into.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\literal.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\location.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\ordered_map.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\parser.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\region.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\result.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\scanner.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\serializer.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\skip.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\source_location.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\spec.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\storage.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\syntax.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\traits.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\types.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\utility.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\value.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\value_t.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\version.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\visit.hpp">
+      <Filter>include\ThirdParty\toml11\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml.hpp">
+      <Filter>include\ThirdParty\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml_fwd.hpp">
+      <Filter>include\ThirdParty\toml11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\color_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\comments_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\datetime_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\error_info_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\format_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\literal_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\location_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\region_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\scanner_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\source_location_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\syntax_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\impl\value_t_impl.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\color_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\comments_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\datetime_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\error_info_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\format_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\literal_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\location_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\region_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\scanner_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\source_location_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\syntax_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\toml11\toml11\fwd\value_t_fwd.hpp">
+      <Filter>include\ThirdParty\toml11\toml11\fwd</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty-prebuilt\mimalloc\mimalloc-new-delete.h">
+      <Filter>src\ThirdParty-prebuilt\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\ThirdParty\mimalloc\mimalloc.h">
+      <Filter>include\ThirdParty\mimalloc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageDraw.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImagePixel.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ImagePixel.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\ImagePixel\SolidColorWriter.hpp">
+      <Filter>src\Siv3D\ImagePixel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8503,6 +8791,75 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgtextelement.cpp">
       <Filter>src\ThirdParty\lunasvg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOMLValueType\SivTOMLValueType.cpp">
+      <Filter>src\Siv3D\TOMLValueType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOMLParseErrorReason\SivTOMLParseErrorReason.cpp">
+      <Filter>src\Siv3D\TOMLParseErrorReason</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TOML\SivTOML.cpp">
+      <Filter>src\Siv3D\TOML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CSV\SivCSV.cpp">
+      <Filter>src\Siv3D\CSV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_color.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_comments.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_context.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_datetime.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_error_info.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_format.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_literal.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_location.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_parser.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_region.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_scanner.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_serializer.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_skip.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_source_location.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_syntax.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_types.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\toml11\toml11_value_t.cpp">
+      <Filter>src\ThirdParty\toml11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageDraw\SivImageDraw.cpp">
+      <Filter>src\Siv3D\ImageDraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImagePixel\SivImagePixel.cpp">
+      <Filter>src\Siv3D\ImagePixel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

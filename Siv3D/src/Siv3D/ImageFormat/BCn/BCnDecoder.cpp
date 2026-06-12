@@ -166,6 +166,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("BCnDecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		DDSURFACEDESC2 desc{};
 
 		if (reader->read(&desc, 4, sizeof(desc)) != sizeof(desc))
@@ -496,6 +501,11 @@ namespace s3d
 	BCnData BCnDecoder::decodeNative(std::unique_ptr<IReader> reader, const bool sRGB, const FilePathView) const
 	{
 		LOG_SCOPED_DEBUG("BCnDecoder::decodeNative()");
+
+		if (not reader)
+		{
+			return{};
+		}
 
 		DDSURFACEDESC2 desc{};
 

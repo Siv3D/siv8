@@ -55,7 +55,7 @@ namespace s3d
 
 	bool BinaryFileWriter::BinaryFileWriterDetail::open(const FilePathView path, const OpenMode openMode)
 	{
-		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path, FromEnum(openMode)));
+		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path.toUTF8(), FromEnum(openMode)));
 
 		close();
 
@@ -86,7 +86,7 @@ namespace s3d
 
 			if (handle == INVALID_HANDLE_VALUE)
 			{
-				LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to open the file `{0}`. {1}", path, Platform::Windows::GetLastErrorMessage()));
+				LOG_FAIL(fmt::format("❌ BinaryFileWriter: Failed to open the file `{0}`. {1}", path.toUTF8(), Platform::Windows::GetLastErrorMessage().toUTF8()));
 				return false;
 			}
 

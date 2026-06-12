@@ -128,7 +128,7 @@ namespace s3d
 
 		if (exists) // すでに登録されている場合は失敗
 		{
-			LOG_FAIL(fmt::format("❌ AudioDecoder: {} is already registered", name));
+			LOG_FAIL(fmt::format("❌ AudioDecoder: {} is already registered", name.toUTF8()));
 			
 			return false;
 		}
@@ -136,7 +136,7 @@ namespace s3d
 		{
 			m_decoders.push_back(std::move(decoder));
 
-			LOG_INFO(fmt::format("🆕 AudioDecoder: {} has been registered", name));
+			LOG_INFO(fmt::format("🆕 AudioDecoder: {} has been registered", name.toUTF8()));
 
 			return true;
 		}
@@ -156,11 +156,11 @@ namespace s3d
 		{
 			m_decoders.erase(it);
 
-			LOG_INFO(fmt::format("🗑️ AudioDecoder: {} has been removed", decoderName));
+			LOG_INFO(fmt::format("🗑️ AudioDecoder: {} has been removed", decoderName.toUTF8()));
 		}
 		else
 		{
-			LOG_DEBUG(fmt::format("AudioDecoder: {} not found", decoderName));
+			LOG_DEBUG(fmt::format("AudioDecoder: {} not found", decoderName.toUTF8()));
 		}
 	}
 
@@ -192,7 +192,7 @@ namespace s3d
 			return{};
 		}
 
-		LOG_TRACE(fmt::format("Audio decoder name: {}", (*it)->name()));
+		LOG_TRACE(fmt::format("Audio decoder name: {}", (*it)->name().toUTF8()));
 
 		return (*it)->audioFormat();
 	}
@@ -207,6 +207,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("CAudioDecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		const auto it = FindDecoder(m_decoders, decoderName, *reader, pathHint);
 
 		if (it == m_decoders.end())
@@ -214,7 +219,7 @@ namespace s3d
 			return{};
 		}
 
-		LOG_TRACE(fmt::format("Audio decoder name: {}", (*it)->name()));
+		LOG_TRACE(fmt::format("Audio decoder name: {}", (*it)->name().toUTF8()));
 
 		return (*it)->decode(std::move(reader), pathHint);
 	}

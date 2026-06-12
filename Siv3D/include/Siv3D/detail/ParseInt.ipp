@@ -43,7 +43,7 @@ namespace s3d
 	template <Concept::Integral Int>
 	Int ParseInt(const std::string_view s, const int32 radix, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto result = ParseIntWithReason<Int>(s, radix))
+		if (const auto result = ParseIntResult<Int>(s, radix))
 		{
 			return *result;
 		}
@@ -60,7 +60,7 @@ namespace s3d
 	template <Concept::Integral Int>
 	Int ParseInt(const StringView s, const int32 radix, [[maybe_unused]] const std::source_location& location)
 	{
-		if (const auto result = ParseIntWithReason<Int>(s, radix))
+		if (const auto result = ParseIntResult<Int>(s, radix))
 		{
 			return *result;
 		}
@@ -83,7 +83,7 @@ namespace s3d
 	template <Concept::Integral Int>
 	Optional<Int> ParseIntOpt(const std::string_view s, const int32 radix) noexcept
 	{
-		if (const auto result = ParseIntWithReason<Int>(s, radix))
+		if (const auto result = ParseIntResult<Int>(s, radix))
 		{
 			return *result;
 		}
@@ -96,7 +96,7 @@ namespace s3d
 	template <Concept::Integral Int>
 	Optional<Int> ParseIntOpt(const StringView s, const int32 radix) noexcept
 	{
-		if (const auto result = ParseIntWithReason<Int>(s, radix))
+		if (const auto result = ParseIntResult<Int>(s, radix))
 		{
 			return *result;
 		}

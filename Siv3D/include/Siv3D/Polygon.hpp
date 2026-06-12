@@ -885,11 +885,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Polygon& paint(Image& dst, const Color& color) const;
+		const Polygon& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Polygon& paint(Image& dst, double x, double y, const Color& color) const;
-
-		//const Polygon& paint(Image& dst, const Vec2& pos, const Color& color) const;
+		const Polygon& paint(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -897,11 +895,37 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Polygon& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Polygon& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Polygon& overwrite(Image& dst, double x, double y, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Polygon& overwrite(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Polygon& overwrite(Image& dst, const Vec2& pos, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Polygon& paintFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Polygon& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		void paintFrame(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		void paintFrame(Image& dst, const Vec2& pos, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Polygon& overwriteFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Polygon& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		void overwriteFrame(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		void overwriteFrame(Image& dst, const Vec2& pos, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -915,12 +939,6 @@ namespace s3d
 		const Polygon& draw(const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形を描画します。
-		/// @param x X 座標のオフセット
-		/// @param y Y 座標のオフセット
-		/// @param color 色
-		void draw(double x, double y, const ColorF& color = Palette::White) const;
-
-		/// @brief 移動させた位置に多角形を描画します。
 		/// @param pos 座標のオフセット
 		/// @param color 色
 		void draw(const Vec2& pos, const ColorF& color = Palette::White) const;
@@ -929,12 +947,6 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Polygon& draw(const PatternParameters& pattern) const;
-
-		/// @brief 移動させた位置に多角形を描画します。
-		/// @param x X 座標のオフセット
-		/// @param y Y 座標のオフセット
-		/// @param pattern 塗りつぶしパターン
-		void draw(double x, double y, const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形を描画します。
 		/// @param pos 座標のオフセット
@@ -947,18 +959,31 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 多角形を回転 + 移動して描画します。
-		///// @param angle 回転角度（ラジアン）
-		///// @param pos 位置
-		///// @param color 色
-		//void drawTransformed(double angle, const Vec2& pos, const ColorF& color = Palette::White) const;
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param color 色
+		void drawTransformed(double angle, const Vec2& pos, const ColorF& color = Palette::White) const;
 
-		///// @brief 多角形を回転 + 移動して描画します。
-		///// @param s 回転角度のサイン
-		///// @param c 回転角度のコサイン
-		///// @param pos 位置
-		///// @param color 色
-		//void drawTransformed(double s, double c, const Vec2& pos, const ColorF& color = Palette::White) const;
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param color 色
+		void drawTransformed(double s, double c, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン 
+		void drawTransformed(double angle, const Vec2& pos, const PatternParameters& pattern) const;
+
+		/// @brief 多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン
+		void drawTransformed(double s, double c, const Vec2& pos, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -973,13 +998,6 @@ namespace s3d
 		const Polygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形の枠を描画します。
-		/// @param x X 座標のオフセット
-		/// @param y Y 座標のオフセット
-		/// @param thickness 枠の太さ（ピクセル）
-		/// @param color 色
-		void drawFrame(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
-
-		/// @brief 移動させた位置に多角形の枠を描画します。
 		/// @param pos 座標のオフセット
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 色
@@ -990,13 +1008,6 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Polygon& drawFrame(double thickness, const PatternParameters& pattern) const;
-
-		/// @brief 移動させた位置に多角形の枠を描画します。
-		/// @param x X 座標のオフセット
-		/// @param y Y 座標のオフセット
-		/// @param thickness 枠の太さ（ピクセル）
-		/// @param pattern 塗りつぶしパターン
-		void drawFrame(double x, double y, double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形の枠を描画します。
 		/// @param pos 座標のオフセット
@@ -1017,13 +1028,6 @@ namespace s3d
 		const Polygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
-		/// @param x X 座標のオフセット
-		/// @param y Y 座標のオフセット
-		/// @param thickness ワイヤフレームの太さ（ピクセル）
-		/// @param color 色
-		void drawWireframe(double x, double y, double thickness = 1.0, const ColorF& color = Palette::White) const;
-
-		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
 		/// @param pos 座標のオフセット
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
 		/// @param color 色
@@ -1034,13 +1038,6 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Polygon& drawWireframe(double thickness, const PatternParameters& pattern) const;
-
-		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
-		/// @param x X 座標のオフセット
-		/// @param y Y 座標のオフセット
-		/// @param thickness ワイヤフレームの太さ（ピクセル）
-		/// @param pattern 塗りつぶしパターン
-		void drawWireframe(double x, double y, double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
 		/// @param pos 座標のオフセット
@@ -1179,7 +1176,7 @@ struct fmt::formatter<s3d::Polygon, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Polygon& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Polygon& value, s3d::BufferContext& ctx) const;
 };
 
 # include "detail/Polygon.ipp"

@@ -1650,7 +1650,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const RectF& paint(Image& dst, const Color& color) const;
+		const RectF& paint(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1658,7 +1658,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const RectF& overwrite(Image& dst, const Color& color) const;
+		const RectF& overwrite(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1666,7 +1666,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const RectF& paintFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+		const RectF& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1674,7 +1674,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const RectF& overwriteFrame(Image& dst, int32 innerThickness, int32 outerThickness, const Color& color) const;
+		const RectF& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1959,7 +1959,7 @@ struct fmt::formatter<s3d::RectF>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::RectF& value, format_context& ctx);
+	format_context::iterator format(const s3d::RectF& value, format_context& ctx) const;
 };
 
 template <>
@@ -1969,7 +1969,7 @@ struct fmt::formatter<s3d::RectF, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::RectF& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::RectF& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

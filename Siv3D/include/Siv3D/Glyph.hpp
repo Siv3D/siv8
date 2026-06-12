@@ -24,12 +24,11 @@ namespace s3d
 		/// @brief UTF-32 コードポイント
 		char32 codePoint = U'\0';
 
-		//[[nodiscard]]
-		//Glyph() = default;
+		[[nodiscard]]
+		Glyph() = default;
 
-		//explicit Glyph(const GlyphInfo& glyphInfo);
+		explicit Glyph(const GlyphInfo& glyphInfo);
 	};
 }
 
-//# include "detail/Glyph.ipp"
-
+# include "detail/Glyph.ipp"

@@ -307,8 +307,6 @@ namespace s3d
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{})
 			: m_container(list, alloc) {}
 
-	# if __cpp_lib_containers_ranges >= 202202L
-
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -317,8 +315,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::from_range_t, Range&& range, const Allocator& alloc = Allocator{})
 			: m_container(std::from_range, std::forward<Range>(range), alloc) {}
-
-	# endif
 
 		/// @brief ジェネレータ関数を使って配列を作成します。
 		/// @param size 作成する配列の要素数
@@ -413,7 +409,7 @@ namespace s3d
 		/// @param count 要素数
 		/// @param value 要素の値
 		/// @return *this
-		constexpr void assign(size_type count, value_type value) SIV3D_LIFETIMEBOUND
+		constexpr void assign(size_type count, value_type value)
 		{
 			m_container.assign(count, value);
 		}
@@ -424,7 +420,7 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <std::input_iterator Iterator>
-		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
+		constexpr void assign(Iterator first, Iterator last)
 		{
 			m_container.assign(first, last);
 		}
@@ -432,7 +428,7 @@ namespace s3d
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
 		/// @return *this
-		constexpr void assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
+		constexpr void assign(std::initializer_list<value_type> list)
 		{
 			m_container.assign(list);
 		}
@@ -448,14 +444,9 @@ namespace s3d
 		/// @param range 範囲
 		/// @return *this
 		template <Concept::ContainerCompatibleRange<bool> Range>
-		constexpr void assign_range(Range&& range) SIV3D_LIFETIMEBOUND
+		constexpr void assign_range(Range&& range)
 		{
-		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.assign_range(std::forward<Range>(range));
-		# else
-			auto common_range = std::views::common(std::forward<Range>(range));
-			m_container.assign(std::ranges::begin(common_range), std::ranges::end(common_range));
-		# endif
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -495,6 +486,30 @@ namespace s3d
 		/// @brief std::basic_string&gt;bool&lt; への暗黙の変換を行います。
 		[[nodiscard]]
 		constexpr operator container_type() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	asArray
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素の型を変換した新しい配列を返します。
+		/// @tparam ElementType 変換後の要素の型
+		/// @return 要素の型を変換した新しい配列
+		template <class ElementType>
+		[[nodiscard]]
+		constexpr Array<ElementType> asArray() const
+			requires requires(const value_type& value) { static_cast<ElementType>(value); }
+		{
+			Array<ElementType> result(Arg::reserve = m_container.size());
+
+			for (const auto& value : m_container)
+			{
+				result.push_back(static_cast<ElementType>(value));
+			}
+
+			return result;
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1007,13 +1022,9 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		template <Concept::ContainerCompatibleRange<bool> Range>
-		constexpr iterator insert_range(const_iterator pos, Range&& range) {
-		# if __cpp_lib_containers_ranges >= 202202L
+		constexpr iterator insert_range(const_iterator pos, Range&& range)
+		{
 			return m_container.insert_range(pos, std::forward<Range>(range));
-		# else
-			auto common_range = std::views::common(std::forward<Range>(range));
-			return m_container.insert(pos, std::ranges::begin(common_range), std::ranges::end(common_range));
-		# endif
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1046,12 +1057,7 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<bool> Range>
 		constexpr void append_range(Range&& range)
 		{
-		# if __cpp_lib_containers_ranges >= 202202L
 			m_container.append_range(std::forward<Range>(range));
-		# else
-			auto common_range = std::views::common(std::forward<Range>(range));
-			m_container.insert(m_container.end(), std::ranges::begin(common_range), std::ranges::end(common_range));
-		# endif
 		}
 
 		////////////////////////////////////////////////////////////////

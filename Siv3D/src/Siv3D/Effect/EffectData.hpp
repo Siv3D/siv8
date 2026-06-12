@@ -107,14 +107,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	setSortingEnabled, isSortingEnabled
+		//	setOrderSortingEnabled, isOrderSortingEnabled
 		//
 		////////////////////////////////////////////////////////////////
 
-		void setSortingEnabled(bool enabled) noexcept;
+		void setOrderSortingEnabled(bool enabled) noexcept;
 
 		[[nodiscard]]
-		bool isSortingEnabled() const noexcept;
+		bool isOrderSortingEnabled() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

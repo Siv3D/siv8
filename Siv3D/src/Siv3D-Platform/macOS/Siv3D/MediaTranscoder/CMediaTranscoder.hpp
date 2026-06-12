@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -22,13 +22,13 @@ namespace s3d
 
 		void init() override;
 
-		bool encodeAAC(const Wave& wave, IWriter& writer, AACQuality quality) const;
+		bool encodeAAC(const Wave& wave, IWriter& writer, AACQuality quality) const override;
 
-		Array<uint32> getAvailableAACSampleRates(uint32 channels = 2) const;
+		Array<uint32> getAvailableAACSampleRates(uint32 channels = 2) const override;
 
-		bool encodeMP3(const Wave& wave, IWriter& writer, MP3Quality quality) const;
+		bool encodeMP3(const Wave& wave, IWriter& writer, MP3Quality quality) const override;
 
-		Array<uint32> getAvailableMP3SampleRates(uint32 channels = 2) const;
+		Array<uint32> getAvailableMP3SampleRates(uint32 channels = 2) const override;
 
 	private:
 

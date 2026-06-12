@@ -52,11 +52,11 @@ namespace s3d
 				if (UINT quality = 0; SUCCEEDED(device->CheckMultisampleQualityLevels(format, 4, &quality)) && (0 < quality))
 				{
 					multiSampleSupportTable[i] = true;
-					logText += fmt::format("{} ✔\n", name);
+					logText += fmt::format("{} ✔\n", name.toUTF8());
 				}
 				else
 				{
-					logText += fmt::format("{} ✘\n", name);
+					logText += fmt::format("{} ✘\n", name.toUTF8());
 				}
 			}
 
@@ -135,6 +135,11 @@ namespace s3d
 
 	Texture::IDType CTexture_D3D11::create(std::unique_ptr<IReader> reader, FilePathView pathHint, const TextureDesc desc)
 	{
+		if (not reader)
+		{
+			return Texture::IDType::Null();
+		}
+
 		if (not reader->isOpen())
 		{
 			return Texture::IDType::Null();

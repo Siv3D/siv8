@@ -60,6 +60,11 @@ namespace s3d
 
 	bool SVG::load(std::unique_ptr<IReader> reader)
 	{
+		if (not reader)
+		{
+			return false;
+		}
+
 		std::string source(static_cast<size_t>(reader->size()), '\0');
 
 		reader->read(source.data(), source.size());

@@ -48,6 +48,34 @@ namespace s3d
 		[[nodiscard]]
 		explicit BinaryFileWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc);
 
+		BinaryFileWriter(const BinaryFileWriter& other) = delete;
+
+		/// @brief ムーブコンストラクタ
+		/// @param other ムーブする BinaryFileWriter
+		BinaryFileWriter(BinaryFileWriter&& other) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief デストラクタ
+		~BinaryFileWriter() override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		BinaryFileWriter& operator =(const BinaryFileWriter& other) = delete;
+
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする BinaryFileWriter
+		/// @return *this
+		BinaryFileWriter& operator =(BinaryFileWriter&& other) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	open
@@ -187,7 +215,7 @@ namespace s3d
 
 		class BinaryFileWriterDetail;
 
-		std::shared_ptr<BinaryFileWriterDetail> pImpl;
+		std::unique_ptr<BinaryFileWriterDetail> pImpl;
 	};
 }
 

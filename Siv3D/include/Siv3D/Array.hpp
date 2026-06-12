@@ -191,8 +191,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::initializer_list<value_type> list, const Allocator& alloc = Allocator{});
 
-	# if __cpp_lib_containers_ranges >= 202202L
-		
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -201,8 +199,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array(std::from_range_t, Range&& range, const Allocator& alloc = Allocator{});
 
-	# endif
-		
 		/// @brief ジェネレータ関数を使って配列を作成します。
 		/// @param size 作成する配列の要素数
 		/// @param generator ジェネレータ関数
@@ -270,18 +266,18 @@ namespace s3d
 		/// @brief 指定した個数の要素からなる配列を作成します。
 		/// @param count 要素数
 		/// @param value 要素の値
-		constexpr void assign(size_type count, const value_type& value) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(size_type count, const value_type& value);
 
 		/// @brief イテレータが指す範囲の要素から配列を作成します。
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		template <std::input_iterator Iterator>
-		constexpr void assign(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(Iterator first, Iterator last);
 
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
-		constexpr void assign(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND;
+		constexpr void assign(std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -293,7 +289,7 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		template <Concept::ContainerCompatibleRange<Type> Range>
-		constexpr void assign_range(Range&& range) SIV3D_LIFETIMEBOUND;
+		constexpr void assign_range(Range&& range);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -321,6 +317,20 @@ namespace s3d
 		/// @return std::vector
 		[[nodiscard]]
 		constexpr container_type getContainer() && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	asArray
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素の型を変換した新しい配列を返します。
+		/// @tparam ElementType 変換後の要素の型
+		/// @return 要素の型を変換した新しい配列
+		template <class ElementType>
+		[[nodiscard]]
+		constexpr Array<ElementType> asArray() const
+			requires requires(const value_type& value){ static_cast<ElementType>(value); };
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -959,7 +969,8 @@ namespace s3d
 
 		/// @brief 他の配列と要素を入れ替えます。
 		/// @param other 入れ替える配列
-		constexpr void swap(Array& other) noexcept;
+		constexpr void swap(Array& other)
+			noexcept(std::allocator_traits<Allocator>::propagate_on_container_swap::value || std::allocator_traits<Allocator>::is_always_equal::value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1473,7 +1484,7 @@ namespace s3d
 		/// @return 指定した値と等しい最初の要素のインデックス。見つからなかった場合は none
 		[[nodiscard]]
 		constexpr Optional<size_t> indexOf(const value_type& value) const
-			noexcept(std::declval<const value_type&>() == std::declval<const value_type&>());
+			noexcept(noexcept(std::declval<const value_type&>() == std::declval<const value_type&>()));
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2196,7 +2207,8 @@ namespace s3d
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array uniqued_consecutive() && noexcept;
+		constexpr Array uniqued_consecutive() &&
+			noexcept(std::is_nothrow_move_assignable_v<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2408,7 +2420,7 @@ namespace s3d
 		/// @brief 2 つの配列を入れ替えます。
 		/// @param lhs 一方の配列
 		/// @param rhs もう一方の配列
-		friend constexpr void swap(Array& lhs, Array& rhs) noexcept
+		friend constexpr void swap(Array& lhs, Array& rhs) noexcept(noexcept(lhs.swap(rhs)))
 		{
 			lhs.swap(rhs);
 		}
@@ -2455,13 +2467,9 @@ namespace s3d
 	Array(Iterator, Iterator, Allocator = Allocator{})
 		-> Array<typename std::iterator_traits<Iterator>::value_type, Allocator>;
 
-# if __cpp_lib_containers_ranges >= 202202L
-	
 	template<std::ranges::input_range Range, class Allocator = std::allocator<std::ranges::range_value_t<Range>>>
 	Array(std::from_range_t, Range&&, Allocator = Allocator{})
 		-> Array<std::ranges::range_value_t<Range>, Allocator>;
-
-# endif
 }
 
 # include "detail/Array.ipp"

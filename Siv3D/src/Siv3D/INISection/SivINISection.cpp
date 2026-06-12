@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -21,7 +21,7 @@ namespace s3d
 		[[noreturn]]
 		static void ThrowGetProperty(const StringView section, const StringView key)
 		{
-			throw Error{ fmt::format("INISection::operator []: Section `{}` does not contain the key `{}`", section, key) };
+			throw Error{ fmt::format("INISection::operator []: Section `{}` does not contain the key `{}`", section.toUTF8(), key.toUTF8()) };
 		}
 	}
 
@@ -29,7 +29,7 @@ namespace s3d
 	{
 		void ThrowINISectionGetError(const char* type, const StringView section, const StringView key)
 		{
-			throw Error{ fmt::format("INI[{}]::get<{}>({}) failed", DemangleUTF8(type), section, key) };
+			throw Error{ fmt::format("INI[{}]::get<{}>({}) failed", DemangleUTF8(type), section.toUTF8(), key.toUTF8()) };
 		}
 	}
 
@@ -146,31 +146,82 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	propertyView
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<INISection::Property> INISection::propertyView() const
+	{
+		Array<std::pair<int32, String>> sortedKeys;
+
+		for (const auto& [key, item] : items)
+		{
+			sortedKeys.emplace_back(item.index, key);
+		}
+
+		sortedKeys.sort();
+
+		Array<Property> result;
+		result.reserve(sortedKeys.size());
+
+		for (const auto& [_, key] : sortedKeys)
+		{
+			const auto it = items.find(key);
+
+			if (it == items.end())
+			{
+				continue;
+			}
+
+			const INIItem& item = it->second;
+			result.push_back(Property{ .key = key, .value = item.value, .index = item.index });
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	format
 	//
 	////////////////////////////////////////////////////////////////
 
-	String INISection::format() const
+	String INISection::format(const INIWriteOptions& options) const
 	{
 		String result;
+		const String& newline = options.newline;
 
 		if (name)
 		{
-			result += (U'[' + name + U"]\n");
+			result.push_back(U'[');
+			result.append(name);
+			result.push_back(U']');
 		}
 
-		Array<std::pair<int32, std::pair<String, String>>> sortedItems;
-
-		for (const auto& [key, item] : items)
+		for (const auto& property : propertyView())
 		{
-			sortedItems.emplace_back(item.index, std::pair{ key, item.value });
+			if (result)
+			{
+				result.append(newline);
+			}
+
+			result.append(property.key);
+
+			if (options.spaceAroundEquals)
+			{
+				result.append(U" = ");
+			}
+			else
+			{
+				result.push_back(U'=');
+			}
+
+			result.append(property.value);
 		}
 
-		sortedItems.sort();
-
-		for (const auto& item : sortedItems)
+		if (options.trailingNewline && result)
 		{
-			result += (item.second.first + U" = " + item.second.second + U'\n');
+			result.append(newline);
 		}
 
 		return result;

@@ -89,9 +89,9 @@ namespace s3d
 
 		virtual void addEllipse(const Float2& center, float a, float b, const PatternParameters& pattern) = 0;
 
-		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) = 0;
+		virtual void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor) = 0;
 
-		virtual void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) = 0;
+		virtual void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const PatternParameters& pattern) = 0;
 
 		virtual void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) = 0;
 
@@ -126,6 +126,14 @@ namespace s3d
 		virtual void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color) = 0;
 
 		virtual void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const PatternParameters& pattern) = 0;
+
+		virtual void addPolygonTransformed(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const Float4& color) = 0;
+
+		virtual void addPolygonTransformed(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const PatternParameters& pattern) = 0;
+
+		virtual void addShape2DFrame(std::span<const Float2> vertices, float thickness, const Float4& color) = 0;
+
+		virtual void addShape2DFrame(std::span<const Float2> vertices, float thickness, const PatternParameters& pattern) = 0;
 
 		virtual void addLineString(LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color) = 0;
 

@@ -506,7 +506,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Remove(const FilePathView path, const AllowUndo allowUndo)
+		bool Remove(const FilePathView path, const MoveToTrash moveToTrash)
 		{
 			if (path.isEmpty())
 			{
@@ -524,7 +524,7 @@ namespace s3d
 			{
 				.wFunc	= FO_DELETE,
 				.pFrom	= from.c_str(), // must be double-null terminated
-				.fFlags	= FILEOP_FLAGS(FOF_NOERRORUI | FOF_SILENT | FOF_NOCONFIRMATION | (allowUndo ? FOF_ALLOWUNDO : 0)),
+				.fFlags	= FILEOP_FLAGS(FOF_NOERRORUI | FOF_SILENT | FOF_NOCONFIRMATION | (moveToTrash ? FOF_ALLOWUNDO : 0)),
 			};
 
 			return (::SHFileOperationW(&fileOption) == 0)
@@ -537,14 +537,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool RemoveContents(const FilePathView path, const AllowUndo allowUndo)
+		bool RemoveContents(const FilePathView path, const MoveToTrash moveToTrash)
 		{
 			if (not IsDirectory(path))
 			{
 				return false;
 			}
 
-			return Remove((path + U"\\*"), allowUndo);
+			return Remove((path + U"\\*"), moveToTrash);
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace s3d
 	{
 		static void LogPDFiumError(const PDFiumAPI* api, const bool hasPasword)
 		{
-			const int32 errorCode = api->FPDF_GetLastError();
+			const auto errorCode = api->FPDF_GetLastError();
 
 			switch (errorCode)
 			{
@@ -280,6 +280,11 @@ namespace s3d
 	PDFDocumentData::PDFDocumentData(std::unique_ptr<IReader> reader, const StringView password, const PDFiumAPI* api)
 	{
 		m_api = api;
+
+		if (not reader)
+		{
+			return;
+		}
 
 		FPDF_DOCUMENT document = nullptr;
 		{

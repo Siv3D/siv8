@@ -420,6 +420,53 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildPolygonTransformed
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildPolygonTransformed(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const std::span<const TriangleIndex> triangleIndices, const float s, const float c, const Float2& offset, const Float4& color)
+		{
+			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(triangleIndices.size() * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			// 頂点バッファへの書き込み
+			{
+				const Float2* pSrc = vertices.data();
+				const Float2* pSrcEnd = (pSrc + vertices.size());
+				const Float2 _offset = offset;
+
+				while (pSrc != pSrcEnd)
+				{
+					const Float2 v = *pSrc++;
+					const float x = (v.x * c - v.y * s + _offset.x);
+					const float y = (v.x * s + v.y * c + _offset.y);
+					pVertex->pos.set(x, y);
+					pVertex->color = color;
+					++pVertex;
+				}
+			}
+
+			// インデックスバッファへの書き込み
+			{
+				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
+
+				for (size_t i = 0; i < IndexCount; ++i)
+				{
+					*(pIndex++) += indexOffset;
+				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildTexturedQuad
 		//
 		////////////////////////////////////////////////////////////////

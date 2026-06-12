@@ -49,7 +49,7 @@ namespace s3d
 		FSEventStreamRelease(m_eventStream);
 		m_eventStream = nullptr;
 		
-		LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Stopped watching `{}`", m_directory));
+		LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Stopped watching `{}`", m_directory.toUTF8()));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ namespace s3d
 		if (directory.isEmpty()
 			|| (not FileSystem::IsDirectory(directory)))
 		{
-			LOG_FAIL(fmt::format("❌ DirectoryWatcherDetail::start(): `{}` is not a directory", directory));
+			LOG_FAIL(fmt::format("❌ DirectoryWatcherDetail::start(): `{}` is not a directory", directory.toUTF8()));
 			return false;
 		}
 
@@ -105,11 +105,11 @@ namespace s3d
 		
 		if (m_extensionFilter)
 		{
-			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`. applicableExtensions = {}", m_directory, Format(m_extensionFilter.getSortedExtensions())));
+			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`. applicableExtensions = {}", m_directory.toUTF8(), Format(m_extensionFilter.getSortedExtensions()).toUTF8()));
 		}
 		else
 		{
-			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`", m_directory));
+			LOG_INFO(fmt::format("ℹ️ DirectoryWatcher: Started to watch `{}`", m_directory.toUTF8()));
 		}
 		
 		return true;

@@ -468,7 +468,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Image::premultiplyAlpha(const bool useSIMD)
+	void Image::premultiplyAlpha([[maybe_unused]] const bool useSIMD)
 	{
 	# if SIV3D_CPU(X86_64)
 
@@ -495,7 +495,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Image::unpremultiplyAlpha(const bool useSIMD)
+	void Image::unpremultiplyAlpha([[maybe_unused]] const bool useSIMD)
 	{
 	# if SIV3D_CPU(X86_64)
 
@@ -522,7 +522,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Image::bgraToRGBA(const bool useSIMD)
+	void Image::bgraToRGBA([[maybe_unused]] const bool useSIMD)
 	{
 	# if SIV3D_INTRINSIC(SSE)
 

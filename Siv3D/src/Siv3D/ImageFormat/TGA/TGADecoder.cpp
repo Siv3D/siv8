@@ -117,6 +117,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("TGADecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		TGAHeader header;
 			
 		if (not reader->read(header))

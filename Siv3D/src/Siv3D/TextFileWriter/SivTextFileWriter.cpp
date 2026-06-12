@@ -45,7 +45,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	TextFileWriter::TextFileWriter()
-		: pImpl{ std::make_shared<TextFileWriterDetail>() } {}
+		: pImpl{ std::make_unique<TextFileWriterDetail>() } {}
 
 	TextFileWriter::TextFileWriter(const FilePathView path, const TextEncoding encoding)
 		: TextFileWriter{}
@@ -58,6 +58,24 @@ namespace s3d
 	{
 		open(path, openMode, encoding);
 	}
+
+	TextFileWriter::TextFileWriter(TextFileWriter&& other) noexcept = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextFileWriter::~TextFileWriter() = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator =
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextFileWriter& TextFileWriter::operator =(TextFileWriter&& other) noexcept = default;
 
 	////////////////////////////////////////////////////////////////
 	//

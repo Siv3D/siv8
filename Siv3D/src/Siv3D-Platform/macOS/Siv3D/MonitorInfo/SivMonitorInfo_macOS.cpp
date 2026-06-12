@@ -108,8 +108,8 @@ namespace s3d
 					.displayRect			= Rect{ xPos, yPos, width, height },
 					.workArea				= Rect{ wx, wy, ww, wh },
 					.fullscreenResolution	= fullscreenResolution,
-					.isPrimary				= (i == 0),
 					.sizeMillimeter			= sizeMillimeter,
+					.isPrimary				= (i == 0),
 					.scaling				= scaling,
 					.refreshRate			= refreshRate,
 				};

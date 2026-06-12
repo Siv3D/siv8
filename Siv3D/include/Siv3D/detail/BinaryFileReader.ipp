@@ -35,6 +35,43 @@ namespace s3d
 		return (read(std::addressof(dst), sizeof(dst)) == sizeof(dst));
 	}
 
+	template <Concept::TriviallyCopyable Type>
+	Optional<Type> BinaryFileReader::read()
+	{
+		Type value;
+		
+		if (read(value))
+		{
+			return value;
+		}
+
+		return none;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	readExact
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool BinaryFileReader::readExact(Concept::TriviallyCopyable auto& dst)
+	{
+		return readExact(std::addressof(dst), sizeof(dst));
+	}
+
+	template <Concept::TriviallyCopyable Type>
+	Optional<Type> BinaryFileReader::readExact()
+	{
+		Type value;
+
+		if (readExact(value))
+		{
+			return value;
+		}
+
+		return none;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	lookahead
@@ -44,5 +81,18 @@ namespace s3d
 	bool BinaryFileReader::lookahead(Concept::TriviallyCopyable auto& dst) const
 	{
 		return (lookahead(std::addressof(dst), sizeof(dst)) == sizeof(dst));
+	}
+
+	template <Concept::TriviallyCopyable Type>
+	Optional<Type> BinaryFileReader::lookahead() const
+	{
+		Type value;
+
+		if (lookahead(value))
+		{
+			return value;
+		}
+
+		return none;
 	}
 }

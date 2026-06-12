@@ -795,7 +795,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Quad& paint(Image& dst, const Color& color) const;
+		const Quad& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -803,7 +803,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Quad& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Quad& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -811,7 +811,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Quad& paintFrame(Image& dst, int32 thickness, const Color& color) const;
+		const Quad& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -819,7 +819,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Quad& overwriteFrame(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Quad& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -975,7 +975,7 @@ struct fmt::formatter<s3d::Quad>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Quad& value, format_context& ctx);
+	format_context::iterator format(const s3d::Quad& value, format_context& ctx) const;
 };
 
 template <>
@@ -985,7 +985,7 @@ struct fmt::formatter<s3d::Quad, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Quad& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Quad& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

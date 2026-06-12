@@ -18,7 +18,7 @@
 # include "Pipe.hpp"
 
 namespace s3d
-{		
+{
 	////////////////////////////////////////////////////////////////
 	//
 	//	ChildProcess
@@ -60,6 +60,12 @@ namespace s3d
 		[[nodiscard]]
 		ChildProcess(FilePathView path, const Array<String>& commands, Pipe pipe = Pipe::None);
 
+		ChildProcess(const ChildProcess& other) = delete;
+
+		/// @brief ムーブコンストラクタ
+		/// @param other ムーブする ChildProcess
+		ChildProcess(ChildProcess&& other) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(destructor)
@@ -68,6 +74,19 @@ namespace s3d
 
 		/// @brief デストラクタ
 		~ChildProcess();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		ChildProcess& operator =(const ChildProcess& other) = delete;
+
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする ChildProcess
+		/// @return *this
+		ChildProcess& operator =(ChildProcess&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -157,6 +176,6 @@ namespace s3d
 
 		class ChildProcessDetail;
 
-		std::shared_ptr<ChildProcessDetail> pImpl;
+		std::unique_ptr<ChildProcessDetail> pImpl;
 	};
 }

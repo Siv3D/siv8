@@ -214,14 +214,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Resize(const Size size, const Centering centering)
+		bool Resize(const Size size, const CenterWindow centerWindow)
 		{
-			return ResizeVirtual(size, centering);
+			return ResizeVirtual(size, centerWindow);
 		}
 
-		bool Resize(const int32 width, const int32 height, const Centering centering)
+		bool Resize(const int32 width, const int32 height, const CenterWindow centerWindow)
 		{
-			return ResizeVirtual(Size{ width, height }, centering);
+			return ResizeVirtual(Size{ width, height }, centerWindow);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -230,7 +230,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool ResizeVirtual(const Size size, const Centering centering)
+		bool ResizeVirtual(const Size size, const CenterWindow centerWindow)
 		{
 			if ((not InRange(size.x, 1, 8192))
 				|| (not InRange(size.y, 1, 8192)))
@@ -253,7 +253,7 @@ namespace s3d
 				Scene::Resize(size);
 			}
 
-			if (centering)
+			if (centerWindow)
 			{
 				CenterToScreen();
 			}
@@ -261,9 +261,9 @@ namespace s3d
 			return true;
 		}
 
-		bool ResizeVirtual(const int32 width, const int32 height, const Centering centering)
+		bool ResizeVirtual(const int32 width, const int32 height, const CenterWindow centerWindow)
 		{
-			return ResizeVirtual(Size{ width, height }, centering);
+			return ResizeVirtual(Size{ width, height }, centerWindow);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -272,7 +272,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool ResizeActual(const Size size, const Centering centering)
+		bool ResizeActual(const Size size, const CenterWindow centerWindow)
 		{
 			if ((not InRange(size.x, 1, 8192))
 				|| (not InRange(size.y, 1, 8192)))
@@ -295,7 +295,7 @@ namespace s3d
 				Scene::Resize(size);
 			}
 
-			if (centering)
+			if (centerWindow)
 			{
 				CenterToScreen();
 			}
@@ -303,9 +303,9 @@ namespace s3d
 			return true;
 		}
 
-		bool ResizeActual(const int32 width, const int32 height, const Centering centering)
+		bool ResizeActual(const int32 width, const int32 height, const CenterWindow centerWindow)
 		{
-			return ResizeActual(Size{ width, height }, centering);
+			return ResizeActual(Size{ width, height }, centerWindow);
 		}
 
 		////////////////////////////////////////////////////////////////

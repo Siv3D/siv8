@@ -569,6 +569,30 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Bezier2& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Bezier2& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Bezier2& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Bezier2& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Bezier2& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Bezier2& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////
@@ -730,7 +754,7 @@ struct fmt::formatter<s3d::Bezier2>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Bezier2& value, format_context& ctx);
+	format_context::iterator format(const s3d::Bezier2& value, format_context& ctx) const;
 };
 
 template <>
@@ -740,7 +764,7 @@ struct fmt::formatter<s3d::Bezier2, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Bezier2& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Bezier2& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

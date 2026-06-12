@@ -60,7 +60,7 @@ namespace s3d
 
 			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
 			{
-				return std::count_if(it, (it + n), f);
+				return std::count_if(it, (it + n), detail::PassFunction(std::forward<Fty>(f)));
 			}));
 
 			it += n;
@@ -71,7 +71,7 @@ namespace s3d
 		
 		if (countLeft)
 		{
-			result = std::count_if(it, (it + countLeft), f);
+			result = std::count_if(it, (it + countLeft), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		for (auto& task : tasks)
@@ -131,7 +131,7 @@ namespace s3d
 
 			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
 			{
-				std::for_each(it, (it + n), f);
+				std::for_each(it, (it + n), detail::PassFunction(std::forward<Fty>(f)));
 			}));
 
 			it += n;
@@ -140,7 +140,7 @@ namespace s3d
 
 		if (countLeft)
 		{
-			std::for_each(it, (it + countLeft), f);
+			std::for_each(it, (it + countLeft), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		for (auto& task : tasks)
@@ -192,7 +192,7 @@ namespace s3d
 
 			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
 			{
-				std::for_each(it, (it + n), f);
+				std::for_each(it, (it + n), detail::PassFunction(std::forward<Fty>(f)));
 			}));
 
 			it += n;
@@ -201,7 +201,7 @@ namespace s3d
 
 		if (countLeft)
 		{
-			std::for_each(it, (it + countLeft), f);
+			std::for_each(it, (it + countLeft), detail::PassFunction(std::forward<Fty>(f)));
 		}
 
 		for (auto& task : tasks)

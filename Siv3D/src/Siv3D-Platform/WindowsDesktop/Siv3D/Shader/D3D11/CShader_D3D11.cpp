@@ -61,11 +61,11 @@ namespace s3d
 		{
 			if (pathHint)
 			{
-				LOG_DEBUG(fmt::format("CompileHLSLFromReader(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", pathHint, ToTargetName(stage), entryPoint, flags));
+				LOG_DEBUG(fmt::format("CompileHLSLFromReader(path = {}, stage = {}, entryPoint = {}, flags = {:#X})", pathHint.toUTF8(), ToTargetName(stage), entryPoint.toUTF8(), flags));
 			}
 			else
 			{
-				LOG_DEBUG(fmt::format("CompileHLSLFromReader(stage = {}, entryPoint = {}, flags = {:#X})", ToTargetName(stage), entryPoint, flags));
+				LOG_DEBUG(fmt::format("CompileHLSLFromReader(stage = {}, entryPoint = {}, flags = {:#X})", ToTargetName(stage), entryPoint.toUTF8(), flags));
 			}
 			
 			TextFileReader textReader{ std::move(reader) };
@@ -74,7 +74,7 @@ namespace s3d
 			{
 				if (pathHint)
 				{
-					LOG_FAIL(fmt::format("CompileHLSLFromReader(): failed to read `{}`", pathHint));
+					LOG_FAIL(fmt::format("CompileHLSLFromReader(): failed to read `{}`", pathHint.toUTF8()));
 
 				}
 				else
@@ -164,11 +164,16 @@ namespace s3d
 
 	VertexShader::IDType CShader_D3D11::createVSFromReader(std::unique_ptr<IReader> reader, const FilePathView pathHint, StringView entryPoint)
 	{
+		if (not reader)
+		{
+			return VertexShader::IDType::Null();
+		}
+
 		if (not reader->isOpen())
 		{
 			if (pathHint) // ファイルの場合
 			{
-				LOG_FAIL(fmt::format("CShader_D3D11::createVSFromFile(): failed to open `{}`", pathHint));
+				LOG_FAIL(fmt::format("CShader_D3D11::createVSFromFile(): failed to open `{}`", pathHint.toUTF8()));
 			}
 			else // その他の Reader オブジェクトの場合
 			{
@@ -183,7 +188,7 @@ namespace s3d
 		{
 			if (pathHint) // ファイルの場合
 			{
-				LOG_DEBUG(fmt::format("CShader_D3D11::createVSFromFile(): `{}` is a precompiled shader file", pathHint));
+				LOG_DEBUG(fmt::format("CShader_D3D11::createVSFromFile(): `{}` is a precompiled shader file", pathHint.toUTF8()));
 			}
 			else // その他の Reader オブジェクトの場合
 			{
@@ -241,11 +246,16 @@ namespace s3d
 
 	PixelShader::IDType CShader_D3D11::createPSFromReader(std::unique_ptr<IReader> reader, const FilePathView pathHint, StringView entryPoint)
 	{
+		if (not reader)
+		{
+			return PixelShader::IDType::Null();
+		}
+
 		if (not reader->isOpen())
 		{
 			if (pathHint) // ファイルの場合
 			{
-				LOG_FAIL(fmt::format("CShader_D3D11::createPSFromFile(): failed to open `{}`", pathHint));
+				LOG_FAIL(fmt::format("CShader_D3D11::createPSFromFile(): failed to open `{}`", pathHint.toUTF8()));
 			}
 			else // その他の Reader オブジェクトの場合
 			{
@@ -260,7 +270,7 @@ namespace s3d
 		{
 			if (pathHint) // ファイルの場合
 			{
-				LOG_DEBUG(fmt::format("CShader_D3D11::createPSFromFile(): `{}` is a precompiled shader file", pathHint));
+				LOG_DEBUG(fmt::format("CShader_D3D11::createPSFromFile(): `{}` is a precompiled shader file", pathHint.toUTF8()));
 			}
 			else // その他の Reader オブジェクトの場合
 			{

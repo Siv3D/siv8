@@ -850,15 +850,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	intersectsAtPrecise
+		//	intersectsAtCanonical
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 別の線分 other との交点を返します。`intersectsAt()` と異なり、両者の順序が異なっても一致する結果を返します。
-		///// @param other 別の線分
-		///// @return 交差しない場合は none, 交差する場合はその座標、2 つの線分が重なっている場合 (QNaN, QNaN)
-		//[[nodiscard]]
-		//Optional<position_type> intersectsAtPrecise(const Line& other) const;
+		/// @brief 別の線分 other との交点を返します。線分の向きと呼び出し順を正規化してから、intersectsAt() に渡します。
+		/// @param other 別の線分
+		/// @return 交差しない場合は none, 交差する場合はその座標、2 つの線分が重なっている場合 (QNaN, QNaN)
+		[[nodiscard]]
+		Optional<position_type> intersectsAtCanonical(const Line& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -866,9 +866,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& paint(Image& dst, const Color& color) const;
+		const Line& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Line& paint(Image& dst, int32 thickness, const Color& color) const;
+		const Line& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -876,9 +878,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Line& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		//const Line& overwrite(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
+		const Line& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -886,7 +890,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& paintArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& paintArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& paintArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -894,7 +900,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& overwriteArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& overwriteArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& overwriteArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -902,7 +910,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& paintDoubleHeadedArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& paintDoubleHeadedArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& paintDoubleHeadedArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -910,7 +920,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Line& overwriteDoubleHeadedArrow(Image& dst, double width, const Vec2& headSize, const Color& color) const;
+		const Line& overwriteDoubleHeadedArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Line& overwriteDoubleHeadedArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1156,7 +1168,7 @@ struct fmt::formatter<s3d::Line>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Line& value, format_context& ctx);
+	format_context::iterator format(const s3d::Line& value, format_context& ctx) const;
 };
 
 template <>
@@ -1166,7 +1178,7 @@ struct fmt::formatter<s3d::Line, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Line& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Line& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

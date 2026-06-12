@@ -30,7 +30,7 @@ struct fmt::formatter<s3d::Optional<Type>>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Optional<Type> value, format_context& ctx)
+	format_context::iterator format(const s3d::Optional<Type> value, format_context& ctx) const
 	{
 		if (value.has_value())
 		{
@@ -60,7 +60,7 @@ struct fmt::formatter<s3d::Optional<Type>, s3d::char32>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	s3d::BufferContext::iterator format(const s3d::Optional<Type>& value, s3d::BufferContext& ctx)
+	s3d::BufferContext::iterator format(const s3d::Optional<Type>& value, s3d::BufferContext& ctx) const
 	{
 		if (value.has_value())
 		{

@@ -17,7 +17,7 @@ Name | Version
 [Earcut](https://github.com/mapbox/earcut.hpp) | 
 [EnumBitmask](https://github.com/Reputeless/EnumBitmask) | v1.0
 [fast_float](https://github.com/fastfloat/fast_float) | Version 8.2.4
-[fmt](https://github.com/fmtlib/fmt) | 10.2.1
+[fmt](https://github.com/fmtlib/fmt) | 12.1.0
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
 [GLFW](https://github.com/glfw/glfw) | 3.4
@@ -31,7 +31,7 @@ Name | Version
 [lunasvg](https://github.com/sammycage/lunasvg) | v3.5.0
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
-[mimalloc](https://github.com/microsoft/mimalloc) | v2.1.2
+[mimalloc](https://github.com/microsoft/mimalloc) | v3.3.2
 [miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
 [miniutf](https://github.com/dropbox/miniutf) | 
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
@@ -61,6 +61,7 @@ Name | Version
 [stduuid](https://github.com/mariusbancila/stduuid) | 
 [The Parallel Hashmap](https://github.com/greg7mdp/parallel-hashmap) | v2.0.0
 [tinycolormap](https://github.com/yuki-koyama/tinycolormap) | 
+[toml11](https://github.com/ToruNiina/toml11) | 
 [variant](https://github.com/mapbox/variant) | 
 [WinToast](https://github.com/mohabouje/WinToast) | v1.3.2
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 

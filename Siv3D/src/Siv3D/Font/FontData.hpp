@@ -171,7 +171,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection, EnableFallback enableFallback, EnableLigatures enableLigatures);
+		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection, EnableFontFallback enableFontFallback, EnableLigatures enableLigatures);
 
 		////////////////////////////////////////////////////////////////
 		//

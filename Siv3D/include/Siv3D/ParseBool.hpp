@@ -64,7 +64,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ParseBoolWithReason
+	//	ParseBoolResult
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -73,12 +73,12 @@ namespace s3d
 	/// @return パースによって得られた bool 値。パースに失敗した場合はエラーの原因 | The bool value obtained by parsing, or the reason for the error if parsing fails
 	/// @remark 小文字と大文字は問いません。 | Case insensitive.
 	[[nodiscard]]
-	Result<bool, ParseErrorReason> ParseBoolWithReason(std::string_view s) noexcept;
+	Result<bool, ParseErrorReason> ParseBoolResult(std::string_view s) noexcept;
 
 	/// @brief 文字列を bool 値にパースします。 | Parses a string into a bool value.
 	/// @param s パースする文字列 | String to parse
 	/// @return パースによって得られた bool 値。パースに失敗した場合はエラーの原因 | The bool value obtained by parsing, or the reason for the error if parsing fails
 	/// @remark 小文字と大文字は問いません。 | Case insensitive.
 	[[nodiscard]]
-	Result<bool, ParseErrorReason> ParseBoolWithReason(StringView s) noexcept;
+	Result<bool, ParseErrorReason> ParseBoolResult(StringView s) noexcept;
 }

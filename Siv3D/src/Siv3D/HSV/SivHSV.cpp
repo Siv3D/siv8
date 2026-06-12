@@ -235,7 +235,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::HSV, s3d::char32>::parse(s3d::Pa
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::HSV, s3d::char32>::format(const s3d::HSV& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::HSV, s3d::char32>::format(const s3d::HSV& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

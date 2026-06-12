@@ -158,6 +158,11 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("JPEGDecoder::decode()");
 
+		if (not reader)
+		{
+			return{};
+		}
+
 		const int64 size = reader->size();
 
 		uint8* buffer = static_cast<uint8*>(std::malloc(static_cast<size_t>(size)));

@@ -162,9 +162,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
+		void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor) override;
 
-		void addEllipseFrame(const Float2& center, float aInner, float bInner, float thickness, const PatternParameters& pattern) override;
+		void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const PatternParameters& pattern) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -235,6 +235,26 @@ namespace s3d
 		void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const Float4& color) override;
 
 		void addPolygon(std::span<const Float2> vertices, std::span<const Vertex2D::IndexType> indices, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addPolygonTransformed
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addPolygonTransformed(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const Float4& color) override;
+
+		void addPolygonTransformed(std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addShape2DFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addShape2DFrame(std::span<const Float2> vertices, float thickness, const Float4& color) override;
+
+		void addShape2DFrame(std::span<const Float2> vertices, float thickness, const PatternParameters& pattern) override;
 
 		////////////////////////////////////////////////////////////////
 		//

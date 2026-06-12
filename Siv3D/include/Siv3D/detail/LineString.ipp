@@ -47,8 +47,6 @@ namespace s3d
 	constexpr LineString::LineString(std::initializer_list<value_type> list)
 		: m_points(list) {}
 
-# ifdef __cpp_lib_containers_ranges
-
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
 	constexpr LineString::LineString(std::from_range_t, Range&& range)
 		: m_points(std::from_range, std::forward<Range>(range)) {}
@@ -56,8 +54,6 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Point> Range>
 	constexpr LineString::LineString(std::from_range_t, Range&& range)
 		: m_points(std::from_range, std::forward<Range>(range)) {}
-
-# endif
 
 	constexpr LineString::LineString(const Arg::reserve_<size_type> size)
 		: m_points{ size } {}
@@ -551,6 +547,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	insert_range
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::ContainerCompatibleRange<Vec2> Range>
+	constexpr LineString::iterator LineString::insert_range(const_iterator pos, Range&& range)
+	{
+		return m_points.insert_range(pos, std::forward<Range>(range));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	emplace
 	//
 	////////////////////////////////////////////////////////////////
@@ -593,6 +601,72 @@ namespace s3d
 	constexpr LineString::iterator LineString::erase(const_iterator first, const_iterator last)
 	{
 		return m_points.erase(first, last);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::erase_at(const size_type index)&
+	{
+		m_points.erase_at(index);
+		return *this;
+	}
+
+	constexpr LineString LineString::erase_at(const size_type index)&&
+	{
+		erase_at(index);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString::size_type LineString::erase_all(const value_type& value)
+	{
+		return m_points.erase_all(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool LineString::erase_first(const value_type& value)
+	{
+		return m_points.erase_first(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString::size_type LineString::erase_all_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.erase_all_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::erase_first_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.erase_first_if(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -753,14 +827,841 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	all
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::all(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.all(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	any
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::any(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.any(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	append
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::append(const LineString& other)
+	{
+		m_points.append(other.m_points);
+		return *this;
+	}
+
+	constexpr LineString& LineString::append(const container_type& other)
+	{
+		m_points.append(other);
+		return *this;
+	}
+
+	template <std::input_iterator Iterator>
+	constexpr LineString& LineString::append(Iterator first, Iterator last)
+	{
+		m_points.append(first, last);
+		return *this;
+	}
+
+	constexpr LineString& LineString::append(std::initializer_list<value_type> list)
+	{
+		m_points.append(list);
+		return *this;
+	}
+
+	constexpr LineString& LineString::append(const size_type count, const value_type& value)
+	{
+		m_points.append(count, value);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	choice
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline LineString::value_type& LineString::choice()
+	{
+		return m_points.choice();
+	}
+
+	inline const LineString::value_type& LineString::choice() const
+	{
+		return m_points.choice();
+	}
+
+	inline LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg)
+	{
+		return m_points.choice(std::forward<decltype(rbg)>(rbg));
+	}
+
+	inline const LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		return m_points.choice(std::forward<decltype(rbg)>(rbg));
+	}
+
+	inline LineString LineString::choice(const size_t n) const
+	{
+		return LineString{ m_points.choice(n) };
+	}
+
+	inline LineString LineString::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	{
+		return LineString{ m_points.choice(n, std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	chunk
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Array<LineString> LineString::chunk(const size_type n) const
+	{
+		Array<LineString> result;
+
+		if (n == 0)
+		{
+			return result;
+		}
+
+		const size_type s = size();
+		const size_type chunkCount = (s + n - 1) / n;
+		result.reserve(chunkCount);
+
+		for (size_type i = 0; i < chunkCount; ++i)
+		{
+			const size_type index = (i * n);
+			const size_type length = Min((s - index), n);
+			result.push_back(slice(index, length));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool LineString::contains(const value_type& value) const
+	{
+		return m_points.contains(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::contains_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.contains_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr isize LineString::count(const value_type& value) const
+	{
+		return m_points.count(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr isize LineString::count_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.count_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::each(Fty f)
+		requires std::invocable<Fty&, value_type&>
+	{
+		m_points.each(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		m_points.each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_index
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::each_index(Fty f)
+		requires std::invocable<Fty&, size_t, value_type&>
+	{
+		m_points.each_index(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::each_index(Fty f) const
+		requires std::invocable<Fty&, size_t, const value_type&>
+	{
+		m_points.each_index(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_sindex
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::each_sindex(Fty f)
+		requires std::invocable<Fty&, isize, value_type&>
+	{
+		m_points.each_sindex(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::each_sindex(Fty f) const
+		requires std::invocable<Fty&, isize, const value_type&>
+	{
+		m_points.each_sindex(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fetch
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class U>
+	constexpr LineString::value_type LineString::fetch(const size_type index, U&& defaultValue) const
+		noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+		requires std::constructible_from<value_type, U>
+	{
+		return m_points.fetch(index, std::forward<U>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::fill(const value_type& value)
+	{
+		m_points.fill(value);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	filter
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString LineString::filter(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.filter(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	in_groups
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Array<LineString> LineString::in_groups(const size_type group) const
+	{
+		Array<LineString> result;
+
+		if (group == 0)
+		{
+			return result;
+		}
+
+		const size_type s = size();
+
+		if (s == 0)
+		{
+			return result;
+		}
+
+		const size_type g = Min(group, s);
+		result.reserve(g);
+
+		const size_type div = (s / g);
+		const size_type mod = (s % g);
+
+		size_type index = 0;
+
+		for (size_type i = 0; i < g; ++i)
+		{
+			const size_type length = (div + (i < mod ? 1 : 0));
+			result.push_back(slice(index, length));
+			index += length;
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	indexOf
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Optional<size_t> LineString::indexOf(const value_type& value) const
+	{
+		if (const auto it = std::ranges::find(m_points, value);
+			it != m_points.end())
+		{
+			return std::ranges::distance(m_points.begin(), it);
+		}
+		else
+		{
+			return s3d::none;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	join
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline String LineString::join(const StringView sep) const
+	{
+		return m_points.join(sep);
+	}
+
+	inline String LineString::join(const StringView sep, const StringView begin, const StringView end) const
+	{
+		return m_points.join(sep, begin, end);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	map
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr auto LineString::map(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		return m_points.map(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	none
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr bool LineString::none(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_points.none(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	slice
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::slice(const size_type index, const size_type length) const&
+	{
+		return LineString{ m_points.slice(index, length) };
+	}
+
+	constexpr LineString LineString::slice(const size_type index, const size_type length) &&
+	{
+		return LineString{ std::move(m_points).slice(index, length) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::head(const size_type n) const&
+	{
+		return LineString{ m_points.head(n) };
+	}
+
+	constexpr LineString LineString::head(const size_type n) &&
+	{
+		return LineString{ std::move(m_points).head(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::span<LineString::value_type> LineString::head_span(const size_type n) & noexcept
+	{
+		return m_points.head_span(n);
+	}
+
+	constexpr std::span<const LineString::value_type> LineString::head_span(const size_type n) const& noexcept
+	{
+		return m_points.head_span(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto LineString::head_view(const size_type n) & noexcept
+	{
+		return m_points.head_view(n);
+	}
+
+	constexpr auto LineString::head_view(const size_type n) const& noexcept
+	{
+		return m_points.head_view(n);
+	}
+
+	constexpr auto LineString::head_view(const size_type n) && noexcept
+	{
+		return std::move(m_points).head_view(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::tail(const size_type n) const&
+	{
+		return LineString{ m_points.tail(n) };
+	}
+
+	constexpr LineString LineString::tail(const size_type n) &&
+	{
+		return LineString{ std::move(m_points).tail(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::span<LineString::value_type> LineString::tail_span(const size_type n) & noexcept
+	{
+		return m_points.tail_span(n);
+	}
+
+	constexpr std::span<const LineString::value_type> LineString::tail_span(const size_type n) const& noexcept
+	{
+		return m_points.tail_span(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto LineString::tail_view(const size_type n) & noexcept
+	{
+		return m_points.tail_view(n);
+	}
+
+	constexpr auto LineString::tail_view(const size_type n) const& noexcept
+	{
+		return m_points.tail_view(n);
+	}
+
+	constexpr auto LineString::tail_view(const size_type n) && noexcept
+	{
+		return std::move(m_points).tail_view(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::take(const size_type n) const&
+	{
+		return LineString{ m_points.take(n) };
+	}
+
+	constexpr LineString LineString::take(const size_type n) &&
+	{
+		return LineString{ std::move(m_points).take(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take_while
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString LineString::take_while(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.take_while(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::take_while(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).take_while(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	values_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::values_at(const std::initializer_list<size_type> indices) const
+	{
+		return LineString{ m_points.values_at(indices) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::without(const value_type& value) const&
+	{
+		return LineString{ m_points.without(value) };
+	}
+
+	constexpr LineString LineString::without(const value_type& value) &&
+	{
+		return LineString{ std::move(m_points).without(value) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::without_at(const size_type index) const&
+	{
+		return LineString{ m_points.without_at(index) };
+	}
+
+	constexpr LineString LineString::without_at(const size_type index) &&
+	{
+		return LineString{ std::move(m_points).without_at(index) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString LineString::without_if(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.without_if(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::without_if(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).without_if(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace, replaced
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::replace(const value_type& oldValue, const value_type& newValue)&
+	{
+		m_points.replace(oldValue, newValue);
+		return *this;
+	}
+
+	constexpr LineString LineString::replace(const value_type& oldValue, const value_type& newValue) &&
+	{
+		return LineString{ std::move(m_points).replace(oldValue, newValue) };
+	}
+
+	constexpr LineString LineString::replaced(const value_type& oldValue, const value_type& newValue) const&
+	{
+		return LineString{ m_points.replaced(oldValue, newValue) };
+	}
+
+	constexpr LineString LineString::replaced(const value_type& oldValue, const value_type& newValue) &&
+	{
+		return LineString{ std::move(m_points).replaced(oldValue, newValue) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace_if, replaced_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString& LineString::replace_if(Fty f, const value_type& newValue)&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		m_points.replace_if(std::forward<Fty>(f), newValue);
+		return *this;
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::replace_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).replace_if(std::forward<Fty>(f), newValue) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::replaced_if(Fty f, const value_type& newValue) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_points.replaced_if(std::forward<Fty>(f), newValue) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::replaced_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_points).replaced_if(std::forward<Fty>(f), newValue) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate, rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::rotate(const size_type middle)&
+	{
+		m_points.rotate(middle);
+		return *this;
+	}
+
+	constexpr LineString LineString::rotate(const size_type middle) &&
+	{
+		return LineString{ std::move(m_points).rotate(middle) };
+	}
+
+	constexpr LineString LineString::rotated(const size_type middle) const&
+	{
+		return LineString{ m_points.rotated(middle) };
+	}
+
+	constexpr LineString LineString::rotated(const size_type middle) &&
+	{
+		return LineString{ std::move(m_points).rotated(middle) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr void LineString::reverse_each(Fty f)
+		requires std::invocable<Fty&, value_type&>
+	{
+		m_points.reverse_each(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr void LineString::reverse_each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		m_points.reverse_each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto LineString::reverse_view() &
+	{
+		return m_points.reverse_view();
+	}
+
+	constexpr auto LineString::reverse_view() const&
+	{
+		return m_points.reverse_view();
+	}
+
+	constexpr auto LineString::reverse_view() &&
+	{
+		return std::move(m_points).reverse_view();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shuffle, shuffled
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString& LineString::shuffle()&
+	{
+		m_points.shuffle();
+		return *this;
+	}
+
+	constexpr LineString LineString::shuffle() &&
+	{
+		return LineString{ std::move(m_points).shuffle() };
+	}
+
+	constexpr LineString LineString::shuffled() const&
+	{
+		return LineString{ m_points.shuffled() };
+	}
+
+	constexpr LineString LineString::shuffled() &&
+	{
+		return LineString{ std::move(m_points).shuffled() };
+	}
+
+	constexpr LineString& LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	{
+		m_points.shuffle(std::forward<decltype(rbg)>(rbg));
+		return *this;
+	}
+
+	constexpr LineString LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&
+	{
+		return LineString{ std::move(m_points).shuffle(std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	{
+		return LineString{ m_points.shuffled(std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&
+	{
+		return LineString{ std::move(m_points).shuffled(std::forward<decltype(rbg)>(rbg)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sort_by, sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString& LineString::sort_by(Fty f)&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		m_points.sort_by(std::forward<Fty>(f));
+		return *this;
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::sort_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return LineString{ std::move(m_points).sort_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::sorted_by(Fty f) const&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return LineString{ m_points.sorted_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::sorted_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return LineString{ std::move(m_points).sorted_by(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sum
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr auto LineString::sum() const
+	{
+		return m_points.sum();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	reverse
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::reverse() noexcept
+	constexpr LineString& LineString::reverse() & noexcept
 	{
 		m_points.reverse();
 		return *this;
+	}
+
+	constexpr LineString LineString::reverse() && noexcept
+	{
+		m_points.reverse();
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -786,10 +1687,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::unique_consecutive()
+	constexpr LineString& LineString::unique_consecutive() &
 	{
 		m_points.unique_consecutive();
 		return *this;
+	}
+
+	constexpr LineString LineString::unique_consecutive() &&
+	{
+		m_points.unique_consecutive();
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::uniqued_consecutive() const&
+	{
+		return LineString{ m_points.uniqued_consecutive() };
+	}
+
+	constexpr LineString LineString::uniqued_consecutive() && noexcept
+	{
+		return LineString{ std::move(m_points).uniqued_consecutive() };
 	}
 
 	////////////////////////////////////////////////////////////////

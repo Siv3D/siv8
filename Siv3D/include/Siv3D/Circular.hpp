@@ -364,7 +364,7 @@ struct fmt::formatter<s3d::CircularBase<Float, Oclock>, s3d::char32>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	s3d::BufferContext::iterator format(const s3d::CircularBase<Float, Oclock>& value, s3d::BufferContext& ctx)
+	s3d::BufferContext::iterator format(const s3d::CircularBase<Float, Oclock>& value, s3d::BufferContext& ctx) const
 	{
 		if (tag.empty())
 		{

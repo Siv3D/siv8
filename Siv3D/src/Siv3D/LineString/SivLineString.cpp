@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -13,6 +13,7 @@
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Spline.hpp>
 # include <Siv3D/RangeFormatter.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -339,6 +340,12 @@ namespace s3d
 	double LineString::computeLength(const CloseRing closeRing) const noexcept
 	{
 		const size_t n = m_points.size();
+
+		if (n < 2)
+		{
+			return 0.0;
+		}
+
 		const Vec2* pData = m_points.data();
 
 		double length = 0.0;
@@ -353,6 +360,85 @@ namespace s3d
 		}
 
 		return length;
+	}
+
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paint(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paint(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::overwrite(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintClosed
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::paintClosed(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintClosed(dst, 1.0, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::paintClosed(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteClosed
+	//
+	////////////////////////////////////////////////////////////////
+
+	const LineString& LineString::overwriteClosed(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteClosed(dst, 1.0, color, enableAntialiasing);
+	}
+
+	const LineString& LineString::overwriteClosed(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::ClosedLineString(dst, *this, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -409,7 +495,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			color.toFloat4());
@@ -420,7 +506,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			colorStart.toFloat4(),
 			colorEnd.toFloat4());
@@ -431,7 +517,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			pattern);
@@ -457,7 +543,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, double thickness, std::span<const ColorF> colors) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			colors);
@@ -484,7 +570,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			color.toFloat4());
@@ -495,7 +581,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			pattern);
@@ -511,7 +597,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const std::span<const ColorF> colors) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, none,
+			m_points, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			colors);
@@ -599,7 +685,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::LineString, s3d::char32>::parse(
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::LineString, s3d::char32>::format(const s3d::LineString& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::LineString, s3d::char32>::format(const s3d::LineString& value, s3d::BufferContext& ctx) const
 {
 	return s3d::FmtHelper::FormatSequence(tag, std::span(value), ctx);
 }

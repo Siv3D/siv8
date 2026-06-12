@@ -927,7 +927,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vec2 を Point 型に変換します。小数点数以下は切り捨てられます。
+		/// @brief Vec2 を Point 型に変換します。小数点以下は切り捨てられます。
 		/// @return Point
 		[[nodiscard]]
 		constexpr Point asPoint() const noexcept;
@@ -957,6 +957,22 @@ namespace s3d
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Vector2D& paint(Image& dst, const Color& color) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Vector2D& overwrite(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1307,7 +1323,7 @@ struct fmt::formatter<s3d::Float2>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Float2& value, format_context& ctx);
+	format_context::iterator format(const s3d::Float2& value, format_context& ctx) const;
 };
 
 template <>
@@ -1320,7 +1336,7 @@ struct fmt::formatter<s3d::Vec2>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Vec2& value, format_context& ctx);
+	format_context::iterator format(const s3d::Vec2& value, format_context& ctx) const;
 };
 
 template <>
@@ -1330,7 +1346,7 @@ struct fmt::formatter<s3d::Float2, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Float2& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Float2& value, s3d::BufferContext& ctx) const;
 };
 
 template <>
@@ -1340,7 +1356,7 @@ struct fmt::formatter<s3d::Vec2, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Vec2& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Vec2& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

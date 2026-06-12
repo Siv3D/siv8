@@ -207,25 +207,25 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	setSortingEnabled
+	//	setOrderSortingEnabled
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Effect& Effect::setSortingEnabled(const bool enabled) const
+	const Effect& Effect::setOrderSortingEnabled(const bool enabled) const
 	{
-		SIV3D_ENGINE(Effect)->setSortingEnabled(m_handle->id(), enabled);
+		SIV3D_ENGINE(Effect)->setOrderSortingEnabled(m_handle->id(), enabled);
 		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	isSortingEnabled
+	//	isOrderSortingEnabled
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Effect::isSortingEnabled() const
+	bool Effect::isOrderSortingEnabled() const
 	{
-		return SIV3D_ENGINE(Effect)->isSortingEnabled(m_handle->id());
+		return SIV3D_ENGINE(Effect)->isOrderSortingEnabled(m_handle->id());
 	}
 
 	////////////////////////////////////////////////////////////////

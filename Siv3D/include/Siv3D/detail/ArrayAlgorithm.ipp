@@ -163,13 +163,18 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() &
 	{
-		return (*this = stable_uniqued());
+		detail::ArrayStableUniqueHelper<value_type> pred;
+		pred.reserve(m_container.size());
+
+		const auto removed = std::ranges::remove_if(m_container, [&pred](const value_type& v) { return (not pred(v)); });
+		m_container.erase(removed.begin(), removed.end());
+		return *this;
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() &&
 	{
-		return stable_uniqued();
+		return std::move(stable_unique());
 	}
 
 	template <class Type, class Allocator>
@@ -181,7 +186,6 @@ namespace s3d
 		pred.reserve(m_container.size());
 
 		std::ranges::copy_if(m_container, std::back_inserter(result), std::ref(pred));
-
 		return result;
 	}
 
@@ -214,7 +218,8 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() && noexcept
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() &&
+		noexcept(std::is_nothrow_move_assignable_v<value_type>)
 	{
 		return std::move(unique_consecutive());
 	}

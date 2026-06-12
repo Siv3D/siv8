@@ -314,8 +314,6 @@ namespace s3d
 		return *(m_pixels.data() + (m_size.x * pos.y + pos.x));
 	}
 
-# ifdef __cpp_multidimensional_subscript
-
 	inline Color& Image::operator [](const size_t y, const size_t x)&
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
@@ -330,8 +328,6 @@ namespace s3d
 	{
 		return *(m_pixels.data() + (m_size.x * y + x));
 	}
-
-# endif
 
 	////////////////////////////////////////////////////////////////
 	//

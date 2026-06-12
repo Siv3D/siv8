@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Bezier.hpp>
+# include <Siv3D/LineCap.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 
 namespace s3d
@@ -820,6 +821,50 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::paint(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		getLineStringAdaptive().paint(dst, lineCap, thickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Bezier3& Bezier3::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::overwrite(Image& dst, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Bezier3& Bezier3::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		getLineStringAdaptive().overwrite(dst, lineCap, thickness, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -950,7 +995,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Bezier3>::format(const s3d::Bezier3& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Bezier3>::format(const s3d::Bezier3& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -969,7 +1014,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Bezier3, s3d::char32>::parse(s3d
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Bezier3, s3d::char32>::format(const s3d::Bezier3& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Bezier3, s3d::char32>::format(const s3d::Bezier3& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

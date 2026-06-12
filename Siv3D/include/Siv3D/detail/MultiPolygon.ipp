@@ -237,11 +237,6 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Polygon> Range>
 	void MultiPolygon::append_range(Range&& range)
 	{
-	# if __cpp_lib_containers_ranges >= 202202L
 		m_polygons.append_range(std::forward<Range>(range));
-	# else
-		auto common_range = std::views::common(std::forward<Range>(range));
-		m_polygons.insert(m_polygons.end(), std::ranges::begin(common_range), std::ranges::end(common_range));
-	# endif
 	}
 }

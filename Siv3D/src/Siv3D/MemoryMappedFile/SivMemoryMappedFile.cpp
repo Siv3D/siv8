@@ -21,13 +21,31 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	MemoryMappedFile::MemoryMappedFile()
-		: pImpl{ std::make_shared<MemoryMappedFileDetail>() } {}
+		: pImpl{ std::make_unique<MemoryMappedFileDetail>() } {}
 
 	MemoryMappedFile::MemoryMappedFile(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
 		: MemoryMappedFile{}
 	{
 		open(path, ifExists, ifNotFound);
 	}
+
+	MemoryMappedFile::MemoryMappedFile(MemoryMappedFile&& other) noexcept = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	MemoryMappedFile::~MemoryMappedFile() = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator =
+	//
+	////////////////////////////////////////////////////////////////
+
+	MemoryMappedFile& MemoryMappedFile::operator =(MemoryMappedFile&& other) noexcept = default;
 
 	////////////////////////////////////////////////////////////////
 	//

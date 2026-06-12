@@ -81,6 +81,34 @@ namespace s3d
 		[[nodiscard]]
 		MemoryMappedFile(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
 
+		MemoryMappedFile(const MemoryMappedFile& other) = delete;
+
+		/// @brief ムーブコンストラクタ
+		/// @param other ムーブする MemoryMappedFile
+		MemoryMappedFile(MemoryMappedFile&& other) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief デストラクタ
+		~MemoryMappedFile();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator =
+		//
+		////////////////////////////////////////////////////////////////
+
+		MemoryMappedFile& operator =(const MemoryMappedFile& other) = delete;
+
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする MemoryMappedFile
+		/// @return *this
+		MemoryMappedFile& operator =(MemoryMappedFile&& other) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	open
@@ -198,6 +226,6 @@ namespace s3d
 
 		class MemoryMappedFileDetail;
 
-		std::shared_ptr<MemoryMappedFileDetail> pImpl;
+		std::unique_ptr<MemoryMappedFileDetail> pImpl;
 	};
 }

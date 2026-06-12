@@ -549,11 +549,11 @@ namespace s3d
 		/// @brief 指定した文字列に対するグリフインデックスの配列を返します。
 		/// @param s 文字列
 		/// @param readingDirection テキストの方向
-		/// @param enableFallback フォールバックを有効にするか
+		/// @param enableFontFallback フォントのフォールバックを有効にするか
 		/// @param enableLigatures 合字を有効にするか
 		/// @return グリフインデックスの配列
 		[[nodiscard]]
-		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection = ReadingDirection::LeftToRight, EnableFallback enableFallback = EnableFallback::Yes, EnableLigatures enableLigatures = EnableLigatures::Yes) const;
+		Array<ResolvedGlyph> getResolvedGlyphs(StringView s, ReadingDirection readingDirection = ReadingDirection::LeftToRight, EnableFontFallback enableFontFallback = EnableFontFallback::Yes, EnableLigatures enableLigatures = EnableLigatures::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

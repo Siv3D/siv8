@@ -43,7 +43,7 @@ namespace s3d
 		int32 second;
 
 		/// @brief ミリ秒 [0-999] | Millisecond [0-999]
-		int32 milliseconds;
+		int32 millisecond;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -62,7 +62,7 @@ namespace s3d
 		/// @param _hour 時 [0-23]、デフォルトでは 0
 		/// @param _minute 分 [0-59]、デフォルトでは 0
 		/// @param _second 秒 [0-59]、デフォルトでは 0
-		/// @param _milliseconds ミリ秒 [0-999]、デフォルトでは 0
+		/// @param _millisecond ミリ秒 [0-999]、デフォルトでは 0
 		/// @remark 指定された時刻や日付が存在するかはチェックされません。
 		[[nodiscard]]
 		constexpr DateTime(
@@ -72,14 +72,14 @@ namespace s3d
 			int32 _hour = 0,
 			int32 _minute = 0,
 			int32 _second = 0,
-			int32 _milliseconds = 0) noexcept;
+			int32 _millisecond = 0) noexcept;
 
 		/// @brief 日付と時刻を作成します。
 		/// @param date 日付
 		/// @param _hour 時 [0-23]、デフォルトでは 0
 		/// @param _minute 分 [0-59]、デフォルトでは 0
 		/// @param _second 秒 [0-59]、デフォルトでは 0
-		/// @param _milliseconds ミリ秒 [0-999]、デフォルトでは 0
+		/// @param _millisecond ミリ秒 [0-999]、デフォルトでは 0
 		/// @remark 指定された時刻や日付が存在するかはチェックされません。
 		[[nodiscard]]
 		constexpr DateTime(
@@ -87,7 +87,7 @@ namespace s3d
 			int32 _hour = 0,
 			int32 _minute = 0,
 			int32 _second = 0,
-			int32 _milliseconds = 0) noexcept;
+			int32 _millisecond = 0) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

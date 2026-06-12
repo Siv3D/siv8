@@ -126,7 +126,7 @@ namespace s3d
 		if (directory.isEmpty()
 			|| (not FileSystem::IsDirectory(directory)))
 		{
-			LOG_FAIL(fmt::format("❌ DirectoryWatcherDetail::start(): `{}` is not a directory", directory));
+			LOG_FAIL(fmt::format("❌ DirectoryWatcherDetail::start(): `{}` is not a directory", directory.toUTF8()));
 			return false;
 		}
 

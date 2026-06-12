@@ -872,7 +872,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Vec3 を Point3D 型に変換します。小数点数以下は切り捨てられます。
+		/// @brief Vec3 を Point3D 型に変換します。小数点以下は切り捨てられます。
 		/// @return Point3D
 		[[nodiscard]]
 		constexpr Point3D asPoint3D() const noexcept;
@@ -1212,7 +1212,7 @@ struct fmt::formatter<s3d::Float3>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Float3& value, format_context& ctx);
+	format_context::iterator format(const s3d::Float3& value, format_context& ctx) const;
 };
 
 template <>
@@ -1225,7 +1225,7 @@ struct fmt::formatter<s3d::Vec3>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Vec3& value, format_context& ctx);
+	format_context::iterator format(const s3d::Vec3& value, format_context& ctx) const;
 };
 
 template <>
@@ -1235,7 +1235,7 @@ struct fmt::formatter<s3d::Float3, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Float3& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Float3& value, s3d::BufferContext& ctx) const;
 };
 
 template <>
@@ -1245,7 +1245,7 @@ struct fmt::formatter<s3d::Vec3, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Vec3& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Vec3& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

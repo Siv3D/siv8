@@ -16,12 +16,12 @@ namespace s3d
 	namespace detail
 	{
 		[[nodiscard]]
-		constexpr int32 TimeToMillisecCount(const int32 hour, const int32 minute, const int32 second, const int32 milliseconds) noexcept
+		constexpr int32 TimeToMillisecCount(const int32 hour, const int32 minute, const int32 second, const int32 millisecond) noexcept
 		{
 			return (hour * (60 * 60 * 1000)
 				+ minute * (60 * 1000)
 				+ second * (1000)
-				+ milliseconds);
+				+ millisecond);
 		}
 	}
 
@@ -38,28 +38,28 @@ namespace s3d
 		const int32 _hour,
 		const int32 _minute,
 		const int32 _second,
-		const int32 _milliseconds) noexcept
+		const int32 _millisecond) noexcept
 		: year{ _year }
 		, month{ _month }
 		, day{ _day }
 		, hour{ _hour }
 		, minute{ _minute }
 		, second{ _second }
-		, milliseconds{ _milliseconds } {}
+		, millisecond{ _millisecond } {}
 
 	constexpr DateTime::DateTime(
 		const Date& date,
 		const int32 _hour,
 		const int32 _minute,
 		const int32 _second,
-		const int32 _milliseconds) noexcept
+		const int32 _millisecond) noexcept
 		: year{ date.year }
 		, month{ date.month }
 		, day{ date.day }
 		, hour{ _hour }
 		, minute{ _minute }
 		, second{ _second }
-		, milliseconds{ _milliseconds } {}
+		, millisecond{ _millisecond } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -73,7 +73,7 @@ namespace s3d
 			&& InRange(hour, 0, 23)
 			&& InRange(minute, 0, 59)
 			&& InRange(second, 0, 59)
-			&& InRange(milliseconds, 0, 999));
+			&& InRange(millisecond, 0, 999));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -118,8 +118,8 @@ namespace s3d
 	constexpr Duration DateTime::Subtract(const DateTime& a, const DateTime& b) noexcept
 	{
 		const Days diffDays = (a.date() - b.date());
-		const int64 aMilliSec = detail::TimeToMillisecCount(a.hour, a.minute, a.second, a.milliseconds);
-		const int64 bMilliSec = detail::TimeToMillisecCount(b.hour, b.minute, b.second, b.milliseconds);
+		const int64 aMilliSec = detail::TimeToMillisecCount(a.hour, a.minute, a.second, a.millisecond);
+		const int64 bMilliSec = detail::TimeToMillisecCount(b.hour, b.minute, b.second, b.millisecond);
 		return Duration{ (static_cast<int64>(diffDays.count()) * (86400 * 1000) + (aMilliSec - bMilliSec)) / 1000.0 };
 	}
 }

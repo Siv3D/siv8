@@ -31,13 +31,31 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	BinaryFileWriter::BinaryFileWriter()
-		: pImpl{ std::make_shared<BinaryFileWriterDetail>() } {}
+		: pImpl{ std::make_unique<BinaryFileWriterDetail>() } {}
 
 	BinaryFileWriter::BinaryFileWriter(const FilePathView path, const OpenMode openMode)
 		: BinaryFileWriter{}
 	{
 		open(path, openMode);
 	}
+
+	BinaryFileWriter::BinaryFileWriter(BinaryFileWriter&& other) noexcept = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	BinaryFileWriter::~BinaryFileWriter() = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator =
+	//
+	////////////////////////////////////////////////////////////////
+
+	BinaryFileWriter& BinaryFileWriter::operator =(BinaryFileWriter&& other) noexcept = default;
 
 	////////////////////////////////////////////////////////////////
 	//

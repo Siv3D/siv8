@@ -663,7 +663,7 @@ APACHE_2_LICENSE
 
 {
 R"-(mimalloc)-",
-R"-(Copyright (c) 2018-2021 Microsoft Corporation, Daan Leijen)-",
+R"-(Copyright (c) 2018-2025 Microsoft Corporation, Daan Leijen)-",
 MIT_LICENSE
 },
 
@@ -911,15 +911,21 @@ APACHE_2_LICENSE
 },
 
 {
+R"-(The Parallel Hashmap)-",
+R"-(Copyright 2018 The Abseil Authors.)-",
+APACHE_2_LICENSE
+},
+
+{
 R"-(tinycolormap)-",
 R"-(Copyright (c) 2018 Yuki Koyama)-",
 MIT_LICENSE
 },
 
 {
-R"-(The Parallel Hashmap)-",
-R"-(Copyright 2018 The Abseil Authors.)-",
-APACHE_2_LICENSE
+R"-(toml11)-",
+R"-(Copyright (c) 2017 Toru Niina)-",
+MIT_LICENSE
 },
 
 {

@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -26,7 +26,6 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	[[nodiscard]]
 	Type INIItem::get() const
 	{
 		if (const auto opt = getOpt<Type>())

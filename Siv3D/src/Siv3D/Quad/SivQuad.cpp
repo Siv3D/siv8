@@ -16,6 +16,7 @@
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -377,6 +378,56 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Quad& Quad::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Quad& Quad::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Quad& Quad::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		const Vec2 points[4] = { p0, p1, p2, p3 };
+		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Quad& Quad::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		const Vec2 points[4] = { p0, p1, p2, p3 };
+		ImageDraw::ClosedLineString(dst, points, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -473,7 +524,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Quad>::format(const s3d::Quad& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Quad>::format(const s3d::Quad& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -492,7 +543,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Quad, s3d::char32>::parse(s3d::P
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Quad, s3d::char32>::format(const s3d::Quad& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Quad, s3d::char32>::format(const s3d::Quad& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

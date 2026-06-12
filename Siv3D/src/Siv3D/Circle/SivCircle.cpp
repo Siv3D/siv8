@@ -19,6 +19,7 @@
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedCircle.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -226,6 +227,112 @@ namespace s3d
 	bool Circle::mouseOver() const noexcept
 	{
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
+	const Circle& Circle::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteFrame(dst, (thickness * 0.5), (thickness * 0.5), color, enableAntialiasing);
+	}
+
+	const Circle& Circle::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintPie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintPie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CirclePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwritePie
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwritePie(Image& dst, const double startAngle, const double angle, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CirclePie(dst, *this, startAngle, angle, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::paintArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleArc(dst, *this, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArc
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::overwriteArc(Image& dst, const double startAngle, const double angle, const double innerThickness, const double outerThickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::CircleArc(dst, *this, startAngle, angle, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -757,7 +864,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Circle>::format(const s3d::Circle& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Circle>::format(const s3d::Circle& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -776,7 +883,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Circle, s3d::char32>::parse(s3d:
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Circle, s3d::char32>::format(const s3d::Circle& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Circle, s3d::char32>::format(const s3d::Circle& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

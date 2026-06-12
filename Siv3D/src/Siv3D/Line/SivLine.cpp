@@ -14,6 +14,8 @@
 # include <Siv3D/FormatLiteral.hpp>
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/Shape2D.hpp>
+# include <Siv3D/ImageDraw.hpp>
+# include <Siv3D/Hash.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -34,6 +36,64 @@ namespace s3d
 		static constexpr bool In01(const double t) noexcept
 		{
 			return ((-Epsilon <= t) && (t <= (1.0 + Epsilon)));
+		}
+
+		[[nodiscard]]
+		static constexpr uint64 ToBits(const double value) noexcept
+		{
+			return std::bit_cast<uint64>(value);
+		}
+
+		[[nodiscard]]
+		static constexpr int32 CompareBitwise(const double a, const double b) noexcept
+		{
+			const uint64 ua = ToBits(a);
+			const uint64 ub = ToBits(b);
+
+			if (ua < ub)
+			{
+				return -1;
+			}
+
+			if (ub < ua)
+			{
+				return 1;
+			}
+
+			return 0;
+		}
+
+		[[nodiscard]]
+		static constexpr int32 CompareBitwise(const Vec2& a, const Vec2& b) noexcept
+		{
+			if (const int32 c = CompareBitwise(a.x, b.x))
+			{
+				return c;
+			}
+
+			return CompareBitwise(a.y, b.y);
+		}
+
+		[[nodiscard]]
+		static constexpr int32 CompareBitwise(const Line& a, const Line& b) noexcept
+		{
+			if (const int32 c = CompareBitwise(a.start, b.start))
+			{
+				return c;
+			}
+
+			return CompareBitwise(a.end, b.end);
+		}
+
+		[[nodiscard]]
+		static Line CanonicalizeLine(Line line) noexcept
+		{
+			if (CompareBitwise(line.end, line.start) < 0)
+			{
+				line.reverse();
+			}
+
+			return line;
 		}
 	}
 
@@ -274,6 +334,137 @@ namespace s3d
 		}
 
 		return none;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAtCanonical
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Line::position_type> Line::intersectsAtCanonical(const Line& other) const
+	{
+		Line a = CanonicalizeLine(*this);
+		Line b = CanonicalizeLine(other);
+
+		if (CompareBitwise(b, a) < 0)
+		{
+			std::ranges::swap(a, b);
+		}
+
+		return a.intersectsAt(b);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Line& Line::paint(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paint(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Line& Line::paint(Image& dst, const  LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, 1.0, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwrite(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwrite(dst, LineCap::Round, thickness, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwrite(Image& dst, const LineCap lineCap, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		ImageDraw::Line(dst, start, end, thickness, color, ImagePixel::BlendMode::Overwrite, enableAntialiasing, lineCap);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::paintArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::paintArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::Arrow(*this, width, headSize).paint(dst, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::overwriteArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwriteArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::Arrow(*this, width, headSize).overwrite(dst, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::paintDoubleHeadedArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return paintDoubleHeadedArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::paintDoubleHeadedArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::DoubleHeadedArrow(*this, width, headSize).paint(dst, color, enableAntialiasing);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteDoubleHeadedArrow
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Line& Line::overwriteDoubleHeadedArrow(Image& dst, const double width, const double headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		return overwriteDoubleHeadedArrow(dst, width, SizeF{ headSize, headSize }, color, enableAntialiasing);
+	}
+
+	const Line& Line::overwriteDoubleHeadedArrow(Image& dst, const double width, const SizeF& headSize, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		Shape2D::DoubleHeadedArrow(*this, width, headSize).overwrite(dst, color, enableAntialiasing);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -571,7 +762,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Line>::format(const s3d::Line& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Line>::format(const s3d::Line& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -590,7 +781,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Line, s3d::char32>::parse(s3d::P
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Line, s3d::char32>::format(const s3d::Line& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Line, s3d::char32>::format(const s3d::Line& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

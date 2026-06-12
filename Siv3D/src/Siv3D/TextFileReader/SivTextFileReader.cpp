@@ -21,7 +21,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	TextFileReader::TextFileReader()
-		: pImpl{ std::make_shared<TextFileReaderDetail>() } {}
+		: pImpl{ std::make_unique<TextFileReaderDetail>() } {}
 
 	TextFileReader::TextFileReader(const FilePathView path, const Optional<TextEncoding>& encoding)
 		: TextFileReader{}
@@ -34,6 +34,24 @@ namespace s3d
 	{
 		open(std::move(reader), encoding);
 	}
+
+	TextFileReader::TextFileReader(TextFileReader&& other) noexcept = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(destructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextFileReader::~TextFileReader() = default;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator =
+	//
+	////////////////////////////////////////////////////////////////
+
+	TextFileReader& TextFileReader::operator =(TextFileReader&& other) noexcept = default;
 
 	////////////////////////////////////////////////////////////////
 	//

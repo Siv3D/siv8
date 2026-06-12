@@ -98,7 +98,7 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ParseWithReason
+	//	ParseResult
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -108,7 +108,7 @@ namespace s3d
 	/// @return パースによって得られた値。パースに失敗した場合はエラーの原因 | The value obtained by parsing, or the reason for the error if parsing fails
 	template <class Type>
 	[[nodiscard]]
-	Result<Type, ParseErrorReason> ParseWithReason(std::string_view s) noexcept;
+	Result<Type, ParseErrorReason> ParseResult(std::string_view s) noexcept;
 
 	/// @brief 文字列から Type 型の値をパースします。 | Parses a string into a value of type Type.
 	/// @tparam Type パースする値の型 | Type of the value to parse
@@ -116,7 +116,7 @@ namespace s3d
 	/// @return パースによって得られた値。パースに失敗した場合はエラーの原因 | The value obtained by parsing, or the reason for the error if parsing fails
 	template <class Type>
 	[[nodiscard]]
-	Result<Type, ParseErrorReason> ParseWithReason(StringView s) noexcept;
+	Result<Type, ParseErrorReason> ParseResult(StringView s) noexcept;
 }
 
 # include "detail/Parse.ipp"

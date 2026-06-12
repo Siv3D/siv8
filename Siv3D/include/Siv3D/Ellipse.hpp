@@ -779,7 +779,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Ellipse& paint(Image& dst, const Color& color) const;
+		const Ellipse& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -787,7 +787,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//const Ellipse& overwrite(Image& dst, const Color& color) const;
+		const Ellipse& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Ellipse& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Ellipse& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		const Ellipse& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const Ellipse& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -971,7 +991,7 @@ struct fmt::formatter<s3d::Ellipse>
 		return s3d::FmtHelper::GetFormatTag(tag, ctx);
 	}
 
-	format_context::iterator format(const s3d::Ellipse& value, format_context& ctx);
+	format_context::iterator format(const s3d::Ellipse& value, format_context& ctx) const;
 };
 
 template <>
@@ -981,7 +1001,7 @@ struct fmt::formatter<s3d::Ellipse, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::Ellipse& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::Ellipse& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

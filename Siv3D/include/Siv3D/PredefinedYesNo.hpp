@@ -17,22 +17,22 @@ namespace s3d
 	/// @brief 即座に処理を開始するかどうかを指定 | Whether to start processing immediately
 	using StartImmediately = YesNo<struct StartImmediately_tag>;
 
-	/// @brief 大文字小文字の区別を保持するかどうかを指定 | Whether to preserve case sensitivity
+	/// @brief 大文字小文字を保持するかどうかを指定 | Whether to preserve letter case
 	using PreserveCase = YesNo<struct PreserveCase_tag>;
 
 	/// @brief サブディレクトリを含め再帰的に処理するかどうかを指定 | Whether to process subdirectories recursively
 	using Recursive = YesNo<struct Recursive_tag>;
 
-	/// @brief 操作の取り消しを許可するかどうかを指定 | Whether to allow operation undoing
-	using AllowUndo = YesNo<struct AllowUndo_tag>;
+	/// @brief 削除対象をゴミ箱へ移動するかどうかを指定 | Whether to move deleted items to the trash
+	using MoveToTrash = YesNo<struct MoveToTrash_tag>;
 
 	/// @brief 小数点以下の桁数を固定するかどうかを指定 | Whether to fix the number of decimal places
-	using FixDecimalPlace = YesNo<struct FixDecimalPlace_tag>;
+	using FixDecimalPlaces = YesNo<struct FixDecimalPlaces_tag>;
 
 	/// @brief エラー時に例外を発生させるかどうかを指定 | Whether to throw exceptions on errors
 	using AllowExceptions = YesNo<struct AllowExceptions_tag>;
 
-	/// @brief ASCII 文字のみに変換するかどうかを指定 | Whether to convert to ASCII characters only
+	/// @brief ASCII 文字のみに変換するかどうかを指定 | Whether to convert to ASCII-only characters
 	using EnsureAscii = YesNo<struct EnsureAscii_tag>;
 
 	/// @brief 乗算済みアルファを使用するかどうかを指定 | Whether to use premultiplied alpha
@@ -41,8 +41,8 @@ namespace s3d
 	/// @brief 乗算済みアルファが使用されているかどうかを指定 | Whether premultiplied alpha is being used
 	using IsAlphaPremultiplied = YesNo<struct IsAlphaPremultiplied_tag>;
 
-	/// @brief 要素を中心に配置するかどうかを指定 | Whether to center elements
-	using Centering = YesNo<struct Centering_tag>;
+	/// @brief ウィンドウを画面中央へ移動するかどうかを指定 | Whether to center the window on the screen
+	using CenterWindow = YesNo<struct CenterWindow_tag>;
 
 	/// @brief カーソル座標を変換するかどうかを指定 | Whether to transform cursor coordinates
 	using TransformCursor = YesNo<struct TransformCursor_tag>;
@@ -60,7 +60,7 @@ namespace s3d
 	using CloseRing = YesNo<struct CloseRing_tag>;
 
 	/// @brief 画像の拡大処理を許可するかどうかを指定 | Whether to allow image upscaling
-	using AllowUpscale = YesNo<struct AllowUpscale_tag>;
+	using AllowUpscaling = YesNo<struct AllowUpscaling_tag>;
 
 	/// @brief ミップマップを生成するかどうかを指定 | Whether to generate mipmaps
 	using GenerateMipmaps = YesNo<struct GenerateMipmaps_tag>;
@@ -69,7 +69,7 @@ namespace s3d
 	using EnableLigatures = YesNo<struct EnableLigatures_tag>;
 
 	/// @brief フォントのフォールバックを使うかどうかを指定 | Whether to use font fallback
-	using EnableFallback = YesNo<struct EnableFallback_tag>;
+	using EnableFontFallback = YesNo<struct EnableFontFallback_tag>;
 
 	/// @brief ヒンティングを使うかどうかを指定 | Whether to use hinting
 	using EnableHinting = YesNo<struct EnableHinting_tag>;
@@ -79,4 +79,7 @@ namespace s3d
 
 	/// @brief 事前に計算を行うかどうかを指定 | Whether to perform precomputation
 	using Precompute = YesNo<struct Precompute_tag>;
+
+	/// @brief 画像への図形描画時にアンチエイリアシングを有効にするかどうかを指定 | Whether to enable antialiasing when drawing shapes on an image
+	using EnableAntialiasing = YesNo<struct EnableAntialiasing_tag>;
 }

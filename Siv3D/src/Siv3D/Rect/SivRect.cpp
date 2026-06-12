@@ -18,6 +18,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
+# include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -304,6 +305,66 @@ namespace s3d
 	bool Rect::mouseOver() const noexcept
 	{
 		return Geometry2D::Intersect(Cursor::PosF(), *this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::paint(Image& dst, const Color& color) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::SourceOver);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::overwrite(Image& dst, const Color& color) const
+	{
+		ImageDraw::Fill(dst, *this, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::paintFrame(Image& dst, const int32 innerThickness, const int32 outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver);
+		return *this;
+	}
+
+	const Rect& Rect::paintFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, RectF{ *this }, innerThickness, outerThickness, color, ImagePixel::BlendMode::SourceOver);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::overwriteFrame(Image& dst, const int32 innerThickness, const int32 outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, *this, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
+	}
+
+	const Rect& Rect::overwriteFrame(Image& dst, const double innerThickness, const double outerThickness, const Color& color) const
+	{
+		ImageDraw::RectFrame(dst, RectF{ *this }, innerThickness, outerThickness, color, ImagePixel::BlendMode::Overwrite);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -628,7 +689,7 @@ namespace s3d
 //
 ////////////////////////////////////////////////////////////////
 
-fmt::format_context::iterator fmt::formatter<s3d::Rect>::format(const s3d::Rect& value, fmt::format_context& ctx)
+fmt::format_context::iterator fmt::formatter<s3d::Rect>::format(const s3d::Rect& value, fmt::format_context& ctx) const
 {
 	if (tag.empty())
 	{
@@ -647,7 +708,7 @@ s3d::ParseContext::iterator fmt::formatter<s3d::Rect, s3d::char32>::parse(s3d::P
 	return s3d::FmtHelper::GetFormatTag(tag, ctx);
 }
 
-s3d::BufferContext::iterator fmt::formatter<s3d::Rect, s3d::char32>::format(const s3d::Rect& value, s3d::BufferContext& ctx)
+s3d::BufferContext::iterator fmt::formatter<s3d::Rect, s3d::char32>::format(const s3d::Rect& value, s3d::BufferContext& ctx) const
 {
 	if (tag.empty())
 	{

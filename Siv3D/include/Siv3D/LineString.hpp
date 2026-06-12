@@ -15,6 +15,7 @@
 # include "ColorHSV.hpp"
 # include "Array.hpp"
 # include "ArrayAlgorithm.hpp"
+# include "ArrayRandom.hpp"
 # include "2DShapes.hpp"
 # include "PredefinedYesNo.hpp"
 # include "RangeFormatter.hpp"
@@ -141,8 +142,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(std::initializer_list<value_type> list);
 
-	# if __cpp_lib_containers_ranges >= 202202L
-		
 		/// @brief 範囲から点の配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
@@ -158,8 +157,6 @@ namespace s3d
 		template <Concept::ContainerCompatibleRange<Point> Range>
 		[[nodiscard]]
 		constexpr LineString(std::from_range_t, Range&& range);
-
-	# endif
 
 		/// @brief 空の点の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
@@ -670,6 +667,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	insert_range
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に範囲の要素を挿入します。
+		/// @tparam Range 範囲の型
+		/// @param pos 挿入する位置
+		/// @param range 範囲
+		/// @return 挿入された要素の先頭を指すイテレータ
+		template <Concept::ContainerCompatibleRange<Vec2> Range>
+		constexpr iterator insert_range(const_iterator pos, Range&& range);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	emplace
 		//
 		////////////////////////////////////////////////////////////////
@@ -716,6 +727,73 @@ namespace s3d
 		/// @param last 削除する範囲の終端位置
 		/// @return 削除された範囲の次を指すイテレータ
 		constexpr iterator erase(const_iterator first, const_iterator last);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除します。
+		/// @param index インデックス
+		/// @return *this
+		constexpr LineString& erase_at(size_type index)&;
+
+		/// @brief 指定したインデックスにある要素を削除した新しい LineString を返します。
+		/// @param index インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString erase_at(size_type index)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素をすべて削除します。
+		/// @param value 値
+		/// @return 削除した要素の個数
+		constexpr size_type erase_all(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した値と等しい要素を削除します。
+		/// @param value 値
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		constexpr bool erase_first(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素をすべて削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除した要素の個数
+		template <class Fty>
+		constexpr size_type erase_all_if(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から見て、最初に指定した条件を満たす要素を削除します。
+		/// @tparam Fty 条件を表す述語の型
+		/// @param f 条件を表す述語
+		/// @return 削除された要素があった場合 true, それ以外の場合は false
+		template <class Fty>
+		constexpr bool erase_first_if(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -865,76 +943,874 @@ namespace s3d
 		//	hash
 		//
 		////////////////////////////////////////////////////////////////
-	
+
 		/// @brief 配列のハッシュ値を返します。
 		/// @return 配列のハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	all
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief すべての要素が条件を満たすかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool all(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	any
+		//
+		////////////////////////////////////////////////////////////////
 
-//		template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, value_type>>* = nullptr>
-//		[[nodiscard]]
-//		bool all(Fty f = Identity) const;
-//
-//		template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, value_type>>* = nullptr>
-//		[[nodiscard]]
-//		bool any(Fty f = Identity) const;
-//
-//		[[nodiscard]]
-//		value_type& choice();
-//
-//		[[nodiscard]]
-//		const value_type& choice() const;
-//
-//		SIV3D_CONCEPT_URBG
-//			[[nodiscard]]
-//		value_type& choice(URBG&& rbg);
-//
-//		SIV3D_CONCEPT_URBG
-//			[[nodiscard]]
-//		const value_type& choice(URBG&& rbg) const;
-//
-//		SIV3D_CONCEPT_INTEGRAL
-//			[[nodiscard]]
-//		LineString choice(Int n) const;
-//
-//# if __cpp_lib_concepts
-//		template <Concept::Integral Size_t, Concept::UniformRandomBitGenerator URBG>
-//# else
-//		template <class Size_t, class URBG, std::enable_if_t<std::is_integral_v<Size_t>>* = nullptr,
-//			std::enable_if_t<std::conjunction_v<std::is_invocable<URBG&>, std::is_unsigned<std::invoke_result_t<URBG&>>>>* = nullptr>
-//# endif
-//		[[nodiscard]]
-//		LineString choice(Size_t n, URBG&& rbg) const;
-//
-//		[[nodiscard]]
-//		size_t count(const value_type& value) const;
-//
-//		template <class Fty, std::enable_if_t<std::is_invocable_r_v<bool, Fty, value_type>>* = nullptr>
-//		[[nodiscard]]
-//		size_t count_if(Fty f) const;
-//
-//		LineString& fill(const value_type& value);
-//
-//		[[nodiscard]]
-//		String join(StringView sep = U", "_sv, StringView begin = U"{"_sv, StringView end = U"}"_sv) const;
-//
-//		template <class Fty = decltype(Identity), std::enable_if_t<std::is_invocable_r_v<bool, Fty, value_type>>* = nullptr>
-//		[[nodiscard]]
-//		bool none(Fty f = Identity) const;
-//
-//		LineString& append(const Array<value_type>& other);
-//
-//		LineString& append(const LineString& other);
-//
-//		LineString& remove(const value_type& value);
-//
-//		LineString& remove_at(size_t index);
-//
-//		template <class Fty>
-//		LineString& remove_if(Fty f);
+		/// @brief 条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool any(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	append
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の末尾に別の LineString を追加します。
+		/// @param other 追加する LineString
+		/// @return *this
+		constexpr LineString& append(const LineString& other);
+
+		/// @brief 配列の末尾に別の配列を追加します。
+		/// @param other 追加する配列
+		/// @return *this
+		constexpr LineString& append(const container_type& other);
+
+		/// @brief 配列の末尾に別の範囲の要素を追加します。
+		/// @tparam Iterator イテレータ
+		/// @param first 範囲の開始位置を指すイテレータ
+		/// @param last 範囲の終端位置を指すイテレータ
+		/// @return *this
+		template <std::input_iterator Iterator>
+		constexpr LineString& append(Iterator first, Iterator last);
+
+		/// @brief 配列の末尾にリストの要素を追加します。
+		/// @param list リスト
+		/// @return *this
+		constexpr LineString& append(std::initializer_list<value_type> list);
+
+		/// @brief 配列の末尾に要素を追加します。
+		/// @param count 追加する個数
+		/// @param value 追加する値
+		/// @return *this
+		constexpr LineString& append(size_type count, const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	choice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の要素を 1 つランダムに返します。
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice();
+
+		/// @brief 点列の要素を 1 つランダムに返します。
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
+
+		/// @brief 指定した乱数エンジンを用いて、点列の要素を 1 つランダムに返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 点列からランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
+
+		/// @brief 点列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @return ランダムに選ばれた要素の LineString
+		[[nodiscard]]
+		LineString choice(size_t n) const;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @param rbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素の LineString
+		[[nodiscard]]
+		LineString choice(size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	chunk
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列を指定した個数の要素を持つグループに分割します。最後のグループの要素数は n 個未満になることがあります。
+		/// @param n 1 つのグループが持つ要素数
+		/// @return 分割された点列のグループ
+		[[nodiscard]]
+		constexpr Array<LineString> chunk(size_type n) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素があるかを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素がある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool contains(const value_type& value) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @remark `.any(f)` と同じです。
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		constexpr bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい要素の個数を返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい要素の個数
+		[[nodiscard]]
+		constexpr isize count(const value_type& value) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
+		template <class Fty>
+		[[nodiscard]]
+		constexpr isize count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_index
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_index(Fty f)
+			requires std::invocable<Fty&, size_t, value_type&>;
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_sindex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_sindex(Fty f)
+			requires std::invocable<Fty&, isize, value_type&>;
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fetch
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を返します。インデックスが範囲外の場合デフォルト値を返します。
+		/// @tparam U デフォルト値の型
+		/// @param index インデックス
+		/// @param defaultValue インデックスが範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスにある要素。範囲外の場合は defaultValue
+		template <class U>
+		[[nodiscard]]
+		constexpr value_type fetch(size_type index, U&& defaultValue) const
+			noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+			requires std::constructible_from<value_type, U>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fill
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値をすべての要素に代入します。
+		/// @param value 代入する値
+		/// @return *this
+		constexpr LineString& fill(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	filter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素だけを集めた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 指定した条件を満たす要素を集めた新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	in_groups
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列を指定したグループ数に分割します。
+		/// @param group グループ数
+		/// @remark group が要素数より大きい場合、空のグループは作られず、返されるグループ数は要素数になります。
+		/// @return 分割した点列のグループ
+		[[nodiscard]]
+		constexpr Array<LineString> in_groups(size_type group) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	indexOf
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しい最初の要素のインデックスを返します。
+		/// @param value 検索する値
+		/// @return 指定した値と等しい最初の要素のインデックス。見つからなかった場合は none
+		[[nodiscard]]
+		constexpr Optional<size_t> indexOf(const value_type& value) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	join
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		String join(StringView sep = U", ") const;
+
+		/// @brief 配列の要素から文字列を生成します。
+		/// @param sep 要素の間に挿入する文字列
+		/// @param begin 先頭に挿入する文字列
+		/// @param end 末尾に挿入する文字列
+		/// @return 生成された文字列
+		[[nodiscard]]
+		String join(StringView sep, StringView begin, StringView end) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	map
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素に関数を適用した戻り値からなる新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	none
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素が存在しないかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素数が 0 個の場合 true, それ以外の場合は false
+		template <class Fty = decltype(Identity)>
+		[[nodiscard]]
+		constexpr bool none(Fty f = Identity) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した範囲の要素からなる新しい LineString を返します。
+		/// @param index インデックス
+		/// @param length 長さ
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString slice(size_type index, size_type length) const&;
+
+		/// @brief 指定した範囲の要素からなる新しい LineString を返します。
+		/// @param index インデックス
+		/// @param length 長さ
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString slice(size_type index, size_type length) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString head(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString head(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<value_type> head_span(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<const value_type> head_span(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		constexpr std::span<value_type> head_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾の最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString tail(size_type n) const&;
+
+		/// @brief 末尾の最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 末尾の最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString tail(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<value_type> tail_span(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		[[nodiscard]]
+		constexpr std::span<const value_type> tail_span(size_type n) const& noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		constexpr std::span<value_type> tail_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) const& noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString take(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 先頭から最大 n 個の要素を含む新しい LineString
+		[[nodiscard]]
+		constexpr LineString take(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take_while
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString take_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString take_while(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	values_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素からなる新しい LineString を返します。
+		/// @param indices インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい LineString を返します。
+		/// @param value 削除する値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without(const value_type& value) const&;
+
+		/// @brief 指定した値と等しいすべての要素を削除した新しい LineString を返します。
+		/// @param value 削除する値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without(const value_type& value) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスにある要素を削除した新しい LineString を返します。
+		/// @param index インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without_at(size_type index) const&;
+
+		/// @brief 指定したインデックスにある要素を削除した新しい LineString を返します。
+		/// @param index インデックス
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString without_at(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を配列から削除した新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たす要素を配列から削除した新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString without_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace, replaced
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えます。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return *this
+		constexpr LineString& replace(const value_type& oldValue, const value_type& newValue)&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString replace(const value_type& oldValue, const value_type& newValue) &&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString replaced(const value_type& oldValue, const value_type& newValue) const&;
+
+		/// @brief 指定した値と等しいすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @param oldValue 置き換えられる値
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString replaced(const value_type& oldValue, const value_type& newValue) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace_if, replaced_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return *this
+		template <class Fty>
+		constexpr LineString& replace_if(Fty f, const value_type& newValue)&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString replace_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString replaced_if(Fty f, const value_type& newValue) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した条件を満たすすべての要素を別の値に置き換えた新しい LineString を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件
+		/// @param newValue 新しい値
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString replaced_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotate, rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えます。
+		/// @param middle 境の位置
+		/// @return *this
+		constexpr LineString& rotate(size_type middle)&;
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @param middle 境の位置
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString rotate(size_type middle) &&;
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @param middle 境の位置
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString rotated(size_type middle) const&;
+
+		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @param middle 境の位置
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString rotated(size_type middle) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾から順番に、すべての要素に対して関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief 末尾から順番に、すべての要素に対して関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		constexpr void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の逆順ビューを返します。
+		/// @return 点列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() &;
+
+		/// @brief 点列の逆順ビューを返します。
+		/// @return 点列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() const&;
+
+		/// @brief 点列の逆順ビューを返します。
+		/// @return 点列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shuffle, shuffled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の並び順をランダムにシャッフルします。
+		/// @return *this
+		constexpr LineString& shuffle()&;
+
+		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffle() &&;
+
+		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled() const&;
+
+		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled() &&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルします。
+		/// @param rbg 使用する乱数エンジン
+		/// @return *this
+		constexpr LineString& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+
+		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @param rbg 使用する乱数エンジン
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sort_by, sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		constexpr LineString& sort_by(Fty f)&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい LineString
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sum
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 点列の要素を `+` 演算子を用いて合計します。
+		/// @return 合計値
+		[[nodiscard]]
+		constexpr auto sum() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -942,7 +1818,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr LineString& reverse() noexcept;
+		/// @brief 連続する線分の向きを反転します。
+		/// @return *this
+		constexpr LineString& reverse() & noexcept;
+
+		/// @brief 連続する線分の向きを反転した新しい LineString を返します。
+		/// @return 連続する線分の向きを反転した新しい LineString
+		[[nodiscard]]
+		constexpr LineString reverse() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -960,24 +1843,30 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString reversed() && noexcept;
 
-//		LineString& shuffle();
-//
-//		SIV3D_CONCEPT_URBG
-//			LineString& shuffle(URBG&& rbg);
-//
-//		[[nodiscard]]
-//		LineString slice(size_t index) const;
-//
-//		[[nodiscard]]
-//		LineString slice(size_t index, size_t length) const;
+		////////////////////////////////////////////////////////////////
+		//
+		//	unique_consecutive, uniqued_consecutive
+		//
+		////////////////////////////////////////////////////////////////
 
-		constexpr LineString& unique_consecutive();
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去します。
+		/// @return *this
+		constexpr LineString& unique_consecutive() &;
 
-//		[[nodiscard]]
-//		LineString uniqued_consecutive() const&;
-//
-//		[[nodiscard]]
-//		LineString uniqued_consecutive()&&;
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString unique_consecutive() &&;
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString uniqued_consecutive() const&;
+
+		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい LineString を返します。
+		/// @return 新しい LineString
+		[[nodiscard]]
+		constexpr LineString uniqued_consecutive() && noexcept;
 
 
 		////////////////////////////////////////////////////////////////
@@ -1068,8 +1957,6 @@ namespace s3d
 		/// @return 指定した線分における進行方向の単位ベクトル
 		[[nodiscard]]
 		Vec2 getTangentAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
-
-
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1347,10 +2234,6 @@ namespace s3d
 //
 //		const LineString& overwriteClosed(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
-
-
-
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator >>
@@ -1360,7 +2243,7 @@ namespace s3d
 		/// @brief 各要素に関数を適用します。
 		/// @tparam Fty 適用する関数の型
 		/// @param f 適用する関数
-		/// @remark Fty が戻り値を持たない場合 `.each(f), 戻り値を持つ場合は `.map(f)` と同じです。
+		/// @remark Fty が戻り値を持たない場合 `.each(f)`, 戻り値を持つ場合は `.map(f)` と同じです。
 		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合 void
 		template <class Fty>
 		constexpr auto operator >>(Fty f) const
@@ -1377,6 +2260,50 @@ namespace s3d
 		{
 			return output << Format(value.m_points);
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const LineString& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const LineString& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const LineString& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const LineString& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintClosed
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& paintClosed(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const LineString& paintClosed(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteClosed
+		//
+		////////////////////////////////////////////////////////////////
+
+		const LineString& overwriteClosed(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		const LineString& overwriteClosed(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1451,9 +2378,6 @@ namespace s3d
 		const LineString& drawPointsFrame(double r, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		const LineString& drawPointsFrame(double r, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
-
-
-
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1538,7 +2462,7 @@ struct fmt::formatter<s3d::LineString, s3d::char32>
 
 	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
 
-	s3d::BufferContext::iterator format(const s3d::LineString& value, s3d::BufferContext& ctx);
+	s3d::BufferContext::iterator format(const s3d::LineString& value, s3d::BufferContext& ctx) const;
 };
 
 ////////////////////////////////////////////////////////////////

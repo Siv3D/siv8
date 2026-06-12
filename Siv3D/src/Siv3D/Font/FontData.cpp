@@ -277,12 +277,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<ResolvedGlyph> FontData::getResolvedGlyphs(const StringView s, const ReadingDirection readingDirection, const EnableFallback enableFallback, const EnableLigatures enableLigatures)
+	Array<ResolvedGlyph> FontData::getResolvedGlyphs(const StringView s, const ReadingDirection readingDirection, const EnableFontFallback enableFontFallback, const EnableLigatures enableLigatures)
 	{
 		const HarfBuzzGlyphInfo hbGlyphInfo = m_face->getHarfBuzzGlyphInfo(s, enableLigatures, readingDirection);
 		const size_t count = hbGlyphInfo.count;
 
-		if (enableFallback && m_fallbackFontIDs)
+		if (enableFontFallback && m_fallbackFontIDs)
 		{
 			Array<ResolvedGlyph> result;
 
@@ -335,7 +335,7 @@ namespace s3d
 				for (uint32 fallbackIndex = 1;
 					const auto& fallbackFontID : m_fallbackFontIDs)
 				{
-					const Array<ResolvedGlyph> resolvedGlyphs = SIV3D_ENGINE(Font)->getResolvedGlyphs(fallbackFontID, s.substr(pos, fallbackStringLength), readingDirection, EnableFallback::No, enableLigatures);
+					const Array<ResolvedGlyph> resolvedGlyphs = SIV3D_ENGINE(Font)->getResolvedGlyphs(fallbackFontID, s.substr(pos, fallbackStringLength), readingDirection, EnableFontFallback::No, enableLigatures);
 
 					if (resolvedGlyphs.none([](const ResolvedGlyph& g) { return (g.glyphIndex == 0); }))
 					{

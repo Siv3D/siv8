@@ -26,7 +26,7 @@ namespace s3d
 
 		LibraryHandle LoadSystemLibraryNoThrow(const wchar_t* library)
 		{
-			LOG_DEBUG(fmt::format("DLL::LoadSystemLibraryNoThrow(\"{0}\")", Unicode::FromWstring(library)));
+			LOG_DEBUG(fmt::format("DLL::LoadSystemLibraryNoThrow(\"{0}\")", Unicode::FromWstring(library).toUTF8()));
 
 			return ::LoadLibraryExW(library, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
 		}
@@ -39,13 +39,13 @@ namespace s3d
 
 		LibraryHandle LoadSystemLibrary(const wchar_t* library)
 		{
-			LOG_DEBUG(fmt::format("DLL::LoadSystemLibrary(\"{0}\")", Unicode::FromWstring(library)));
+			LOG_DEBUG(fmt::format("DLL::LoadSystemLibrary(\"{0}\")", Unicode::FromWstring(library).toUTF8()));
 
 			const LibraryHandle hModule = ::LoadLibraryExW(library, nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
 
 			if (not hModule)
 			{
-				throw InternalEngineError{ fmt::format("Failed to load `{}`", Unicode::FromWstring(library)) };
+				throw InternalEngineError{ fmt::format("Failed to load `{}`", Unicode::FromWstring(library).toUTF8()) };
 			}
 
 			return hModule;
@@ -59,7 +59,7 @@ namespace s3d
 
 		LibraryHandle Load(const StringView path)
 		{
-			LOG_DEBUG(fmt::format("DLL::Load(\"path = `{}`\")", path));
+			LOG_DEBUG(fmt::format("DLL::Load(\"path = `{}`\")", path.toUTF8()));
 
 			return ::LoadLibraryW(path.toWstr().c_str());
 		}

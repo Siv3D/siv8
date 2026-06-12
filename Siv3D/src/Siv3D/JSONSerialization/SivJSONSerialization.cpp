@@ -131,7 +131,7 @@ void JSONSerializer<s3d::DateTime>::to_json(s3d::JSON::json_base& j, const s3d::
 		  { "hour", value.hour },
 		  { "minute", value.minute },
 		  { "second", value.second },
-		  { "milliseconds", value.milliseconds } };
+		  { "millisecond", value.millisecond } };
 }
 
 void JSONSerializer<s3d::DateTime>::from_json(const s3d::JSON::json_base& j, s3d::DateTime& value)
@@ -142,7 +142,7 @@ void JSONSerializer<s3d::DateTime>::from_json(const s3d::JSON::json_base& j, s3d
 	j.at("hour").get_to(value.hour);
 	j.at("minute").get_to(value.minute);
 	j.at("second").get_to(value.second);
-	j.at("milliseconds").get_to(value.milliseconds);
+	j.at("millisecond").get_to(value.millisecond);
 }
 
 ////////////////////////////////////////////////////////////////
