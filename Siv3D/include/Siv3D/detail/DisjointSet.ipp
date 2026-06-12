@@ -22,6 +22,7 @@ namespace s3d
 	template <Concept::Integral IndexType>
 	DisjointSet<IndexType>::DisjointSet(const size_t n)
 		: m_parentsOrSize(n, static_cast<signed_index_type>(-1))
+		, m_setCount{ n }
 	{
 		assert(n <= MaxSize);
 	}
@@ -85,13 +86,20 @@ namespace s3d
 	{
 		assert(static_cast<size_t>(i) < size());
 
-		if (m_parentsOrSize[i] < 0)
+		while (0 <= m_parentsOrSize[i])
 		{
-			return i;
+			const signed_index_type parent = m_parentsOrSize[i];
+
+			if (0 <= m_parentsOrSize[parent])
+			{
+				// path halving
+				m_parentsOrSize[i] = m_parentsOrSize[parent];
+			}
+
+			i = static_cast<index_type>(parent);
 		}
 
-		// path compression
-		return (m_parentsOrSize[i] = root(static_cast<index_type>(m_parentsOrSize[i])));
+		return i;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -141,13 +149,14 @@ namespace s3d
 		}
 
 		// union by size
-		if (-m_parentsOrSize[i] < -m_parentsOrSize[k])
+		if (m_parentsOrSize[i] > m_parentsOrSize[k])
 		{
 			std::ranges::swap(i, k);
 		}
 
 		m_parentsOrSize[i] += m_parentsOrSize[k];
 		m_parentsOrSize[k] = i;
+		--m_setCount;
 
 		return true;
 	}
@@ -163,7 +172,7 @@ namespace s3d
 	{
 		assert(static_cast<size_t>(i) < size());
 
-		return static_cast<size_t>(-m_parentsOrSize[root(i)]);
+		return (0 - static_cast<size_t>(m_parentsOrSize[root(i)]));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -175,19 +184,58 @@ namespace s3d
 	template <Concept::Integral IndexType>
 	size_t DisjointSet<IndexType>::countSets() const noexcept
 	{
-		size_t count = 0;
+		return m_setCount;
+	}
 
-		const size_t size = m_parentsOrSize.size();
+	////////////////////////////////////////////////////////////////
+	//
+	//	groups
+	//
+	////////////////////////////////////////////////////////////////
 
-		for (size_t i = 0; i < size; ++i)
+	template <Concept::Integral IndexType>
+	Array<Array<typename DisjointSet<IndexType>::index_type>> DisjointSet<IndexType>::groups()
+	{
+		const size_t n = size();
+
+		Array<index_type> roots(n);
+		Array<size_t> groupIndices(n);
+		size_t groupCount = 0;
+
+		for (size_t i = 0; i < n; ++i)
 		{
-			if (m_parentsOrSize[i] < 0)
+			roots[i] = root(static_cast<index_type>(i));
+
+			if (static_cast<size_t>(roots[i]) == i)
 			{
-				++count;
+				groupIndices[i] = groupCount++;
 			}
 		}
 
-		return count;
+		Array<Array<index_type>> result(groupCount);
+
+		for (size_t i = 0; i < n; ++i)
+		{
+			result[groupIndices[roots[i]]].push_back(static_cast<index_type>(i));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resize
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::Integral IndexType>
+	void DisjointSet<IndexType>::resize(const size_t n)
+	{
+		assert(m_parentsOrSize.size() <= n);
+		assert(n <= MaxSize);
+
+		m_setCount += (n - m_parentsOrSize.size());
+		m_parentsOrSize.resize(n, static_cast<signed_index_type>(-1));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -199,6 +247,7 @@ namespace s3d
 	template <Concept::Integral IndexType>
 	void DisjointSet<IndexType>::reset() noexcept
 	{
-		std::fill(m_parentsOrSize.begin(), m_parentsOrSize.end(), static_cast<signed_index_type>(-1));
+		std::ranges::fill(m_parentsOrSize, static_cast<signed_index_type>(-1));
+		m_setCount = m_parentsOrSize.size();
 	}
 }
