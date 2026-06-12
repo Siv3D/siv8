@@ -969,7 +969,8 @@ namespace s3d
 
 		/// @brief 他の配列と要素を入れ替えます。
 		/// @param other 入れ替える配列
-		constexpr void swap(Array& other) noexcept;
+		constexpr void swap(Array& other)
+			noexcept(std::allocator_traits<Allocator>::propagate_on_container_swap::value || std::allocator_traits<Allocator>::is_always_equal::value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1483,7 +1484,7 @@ namespace s3d
 		/// @return 指定した値と等しい最初の要素のインデックス。見つからなかった場合は none
 		[[nodiscard]]
 		constexpr Optional<size_t> indexOf(const value_type& value) const
-			noexcept(std::declval<const value_type&>() == std::declval<const value_type&>());
+			noexcept(noexcept(std::declval<const value_type&>() == std::declval<const value_type&>()));
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2206,7 +2207,8 @@ namespace s3d
 		/// @brief 同じ要素が連続する場合、その先頭以外を除去した新しい配列を返します。
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array uniqued_consecutive() && noexcept;
+		constexpr Array uniqued_consecutive() &&
+			noexcept(std::is_nothrow_move_assignable_v<value_type>);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2418,7 +2420,7 @@ namespace s3d
 		/// @brief 2 つの配列を入れ替えます。
 		/// @param lhs 一方の配列
 		/// @param rhs もう一方の配列
-		friend constexpr void swap(Array& lhs, Array& rhs) noexcept
+		friend constexpr void swap(Array& lhs, Array& rhs) noexcept(noexcept(lhs.swap(rhs)))
 		{
 			lhs.swap(rhs);
 		}

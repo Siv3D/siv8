@@ -32,6 +32,9 @@ namespace s3d
 
 		[[noreturn]]
 		void ThrowArrayValuesAtIndexOutOfRange();
+
+		[[noreturn]]
+		void ThrowArrayRotateMiddleOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -927,7 +930,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr void Array<Type, Allocator>::swap(Array& other) noexcept
+	constexpr void Array<Type, Allocator>::swap(Array& other)
+		noexcept(std::allocator_traits<Allocator>::propagate_on_container_swap::value || std::allocator_traits<Allocator>::is_always_equal::value)
 	{
 		m_container.swap(other.m_container);
 	}
@@ -1409,7 +1413,8 @@ namespace s3d
 		const auto k = Min(n, m_container.size());
 		return Array(
 			std::make_move_iterator(m_container.begin()),
-			std::make_move_iterator(m_container.begin() + k));
+			std::make_move_iterator(m_container.begin() + k),
+			m_container.get_allocator());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1503,7 +1508,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Optional<size_t> Array<Type, Allocator>::indexOf(const value_type& value) const
-		noexcept(std::declval<const value_type&>() == std::declval<const value_type&>())
+		noexcept(noexcept(std::declval<const value_type&>() == std::declval<const value_type&>()))
 	{
 		if (const auto it = std::ranges::find(m_container, value); 
 			it != m_container.end())
@@ -1792,6 +1797,11 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::rotate(const size_type middle)&
 	{
+		if (m_container.size() < middle)
+		{
+			detail::ThrowArrayRotateMiddleOutOfRange();
+		}
+
 		std::rotate(m_container.begin(), (m_container.begin() + middle), m_container.end());
 		return *this;
 	}
@@ -2118,24 +2128,30 @@ namespace s3d
 	constexpr auto Array<Type, Allocator>::sum() const
 		requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>)
 	{
-		decltype(std::declval<Type>() + std::declval<Type>()) result{};
-
-		if constexpr (Concept::AddAssignable<Type>)
+		if constexpr (Concept::AddAssignable<value_type>)
 		{
+			value_type result{};
+
 			for (const auto& elem : m_container)
 			{
 				result += elem;
 			}
+
+			return result;
 		}
 		else
 		{
+			using result_type = decltype(std::declval<value_type>() + std::declval<value_type>());
+
+			result_type result{};
+
 			for (const auto& elem : m_container)
 			{
 				result = (result + elem);
 			}
-		}
 
-		return result;
+			return result;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2322,7 +2338,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::without(const value_type& value)&&
 	{
-		return std::move(without(value));
+		std::erase(m_container, value);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2349,7 +2366,13 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_at(const size_type index)&&
 	{
-		return std::move(without_at(index));
+		if (m_container.size() <= index)
+		{
+			detail::ThrowArrayWithoutAtIndexOutOfRange();
+		}
+
+		m_container.erase(m_container.begin() + index);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2381,7 +2404,8 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_if(Fty f) &&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::move(without_if(detail::PassFunction(std::forward<Fty>(f))));
+		std::erase_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
