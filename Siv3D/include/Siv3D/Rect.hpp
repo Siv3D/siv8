@@ -1653,18 +1653,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 長方形の輪郭を LineString として返します。
-		///// @param closeRing 頂点配列の終点を始点と重ねるか
-		///// @return 長方形の輪郭の LineString
-		//[[nodiscard]]
-		//LineString outline(CloseRing closeRing = CloseRing::No) const;
+		/// @brief 長方形の輪郭を LineString として返します。
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @return 長方形の輪郭の LineString
+		[[nodiscard]]
+		LineString outline(CloseRing closeRing = CloseRing::No) const;
 
-		///// @brief 長方形の輪郭の一部を LineString として返します。
-		///// @param distanceFromOrigin 開始地点の距離（長方形の左上の頂点から時計回りでの距離）
-		///// @param length 長さ
-		///// @return 長方形の輪郭の一部の LineString
-		//[[nodiscard]]
-		//LineString outline(double distanceFromOrigin, double length) const;
+		/// @brief 長方形の輪郭の一部を LineString として返します。
+		/// @param distanceFromOrigin 開始地点の距離（長方形の左上の頂点から時計回りでの距離）
+		/// @param length 長さ
+		/// @return 長方形の輪郭の一部の LineString
+		[[nodiscard]]
+		LineString outline(double distanceFromOrigin, double length) const;
 
 		////////////////////////////////////////////////////////////////
 		//

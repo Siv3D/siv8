@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
@@ -238,6 +239,29 @@ namespace s3d
 	Polygon Rect::chamfered(const double tl, const double tr, const double br, const double bl) const
 	{
 		return RectF{ *this }.chamfered(tl, tr, br, bl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outline
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString Rect::outline(const CloseRing closeRing) const
+	{
+		if (closeRing)
+		{
+			return{ pos, tr(), br(), bl(), pos };
+		}
+		else
+		{
+			return{ pos, tr(), br(), bl() };
+		}
+	}
+
+	LineString Rect::outline(const double distanceFromOrigin, const double length) const
+	{
+		return RectF{ *this }.outline(distanceFromOrigin, length);
 	}
 
 	////////////////////////////////////////////////////////////////
