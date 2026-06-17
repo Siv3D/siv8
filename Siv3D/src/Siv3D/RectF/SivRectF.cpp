@@ -395,6 +395,195 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	chamfered
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RectF::chamfered(double s) const
+	{
+		if (s <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		s = Min(s, (Min(w, h) * 0.5));
+
+		if (s <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		const bool hasHorizontalEdge = ((s * 2.0) < w);
+		const bool hasVerticalEdge = ((s * 2.0) < h);
+
+		Array<Vec2> points{ Arg::reserve = 8 };
+
+		// 上辺
+		if (hasHorizontalEdge)
+		{
+			points.emplace_back((x + s), y);
+			points.emplace_back((x + w - s), y);
+		}
+		else
+		{
+			points.emplace_back((x + w * 0.5), y);
+		}
+
+		// 右辺
+		if (hasVerticalEdge)
+		{
+			points.emplace_back((x + w), (y + s));
+			points.emplace_back((x + w), (y + h - s));
+		}
+		else
+		{
+			points.emplace_back((x + w), (y + h * 0.5));
+		}
+
+		// 下辺
+		if (hasHorizontalEdge)
+		{
+			points.emplace_back((x + w - s), (y + h));
+			points.emplace_back((x + s), (y + h));
+		}
+		else
+		{
+			points.emplace_back((x + w * 0.5), (y + h));
+		}
+
+		// 左辺
+		if (hasVerticalEdge)
+		{
+			points.emplace_back(x, (y + h - s));
+			points.emplace_back(x, (y + s));
+		}
+		else
+		{
+			points.emplace_back(x, (y + h * 0.5));
+		}
+
+		Array<TriangleIndex> indices(points.size() - 2);
+
+		for (Vertex2D::IndexType i = 0; i < indices.size(); ++i)
+		{
+			indices[i] = { 0, static_cast<Vertex2D::IndexType>(i + 1), static_cast<Vertex2D::IndexType>(i + 2) };
+		}
+
+		return Polygon{ points, indices, *this, SkipValidation::Yes };
+	}
+
+	Polygon RectF::chamfered(double tl, double tr, double br, double bl) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		tl = Max(tl, 0.0);
+		tr = Max(tr, 0.0);
+		br = Max(br, 0.0);
+		bl = Max(bl, 0.0);
+
+		if (double top = (tl + tr);
+			w < top)
+		{
+			const double scale = (w / top);
+			tl *= scale;
+			tr *= scale;
+		}
+
+		if (double right = (tr + br);
+			h < right)
+		{
+			const double scale = (h / right);
+			tr *= scale;
+			br *= scale;
+		}
+
+		if (double bottom = (br + bl);
+			w < bottom)
+		{
+			const double scale = (w / bottom);
+			br *= scale;
+			bl *= scale;
+		}
+
+		if (double left = (bl + tl);
+			h < left)
+		{
+			const double scale = (h / left);
+			bl *= scale;
+			tl *= scale;
+		}
+
+		Array<Vec2> points{ Arg::reserve = 8 };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+		{
+			if (points.empty()
+				|| ((points.back() != point)
+					&& (points.front() != point)))
+			{
+				points << point;
+			}
+		};
+
+		// 左上
+		if (tl)
+		{
+			AppendPoint(Vec2{ x, (y + tl) });
+			AppendPoint(Vec2{ (x + tl), y });
+		}
+		else
+		{
+			AppendPoint(this->tl());
+		}
+
+		// 右上
+		if (tr)
+		{
+			AppendPoint(Vec2{ (x + w - tr), y });
+			AppendPoint(Vec2{ (x + w), (y + tr) });
+		}
+		else
+		{
+			AppendPoint(this->tr());
+		}
+
+		// 右下
+		if (br)
+		{
+			AppendPoint(Vec2{ (x + w), (y + h - br) });
+			AppendPoint(Vec2{ (x + w - br), (y + h) });
+		}
+		else
+		{
+			AppendPoint(this->br());
+		}
+
+		// 左下
+		if (bl)
+		{
+			AppendPoint(Vec2{ (x + bl), (y + h) });
+			AppendPoint(Vec2{ x, (y + h - bl) });
+		}
+		else
+		{
+			AppendPoint(this->bl());
+		}
+
+		Array<TriangleIndex> indices(points.size() - 2);
+
+		for (Vertex2D::IndexType i = 0; i < indices.size(); ++i)
+		{
+			indices[i] = { 0, static_cast<Vertex2D::IndexType>(i + 1), static_cast<Vertex2D::IndexType>(i + 2) };
+		}
+
+		return Polygon{ points, indices, *this, SkipValidation::Yes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	outer
 	//
 	////////////////////////////////////////////////////////////////
