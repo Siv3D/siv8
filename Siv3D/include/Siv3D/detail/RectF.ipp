@@ -1142,6 +1142,39 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	inscribedDiamond
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad RectF::inscribedDiamond() const noexcept
+	{
+		return{ topCenter(), middleRight(), bottomCenter(), middleLeft() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	trapezoid
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad RectF::trapezoid(const Arg::top_<double> topOffset, const Arg::bottom_<double> bottomOffset) const noexcept
+	{
+		return{ { (pos.x - *topOffset), pos.y },
+				{ (pos.x + size.x + *topOffset), pos.y },
+				{ (pos.x + size.x + *bottomOffset), (pos.y + size.y) },
+				{ (pos.x - *bottomOffset), (pos.y + size.y) } };
+	}
+
+	constexpr Quad RectF::trapezoid(const Arg::left_<double> leftOffset, const Arg::right_<double> rightOffset) const noexcept
+	{
+		return{ { pos.x, (pos.y - *leftOffset) },
+				{ (pos.x + size.x), (pos.y - *rightOffset) },
+				{ (pos.x + size.x), (pos.y + size.y + *rightOffset) },
+				{ pos.x, (pos.y + size.y + *leftOffset) } };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	asQuad
 	//
 	////////////////////////////////////////////////////////////////

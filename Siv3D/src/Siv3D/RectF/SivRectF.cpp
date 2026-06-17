@@ -72,6 +72,181 @@ namespace s3d
 				: r <= 12.0 ? 8
 				: static_cast<Vertex2D::IndexType>(Min<double>(QuarterArcTable::MaxQuality, (r * 0.2 + 6)));
 		}
+
+		static constexpr void ScaleCornerSizes(double& tl, double& tr, double& br, double& bl, const double w, const double h) noexcept
+		{
+			double scale = 1.0;
+
+			if (const double top = (tl + tr); w < top)
+			{
+				scale = Min(scale, (w / top));
+			}
+
+			if (const double right = (tr + br); h < right)
+			{
+				scale = Min(scale, (h / right));
+			}
+
+			if (const double bottom = (br + bl); w < bottom)
+			{
+				scale = Min(scale, (w / bottom));
+			}
+
+			if (const double left = (bl + tl); h < left)
+			{
+				scale = Min(scale, (h / left));
+			}
+
+			if (scale < 1.0)
+			{
+				tl *= scale;
+				tr *= scale;
+				br *= scale;
+				bl *= scale;
+			}
+		}
+
+		[[nodiscard]]
+		static constexpr double Cross(const Vec2& a, const Vec2& b, const Vec2& c) noexcept
+		{
+			return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+		}
+
+		static void SimplifyPolygonPoints(Array<Vec2>& points)
+		{
+			bool changed = true;
+
+			while (changed && (2 < points.size()))
+			{
+				changed = false;
+
+				for (size_t i = 0; i < points.size(); ++i)
+				{
+					const size_t next = ((i + 1) % points.size());
+
+					if (points[i] == points[next])
+					{
+						points.erase(points.begin() + next);
+						changed = true;
+						break;
+					}
+				}
+
+				if (changed)
+				{
+					continue;
+				}
+
+				for (size_t i = 0; i < points.size(); ++i)
+				{
+					const size_t prev = ((i + points.size() - 1) % points.size());
+					const size_t next = ((i + 1) % points.size());
+
+					if (points[prev] == points[next])
+					{
+						points.erase(points.begin() + i);
+						changed = true;
+						break;
+					}
+				}
+
+				if (changed)
+				{
+					continue;
+				}
+
+				for (size_t i = 0; i < points.size(); ++i)
+				{
+					const Vec2& a = points[(i + points.size() - 1) % points.size()];
+					const Vec2& b = points[i];
+					const Vec2& c = points[(i + 1) % points.size()];
+					const double dot = ((b.x - a.x) * (c.x - b.x) + (b.y - a.y) * (c.y - b.y));
+
+					if ((Abs(Cross(a, b, c)) <= 1.0e-10) && (0.0 <= dot))
+					{
+						points.erase(points.begin() + i);
+						changed = true;
+						break;
+					}
+				}
+			}
+		}
+
+		[[nodiscard]]
+		static Array<TriangleIndex> TriangulateCCW(const Array<Vec2>& points)
+		{
+			if (points.size() < 3)
+			{
+				return{};
+			}
+
+			Array<TriangleIndex> indices{ Arg::reserve = (points.size() - 2) };
+			Array<Vertex2D::IndexType> remaining{ Arg::reserve = points.size() };
+
+			for (Vertex2D::IndexType i = 0; i < points.size(); ++i)
+			{
+				remaining << i;
+			}
+
+			const auto ContainsPoint = [](const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& p)
+			{
+				constexpr double eps = 1.0e-10;
+
+				return ((eps < Cross(a, b, p))
+					&& (eps < Cross(b, c, p))
+					&& (eps < Cross(c, a, p)));
+			};
+
+			while (3 < remaining.size())
+			{
+				bool earFound = false;
+
+				for (size_t i = 0; i < remaining.size(); ++i)
+				{
+					const Vertex2D::IndexType a = remaining[(i + remaining.size() - 1) % remaining.size()];
+					const Vertex2D::IndexType b = remaining[i];
+					const Vertex2D::IndexType c = remaining[(i + 1) % remaining.size()];
+
+					if (Cross(points[a], points[b], points[c]) <= 0.0)
+					{
+						continue;
+					}
+
+					bool hasPoint = false;
+
+					for (const auto index : remaining)
+					{
+						if ((index == a) || (index == b) || (index == c))
+						{
+							continue;
+						}
+
+						if (ContainsPoint(points[a], points[b], points[c], points[index]))
+						{
+							hasPoint = true;
+							break;
+						}
+					}
+
+					if (not hasPoint)
+					{
+						indices << TriangleIndex{ a, b, c };
+						remaining.erase(remaining.begin() + i);
+						earFound = true;
+						break;
+					}
+				}
+
+				if (not earFound)
+				{
+					return{};
+				}
+			}
+
+			indices << TriangleIndex{ remaining[0], remaining[1], remaining[2] };
+
+			return indices;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -586,6 +761,559 @@ namespace s3d
 		for (Vertex2D::IndexType i = 0; i < indices.size(); ++i)
 		{
 			indices[i] = { 0, static_cast<Vertex2D::IndexType>(i + 1), static_cast<Vertex2D::IndexType>(i + 2) };
+		}
+
+		return Polygon{ points, indices, *this, SkipValidation::Yes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pointed
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RectF::pointed(Arg::top_<double> topOffset) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		const double offset = Max(*topOffset, -h);
+
+		if (offset == 0.0)
+		{
+			return asPolygon();
+		}
+
+		Array<Vec2> points{ Arg::reserve = 5 };
+		points << this->tl();
+		points << Vec2{ (x + w * 0.5), (y - offset) };
+		points << this->tr();
+		points << this->br();
+		points << this->bl();
+
+		Array<TriangleIndex> indices(3);
+
+		if (0.0 < offset)
+		{
+			indices[0] = { 0, 1, 2 };
+			indices[1] = { 0, 2, 3 };
+			indices[2] = { 0, 3, 4 };
+		}
+		else
+		{
+			indices[0] = { 0, 1, 4 };
+			indices[1] = { 1, 3, 4 };
+			indices[2] = { 1, 2, 3 };
+		}
+
+		const RectF bounds = (0.0 < offset)
+			? RectF{ x, (y - offset), w, (h + offset) }
+		: *this;
+
+		return Polygon{ points, indices, bounds, SkipValidation::Yes };
+	}
+
+	Polygon RectF::pointed(Arg::right_<double> rightOffset) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		const double offset = Max(*rightOffset, -w);
+
+		if (offset == 0.0)
+		{
+			return asPolygon();
+		}
+
+		Array<Vec2> points{ Arg::reserve = 5 };
+		points << this->tl();
+		points << this->tr();
+		points << Vec2{ (x + w + offset), (y + h * 0.5) };
+		points << this->br();
+		points << this->bl();
+
+		Array<TriangleIndex> indices(3);
+
+		if (0.0 < offset)
+		{
+			indices[0] = { 0, 1, 2 };
+			indices[1] = { 0, 2, 3 };
+			indices[2] = { 0, 3, 4 };
+		}
+		else
+		{
+			indices[0] = { 0, 1, 2 };
+			indices[1] = { 2, 3, 4 };
+			indices[2] = { 2, 4, 0 };
+		}
+
+		const RectF bounds = (0.0 < offset)
+			? RectF{ x, y, (w + offset), h }
+		: *this;
+
+		return Polygon{ points, indices, bounds, SkipValidation::Yes };
+	}
+
+	Polygon RectF::pointed(Arg::bottom_<double> bottomOffset) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		const double offset = Max(*bottomOffset, -h);
+
+		if (offset == 0.0)
+		{
+			return asPolygon();
+		}
+
+		Array<Vec2> points{ Arg::reserve = 5 };
+		points << this->tl();
+		points << this->tr();
+		points << this->br();
+		points << Vec2{ (x + w * 0.5), (y + h + offset) };
+		points << this->bl();
+
+		Array<TriangleIndex> indices(3);
+
+		if (0.0 < offset)
+		{
+			indices[0] = { 0, 1, 2 };
+			indices[1] = { 0, 2, 3 };
+			indices[2] = { 0, 3, 4 };
+		}
+		else
+		{
+			indices[0] = { 1, 2, 3 };
+			indices[1] = { 3, 4, 0 };
+			indices[2] = { 3, 0, 1 };
+		}
+
+		const RectF bounds = (0.0 < offset)
+			? RectF{ x, y, w, (h + offset) }
+		: *this;
+
+		return Polygon{ points, indices, bounds, SkipValidation::Yes };
+	}
+
+	Polygon RectF::pointed(Arg::left_<double> leftOffset) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		const double offset = Max(*leftOffset, -w);
+
+		if (offset == 0.0)
+		{
+			return asPolygon();
+		}
+
+		Array<Vec2> points{ Arg::reserve = 5 };
+		points << this->tl();
+		points << this->tr();
+		points << this->br();
+		points << this->bl();
+		points << Vec2{ (x - offset), (y + h * 0.5) };
+
+		Array<TriangleIndex> indices(3);
+
+		if (0.0 < offset)
+		{
+			indices[0] = { 0, 1, 2 };
+			indices[1] = { 0, 2, 3 };
+			indices[2] = { 0, 3, 4 };
+		}
+		else
+		{
+			indices[0] = { 4, 0, 1 };
+			indices[1] = { 4, 1, 2 };
+			indices[2] = { 2, 3, 4 };
+		}
+
+		const RectF bounds = (0.0 < offset)
+			? RectF{ (x - offset), y, (w + offset), h }
+		: *this;
+
+		return Polygon{ points, indices, bounds, SkipValidation::Yes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stepped
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RectF::stepped(double s) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		if (s <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		s = Min(s, (Min(w, h) * 0.5));
+
+		if (s <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		const bool hasHorizontalEdge = ((s * 2.0) < w);
+		const bool hasVerticalEdge = ((s * 2.0) < h);
+
+		if (not hasHorizontalEdge && not hasVerticalEdge)
+		{
+			return{};
+		}
+
+		if (not hasHorizontalEdge)
+		{
+			return RectF{ x, (y + s), w, (h - s * 2.0) }.asPolygon();
+		}
+
+		if (not hasVerticalEdge)
+		{
+			return RectF{ (x + s), y, (w - s * 2.0), h }.asPolygon();
+		}
+
+		Array<Vec2> points{ Arg::reserve = 12 };
+
+		points << Vec2{ (x + s), y };
+		points << Vec2{ (x + w - s), y };
+		points << Vec2{ (x + w - s), (y + s) };
+		points << Vec2{ (x + w), (y + s) };
+		points << Vec2{ (x + w), (y + h - s) };
+		points << Vec2{ (x + w - s), (y + h - s) };
+		points << Vec2{ (x + w - s), (y + h) };
+		points << Vec2{ (x + s), (y + h) };
+		points << Vec2{ (x + s), (y + h - s) };
+		points << Vec2{ x, (y + h - s) };
+		points << Vec2{ x, (y + s) };
+		points << Vec2{ (x + s), (y + s) };
+
+		Array<TriangleIndex> indices(10);
+		indices[0] = { 0, 1, 2 };
+		indices[1] = { 0, 2, 11 };
+		indices[2] = { 2, 3, 4 };
+		indices[3] = { 2, 4, 5 };
+		indices[4] = { 11, 2, 5 };
+		indices[5] = { 11, 5, 8 };
+		indices[6] = { 10, 11, 8 };
+		indices[7] = { 10, 8, 9 };
+		indices[8] = { 8, 5, 6 };
+		indices[9] = { 8, 6, 7 };
+
+		return Polygon{ points, indices, *this, SkipValidation::Yes };
+	}
+
+	Polygon RectF::stepped(double tl, double tr, double br, double bl) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		tl = Max(tl, 0.0);
+		tr = Max(tr, 0.0);
+		br = Max(br, 0.0);
+		bl = Max(bl, 0.0);
+
+		if (not (tl || tr || br || bl))
+		{
+			return asPolygon();
+		}
+
+		ScaleCornerSizes(tl, tr, br, bl, w, h);
+
+		Array<Vec2> points{ Arg::reserve = 12 };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+			{
+				if (points.empty()
+					|| ((points.back() != point)
+						&& (points.front() != point)))
+				{
+					points << point;
+				}
+			};
+
+		AppendPoint(tl ? Vec2{ (x + tl), y } : this->tl());
+
+		if (tr)
+		{
+			AppendPoint(Vec2{ (x + w - tr), y });
+			AppendPoint(Vec2{ (x + w - tr), (y + tr) });
+			AppendPoint(Vec2{ (x + w), (y + tr) });
+		}
+		else
+		{
+			AppendPoint(this->tr());
+		}
+
+		if (br)
+		{
+			AppendPoint(Vec2{ (x + w), (y + h - br) });
+			AppendPoint(Vec2{ (x + w - br), (y + h - br) });
+			AppendPoint(Vec2{ (x + w - br), (y + h) });
+		}
+		else
+		{
+			AppendPoint(this->br());
+		}
+
+		if (bl)
+		{
+			AppendPoint(Vec2{ (x + bl), (y + h) });
+			AppendPoint(Vec2{ (x + bl), (y + h - bl) });
+			AppendPoint(Vec2{ x, (y + h - bl) });
+		}
+		else
+		{
+			AppendPoint(this->bl());
+		}
+
+		if (tl)
+		{
+			AppendPoint(Vec2{ x, (y + tl) });
+			AppendPoint(Vec2{ (x + tl), (y + tl) });
+		}
+
+		SimplifyPolygonPoints(points);
+
+		const Array<TriangleIndex> indices = TriangulateCCW(points);
+
+		if (indices.isEmpty())
+		{
+			return{};
+		}
+
+		return Polygon{ points, indices, *this, SkipValidation::Yes };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scooped
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RectF::scooped(double r) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		if (r <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		r = Min(r, (Min(w, h) * 0.5));
+
+		if (r <= 0.0)
+		{
+			return asPolygon();
+		}
+
+		const float scale = SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+		const Vertex2D::IndexType quality = CaluculateFanQuality(r * scale);
+		const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(quality);
+
+		Array<Vec2> points{ Arg::reserve = static_cast<size_t>(quality * 4 + 4) };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+			{
+				if (points.empty()
+					|| ((points.back() != point)
+						&& (points.front() != point)))
+				{
+					points << point;
+				}
+			};
+
+		AppendPoint(Vec2{ (x + r), y });
+		AppendPoint(Vec2{ (x + w - r), y });
+
+		for (Vertex2D::IndexType i = 1; i < quality; ++i)
+		{
+			const float s = sc[i].x;
+			const float c = -sc[i].y;
+			AppendPoint(Vec2{ (x + w - r * c), (y + r * s) });
+		}
+
+		AppendPoint(Vec2{ (x + w), (y + r) });
+		AppendPoint(Vec2{ (x + w), (y + h - r) });
+
+		for (Vertex2D::IndexType i = 1; i < quality; ++i)
+		{
+			const float s = sc[i].x;
+			const float c = -sc[i].y;
+			AppendPoint(Vec2{ (x + w - r * s), (y + h - r * c) });
+		}
+
+		AppendPoint(Vec2{ (x + w - r), (y + h) });
+		AppendPoint(Vec2{ (x + r), (y + h) });
+
+		for (Vertex2D::IndexType i = 1; i < quality; ++i)
+		{
+			const float s = sc[i].x;
+			const float c = -sc[i].y;
+			AppendPoint(Vec2{ (x + r * c), (y + h - r * s) });
+		}
+
+		AppendPoint(Vec2{ x, (y + h - r) });
+		AppendPoint(Vec2{ x, (y + r) });
+
+		for (Vertex2D::IndexType i = 1; i < quality; ++i)
+		{
+			const float s = sc[i].x;
+			const float c = -sc[i].y;
+			AppendPoint(Vec2{ (x + r * s), (y + r * c) });
+		}
+
+		SimplifyPolygonPoints(points);
+
+		const Array<TriangleIndex> indices = TriangulateCCW(points);
+
+		if (indices.isEmpty())
+		{
+			return{};
+		}
+
+		return Polygon{ points, indices, *this, SkipValidation::Yes };
+	}
+
+	Polygon RectF::scooped(double tl, double tr, double br, double bl) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		tl = Max(tl, 0.0);
+		tr = Max(tr, 0.0);
+		br = Max(br, 0.0);
+		bl = Max(bl, 0.0);
+
+		if (not (tl || tr || br || bl))
+		{
+			return asPolygon();
+		}
+
+		ScaleCornerSizes(tl, tr, br, bl, w, h);
+
+		const float scale = SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+		const Vertex2D::IndexType tlQuality = (tl ? CaluculateFanQuality(tl * scale) : 1);
+		const Vertex2D::IndexType trQuality = (tr ? CaluculateFanQuality(tr * scale) : 1);
+		const Vertex2D::IndexType brQuality = (br ? CaluculateFanQuality(br * scale) : 1);
+		const Vertex2D::IndexType blQuality = (bl ? CaluculateFanQuality(bl * scale) : 1);
+
+		Array<Vec2> points{ Arg::reserve = static_cast<size_t>(tlQuality + trQuality + brQuality + blQuality + 4) };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+			{
+				if (points.empty()
+					|| ((points.back() != point)
+						&& (points.front() != point)))
+				{
+					points << point;
+				}
+			};
+
+		AppendPoint(tl ? Vec2{ (x + tl), y } : this->tl());
+
+		if (tr)
+		{
+			AppendPoint(Vec2{ (x + w - tr), y });
+
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(trQuality);
+
+			for (Vertex2D::IndexType i = 1; i < trQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float c = -sc[i].y;
+				AppendPoint(Vec2{ (x + w - tr * c), (y + tr * s) });
+			}
+
+			AppendPoint(Vec2{ (x + w), (y + tr) });
+		}
+		else
+		{
+			AppendPoint(this->tr());
+		}
+
+		if (br)
+		{
+			AppendPoint(Vec2{ (x + w), (y + h - br) });
+
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(brQuality);
+
+			for (Vertex2D::IndexType i = 1; i < brQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float c = -sc[i].y;
+				AppendPoint(Vec2{ (x + w - br * s), (y + h - br * c) });
+			}
+
+			AppendPoint(Vec2{ (x + w - br), (y + h) });
+		}
+		else
+		{
+			AppendPoint(this->br());
+		}
+
+		if (bl)
+		{
+			AppendPoint(Vec2{ (x + bl), (y + h) });
+
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(blQuality);
+
+			for (Vertex2D::IndexType i = 1; i < blQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float c = -sc[i].y;
+				AppendPoint(Vec2{ (x + bl * c), (y + h - bl * s) });
+			}
+
+			AppendPoint(Vec2{ x, (y + h - bl) });
+		}
+		else
+		{
+			AppendPoint(this->bl());
+		}
+
+		if (tl)
+		{
+			AppendPoint(Vec2{ x, (y + tl) });
+
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(tlQuality);
+
+			for (Vertex2D::IndexType i = 1; i < tlQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float c = -sc[i].y;
+				AppendPoint(Vec2{ (x + tl * s), (y + tl * c) });
+			}
+		}
+
+		SimplifyPolygonPoints(points);
+
+		const Array<TriangleIndex> indices = TriangulateCCW(points);
+
+		if (indices.isEmpty())
+		{
+			return{};
 		}
 
 		return Polygon{ points, indices, *this, SkipValidation::Yes };

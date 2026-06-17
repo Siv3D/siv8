@@ -243,6 +243,64 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	pointed
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::pointed(const Arg::top_<double> topOffset) const
+	{
+		return RectF{ *this }.pointed(topOffset);
+	}
+
+	Polygon Rect::pointed(const Arg::right_<double> rightOffset) const
+	{
+		return RectF{ *this }.pointed(rightOffset);
+	}
+
+	Polygon Rect::pointed(const Arg::bottom_<double> bottomOffset) const
+	{
+		return RectF{ *this }.pointed(bottomOffset);
+	}
+
+	Polygon Rect::pointed(const Arg::left_<double> leftOffset) const
+	{
+		return RectF{ *this }.pointed(leftOffset);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	notched
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::stepped(const double s) const
+	{
+		return RectF{ *this }.stepped(s);
+	}
+
+	Polygon Rect::stepped(const double tl, const double tr, const double br, const double bl) const
+	{
+		return RectF{ *this }.stepped(tl, tr, br, bl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scooped
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::scooped(const double r) const
+	{
+		return RectF{ *this }.scooped(r);
+	}
+
+	Polygon Rect::scooped(const double tl, const double tr, const double br, const double bl) const
+	{
+		return RectF{ *this }.scooped(tl, tr, br, bl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	outline
 	//
 	////////////////////////////////////////////////////////////////
@@ -270,7 +328,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Vec2> Rect::outer() const
+	Array<Point> Rect::outer() const
 	{
 		return{ tl(), tr(), br(), bl() };
 	}
@@ -281,7 +339,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Vec2> Rect::ring() const
+	Array<Point> Rect::ring() const
 	{
 		return{ tl(), tr(), br(), bl(), tl() };
 	}

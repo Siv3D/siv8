@@ -1612,6 +1612,12 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RoundRect rounded(double r) const noexcept;
 
+		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @param tl 左上の角の半径
+		/// @param tr 右上の角の半径
+		/// @param br 右下の角の半径
+		/// @param bl 左下の角の半径
+		/// @return 作成した Polygon
 		[[nodiscard]]
 		Polygon rounded(double tl, double tr, double br, double bl) const;
 
@@ -1621,13 +1627,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 長方形を面取りした Polygon を返します。
+		/// @brief 長方形を 45°の直線で面取りした Polygon を返します。
 		/// @param size 面取りの大きさ
 		/// @return 面取りした Polygon
 		[[nodiscard]]
 		Polygon chamfered(double size) const;
 	
-		/// @brief 長方形を面取りした Polygon を返します。
+		/// @brief 長方形を 45°の直線で面取りした Polygon を返します。
 		/// @param tl 左上の面取りの大きさ
 		/// @param tr 右上の面取りの大きさ
 		/// @param br 右下の面取りの大きさ
@@ -1635,6 +1641,109 @@ namespace s3d
 		/// @return 面取りした Polygon
 		[[nodiscard]]
 		Polygon chamfered(double tl, double tr, double br, double bl) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	inscribedDiamond
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 内接するひし形を返します。
+		/// @return 内接するひし形
+		[[nodiscard]]
+		constexpr Quad inscribedDiamond() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	trapezoid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形を台形に変形した Quad を返します。
+		/// @param topOffset 上辺のオフセット量
+		/// @param bottomOffset 下辺のオフセット量
+		/// @return 台形
+		[[nodiscard]]
+		constexpr Quad trapezoid(Arg::top_<double> topOffset, Arg::bottom_<double> bottomOffset) const noexcept;
+
+		/// @brief 長方形を台形に変形した Quad を返します。
+		/// @param leftOffset 左辺のオフセット量
+		/// @param rightOffset 右辺のオフセット量
+		/// @return 台形
+		[[nodiscard]]
+		constexpr Quad trapezoid(Arg::left_<double> leftOffset, Arg::right_<double> rightOffset) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	pointed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 上辺の中央を法線方向に動かして、辺を V 字型に変形した Polygon を返します。
+		/// @param topOffset 上辺の中央を法線方向に動かす量（外側が正の値、内側が負の値）
+		/// @return 上辺を V 字型に変形した Polygon
+		[[nodiscard]]
+		Polygon pointed(Arg::top_<double> topOffset) const;
+
+		/// @brief 右辺の中央を法線方向に動かして、辺を V 字型に変形した Polygon を返します。
+		/// @param rightOffset 右辺の中央を法線方向に動かす量（外側が正の値、内側が負の値）
+		/// @return 右辺を V 字型に変形した Polygon
+		[[nodiscard]]
+		Polygon pointed(Arg::right_<double> rightOffset) const;
+
+		/// @brief 下辺の中央を法線方向に動かして、辺を V 字型に変形した Polygon を返します。
+		/// @param bottomOffset 下辺の中央を法線方向に動かす量（外側が正の値、内側が負の値）
+		/// @return 下辺を V 字型に変形した Polygon
+		[[nodiscard]]
+		Polygon pointed(Arg::bottom_<double> bottomOffset) const;
+
+		/// @brief 左辺の中央を法線方向に動かして、辺を V 字型に変形した Polygon を返します。
+		/// @param leftOffset 左辺の中央を法線方向に動かす量（外側が正の値、内側が負の値）
+		/// @return 左辺を V 字型に変形した Polygon
+		[[nodiscard]]
+		Polygon pointed(Arg::left_<double> leftOffset) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stepped
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角を正方形でくり抜いた Polygon を返します。
+		/// @param s くり抜く正方形の一辺の長さ
+		/// @return 角を正方形でくり抜いた Polygon
+		[[nodiscard]]
+		Polygon stepped(double s) const;
+
+		/// @brief 角を正方形でくり抜いた Polygon を返します。
+		/// @param tl 左上をくり抜く正方形の一辺の長さ
+		/// @param tr 右上をくり抜く正方形の一辺の長さ
+		/// @param br 右下をくり抜く正方形の一辺の長さ
+		/// @param bl 左下をくり抜く正方形の一辺の長さ
+		/// @return 角を正方形でくり抜いた Polygon
+		[[nodiscard]]
+		Polygon stepped(double tl, double tr, double br, double bl) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scooped
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角を円形でくり抜いた Polygon を返します。
+		/// @param r くり抜く円の半径
+		/// @return 角を円形でくり抜いた Polygon
+		[[nodiscard]]
+		Polygon scooped(double r) const;
+
+		/// @brief 角を円形でくり抜いた Polygon を返します。
+		/// @param tl 左上をくり抜く円の半径
+		/// @param tr 右上をくり抜く円の半径
+		/// @param br 右下をくり抜く円の半径
+		/// @param bl 左下をくり抜く円の半径
+		/// @return 角を円形でくり抜いた Polygon
+		[[nodiscard]]
+		Polygon scooped(double tl, double tr, double br, double bl) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1672,8 +1781,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 点列 { tl(), tr(), br(), bl() } を返します。
+		/// @return 点列 { tl(), tr(), br(), bl() }
 		[[nodiscard]]
-		Array<Vec2> outer() const;
+		Array<Point> outer() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1681,8 +1792,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 点列 { tl(), tr(), br(), bl(), tl() } を返します。
+		/// @return 点列 { tl(), tr(), br(), bl(), tl() }
 		[[nodiscard]]
-		Array<Vec2> ring() const;
+		Array<Point> ring() const;
 
 		////////////////////////////////////////////////////////////////
 		//
