@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
+# include <limits>
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
@@ -449,516 +450,211 @@ namespace s3d
 			return IndexCount;
 		}
 
-		[[nodiscard]]
-		static Array<Float2> SimplifyOpen(const std::span<const Vec2> points, const float scale, const Optional<Float2>& offset)
+		struct PolylineBuffer
 		{
-			const double threshold = (0.25f / scale);
-			const double thresholdSq = (threshold * threshold);
-			const size_t size = points.size();
+			Array<Float2> simplified;	// 間引き適用後（中間バッファ）
 
-			Array<Float2> buffer(Arg::reserve = size);
-			{
-				Vec2 previous = points.front();
+			Array<uint32> simplifiedSrc;
 
-				buffer.push_back(previous);
+			Array<Float2> points;		// 角分割適用後（最終出力）
 
-				for (size_t i = 1; i < (size - 1); ++i)
-				{
-					const Vec2 current = points[i];
+			Array<uint32> srcIndices;	// points[i] が入力点列の何番目由来か
+		};
 
-					if (previous.distanceFromSq(current) < thresholdSq)
-					{
-						continue;
-					}
-
-					buffer.push_back(current);
-
-					previous = current;
-				}
-
-				const Vec2 current = points.back();
-
-				if (previous != current)
-				{
-					buffer.push_back(current);
-				}
-			}
-
-			if (offset)
-			{
-				const Float2 v = *offset;
-
-				for (Float2& point : buffer)
-				{
-					point += v;
-				}
-			}
-
+		/// @brief 前処理用の共有スクラッチバッファを返します。
+		/// @remark Vertex2DBuilder はシングルスレッドからのみ呼ばれる前提。
+		///         capacity を呼び出し間で再利用するため、定常状態ではヒープ確保が発生しない。
+		[[nodiscard]]
+		static PolylineBuffer& GetPolylineBuffer()
+		{
+			static PolylineBuffer buffer;
+			buffer.simplified.clear();
+			buffer.simplifiedSrc.clear();
+			buffer.points.clear();
+			buffer.srcIndices.clear();
 			return buffer;
 		}
 
+		/// @brief 鋭角頂点を分割する際の補助点の変位方向（角を抜けて進む向きの二等分線）を返します。
 		[[nodiscard]]
-		static std::pair<Array<Float2>, Array<Float4>> SimplifyOpen(const std::span<const Vec2> points, const float scale, const Optional<Float2>& offset, const std::span<const ColorF> colors)
+		static Float2 CornerSplitDirection(const Float2& inDir, const Float2& outDir) noexcept
 		{
-			const double threshold = (0.25f / scale);
-			const double thresholdSq = (threshold * threshold);
-			const size_t size = points.size();
+			const Float2 v = (inDir + outDir);
 
-			Array<Float2> posBuffer(Arg::reserve = size);
-			Array<Float4> colorBuffer(Arg::reserve = size);
-			{
-				Vec2 previous = points.front();
-
-				posBuffer.push_back(previous);
-				colorBuffer.push_back(colors.front().toFloat4());
-
-				for (size_t i = 1; i < (size - 1); ++i)
-				{
-					const Vec2 current = points[i];
-
-					if (previous.distanceFromSq(current) < thresholdSq)
-					{
-						continue;
-					}
-
-					posBuffer.push_back(current);
-					colorBuffer.push_back(colors[i].toFloat4());
-
-					previous = current;
-				}
-
-				const Vec2 current = points.back();
-
-				if (previous != current)
-				{
-					posBuffer.push_back(current);
-					colorBuffer.push_back(colors.back().toFloat4());
-				}
-			}
-
-			if (offset)
-			{
-				const Float2 v = *offset;
-
-				for (Float2& point : posBuffer)
-				{
-					point += v;
-				}
-			}
-
-			return{ std::move(posBuffer), std::move(colorBuffer) };
+			return ((0.0001f < v.lengthSq()) ? v.normalized() : Float2{ -inDir.y, inDir.x });
 		}
 
+		struct PreparedPolyline
+		{
+			std::span<const Float2> points;
+
+			std::span<const uint32> srcIndices;
+		};
+
+		/// @brief 入力点列に間引きと鋭角頂点の分割を適用します。
+		/// @remark 間引き: 直前の採用点からスクリーン上で 0.25px 未満しか離れていない点を除去。
+		/// @remark 角分割: 内角が acos(0.55) ≒ 56.6° 未満の鋭角頂点の直後
+		///         （closed の先頭頂点については巡回順で直前 = 点列末尾）に、二等分線方向へ
+		///         ε = 0.001px ずらした補助点を挿入し、マイター長の暴走を防ぐ。
+		/// @param trackSrcIndices true のとき、各出力点の入力インデックスを記録する
+		///        （点ごとの色指定の参照用。補助点は元の頂点と同じインデックスを持つ）。
+		/// @return buffer 内を指す span。次に GetPolylineBuffer() が呼ばれるまで有効。
 		template <class PointType>
 		[[nodiscard]]
-		static Array<Float2> SimplifyClosed(const std::span<const PointType> points, const float scale, const Optional<Float2>& offset)
+		static PreparedPolyline PreparePolyline(const std::span<const PointType> points, const Optional<Float2>& offset, const float scale, const bool closed, const bool splitSharpCorners, const bool trackSrcIndices, PolylineBuffer& buffer)
 		{
-			const float threshold = (0.25f / scale);
-			const float thresholdSq = (threshold * threshold);
+			// inDir・outDir がこの値未満なら鋭角とみなす
+			constexpr float SharpCornerThreshold = -0.55f;
+
+			const Float2 offsetValue = offset.value_or(Float2{ 0, 0 });
 			const size_t size = points.size();
 
-			Array<Float2> buffer(Arg::reserve = size);
-			{
-				Float2 previous = points.front();
+			Array<Float2>& simplified = buffer.simplified;
+			Array<uint32>& simplifiedSrc = buffer.simplifiedSrc;
 
-				buffer.push_back(previous);
+			// 間引き
+			{
+				const double threshold = (0.25 / scale);
+				const double thresholdSq = (threshold * threshold);
+
+				PointType previous = points.front();
+				{
+					const Float2 p = previous;
+					simplified.push_back(p + offsetValue);
+				}
+
+				if (trackSrcIndices)
+				{
+					simplifiedSrc.push_back(0);
+				}
 
 				for (size_t i = 1; i < (size - 1); ++i)
 				{
-					const Float2 current = points[i];
+					const PointType current = points[i];
 
 					if (previous.distanceFromSq(current) < thresholdSq)
 					{
 						continue;
 					}
 
-					buffer.push_back(current);
+					const Float2 p = current;
+					simplified.push_back(p + offsetValue);
+
+					if (trackSrcIndices)
+					{
+						simplifiedSrc.push_back(static_cast<uint32>(i));
+					}
 
 					previous = current;
 				}
 
-				const Float2 current = points.back();
+				const PointType last = points.back();
 
-				if (previous != current)
+				if (previous != last)
 				{
-					buffer.push_back(current);
-				}
+					const Float2 p = last;
+					simplified.push_back(p + offsetValue);
 
-				if ((2 < buffer.size())
-					&& (buffer.back().distanceFromSq(buffer.front()) <= thresholdSq))
-				{
-					buffer.pop_back();
-				}
-			}
-
-			if (offset)
-			{
-				const Float2 v = *offset;
-
-				for (Float2& point : buffer)
-				{
-					point += v;
-				}
-			}
-
-			return buffer;
-		}
-
-		[[nodiscard]]
-		static std::pair<Array<Float2>, Array<Float4>> SimplifyClosed(const std::span<const Vec2> points, const float scale, const Optional<Float2>& offset, const std::span<const ColorF> colors)
-		{
-			const double threshold = (0.25f / scale);
-			const double thresholdSq = (threshold * threshold);
-			const size_t size = points.size();
-
-			Array<Float2> posBuffer(Arg::reserve = size);
-			Array<Float4> colorBuffer(Arg::reserve = size);
-			{
-				Vec2 previous = points.front();
-
-				posBuffer.push_back(previous);
-				colorBuffer.push_back(colors.front().toFloat4());
-
-				for (size_t i = 1; i < (size - 1); ++i)
-				{
-					const Vec2 current = points[i];
-
-					if (previous.distanceFromSq(current) < thresholdSq)
+					if (trackSrcIndices)
 					{
-						continue;
-					}
-
-					posBuffer.push_back(current);
-					colorBuffer.push_back(colors[i].toFloat4());
-
-					previous = current;
-				}
-
-				const Vec2 current = points.back();
-
-				if (previous != current)
-				{
-					posBuffer.push_back(current);
-					colorBuffer.push_back(colors.back().toFloat4());
-				}
-
-				if ((2 < posBuffer.size())
-					&& (posBuffer.back().distanceFromSq(posBuffer.front()) <= thresholdSq))
-				{
-					posBuffer.pop_back();
-					colorBuffer.pop_back();
-				}
-			}
-
-			if (offset)
-			{
-				const Float2 v = *offset;
-
-				for (Float2& point : posBuffer)
-				{
-					point += v;
-				}
-			}
-
-			return{ std::move(posBuffer), std::move(colorBuffer) };
-		}
-
-		[[nodiscard]]
-		static Array<Float2> AdjustOpen(const Array<Float2>& base, const float scale, const bool inner)
-		{
-			const float epsilon = (0.001f / scale);
-			constexpr float AngleThreshold = 0.55f;
-
-			Array<Float2> results(Arg::reserve = base.size());
-			{
-				results.push_back(base.front());
-
-				const size_t count = (base.size() - 1);
-
-				for (size_t i = 1; i < count; ++i)
-				{
-					const Float2 back = base[i - 1];
-					const Float2 current = base[i];
-					const Float2 next = base[i + 1];
-					const Float2 v1 = (back - current).normalized();
-					const Float2 v2 = (next - current).normalized();
-
-					results.push_back(current);
-
-					if ((not inner)
-						&& (AngleThreshold < v1.dot(v2)))
-					{
-						const Float2 line = (current - back);
-						const Float2 tangent = ((next - current).normalized() + (current - back).normalized()).normalized();
-						const Float2 line2 = (next - current);
-
-						const float a = tangent.dot(line2);
-						const float b = (-tangent).dot(line2);
-
-						if (a >= b)
-						{
-							results.push_back(current + tangent.normalized() * epsilon);
-						}
-						else if (a <= b)
-						{
-							results.push_back(current + (-tangent).normalized() * epsilon);
-						}
-						else
-						{
-							const Float2 normal = Float2{ -line.y, line.x }.normalized();
-							results.push_back(current + normal * epsilon);
-						}
+						simplifiedSrc.push_back(static_cast<uint32>(size - 1));
 					}
 				}
 
-				results.push_back(base.back());
-			}
-
-			return results;
-		}
-
-		[[nodiscard]]
-		static std::pair<Array<Float2>, Array<Float4>> AdjustOpen(const Array<Float2>& posBase, const Array<Float4>& colorBase, const float scale, const bool inner)
-		{
-			const float epsilon = (0.001f / scale);
-			constexpr float AngleThreshold = 0.55f;
-
-			Array<Float2> posResults(Arg::reserve = posBase.size());
-			Array<Float4> colorResults(Arg::reserve = colorBase.size());
-			{
-				posResults.push_back(posBase.front());
-				colorResults.push_back(colorBase.front());
-
-				const size_t count = (posBase.size() - 1);
-
-				for (size_t i = 1; i < count; ++i)
+				// リングの場合、終点が始点と十分近ければ重複とみなして除去する
+				if (closed && (2 < simplified.size())
+					&& (simplified.back().distanceFromSq(simplified.front()) <= thresholdSq))
 				{
-					const Float2 back = posBase[i - 1];
-					const Float2 current = posBase[i];
-					const Float2 next = posBase[i + 1];
-					const Float2 v1 = (back - current).normalized();
-					const Float2 v2 = (next - current).normalized();
-					const Float4& color = colorBase[i];
+					simplified.pop_back();
 
-					posResults.push_back(current);
-					colorResults.push_back(color);
-
-					if ((not inner)
-						&& (AngleThreshold < v1.dot(v2)))
+					if (trackSrcIndices)
 					{
-						const Float2 line = (current - back);
-						const Float2 tangent = ((next - current).normalized() + (current - back).normalized()).normalized();
-						const Float2 line2 = (next - current);
-
-						const float a = tangent.dot(line2);
-						const float b = (-tangent).dot(line2);
-
-						if (a >= b)
-						{
-							posResults.push_back(current + tangent.normalized() * epsilon);
-							colorResults.push_back(color);
-
-						}
-						else if (a <= b)
-						{
-							posResults.push_back(current + (-tangent).normalized() * epsilon);
-							colorResults.push_back(color);
-						}
-						else
-						{
-							const Float2 normal = Float2{ -line.y, line.x }.normalized();
-							posResults.push_back(current + normal * epsilon);
-							colorResults.push_back(color);
-						}
-					}
-				}
-
-				posResults.push_back(posBase.back());
-				colorResults.push_back(colorBase.back());
-			}
-
-			return{ std::move(posResults), std::move(colorResults) };
-		}
-
-		[[nodiscard]]
-		static Array<Float2> AdjustClosed(const Array<Float2>& base, const float scale, const bool inner)
-		{
-			const float epsilon = (0.001f / scale);
-			constexpr float AngleThreshold = 0.55f;
-
-			Array<Float2> results(Arg::reserve = base.size());
-			{
-				results.push_back(base.front());
-
-				const size_t count = base.size();
-
-				for (size_t i = 1; i < count; ++i)
-				{
-					const Float2 back = base[i - 1];
-					const Float2 current = base[i];
-					const Float2 next = base[(i + 1) % base.size()];
-					const Float2 v1 = (back - current).normalized();
-					const Float2 v2 = (next - current).normalized();
-
-					results.push_back(current);
-
-					if ((not inner)
-						&& (AngleThreshold < v1.dot(v2)))
-					{
-						const Float2 line = (current - back);
-						const Float2 tangent = ((next - current).normalized() + (current - back).normalized()).normalized();
-						const Float2 line2 = (next - current);
-
-						const float a = tangent.dot(line2);
-						const float b = (-tangent).dot(line2);
-
-						if (a >= b)
-						{
-							results.push_back(current + tangent.normalized() * epsilon);
-						}
-						else if (a <= b)
-						{
-							results.push_back(current + (-tangent).normalized() * epsilon);
-						}
-						else
-						{
-							const Float2 normal = Float2{ -line.y, line.x }.normalized();
-							results.push_back(current + normal * epsilon);
-						}
-					}
-				}
-
-				{
-					const Float2 back = base[base.size() - 1];
-					const Float2 current = base[0];
-					const Float2 next = base[1];
-
-					const Float2 v1 = (back - current).normalized();
-					const Float2 v2 = (next - current).normalized();
-
-					if ((not inner)
-						&& (AngleThreshold < v1.dot(v2)))
-					{
-						const Float2 line = (current - back);
-						const Float2 tangent = ((next - current).normalized() + (current - back).normalized()).normalized();
-						const Float2 line2 = (next - current);
-
-						const float a = tangent.dot(line2);
-						const float b = (-tangent).dot(line2);
-
-						if (a >= b)
-						{
-							results.push_back(current - tangent.normalized() * epsilon);
-						}
-						else if (a <= b)
-						{
-							results.push_back(current - (-tangent).normalized() * epsilon);
-						}
-						else
-						{
-							const Float2 normal = Float2{ -line.y, line.x }.normalized();
-							results.push_back(current - normal * epsilon);
-						}
+						simplifiedSrc.pop_back();
 					}
 				}
 			}
 
-			return results;
-		}
+			const size_t simplifiedSize = simplified.size();
 
-		[[nodiscard]]
-		static std::pair<Array<Float2>, Array<Float4>> AdjustClosed(const Array<Float2>& posBase, const Array<Float4>& colorBase, const float scale, const bool inner)
-		{
-			const float epsilon = (0.001f / scale);
-			constexpr float AngleThreshold = 0.55f;
-
-			Array<Float2> posResults(Arg::reserve = posBase.size());
-			Array<Float4> colorResults(Arg::reserve = colorBase.size());
+			// 角分割の対象が無い場合は間引き結果をそのまま返す（コピーしない）
+			if ((simplifiedSize < 3) || (not splitSharpCorners))
 			{
-				posResults.push_back(posBase.front());
-				colorResults.push_back(colorBase.front());
-
-				const size_t count = posBase.size();
-
-				for (size_t i = 1; i < count; ++i)
-				{
-					const Float2 back = posBase[i - 1];
-					const Float2 current = posBase[i];
-					const Float2 next = posBase[(i + 1) % posBase.size()];
-					const Float2 v1 = (back - current).normalized();
-					const Float2 v2 = (next - current).normalized();
-
-					posResults.push_back(current);
-					colorResults.push_back(colorBase[i]);
-
-					if ((not inner)
-						&& (AngleThreshold < v1.dot(v2)))
-					{
-						const Float2 line = (current - back);
-						const Float2 tangent = ((next - current).normalized() + (current - back).normalized()).normalized();
-						const Float2 line2 = (next - current);
-
-						const float a = tangent.dot(line2);
-						const float b = (-tangent).dot(line2);
-
-						if (a >= b)
-						{
-							posResults.push_back(current + tangent.normalized() * epsilon);
-							colorResults.push_back(colorBase[i]);
-						}
-						else if (a <= b)
-						{
-							posResults.push_back(current + (-tangent).normalized() * epsilon);
-							colorResults.push_back(colorBase[i]);
-						}
-						else
-						{
-							const Float2 normal = Float2{ -line.y, line.x }.normalized();
-							posResults.push_back(current + normal * epsilon);
-							colorResults.push_back(colorBase[i]);
-						}
-					}
-				}
-
-				{
-					const Float2 back = posBase[posBase.size() - 1];
-					const Float2 current = posBase[0];
-					const Float2 next = posBase[1];
-
-					const Float2 v1 = (back - current).normalized();
-					const Float2 v2 = (next - current).normalized();
-
-					if ((not inner)
-						&& (AngleThreshold < v1.dot(v2)))
-					{
-						const Float2 line = (current - back);
-						const Float2 tangent = ((next - current).normalized() + (current - back).normalized()).normalized();
-						const Float2 line2 = (next - current);
-
-						const float a = tangent.dot(line2);
-						const float b = (-tangent).dot(line2);
-
-						if (a >= b)
-						{
-							posResults.push_back(current - tangent.normalized() * epsilon);
-							colorResults.push_back(colorBase[0]);
-						}
-						else if (a <= b)
-						{
-							posResults.push_back(current - (-tangent).normalized() * epsilon);
-							colorResults.push_back(colorBase[0]);
-						}
-						else
-						{
-							const Float2 normal = Float2{ -line.y, line.x }.normalized();
-							posResults.push_back(current - normal * epsilon);
-							colorResults.push_back(colorBase[0]);
-						}
-					}
-				}
+				return{ { simplified.data(), simplified.size() }, { simplifiedSrc.data(), simplifiedSrc.size() } };
 			}
 
-			return{ std::move(posResults), std::move(colorResults) };
+			// 角分割
+			{
+				Array<Float2>& result = buffer.points;
+				Array<uint32>& resultSrc = buffer.srcIndices;
+				const Float2* const pSrc = simplified.data();
+				const float epsilon = (0.001f / scale);
+
+				result.push_back(pSrc[0]);
+
+				if (trackSrcIndices)
+				{
+					resultSrc.push_back(simplifiedSrc[0]);
+				}
+
+				// セグメントの単位方向ベクトルは隣接頂点間で共有されるため持ち回り、
+				// 正規化 (sqrt) の重複を避ける
+				const Float2 d01 = (pSrc[1] - pSrc[0]).normalized();
+				Float2 inDir = d01;
+
+				const size_t last = (closed ? simplifiedSize : (simplifiedSize - 1));
+
+				for (size_t i = 1; i < last; ++i)
+				{
+					const Float2 current = pSrc[i];
+					const Float2 next = ((i + 1) < simplifiedSize) ? pSrc[i + 1] : pSrc[0];
+					const Float2 outDir = (next - current).normalized();
+
+					result.push_back(current);
+
+					if (trackSrcIndices)
+					{
+						resultSrc.push_back(simplifiedSrc[i]);
+					}
+
+					if (inDir.dot(outDir) < SharpCornerThreshold)
+					{
+						result.push_back(current + (CornerSplitDirection(inDir, outDir) * epsilon));
+
+						if (trackSrcIndices)
+						{
+							resultSrc.push_back(simplifiedSrc[i]);
+						}
+					}
+
+					inDir = outDir;
+				}
+
+				if (closed)
+				{
+					// 先頭頂点の角分割。補助点は巡回順で先頭頂点の「直前」に当たるため、
+					// 点列の末尾に、二等分線の逆方向で追加する
+					if (inDir.dot(d01) < SharpCornerThreshold)
+					{
+						result.push_back(pSrc[0] - (CornerSplitDirection(inDir, d01) * epsilon));
+
+						if (trackSrcIndices)
+						{
+							resultSrc.push_back(simplifiedSrc[0]);
+						}
+					}
+				}
+				else
+				{
+					result.push_back(pSrc[simplifiedSize - 1]);
+
+					if (trackSrcIndices)
+					{
+						resultSrc.push_back(simplifiedSrc[simplifiedSize - 1]);
+					}
+				}
+
+				return{ { result.data(), result.size() }, { resultSrc.data(), resultSrc.size() } };
+			}
 		}
 
 		[[nodiscard]]
@@ -974,452 +670,147 @@ namespace s3d
 			return length;
 		}
 
-		[[nodiscard]]
-		static Vertex2D::IndexType BuildUncappedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& color, const float scale, float& startAngle, float& endAngle)
+		struct MiterPair
 		{
-			const Array<Float2> base = SimplifyOpen(points, scale, offset);
-			const Array<Float2> buffer = AdjustOpen(base, scale, inner);
+			Float2 a;
 
-			const Vertex2D::IndexType newSize = static_cast<Vertex2D::IndexType>(buffer.size());
-			const Vertex2D::IndexType vertexSize = (newSize * 2), indexSize = (6 * (newSize - 1));
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexSize, indexSize);
+			Float2 b;
+		};
 
-			if (not pVertex)
-			{
-				return 0;
-			}
+		/// @brief 頂点 point におけるマイター接合の頂点ペアを返します。
+		/// @param inDir 流入セグメントの単位方向ベクトル
+		/// @param outDir 流出セグメントの単位方向ベクトル
+		/// @param prevPoint, nextPoint 180° 折り返し（二等分線が定義できない）時のフォールバックにのみ使用
+		[[nodiscard]]
+		static MiterPair ComputeMiterPair(const Float2& point, const Float2& inDir, const Float2& outDir, const Float2& prevPoint, const Float2& nextPoint, const float halfThickness) noexcept
+		{
+			const Float2 v = (inDir + outDir);
+			const Float2 tangent = ((0.001f < v.lengthSq()) ? v.normalized() : (nextPoint - prevPoint).normalized());
+			const Float2 miter{ -tangent.y, tangent.x };
+			const float length = (halfThickness / tangent.dot(inDir));
+			const Float2 m = (miter * length);
 
-			const float halfThickness = (thickness * 0.5f);
-
-			const Float2* const pBuf = buffer.data();
-
-			{
-				const Float2 p0 = pBuf[0];
-				const Float2 p1 = pBuf[1];
-				const Float2 line = (p1 - p0).normalize();
-				const Float2 vNormalBegin{ -line.y * halfThickness, line.x * halfThickness };
-
-				{
-					startAngle = std::atan2(vNormalBegin.x, -vNormalBegin.y);
-				}
-
-				pVertex[0].pos.set(p0 + vNormalBegin);
-				pVertex[1].pos.set(p0 - vNormalBegin);
-			}
-
-			for (Vertex2D::IndexType i = 0; i < (newSize - 2); ++i)
-			{
-				const Float2 p0 = pBuf[i];
-				const Float2 p1 = pBuf[i + 1];
-				const Float2 p2 = pBuf[i + 2];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = halfThickness / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				pVertex[i * 2 + 2].pos.set(result0);
-				pVertex[i * 2 + 3].pos.set(result1);
-			}
-
-			{
-				const Float2 p0 = pBuf[newSize - 2];
-				const Float2 p1 = pBuf[newSize - 1];
-				const Float2 line = (p1 - p0).normalize();
-				const Float2 vNormalEnd{ -line.y * halfThickness, line.x * halfThickness };
-
-				{
-					endAngle = std::atan2(vNormalEnd.x, -vNormalEnd.y);
-				}
-
-				pVertex[newSize * 2 - 2].pos.set(p1 + vNormalEnd);
-				pVertex[newSize * 2 - 1].pos.set(p1 - vNormalEnd);
-			}
-
-			for (size_t i = 0; i < vertexSize; ++i)
-			{
-				(pVertex++)->color = color;
-			}
-
-			{
-				const Vertex2D::IndexType count = static_cast<Vertex2D::IndexType>(newSize - 1);
-
-				for (Vertex2D::IndexType k = 0; k < count; ++k)
-				{
-					for (Vertex2D::IndexType i = 0; i < 6; ++i)
-					{
-						*pIndex++ = (indexOffset + (RectIndexTable[i] + k * 2) % vertexSize);
-					}
-				}
-			}
-
-			return indexSize;
+			return{ (point + m), (point - m) };
 		}
 
+		/// @brief 前処理済みの点列から、幅 (halfThickness * 2) のクアッドストリップを構築します。
+		/// @param pts PreparePolyline 済みの点列。open は 2 点以上、closed は 3 点以上であること。
+		/// @param colorAt pts[i] に対応する頂点ペアの色を返す関数。
+		///        i の昇順に、各 i につきちょうど 1 回呼び出される（状態を持つラムダを許容するための契約）。
+		/// @param pStartAngle, pEndAngle open のとき、始端・終端の法線角度を返す（キャップ描画用）。
+		template <class ColorFn>
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildUncappedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd, const float scale, float& startAngle, float& endAngle, Float4& startColor, Float4& endColor, const bool hasStartCap, const bool hasEndCap)
+		static Vertex2D::IndexType EmitLineStringStrip(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> pts, const float halfThickness, const bool closed, ColorFn&& colorAt, float* pStartAngle = nullptr, float* pEndAngle = nullptr)
 		{
-			const float halfThickness = (thickness * 0.5f);
-			const Array<Float2> base = SimplifyOpen(points, scale, offset);
-			const Array<Float2> buffer = AdjustOpen(base, scale, inner);
-			const float baseLength = CalculateLength(buffer);
-			const float allLength = (baseLength + (hasStartCap ? halfThickness : 0.0f) + (hasEndCap ? halfThickness : 0.0f));
-			const Float4 color0 = (hasStartCap ? colorStart.lerp(colorEnd, (halfThickness / allLength)) : colorStart);
-			const Float4 color1 = (hasEndCap ? colorStart.lerp(colorEnd, (1.0f - halfThickness / allLength)) : colorEnd);
-			const Float4 colorDiff = (color1 - color0);
-			const float lengthInv = (1.0f / allLength);
+			// 頂点数 (2n) とインデックス数 (6n) の双方が IndexType に収まる点数に制限する。
+			constexpr size_t MaxPointCount = (std::numeric_limits<Vertex2D::IndexType>::max() / 6);
 
-			const Vertex2D::IndexType newSize = static_cast<Vertex2D::IndexType>(buffer.size());
-			const Vertex2D::IndexType vertexSize = (newSize * 2), indexSize = (6 * (newSize - 1));
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexSize, indexSize);
+			const size_t n = pts.size();
+
+			if ((n < 2) || (MaxPointCount < n))
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType pointCount = static_cast<Vertex2D::IndexType>(n);
+			const Vertex2D::IndexType vertexCount = (pointCount * 2);
+			const Vertex2D::IndexType indexCount = (closed ? (6 * pointCount) : (6 * (pointCount - 1)));
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexCount, indexCount);
 
 			if (not pVertex)
 			{
 				return 0;
 			}
 
-			const Float2* const pBuf = buffer.data();
-			float distanceFromStart = (hasStartCap ? halfThickness : 0.0f);
+			const Float2* const pBuf = pts.data();
+			const Float2 firstDir = (closed ? (pBuf[0] - pBuf[n - 1]) : (pBuf[1] - pBuf[0])).normalized();
+			Float2 inDir = firstDir;
 
+			// 始端の頂点ペア
+			if (closed)
 			{
-				const Float2 p0 = pBuf[0];
-				const Float2 p1 = pBuf[1];
-				const Float2 line = (p1 - p0).normalize();
-				const Float2 vNormalBegin{ -line.y * halfThickness, line.x * halfThickness };
+				const Float2 outDir = (pBuf[1] - pBuf[0]).normalized();
+				const auto [a, b] = ComputeMiterPair(pBuf[0], inDir, outDir, pBuf[n - 1], pBuf[1], halfThickness);
+				const Float4 color = colorAt(size_t{ 0 });
+				pVertex[0].set(a, color);
+				pVertex[1].set(b, color);
+				inDir = outDir;
+			}
+			else
+			{
+				const Float2 vNormalBegin{ (-inDir.y * halfThickness), (inDir.x * halfThickness) };
 
+				if (pStartAngle)
 				{
-					startAngle = std::atan2(vNormalBegin.x, -vNormalBegin.y);
-					startColor = color0;
+					*pStartAngle = std::atan2(vNormalBegin.x, -vNormalBegin.y);
 				}
 
-				pVertex[0].set(p0 + vNormalBegin, color0);
-				pVertex[1].set(p0 - vNormalBegin, color0);
+				const Float4 color = colorAt(size_t{ 0 });
+				pVertex[0].set((pBuf[0] + vNormalBegin), color);
+				pVertex[1].set((pBuf[0] - vNormalBegin), color);
 			}
 
-			for (Vertex2D::IndexType i = 0; i < (newSize - 2); ++i)
+			// 中間頂点（マイター接合）
+			for (size_t i = 1; i < (n - 1); ++i)
 			{
-				distanceFromStart += pBuf[i + 1].distanceFrom(pBuf[i]);
-
-				const Float2 p0 = pBuf[i];
-				const Float2 p1 = pBuf[i + 1];
-				const Float2 p2 = pBuf[i + 2];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = halfThickness / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-				const Float4 color = (color0 + colorDiff * (distanceFromStart * lengthInv));
-
-				pVertex[i * 2 + 2].set(result0, color);
-				pVertex[i * 2 + 3].set(result1, color);
+				const Float2 outDir = (pBuf[i + 1] - pBuf[i]).normalized();
+				const auto [a, b] = ComputeMiterPair(pBuf[i], inDir, outDir, pBuf[i - 1], pBuf[i + 1], halfThickness);
+				const Float4 color = colorAt(i);
+				pVertex[i * 2].set(a, color);
+				pVertex[i * 2 + 1].set(b, color);
+				inDir = outDir;
 			}
 
+			// 終端の頂点ペア
+			if (closed)
 			{
-				const Float2 p0 = pBuf[newSize - 2];
-				const Float2 p1 = pBuf[newSize - 1];
-				const Float2 line = (p1 - p0).normalize();
-				const Float2 vNormalEnd{ -line.y * halfThickness, line.x * halfThickness };
+				const auto [a, b] = ComputeMiterPair(pBuf[n - 1], inDir, firstDir, pBuf[n - 2], pBuf[0], halfThickness);
+				const Float4 color = colorAt(n - 1);
+				pVertex[(n - 1) * 2].set(a, color);
+				pVertex[(n - 1) * 2 + 1].set(b, color);
+			}
+			else
+			{
+				const Float2 vNormalEnd{ (-inDir.y * halfThickness), (inDir.x * halfThickness) };
 
+				if (pEndAngle)
 				{
-					endAngle = std::atan2(vNormalEnd.x, -vNormalEnd.y);
-					endColor = color1;
+					*pEndAngle = std::atan2(vNormalEnd.x, -vNormalEnd.y);
 				}
 
-				pVertex[newSize * 2 - 2].set(p1 + vNormalEnd, color1);
-				pVertex[newSize * 2 - 1].set(p1 - vNormalEnd, color1);
+				const Float4 color = colorAt(n - 1);
+				pVertex[(n - 1) * 2].set((pBuf[n - 1] + vNormalEnd), color);
+				pVertex[(n - 1) * 2 + 1].set((pBuf[n - 1] - vNormalEnd), color);
 			}
 
 			{
-				const Vertex2D::IndexType count = static_cast<Vertex2D::IndexType>(newSize - 1);
+				Vertex2D::IndexType base = indexOffset;
 
-				for (Vertex2D::IndexType k = 0; k < count; ++k)
+				for (Vertex2D::IndexType k = 0; k < (pointCount - 1); ++k)
 				{
-					for (Vertex2D::IndexType i = 0; i < 6; ++i)
-					{
-						*pIndex++ = (indexOffset + (RectIndexTable[i] + k * 2) % vertexSize);
-					}
-				}
-			}
-
-			return indexSize;
-		}
-
-		[[nodiscard]]
-		static Vertex2D::IndexType BuildUncappedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const std::span<const ColorF> colors, const float scale, float& startAngle, float& endAngle)
-		{
-			const std::pair<Array<Float2>,Array<Float4>> base = SimplifyOpen(points, scale, offset, colors);
-			const std::pair<Array<Float2>, Array<Float4>> buffer = AdjustOpen(base.first, base.second, scale, inner);
-			const auto& posBuffer = buffer.first;
-			const auto& colorBuffer = buffer.second;
-
-			const Vertex2D::IndexType newSize = static_cast<Vertex2D::IndexType>(posBuffer.size());
-			const Vertex2D::IndexType vertexSize = (newSize * 2), indexSize = (6 * (newSize - 1));
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexSize, indexSize);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			const float halfThickness = (thickness * 0.5f);
-
-			const Float2* const pBuf = posBuffer.data();
-			const Float4* const cBuf = colorBuffer.data();
-
-			{
-				const Float2 p0 = pBuf[0];
-				const Float2 p1 = pBuf[1];
-				const Float2 line = (p1 - p0).normalize();
-				const Float2 vNormalBegin{ -line.y * halfThickness, line.x * halfThickness };
-
-				{
-					startAngle = std::atan2(vNormalBegin.x, -vNormalBegin.y);
+					pIndex[0] = base;
+					pIndex[1] = (base + 1);
+					pIndex[2] = (base + 2);
+					pIndex[3] = (base + 2);
+					pIndex[4] = (base + 1);
+					pIndex[5] = (base + 3);
+					pIndex += 6;
+					base += 2;
 				}
 
-				const Float4& color = cBuf[0];
-				pVertex[0].set((p0 + vNormalBegin), color);
-				pVertex[1].set((p0 - vNormalBegin), color);
-			}
-
-			for (Vertex2D::IndexType i = 0; i < (newSize - 2); ++i)
-			{
-				const Float2 p0 = pBuf[i];
-				const Float2 p1 = pBuf[i + 1];
-				const Float2 p2 = pBuf[i + 2];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = halfThickness / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				const Float4& color = cBuf[i + 1];
-				pVertex[i * 2 + 2].set(result0, color);
-				pVertex[i * 2 + 3].set(result1, color);
-			}
-
-			{
-				const Float2 p0 = pBuf[newSize - 2];
-				const Float2 p1 = pBuf[newSize - 1];
-				const Float2 line = (p1 - p0).normalize();
-				const Float2 vNormalEnd{ -line.y * halfThickness, line.x * halfThickness };
-
+				if (closed)
 				{
-					endAngle = std::atan2(vNormalEnd.x, -vNormalEnd.y);
-				}
-
-				const Float4& color = cBuf[newSize - 1];
-				pVertex[newSize * 2 - 2].set((p1 + vNormalEnd), color);
-				pVertex[newSize * 2 - 1].set((p1 - vNormalEnd), color);
-			}
-
-			{
-				const Vertex2D::IndexType count = static_cast<Vertex2D::IndexType>(newSize - 1);
-
-				for (Vertex2D::IndexType k = 0; k < count; ++k)
-				{
-					for (Vertex2D::IndexType i = 0; i < 6; ++i)
-					{
-						*pIndex++ = (indexOffset + (RectIndexTable[i] + k * 2) % vertexSize);
-					}
+					// 最終クアッドのみ先頭の頂点ペアへラップする
+					pIndex[0] = base;
+					pIndex[1] = (base + 1);
+					pIndex[2] = indexOffset;
+					pIndex[3] = indexOffset;
+					pIndex[4] = (base + 1);
+					pIndex[5] = (indexOffset + 1);
 				}
 			}
 
-			return indexSize;
-		}
-
-		template <class PointType>
-		[[nodiscard]]
-		static Vertex2D::IndexType BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const PointType> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& color, const float scale)
-		{
-			const Array<Float2> base = SimplifyClosed(points, scale, offset);
-			const Array<Float2> buffer = AdjustClosed(base, scale, inner);
-
-			const Vertex2D::IndexType newSize = static_cast<Vertex2D::IndexType>(buffer.size());
-			const Vertex2D::IndexType vertexSize = (newSize * 2), indexSize = (6 * (newSize - 1) + 6);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexSize, indexSize);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			const float thicknessHalf = (thickness * 0.5f);
-
-			const Float2* const pBuf = buffer.data();
-
-			{
-				const Float2 p0 = pBuf[newSize - 1];
-				const Float2 p1 = pBuf[0];
-				const Float2 p2 = pBuf[1];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = thicknessHalf / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				pVertex[0].pos.set(result0);
-				pVertex[1].pos.set(result1);
-			}
-
-			for (Vertex2D::IndexType i = 0; i < (newSize - 2); ++i)
-			{
-				const Float2 p0 = pBuf[i];
-				const Float2 p1 = pBuf[i + 1];
-				const Float2 p2 = pBuf[i + 2];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = thicknessHalf / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				pVertex[i * 2 + 2].pos.set(result0);
-				pVertex[i * 2 + 3].pos.set(result1);
-			}
-
-
-			{
-				const Float2 p0 = pBuf[newSize - 2];
-				const Float2 p1 = pBuf[newSize - 1];
-				const Float2 p2 = pBuf[0];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = thicknessHalf / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				pVertex[newSize * 2 - 2].pos.set(result0);
-				pVertex[newSize * 2 - 1].pos.set(result1);
-			}
-
-			for (size_t i = 0; i < vertexSize; ++i)
-			{
-				(pVertex++)->color = color;
-			}
-
-			{
-				const Vertex2D::IndexType count = static_cast<Vertex2D::IndexType>(newSize);
-
-				for (Vertex2D::IndexType k = 0; k < count; ++k)
-				{
-					for (Vertex2D::IndexType i = 0; i < 6; ++i)
-					{
-						*pIndex++ = (indexOffset + (RectIndexTable[i] + k * 2) % vertexSize);
-					}
-				}
-			}
-
-			return indexSize;
-		}
-
-		[[nodiscard]]
-		static Vertex2D::IndexType BuildClosedLineString(const BufferCreatorFunc& bufferCreator, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const std::span<const ColorF> colors, const float scale)
-		{
-			const std::pair<Array<Float2>, Array<Float4>> base = SimplifyClosed(points, scale, offset, colors);
-			const std::pair<Array<Float2>, Array<Float4>> buffer = AdjustClosed(base.first, base.second, scale, inner);
-			const auto& posBuffer = buffer.first;
-			const auto& colorBuffer = buffer.second;
-
-			const Vertex2D::IndexType newSize = static_cast<Vertex2D::IndexType>(posBuffer.size());
-			const Vertex2D::IndexType vertexSize = (newSize * 2), indexSize = (6 * (newSize - 1) + 6);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(vertexSize, indexSize);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			const float thicknessHalf = (thickness * 0.5f);
-
-			const Float2* const pBuf = posBuffer.data();
-			const Float4* const cBuf = colorBuffer.data();
-
-			{
-				const Float2 p0 = pBuf[newSize - 1];
-				const Float2 p1 = pBuf[0];
-				const Float2 p2 = pBuf[1];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = thicknessHalf / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				const Float4& color = cBuf[0];
-				pVertex[0].set(result0, color);
-				pVertex[1].set(result1, color);
-			}
-
-			for (Vertex2D::IndexType i = 0; i < (newSize - 2); ++i)
-			{
-				const Float2 p0 = pBuf[i];
-				const Float2 p1 = pBuf[i + 1];
-				const Float2 p2 = pBuf[i + 2];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = thicknessHalf / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				const Float4& color = cBuf[i + 1];
-				pVertex[i * 2 + 2].set(result0, color);
-				pVertex[i * 2 + 3].set(result1, color);
-			}
-
-
-			{
-				const Float2 p0 = pBuf[newSize - 2];
-				const Float2 p1 = pBuf[newSize - 1];
-				const Float2 p2 = pBuf[0];
-				const Float2 line = p1 - p0;
-				const Float2 normal = Float2{ -line.y, line.x }.normalized();
-				const Float2 v = (p2 - p1).normalized() + (p1 - p0).normalized();
-				const Float2 tangent = (0.001f < v.lengthSq()) ? v.normalized() : (p2 - p0).normalized();
-				const Float2 miter = Float2{ -tangent.y, tangent.x };
-				const float length = thicknessHalf / miter.dot(normal);
-				const Float2 result0 = p1 + miter * length;
-				const Float2 result1 = p1 - miter * length;
-
-				const Float4& color = cBuf[newSize - 1];
-				pVertex[newSize * 2 - 2].set(result0, color);
-				pVertex[newSize * 2 - 1].set(result1, color);
-			}
-
-			{
-				const Vertex2D::IndexType count = static_cast<Vertex2D::IndexType>(newSize);
-
-				for (Vertex2D::IndexType k = 0; k < count; ++k)
-				{
-					for (Vertex2D::IndexType i = 0; i < 6; ++i)
-					{
-						*pIndex++ = (indexOffset + (RectIndexTable[i] + k * 2) % vertexSize);
-					}
-				}
-			}
-
-			return indexSize;
+			return indexCount;
 		}
 
 		[[nodiscard]]
@@ -3269,7 +2660,16 @@ namespace s3d
 				return 0;
 			}
 
-			return BuildClosedLineString<Float2>(bufferCreator, vertices, none, thickness, false, color, scale);
+			PolylineBuffer& buffer = GetPolylineBuffer();
+			const PreparedPolyline prepared = PreparePolyline<Float2>(vertices, none, scale, true, true, false, buffer);
+
+			if (prepared.points.size() < 3)
+			{
+				return 0;
+			}
+
+			return EmitLineStringStrip(bufferCreator, prepared.points, (thickness * 0.5f), true,
+				[&color](size_t) { return color; });
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3300,18 +2700,37 @@ namespace s3d
 				return 0;
 			}
 
-			if (closeRing && (3 <= num_points))
+			PolylineBuffer& buffer = GetPolylineBuffer();
+			const bool closed = (closeRing && (3 <= num_points));
+			const PreparedPolyline prepared = PreparePolyline<Vec2>(points, offset, scale, closed, (not inner), false, buffer);
+
+			// 間引きの結果 1 点に縮退した場合はキャップのみ描画する
+			if (prepared.points.size() < 2)
 			{
-				return BuildClosedLineString(bufferCreator, points, offset, thickness, inner, color, scale);
+				return BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), offset, thickness, color, scale);
+			}
+
+			const float halfThickness = (thickness * 0.5f);
+			const auto colorAt = [&color](size_t) { return color; };
+
+			if (closed)
+			{
+				if (3 <= prepared.points.size())
+				{
+					return EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, true, colorAt);
+				}
+
+				// 2 点に縮退したリングは、キャップなしの開いた線分として描画する
+				return EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt);
 			}
 			else
 			{
 				float startAngle = 0.0f, endAngle = 0.0f;
 
-				Vertex2D::IndexType indexCount = BuildUncappedLineString(bufferCreator, points, offset, thickness, inner, color, scale, startAngle, endAngle);
+				Vertex2D::IndexType indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
 
 				indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, color, color, scale);
-		
+
 				return indexCount;
 			}
 		}
@@ -3338,18 +2757,47 @@ namespace s3d
 				return 0;
 			}
 
+			PolylineBuffer& buffer = GetPolylineBuffer();
+			const PreparedPolyline prepared = PreparePolyline<Vec2>(points, offset, scale, false, (not inner), false, buffer);
+
+			if (prepared.points.size() < 2)
 			{
-				float startAngle = 0.0f, endAngle = 0.0f;
-				Float4 c1, c2;
-				const bool hasStartCap = (startCap != LineCap::Flat);
-				const bool hasEndCap = (endCap != LineCap::Flat);
-
-				Vertex2D::IndexType indexCount = BuildUncappedLineString(bufferCreator, points, offset, thickness, inner, colorStart, colorEnd, scale, startAngle, endAngle, c1, c2, hasStartCap, hasEndCap);
-
-				indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, colorStart, c1, c2, colorEnd, scale);
-
-				return indexCount;
+				return BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), offset, thickness, colorStart, colorEnd, scale);
 			}
+
+			const float halfThickness = (thickness * 0.5f);
+			const bool hasStartCap = (startCap != LineCap::Flat);
+			const bool hasEndCap = (endCap != LineCap::Flat);
+
+			// 色はキャップ部分も含めた全長 (allLength) に対して線形に補間する。
+			const float baseLength = CalculateLength(prepared.points);
+			const float startDistance = (hasStartCap ? halfThickness : 0.0f);
+			const float allLength = (baseLength + startDistance + (hasEndCap ? halfThickness : 0.0f));
+			const float lengthInv = ((0.0f < allLength) ? (1.0f / allLength) : 0.0f);
+			const Float4 colorDiff = (colorEnd - colorStart);
+
+			// 始端・終端の頂点色。キャップ側のグラデーションに引き継ぐ
+			const Float4 stripStartColor = (colorStart + colorDiff * (startDistance * lengthInv));
+			const Float4 stripEndColor = (colorStart + colorDiff * ((startDistance + baseLength) * lengthInv));
+
+			const Float2* const pts = prepared.points.data();
+			auto colorAt = [&, distance = startDistance](const size_t i) mutable
+			{
+				if (0 < i)
+				{
+					distance += pts[i].distanceFrom(pts[i - 1]);
+				}
+
+				return (colorStart + colorDiff * (distance * lengthInv));
+			};
+
+			float startAngle = 0.0f, endAngle = 0.0f;
+
+			Vertex2D::IndexType indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+
+			indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, colorStart, stripStartColor, stripEndColor, colorEnd, scale);
+
+			return indexCount;
 		}
 
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors, const float scale)
@@ -3378,15 +2826,34 @@ namespace s3d
 				return 0;
 			}
 
-			if (closeRing && (3 <= num_points))
+			PolylineBuffer& buffer = GetPolylineBuffer();
+			const bool closed = (closeRing && (3 <= num_points));
+			const PreparedPolyline prepared = PreparePolyline<Vec2>(points, offset, scale, closed, (not inner), true, buffer);
+
+			if (prepared.points.size() < 2)
 			{
-				return BuildClosedLineString(bufferCreator, points, offset, thickness, inner, colors, scale);
+				return BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), offset, thickness, colorStart, colorEnd, scale);
+			}
+
+			const float halfThickness = (thickness * 0.5f);
+			const uint32* const srcIndices = prepared.srcIndices.data();
+			const auto colorAt = [&colors, srcIndices](const size_t i) { return colors[srcIndices[i]].toFloat4(); };
+
+			if (closed)
+			{
+				if (3 <= prepared.points.size())
+				{
+					return EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, true, colorAt);
+				}
+
+				// 2 点に縮退したリングは、キャップなしの開いた線分として描画する
+				return EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt);
 			}
 			else
 			{
 				float startAngle = 0.0f, endAngle = 0.0f;
 
-				Vertex2D::IndexType indexCount = BuildUncappedLineString(bufferCreator, points, offset, thickness, inner, colors, scale, startAngle, endAngle);
+				Vertex2D::IndexType indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
 
 				indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, colorStart, colorEnd, scale);
 
