@@ -647,6 +647,9 @@
 // 精度を落とした高速な数学関数 | Fast math functions
 # include <Siv3D/FastMath.hpp>
 
+// 四分円の単位ベクトルテーブル | Quarter arc unit vector table
+# include <Siv3D/QuarterArcTable.hpp>
+
 // 補間 | Interpolation
 # include <Siv3D/Interpolation.hpp>
 

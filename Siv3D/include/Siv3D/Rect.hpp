@@ -1612,8 +1612,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RoundRect rounded(double r) const noexcept;
 
-		//[[nodiscard]]
-		//Polygon rounded(double tl, double tr, double br, double bl) const noexcept;
+		[[nodiscard]]
+		Polygon rounded(double tl, double tr, double br, double bl) const;
 
 		////////////////////////////////////////////////////////////////
 		//

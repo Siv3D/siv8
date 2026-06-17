@@ -14,6 +14,7 @@
 # include "Vertex2DBuilder.hpp"
 # include <Siv3D/LineStyle.hpp>
 # include <Siv3D/FloatQuad.hpp>
+# include <Siv3D/QuarterArcTable.hpp>
 
 namespace s3d
 {
@@ -22,32 +23,6 @@ namespace s3d
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
 
 		static constexpr Vertex2D::IndexType CircleFrameIndexTable[6] = { 0, 2, 1, 1, 2, 3 };
-
-		static const std::array<Float2, 2016> SinCosTable = []()
-		{
-			std::array<Float2, 2016> table;
-
-			Float2* pDst = table.data();
-
-			for (int32 quality = 1; quality <= 63; ++quality)
-			{
-				const float radDelta = (Math::HalfPiF / quality);
-
-				for (int32 i = 0; i < quality; ++i)
-				{
-					const float rad = (radDelta * i);
-					*pDst++ = { std::sin(rad), -std::cos(rad) };
-				}
-			}
-
-			return table;
-		}();
-
-		[[nodiscard]]
-		static constexpr size_t GetSinCosTableIndex(Vertex2D::IndexType quality)
-		{
-			return ((quality - 1) * quality / 2);
-		}
 
 		/// @brief 円の品質を計算します。
 		/// @param r 円の半径
@@ -1168,7 +1143,7 @@ namespace s3d
 
 			const Float4 colorDiff = (color1 - color0);
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 			
 			Vertex2D* pDst0 = &pVertex[1];
 			Vertex2D* pDst1 = (pDst0 + Quality);
@@ -1177,9 +1152,9 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float x = (cs->x * r);
-				const float y = (cs->y * r);
+				const Float2& cs = pCS[i];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
 
 				if (colorType == ColorFillDirection::InOut)
 				{
@@ -1190,10 +1165,10 @@ namespace s3d
 				}
 				else if(colorType == ColorFillDirection::TopBottom)
 				{
-					const Float4 c0 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c0 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c1 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c2 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c3 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
 
 					pDst0->set((centerX + x), (centerY + y), c0);
 					pDst1->set((centerX - y), (centerY + x), c1);
@@ -1202,10 +1177,10 @@ namespace s3d
 				}
 				else
 				{
-					const Float4 c0 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c0 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c1 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c2 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c3 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
 
 					pDst0->set((centerX + x), (centerY + y), c0);
 					pDst1->set((centerX - y), (centerY + x), c1);
@@ -1268,7 +1243,7 @@ namespace s3d
 			const float centerX = center.x;
 			const float centerY = center.y;
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = &pVertex[0];
 			Vertex2D* pDst1 = (pDst0 + Quality * 2);
@@ -1277,11 +1252,11 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float ox = (cs->x * rOuter);
-				const float ix = (cs->x * rInner);
-				const float oy = (cs->y * rOuter);
-				const float iy = (cs->y * rInner);
+				const Float2& cs = pCS[i];
+				const float ox = (cs.x * rOuter);
+				const float ix = (cs.x * rInner);
+				const float oy = (cs.y * rOuter);
+				const float iy = (cs.y * rInner);
 
 				(pDst0++)->pos.set((centerX + ox), (centerY + oy));
 				(pDst0++)->pos.set((centerX + ix), (centerY + iy));
@@ -1494,7 +1469,7 @@ namespace s3d
 
 			const Float4 colorDiff = (color1 - color0);
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = &pVertex[1];
 			Vertex2D* pDst1 = (pDst0 + Quality);
@@ -1503,11 +1478,11 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float xa = (cs->x * a);
-				const float xb = (cs->x * b);
-				const float ya = (cs->y * a);
-				const float yb = (cs->y * b);
+				const Float2& cs = pCS[i];
+				const float xa = (cs.x * a);
+				const float xb = (cs.x * b);
+				const float ya = (cs.y * a);
+				const float yb = (cs.y * b);
 
 				if (colorType == ColorFillDirection::InOut)
 				{
@@ -1518,10 +1493,10 @@ namespace s3d
 				}
 				else if (colorType == ColorFillDirection::TopBottom)
 				{
-					const Float4 c0 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c0 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c1 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c2 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c3 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
 
 					pDst0->set((centerX + xa), (centerY + yb), c0);
 					pDst1->set((centerX - ya), (centerY + xb), c1);
@@ -1530,10 +1505,10 @@ namespace s3d
 				}
 				else
 				{
-					const Float4 c0 = (color0 + ((cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c1 = (color0 + ((-cs->y + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs->x + 1.0f) * 0.5f) * colorDiff);
-					const Float4 c3 = (color0 + ((cs->y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c0 = (color0 + ((cs.x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c1 = (color0 + ((-cs.y + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c2 = (color0 + ((-cs.x + 1.0f) * 0.5f) * colorDiff);
+					const Float4 c3 = (color0 + ((cs.y + 1.0f) * 0.5f) * colorDiff);
 
 					pDst0->set((centerX + xa), (centerY + yb), c0);
 					pDst1->set((centerX - ya), (centerY + xb), c1);
@@ -1601,7 +1576,7 @@ namespace s3d
 			const float centerX = center.x;
 			const float centerY = center.y;
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = &pVertex[0];
 			Vertex2D* pDst1 = (pDst0 + Quality * 2);
@@ -1610,16 +1585,9 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-
-				// 既存実装と同じ周回順:
-				// top -> right -> bottom -> left
-				//
-				// cs->x = sin(rad)
-				// cs->y = -cos(rad)
-
-				const float ux = cs->x;
-				const float uy = cs->y;
+				const Float2& cs = pCS[i];
+				const float ux = cs.x;
+				const float uy = cs.y;
 
 				SetEllipseFrameVertexPair(
 					pDst0,
@@ -1784,7 +1752,7 @@ namespace s3d
 			const float invW = (1.0f / (2.0f * a));
 			const float invH = (1.0f / (2.0f * b));
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = &pVertex[1];
 			Vertex2D* pDst1 = (pDst0 + Quality);
@@ -1799,9 +1767,9 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float cp = SignedPow(cs->x);
-				const float sp = SignedPow(cs->y);
+				const Float2& cs = pCS[i];
+				const float cp = SignedPow(cs.x);
+				const float sp = SignedPow(cs.y);
 
 				const float ax_cp = (a * cp);
 				const float ax_sp = (a * sp);
@@ -1905,7 +1873,7 @@ namespace s3d
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = pVertex;
 			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
@@ -1914,9 +1882,9 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float x = (cs->x * r);
-				const float y = (cs->y * r);
+				const Float2& cs = pCS[i];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
 
 				pDst0->set((middleRightX + x), (topCenterY + y), color);
 				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
@@ -1931,8 +1899,9 @@ namespace s3d
 
 			// Fan の最後の頂点
 			{
-				const float x = (pCS->x * r);
-				const float y = (pCS->y * r);
+				const Float2& cs = pCS[0];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
 
 				pDst0->set((middleRightX - y), (topCenterY + x), color);
 				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
@@ -2064,7 +2033,7 @@ namespace s3d
 			const float colorRScale = (colorType == ColorFillDirection::TopBottom) ? (r / (rect.bottom - rect.top)) : (r / (rect.right - rect.left));
 			const float colorROffset = (1.0f - colorRScale);
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = pVertex;
 			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
@@ -2073,16 +2042,16 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float x = (cs->x * r);
-				const float y = (cs->y * r);
+				const Float2& cs = pCS[i];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
 
 				if (colorType == ColorFillDirection::TopBottom)
 				{
-					const Float4 c0 = (color0 + ((cs->y + 1.0f) * colorRScale) * colorDiff);
-					const Float4 c1 = (color0 + (colorROffset + (cs->x * colorRScale)) * colorDiff);
-					const Float4 c2 = (color0 + (colorROffset + (-cs->y * colorRScale)) * colorDiff);
-					const Float4 c3 = (color0 + ((-cs->x + 1.0f) * colorRScale) * colorDiff);
+					const Float4 c0 = (color0 + ((cs.y + 1.0f) * colorRScale) * colorDiff);
+					const Float4 c1 = (color0 + (colorROffset + (cs.x * colorRScale)) * colorDiff);
+					const Float4 c2 = (color0 + (colorROffset + (-cs.y * colorRScale)) * colorDiff);
+					const Float4 c3 = (color0 + ((-cs.x + 1.0f) * colorRScale) * colorDiff);
 
 					pDst0->set((middleRightX + x), (topCenterY + y), c0);
 					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
@@ -2091,10 +2060,10 @@ namespace s3d
 				}
 				else // ColorFillDirection::LeftRight
 				{
-					const Float4 c0 = (color0 + (colorROffset + (cs->x * colorRScale)) * colorDiff);
-					const Float4 c1 = (color0 + (colorROffset + (-cs->y * colorRScale)) * colorDiff);
-					const Float4 c2 = (color0 + ((-cs->x + 1.0f) * colorRScale) * colorDiff);
-					const Float4 c3 = (color0 + ((cs->y + 1.0f) * colorRScale) * colorDiff);
+					const Float4 c0 = (color0 + (colorROffset + (cs.x * colorRScale)) * colorDiff);
+					const Float4 c1 = (color0 + (colorROffset + (-cs.y * colorRScale)) * colorDiff);
+					const Float4 c2 = (color0 + ((-cs.x + 1.0f) * colorRScale) * colorDiff);
+					const Float4 c3 = (color0 + ((cs.y + 1.0f) * colorRScale) * colorDiff);
 
 					pDst0->set((middleRightX + x), (topCenterY + y), c0);
 					pDst1->set((middleRightX - y), (bottomCenterY + x), c1);
@@ -2110,8 +2079,9 @@ namespace s3d
 
 			// Fan の最後の頂点
 			{
-				const float x = (pCS->x * r);
-				const float y = (pCS->y * r);
+				const Float2& cs = pCS[0];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
 
 				if (colorType == ColorFillDirection::TopBottom)
 				{
@@ -2290,7 +2260,7 @@ namespace s3d
 				const float outerTopCenterY = (outerRect.top + outerR);
 				const float outerBottomCenterY = (outerRect.bottom - outerR);
 
-				const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+				const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 				Vertex2D* pDst0 = pVertex;
 				Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
@@ -2299,11 +2269,11 @@ namespace s3d
 
 				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 				{
-					const Float2* cs = (pCS + i);
-					const float ox = (cs->x * outerR);
-					const float oy = (cs->y * outerR);
-					const float ix = (cs->x * innerR);
-					const float iy = (cs->y * innerR);
+					const Float2& cs = pCS[i];
+					const float ox = (cs.x * outerR);
+					const float oy = (cs.y * outerR);
+					const float ix = (cs.x * innerR);
+					const float iy = (cs.y * innerR);
 
 					pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), color);
 					pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), color);
@@ -2328,10 +2298,11 @@ namespace s3d
 
 				// 弧の最後の頂点
 				{
-					const float ox = (pCS->x * outerR);
-					const float oy = (pCS->y * outerR);
-					const float ix = (pCS->x * innerR);
-					const float iy = (pCS->y * innerR);
+					const Float2& cs = pCS[0];
+					const float ox = (cs.x * outerR);
+					const float oy = (cs.y * outerR);
+					const float ix = (cs.x * innerR);
+					const float iy = (cs.y * innerR);
 
 					pDst0->set((outerRightCenterX - oy), (outerTopCenterY + ox), color);
 					pDst1->set((outerRightCenterX - ox), (outerBottomCenterY - oy), color);
@@ -2453,7 +2424,7 @@ namespace s3d
 				const float it4 = (1.0f - it1);
 				const float irt = (it2 - it1);
 
-				const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+				const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 				Vertex2D* pDst0 = pVertex;
 				Vertex2D* pDst1 = (pVertex + ArcVertexCount * 1);
@@ -2462,18 +2433,18 @@ namespace s3d
 
 				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 				{
-					const Float2* cs = (pCS + i);
-					const float ox = (cs->x * outerR);
-					const float oy = (cs->y * outerR);
-					const float ix = (cs->x * innerR);
-					const float iy = (cs->y * innerR);
+					const Float2& cs = pCS[i];
+					const float ox = (cs.x * outerR);
+					const float oy = (cs.y * outerR);
+					const float ix = (cs.x * innerR);
+					const float iy = (cs.y * innerR);
 
 					if (colorType == ColorFillDirection::TopBottom)
 					{
-						const Float4 c0 = (color0 + ((cs->y + 1.0f) * ot1) * colorDiff);
-						const Float4 c1 = (color0 + (ot2 + (cs->x * ot1)) * colorDiff);
-						const Float4 c2 = (color0 + (ot2 + (-cs->y * ot1)) * colorDiff);
-						const Float4 c3 = (color0 + ((-cs->x + 1.0f) * ot1) * colorDiff);
+						const Float4 c0 = (color0 + ((cs.y + 1.0f) * ot1) * colorDiff);
+						const Float4 c1 = (color0 + (ot2 + (cs.x * ot1)) * colorDiff);
+						const Float4 c2 = (color0 + (ot2 + (-cs.y * ot1)) * colorDiff);
+						const Float4 c3 = (color0 + ((-cs.x + 1.0f) * ot1) * colorDiff);
 
 						pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), c0);
 						pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), c1);
@@ -2482,10 +2453,10 @@ namespace s3d
 					}
 					else // ColorFillDirection::LeftRight
 					{
-						const Float4 c0 = (color0 + (ot2 + (cs->x * ot1)) * colorDiff);
-						const Float4 c1 = (color0 + (ot2 + (-cs->y * ot1)) * colorDiff);
-						const Float4 c2 = (color0 + ((-cs->x + 1.0f) * ot1) * colorDiff);
-						const Float4 c3 = (color0 + ((cs->y + 1.0f) * ot1) * colorDiff);
+						const Float4 c0 = (color0 + (ot2 + (cs.x * ot1)) * colorDiff);
+						const Float4 c1 = (color0 + (ot2 + (-cs.y * ot1)) * colorDiff);
+						const Float4 c2 = (color0 + ((-cs.x + 1.0f) * ot1) * colorDiff);
+						const Float4 c3 = (color0 + ((cs.y + 1.0f) * ot1) * colorDiff);
 
 						pDst0->set((outerRightCenterX + ox), (outerTopCenterY + oy), c0);
 						pDst1->set((outerRightCenterX - oy), (outerBottomCenterY + ox), c1);
@@ -2500,10 +2471,10 @@ namespace s3d
 
 					if (colorType == ColorFillDirection::TopBottom)
 					{
-						const Float4 c0 = (color0 + (it1 + (cs->y + 1.0f) * irt) * colorDiff);
-						const Float4 c1 = (color0 + (it3 + (cs->x * irt)) * colorDiff);
-						const Float4 c2 = (color0 + (it3 + (-cs->y * irt)) * colorDiff);
-						const Float4 c3 = (color0 + (it1 + (-cs->x + 1.0f) * irt) * colorDiff);
+						const Float4 c0 = (color0 + (it1 + (cs.y + 1.0f) * irt) * colorDiff);
+						const Float4 c1 = (color0 + (it3 + (cs.x * irt)) * colorDiff);
+						const Float4 c2 = (color0 + (it3 + (-cs.y * irt)) * colorDiff);
+						const Float4 c3 = (color0 + (it1 + (-cs.x + 1.0f) * irt) * colorDiff);
 
 						pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), c0);
 						pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), c1);
@@ -2512,10 +2483,10 @@ namespace s3d
 					}
 					else // ColorFillDirection::LeftRight
 					{
-						const Float4 c0 = (color0 + (it3 + (cs->x * irt)) * colorDiff);
-						const Float4 c1 = (color0 + (it3 + (-cs->y * irt)) * colorDiff);
-						const Float4 c2 = (color0 + (it1 + (-cs->x + 1.0f) * irt) * colorDiff);
-						const Float4 c3 = (color0 + (it1 + (cs->y + 1.0f) * irt) * colorDiff);
+						const Float4 c0 = (color0 + (it3 + (cs.x * irt)) * colorDiff);
+						const Float4 c1 = (color0 + (it3 + (-cs.y * irt)) * colorDiff);
+						const Float4 c2 = (color0 + (it1 + (-cs.x + 1.0f) * irt) * colorDiff);
+						const Float4 c3 = (color0 + (it1 + (cs.y + 1.0f) * irt) * colorDiff);
 
 						pDst0->set((innerRightCenterX + ix), (innerTopCenterY + iy), c0);
 						pDst1->set((innerRightCenterX - iy), (innerBottomCenterY + ix), c1);
@@ -2531,10 +2502,11 @@ namespace s3d
 
 				// 弧の最後の頂点
 				{
-					const float ox = (pCS->x * outerR);
-					const float oy = (pCS->y * outerR);
-					const float ix = (pCS->x * innerR);
-					const float iy = (pCS->y * innerR);
+					const Float2& cs = pCS[0];
+					const float ox = (cs.x * outerR);
+					const float oy = (cs.y * outerR);
+					const float ix = (cs.x * innerR);
+					const float iy = (cs.y * innerR);
 					
 					if (colorType == ColorFillDirection::TopBottom)
 					{
@@ -2952,7 +2924,7 @@ namespace s3d
 			const float topCenterY		= (rect.top + r);
 			const float bottomCenterY	= (rect.bottom - r);
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = pVertex;
 			Vertex2D* pDst1 = (pDst0 + FanOuterVertexCount);
@@ -2961,9 +2933,9 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float x = (cs->x * r);
-				const float y = (cs->y * r);
+				const Float2& cs = pCS[i];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
 
 				pDst0->set((middleRightX + x), (topCenterY + y), color);
 				pDst1->set((middleRightX - y), (bottomCenterY + x), color);
@@ -2978,8 +2950,9 @@ namespace s3d
 
 			// Fan の最後の頂点
 			{
-				const float x = (pCS->x * r);
-				const float y = (pCS->y * r);
+				const Float2& cs = pCS[0];
+				const float x = (cs.x * r);
+				const float y = (cs.y * r);
 
 				pDst0->set((middleRightX - y), (topCenterY + x), color);
 				pDst1->set((middleRightX - x), (bottomCenterY - y), color);
@@ -3136,7 +3109,7 @@ namespace s3d
 			const float centerX = static_cast<float>(circle.x);
 			const float centerY = static_cast<float>(circle.y);
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			Vertex2D* pDst0 = &pVertex[0];
 			Vertex2D* pDst1 = (pDst0 + Quality * 2);
@@ -3145,11 +3118,11 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float ox = (cs->x * rOuter);
-				const float ix = (cs->x * rInner);
-				const float oy = (cs->y * rOuter);
-				const float iy = (cs->y * rInner);
+				const Float2& cs = pCS[i];
+				const float ox = (cs.x * rOuter);
+				const float ix = (cs.x * rInner);
+				const float oy = (cs.y * rOuter);
+				const float iy = (cs.y * rInner);
 
 				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
 				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);
@@ -3210,7 +3183,7 @@ namespace s3d
 			const float centerX = static_cast<float>(circle.x);
 			const float centerY = static_cast<float>(circle.y);
 
-			const Float2* pCS = (SinCosTable.data() + GetSinCosTableIndex(Quality));
+			const std::span<const Float2> pCS = QuarterArcTable::GetUnitVectors(Quality);
 
 			// 中心頂点を最初に配置
 			pVertex[0].set(centerX, centerY, 0.5f, 0.5f, color);
@@ -3222,11 +3195,11 @@ namespace s3d
 
 			for (Vertex2D::IndexType i = 0; i < Quality; ++i)
 			{
-				const Float2* cs = (pCS + i);
-				const float ox = (cs->x * rOuter);
-				const float ix = (cs->x * rInner);
-				const float oy = (cs->y * rOuter);
-				const float iy = (cs->y * rInner);
+				const Float2& cs = pCS[i];
+				const float ox = (cs.x * rOuter);
+				const float ix = (cs.x * rInner);
+				const float oy = (cs.y * rOuter);
+				const float iy = (cs.y * rInner);
 
 				(pDst0++)->set((centerX + ox), (centerY + oy), 0.0f, 0.5f, color);
 				(pDst0++)->set((centerX + ix), (centerY + iy), 0.5f, 0.5f, color);

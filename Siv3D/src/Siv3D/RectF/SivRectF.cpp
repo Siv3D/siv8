@@ -21,6 +21,7 @@
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/LineStyle.hpp>
+# include <Siv3D/QuarterArcTable.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -60,6 +61,15 @@ namespace s3d
 		static bool IsFilledRect(const RectF& rect, const double innerThickness) noexcept
 		{
 			return ((rect.w < (innerThickness * 2)) || (rect.h < (innerThickness * 2)));
+		}
+
+		[[nodiscard]]
+		constexpr Vertex2D::IndexType CaluculateFanQuality(const double r) noexcept
+		{
+			return r <= 1.0 ? 3
+				: r <= 6.0 ? 5
+				: r <= 12.0 ? 8
+				: static_cast<Vertex2D::IndexType>(Min<double>(QuarterArcTable::MaxQuality, (r * 0.2 + 6)));
 		}
 	}
 
@@ -212,6 +222,175 @@ namespace s3d
 		}
 
 		return quad;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RectF::rounded(double tl, double tr, double br, double bl) const
+	{
+		tl = Max(tl, 0.0);
+		tr = Max(tr, 0.0);
+		br = Max(br, 0.0);
+		bl = Max(bl, 0.0);
+
+		double radiusScale = 1.0;
+
+		if (const double t = (tl + tr); w < t)
+		{
+			radiusScale = Min(radiusScale, (w / t));
+		}
+
+		if (const double r = (tr + br); h < r)
+		{
+			radiusScale = Min(radiusScale, (h / r));
+		}
+
+		if (const double b = (bl + br); w < b)
+		{
+			radiusScale = Min(radiusScale, (w / b));
+		}
+
+		if (const double l = (tl + bl); h < l)
+		{
+			radiusScale = Min(radiusScale, (h / l));
+		}
+
+		if (radiusScale < 1.0)
+		{
+			tl *= radiusScale;
+			tr *= radiusScale;
+			br *= radiusScale;
+			bl *= radiusScale;
+		}
+
+		const Vec2 rectTL = this->tl();
+		const Vec2 rectTR = this->tr();
+		const Vec2 rectBR = this->br();
+		const Vec2 rectBL = this->bl();
+
+		if (not (tl || tr || br || bl))
+		{
+			return Polygon{
+				Array<Vec2>{ rectTL, rectTR, rectBR, rectBL },
+				*this,
+				SkipValidation::Yes
+			};
+		}
+
+		const float scale = SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+
+		const Vertex2D::IndexType tlQuality = (tl ? CaluculateFanQuality(tl * scale) : 1);
+		const Vertex2D::IndexType trQuality = (tr ? CaluculateFanQuality(tr * scale) : 1);
+		const Vertex2D::IndexType brQuality = (br ? CaluculateFanQuality(br * scale) : 1);
+		const Vertex2D::IndexType blQuality = (bl ? CaluculateFanQuality(bl * scale) : 1);
+
+		Array<Vec2> vertices{ Arg::reserve = static_cast<size_t>(tlQuality + trQuality + brQuality + blQuality + 4) };
+
+		if (tl)
+		{
+			const Vec2 center = (rectTL + Vec2{ tl, tl });
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(tlQuality);
+			vertices << (rectTL + Vec2{ 0, tl });
+
+			for (Vertex2D::IndexType i = 1; i < tlQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float c = -sc[i].y;
+				vertices << (center + Vec2{ (-tl * c), (-tl * s) });
+			}
+
+			vertices << (rectTL + Vec2{ tl, 0 });
+		}
+		else
+		{
+			vertices << rectTL;
+		}
+
+		if (tr)
+		{
+			const Vec2 center = (rectTR + Vec2{ -tr, tr });
+			const Vec2 start = (rectTR + Vec2{ -tr, 0 });
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(trQuality);
+
+			if (vertices.back() != start)
+			{
+				vertices << start;
+			}
+
+			for (Vertex2D::IndexType i = 1; i < trQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float nc = sc[i].y;
+				vertices << (center + Vec2{ (tr * s), (tr * nc) });
+			}
+
+			vertices << (rectTR + Vec2{ 0, tr });
+		}
+		else if (vertices.back() != rectTR)
+		{
+			vertices << rectTR;
+		}
+
+		if (br)
+		{
+			const Vec2 center = (rectBR + Vec2{ -br, -br });
+			const Vec2 start = (rectBR + Vec2{ 0, -br });
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(brQuality);
+
+			if (vertices.back() != start)
+			{
+				vertices << start;
+			}
+
+			for (Vertex2D::IndexType i = 1; i < brQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float c = -sc[i].y;
+				vertices << (center + Vec2{ (br * c), (br * s) });
+			}
+
+			vertices << (rectBR + Vec2{ -br, 0 });
+		}
+		else if (vertices.back() != rectBR)
+		{
+			vertices << rectBR;
+		}
+
+		if (bl)
+		{
+			const Vec2 center = (rectBL + Vec2{ bl, -bl });
+			const Vec2 start = (rectBL + Vec2{ bl, 0 });
+			const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(blQuality);
+
+			if (vertices.back() != start)
+			{
+				vertices << start;
+			}
+
+			for (Vertex2D::IndexType i = 1; i < blQuality; ++i)
+			{
+				const float s = sc[i].x;
+				const float c = -sc[i].y;
+				vertices << (center + Vec2{ (-bl * s), (bl * c) });
+			}
+
+			const Vec2 end = (rectBL + Vec2{ 0, -bl });
+
+			if (vertices.front() != end)
+			{
+				vertices << end;
+			}
+		}
+		else if (vertices.front() != rectBL)
+		{
+			vertices << rectBL;
+		}
+
+		return Polygon{ vertices, *this, SkipValidation::Yes };
 	}
 
 	////////////////////////////////////////////////////////////////
