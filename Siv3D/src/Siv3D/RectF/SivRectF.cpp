@@ -603,69 +603,62 @@ namespace s3d
 
 	LineString RectF::outline(double distanceFromOrigin, double length) const
 	{
-		if (length <= 0.0)
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		const double perim = perimeter();
+
+		if (length < 0.0)
 		{
 			distanceFromOrigin += length;
 			length = -length;
 		}
 
-		const Vec2 ps[4] = {
-			pos, tr(), br(), bl()
-		};
-		constexpr size_t N = 4;
-		const double lens[N] = {
-			static_cast<double>(w), static_cast<double>(h), static_cast<double>(w), static_cast<double>(h)
-		};
-		const double perim = (w * 2 + h * 2);
-
-		distanceFromOrigin = std::fmod(distanceFromOrigin, perim) + (distanceFromOrigin < 0 ? perim : 0);
+		distanceFromOrigin = WrapLength(distanceFromOrigin, perim);
 		length = Min(length, perim);
+
+		LineString points{ Arg::reserve = 6 };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+		{
+			if (points.empty() || (points.back() != point))
+			{
+				points << point;
+			}
+		};
+
+		AppendPoint(pointAtLength(distanceFromOrigin));
+
+		if (length == 0.0)
+		{
+			return points;
+		}
+
 		const double distanceToTarget = (distanceFromOrigin + length);
 
-		LineString points;
-		double currentLength = 0.0;
+		const double cornerLengths[4] = {
+			w,
+			(w + h),
+			((w * 2.0) + h),
+			perim,
+		};
 
-		for (size_t n = 0; n < (N * 2); ++n)
+		for (double base = 0.0; base <= distanceToTarget; base += perim)
 		{
-			const size_t i = (n % N);
-			const double len = lens[i];
-			const Vec2 pFrom = ps[i];
-			const Vec2 pTo = ps[(N <= (i + 1)) ? (i - (N - 1)) : (i + 1)];
-
-			if (not points)
+			for (size_t i = 0; i < 4; ++i)
 			{
-				if ((distanceFromOrigin <= (currentLength + len)))
+				const double d = (base + cornerLengths[i]);
+
+				if ((distanceFromOrigin < d) && (d < distanceToTarget))
 				{
-					const Vec2 origin = pFrom + (pTo - pFrom)
-						.setLength(distanceFromOrigin - currentLength);
-					points << origin;
-
-					if (distanceToTarget <= (currentLength + len))
-					{
-						const Vec2 target = pFrom + (pTo - pFrom)
-							.setLength(distanceToTarget - currentLength);
-						points << target;
-						break;
-					}
-
-					points << pTo;
+					AppendPoint(pointAtIndex((i + 1) % 4));
 				}
 			}
-			else
-			{
-				if (distanceToTarget <= (currentLength + len))
-				{
-					const Vec2 target = pFrom + (pTo - pFrom)
-						.setLength(distanceToTarget - currentLength);
-					points << target;
-					break;
-				}
-
-				points << pTo;
-			}
-
-			currentLength += len;
 		}
+
+		AppendPoint(pointAtLength(distanceToTarget));
 
 		return points;
 	}
