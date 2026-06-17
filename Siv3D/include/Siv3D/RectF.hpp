@@ -1426,6 +1426,12 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RoundRect rounded(double r) const noexcept;
 
+		/// @brief 角を丸めた RoundRect を作成して返します。
+		/// @param tl 左上の角の半径
+		/// @param tr 右上の角の半径
+		/// @param br 右下の角の半径
+		/// @param bl 左下の角の半径
+		/// @return 作成した Polygon
 		[[nodiscard]]
 		Polygon rounded(double tl, double tr, double br, double bl) const;
 
@@ -1486,6 +1492,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 点列 { tl(), tr(), br(), bl() } を返します。
+		/// @return 点列 { tl(), tr(), br(), bl() }
 		[[nodiscard]]
 		Array<Vec2> outer() const;
 
@@ -1495,6 +1503,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 点列 { tl(), tr(), br(), bl(), tl() } を返します。
+		/// @return 点列 { tl(), tr(), br(), bl(), tl() }
 		[[nodiscard]]
 		Array<Vec2> ring() const;
 

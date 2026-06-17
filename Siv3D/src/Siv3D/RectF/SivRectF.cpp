@@ -233,6 +233,11 @@ namespace s3d
 
 	Polygon RectF::rounded(double tl, double tr, double br, double bl) const
 	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
 		tl = Max(tl, 0.0);
 		tr = Max(tr, 0.0);
 		br = Max(br, 0.0);
@@ -275,11 +280,7 @@ namespace s3d
 
 		if (not (tl || tr || br || bl))
 		{
-			return Polygon{
-				Array<Vec2>{ rectTL, rectTR, rectBR, rectBL },
-				*this,
-				SkipValidation::Yes
-			};
+			return asPolygon();
 		}
 
 		const float scale = SIV3D_ENGINE(Renderer2D)->getMaxScaling();
@@ -391,7 +392,14 @@ namespace s3d
 			vertices << rectBL;
 		}
 
-		return Polygon{ vertices, *this, SkipValidation::Yes };
+		Array<TriangleIndex> indices(vertices.size() - 2);
+
+		for (Vertex2D::IndexType i = 0; i < indices.size(); ++i)
+		{
+			indices[i] = { 0, static_cast<Vertex2D::IndexType>(i + 1), static_cast<Vertex2D::IndexType>(i + 2) };
+		}
+
+		return Polygon{ vertices, indices, *this, SkipValidation::Yes };
 	}
 
 	////////////////////////////////////////////////////////////////
