@@ -1758,6 +1758,25 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	frame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 枠の形状の Polygon を返します。
+		/// @param thickness 枠の太さ
+		/// @return 枠の形状の Polygon
+		[[nodiscard]]
+		Polygon frame(double thickness) const;
+		
+		/// @brief 枠の形状の Polygon を返します。
+		/// @param innerThickness 内側の太さ
+		/// @param outerThickness 外側の太さ
+		/// @return 枠の形状の Polygon
+		[[nodiscard]]
+		Polygon frame(double innerThickness, double outerThickness) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	outline
 		//
 		////////////////////////////////////////////////////////////////

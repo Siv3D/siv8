@@ -247,6 +247,57 @@ namespace s3d
 
 			return indices;
 		}
+
+		[[nodiscard]]
+		static 	Polygon MakeRectFramePolygon(const RectF& outerRect, const RectF& innerRect)
+		{
+			const Vec2 outerTL = outerRect.tl();
+			const Vec2 outerTR = outerRect.tr();
+			const Vec2 outerBR = outerRect.br();
+			const Vec2 outerBL = outerRect.bl();
+
+			const Vec2 innerTL = innerRect.tl();
+			const Vec2 innerTR = innerRect.tr();
+			const Vec2 innerBR = innerRect.br();
+			const Vec2 innerBL = innerRect.bl();
+
+			Array<Vec2> outer{ Arg::reserve = 4 };
+			outer << outerTL;
+			outer << outerTR;
+			outer << outerBR;
+			outer << outerBL;
+
+			Array<Vec2> hole{ Arg::reserve = 4 };
+			hole << innerTL;
+			hole << innerBL;
+			hole << innerBR;
+			hole << innerTR;
+
+			Array<Array<Vec2>> holes{ Arg::reserve = 1 };
+			holes << std::move(hole);
+
+			Array<Float2> vertices(8);
+			vertices[0] = outerTL;
+			vertices[1] = outerTR;
+			vertices[2] = outerBR;
+			vertices[3] = outerBL;
+			vertices[4] = innerTL;
+			vertices[5] = innerTR;
+			vertices[6] = innerBR;
+			vertices[7] = innerBL;
+
+			Array<TriangleIndex> indices(8);
+			indices[0] = { 0, 1, 5 };
+			indices[1] = { 0, 5, 4 };
+			indices[2] = { 1, 2, 6 };
+			indices[3] = { 1, 6, 5 };
+			indices[4] = { 2, 3, 7 };
+			indices[5] = { 2, 7, 6 };
+			indices[6] = { 3, 0, 4 };
+			indices[7] = { 3, 4, 7 };
+
+			return Polygon{ outer, std::move(holes), std::move(vertices), std::move(indices), outerRect, SkipValidation::Yes };
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1318,6 +1369,93 @@ namespace s3d
 
 		return Polygon{ points, indices, *this, SkipValidation::Yes };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	frame
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon RectF::frame(double thickness) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		if (thickness <= 0.0)
+		{
+			return{};
+		}
+
+		const double innerThickness = Min((thickness * 0.5), (Min(w, h) * 0.5));
+		const double outerThickness = (thickness * 0.5);
+
+		if ((innerThickness <= 0.0) && (outerThickness <= 0.0))
+		{
+			return{};
+		}
+
+		const RectF outerRect{
+			(x - outerThickness),
+			(y - outerThickness),
+			(w + outerThickness * 2.0),
+			(h + outerThickness * 2.0)
+		};
+
+		const double innerW = (w - innerThickness * 2.0);
+		const double innerH = (h - innerThickness * 2.0);
+
+		if ((innerW <= 0.0) || (innerH <= 0.0))
+		{
+			return outerRect.asPolygon();
+		}
+
+		const RectF innerRect{ (x + innerThickness), (y + innerThickness), innerW, innerH };
+
+		return MakeRectFramePolygon(outerRect, innerRect);
+	}
+
+	Polygon RectF::frame(double innerThickness, double outerThickness) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		innerThickness = Max(innerThickness, 0.0);
+		outerThickness = Max(outerThickness, 0.0);
+
+		if ((innerThickness <= 0.0) && (outerThickness <= 0.0))
+		{
+			return{};
+		}
+
+		const RectF outerRect{
+			(x - outerThickness),
+			(y - outerThickness),
+			(w + outerThickness * 2.0),
+			(h + outerThickness * 2.0)
+		};
+
+		const double innerW = (w - innerThickness * 2.0);
+		const double innerH = (h - innerThickness * 2.0);
+
+		if ((innerW <= 0.0) || (innerH <= 0.0))
+		{
+			return outerRect.asPolygon();
+		}
+
+		const RectF innerRect{
+			(x + innerThickness),
+			(y + innerThickness),
+			innerW,
+			innerH
+		};
+
+		return MakeRectFramePolygon(outerRect, innerRect);
+	}
+
 
 	////////////////////////////////////////////////////////////////
 	//
