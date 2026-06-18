@@ -233,8 +233,6 @@ namespace s3d
 
 		m_vertices		= MakeVertices(outer, holes);
 
-		m_holes			= std::move(holes);
-
 		m_boundingRect	= Geometry2D::BoundingRect(outer);
 	}
 
@@ -258,8 +256,6 @@ namespace s3d
 		m_polygon		= std::move(polygon);
 
 		m_vertices		= MakeVertices(outer, holes);
-
-		m_holes			= std::move(holes);
 
 		m_boundingRect	= boundingRect;
 	}
@@ -302,8 +298,6 @@ namespace s3d
 		m_polygon		= std::move(polygon);
 
 		m_vertices		= std::move(vertices);
-
-		m_holes			= std::move(holes);
 
 		m_boundingRect	= boundingRect;
 	}
@@ -349,9 +343,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<Array<Vec2>>& Polygon::PolygonDetail::inners() const noexcept
+	PolygonHolesView Polygon::PolygonDetail::inners() const noexcept
 	{
-		return m_holes;
+		return PolygonHolesView{ m_polygon.inners() };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -424,14 +418,6 @@ namespace s3d
 				{
 					point.moveBy(v);
 				}
-			}
-		}
-
-		for (auto& hole : m_holes)
-		{
-			for (auto& point : hole)
-			{
-				point.moveBy(v);
 			}
 		}
 
@@ -536,14 +522,6 @@ namespace s3d
 			}
 		}
 
-		m_holes.clear();
-
-		for (auto& hole : m_polygon.inners())
-		{
-			m_holes.emplace_back();
-			m_holes.back().insert(m_holes.back().end(), hole.begin(), hole.end());
-		}
-
 		m_boundingRect = Geometry2D::BoundingRect(outer());
 	}
 
@@ -589,14 +567,6 @@ namespace s3d
 			vertex.set(x, y);
 		}
 
-		m_holes.clear();
-
-		for (auto& hole : m_polygon.inners())
-		{
-			m_holes.emplace_back();
-			m_holes.back().insert(m_holes.back().end(), hole.begin(), hole.end());
-		}
-
 		m_boundingRect = Geometry2D::BoundingRect(outer());
 	}
 
@@ -619,14 +589,6 @@ namespace s3d
 		}
 
 		for (auto& hole : m_polygon.inners())
-		{
-			for (auto& point : hole)
-			{
-				point *= s;
-			}
-		}
-
-		for (auto& hole : m_holes)
 		{
 			for (auto& point : hole)
 			{
@@ -663,15 +625,7 @@ namespace s3d
 				point *= s;
 			}
 		}
-		
-		for (auto& hole : m_holes)
-		{
-			for (auto& point : hole)
-			{
-				point *= s;
-			}
-		}
-		
+
 		const Float2 sf = s;
 		
 		for (auto& point : m_vertices)
@@ -701,14 +655,6 @@ namespace s3d
 		}
 
 		for (auto& hole : m_polygon.inners())
-		{
-			for (auto& point : hole)
-			{
-				point = (pos + (point - pos) * s);
-			}
-		}
-
-		for (auto& hole : m_holes)
 		{
 			for (auto& point : hole)
 			{
@@ -746,15 +692,7 @@ namespace s3d
 				point = (pos + (point - pos) * s);
 			}
 		}
-		
-		for (auto& hole : m_holes)
-		{
-			for (auto& point : hole)
-			{
-				point = (pos + (point - pos) * s);
-			}
-		}
-		
+	
 		const Float2 sf = s;
 		const Float2 posF{ pos };
 		

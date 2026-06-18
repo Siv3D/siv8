@@ -23,11 +23,15 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Polygon AddHole(const Array<Vec2>& outer, const Array<Array<Vec2>>& currentInners, Array<Vec2> hole)
+		static Polygon AddHole(const Array<Vec2>& outer, const PolygonHolesView currentInners, Array<Vec2> hole)
 		{
 			Array<Array<Vec2>> inners(Arg::reserve = (currentInners.size() + 1));
 			{
-				inners.append(currentInners);
+				for (const auto& currentInner : currentInners)
+				{
+					inners.emplace_back(currentInner.begin(), currentInner.end());
+				}
+				
 				inners.push_back(std::move(hole));
 			}
 
@@ -184,7 +188,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<Array<Vec2>>& Polygon::inners() const noexcept
+	PolygonHolesView Polygon::inners() const noexcept
 	{
 		return pImpl->inners();
 	}
@@ -505,7 +509,13 @@ namespace s3d
 
 		Array<Array<Vec2>> inners(Arg::reserve = (pImpl->inners().size() + holes.size()));
 		{
-			inners.append(pImpl->inners());
+			const auto& polygonInners = pImpl->inners();
+
+			for (const auto& polygonInner : polygonInners)
+			{
+				inners.emplace_back(polygonInner.begin(), polygonInner.end());
+			}
+
 			inners.append(holes);
 		}
 

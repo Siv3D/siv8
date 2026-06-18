@@ -73,7 +73,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		const Array<Array<Vec2>>& inners() const noexcept;
+		PolygonHolesView inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -324,8 +324,6 @@ namespace s3d
 	private:
 
 		CwOpenPolygon m_polygon;
-
-		Array<Array<Vec2>> m_holes;
 
 		Array<Float2> m_vertices;
 
