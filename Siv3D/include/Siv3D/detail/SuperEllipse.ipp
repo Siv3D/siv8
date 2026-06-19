@@ -470,4 +470,28 @@ namespace s3d
 	{
 		return BitwiseHash(*this);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	inline constexpr bool SuperEllipse::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersect(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool SuperEllipse::contains(const Shape2DType& other) const
+	{
+		return Geometry2D::Contains(*this, other);
+	}
 }

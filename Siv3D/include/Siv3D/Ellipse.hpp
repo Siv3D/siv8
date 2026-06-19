@@ -716,9 +716,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//bool contains(const Shape2DType& other) const;
+		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool contains(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
