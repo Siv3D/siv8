@@ -232,8 +232,11 @@ namespace s3d
 
 		for (const auto& [index, glfwKey] : KeyConversionTable)
 		{
-			const bool pressed = (keys[glfwKey] == GLFW_PRESS);
-			m_states[index].update(pressed);
+			if (glfwKey != 0)
+			{
+				const bool pressed = (keys[glfwKey] == GLFW_PRESS);
+				m_states[index].update(pressed);
+			}
 		}
 		
 		{

@@ -2784,6 +2784,10 @@
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
+		F9ADA8732FE314BA003EB3FA /* SivQuarterArcTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */; };
+		F9ADA8752FE314CE003EB3FA /* QuarterArcTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */; };
+		F9ADA8772FE526E4003EB3FA /* PolygonHolesView.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ADA8762FE526E4003EB3FA /* PolygonHolesView.hpp */; };
+		F9ADA8792FE526F8003EB3FA /* PolygonHolesView.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9ADA8782FE526F8003EB3FA /* PolygonHolesView.ipp */; };
 		F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F62E6B3E27003734E7 /* Print.hpp */; };
 		F9AEA4F92E6B3E27003734E7 /* PrintBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */; };
 		F9AEA4FC2E6B3E48003734E7 /* Print.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4FA2E6B3E48003734E7 /* Print.ipp */; };
@@ -5991,6 +5995,10 @@
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
+		F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuarterArcTable.cpp; sourceTree = "<group>"; };
+		F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QuarterArcTable.hpp; sourceTree = "<group>"; };
+		F9ADA8762FE526E4003EB3FA /* PolygonHolesView.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PolygonHolesView.hpp; sourceTree = "<group>"; };
+		F9ADA8782FE526F8003EB3FA /* PolygonHolesView.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PolygonHolesView.ipp; sourceTree = "<group>"; };
 		F9AEA4F62E6B3E27003734E7 /* Print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.hpp; sourceTree = "<group>"; };
 		F9AEA4F72E6B3E27003734E7 /* PrintBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PrintBuffer.hpp; sourceTree = "<group>"; };
 		F9AEA4FA2E6B3E48003734E7 /* Print.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.ipp; sourceTree = "<group>"; };
@@ -7008,6 +7016,7 @@
 				F9F00A4C2CD2993F0097C165 /* PointsPerCircle.ipp */,
 				F9DD96642F13EFC00026DFA5 /* PoissonDiskSampler2D.ipp */,
 				F95122432CB8234200151291 /* Polygon.ipp */,
+				F9ADA8782FE526F8003EB3FA /* PolygonHolesView.ipp */,
 				F9AEA4FA2E6B3E48003734E7 /* Print.ipp */,
 				F9AEA4FB2E6B3E48003734E7 /* PrintBuffer.ipp */,
 				F98605F62BE61586006A4C0F /* Quad.ipp */,
@@ -7404,6 +7413,7 @@
 				F95122122CB62E6B00151291 /* Polygon.hpp */,
 				F951221C2CB8227E00151291 /* PolygonFailureType.hpp */,
 				F9DD96262F03C2100026DFA5 /* PolygonGlyph.hpp */,
+				F9ADA8762FE526E4003EB3FA /* PolygonHolesView.hpp */,
 				F99881472F40B54A00C8991D /* PolynomialSolver.hpp */,
 				F998818B2F487FCE00C8991D /* PowerStatus.hpp */,
 				F9070C172B9F175000383E4D /* PredefinedNamedParameter.hpp */,
@@ -7414,6 +7424,7 @@
 				F9528B7E2BB71F9900222F45 /* Profiler.hpp */,
 				F98605262BD10459006A4C0F /* Quad.hpp */,
 				F9F00A492CD299120097C165 /* QualityFactor.hpp */,
+				F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */,
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
 				F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */,
 				F98605EA2BE61563006A4C0F /* RandomColor.hpp */,
@@ -8229,6 +8240,7 @@
 				F986062E2BEBBBC7006A4C0F /* Profiler */,
 				F96F95E52C2B0F640033353E /* Quad */,
 				F9F00A512CD2995D0097C165 /* QualityFactor */,
+				F9ADA8722FE314BA003EB3FA /* QuarterArcTable */,
 				F9070D7C2B9F175E00383E4D /* Random */,
 				F980C43D2C00D31000A86B68 /* RasterizerState */,
 				F980C4702C01B4B600A86B68 /* RasterizerStateBuilder */,
@@ -12920,6 +12932,14 @@
 			path = Pentablet;
 			sourceTree = "<group>";
 		};
+		F9ADA8722FE314BA003EB3FA /* QuarterArcTable */ = {
+			isa = PBXGroup;
+			children = (
+				F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */,
+			);
+			path = QuarterArcTable;
+			sourceTree = "<group>";
+		};
 		F9AEA5042E6B3E71003734E7 /* Print */ = {
 			isa = PBXGroup;
 			children = (
@@ -13621,6 +13641,7 @@
 				F9070B012B9DEB5900383E4D /* format-inl.h in Headers */,
 				F9070CA12B9F175000383E4D /* ColorF.hpp in Headers */,
 				F9D41CE52C9972EC00290998 /* Choice.ipp in Headers */,
+				F9ADA8772FE526E4003EB3FA /* PolygonHolesView.hpp in Headers */,
 				F986FA7A2BCFB53B006A4C0F /* ftcid.h in Headers */,
 				F902E0DA2E9E5EDE002C6B92 /* JSONSerialization.hpp in Headers */,
 				F98600A92BCFBB53006A4C0F /* SkEventTracer.h in Headers */,
@@ -13663,6 +13684,7 @@
 				F98604682BCFBB54006A4C0F /* SkSLBuiltinTypes.h in Headers */,
 				F933ACF72E54A2A2005624D7 /* MSDFGlyphRenderer.hpp in Headers */,
 				F98603D62BCFBB54006A4C0F /* SkSLMetalCodeGenerator.h in Headers */,
+				F9ADA8792FE526F8003EB3FA /* PolygonHolesView.ipp in Headers */,
 				F9807D7F2BF1229700D9B590 /* MetalInternalTexture2D.hpp in Headers */,
 				F98603272BCFBB54006A4C0F /* SkPathOpsPoint.h in Headers */,
 				F986FA7F2BCFB53B006A4C0F /* ftfntfmt.h in Headers */,
@@ -14272,6 +14294,7 @@
 				F9070C732B9F175000383E4D /* Point.ipp in Headers */,
 				F986FA612BCFB53B006A4C0F /* fthash.h in Headers */,
 				F986FA702BCFB53B006A4C0F /* tttypes.h in Headers */,
+				F9ADA8752FE314CE003EB3FA /* QuarterArcTable.hpp in Headers */,
 				F9528B572BB6DC3700222F45 /* CycleClock.hpp in Headers */,
 				F9797E352F643F7F00518D26 /* AudioDecoder.ipp in Headers */,
 				F9797E362F643F7F00518D26 /* AudioEncoder.ipp in Headers */,
@@ -15911,6 +15934,7 @@
 				F98602752BCFBB54006A4C0F /* SkStrikeSpec.cpp in Sources */,
 				F98604822BCFBB54006A4C0F /* SkSLOutputStream.cpp in Sources */,
 				F98111962EC8C63200C50DD1 /* SivGeometry2D_Misc.cpp in Sources */,
+				F9ADA8732FE314BA003EB3FA /* SivQuarterArcTable.cpp in Sources */,
 				F986055F2BD203D4006A4C0F /* muParserCallback.cpp in Sources */,
 				F902E1122EA8B391002C6B92 /* GUIFactory.cpp in Sources */,
 				F902E1132EA8B391002C6B92 /* CGUI.cpp in Sources */,
