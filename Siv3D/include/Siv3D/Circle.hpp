@@ -691,7 +691,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return Polygon
 		[[nodiscard]]
-		Polygon asPolygon(const QualityFactor& qualityFactor) const;
+		Polygon asPolygon(const QualityFactor& qualityFactor = QualityFactor{}) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -699,8 +699,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Polygon pieAsPolygon(double startAngle, double angle, uint32 quality = 24) const;
+		/// @brief 扇形の Polygon を作成します。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param pointsPerCircle 頂点数（完全な円のときの頂点数）
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon pieAsPolygon(double startAngle, double angle, const PointsPerCircle& pointsPerCircle) const;
+
+		/// @brief 扇形の Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon pieAsPolygon(double startAngle, double angle, const QualityFactor& qualityFactor = QualityFactor{}) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -708,8 +721,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, uint32 quality = 24) const;
+		/// @brief 円弧の Polygon を作成します。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param innerThickness 内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 外側方向への枠の太さ（ピクセル）
+		/// @param pointsPerCircle 頂点数（完全な円のときの頂点数）
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, const PointsPerCircle& pointsPerCircle) const;
+
+		/// @brief 円弧の Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param innerThickness 内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 外側方向への枠の太さ（ピクセル）
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, const QualityFactor& qualityFactor = QualityFactor{}) const;
 
 		////////////////////////////////////////////////////////////////
 		//
