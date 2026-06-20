@@ -754,5 +754,15 @@ namespace s3d
 		return Geometry2D::Intersect(*this, other);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <class Shape2DType>
+	constexpr bool RoundRect::contains(const Shape2DType& other) const
+	{
+		return Geometry2D::Contains(*this, other);
+	}
 }

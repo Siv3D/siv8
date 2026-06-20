@@ -1280,8 +1280,6 @@ namespace s3d
 		return Geometry2D::Intersect(*this, other);
 	}
 
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	contains
@@ -1293,9 +1291,6 @@ namespace s3d
 	{
 		return Geometry2D::Contains(*this, other);
 	}
-
-
-
 
 	////////////////////////////////////////////////////////////////
 	//
