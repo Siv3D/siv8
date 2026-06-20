@@ -22,12 +22,37 @@ namespace s3d
 
 		static constexpr Vertex2D::IndexType RectFrameIndexTable[24] = { 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7, 6, 0, 7, 7, 0, 1 };
 
-		struct RectFramePathPoint
+		struct RectFrameDashedQuad
 		{
-			Float2 outer;
+			float left;
 
-			Float2 inner;
+			float top;
+
+			float right;
+
+			float bottom;
 		};
+
+		enum class RectFramePathComponent
+		{
+			TopSide,
+			TopRightCorner,
+			RightSide,
+			BottomRightCorner,
+			BottomSide,
+			BottomLeftCorner,
+			LeftSide,
+			TopLeftCorner,
+		};
+
+		[[nodiscard]]
+		static float CalculateRectFrameVirtualPerimeter(const FloatRect& innerRect, const float thickness) noexcept
+		{
+			const float width = (innerRect.right - innerRect.left);
+			const float height = (innerRect.bottom - innerRect.top);
+
+			return (width * 2.0f + height * 2.0f + thickness * 4.0f);
+		}
 
 		[[nodiscard]]
 		static float NormalizeRectFrameDashOffset(const float offset, const float perimeter) noexcept
@@ -37,65 +62,10 @@ namespace s3d
 			return ((result < 0.0f) ? (result + perimeter) : result);
 		}
 
-		[[nodiscard]]
-		static RectFramePathPoint GetRectFramePathPoint(const FloatRect& innerRect, const float thickness, const float distance) noexcept
-		{
-			const float width = (innerRect.right - innerRect.left);
-			const float height = (innerRect.bottom - innerRect.top);
-			const float perimeter = (width * 2.0f + height * 2.0f);
-			const float d = ((perimeter < distance) ? (distance - perimeter) : distance);
-			const float rightBegin = width;
-			const float bottomBegin = (width + height);
-			const float leftBegin = (width * 2.0f + height);
-
-			if (d <= rightBegin)
-			{
-				const float x = (innerRect.left + d);
-				const float outerX = ((d == rightBegin) ? (innerRect.right + thickness) : x);
-
-				return{
-					{ outerX, (innerRect.top - thickness) },
-					{ x, innerRect.top }
-				};
-			}
-			else if (d <= bottomBegin)
-			{
-				const float y = (innerRect.top + (d - rightBegin));
-				const float outerY = ((d == bottomBegin) ? (innerRect.bottom + thickness) : y);
-
-				return{
-					{ (innerRect.right + thickness), outerY },
-					{ innerRect.right, y }
-				};
-			}
-			else if (d <= leftBegin)
-			{
-				const float x = (innerRect.right - (d - bottomBegin));
-				const float outerX = ((d == leftBegin) ? (innerRect.left - thickness) : x);
-
-				return{
-					{ outerX, (innerRect.bottom + thickness) },
-					{ x, innerRect.bottom }
-				};
-			}
-			else
-			{
-				const float y = (innerRect.bottom - (d - leftBegin));
-				const float outerY = ((d == perimeter) ? (innerRect.top - thickness) : y);
-
-				return{
-					{ (innerRect.left - thickness), outerY },
-					{ innerRect.left, y }
-				};
-			}
-		}
-
 		template <class Fn>
-		static void ForEachRectFrameDashRange(const FloatRect& innerRect, const float offset, const float dashRatio, const uint32 dashCount, Fn&& fn)
+		static void ForEachRectFrameDashRange(const FloatRect& innerRect, const float thickness, const float offset, const float dashRatio, const uint32 dashCount, Fn&& fn)
 		{
-			const float width = (innerRect.right - innerRect.left);
-			const float height = (innerRect.bottom - innerRect.top);
-			const float perimeter = (width * 2.0f + height * 2.0f);
+			const float perimeter = CalculateRectFrameVirtualPerimeter(innerRect, thickness);
 			const float period = (perimeter / dashCount);
 			const float dashLength = (period * dashRatio);
 			const float normalizedOffset = NormalizeRectFrameDashOffset(offset, perimeter);
@@ -114,33 +84,182 @@ namespace s3d
 		}
 
 		template <class Fn>
-		static void ForEachRectFramePathDistance(const FloatRect& innerRect, const float begin, const float end, Fn&& fn)
+		static void EmitRectFrameDashedQuad(const RectFrameDashedQuad& rect, Fn&& fn)
+		{
+			if ((rect.left < rect.right) && (rect.top < rect.bottom))
+			{
+				fn(rect);
+			}
+		}
+
+		template <class Fn>
+		static void EmitRectFrameSideSegment(const FloatRect& innerRect, const float thickness, const RectFramePathComponent component, const float localBegin, const float localEnd, Fn&& fn)
+		{
+			switch (component)
+			{
+			case RectFramePathComponent::TopSide:
+			{
+				EmitRectFrameDashedQuad({
+					(innerRect.left + localBegin),
+					(innerRect.top - thickness),
+					(innerRect.left + localEnd),
+					innerRect.top }, fn);
+				break;
+			}
+			case RectFramePathComponent::RightSide:
+			{
+				EmitRectFrameDashedQuad({
+					innerRect.right,
+					(innerRect.top + localBegin),
+					(innerRect.right + thickness),
+					(innerRect.top + localEnd) }, fn);
+				break;
+			}
+			case RectFramePathComponent::BottomSide:
+			{
+				EmitRectFrameDashedQuad({
+					(innerRect.right - localEnd),
+					innerRect.bottom,
+					(innerRect.right - localBegin),
+					(innerRect.bottom + thickness) }, fn);
+				break;
+			}
+			case RectFramePathComponent::LeftSide:
+			{
+				EmitRectFrameDashedQuad({
+					(innerRect.left - thickness),
+					(innerRect.bottom - localEnd),
+					innerRect.left,
+					(innerRect.bottom - localBegin) }, fn);
+				break;
+			}
+			default:
+				break;
+			}
+		}
+
+		template <class Fn>
+		static void EmitRectFrameCornerSegment(const FloatRect& innerRect, const float thickness, const RectFramePathComponent component, const float localBegin, const float localEnd, Fn&& fn)
+		{
+			switch (component)
+			{
+			case RectFramePathComponent::TopRightCorner:
+			{
+				EmitRectFrameDashedQuad({
+					(innerRect.right + localBegin),
+					(innerRect.top - thickness),
+					(innerRect.right + localEnd),
+					innerRect.top }, fn);
+				break;
+			}
+			case RectFramePathComponent::BottomRightCorner:
+			{
+				EmitRectFrameDashedQuad({
+					innerRect.right,
+					(innerRect.bottom + localBegin),
+					(innerRect.right + thickness),
+					(innerRect.bottom + localEnd) }, fn);
+				break;
+			}
+			case RectFramePathComponent::BottomLeftCorner:
+			{
+				EmitRectFrameDashedQuad({
+					(innerRect.left - localEnd),
+					innerRect.bottom,
+					(innerRect.left - localBegin),
+					(innerRect.bottom + thickness) }, fn);
+				break;
+			}
+			case RectFramePathComponent::TopLeftCorner:
+			{
+				EmitRectFrameDashedQuad({
+					(innerRect.left - thickness),
+					(innerRect.top - localEnd),
+					innerRect.left,
+					(innerRect.top - localBegin) }, fn);
+				break;
+			}
+			default:
+				break;
+			}
+		}
+
+		template <class Fn>
+		static void ForEachRectFrameComponentSegment(const FloatRect& innerRect, const float thickness, const float begin, const float end, Fn&& fn)
 		{
 			const float width = (innerRect.right - innerRect.left);
 			const float height = (innerRect.bottom - innerRect.top);
-			const float perimeter = (width * 2.0f + height * 2.0f);
-			const float corners[7] =
+			const float perimeter = CalculateRectFrameVirtualPerimeter(innerRect, thickness);
+			const RectFramePathComponent components[16] =
+			{
+				RectFramePathComponent::TopSide,
+				RectFramePathComponent::TopRightCorner,
+				RectFramePathComponent::RightSide,
+				RectFramePathComponent::BottomRightCorner,
+				RectFramePathComponent::BottomSide,
+				RectFramePathComponent::BottomLeftCorner,
+				RectFramePathComponent::LeftSide,
+				RectFramePathComponent::TopLeftCorner,
+				RectFramePathComponent::TopSide,
+				RectFramePathComponent::TopRightCorner,
+				RectFramePathComponent::RightSide,
+				RectFramePathComponent::BottomRightCorner,
+				RectFramePathComponent::BottomSide,
+				RectFramePathComponent::BottomLeftCorner,
+				RectFramePathComponent::LeftSide,
+				RectFramePathComponent::TopLeftCorner,
+			};
+			const float componentLengths[16] =
 			{
 				width,
-				(width + height),
-				(width * 2.0f + height),
-				perimeter,
-				(perimeter + width),
-				(perimeter + width + height),
-				(perimeter + width * 2.0f + height),
+				thickness,
+				height,
+				thickness,
+				width,
+				thickness,
+				height,
+				thickness,
+				width,
+				thickness,
+				height,
+				thickness,
+				width,
+				thickness,
+				height,
+				thickness,
 			};
 
-			fn(begin);
+			float componentBegin = 0.0f;
 
-			for (const float corner : corners)
+			for (size_t i = 0; i < 16; ++i)
 			{
-				if ((begin < corner) && (corner < end))
+				if (i == 8)
 				{
-					fn(corner);
+					componentBegin = perimeter;
 				}
-			}
 
-			fn(end);
+				const float componentEnd = (componentBegin + componentLengths[i]);
+				const float clippedBegin = Max(begin, componentBegin);
+				const float clippedEnd = Min(end, componentEnd);
+
+				if (clippedBegin < clippedEnd)
+				{
+					fn(components[i], (clippedBegin - componentBegin), (clippedEnd - componentBegin));
+				}
+
+				componentBegin = componentEnd;
+			}
+		}
+
+		template <class Fn>
+		static void ForEachRectFrameDashedQuad(const FloatRect& innerRect, const float thickness, const float begin, const float end, Fn&& fn)
+		{
+			ForEachRectFrameComponentSegment(innerRect, thickness, begin, end,
+				[&](const RectFramePathComponent component, const float localBegin, const float localEnd)
+				{
+					EmitRectFrameSideSegment(innerRect, thickness, component, localBegin, localEnd, fn);
+					EmitRectFrameCornerSegment(innerRect, thickness, component, localBegin, localEnd, fn);
+				});
 		}
 	}
 
@@ -413,26 +532,20 @@ namespace s3d
 				return BuildRectFrame(bufferCreator, innerRect, thickness, ColorFillDirection::InOut, color, color);
 			}
 
-			size_t pathPointCount = 0;
-			size_t segmentCount = 0;
+			size_t quadCount = 0;
 
-			ForEachRectFrameDashRange(innerRect, offset, clampedDashRatio, dashCount,
+			ForEachRectFrameDashRange(innerRect, thickness, offset, clampedDashRatio, dashCount,
 				[&](const float begin, const float end)
 				{
-					size_t currentPathPointCount = 0;
-
-					ForEachRectFramePathDistance(innerRect, begin, end,
-						[&](const float)
+					ForEachRectFrameDashedQuad(innerRect, thickness, begin, end,
+						[&](const RectFrameDashedQuad&)
 						{
-							++currentPathPointCount;
+							++quadCount;
 						});
-
-					pathPointCount += currentPathPointCount;
-					segmentCount += (currentPathPointCount - 1);
 				});
 
-			const size_t vertexCount = (pathPointCount * 2);
-			const size_t indexCount = (segmentCount * 6);
+			const size_t vertexCount = (quadCount * 4);
+			const size_t indexCount = (quadCount * 6);
 			constexpr size_t MaxIndexValue = static_cast<size_t>(std::numeric_limits<Vertex2D::IndexType>::max());
 
 			if ((MaxIndexValue < vertexCount) || (MaxIndexValue < indexCount))
@@ -449,37 +562,29 @@ namespace s3d
 				return 0;
 			}
 
-			Vertex2D* pDstVertex = pVertex;
-			Vertex2D::IndexType vertexOffset = indexOffset;
+			Vertex2D::IndexType quadIndex = 0;
 
-			ForEachRectFrameDashRange(innerRect, offset, clampedDashRatio, dashCount,
+			ForEachRectFrameDashRange(innerRect, thickness, offset, clampedDashRatio, dashCount,
 				[&](const float begin, const float end)
 				{
-					Vertex2D::IndexType currentPathPointCount = 0;
-
-					ForEachRectFramePathDistance(innerRect, begin, end,
-						[&](const float distance)
+					ForEachRectFrameDashedQuad(innerRect, thickness, begin, end,
+						[&](const RectFrameDashedQuad& rect)
 						{
-							const RectFramePathPoint point = GetRectFramePathPoint(innerRect, thickness, distance);
+							pVertex[0].set(rect.left, rect.top, color);
+							pVertex[1].set(rect.right, rect.top, color);
+							pVertex[2].set(rect.left, rect.bottom, color);
+							pVertex[3].set(rect.right, rect.bottom, color);
+							pVertex += 4;
 
-							(pDstVertex++)->set(point.outer, color);
-							(pDstVertex++)->set(point.inner, color);
-							++currentPathPointCount;
+							const Vertex2D::IndexType vertexOffset = (indexOffset + quadIndex * 4);
+
+							for (Vertex2D::IndexType i = 0; i < 6; ++i)
+							{
+								*pIndex++ = (vertexOffset + RectIndexTable[i]);
+							}
+
+							++quadIndex;
 						});
-
-					for (Vertex2D::IndexType i = 0; i < (currentPathPointCount - 1); ++i)
-					{
-						const Vertex2D::IndexType base = (vertexOffset + i * 2);
-
-						*pIndex++ = base;
-						*pIndex++ = (base + 2);
-						*pIndex++ = (base + 1);
-						*pIndex++ = (base + 1);
-						*pIndex++ = (base + 2);
-						*pIndex++ = (base + 3);
-					}
-
-					vertexOffset += (currentPathPointCount * 2);
 				});
 
 			return IndexCount;

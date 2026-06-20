@@ -15,6 +15,7 @@
 # include "ColorHSV.hpp"
 # include "PointsPerCircle.hpp"
 # include "QualityFactor.hpp"
+# include "CircularDashStyle.hpp"
 # include "PredefinedNamedParameter.hpp"
 
 namespace s3d
@@ -22,7 +23,6 @@ namespace s3d
 	enum class LineCap : uint8;
 	struct PatternParameters;
 	struct TexturedCircle;
-	struct CircularDashStyle;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1048,7 +1048,7 @@ namespace s3d
 		/// @param style 破線のスタイル
 		/// @param color 色
 		/// @return *this
-		const Circle& drawDashedFrame(double thickness, const CircularDashStyle& style, const ColorF& color = Palette::White) const;
+		const Circle& drawDashedFrame(double thickness, const CircularDashStyle& style = {}, const ColorF& color = Palette::White) const;
 
 		/// @brief 円形の破線を描きます。
 		/// @param thickness 枠の太さ（ピクセル）
@@ -1064,7 +1064,7 @@ namespace s3d
 		/// @param style 破線のスタイル
 		/// @param color 色
 		/// @return *this
-		const Circle& drawDashedFrame(double innerThickness, double outerThickness, const CircularDashStyle& style, const ColorF& color = Palette::White) const;
+		const Circle& drawDashedFrame(double innerThickness, double outerThickness, const CircularDashStyle& style = {}, const ColorF& color = Palette::White) const;
 
 		/// @brief 円形の破線を描きます。
 		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）

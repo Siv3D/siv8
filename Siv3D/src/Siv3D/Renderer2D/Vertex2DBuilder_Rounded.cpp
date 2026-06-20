@@ -966,6 +966,61 @@ namespace s3d
 
 			return indexCount;
 		}
+
+		static constexpr size_t MaxEllipseArcLengthTableSegmentCount = (63 * 4 * 8);
+
+		[[nodiscard]]
+		static float CalculateEllipseParameterAtLength(const std::span<const float> cumulativeLengths, const float length, const float perimeter) noexcept
+		{
+			if ((perimeter <= 0.0f) || (cumulativeLengths.size() < 2))
+			{
+				return 0.0f;
+			}
+
+			float cycle = std::floor(length / perimeter);
+			float wrappedLength = (length - cycle * perimeter);
+
+			if (wrappedLength < 0.0f)
+			{
+				wrappedLength += perimeter;
+				cycle -= 1.0f;
+			}
+			else if (perimeter <= wrappedLength)
+			{
+				wrappedLength = 0.0f;
+				cycle += 1.0f;
+			}
+
+			size_t first = 0;
+			size_t last = (cumulativeLengths.size() - 1);
+
+			while (first < last)
+			{
+				const size_t mid = ((first + last) / 2);
+
+				if (cumulativeLengths[mid] < wrappedLength)
+				{
+					first = (mid + 1);
+				}
+				else
+				{
+					last = mid;
+				}
+			}
+
+			if (first == 0)
+			{
+				return (cycle * Math::TwoPiF);
+			}
+
+			const float s0 = cumulativeLengths[first - 1];
+			const float s1 = cumulativeLengths[first];
+			const float t = ((s0 < s1) ? ((wrappedLength - s0) / (s1 - s0)) : 0.0f);
+			const float segment = (static_cast<float>(first - 1) + t);
+			const float segmentCount = static_cast<float>(cumulativeLengths.size() - 1);
+
+			return ((cycle * Math::TwoPiF) + (segment * Math::TwoPiF / segmentCount));
+		}
 	}
 
 	namespace Vertex2DBuilder
@@ -1731,6 +1786,156 @@ namespace s3d
 				for (Vertex2D::IndexType k = 0; k < 6; ++k)
 				{
 					*pIndex++ = (indexOffset + (i * 2 + CircleFrameIndexTable[k]) % (FullQuality * 2));
+				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildEllipseDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildEllipseDashedFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const float offset, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			if ((a <= 0.0f) || (b <= 0.0f) || ((innerThickness <= 0.0f) && (outerThickness <= 0.0f)))
+			{
+				return 0;
+			}
+
+			const float clampedDashRatio = Clamp(dashRatio, 0.0f, 1.0f);
+
+			if ((dashCount == 0) || (clampedDashRatio == 0.0f))
+			{
+				return 0;
+			}
+
+			if (clampedDashRatio == 1.0f)
+			{
+				return BuildEllipseFrame(bufferCreator, center, a, b, innerThickness, outerThickness, innerColor, outerColor, scale);
+			}
+
+			const float majorAxis = (Max(a, b) + Max(Abs(innerThickness), Abs(outerThickness)));
+			const Vertex2D::IndexType baseQuality = CalculateCircleQuality(majorAxis * scale);
+			const Vertex2D::IndexType fullQuality = (baseQuality * 4);
+			const size_t requestedTableSegmentCount = Max(static_cast<size_t>(64), (static_cast<size_t>(fullQuality) * 8));
+			const size_t tableSegmentCount = Min(requestedTableSegmentCount, MaxEllipseArcLengthTableSegmentCount);
+
+			static_assert((MaxEllipseArcLengthTableSegmentCount + 1) <= std::numeric_limits<Vertex2D::IndexType>::max());
+
+			std::array<float, (MaxEllipseArcLengthTableSegmentCount + 1)> cumulativeLengths;
+			cumulativeLengths[0] = 0.0f;
+
+			{
+				float previousX = 0.0f;
+				float previousY = -b;
+				float length = 0.0f;
+
+				for (size_t i = 1; i <= tableSegmentCount; ++i)
+				{
+					const float rad = (Math::TwoPiF * static_cast<float>(i) / tableSegmentCount);
+					const auto [s, c] = FastMath::SinCos(rad);
+					const float x = (a * s);
+					const float y = (-b * c);
+					const float dx = (x - previousX);
+					const float dy = (y - previousY);
+
+					length += std::sqrt(dx * dx + dy * dy);
+					cumulativeLengths[i] = length;
+					previousX = x;
+					previousY = y;
+				}
+			}
+
+			const float perimeter = cumulativeLengths[tableSegmentCount];
+
+			if (perimeter <= 0.0f)
+			{
+				return 0;
+			}
+
+			const float periodLength = (perimeter / dashCount);
+			const float dashLength = (periodLength * clampedDashRatio);
+			const float segmentLength = (perimeter / fullQuality);
+			const Vertex2D::IndexType pointCountPerDash = static_cast<Vertex2D::IndexType>(Max((std::ceil(dashLength / segmentLength) + 1.0f), 5.0f));
+
+			const size_t vertexCount = (static_cast<size_t>(dashCount) * pointCountPerDash * 2);
+			const size_t indexCount = (static_cast<size_t>(dashCount) * (pointCountPerDash - 1) * 6);
+
+			constexpr size_t MaxIndexValue = static_cast<size_t>(std::numeric_limits<Vertex2D::IndexType>::max());
+
+			if ((MaxIndexValue < vertexCount) || (MaxIndexValue < indexCount))
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertexCount);
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(indexCount);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			const std::span<const float> arcLengthTable{ cumulativeLengths.data(), (tableSegmentCount + 1) };
+			float wrappedOffset = std::fmod(offset, perimeter);
+
+			if (wrappedOffset < 0.0f)
+			{
+				wrappedOffset += perimeter;
+			}
+
+			{
+				const float centerX = center.x;
+				const float centerY = center.y;
+				Vertex2D* pDst = pVertex;
+
+				for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
+				{
+					const float dashStartLength = (wrappedOffset + periodLength * dashIndex);
+
+					for (Vertex2D::IndexType i = 0; i < pointCountPerDash; ++i)
+					{
+						const float f = (static_cast<float>(i) / (pointCountPerDash - 1));
+						const float rad = CalculateEllipseParameterAtLength(arcLengthTable, (dashStartLength + dashLength * f), perimeter);
+						const auto [s, c] = FastMath::SinCos(rad);
+						const float ux = s;
+						const float uy = -c;
+
+						SetEllipseFrameVertexPair(
+							pDst,
+							centerX,
+							centerY,
+							a,
+							b,
+							ux,
+							uy,
+							innerThickness,
+							outerThickness);
+
+						pDst[-2].color = outerColor;
+						pDst[-1].color = innerColor;
+					}
+				}
+			}
+
+			for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
+			{
+				const Vertex2D::IndexType vertexOffset = (indexOffset + static_cast<Vertex2D::IndexType>(static_cast<size_t>(dashIndex) * pointCountPerDash * 2));
+
+				for (Vertex2D::IndexType i = 0; i < (pointCountPerDash - 1); ++i)
+				{
+					const Vertex2D::IndexType base = (vertexOffset + i * 2);
+
+					*pIndex++ = base;
+					*pIndex++ = (base + 1);
+					*pIndex++ = (base + 2);
+					*pIndex++ = (base + 2);
+					*pIndex++ = (base + 1);
+					*pIndex++ = (base + 3);
 				}
 			}
 

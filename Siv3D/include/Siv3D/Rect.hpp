@@ -14,13 +14,13 @@
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
 # include "PredefinedNamedParameter.hpp"
+# include "RectangularDashStyle.hpp"
 
 namespace s3d
 {
 	struct RectF;
 	struct PatternParameters;
 	enum class LineType : uint8;
-	struct RectangularDashStyle;
 	class Texture;
 	struct TextureRegion;
 	struct TexturedQuad;
@@ -2203,7 +2203,7 @@ namespace s3d
 		/// @param style 破線のスタイル
 		/// @param color 色
 		/// @return *this
-		const Rect& drawDashedFrame(double thickness, const RectangularDashStyle& style, const ColorF& color = Palette::White) const;
+		const Rect& drawDashedFrame(double thickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
 
 		/// @brief 長方形の破線を描きます。
 		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
@@ -2211,7 +2211,7 @@ namespace s3d
 		/// @param style 破線のスタイル
 		/// @param color 色
 		/// @return *this
-		const Rect& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style, const ColorF& color = Palette::White) const;
+		const Rect& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -15,7 +15,6 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/Polygon.hpp>
-# include <Siv3D/RectangularDashStyle.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/TextureRegion.hpp>

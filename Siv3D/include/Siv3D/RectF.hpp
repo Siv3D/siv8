@@ -1993,7 +1993,7 @@ namespace s3d
 		/// @param style 破線のスタイル
 		/// @param color 色
 		/// @return *this
-		const RectF& drawDashedFrame(double thickness, const RectangularDashStyle& style, const ColorF& color = Palette::White) const;
+		const RectF& drawDashedFrame(double thickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
 
 		/// @brief 長方形の破線を描きます。
 		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
@@ -2001,7 +2001,7 @@ namespace s3d
 		/// @param style 破線のスタイル
 		/// @param color 色
 		/// @return *this
-		const RectF& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style, const ColorF& color = Palette::White) const;
+		const RectF& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

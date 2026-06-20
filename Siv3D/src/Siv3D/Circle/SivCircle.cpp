@@ -17,7 +17,6 @@
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/LineCap.hpp>
-# include <Siv3D/CircularDashStyle.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>

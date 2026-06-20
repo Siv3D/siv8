@@ -896,6 +896,44 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double thickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 楕円の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double thickness, const RectangularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 楕円の破線を描きます。
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 楕円の破線を描きます。
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawPie
 		//
 		////////////////////////////////////////////////////////////////

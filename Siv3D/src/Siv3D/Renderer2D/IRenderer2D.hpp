@@ -97,6 +97,8 @@ namespace s3d
 
 		virtual void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const PatternParameters& pattern) = 0;
 
+		virtual void addEllipseDashedFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, float offset, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor) = 0;
+
 		virtual void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) = 0;
 
 		virtual void addEllipsePie(const Float2& center, float rx, float ry, float startAngle, float angle, const PatternParameters& pattern) = 0;

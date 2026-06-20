@@ -457,6 +457,51 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Ellipse& Ellipse::drawDashedFrame(const double thickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, color);
+	}
+
+	const Ellipse& Ellipse::drawDashedFrame(const double thickness, const RectangularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, innerColor, outerColor);
+	}
+
+	const Ellipse& Ellipse::drawDashedFrame(const double innerThickness, const double outerThickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame(innerThickness, outerThickness, style, color, color);
+	}
+
+	const Ellipse& Ellipse::drawDashedFrame(const double innerThickness, const double outerThickness, const RectangularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		const float thickness = static_cast<float>(innerThickness + outerThickness);
+		
+		if ((axes.x == 0.0) || (axes.y == 0.0) || (thickness <= 0.0))
+		{
+			return *this;
+		}
+		
+		SIV3D_ENGINE(Renderer2D)->addEllipseDashedFrame(
+			center,
+			static_cast<float>(Abs(axes.x)),
+			static_cast<float>(Abs(axes.y)),
+			static_cast<float>(innerThickness),
+			static_cast<float>(outerThickness),
+			style.offset,
+			style.dashRatio,
+			style.dashCount,
+			innerColor.toFloat4(),
+			outerColor.toFloat4()
+		);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawPie
 	//
 	////////////////////////////////////////////////////////////////

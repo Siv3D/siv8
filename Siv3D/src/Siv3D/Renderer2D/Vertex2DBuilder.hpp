@@ -79,6 +79,9 @@ namespace s3d
 		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildEllipseDashedFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float innerThickness, float outerThickness, float offset, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildEllipsePie(const BufferCreatorFunc& bufferCreator, const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor, float scale);
 
 		[[nodiscard]]
