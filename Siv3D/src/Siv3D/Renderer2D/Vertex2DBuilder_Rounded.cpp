@@ -1290,6 +1290,92 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildCircleDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildCircleDashedFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor, const float scale)
+		{
+			const float clampedDashRatio = Clamp(dashRatio, 0.0f, 1.0f);
+
+			if ((dashCount == 0) || (clampedDashRatio == 0.0f))
+			{
+				return 0;
+			}
+
+			if (clampedDashRatio == 1.0f)
+			{
+				return BuildCircleFrame(bufferCreator, center, rInner, thickness, innerColor, outerColor, scale);
+			}
+
+			const float rOuter = (rInner + thickness);
+			const float angleStep = (Math::TwoPiF / dashCount);
+			const float dashAngle = (angleStep * clampedDashRatio);
+			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), dashAngle);
+
+			const size_t vertexCount = (static_cast<size_t>(dashCount) * Quality * 2);
+			const size_t indexCount = (static_cast<size_t>(dashCount) * (Quality - 1) * 6);
+
+			constexpr size_t MaxIndexValue = static_cast<size_t>(std::numeric_limits<Vertex2D::IndexType>::max());
+
+			if ((MaxIndexValue < vertexCount) || (MaxIndexValue < indexCount))
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertexCount);
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(indexCount);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			{
+				const float centerX = center.x;
+				const float centerY = center.y;
+				const float radDelta = (dashAngle / (Quality - 1));
+				float dashStartAngle = startAngle;
+				Vertex2D* pDst = pVertex;
+
+				for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
+				{
+					for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+					{
+						const float rad = (dashStartAngle + radDelta * i);
+						const auto [s, c] = FastMath::SinCos(rad);
+
+						(pDst++)->set((centerX + rInner * s), (centerY - rInner * c), innerColor);
+						(pDst++)->set((centerX + rOuter * s), (centerY - rOuter * c), outerColor);
+					}
+
+					dashStartAngle += angleStep;
+				}
+			}
+
+			for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
+			{
+				const Vertex2D::IndexType vertexOffset = (indexOffset + static_cast<Vertex2D::IndexType>(static_cast<size_t>(dashIndex) * Quality * 2));
+
+				for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+				{
+					const Vertex2D::IndexType base = (vertexOffset + i * 2);
+
+					*pIndex++ = base;
+					*pIndex++ = (base + 1);
+					*pIndex++ = (base + 2);
+					*pIndex++ = (base + 2);
+					*pIndex++ = (base + 1);
+					*pIndex++ = (base + 3);
+				}
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildCirclePie
 		//
 		////////////////////////////////////////////////////////////////

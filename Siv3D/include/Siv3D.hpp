@@ -856,6 +856,9 @@
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>
 
+// 円形の点線のスタイル | Circular dashed line style
+# include <Siv3D/CircularDashStyle.hpp>
+
 // 線分 | Line segment
 # include <Siv3D/Line.hpp> // ToDo
 

@@ -61,6 +61,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Choice.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Circle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Circular.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CircularDashStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Clipboard.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Color.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorF.hpp" />

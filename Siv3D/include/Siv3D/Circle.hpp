@@ -22,6 +22,7 @@ namespace s3d
 	enum class LineCap : uint8;
 	struct PatternParameters;
 	struct TexturedCircle;
+	struct CircularDashStyle;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -665,6 +666,37 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	signedDistanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標から円周までの符号付き距離を返します。
+		/// @param _x 座標の X 成分
+		/// @param _y 座標の Y 成分
+		/// @return 円周までの符号付き距離。円の外側では正、内側では負
+		[[nodiscard]]
+		double signedDistanceTo(double _x, double _y) const noexcept;
+
+		/// @brief 指定した座標から円周までの符号付き距離を返します。
+		/// @param point 座標
+		/// @return 円周までの符号付き距離。円の外側では正、内側では負
+		[[nodiscard]]
+		double signedDistanceTo(position_type point) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	closestPointOnCircumference
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標に最も近い円周上の座標を返します。
+		/// @param point 座標
+		/// @return 指定した座標に最も近い円周上の座標。指定した座標が円の中心の場合は円の上端
+		[[nodiscard]]
+		position_type closestPointOnCircumference(position_type point) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	outer
 		//
 		////////////////////////////////////////////////////////////////
@@ -1004,6 +1036,44 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円形の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Circle& drawDashedFrame(double thickness, const CircularDashStyle& style, const ColorF& color = Palette::White) const;
+
+		/// @brief 円形の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Circle& drawDashedFrame(double thickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 円形の破線を描きます。
+		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Circle& drawDashedFrame(double innerThickness, double outerThickness, const CircularDashStyle& style, const ColorF& color = Palette::White) const;
+
+		/// @brief 円形の破線を描きます。
+		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Circle& drawDashedFrame(double innerThickness, double outerThickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

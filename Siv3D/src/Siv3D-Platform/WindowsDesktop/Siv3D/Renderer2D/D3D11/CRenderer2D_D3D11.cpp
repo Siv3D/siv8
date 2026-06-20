@@ -521,6 +521,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addCircleDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleDashedFrame(const Float2& center, const float rInner, const float startAngle, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, startAngle, thickness, dashRatio, dashCount, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+			
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+		
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addCirclePie
 	//
 	////////////////////////////////////////////////////////////////

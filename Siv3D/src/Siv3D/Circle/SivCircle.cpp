@@ -17,6 +17,7 @@
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/CircularDashStyle.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>
@@ -106,6 +107,35 @@ namespace s3d
 	Circle::position_type Circle::interpolatedPointAt(const double t) const noexcept
 	{
 		return getPointByAngle(t * Math::TwoPi);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	signedDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Circle::signedDistanceTo(const double x, const double y) const noexcept
+	{
+		return signedDistanceTo(position_type{ x, y });
+	}
+
+	double Circle::signedDistanceTo(const position_type point) const noexcept
+	{
+		return (center.distanceTo(point) - Abs(r));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	closestPointOnCircumference
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle::position_type Circle::closestPointOnCircumference(const position_type point) const noexcept
+	{
+		const Vec2 direction = (point - center);
+
+		return (center + direction.normalized_or(Vec2{ 0.0, -1.0 }) * Abs(r));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -626,6 +656,42 @@ namespace s3d
 			pattern
 		);
 
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::drawDashedFrame(const double thickness, const CircularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, color, color);
+	}
+
+	const Circle& Circle::drawDashedFrame(const double thickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, innerColor, outerColor);
+	}
+
+	const Circle& Circle::drawDashedFrame(const double innerThickness, const double outerThickness, const CircularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame(innerThickness, outerThickness, style, color, color);
+	}
+
+	const Circle& Circle::drawDashedFrame(const double innerThickness, const double outerThickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircleDashedFrame(
+			center,
+			static_cast<float>(Abs(r) - innerThickness),
+			style.startAngle,
+			static_cast<float>(innerThickness + outerThickness),
+			style.dashRatio,
+			style.dashCount,
+			innerColor.toFloat4(),
+			outerColor.toFloat4()
+		);
 		return *this;
 	}
 

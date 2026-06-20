@@ -73,6 +73,8 @@ namespace s3d
 
 		virtual void addCircleFrame(const Float2& center, float rInner, float thickness, const PatternParameters& pattern) = 0;
 
+		virtual void addCircleDashedFrame(const Float2& center, float rInner, float startAngle, float thickness, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor) = 0;
+
 		virtual void addCirclePie(const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor) = 0;
 
 		virtual void addCirclePie(const Float2& center, float r, float startAngle, float angle, const PatternParameters& pattern) = 0;
