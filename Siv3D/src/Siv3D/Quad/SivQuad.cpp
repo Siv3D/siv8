@@ -12,6 +12,7 @@
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatQuad.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Cursor.hpp>
@@ -251,10 +252,150 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	Circle Quad::boundingCircle() const noexcept
+	{
+		const Vec2 points[4] = { p0, p1, p2, p3 };
 
+		Circle result{ p0, 0.0 };
+		bool hasResult = false;
 
+		const auto ContainsAll = [&](const Circle& circle) noexcept
+		{
+			for (const Vec2& point : points)
+			{
+				if (not circle.intersects(point))
+				{
+					return false;
+				}
+			}
 
+			return true;
+		};
 
+		const auto Update = [&](const Circle& circle) noexcept
+		{
+			if (not ContainsAll(circle))
+			{
+				return;
+			}
+
+			if ((not hasResult) || (circle.r < result.r))
+			{
+				result = circle;
+				hasResult = true;
+			}
+		};
+
+		const auto UpdateCircumcircle = [&](const Vec2& a, const Vec2& b, const Vec2& c) noexcept
+		{
+			const double cross = ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+
+			if (Abs(cross) <= 1.0e-10)
+			{
+				return;
+			}
+
+			Update(Triangle{ a, b, c }.getCircumscribedCircle());
+		};
+
+		Update(Circle{ p0, p1 });
+		Update(Circle{ p0, p2 });
+		Update(Circle{ p0, p3 });
+		Update(Circle{ p1, p2 });
+		Update(Circle{ p1, p3 });
+		Update(Circle{ p2, p3 });
+
+		UpdateCircumcircle(p0, p1, p2);
+		UpdateCircumcircle(p0, p1, p3);
+		UpdateCircumcircle(p0, p2, p3);
+		UpdateCircumcircle(p1, p2, p3);
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outline
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString Quad::outline(const CloseRing closeRing) const
+	{
+		if (closeRing)
+		{
+			return{ p0, p1, p2, p3, p0 };
+		}
+		else
+		{
+			return{ p0, p1, p2, p3 };
+		}
+	}
+
+	LineString Quad::outline(double distanceFromOrigin, double length) const
+	{
+		const double l0 = p1.distanceFrom(p0);
+		const double l1 = p2.distanceFrom(p1);
+		const double l2 = p3.distanceFrom(p2);
+		const double l3 = p0.distanceFrom(p3);
+		const double perim = (l0 + l1 + l2 + l3);
+
+		if (perim <= 0.0)
+		{
+			return{};
+		}
+
+		if (length < 0.0)
+		{
+			distanceFromOrigin += length;
+			length = -length;
+		}
+
+		distanceFromOrigin = WrapLength(distanceFromOrigin, perim);
+		length = Min(length, perim);
+
+		LineString points{ Arg::reserve = 6 };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+		{
+			if (points.empty() || (points.back() != point))
+			{
+				points << point;
+			}
+		};
+
+		AppendPoint(pointAtLength(distanceFromOrigin));
+
+		if (length == 0.0)
+		{
+			return points;
+		}
+
+		const double distanceToTarget = (distanceFromOrigin + length);
+
+		const double cornerLengths[4] = {
+			l0,
+			(l0 + l1),
+			(l0 + l1 + l2),
+			perim,
+		};
+
+		for (double base = 0.0; base <= distanceToTarget; base += perim)
+		{
+			for (size_t i = 0; i < 4; ++i)
+			{
+				const double d = (base + cornerLengths[i]);
+
+				if ((distanceFromOrigin < d) && (d < distanceToTarget))
+				{
+					AppendPoint(pointAtIndex((i + 1) % 4));
+				}
+			}
+		}
+
+		AppendPoint(pointAtLength(distanceToTarget));
+
+		return points;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -318,10 +459,6 @@ namespace s3d
 	{
 		return CalculatePolygonRoundBuffer({ p0, p1, p2, p3 }, distance, qualityFactor);
 	}
-
-
-
-
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -463,9 +600,30 @@ namespace s3d
 		return *this;
 	}
 
+	const Quad& Quad::drawFrame(double innerThickness, double outerThickness, const ColorF& color) const
+	{
+		const double offset = ((outerThickness - innerThickness) * 0.5);
+		const Quad t = stretched(offset);
+		const std::array<Vec2, 4> points = { t.p0, t.p1, t.p2, t.p3 };
+
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Flat, LineCap::Flat, points, none,
+			static_cast<float>(innerThickness + outerThickness), (outerThickness == 0.0), CloseRing::Yes, color.toFloat4());
+		return *this;
+	}
+
 	const Quad& Quad::drawFrame(const double thickness, const PatternParameters& pattern, const JoinStyle joinStyle) const
 	{
 		DrawClosedLineString({ p0, p1, p2, p3, p0, p1 }, joinStyle, thickness, pattern);
+		return *this;
+	}
+
+	const Quad& Quad::drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const
+	{
+		const double offset = ((outerThickness - innerThickness) * 0.5);
+		const Quad t = stretched(offset);
+		const std::array<Vec2, 4> points = { t.p0, t.p1, t.p2, t.p3 };
+		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Flat, LineCap::Flat, points, none,
+			static_cast<float>(innerThickness + outerThickness), (outerThickness == 0.0), CloseRing::Yes, pattern);
 		return *this;
 	}
 

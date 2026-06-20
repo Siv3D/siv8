@@ -603,10 +603,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 四角形を囲む最小の円を返します。
-		///// @return 四角形を囲む最小の円
-		//[[nodiscard]]
-		//Circle boundingCircle() const noexcept;
+		/// @brief 四角形を囲む最小の円を返します。
+		/// @return 四角形を囲む最小の円
+		[[nodiscard]]
+		Circle boundingCircle() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -614,11 +614,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//LineString outline(CloseRing closeRing = CloseRing::No) const;
+		/// @brief 四角形の輪郭を LineString として返します。
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @return 四角形の輪郭の LineString
+		[[nodiscard]]
+		LineString outline(CloseRing closeRing = CloseRing::No) const;
 
-		//[[nodiscard]]
-		//LineString outline(double distanceFromOrigin, double length) const;
+		/// @brief 四角形の輪郭の一部を LineString として返します。
+		/// @param distanceFromOrigin 開始地点の距離（四角形の頂点から時計回りでの距離）
+		/// @param length 長さ
+		/// @return 四角形の輪郭の一部の LineString
+		[[nodiscard]]
+		LineString outline(double distanceFromOrigin, double length) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -861,12 +868,12 @@ namespace s3d
 		/// @return *this
 		const Quad& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White, JoinStyle joinStyle = JoinStyle::Default) const;
 
-		///// @brief 四角形の枠を描きます。
-		///// @param innerThickness 基準の四角形から内側方向への枠の太さ（ピクセル）
-		///// @param outerThickness 基準の四角形から外側方向への枠の太さ（ピクセル）
-		///// @param color 枠の色
-		///// @return *this
-		//const Quad& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+		/// @brief 四角形の枠を描きます。
+		/// @param innerThickness 基準の四角形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の四角形から外側方向への枠の太さ（ピクセル）
+		/// @param color 枠の色
+		/// @return *this
+		const Quad& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		/// @brief 四角形の枠を描きます。
 		/// @param thickness 枠の太さ（ピクセル）
@@ -875,12 +882,12 @@ namespace s3d
 		/// @return *this
 		const Quad& drawFrame(double thickness, const PatternParameters& pattern, JoinStyle joinStyle = JoinStyle::Default) const;
 
-		///// @brief 四角形の枠を描きます。
-		///// @param innerThickness 基準の四角形から内側方向への枠の太さ（ピクセル）
-		///// @param outerThickness 基準の四角形から外側方向への枠の太さ（ピクセル）
+		/// @brief 四角形の枠を描きます。
+		/// @param innerThickness 基準の四角形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の四角形から外側方向への枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		///// @return *this
-		//const Quad& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+		/// @return *this
+		const Quad& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -888,11 +895,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//TexturedQuad operator ()(const Texture& texture) const;
+		[[nodiscard]]
+		TexturedQuad operator ()(const Texture& texture) const;
 
-		//[[nodiscard]]
-		//TexturedQuad operator ()(const TextureRegion& textureRegion) const;
+		[[nodiscard]]
+		TexturedQuad operator ()(const TextureRegion& textureRegion) const;
 
 		////////////////////////////////////////////////////////////////
 		//

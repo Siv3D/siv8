@@ -15,6 +15,7 @@
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -352,7 +353,87 @@ namespace s3d
 		return{ center, (area2 / perimeter) };
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	outline
+	//
+	////////////////////////////////////////////////////////////////
 
+	LineString Triangle::outline(const CloseRing closeRing) const
+	{
+		if (closeRing)
+		{
+			return{ p0, p1, p2, p0 };
+		}
+		else
+		{
+			return{ p0, p1, p2 };
+		}
+	}
+
+	LineString Triangle::outline(double distanceFromOrigin, double length) const
+	{
+		const double l0 = p1.distanceFrom(p0);
+		const double l1 = p2.distanceFrom(p1);
+		const double l2 = p0.distanceFrom(p2);
+		const double perim = (l0 + l1 + l2);
+
+		if (perim <= 0.0)
+		{
+			return{};
+		}
+
+		if (length < 0.0)
+		{
+			distanceFromOrigin += length;
+			length = -length;
+		}
+
+		distanceFromOrigin = WrapLength(distanceFromOrigin, perim);
+		length = Min(length, perim);
+
+		LineString points{ Arg::reserve = 5 };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+		{
+			if (points.empty() || (points.back() != point))
+			{
+				points << point;
+			}
+		};
+
+		AppendPoint(pointAtLength(distanceFromOrigin));
+
+		if (length == 0.0)
+		{
+			return points;
+		}
+
+		const double distanceToTarget = (distanceFromOrigin + length);
+
+		const double cornerLengths[3] = {
+			l0,
+			(l0 + l1),
+			perim,
+		};
+
+		for (double base = 0.0; base <= distanceToTarget; base += perim)
+		{
+			for (size_t i = 0; i < 3; ++i)
+			{
+				const double d = (base + cornerLengths[i]);
+
+				if ((distanceFromOrigin < d) && (d < distanceToTarget))
+				{
+					AppendPoint(pointAtIndex((i + 1) % 3));
+				}
+			}
+		}
+
+		AppendPoint(pointAtLength(distanceToTarget));
+
+		return points;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
