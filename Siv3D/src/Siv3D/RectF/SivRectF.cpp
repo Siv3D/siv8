@@ -15,6 +15,7 @@
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/RectangularDashStyle.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/TextureRegion.hpp>
@@ -1928,6 +1929,29 @@ namespace s3d
 			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ px1, y3 }, Float2{ px1, y0 }, thickness, colors);
 		}
 
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& RectF::drawDashedFrame(double thickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, color);
+	}
+
+	const RectF& RectF::drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addRectDashedFrame(
+			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
+			style.offset,
+			static_cast<float>(innerThickness + outerThickness),
+			style.dashRatio,
+			style.dashCount,
+			color.toFloat4());
 		return *this;
 	}
 

@@ -706,6 +706,23 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::drawDashedFrame(const double thickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, color);
+	}
+
+	const Rect& Rect::drawDashedFrame(const double innerThickness, const double outerThickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		RectF{ *this }.drawDashedFrame(innerThickness, outerThickness, style, color);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawShadow
 	//
 	////////////////////////////////////////////////////////////////

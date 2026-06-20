@@ -1170,6 +1170,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	points
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の頂点座標を左上、右上、右下、左下の順に std::array で返します。
+		/// @return 長方形の各頂点の座標
+		[[nodiscard]]
+		constexpr std::array<position_type, 4> points() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sides
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の辺を上、右、下、左の順に std::array で返します。
+		/// @return 長方形の各辺
+		[[nodiscard]]
+		constexpr std::array<Line, 4> sides() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	pointAtIndex
 		//
 		////////////////////////////////////////////////////////////////
@@ -1959,6 +1981,27 @@ namespace s3d
 		/// @param color 色
 		/// @return *this
 		const RectF& drawFrame(double innerThickness, double outerThickness, LineType lineType, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const RectF& drawDashedFrame(double thickness, const RectangularDashStyle& style, const ColorF& color = Palette::White) const;
+
+		/// @brief 長方形の破線を描きます。
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const RectF& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

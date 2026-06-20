@@ -65,6 +65,8 @@ namespace s3d
 
 		virtual void addRectFrame(const FloatRect& innerRect, float thickness, const PatternParameters& pattern) = 0;
 
+		virtual void addRectDashedFrame(const FloatRect& innerRect, float offset, float thickness, float dashRatio, uint32 dashCount, const Float4& color) = 0;
+
 		virtual void addCircle(const Float2& center, float r, const Float4& color0, const Float4& color1, ColorFillDirection colorType) = 0;
 
 		virtual void addCircle(const Float2& center, float r, const PatternParameters& pattern) = 0;

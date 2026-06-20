@@ -52,6 +52,9 @@ namespace s3d
 		Vertex2D::IndexType BuildRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float thickness, ColorFillDirection colorType, const Float4& color0, const Float4& color1);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildRectDashedFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float offset, float thickness, float dashRatio, uint32 dashCount, const Float4& color);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildCircle(const BufferCreatorFunc& bufferCreator, const Float2& center, float r, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]

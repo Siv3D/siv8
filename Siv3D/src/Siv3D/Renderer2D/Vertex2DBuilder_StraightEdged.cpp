@@ -21,6 +21,127 @@ namespace s3d
 		static constexpr Vertex2D::IndexType RectIndexTable[6] = { 0, 1, 2, 2, 1, 3 };
 
 		static constexpr Vertex2D::IndexType RectFrameIndexTable[24] = { 0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5, 4, 6, 5, 5, 6, 7, 6, 0, 7, 7, 0, 1 };
+
+		struct RectFramePathPoint
+		{
+			Float2 outer;
+
+			Float2 inner;
+		};
+
+		[[nodiscard]]
+		static float NormalizeRectFrameDashOffset(const float offset, const float perimeter) noexcept
+		{
+			const float result = std::fmod(offset, perimeter);
+
+			return ((result < 0.0f) ? (result + perimeter) : result);
+		}
+
+		[[nodiscard]]
+		static RectFramePathPoint GetRectFramePathPoint(const FloatRect& innerRect, const float thickness, const float distance) noexcept
+		{
+			const float width = (innerRect.right - innerRect.left);
+			const float height = (innerRect.bottom - innerRect.top);
+			const float perimeter = (width * 2.0f + height * 2.0f);
+			const float d = ((perimeter < distance) ? (distance - perimeter) : distance);
+			const float rightBegin = width;
+			const float bottomBegin = (width + height);
+			const float leftBegin = (width * 2.0f + height);
+
+			if (d <= rightBegin)
+			{
+				const float x = (innerRect.left + d);
+				const float outerX = ((d == rightBegin) ? (innerRect.right + thickness) : x);
+
+				return{
+					{ outerX, (innerRect.top - thickness) },
+					{ x, innerRect.top }
+				};
+			}
+			else if (d <= bottomBegin)
+			{
+				const float y = (innerRect.top + (d - rightBegin));
+				const float outerY = ((d == bottomBegin) ? (innerRect.bottom + thickness) : y);
+
+				return{
+					{ (innerRect.right + thickness), outerY },
+					{ innerRect.right, y }
+				};
+			}
+			else if (d <= leftBegin)
+			{
+				const float x = (innerRect.right - (d - bottomBegin));
+				const float outerX = ((d == leftBegin) ? (innerRect.left - thickness) : x);
+
+				return{
+					{ outerX, (innerRect.bottom + thickness) },
+					{ x, innerRect.bottom }
+				};
+			}
+			else
+			{
+				const float y = (innerRect.bottom - (d - leftBegin));
+				const float outerY = ((d == perimeter) ? (innerRect.top - thickness) : y);
+
+				return{
+					{ (innerRect.left - thickness), outerY },
+					{ innerRect.left, y }
+				};
+			}
+		}
+
+		template <class Fn>
+		static void ForEachRectFrameDashRange(const FloatRect& innerRect, const float offset, const float dashRatio, const uint32 dashCount, Fn&& fn)
+		{
+			const float width = (innerRect.right - innerRect.left);
+			const float height = (innerRect.bottom - innerRect.top);
+			const float perimeter = (width * 2.0f + height * 2.0f);
+			const float period = (perimeter / dashCount);
+			const float dashLength = (period * dashRatio);
+			const float normalizedOffset = NormalizeRectFrameDashOffset(offset, perimeter);
+
+			for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
+			{
+				float begin = (normalizedOffset + period * dashIndex);
+
+				if (perimeter <= begin)
+				{
+					begin -= perimeter;
+				}
+
+				fn(begin, (begin + dashLength));
+			}
+		}
+
+		template <class Fn>
+		static void ForEachRectFramePathDistance(const FloatRect& innerRect, const float begin, const float end, Fn&& fn)
+		{
+			const float width = (innerRect.right - innerRect.left);
+			const float height = (innerRect.bottom - innerRect.top);
+			const float perimeter = (width * 2.0f + height * 2.0f);
+			const float corners[7] =
+			{
+				width,
+				(width + height),
+				(width * 2.0f + height),
+				perimeter,
+				(perimeter + width),
+				(perimeter + width + height),
+				(perimeter + width * 2.0f + height),
+			};
+
+			fn(begin);
+
+			for (const float corner : corners)
+			{
+				if ((begin < corner) && (corner < end))
+				{
+					fn(corner);
+				}
+			}
+
+			fn(end);
+		}
 	}
 
 	namespace Vertex2DBuilder
@@ -266,6 +387,100 @@ namespace s3d
 			{
 				*pIndex++ = (indexOffset + RectFrameIndexTable[i]);
 			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildRectDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRectDashedFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float offset, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& color)
+		{
+			const float width = (innerRect.right - innerRect.left);
+			const float height = (innerRect.bottom - innerRect.top);
+			const float clampedDashRatio = Clamp(dashRatio, 0.0f, 1.0f);
+
+			if ((width <= 0.0f) || (height <= 0.0f) || (thickness <= 0.0f) || (dashCount == 0) || (clampedDashRatio == 0.0f))
+			{
+				return 0;
+			}
+
+			if (clampedDashRatio == 1.0f)
+			{
+				return BuildRectFrame(bufferCreator, innerRect, thickness, ColorFillDirection::InOut, color, color);
+			}
+
+			size_t pathPointCount = 0;
+			size_t segmentCount = 0;
+
+			ForEachRectFrameDashRange(innerRect, offset, clampedDashRatio, dashCount,
+				[&](const float begin, const float end)
+				{
+					size_t currentPathPointCount = 0;
+
+					ForEachRectFramePathDistance(innerRect, begin, end,
+						[&](const float)
+						{
+							++currentPathPointCount;
+						});
+
+					pathPointCount += currentPathPointCount;
+					segmentCount += (currentPathPointCount - 1);
+				});
+
+			const size_t vertexCount = (pathPointCount * 2);
+			const size_t indexCount = (segmentCount * 6);
+			constexpr size_t MaxIndexValue = static_cast<size_t>(std::numeric_limits<Vertex2D::IndexType>::max());
+
+			if ((MaxIndexValue < vertexCount) || (MaxIndexValue < indexCount))
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertexCount);
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(indexCount);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			Vertex2D* pDstVertex = pVertex;
+			Vertex2D::IndexType vertexOffset = indexOffset;
+
+			ForEachRectFrameDashRange(innerRect, offset, clampedDashRatio, dashCount,
+				[&](const float begin, const float end)
+				{
+					Vertex2D::IndexType currentPathPointCount = 0;
+
+					ForEachRectFramePathDistance(innerRect, begin, end,
+						[&](const float distance)
+						{
+							const RectFramePathPoint point = GetRectFramePathPoint(innerRect, thickness, distance);
+
+							(pDstVertex++)->set(point.outer, color);
+							(pDstVertex++)->set(point.inner, color);
+							++currentPathPointCount;
+						});
+
+					for (Vertex2D::IndexType i = 0; i < (currentPathPointCount - 1); ++i)
+					{
+						const Vertex2D::IndexType base = (vertexOffset + i * 2);
+
+						*pIndex++ = base;
+						*pIndex++ = (base + 2);
+						*pIndex++ = (base + 1);
+						*pIndex++ = (base + 1);
+						*pIndex++ = (base + 2);
+						*pIndex++ = (base + 3);
+					}
+
+					vertexOffset += (currentPathPointCount * 2);
+				});
 
 			return IndexCount;
 		}

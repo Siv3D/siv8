@@ -496,6 +496,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	points
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形の頂点の座標を配列として返します。
+		/// @return 四角形の頂点の座標を格納した配列
+		[[nodiscard]]
+		constexpr std::array<position_type, 4> points() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sides
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 四角形の辺を配列として返します。
+		/// @return 四角形の辺を格納した配列
+		[[nodiscard]]
+		constexpr std::array<Line, 4> sides() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	pointAtIndex
 		//
 		////////////////////////////////////////////////////////////////
@@ -517,6 +539,58 @@ namespace s3d
 		/// @return 四角形の周上の指定した距離に対応する座標
 		[[nodiscard]]
 		Vec2 pointAtLength(double length) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	p0p1, p1p2, p2p3, p3p0
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief p0 から p1 への線分を返します。
+		/// @return p0 から p1 への線分
+		[[nodiscard]]
+		constexpr Line p0p1() const noexcept;
+
+		/// @brief p1 から p2 への線分を返します。
+		/// @return p1 から p2 への線分
+		[[nodiscard]]
+		constexpr Line p1p2() const noexcept;
+
+		/// @brief p2 から p3 への線分を返します。
+		/// @return p2 から p3 への線分
+		[[nodiscard]]
+		constexpr Line p2p3() const noexcept;
+
+		/// @brief p3 から p0 への線分を返します。
+		/// @return p3 から p0 への線分
+		[[nodiscard]]
+		constexpr Line p3p0() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	p1p0, p2p1, p3p2, p0p3
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief p1 から p0 への線分を返します。
+		/// @return p1 から p0 への線分
+		[[nodiscard]]
+		constexpr Line p1p0() const noexcept;
+
+		/// @brief p2 から p1 への線分を返します。
+		/// @return p2 から p1 への線分
+		[[nodiscard]]
+		constexpr Line p2p1() const noexcept;
+
+		/// @brief p3 から p2 への線分を返します。
+		/// @return p3 から p2 への線分
+		[[nodiscard]]
+		constexpr Line p3p2() const noexcept;
+
+		/// @brief p0 から p3 への線分を返します。
+		/// @return p0 から p3 への線分
+		[[nodiscard]]
+		constexpr Line p0p3() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -15,6 +15,8 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
+# include <Siv3D/TexturedQuad.hpp>
+# include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>
@@ -625,6 +627,32 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Flat, LineCap::Flat, points, none,
 			static_cast<float>(innerThickness + outerThickness), (outerThickness == 0.0), CloseRing::Yes, pattern);
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator ()
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedQuad Quad::operator ()(const Texture& texture) const
+	{
+		const Vec2 center = (p0 + p1 + p2 + p3) * 0.25;
+
+		return{ texture,
+			0.0f, 0.0f, 1.0f, 1.0f,
+			*this,
+			center };
+	}
+
+	TexturedQuad Quad::operator ()(const TextureRegion& textureRegion) const
+	{
+		const Vec2 center = ((p0 + p1 + p2 + p3) * 0.25);
+
+		return{ textureRegion.texture,
+			textureRegion.uvRect,
+			*this,
+			center };
 	}
 
 	////////////////////////////////////////////////////////////////

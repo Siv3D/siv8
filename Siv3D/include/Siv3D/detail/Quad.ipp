@@ -374,6 +374,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	points
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::array<Quad::position_type, 4> Quad::points() const noexcept
+	{
+		return{ p0, p1, p2, p3 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sides
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::array<Line, 4> Quad::sides() const noexcept
+	{
+		return{ p0p1(), p1p2(), p2p3(), p3p0() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	pointAtIndex
 	//
 	////////////////////////////////////////////////////////////////
@@ -424,6 +446,58 @@ namespace s3d
 		{
 			ThrowPointAtIndexOutOfRange();
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p0p1, p1p2, p2p3, p3p0
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Quad::p0p1() const noexcept
+	{
+		return{ p0, p1 };
+	}
+
+	constexpr Line Quad::p1p2() const noexcept
+	{
+		return{ p1, p2 };
+	}
+
+	constexpr Line Quad::p2p3() const noexcept
+	{
+		return{ p2, p3 };
+	}
+
+	constexpr Line Quad::p3p0() const noexcept
+	{
+		return{ p3, p0 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p1p0, p2p1, p3p2, p0p3
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Quad::p1p0() const noexcept
+	{
+		return{ p1, p0 };
+	}
+
+	constexpr Line Quad::p2p1() const noexcept
+	{
+		return{ p2, p1 };
+	}
+
+	constexpr Line Quad::p3p2() const noexcept
+	{
+		return{ p3, p2 };
+	}
+
+	constexpr Line Quad::p0p3() const noexcept
+	{
+		return{ p0, p3 };
 	}
 
 	////////////////////////////////////////////////////////////////
