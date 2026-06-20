@@ -261,6 +261,127 @@ namespace s3d
 					EmitRectFrameCornerSegment(innerRect, thickness, component, localBegin, localEnd, fn);
 				});
 		}
+
+		struct RectFramePathComponentPosition
+		{
+			RectFramePathComponent component;
+
+			float componentBegin;
+
+			float local;
+		};
+
+		[[nodiscard]]
+		static bool IsRectFrameCornerComponent(const RectFramePathComponent component) noexcept
+		{
+			switch (component)
+			{
+			case RectFramePathComponent::TopRightCorner:
+			case RectFramePathComponent::BottomRightCorner:
+			case RectFramePathComponent::BottomLeftCorner:
+			case RectFramePathComponent::TopLeftCorner:
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		[[nodiscard]]
+		static RectFramePathComponentPosition GetRectFramePathComponentPosition(const FloatRect& innerRect, const float thickness, const float distance) noexcept
+		{
+			const float width = (innerRect.right - innerRect.left);
+			const float height = (innerRect.bottom - innerRect.top);
+			const float perimeter = CalculateRectFrameVirtualPerimeter(innerRect, thickness);
+			const float d = NormalizeRectFrameDashOffset(distance, perimeter);
+			const RectFramePathComponent components[8] =
+			{
+				RectFramePathComponent::TopSide,
+				RectFramePathComponent::TopRightCorner,
+				RectFramePathComponent::RightSide,
+				RectFramePathComponent::BottomRightCorner,
+				RectFramePathComponent::BottomSide,
+				RectFramePathComponent::BottomLeftCorner,
+				RectFramePathComponent::LeftSide,
+				RectFramePathComponent::TopLeftCorner,
+			};
+			const float componentLengths[8] =
+			{
+				width,
+				thickness,
+				height,
+				thickness,
+				width,
+				thickness,
+				height,
+				thickness,
+			};
+
+			float componentBegin = 0.0f;
+
+			for (size_t i = 0; i < 8; ++i)
+			{
+				const float componentEnd = (componentBegin + componentLengths[i]);
+
+				if ((d < componentEnd) || (i == 7))
+				{
+					return{ components[i], componentBegin, (d - componentBegin) };
+				}
+
+				componentBegin = componentEnd;
+			}
+
+			return{ RectFramePathComponent::TopSide, 0.0f, 0.0f };
+		}
+
+		template <class Fn>
+		static void ForEachRectFrameDashedQuadWrapped(const FloatRect& innerRect, const float thickness, float begin, float end, Fn&& fn)
+		{
+			const float perimeter = CalculateRectFrameVirtualPerimeter(innerRect, thickness);
+
+			if (end <= begin)
+			{
+				return;
+			}
+
+			while (begin < 0.0f)
+			{
+				begin += perimeter;
+				end += perimeter;
+			}
+
+			while (perimeter <= begin)
+			{
+				begin -= perimeter;
+				end -= perimeter;
+			}
+
+			ForEachRectFrameDashedQuad(innerRect, thickness, begin, end, fn);
+		}
+
+		template <class Fn>
+		static void ForEachRectFrameDashTailExtensionQuad(const FloatRect& innerRect, const float thickness, const float begin, Fn&& fn)
+		{
+			const RectFramePathComponentPosition position = GetRectFramePathComponentPosition(innerRect, thickness, begin);
+			float extensionLength = 0.0f;
+
+			if (IsRectFrameCornerComponent(position.component))
+			{
+				// ダッシュの後端が角区間の途中にある場合、角の残りが細い尻尾として見える。
+				// 角区間の始点まで後ろへ延ばして、角を部分幅ではなく一続きの領域として扱う。
+				extensionLength = position.local;
+			}
+			else if (position.local < thickness)
+			{
+				// 角を抜けた直後は、先行して折り返した辺の後ろを徐々に延ばす。
+				// これにより、角区間の補助分は local == thickness で連続的に消える。
+				extensionLength = (thickness - position.local);
+			}
+
+			if (0.0f < extensionLength)
+			{
+				ForEachRectFrameDashedQuadWrapped(innerRect, thickness, (begin - extensionLength), begin, fn);
+			}
+		}
 	}
 
 	namespace Vertex2DBuilder
