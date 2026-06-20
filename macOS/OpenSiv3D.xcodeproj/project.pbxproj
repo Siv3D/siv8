@@ -2781,6 +2781,8 @@
 		F99882472F587C8000C8991D /* PentabletFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99882442F587C8000C8991D /* PentabletFactory.cpp */; };
 		F99882482F587C8000C8991D /* SivPentablet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99882452F587C8000C8991D /* SivPentablet.cpp */; };
 		F99882492F587C8000C8991D /* IPentablet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99882432F587C8000C8991D /* IPentablet.hpp */; };
+		F99BC3682FE6B7AB00D4ECDE /* RectangularDashStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99BC3672FE6B7AB00D4ECDE /* RectangularDashStyle.hpp */; };
+		F99BC3692FE6B7AB00D4ECDE /* CircularDashStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99BC3662FE6B7AB00D4ECDE /* CircularDashStyle.hpp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5992,6 +5994,8 @@
 		F99882432F587C8000C8991D /* IPentablet.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPentablet.hpp; sourceTree = "<group>"; };
 		F99882442F587C8000C8991D /* PentabletFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PentabletFactory.cpp; sourceTree = "<group>"; };
 		F99882452F587C8000C8991D /* SivPentablet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPentablet.cpp; sourceTree = "<group>"; };
+		F99BC3662FE6B7AB00D4ECDE /* CircularDashStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircularDashStyle.hpp; sourceTree = "<group>"; };
+		F99BC3672FE6B7AB00D4ECDE /* RectangularDashStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RectangularDashStyle.hpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -7159,6 +7163,7 @@
 				F9D41CE62C99730500290998 /* Choice.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
 				F9E7943E2C158B8F002615BA /* Circular.hpp */,
+				F99BC3662FE6B7AB00D4ECDE /* CircularDashStyle.hpp */,
 				F99881712F45A20600C8991D /* Clipboard.hpp */,
 				F9070BC72B9F175000383E4D /* Color.hpp */,
 				F9070BC82B9F175000383E4D /* ColorF.hpp */,
@@ -7439,6 +7444,7 @@
 				F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */,
 				F9070C1C2B9F175000383E4D /* Rect.hpp */,
 				F95121FA2CB62DF400151291 /* RectanglePack.hpp */,
+				F99BC3672FE6B7AB00D4ECDE /* RectangularDashStyle.hpp */,
 				F986F9432BCA79BB006A4C0F /* RectF.hpp */,
 				F986F8B32BC843CF006A4C0F /* RegExp.hpp */,
 				F97202F72BEDF2D8000E21DD /* ResizeMode.hpp */,
@@ -13604,6 +13610,8 @@
 				F9528B532BB6DC2C00222F45 /* LicenseInfo.hpp in Headers */,
 				F9528C042BBF026F00222F45 /* bits.h in Headers */,
 				F98602142BCFBB54006A4C0F /* SkPathEnums.h in Headers */,
+				F99BC3682FE6B7AB00D4ECDE /* RectangularDashStyle.hpp in Headers */,
+				F99BC3692FE6B7AB00D4ECDE /* CircularDashStyle.hpp in Headers */,
 				F98601BF2BCFBB53006A4C0F /* SkFontScanner.h in Headers */,
 				F9E5FCD52BC3AD580081A4F7 /* JSON.ipp in Headers */,
 				F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */,
