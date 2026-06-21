@@ -92,9 +92,29 @@ namespace s3d
 			}
 		}
 
+		// Emits the quad for a single path component (side or corner). This merges the
+		// former EmitRectFrameSideSegment / EmitRectFrameCornerSegment pair (which were
+		// both invoked for every segment, with one always doing nothing) into a single
+		// table of per-component quad geometries.
+		//
+		// A corner square is shared by its previous side and its next side (which run in
+		// perpendicular directions). When a corner is only partially covered, the quad is
+		// emitted collinear with whichever side the dash actually occupies, so the corner
+		// is always a full-thickness extension of the dash rectangle (never a sub-thickness
+		// sliver). localBegin == 0 means the dash reaches the corner from its PREVIOUS side;
+		// localEnd == thickness means it continues onto its NEXT side. A fully covered
+		// corner (both) fills the whole square either way.
 		template <class Fn>
-		static void EmitRectFrameSideSegment(const FloatRect& innerRect, const float thickness, const RectFramePathComponent component, const float localBegin, const float localEnd, Fn&& fn)
+		static void EmitRectFrameComponentQuad(const FloatRect& innerRect, const float thickness, const RectFramePathComponent component, const float localBegin, const float localEnd, Fn&& fn)
 		{
+			constexpr float CornerEpsilon = 1e-4f;
+			const float coverage = (localEnd - localBegin);
+			const bool reachesNextSide = (localEnd > (thickness - CornerEpsilon));
+			const bool reachesPrevSide = (localBegin < CornerEpsilon);
+			// Render the corner collinear with the NEXT side only when the dash body is on
+			// that side (reaches the next side but not the previous one).
+			const bool alignWithNextSide = (reachesNextSide && (!reachesPrevSide));
+
 			switch (component)
 			{
 			case RectFramePathComponent::TopSide:
@@ -133,166 +153,77 @@ namespace s3d
 					(innerRect.bottom - localBegin) }, fn);
 				break;
 			}
-			default:
-				break;
-			}
-		}
-
-		template <class Fn>
-		static void EmitRectFrameCornerSegment(const FloatRect& innerRect, const float thickness, const RectFramePathComponent component, const float localBegin, const float localEnd, Fn&& fn)
-		{
-			switch (component)
-			{
 			case RectFramePathComponent::TopRightCorner:
 			{
-				EmitRectFrameDashedQuad({
-					(innerRect.right + localBegin),
-					(innerRect.top - thickness),
-					(innerRect.right + localEnd),
-					innerRect.top }, fn);
+				if (alignWithNextSide)
+				{
+					// next side: RightSide (vertical)
+					EmitRectFrameDashedQuad({ innerRect.right, (innerRect.top - coverage), (innerRect.right + thickness), innerRect.top }, fn);
+				}
+				else
+				{
+					// previous side: TopSide (horizontal)
+					EmitRectFrameDashedQuad({ (innerRect.right + localBegin), (innerRect.top - thickness), (innerRect.right + localEnd), innerRect.top }, fn);
+				}
 				break;
 			}
 			case RectFramePathComponent::BottomRightCorner:
 			{
-				EmitRectFrameDashedQuad({
-					innerRect.right,
-					(innerRect.bottom + localBegin),
-					(innerRect.right + thickness),
-					(innerRect.bottom + localEnd) }, fn);
+				if (alignWithNextSide)
+				{
+					// next side: BottomSide (horizontal)
+					EmitRectFrameDashedQuad({ innerRect.right, innerRect.bottom, (innerRect.right + coverage), (innerRect.bottom + thickness) }, fn);
+				}
+				else
+				{
+					// previous side: RightSide (vertical)
+					EmitRectFrameDashedQuad({ innerRect.right, (innerRect.bottom + localBegin), (innerRect.right + thickness), (innerRect.bottom + localEnd) }, fn);
+				}
 				break;
 			}
 			case RectFramePathComponent::BottomLeftCorner:
 			{
-				EmitRectFrameDashedQuad({
-					(innerRect.left - localEnd),
-					innerRect.bottom,
-					(innerRect.left - localBegin),
-					(innerRect.bottom + thickness) }, fn);
+				if (alignWithNextSide)
+				{
+					// next side: LeftSide (vertical)
+					EmitRectFrameDashedQuad({ (innerRect.left - thickness), innerRect.bottom, innerRect.left, (innerRect.bottom + coverage) }, fn);
+				}
+				else
+				{
+					// previous side: BottomSide (horizontal)
+					EmitRectFrameDashedQuad({ (innerRect.left - localEnd), innerRect.bottom, (innerRect.left - localBegin), (innerRect.bottom + thickness) }, fn);
+				}
 				break;
 			}
 			case RectFramePathComponent::TopLeftCorner:
 			{
-				EmitRectFrameDashedQuad({
-					(innerRect.left - thickness),
-					(innerRect.top - localEnd),
-					innerRect.left,
-					(innerRect.top - localBegin) }, fn);
+				if (alignWithNextSide)
+				{
+					// next side: TopSide (horizontal)
+					EmitRectFrameDashedQuad({ (innerRect.left - coverage), (innerRect.top - thickness), innerRect.left, innerRect.top }, fn);
+				}
+				else
+				{
+					// previous side: LeftSide (vertical)
+					EmitRectFrameDashedQuad({ (innerRect.left - thickness), (innerRect.top - localEnd), innerRect.left, (innerRect.top - localBegin) }, fn);
+				}
 				break;
 			}
-			default:
-				break;
 			}
 		}
 
+		// Walks the dash range [begin, end] across the virtual perimeter and invokes
+		// fn(component, localBegin, localEnd) for the part of each path component it
+		// covers. A dash range lies within [0, 2 * perimeter), so two laps of the eight-
+		// component cycle are sufficient (this replaces the former hand-duplicated
+		// sixteen-entry table).
 		template <class Fn>
 		static void ForEachRectFrameComponentSegment(const FloatRect& innerRect, const float thickness, const float begin, const float end, Fn&& fn)
 		{
 			const float width = (innerRect.right - innerRect.left);
 			const float height = (innerRect.bottom - innerRect.top);
 			const float perimeter = CalculateRectFrameVirtualPerimeter(innerRect, thickness);
-			const RectFramePathComponent components[16] =
-			{
-				RectFramePathComponent::TopSide,
-				RectFramePathComponent::TopRightCorner,
-				RectFramePathComponent::RightSide,
-				RectFramePathComponent::BottomRightCorner,
-				RectFramePathComponent::BottomSide,
-				RectFramePathComponent::BottomLeftCorner,
-				RectFramePathComponent::LeftSide,
-				RectFramePathComponent::TopLeftCorner,
-				RectFramePathComponent::TopSide,
-				RectFramePathComponent::TopRightCorner,
-				RectFramePathComponent::RightSide,
-				RectFramePathComponent::BottomRightCorner,
-				RectFramePathComponent::BottomSide,
-				RectFramePathComponent::BottomLeftCorner,
-				RectFramePathComponent::LeftSide,
-				RectFramePathComponent::TopLeftCorner,
-			};
-			const float componentLengths[16] =
-			{
-				width,
-				thickness,
-				height,
-				thickness,
-				width,
-				thickness,
-				height,
-				thickness,
-				width,
-				thickness,
-				height,
-				thickness,
-				width,
-				thickness,
-				height,
-				thickness,
-			};
 
-			float componentBegin = 0.0f;
-
-			for (size_t i = 0; i < 16; ++i)
-			{
-				if (i == 8)
-				{
-					componentBegin = perimeter;
-				}
-
-				const float componentEnd = (componentBegin + componentLengths[i]);
-				const float clippedBegin = Max(begin, componentBegin);
-				const float clippedEnd = Min(end, componentEnd);
-
-				if (clippedBegin < clippedEnd)
-				{
-					fn(components[i], (clippedBegin - componentBegin), (clippedEnd - componentBegin));
-				}
-
-				componentBegin = componentEnd;
-			}
-		}
-
-		template <class Fn>
-		static void ForEachRectFrameDashedQuad(const FloatRect& innerRect, const float thickness, const float begin, const float end, Fn&& fn)
-		{
-			ForEachRectFrameComponentSegment(innerRect, thickness, begin, end,
-				[&](const RectFramePathComponent component, const float localBegin, const float localEnd)
-				{
-					EmitRectFrameSideSegment(innerRect, thickness, component, localBegin, localEnd, fn);
-					EmitRectFrameCornerSegment(innerRect, thickness, component, localBegin, localEnd, fn);
-				});
-		}
-
-		struct RectFramePathComponentPosition
-		{
-			RectFramePathComponent component;
-
-			float componentBegin;
-
-			float local;
-		};
-
-		[[nodiscard]]
-		static bool IsRectFrameCornerComponent(const RectFramePathComponent component) noexcept
-		{
-			switch (component)
-			{
-			case RectFramePathComponent::TopRightCorner:
-			case RectFramePathComponent::BottomRightCorner:
-			case RectFramePathComponent::BottomLeftCorner:
-			case RectFramePathComponent::TopLeftCorner:
-				return true;
-			default:
-				return false;
-			}
-		}
-
-		[[nodiscard]]
-		static RectFramePathComponentPosition GetRectFramePathComponentPosition(const FloatRect& innerRect, const float thickness, const float distance) noexcept
-		{
-			const float width = (innerRect.right - innerRect.left);
-			const float height = (innerRect.bottom - innerRect.top);
-			const float perimeter = CalculateRectFrameVirtualPerimeter(innerRect, thickness);
-			const float d = NormalizeRectFrameDashOffset(distance, perimeter);
 			const RectFramePathComponent components[8] =
 			{
 				RectFramePathComponent::TopSide,
@@ -306,81 +237,37 @@ namespace s3d
 			};
 			const float componentLengths[8] =
 			{
-				width,
-				thickness,
-				height,
-				thickness,
-				width,
-				thickness,
-				height,
-				thickness,
+				width, thickness, height, thickness, width, thickness, height, thickness,
 			};
 
-			float componentBegin = 0.0f;
-
-			for (size_t i = 0; i < 8; ++i)
+			for (int lap = 0; lap < 2; ++lap)
 			{
-				const float componentEnd = (componentBegin + componentLengths[i]);
+				float componentBegin = (lap * perimeter);
 
-				if ((d < componentEnd) || (i == 7))
+				for (size_t i = 0; i < 8; ++i)
 				{
-					return{ components[i], componentBegin, (d - componentBegin) };
+					const float componentEnd = (componentBegin + componentLengths[i]);
+					const float clippedBegin = Max(begin, componentBegin);
+					const float clippedEnd = Min(end, componentEnd);
+
+					if (clippedBegin < clippedEnd)
+					{
+						fn(components[i], (clippedBegin - componentBegin), (clippedEnd - componentBegin));
+					}
+
+					componentBegin = componentEnd;
 				}
-
-				componentBegin = componentEnd;
 			}
-
-			return{ RectFramePathComponent::TopSide, 0.0f, 0.0f };
 		}
 
 		template <class Fn>
-		static void ForEachRectFrameDashedQuadWrapped(const FloatRect& innerRect, const float thickness, float begin, float end, Fn&& fn)
+		static void ForEachRectFrameDashedQuad(const FloatRect& innerRect, const float thickness, const float begin, const float end, Fn&& fn)
 		{
-			const float perimeter = CalculateRectFrameVirtualPerimeter(innerRect, thickness);
-
-			if (end <= begin)
-			{
-				return;
-			}
-
-			while (begin < 0.0f)
-			{
-				begin += perimeter;
-				end += perimeter;
-			}
-
-			while (perimeter <= begin)
-			{
-				begin -= perimeter;
-				end -= perimeter;
-			}
-
-			ForEachRectFrameDashedQuad(innerRect, thickness, begin, end, fn);
-		}
-
-		template <class Fn>
-		static void ForEachRectFrameDashTailExtensionQuad(const FloatRect& innerRect, const float thickness, const float begin, Fn&& fn)
-		{
-			const RectFramePathComponentPosition position = GetRectFramePathComponentPosition(innerRect, thickness, begin);
-			float extensionLength = 0.0f;
-
-			if (IsRectFrameCornerComponent(position.component))
-			{
-				// ダッシュの後端が角区間の途中にある場合、角の残りが細い尻尾として見える。
-				// 角区間の始点まで後ろへ延ばして、角を部分幅ではなく一続きの領域として扱う。
-				extensionLength = position.local;
-			}
-			else if (position.local < thickness)
-			{
-				// 角を抜けた直後は、先行して折り返した辺の後ろを徐々に延ばす。
-				// これにより、角区間の補助分は local == thickness で連続的に消える。
-				extensionLength = (thickness - position.local);
-			}
-
-			if (0.0f < extensionLength)
-			{
-				ForEachRectFrameDashedQuadWrapped(innerRect, thickness, (begin - extensionLength), begin, fn);
-			}
+			ForEachRectFrameComponentSegment(innerRect, thickness, begin, end,
+				[&](const RectFramePathComponent component, const float localBegin, const float localEnd)
+				{
+					EmitRectFrameComponentQuad(innerRect, thickness, component, localBegin, localEnd, fn);
+				});
 		}
 	}
 
