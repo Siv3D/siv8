@@ -17,6 +17,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/FloatRect.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedRoundRect.hpp>
@@ -28,6 +29,12 @@ namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static constexpr double GetRadius(const double w, const double h, const double r) noexcept
+		{
+			return Min((w * 0.5), (h * 0.5), Abs(r));
+		}
+
 		[[nodiscard]]
 		static double WrapLength(double length, const double perimeter) noexcept
 		{
@@ -64,7 +71,7 @@ namespace s3d
 				return{ rect.tl(), rect.tr(), rect.br(), rect.bl() };
 			}
 
-			const double rr = (Min((rect.w * 0.5), (rect.h * 0.5), Max(0.0, Abs(rect.r))) + offset);
+			const double rr = (GetRadius(rect.w, rect.h, rect.r) + offset);
 			const uint32 quality = ((pointsPerCircle.value() + 3) / 4 + 1);
 			const double radDelta = (Math::HalfPi / (quality - 1));
 
@@ -182,6 +189,175 @@ namespace s3d
 		return pointAtLength(t * perimeter());
 	}
 
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outline
+	//
+	////////////////////////////////////////////////////////////////
+
+	///// @brief 角丸長方形の輪郭を LineString として返します。
+	///// @param closeRing 頂点配列の終点を始点と重ねるか
+	///// @param pointsPerCircle 円周の分割数
+	///// @return 角丸長方形の輪郭の LineString
+	//[[nodiscard]]
+	//LineString outline(CloseRing closeRing, const PointsPerCircle& pointsPerCircle) const;
+
+	///// @brief 角丸長方形の輪郭を LineString として返します。
+	///// @param closeRing 頂点配列の終点を始点と重ねるか
+	///// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+	///// @return 角丸長方形の輪郭の LineString
+	//[[nodiscard]]
+	//LineString outline(CloseRing closeRing = CloseRing::No, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+	///// @brief 角丸長方形の輪郭の一部を LineString として返します。
+	///// @param distanceFromOrigin 開始地点の距離（左上の角丸の終わりから時計回りでの距離）
+	///// @param length 長さ
+	///// @param pointsPerCircle 円周の分割数
+	///// @return 角丸長方形の輪郭の一部の LineString
+	//[[nodiscard]]
+	//LineString outline(double distanceFromOrigin, double length, const PointsPerCircle& pointsPerCircle) const;
+
+	///// @brief 角丸長方形の輪郭の一部を LineString として返します。
+	///// @param distanceFromOrigin 開始地点の距離（左上の角丸の終わりから時計回りでの距離）
+	///// @param length 長さ
+	///// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+	///// @return 角丸長方形の輪郭の一部の LineString
+	//[[nodiscard]]
+	//LineString outline(double distanceFromOrigin, double length, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+	LineString RoundRect::outline(const CloseRing closeRing, const PointsPerCircle& pointsPerCircle) const
+	{
+		Array<Vec2> vertices = outer(pointsPerCircle);
+		
+		if (closeRing == CloseRing::Yes)
+		{
+			vertices.push_back(vertices.front());
+		}
+		
+		return vertices;
+	}
+
+	LineString RoundRect::outline(const CloseRing closeRing, const QualityFactor& qualityFactor) const
+	{
+		return outline(closeRing, qualityFactor.toPointsPerCircle(GetRadius(w, h, r)));
+	}
+
+	LineString RoundRect::outline(double distanceFromOrigin, double length, const PointsPerCircle& pointsPerCircle) const
+	{
+		if ((w <= 0.0) || (h <= 0.0))
+		{
+			return{};
+		}
+
+		const double radius = GetRadius(w, h, r);
+
+		if (radius == 0.0)
+		{
+			return rect.outline(distanceFromOrigin, length);
+		}
+
+		const RoundRect roundRect{ rect, radius };
+		const double perim = roundRect.perimeter();
+
+		if (length < 0.0)
+		{
+			distanceFromOrigin += length;
+			length = -length;
+		}
+
+		distanceFromOrigin = WrapLength(distanceFromOrigin, perim);
+		length = Min(length, perim);
+
+		uint32 quality = ((pointsPerCircle.value() + 3) / 4 + 1);
+
+		if (quality < 2)
+		{
+			quality = 2;
+		}
+
+		const double fanLength = (radius * Math::HalfPi);
+		const double xLineLength = (rect.w - 2.0 * radius);
+		const double yLineLength = (rect.h - 2.0 * radius);
+		const double fanLengthDelta = (fanLength / (quality - 1));
+
+		LineString points{ Arg::reserve = static_cast<size_t>(quality * 4 + 2) };
+
+		const auto AppendPoint = [&points](const Vec2& point)
+		{
+			if (points.empty() || (points.back() != point))
+			{
+				points << point;
+			}
+		};
+
+		AppendPoint(roundRect.pointAtLength(distanceFromOrigin));
+
+		if (length == 0.0)
+		{
+			return points;
+		}
+
+		const double distanceToTarget = (distanceFromOrigin + length);
+
+		Array<double> keyDistances{ Arg::reserve = static_cast<size_t>(quality * 4 + 1) };
+		keyDistances << 0.0;
+
+		double d = xLineLength;
+		keyDistances << d;
+
+		for (uint32 i = 1; i < quality; ++i)
+		{
+			keyDistances << (d + fanLengthDelta * i);
+		}
+
+		d += (fanLength + yLineLength);
+		keyDistances << d;
+
+		for (uint32 i = 1; i < quality; ++i)
+		{
+			keyDistances << (d + fanLengthDelta * i);
+		}
+
+		d += (fanLength + xLineLength);
+		keyDistances << d;
+
+		for (uint32 i = 1; i < quality; ++i)
+		{
+			keyDistances << (d + fanLengthDelta * i);
+		}
+
+		d += (fanLength + yLineLength);
+		keyDistances << d;
+
+		for (uint32 i = 1; i < quality; ++i)
+		{
+			keyDistances << (d + fanLengthDelta * i);
+		}
+
+		for (double base = 0.0; base <= distanceToTarget; base += perim)
+		{
+			for (const double keyDistance : keyDistances)
+			{
+				const double currentDistance = (base + keyDistance);
+
+				if ((distanceFromOrigin < currentDistance) && (currentDistance < distanceToTarget))
+				{
+					AppendPoint(roundRect.pointAtLength(currentDistance));
+				}
+			}
+		}
+
+		AppendPoint(roundRect.pointAtLength(distanceToTarget));
+
+		return points;
+	}
+
+	LineString RoundRect::outline(double distanceFromOrigin, double length, const QualityFactor& qualityFactor) const
+	{
+		return outline(distanceFromOrigin, length, qualityFactor.toPointsPerCircle(GetRadius(w, h, r)));
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	outer
@@ -195,9 +371,7 @@ namespace s3d
 
 	Array<Vec2> RoundRect::outer(const QualityFactor& qualityFactor) const
 	{
-		const double rr = Min((w * 0.5), (h * 0.5), Max(0.0, Abs(r)));
-		
-		return outer(qualityFactor.toPointsPerCircle(rr));
+		return outer(qualityFactor.toPointsPerCircle(GetRadius(w, h, r)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -228,9 +402,7 @@ namespace s3d
 
 	Polygon RoundRect::asPolygon(const QualityFactor& qualityFactor) const
 	{
-		const double rr = Min((w * 0.5), (h * 0.5), Max(0.0, Abs(r)));
-
-		return asPolygon(qualityFactor.toPointsPerCircle(rr));
+		return asPolygon(qualityFactor.toPointsPerCircle(GetRadius(w, h, r)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -358,7 +530,7 @@ namespace s3d
 		}
 		else
 		{
-			const double radius = Min(Abs(rect.w * 0.5), Abs(rect.h * 0.5), Abs(r));
+			const double radius = GetRadius(rect.w, rect.h, r);
 
 			SIV3D_ENGINE(Renderer2D)->addRoundRect(
 				FloatRect{ x, y, (x + w), (y + h) },

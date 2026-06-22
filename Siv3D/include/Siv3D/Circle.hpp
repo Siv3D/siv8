@@ -705,7 +705,7 @@ namespace s3d
 		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
 
 		[[nodiscard]]
-		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
+		Array<Vec2> outer(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//

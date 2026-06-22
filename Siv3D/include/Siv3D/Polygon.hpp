@@ -350,15 +350,15 @@ namespace s3d
 
 		bool addHole(const Circle& circle, const PointsPerCircle& pointsPerCircle);
 
-		bool addHole(const Circle& circle, const QualityFactor& qualityFactor);
+		bool addHole(const Circle& circle, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		bool addHole(const Ellipse& ellipse, const PointsPerCircle& pointsPerCircle);
 
-		bool addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor);
+		bool addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		bool addHole(const RoundRect& roundRect, const PointsPerCircle& pointsPerCircle);
 
-		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor);
+		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		/// @brief 多角形に穴を追加します。
 		/// @param hole 穴を構成する頂点配列
