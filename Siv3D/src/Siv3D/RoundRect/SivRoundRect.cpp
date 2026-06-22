@@ -762,6 +762,72 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	///// @brief 角丸長方形の破線を描きます。
+	///// @param thickness 枠の太さ（ピクセル）
+	///// @param style 破線のスタイル
+	///// @param color 色
+	///// @return *this
+	//const RoundRect& drawDashedFrame(double thickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+	///// @brief 角丸長方形の破線を描きます。
+	///// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ（ピクセル）
+	///// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ（ピクセル）
+	///// @param style 破線のスタイル
+	///// @param color 色
+	///// @return *this
+	//const RoundRect& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+	const RoundRect& RoundRect::drawDashedFrame(const double thickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, color);
+	}
+
+	const RoundRect& RoundRect::drawDashedFrame(const double innerThickness, const double outerThickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		if (IsEmpty(rect, innerThickness, outerThickness))
+		{
+			return *this;
+		}
+
+		const double radius = Abs(r);
+
+		if (radius == 0.0)
+		{
+			rect.drawDashedFrame(innerThickness, outerThickness, style, color);
+			return *this;
+		}
+
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((radius + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(color);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((radius - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectDashedFrame(
+			FloatRect{ innerRoundRect.rect },
+			static_cast<float>(innerRoundRect.r),
+			FloatRect{ outerRoundRect.rect },
+			static_cast<float>(outerRoundRect.r),
+			static_cast<float>(style.offset),
+			static_cast<float>(style.dashRatio),
+			style.dashCount,
+			color.toFloat4()
+		);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawShadow
 	//
 	////////////////////////////////////////////////////////////////

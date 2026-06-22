@@ -2901,6 +2901,297 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BuildRoundRectDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildRoundRectDashedFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const float offset, const float dashRatio, const uint32 dashCount, const Float4& color, const float scale)
+		{
+			const float clampedDashRatio = Clamp(dashRatio, 0.0f, 1.0f);
+
+			if ((dashCount == 0) || (clampedDashRatio == 0.0f))
+			{
+				return 0;
+			}
+
+			if (clampedDashRatio == 1.0f)
+			{
+				return BuildRoundRectFrame(bufferCreator, innerRect, innerR, outerRect, outerR, color, scale);
+			}
+
+			constexpr float HalfPi = (Math::TwoPiF * 0.25f);
+
+			const float iL = innerRect.left;
+			const float iT = innerRect.top;
+			const float iR = innerRect.right;
+			const float iB = innerRect.bottom;
+			const float oL = outerRect.left;
+			const float oT = outerRect.top;
+			const float oR = outerRect.right;
+			const float oB = outerRect.bottom;
+			const float irad = innerR;
+			const float orad = outerR;
+
+			// 周長は内側・外側の中間線で測る（直線部の長さは内外で一致、弧部は平均半径で算出）。
+			// 構成要素は時計回りに 8 個: TopStraight, TR弧, RightStraight, BR弧, BottomStraight, BL弧, LeftStraight, TL弧。
+			// 添字が奇数の要素が弧。r→0 で BuildRectDashedFrame と同じ並びに収束する。
+			const float horizontalStraightMid = ((((iR - irad) - (iL + irad)) + ((oR - orad) - (oL + orad))) * 0.5f);
+			const float verticalStraightMid = ((((iB - irad) - (iT + irad)) + ((oB - orad) - (oT + orad))) * 0.5f);
+			const float arcMid = (HalfPi * (irad + orad) * 0.5f);
+
+			const float componentLengths[8] =
+			{
+				horizontalStraightMid, arcMid, verticalStraightMid, arcMid,
+				horizontalStraightMid, arcMid, verticalStraightMid, arcMid,
+			};
+
+			float cumulativeLengths[9];
+			cumulativeLengths[0] = 0.0f;
+			for (int i = 0; i < 8; ++i)
+			{
+				cumulativeLengths[i + 1] = (cumulativeLengths[i] + componentLengths[i]);
+			}
+
+			const float perimeter = cumulativeLengths[8];
+
+			if (perimeter <= 0.0f)
+			{
+				return 0;
+			}
+
+			const float period = (perimeter / dashCount);
+			const float dashLength = (period * clampedDashRatio);
+			const Vertex2D::IndexType baseQuality = CalculateCircleQuality(orad * scale); // 四分円弧あたりの分割品質
+			const float angleStep = (HalfPi / baseQuality);
+
+			float wrappedOffset = std::fmod(offset, perimeter);
+
+			if (wrappedOffset < 0.0f)
+			{
+				wrappedOffset += perimeter;
+			}
+
+			// 累積長 L（中間線）から (要素 k, 要素内パラメータ f) を求め、内側・外側頂点を返す。
+			const auto EvalPoint = [&](const int k, const float f, float& ix, float& iy, float& ox, float& oy)
+				{
+					switch (k)
+					{
+					case 0: // TopStraight
+						ix = ((iL + irad) + (((iR - irad) - (iL + irad)) * f)); iy = iT;
+						ox = ((oL + orad) + (((oR - orad) - (oL + orad)) * f)); oy = oT;
+						break;
+					case 2: // RightStraight
+						ix = iR; iy = ((iT + irad) + (((iB - irad) - (iT + irad)) * f));
+						ox = oR; oy = ((oT + orad) + (((oB - orad) - (oT + orad)) * f));
+						break;
+					case 4: // BottomStraight
+						ix = ((iR - irad) + (((iL + irad) - (iR - irad)) * f)); iy = iB;
+						ox = ((oR - orad) + (((oL + orad) - (oR - orad)) * f)); oy = oB;
+						break;
+					case 6: // LeftStraight
+						ix = iL; iy = ((iB - irad) + (((iT + irad) - (iB - irad)) * f));
+						ox = oL; oy = ((oB - orad) + (((oT + orad) - (oB - orad)) * f));
+						break;
+					default: // 弧 (k = 1,3,5,7)
+					{
+						const float phi = (f * HalfPi);
+						const auto [s, c] = FastMath::SinCos(phi);
+						float icx, icy, ocx, ocy, dx, dy;
+
+						switch (k)
+						{
+						case 1: icx = (iR - irad); icy = (iT + irad); ocx = (oR - orad); ocy = (oT + orad); dx = s; dy = -c; break;  // TR
+						case 3: icx = (iR - irad); icy = (iB - irad); ocx = (oR - orad); ocy = (oB - orad); dx = c; dy = s; break;   // BR
+						case 5: icx = (iL + irad); icy = (iB - irad); ocx = (oL + orad); ocy = (oB - orad); dx = -s; dy = c; break;  // BL
+						default: icx = (iL + irad); icy = (iT + irad); ocx = (oL + orad); ocy = (oT + orad); dx = -c; dy = -s; break; // TL (k == 7)
+						}
+
+						ix = (icx + (irad * dx)); iy = (icy + (irad * dy));
+						ox = (ocx + (orad * dx)); oy = (ocy + (orad * dy));
+						break;
+					}
+					}
+				};
+
+			const auto LengthToComponent = [&](const float length, int& kOut, float& fOut)
+				{
+					float reduced = ((length >= perimeter) ? (length - perimeter) : length);
+
+					if (reduced >= perimeter)
+					{
+						reduced -= perimeter;
+					}
+
+					if (reduced < 0.0f)
+					{
+						reduced = 0.0f;
+					}
+
+					int k = 7;
+
+					for (int i = 0; i < 8; ++i)
+					{
+						if (reduced <= cumulativeLengths[i + 1])
+						{
+							k = i;
+							break;
+						}
+					}
+
+					const float segment = (cumulativeLengths[k + 1] - cumulativeLengths[k]);
+					float f = ((segment > 0.0f) ? ((reduced - cumulativeLengths[k]) / segment) : 0.0f);
+					f = Clamp(f, 0.0f, 1.0f);
+					kOut = k;
+					fOut = f;
+				};
+
+			// ダッシュ [begin, end]（中間線弧長）をたどり、各サンプル点の累積長を fn に渡す。
+			// 直線部は端点のみ（厳密）、弧部は angleStep で細分。要素境界は共有点として一度だけ含める。
+			// ダッシュは [0, 2*perimeter) に収まるため 2 周で十分。
+			const auto ForEachSample = [&](const float begin, const float end, auto&& fn)
+				{
+					bool first = true;
+
+					for (int lap = 0; lap < 2; ++lap)
+					{
+						float componentBegin = (lap * perimeter);
+
+						for (int i = 0; i < 8; ++i)
+						{
+							const float length = componentLengths[i];
+							const float componentEnd = (componentBegin + length);
+							const float lo = Max(begin, componentBegin);
+							const float hi = Min(end, componentEnd);
+
+							if (lo < hi)
+							{
+								if (first)
+								{
+									fn(lo);
+									first = false;
+								}
+
+								if ((i & 1) == 1) // 弧
+								{
+									const float span = (((hi - lo) / length) * HalfPi);
+									int steps = static_cast<int>(std::ceil(span / angleStep));
+
+									if (steps < 1)
+									{
+										steps = 1;
+									}
+
+									for (int sIndex = 1; sIndex <= steps; ++sIndex)
+									{
+										fn(lo + ((hi - lo) * (static_cast<float>(sIndex) / steps)));
+									}
+								}
+								else // 直線
+								{
+									fn(hi);
+								}
+							}
+
+							componentBegin = componentEnd;
+						}
+					}
+				};
+
+			// パス 1: 頂点数・インデックス数を数える（ダッシュごとにサンプル点数が異なるため）。
+			size_t totalVertexPairs = 0;
+			size_t totalQuads = 0;
+
+			for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
+			{
+				float begin = (wrappedOffset + period * dashIndex);
+
+				if (perimeter <= begin)
+				{
+					begin -= perimeter;
+				}
+
+				const float end = (begin + dashLength);
+
+				size_t pointCount = 0;
+				ForEachSample(begin, end, [&](const float) { ++pointCount; });
+
+				if (2 <= pointCount)
+				{
+					totalVertexPairs += pointCount;
+					totalQuads += (pointCount - 1);
+				}
+			}
+
+			const size_t vertexCount = (totalVertexPairs * 2);
+			const size_t indexCount = (totalQuads * 6);
+
+			constexpr size_t MaxIndexValue = static_cast<size_t>(std::numeric_limits<Vertex2D::IndexType>::max());
+
+			if ((vertexCount == 0) || (indexCount == 0) || (MaxIndexValue < vertexCount) || (MaxIndexValue < indexCount))
+			{
+				return 0;
+			}
+
+			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertexCount);
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(indexCount);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			// パス 2: 頂点とインデックスを書き込む。ダッシュごとに頂点数が異なるので頂点オフセットを加算していく。
+			Vertex2D* pDst = pVertex;
+			Vertex2D::IndexType* pIndexDst = pIndex;
+			Vertex2D::IndexType vertexBase = indexOffset;
+
+			for (uint32 dashIndex = 0; dashIndex < dashCount; ++dashIndex)
+			{
+				float begin = (wrappedOffset + period * dashIndex);
+
+				if (perimeter <= begin)
+				{
+					begin -= perimeter;
+				}
+
+				const float end = (begin + dashLength);
+
+				Vertex2D::IndexType pointCount = 0;
+				ForEachSample(begin, end, [&](const float length)
+					{
+						int k;
+						float f;
+						LengthToComponent(length, k, f);
+
+						float ix, iy, ox, oy;
+						EvalPoint(k, f, ix, iy, ox, oy);
+
+						(pDst++)->set(ix, iy, color);
+						(pDst++)->set(ox, oy, color);
+						++pointCount;
+					});
+
+				for (Vertex2D::IndexType q = 0; (q + 1) < pointCount; ++q)
+				{
+					const Vertex2D::IndexType base = (vertexBase + q * 2);
+
+					*pIndexDst++ = base;
+					*pIndexDst++ = (base + 1);
+					*pIndexDst++ = (base + 2);
+					*pIndexDst++ = (base + 2);
+					*pIndexDst++ = (base + 1);
+					*pIndexDst++ = (base + 3);
+				}
+
+				vertexBase += (pointCount * 2);
+			}
+
+			return IndexCount;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	BuildShape2DFrame
 		//
 		////////////////////////////////////////////////////////////////

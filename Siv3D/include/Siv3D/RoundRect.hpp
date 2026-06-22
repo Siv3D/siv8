@@ -1216,6 +1216,27 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drawDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸長方形の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const RoundRect& drawDashedFrame(double thickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 角丸長方形の破線を描きます。
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const RoundRect& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	drawShadow
 		//
 		////////////////////////////////////////////////////////////////

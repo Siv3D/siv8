@@ -1946,9 +1946,9 @@ namespace s3d
 	{
 		SIV3D_ENGINE(Renderer2D)->addRectDashedFrame(
 			FloatRect{ (x + innerThickness), (y + innerThickness), (x + w - innerThickness), (y + h - innerThickness) },
-			style.offset,
+			static_cast<float>(style.offset),
 			static_cast<float>(innerThickness + outerThickness),
-			style.dashRatio,
+			static_cast<float>(style.dashRatio),
 			style.dashCount,
 			color.toFloat4());
 		return *this;
