@@ -750,9 +750,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Line::ThrowPointAtIndexOutOfRange()
+	void Line::ThrowVertexAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "Line::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "Line::vertexAtIndex() index out of range" };
 	}
 }
 

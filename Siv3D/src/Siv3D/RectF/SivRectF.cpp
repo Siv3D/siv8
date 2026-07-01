@@ -443,7 +443,7 @@ namespace s3d
 
 		for (int32 i = 0; i < 4; ++i)
 		{
-			auto& p = quad.pointAtIndex(i);
+			auto& p = quad.vertexAtIndex(i);
 			p.x = (pts[i].x * c - pts[i].y * s + _pos.x);
 			p.y = (pts[i].x * s + pts[i].y * c + _pos.y);
 		}
@@ -1527,7 +1527,7 @@ namespace s3d
 
 				if ((distanceFromOrigin < d) && (d < distanceToTarget))
 				{
-					AppendPoint(pointAtIndex((i + 1) % 4));
+					AppendPoint(vertexAtIndex((i + 1) % 4));
 				}
 			}
 		}
@@ -2033,9 +2033,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void RectF::ThrowPointAtIndexOutOfRange()
+	void RectF::ThrowVertexAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "RectF::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "RectF::vertexAtIndex() index out of range" };
 	}
 
 	void RectF::ThrowSideAtIndexOutOfRange()

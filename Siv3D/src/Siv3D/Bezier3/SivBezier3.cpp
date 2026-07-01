@@ -983,9 +983,9 @@ namespace s3d
 		return (h * local);
 	}
 
-	void Bezier3::ThrowPointAtIndexOutOfRange()
+	void Bezier3::ThrowControlPointAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "Bezier3::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "Bezier3::controlPointAtIndex() index out of range" };
 	}
 }
 

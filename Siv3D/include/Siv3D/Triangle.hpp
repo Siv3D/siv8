@@ -609,14 +609,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	points
+		//	vertices
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 三角形の頂点の座標を配列として返します。
 		/// @return 三角形の頂点の座標を格納した配列
 		[[nodiscard]]
-		constexpr std::array<position_type, 3> points() const noexcept;
+		constexpr std::array<position_type, 3> vertices() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -631,15 +631,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	pointAtIndex
+		//	vertexAtIndex
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index);
+		position_type& vertexAtIndex(size_t index);
 	
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const;
+		const position_type& vertexAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1175,7 +1175,7 @@ namespace s3d
 	private:
 
 		[[noreturn]]
-		static void ThrowPointAtIndexOutOfRange();
+		static void ThrowVertexAtIndexOutOfRange();
 
 		[[noreturn]]
 		static void ThrowSideAtIndexOutOfRange();

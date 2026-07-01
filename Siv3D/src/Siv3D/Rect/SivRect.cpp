@@ -206,7 +206,7 @@ namespace s3d
 
 		for (int32 i = 0; i < 4; ++i)
 		{
-			auto& p = quad.pointAtIndex(i);
+			auto& p = quad.vertexAtIndex(i);
 			p.x = (pts[i].x * c - pts[i].y * s + _pos.x);
 			p.y = (pts[i].x * s + pts[i].y * c + _pos.y);
 		}
@@ -809,9 +809,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Rect::ThrowPointAtIndexOutOfRange()
+	void Rect::ThrowVertexAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "Rect::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "Rect::vertexAtIndex() index out of range" };
 	}
 
 	void Rect::ThrowSideAtIndexOutOfRange()

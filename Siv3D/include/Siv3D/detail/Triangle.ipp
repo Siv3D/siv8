@@ -423,11 +423,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	points
+	//	vertices
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::array<Triangle::position_type, 3> Triangle::points() const noexcept
+	constexpr std::array<Triangle::position_type, 3> Triangle::vertices() const noexcept
 	{
 		return{ p0, p1, p2 };
 	}
@@ -445,11 +445,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	vertexAtIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Triangle::position_type& Triangle::pointAtIndex(const size_t index)
+	inline Triangle::position_type& Triangle::vertexAtIndex(const size_t index)
 	{
 		if (index == 0)
 		{
@@ -465,11 +465,11 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 
-	inline const Triangle::position_type& Triangle::pointAtIndex(const size_t index) const
+	inline const Triangle::position_type& Triangle::vertexAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -485,7 +485,7 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 

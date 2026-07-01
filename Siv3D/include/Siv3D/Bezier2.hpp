@@ -192,7 +192,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	pointAtIndex
+		//	controlPoints
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3 点の制御点を配列で返します。
+		/// @return 制御点の配列
+		[[nodiscard]]
+		constexpr std::array<position_type, 3> controlPoints() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	controlPointAtIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -201,14 +212,14 @@ namespace s3d
 		/// @return 指定した点への参照
 		/// @throw std::out_of_range index が 0～2 の範囲外の場合
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index);
+		position_type& controlPointAtIndex(size_t index);
 
 		/// @brief インデックスで制御点を取得します。
 		/// @param index 0: p0, 1: p1, 2: p2
 		/// @return 指定した点への参照
 		/// @throw std::out_of_range index が 0～2 の範囲外の場合
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const;
+		const position_type& controlPointAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -732,9 +743,9 @@ namespace s3d
 		/// @return 弧長
 		double integrateSpeed(double a, double b) const noexcept;
 
-		/// @brief pointAtIndex() の範囲外アクセス時に例外を送出します。
+		/// @brief controlPointAtIndex() の範囲外アクセス時に例外を送出します。
 		[[noreturn]]
-		static void ThrowPointAtIndexOutOfRange();
+		static void ThrowControlPointAtIndexOutOfRange();
 	};
 }
 

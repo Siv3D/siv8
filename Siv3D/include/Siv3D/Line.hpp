@@ -628,7 +628,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	pointAtIndex
+		//	vertices
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分の始点と終点の座標を配列にして返します。
+		/// @return 線分の始点と終点の座標を格納した配列
+		[[nodiscard]]
+		constexpr std::array<position_type, 2> vertices() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	vertexAtIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -637,13 +648,13 @@ namespace s3d
 		/// @return 指定したインデックスの頂点座標の参照
 		/// @throw std::out_of_range index が 0 または 1 でない場合
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index);
+		position_type& vertexAtIndex(size_t index);
 
 		/// @brief 指定したインデックスの頂点座標の参照を返します
 		/// @param index インデックス（0: 始点, 1: 終点）
 		/// @return 指定したインデックスの頂点座標の参照
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const;
+		const position_type& vertexAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1148,7 +1159,7 @@ namespace s3d
 	private:
 
 		[[noreturn]]
-		static void ThrowPointAtIndexOutOfRange();
+		static void ThrowVertexAtIndexOutOfRange();
 	};
 }
 

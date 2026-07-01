@@ -1134,7 +1134,7 @@ namespace s3d
 
 			for (size_t i = 0; i < 3; ++i)
 			{
-				triangle.pointAtIndex(i).y *= v;
+				triangle.vertexAtIndex(i).y *= v;
 			}
 
 			return Intersect(Circle{ a.a }, triangle);
@@ -1148,7 +1148,7 @@ namespace s3d
 
 			for (size_t i = 0; i < 4; ++i)
 			{
-				quad.pointAtIndex(i).y *= v;
+				quad.vertexAtIndex(i).y *= v;
 			}
 
 			return Intersect(Circle{ a.a }, quad);
@@ -1194,12 +1194,12 @@ namespace s3d
 		{
 			auto Project = [](const Triangle& t, const Vec2& axis) noexcept -> std::pair<double, double>
 			{
-				double mn = axis.dot(t.pointAtIndex(0));
+				double mn = axis.dot(t.vertexAtIndex(0));
 				double mx = mn;
 
 				for (int32 i = 1; i < 3; ++i)
 				{
-					const double d = axis.dot(t.pointAtIndex(i));
+					const double d = axis.dot(t.vertexAtIndex(i));
 					
 					if (d < mn)
 					{
@@ -1224,8 +1224,8 @@ namespace s3d
 			{
 				for (int32 i = 0; i < 3; ++i)
 				{
-					const Vec2 p0 = t0.pointAtIndex(i);
-					const Vec2 p1 = t0.pointAtIndex((i + 1) % 3);
+					const Vec2 p0 = t0.vertexAtIndex(i);
+					const Vec2 p1 = t0.vertexAtIndex((i + 1) % 3);
 
 					const Vec2 edge = (p1 - p0);
 

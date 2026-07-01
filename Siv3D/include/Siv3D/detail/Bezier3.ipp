@@ -163,11 +163,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	controlPoints
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Bezier3::position_type& Bezier3::pointAtIndex(const size_t index)
+	constexpr std::array<Bezier3::position_type, 4> Bezier3::controlPoints() const noexcept
+	{
+		return{ p0, p1, p2, p3 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	controlPointAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Bezier3::position_type& Bezier3::controlPointAtIndex(const size_t index)
 	{
 		switch (index)
 		{
@@ -175,11 +186,11 @@ namespace s3d
 		case 1: return p1;
 		case 2: return p2;
 		case 3: return p3;
-		default: ThrowPointAtIndexOutOfRange();
+		default: ThrowControlPointAtIndexOutOfRange();
 		}
 	}
 
-	inline const Bezier3::position_type& Bezier3::pointAtIndex(const size_t index) const
+	inline const Bezier3::position_type& Bezier3::controlPointAtIndex(const size_t index) const
 	{
 		switch (index)
 		{
@@ -187,7 +198,7 @@ namespace s3d
 		case 1: return p1;
 		case 2: return p2;
 		case 3: return p3;
-		default: ThrowPointAtIndexOutOfRange();
+		default: ThrowControlPointAtIndexOutOfRange();
 		}
 	}
 

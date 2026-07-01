@@ -1024,11 +1024,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	points
+	//	vertices
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::array<Rect::position_type, 4> Rect::points() const noexcept
+	constexpr std::array<Rect::position_type, 4> Rect::vertices() const noexcept
 	{
 		return{ pos, tr(), br(), bl() };
 	}
@@ -1046,11 +1046,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	vertexAtIndex
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect::position_type Rect::pointAtIndex(const size_t index) const
+	constexpr Rect::position_type Rect::vertexAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -1070,7 +1070,7 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 

@@ -389,7 +389,7 @@ namespace s3d
 
 				if ((distanceFromOrigin < d) && (d < distanceToTarget))
 				{
-					AppendPoint(pointAtIndex((i + 1) % 4));
+					AppendPoint(vertexAtIndex((i + 1) % 4));
 				}
 			}
 		}
@@ -688,9 +688,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Quad::ThrowPointAtIndexOutOfRange()
+	void Quad::ThrowVertexAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "Quad::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "Quad::vertexAtIndex() index out of range" };
 	}
 
 	void Quad::ThrowSideAtIndexOutOfRange()

@@ -425,7 +425,7 @@ namespace s3d
 
 				if ((distanceFromOrigin < d) && (d < distanceToTarget))
 				{
-					AppendPoint(pointAtIndex((i + 1) % 3));
+					AppendPoint(vertexAtIndex((i + 1) % 3));
 				}
 			}
 		}
@@ -723,9 +723,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Triangle::ThrowPointAtIndexOutOfRange()
+	void Triangle::ThrowVertexAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "Triangle::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "Triangle::vertexAtIndex() index out of range" };
 	}
 
 	void Triangle::ThrowSideAtIndexOutOfRange()

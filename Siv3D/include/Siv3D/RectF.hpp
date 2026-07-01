@@ -1170,14 +1170,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	points
+		//	vertices
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 長方形の頂点座標を左上、右上、右下、左下の順に std::array で返します。
 		/// @return 長方形の各頂点の座標
 		[[nodiscard]]
-		constexpr std::array<position_type, 4> points() const noexcept;
+		constexpr std::array<position_type, 4> vertices() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1192,7 +1192,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	pointAtIndex
+		//	vertexAtIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1201,7 +1201,7 @@ namespace s3d
 		/// @return 指定したインデックスの頂点座標
 		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
-		constexpr position_type pointAtIndex(size_t index) const;
+		constexpr position_type vertexAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2112,7 +2112,7 @@ namespace s3d
 	private:
 
 		[[noreturn]]
-		static void ThrowPointAtIndexOutOfRange();
+		static void ThrowVertexAtIndexOutOfRange();
 
 		[[noreturn]]
 		static void ThrowSideAtIndexOutOfRange();
