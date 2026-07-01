@@ -318,7 +318,7 @@ namespace s3d
 
 	RectF LineString::computeBoundingRect() const noexcept
 	{
-		return Geometry2D::BoundingRect(m_points);
+		return Geometry2D::BoundingRect(m_vertices);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -345,14 +345,14 @@ namespace s3d
 
 	double LineString::computeLength(const CloseRing closeRing) const noexcept
 	{
-		const size_t n = m_points.size();
+		const size_t n = m_vertices.size();
 
 		if (n < 2)
 		{
 			return 0.0;
 		}
 
-		const Vec2* pData = m_points.data();
+		const Vec2* pData = m_vertices.data();
 
 		double length = 0.0;
 		for (size_t i = 0; i < (n - 1); ++i)
@@ -501,7 +501,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, s3d::none,
+			m_vertices, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			color.toFloat4());
@@ -512,7 +512,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& colorStart, const ColorF& colorEnd) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, s3d::none,
+			m_vertices, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			colorStart.toFloat4(),
 			colorEnd.toFloat4());
@@ -523,7 +523,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, const double thickness, const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, s3d::none,
+			m_vertices, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			pattern);
@@ -549,7 +549,7 @@ namespace s3d
 	const LineString& LineString::draw(const LineCap startCap, const LineCap endCap, double thickness, std::span<const ColorF> colors) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(startCap, endCap,
-			m_points, s3d::none,
+			m_vertices, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::No,
 			colors);
@@ -576,7 +576,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const ColorF& color) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, s3d::none,
+			m_vertices, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			color.toFloat4());
@@ -587,7 +587,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, s3d::none,
+			m_vertices, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			pattern);
@@ -603,7 +603,7 @@ namespace s3d
 	const LineString& LineString::drawClosed(const double thickness, const std::span<const ColorF> colors) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addLineString(LineCap::Square, LineCap::Square,
-			m_points, s3d::none,
+			m_vertices, s3d::none,
 			Abs(static_cast<float>(thickness)), false,
 			CloseRing::Yes,
 			colors);
@@ -622,10 +622,10 @@ namespace s3d
 		const Float4 color0 = color.toFloat4();
 		const float rF = static_cast<float>(Abs(r));
 
-		for (const auto& p : m_points)
+		for (const auto& vertex : m_vertices)
 		{
 			SIV3D_ENGINE(Renderer2D)->addCircle(
-				p,
+				vertex,
 				rF,
 				color0,
 				color0,
@@ -653,10 +653,10 @@ namespace s3d
 		const float rInner = static_cast<float>(Abs(r) - innerThickness);
 		const float thickness = static_cast<float>(innerThickness + outerThickness);
 
-		for (const auto& p : m_points)
+		for (const auto& vertex : m_vertices)
 		{
 			SIV3D_ENGINE(Renderer2D)->addCircleFrame(
-				p,
+				vertex,
 				rInner,
 				thickness,
 				color0,
@@ -675,7 +675,7 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const LineString& value)
 	{
-		Formatter(formatData, std::span<const Vec2>(value.m_points));
+		Formatter(formatData, std::span<const Vec2>(value.m_vertices));
 	}
 }
 

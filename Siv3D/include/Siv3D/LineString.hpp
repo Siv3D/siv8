@@ -90,28 +90,28 @@ namespace s3d
 		[[nodiscard]]
 		LineString(LineString&& other) = default;
 
-		/// @brief Array からのコピーで点の配列を作成します。
+		/// @brief Array からのコピーで頂点の配列を作成します。
 		/// @param other コピーする配列
 		[[nodiscard]]
 		constexpr LineString(const container_type& other);
 
-		/// @brief Array からのムーブで点の配列を作成します。
+		/// @brief Array からのムーブで頂点の配列を作成します。
 		/// @param other ムーブする配列
 		[[nodiscard]]
 		constexpr LineString(container_type&& other);
 
-		/// @brief count 個の value からなる点の配列を作成します。
+		/// @brief count 個の value からなる頂点の配列を作成します。
 		/// @param count 個数
 		/// @param value 要素
 		[[nodiscard]]
 		constexpr LineString(size_type count, const value_type& value);
 
-		/// @brief count 個の Vec2{ 0, 0 } からなる点の配列を作成します。
+		/// @brief count 個の Vec2{ 0, 0 } からなる頂点の配列を作成します。
 		/// @param count 個数
 		[[nodiscard]]
 		explicit constexpr LineString(size_type count);
 
-		/// @brief イテレータが指す範囲の要素から点の配列を作成します。
+		/// @brief イテレータが指す範囲の要素から頂点の配列を作成します。
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
@@ -119,30 +119,30 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(Iterator first, Iterator last);
 
-		/// @brief 点の配列を作成します。
-		/// @param points 
+		/// @brief 頂点の配列を作成します。
+		/// @param vertices 頂点の配列
 		[[nodiscard]]
-		explicit constexpr LineString(const Array<Point>& points);
+		explicit constexpr LineString(const Array<Point>& vertices);
 
-		/// @brief メンバ関数 `.asArray()` を持つ型から点の配列を作成します。
+		/// @brief メンバ関数 `.asArray()` を持つ型から頂点の配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
 		explicit constexpr LineString(const HasAsArray auto& a);
 
-		/// @brief メンバ関数 `.asArray()` を持つ型から点の配列を作成します。
+		/// @brief メンバ関数 `.asArray()` を持つ型から頂点の配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
 		explicit constexpr LineString(HasAsArray auto&& a);
 
-		/// @brief 初期化リストから点の配列を作成します。
+		/// @brief 初期化リストから頂点の配列を作成します。
 		/// @param list 初期化リスト
 		/// @param alloc アロケータ
 		[[nodiscard]]
 		constexpr LineString(std::initializer_list<value_type> list);
 
-		/// @brief 範囲から点の配列を作成します。
+		/// @brief 範囲から頂点の配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		/// @param alloc アロケータ
@@ -150,7 +150,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(std::from_range_t, Range&& range);
 
-		/// @brief 範囲から点の配列を作成します。
+		/// @brief 範囲から頂点の配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		/// @param alloc アロケータ
@@ -158,7 +158,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString(std::from_range_t, Range&& range);
 
-		/// @brief 空の点の配列を作成し、`reserve()` します。
+		/// @brief 空の頂点の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
 		[[nodiscard]]
 		explicit constexpr LineString(Arg::reserve_<size_type> size);
@@ -1020,35 +1020,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点列の要素を 1 つランダムに返します。
-		/// @return 点列からランダムに選ばれた要素への参照
+		/// @brief 頂点列の要素を 1 つランダムに返します。
+		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
 		value_type& choice();
 
-		/// @brief 点列の要素を 1 つランダムに返します。
-		/// @return 点列からランダムに選ばれた要素への参照
+		/// @brief 頂点列の要素を 1 つランダムに返します。
+		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
 		const value_type& choice() const;
 
-		/// @brief 指定した乱数エンジンを用いて、点列の要素を 1 つランダムに返します。
+		/// @brief 指定した乱数エンジンを用いて、頂点列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
-		/// @return 点列からランダムに選ばれた要素への参照
+		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
 		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
 
-		/// @brief 指定した乱数エンジンを用いて、点列の要素を 1 つランダムに返します。
+		/// @brief 指定した乱数エンジンを用いて、頂点列の要素を 1 つランダムに返します。
 		/// @param rbg 使用する乱数エンジン
-		/// @return 点列からランダムに選ばれた要素への参照
+		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
 		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
 
-		/// @brief 点列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @brief 頂点列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @return ランダムに選ばれた要素の LineString
 		[[nodiscard]]
 		LineString choice(size_t n) const;
 
-		/// @brief 指定した乱数エンジンを用いて、点列の要素から指定した個数だけ重複なくランダムに選んで返します。
+		/// @brief 指定した乱数エンジンを用いて、頂点列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @param rbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の LineString
@@ -1061,9 +1061,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点列を指定した個数の要素を持つグループに分割します。最後のグループの要素数は n 個未満になることがあります。
+		/// @brief 頂点列を指定した個数の要素を持つグループに分割します。最後のグループの要素数は n 個未満になることがあります。
 		/// @param n 1 つのグループが持つ要素数
-		/// @return 分割された点列のグループ
+		/// @return 分割された頂点列のグループ
 		[[nodiscard]]
 		constexpr Array<LineString> chunk(size_type n) const;
 
@@ -1231,10 +1231,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点列を指定したグループ数に分割します。
+		/// @brief 頂点列を指定したグループ数に分割します。
 		/// @param group グループ数
 		/// @remark group が要素数より大きい場合、空のグループは作られず、返されるグループ数は要素数になります。
-		/// @return 分割した点列のグループ
+		/// @return 分割した頂点列のグループ
 		[[nodiscard]]
 		constexpr Array<LineString> in_groups(size_type group) const;
 
@@ -1648,24 +1648,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した位置を境に点列の前半と後半を入れ替えます。
+		/// @brief 指定した位置を境に頂点列の前半と後半を入れ替えます。
 		/// @param middle 境の位置
 		/// @return *this
 		constexpr LineString& rotate(size_type middle)&;
 
-		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @brief 指定した位置を境に頂点列の前半と後半を入れ替えた新しい LineString を返します。
 		/// @param middle 境の位置
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString rotate(size_type middle) &&;
 
-		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @brief 指定した位置を境に頂点列の前半と後半を入れ替えた新しい LineString を返します。
 		/// @param middle 境の位置
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString rotated(size_type middle) const&;
 
-		/// @brief 指定した位置を境に点列の前半と後半を入れ替えた新しい LineString を返します。
+		/// @brief 指定した位置を境に頂点列の前半と後半を入れ替えた新しい LineString を返します。
 		/// @param middle 境の位置
 		/// @return 新しい LineString
 		[[nodiscard]]
@@ -1697,18 +1697,18 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点列の逆順ビューを返します。
-		/// @return 点列の逆順ビュー
+		/// @brief 頂点列の逆順ビューを返します。
+		/// @return 頂点列の逆順ビュー
 		[[nodiscard]]
 		constexpr auto reverse_view() &;
 
-		/// @brief 点列の逆順ビューを返します。
-		/// @return 点列の逆順ビュー
+		/// @brief 頂点列の逆順ビューを返します。
+		/// @return 頂点列の逆順ビュー
 		[[nodiscard]]
 		constexpr auto reverse_view() const&;
 
-		/// @brief 点列の逆順ビューを返します。
-		/// @return 点列の逆順ビュー
+		/// @brief 頂点列の逆順ビューを返します。
+		/// @return 頂点列の逆順ビュー
 		[[nodiscard]]
 		constexpr auto reverse_view() &&;
 
@@ -1718,43 +1718,43 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点列の並び順をランダムにシャッフルします。
+		/// @brief 頂点列の並び順をランダムにシャッフルします。
 		/// @return *this
 		constexpr LineString& shuffle()&;
 
-		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @brief 頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString shuffle() &&;
 
-		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @brief 頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString shuffled() const&;
 
-		/// @brief 点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @brief 頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString shuffled() &&;
 
-		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルします。
+		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルします。
 		/// @param rbg 使用する乱数エンジン
 		/// @return *this
 		constexpr LineString& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&;
 
-		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&;
 
-		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
 
-		/// @brief 指定した乱数エンジンを用いて、点列の並び順をランダムにシャッフルした新しい LineString を返します。
+		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
 		/// @param rbg 使用する乱数エンジン
 		/// @return 新しい LineString
 		[[nodiscard]]
@@ -1766,7 +1766,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定した関数を用いて点列を昇順に並び替えます。
+		/// @brief 指定した関数を用いて頂点列を昇順に並び替えます。
 		/// @tparam Fty 比較に使用する関数の型
 		/// @param f 比較に使用する関数
 		/// @return *this
@@ -1774,7 +1774,7 @@ namespace s3d
 		constexpr LineString& sort_by(Fty f)&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
-		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @brief 指定した関数を用いて頂点列を昇順に並び替えた新しい LineString を返します。
 		/// @tparam Fty 比較に使用する関数の型
 		/// @param f 比較に使用する関数
 		/// @return 新しい LineString
@@ -1783,7 +1783,7 @@ namespace s3d
 		constexpr LineString sort_by(Fty f) &&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
-		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @brief 指定した関数を用いて頂点列を昇順に並び替えた新しい LineString を返します。
 		/// @tparam Fty 比較に使用する関数の型
 		/// @param f 比較に使用する関数
 		/// @return 新しい LineString
@@ -1792,7 +1792,7 @@ namespace s3d
 		constexpr LineString sorted_by(Fty f) const&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
-		/// @brief 指定した関数を用いて点列を昇順に並び替えた新しい LineString を返します。
+		/// @brief 指定した関数を用いて頂点列を昇順に並び替えた新しい LineString を返します。
 		/// @tparam Fty 比較に使用する関数の型
 		/// @param f 比較に使用する関数
 		/// @return 新しい LineString
@@ -1807,7 +1807,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点列の要素を `+` 演算子を用いて合計します。
+		/// @brief 頂点列の要素を `+` 演算子を用いて合計します。
 		/// @return 合計値
 		[[nodiscard]]
 		constexpr auto sum() const;
@@ -2123,7 +2123,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 点と点の間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
+		/// @brief 頂点間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
 		/// @param maxSegmentLength 分割後の各線分の最大長
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 分割した結果
@@ -2292,7 +2292,7 @@ namespace s3d
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const LineString& value)
 		{
-			return output << Format(value.m_points);
+			return output << Format(value.m_vertices);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2452,7 +2452,7 @@ namespace s3d
 		[[nodiscard]]
 		friend constexpr bool operator ==(const LineString& lhs, const LineString& rhs)
 		{
-			return (lhs.m_points == rhs.m_points);
+			return (lhs.m_vertices == rhs.m_vertices);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2479,7 +2479,7 @@ namespace s3d
 
 	private:
 
-		container_type m_points;
+		container_type m_vertices;
 	};
 }
 
