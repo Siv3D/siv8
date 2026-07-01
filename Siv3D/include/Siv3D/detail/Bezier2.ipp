@@ -238,11 +238,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	boundingTriangle
+	//	controlTriangle
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Triangle Bezier2::boundingTriangle() const noexcept
+	constexpr Triangle Bezier2::controlTriangle() const noexcept
 	{
 		return Triangle::FromPoints(p0, p1, p2);
 	}

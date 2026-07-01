@@ -263,7 +263,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 正規化された法線ベクトルを返します。
+		/// @brief パラメータ t における進行方向左手の正規化法線ベクトルを返します。
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 法線ベクトル
 		[[nodiscard]]
@@ -320,8 +320,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線の長さを計算します。
-		/// @return 曲線の長さ
+		/// @brief 曲線の弧長を数値積分により計算します。
+		/// @return 曲線の弧長の近似値
 		[[nodiscard]]
 		double computeLength() const noexcept;
 
@@ -375,19 +375,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getLineString
+		//	toLineString
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線を等間隔の t で分割した LineString を返します。
+		/// @brief パラメータ t を等分して曲線を LineString で近似します。
 		/// @param segments 分割数（最低 1）
 		/// @return LineString
 		[[nodiscard]]
-		LineString getLineString(int32 segments = 24) const;
+		LineString toLineString(int32 segments = 24) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getLineStringAdaptive
+		//	toLineStringAdaptive
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -395,7 +395,7 @@ namespace s3d
 		/// @param maxError 許容誤差
 		/// @param maxDepth 最大再帰深度
 		/// @return LineString
-		LineString getLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
+		LineString toLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -439,14 +439,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	boundingTriangle
+		//	controlTriangle
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線を包含する最小の三角形を返します。
-		/// @return 曲線を包含する最小の三角形
+		/// @brief 制御点 p0, p1, p2 からなる三角形を返します。
+		/// @remark 二次ベジェ曲線はこの三角形に含まれます。
 		[[nodiscard]]
-		constexpr Triangle boundingTriangle() const noexcept;
+		constexpr Triangle controlTriangle() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

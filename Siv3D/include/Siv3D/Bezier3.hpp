@@ -290,7 +290,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 正規化された法線ベクトルを返します。
+		/// @brief パラメータ t における進行方向左手の正規化法線ベクトルを返します。
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 法線ベクトル
 		[[nodiscard]]
@@ -338,8 +338,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線の長さを計算します。
-		/// @return 曲線の長さ
+		/// @brief 曲線の弧長を数値積分により計算します。
+		/// @return 曲線の弧長の近似値
 		[[nodiscard]]
 		double computeLength() const noexcept;
 
@@ -393,19 +393,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getLineString
+		//	toLineString
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線を等間隔の t で分割した LineString を返します。
+		/// @brief パラメータ t を等分して曲線を LineString で近似します。
 		/// @param segments 分割数（最低 1）
 		/// @return LineString
 		[[nodiscard]]
-		LineString getLineString(int32 segments = 24) const;
+		LineString toLineString(int32 segments = 24) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getLineStringAdaptive
+		//	toLineStringAdaptive
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -413,7 +413,7 @@ namespace s3d
 		/// @param maxError 許容誤差
 		/// @param maxDepth 最大再帰深度
 		/// @return LineString
-		LineString getLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
+		LineString toLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -468,14 +468,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	boundingRect
+		//	computeBoundingRect
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 曲線を包含する軸平行矩形（AABB）を返します。
 		/// @return バウンディングボックス
 		[[nodiscard]]
-		RectF boundingRect() const noexcept;
+		RectF computeBoundingRect() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -523,14 +523,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	inflectionTs
+		//	computeInflectionTs
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 反曲点（inflection）候補の t を返します。
 		/// @remark 0～1 の範囲にある解のみ返します。存在しない場合は空配列。
 		[[nodiscard]]
-		Array<double> inflectionTs() const;
+		Array<double> computeInflectionTs() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -547,14 +547,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toBezier2
+		//	approximatedBezier2
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 三次ベジェ曲線を二次ベジェ曲線で近似します。端点（p0, p3）は維持されます。
-		/// @return 二次ベジェ曲線（近似）
+		/// @brief この三次ベジェ曲線を近似する二次ベジェ曲線を返します。
+		/// @return 近似された二次ベジェ曲線
 		[[nodiscard]]
-		constexpr Bezier2 toBezier2() const noexcept;
+		constexpr Bezier2 approximatedBezier2() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

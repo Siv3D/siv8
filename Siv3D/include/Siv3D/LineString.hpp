@@ -1868,10 +1868,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineString uniqued_consecutive() && noexcept;
 
-
 		////////////////////////////////////////////////////////////////
 		//
-		//	num_points
+		//	num_vertices
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1879,7 +1878,7 @@ namespace s3d
 		/// @remark `size()` と同じです。
 		/// @return LineString を構成する頂点の数
 		[[nodiscard]]
-		constexpr size_t num_points() const noexcept;
+		constexpr size_t num_vertices() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1908,33 +1907,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getNormalAtPoint
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した頂点における進行方向左手の単位ベクトルを返します。
-		/// @param index 頂点のインデックス
-		/// @param closeRing 終点と始点を結ぶか
-		/// @return 指定した頂点における進行方向左手の単位ベクトル
-		[[nodiscard]]
-		Vec2 getNormalAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getNormalAtSegment
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した線分における進行方向左手の単位ベクトルを返します。
-		/// @param index 線分のインデックス
-		/// @param closeRing 終点と始点を結ぶか
-		/// @return  指定した線分における進行方向左手の単位ベクトル
-		[[nodiscard]]
-		Vec2 getNormalAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getTangentAtPoint
+		//	tangentAtVertex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1943,11 +1916,11 @@ namespace s3d
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 指定した頂点における進行方向の単位ベクトル
 		[[nodiscard]]
-		Vec2 getTangentAtPoint(size_t index, CloseRing closeRing = CloseRing::No) const;
+		Vec2 tangentAtVertex(size_t index, CloseRing closeRing = CloseRing::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getTangentAtSegment
+		//	tangentAtSegment
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1956,7 +1929,33 @@ namespace s3d
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 指定した線分における進行方向の単位ベクトル
 		[[nodiscard]]
-		Vec2 getTangentAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
+		Vec2 tangentAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	normalAtVertex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した頂点における進行方向左手の単位ベクトルを返します。
+		/// @param index 頂点のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 指定した頂点における進行方向左手の単位ベクトル
+		[[nodiscard]]
+		Vec2 normalAtVertex(size_t index, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	normalAtSegment
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した線分における進行方向左手の単位ベクトルを返します。
+		/// @param index 線分のインデックス
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return  指定した線分における進行方向左手の単位ベクトル
+		[[nodiscard]]
+		Vec2 normalAtSegment(size_t index, CloseRing closeRing = CloseRing::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2125,11 +2124,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 点と点の間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
-		/// @param maxDistance 点と点の間の最大距離
+		/// @param maxSegmentLength 分割後の各線分の最大長
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 分割した結果
 		[[nodiscard]]
-		LineString densified(double maxDistance, CloseRing closeRing = CloseRing::No) const;
+		LineString densified(double maxSegmentLength, CloseRing closeRing = CloseRing::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2138,17 +2137,17 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief Catmull-Rom スプライン曲線を返します。
-		/// @param interpolation 分割の品質
+		/// @param subdivisionsPerSegment 線分ごとの分割数
 		/// @return Catmull-Rom スプライン曲線
 		[[nodiscard]]
-		LineString catmullRom(int32 interpolation = 24) const;
+		LineString catmullRom(int32 subdivisionsPerSegment = 24) const;
 
 		/// @brief Catmull-Rom スプライン曲線を返します。
 		/// @param closeRing 終点と始点を結ぶか
-		/// @param interpolation 分割の品質
+		/// @param subdivisionsPerSegment 線分ごとの分割数
 		/// @return Catmull-Rom スプライン曲線
 		[[nodiscard]]
-		LineString catmullRom(CloseRing closeRing, int32 interpolation = 24) const;
+		LineString catmullRom(CloseRing closeRing, int32 subdivisionsPerSegment = 24) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2189,24 +2188,24 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	subLineString
+		//	sliceByDistance
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 部分 LineString を返します。
-		/// @param distanceFromOrigin 始点からの距離
+		/// @param distanceFromStart 始点からの距離
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 部分 LineString
 		[[nodiscard]]
-		LineString subLineString(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
+		LineString sliceByDistance(double distanceFromStart, CloseRing closeRing = CloseRing::No) const;
 
 		/// @brief 部分 LineString を返します。
-		/// @param distanceFromOrigin 始点からの距離
+		/// @param distanceFromStart 始点からの距離
 		/// @param length 長さ
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 部分 LineString
 		[[nodiscard]]
-		LineString subLineString(double distanceFromOrigin, double length, CloseRing closeRing = CloseRing::No) const;
+		LineString sliceByDistance(double distanceFromStart, double length, CloseRing closeRing = CloseRing::No) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2398,21 +2397,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	drawPoints
+		//	drawVertices
 		//
 		////////////////////////////////////////////////////////////////
 
-		const LineString& drawPoints(double r, const ColorF& color = Palette::White) const;
+		const LineString& drawVertices(double r, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	drawPointsFrame
+		//	drawVerticesFrame
 		//
 		////////////////////////////////////////////////////////////////
 
-		const LineString& drawPointsFrame(double r, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		const LineString& drawVerticesFrame(double r, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
-		const LineString& drawPointsFrame(double r, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+		const LineString& drawVerticesFrame(double r, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

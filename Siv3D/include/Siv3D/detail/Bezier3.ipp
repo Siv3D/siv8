@@ -365,11 +365,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	toBezier2
+	//	approximatedBezier2
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Bezier2 Bezier3::toBezier2() const noexcept
+	constexpr Bezier2 Bezier3::approximatedBezier2() const noexcept
 	{
 		return{ p0, (((p1 + p2) * 3.0 - (p0 + p3)) * 0.25), p3 };
 	}

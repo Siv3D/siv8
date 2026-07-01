@@ -1715,7 +1715,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr size_t LineString::num_points() const noexcept
+	constexpr size_t LineString::num_vertices() const noexcept
 	{
 		return m_points.size();
 	}

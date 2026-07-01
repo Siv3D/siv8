@@ -163,7 +163,7 @@ namespace s3d
 
 			faces.append(GetFontFaces(face0));
 
-			for (uint32 index = 1; index < numFaces; ++index)
+			for (int32 index = 1; index < numFaces; ++index)
 			{
 				::FT_Face face = nullptr;
 

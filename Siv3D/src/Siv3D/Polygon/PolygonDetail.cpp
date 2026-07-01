@@ -1414,7 +1414,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	LineString LineString::densified(const double maxDistance, const CloseRing closeRing) const
+	LineString LineString::densified(const double maxSegmentLength, const CloseRing closeRing) const
 	{
 		if (size() < 2)
 		{
@@ -1428,12 +1428,12 @@ namespace s3d
 			LineString input(begin(), end());
 			input.push_back(input.front());
 
-			boost::geometry::densify(input, result, maxDistance);
+			boost::geometry::densify(input, result, maxSegmentLength);
 			result.pop_back();
 		}
 		else
 		{
-			boost::geometry::densify(*this, result, maxDistance);
+			boost::geometry::densify(*this, result, maxSegmentLength);
 		}
 
 		return result;

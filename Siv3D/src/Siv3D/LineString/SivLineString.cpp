@@ -23,11 +23,11 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static LineString CatmullRom(const LineString& lines, const int32 interpolation, const CloseRing closeRing)
+		static LineString CatmullRom(const LineString& lines, const int32 subdivisionsPerSegment, const CloseRing closeRing)
 		{
 			const size_t n = lines.size();
 
-			if ((n < 2) || (interpolation < 2))
+			if ((n < 2) || (subdivisionsPerSegment < 2))
 			{
 				return lines;
 			}
@@ -36,7 +36,7 @@ namespace s3d
 			const size_t segments = (closeRing ? n : (n - 1));
 
 			LineString out;
-			out.reserve(segments * static_cast<size_t>(interpolation) + 1);
+			out.reserve(segments * static_cast<size_t>(subdivisionsPerSegment) + 1);
 
 			auto At = [&](std::ptrdiff_t i) -> const Vec2&
 			{
@@ -57,7 +57,7 @@ namespace s3d
 				}
 			};
 
-			const double inv = (1.0 / static_cast<double>(interpolation));
+			const double inv = (1.0 / static_cast<double>(subdivisionsPerSegment));
 
 			for (size_t i = 0; i < segments; ++i)
 			{
@@ -69,7 +69,7 @@ namespace s3d
 				const Vec2& p3 = At(ii + 2);
 
 				const bool lastSeg = (i + 1 == segments);
-				const int32 count = (interpolation + (lastSeg ? 1 : 0));
+				const int32 count = (subdivisionsPerSegment + (lastSeg ? 1 : 0));
 
 				for (int32 t = 0; t < count; ++t)
 				{
@@ -102,11 +102,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getNormalAtPoint
+	//	tangentAtVertex
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 LineString::getNormalAtPoint(const size_t index, const CloseRing closeRing) const
+	Vec2 LineString::tangentAtVertex(const size_t index, const CloseRing closeRing) const
 	{
 		if (size() < 2)
 		{
@@ -115,112 +115,7 @@ namespace s3d
 
 		if (size() <= index)
 		{
-			throw std::out_of_range{ "LineString::getNormalAtPoint() index out of range" };
-		}
-
-		const size_t n = size();
-		const Vec2* pSrc = data();
-		const Vec2 curr = pSrc[index];
-		Vec2 prev, next;
-
-		if (index == 0)
-		{
-			if (closeRing)
-			{
-				prev = pSrc[n - 1];
-				next = pSrc[index + 1];
-			}
-			else
-			{
-				const Vec2 forward = (pSrc[1] - pSrc[0]).normalized();
-				return{ forward.y, -forward.x };
-			}
-		}
-		else if (index == (n - 1))
-		{
-			if (closeRing)
-			{
-				prev = pSrc[index - 1];
-				next = pSrc[0];
-			}
-			else
-			{
-				const Vec2 forward = (pSrc[n - 1] - pSrc[n - 2]).normalized();
-				return{ forward.y, -forward.x };
-			}
-		}
-		else
-		{
-			prev = pSrc[index - 1];
-			next = pSrc[index + 1];
-		}
-
-		const double a0 = (curr - prev).getAngle();
-		const double a1 = (next - curr).getAngle();
-		return Circular{ 1, (Math::LerpAngle(a0, a1, 0.5) - Math::HalfPi) };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getNormalAtSegment
-	//
-	////////////////////////////////////////////////////////////////
-
-	Vec2 LineString::getNormalAtSegment(const size_t index, const CloseRing closeRing) const
-	{
-		if (size() < 2)
-		{
-			return{ Math::NaN, Math::NaN };
-		}
-
-		const bool hasCloseLine = static_cast<bool>(closeRing);
-
-		if ((size() - 1 + hasCloseLine) <= index)
-		{
-			throw std::out_of_range{ "LineString::getNormalAtSegment() index out of range" };
-		}
-
-		const size_t num_lines = (size() - 1);
-		const Vec2* pSrc = data();
-		const Vec2 curr = pSrc[index];
-		Vec2 next;
-
-		if (closeRing)
-		{
-			if (index == num_lines)
-			{
-				next = pSrc[0];
-			}
-			else
-			{
-				next = pSrc[index + 1];
-			}
-		}
-		else
-		{
-			next = pSrc[index + 1];
-		}
-
-		const Vec2 v = (next - curr).normalized();
-		return{ v.y, -v.x };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getTangentAtPoint
-	//
-	////////////////////////////////////////////////////////////////
-
-	Vec2 LineString::getTangentAtPoint(const size_t index, const CloseRing closeRing) const
-	{
-		if (size() < 2)
-		{
-			return{ Math::NaN, Math::NaN };
-		}
-
-		if (size() <= index)
-		{
-			throw std::out_of_range{ "LineString::getTangentAtPoint() index out of range" };
+			throw std::out_of_range{ "LineString::tangentAtVertex() index out of range" };
 		}
 
 		const size_t n = size();
@@ -268,11 +163,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getTangentAtSegment
+	//	tangentAtSegment
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 LineString::getTangentAtSegment(const size_t index, const CloseRing closeRing) const
+	Vec2 LineString::tangentAtSegment(const size_t index, const CloseRing closeRing) const
 	{
 		if (size() < 2)
 		{
@@ -283,7 +178,7 @@ namespace s3d
 
 		if ((size() - 1 + hasCloseLine) <= index)
 		{
-			throw std::out_of_range{ "LineString::getTangentAtSegment() index out of range" };
+			throw std::out_of_range{ "LineString::tangentAtSegment() index out of range" };
 		}
 
 		const size_t num_lines = (size() - 1);
@@ -312,6 +207,111 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	normalAtVertex
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 LineString::normalAtVertex(const size_t index, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return{ Math::NaN, Math::NaN };
+		}
+
+		if (size() <= index)
+		{
+			throw std::out_of_range{ "LineString::normalAtVertex() index out of range" };
+		}
+
+		const size_t n = size();
+		const Vec2* pSrc = data();
+		const Vec2 curr = pSrc[index];
+		Vec2 prev, next;
+
+		if (index == 0)
+		{
+			if (closeRing)
+			{
+				prev = pSrc[n - 1];
+				next = pSrc[index + 1];
+			}
+			else
+			{
+				const Vec2 forward = (pSrc[1] - pSrc[0]).normalized();
+				return{ forward.y, -forward.x };
+			}
+		}
+		else if (index == (n - 1))
+		{
+			if (closeRing)
+			{
+				prev = pSrc[index - 1];
+				next = pSrc[0];
+			}
+			else
+			{
+				const Vec2 forward = (pSrc[n - 1] - pSrc[n - 2]).normalized();
+				return{ forward.y, -forward.x };
+			}
+		}
+		else
+		{
+			prev = pSrc[index - 1];
+			next = pSrc[index + 1];
+		}
+
+		const double a0 = (curr - prev).getAngle();
+		const double a1 = (next - curr).getAngle();
+		return Circular{ 1, (Math::LerpAngle(a0, a1, 0.5) - Math::HalfPi) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	normalAtSegment
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 LineString::normalAtSegment(const size_t index, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return{ Math::NaN, Math::NaN };
+		}
+
+		const bool hasCloseLine = static_cast<bool>(closeRing);
+
+		if ((size() - 1 + hasCloseLine) <= index)
+		{
+			throw std::out_of_range{ "LineString::normalAtSegment() index out of range" };
+		}
+
+		const size_t num_lines = (size() - 1);
+		const Vec2* pSrc = data();
+		const Vec2 curr = pSrc[index];
+		Vec2 next;
+
+		if (closeRing)
+		{
+			if (index == num_lines)
+			{
+				next = pSrc[0];
+			}
+			else
+			{
+				next = pSrc[index + 1];
+			}
+		}
+		else
+		{
+			next = pSrc[index + 1];
+		}
+
+		const Vec2 v = (next - curr).normalized();
+		return{ v.y, -v.x };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	computeBoundingRect
 	//
 	////////////////////////////////////////////////////////////////
@@ -321,14 +321,20 @@ namespace s3d
 		return Geometry2D::BoundingRect(m_points);
 	}
 
-	LineString LineString::catmullRom(const int32 interpolation) const
+	////////////////////////////////////////////////////////////////
+	//
+	//	catmullRom
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::catmullRom(const int32 subdivisionsPerSegment) const
 	{
-		return CatmullRom(*this, interpolation, CloseRing::No);
+		return CatmullRom(*this, subdivisionsPerSegment, CloseRing::No);
 	}
 
-	LineString LineString::catmullRom(const CloseRing closeRing, const int32 interpolation) const
+	LineString LineString::catmullRom(const CloseRing closeRing, const int32 subdivisionsPerSegment) const
 	{
-		return CatmullRom(*this, interpolation, closeRing);
+		return CatmullRom(*this, subdivisionsPerSegment, closeRing);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -607,11 +613,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	drawPoints
+	//	drawVertices
 	//
 	////////////////////////////////////////////////////////////////
 
-	const LineString& LineString::drawPoints(const double r, const ColorF& color) const
+	const LineString& LineString::drawVertices(const double r, const ColorF& color) const
 	{
 		const Float4 color0 = color.toFloat4();
 		const float rF = static_cast<float>(Abs(r));
@@ -632,16 +638,16 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	drawPointsFrame
+	//	drawVerticesFrame
 	//
 	////////////////////////////////////////////////////////////////
 
-	const LineString& LineString::drawPointsFrame(const double r, const double thickness, const ColorF& color) const
+	const LineString& LineString::drawVerticesFrame(const double r, const double thickness, const ColorF& color) const
 	{
-		return drawPointsFrame(r, (thickness * 0.5), (thickness * 0.5), color);
+		return drawVerticesFrame(r, (thickness * 0.5), (thickness * 0.5), color);
 	}
 
-	const LineString& LineString::drawPointsFrame(const double r, const double innerThickness, const double outerThickness, const ColorF& color) const
+	const LineString& LineString::drawVerticesFrame(const double r, const double innerThickness, const double outerThickness, const ColorF& color) const
 	{
 		const Float4 color0 = color.toFloat4();
 		const float rInner = static_cast<float>(Abs(r) - innerThickness);
@@ -660,7 +666,6 @@ namespace s3d
 
 		return *this;
 	}
-
 
 	////////////////////////////////////////////////////////////////
 	//

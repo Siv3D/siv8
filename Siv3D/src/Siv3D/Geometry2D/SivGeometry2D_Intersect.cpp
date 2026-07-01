@@ -852,20 +852,20 @@ namespace s3d
 				return false;
 			}
 
-			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
 		bool Intersect(const Bezier2& a, const Bezier3& b)
 		{
 			const RectF aRect = a.computeBoundingRect();
-			const RectF bRect = b.boundingRect();
+			const RectF bRect = b.computeBoundingRect();
 
 			if (not Intersect(aRect, bRect))
 			{
 				return false;
 			}
 
-			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
 		bool Intersect(const Bezier2& a, const Rect& b)
@@ -986,15 +986,15 @@ namespace s3d
 
 		bool Intersect(const Bezier3& a, const Bezier3& b)
 		{
-			const RectF aRect = a.boundingRect();
-			const RectF bRect = b.boundingRect();
+			const RectF aRect = a.computeBoundingRect();
+			const RectF bRect = b.computeBoundingRect();
 
 			if (not Intersect(aRect, bRect))
 			{
 				return false;
 			}
 
-			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
 		////////////////////////////////////////////////////////////////

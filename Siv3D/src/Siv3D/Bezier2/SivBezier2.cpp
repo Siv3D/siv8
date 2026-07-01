@@ -340,11 +340,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getLineString
+	//	toLineString
 	//
 	////////////////////////////////////////////////////////////////
 
-	LineString Bezier2::getLineString(int32 segments) const
+	LineString Bezier2::toLineString(int32 segments) const
 	{
 		segments = Max(1, segments);
 
@@ -369,11 +369,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getLineStringAdaptive
+	//	toLineStringAdaptive
 	//
 	////////////////////////////////////////////////////////////////
 
-	LineString Bezier2::getLineStringAdaptive(const double maxError, const int32 maxDepth) const
+	LineString Bezier2::toLineStringAdaptive(const double maxError, const int32 maxDepth) const
 	{
 		LineString polyline;
 		polyline.reserve(33);
@@ -601,7 +601,7 @@ namespace s3d
 
 	const Bezier2& Bezier2::paint(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		getLineStringAdaptive().paint(dst, lineCap, thickness, color, enableAntialiasing);
+		toLineStringAdaptive().paint(dst, lineCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 
@@ -623,7 +623,7 @@ namespace s3d
 
 	const Bezier2& Bezier2::overwrite(Image& dst, const LineCap lineCap, double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
 	{
-		getLineStringAdaptive().overwrite(dst, lineCap, thickness, color, enableAntialiasing);
+		toLineStringAdaptive().overwrite(dst, lineCap, thickness, color, enableAntialiasing);
 		return *this;
 	}
 
@@ -640,19 +640,19 @@ namespace s3d
 
 	const Bezier2& Bezier2::draw(double thickness, const ColorF& color, const int32 segments) const
 	{
-		getLineString(segments).draw(thickness, color);
+		toLineString(segments).draw(thickness, color);
 		return *this;
 	}
 
 	const Bezier2& Bezier2::draw(const LineCap linaCap, const double thickness, const ColorF& color, const int32 segments) const
 	{
-		getLineString(segments).draw(linaCap, thickness, color);
+		toLineString(segments).draw(linaCap, thickness, color);
 		return *this;
 	}
 
 	const Bezier2& Bezier2::draw(const LineCap startCap, const LineCap endCap, const double thickness, const ColorF& color, const int32 segments) const
 	{
-		getLineString(segments).draw(startCap, endCap, thickness, color);
+		toLineString(segments).draw(startCap, endCap, thickness, color);
 		return *this;
 	}
 
@@ -669,19 +669,19 @@ namespace s3d
 
 	const Bezier2& Bezier2::drawAdaptive(double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
 	{
-		getLineStringAdaptive(maxError, maxDepth).draw(thickness, color);
+		toLineStringAdaptive(maxError, maxDepth).draw(thickness, color);
 		return *this;
 	}
 
 	const Bezier2& Bezier2::drawAdaptive(LineCap lineCap, double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
 	{
-		getLineStringAdaptive(maxError, maxDepth).draw(lineCap, thickness, color);
+		toLineStringAdaptive(maxError, maxDepth).draw(lineCap, thickness, color);
 		return *this;
 	}
 
 	const Bezier2& Bezier2::drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color, const double maxError, const int32 maxDepth) const
 	{
-		getLineStringAdaptive(maxError, maxDepth).draw(startCap, endCap, thickness, color);
+		toLineStringAdaptive(maxError, maxDepth).draw(startCap, endCap, thickness, color);
 		return *this;
 	}
 

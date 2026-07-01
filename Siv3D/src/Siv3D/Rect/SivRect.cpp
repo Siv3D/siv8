@@ -231,9 +231,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Rect::chamfered(const double size) const
+	Polygon Rect::chamfered(const double _size) const
 	{
-		return RectF{ *this }.chamfered(size);
+		return RectF{ *this }.chamfered(_size);
 	}
 
 	Polygon Rect::chamfered(const double tl, const double tr, const double br, const double bl) const
