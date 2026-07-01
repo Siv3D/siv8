@@ -34,37 +34,48 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getTangent
+	//	tangentAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 Bezier3::getTangent(const double t) const noexcept
+	Vec2 Bezier3::tangentAt(const double t) const noexcept
 	{
-		return getDerivative(t).normalized();
+		return derivativeAt(t).normalized();
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getNormal
+	//	normalAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 Bezier3::getNormal(const double t) const noexcept
+	Vec2 Bezier3::normalAt(const double t) const noexcept
 	{
-		const Vec2 d = getDerivative(t);
+		const Vec2 d = derivativeAt(t);
 		return Vec2{ d.y, -d.x }.normalized();
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getCurvature
+	//	headingAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Bezier3::getCurvature(const double t) const noexcept
+	double Bezier3::headingAt(const double t) const noexcept
 	{
-		const Vec2 d1 = getDerivative(t);          // B'(t)
-		const Vec2 d2 = getSecondDerivative(t);    // B''(t)
+		return derivativeAt(t).getAngle();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	curvatureAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Bezier3::curvatureAt(const double t) const noexcept
+	{
+		const Vec2 d1 = derivativeAt(t);          // B'(t)
+		const Vec2 d2 = secondDerivativeAt(t);    // B''(t)
 
 		const double speed2 = d1.lengthSq();
 
@@ -80,13 +91,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getCurvatureRadius
+	//	radiusOfCurvatureAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Bezier3::getCurvatureRadius(const double t) const noexcept
+	double Bezier3::radiusOfCurvatureAt(const double t) const noexcept
 	{
-		const double curvature = getCurvature(t);
+		const double curvature = curvatureAt(t);
 
 		if (curvature == 0.0)
 		{
@@ -94,17 +105,6 @@ namespace s3d
 		}
 
 		return (1.0 / Abs(curvature));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getHeading
-	//
-	////////////////////////////////////////////////////////////////
-
-	double Bezier3::getHeading(const double t) const noexcept
-	{
-		return getDerivative(t).getAngle();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -130,17 +130,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	tAtLength
+	//	computeTAtDistance
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Bezier3::tAtLength(const double s) const noexcept
+	double Bezier3::computeTAtDistance(const double distanceFromStart) const noexcept
 	{
 		constexpr int32 N = 32;
 		constexpr double invN = (1.0 / static_cast<double>(N));
 
 		// 端の扱い
-		if (s <= 0.0)
+		if (distanceFromStart <= 0.0)
 		{
 			return 0.0;
 		}
@@ -161,19 +161,19 @@ namespace s3d
 			return 0.0; // 退化（ほぼ長さ 0）
 		}
 
-		if (s >= total)
+		if (distanceFromStart >= total)
 		{
 			return 1.0;
 		}
 
-		// s が入る区間を探す（cum[i] <= s < cum[i+1]）
+		// distanceFromStart が入る区間を探す（cum[i] <= s < cum[i+1]）
 		int32 seg = 0;
 		{
 			int32 lo = 0, hi = N;
 			while (lo < hi)
 			{
 				const int32 mid = (lo + hi) >> 1;
-				if (cum[mid] < s) lo = mid + 1;
+				if (cum[mid] < distanceFromStart) lo = mid + 1;
 				else              hi = mid;
 			}
 			seg = (lo > 0) ? (lo - 1) : 0;
@@ -188,7 +188,7 @@ namespace s3d
 		double t = (0.5 * (a + b));
 		if (0.0 < segLen)
 		{
-			const double u = ((s - cum[seg]) / segLen); // 0..1
+			const double u = ((distanceFromStart - cum[seg]) / segLen); // 0..1
 			t = (a + (b - a) * Clamp(u, 0.0, 1.0));
 		}
 
@@ -209,7 +209,7 @@ namespace s3d
 
 			// L(t) = cum[seg] + ∫[a,t] |B'(u)| du
 			const double Lt = (cum[seg] + integrateSpeed(a, t));
-			const double f = (Lt - s);
+			const double f = (Lt - distanceFromStart);
 
 			if (Abs(f) <= tol)
 			{
@@ -240,22 +240,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getPosAtLength
+	//	computePointAtDistance
 	//
 	////////////////////////////////////////////////////////////////
 
-	Bezier3::position_type Bezier3::getPosAtLength(const double length) const noexcept
+	Bezier3::position_type Bezier3::computePointAtDistance(const double distanceFromStart) const noexcept
 	{
-		return getPos(tAtLength(length));
+		return pointAt(computeTAtDistance(distanceFromStart));
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	closestT
+	//	computeClosestT
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Bezier3::closestT(const position_type& point) const noexcept
+	double Bezier3::computeClosestT(const position_type& targetPoint) const noexcept
 	{
 		constexpr double Eps = 1e-12;
 		constexpr double DegenerateRel = 1e-24; // relative threshold
@@ -280,17 +280,17 @@ namespace s3d
 			if ((c1 * c1 <= (DegenerateRel * scale * scale))
 				&& (c2 * c2 <= (DegenerateRel * scale * scale)))
 			{
-				const double t = ((point - p0).dot(chord) / chordLenSq);
+				const double t = ((targetPoint - p0).dot(chord) / chordLenSq);
 				return Clamp(t, 0.0, 1.0);
 			}
 		}
 
 		// 端点を初期最良に
 		double bestT = 0.0;
-		double bestDistSq = point.distanceFromSq(p0);
+		double bestDistSq = targetPoint.distanceFromSq(p0);
 
 		{
-			const double d2 = point.distanceFromSq(p3);
+			const double d2 = targetPoint.distanceFromSq(p3);
 			if (d2 < bestDistSq)
 			{
 				bestDistSq = d2;
@@ -301,25 +301,25 @@ namespace s3d
 		// D'(t)=0 を解く（数値）
 		// f(t) = (B(t)-P)·B'(t)
 		// f'(t)= B'(t)·B'(t) + (B(t)-P)·B''(t)
-		auto f = [this, &point](double t) noexcept -> double
+		auto f = [this, &targetPoint](double t) noexcept -> double
 		{
-			const Vec2 r = (getPos(t) - point);
-			const Vec2 d = getDerivative(t);
+			const Vec2 r = (pointAt(t) - targetPoint);
+			const Vec2 d = derivativeAt(t);
 			return r.dot(d);
 		};
 
-		auto fp = [this, &point](double t) noexcept -> double
+		auto fp = [this, &targetPoint](double t) noexcept -> double
 		{
-			const Vec2 r = (getPos(t) - point);
-			const Vec2 d1 = getDerivative(t);
-			const Vec2 d2 = getSecondDerivative(t);
+			const Vec2 r = (pointAt(t) - targetPoint);
+			const Vec2 d1 = derivativeAt(t);
+			const Vec2 d2 = secondDerivativeAt(t);
 			return (d1.dot(d1) + r.dot(d2));
 		};
 
-		auto consider = [this, &point, &bestT, &bestDistSq](double t) noexcept
+		auto consider = [this, &targetPoint, &bestT, &bestDistSq](double t) noexcept
 		{
 			t = Clamp(t, 0.0, 1.0);
-			const double d2 = point.distanceFromSq(getPos(t));
+			const double d2 = targetPoint.distanceFromSq(pointAt(t));
 			if (d2 < bestDistSq)
 			{
 				bestDistSq = d2;
@@ -415,13 +415,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//  closestPoint
+	//  computeClosestPoint
 	//
 	////////////////////////////////////////////////////////////////
 
-	Bezier3::position_type Bezier3::closestPoint(const position_type& point) const noexcept
+	Bezier3::position_type Bezier3::computeClosestPoint(const position_type& targetPoint) const noexcept
 	{
-		return getPos(closestT(point));
+		return pointAt(computeClosestT(targetPoint));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -443,7 +443,7 @@ namespace s3d
 			for (int32 i = 1; i < segments; ++i)
 			{
 				const double t = (static_cast<double>(i) / segments);
-				*pDst++ = getPos(t);
+				*pDst++ = pointAt(t);
 			}
 
 			// 終点
@@ -609,7 +609,7 @@ namespace s3d
 
 		if (t0 == t1)
 		{
-			const Vec2 p = getPos(t0);
+			const Vec2 p = pointAt(t0);
 			return{ p, p, p, p };
 		}
 
@@ -699,7 +699,7 @@ namespace s3d
 			// 桁落ちを防ぐための符号選択
 			const double q = (-0.5) * (qb + (qb >= 0.0 ? s : -s));
 
-			if (q == 0.0) // qb=0 かつ s=0 のケース等
+			if (q == 0.0) // qb=0 かつ distanceFromStart=0 のケース等
 			{
 				ConsiderT(-qb / (2.0 * qa));
 				return;
@@ -959,7 +959,7 @@ namespace s3d
 	double Bezier3::speed(double t) const noexcept
 	{
 		t = Clamp(t, 0.0, 1.0);
-		return getDerivative(t).length();
+		return derivativeAt(t).length();
 	}
 
 	double Bezier3::integrateSpeed(double a, double b) const noexcept

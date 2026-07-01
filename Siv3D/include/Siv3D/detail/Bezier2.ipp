@@ -172,22 +172,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getPos
+	//	pointAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Vec2 Bezier2::getPos(const double t) const noexcept
+	constexpr Vec2 Bezier2::pointAt(const double t) const noexcept
 	{
 		return ((1.0 - t) * (1.0 - t) * p0 + 2.0 * (1.0 - t) * t * p1 + t * t * p2);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getDerivative
+	//	derivativeAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Vec2 Bezier2::getDerivative(const double t) const noexcept
+	constexpr Vec2 Bezier2::derivativeAt(const double t) const noexcept
 	{
 		const Vec2 v0 = (p1 - p0);
 		const Vec2 v1 = (p2 - p1);
@@ -196,11 +196,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getSecondDerivative
+	//	secondDerivative
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Vec2 Bezier2::getSecondDerivative() const noexcept
+	constexpr Vec2 Bezier2::secondDerivative() const noexcept
 	{
 		return ((p2 - (p1 * 2.0) + p0) * 2.0);
 	}

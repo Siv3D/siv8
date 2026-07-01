@@ -2100,6 +2100,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 連続する線分を含む最小の長方形を返します。
+		/// @return 連続する線分を含む最小の長方形
 		[[nodiscard]]
 		RectF computeBoundingRect() const noexcept;
 
@@ -2148,37 +2150,70 @@ namespace s3d
 		[[nodiscard]]
 		LineString catmullRom(CloseRing closeRing, int32 interpolation = 24) const;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeLength
+		//
+		////////////////////////////////////////////////////////////////
+
 		/// @brief 連続する線分全体の長さを返します。
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return 連続する線分全体の長さ
 		[[nodiscard]]
 		double computeLength(CloseRing closeRing = CloseRing::No) const noexcept;
 
-//		/// @brief 始点から指定した距離にある、線分上の点を返します
-//		/// @param distanceFromOrigin 始点からの距離
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 始点から指定した距離にある線分上の点
-//		[[nodiscard]]
-//		Vec2 calculatePointFromOrigin(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 部分 LineString を返します。
-//		/// @param distanceFromOrigin 始点からの距離
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 部分 LineString
-//		[[nodiscard]]
-//		LineString subLineString(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
-//
-//		/// @brief 部分 LineString を返します。
-//		/// @param distanceFromOrigin 始点からの距離
-//		/// @param length 長さ
-//		/// @param closeRing 終点と始点を結ぶか
-//		/// @return 部分 LineString
-//		[[nodiscard]]
-//		LineString subLineString(double distanceFromOrigin, double length, CloseRing closeRing = CloseRing::No) const;
-//
-//		[[nodiscard]]
-//		Array<Vec2> computeNormals(CloseRing closeRing = CloseRing::No) const;
-//
+		////////////////////////////////////////////////////////////////
+		//
+		//	computePointAtDistance
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 始点から指定した距離にある、線分上の点を返します
+		/// @param distanceFromStart 始点からの距離
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 始点から指定した距離にある線分上の点
+		[[nodiscard]]
+		Vec2 computePointAtDistance(double distanceFromStart, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeVertexNormals
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各頂点における進行方向左手の単位ベクトルを返します。
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 各頂点における進行方向左手の単位ベクトル
+		[[nodiscard]]
+		Array<Vec2> computeVertexNormals(CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	subLineString
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 部分 LineString を返します。
+		/// @param distanceFromOrigin 始点からの距離
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 部分 LineString
+		[[nodiscard]]
+		LineString subLineString(double distanceFromOrigin, CloseRing closeRing = CloseRing::No) const;
+
+		/// @brief 部分 LineString を返します。
+		/// @param distanceFromOrigin 始点からの距離
+		/// @param length 長さ
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return 部分 LineString
+		[[nodiscard]]
+		LineString subLineString(double distanceFromOrigin, double length, CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	calculateBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
 //		/// @brief 太らせた多角形を作成します。
 //		/// @param distance 太らせる距離（ピクセル）
 //		/// @param bufferQuality 品質

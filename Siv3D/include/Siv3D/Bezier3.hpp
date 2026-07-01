@@ -227,7 +227,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getPos
+		//	pointAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -235,11 +235,11 @@ namespace s3d
 		/// @param t パラメータ（0.0～1.0）
 		/// @return 曲線上の座標
 		[[nodiscard]]
-		constexpr position_type getPos(double t) const noexcept;
+		constexpr position_type pointAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getDerivative
+		//	derivativeAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -247,11 +247,11 @@ namespace s3d
 		/// @param t パラメータ（0.0～1.0）
 		/// @return 1 階導関数ベクトル
 		[[nodiscard]]
-		constexpr Vec2 getDerivative(double t) const noexcept;
+		constexpr Vec2 derivativeAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getSecondDerivative
+		//	secondDerivativeAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -259,22 +259,22 @@ namespace s3d
 		/// @param t パラメータ（0.0～1.0）
 		/// @return 2 階導関数ベクトル
 		[[nodiscard]]
-		constexpr Vec2 getSecondDerivative(double t) const noexcept;
+		constexpr Vec2 secondDerivativeAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getThirdDerivative
+		//	thirdDerivative
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 3 階導関数（ジャークベクトル）を返します。
 		/// @return 3 階導関数ベクトル
 		[[nodiscard]]
-		constexpr Vec2 getThirdDerivative() const noexcept;
+		constexpr Vec2 thirdDerivative() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getTangent
+		//	tangentAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -282,11 +282,11 @@ namespace s3d
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 接線ベクトル
 		[[nodiscard]]
-		Vec2 getTangent(double t) const noexcept;
+		Vec2 tangentAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getNormal
+		//	normalAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -294,35 +294,11 @@ namespace s3d
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 法線ベクトル
 		[[nodiscard]]
-		Vec2 getNormal(double t) const noexcept;
+		Vec2 normalAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getCurvature
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 曲率 κ(t) を返します（符号付き）。
-		/// @param t パラメータ（0.0 ～ 1.0）
-		/// @return 曲率
-		[[nodiscard]]
-		double getCurvature(double t) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getCurvatureRadius
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 曲率半径 ρ(t) = 1/|κ(t)| を返します。
-		/// @param t パラメータ（0.0 ～ 1.0）
-		/// @return 曲率半径（直線に近い場合は Inf を返すことがあります）
-		[[nodiscard]]
-		double getCurvatureRadius(double t) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getHeading
+		//	headingAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -330,7 +306,31 @@ namespace s3d
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 角度（-π～π）
 		[[nodiscard]]
-		double getHeading(double t) const noexcept;
+		double headingAt(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	curvatureAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲率 κ(t) を返します（符号付き）。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 曲率
+		[[nodiscard]]
+		double curvatureAt(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	radiusOfCurvatureAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲率半径 ρ(t) = 1/|κ(t)| を返します。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 曲率半径（直線に近い場合は Inf を返すことがあります）
+		[[nodiscard]]
+		double radiusOfCurvatureAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -345,51 +345,51 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	tAtLength
+		//	computeTAtDistance
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した長さになる位置のパラメータ t を計算します。
-		/// @param length 長さ
+		/// @param distanceFromStart 始点からの長さ
 		/// @return パラメータ t（0.0 ～ 1.0）
 		[[nodiscard]]
-		double tAtLength(double length) const noexcept;
+		double computeTAtDistance(double distanceFromStart) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getPosAtLength
+		//	computePointAtDistance
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 始点からの長さが length になる位置の座標を計算します。
-		/// @param length 長さ
+		/// @param distanceFromStart 始点からの長さ
 		/// @return 座標
 		[[nodiscard]]
-		position_type getPosAtLength(double length) const noexcept;
+		position_type computePointAtDistance(double distanceFromStart) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//  closestT
+		//  computeClosestT
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した点に最も近い曲線上の位置のパラメータ t を返します。
-		/// @param point 点
+		/// @param targetPoint 対象の点
 		/// @return パラメータ t（0.0～1.0）
 		[[nodiscard]]
-		double closestT(const position_type& point) const noexcept;
+		double computeClosestT(const position_type& targetPoint) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//  closestPoint
+		//  computeClosestPoint
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した点に最も近い曲線上の点を返します。
-		/// @param point 点
+		/// @param targetPoint 対象の点
 		/// @return 曲線上の最近傍点
 		[[nodiscard]]
-		position_type closestPoint(const position_type& point) const noexcept;
+		position_type computeClosestPoint(const position_type& targetPoint) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

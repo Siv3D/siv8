@@ -482,7 +482,7 @@ namespace s3d
 				{
 					if (In01(x))
 					{
-						const Vec2 intersection = b.getPos(Clamp(x, 0.0, 1.0));
+						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
 
 						if (Intersect(a, intersection))
 						{
@@ -516,7 +516,7 @@ namespace s3d
 				{
 					if (In01(x))
 					{
-						const Vec2 intersection = b.getPos(Clamp(x, 0.0, 1.0));
+						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
 
 						if (Intersect(a, intersection))
 						{
@@ -844,8 +844,8 @@ namespace s3d
 
 		bool Intersect(const Bezier2& a, const Bezier2& b)
 		{
-			const RectF aRect = a.boundingRect();
-			const RectF bRect = b.boundingRect();
+			const RectF aRect = a.computeBoundingRect();
+			const RectF bRect = b.computeBoundingRect();
 
 			if (not Intersect(aRect, bRect))
 			{
@@ -857,7 +857,7 @@ namespace s3d
 
 		bool Intersect(const Bezier2& a, const Bezier3& b)
 		{
-			const RectF aRect = a.boundingRect();
+			const RectF aRect = a.computeBoundingRect();
 			const RectF bRect = b.boundingRect();
 
 			if (not Intersect(aRect, bRect))
@@ -926,7 +926,7 @@ namespace s3d
 				return true;
 			}
 
-			const Vec2 closestPoint = a.closestPoint(b.center);
+			const Vec2 closestPoint = a.computeClosestPoint(b.center);
 			return (closestPoint.distanceFromSq(b.center) <= (b.r * b.r));
 		}
 
@@ -954,7 +954,7 @@ namespace s3d
 			localBezier.p1 = ((a.p1 - b.center) * invR);
 			localBezier.p2 = ((a.p2 - b.center) * invR);
 
-			const double distanceSq = localBezier.closestPoint(Vec2{ 0, 0 }).lengthSq();
+			const double distanceSq = localBezier.computeClosestPoint(Vec2{ 0, 0 }).lengthSq();
 			return (distanceSq <= 1.0);
 		}
 
