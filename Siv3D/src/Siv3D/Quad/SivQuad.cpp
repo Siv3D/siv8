@@ -91,7 +91,7 @@ namespace s3d
 
 	Polygon Quad::stretchedPolygon(const value_type size) const noexcept
 	{
-		return CalculatePolygonBuffer({ p0, p1, p2, p3 }, size);
+		return ComputeMiterBufferPolygon({ p0, p1, p2, p3 }, size);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -448,18 +448,18 @@ namespace s3d
 			return asPolygon();
 		}
 
-		return CalculateRoundedQuad(*this, round, qualityFactor);
+		return ComputeRoundedQuadPolygon(*this, round, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateRoundBuffer
+	//	computeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Quad::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	Polygon Quad::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		return CalculatePolygonRoundBuffer({ p0, p1, p2, p3 }, distance, qualityFactor);
+		return ComputeRoundBufferPolygon({ p0, p1, p2, p3 }, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

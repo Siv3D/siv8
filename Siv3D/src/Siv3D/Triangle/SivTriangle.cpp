@@ -491,18 +491,18 @@ namespace s3d
 
 		const Triangle inner = stretched(-round);
 
-		return inner.calculateRoundBuffer(round, qualityFactor);
+		return inner.computeRoundBufferPolygon(round, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateRoundBuffer
+	//	computeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Triangle::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	Polygon Triangle::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		return CalculatePolygonRoundBuffer({ p0, p1, p2 }, distance, qualityFactor);
+		return ComputeRoundBufferPolygon({ p0, p1, p2 }, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

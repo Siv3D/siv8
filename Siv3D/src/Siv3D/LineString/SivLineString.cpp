@@ -14,6 +14,7 @@
 # include <Siv3D/Spline.hpp>
 # include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include <Siv3D/Polygon/LineStringBuffer.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -79,6 +80,30 @@ namespace s3d
 			}
 
 			return out;
+		}
+
+		[[nodiscard]]
+		static Vec2 PointAtSegmentDistance(const Vec2& from, const Vec2& to, const double distance, const double segmentLength) noexcept
+		{
+			if (segmentLength <= 0.0)
+			{
+				return from;
+			}
+
+			return (from + ((to - from) * (distance / segmentLength)));
+		}
+
+		[[nodiscard]]
+		static double WrapDistance(const double distance, const double length)
+		{
+			double result = std::fmod(distance, length);
+
+			if (result < 0.0)
+			{
+				result += length;
+			}
+
+			return result;
 		}
 	}
 
@@ -368,6 +393,379 @@ namespace s3d
 		return length;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	computePointAtDistance
+	//
+	////////////////////////////////////////////////////////////////
+
+	Vec2 LineString::computePointAtDistance(const double distanceFromStart, const CloseRing closeRing) const
+	{
+		if (isEmpty())
+		{
+			throw std::out_of_range{ "LineString::computePointAtDistance() line is empty" };
+		}
+
+		if (distanceFromStart <= 0.0)
+		{
+			return front();
+		}
+
+		const size_t n = m_vertices.size();
+
+		if (n < 2)
+		{
+			return front();
+		}
+
+		const size_t segmentCount = num_segments(closeRing);
+		const Vec2* pSrc = m_vertices.data();
+		double accumulatedLength = 0.0;
+
+		for (size_t i = 0; i < segmentCount; ++i)
+		{
+			const Vec2 from = pSrc[i];
+			const Vec2 to = pSrc[((i + 1) == n) ? 0 : (i + 1)];
+			const double segmentLength = from.distanceFrom(to);
+
+			if (distanceFromStart <= (accumulatedLength + segmentLength))
+			{
+				return PointAtSegmentDistance(from, to, (distanceFromStart - accumulatedLength), segmentLength);
+			}
+
+			accumulatedLength += segmentLength;
+		}
+
+		return (closeRing ? front() : back());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeVertexNormals
+	//
+	////////////////////////////////////////////////////////////////
+
+	Array<Vec2> LineString::computeVertexNormals(const CloseRing closeRing) const
+	{
+		const size_t n = m_vertices.size();
+		Array<Vec2> normals(n);
+
+		if (n == 0)
+		{
+			return normals;
+		}
+
+		Vec2* pDst = normals.data();
+
+		if (n < 2)
+		{
+			pDst[0] = { Math::NaN, Math::NaN };
+			return normals;
+		}
+
+		const Vec2* pSrc = m_vertices.data();
+
+		if (closeRing)
+		{
+			for (size_t i = 0; i < n; ++i)
+			{
+				const Vec2 prev = (i == 0) ? pSrc[n - 1] : pSrc[i - 1];
+				const Vec2 curr = pSrc[i];
+				const Vec2 next = (i == (n - 1)) ? pSrc[0] : pSrc[i + 1];
+				const double a0 = (curr - prev).getAngle();
+				const double a1 = (next - curr).getAngle();
+				pDst[i] = Circular{ 1, (Math::LerpAngle(a0, a1, 0.5) - Math::HalfPi) };
+			}
+		}
+		else
+		{
+			{
+				const Vec2 forward = (pSrc[1] - pSrc[0]).normalized();
+				pDst[0] = { forward.y, -forward.x };
+			}
+
+			for (size_t i = 1; i < (n - 1); ++i)
+			{
+				const Vec2 prev = pSrc[i - 1];
+				const Vec2 curr = pSrc[i];
+				const Vec2 next = pSrc[i + 1];
+				const double a0 = (curr - prev).getAngle();
+				const double a1 = (next - curr).getAngle();
+				pDst[i] = Circular{ 1, (Math::LerpAngle(a0, a1, 0.5) - Math::HalfPi) };
+			}
+
+			{
+				const Vec2 forward = (pSrc[n - 1] - pSrc[n - 2]).normalized();
+				pDst[n - 1] = { forward.y, -forward.x };
+			}
+		}
+
+		return normals;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sliceByDistance
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::sliceByDistance(const double distanceFromStart, const CloseRing closeRing) const
+	{
+		if (m_vertices.size() < 2)
+		{
+			return{};
+		}
+
+		const size_t n = m_vertices.size();
+		const size_t segmentCount = num_segments(closeRing);
+		const Vec2* pSrc = m_vertices.data();
+		Array<double> segmentLengths(segmentCount);
+		double lineStringLength = 0.0;
+
+		for (size_t i = 0; i < segmentCount; ++i)
+		{
+			const double segmentLength = pSrc[i].distanceFrom(pSrc[((i + 1) == n) ? 0 : (i + 1)]);
+			segmentLengths[i] = segmentLength;
+			lineStringLength += segmentLength;
+		}
+
+		LineString result;
+		result.reserve(segmentCount + 2);
+
+		if (closeRing)
+		{
+			if (lineStringLength <= 0.0)
+			{
+				return{};
+			}
+
+			const double distanceBegin = WrapDistance(distanceFromStart, lineStringLength);
+			const double distanceEnd = (distanceBegin + lineStringLength);
+			double accumulatedLength = 0.0;
+
+			for (size_t k = 0; k < (segmentCount * 2); ++k)
+			{
+				const size_t i = (k % segmentCount);
+				const Vec2 from = pSrc[i];
+				const Vec2 to = pSrc[((i + 1) == n) ? 0 : (i + 1)];
+				const double segmentLength = segmentLengths[i];
+
+				if (not result)
+				{
+					if (distanceBegin <= (accumulatedLength + segmentLength))
+					{
+						const Vec2 start = PointAtSegmentDistance(from, to, (distanceBegin - accumulatedLength), segmentLength);
+						result << start;
+
+						if (distanceEnd <= (accumulatedLength + segmentLength))
+						{
+							const Vec2 goal = PointAtSegmentDistance(from, to, (distanceEnd - accumulatedLength), segmentLength);
+							result << goal;
+							break;
+						}
+
+						if (result.back() != to)
+						{
+							result << to;
+						}
+					}
+				}
+				else
+				{
+					if (distanceEnd <= (accumulatedLength + segmentLength))
+					{
+						const Vec2 goal = PointAtSegmentDistance(from, to, (distanceEnd - accumulatedLength), segmentLength);
+						result << goal;
+						break;
+					}
+
+					result << to;
+				}
+
+				accumulatedLength += segmentLength;
+			}
+		}
+		else
+		{
+			const double distanceBegin = Clamp(distanceFromStart, 0.0, lineStringLength);
+			double accumulatedLength = 0.0;
+
+			for (size_t i = 0; i < segmentCount; ++i)
+			{
+				const Vec2 from = pSrc[i];
+				const Vec2 to = pSrc[i + 1];
+				const double segmentLength = segmentLengths[i];
+
+				if (not result)
+				{
+					if (distanceBegin <= (accumulatedLength + segmentLength))
+					{
+						const Vec2 start = PointAtSegmentDistance(from, to, (distanceBegin - accumulatedLength), segmentLength);
+						result << start;
+
+						if (result.back() != to)
+						{
+							result << to;
+						}
+					}
+				}
+				else
+				{
+					result << to;
+				}
+
+				accumulatedLength += segmentLength;
+			}
+		}
+
+		return result;
+	}
+
+	LineString LineString::sliceByDistance(const double distanceFromStart, const double length, const CloseRing closeRing) const
+	{
+		if (m_vertices.size() < 2)
+		{
+			return{};
+		}
+
+		const size_t n = m_vertices.size();
+		const size_t segmentCount = num_segments(closeRing);
+		const Vec2* pSrc = m_vertices.data();
+		Array<double> segmentLengths(segmentCount);
+		double lineStringLength = 0.0;
+
+		for (size_t i = 0; i < segmentCount; ++i)
+		{
+			const double segmentLength = pSrc[i].distanceFrom(pSrc[((i + 1) == n) ? 0 : (i + 1)]);
+			segmentLengths[i] = segmentLength;
+			lineStringLength += segmentLength;
+		}
+
+		double from, to;
+
+		if (length < 0.0)
+		{
+			from = (distanceFromStart + length);
+			to = distanceFromStart;
+		}
+		else
+		{
+			from = distanceFromStart;
+			to = (distanceFromStart + length);
+		}
+
+		LineString result;
+		result.reserve(segmentCount + 2);
+
+		if (closeRing)
+		{
+			if (lineStringLength <= 0.0)
+			{
+				return{};
+			}
+
+			const double distanceBegin = WrapDistance(from, lineStringLength);
+			double distanceEnd = WrapDistance(to, lineStringLength);
+
+			if (distanceEnd < distanceBegin)
+			{
+				distanceEnd += lineStringLength;
+			}
+
+			double accumulatedLength = 0.0;
+
+			for (size_t k = 0; k < (segmentCount * 2); ++k)
+			{
+				const size_t i = (k % segmentCount);
+				const Vec2 pFrom = pSrc[i];
+				const Vec2 pTo = pSrc[((i + 1) == n) ? 0 : (i + 1)];
+				const double segmentLength = segmentLengths[i];
+
+				if (not result)
+				{
+					if (distanceBegin <= (accumulatedLength + segmentLength))
+					{
+						const Vec2 start = PointAtSegmentDistance(pFrom, pTo, (distanceBegin - accumulatedLength), segmentLength);
+						result << start;
+
+						if (distanceEnd <= (accumulatedLength + segmentLength))
+						{
+							const Vec2 goal = PointAtSegmentDistance(pFrom, pTo, (distanceEnd - accumulatedLength), segmentLength);
+							result << goal;
+							break;
+						}
+
+						if (result.back() != pTo)
+						{
+							result << pTo;
+						}
+					}
+				}
+				else
+				{
+					if (distanceEnd <= (accumulatedLength + segmentLength))
+					{
+						const Vec2 goal = PointAtSegmentDistance(pFrom, pTo, (distanceEnd - accumulatedLength), segmentLength);
+						result << goal;
+						break;
+					}
+
+					result << pTo;
+				}
+
+				accumulatedLength += segmentLength;
+			}
+		}
+		else
+		{
+			const double distanceBegin = Clamp(from, 0.0, lineStringLength);
+			const double distanceEnd = Clamp(to, 0.0, lineStringLength);
+			double accumulatedLength = 0.0;
+
+			for (size_t i = 0; i < segmentCount; ++i)
+			{
+				const Vec2 pFrom = pSrc[i];
+				const Vec2 pTo = pSrc[i + 1];
+				const double segmentLength = segmentLengths[i];
+
+				if (not result)
+				{
+					if (distanceBegin <= (accumulatedLength + segmentLength))
+					{
+						const Vec2 start = PointAtSegmentDistance(pFrom, pTo, (distanceBegin - accumulatedLength), segmentLength);
+						result << start;
+
+						if (distanceEnd <= (accumulatedLength + segmentLength))
+						{
+							const Vec2 goal = PointAtSegmentDistance(pFrom, pTo, (distanceEnd - accumulatedLength), segmentLength);
+							result << goal;
+							break;
+						}
+
+						if (result.back() != pTo)
+						{
+							result << pTo;
+						}
+					}
+				}
+				else
+				{
+					if (distanceEnd <= (accumulatedLength + segmentLength))
+					{
+						const Vec2 goal = PointAtSegmentDistance(pFrom, pTo, (distanceEnd - accumulatedLength), segmentLength);
+						result << goal;
+						break;
+					}
+
+					result << pTo;
+				}
+
+				accumulatedLength += segmentLength;
+			}
+		}
+
+		return result;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -389,6 +787,38 @@ namespace s3d
 	{
 		ImageDraw::LineString(dst, *this, thickness, color, ImagePixel::BlendMode::SourceOver, enableAntialiasing, lineCap);
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeMiterBufferPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon LineString::computeMiterBufferPolygon(const double distance) const
+	{
+		return computeMiterBufferPolygon(distance, CloseRing::No);
+	}
+
+	Polygon LineString::computeMiterBufferPolygon(const double distance, const CloseRing closeRing) const
+	{
+		return ComputeMiterBufferPolygon(*this, distance, closeRing);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeRoundBufferPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon LineString::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
+	{
+		return computeRoundBufferPolygon(distance, CloseRing::No, qualityFactor);
+	}
+
+	Polygon LineString::computeRoundBufferPolygon(const double distance, const CloseRing closeRing, const QualityFactor& qualityFactor) const
+	{
+		return ComputeRoundBufferPolygon(*this, distance, closeRing, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

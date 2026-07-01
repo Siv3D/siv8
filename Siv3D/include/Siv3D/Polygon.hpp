@@ -700,7 +700,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateBuffer
+		//	computeMiterBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -708,11 +708,11 @@ namespace s3d
 		/// @param distance 太らせる距離。負の場合は細らせます。
 		/// @return 新しい多角形
 		[[nodiscard]]
-		Polygon calculateBuffer(double distance) const;
+		Polygon computeMiterBufferPolygon(double distance) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateRoundBuffer
+		//	computeRoundBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -721,7 +721,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 新しい多角形
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -219,13 +219,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateRoundBuffer
+	//	computeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Line::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	Polygon Line::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		return CalculateLineRoundBuffer(*this, distance, qualityFactor);
+		return ComputeCapsulePolygon(*this, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

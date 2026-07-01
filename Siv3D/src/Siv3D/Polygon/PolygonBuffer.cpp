@@ -17,11 +17,11 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	CalculateLineRoundBuffer
+	//	ComputeCapsulePolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CalculateLineRoundBuffer(const Line& line, const double distance, const QualityFactor& qualityFactor)
+	Polygon ComputeCapsulePolygon(const Line& line, const double distance, const QualityFactor& qualityFactor)
 	{
 		if (distance <= 0.0)
 		{
@@ -36,7 +36,7 @@ namespace s3d
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
 			boost::geometry::strategy::buffer::join_round{},
-			boost::geometry::strategy::buffer::end_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
+			boost::geometry::strategy::buffer::end_round{ detail::CalculateCircleQuality(Abs(distance) * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
 		if (multiPolygon.size() != 1)
@@ -49,11 +49,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	CalculateRoundedQuad
+	//	ComputeRoundedQuadPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CalculateRoundedQuad(const Quad& quad, const double distance, const QualityFactor& qualityFactor)
+	Polygon ComputeRoundedQuadPolygon(const Quad& quad, const double distance, const QualityFactor& qualityFactor)
 	{
 		const CwOpenPolygon polygon{ { quad.p0, quad.p1, quad.p2, quad.p3 } };
 
@@ -76,7 +76,7 @@ namespace s3d
 		boost::geometry::buffer(stretchedPolygon.front(), multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
-			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(Abs(distance) * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::end_round{},
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
@@ -96,11 +96,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	CalculatePolygonBuffer
+	//	ComputeMiterBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CalculatePolygonBuffer(std::initializer_list<Vec2> outer, const double distance)
+	Polygon ComputeMiterBufferPolygon(const std::initializer_list<Vec2> outer, const double distance)
 	{
 		const CwOpenPolygon polygon{ outer };
 
@@ -123,11 +123,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	CalculatePolygonRoundBuffer
+	//	ComputeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon CalculatePolygonRoundBuffer(std::initializer_list<Vec2> outer, const double distance, const QualityFactor& qualityFactor)
+	Polygon ComputeRoundBufferPolygon(const std::initializer_list<Vec2> outer, const double distance, const QualityFactor& qualityFactor)
 	{
 		const CwOpenPolygon polygon{ outer };
 
@@ -136,7 +136,7 @@ namespace s3d
 		boost::geometry::buffer(polygon, multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
-			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(Abs(distance) * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::end_round{},
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
@@ -161,7 +161,7 @@ namespace s3d
 			return{};
 		}
 
-		const size_t quality = detail::CalculateCircleQuality(circle.r * qualityFactor.value());
+		const size_t quality = detail::CalculateCircleQuality(Abs(circle.r) * qualityFactor.value());
 
 		Array<Vec2> vertices(quality, circle.center);
 		Vec2* pPos = vertices.data();

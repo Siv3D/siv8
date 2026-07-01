@@ -913,24 +913,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateBuffer
+	//	computeMiterBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::calculateBuffer(const double distance) const
+	Polygon Polygon::computeMiterBufferPolygon(const double distance) const
 	{
-		return pImpl->calculateBuffer(distance);
+		return pImpl->computeMiterBufferPolygon(distance);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateRoundBuffer
+	//	computeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	Polygon Polygon::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		return pImpl->calculateRoundBuffer(distance, qualityFactor);
+		return pImpl->computeRoundBufferPolygon(distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

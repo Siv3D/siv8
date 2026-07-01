@@ -5803,6 +5803,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RectangularDashStyle.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.hpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8879,6 +8882,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\QuarterArcTable\SivQuarterArcTable.cpp">
       <Filter>src\Siv3D\QuarterArcTable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.cpp">
+      <Filter>src\Siv3D\Polygon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

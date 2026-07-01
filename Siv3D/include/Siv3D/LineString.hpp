@@ -2209,64 +2209,72 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateBuffer
+		//	computeMiterBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
-//		/// @brief 太らせた多角形を作成します。
-//		/// @param distance 太らせる距離（ピクセル）
-//		/// @param bufferQuality 品質
-//		/// @return 太らせた多角形
+		/// @brief LineString を指定した距離だけ太らせた Polygon を返します。
+		/// @param distance 太らせる距離（ピクセル）
+		/// @return LineString を指定した距離だけ太らせた Polygon
+		[[nodiscard]]
+		Polygon computeMiterBufferPolygon(double distance) const;
+
+		/// @brief LineString を指定した距離だけ太らせた Polygon を返します。
+		/// @param distance 太らせる距離（ピクセル）
+		/// @param closeRing 終点と始点を結ぶか
+		/// @return LineString を指定した距離だけ太らせた Polygon
+		[[nodiscard]]
+		Polygon computeMiterBufferPolygon(double distance, CloseRing closeRing) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeRoundBufferPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief LineString を指定した距離だけ丸く太らせた Polygon を返します。
+		/// @param distance 太らせる距離（ピクセル）
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return LineString を指定した距離だけ丸く太らせた Polygon
+		[[nodiscard]]
+		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+		
+		/// @brief LineString を指定した距離だけ丸く太らせた Polygon を返します。
+		/// @param distance 太らせる距離（ピクセル）
+		/// @param closeRing 終点と始点を結ぶか
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return LineString を指定した距離だけ丸く太らせた Polygon
+		[[nodiscard]]
+		Polygon computeRoundBufferPolygon(double distance, CloseRing closeRing, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toSpline
+		//
+		////////////////////////////////////////////////////////////////
+
 //		[[nodiscard]]
-//		Polygon calculateBuffer(double distance, int32 bufferQuality = 24) const;
-//
-//		/// @brief 終点と始点を結んだうえで、太らせた多角形を作成します。
-//		/// @param distance 太らせる距離（ピクセル）
-//		/// @param bufferQuality 品質
-//		/// @return 太らせた多角形
-//		[[nodiscard]]
-//		Polygon calculateBufferClosed(double distance, int32 bufferQuality = 24) const;
-//
-//		/// @brief 丸く太らせた多角形を作成します。
-//		/// @param distance 太らせる距離（ピクセル）
-//		/// @param bufferQuality 品質
-//		/// @return 丸く太らせた多角形
-//		[[nodiscard]]
-//		Polygon calculateRoundBuffer(double distance, int32 bufferQuality = 24) const;
-//
-//		/// @brief 終点と始点を結んだうえで、丸く太らせた多角形を作成します。
-//		/// @param distance 太らせる距離（ピクセル）
-//		/// @param bufferQuality 品質
-//		/// @return 丸く太らせた多角形
-//		[[nodiscard]]
-//		Polygon calculateRoundBufferClosed(double distance, int32 bufferQuality = 24) const;
-//
-//		[[nodiscard]]
-//		Spline2D asSpline(CloseRing closeRing = CloseRing::No) const;
-//
+//		Spline2D toSpline(CloseRing closeRing = CloseRing::No) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
+
 //		template <class Shape2DType>
 //		[[nodiscard]]
 //		constexpr bool intersects(const Shape2DType& other) const;
-//
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
 //		template <class Shape2DType>
 //		[[nodiscard]]
 //		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
-//
-//		const LineString& paint(Image& dst, const Color& color) const;
-//
-//		const LineString& paint(Image& dst, int32 thickness, const Color& color) const;
-//
-//		const LineString& paintClosed(Image& dst, const Color& color) const;
-//
-//		const LineString& paintClosed(Image& dst, int32 thickness, const Color& color) const;
-//
-//		const LineString& overwrite(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
-//
-//		const LineString& overwrite(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
-//
-//		const LineString& overwriteClosed(Image& dst, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
-//
-//		const LineString& overwriteClosed(Image& dst, int32 thickness, const Color& color, Antialiased antialiased = Antialiased::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -193,21 +193,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateBuffer
+		//	computeMiterBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Polygon calculateBuffer(double distance) const;
+		Polygon computeMiterBufferPolygon(double distance) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateRoundBuffer
+		//	computeRoundBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor) const;
+		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
