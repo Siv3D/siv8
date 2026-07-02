@@ -19,7 +19,20 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	ComputeCapsulePolygon
+	//	ComputeMiterBufferPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 線分を指定した距離だけ膨張させた Polygon を作成します。
+	/// @param line 対象の線分
+	/// @param distance 線分からの膨張距離
+	/// @return 作成された Polygon. 作成に失敗した場合は空の Polygon
+	[[nodiscard]]
+	Polygon ComputeMiterBufferPolygon(const Line& line, double distance);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	ComputeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
@@ -29,7 +42,7 @@ namespace s3d
 	/// @param qualityFactor 半円部分の分割品質
 	/// @return 作成された Polygon. 作成に失敗した場合は空の Polygon
 	[[nodiscard]]
-	Polygon ComputeCapsulePolygon(const Line& line, double distance, const QualityFactor& qualityFactor);
+	Polygon ComputeRoundBufferPolygon(const Line& line, double distance, const QualityFactor& qualityFactor);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -56,7 +69,7 @@ namespace s3d
 	/// @param distance オフセット距離。正の値で外側、負の値で内側にオフセットします。
 	/// @return 作成された Polygon. 作成に失敗した場合は空の Polygon
 	[[nodiscard]]
-	Polygon ComputeMiterBufferPolygon(std::initializer_list<Vec2> outer, double distance);
+	Polygon ComputeMiterBufferPolygon(std::span<const Vec2> outer, double distance);
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -70,18 +83,5 @@ namespace s3d
 	/// @param qualityFactor 丸め部分の分割品質
 	/// @return 作成された Polygon. 作成に失敗した場合は空の Polygon
 	[[nodiscard]]
-	Polygon ComputeRoundBufferPolygon(std::initializer_list<Vec2> outer, double distance, const QualityFactor& qualityFactor);
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	CircleToPolygon
-	//
-	////////////////////////////////////////////////////////////////
-
-	/// @brief 円を近似 Polygon に変換します。
-	/// @param circle 対象の円
-	/// @param qualityFactor 円周部分の分割品質
-	/// @return 作成された Polygon. 半径が 0 以下の場合は空の Polygon
-	[[nodiscard]]
-	Polygon CircleToPolygon(const Circle& circle, const QualityFactor& qualityFactor);
+	Polygon ComputeRoundBufferPolygon(std::span<const Vec2> outer, double distance, const QualityFactor& qualityFactor);
 }

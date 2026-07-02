@@ -486,12 +486,23 @@ namespace s3d
 
 		if (inradius() <= round)
 		{
-			return CircleToPolygon(getInscribedCircle(), qualityFactor);
+			return getInscribedCircle().asPolygon(qualityFactor);
 		}
 
 		const Triangle inner = stretched(-round);
 
 		return inner.computeRoundBufferPolygon(round, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeMiterBufferPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Triangle::computeMiterBufferPolygon(const double distance) const
+	{
+		return ComputeMiterBufferPolygon(vertices(), distance);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -502,7 +513,7 @@ namespace s3d
 
 	Polygon Triangle::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		return ComputeRoundBufferPolygon({ p0, p1, p2 }, distance, qualityFactor);
+		return ComputeRoundBufferPolygon(vertices(), distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////

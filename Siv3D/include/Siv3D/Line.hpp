@@ -794,14 +794,26 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	computeMiterBufferPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分を太らせて作成した、新しい Polygon を返します。
+		/// @param distance 太らせる距離
+		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
+		[[nodiscard]]
+		Polygon computeMiterBufferPolygon(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	computeRoundBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 線分を丸く太らせて作成した、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
+		/// @brief 線分を丸く太らせて作成した、新しい Polygon を返します。分割数は半径に応じて自動的に決定されます。
 		/// @param distance 太らせる距離
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
-		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
+		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
 		[[nodiscard]]
 		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
