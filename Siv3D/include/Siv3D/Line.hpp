@@ -889,10 +889,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param lineCap 線端の形状
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -901,10 +919,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param lineCap 線端の形状
+		/// @param thickness 線分の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -913,8 +949,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分をもとに矢印を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& paintArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分をもとに矢印を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& paintArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -923,8 +973,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分をもとに矢印を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& overwriteArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分をもとに矢印を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& overwriteArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -933,8 +997,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分をもとに両方向矢印を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& paintDoubleHeadedArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分をもとに両方向矢印を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& paintDoubleHeadedArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -943,8 +1021,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分をもとに両方向矢印を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& overwriteDoubleHeadedArrow(Image& dst, double width, double headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 線分をもとに両方向矢印を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param width 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Line& overwriteDoubleHeadedArrow(Image& dst, double width, const SizeF& headSize, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -989,9 +1081,9 @@ namespace s3d
 		/// @param startCap 始点側の形状
 		/// @param endCap 終点側の形状
 		/// @param thickness 線分の太さ
-		/// @param colorStart 
-		/// @param colorEnd 
-		/// @return 
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 線分を描きます。
@@ -1075,8 +1167,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分をもとに矢印を描きます。
+		/// @param thickness 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @return *this
 		const Line& drawArrow(double thickness = 1.0, double headSize = 5.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 線分をもとに矢印を描きます。
+		/// @param thickness 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& drawArrow(double thickness, double headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 矢印を描きます。
@@ -1086,10 +1189,29 @@ namespace s3d
 		/// @return *this
 		const Line& drawArrow(double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
 
+		/// @brief 線分をもとに矢印を描きます。
+		/// @param thickness 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& drawArrow(double thickness, const SizeF& headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
 
+		/// @brief 線分をもとに矢印を描きます。
+		/// @param startCap 始点側の形状
+		/// @param thickness 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @return *this
 		const Line& drawArrow(LineCap startCap, double thickness = 1.0, double headSize = 5.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 線分をもとに矢印を描きます。
+		/// @param startCap 始点側の形状
+		/// @param thickness 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& drawArrow(LineCap startCap, double thickness, double headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		/// @brief 矢印を描きます。
@@ -1100,6 +1222,13 @@ namespace s3d
 		/// @return *this
 		const Line& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& color = Palette::White) const;
 
+		/// @brief 線分をもとに矢印を描きます。
+		/// @param startCap 始点側の形状
+		/// @param thickness 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const Line& drawArrow(LineCap startCap, double thickness, const SizeF& headSize, const ColorF& colorStart, const ColorF& colorEnd) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1108,6 +1237,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 線分をもとに両方向矢印を描きます。
+		/// @param thickness 矢印の線の幅
+		/// @param headSize 矢印の三角形のサイズ
+		/// @param color 色
+		/// @return *this
 		const Line& drawDoubleHeadedArrow(double thickness = 1.0, double headSize = 5.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 線分をもとに両方向矢印を描きます。

@@ -144,19 +144,19 @@ namespace s3d
 
 		/// @brief 範囲から頂点の配列を作成します。
 		/// @tparam Range 範囲の型
+		/// @param tag 範囲から構築することを示すタグ
 		/// @param range 範囲
-		/// @param alloc アロケータ
 		template <Concept::ContainerCompatibleRange<Vec2> Range>
 		[[nodiscard]]
-		constexpr LineString(std::from_range_t, Range&& range);
+		constexpr LineString(std::from_range_t tag, Range&& range);
 
 		/// @brief 範囲から頂点の配列を作成します。
 		/// @tparam Range 範囲の型
+		/// @param tag 範囲から構築することを示すタグ
 		/// @param range 範囲
-		/// @param alloc アロケータ
 		template <Concept::ContainerCompatibleRange<Point> Range>
 		[[nodiscard]]
-		constexpr LineString(std::from_range_t, Range&& range);
+		constexpr LineString(std::from_range_t tag, Range&& range);
 
 		/// @brief 空の頂点の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
@@ -288,10 +288,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief Array への暗黙の変換を行います。
+		/// @return Array
 		[[nodiscard]]
 		constexpr operator container_type() const& noexcept;
 
 		/// @brief Array への暗黙の変換を行います。
+		/// @return Array
 		[[nodiscard]]
 		constexpr operator container_type() && noexcept;
 
@@ -686,9 +688,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した位置に要素を構築して挿入します。
-		/// @tparam ...Args 構築する要素の引数の型
+		/// @tparam Args 構築する要素の引数の型
 		/// @param pos 挿入する位置
-		/// @param ...args 構築する要素の引数
+		/// @param args 構築する要素の引数
 		/// @return 挿入された要素を指すイテレータ
 		template <class... Args>
 		constexpr iterator emplace(const_iterator pos, Args&&... args);
@@ -812,8 +814,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 配列の末尾に要素を構築して追加します。
-		/// @tparam ...Args 構築する要素の引数の型
-		/// @param ...args 構築する要素の引数
+		/// @tparam Args 構築する要素の引数の型
+		/// @param args 構築する要素の引数
 		/// @return 追加された要素への参照
 		template <class... Args>
 		constexpr reference emplace_back(Args&&... args);
@@ -870,8 +872,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 配列の先頭に要素を構築して追加します。
-		/// @tparam ...Args 構築する要素の引数の型
-		/// @param ...args 構築する要素の引数
+		/// @tparam Args 構築する要素の引数の型
+		/// @param args 構築する要素の引数
 		/// @return 追加された要素への参照
 		template <class... Args>
 		constexpr reference emplace_front(Args&&... args);
@@ -1963,15 +1965,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 平行移動した LineString を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString movedBy(double x, double y) const&;
 
+		/// @brief 平行移動した LineString を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString movedBy(double x, double y) && noexcept;
 
+		/// @brief 平行移動した LineString を返します。
+		/// @param v 移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString movedBy(Vec2 v) const&;
 
+		/// @brief 平行移動した LineString を返します。
+		/// @param v 移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString movedBy(Vec2 v) && noexcept;
 
@@ -1981,8 +1997,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief LineString を平行移動します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return *this
 		constexpr LineString& moveBy(double x, double y) noexcept;
 
+		/// @brief LineString を平行移動します。
+		/// @param v 移動量
+		/// @return *this
 		constexpr LineString& moveBy(Vec2 v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -1991,15 +2014,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 平行移動した LineString を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffset(double x, double y) const&;
 		
+		/// @brief 平行移動した LineString を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffset(double x, double y) && noexcept;
 		
+		/// @brief 平行移動した LineString を返します。
+		/// @param v 移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffset(Vec2 v) const&;
 		
+		/// @brief 平行移動した LineString を返します。
+		/// @param v 移動量
+		/// @return 平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffset(Vec2 v) && noexcept;
 
@@ -2009,15 +2046,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief X 方向に平行移動した LineString を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffsetX(double x) const&;
 		
+		/// @brief X 方向に平行移動した LineString を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffsetX(double x) && noexcept;
 		
+		/// @brief Y 方向に平行移動した LineString を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffsetY(double y) const&;
 		
+		/// @brief Y 方向に平行移動した LineString を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した LineString
 		[[nodiscard]]
 		constexpr LineString withOffsetY(double y) && noexcept;
 
@@ -2027,21 +2076,41 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した LineString を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFromOrigin(double s) const&;
 
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した LineString を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFromOrigin(double s) && noexcept;
 
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した LineString を返します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFromOrigin(double sx, double sy) const&;
 
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した LineString を返します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFromOrigin(double sx, double sy) && noexcept;
 
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した LineString を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFromOrigin(Vec2 s) const&;
 
+		/// @brief 原点 (0, 0) を中心に拡大・縮小した LineString を返します。
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFromOrigin(Vec2 s) && noexcept;
 
@@ -2051,10 +2120,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に LineString を拡大・縮小します。
+		/// @param s 拡大率
+		/// @return *this
 		constexpr LineString& scaleFromOrigin(double s);
 
+		/// @brief 原点 (0, 0) を中心に LineString を拡大・縮小します。
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return *this
 		constexpr LineString& scaleFromOrigin(double sx, double sy);
 
+		/// @brief 原点 (0, 0) を中心に LineString を拡大・縮小します。
+		/// @param s 拡大率
+		/// @return *this
 		constexpr LineString& scaleFromOrigin(Vec2 s);
 
 		////////////////////////////////////////////////////////////////
@@ -2063,21 +2142,47 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に拡大・縮小した LineString を返します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, double s) const&;
 
+		/// @brief 指定した座標を中心に拡大・縮小した LineString を返します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, double s) && noexcept;
 
+		/// @brief 指定した座標を中心に拡大・縮小した LineString を返します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) const&;
 
+		/// @brief 指定した座標を中心に拡大・縮小した LineString を返します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, double sx, double sy) && noexcept;
 
+		/// @brief 指定した座標を中心に拡大・縮小した LineString を返します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) const&;
 
+		/// @brief 指定した座標を中心に拡大・縮小した LineString を返します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param s 拡大率
+		/// @return 拡大・縮小した LineString
 		[[nodiscard]]
 		constexpr LineString scaledFrom(Vec2 pos, Vec2 s) && noexcept;
 
@@ -2087,10 +2192,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に LineString を拡大・縮小します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param s 拡大率
+		/// @return *this
 		constexpr LineString& scaleFrom(Vec2 pos, double s);
 
+		/// @brief 指定した座標を中心に LineString を拡大・縮小します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param sx X 方向の拡大率
+		/// @param sy Y 方向の拡大率
+		/// @return *this
 		constexpr LineString& scaleFrom(Vec2 pos, double sx, double sy);
 
+		/// @brief 指定した座標を中心に LineString を拡大・縮小します。
+		/// @param pos 拡大・縮小の中心座標
+		/// @param s 拡大率
+		/// @return *this
 		constexpr LineString& scaleFrom(Vec2 pos, Vec2 s);
 
 		////////////////////////////////////////////////////////////////
@@ -2309,10 +2427,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 連続する線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 連続する線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 連続する線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param lineCap 線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2321,10 +2457,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 連続する線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 連続する線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 連続する線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param lineCap 線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2333,8 +2487,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 終点と始点を結んだ連続する線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& paintClosed(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 終点と始点を結んだ連続する線分を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& paintClosed(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2343,8 +2508,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 終点と始点を結んだ連続する線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& overwriteClosed(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 終点と始点を結んだ連続する線分を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const LineString& overwriteClosed(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2353,36 +2529,112 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 連続する線分を描画します。
+		/// @param color 色
+		/// @return *this
 		const LineString& draw(const ColorF& color = Palette::White) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const LineString& draw(const ColorF& colorStart, const ColorF& colorEnd) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param pattern パターン
+		/// @return *this
 		const LineString& draw(const PatternParameters& pattern) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @return *this
 		const LineString& draw(double thickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param thickness 線の太さ
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const LineString& draw(double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param thickness 線の太さ
+		/// @param pattern パターン
+		/// @return *this
 		const LineString& draw(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param lineCap 線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @return *this
 		const LineString& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param lineCap 線端の形状
+		/// @param thickness 線の太さ
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const LineString& draw(LineCap lineCap, double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param lineCap 線端の形状
+		/// @param thickness 線の太さ
+		/// @param pattern パターン
+		/// @return *this
 		const LineString& draw(LineCap lineCap, double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param startCap 始点側の線端の形状
+		/// @param endCap 終点側の線端の形状
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @return *this
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param startCap 始点側の線端の形状
+		/// @param endCap 終点側の線端の形状
+		/// @param thickness 線の太さ
+		/// @param colorStart 始点側の色
+		/// @param colorEnd 終点側の色
+		/// @return *this
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& colorStart, const ColorF& colorEnd) const;
 
+		/// @brief 連続する線分を描画します。
+		/// @param startCap 始点側の線端の形状
+		/// @param endCap 終点側の線端の形状
+		/// @param thickness 線の太さ
+		/// @param pattern パターン
+		/// @return *this
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 頂点ごとの色で連続する線分を描画します。
+		/// @param colors 頂点ごとの色
+		/// @return *this
 		const LineString& draw(std::span<const ColorF> colors) const;
 
+		/// @brief 頂点ごとの色で連続する線分を描画します。
+		/// @param thickness 線の太さ
+		/// @param colors 頂点ごとの色
+		/// @return *this
 		const LineString& draw(double thickness, std::span<const ColorF> colors) const;
 
+		/// @brief 頂点ごとの色で連続する線分を描画します。
+		/// @param lineCap 線端の形状
+		/// @param thickness 線の太さ
+		/// @param colors 頂点ごとの色
+		/// @return *this
 		const LineString& draw(LineCap lineCap, double thickness, std::span<const ColorF> colors) const;
 
+		/// @brief 頂点ごとの色で連続する線分を描画します。
+		/// @param startCap 始点側の線端の形状
+		/// @param endCap 終点側の線端の形状
+		/// @param thickness 線の太さ
+		/// @param colors 頂点ごとの色
+		/// @return *this
 		const LineString& draw(LineCap startCap, LineCap endCap, double thickness, std::span<const ColorF> colors) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2391,16 +2643,37 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 終点と始点を結んだ連続する線分を描画します。
+		/// @param color 色
+		/// @return *this
 		const LineString& drawClosed(const ColorF& color = Palette::White) const;
 
+		/// @brief 終点と始点を結んだ連続する線分を描画します。
+		/// @param pattern パターン
+		/// @return *this
 		const LineString& drawClosed(const PatternParameters& pattern) const;
 
+		/// @brief 終点と始点を結んだ連続する線分を描画します。
+		/// @param thickness 線の太さ
+		/// @param color 色
+		/// @return *this
 		const LineString& drawClosed(double thickness, const ColorF& color = Palette::White) const;
 
+		/// @brief 終点と始点を結んだ連続する線分を描画します。
+		/// @param thickness 線の太さ
+		/// @param pattern パターン
+		/// @return *this
 		const LineString& drawClosed(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 頂点ごとの色で、終点と始点を結んだ連続する線分を描画します。
+		/// @param colors 頂点ごとの色
+		/// @return *this
 		const LineString& drawClosed(std::span<const ColorF> colors) const;
 
+		/// @brief 頂点ごとの色で、終点と始点を結んだ連続する線分を描画します。
+		/// @param thickness 線の太さ
+		/// @param colors 頂点ごとの色
+		/// @return *this
 		const LineString& drawClosed(double thickness, std::span<const ColorF> colors) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2409,6 +2682,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各頂点を円で描画します。
+		/// @param r 円の半径
+		/// @param color 色
+		/// @return *this
 		const LineString& drawVertices(double r, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2417,8 +2694,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各頂点を円の枠で描画します。
+		/// @param r 円の半径
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @return *this
 		const LineString& drawVerticesFrame(double r, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 各頂点を円の枠で描画します。
+		/// @param r 円の半径
+		/// @param innerThickness 内側方向の枠の太さ
+		/// @param outerThickness 外側方向の枠の太さ
+		/// @param color 色
+		/// @return *this
 		const LineString& drawVerticesFrame(double r, double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////

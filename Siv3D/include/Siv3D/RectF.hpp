@@ -490,48 +490,124 @@ namespace s3d
 		[[nodiscard]]
 		constexpr RectF(Arg::middleLeft_<position_type> middleLeft, size_type _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, value_type _x, value_type _y, value_type _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, value_type _x, value_type _y, Concept::Arithmetic auto _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, value_type _x, value_type _y, value_type _w, value_type _h) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, value_type _x, value_type _y, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, value_type _x, value_type _y, size_type _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, value_type _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, value_type _w, value_type _h) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _x アンカーの X 座標
+		/// @param _y アンカーの Y 座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, size_type _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _pos アンカーの座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, position_type _pos, value_type _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _pos アンカーの座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, position_type _pos, Concept::Arithmetic auto _size) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _pos アンカーの座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, position_type _pos, value_type _w, value_type _h) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _pos アンカーの座標
+		/// @param _w 長方形の幅
+		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, position_type _pos, Concept::Arithmetic auto _w, Concept::Arithmetic auto _h) noexcept;
 
+		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
+		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @param _pos アンカーの座標
+		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr RectF(Anchor anchor, position_type _pos, size_type _size) noexcept;
 
@@ -1808,6 +1884,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @return *this
 		const RectF& paint(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1816,6 +1896,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param color 色
+		/// @return *this
 		const RectF& overwrite(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1824,6 +1908,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param color 色
+		/// @return *this
 		const RectF& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1832,6 +1922,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 長方形の枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param innerThickness 基準の長方形から内側方向への枠の太さ
+		/// @param outerThickness 基準の長方形から外側方向への枠の太さ
+		/// @param color 色
+		/// @return *this
 		const RectF& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -2024,9 +2120,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャを長方形に貼り付けた TexturedQuad を返します。
+		/// @param texture テクスチャ
+		/// @return TexturedQuad
 		[[nodiscard]]
 		TexturedQuad operator ()(const Texture& texture) const;
 
+		/// @brief テクスチャ領域を長方形に貼り付けた TexturedQuad を返します。
+		/// @param textureRegion テクスチャ領域
+		/// @return TexturedQuad
 		[[nodiscard]]
 		TexturedQuad operator ()(const TextureRegion& textureRegion) const;
 
