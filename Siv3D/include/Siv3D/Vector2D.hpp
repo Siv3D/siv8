@@ -964,6 +964,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief この座標のピクセルを Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @return *this
 		const Vector2D& paint(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -972,6 +976,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief この座標のピクセルを Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @return *this
 		const Vector2D& overwrite(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1129,6 +1137,7 @@ namespace s3d
 		static constexpr Vector2D Up(value_type length = 1) noexcept;
 
 		/// @brief Vector2D{ 0, length } を返します。
+		/// @param length 値
 		/// @return Vector2D{ 0, length }
 		[[nodiscard]]
 		static constexpr Vector2D Down(value_type length = 1) noexcept;
