@@ -234,24 +234,24 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Rect(Arg::center_<position_type> _center, size_type _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, value_type _x, value_type _y, value_type _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, value_type _x, value_type _y, Concept::Integral auto _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _w 長方形の幅
@@ -259,8 +259,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, value_type _x, value_type _y, value_type _w, value_type _h) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _w 長方形の幅
@@ -268,32 +268,32 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, value_type _x, value_type _y, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, value_type _x, value_type _y, size_type _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, value_type _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _w 長方形の幅
@@ -301,8 +301,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, value_type _w, value_type _h) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _w 長方形の幅
@@ -310,46 +310,46 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _x アンカーの X 座標
 		/// @param _y アンカーの Y 座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, Concept::Integral auto _x, Concept::Integral auto _y, size_type _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _pos アンカーの座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, position_type _pos, value_type _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _pos アンカーの座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, position_type _pos, Concept::Integral auto _size) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _pos アンカーの座標
 		/// @param _w 長方形の幅
 		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, position_type _pos, value_type _w, value_type _h) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _pos アンカーの座標
 		/// @param _w 長方形の幅
 		/// @param _h 長方形の高さ
 		[[nodiscard]]
 		constexpr Rect(Anchor anchor, position_type _pos, Concept::Integral auto _w, Concept::Integral auto _h) noexcept;
 
-		/// @brief 指定したアンカー位置が指定座標に一致する長方形を作成します。
-		/// @param anchor 指定座標に合わせる長方形上のアンカー
+		/// @brief 指定したアンカーを基準に長方形を作成します。
+		/// @param anchor アンカーの種類
 		/// @param _pos アンカーの座標
 		/// @param _size 長方形の幅と高さ
 		[[nodiscard]]
