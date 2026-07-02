@@ -1052,21 +1052,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toBuffer2D
+		//	toMesh2D
 		//
 		////////////////////////////////////////////////////////////////
 
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
+		//Mesh2D toMesh2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
 
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
+		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
 
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
+		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
 
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(const Mat3x2& uvMat) const;
+		//Mesh2D toMesh2D(const Mat3x2& uvMat) const;
 
 		////////////////////////////////////////////////////////////////
 		//
