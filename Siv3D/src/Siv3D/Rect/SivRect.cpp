@@ -71,7 +71,7 @@ namespace s3d
 
 	Vec2 Rect::pointAtLength(double length) const noexcept
 	{
-		length = WrapLength(length, perimeter());
+		length = WrapLength(length, static_cast<double>(perimeter()));
 
 		if (length <= size.x)
 		{
@@ -129,7 +129,7 @@ namespace s3d
 
 	size_t Rect::sideIndexAtLength(double length) const noexcept
 	{
-		length = WrapLength(length, perimeter());
+		length = WrapLength(length, static_cast<double>(perimeter()));
 
 		if (length <= size.x)
 		{
