@@ -19,6 +19,7 @@
 # include "PolygonFailureType.hpp"
 # include "QualityFactor.hpp"
 # include "PredefinedYesNo.hpp"
+# include "PolygonHolesView.hpp"
 
 namespace s3d
 {
@@ -256,7 +257,7 @@ namespace s3d
 		/// @brief 多角形の穴を構成する頂点配列を返します。
 		/// @return 多角形の穴を構成する頂点配列
 		[[nodiscard]]
-		const Array<Array<Vec2>>& inners() const noexcept;
+		PolygonHolesView inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -349,15 +350,15 @@ namespace s3d
 
 		bool addHole(const Circle& circle, const PointsPerCircle& pointsPerCircle);
 
-		bool addHole(const Circle& circle, const QualityFactor& qualityFactor);
+		bool addHole(const Circle& circle, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		bool addHole(const Ellipse& ellipse, const PointsPerCircle& pointsPerCircle);
 
-		bool addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor);
+		bool addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		bool addHole(const RoundRect& roundRect, const PointsPerCircle& pointsPerCircle);
 
-		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor);
+		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		/// @brief 多角形に穴を追加します。
 		/// @param hole 穴を構成する頂点配列
@@ -699,7 +700,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateBuffer
+		//	computeMiterBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -707,11 +708,11 @@ namespace s3d
 		/// @param distance 太らせる距離。負の場合は細らせます。
 		/// @return 新しい多角形
 		[[nodiscard]]
-		Polygon calculateBuffer(double distance) const;
+		Polygon computeMiterBufferPolygon(double distance) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateRoundBuffer
+		//	computeRoundBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -720,7 +721,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 新しい多角形
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -822,9 +823,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//bool contains(const Shape2DType& other) const;
+		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		bool contains(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -939,9 +944,9 @@ namespace s3d
 		const Polygon& draw(const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param color 色
-		void draw(const Vec2& pos, const ColorF& color = Palette::White) const;
+		void draw(const Vec2& offset, const ColorF& color = Palette::White) const;
 
 		/// @brief 多角形を描画します。
 		/// @param pattern 塗りつぶしパターン
@@ -949,9 +954,9 @@ namespace s3d
 		const Polygon& draw(const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param pattern 塗りつぶしパターン
-		void draw(const Vec2& pos, const PatternParameters& pattern) const;
+		void draw(const Vec2& offset, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -998,10 +1003,10 @@ namespace s3d
 		const Polygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形の枠を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 色
-		void drawFrame(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		void drawFrame(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 多角形の枠を描画します。
 		/// @param thickness 枠の太さ（ピクセル）
@@ -1010,10 +1015,10 @@ namespace s3d
 		const Polygon& drawFrame(double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形の枠を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		void drawFrame(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
+		void drawFrame(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1028,10 +1033,10 @@ namespace s3d
 		const Polygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
 		/// @param color 色
-		void drawWireframe(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		void drawWireframe(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 多角形をワイヤフレーム表示で描画します。
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
@@ -1040,10 +1045,10 @@ namespace s3d
 		const Polygon& drawWireframe(double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		void drawWireframe(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
+		void drawWireframe(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

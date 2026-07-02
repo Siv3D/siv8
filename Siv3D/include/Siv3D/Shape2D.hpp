@@ -321,6 +321,45 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	rounded
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角を丸めて作成した、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
+		/// @param round 角の半径
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 新しい多角形
+		[[nodiscard]]
+		Polygon rounded(double round, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeMiterBufferPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 辺を外側に拡大または内側に縮小した新しい多角形を返します。
+		/// @param distance 拡大縮小の量（正の値で外側に拡大、負の値で内側に縮小）
+		/// @return 拡大縮小した新しい多角形
+		/// @remark 縮小時に三角形になる場合にも正しく処理されます。
+		[[nodiscard]]
+		Polygon computeMiterBufferPolygon(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeRoundBufferPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形を丸く太らせて作成した、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
+		/// @param distance 太らせる距離
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
+		[[nodiscard]]
+		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	paint
 		//
 		////////////////////////////////////////////////////////////////
@@ -361,8 +400,12 @@ namespace s3d
 		/// @param color 色
 		/// @return *this
 		const Shape2D& draw(const ColorF& color = Palette::White) const;
+		
+		const Shape2D& draw(const Vec2& offset, const ColorF& color = Palette::White) const;
 
 		const Shape2D& draw(const PatternParameters& pattern) const;
+
+		const Shape2D& draw(const Vec2& offset, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -376,7 +419,11 @@ namespace s3d
 		/// @return *this
 		const Shape2D& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		const Shape2D& drawFrame(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
 		const Shape2D& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		const Shape2D& drawFrame(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -390,7 +437,11 @@ namespace s3d
 		/// @return *this
 		const Shape2D& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		const Shape2D& drawWireframe(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
 		const Shape2D& drawWireframe(double thickness, const PatternParameters& pattern) const;
+
+		const Shape2D& drawWireframe(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

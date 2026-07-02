@@ -642,7 +642,7 @@ namespace s3d
 		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
 
 		[[nodiscard]]
-		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
+		Array<Vec2> outer(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -660,7 +660,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return Polygon
 		[[nodiscard]]
-		Polygon asPolygon(const QualityFactor& qualityFactor) const;
+		Polygon asPolygon(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -716,9 +716,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//bool contains(const Shape2DType& other) const;
+		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool contains(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -889,6 +893,44 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Ellipse& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 楕円の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double thickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 楕円の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double thickness, const RectangularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 楕円の破線を描きます。
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 楕円の破線を描きます。
+		/// @param innerThickness 基準の楕円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の楕円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Ellipse& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

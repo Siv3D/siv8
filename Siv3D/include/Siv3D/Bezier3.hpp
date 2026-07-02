@@ -207,7 +207,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	pointAtIndex
+		//	controlPoints
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 4 点の制御点を配列で返します。
+		/// @return 制御点の配列
+		[[nodiscard]]
+		constexpr std::array<position_type, 4> controlPoints() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	controlPointAtIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -216,18 +227,18 @@ namespace s3d
 		/// @return 指定した点への参照
 		/// @throw std::out_of_range index が 0～3 の範囲外の場合
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index);
+		position_type& controlPointAtIndex(size_t index);
 
 		/// @brief インデックスで制御点を取得します。
 		/// @param index 0: p0, 1: p1, 2: p2, 3: p3
 		/// @return 指定した点への参照
 		/// @throw std::out_of_range index が 0～3 の範囲外の場合
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const;
+		const position_type& controlPointAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getPos
+		//	pointAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -235,11 +246,11 @@ namespace s3d
 		/// @param t パラメータ（0.0～1.0）
 		/// @return 曲線上の座標
 		[[nodiscard]]
-		constexpr position_type getPos(double t) const noexcept;
+		constexpr position_type pointAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getDerivative
+		//	derivativeAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -247,11 +258,11 @@ namespace s3d
 		/// @param t パラメータ（0.0～1.0）
 		/// @return 1 階導関数ベクトル
 		[[nodiscard]]
-		constexpr Vec2 getDerivative(double t) const noexcept;
+		constexpr Vec2 derivativeAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getSecondDerivative
+		//	secondDerivativeAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -259,22 +270,22 @@ namespace s3d
 		/// @param t パラメータ（0.0～1.0）
 		/// @return 2 階導関数ベクトル
 		[[nodiscard]]
-		constexpr Vec2 getSecondDerivative(double t) const noexcept;
+		constexpr Vec2 secondDerivativeAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getThirdDerivative
+		//	thirdDerivative
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 3 階導関数（ジャークベクトル）を返します。
 		/// @return 3 階導関数ベクトル
 		[[nodiscard]]
-		constexpr Vec2 getThirdDerivative() const noexcept;
+		constexpr Vec2 thirdDerivative() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getTangent
+		//	tangentAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -282,47 +293,23 @@ namespace s3d
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 接線ベクトル
 		[[nodiscard]]
-		Vec2 getTangent(double t) const noexcept;
+		Vec2 tangentAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getNormal
+		//	normalAt
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 正規化された法線ベクトルを返します。
+		/// @brief パラメータ t における進行方向左手の正規化法線ベクトルを返します。
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 法線ベクトル
 		[[nodiscard]]
-		Vec2 getNormal(double t) const noexcept;
+		Vec2 normalAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getCurvature
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 曲率 κ(t) を返します（符号付き）。
-		/// @param t パラメータ（0.0 ～ 1.0）
-		/// @return 曲率
-		[[nodiscard]]
-		double getCurvature(double t) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getCurvatureRadius
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 曲率半径 ρ(t) = 1/|κ(t)| を返します。
-		/// @param t パラメータ（0.0 ～ 1.0）
-		/// @return 曲率半径（直線に近い場合は Inf を返すことがあります）
-		[[nodiscard]]
-		double getCurvatureRadius(double t) const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getHeading
+		//	headingAt
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -330,7 +317,31 @@ namespace s3d
 		/// @param t パラメータ（0.0 ～ 1.0）
 		/// @return 角度（-π～π）
 		[[nodiscard]]
-		double getHeading(double t) const noexcept;
+		double headingAt(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	curvatureAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲率 κ(t) を返します（符号付き）。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 曲率
+		[[nodiscard]]
+		double curvatureAt(double t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	radiusOfCurvatureAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 曲率半径 ρ(t) = 1/|κ(t)| を返します。
+		/// @param t パラメータ（0.0 ～ 1.0）
+		/// @return 曲率半径（直線に近い場合は Inf を返すことがあります）
+		[[nodiscard]]
+		double radiusOfCurvatureAt(double t) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -338,74 +349,74 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線の長さを計算します。
-		/// @return 曲線の長さ
+		/// @brief 曲線の弧長を数値積分により計算します。
+		/// @return 曲線の弧長の近似値
 		[[nodiscard]]
 		double computeLength() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	tAtLength
+		//	computeTAtDistance
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した長さになる位置のパラメータ t を計算します。
-		/// @param length 長さ
+		/// @param distanceFromStart 始点からの長さ
 		/// @return パラメータ t（0.0 ～ 1.0）
 		[[nodiscard]]
-		double tAtLength(double length) const noexcept;
+		double computeTAtDistance(double distanceFromStart) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getPosAtLength
+		//	computePointAtDistance
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 始点からの長さが length になる位置の座標を計算します。
-		/// @param length 長さ
+		/// @param distanceFromStart 始点からの長さ
 		/// @return 座標
 		[[nodiscard]]
-		position_type getPosAtLength(double length) const noexcept;
+		position_type computePointAtDistance(double distanceFromStart) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//  closestT
+		//  computeClosestT
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した点に最も近い曲線上の位置のパラメータ t を返します。
-		/// @param point 点
+		/// @param targetPoint 対象の点
 		/// @return パラメータ t（0.0～1.0）
 		[[nodiscard]]
-		double closestT(const position_type& point) const noexcept;
+		double computeClosestT(const position_type& targetPoint) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//  closestPoint
+		//  computeClosestPoint
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した点に最も近い曲線上の点を返します。
-		/// @param point 点
+		/// @param targetPoint 対象の点
 		/// @return 曲線上の最近傍点
 		[[nodiscard]]
-		position_type closestPoint(const position_type& point) const noexcept;
+		position_type computeClosestPoint(const position_type& targetPoint) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getLineString
+		//	toLineString
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 曲線を等間隔の t で分割した LineString を返します。
+		/// @brief パラメータ t を等分して曲線を LineString で近似します。
 		/// @param segments 分割数（最低 1）
 		/// @return LineString
 		[[nodiscard]]
-		LineString getLineString(int32 segments = 24) const;
+		LineString toLineString(int32 segments = 24) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	getLineStringAdaptive
+		//	toLineStringAdaptive
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -413,7 +424,7 @@ namespace s3d
 		/// @param maxError 許容誤差
 		/// @param maxDepth 最大再帰深度
 		/// @return LineString
-		LineString getLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
+		LineString toLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -468,14 +479,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	boundingRect
+		//	computeBoundingRect
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 曲線を包含する軸平行矩形（AABB）を返します。
 		/// @return バウンディングボックス
 		[[nodiscard]]
-		RectF boundingRect() const noexcept;
+		RectF computeBoundingRect() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -523,14 +534,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	inflectionTs
+		//	computeInflectionTs
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 反曲点（inflection）候補の t を返します。
 		/// @remark 0～1 の範囲にある解のみ返します。存在しない場合は空配列。
 		[[nodiscard]]
-		Array<double> inflectionTs() const;
+		Array<double> computeInflectionTs() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -547,14 +558,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toBezier2
+		//	approximatedBezier2
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 三次ベジェ曲線を二次ベジェ曲線で近似します。端点（p0, p3）は維持されます。
-		/// @return 二次ベジェ曲線（近似）
+		/// @brief この三次ベジェ曲線を近似する二次ベジェ曲線を返します。
+		/// @return 近似された二次ベジェ曲線
 		[[nodiscard]]
-		constexpr Bezier2 toBezier2() const noexcept;
+		constexpr Bezier2 approximatedBezier2() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -764,9 +775,9 @@ namespace s3d
 		/// @brief 区間 [a, b] の速度を数値積分して弧長を求めます。
 		double integrateSpeed(double a, double b) const noexcept;
 
-		/// @brief pointAtIndex() の範囲外アクセス時に例外を送出します。
+		/// @brief controlPointAtIndex() の範囲外アクセス時に例外を送出します。
 		[[noreturn]]
-		static void ThrowPointAtIndexOutOfRange();
+		static void ThrowControlPointAtIndexOutOfRange();
 	};
 }
 

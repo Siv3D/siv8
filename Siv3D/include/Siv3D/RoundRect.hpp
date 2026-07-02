@@ -907,18 +907,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 角丸長方形の輪郭を LineString として返します。
-		///// @param closeRing 頂点配列の終点を始点と重ねるか
-		///// @return 角丸長方形の輪郭の LineString
-		//[[nodiscard]]
-		//LineString outline(CloseRing closeRing = CloseRing::No) const;
+		/// @brief 角丸長方形の輪郭を LineString として返します。
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @param pointsPerCircle 円周の分割数
+		/// @return 角丸長方形の輪郭の LineString
+		[[nodiscard]]
+		LineString outline(CloseRing closeRing, const PointsPerCircle& pointsPerCircle) const;
 
-		///// @brief 角丸長方形の輪郭の一部を LineString として返します。
-		///// @param distanceFromOrigin 開始地点の距離（左上の角丸の終わりから時計回りでの距離）
-		///// @param length 長さ
-		///// @return 角丸長方形の輪郭の一部の LineString
-		//[[nodiscard]]
-		//LineString outline(double distanceFromOrigin, double length) const;
+		/// @brief 角丸長方形の輪郭を LineString として返します。
+		/// @param closeRing 頂点配列の終点を始点と重ねるか
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 角丸長方形の輪郭の LineString
+		[[nodiscard]]
+		LineString outline(CloseRing closeRing = CloseRing::No, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+		/// @brief 角丸長方形の輪郭の一部を LineString として返します。
+		/// @param distanceFromOrigin 開始地点の距離（左上の角丸の終わりから時計回りでの距離）
+		/// @param length 長さ
+		/// @param pointsPerCircle 円周の分割数
+		/// @return 角丸長方形の輪郭の一部の LineString
+		[[nodiscard]]
+		LineString outline(double distanceFromOrigin, double length, const PointsPerCircle& pointsPerCircle) const;
+		
+		/// @brief 角丸長方形の輪郭の一部を LineString として返します。
+		/// @param distanceFromOrigin 開始地点の距離（左上の角丸の終わりから時計回りでの距離）
+		/// @param length 長さ
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return 角丸長方形の輪郭の一部の LineString
+		[[nodiscard]]
+		LineString outline(double distanceFromOrigin, double length, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -926,6 +943,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 		
+		/// @brief 角丸長方形の外周を表現する頂点配列を返します。
+		/// @param pointsPerCircle 円周の分割数
+		/// @return 角丸長方形の外周を表現する頂点配列
 		[[nodiscard]]
 		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
 
@@ -933,7 +953,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 角丸長方形の外周を表現する頂点配列
 		[[nodiscard]]
-		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
+		Array<Vec2> outer(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -941,6 +961,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 	
+		/// @brief 角丸長方形を Polygon として返します。
+		/// @param pointsPerCircle 円周の分割数
+		/// @return 角丸長方形の Polygon
 		[[nodiscard]]
 		Polygon asPolygon(const PointsPerCircle& pointsPerCircle) const;
 
@@ -948,7 +971,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return 角丸長方形の Polygon
 		[[nodiscard]]
-		Polygon asPolygon(const QualityFactor& qualityFactor) const;
+		Polygon asPolygon(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1004,9 +1027,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//bool contains(const Shape2DType& other) const;
+		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool contains(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1186,6 +1213,27 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 角丸長方形の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const RoundRect& drawDashedFrame(double thickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 角丸長方形の破線を描きます。
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const RoundRect& drawDashedFrame(double innerThickness, double outerThickness, const RectangularDashStyle& style = {}, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

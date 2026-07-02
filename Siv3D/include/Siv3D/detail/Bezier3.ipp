@@ -163,11 +163,22 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	controlPoints
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Bezier3::position_type& Bezier3::pointAtIndex(const size_t index)
+	constexpr std::array<Bezier3::position_type, 4> Bezier3::controlPoints() const noexcept
+	{
+		return{ p0, p1, p2, p3 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	controlPointAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Bezier3::position_type& Bezier3::controlPointAtIndex(const size_t index)
 	{
 		switch (index)
 		{
@@ -175,11 +186,11 @@ namespace s3d
 		case 1: return p1;
 		case 2: return p2;
 		case 3: return p3;
-		default: ThrowPointAtIndexOutOfRange();
+		default: ThrowControlPointAtIndexOutOfRange();
 		}
 	}
 
-	inline const Bezier3::position_type& Bezier3::pointAtIndex(const size_t index) const
+	inline const Bezier3::position_type& Bezier3::controlPointAtIndex(const size_t index) const
 	{
 		switch (index)
 		{
@@ -187,17 +198,17 @@ namespace s3d
 		case 1: return p1;
 		case 2: return p2;
 		case 3: return p3;
-		default: ThrowPointAtIndexOutOfRange();
+		default: ThrowControlPointAtIndexOutOfRange();
 		}
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getPos
+	//	pointAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Bezier3::position_type Bezier3::getPos(const double t) const noexcept
+	constexpr Bezier3::position_type Bezier3::pointAt(const double t) const noexcept
 	{
 		const double u = (1.0 - t);
 		return ((u * u * u) * p0
@@ -208,11 +219,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getDerivative
+	//	derivativeAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Bezier3::position_type Bezier3::getDerivative(const double t) const noexcept
+	constexpr Bezier3::position_type Bezier3::derivativeAt(const double t) const noexcept
 	{
 		const double u = (1.0 - t);
 		const position_type a = (p1 - p0);
@@ -225,11 +236,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getSecondDerivative
+	//	secondDerivativeAt
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Bezier3::position_type Bezier3::getSecondDerivative(const double t) const noexcept
+	constexpr Bezier3::position_type Bezier3::secondDerivativeAt(const double t) const noexcept
 	{
 		const double u = (1.0 - t);
 		const position_type a = (p2 - (p1 * 2.0) + p0);
@@ -239,11 +250,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getThirdDerivative
+	//	thirdDerivative
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Bezier3::position_type Bezier3::getThirdDerivative() const noexcept
+	constexpr Bezier3::position_type Bezier3::thirdDerivative() const noexcept
 	{
 		return ((p3 - (p2 * 3.0) + (p1 * 3.0) - p0) * 6.0);
 	}
@@ -365,11 +376,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	toBezier2
+	//	approximatedBezier2
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Bezier2 Bezier3::toBezier2() const noexcept
+	constexpr Bezier2 Bezier3::approximatedBezier2() const noexcept
 	{
 		return{ p0, (((p1 + p2) * 3.0 - (p0 + p3)) * 0.25), p3 };
 	}

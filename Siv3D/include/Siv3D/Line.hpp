@@ -628,7 +628,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	pointAtIndex
+		//	vertices
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分の始点と終点の座標を配列にして返します。
+		/// @return 線分の始点と終点の座標を格納した配列
+		[[nodiscard]]
+		constexpr std::array<position_type, 2> vertices() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	vertexAtIndex
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -637,13 +648,13 @@ namespace s3d
 		/// @return 指定したインデックスの頂点座標の参照
 		/// @throw std::out_of_range index が 0 または 1 でない場合
 		[[nodiscard]]
-		position_type& pointAtIndex(size_t index);
+		position_type& vertexAtIndex(size_t index);
 
 		/// @brief 指定したインデックスの頂点座標の参照を返します
 		/// @param index インデックス（0: 始点, 1: 終点）
 		/// @return 指定したインデックスの頂点座標の参照
 		[[nodiscard]]
-		const position_type& pointAtIndex(size_t index) const;
+		const position_type& vertexAtIndex(size_t index) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -783,16 +794,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateRoundBuffer
+		//	computeMiterBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 線分を丸く太らせて作成した、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
+		/// @brief 線分を太らせて作成した、新しい Polygon を返します。
+		/// @param distance 太らせる距離
+		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
+		[[nodiscard]]
+		Polygon computeMiterBufferPolygon(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeRoundBufferPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 線分を丸く太らせて作成した、新しい Polygon を返します。分割数は半径に応じて自動的に決定されます。
 		/// @param distance 太らせる距離
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
-		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
+		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1148,7 +1171,7 @@ namespace s3d
 	private:
 
 		[[noreturn]]
-		static void ThrowPointAtIndexOutOfRange();
+		static void ThrowVertexAtIndexOutOfRange();
 	};
 }
 

@@ -1024,11 +1024,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	vertices
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Rect::position_type Rect::pointAtIndex(const size_t index) const
+	constexpr std::array<Rect::position_type, 4> Rect::vertices() const noexcept
+	{
+		return{ pos, tr(), br(), bl() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sides
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::array<Line, 4> Rect::sides() const noexcept
+	{
+		return{ top(), right(), bottom(), left() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	vertexAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Rect::position_type Rect::vertexAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -1048,7 +1070,7 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 
@@ -1283,6 +1305,39 @@ namespace s3d
 	constexpr RoundRect Rect::rounded(const double r) const noexcept
 	{
 		return{ *this, Min(r, (size.x * 0.5), (size.y * 0.5)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	inscribedDiamond
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Rect::inscribedDiamond() const noexcept
+	{
+		return{ topCenter(), middleRight(), bottomCenter(), middleLeft() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	trapezoid
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad Rect::trapezoid(const Arg::top_<double> topOffset, const Arg::bottom_<double> bottomOffset) const noexcept
+	{
+		return{ { (pos.x - *topOffset), pos.y },
+				{ (pos.x + size.x + *topOffset), pos.y },
+				{ (pos.x + size.x + *bottomOffset), (pos.y + size.y) },
+				{ (pos.x - *bottomOffset), (pos.y + size.y) } };
+	}
+
+	constexpr Quad Rect::trapezoid(const Arg::left_<double> leftOffset, const Arg::right_<double> rightOffset) const noexcept
+	{
+		return{ { pos.x, (pos.y - *leftOffset) },
+				{ (pos.x + size.x), (pos.y - *rightOffset) },
+				{ (pos.x + size.x), (pos.y + size.y + *rightOffset) },
+				{ pos.x, (pos.y + size.y + *leftOffset) } };
 	}
 
 	////////////////////////////////////////////////////////////////

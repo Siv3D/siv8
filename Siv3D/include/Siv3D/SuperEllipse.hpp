@@ -561,7 +561,7 @@ namespace s3d
 		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
 
 		[[nodiscard]]
-		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
+		Array<Vec2> outer(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -579,7 +579,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return Polygon
 		[[nodiscard]]
-		Polygon asPolygon(const QualityFactor& qualityFactor) const;
+		Polygon asPolygon(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -619,25 +619,29 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
 
-		//////////////////////////////////////////////////////////////////
-		////
-		////	intersetsAt
-		////
-		//////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersetsAt
+		//
+		////////////////////////////////////////////////////////////////
 
-		////template <class Shape2DType>
-		////[[nodiscard]]
-		////Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+		//template <class Shape2DType>
+		//[[nodiscard]]
+		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
-		//////////////////////////////////////////////////////////////////
-		////
-		////	contains
-		////
-		//////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
 
-		////template <class Shape2DType>
-		////[[nodiscard]]
-		////bool contains(const Shape2DType& other) const;
+		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool contains(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -37,12 +37,12 @@ namespace s3d
 
 		double Distance(const Vec2& a, const Bezier2& b)
 		{
-			return a.distanceFrom(b.closestPoint(a));
+			return a.distanceFrom(b.computeClosestPoint(a));
 		}
 
 		double Distance(const Vec2& a, const Bezier3& b)
 		{
-			return a.distanceFrom(b.closestPoint(a));
+			return a.distanceFrom(b.computeClosestPoint(a));
 		}
 	}
 }

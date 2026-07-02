@@ -423,11 +423,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	vertices
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Triangle::position_type& Triangle::pointAtIndex(const size_t index)
+	constexpr std::array<Triangle::position_type, 3> Triangle::vertices() const noexcept
+	{
+		return{ p0, p1, p2 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sides
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::array<Line, 3> Triangle::sides() const noexcept
+	{
+		return{ p0p1(), p1p2(), p2p0() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	vertexAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Triangle::position_type& Triangle::vertexAtIndex(const size_t index)
 	{
 		if (index == 0)
 		{
@@ -443,11 +465,11 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 
-	inline const Triangle::position_type& Triangle::pointAtIndex(const size_t index) const
+	inline const Triangle::position_type& Triangle::vertexAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -463,7 +485,7 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 
@@ -578,6 +600,18 @@ namespace s3d
 	constexpr bool Triangle::intersects(const Shape2DType& other) const
 	{
 		return Geometry2D::Intersect(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Triangle::contains(const Shape2DType& other) const
+	{
+		return Geometry2D::Contains(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

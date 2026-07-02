@@ -482,7 +482,7 @@ namespace s3d
 				{
 					if (In01(x))
 					{
-						const Vec2 intersection = b.getPos(Clamp(x, 0.0, 1.0));
+						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
 
 						if (Intersect(a, intersection))
 						{
@@ -516,7 +516,7 @@ namespace s3d
 				{
 					if (In01(x))
 					{
-						const Vec2 intersection = b.getPos(Clamp(x, 0.0, 1.0));
+						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
 
 						if (Intersect(a, intersection))
 						{
@@ -844,28 +844,28 @@ namespace s3d
 
 		bool Intersect(const Bezier2& a, const Bezier2& b)
 		{
-			const RectF aRect = a.boundingRect();
-			const RectF bRect = b.boundingRect();
+			const RectF aRect = a.computeBoundingRect();
+			const RectF bRect = b.computeBoundingRect();
 
 			if (not Intersect(aRect, bRect))
 			{
 				return false;
 			}
 
-			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
 		bool Intersect(const Bezier2& a, const Bezier3& b)
 		{
-			const RectF aRect = a.boundingRect();
-			const RectF bRect = b.boundingRect();
+			const RectF aRect = a.computeBoundingRect();
+			const RectF bRect = b.computeBoundingRect();
 
 			if (not Intersect(aRect, bRect))
 			{
 				return false;
 			}
 
-			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
 		bool Intersect(const Bezier2& a, const Rect& b)
@@ -926,7 +926,7 @@ namespace s3d
 				return true;
 			}
 
-			const Vec2 closestPoint = a.closestPoint(b.center);
+			const Vec2 closestPoint = a.computeClosestPoint(b.center);
 			return (closestPoint.distanceFromSq(b.center) <= (b.r * b.r));
 		}
 
@@ -954,7 +954,7 @@ namespace s3d
 			localBezier.p1 = ((a.p1 - b.center) * invR);
 			localBezier.p2 = ((a.p2 - b.center) * invR);
 
-			const double distanceSq = localBezier.closestPoint(Vec2{ 0, 0 }).lengthSq();
+			const double distanceSq = localBezier.computeClosestPoint(Vec2{ 0, 0 }).lengthSq();
 			return (distanceSq <= 1.0);
 		}
 
@@ -986,15 +986,15 @@ namespace s3d
 
 		bool Intersect(const Bezier3& a, const Bezier3& b)
 		{
-			const RectF aRect = a.boundingRect();
-			const RectF bRect = b.boundingRect();
+			const RectF aRect = a.computeBoundingRect();
+			const RectF bRect = b.computeBoundingRect();
 
 			if (not Intersect(aRect, bRect))
 			{
 				return false;
 			}
 
-			return Intersect(a.getLineStringAdaptive(), b.getLineStringAdaptive());
+			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1134,7 +1134,7 @@ namespace s3d
 
 			for (size_t i = 0; i < 3; ++i)
 			{
-				triangle.pointAtIndex(i).y *= v;
+				triangle.vertexAtIndex(i).y *= v;
 			}
 
 			return Intersect(Circle{ a.a }, triangle);
@@ -1148,7 +1148,7 @@ namespace s3d
 
 			for (size_t i = 0; i < 4; ++i)
 			{
-				quad.pointAtIndex(i).y *= v;
+				quad.vertexAtIndex(i).y *= v;
 			}
 
 			return Intersect(Circle{ a.a }, quad);
@@ -1194,12 +1194,12 @@ namespace s3d
 		{
 			auto Project = [](const Triangle& t, const Vec2& axis) noexcept -> std::pair<double, double>
 			{
-				double mn = axis.dot(t.pointAtIndex(0));
+				double mn = axis.dot(t.vertexAtIndex(0));
 				double mx = mn;
 
 				for (int32 i = 1; i < 3; ++i)
 				{
-					const double d = axis.dot(t.pointAtIndex(i));
+					const double d = axis.dot(t.vertexAtIndex(i));
 					
 					if (d < mn)
 					{
@@ -1224,8 +1224,8 @@ namespace s3d
 			{
 				for (int32 i = 0; i < 3; ++i)
 				{
-					const Vec2 p0 = t0.pointAtIndex(i);
-					const Vec2 p1 = t0.pointAtIndex((i + 1) % 3);
+					const Vec2 p0 = t0.vertexAtIndex(i);
+					const Vec2 p1 = t0.vertexAtIndex((i + 1) % 3);
 
 					const Vec2 edge = (p1 - p0);
 

@@ -100,6 +100,14 @@ namespace s3d
 
 		template <class OutputIterator, class Converter>
 		void batchNoise(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchNoise(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchNoise(OutputIterator first, int32 width, int32 height,
 			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Converter convert) const;
 
 		template <class OutputIterator, class Converter>
@@ -132,6 +140,14 @@ namespace s3d
 		//	batchNoise01
 		//
 		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchNoise01(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchNoise01(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Converter convert) const;
 
 		template <class OutputIterator, class Converter>
 		void batchNoise01(OutputIterator first, int32 width, int32 height,
@@ -170,6 +186,14 @@ namespace s3d
 
 		template <class OutputIterator, class Converter>
 		void batchOctaveNoise(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise(OutputIterator first, int32 width, int32 height,
 			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
 
 		template <class OutputIterator, class Converter>
@@ -202,6 +226,14 @@ namespace s3d
 		//	batchOctaveNoise01
 		//
 		////////////////////////////////////////////////////////////////
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise01(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoise01(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
 
 		template <class OutputIterator, class Converter>
 		void batchOctaveNoise01(OutputIterator first, int32 width, int32 height,
@@ -240,7 +272,15 @@ namespace s3d
 
 		template <class OutputIterator, class Converter>
 		void batchOctaveNoiseNormalized(OutputIterator first, int32 width, int32 height,
-			value_type baseX, const value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
 
 		template <class OutputIterator, class Converter>
 		void batchOctaveNoiseNormalized(OutputIterator first, Size size,
@@ -275,6 +315,14 @@ namespace s3d
 
 		template <class OutputIterator, class Converter>
 		void batchOctaveNoiseNormalized01(OutputIterator first, int32 width, int32 height,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized01(OutputIterator first, Size size,
+			value_type baseX, value_type baseY, value_type xStep, value_type yStep, Parameters parameters, Converter convert) const;
+
+		template <class OutputIterator, class Converter>
+		void batchOctaveNoiseNormalized01(OutputIterator first, int32 width, int32 height,
 			value_type baseX, value_type baseY, value_type xStep, value_type yStep, value_type z, Parameters parameters, Converter convert) const;
 
 		template <class OutputIterator, class Converter>
@@ -288,7 +336,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		constexpr const state_type serialize() const noexcept;
+		constexpr state_type serialize() const noexcept;
 
 		constexpr void deserialize(const state_type& state) noexcept;
 
@@ -300,6 +348,12 @@ namespace s3d
 			{ 0, 1, 1}, { 0,-1, 1}, { 0, 1,-1}, { 0,-1,-1},
 			{ 1, 1, 0}, { 0,-1, 1}, {-1, 1, 0}, { 0,-1,-1}
 		};
+
+		/// @brief noise(x) で用いるエントロピー定数
+		static constexpr value_type EntropyY = static_cast<value_type>(0.34567890123456789012);
+
+		/// @brief noise(x) と noise(x, y) で用いるエントロピー定数
+		static constexpr value_type EntropyZ = static_cast<value_type>(0.12345678901234567890);
 
 		internal_state_type m_perm;
 

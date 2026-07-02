@@ -20,43 +20,43 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	constexpr LineString::LineString(const container_type& other)
-		: m_points{ other } {}
+		: m_vertices{ other } {}
 
 	constexpr LineString::LineString(container_type&& other)
-		: m_points{ std::move(other) } {}
+		: m_vertices{ std::move(other) } {}
 
 	constexpr LineString::LineString(const size_type count, const value_type& value)
-		: m_points(count, value) {}
+		: m_vertices(count, value) {}
 
 	constexpr LineString::LineString(const size_type count)
-		: m_points(count) {}
+		: m_vertices(count) {}
 
 	template <std::input_iterator Iterator>
 	constexpr LineString::LineString(Iterator first, Iterator last)
-		: m_points(first, last) {}
+		: m_vertices(first, last) {}
 
-	constexpr LineString::LineString(const Array<Point>& points)
-		: m_points(points.begin(), points.end()) {}
+	constexpr LineString::LineString(const Array<Point>& vertices)
+		: m_vertices(vertices.begin(), vertices.end()) {}
 
 	constexpr LineString::LineString(const HasAsArray auto& a)
-		: m_points{ a.asArray() } {}
+		: m_vertices{ a.asArray() } {}
 
 	constexpr LineString::LineString(HasAsArray auto&& a)
-		: m_points{ std::forward<decltype(a)>(a).asArray() } {}
+		: m_vertices{ std::forward<decltype(a)>(a).asArray() } {}
 
 	constexpr LineString::LineString(std::initializer_list<value_type> list)
-		: m_points(list) {}
+		: m_vertices(list) {}
 
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
 	constexpr LineString::LineString(std::from_range_t, Range&& range)
-		: m_points(std::from_range, std::forward<Range>(range)) {}
+		: m_vertices(std::from_range, std::forward<Range>(range)) {}
 
 	template <Concept::ContainerCompatibleRange<Point> Range>
 	constexpr LineString::LineString(std::from_range_t, Range&& range)
-		: m_points(std::from_range, std::forward<Range>(range)) {}
+		: m_vertices(std::from_range, std::forward<Range>(range)) {}
 
 	constexpr LineString::LineString(const Arg::reserve_<size_type> size)
-		: m_points{ size } {}
+		: m_vertices{ size } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -66,37 +66,37 @@ namespace s3d
 
 	constexpr LineString& LineString::operator =(const container_type& other)
 	{
-		m_points = other;
+		m_vertices = other;
 		return *this;
 	}
 
 	constexpr LineString& LineString::operator =(container_type&& other)
 	{
-		m_points = std::move(other);
+		m_vertices = std::move(other);
 		return *this;
 	}
 
 	constexpr LineString& LineString::operator =(const Array<Point>& other)
 	{
-		m_points.assign(other.begin(), other.end());
+		m_vertices.assign(other.begin(), other.end());
 		return *this;
 	}
 
 	constexpr LineString& LineString::operator =(const HasAsArray auto& a)
 	{
-		m_points = a.asArray();
+		m_vertices = a.asArray();
 		return *this;
 	}
 
 	constexpr LineString& LineString::operator =(HasAsArray auto&& a)
 	{
-		m_points = std::forward<decltype(a)>(a).asArray();
+		m_vertices = std::forward<decltype(a)>(a).asArray();
 		return *this;
 	}
 
 	constexpr LineString& LineString::operator =(std::initializer_list<value_type> list)
 	{
-		m_points = list;
+		m_vertices = list;
 		return *this;
 	}
 
@@ -108,20 +108,20 @@ namespace s3d
 
 	constexpr LineString& LineString::assign(const size_type count, const value_type& value)
 	{
-		m_points.assign(count, value);
+		m_vertices.assign(count, value);
 		return *this;
 	}
 
 	template <std::input_iterator Iterator>
 	constexpr LineString& LineString::assign(Iterator first, Iterator last)
 	{
-		m_points.assign(first, last);
+		m_vertices.assign(first, last);
 		return *this;
 	}
 
 	constexpr LineString& LineString::assign(std::initializer_list<value_type> list)
 	{
-		m_points.assign(list);
+		m_vertices.assign(list);
 		return *this;
 	}
 
@@ -134,14 +134,14 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
 	constexpr LineString& LineString::assign_range(Range&& range)
 	{
-		m_points.assign_range(std::forward<Range>(range));
+		m_vertices.assign_range(std::forward<Range>(range));
 		return *this;
 	}
 
 	template <Concept::ContainerCompatibleRange<Point> Range>
 	constexpr LineString& LineString::assign_range(Range&& range)
 	{
-		m_points.assign_range(std::forward<Range>(range));
+		m_vertices.assign_range(std::forward<Range>(range));
 		return *this;
 	}
 
@@ -156,7 +156,7 @@ namespace s3d
 	[[nodiscard]]
 	constexpr LineString::allocator_type LineString::get_allocator() const noexcept
 	{
-		return m_points.get_allocator();
+		return m_vertices.get_allocator();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -167,12 +167,12 @@ namespace s3d
 
 	constexpr const LineString::container_type& LineString::asArray() const& noexcept
 	{
-		return m_points;
+		return m_vertices;
 	}
 
 	constexpr LineString::container_type LineString::asArray() && noexcept
 	{
-		return std::move(m_points);
+		return std::move(m_vertices);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -183,12 +183,12 @@ namespace s3d
 
 	constexpr LineString::operator container_type() const& noexcept
 	{
-		return m_points;
+		return m_vertices;
 	}
 
 	constexpr LineString::operator container_type() && noexcept
 	{
-		return std::move(m_points);
+		return std::move(m_vertices);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -199,17 +199,17 @@ namespace s3d
 
 	constexpr const LineString::value_type& LineString::at(const size_type index) const&
 	{
-		return m_points.at(index);
+		return m_vertices.at(index);
 	}
 
 	constexpr LineString::value_type& LineString::at(const size_type index)&
 	{
-		return m_points.at(index);
+		return m_vertices.at(index);
 	}
 
 	constexpr LineString::value_type LineString::at(const size_type index)&&
 	{
-		return m_points.at(index);
+		return m_vertices.at(index);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -220,17 +220,17 @@ namespace s3d
 
 	constexpr const LineString::value_type& LineString::operator [](const size_type index) const& noexcept
 	{
-		return m_points[index];
+		return m_vertices[index];
 	}
 
 	constexpr LineString::value_type& LineString::operator [](const size_type index) & noexcept
 	{
-		return m_points[index];
+		return m_vertices[index];
 	}
 
 	constexpr LineString::value_type LineString::operator [](const size_type index) && noexcept
 	{
-		return m_points[index];
+		return m_vertices[index];
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -241,17 +241,17 @@ namespace s3d
 
 	constexpr LineString::reference LineString::front() & noexcept
 	{
-		return m_points.front();
+		return m_vertices.front();
 	}
 
 	constexpr LineString::const_reference LineString::front() const& noexcept
 	{
-		return m_points.front();
+		return m_vertices.front();
 	}
 
 	constexpr LineString::value_type LineString::front() && noexcept
 	{
-		return m_points.front();
+		return m_vertices.front();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -262,17 +262,17 @@ namespace s3d
 
 	constexpr LineString::reference LineString::back() & noexcept
 	{
-		return m_points.back();
+		return m_vertices.back();
 	}
 
 	constexpr LineString::const_reference LineString::back() const& noexcept
 	{
-		return m_points.back();
+		return m_vertices.back();
 	}
 
 	constexpr LineString::value_type LineString::back() && noexcept
 	{
-		return m_points.back();
+		return m_vertices.back();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -283,12 +283,12 @@ namespace s3d
 
 	constexpr LineString::value_type* LineString::data() noexcept
 	{
-		return m_points.data();
+		return m_vertices.data();
 	}
 
 	constexpr const LineString::value_type* LineString::data() const noexcept
 	{
-		return m_points.data();
+		return m_vertices.data();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -299,22 +299,22 @@ namespace s3d
 
 	constexpr LineString::iterator LineString::begin() noexcept
 	{
-		return m_points.begin();
+		return m_vertices.begin();
 	}
 
 	constexpr LineString::iterator LineString::end() noexcept
 	{
-		return m_points.end();
+		return m_vertices.end();
 	}
 
 	constexpr LineString::const_iterator LineString::begin() const noexcept
 	{
-		return m_points.begin();
+		return m_vertices.begin();
 	}
 
 	constexpr LineString::const_iterator LineString::end() const noexcept
 	{
-		return m_points.end();
+		return m_vertices.end();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -325,12 +325,12 @@ namespace s3d
 
 	constexpr LineString::const_iterator LineString::cbegin() const noexcept
 	{
-		return m_points.cbegin();
+		return m_vertices.cbegin();
 	}
 
 	constexpr LineString::const_iterator LineString::cend() const noexcept
 	{
-		return m_points.cend();
+		return m_vertices.cend();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -341,22 +341,22 @@ namespace s3d
 
 	constexpr LineString::reverse_iterator LineString::rbegin() noexcept
 	{
-		return m_points.rbegin();
+		return m_vertices.rbegin();
 	}
 
 	constexpr LineString::reverse_iterator LineString::rend() noexcept
 	{
-		return m_points.rend();
+		return m_vertices.rend();
 	}
 
 	constexpr LineString::const_reverse_iterator LineString::rbegin() const noexcept
 	{
-		return m_points.rbegin();
+		return m_vertices.rbegin();
 	}
 
 	constexpr LineString::const_reverse_iterator LineString::rend() const noexcept
 	{
-		return m_points.rend();
+		return m_vertices.rend();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -367,12 +367,12 @@ namespace s3d
 
 	constexpr LineString::const_reverse_iterator LineString::crbegin() const noexcept
 	{
-		return m_points.crbegin();
+		return m_vertices.crbegin();
 	}
 
 	constexpr LineString::const_reverse_iterator LineString::crend() const noexcept
 	{
-		return m_points.crend();
+		return m_vertices.crend();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -383,7 +383,7 @@ namespace s3d
 
 	constexpr bool LineString::empty() const noexcept
 	{
-		return m_points.isEmpty();
+		return m_vertices.isEmpty();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -394,7 +394,7 @@ namespace s3d
 
 	constexpr bool LineString::isEmpty() const noexcept
 	{
-		return m_points.isEmpty();
+		return m_vertices.isEmpty();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -405,7 +405,7 @@ namespace s3d
 
 	constexpr bool LineString::indexInBounds(const size_type index) const noexcept
 	{
-		return (index < m_points.size());
+		return (index < m_vertices.size());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -416,7 +416,7 @@ namespace s3d
 
 	constexpr LineString::operator bool() const noexcept
 	{
-		return (not m_points.isEmpty());
+		return (not m_vertices.isEmpty());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -427,7 +427,7 @@ namespace s3d
 
 	constexpr size_t LineString::size() const noexcept
 	{
-		return m_points.size();
+		return m_vertices.size();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -438,7 +438,7 @@ namespace s3d
 
 	constexpr isize LineString::ssize() const noexcept
 	{
-		return m_points.ssize();
+		return m_vertices.ssize();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -449,7 +449,7 @@ namespace s3d
 
 	constexpr size_t LineString::size_bytes() const noexcept
 	{
-		return m_points.size_bytes();
+		return m_vertices.size_bytes();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -460,7 +460,7 @@ namespace s3d
 
 	constexpr size_t LineString::max_size() const noexcept
 	{
-		return m_points.max_size();
+		return m_vertices.max_size();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -471,7 +471,7 @@ namespace s3d
 
 	constexpr void LineString::reserve(const size_type n)
 	{
-		m_points.reserve(n);
+		m_vertices.reserve(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -482,7 +482,7 @@ namespace s3d
 
 	constexpr size_t LineString::capacity() const noexcept
 	{
-		return m_points.capacity();
+		return m_vertices.capacity();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -493,7 +493,7 @@ namespace s3d
 
 	constexpr void LineString::shrink_to_fit()
 	{
-		m_points.shrink_to_fit();
+		m_vertices.shrink_to_fit();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -504,7 +504,7 @@ namespace s3d
 
 	constexpr void LineString::clear() noexcept
 	{
-		m_points.clear();
+		m_vertices.clear();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -515,7 +515,7 @@ namespace s3d
 
 	constexpr void LineString::release()
 	{
-		m_points.release();
+		m_vertices.release();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -526,23 +526,23 @@ namespace s3d
 
 	constexpr LineString::iterator LineString::insert(const_iterator pos, const value_type& value)
 	{
-		return m_points.insert(pos, value);
+		return m_vertices.insert(pos, value);
 	}
 
 	constexpr LineString::iterator LineString::insert(const_iterator pos, const size_type count, const value_type& value)
 	{
-		return m_points.insert(pos, count, value);
+		return m_vertices.insert(pos, count, value);
 	}
 
 	template <std::input_iterator Iterator>
 	constexpr LineString::iterator LineString::insert(const_iterator pos, Iterator first, Iterator last)
 	{
-		return m_points.insert(pos, first, last);
+		return m_vertices.insert(pos, first, last);
 	}
 
 	constexpr LineString::iterator LineString::insert(const_iterator pos, std::initializer_list<value_type> list)
 	{
-		return m_points.insert(pos, list);
+		return m_vertices.insert(pos, list);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -554,7 +554,7 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
 	constexpr LineString::iterator LineString::insert_range(const_iterator pos, Range&& range)
 	{
-		return m_points.insert_range(pos, std::forward<Range>(range));
+		return m_vertices.insert_range(pos, std::forward<Range>(range));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -566,7 +566,7 @@ namespace s3d
 	template <class... Args>
 	constexpr LineString::iterator LineString::emplace(const_iterator pos, Args&&... args)
 	{
-		return m_points.emplace(pos, std::forward<Args>(args)...);
+		return m_vertices.emplace(pos, std::forward<Args>(args)...);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -578,13 +578,13 @@ namespace s3d
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
 	constexpr void LineString::append_range(Range&& range)
 	{
-		m_points.append_range(std::forward<Range>(range));
+		m_vertices.append_range(std::forward<Range>(range));
 	}
 
 	template <Concept::ContainerCompatibleRange<Point> Range>
 	constexpr void LineString::append_range(Range&& range)
 	{
-		m_points.append_range(std::forward<Range>(range));
+		m_vertices.append_range(std::forward<Range>(range));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -595,12 +595,12 @@ namespace s3d
 
 	constexpr LineString::iterator LineString::erase(const_iterator pos)
 	{
-		return m_points.erase(pos);
+		return m_vertices.erase(pos);
 	}
 
 	constexpr LineString::iterator LineString::erase(const_iterator first, const_iterator last)
 	{
-		return m_points.erase(first, last);
+		return m_vertices.erase(first, last);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -611,7 +611,7 @@ namespace s3d
 
 	constexpr LineString& LineString::erase_at(const size_type index)&
 	{
-		m_points.erase_at(index);
+		m_vertices.erase_at(index);
 		return *this;
 	}
 
@@ -629,7 +629,7 @@ namespace s3d
 
 	constexpr LineString::size_type LineString::erase_all(const value_type& value)
 	{
-		return m_points.erase_all(value);
+		return m_vertices.erase_all(value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -640,7 +640,7 @@ namespace s3d
 
 	constexpr bool LineString::erase_first(const value_type& value)
 	{
-		return m_points.erase_first(value);
+		return m_vertices.erase_first(value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -653,7 +653,7 @@ namespace s3d
 	constexpr LineString::size_type LineString::erase_all_if(Fty f)
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return m_points.erase_all_if(std::forward<Fty>(f));
+		return m_vertices.erase_all_if(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -666,7 +666,7 @@ namespace s3d
 	constexpr bool LineString::erase_first_if(Fty f)
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return m_points.erase_first_if(std::forward<Fty>(f));
+		return m_vertices.erase_first_if(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -677,7 +677,7 @@ namespace s3d
 
 	constexpr void LineString::push_back(const value_type& value)
 	{
-		m_points.push_back(value);
+		m_vertices.push_back(value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -689,7 +689,7 @@ namespace s3d
 	template <class... Args>
 	constexpr LineString::reference LineString::emplace_back(Args&&... args)
 	{
-		return m_points.emplace_back(std::forward<Args>(args)...);
+		return m_vertices.emplace_back(std::forward<Args>(args)...);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -700,7 +700,7 @@ namespace s3d
 
 	constexpr void LineString::pop_back()
 	{
-		m_points.pop_back();
+		m_vertices.pop_back();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -711,12 +711,12 @@ namespace s3d
 
 	constexpr void LineString::resize(const size_type count)
 	{
-		m_points.resize(count);
+		m_vertices.resize(count);
 	}
 
 	constexpr void LineString::resize(const size_type count, const value_type& value)
 	{
-		m_points.resize(count, value);
+		m_vertices.resize(count, value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -727,7 +727,7 @@ namespace s3d
 
 	constexpr void LineString::swap(LineString& other) noexcept
 	{
-		m_points.swap(other.m_points);
+		m_vertices.swap(other.m_vertices);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -738,7 +738,7 @@ namespace s3d
 
 	constexpr void LineString::push_front(const value_type& value)
 	{
-		m_points.push_front(value);
+		m_vertices.push_front(value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -750,7 +750,7 @@ namespace s3d
 	template <class... Args>
 	constexpr LineString::reference LineString::emplace_front(Args&&... args)
 	{
-		return m_points.emplace_front(std::forward<Args>(args)...);
+		return m_vertices.emplace_front(std::forward<Args>(args)...);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -761,7 +761,7 @@ namespace s3d
 
 	constexpr void LineString::pop_front()
 	{
-		m_points.pop_front();
+		m_vertices.pop_front();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -772,7 +772,7 @@ namespace s3d
 
 	constexpr void LineString::pop_front_N(const size_type n)
 	{
-		m_points.pop_front_N(n);
+		m_vertices.pop_front_N(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -783,7 +783,7 @@ namespace s3d
 
 	constexpr void LineString::pop_back_N(const size_type n)
 	{
-		m_points.pop_back_N(n);
+		m_vertices.pop_back_N(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -794,7 +794,7 @@ namespace s3d
 
 	constexpr LineString& LineString::operator <<(const value_type& value)
 	{
-		m_points << value;
+		m_vertices << value;
 		return *this;
 	}
 
@@ -806,12 +806,12 @@ namespace s3d
 
 	constexpr std::span<LineString::value_type> LineString::subspan(const size_type pos, const size_type count) noexcept
 	{
-		return m_points.subspan(pos, count);
+		return m_vertices.subspan(pos, count);
 	}
 
 	constexpr std::span<const LineString::value_type> LineString::subspan(const size_type pos, const size_type count) const noexcept
 	{
-		return m_points.subspan(pos, count);
+		return m_vertices.subspan(pos, count);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -822,7 +822,7 @@ namespace s3d
 
 	inline uint64 LineString::hash() const noexcept
 	{
-		return BitwiseHash(m_points.data(), m_points.size_bytes());
+		return BitwiseHash(m_vertices.data(), m_vertices.size_bytes());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -835,7 +835,7 @@ namespace s3d
 	constexpr bool LineString::all(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return m_points.all(std::forward<Fty>(f));
+		return m_vertices.all(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -848,7 +848,7 @@ namespace s3d
 	constexpr bool LineString::any(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return m_points.any(std::forward<Fty>(f));
+		return m_vertices.any(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -859,32 +859,32 @@ namespace s3d
 
 	constexpr LineString& LineString::append(const LineString& other)
 	{
-		m_points.append(other.m_points);
+		m_vertices.append(other.m_vertices);
 		return *this;
 	}
 
 	constexpr LineString& LineString::append(const container_type& other)
 	{
-		m_points.append(other);
+		m_vertices.append(other);
 		return *this;
 	}
 
 	template <std::input_iterator Iterator>
 	constexpr LineString& LineString::append(Iterator first, Iterator last)
 	{
-		m_points.append(first, last);
+		m_vertices.append(first, last);
 		return *this;
 	}
 
 	constexpr LineString& LineString::append(std::initializer_list<value_type> list)
 	{
-		m_points.append(list);
+		m_vertices.append(list);
 		return *this;
 	}
 
 	constexpr LineString& LineString::append(const size_type count, const value_type& value)
 	{
-		m_points.append(count, value);
+		m_vertices.append(count, value);
 		return *this;
 	}
 
@@ -896,32 +896,32 @@ namespace s3d
 
 	inline LineString::value_type& LineString::choice()
 	{
-		return m_points.choice();
+		return m_vertices.choice();
 	}
 
 	inline const LineString::value_type& LineString::choice() const
 	{
-		return m_points.choice();
+		return m_vertices.choice();
 	}
 
 	inline LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg)
 	{
-		return m_points.choice(std::forward<decltype(rbg)>(rbg));
+		return m_vertices.choice(std::forward<decltype(rbg)>(rbg));
 	}
 
 	inline const LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
 	{
-		return m_points.choice(std::forward<decltype(rbg)>(rbg));
+		return m_vertices.choice(std::forward<decltype(rbg)>(rbg));
 	}
 
 	inline LineString LineString::choice(const size_t n) const
 	{
-		return LineString{ m_points.choice(n) };
+		return LineString{ m_vertices.choice(n) };
 	}
 
 	inline LineString LineString::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
 	{
-		return LineString{ m_points.choice(n, std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ m_vertices.choice(n, std::forward<decltype(rbg)>(rbg)) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -961,7 +961,7 @@ namespace s3d
 
 	constexpr bool LineString::contains(const value_type& value) const
 	{
-		return m_points.contains(value);
+		return m_vertices.contains(value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -974,7 +974,7 @@ namespace s3d
 	constexpr bool LineString::contains_if(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return m_points.contains_if(std::forward<Fty>(f));
+		return m_vertices.contains_if(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -985,7 +985,7 @@ namespace s3d
 
 	constexpr isize LineString::count(const value_type& value) const
 	{
-		return m_points.count(value);
+		return m_vertices.count(value);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -998,7 +998,7 @@ namespace s3d
 	constexpr isize LineString::count_if(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return m_points.count_if(std::forward<Fty>(f));
+		return m_vertices.count_if(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1011,14 +1011,14 @@ namespace s3d
 	constexpr void LineString::each(Fty f)
 		requires std::invocable<Fty&, value_type&>
 	{
-		m_points.each(std::forward<Fty>(f));
+		m_vertices.each(std::forward<Fty>(f));
 	}
 
 	template <class Fty>
 	constexpr void LineString::each(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
 	{
-		m_points.each(std::forward<Fty>(f));
+		m_vertices.each(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1031,14 +1031,14 @@ namespace s3d
 	constexpr void LineString::each_index(Fty f)
 		requires std::invocable<Fty&, size_t, value_type&>
 	{
-		m_points.each_index(std::forward<Fty>(f));
+		m_vertices.each_index(std::forward<Fty>(f));
 	}
 
 	template <class Fty>
 	constexpr void LineString::each_index(Fty f) const
 		requires std::invocable<Fty&, size_t, const value_type&>
 	{
-		m_points.each_index(std::forward<Fty>(f));
+		m_vertices.each_index(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1051,14 +1051,14 @@ namespace s3d
 	constexpr void LineString::each_sindex(Fty f)
 		requires std::invocable<Fty&, isize, value_type&>
 	{
-		m_points.each_sindex(std::forward<Fty>(f));
+		m_vertices.each_sindex(std::forward<Fty>(f));
 	}
 
 	template <class Fty>
 	constexpr void LineString::each_sindex(Fty f) const
 		requires std::invocable<Fty&, isize, const value_type&>
 	{
-		m_points.each_sindex(std::forward<Fty>(f));
+		m_vertices.each_sindex(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1072,7 +1072,7 @@ namespace s3d
 		noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
 		requires std::constructible_from<value_type, U>
 	{
-		return m_points.fetch(index, std::forward<U>(defaultValue));
+		return m_vertices.fetch(index, std::forward<U>(defaultValue));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1083,7 +1083,7 @@ namespace s3d
 
 	constexpr LineString& LineString::fill(const value_type& value)
 	{
-		m_points.fill(value);
+		m_vertices.fill(value);
 		return *this;
 	}
 
@@ -1097,7 +1097,7 @@ namespace s3d
 	constexpr LineString LineString::filter(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ m_points.filter(std::forward<Fty>(f)) };
+		return LineString{ m_vertices.filter(std::forward<Fty>(f)) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1148,10 +1148,10 @@ namespace s3d
 
 	constexpr Optional<size_t> LineString::indexOf(const value_type& value) const
 	{
-		if (const auto it = std::ranges::find(m_points, value);
-			it != m_points.end())
+		if (const auto it = std::ranges::find(m_vertices, value);
+			it != m_vertices.end())
 		{
-			return std::ranges::distance(m_points.begin(), it);
+			return std::ranges::distance(m_vertices.begin(), it);
 		}
 		else
 		{
@@ -1167,12 +1167,12 @@ namespace s3d
 
 	inline String LineString::join(const StringView sep) const
 	{
-		return m_points.join(sep);
+		return m_vertices.join(sep);
 	}
 
 	inline String LineString::join(const StringView sep, const StringView begin, const StringView end) const
 	{
-		return m_points.join(sep, begin, end);
+		return m_vertices.join(sep, begin, end);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1185,7 +1185,7 @@ namespace s3d
 	constexpr auto LineString::map(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
 	{
-		return m_points.map(std::forward<Fty>(f));
+		return m_vertices.map(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1198,7 +1198,7 @@ namespace s3d
 	constexpr bool LineString::none(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return m_points.none(std::forward<Fty>(f));
+		return m_vertices.none(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1209,12 +1209,12 @@ namespace s3d
 
 	constexpr LineString LineString::slice(const size_type index, const size_type length) const&
 	{
-		return LineString{ m_points.slice(index, length) };
+		return LineString{ m_vertices.slice(index, length) };
 	}
 
 	constexpr LineString LineString::slice(const size_type index, const size_type length) &&
 	{
-		return LineString{ std::move(m_points).slice(index, length) };
+		return LineString{ std::move(m_vertices).slice(index, length) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1225,12 +1225,12 @@ namespace s3d
 
 	constexpr LineString LineString::head(const size_type n) const&
 	{
-		return LineString{ m_points.head(n) };
+		return LineString{ m_vertices.head(n) };
 	}
 
 	constexpr LineString LineString::head(const size_type n) &&
 	{
-		return LineString{ std::move(m_points).head(n) };
+		return LineString{ std::move(m_vertices).head(n) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1241,12 +1241,12 @@ namespace s3d
 
 	constexpr std::span<LineString::value_type> LineString::head_span(const size_type n) & noexcept
 	{
-		return m_points.head_span(n);
+		return m_vertices.head_span(n);
 	}
 
 	constexpr std::span<const LineString::value_type> LineString::head_span(const size_type n) const& noexcept
 	{
-		return m_points.head_span(n);
+		return m_vertices.head_span(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1257,17 +1257,17 @@ namespace s3d
 
 	constexpr auto LineString::head_view(const size_type n) & noexcept
 	{
-		return m_points.head_view(n);
+		return m_vertices.head_view(n);
 	}
 
 	constexpr auto LineString::head_view(const size_type n) const& noexcept
 	{
-		return m_points.head_view(n);
+		return m_vertices.head_view(n);
 	}
 
 	constexpr auto LineString::head_view(const size_type n) && noexcept
 	{
-		return std::move(m_points).head_view(n);
+		return std::move(m_vertices).head_view(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1278,12 +1278,12 @@ namespace s3d
 
 	constexpr LineString LineString::tail(const size_type n) const&
 	{
-		return LineString{ m_points.tail(n) };
+		return LineString{ m_vertices.tail(n) };
 	}
 
 	constexpr LineString LineString::tail(const size_type n) &&
 	{
-		return LineString{ std::move(m_points).tail(n) };
+		return LineString{ std::move(m_vertices).tail(n) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1294,12 +1294,12 @@ namespace s3d
 
 	constexpr std::span<LineString::value_type> LineString::tail_span(const size_type n) & noexcept
 	{
-		return m_points.tail_span(n);
+		return m_vertices.tail_span(n);
 	}
 
 	constexpr std::span<const LineString::value_type> LineString::tail_span(const size_type n) const& noexcept
 	{
-		return m_points.tail_span(n);
+		return m_vertices.tail_span(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1310,17 +1310,17 @@ namespace s3d
 
 	constexpr auto LineString::tail_view(const size_type n) & noexcept
 	{
-		return m_points.tail_view(n);
+		return m_vertices.tail_view(n);
 	}
 
 	constexpr auto LineString::tail_view(const size_type n) const& noexcept
 	{
-		return m_points.tail_view(n);
+		return m_vertices.tail_view(n);
 	}
 
 	constexpr auto LineString::tail_view(const size_type n) && noexcept
 	{
-		return std::move(m_points).tail_view(n);
+		return std::move(m_vertices).tail_view(n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1331,12 +1331,12 @@ namespace s3d
 
 	constexpr LineString LineString::take(const size_type n) const&
 	{
-		return LineString{ m_points.take(n) };
+		return LineString{ m_vertices.take(n) };
 	}
 
 	constexpr LineString LineString::take(const size_type n) &&
 	{
-		return LineString{ std::move(m_points).take(n) };
+		return LineString{ std::move(m_vertices).take(n) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1349,14 +1349,14 @@ namespace s3d
 	constexpr LineString LineString::take_while(Fty f) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ m_points.take_while(std::forward<Fty>(f)) };
+		return LineString{ m_vertices.take_while(std::forward<Fty>(f)) };
 	}
 
 	template <class Fty>
 	constexpr LineString LineString::take_while(Fty f) &&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ std::move(m_points).take_while(std::forward<Fty>(f)) };
+		return LineString{ std::move(m_vertices).take_while(std::forward<Fty>(f)) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1367,7 +1367,7 @@ namespace s3d
 
 	constexpr LineString LineString::values_at(const std::initializer_list<size_type> indices) const
 	{
-		return LineString{ m_points.values_at(indices) };
+		return LineString{ m_vertices.values_at(indices) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1378,12 +1378,12 @@ namespace s3d
 
 	constexpr LineString LineString::without(const value_type& value) const&
 	{
-		return LineString{ m_points.without(value) };
+		return LineString{ m_vertices.without(value) };
 	}
 
 	constexpr LineString LineString::without(const value_type& value) &&
 	{
-		return LineString{ std::move(m_points).without(value) };
+		return LineString{ std::move(m_vertices).without(value) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1394,12 +1394,12 @@ namespace s3d
 
 	constexpr LineString LineString::without_at(const size_type index) const&
 	{
-		return LineString{ m_points.without_at(index) };
+		return LineString{ m_vertices.without_at(index) };
 	}
 
 	constexpr LineString LineString::without_at(const size_type index) &&
 	{
-		return LineString{ std::move(m_points).without_at(index) };
+		return LineString{ std::move(m_vertices).without_at(index) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1412,14 +1412,14 @@ namespace s3d
 	constexpr LineString LineString::without_if(Fty f) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ m_points.without_if(std::forward<Fty>(f)) };
+		return LineString{ m_vertices.without_if(std::forward<Fty>(f)) };
 	}
 
 	template <class Fty>
 	constexpr LineString LineString::without_if(Fty f) &&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ std::move(m_points).without_if(std::forward<Fty>(f)) };
+		return LineString{ std::move(m_vertices).without_if(std::forward<Fty>(f)) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1430,23 +1430,23 @@ namespace s3d
 
 	constexpr LineString& LineString::replace(const value_type& oldValue, const value_type& newValue)&
 	{
-		m_points.replace(oldValue, newValue);
+		m_vertices.replace(oldValue, newValue);
 		return *this;
 	}
 
 	constexpr LineString LineString::replace(const value_type& oldValue, const value_type& newValue) &&
 	{
-		return LineString{ std::move(m_points).replace(oldValue, newValue) };
+		return LineString{ std::move(m_vertices).replace(oldValue, newValue) };
 	}
 
 	constexpr LineString LineString::replaced(const value_type& oldValue, const value_type& newValue) const&
 	{
-		return LineString{ m_points.replaced(oldValue, newValue) };
+		return LineString{ m_vertices.replaced(oldValue, newValue) };
 	}
 
 	constexpr LineString LineString::replaced(const value_type& oldValue, const value_type& newValue) &&
 	{
-		return LineString{ std::move(m_points).replaced(oldValue, newValue) };
+		return LineString{ std::move(m_vertices).replaced(oldValue, newValue) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1459,7 +1459,7 @@ namespace s3d
 	constexpr LineString& LineString::replace_if(Fty f, const value_type& newValue)&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		m_points.replace_if(std::forward<Fty>(f), newValue);
+		m_vertices.replace_if(std::forward<Fty>(f), newValue);
 		return *this;
 	}
 
@@ -1467,21 +1467,21 @@ namespace s3d
 	constexpr LineString LineString::replace_if(Fty f, const value_type& newValue) &&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ std::move(m_points).replace_if(std::forward<Fty>(f), newValue) };
+		return LineString{ std::move(m_vertices).replace_if(std::forward<Fty>(f), newValue) };
 	}
 
 	template <class Fty>
 	constexpr LineString LineString::replaced_if(Fty f, const value_type& newValue) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ m_points.replaced_if(std::forward<Fty>(f), newValue) };
+		return LineString{ m_vertices.replaced_if(std::forward<Fty>(f), newValue) };
 	}
 
 	template <class Fty>
 	constexpr LineString LineString::replaced_if(Fty f, const value_type& newValue) &&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return LineString{ std::move(m_points).replaced_if(std::forward<Fty>(f), newValue) };
+		return LineString{ std::move(m_vertices).replaced_if(std::forward<Fty>(f), newValue) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1492,23 +1492,23 @@ namespace s3d
 
 	constexpr LineString& LineString::rotate(const size_type middle)&
 	{
-		m_points.rotate(middle);
+		m_vertices.rotate(middle);
 		return *this;
 	}
 
 	constexpr LineString LineString::rotate(const size_type middle) &&
 	{
-		return LineString{ std::move(m_points).rotate(middle) };
+		return LineString{ std::move(m_vertices).rotate(middle) };
 	}
 
 	constexpr LineString LineString::rotated(const size_type middle) const&
 	{
-		return LineString{ m_points.rotated(middle) };
+		return LineString{ m_vertices.rotated(middle) };
 	}
 
 	constexpr LineString LineString::rotated(const size_type middle) &&
 	{
-		return LineString{ std::move(m_points).rotated(middle) };
+		return LineString{ std::move(m_vertices).rotated(middle) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1521,14 +1521,14 @@ namespace s3d
 	constexpr void LineString::reverse_each(Fty f)
 		requires std::invocable<Fty&, value_type&>
 	{
-		m_points.reverse_each(std::forward<Fty>(f));
+		m_vertices.reverse_each(std::forward<Fty>(f));
 	}
 
 	template <class Fty>
 	constexpr void LineString::reverse_each(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
 	{
-		m_points.reverse_each(std::forward<Fty>(f));
+		m_vertices.reverse_each(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1539,17 +1539,17 @@ namespace s3d
 
 	constexpr auto LineString::reverse_view() &
 	{
-		return m_points.reverse_view();
+		return m_vertices.reverse_view();
 	}
 
 	constexpr auto LineString::reverse_view() const&
 	{
-		return m_points.reverse_view();
+		return m_vertices.reverse_view();
 	}
 
 	constexpr auto LineString::reverse_view() &&
 	{
-		return std::move(m_points).reverse_view();
+		return std::move(m_vertices).reverse_view();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1560,44 +1560,44 @@ namespace s3d
 
 	constexpr LineString& LineString::shuffle()&
 	{
-		m_points.shuffle();
+		m_vertices.shuffle();
 		return *this;
 	}
 
 	constexpr LineString LineString::shuffle() &&
 	{
-		return LineString{ std::move(m_points).shuffle() };
+		return LineString{ std::move(m_vertices).shuffle() };
 	}
 
 	constexpr LineString LineString::shuffled() const&
 	{
-		return LineString{ m_points.shuffled() };
+		return LineString{ m_vertices.shuffled() };
 	}
 
 	constexpr LineString LineString::shuffled() &&
 	{
-		return LineString{ std::move(m_points).shuffled() };
+		return LineString{ std::move(m_vertices).shuffled() };
 	}
 
 	constexpr LineString& LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
 	{
-		m_points.shuffle(std::forward<decltype(rbg)>(rbg));
+		m_vertices.shuffle(std::forward<decltype(rbg)>(rbg));
 		return *this;
 	}
 
 	constexpr LineString LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&
 	{
-		return LineString{ std::move(m_points).shuffle(std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ std::move(m_vertices).shuffle(std::forward<decltype(rbg)>(rbg)) };
 	}
 
 	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
 	{
-		return LineString{ m_points.shuffled(std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ m_vertices.shuffled(std::forward<decltype(rbg)>(rbg)) };
 	}
 
 	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&
 	{
-		return LineString{ std::move(m_points).shuffled(std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ std::move(m_vertices).shuffled(std::forward<decltype(rbg)>(rbg)) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1610,7 +1610,7 @@ namespace s3d
 	constexpr LineString& LineString::sort_by(Fty f)&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		m_points.sort_by(std::forward<Fty>(f));
+		m_vertices.sort_by(std::forward<Fty>(f));
 		return *this;
 	}
 
@@ -1618,21 +1618,21 @@ namespace s3d
 	constexpr LineString LineString::sort_by(Fty f) &&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		return LineString{ std::move(m_points).sort_by(std::forward<Fty>(f)) };
+		return LineString{ std::move(m_vertices).sort_by(std::forward<Fty>(f)) };
 	}
 
 	template <class Fty>
 	constexpr LineString LineString::sorted_by(Fty f) const&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		return LineString{ m_points.sorted_by(std::forward<Fty>(f)) };
+		return LineString{ m_vertices.sorted_by(std::forward<Fty>(f)) };
 	}
 
 	template <class Fty>
 	constexpr LineString LineString::sorted_by(Fty f) &&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		return LineString{ std::move(m_points).sorted_by(std::forward<Fty>(f)) };
+		return LineString{ std::move(m_vertices).sorted_by(std::forward<Fty>(f)) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1643,7 +1643,7 @@ namespace s3d
 
 	constexpr auto LineString::sum() const
 	{
-		return m_points.sum();
+		return m_vertices.sum();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1654,13 +1654,13 @@ namespace s3d
 
 	constexpr LineString& LineString::reverse() & noexcept
 	{
-		m_points.reverse();
+		m_vertices.reverse();
 		return *this;
 	}
 
 	constexpr LineString LineString::reverse() && noexcept
 	{
-		m_points.reverse();
+		m_vertices.reverse();
 		return std::move(*this);
 	}
 
@@ -1672,12 +1672,12 @@ namespace s3d
 
 	constexpr LineString LineString::reversed() const&
 	{
-		return LineString{ m_points.rbegin(), m_points.rend() };
+		return LineString{ m_vertices.rbegin(), m_vertices.rend() };
 	}
 
 	constexpr LineString LineString::reversed() && noexcept
 	{
-		std::ranges::reverse(m_points);
+		std::ranges::reverse(m_vertices);
 		return std::move(*this);
 	}
 
@@ -1689,24 +1689,24 @@ namespace s3d
 
 	constexpr LineString& LineString::unique_consecutive() &
 	{
-		m_points.unique_consecutive();
+		m_vertices.unique_consecutive();
 		return *this;
 	}
 
 	constexpr LineString LineString::unique_consecutive() &&
 	{
-		m_points.unique_consecutive();
+		m_vertices.unique_consecutive();
 		return std::move(*this);
 	}
 
 	constexpr LineString LineString::uniqued_consecutive() const&
 	{
-		return LineString{ m_points.uniqued_consecutive() };
+		return LineString{ m_vertices.uniqued_consecutive() };
 	}
 
 	constexpr LineString LineString::uniqued_consecutive() && noexcept
 	{
-		return LineString{ std::move(m_points).uniqued_consecutive() };
+		return LineString{ std::move(m_vertices).uniqued_consecutive() };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1715,9 +1715,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr size_t LineString::num_points() const noexcept
+	constexpr size_t LineString::num_vertices() const noexcept
 	{
-		return m_points.size();
+		return m_vertices.size();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1728,12 +1728,12 @@ namespace s3d
 
 	constexpr size_t LineString::num_segments(const CloseRing closeRing) const noexcept
 	{
-		if (m_points.size() < 2)
+		if (m_vertices.size() < 2)
 		{
 			return 0;
 		}
 		
-		return (closeRing ? m_points.size() : (m_points.size() - 1));
+		return (closeRing ? m_vertices.size() : (m_vertices.size() - 1));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1746,9 +1746,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 		
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.moveBy(x, y);
+			vertex.moveBy(x, y);
 		}
 		
 		return result;
@@ -1764,9 +1764,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 	
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.moveBy(v);
+			vertex.moveBy(v);
 		}
 		
 		return result;
@@ -1786,9 +1786,9 @@ namespace s3d
 
 	constexpr LineString& LineString::moveBy(const double x, const double y) noexcept
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point.moveBy(x, y);
+			vertex.moveBy(x, y);
 		}
 
 		return *this;
@@ -1796,9 +1796,9 @@ namespace s3d
 
 	constexpr LineString& LineString::moveBy(const Vec2 v) noexcept
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point.moveBy(v);
+			vertex.moveBy(v);
 		}
 	
 		return *this;
@@ -1814,9 +1814,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 		
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.moveBy(x, y);
+			vertex.moveBy(x, y);
 		}
 		
 		return result;
@@ -1832,9 +1832,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 	
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.moveBy(v);
+			vertex.moveBy(v);
 		}
 		
 		return result;
@@ -1856,9 +1856,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 		
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.x += x;
+			vertex.x += x;
 		}
 		
 		return result;
@@ -1866,9 +1866,9 @@ namespace s3d
 
 	constexpr LineString LineString::withOffsetX(const double x) && noexcept
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point.x += x;
+			vertex.x += x;
 		}
 	
 		return std::move(*this);
@@ -1878,9 +1878,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 		
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.y += y;
+			vertex.y += y;
 		}
 		
 		return result;
@@ -1888,9 +1888,9 @@ namespace s3d
 
 	constexpr LineString LineString::withOffsetY(const double y) && noexcept
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point.y += y;
+			vertex.y += y;
 		}
 	
 		return std::move(*this);
@@ -1906,9 +1906,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point *= s;
+			vertex *= s;
 		}
 
 		return result;
@@ -1924,10 +1924,10 @@ namespace s3d
 	{
 		LineString result{ *this };
 
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.x *= sx;
-			point.y *= sy;
+			vertex.x *= sx;
+			vertex.y *= sy;
 		}
 
 		return result;
@@ -1943,9 +1943,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point *= s;
+			vertex *= s;
 		}
 
 		return result;
@@ -1965,9 +1965,9 @@ namespace s3d
 
 	constexpr LineString& LineString::scaleFromOrigin(const double s)
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point *= s;
+			vertex *= s;
 		}
 
 		return *this;
@@ -1975,10 +1975,10 @@ namespace s3d
 
 	constexpr LineString& LineString::scaleFromOrigin(const double sx, const double sy)
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point.x *= sx;
-			point.y *= sy;
+			vertex.x *= sx;
+			vertex.y *= sy;
 		}
 
 		return *this;
@@ -1986,9 +1986,9 @@ namespace s3d
 
 	constexpr LineString& LineString::scaleFromOrigin(const Vec2 s)
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point *= s;
+			vertex *= s;
 		}
 
 		return *this;
@@ -2004,9 +2004,9 @@ namespace s3d
 	{
 		LineString result{ *this };
 		
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point = pos + ((point - pos) * s);
+			vertex = pos + ((vertex - pos) * s);
 		}
 		
 		return result;
@@ -2022,10 +2022,10 @@ namespace s3d
 	{
 		LineString result{ *this };
 		
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.x = pos.x + ((point.x - pos.x) * sx);
-			point.y = pos.y + ((point.y - pos.y) * sy);
+			vertex.x = pos.x + ((vertex.x - pos.x) * sx);
+			vertex.y = pos.y + ((vertex.y - pos.y) * sy);
 		}
 		
 		return result;
@@ -2041,10 +2041,10 @@ namespace s3d
 	{
 		LineString result{ *this };
 		
-		for (auto& point : result.m_points)
+		for (auto& vertex : result.m_vertices)
 		{
-			point.x = pos.x + ((point.x - pos.x) * s.x);
-			point.y = pos.y + ((point.y - pos.y) * s.y);
+			vertex.x = pos.x + ((vertex.x - pos.x) * s.x);
+			vertex.y = pos.y + ((vertex.y - pos.y) * s.y);
 		}
 		
 		return result;
@@ -2064,9 +2064,9 @@ namespace s3d
 
 	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double s)
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point = pos + ((point - pos) * s);
+			vertex = pos + ((vertex - pos) * s);
 		}
 	
 		return *this;
@@ -2074,10 +2074,10 @@ namespace s3d
 
 	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double sx, const double sy)
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point.x = pos.x + ((point.x - pos.x) * sx);
-			point.y = pos.y + ((point.y - pos.y) * sy);
+			vertex.x = pos.x + ((vertex.x - pos.x) * sx);
+			vertex.y = pos.y + ((vertex.y - pos.y) * sy);
 		}
 	
 		return *this;
@@ -2085,10 +2085,10 @@ namespace s3d
 
 	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const Vec2 s)
 	{
-		for (auto& point : m_points)
+		for (auto& vertex : m_vertices)
 		{
-			point.x = pos.x + ((point.x - pos.x) * s.x);
-			point.y = pos.y + ((point.y - pos.y) * s.y);
+			vertex.x = pos.x + ((vertex.x - pos.x) * s.x);
+			vertex.y = pos.y + ((vertex.y - pos.y) * s.y);
 		}
 	
 		return *this;
@@ -2128,7 +2128,7 @@ namespace s3d
 
 		for (size_type i = 0; i < size; ++i)
 		{
-			result.m_points[i] = generator();
+			result.m_vertices[i] = generator();
 		}
 
 		return result;
@@ -2146,7 +2146,7 @@ namespace s3d
 
 		for (size_type i = 0; i < size; ++i)
 		{
-			result.m_points[i] = generator(i);
+			result.m_vertices[i] = generator(i);
 		}
 
 		return result;

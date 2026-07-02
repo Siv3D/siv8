@@ -753,10 +753,10 @@ TEST_CASE("LineString.sum")
 	CHECK_EQ(LineString{}.sum(), Vec2{ 0, 0 });
 }
 
-TEST_CASE("LineString.num_points_segments")
+TEST_CASE("LineString.num_vertices_segments")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 3, 0 }, Vec2{ 3, 4 } };
-	CHECK_EQ(line.num_points(), 3);
+	CHECK_EQ(line.num_vertices(), 3);
 	CHECK_EQ(line.num_segments(), 2);
 	CHECK_EQ(line.num_segments(CloseRing::Yes), 3);
 	CHECK_EQ(LineString{ Vec2{ 0, 0 } }.num_segments(CloseRing::Yes), 0);
@@ -774,17 +774,17 @@ TEST_CASE("LineString.segment")
 TEST_CASE("LineString.tangent_normal")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 3, 0 }, Vec2{ 3, 4 } };
-	CHECK_EQ(line.getTangentAtSegment(0), Vec2{ 1, 0 });
-	CHECK_EQ(line.getNormalAtSegment(0), Vec2{ 0, -1 });
-	CHECK_EQ(line.getTangentAtPoint(0), Vec2{ 1, 0 });
-	CHECK_EQ(line.getNormalAtPoint(0), Vec2{ 0, -1 });
-	CHECK_EQ(line.getTangentAtPoint(2), Vec2{ 0, 1 });
-	CHECK_EQ(line.getNormalAtPoint(2), Vec2{ 1, 0 });
-	CHECK_THROWS_AS(static_cast<void>(line.getTangentAtPoint(3)), std::out_of_range);
-	CHECK_THROWS_AS(static_cast<void>(line.getNormalAtSegment(2)), std::out_of_range);
+	CHECK_EQ(line.tangentAtSegment(0), Vec2{ 1, 0 });
+	CHECK_EQ(line.normalAtSegment(0), Vec2{ 0, -1 });
+	CHECK_EQ(line.tangentAtVertex(0), Vec2{ 1, 0 });
+	CHECK_EQ(line.normalAtVertex(0), Vec2{ 0, -1 });
+	CHECK_EQ(line.tangentAtVertex(2), Vec2{ 0, 1 });
+	CHECK_EQ(line.normalAtVertex(2), Vec2{ 1, 0 });
+	CHECK_THROWS_AS(static_cast<void>(line.tangentAtVertex(3)), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(line.normalAtSegment(2)), std::out_of_range);
 
-	const Vec2 shortTangent = LineString{ Vec2{ 0, 0 } }.getTangentAtPoint(0);
-	const Vec2 shortNormal = LineString{ Vec2{ 0, 0 } }.getNormalAtSegment(0);
+	const Vec2 shortTangent = LineString{ Vec2{ 0, 0 } }.tangentAtVertex(0);
+	const Vec2 shortNormal = LineString{ Vec2{ 0, 0 } }.normalAtSegment(0);
 	CHECK(IsNaN(shortTangent.x));
 	CHECK(IsNaN(shortTangent.y));
 	CHECK(IsNaN(shortNormal.x));

@@ -243,7 +243,7 @@ void JSONSerializer<s3d::LineString>::from_json(const s3d::JSON::json_base& j, s
 void JSONSerializer<s3d::Polygon>::to_json(s3d::JSON::json_base& j, const s3d::Polygon& value)
 {
 	j = { { "outer", value.outer() },
-		  { "inners", value.inners() },
+		  { "inners", value.inners().asArray() },
 		  { "vertices", value.vertices() },
 		  { "indices", value.indices() },
 		  { "boundingRect", value.boundingRect() }

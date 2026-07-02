@@ -515,8 +515,20 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
-	inline constexpr bool Circle::intersects(const Shape2DType& other) const
+	constexpr bool Circle::intersects(const Shape2DType& other) const
 	{
 		return Geometry2D::Intersect(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Circle::contains(const Shape2DType& other) const
+	{
+		return Geometry2D::Contains(*this, other);
 	}
 }

@@ -155,8 +155,8 @@ namespace s3d
 				const int32 numDivisions = Max(2, static_cast<int32>(segLength / segLenSetting));
 				const bool isLastSegment = ((not isClosed) && (segIdx + 1 == segCount));
 				const int32 endIndex = isClosed ? (numDivisions - 1) : (isLastSegment ? numDivisions : (numDivisions - 1));
-				const Vec2 tan0 = points.getTangentAtPoint(segIdx, closeRing);
-				const Vec2 tan1 = points.getTangentAtPoint(nextIdx, closeRing);
+				const Vec2 tan0 = points.tangentAtVertex(segIdx, closeRing);
+				const Vec2 tan1 = points.tangentAtVertex(nextIdx, closeRing);
 				Vec2 prevTangent = Math::Lerp(tan0, tan1, 0.0).normalized_or(Vec2{ 1.0, 0.0 });
 
 				for (int32 i = 0; i <= endIndex; ++i)

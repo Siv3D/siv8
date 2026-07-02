@@ -96,6 +96,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addRectDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addRectDashedFrame(const FloatRect& innerRect, float offset, float thickness, float dashRatio, uint32 dashCount, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addCircle
 		//
 		////////////////////////////////////////////////////////////////
@@ -113,6 +121,14 @@ namespace s3d
 		void addCircleFrame(const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor) override;
 
 		void addCircleFrame(const Float2& center, float rInner, float thickness, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCircleDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addCircleDashedFrame(const Float2& center, float rInner, float startAngle, float thickness, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -163,6 +179,14 @@ namespace s3d
 		void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor) override;
 
 		void addEllipseFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, const PatternParameters& pattern) override;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addEllipseDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addEllipseDashedFrame(const Float2& center, float a, float b, float innerThickness, float outerThickness, float offset, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor) override;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -222,6 +246,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addRoundRectDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		void addRoundRectDashedFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, float offset, float dashRatio, uint32 dashCount, const Float4& color) override;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addPolygon
 		//
 		////////////////////////////////////////////////////////////////
@@ -250,9 +282,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void addShape2DFrame(std::span<const Float2> vertices, float thickness, const Float4& color) override;
+		void addShape2DFrame(std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const Float4& color) override;
 
-		void addShape2DFrame(std::span<const Float2> vertices, float thickness, const PatternParameters& pattern) override;
+		void addShape2DFrame(std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const PatternParameters& pattern) override;
 
 		////////////////////////////////////////////////////////////////
 		//

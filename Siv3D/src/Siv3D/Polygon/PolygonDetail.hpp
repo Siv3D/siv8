@@ -73,7 +73,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		const Array<Array<Vec2>>& inners() const noexcept;
+		PolygonHolesView inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -193,21 +193,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateBuffer
+		//	computeMiterBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Polygon calculateBuffer(double distance) const;
+		Polygon computeMiterBufferPolygon(double distance) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	calculateRoundBuffer
+		//	computeRoundBufferPolygon
 		//
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Polygon calculateRoundBuffer(double distance, const QualityFactor& qualityFactor) const;
+		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -324,8 +324,6 @@ namespace s3d
 	private:
 
 		CwOpenPolygon m_polygon;
-
-		Array<Array<Vec2>> m_holes;
 
 		Array<Float2> m_vertices;
 

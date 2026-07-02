@@ -89,17 +89,13 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	BasicPerlinNoise<Float>::value_type BasicPerlinNoise<Float>::noise(const value_type x) const noexcept
 	{
-		return noise(x,
-			static_cast<value_type>(0.34567890123456789012),
-			static_cast<value_type>(0.12345678901234567890)); // arbitrary number for entropy
+		return noise(x, EntropyY, EntropyZ);
 	}
 
 	template <Concept::FloatingPoint Float>
 	BasicPerlinNoise<Float>::value_type BasicPerlinNoise<Float>::noise(const value_type x, const value_type y) const noexcept
 	{
-		return noise(x,
-			y,
-			static_cast<value_type>(0.12345678901234567890)); // arbitrary number for entropy
+		return noise(x, y, EntropyZ);
 	}
 
 	template <Concept::FloatingPoint Float>
@@ -159,7 +155,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	BasicPerlinNoise<Float>::value_type BasicPerlinNoise<Float>::noise(const Vector3D<value_type> xyz) const noexcept
 	{
-		return noise3D(xyz.x, xyz.y, xyz.z);
+		return noise(xyz.x, xyz.y, xyz.z);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -168,6 +164,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	// 2D スライス（z = EntropyZ 固定）: noise(x, y) と同一系列を生成する。
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchNoise(OutputIterator first, const int32 width, const int32 height,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, Converter convert) const
+	{
+		batchNoise(first, width, height, baseX, baseY, xStep, yStep, EntropyZ, std::move(convert));
+	}
+
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchNoise(OutputIterator first, const Size size,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, Converter convert) const
+	{
+		batchNoise(first, size.x, size.y, baseX, baseY, xStep, yStep, std::move(convert));
+	}
+
+	// 3D ノイズの 2D スライス（z はユーザー指定座標）。
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchNoise(OutputIterator first, const int32 width, const int32 height,
@@ -196,28 +210,28 @@ namespace s3d
 		Array<XCache> xCaches(width);
 		{
 			XCache* pCache = xCaches.data();
-			value_type currentX = baseX;
 			for (int32 x = 0; x < width; ++x)
 			{
+				// 逐次加算による誤差蓄積を避けるため base + i * step で評価する。
+				const value_type currentX = (baseX + (static_cast<value_type>(x) * xStep));
 				const value_type _x = std::floor(currentX);
 				const int32 ix = (static_cast<int32>(_x) & 255);
+				const value_type fx = (currentX - _x);
 				*pCache = {
 					.permA = m_perm[ix],
 					.permB = m_perm[ix + 1],
-					.fx = (currentX - _x),
-					.fx_minus_1 = ((currentX - _x) - value_type(1)),
-					.u = Fade(currentX - _x)
+					.fx = fx,
+					.fx_minus_1 = (fx - value_type(1)),
+					.u = Fade(fx)
 				};
 
-				currentX += xStep;
 				++pCache;
 			}
 		}
 
-		value_type currentY = baseY;
-
 		for (int32 y = 0; y < height; ++y)
 		{
+			const value_type currentY = (baseY + (static_cast<value_type>(y) * yStep));
 			const value_type _y = std::floor(currentY);
 			const int32 iy = (static_cast<int32>(_y) & 255);
 			const value_type fy = (currentY - _y);
@@ -260,8 +274,6 @@ namespace s3d
 				++first;
 				++pCache;
 			}
-
-			currentY += yStep;
 		}
 	}
 
@@ -315,6 +327,29 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	// 2D スライス（noise01(x, y) と一致）。
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchNoise01(OutputIterator first, const int32 width, const int32 height,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, Converter convert) const
+	{
+		auto converter01 = [&](value_type n)
+		{
+			return convert(To01(n));
+		};
+
+		batchNoise(first, width, height, baseX, baseY, xStep, yStep, std::move(converter01));
+	}
+
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchNoise01(OutputIterator first, const Size size,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, Converter convert) const
+	{
+		batchNoise01(first, size.x, size.y, baseX, baseY, xStep, yStep, std::move(convert));
+	}
+
+	// 3D ノイズの 2D スライス。
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchNoise01(OutputIterator first, const int32 width, const int32 height,
@@ -411,6 +446,176 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	// 2D スライス（z = EntropyZ を全オクターブで共有）: octaveNoise(x, y) と同一系列を生成する。
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoise(OutputIterator first, const int32 width, const int32 height,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
+	{
+		if ((width <= 0) || (height <= 0))
+		{
+			return;
+		}
+
+		// オクターブがない場合は 0 で埋める。
+		if (parameters.octaves <= 0)
+		{
+			const size_t count = (static_cast<size_t>(width) * static_cast<size_t>(height));
+			for (size_t i = 0; i < count; ++i)
+			{
+				*first = convert(value_type(0));
+				++first;
+			}
+			return;
+		}
+
+		// z は全オクターブで EntropyZ 固定なので iz / fz / w はバッチ全体で共有できる。
+		const value_type _z = std::floor(EntropyZ);
+		const int32 iz = (static_cast<int32>(_z) & 255);
+		const value_type fz = (EntropyZ - _z);
+		const value_type fz_minus_1 = (fz - value_type(1));
+		const value_type w = Fade(fz);
+
+		struct XCache
+		{
+			uint8 permA;
+			uint8 permB;
+			value_type fx;
+			value_type fx_minus_1;
+			value_type u;
+		};
+
+		struct OctaveLayer
+		{
+			value_type amplitude;
+			value_type scaledBaseY;
+			value_type scaledStepY;
+			Array<XCache> xCaches;
+		};
+
+		// 各オクターブの初期化と X キャッシュの事前計算
+		Array<OctaveLayer> layers(parameters.octaves);
+		{
+			value_type frequency = value_type(1);
+			value_type amplitude = value_type(1);
+
+			for (auto& layer : layers)
+			{
+				layer.amplitude = amplitude;
+				layer.scaledBaseY = (baseY * frequency);
+				layer.scaledStepY = (yStep * frequency);
+
+				const value_type scaledBaseX = (baseX * frequency);
+				const value_type scaledStepX = (xStep * frequency);
+
+				layer.xCaches.resize(width);
+				XCache* pCache = layer.xCaches.data();
+				for (int32 x = 0; x < width; ++x)
+				{
+					const value_type currentX = (scaledBaseX + (static_cast<value_type>(x) * scaledStepX));
+					const value_type _x = std::floor(currentX);
+					const int32 ix = (static_cast<int32>(_x) & 255);
+					const value_type fx = (currentX - _x);
+
+					*pCache = {
+						.permA = m_perm[ix],
+						.permB = m_perm[ix + 1],
+						.fx = fx,
+						.fx_minus_1 = (fx - value_type(1)),
+						.u = Fade(fx)
+					};
+
+					++pCache;
+				}
+
+				frequency *= value_type(2);
+				amplitude *= parameters.persistence;
+			}
+		}
+
+		struct LayerYState
+		{
+			int32 iy;
+			value_type fy;
+			value_type fy_minus_1;
+			value_type v;
+		};
+		Array<LayerYState> layerYStates(layers.size());
+
+		for (int32 y = 0; y < height; ++y)
+		{
+			for (size_t i = 0; i < layers.size(); ++i)
+			{
+				const auto& layer = layers[i];
+				auto& state = layerYStates[i];
+
+				const value_type currentY = (layer.scaledBaseY + (static_cast<value_type>(y) * layer.scaledStepY));
+				const value_type _y = std::floor(currentY);
+
+				state.iy = (static_cast<int32>(_y) & 255);
+				state.fy = (currentY - _y);
+				state.fy_minus_1 = (state.fy - value_type(1));
+				state.v = Fade(state.fy);
+			}
+
+			for (int32 x = 0; x < width; ++x)
+			{
+				value_type sum = 0;
+
+				for (size_t i = 0; i < layers.size(); ++i)
+				{
+					const auto& layer = layers[i];
+					const auto& xCache = layer.xCaches[x];
+					const auto& yState = layerYStates[i];
+
+					const int32 A = (xCache.permA + yState.iy);
+					const int32 B = (xCache.permB + yState.iy);
+
+					const int32 AA = (m_perm[A & 255] + iz);
+					const int32 AB = (m_perm[(A + 1) & 255] + iz);
+					const int32 BA = (m_perm[B & 255] + iz);
+					const int32 BB = (m_perm[(B + 1) & 255] + iz);
+
+					const value_type p0 = Grad(m_perm[AA & 255], xCache.fx, yState.fy, fz);
+					const value_type p1 = Grad(m_perm[BA & 255], xCache.fx_minus_1, yState.fy, fz);
+					const value_type p2 = Grad(m_perm[AB & 255], xCache.fx, yState.fy_minus_1, fz);
+					const value_type p3 = Grad(m_perm[BB & 255], xCache.fx_minus_1, yState.fy_minus_1, fz);
+
+					const value_type p4 = Grad(m_perm[(AA + 1) & 255], xCache.fx, yState.fy, fz_minus_1);
+					const value_type p5 = Grad(m_perm[(BA + 1) & 255], xCache.fx_minus_1, yState.fy, fz_minus_1);
+					const value_type p6 = Grad(m_perm[(AB + 1) & 255], xCache.fx, yState.fy_minus_1, fz_minus_1);
+					const value_type p7 = Grad(m_perm[(BB + 1) & 255], xCache.fx_minus_1, yState.fy_minus_1, fz_minus_1);
+
+					const value_type q0 = Lerp(p0, p1, xCache.u);
+					const value_type q1 = Lerp(p2, p3, xCache.u);
+					const value_type q2 = Lerp(p4, p5, xCache.u);
+					const value_type q3 = Lerp(p6, p7, xCache.u);
+
+					const value_type r0 = Lerp(q0, q1, yState.v);
+					const value_type r1 = Lerp(q2, q3, yState.v);
+
+					const value_type n = Lerp(r0, r1, w);
+
+					sum += (n * layer.amplitude);
+				}
+
+				*first = convert(sum);
+				++first;
+			}
+		}
+	}
+
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoise(OutputIterator first, const Size size,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
+	{
+		batchOctaveNoise(first, size.x, size.y, baseX, baseY, xStep, yStep, parameters, std::move(convert));
+	}
+
+	// 3D ノイズの 2D スライス（z はユーザー指定座標、各オクターブで周波数スケール）。
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchOctaveNoise(OutputIterator first, const int32 width, const int32 height,
@@ -422,9 +627,15 @@ namespace s3d
 			return;
 		}
 
-		// オクターブがない場合は何もしない
+		// オクターブがない場合は 0 で埋める。
 		if (parameters.octaves <= 0)
 		{
+			const size_t count = (static_cast<size_t>(width) * static_cast<size_t>(height));
+			for (size_t i = 0; i < count; ++i)
+			{
+				*first = convert(value_type(0));
+				++first;
+			}
 			return;
 		}
 
@@ -443,25 +654,25 @@ namespace s3d
 			// 定数・設定
 			value_type amplitude;
 
-			// Z座標関連（バッチ内で定数）
+			// Z 座標関連（バッチ内で定数）
 			int32 iz;
 			value_type fz;
 			value_type fz_minus_1;
 			value_type w;
 
-			// Y座標関連（行ごとに更新）
-			value_type currentY;
-			value_type yStep;
+			// Y 座標関連（行ごとに更新）
+			value_type scaledBaseY;
+			value_type scaledStepY;
 
-			// X座標関連キャッシュ（事前に計算）
+			// X 座標関連キャッシュ（事前に計算）
 			Array<XCache> xCaches;
 		};
 
 		// 各オクターブの初期化と X キャッシュの事前計算
 		Array<OctaveLayer> layers(parameters.octaves);
 		{
-			value_type frequency = 1.0;
-			value_type amplitude = 1.0;
+			value_type frequency = value_type(1);
+			value_type amplitude = value_type(1);
 
 			for (auto& layer : layers)
 			{
@@ -477,33 +688,31 @@ namespace s3d
 				layer.w = Fade(layer.fz);
 
 				// Y state init
-				layer.currentY = (baseY * frequency);
-				layer.yStep = (yStep * frequency);
+				layer.scaledBaseY = (baseY * frequency);
+				layer.scaledStepY = (yStep * frequency);
 
 				// X Cache construction
+				const value_type scaledBaseX = (baseX * frequency);
+				const value_type scaledStepX = (xStep * frequency);
+
 				layer.xCaches.resize(width);
+				XCache* pCache = layer.xCaches.data();
+				for (int32 x = 0; x < width; ++x)
 				{
-					XCache* pCache = layer.xCaches.data();
-					value_type currentX = (baseX * frequency);
-					const value_type currentXStep = (xStep * frequency);
+					const value_type currentX = (scaledBaseX + (static_cast<value_type>(x) * scaledStepX));
+					const value_type _x = std::floor(currentX);
+					const int32 ix = (static_cast<int32>(_x) & 255);
+					const value_type fx = (currentX - _x);
 
-					for (int32 x = 0; x < width; ++x)
-					{
-						const value_type _x = std::floor(currentX);
-						const int32 ix = (static_cast<int32>(_x) & 255);
-						const value_type fx = (currentX - _x);
+					*pCache = {
+						.permA = m_perm[ix],
+						.permB = m_perm[ix + 1],
+						.fx = fx,
+						.fx_minus_1 = (fx - value_type(1)),
+						.u = Fade(fx)
+					};
 
-						*pCache = {
-							.permA = m_perm[ix],
-							.permB = m_perm[ix + 1],
-							.fx = fx,
-							.fx_minus_1 = (fx - value_type(1)),
-							.u = Fade(fx)
-						};
-
-						currentX += currentXStep;
-						++pCache;
-					}
+					++pCache;
 				}
 
 				// Next octave
@@ -515,8 +724,7 @@ namespace s3d
 		// Y 座標ごとの計算データを一時保存する構造体
 		struct LayerYState
 		{
-			int32 A;
-			int32 B;
+			int32 iy;
 			value_type fy;
 			value_type fy_minus_1;
 			value_type v;
@@ -527,19 +735,16 @@ namespace s3d
 		{
 			for (size_t i = 0; i < layers.size(); ++i)
 			{
-				auto& layer = layers[i];
+				const auto& layer = layers[i];
 				auto& state = layerYStates[i];
 
-				const value_type _y = std::floor(layer.currentY);
-				const int32 iy = (static_cast<int32>(_y) & 255);
+				const value_type currentY = (layer.scaledBaseY + (static_cast<value_type>(y) * layer.scaledStepY));
+				const value_type _y = std::floor(currentY);
 
-				state.fy = (layer.currentY - _y);
+				state.iy = (static_cast<int32>(_y) & 255);
+				state.fy = (currentY - _y);
 				state.fy_minus_1 = (state.fy - value_type(1));
 				state.v = Fade(state.fy);
-				state.A = iy;
-				state.B = iy;
-
-				layer.currentY += layer.yStep;
 			}
 
 			for (int32 x = 0; x < width; ++x)
@@ -553,8 +758,8 @@ namespace s3d
 					const auto& xCache = layer.xCaches[x];
 					const auto& yState = layerYStates[i];
 
-					const int32 A = (xCache.permA + yState.A);
-					const int32 B = (xCache.permB + yState.B);
+					const int32 A = (xCache.permA + yState.iy);
+					const int32 B = (xCache.permB + yState.iy);
 
 					const int32 AA = (m_perm[A & 255] + layer.iz);
 					const int32 AB = (m_perm[(A + 1) & 255] + layer.iz);
@@ -641,6 +846,30 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	// 2D スライス（octaveNoise01(x, y) と一致）。
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoise01(OutputIterator first, const int32 width, const int32 height,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
+	{
+		auto converter01 = [&](value_type n)
+		{
+			return convert(To01Clamped(n));
+		};
+		batchOctaveNoise(first, width, height, baseX, baseY, xStep, yStep, parameters, std::move(converter01));
+	}
+
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoise01(OutputIterator first, const Size size,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
+	{
+		batchOctaveNoise01(first, size.x, size.y, baseX, baseY, xStep, yStep, parameters, std::move(convert));
+	}
+
+	// 3D ノイズの 2D スライス。
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchOctaveNoise01(OutputIterator first, const int32 width, const int32 height,
@@ -720,13 +949,50 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	// 2D スライス（octaveNoiseNormalized(x, y) と一致）。
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized(OutputIterator first, const int32 width, const int32 height,
-		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z, const Parameters parameters, Converter convert) const
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
 	{
+		// octaves <= 0 のときは正規化係数を計算せず 0 で埋める。
 		if (parameters.octaves <= 0)
 		{
+			batchOctaveNoise(first, width, height, baseX, baseY, xStep, yStep, parameters, std::move(convert));
+			return;
+		}
+
+		const value_type invAmpSum = (value_type(1) / AmplitudeSum(parameters));
+
+		auto normalizedConverter = [&](value_type n)
+		{
+			return convert(n * invAmpSum);
+		};
+
+		batchOctaveNoise(first, width, height, baseX, baseY, xStep, yStep, parameters, std::move(normalizedConverter));
+	}
+
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized(OutputIterator first, const Size size,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
+	{
+		batchOctaveNoiseNormalized(first, size.x, size.y, baseX, baseY, xStep, yStep, parameters, std::move(convert));
+	}
+
+	// 3D ノイズの 2D スライス。
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized(OutputIterator first, const int32 width, const int32 height,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z,
+		const Parameters parameters, Converter convert) const
+	{
+		// octaves <= 0 のときは正規化係数を計算せず 0 で埋める。
+		if (parameters.octaves <= 0)
+		{
+			batchOctaveNoise(first, width, height, baseX, baseY, xStep, yStep, z, parameters, std::move(convert));
 			return;
 		}
 
@@ -743,7 +1009,8 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized(OutputIterator first, const Size size,
-		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z, const Parameters parameters, Converter convert) const
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z,
+		const Parameters parameters, Converter convert) const
 	{
 		batchOctaveNoiseNormalized(first, size.x, size.y, baseX, baseY, xStep, yStep, z, parameters, std::move(convert));
 	}
@@ -790,13 +1057,58 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	// 2D スライス（octaveNoiseNormalized01(x, y) と一致）。
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized01(OutputIterator first, const int32 width, const int32 height,
-		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z, const Parameters parameters, Converter convert) const
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
 	{
+		// octaves <= 0 のときは正規化係数を計算せず To01(0) = 0.5 相当で埋める。
 		if (parameters.octaves <= 0)
 		{
+			auto zeroConverter = [&](value_type n)
+			{
+				return convert(To01(n));
+			};
+			batchOctaveNoise(first, width, height, baseX, baseY, xStep, yStep, parameters, std::move(zeroConverter));
+			return;
+		}
+
+		const value_type invAmpSum = (value_type(1) / AmplitudeSum(parameters));
+
+		auto normalized01Converter = [&](value_type n)
+		{
+			return convert(To01(n * invAmpSum));
+		};
+
+		batchOctaveNoise(first, width, height, baseX, baseY, xStep, yStep, parameters, std::move(normalized01Converter));
+	}
+
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized01(OutputIterator first, const Size size,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep,
+		const Parameters parameters, Converter convert) const
+	{
+		batchOctaveNoiseNormalized01(first, size.x, size.y, baseX, baseY, xStep, yStep, parameters, std::move(convert));
+	}
+
+	// 3D ノイズの 2D スライス。
+	template <Concept::FloatingPoint Float>
+	template <class OutputIterator, class Converter>
+	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized01(OutputIterator first, const int32 width, const int32 height,
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z,
+		const Parameters parameters, Converter convert) const
+	{
+		// octaves <= 0 のときは正規化係数を計算せず To01(0) = 0.5 相当で埋める。
+		if (parameters.octaves <= 0)
+		{
+			auto zeroConverter = [&](value_type n)
+			{
+				return convert(To01(n));
+			};
+			batchOctaveNoise(first, width, height, baseX, baseY, xStep, yStep, z, parameters, std::move(zeroConverter));
 			return;
 		}
 
@@ -813,7 +1125,8 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	template <class OutputIterator, class Converter>
 	void BasicPerlinNoise<Float>::batchOctaveNoiseNormalized01(OutputIterator first, const Size size,
-		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z, const Parameters parameters, Converter convert) const
+		const value_type baseX, const value_type baseY, const value_type xStep, const value_type yStep, const value_type z,
+		const Parameters parameters, Converter convert) const
 	{
 		batchOctaveNoiseNormalized01(first, size.x, size.y, baseX, baseY, xStep, yStep, z, parameters, std::move(convert));
 	}
@@ -825,7 +1138,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 	
 	template <Concept::FloatingPoint Float>
-	constexpr const typename BasicPerlinNoise<Float>::state_type BasicPerlinNoise<Float>::serialize() const noexcept
+	constexpr typename BasicPerlinNoise<Float>::state_type BasicPerlinNoise<Float>::serialize() const noexcept
 	{
 		state_type state;
 		std::copy(m_perm.begin(), (m_perm.begin() + 256), state.begin());

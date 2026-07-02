@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/LineString.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/IntFormatter.hpp>
 # include <Siv3D/FloatRect.hpp>
@@ -205,7 +206,7 @@ namespace s3d
 
 		for (int32 i = 0; i < 4; ++i)
 		{
-			auto& p = quad.pointAtIndex(i);
+			auto& p = quad.vertexAtIndex(i);
 			p.x = (pts[i].x * c - pts[i].y * s + _pos.x);
 			p.y = (pts[i].x * s + pts[i].y * c + _pos.y);
 		}
@@ -215,11 +216,135 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::rounded(const double tl, const double tr,	const double br, const double bl) const
+	{
+		return RectF{ *this }.rounded(tl, tr, br, bl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	chamfered
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::chamfered(const double _size) const
+	{
+		return RectF{ *this }.chamfered(_size);
+	}
+
+	Polygon Rect::chamfered(const double tl, const double tr, const double br, const double bl) const
+	{
+		return RectF{ *this }.chamfered(tl, tr, br, bl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pointed
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::pointed(const Arg::top_<double> topOffset) const
+	{
+		return RectF{ *this }.pointed(topOffset);
+	}
+
+	Polygon Rect::pointed(const Arg::right_<double> rightOffset) const
+	{
+		return RectF{ *this }.pointed(rightOffset);
+	}
+
+	Polygon Rect::pointed(const Arg::bottom_<double> bottomOffset) const
+	{
+		return RectF{ *this }.pointed(bottomOffset);
+	}
+
+	Polygon Rect::pointed(const Arg::left_<double> leftOffset) const
+	{
+		return RectF{ *this }.pointed(leftOffset);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	notched
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::stepped(const double s) const
+	{
+		return RectF{ *this }.stepped(s);
+	}
+
+	Polygon Rect::stepped(const double tl, const double tr, const double br, const double bl) const
+	{
+		return RectF{ *this }.stepped(tl, tr, br, bl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scooped
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::scooped(const double r) const
+	{
+		return RectF{ *this }.scooped(r);
+	}
+
+	Polygon Rect::scooped(const double tl, const double tr, const double br, const double bl) const
+	{
+		return RectF{ *this }.scooped(tl, tr, br, bl);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	frame
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Rect::frame(const double thickness) const
+	{
+		return RectF{ *this }.frame(thickness);
+	}
+
+	Polygon Rect::frame(const double innerThickness, const double outerThickness) const
+	{
+		return RectF{ *this }.frame(innerThickness, outerThickness);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	outline
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString Rect::outline(const CloseRing closeRing) const
+	{
+		if (closeRing)
+		{
+			return{ pos, tr(), br(), bl(), pos };
+		}
+		else
+		{
+			return{ pos, tr(), br(), bl() };
+		}
+	}
+
+	LineString Rect::outline(const double distanceFromOrigin, const double length) const
+	{
+		return RectF{ *this }.outline(distanceFromOrigin, length);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	outer
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Vec2> Rect::outer() const
+	Array<Point> Rect::outer() const
 	{
 		return{ tl(), tr(), br(), bl() };
 	}
@@ -230,7 +355,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<Vec2> Rect::ring() const
+	Array<Point> Rect::ring() const
 	{
 		return{ tl(), tr(), br(), bl(), tl() };
 	}
@@ -581,6 +706,23 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drawDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Rect& Rect::drawDashedFrame(const double thickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, color);
+	}
+
+	const Rect& Rect::drawDashedFrame(const double innerThickness, const double outerThickness, const RectangularDashStyle& style, const ColorF& color) const
+	{
+		RectF{ *this }.drawDashedFrame(innerThickness, outerThickness, style, color);
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	drawShadow
 	//
 	////////////////////////////////////////////////////////////////
@@ -667,9 +809,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Rect::ThrowPointAtIndexOutOfRange()
+	void Rect::ThrowVertexAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "Rect::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "Rect::vertexAtIndex() index out of range" };
 	}
 
 	void Rect::ThrowSideAtIndexOutOfRange()

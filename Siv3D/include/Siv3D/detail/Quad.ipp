@@ -374,11 +374,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	vertices
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Quad::position_type& Quad::pointAtIndex(const size_t index)
+	constexpr std::array<Quad::position_type, 4> Quad::vertices() const noexcept
+	{
+		return{ p0, p1, p2, p3 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sides
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::array<Line, 4> Quad::sides() const noexcept
+	{
+		return{ p0p1(), p1p2(), p2p3(), p3p0() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	vertexAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Quad::position_type& Quad::vertexAtIndex(const size_t index)
 	{
 		if (index == 0)
 		{
@@ -398,11 +420,11 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 
-	inline const Quad::position_type& Quad::pointAtIndex(const size_t index) const
+	inline const Quad::position_type& Quad::vertexAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -422,8 +444,60 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p0p1, p1p2, p2p3, p3p0
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Quad::p0p1() const noexcept
+	{
+		return{ p0, p1 };
+	}
+
+	constexpr Line Quad::p1p2() const noexcept
+	{
+		return{ p1, p2 };
+	}
+
+	constexpr Line Quad::p2p3() const noexcept
+	{
+		return{ p2, p3 };
+	}
+
+	constexpr Line Quad::p3p0() const noexcept
+	{
+		return{ p3, p0 };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	p1p0, p2p1, p3p2, p0p3
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Line Quad::p1p0() const noexcept
+	{
+		return{ p1, p0 };
+	}
+
+	constexpr Line Quad::p2p1() const noexcept
+	{
+		return{ p2, p1 };
+	}
+
+	constexpr Line Quad::p3p2() const noexcept
+	{
+		return{ p3, p2 };
+	}
+
+	constexpr Line Quad::p0p3() const noexcept
+	{
+		return{ p0, p3 };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -523,5 +597,17 @@ namespace s3d
 	constexpr bool Quad::intersects(const Shape2DType& other) const
 	{
 		return Geometry2D::Intersect(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Quad::contains(const Shape2DType& other) const
+	{
+		return Geometry2D::Contains(*this, other);
 	}
 }

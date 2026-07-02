@@ -61,6 +61,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Choice.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Circle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Circular.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\CircularDashStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Clipboard.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Color.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorF.hpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PoissonDiskSampler2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Polygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\IsPrime_impl.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PolygonHolesView.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Print.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PrintBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\QualityFactor.ipp" />
@@ -268,11 +270,14 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PerlinNoise.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PoissonDiskSampler2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonGlyph.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PolygonHolesView.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolynomialSolver.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PowerStatus.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PrintBuffer.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\QuarterArcTable.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ReadingDirection.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RectangularDashStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ResolvedGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Graphics2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IConstantBuffer.hpp" />
@@ -1002,6 +1007,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Pentablet\IPentablet.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.hpp" />
@@ -1816,6 +1822,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\PolygonFailureType\SivPolygonFailureType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\ClosedLineString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\GeometryCommon.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\SivPolygon.cpp" />
@@ -1830,6 +1837,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Profiler\SivProfiler.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Quad\SivQuad.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\QualityFactor\SivQualityFactor.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\QuarterArcTable\SivQuarterArcTable.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerStateBuilder\SivRasterizerStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerState\SivRasterizerState.cpp" />

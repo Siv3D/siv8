@@ -900,11 +900,33 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pointAtIndex
+	//	vertices
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr RectF::position_type RectF::pointAtIndex(const size_t index) const
+	constexpr std::array<RectF::position_type, 4> RectF::vertices() const noexcept
+	{
+		return{ pos, tr(), br(), bl() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sides
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr std::array<Line, 4> RectF::sides() const noexcept
+	{
+		return{ top(), right(), bottom(), left() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	vertexAtIndex
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr RectF::position_type RectF::vertexAtIndex(const size_t index) const
 	{
 		if (index == 0)
 		{
@@ -924,7 +946,7 @@ namespace s3d
 		}
 		else
 		{
-			ThrowPointAtIndexOutOfRange();
+			ThrowVertexAtIndexOutOfRange();
 		}
 	}
 
@@ -1142,6 +1164,39 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	inscribedDiamond
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad RectF::inscribedDiamond() const noexcept
+	{
+		return{ topCenter(), middleRight(), bottomCenter(), middleLeft() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	trapezoid
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Quad RectF::trapezoid(const Arg::top_<double> topOffset, const Arg::bottom_<double> bottomOffset) const noexcept
+	{
+		return{ { (pos.x - *topOffset), pos.y },
+				{ (pos.x + size.x + *topOffset), pos.y },
+				{ (pos.x + size.x + *bottomOffset), (pos.y + size.y) },
+				{ (pos.x - *bottomOffset), (pos.y + size.y) } };
+	}
+
+	constexpr Quad RectF::trapezoid(const Arg::left_<double> leftOffset, const Arg::right_<double> rightOffset) const noexcept
+	{
+		return{ { pos.x, (pos.y - *leftOffset) },
+				{ (pos.x + size.x), (pos.y - *rightOffset) },
+				{ (pos.x + size.x), (pos.y + size.y + *rightOffset) },
+				{ pos.x, (pos.y + size.y + *leftOffset) } };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	asQuad
 	//
 	////////////////////////////////////////////////////////////////
@@ -1225,8 +1280,6 @@ namespace s3d
 		return Geometry2D::Intersect(*this, other);
 	}
 
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	contains
@@ -1238,9 +1291,6 @@ namespace s3d
 	{
 		return Geometry2D::Contains(*this, other);
 	}
-
-
-
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -22,6 +22,7 @@
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedCircle.hpp>
+# include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -33,6 +34,12 @@ namespace s3d
 		static constexpr float ClampAngle(const double angle) noexcept
 		{
 			return Clamp(static_cast<float>(angle), -Math::TwoPiF, Math::TwoPiF);
+		}
+
+		[[nodiscard]]
+		static uint32 CalculateArcSegmentCount(const PointsPerCircle& pointsPerCircle, const double angle) noexcept
+		{
+			return Max(static_cast<uint32>(std::ceil(pointsPerCircle.value() * (angle / Math::TwoPi))), 1u);
 		}
 	}
 
@@ -103,6 +110,35 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	signedDistanceTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	double Circle::signedDistanceTo(const double x, const double y) const noexcept
+	{
+		return signedDistanceTo(position_type{ x, y });
+	}
+
+	double Circle::signedDistanceTo(const position_type point) const noexcept
+	{
+		return (center.distanceTo(point) - Abs(r));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	closestPointOnCircumference
+	//
+	////////////////////////////////////////////////////////////////
+
+	Circle::position_type Circle::closestPointOnCircumference(const position_type point) const noexcept
+	{
+		const Vec2 direction = (point - center);
+
+		return (center + direction.normalized_or(Vec2{ 0.0, -1.0 }) * Abs(r));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	outer
 	//
 	////////////////////////////////////////////////////////////////
@@ -146,12 +182,15 @@ namespace s3d
 
 	Polygon Circle::asPolygon(const PointsPerCircle& pointsPerCircle) const
 	{
-		if (r == 0.0)
+		const double radius = Abs(r);
+
+		if (radius == 0.0)
 		{
 			return{};
 		}
 
-		const Array<Vec2> vertices = outer(pointsPerCircle);
+		const Circle baseCircle{ center, radius };
+		const Array<Vec2> vertices = baseCircle.outer(pointsPerCircle);
 
 		const uint32 n = pointsPerCircle.value();
 
@@ -168,12 +207,164 @@ namespace s3d
 			}
 		}
 
-		return Polygon{ vertices, std::move(indices), boundingRect(), SkipValidation::Yes };
+		return Polygon{ vertices, std::move(indices), baseCircle.boundingRect(), SkipValidation::Yes };
 	}
 
 	Polygon Circle::asPolygon(const QualityFactor& qualityFactor) const
 	{
-		return asPolygon(qualityFactor.toPointsPerCircle(r));
+		return asPolygon(qualityFactor.toPointsPerCircle(Abs(r)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pieAsPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Circle::pieAsPolygon(const double startAngle, const double angle, const PointsPerCircle& pointsPerCircle) const
+	{
+		const double radius = Abs(r);
+
+		if ((radius == 0.0) || (angle == 0.0))
+		{
+			return{};
+		}
+
+		if (Math::TwoPi <= Abs(angle))
+		{
+			return Circle{ center, radius }.asPolygon(pointsPerCircle);
+		}
+
+		const double clampedAngle = Clamp(angle, -Math::TwoPi, Math::TwoPi);
+		const double absAngle = Abs(clampedAngle);
+		const uint32 segmentCount = CalculateArcSegmentCount(pointsPerCircle, absAngle);
+		const uint32 arcPointCount = (segmentCount + 1);
+		Array<Vec2> vertices((arcPointCount + 1), center);
+		{
+			const double start = (startAngle + ((clampedAngle < 0.0) ? clampedAngle : 0.0));
+			const double angleDelta = (absAngle / segmentCount);
+			Vec2* pDst = &vertices[1];
+
+			for (uint32 i = 0; i < arcPointCount; ++i)
+			{
+				const auto [s, c] = FastMath::SinCos(start + (angleDelta * i));
+				(pDst++)->moveBy((radius * s), (-radius * c));
+			}
+		}
+
+		Array<TriangleIndex> indices(segmentCount);
+		{
+			TriangleIndex* pIndex = indices.data();
+
+			for (Vertex2D::IndexType i = 0; i < segmentCount; ++i)
+			{
+				pIndex->i0 = 0;
+				pIndex->i1 = (i + 1);
+				pIndex->i2 = (i + 2);
+				++pIndex;
+			}
+		}
+
+		return Polygon{ vertices, std::move(indices), Geometry2D::BoundingRect(vertices), SkipValidation::Yes };
+	}
+
+	Polygon Circle::pieAsPolygon(const double startAngle, const double angle, const QualityFactor& qualityFactor) const
+	{
+		return pieAsPolygon(startAngle, angle, qualityFactor.toPointsPerCircle(Abs(r)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	arcAsPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Circle::arcAsPolygon(const double startAngle, const double angle, const double innerThickness, const double outerThickness, const PointsPerCircle& pointsPerCircle) const
+	{
+		const double radius = Abs(r);
+		const double thickness = (innerThickness + outerThickness);
+		const double innerRadius = Max((radius - innerThickness), 0.0);
+		const double outerRadius = (radius + outerThickness);
+
+		if ((radius == 0.0) || (angle == 0.0) || (thickness <= 0.0) || (outerRadius <= 0.0))
+		{
+			return{};
+		}
+
+		if (innerRadius == 0.0)
+		{
+			return Circle{ center, outerRadius }.pieAsPolygon(startAngle, angle, pointsPerCircle);
+		}
+
+		if (Math::TwoPi <= Abs(angle))
+		{
+			const uint32 pointCount = pointsPerCircle.value();
+			const double angleDelta = (Math::TwoPi / pointCount);
+			Array<Vec2> outer(pointCount, center);
+			Array<Vec2> inner(pointCount, center);
+			{
+				Vec2* pOuter = outer.data();
+				Vec2* pInner = inner.data();
+
+				for (uint32 i = 0; i < pointCount; ++i)
+				{
+					const auto [s, c] = FastMath::SinCos(angleDelta * i);
+					(pOuter++)->moveBy((outerRadius * s), (-outerRadius * c));
+					(pInner++)->moveBy((-innerRadius * s), (-innerRadius * c));
+				}
+			}
+
+			const RectF boundingRect = Geometry2D::BoundingRect(outer);
+			Array<Array<Vec2>> holes(1);
+			holes.front() = std::move(inner);
+
+			return Polygon{ outer, std::move(holes), boundingRect, SkipValidation::Yes };
+		}
+
+		const double clampedAngle = Clamp(angle, -Math::TwoPi, Math::TwoPi);
+		const double absAngle = Abs(clampedAngle);
+		const uint32 segmentCount = CalculateArcSegmentCount(pointsPerCircle, absAngle);
+		const uint32 arcPointCount = (segmentCount + 1);
+		const uint32 vertexCount = (arcPointCount * 2);
+		Array<Vec2> vertices(vertexCount, center);
+		{
+			const double start = (startAngle + ((clampedAngle < 0.0) ? clampedAngle : 0.0));
+			const double angleDelta = (absAngle / segmentCount);
+			Vec2* pOuter = vertices.data();
+			Vec2* pInner = &vertices.back();
+
+			for (uint32 i = 0; i < arcPointCount; ++i)
+			{
+				const auto [s, c] = FastMath::SinCos(start + (angleDelta * i));
+				(pOuter++)->moveBy((outerRadius * s), (-outerRadius * c));
+				(pInner--)->moveBy((innerRadius * s), (-innerRadius * c));
+			}
+		}
+
+		Array<TriangleIndex> indices(segmentCount * 2);
+		{
+			TriangleIndex* pIndex = indices.data();
+
+			for (Vertex2D::IndexType i = 0; i < segmentCount; ++i)
+			{
+				pIndex->i0 = i;
+				pIndex->i1 = (i + 1);
+				pIndex->i2 = ((vertexCount - 1) - i);
+				++pIndex;
+				pIndex->i0 = ((vertexCount - 1) - i);
+				pIndex->i1 = (i + 1);
+				pIndex->i2 = ((vertexCount - 2) - i);
+				++pIndex;
+			}
+		}
+
+		return Polygon{ vertices, std::move(indices), Geometry2D::BoundingRect(vertices), SkipValidation::Yes };
+	}
+
+	Polygon Circle::arcAsPolygon(const double startAngle, const double angle, const double innerThickness, const double outerThickness, const QualityFactor& qualityFactor) const
+	{
+		return arcAsPolygon(startAngle, angle, innerThickness, outerThickness,
+			qualityFactor.toPointsPerCircle(Abs(r) + outerThickness));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -464,6 +655,42 @@ namespace s3d
 			pattern
 		);
 
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	const Circle& Circle::drawDashedFrame(const double thickness, const CircularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, color, color);
+	}
+
+	const Circle& Circle::drawDashedFrame(const double thickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		return drawDashedFrame((thickness * 0.5), (thickness * 0.5), style, innerColor, outerColor);
+	}
+
+	const Circle& Circle::drawDashedFrame(const double innerThickness, const double outerThickness, const CircularDashStyle& style, const ColorF& color) const
+	{
+		return drawDashedFrame(innerThickness, outerThickness, style, color, color);
+	}
+
+	const Circle& Circle::drawDashedFrame(const double innerThickness, const double outerThickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addCircleDashedFrame(
+			center,
+			static_cast<float>(Abs(r) - innerThickness),
+			style.startAngle,
+			static_cast<float>(innerThickness + outerThickness),
+			style.dashRatio,
+			style.dashCount,
+			innerColor.toFloat4(),
+			outerColor.toFloat4()
+		);
 		return *this;
 	}
 

@@ -219,13 +219,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateRoundBuffer
+	//	computeMiterBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Line::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	Polygon Line::computeMiterBufferPolygon(const double distance) const
 	{
-		return CalculateLineRoundBuffer(*this, distance, qualityFactor);
+		return ComputeMiterBufferPolygon(*this, distance);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeRoundBufferPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Line::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
+	{
+		return ComputeRoundBufferPolygon(*this, distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -750,9 +761,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Line::ThrowPointAtIndexOutOfRange()
+	void Line::ThrowVertexAtIndexOutOfRange()
 	{
-		throw std::out_of_range{ "Line::pointAtIndex() index out of range" };
+		throw std::out_of_range{ "Line::vertexAtIndex() index out of range" };
 	}
 }
 

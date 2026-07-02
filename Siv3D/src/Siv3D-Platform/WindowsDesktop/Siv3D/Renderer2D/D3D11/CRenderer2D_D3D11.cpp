@@ -433,6 +433,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRectDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRectDashedFrame(const FloatRect& innerRect, const float offset, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRectDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), innerRect, offset, thickness, dashRatio, dashCount, color))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addCircle
 	//
 	////////////////////////////////////////////////////////////////
@@ -515,6 +539,30 @@ namespace s3d
 
 			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
 
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCircleDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addCircleDashedFrame(const Float2& center, const float rInner, const float startAngle, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, rInner, startAngle, thickness, dashRatio, dashCount, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+			
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+		
 			m_commandManager.pushDraw(indexCount);
 		}
 	}
@@ -735,6 +783,30 @@ namespace s3d
 			
 			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
 			
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addEllipseDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addEllipseDashedFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const float offset, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), center, a, b, innerThickness, outerThickness, offset, dashRatio, dashCount, innerColor, outerColor, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+
 			m_commandManager.pushDraw(indexCount);
 		}
 	}
@@ -1018,6 +1090,31 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addRoundRectDashedFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::addRoundRectDashedFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const float offset, const float dashRatio, const uint32 dashCount, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectDashedFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this),
+			innerRect, innerR, outerRect, outerR, offset, dashRatio, dashCount, color, getMaxScaling()))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+			
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+			
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addPolygon
 	//
 	////////////////////////////////////////////////////////////////
@@ -1148,9 +1245,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const float thickness, const Float4& color)
+	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, thickness, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, color, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1166,9 +1263,9 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const float thickness, const PatternParameters& pattern)
+	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, thickness, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, pattern.primaryColor, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{

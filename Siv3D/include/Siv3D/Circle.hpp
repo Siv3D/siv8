@@ -15,6 +15,7 @@
 # include "ColorHSV.hpp"
 # include "PointsPerCircle.hpp"
 # include "QualityFactor.hpp"
+# include "CircularDashStyle.hpp"
 # include "PredefinedNamedParameter.hpp"
 
 namespace s3d
@@ -665,6 +666,37 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	signedDistanceTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標から円周までの符号付き距離を返します。
+		/// @param _x 座標の X 成分
+		/// @param _y 座標の Y 成分
+		/// @return 円周までの符号付き距離。円の外側では正、内側では負
+		[[nodiscard]]
+		double signedDistanceTo(double _x, double _y) const noexcept;
+
+		/// @brief 指定した座標から円周までの符号付き距離を返します。
+		/// @param point 座標
+		/// @return 円周までの符号付き距離。円の外側では正、内側では負
+		[[nodiscard]]
+		double signedDistanceTo(position_type point) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	closestPointOnCircumference
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した座標に最も近い円周上の座標を返します。
+		/// @param point 座標
+		/// @return 指定した座標に最も近い円周上の座標。指定した座標が円の中心の場合は円の上端
+		[[nodiscard]]
+		position_type closestPointOnCircumference(position_type point) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	outer
 		//
 		////////////////////////////////////////////////////////////////
@@ -673,7 +705,7 @@ namespace s3d
 		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
 
 		[[nodiscard]]
-		Array<Vec2> outer(const QualityFactor& qualityFactor) const;
+		Array<Vec2> outer(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -691,7 +723,7 @@ namespace s3d
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
 		/// @return Polygon
 		[[nodiscard]]
-		Polygon asPolygon(const QualityFactor& qualityFactor) const;
+		Polygon asPolygon(const QualityFactor& qualityFactor = QualityFactor{}) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -699,8 +731,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Polygon pieAsPolygon(double startAngle, double angle, uint32 quality = 24) const;
+		/// @brief 扇形の Polygon を作成します。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param pointsPerCircle 頂点数（完全な円のときの頂点数）
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon pieAsPolygon(double startAngle, double angle, const PointsPerCircle& pointsPerCircle) const;
+
+		/// @brief 扇形の Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon pieAsPolygon(double startAngle, double angle, const QualityFactor& qualityFactor = QualityFactor{}) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -708,8 +753,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, uint32 quality = 24) const;
+		/// @brief 円弧の Polygon を作成します。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param innerThickness 内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 外側方向への枠の太さ（ピクセル）
+		/// @param pointsPerCircle 頂点数（完全な円のときの頂点数）
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, const PointsPerCircle& pointsPerCircle) const;
+
+		/// @brief 円弧の Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @param startAngle 開始角度（ラジアン）
+		/// @param angle 角度（ラジアン）
+		/// @param innerThickness 内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 外側方向への枠の太さ（ピクセル）
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return Polygon
+		[[nodiscard]]
+		Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, const QualityFactor& qualityFactor = QualityFactor{}) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -765,9 +827,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//bool contains(const Shape2DType& other) const;
+		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool contains(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -970,6 +1036,44 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const Circle& drawFrame(double innerThickness, double outerThickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawDashedFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円形の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Circle& drawDashedFrame(double thickness, const CircularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 円形の破線を描きます。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Circle& drawDashedFrame(double thickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
+
+		/// @brief 円形の破線を描きます。
+		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param color 色
+		/// @return *this
+		const Circle& drawDashedFrame(double innerThickness, double outerThickness, const CircularDashStyle& style = {}, const ColorF& color = Palette::White) const;
+
+		/// @brief 円形の破線を描きます。
+		/// @param innerThickness 基準の円から内側方向への枠の太さ（ピクセル）
+		/// @param outerThickness 基準の円から外側方向への枠の太さ（ピクセル）
+		/// @param style 破線のスタイル
+		/// @param innerColor 内側部分の色
+		/// @param outerColor 外側部分の色
+		/// @return *this
+		const Circle& drawDashedFrame(double innerThickness, double outerThickness, const CircularDashStyle& style, const ColorF& innerColor, const ColorF& outerColor) const;
 
 		////////////////////////////////////////////////////////////////
 		//

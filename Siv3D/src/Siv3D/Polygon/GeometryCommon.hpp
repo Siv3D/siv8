@@ -30,7 +30,7 @@ BOOST_GEOMETRY_REGISTER_LINESTRING(s3d::LineString)
 namespace s3d
 {
 	using CwOpenPolygon			= boost::geometry::model::polygon<Vec2, false, false, Array, Array>;
-	using MultiCwOpenPolygon	= boost::geometry::model::multi_polygon<CwOpenPolygon>;
+	using CwOpenMultiPolygon	= boost::geometry::model::multi_polygon<CwOpenPolygon>;
 	using CWOpenRing	= boost::geometry::model::ring<Vec2, false, false, Array>;
 	using GVec2			= boost::geometry::model::d2::point_xy<double>;
 	using InnersType	= Array<boost::geometry::model::ring<Vec2, false, false, Array>>;

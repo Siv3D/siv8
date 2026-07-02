@@ -13,6 +13,7 @@
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -772,6 +773,39 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Shape2D::rounded(const double round, const QualityFactor& qualityFactor) const
+	{
+		return ComputeRoundPolygon(m_vertices.asArray<Vec2>(), round, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeMiterBufferPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Shape2D::computeMiterBufferPolygon(const double distance) const
+	{
+		return ComputeMiterBufferPolygon(m_vertices.asArray<Vec2>(), distance);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeRoundBufferPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Shape2D::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
+	{
+		return ComputeRoundBufferPolygon(m_vertices.asArray<Vec2>(), distance, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	paint
 	//
 	////////////////////////////////////////////////////////////////
@@ -830,9 +864,21 @@ namespace s3d
 		return *this;
 	}
 
+	const Shape2D& Shape2D::draw(const Vec2& offset, const ColorF& color) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, Float2{ offset }, color.toFloat4());
+		return *this;
+	}
+
 	const Shape2D& Shape2D::draw(const PatternParameters& pattern) const
 	{
 		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, none, pattern);
+		return *this;
+	}
+
+	const Shape2D& Shape2D::draw(const Vec2& offset, const PatternParameters& pattern) const
+	{
+		SIV3D_ENGINE(Renderer2D)->addPolygon(m_vertices, m_indices, Float2{ offset }, pattern);
 		return *this;
 	}
 
@@ -844,14 +890,26 @@ namespace s3d
 
 	 const Shape2D& Shape2D::drawFrame(const double thickness, const ColorF& color) const
 	 {
-	 	SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, static_cast<float>(thickness), color.toFloat4());
+	 	SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, none, static_cast<float>(thickness), color.toFloat4());
 	 	return *this;
+	 }
+
+	 const Shape2D& Shape2D::drawFrame(const Vec2& offset, const double thickness, const ColorF& color) const
+	 {
+		 SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, Float2{ offset }, static_cast<float>(thickness), color.toFloat4());
+		 return *this;
 	 }
 
 	 const Shape2D& Shape2D::drawFrame(const double thickness, const PatternParameters& pattern) const
 	 {
-		SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, static_cast<float>(thickness), pattern);
+		SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, none, static_cast<float>(thickness), pattern);
 		return *this;
+	 }
+
+	 const Shape2D& Shape2D::drawFrame(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
+	 {
+		 SIV3D_ENGINE(Renderer2D)->addShape2DFrame(m_vertices, Float2{ offset }, static_cast<float>(thickness), pattern);
+		 return *this;
 	 }
 
 	////////////////////////////////////////////////////////////////
@@ -871,10 +929,28 @@ namespace s3d
 		while (pIndex != pIndexEnd)
 		{
 			const Float2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
-			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, thicknessF, colorF);
+			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, none, thicknessF, colorF);
 			++pIndex;
 		}
 		
+		return *this;
+	}
+
+	const Shape2D& Shape2D::drawWireframe(const Vec2& offset, const double thickness, const ColorF& color) const
+	{
+		const Float2* pVertex = m_vertices.data();
+		const TriangleIndex* pIndex = m_indices.data();
+		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
+		const float thicknessF = static_cast<float>(thickness);
+		const Float4 colorF = color.toFloat4();
+
+		while (pIndex != pIndexEnd)
+		{
+			const Float2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
+			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, Float2{ offset }, thicknessF, colorF);
+			++pIndex;
+		}
+
 		return *this;
 	}
 
@@ -888,10 +964,27 @@ namespace s3d
 		while (pIndex != pIndexEnd)
 		{
 			const Float2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
-			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, thicknessF, pattern);
+			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, none, thicknessF, pattern);
 			++pIndex;
 		}
 		
+		return *this;
+	}
+
+	const Shape2D& Shape2D::drawWireframe(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
+	{
+		const Float2* pVertex = m_vertices.data();
+		const TriangleIndex* pIndex = m_indices.data();
+		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
+		const float thicknessF = static_cast<float>(thickness);
+		
+		while (pIndex != pIndexEnd)
+		{
+			const Float2 points[3] = { pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2] };
+			SIV3D_ENGINE(Renderer2D)->addShape2DFrame(points, Float2{ offset }, thicknessF, pattern);
+			++pIndex;
+		}
+	
 		return *this;
 	}
 }

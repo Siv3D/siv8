@@ -1414,6 +1414,9 @@
     <Filter Include="src\Siv3D\ImageDraw">
       <UniqueIdentifier>{e878034e-5f75-4988-8967-6f7e3f30bed7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\QuarterArcTable">
+      <UniqueIdentifier>{3d1d9bff-9ad9-45f8-9781-6ae8450303bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5787,6 +5790,22 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\ImagePixel\SolidColorWriter.hpp">
       <Filter>src\Siv3D\ImagePixel</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\QuarterArcTable.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\PolygonHolesView.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PolygonHolesView.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CircularDashStyle.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RectangularDashStyle.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.hpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8860,6 +8879,12 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImagePixel\SivImagePixel.cpp">
       <Filter>src\Siv3D\ImagePixel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\QuarterArcTable\SivQuarterArcTable.cpp">
+      <Filter>src\Siv3D\QuarterArcTable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.cpp">
+      <Filter>src\Siv3D\Polygon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -23,11 +23,15 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Polygon AddHole(const Array<Vec2>& outer, const Array<Array<Vec2>>& currentInners, Array<Vec2> hole)
+		static Polygon AddHole(const Array<Vec2>& outer, const PolygonHolesView currentInners, Array<Vec2> hole)
 		{
 			Array<Array<Vec2>> inners(Arg::reserve = (currentInners.size() + 1));
 			{
-				inners.append(currentInners);
+				for (const auto& currentInner : currentInners)
+				{
+					inners.emplace_back(currentInner.begin(), currentInner.end());
+				}
+				
 				inners.push_back(std::move(hole));
 			}
 
@@ -184,7 +188,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<Array<Vec2>>& Polygon::inners() const noexcept
+	PolygonHolesView Polygon::inners() const noexcept
 	{
 		return pImpl->inners();
 	}
@@ -505,7 +509,13 @@ namespace s3d
 
 		Array<Array<Vec2>> inners(Arg::reserve = (pImpl->inners().size() + holes.size()));
 		{
-			inners.append(pImpl->inners());
+			const auto& polygonInners = pImpl->inners();
+
+			for (const auto& polygonInner : polygonInners)
+			{
+				inners.emplace_back(polygonInner.begin(), polygonInner.end());
+			}
+
 			inners.append(holes);
 		}
 
@@ -903,24 +913,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateBuffer
+	//	computeMiterBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::calculateBuffer(const double distance) const
+	Polygon Polygon::computeMiterBufferPolygon(const double distance) const
 	{
-		return pImpl->calculateBuffer(distance);
+		return pImpl->computeMiterBufferPolygon(distance);
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateRoundBuffer
+	//	computeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	Polygon Polygon::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		return pImpl->calculateRoundBuffer(distance, qualityFactor);
+		return pImpl->computeRoundBufferPolygon(distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1282,9 +1292,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::draw(const Vec2& pos, const ColorF& color) const
+	void Polygon::draw(const Vec2& offset, const ColorF& color) const
 	{
-		pImpl->draw(Float2{ pos }, color);
+		pImpl->draw(Float2{ offset }, color);
 	}
 
 	const Polygon& Polygon::draw(const PatternParameters& pattern) const
@@ -1293,9 +1303,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::draw(const Vec2& pos, const PatternParameters& pattern) const
+	void Polygon::draw(const Vec2& offset, const PatternParameters& pattern) const
 	{
-		pImpl->draw(Float2{ pos }, pattern);
+		pImpl->draw(Float2{ offset }, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1338,9 +1348,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawFrame(const Vec2& pos, const double thickness, const ColorF& color) const
+	void Polygon::drawFrame(const Vec2& offset, const double thickness, const ColorF& color) const
 	{
-		pImpl->drawFrame(Float2{ pos }, thickness, color);
+		pImpl->drawFrame(Float2{ offset }, thickness, color);
 	}
 
 	const Polygon& Polygon::drawFrame(const double thickness, const PatternParameters& pattern) const
@@ -1349,9 +1359,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawFrame(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
+	void Polygon::drawFrame(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
 	{
-		pImpl->drawFrame(Float2{ pos }, thickness, pattern);
+		pImpl->drawFrame(Float2{ offset }, thickness, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1366,9 +1376,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const ColorF& color) const
+	void Polygon::drawWireframe(const Vec2& offset, const double thickness, const ColorF& color) const
 	{
-		pImpl->drawWireframe(Float2{ pos }, thickness, color);
+		pImpl->drawWireframe(Float2{ offset }, thickness, color);
 	}
 
 	const Polygon& Polygon::drawWireframe(const double thickness, const PatternParameters& pattern) const
@@ -1377,9 +1387,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
+	void Polygon::drawWireframe(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
 	{
-		pImpl->drawWireframe(Float2{ pos }, thickness, pattern);
+		pImpl->drawWireframe(Float2{ offset }, thickness, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////

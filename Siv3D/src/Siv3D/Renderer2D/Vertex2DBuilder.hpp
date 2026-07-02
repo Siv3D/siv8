@@ -52,10 +52,16 @@ namespace s3d
 		Vertex2D::IndexType BuildRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float thickness, ColorFillDirection colorType, const Float4& color0, const Float4& color1);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildRectDashedFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float offset, float thickness, float dashRatio, uint32 dashCount, const Float4& color);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildCircle(const BufferCreatorFunc& bufferCreator, const Float2& center, float r, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildCircleFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float rInner, float thickness, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildCircleDashedFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float rInner, float startAngle, float thickness, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildCirclePie(const BufferCreatorFunc& bufferCreator, const Float2& center, float r, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor, float scale);
@@ -71,6 +77,9 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildEllipseFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float innerThickness, float outerThickness, const Float4& innerColor, const Float4& outerColor, float scale);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildEllipseDashedFrame(const BufferCreatorFunc& bufferCreator, const Float2& center, float a, float b, float innerThickness, float outerThickness, float offset, float dashRatio, uint32 dashCount, const Float4& innerColor, const Float4& outerColor, float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildEllipsePie(const BufferCreatorFunc& bufferCreator, const Float2& center, float rx, float ry, float startAngle, float angle, const Float4& innerColor, const Float4& outerColor, float scale);
@@ -97,6 +106,9 @@ namespace s3d
 		Vertex2D::IndexType BuildRoundRectFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, ColorFillDirection colorType, const Float4& color0, const Float4& color1, float scale);
 
 		[[nodiscard]]
+		Vertex2D::IndexType BuildRoundRectDashedFrame(const BufferCreatorFunc& bufferCreator, const FloatRect& innerRect, float innerR, const FloatRect& outerRect, float outerR, float offset, float dashRatio, uint32 dashCount, const Float4& color, float scale);
+
+		[[nodiscard]]
 		Vertex2D::IndexType BuildPolygon(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset, const Float4& color);
 
 		[[nodiscard]]
@@ -106,7 +118,7 @@ namespace s3d
 		Vertex2D::IndexType BuildPolygonTransformed(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, std::span<const TriangleIndex> triangleIndices, float s, float c, const Float2& offset, const Float4& color);
 
 		[[nodiscard]]
-		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, float thickness, const Float4& color, const float scale);
+		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const Float4& color, const float scale);
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, LineCap startCap, LineCap endCap, std::span<const Vec2> points, const Optional<Float2>& offset, float thickness, bool inner, CloseRing closeRing, const Float4& color, float scale);

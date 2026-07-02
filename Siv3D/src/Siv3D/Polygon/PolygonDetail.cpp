@@ -233,8 +233,6 @@ namespace s3d
 
 		m_vertices		= MakeVertices(outer, holes);
 
-		m_holes			= std::move(holes);
-
 		m_boundingRect	= Geometry2D::BoundingRect(outer);
 	}
 
@@ -258,8 +256,6 @@ namespace s3d
 		m_polygon		= std::move(polygon);
 
 		m_vertices		= MakeVertices(outer, holes);
-
-		m_holes			= std::move(holes);
 
 		m_boundingRect	= boundingRect;
 	}
@@ -302,8 +298,6 @@ namespace s3d
 		m_polygon		= std::move(polygon);
 
 		m_vertices		= std::move(vertices);
-
-		m_holes			= std::move(holes);
 
 		m_boundingRect	= boundingRect;
 	}
@@ -349,9 +343,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Array<Array<Vec2>>& Polygon::PolygonDetail::inners() const noexcept
+	PolygonHolesView Polygon::PolygonDetail::inners() const noexcept
 	{
-		return m_holes;
+		return PolygonHolesView{ m_polygon.inners() };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -424,14 +418,6 @@ namespace s3d
 				{
 					point.moveBy(v);
 				}
-			}
-		}
-
-		for (auto& hole : m_holes)
-		{
-			for (auto& point : hole)
-			{
-				point.moveBy(v);
 			}
 		}
 
@@ -536,14 +522,6 @@ namespace s3d
 			}
 		}
 
-		m_holes.clear();
-
-		for (auto& hole : m_polygon.inners())
-		{
-			m_holes.emplace_back();
-			m_holes.back().insert(m_holes.back().end(), hole.begin(), hole.end());
-		}
-
 		m_boundingRect = Geometry2D::BoundingRect(outer());
 	}
 
@@ -589,14 +567,6 @@ namespace s3d
 			vertex.set(x, y);
 		}
 
-		m_holes.clear();
-
-		for (auto& hole : m_polygon.inners())
-		{
-			m_holes.emplace_back();
-			m_holes.back().insert(m_holes.back().end(), hole.begin(), hole.end());
-		}
-
 		m_boundingRect = Geometry2D::BoundingRect(outer());
 	}
 
@@ -619,14 +589,6 @@ namespace s3d
 		}
 
 		for (auto& hole : m_polygon.inners())
-		{
-			for (auto& point : hole)
-			{
-				point *= s;
-			}
-		}
-
-		for (auto& hole : m_holes)
 		{
 			for (auto& point : hole)
 			{
@@ -663,15 +625,7 @@ namespace s3d
 				point *= s;
 			}
 		}
-		
-		for (auto& hole : m_holes)
-		{
-			for (auto& point : hole)
-			{
-				point *= s;
-			}
-		}
-		
+
 		const Float2 sf = s;
 		
 		for (auto& point : m_vertices)
@@ -701,14 +655,6 @@ namespace s3d
 		}
 
 		for (auto& hole : m_polygon.inners())
-		{
-			for (auto& point : hole)
-			{
-				point = (pos + (point - pos) * s);
-			}
-		}
-
-		for (auto& hole : m_holes)
 		{
 			for (auto& point : hole)
 			{
@@ -746,15 +692,7 @@ namespace s3d
 				point = (pos + (point - pos) * s);
 			}
 		}
-		
-		for (auto& hole : m_holes)
-		{
-			for (auto& point : hole)
-			{
-				point = (pos + (point - pos) * s);
-			}
-		}
-		
+	
 		const Float2 sf = s;
 		const Float2 posF{ pos };
 		
@@ -872,11 +810,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateBuffer
+	//	computeMiterBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::PolygonDetail::calculateBuffer(const double distance) const
+	Polygon Polygon::PolygonDetail::computeMiterBufferPolygon(const double distance) const
 	{
 		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
 
@@ -884,7 +822,7 @@ namespace s3d
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
 			boost::geometry::strategy::buffer::join_miter{},
-			boost::geometry::strategy::buffer::end_round{},
+			boost::geometry::strategy::buffer::end_flat{},
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
 		if (multiPolygon.size() != 1)
@@ -897,18 +835,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	calculateRoundBuffer
+	//	computeRoundBufferPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::PolygonDetail::calculateRoundBuffer(const double distance, const QualityFactor& qualityFactor) const
+	Polygon Polygon::PolygonDetail::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
 		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
 
 		boost::geometry::buffer(m_polygon, multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
-			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(distance * qualityFactor.value()) },
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(Abs(distance) * qualityFactor.value()) },
 			boost::geometry::strategy::buffer::end_round{},
 			boost::geometry::strategy::buffer::point_circle{ 0 });
 
@@ -1416,7 +1354,7 @@ namespace s3d
 
 		boost::geometry::correct(polygon);
 		
-		MultiCwOpenPolygon solvedPolygons;
+		CwOpenMultiPolygon solvedPolygons;
 		boost::geometry::dissolve(polygon, solvedPolygons);
 
 		Array<Polygon> results;
@@ -1476,7 +1414,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	LineString LineString::densified(const double maxDistance, const CloseRing closeRing) const
+	LineString LineString::densified(const double maxSegmentLength, const CloseRing closeRing) const
 	{
 		if (size() < 2)
 		{
@@ -1490,12 +1428,12 @@ namespace s3d
 			LineString input(begin(), end());
 			input.push_back(input.front());
 
-			boost::geometry::densify(input, result, maxDistance);
+			boost::geometry::densify(input, result, maxSegmentLength);
 			result.pop_back();
 		}
 		else
 		{
-			boost::geometry::densify(*this, result, maxDistance);
+			boost::geometry::densify(*this, result, maxSegmentLength);
 		}
 
 		return result;
