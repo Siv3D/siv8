@@ -1016,11 +1016,11 @@ namespace s3d
 
 		/// @brief 多角形を移動させた位置で Image に描き込みます。
 		/// @param dst 描き込み先の Image
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
-		const Polygon& paint(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Polygon& paint(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1037,11 +1037,11 @@ namespace s3d
 
 		/// @brief 多角形を移動させた位置で Image に上書きします。
 		/// @param dst 上書き先の Image
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
-		const Polygon& overwrite(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		const Polygon& overwrite(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1066,18 +1066,18 @@ namespace s3d
 
 		/// @brief 多角形の枠を移動させた位置で Image に描き込みます。
 		/// @param dst 描き込み先の Image
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
-		void paintFrame(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		void paintFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		/// @brief 多角形の枠を移動させた位置で Image に描き込みます。
 		/// @param dst 描き込み先の Image
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness 枠の太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
-		void paintFrame(Image& dst, const Vec2& pos, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		void paintFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1102,18 +1102,18 @@ namespace s3d
 
 		/// @brief 多角形の枠を移動させた位置で Image に上書きします。
 		/// @param dst 上書き先の Image
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
-		void overwriteFrame(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		void overwriteFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		/// @brief 多角形の枠を移動させた位置で Image に上書きします。
 		/// @param dst 上書き先の Image
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness 枠の太さ
 		/// @param color 色
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
-		void overwriteFrame(Image& dst, const Vec2& pos, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		void overwriteFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//

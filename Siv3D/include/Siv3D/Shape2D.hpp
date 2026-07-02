@@ -364,7 +364,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 図形を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Shape2D& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 図形を移動させた位置に Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const Shape2D& paint(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -372,7 +385,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 図形を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Shape2D& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 図形を移動させた位置に Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const Shape2D& overwrite(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -380,7 +406,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 図形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Shape2D& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 図形の枠を移動させた位置に Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const Shape2D& paintFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -388,7 +429,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 図形の枠を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Shape2D& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief 図形の枠を移動させた位置に Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const Shape2D& overwriteFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -401,10 +457,21 @@ namespace s3d
 		/// @return *this
 		const Shape2D& draw(const ColorF& color = Palette::White) const;
 		
+		/// @brief 図形を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @return *this
 		const Shape2D& draw(const Vec2& offset, const ColorF& color = Palette::White) const;
 
+		/// @brief 図形を描画します。
+		/// @param pattern パターン
+		/// @return *this
 		const Shape2D& draw(const PatternParameters& pattern) const;
 
+		/// @brief 図形を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param pattern パターン
+		/// @return *this
 		const Shape2D& draw(const Vec2& offset, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -419,10 +486,24 @@ namespace s3d
 		/// @return *this
 		const Shape2D& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 図形の枠を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @return *this
 		const Shape2D& drawFrame(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 図形の枠を描画します。
+		/// @param thickness 枠の太さ
+		/// @param pattern パターン
+		/// @return *this
 		const Shape2D& drawFrame(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 図形の枠を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ
+		/// @param pattern パターン
+		/// @return *this
 		const Shape2D& drawFrame(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
@@ -437,45 +518,43 @@ namespace s3d
 		/// @return *this
 		const Shape2D& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 図形を構成する三角形をワイヤフレームで、移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ
+		/// @param color 色
+		/// @return *this
 		const Shape2D& drawWireframe(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		/// @brief 図形を構成する三角形をワイヤフレームで描画します。
+		/// @param thickness ワイヤフレームの太さ
+		/// @param pattern パターン
+		/// @return *this
 		const Shape2D& drawWireframe(double thickness, const PatternParameters& pattern) const;
 
+		/// @brief 図形を構成する三角形をワイヤフレームで、移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ
+		/// @param pattern パターン
+		/// @return *this
 		const Shape2D& drawWireframe(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toBuffer2D
+		//	toMesh2D
 		//
 		////////////////////////////////////////////////////////////////
 
-		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		///// @param uvOrigin UV 座標 (0, 0) をマッピングする位置
-		///// @param uvScale マッピングする UV のスケール
-		///// @return Buffer2D
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
+		//Mesh2D toMesh2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
 
-		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		///// @param uvCenter UV 座標 (0.5, 0.5) をマッピングする位置
-		///// @param uvScale マッピングする UV のスケール
-		///// @return Buffer2D
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
+		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
 
-		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		///// @param uvCenter UV 座標 (0.5, 0.5) をマッピングする位置
-		///// @param uvScale マッピングする UV のスケール
-		///// @param uvRotation マッピングする UV の時計回りの回転
-		///// @return Buffer2D
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
+		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
 
-		///// @brief 図形に UV 座標をマッピングして Buffer2D を作成します。
-		///// @param uvMat 頂点の座標から UV 座標を計算する行列
-		///// @return Buffer2D
 		//[[nodiscard]]
-		//Buffer2D toBuffer2D(const Mat3x2& uvMat) const;
+		//Mesh2D toMesh2D(const Mat3x2& uvMat) const;
 
 	private:
 

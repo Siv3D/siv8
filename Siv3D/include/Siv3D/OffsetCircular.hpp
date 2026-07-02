@@ -118,6 +118,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr OffsetCircularBase operator -() const noexcept;
 
+		/// @brief オフセット付き円座標を通常の直交座標に変換し、指定したベクトルを減算した結果を返します。
+		/// @param v 減算するベクトル
+		/// @return 減算結果
 		[[nodiscard]]
 		position_type operator -(position_type v) const noexcept;
 
@@ -211,8 +214,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 		
+		/// @brief 中心座標を変更します。
+		/// @param x 中心座標の X 成分
+		/// @param y 中心座標の Y 成分
+		/// @return *this
 		constexpr OffsetCircularBase& setCenter(value_type x, value_type y) noexcept;
 
+		/// @brief 中心座標を変更します。
+		/// @param _center 中心座標
+		/// @return *this
 		constexpr OffsetCircularBase& setCenter(position_type _center) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -221,8 +231,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心座標はそのままで、目標とする直交座標を変更します。
+		/// @param x 目標座標の X 成分
+		/// @param y 目標座標の Y 成分
+		/// @return *this
 		OffsetCircularBase& setTarget(value_type x, value_type y) noexcept;
 
+		/// @brief 中心座標はそのままで、目標とする直交座標を変更します。
+		/// @param target 目標とする直交座標
+		/// @return *this
 		OffsetCircularBase& setTarget(position_type target) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -231,9 +248,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心座標を平行移動したオフセット付き円座標を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動したオフセット付き円座標
 		[[nodiscard]]
 		constexpr OffsetCircularBase movedBy(value_type x, value_type y) const noexcept;
 
+		/// @brief 中心座標を平行移動したオフセット付き円座標を返します。
+		/// @param v 移動量
+		/// @return 平行移動したオフセット付き円座標
 		[[nodiscard]]
 		constexpr OffsetCircularBase movedBy(position_type v) const noexcept;
 
@@ -243,8 +267,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 中心座標を平行移動します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return *this
 		constexpr OffsetCircularBase& moveBy(value_type x, value_type y) noexcept;
 
+		/// @brief 中心座標を平行移動します。
+		/// @param v 移動量
+		/// @return *this
 		constexpr OffsetCircularBase& moveBy(position_type v) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -253,6 +284,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角度を時計回りに回転させたオフセット付き円座標を返します。
+		/// @param angle 回転する角度（ラジアン）
+		/// @return 回転後のオフセット付き円座標
 		[[nodiscard]]
 		constexpr OffsetCircularBase rotated(value_type angle) const noexcept;
 
@@ -262,6 +296,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 自身を指定した角度だけ時計回りに回転させます。
+		/// @param angle 回転する角度（ラジアン）
+		/// @return *this
 		constexpr OffsetCircularBase& rotate(value_type angle) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -395,6 +432,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief オフセット付き円座標を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value オフセット付き円座標
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const OffsetCircularBase& value)
 		{
 			Formatter(formatData, vector_type{ value.center, value.r, value.theta });
