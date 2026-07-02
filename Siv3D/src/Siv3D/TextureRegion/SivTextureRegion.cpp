@@ -11,6 +11,7 @@
 
 # include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/TexturedQuad.hpp>
+# include <Siv3D/TexturedRoundRect.hpp>
 # include <Siv3D/FloatQuad.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -747,4 +748,18 @@ namespace s3d
 		return rotatedAt(pos.x, pos.y, angle);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	rounded
+	//
+	////////////////////////////////////////////////////////////////
+
+	TexturedRoundRect TextureRegion::rounded(const double r) const
+	{
+		return{
+			texture,
+			uvRect,
+			RoundRect{ 0, 0, size, r }
+		};
+	}
 }
