@@ -491,8 +491,8 @@ namespace s3d
 			static_cast<float>(Abs(axes.y)),
 			static_cast<float>(innerThickness),
 			static_cast<float>(outerThickness),
-			style.offset,
-			style.dashRatio,
+			static_cast<float>(style.offset),
+			static_cast<float>(style.dashRatio),
 			style.dashCount,
 			innerColor.toFloat4(),
 			outerColor.toFloat4()

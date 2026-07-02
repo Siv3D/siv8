@@ -896,7 +896,7 @@ namespace s3d
 			{
 				if (startCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::middleLeft = start, halfThickness, thickness }.rotatedAt(start, startAngle);
+					const Quad quad = RectF{ Anchor::MiddleLeft, start, halfThickness, thickness }.rotatedAt(start, startAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, colorStart);
 				}
@@ -910,7 +910,7 @@ namespace s3d
 			{
 				if (endCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::middleRight = end, halfThickness, thickness }.rotatedAt(end, endAngle);
+					const Quad quad = RectF{ Anchor::MiddleRight, end, halfThickness, thickness }.rotatedAt(end, endAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, colorEnd);
 				}
@@ -940,7 +940,7 @@ namespace s3d
 			{
 				if (startCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::middleLeft = start, halfThickness, thickness }.rotatedAt(start, startAngle);
+					const Quad quad = RectF{ Anchor::MiddleLeft, start, halfThickness, thickness }.rotatedAt(start, startAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, { c1, c0, c0, c1 });
 				}
@@ -954,7 +954,7 @@ namespace s3d
 			{
 				if (endCap == LineCap::Square)
 				{
-					const Quad quad = RectF{ Arg::middleRight = end, halfThickness, thickness }.rotatedAt(end, endAngle);
+					const Quad quad = RectF{ Anchor::MiddleRight, end, halfThickness, thickness }.rotatedAt(end, endAngle);
 
 					indexCount += Vertex2DBuilder::BuildQuad(bufferCreator, FloatQuad{ quad }, { c2, c3, c3, c2 });
 				}

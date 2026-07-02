@@ -114,9 +114,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Circle::signedDistanceTo(const double x, const double y) const noexcept
+	double Circle::signedDistanceTo(const double _x, const double _y) const noexcept
 	{
-		return signedDistanceTo(position_type{ x, y });
+		return signedDistanceTo(position_type{ _x, _y });
 	}
 
 	double Circle::signedDistanceTo(const position_type point) const noexcept
@@ -349,11 +349,11 @@ namespace s3d
 			{
 				pIndex->i0 = i;
 				pIndex->i1 = (i + 1);
-				pIndex->i2 = ((vertexCount - 1) - i);
+				pIndex->i2 = static_cast<Vertex2D::IndexType>((vertexCount - 1) - i);
 				++pIndex;
-				pIndex->i0 = ((vertexCount - 1) - i);
+				pIndex->i0 = static_cast<Vertex2D::IndexType>((vertexCount - 1) - i);
 				pIndex->i1 = (i + 1);
-				pIndex->i2 = ((vertexCount - 2) - i);
+				pIndex->i2 = static_cast<Vertex2D::IndexType>((vertexCount - 2) - i);
 				++pIndex;
 			}
 		}
@@ -684,9 +684,9 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addCircleDashedFrame(
 			center,
 			static_cast<float>(Abs(r) - innerThickness),
-			style.startAngle,
+			static_cast<float>(style.startAngle),
 			static_cast<float>(innerThickness + outerThickness),
-			style.dashRatio,
+			static_cast<float>(style.dashRatio),
 			style.dashCount,
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
