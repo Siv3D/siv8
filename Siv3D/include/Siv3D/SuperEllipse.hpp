@@ -77,30 +77,72 @@ namespace s3d
 		[[nodiscard]]
 		SuperEllipse() = default;
 
+		/// @brief スーパー楕円を作成します。
+		/// @param _x 中心の X 座標
+		/// @param _y 中心の Y 座標
+		/// @param _a X 軸上の半径
+		/// @param _b Y 軸上の半径
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(value_type _x, value_type _y, value_type _a, value_type _b, value_type _n) noexcept;
 
+		/// @brief スーパー楕円を作成します。
+		/// @param _x 中心の X 座標
+		/// @param _y 中心の Y 座標
+		/// @param _a X 軸上の半径
+		/// @param _b Y 軸上の半径
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, Concept::Arithmetic auto _a, Concept::Arithmetic auto _b, Concept::Arithmetic auto _n) noexcept;
 
+		/// @brief スーパー楕円を作成します。
+		/// @param _center 中心座標
+		/// @param _a X 軸上の半径
+		/// @param _b Y 軸上の半径
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(const position_type& _center, value_type _a, value_type _b, value_type _n) noexcept;
 
+		/// @brief スーパー楕円を作成します。
+		/// @param _center 中心座標
+		/// @param _a X 軸上の半径
+		/// @param _b Y 軸上の半径
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(const position_type& _center, Concept::Arithmetic auto _a, Concept::Arithmetic auto _b, Concept::Arithmetic auto _n) noexcept;
 
+		/// @brief スーパー楕円を作成します。
+		/// @param _x 中心の X 座標
+		/// @param _y 中心の Y 座標
+		/// @param _axes X 軸 Y 軸に沿った半径
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(value_type _x, value_type _y, const size_type& _axes, value_type _n) noexcept;
 
+		/// @brief スーパー楕円を作成します。
+		/// @param _x 中心の X 座標
+		/// @param _y 中心の Y 座標
+		/// @param _axes X 軸 Y 軸に沿った半径
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(Concept::Arithmetic auto _x, Concept::Arithmetic auto _y, const size_type& _axes, Concept::Arithmetic auto _n) noexcept;
 
+		/// @brief スーパー楕円を作成します。
+		/// @param _center 中心座標
+		/// @param _axes X 軸 Y 軸に沿った半径
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(const position_type& _center, const size_type& _axes, Concept::Arithmetic auto _n) noexcept;
 
+		/// @brief 楕円からスーパー楕円を作成します。
+		/// @param ellipse 元になる楕円
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(const Ellipse& ellipse, Concept::Arithmetic auto _n) noexcept;
 
+		/// @brief 長方形に内接するスーパー楕円を作成します。
+		/// @param rect スーパー楕円が内接する長方形
+		/// @param _n 形状を決定する指数（n = 2 で通常の楕円）
 		[[nodiscard]]
 		constexpr SuperEllipse(const RectF& rect, Concept::Arithmetic auto _n) noexcept;
 
@@ -557,9 +599,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief スーパー楕円の外周を表現する頂点配列を返します。
+		/// @param pointsPerCircle 円周の分割数
+		/// @return スーパー楕円の外周を表現する頂点配列
 		[[nodiscard]]
 		Array<Vec2> outer(const PointsPerCircle& pointsPerCircle) const;
 
+		/// @brief スーパー楕円の外周を表現する頂点配列を返します。分割数は半径と qualityFactor に応じて自動的に決定されます。
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return スーパー楕円の外周を表現する頂点配列
 		[[nodiscard]]
 		Array<Vec2> outer(const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 

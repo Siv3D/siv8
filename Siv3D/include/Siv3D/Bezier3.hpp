@@ -520,15 +520,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief p1 から p0 への線分を返します。
+		/// @return Line{ p1, p0 }
 		[[nodiscard]]
 		constexpr Line p1p0() const noexcept;
 
+		/// @brief p2 から p1 への線分を返します。
+		/// @return Line{ p2, p1 }
 		[[nodiscard]]
 		constexpr Line p2p1() const noexcept;
 
+		/// @brief p3 から p2 への線分を返します。
+		/// @return Line{ p3, p2 }
 		[[nodiscard]]
 		constexpr Line p3p2() const noexcept;
 
+		/// @brief p3 から p0 への線分を返します。
+		/// @return Line{ p3, p0 }
 		[[nodiscard]]
 		constexpr Line p3p0() const noexcept;
 
@@ -540,6 +548,7 @@ namespace s3d
 
 		/// @brief 反曲点（inflection）候補の t を返します。
 		/// @remark 0～1 の範囲にある解のみ返します。存在しない場合は空配列。
+		/// @return 反曲点候補の t の配列
 		[[nodiscard]]
 		Array<double> computeInflectionTs() const;
 
@@ -584,6 +593,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
 		bool intersects(const Shape2DType& other) const;
@@ -604,10 +617,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier3& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した太さで Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier3& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した線端と太さで Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier3& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -616,10 +647,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier3& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した太さで Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier3& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した線端と太さで Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier3& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -649,6 +698,13 @@ namespace s3d
 		/// @return *this
 		const Bezier3& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
 
+		/// @brief 曲線を指定した両端の線端と太さで描画します。
+		/// @param startCap 始点側の線端の種類
+		/// @param endCap 終点側の線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param segments 分割数（最低 1）
+		/// @return *this
 		const Bezier3& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
 
 		////////////////////////////////////////////////////////////////
@@ -681,6 +737,14 @@ namespace s3d
 		/// @return *this
 		const Bezier3& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
+		/// @brief 曲線を指定した両端の線端と太さで適応分割して描画します。
+		/// @param startCap 始点側の線端の種類
+		/// @param endCap 終点側の線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param maxError 許容誤差
+		/// @param maxDepth 最大再帰深度
+		/// @return *this
 		const Bezier3& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
@@ -694,6 +758,7 @@ namespace s3d
 		/// @param v0 開始点の速度ベクトル
 		/// @param p3 終了点
 		/// @param v3 終了点の速度ベクトル
+		/// @return 作成した三次ベジェ曲線
 		[[nodiscard]]
 		static constexpr Bezier3 FromHermite(const position_type& p0, const Vec2& v0, const position_type& p3, const Vec2& v3) noexcept;
 
@@ -709,6 +774,7 @@ namespace s3d
 		/// @param p3 セグメント終了点（実際の描画終了位置）
 		/// @param pNext 次の制御点（カーブの脱出角度に影響します）
 		/// @param tension テンション（0.0: 標準。1.0 に近づくほど直線的になり、負の値だと緩く膨らみます）
+		/// @return 作成した三次ベジェ曲線
 		[[nodiscard]]
 		static constexpr Bezier3 FromCatmullRom(const position_type& pPrev, const position_type& p0, const position_type& p3, const position_type& pNext, double tension = 0.0) noexcept;
 

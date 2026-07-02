@@ -456,6 +456,7 @@ namespace s3d
 
 		/// @brief 制御点 p0, p1, p2 からなる三角形を返します。
 		/// @remark 二次ベジェ曲線はこの三角形に含まれます。
+		/// @return 制御点 p0, p1, p2 からなる三角形
 		[[nodiscard]]
 		constexpr Triangle controlTriangle() const noexcept;
 
@@ -564,6 +565,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
 		bool intersects(const Shape2DType& other) const;
@@ -584,10 +589,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier2& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した太さで Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier2& paint(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した線端と太さで Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier2& paint(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -596,10 +619,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 曲線を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier2& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した太さで Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier2& overwrite(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 曲線を指定した線端と太さで Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param lineCap 線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Bezier2& overwrite(Image& dst, LineCap lineCap, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -629,6 +670,13 @@ namespace s3d
 		/// @return *this
 		const Bezier2& draw(LineCap lineCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
 
+		/// @brief 曲線を指定した両端の線端と太さで描画します。
+		/// @param startCap 始点側の線端の種類
+		/// @param endCap 終点側の線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param segments 分割数（最低 1）
+		/// @return *this
 		const Bezier2& draw(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, int32 segments = 24) const;
 
 		////////////////////////////////////////////////////////////////
@@ -661,6 +709,14 @@ namespace s3d
 		/// @return *this
 		const Bezier2& drawAdaptive(LineCap lineCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
+		/// @brief 曲線を指定した両端の線端と太さで適応分割して描画します。
+		/// @param startCap 始点側の線端の種類
+		/// @param endCap 終点側の線端の種類
+		/// @param thickness 太さ
+		/// @param color 色
+		/// @param maxError 許容誤差
+		/// @param maxDepth 最大再帰深度
+		/// @return *this
 		const Bezier2& drawAdaptive(LineCap startCap, LineCap endCap, double thickness, const ColorF& color = Palette::White, double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////

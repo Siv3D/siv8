@@ -635,9 +635,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの頂点への参照を返します。
+		/// @param index 頂点のインデックス（0 が p0, 1 が p1, 2 が p2）
+		/// @return 指定したインデックスの頂点への参照
+		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
 		position_type& vertexAtIndex(size_t index);
 	
+		/// @brief 指定したインデックスの頂点への参照を返します。
+		/// @param index 頂点のインデックス（0 が p0, 1 が p1, 2 が p2）
+		/// @return 指定したインデックスの頂点への参照
+		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
 		const position_type& vertexAtIndex(size_t index) const;
 
@@ -1020,6 +1028,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Triangle& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1028,6 +1041,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Triangle& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1036,6 +1054,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Triangle& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1044,6 +1068,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 三角形の枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Triangle& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
