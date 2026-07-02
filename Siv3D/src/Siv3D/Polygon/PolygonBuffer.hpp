@@ -46,17 +46,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ComputeRoundedQuadPolygon
+	//	ComputeRoundPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief 四角形の各辺を内側に縮めてから外側に丸く膨張させ、角丸四角形の Polygon を作成します。
-	/// @param quad 対象の四角形
+	/// @brief 多角形の各辺を内側に縮めてから外側に丸く膨張させ、角丸多角形の Polygon を作成します。
+	/// @param outer 対象多角形の外周頂点列
 	/// @param distance 角丸の半径に相当する距離
 	/// @param qualityFactor 角丸部分の分割品質
-	/// @return 作成された Polygon. 作成に失敗した場合、または異常な Polygon になった場合は空の Polygon
+	/// @return 作成された Polygon. 作成に失敗した場合は空の Polygon
 	[[nodiscard]]
-	Polygon ComputeRoundedQuadPolygon(const Quad& quad, double distance, const QualityFactor& qualityFactor);
+	Polygon ComputeRoundPolygon(std::span<const Vec2> outer, double distance, const QualityFactor& qualityFactor);
 
 	////////////////////////////////////////////////////////////////
 	//

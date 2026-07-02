@@ -1245,9 +1245,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const float thickness, const Float4& color)
+	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, thickness, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, color, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1263,9 +1263,9 @@ namespace s3d
 		}
 	}
 
-	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const float thickness, const PatternParameters& pattern)
+	void CRenderer2D_D3D11::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, thickness, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_D3D11::createBuffer, this), vertices, offset, thickness, pattern.primaryColor, getMaxScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{

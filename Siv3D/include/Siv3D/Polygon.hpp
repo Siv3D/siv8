@@ -944,9 +944,9 @@ namespace s3d
 		const Polygon& draw(const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param color 色
-		void draw(const Vec2& pos, const ColorF& color = Palette::White) const;
+		void draw(const Vec2& offset, const ColorF& color = Palette::White) const;
 
 		/// @brief 多角形を描画します。
 		/// @param pattern 塗りつぶしパターン
@@ -954,9 +954,9 @@ namespace s3d
 		const Polygon& draw(const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param pattern 塗りつぶしパターン
-		void draw(const Vec2& pos, const PatternParameters& pattern) const;
+		void draw(const Vec2& offset, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1003,10 +1003,10 @@ namespace s3d
 		const Polygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形の枠を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param color 色
-		void drawFrame(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		void drawFrame(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 多角形の枠を描画します。
 		/// @param thickness 枠の太さ（ピクセル）
@@ -1015,10 +1015,10 @@ namespace s3d
 		const Polygon& drawFrame(double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形の枠を描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness 枠の太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		void drawFrame(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
+		void drawFrame(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1033,10 +1033,10 @@ namespace s3d
 		const Polygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
 		/// @param color 色
-		void drawWireframe(const Vec2& pos, double thickness = 1.0, const ColorF& color = Palette::White) const;
+		void drawWireframe(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
 
 		/// @brief 多角形をワイヤフレーム表示で描画します。
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
@@ -1045,10 +1045,10 @@ namespace s3d
 		const Polygon& drawWireframe(double thickness, const PatternParameters& pattern) const;
 
 		/// @brief 移動させた位置に多角形をワイヤフレーム表示で描画します。
-		/// @param pos 座標のオフセット
+		/// @param offset 座標のオフセット
 		/// @param thickness ワイヤフレームの太さ（ピクセル）
 		/// @param pattern 塗りつぶしパターン
-		void drawWireframe(const Vec2& pos, double thickness, const PatternParameters& pattern) const;
+		void drawWireframe(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

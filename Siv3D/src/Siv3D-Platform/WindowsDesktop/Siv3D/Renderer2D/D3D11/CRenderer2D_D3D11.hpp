@@ -282,9 +282,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void addShape2DFrame(std::span<const Float2> vertices, float thickness, const Float4& color) override;
+		void addShape2DFrame(std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const Float4& color) override;
 
-		void addShape2DFrame(std::span<const Float2> vertices, float thickness, const PatternParameters& pattern) override;
+		void addShape2DFrame(std::span<const Float2> vertices, const Optional<Float2>& offset, float thickness, const PatternParameters& pattern) override;
 
 		////////////////////////////////////////////////////////////////
 		//

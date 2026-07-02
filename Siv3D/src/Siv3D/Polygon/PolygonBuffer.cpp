@@ -81,13 +81,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	ComputeRoundedQuadPolygon
+	//	ComputeRoundPolygon
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon ComputeRoundedQuadPolygon(const Quad& quad, const double distance, const QualityFactor& qualityFactor)
+	Polygon ComputeRoundPolygon(const std::span<const Vec2> outer, const double distance, const QualityFactor& qualityFactor)
 	{
-		const CWOpenRing polygon{ { quad.p0, quad.p1, quad.p2, quad.p3 } };
+		const CWOpenRing polygon{ outer.begin(), outer.end() };
 
 		boost::geometry::model::multi_polygon<CwOpenPolygon> insetPolygon;
 

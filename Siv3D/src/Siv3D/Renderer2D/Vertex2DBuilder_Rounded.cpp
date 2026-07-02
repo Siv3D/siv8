@@ -3196,7 +3196,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const float thickness, const Float4& color, const float scale)
+		Vertex2D::IndexType BuildShape2DFrame(const BufferCreatorFunc& bufferCreator, const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const Float4& color, const float scale)
 		{
 			const size_t num_points = vertices.size();
 
@@ -3215,7 +3215,7 @@ namespace s3d
 			}
 
 			PolylineBuffer& buffer = GetPolylineBuffer();
-			const PreparedPolyline prepared = PreparePolyline<Float2>(vertices, none, scale, true, true, false, buffer);
+			const PreparedPolyline prepared = PreparePolyline<Float2>(vertices, offset, scale, true, true, false, buffer);
 
 			if (prepared.points.size() < 3)
 			{

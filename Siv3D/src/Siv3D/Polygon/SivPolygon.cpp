@@ -1292,9 +1292,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::draw(const Vec2& pos, const ColorF& color) const
+	void Polygon::draw(const Vec2& offset, const ColorF& color) const
 	{
-		pImpl->draw(Float2{ pos }, color);
+		pImpl->draw(Float2{ offset }, color);
 	}
 
 	const Polygon& Polygon::draw(const PatternParameters& pattern) const
@@ -1303,9 +1303,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::draw(const Vec2& pos, const PatternParameters& pattern) const
+	void Polygon::draw(const Vec2& offset, const PatternParameters& pattern) const
 	{
-		pImpl->draw(Float2{ pos }, pattern);
+		pImpl->draw(Float2{ offset }, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1348,9 +1348,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawFrame(const Vec2& pos, const double thickness, const ColorF& color) const
+	void Polygon::drawFrame(const Vec2& offset, const double thickness, const ColorF& color) const
 	{
-		pImpl->drawFrame(Float2{ pos }, thickness, color);
+		pImpl->drawFrame(Float2{ offset }, thickness, color);
 	}
 
 	const Polygon& Polygon::drawFrame(const double thickness, const PatternParameters& pattern) const
@@ -1359,9 +1359,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawFrame(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
+	void Polygon::drawFrame(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
 	{
-		pImpl->drawFrame(Float2{ pos }, thickness, pattern);
+		pImpl->drawFrame(Float2{ offset }, thickness, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1376,9 +1376,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const ColorF& color) const
+	void Polygon::drawWireframe(const Vec2& offset, const double thickness, const ColorF& color) const
 	{
-		pImpl->drawWireframe(Float2{ pos }, thickness, color);
+		pImpl->drawWireframe(Float2{ offset }, thickness, color);
 	}
 
 	const Polygon& Polygon::drawWireframe(const double thickness, const PatternParameters& pattern) const
@@ -1387,9 +1387,9 @@ namespace s3d
 		return *this;
 	}
 
-	void Polygon::drawWireframe(const Vec2& pos, const double thickness, const PatternParameters& pattern) const
+	void Polygon::drawWireframe(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
 	{
-		pImpl->drawWireframe(Float2{ pos }, thickness, pattern);
+		pImpl->drawWireframe(Float2{ offset }, thickness, pattern);
 	}
 
 	////////////////////////////////////////////////////////////////

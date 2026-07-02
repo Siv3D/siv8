@@ -437,7 +437,7 @@ namespace s3d
 			return asPolygon();
 		}
 
-		return ComputeRoundedQuadPolygon(*this, round, qualityFactor);
+		return ComputeRoundPolygon(vertices(), round, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
