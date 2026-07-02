@@ -70,49 +70,14 @@ namespace s3d
 		return region(TextStyle::Default(), size, Vec2{ x, y });
 	}
 
-	RectF DrawableText::region(const Arg::topLeft_<Vec2> topLeft) const
+	RectF DrawableText::region(const Anchor anchor, const double x, const double y) const
 	{
-		return region(TextStyle::Default(), font.baseSize(), topLeft);
+		return region(anchor, Vec2{ x, y });
 	}
 
-	RectF DrawableText::region(const Arg::topCenter_<Vec2> topCenter) const
+	RectF DrawableText::region(const Anchor anchor, const Vec2 pos) const
 	{
-		return region(TextStyle::Default(), font.baseSize(), topCenter);
-	}
-
-	RectF DrawableText::region(const Arg::topRight_<Vec2> topRight) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), topRight);
-	}
-
-	RectF DrawableText::region(const Arg::middleRight_<Vec2> middleRight) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), middleRight);
-	}
-
-	RectF DrawableText::region(const Arg::bottomRight_<Vec2> bottomRight) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), bottomRight);
-	}
-
-	RectF DrawableText::region(const Arg::bottomCenter_<Vec2> bottomCenter) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), bottomCenter);
-	}
-
-	RectF DrawableText::region(const Arg::bottomLeft_<Vec2> bottomLeft) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), bottomLeft);
-	}
-
-	RectF DrawableText::region(const Arg::middleLeft_<Vec2> middleLeft) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), middleLeft);
-	}
-
-	RectF DrawableText::region(const Arg::center_<Vec2> center) const
-	{
-		return region(TextStyle::Default(), font.baseSize(), center);
+		return region(TextStyle::Default(), font.baseSize(), anchor, pos);
 	}
 
 	RectF DrawableText::region(const double size, const Vec2 pos) const
@@ -120,49 +85,14 @@ namespace s3d
 		return region(TextStyle::Default(), size, pos);
 	}
 
-	RectF DrawableText::region(const double size, const Arg::topLeft_<Vec2> topLeft) const
+	RectF DrawableText::region(const double size, const Anchor anchor, const double x, const double y) const
 	{
-		return region(TextStyle::Default(), size, topLeft);
+		return region(size, anchor, Vec2{ x, y });
 	}
 
-	RectF DrawableText::region(const double size, const Arg::topCenter_<Vec2> topCenter) const
+	RectF DrawableText::region(const double size, const Anchor anchor, const Vec2 pos) const
 	{
-		return region(TextStyle::Default(), size, topCenter);
-	}
-
-	RectF DrawableText::region(const double size, const Arg::topRight_<Vec2> topRight) const
-	{
-		return region(TextStyle::Default(), size, topRight);
-	}
-
-	RectF DrawableText::region(const double size, const Arg::middleRight_<Vec2> middleRight) const
-	{
-		return region(TextStyle::Default(), size, middleRight);
-	}
-
-	RectF DrawableText::region(const double size, const Arg::bottomRight_<Vec2> bottomRight) const
-	{
-		return region(TextStyle::Default(), size, bottomRight);
-	}
-
-	RectF DrawableText::region(const double size, const Arg::bottomCenter_<Vec2> bottomCenter) const
-	{
-		return region(TextStyle::Default(), size, bottomCenter);
-	}
-
-	RectF DrawableText::region(const double size, const Arg::bottomLeft_<Vec2> bottomLeft) const
-	{
-		return region(TextStyle::Default(), size, bottomLeft);
-	}
-
-	RectF DrawableText::region(const double size, const Arg::middleLeft_<Vec2> middleLeft) const
-	{
-		return region(TextStyle::Default(), size, middleLeft);
-	}
-
-	RectF DrawableText::region(const double size, const Arg::center_<Vec2> center) const
-	{
-		return regionAt(TextStyle::Default(), size, *center);
+		return region(TextStyle::Default(), size, anchor, pos);
 	}
 
 	RectF DrawableText::region(const TextStyle& textStyle, const double size, const double x, const double y) const
@@ -175,56 +105,14 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->region(font.id(), text, resolvedGlyphs, pos, size, textStyle, readingDirection);
 	}
 
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft) const
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Anchor anchor, const double x, const double y) const
 	{
-		return region(textStyle, size, *topLeft);
+		return region(textStyle, size, anchor, Vec2{ x, y });
 	}
 
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::topCenter_<Vec2> topCenter) const
+	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Anchor anchor, const Vec2 pos) const
 	{
-		const RectF textRegion = region(textStyle, size);
-		return textRegion.movedBy((topCenter->x - (textRegion.w * 0.5)), 0);
-	}
-
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::topRight_<Vec2> topRight) const
-	{
-		const RectF textRegion = region(textStyle, size);
-		return textRegion.movedBy((topRight->x - textRegion.w), 0);
-	}
-
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::middleRight_<Vec2> middleRight) const
-	{
-		const RectF textRegion = region(textStyle, size);
-		return textRegion.movedBy((middleRight->x - textRegion.w), (middleRight->y - (textRegion.h * 0.5)));
-	}
-
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::bottomRight_<Vec2> bottomRight) const
-	{
-		const RectF textRegion = region(textStyle, size);
-		return textRegion.movedBy((bottomRight->x - textRegion.w), (bottomRight->y - textRegion.h));
-	}
-
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::bottomCenter_<Vec2> bottomCenter) const
-	{
-		const RectF textRegion = region(textStyle, size);
-		return textRegion.movedBy((bottomCenter->x - (textRegion.w * 0.5)), (bottomCenter->y - textRegion.h));
-	}
-
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::bottomLeft_<Vec2> bottomLeft) const
-	{
-		const RectF textRegion = region(textStyle, size);
-		return textRegion.movedBy(bottomLeft->x, (bottomLeft->y - textRegion.h));
-	}
-
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::middleLeft_<Vec2> middleLeft) const
-	{
-		const RectF textRegion = region(textStyle, size);
-		return textRegion.movedBy(middleLeft->x, (middleLeft->y - (textRegion.h * 0.5)));
-	}
-
-	RectF DrawableText::region(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center) const
-	{
-		return regionAt(textStyle, size, *center);
+		return{ anchor, pos, region(textStyle, size).size };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -400,49 +288,14 @@ namespace s3d
 		return draw(TextStyle::Default(), font.baseSize(), pos, color);
 	}
 
-	RectF DrawableText::draw(const Arg::topLeft_<Vec2> topLeft, const ColorF& color) const
+	RectF DrawableText::draw(const Anchor anchor, const double x, const double y, const ColorF& color) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), topLeft, color);
+		return draw(anchor, Vec2{ x, y }, color);
 	}
 
-	RectF DrawableText::draw(const Arg::topCenter_<Vec2> topCenter, const ColorF& color) const
+	RectF DrawableText::draw(const Anchor anchor, const Vec2& pos, const ColorF& color) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), topCenter, color);
-	}
-
-	RectF DrawableText::draw(const Arg::topRight_<Vec2> topRight, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), topRight, color);
-	}
-
-	RectF DrawableText::draw(const Arg::middleRight_<Vec2> middleRight, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), middleRight, color);
-	}
-
-	RectF DrawableText::draw(const Arg::bottomRight_<Vec2> bottomRight, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomRight, color);
-	}
-
-	RectF DrawableText::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomCenter, color);
-	}
-
-	RectF DrawableText::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomLeft, color);
-	}
-
-	RectF DrawableText::draw(const Arg::middleLeft_<Vec2> middleLeft, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), middleLeft, color);
-	}
-
-	RectF DrawableText::draw(const Arg::center_<Vec2> center, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), center, color);
+		return draw(TextStyle::Default(), font.baseSize(), anchor, pos, color);
 	}
 
 	TextLayoutResult DrawableText::draw(const RectF& area, const ColorF& color) const
@@ -460,49 +313,14 @@ namespace s3d
 		return draw(TextStyle::Default(), size, pos, color);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::topLeft_<Vec2> topLeft, const ColorF& color) const
+	RectF DrawableText::draw(const double size, const Anchor anchor, const double x, const double y, const ColorF& color) const
 	{
-		return draw(TextStyle::Default(), size, topLeft, color);
+		return draw(size, anchor, Vec2{ x, y }, color);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::topCenter_<Vec2> topCenter, const ColorF& color) const
+	RectF DrawableText::draw(const double size, const Anchor anchor, const Vec2& pos, const ColorF& color) const
 	{
-		return draw(TextStyle::Default(), size, topCenter, color);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::topRight_<Vec2> topRight, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), size, topRight, color);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::middleRight_<Vec2> middleRight, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), size, middleRight, color);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::bottomRight_<Vec2> bottomRight, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), size, bottomRight, color);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), size, bottomCenter, color);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), size, bottomLeft, color);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::middleLeft_<Vec2> middleLeft, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), size, middleLeft, color);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::center_<Vec2> center, const ColorF& color) const
-	{
-		return draw(TextStyle::Default(), size, center, color);
+		return draw(TextStyle::Default(), size, anchor, pos, color);
 	}
 
 	TextLayoutResult DrawableText::draw(const double size, const RectF& area, const ColorF& color) const
@@ -520,49 +338,14 @@ namespace s3d
 		return draw(textStyle, font.baseSize(), pos, color);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topLeft_<Vec2> topLeft, const ColorF& color) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Anchor anchor, const double x, const double y, const ColorF& color) const
 	{
-		return draw(textStyle, font.baseSize(), topLeft, color);
+		return draw(textStyle, anchor, Vec2{ x, y }, color);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topCenter_<Vec2> topCenter, const ColorF& color) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Anchor anchor, const Vec2& pos, const ColorF& color) const
 	{
-		return draw(textStyle, font.baseSize(), topCenter, color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topRight_<Vec2> topRight, const ColorF& color) const
-	{
-		return draw(textStyle, font.baseSize(), topRight, color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::middleRight_<Vec2> middleRight, const ColorF& color) const
-	{
-		return draw(textStyle, font.baseSize(), middleRight, color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomRight_<Vec2> bottomRight, const ColorF& color) const
-	{
-		return draw(textStyle, font.baseSize(), bottomRight, color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& color) const
-	{
-		return draw(textStyle, font.baseSize(), bottomCenter, color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color) const
-	{
-		return draw(textStyle, font.baseSize(), bottomLeft, color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::middleLeft_<Vec2> middleLeft, const ColorF& color) const
-	{
-		return draw(textStyle, font.baseSize(), middleLeft, color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::center_<Vec2> center, const ColorF& color) const
-	{
-		return draw(textStyle, font.baseSize(), center, color);
+		return draw(textStyle, font.baseSize(), anchor, pos, color);
 	}
 
 	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const RectF& area, const ColorF& color) const
@@ -580,53 +363,20 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, TextEffect::BasicTextEffect{ color }, readingDirection);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft, const ColorF& color) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Anchor anchor, const double x, const double y, const ColorF& color) const
 	{
-		return draw(textStyle, size, *topLeft, color);
+		return draw(textStyle, size, anchor, Vec2{ x, y }, color);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topCenter_<Vec2> topCenter, const ColorF& color) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Anchor anchor, const Vec2& pos, const ColorF& color) const
 	{
-		return draw(textStyle, size, topCenter->movedBy((-0.5 * region(textStyle, size).w), 0), color);
-	}
+		if (anchor == Anchor::TopLeft)
+		{
+			return draw(textStyle, size, pos, color);
+		}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topRight_<Vec2> topRight, const ColorF& color) const
-	{
-		return draw(textStyle, size, topRight->movedBy(-region(textStyle, size).w, 0), color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::middleRight_<Vec2> middleRight, const ColorF& color) const
-	{
 		const RectF textRegion = region(textStyle, size);
-
-		return draw(textStyle, size, middleRight->movedBy(-textRegion.w, (-0.5 * textRegion.h)), color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomRight_<Vec2> bottomRight, const ColorF& color) const
-	{
-		return draw(textStyle, size, bottomRight->movedBy(-region(textStyle, size).size), color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const ColorF& color) const
-	{
-		const RectF textRegion = region(textStyle, size);
-
-		return draw(textStyle, size, bottomCenter->movedBy((-0.5 * textRegion.w), -textRegion.h), color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const ColorF& color) const
-	{
-		return draw(textStyle, size, bottomLeft->movedBy(0, -region(textStyle, size).h), color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::middleLeft_<Vec2> middleLeft, const ColorF& color) const
-	{
-		return draw(textStyle, size, middleLeft->movedBy(0, (-0.5 * region(textStyle, size).h)), color);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const ColorF& color) const
-	{
-		return drawAt(textStyle, size, *center, color);
+		return draw(textStyle, size, RectF{ anchor, pos, textRegion.size }.pos, color);
 	}
 
 	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ColorF& color) const
@@ -644,49 +394,14 @@ namespace s3d
 		return draw(TextStyle::Default(), font.baseSize(), pos, textEffect);
 	}
 
-	RectF DrawableText::draw(const Arg::topLeft_<Vec2> topLeft, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const Anchor anchor, const double x, const double y, const ITextEffect& textEffect) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), topLeft, textEffect);
+		return draw(anchor, Vec2{ x, y }, textEffect);
 	}
 
-	RectF DrawableText::draw(const Arg::topCenter_<Vec2> topCenter, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const Anchor anchor, const Vec2& pos, const ITextEffect& textEffect) const
 	{
-		return draw(TextStyle::Default(), font.baseSize(), topCenter, textEffect);
-	}
-
-	RectF DrawableText::draw(const Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), topRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), middleRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const Arg::bottomCenter_<Vec2> bottomCenter, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomCenter, textEffect);
-	}
-
-	RectF DrawableText::draw(const Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), bottomLeft, textEffect);
-	}
-
-	RectF DrawableText::draw(const Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), middleLeft, textEffect);
-	}
-
-	RectF DrawableText::draw(const Arg::center_<Vec2> center, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), font.baseSize(), center, textEffect);
+		return draw(TextStyle::Default(), font.baseSize(), anchor, pos, textEffect);
 	}
 
 	TextLayoutResult DrawableText::draw(const RectF& area, const ITextEffect& textEffect) const
@@ -704,49 +419,14 @@ namespace s3d
 		return draw(TextStyle::Default(), size, pos, textEffect);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::topLeft_<Vec2> topLeft, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const double size, const Anchor anchor, const double x, const double y, const ITextEffect& textEffect) const
 	{
-		return draw(TextStyle::Default(), size, topLeft, textEffect);
+		return draw(size, anchor, Vec2{ x, y }, textEffect);
 	}
 
-	RectF DrawableText::draw(const double size, const Arg::topCenter_<Vec2> topCenter, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const double size, const Anchor anchor, const Vec2& pos, const ITextEffect& textEffect) const
 	{
-		return draw(TextStyle::Default(), size, topCenter, textEffect);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), size, topRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), size, middleRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), size, bottomRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), size, bottomCenter, textEffect);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), size, bottomLeft, textEffect);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), size, middleLeft, textEffect);
-	}
-
-	RectF DrawableText::draw(const double size, const Arg::center_<Vec2> center, const ITextEffect& textEffect) const
-	{
-		return draw(TextStyle::Default(), size, center, textEffect);
+		return draw(TextStyle::Default(), size, anchor, pos, textEffect);
 	}
 
 	TextLayoutResult DrawableText::draw(const double size, const RectF& area, const ITextEffect& textEffect) const
@@ -764,49 +444,14 @@ namespace s3d
 		return draw(textStyle, font.baseSize(), pos, textEffect);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topLeft_<Vec2> topLeft, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Anchor anchor, const double x, const double y, const ITextEffect& textEffect) const
 	{
-		return draw(textStyle, font.baseSize(), topLeft, textEffect);
+		return draw(textStyle, anchor, Vec2{ x, y }, textEffect);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topCenter_<Vec2> topCenter, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const Anchor anchor, const Vec2& pos, const ITextEffect& textEffect) const
 	{
-		return draw(textStyle, font.baseSize(), topCenter, textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, font.baseSize(), topRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, font.baseSize(), middleRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, font.baseSize(), bottomRight, textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomCenter_<Vec2> bottomCenter, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, font.baseSize(), bottomCenter, textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, font.baseSize(), bottomLeft, textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, font.baseSize(), middleLeft, textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const Arg::center_<Vec2> center, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, font.baseSize(), center, textEffect);
+		return draw(textStyle, font.baseSize(), anchor, pos, textEffect);
 	}
 
 	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const RectF& area, const ITextEffect& textEffect) const
@@ -824,53 +469,20 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->draw(font.id(), text, resolvedGlyphs, pos, size, textStyle, textEffect, readingDirection);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topLeft_<Vec2> topLeft, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Anchor anchor, const double x, const double y, const ITextEffect& textEffect) const
 	{
-		return draw(textStyle, size, *topLeft, textEffect);
+		return draw(textStyle, size, anchor, Vec2{ x, y }, textEffect);
 	}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topCenter_<Vec2> topCenter, const ITextEffect& textEffect) const
+	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Anchor anchor, const Vec2& pos, const ITextEffect& textEffect) const
 	{
-		return draw(textStyle, size, topCenter->movedBy((-0.5 * region(textStyle, size).w), 0), textEffect);
-	}
+		if (anchor == Anchor::TopLeft)
+		{
+			return draw(textStyle, size, pos, textEffect);
+		}
 
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::topRight_<Vec2> topRight, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, size, topRight->movedBy(-region(textStyle, size).w, 0), textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::middleRight_<Vec2> middleRight, const ITextEffect& textEffect) const
-	{
 		const RectF textRegion = region(textStyle, size);
-
-		return draw(textStyle, size, middleRight->movedBy(-textRegion.w, (-0.5 * textRegion.h)), textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomRight_<Vec2> bottomRight, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, size, bottomRight->movedBy(-region(textStyle, size).size), textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomCenter_<Vec2> bottomCenter, const ITextEffect& textEffect) const
-	{
-		const RectF textRegion = region(textStyle, size);
-
-		return draw(textStyle, size, bottomCenter->movedBy((-0.5 * textRegion.w), -textRegion.h), textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::bottomLeft_<Vec2> bottomLeft, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, size, bottomLeft->movedBy(0, -region(textStyle, size).h), textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::middleLeft_<Vec2> middleLeft, const ITextEffect& textEffect) const
-	{
-		return draw(textStyle, size, middleLeft->movedBy(0, (-0.5 * region(textStyle, size).h)), textEffect);
-	}
-
-	RectF DrawableText::draw(const TextStyle& textStyle, const double size, const Arg::center_<Vec2> center, const ITextEffect& textEffect) const
-	{
-		return drawAt(textStyle, size, *center, textEffect);
+		return draw(textStyle, size, RectF{ anchor, pos, textRegion.size }.pos, textEffect);
 	}
 
 	TextLayoutResult DrawableText::draw(const TextStyle& textStyle, const double size, const RectF& area, const ITextEffect& textEffect) const
