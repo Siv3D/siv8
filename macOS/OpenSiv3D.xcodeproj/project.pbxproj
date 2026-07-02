@@ -2783,6 +2783,8 @@
 		F99882492F587C8000C8991D /* IPentablet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99882432F587C8000C8991D /* IPentablet.hpp */; };
 		F99BC3682FE6B7AB00D4ECDE /* RectangularDashStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99BC3672FE6B7AB00D4ECDE /* RectangularDashStyle.hpp */; };
 		F99BC3692FE6B7AB00D4ECDE /* CircularDashStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99BC3662FE6B7AB00D4ECDE /* CircularDashStyle.hpp */; };
+		F99BC36C2FF6048900D4ECDE /* LineStringBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F99BC36A2FF6048900D4ECDE /* LineStringBuffer.hpp */; };
+		F99BC36D2FF6048900D4ECDE /* LineStringBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F99BC36B2FF6048900D4ECDE /* LineStringBuffer.cpp */; };
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
@@ -5996,6 +5998,8 @@
 		F99882452F587C8000C8991D /* SivPentablet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPentablet.cpp; sourceTree = "<group>"; };
 		F99BC3662FE6B7AB00D4ECDE /* CircularDashStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircularDashStyle.hpp; sourceTree = "<group>"; };
 		F99BC3672FE6B7AB00D4ECDE /* RectangularDashStyle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RectangularDashStyle.hpp; sourceTree = "<group>"; };
+		F99BC36A2FF6048900D4ECDE /* LineStringBuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LineStringBuffer.hpp; sourceTree = "<group>"; };
+		F99BC36B2FF6048900D4ECDE /* LineStringBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LineStringBuffer.cpp; sourceTree = "<group>"; };
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
@@ -9353,6 +9357,8 @@
 		F95122522CB8239800151291 /* Polygon */ = {
 			isa = PBXGroup;
 			children = (
+				F99BC36A2FF6048900D4ECDE /* LineStringBuffer.hpp */,
+				F99BC36B2FF6048900D4ECDE /* LineStringBuffer.cpp */,
 				F951224A2CB8239800151291 /* ClosedLineString.cpp */,
 				F9F00A3B2CC7F5990097C165 /* GeometryCommon.cpp */,
 				F9F00A3E2CC7F5FB0097C165 /* PolygonBuffer.cpp */,
@@ -14558,6 +14564,7 @@
 				F98602532BCFBB54006A4C0F /* SkRRectPriv.h in Headers */,
 				F986F9422BCA79B4006A4C0F /* Math.hpp in Headers */,
 				F986006E2BCFBB53006A4C0F /* SkAPI.h in Headers */,
+				F99BC36C2FF6048900D4ECDE /* LineStringBuffer.hpp in Headers */,
 				F9070D0A2B9F175100383E4D /* UnicodeConverter.hpp in Headers */,
 				F98601B52BCFBB53006A4C0F /* SkFDot6.h in Headers */,
 				F98604912BCFBB54006A4C0F /* SkSLUtil.h in Headers */,
@@ -16180,6 +16187,7 @@
 				F98605E42BE50038006A4C0F /* SivInputCombination.cpp in Sources */,
 				F98602662BCFBB54006A4C0F /* SkScan.cpp in Sources */,
 				F986031E2BCFBB54006A4C0F /* SkPathOpsCubic.cpp in Sources */,
+				F99BC36D2FF6048900D4ECDE /* LineStringBuffer.cpp in Sources */,
 				F98601C62BCFBB53006A4C0F /* SkGlobalInitialization_core.cpp in Sources */,
 				F98604542BCFBB54006A4C0F /* SkSLAddConstToVarModifiers.cpp in Sources */,
 				F9070AF82B9DEB5900383E4D /* double-to-string.cc in Sources */,
