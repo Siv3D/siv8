@@ -47,6 +47,13 @@ namespace s3d
 		[[nodiscard]]
 		Shape2D(Array<Float2> vertices, Array<TriangleIndex> indices);
 
+		/// @brief 頂点配列と頂点インデックスから多角形を作成します。
+		/// @param vertices 頂点配列
+		/// @param indices 頂点インデックス
+		/// @param boundingRect 外接矩形（あたり判定の高速化のために使用されます）
+		[[nodiscard]]
+		Shape2D(Array<Float2> vertices, Array<TriangleIndex> indices, const Optional<RectF>& boundingRect);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Cross
@@ -310,6 +317,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	boundingRect
+		//
+		////////////////////////////////////////////////////////////////
+		
+		/// @brief 図形の外接円を返します。
+		/// @return 図形の外接矩形
+		[[nodiscard]]
+		const RectF& boundingRect() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	asPolygon
 		//
 		////////////////////////////////////////////////////////////////
@@ -561,6 +579,8 @@ namespace s3d
 		Array<Float2> m_vertices;
 
 		Array<TriangleIndex> m_indices;
+
+		mutable Optional<RectF> m_boundingRect;
 	};
 }
 

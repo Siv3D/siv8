@@ -939,6 +939,7 @@
 # include <Siv3D/JitterEndpointSettings.hpp>
 # include <Siv3D/JitterSettings.hpp>
 
+# include <Siv3D/Geometry2D/PointContainment.hpp>
 # include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
 # include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
 # include <Siv3D/Geometry2D/Distance.hpp> // ToDo

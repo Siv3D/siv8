@@ -20,6 +20,7 @@
 # include "../Optional.hpp"
 # include "../PointVector.hpp"
 # include "../2DShapes.hpp"
+# include "PointContainment.hpp"
 
 namespace s3d
 {

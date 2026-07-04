@@ -13,6 +13,7 @@
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -28,6 +29,11 @@ namespace s3d
 	Shape2D::Shape2D(Array<Float2> vertices, Array<TriangleIndex> indices)
 		: m_vertices{ std::move(vertices) }
 		, m_indices{ std::move(indices) } {}
+
+	Shape2D::Shape2D(Array<Float2> vertices, Array<TriangleIndex> indices, const Optional<RectF>& boundingRect)
+		: m_vertices{ std::move(vertices) }
+		, m_indices{ std::move(indices) }
+		, m_boundingRect{ boundingRect } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -758,6 +764,22 @@ namespace s3d
 		}
 
 		return{ std::move(vertices), std::move(indices) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	boundingRect
+	//
+	////////////////////////////////////////////////////////////////
+
+	const RectF& Shape2D::boundingRect() const noexcept
+	{
+		if (not m_boundingRect)
+		{
+			m_boundingRect = Geometry2D::BoundingRect(m_vertices);
+		}
+
+		return *m_boundingRect;
 	}
 
 	////////////////////////////////////////////////////////////////

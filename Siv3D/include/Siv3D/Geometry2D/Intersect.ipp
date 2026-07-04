@@ -107,23 +107,14 @@ namespace s3d
 
 		constexpr bool Intersect(const Point& a, const Triangle& b) noexcept
 		{
-			if (not b.hasArea())
-			{
-				return (a.intersects(b.p0p1())
-					 || a.intersects(b.p1p2())
-					 || a.intersects(b.p2p0()));
-			}
-
-			const bool b1 = (detail::Sign(a, b.p0, b.p1) < 0.0);
-			const bool b2 = (detail::Sign(a, b.p1, b.p2) < 0.0);
-			const bool b3 = (detail::Sign(a, b.p2, b.p0) < 0.0);
-			return ((b1 == b2) && (b2 == b3));
+			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
+			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, a);
 		}
 
 		constexpr bool Intersect(const Point& a, const Quad& b) noexcept
 		{
-			return (Intersect(a, b.triangleAtIndex(0))
-				 || Intersect(a, b.triangleAtIndex(1)));
+			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
+			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, b.p3, a);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -178,23 +169,14 @@ namespace s3d
 
 		constexpr bool Intersect(const Vec2& a, const Triangle& b) noexcept
 		{
-			if (not b.hasArea())
-			{
-				return (a.intersects(b.p0p1())
-					 || a.intersects(b.p1p2())
-					 || a.intersects(b.p2p0()));
-			}
-
-			const bool b1 = (detail::Sign(a, b.p0, b.p1) < 0.0);
-			const bool b2 = (detail::Sign(a, b.p1, b.p2) < 0.0);
-			const bool b3 = (detail::Sign(a, b.p2, b.p0) < 0.0);
-			return ((b1 == b2) && (b2 == b3));
+			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
+			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, a);
 		}
 
 		constexpr bool Intersect(const Vec2& a, const Quad& b) noexcept
 		{
-			return ((Intersect(a, b.triangleAtIndex(0))
-				 || Intersect(a, b.triangleAtIndex(1))));
+			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
+			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, b.p3, a);
 		}
 
 		////////////////////////////////////////////////////////////////
