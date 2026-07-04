@@ -330,8 +330,8 @@ namespace s3d
 
 	namespace Geometry2D
 	{
-		template <PointContainmentOptions Options>
-		bool ContainsPoint(const std::span<const Vec2> vertices, const Vec2& point) noexcept
+		template <PointContainmentOptions Options, class PointType>
+		bool ContainsPoint(const std::span<const PointType> vertices, const Vec2& point) noexcept
 		{
 			const size_t n = vertices.size();
 
@@ -342,7 +342,7 @@ namespace s3d
 
 			const double px = point.x;
 			const double py = point.y;
-			const Vec2* const v = vertices.data();
+			const PointType* const v = vertices.data();
 
 			double ax = v[n - 1].x;
 			double ay = v[n - 1].y;

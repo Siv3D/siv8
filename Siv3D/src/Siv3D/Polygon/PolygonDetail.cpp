@@ -302,7 +302,7 @@ namespace s3d
 		m_boundingRect	= boundingRect;
 	}
 
-	Polygon::PolygonDetail::PolygonDetail(const std::span<const Float2> outer, Array<TriangleIndex> indices)
+	Polygon::PolygonDetail::PolygonDetail(const std::span<const Float2> outer, Array<TriangleIndex> indices, const RectF& boundingRect)
 	{
 		CwOpenPolygon polygon	= MakeCWOpenPolygon(outer);
 
@@ -312,7 +312,7 @@ namespace s3d
 
 		m_vertices.assign_range(outer);
 
-		m_boundingRect			= Geometry2D::BoundingRect(outer);
+		m_boundingRect			= boundingRect;
 	}
 
 	////////////////////////////////////////////////////////////////

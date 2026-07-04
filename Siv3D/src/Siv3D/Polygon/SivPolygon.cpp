@@ -91,7 +91,7 @@ namespace s3d
 		: pImpl{ std::make_unique<PolygonDetail>(outer, std::move(holes), std::move(vertices), std::move(indices), boundingRect, skipValidation) } {}
 
 	Polygon::Polygon(const Shape2D& shape)
-		: pImpl{ std::make_unique<PolygonDetail>(shape.vertices(), shape.indices()) } {}
+		: pImpl{ std::make_unique<PolygonDetail>(shape.vertices(), shape.indices(), shape.boundingRect()) } {}
 
 	////////////////////////////////////////////////////////////////
 	//

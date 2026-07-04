@@ -46,7 +46,7 @@ namespace s3d
 		PolygonDetail(std::span<const Vec2> outer, Array<Array<Vec2>> holes, Array<Float2> vertices, Array<TriangleIndex> indices, const RectF& boundingRect, SkipValidation skipValidation);
 
 		[[nodiscard]]
-		PolygonDetail(std::span<const Float2> outer, Array<TriangleIndex> indices);
+		PolygonDetail(std::span<const Float2> outer, Array<TriangleIndex> indices, const RectF& boundingRect);
 
 		////////////////////////////////////////////////////////////////
 		//

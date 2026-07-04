@@ -13,6 +13,8 @@
 # include <Siv3D/Shape2D.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include <Siv3D/Cursor.hpp>
+# include <Siv3D/Mouse.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
@@ -20,6 +22,26 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		static RectF MakeRectFromMinMax(const double minX, const double minY, const double maxX, const double maxY) noexcept
+		{
+			return{ minX, minY, (maxX - minX), (maxY - minY) };
+		}
+
+		[[nodiscard]]
+		static RectF MakeRectFromCenterRadius(const Float2& center, const float xRadius, const float yRadius) noexcept
+		{
+			return{
+				(center.x - xRadius),
+				(center.y - yRadius),
+				(xRadius * 2.0f),
+				(yRadius * 2.0f)
+			};
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -63,6 +85,8 @@ namespace s3d
 		const float w = static_cast<float>(width) * 0.5f;
 		const float af = static_cast<float>(angle);
 		const Float2 n = Float2{ w, w }.rotated(af), a = Float2{ r, w }.rotated(af), b = Float2{ w, r }.rotated(af);
+		const Float2 centerF{ center };
+		const float boundingRadius = Max(Max(Max(Abs(a.x), Abs(a.y)), Max(Abs(b.x), Abs(b.y))), Max(Abs(n.x), Abs(n.y)));
 
 		Array<Float2> vertices(12, center);
 		Float2* pPos = vertices.data();
@@ -81,7 +105,7 @@ namespace s3d
 
 		Array<TriangleIndex> indices = { {6, 11, 5}, {5, 11, 0}, {8, 9, 7}, {7, 9, 10}, {4, 1, 3}, {3, 1, 2} };
 
-		return{ std::move(vertices), std::move(indices) };
+		return{ std::move(vertices), std::move(indices), MakeRectFromCenterRadius(centerF, boundingRadius, boundingRadius) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -322,6 +346,10 @@ namespace s3d
 		const float s = std::sin(angleF);
 		const float c = std::cos(angleF);
 
+		const Float2 centerF{ center };
+		const float xRadius = Max(Abs(halfH * s), Abs(halfW * c));
+		const float yRadius = Max(Abs(halfH * c), Abs(halfW * s));
+
 		Array<Float2> vertices(4, center);
 		Float2* pPos = vertices.data();
 		(pPos++)->moveBy(halfH * s, -halfH * c);
@@ -331,7 +359,7 @@ namespace s3d
 
 		Array<TriangleIndex> indices = { {0, 1, 3}, {2, 3, 1} };
 
-		return{ std::move(vertices), std::move(indices) };
+		return{ std::move(vertices), std::move(indices), MakeRectFromCenterRadius(centerF, xRadius, yRadius) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -357,6 +385,16 @@ namespace s3d
 		const Float2 pointingRootCenter(sign[((a + 2) / 4) % 2] * w * 0.25f * (1.0f + ((a + 3) / 2) % 2), sign[((a) / 4) % 2] * h * 0.25f * (1.0f + ((a + 1) / 2) % 2));
 		const Float2 offset = sign[(((a + 3) % 8) / 4) % 2] * ((((a + 1) / 2) % 2) ? Float2{ w * 0.25f * prf, 0.0f } : Float2{ 0.0f, h * 0.25f * prf });
 		const Vertex2D::IndexType indexOffset = ((a + 1) / 2) % 4;
+
+		const double rectMinX = Min(rect.x, (rect.x + rect.w));
+		const double rectMaxX = Max(rect.x, (rect.x + rect.w));
+		const double rectMinY = Min(rect.y, (rect.y + rect.h));
+		const double rectMaxY = Max(rect.y, (rect.y + rect.h));
+		const RectF boundingRect = MakeRectFromMinMax(
+			Min(rectMinX, target.x),
+			Min(rectMinY, target.y),
+			Max(rectMaxX, target.x),
+			Max(rectMaxY, target.y));
 
 		Array<Float2> vertices(7, center);
 		std::array<Vertex2D::IndexType, 4> rectIndices;
@@ -387,7 +425,7 @@ namespace s3d
 			{ rectIndices[0], rectIndices[2], rectIndices[3] }
 		};
 
-		return{ std::move(vertices), std::move(indices) };
+		return{ std::move(vertices), std::move(indices), boundingRect };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -405,21 +443,31 @@ namespace s3d
 			return{};
 		}
 
-		const float offsetX = static_cast<float>(w / steps);
-		const float offsetY = static_cast<float>(h / steps);
-		const Float2 base2 = (base + Float2{ upStairs ? -w : w, 0 });
+		const Float2 baseF{ base };
+		const float wf = static_cast<float>(w);
+		const float hf = static_cast<float>(h);
+		const float direction = (upStairs ? -1.0f : 1.0f);
 
 		Array<Float2> vertices(2 + 2 * steps);
 		{
 			Float2* pPos = vertices.data();
-			*pPos++ = base;
-			*pPos++ = base2;
+
+			*pPos++ = baseF;
+			*pPos++ = baseF + Float2{ (direction * wf), 0.0f };
 
 			for (Vertex2D::IndexType i = 0; i < steps; ++i)
 			{
-				const int32 offsetIndex = i + 1;
-				*pPos++ = base2 + Float2{ upStairs ? offsetX * i : -offsetX * i, -offsetY * offsetIndex };
-				*pPos++ = base2 + Float2{ upStairs ? offsetX * offsetIndex : -offsetX * offsetIndex, -offsetY * offsetIndex };
+				const float x0 = (static_cast<float>(i) / steps) * wf;
+				const float x1 = (static_cast<uint32>(i + 1) == steps)
+					? wf
+					: ((static_cast<float>(i + 1) / steps) * wf);
+
+				const float y1 = (static_cast<uint32>(i + 1) == steps)
+					? hf
+					: ((static_cast<float>(i + 1) / steps) * hf);
+
+				*pPos++ = baseF + Float2{ direction * (wf - x0), -y1 };
+				*pPos++ = baseF + Float2{ direction * (wf - x1), -y1 };
 			}
 		}
 
@@ -432,13 +480,13 @@ namespace s3d
 				for (Vertex2D::IndexType i = 0; i < steps; ++i)
 				{
 					pDst->i0 = 0;
-					pDst->i1 = 2 * i + 1;
-					pDst->i2 = 2 * i + 2;
+					pDst->i1 = (2 * i + 1);
+					pDst->i2 = (2 * i + 2);
 					++pDst;
 
 					pDst->i0 = 0;
-					pDst->i1 = 2 * i + 2;
-					pDst->i2 = 2 * i + 3;
+					pDst->i1 = (2 * i + 2);
+					pDst->i2 = (2 * i + 3);
 					++pDst;
 				}
 			}
@@ -447,19 +495,20 @@ namespace s3d
 				for (Vertex2D::IndexType i = 0; i < steps; ++i)
 				{
 					pDst->i0 = 0;
-					pDst->i1 = 2 * i + 2;
-					pDst->i2 = 2 * i + 1;
+					pDst->i1 = (2 * i + 2);
+					pDst->i2 = (2 * i + 1);
 					++pDst;
 
 					pDst->i0 = 0;
-					pDst->i1 = 2 * i + 3;
-					pDst->i2 = 2 * i + 2;
+					pDst->i1 = (2 * i + 3);
+					pDst->i2 = (2 * i + 2);
 					++pDst;
 				}
 			}
 		}
 
-		return{ std::move(vertices), std::move(indices) };
+		const RectF boundingRect = upStairs ? RectF{ (base.x - w), (base.y - h), w, h } : RectF{ base.x, (base.y - h), w, h };
+		return{ std::move(vertices), std::move(indices), boundingRect };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -618,6 +667,7 @@ namespace s3d
 
 		const Float2 centerF{ center };
 		const float rf = static_cast<float>(r);
+		const RectF boundingRect = MakeRectFromCenterRadius(centerF, rf, rf);
 
 		for (Float2& point : vertices)
 		{
@@ -636,7 +686,7 @@ namespace s3d
 			++pIndex;
 		}
 
-		return{ std::move(vertices), std::move(indices) };
+		return{ std::move(vertices), std::move(indices), boundingRect };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -824,6 +874,67 @@ namespace s3d
 	Polygon Shape2D::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
 		return ComputeRoundBufferPolygon(m_vertices.asArray<Vec2>(), distance, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	leftClicked, leftPressed, leftReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Shape2D::leftClicked() const noexcept
+	{
+		return (MouseL.down() && mouseOver());
+	}
+
+	bool Shape2D::leftPressed() const noexcept
+	{
+		return (MouseL.pressed() && mouseOver());
+	}
+
+	bool Shape2D::leftReleased() const noexcept
+	{
+		return (MouseL.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rightClicked, rightPressed, rightReleased
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Shape2D::rightClicked() const noexcept
+	{
+		return (MouseR.down() && mouseOver());
+	}
+
+	bool Shape2D::rightPressed() const noexcept
+	{
+		return (MouseR.pressed() && mouseOver());
+	}
+
+	bool Shape2D::rightReleased() const noexcept
+	{
+		return (MouseR.up() && mouseOver());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	mouseOver
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Shape2D::mouseOver() const noexcept
+	{
+		const Vec2 cursorPos = Cursor::PosF();
+
+		if (not Geometry2D::Intersect(this->boundingRect(), cursorPos))
+		{
+			return false;
+		}
+		
+		constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::General };
+		return Geometry2D::ContainsPoint<Options, Float2>(m_vertices, cursorPos);
 	}
 
 	////////////////////////////////////////////////////////////////

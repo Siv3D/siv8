@@ -65,6 +65,7 @@ namespace s3d
 	{
 		/// @brief 点が多角形の内部にあるかを返します。
 		/// @tparam Options 点包含判定のコンパイル時設定
+		/// @tparam PointType 多角形の頂点の型
 		/// @param vertices 多角形の外周頂点
 		/// @param point 判定する点
 		/// @return 点が多角形の内部にある場合 true, それ以外の場合は false
@@ -93,9 +94,9 @@ namespace s3d
 		///      `Options.boundary == BoundaryPolicy::Excluded` の場合、隣接する同一頂点、すなわち
 		///      ゼロ長辺を含んではいけません。それ以外の設定ではゼロ長辺は判定結果に影響しません。
 		/// @pre `point` および `vertices` の各座標は有限値である必要があります。NaN / Inf はサポートされません。
-		template <PointContainmentOptions Options = PointContainmentOptions{}>
+		template <PointContainmentOptions Options = PointContainmentOptions{}, class PointType = Vec2>
 		[[nodiscard]]
-		bool ContainsPoint(std::span<const Vec2> vertices, const Vec2& point) noexcept;
+		bool ContainsPoint(std::span<const PointType> vertices, const Vec2& point) noexcept;
 
 		/// @brief 点が三角形(3 頂点)の内部にあるかを返します。
 		/// @tparam Options 点包含判定のコンパイル時設定

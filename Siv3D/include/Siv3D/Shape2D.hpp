@@ -50,7 +50,7 @@ namespace s3d
 		/// @brief 頂点配列と頂点インデックスから多角形を作成します。
 		/// @param vertices 頂点配列
 		/// @param indices 頂点インデックス
-		/// @param boundingRect 外接矩形（あたり判定の高速化のために使用されます）
+		/// @param boundingRect 外接矩形
 		[[nodiscard]]
 		Shape2D(Array<Float2> vertices, Array<TriangleIndex> indices, const Optional<RectF>& boundingRect);
 
@@ -375,6 +375,59 @@ namespace s3d
 		/// @return 新しい多角形。distance が 0 以下の場合は空の多角形
 		[[nodiscard]]
 		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return 多角形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
+
+		/// @brief 多角形が左クリックされているかを返します。
+		/// @return 多角形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
+
+		/// @brief 現在のフレームで多角形への左クリックが離されたかを返します。
+		/// @return 現在のフレームで多角形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return 多角形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
+
+		/// @brief 多角形が右クリックされているかを返します。
+		/// @return 多角形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
+
+		/// @brief 現在のフレームで多角形への右クリックが離されたかを返します。
+		/// @return 現在のフレームで多角形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形上にマウスカーソルがあるかを返します。
+		/// @return 多角形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
