@@ -33,7 +33,7 @@ namespace s3d
 	template <class Shape2DType>
 	bool Polygon::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

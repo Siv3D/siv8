@@ -981,7 +981,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other, m_boundingRect))
+		if (not Geometry2D::Intersects(other, m_boundingRect))
 		{
 			return false;
 		}
@@ -992,7 +992,7 @@ namespace s3d
 		{
 			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersect(other, triangle))
+			if (Geometry2D::Intersects(other, triangle))
 			{
 				return true;
 			}
@@ -1008,7 +1008,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other, m_boundingRect))
+		if (not Geometry2D::Intersects(other, m_boundingRect))
 		{
 			return false;
 		}
@@ -1019,7 +1019,7 @@ namespace s3d
 		{
 			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersect(other, triangle))
+			if (Geometry2D::Intersects(other, triangle))
 			{
 				return true;
 			}
@@ -1035,7 +1035,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other, m_boundingRect))
+		if (not Geometry2D::Intersects(other, m_boundingRect))
 		{
 			return false;
 		}
@@ -1052,7 +1052,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other, m_boundingRect))
+		if (not Geometry2D::Intersects(other, m_boundingRect))
 		{
 			return false;
 		}
@@ -1063,7 +1063,7 @@ namespace s3d
 		{
 			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersect(other, triangle))
+			if (Geometry2D::Intersects(other, triangle))
 			{
 				return true;
 			}
@@ -1079,7 +1079,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other, m_boundingRect))
+		if (not Geometry2D::Intersects(other, m_boundingRect))
 		{
 			return false;
 		}
@@ -1090,7 +1090,7 @@ namespace s3d
 		{
 			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersect(other, triangle))
+			if (Geometry2D::Intersects(other, triangle))
 			{
 				return true;
 			}
@@ -1106,7 +1106,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other, m_boundingRect))
+		if (not Geometry2D::Intersects(other, m_boundingRect))
 		{
 			return false;
 		}
@@ -1117,7 +1117,7 @@ namespace s3d
 		{
 			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersect(other, triangle))
+			if (Geometry2D::Intersects(other, triangle))
 			{
 				return true;
 			}
@@ -1133,7 +1133,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other, m_boundingRect))
+		if (not Geometry2D::Intersects(other, m_boundingRect))
 		{
 			return false;
 		}
@@ -1144,7 +1144,7 @@ namespace s3d
 		{
 			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersect(other, triangle))
+			if (Geometry2D::Intersects(other, triangle))
 			{
 				return true;
 			}
@@ -1165,7 +1165,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not Geometry2D::Intersect(other.m_boundingRect, m_boundingRect))
+		if (not Geometry2D::Intersects(other.m_boundingRect, m_boundingRect))
 		{
 			return false;
 		}

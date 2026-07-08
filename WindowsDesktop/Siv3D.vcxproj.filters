@@ -3852,10 +3852,10 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\libmorton\morton_BMI.h">
       <Filter>src\ThirdParty\libmorton</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersect.ipp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.ipp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp">
@@ -3924,7 +3924,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IntersectAt.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IntersectsAt.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Center.hpp">
@@ -5810,6 +5810,9 @@
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PointContainment.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Overlaps.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,49 +16,49 @@ namespace s3d
 	namespace Geometry2D
 	{
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Point& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Point& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Vec2& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Vec2& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Line& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Line& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Vec2& a, const Bezier2& b);
+		bool Intersects(const Vec2& a, const Bezier2& b);
 
 		//[[nodiscard]]
-		//bool Intersect(const Vec2& a, const Bezier3& b);
+		//bool Intersects(const Vec2& a, const Bezier3& b);
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Rect& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Rect& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const RectF& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const RectF& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Circle& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Circle& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Ellipse& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Ellipse& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Triangle& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Triangle& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Vec2& a, const Quad& b) noexcept;
+		constexpr bool Intersects(const Vec2& a, const Quad& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Vec2& a, const RoundRect& b) noexcept;
+		bool Intersects(const Vec2& a, const RoundRect& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Vec2& a, const Polygon& b) noexcept;
+		bool Intersects(const Vec2& a, const Polygon& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Vec2& a, const MultiPolygon& b) noexcept;
+		bool Intersects(const Vec2& a, const MultiPolygon& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Vec2& a, const LineString& b) noexcept;
+		bool Intersects(const Vec2& a, const LineString& b) noexcept;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1039,11 +1039,11 @@ namespace s3d
 	{
 		if constexpr (std::is_same_v<value_type, double>)
 		{
-			return Geometry2D::Intersect(*this, other);
+			return Geometry2D::Intersects(*this, other);
 		}
 		else
 		{
-			return Geometry2D::Intersect(Vector2D<double>{ *this }, other);
+			return Geometry2D::Intersects(Vector2D<double>{ *this }, other);
 		}
 	}
 

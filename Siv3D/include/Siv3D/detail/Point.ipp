@@ -16,52 +16,52 @@ namespace s3d
 	namespace Geometry2D
 	{
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Point& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Point& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Vec2& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Vec2& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Line& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Line& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Point& a, const Bezier2& b);
+		bool Intersects(const Point& a, const Bezier2& b);
 
 		[[nodiscard]]
-		bool Intersect(const Point& a, const Bezier3& b);
+		bool Intersects(const Point& a, const Bezier3& b);
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Rect& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Rect& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const RectF& b) noexcept;
+		constexpr bool Intersects(const Point& a, const RectF& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Circle& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Circle& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Ellipse& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Ellipse& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Triangle& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Triangle& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Quad& b) noexcept;
+		constexpr bool Intersects(const Point& a, const Quad& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Point& a, const RoundRect& b) noexcept;
+		bool Intersects(const Point& a, const RoundRect& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Point& a, const SuperEllipse& b) noexcept;
+		bool Intersects(const Point& a, const SuperEllipse& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Point& a, const Polygon& b) noexcept;
+		bool Intersects(const Point& a, const Polygon& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Point& a, const MultiPolygon& b) noexcept;
+		bool Intersects(const Point& a, const MultiPolygon& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersect(const Point& a, const LineString& b) noexcept;
+		bool Intersects(const Point& a, const LineString& b) noexcept;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -840,7 +840,7 @@ namespace s3d
 	template <class Shape2DType>
 	constexpr bool Point::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

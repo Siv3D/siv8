@@ -51,26 +51,26 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Point, _)
+		//	Intersects(Point, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersect(const Point& a, const Point& b) noexcept
+		constexpr bool Intersects(const Point& a, const Point& b) noexcept
 		{
 			return (a == b);
 		}
 
-		constexpr bool Intersect(const Point& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Point& a, const Vec2& b) noexcept
 		{
 			return (b.distanceFromSq(a) < 1.0);
 		}
 
-		constexpr bool Intersect(const Point& a, const Line& b) noexcept
+		constexpr bool Intersects(const Point& a, const Line& b) noexcept
 		{
 			return (detail::DistanceSq(b.start, b.end, a) < 1.0);
 		}
 
-		constexpr bool Intersect(const Point& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Point& a, const Rect& b) noexcept
 		{
 			return ((b.pos.x <= a.x)
 				 && (a.x < (b.pos.x + b.size.x))
@@ -78,7 +78,7 @@ namespace s3d
 				 && (a.y < (b.pos.y + b.size.y)));
 		}
 
-		constexpr bool Intersect(const Point& a, const RectF& b) noexcept
+		constexpr bool Intersects(const Point& a, const RectF& b) noexcept
 		{
 			return ((b.pos.x <= a.x)
 				 && (a.x < (b.pos.x + b.size.x))
@@ -86,12 +86,12 @@ namespace s3d
 				 && (a.y < (b.pos.y + b.size.y)));
 		}
 
-		constexpr bool Intersect(const Point& a, const Circle& b) noexcept
+		constexpr bool Intersects(const Point& a, const Circle& b) noexcept
 		{
 			return (a.distanceFromSq(b.center) <= (b.r * b.r));
 		}
 
-		constexpr bool Intersect(const Point& a, const Ellipse& b) noexcept
+		constexpr bool Intersects(const Point& a, const Ellipse& b) noexcept
 		{
 			if ((b.axes.x == 0.0)
 				|| (b.axes.y == 0.0))
@@ -105,13 +105,13 @@ namespace s3d
 			return (((xh * xh) / (b.axes.x * b.axes.x) + (yk * yk) / (b.axes.y * b.axes.y)) <= 1.0);
 		}
 
-		constexpr bool Intersect(const Point& a, const Triangle& b) noexcept
+		constexpr bool Intersects(const Point& a, const Triangle& b) noexcept
 		{
 			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
 			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, a);
 		}
 
-		constexpr bool Intersect(const Point& a, const Quad& b) noexcept
+		constexpr bool Intersects(const Point& a, const Quad& b) noexcept
 		{
 			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
 			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, b.p3, a);
@@ -119,43 +119,43 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Vec2, _)
+		//	Intersects(Vec2, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersect(const Vec2& a, const Point& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Vec2& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Vec2& b) noexcept
 		{
 			return (a.distanceFromSq(b) < 1.0);
 		}
 
-		constexpr bool Intersect(const Vec2& a, const Line& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Line& b) noexcept
 		{
 			return (detail::DistanceSq(b.start, b.end, a) < 1.0);
 		}
 
-		constexpr bool Intersect(const Vec2& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Rect& b) noexcept
 		{
 			return ((b.pos.x <= a.x) && (a.x < (b.pos.x + b.size.x))
 				 && (b.pos.y <= a.y) && (a.y < (b.pos.y + b.size.y)));
 		}
 
-		constexpr bool Intersect(const Vec2& a, const RectF& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const RectF& b) noexcept
 		{
 			return ((b.pos.x <= a.x) && (a.x < (b.pos.x + b.size.x))
 				 && (b.pos.y <= a.y) && (a.y < (b.pos.y + b.size.y)));
 		}
 
-		constexpr bool Intersect(const Vec2& a, const Circle& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Circle& b) noexcept
 		{
 			return (a.distanceFromSq(b.center) <= (b.r * b.r));
 		}
 
-		constexpr bool Intersect(const Vec2& a, const Ellipse& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Ellipse& b) noexcept
 		{
 			if ((b.axes.x == 0.0) || (b.axes.y == 0.0))
 			{
@@ -167,13 +167,13 @@ namespace s3d
 			return (((xh * xh) / (b.axes.x * b.axes.x) + (yk * yk) / (b.axes.y * b.axes.y)) <= 1.0);
 		}
 
-		constexpr bool Intersect(const Vec2& a, const Triangle& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Triangle& b) noexcept
 		{
 			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
 			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, a);
 		}
 
-		constexpr bool Intersect(const Vec2& a, const Quad& b) noexcept
+		constexpr bool Intersects(const Vec2& a, const Quad& b) noexcept
 		{
 			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
 			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, b.p3, a);
@@ -181,37 +181,37 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Line, _)
+		//	Intersects(Line, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersect(const Line& a, const Point& b) noexcept
+		constexpr bool Intersects(const Line& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Line& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Line& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
 		//////////////////////////////////////////////////
 		//
-		//	Intersect(Rect, _)
+		//	Intersects(Rect, _)
 		//
 		//////////////////////////////////////////////////
 
-		constexpr bool Intersect(const Rect& a, const Point& b) noexcept
+		constexpr bool Intersects(const Rect& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Rect& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Rect& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Rect& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Rect& a, const Rect& b) noexcept
 		{
 			return ((a.pos.x < (b.pos.x + b.size.x))
 				 && (b.pos.x < (a.pos.x + a.size.x))
@@ -219,7 +219,7 @@ namespace s3d
 				 && (b.pos.y < (a.pos.y + a.size.y)));
 		}
 
-		constexpr bool Intersect(const Rect& a, const RectF& b) noexcept
+		constexpr bool Intersects(const Rect& a, const RectF& b) noexcept
 		{
 			return ((a.pos.x < (b.pos.x + b.size.x))
 				 && (b.pos.x < (a.pos.x + a.size.x))
@@ -227,38 +227,38 @@ namespace s3d
 				 && (b.pos.y < (a.pos.y + a.size.y)));
 		}
 
-		constexpr bool Intersect(const Rect& a, const Circle& b) noexcept
+		constexpr bool Intersects(const Rect& a, const Circle& b) noexcept
 		{
-			return Intersect(RectF{ a }, b);
+			return Intersects(RectF{ a }, b);
 		}
 
-		constexpr bool Intersect(const Rect& a, const Ellipse& b) noexcept
+		constexpr bool Intersects(const Rect& a, const Ellipse& b) noexcept
 		{
-			return Intersect(RectF{ a }, b);
+			return Intersects(RectF{ a }, b);
 		}
 
 		//////////////////////////////////////////////////
 		//
-		//	Intersect(RectF, _)
+		//	Intersects(RectF, _)
 		//
 		//////////////////////////////////////////////////
 
-		constexpr bool Intersect(const RectF& a, const Point& b) noexcept
+		constexpr bool Intersects(const RectF& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const RectF& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const RectF& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const RectF& a, const Rect& b) noexcept
+		constexpr bool Intersects(const RectF& a, const Rect& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const RectF& a, const RectF& b) noexcept
+		constexpr bool Intersects(const RectF& a, const RectF& b) noexcept
 		{
 			return ((a.pos.x < (b.pos.x + b.size.x))
 				 && (b.pos.x < (a.pos.x + a.size.x))
@@ -266,7 +266,7 @@ namespace s3d
 				 && (b.pos.y < (a.pos.y + a.size.y)));
 		}
 
-		constexpr bool Intersect(const RectF& a, const Circle& b) noexcept
+		constexpr bool Intersects(const RectF& a, const Circle& b) noexcept
 		{
 			const double aw = (a.size.x * 0.5);
 			const double ah = (a.size.y * 0.5);
@@ -288,7 +288,7 @@ namespace s3d
 			return ((cX - aw) * (cX - aw) + (cY - ah) * (cY - ah) <= (b.r * b.r));
 		}
 
-		constexpr bool Intersect(const RectF& a, const Ellipse& b) noexcept
+		constexpr bool Intersects(const RectF& a, const Ellipse& b) noexcept
 		{
 			RectF rect = a.movedBy(-b.center);
 
@@ -296,36 +296,36 @@ namespace s3d
 			rect.y *= v;
 			rect.h *= v;
 
-			return Intersect(rect, Circle{ b.a });
+			return Intersects(rect, Circle{ b.a });
 		}
 
 		//////////////////////////////////////////////////
 		//
-		//	Intersect(Circle, _)
+		//	Intersects(Circle, _)
 		//
 		//////////////////////////////////////////////////
 
-		constexpr bool Intersect(const Circle& a, const Point& b) noexcept
+		constexpr bool Intersects(const Circle& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Circle& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Circle& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Circle& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Circle& a, const Rect& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Circle& a, const RectF& b) noexcept
+		constexpr bool Intersects(const Circle& a, const RectF& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Circle& a, const Circle& b) noexcept
+		constexpr bool Intersects(const Circle& a, const Circle& b) noexcept
 		{
 			const double x = (a.center.x - b.center.x);
 			const double y = (a.center.y - b.center.y);
@@ -335,60 +335,60 @@ namespace s3d
 
 		//////////////////////////////////////////////////
 		//
-		//	Intersect(Ellipse, _)
+		//	Intersects(Ellipse, _)
 		//
 		//////////////////////////////////////////////////
 
-		constexpr bool Intersect(const Ellipse& a, const Point& b) noexcept
+		constexpr bool Intersects(const Ellipse& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Ellipse& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Ellipse& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Ellipse& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Ellipse& a, const Rect& b) noexcept
 		{
-			return Intersect(RectF{ b }, a);
+			return Intersects(RectF{ b }, a);
 		}
 
-		constexpr bool Intersect(const Ellipse& a, const RectF& b) noexcept
+		constexpr bool Intersects(const Ellipse& a, const RectF& b) noexcept
 		{
-			return Intersect(b, a);
-		}
-
-		//////////////////////////////////////////////////
-		//
-		//	Intersect(Triangle, _)
-		//
-		//////////////////////////////////////////////////
-
-		constexpr bool Intersect(const Triangle& a, const Point& b) noexcept
-		{
-			return Intersect(b, a);
-		}
-
-		constexpr bool Intersect(const Triangle& a, const Vec2& b) noexcept
-		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
 		//////////////////////////////////////////////////
 		//
-		//	Intersect(Quad, _)
+		//	Intersects(Triangle, _)
 		//
 		//////////////////////////////////////////////////
 
-		constexpr bool Intersect(const Quad& a, const Point& b) noexcept
+		constexpr bool Intersects(const Triangle& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersect(const Quad& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Triangle& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Intersects(Quad, _)
+		//
+		//////////////////////////////////////////////////
+
+		constexpr bool Intersects(const Quad& a, const Point& b) noexcept
+		{
+			return Intersects(b, a);
+		}
+
+		constexpr bool Intersects(const Quad& a, const Vec2& b) noexcept
+		{
+			return Intersects(b, a);
 		}
 	}
 }

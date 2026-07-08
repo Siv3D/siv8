@@ -23,27 +23,27 @@ namespace s3d
 
 		constexpr bool Contains(const Rect& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
 		constexpr bool Contains(const Rect& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
 		constexpr bool Contains(const RectF& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
 		constexpr bool Contains(const RectF& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
 		inline bool Contains(const Polygon& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 	}
 }

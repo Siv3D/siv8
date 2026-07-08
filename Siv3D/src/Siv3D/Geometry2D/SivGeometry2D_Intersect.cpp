@@ -21,7 +21,7 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
-# include <Siv3D/Geometry2D/Intersect.hpp>
+# include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/Distance.hpp>
 
 namespace s3d
@@ -227,69 +227,69 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Point, _)
+		//	Intersects(Point, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Point& a, const Bezier2& b)
+		bool Intersects(const Point& a, const Bezier2& b)
 		{
-			return Intersect(Vec2{ a }, b);
+			return Intersects(Vec2{ a }, b);
 		}
 
-		bool Intersect(const Point& a, const Bezier3& b)
+		bool Intersects(const Point& a, const Bezier3& b)
 		{
-			return Intersect(Vec2{ a }, b);
+			return Intersects(Vec2{ a }, b);
 		}
 
-		bool Intersect(const Point& a, const RoundRect& b) noexcept
+		bool Intersects(const Point& a, const RoundRect& b) noexcept
 		{
-			return Intersect(Vec2{ a }, b);
+			return Intersects(Vec2{ a }, b);
 		}
 
-		bool Intersect(const Point& a, const SuperEllipse& b) noexcept
+		bool Intersects(const Point& a, const SuperEllipse& b) noexcept
 		{
-			return Intersect(Vec2{ a }, b);
+			return Intersects(Vec2{ a }, b);
 		}
 
-		bool Intersect(const Point& a, const Polygon& b) noexcept
+		bool Intersects(const Point& a, const Polygon& b) noexcept
 		{
 			return b.intersects(Vec2{ a });
 		}
 
-		bool Intersect(const Point& a, const MultiPolygon& b) noexcept
+		bool Intersects(const Point& a, const MultiPolygon& b) noexcept
 		{
-			return Intersect(Vec2{ a }, b);
+			return Intersects(Vec2{ a }, b);
 		}
 
-		bool Intersect(const Point& a, const LineString& b) noexcept
+		bool Intersects(const Point& a, const LineString& b) noexcept
 		{
-			return Intersect(Vec2{ a }, b);
+			return Intersects(Vec2{ a }, b);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Vec2, _)
+		//	Intersects(Vec2, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Vec2& a, const Bezier2& b)
+		bool Intersects(const Vec2& a, const Bezier2& b)
 		{
 			// 距離が 1 未満なら交差と判定
 			return (Distance(a, b) < 1.0);
 		}
 
-		bool Intersect(const Vec2& a, const Bezier3& b)
+		bool Intersects(const Vec2& a, const Bezier3& b)
 		{
 			// 距離が 1 未満なら交差と判定
 			return (Distance(a, b) < 1.0);
 		}
 
-		bool Intersect(const Vec2& a, const RoundRect& b) noexcept
+		bool Intersects(const Vec2& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
 		}
 
-		bool Intersect(const Vec2& a, const SuperEllipse& b) noexcept
+		bool Intersects(const Vec2& a, const SuperEllipse& b) noexcept
 		{
 			const double ax = Abs(b.axes.x);
 			const double by = Abs(b.axes.y);
@@ -316,16 +316,16 @@ namespace s3d
 			return (v <= 1.0);
 		}
 
-		bool Intersect(const Vec2& a, const Polygon& b) noexcept
+		bool Intersects(const Vec2& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
-		bool Intersect(const Vec2& a, const MultiPolygon& b) noexcept
+		bool Intersects(const Vec2& a, const MultiPolygon& b) noexcept
 		{
 			for (const auto& polygon : b)
 			{
-				if (Intersect(a, polygon))
+				if (Intersects(a, polygon))
 				{
 					return true;
 				}
@@ -334,7 +334,7 @@ namespace s3d
 			return false;
 		}
 
-		bool Intersect(const Vec2& a, const LineString& b) noexcept
+		bool Intersects(const Vec2& a, const LineString& b) noexcept
 		{
 			const size_t n = b.size();
 			
@@ -381,11 +381,11 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Line, _)
+		//	Intersects(Line, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Line& a, const Line& b) noexcept
+		bool Intersects(const Line& a, const Line& b) noexcept
 		{
 			const Vec2 p = a.start;
 			const Vec2 r = (a.end - a.start);
@@ -466,7 +466,7 @@ namespace s3d
 			return (In01(t) && In01(u));
 		}
 
-		bool Intersect(const Line& a, const Bezier2& b)
+		bool Intersects(const Line& a, const Bezier2& b)
 		{
 			const double a1 = (a.start.y - a.end.y);
 			const double b1 = (a.end.x - a.start.x);
@@ -484,7 +484,7 @@ namespace s3d
 					{
 						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
 
-						if (Intersect(a, intersection))
+						if (Intersects(a, intersection))
 						{
 							return true;
 						}
@@ -495,7 +495,7 @@ namespace s3d
 			return false;
 		}
 
-		bool Intersect(const Line& a, const Bezier3& b)
+		bool Intersects(const Line& a, const Bezier3& b)
 		{
 			const Vec2 p0 = b.p0, p1 = b.p1, p2 = b.p2, p3 = b.p3;
 			const double a1 = (a.start.y - a.end.y);
@@ -518,7 +518,7 @@ namespace s3d
 					{
 						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
 
-						if (Intersect(a, intersection))
+						if (Intersects(a, intersection))
 						{
 							return true;
 						}
@@ -529,37 +529,37 @@ namespace s3d
 			return false;
 		}
 
-		bool Intersect(const Line& a, const Rect& b) noexcept
+		bool Intersects(const Line& a, const Rect& b) noexcept
 		{
-			if (Intersect(a.start, b) || Intersect(a.end, b))
+			if (Intersects(a.start, b) || Intersects(a.end, b))
 			{
 				return true;
 			}
 
 			const Vec2 tl = b.tl(), tr = b.tr(), br = b.br(), bl = b.bl();
 
-			return (Intersect(a, Line{ tl, tr })
-				 || Intersect(a, Line{ tr, br })
-				 || Intersect(a, Line{ br, bl })
-				 || Intersect(a, Line{ bl, tl }));
+			return (Intersects(a, Line{ tl, tr })
+				 || Intersects(a, Line{ tr, br })
+				 || Intersects(a, Line{ br, bl })
+				 || Intersects(a, Line{ bl, tl }));
 		}
 
-		bool Intersect(const Line& a, const RectF& b) noexcept
+		bool Intersects(const Line& a, const RectF& b) noexcept
 		{
-			if (Intersect(a.start, b) || Intersect(a.end, b))
+			if (Intersects(a.start, b) || Intersects(a.end, b))
 			{
 				return true;
 			}
 
 			const Vec2 tl = b.tl(), tr = b.tr(), br = b.br(), bl = b.bl();
 
-			return (Intersect(a, Line{ tl, tr })
-				 || Intersect(a, Line{ tr, br })
-				 || Intersect(a, Line{ br, bl })
-				 || Intersect(a, Line{ bl, tl }));
+			return (Intersects(a, Line{ tl, tr })
+				 || Intersects(a, Line{ tr, br })
+				 || Intersects(a, Line{ br, bl })
+				 || Intersects(a, Line{ bl, tl }));
 		}
 
-		bool Intersect(const Line& a, const Circle& b) noexcept
+		bool Intersects(const Line& a, const Circle& b) noexcept
 		{
 			const Vec2 ab = (a.end - a.start);
 			const Vec2 ac = (b.center - a.start);
@@ -585,7 +585,7 @@ namespace s3d
 		//
 		//	https://github.com/thelonious/kld-intersections/blob/development/lib/Intersection.js
 		//
-		bool Intersect(const Line& a, const Ellipse& b) noexcept
+		bool Intersects(const Line& a, const Ellipse& b) noexcept
 		{
 			const double rx = b.a;
 			const double ry = b.b;
@@ -634,37 +634,37 @@ namespace s3d
 			}
 		}
 
-		bool Intersect(const Line& a, const Triangle& b) noexcept
+		bool Intersects(const Line& a, const Triangle& b) noexcept
 		{
-			if (Intersect(a.start, b) || Intersect(a.end, b))
+			if (Intersects(a.start, b) || Intersects(a.end, b))
 			{
 				return true;
 			}
 
-			return (Intersect(a, Line{ b.p0, b.p1 })
-				 || Intersect(a, Line{ b.p1, b.p2 })
-				 || Intersect(a, Line{ b.p2, b.p0 }));
+			return (Intersects(a, Line{ b.p0, b.p1 })
+				 || Intersects(a, Line{ b.p1, b.p2 })
+				 || Intersects(a, Line{ b.p2, b.p0 }));
 		}
 
-		bool Intersect(const Line& a, const Quad& b) noexcept
+		bool Intersects(const Line& a, const Quad& b) noexcept
 		{
-			if (Intersect(a.start, b) || Intersect(a.end, b))
+			if (Intersects(a.start, b) || Intersects(a.end, b))
 			{
 				return true;
 			}
 
-			return (Intersect(a, Line{ b.p0, b.p1 })
-				 || Intersect(a, Line{ b.p1, b.p2 })
-				 || Intersect(a, Line{ b.p2, b.p3 })
-				 || Intersect(a, Line{ b.p3, b.p0 }));
+			return (Intersects(a, Line{ b.p0, b.p1 })
+				 || Intersects(a, Line{ b.p1, b.p2 })
+				 || Intersects(a, Line{ b.p2, b.p3 })
+				 || Intersects(a, Line{ b.p3, b.p0 }));
 		}
 
-		bool Intersect(const Line& a, const RoundRect& b) noexcept
+		bool Intersects(const Line& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
 		}
 
-		bool Intersect(const Line& a, const SuperEllipse& b) noexcept
+		bool Intersects(const Line& a, const SuperEllipse& b) noexcept
 		{
 			const double ax = Abs(b.axes.x);
 			const double by = Abs(b.axes.y);
@@ -677,23 +677,23 @@ namespace s3d
 			// 線分が点なら点判定
 			if (a.start == a.end)
 			{
-				return Intersect(a.start, b);
+				return Intersects(a.start, b);
 			}
 
 			// AABB
-			if (not Intersect(a, b.boundingRect()))
+			if (not Intersects(a, b.boundingRect()))
 			{
 				return false;
 			}
 
 			// bounding circle
-			if (not Intersect(a, b.boundingCircle()))
+			if (not Intersects(a, b.boundingCircle()))
 			{
 				return false;
 			}
 
 			// 線分の両端が内部にあるか
-			if (Intersect(a.start, b) || Intersect(a.end, b))
+			if (Intersects(a.start, b) || Intersects(a.end, b))
 			{
 				return true;
 			}
@@ -748,16 +748,16 @@ namespace s3d
 			return (Eval(tMin) <= 1.0);
 		}
 
-		bool Intersect(const Line& a, const Polygon& b) noexcept
+		bool Intersects(const Line& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
-		bool Intersect(const Line& a, const MultiPolygon& b) noexcept
+		bool Intersects(const Line& a, const MultiPolygon& b) noexcept
 		{
 			for (const auto& polygon : b)
 			{
-				if (Intersect(a, polygon))
+				if (Intersects(a, polygon))
 				{
 					return true;
 				}
@@ -766,7 +766,7 @@ namespace s3d
 			return false;
 		}
 
-		bool Intersect(const Line& a, const LineString& b) noexcept
+		bool Intersects(const Line& a, const LineString& b) noexcept
 		{
 			const size_t n = b.size();
 
@@ -810,7 +810,7 @@ namespace s3d
 				}
 
 				// 本判定
-				if (Intersect(a, Line{ p0, p1 }))
+				if (Intersects(a, Line{ p0, p1 }))
 				{
 					return true;
 				}
@@ -823,60 +823,60 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Bezier2, _)
+		//	Intersects(Bezier2, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Bezier2& a, const Point& b)
+		bool Intersects(const Bezier2& a, const Point& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Bezier2& a, const Vec2& b)
+		bool Intersects(const Bezier2& a, const Vec2& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Bezier2& a, const Line& b)
+		bool Intersects(const Bezier2& a, const Line& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Bezier2& a, const Bezier2& b)
-		{
-			const RectF aRect = a.computeBoundingRect();
-			const RectF bRect = b.computeBoundingRect();
-
-			if (not Intersect(aRect, bRect))
-			{
-				return false;
-			}
-
-			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
-		}
-
-		bool Intersect(const Bezier2& a, const Bezier3& b)
+		bool Intersects(const Bezier2& a, const Bezier2& b)
 		{
 			const RectF aRect = a.computeBoundingRect();
 			const RectF bRect = b.computeBoundingRect();
 
-			if (not Intersect(aRect, bRect))
+			if (not Intersects(aRect, bRect))
 			{
 				return false;
 			}
 
-			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
+			return Intersects(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
-		bool Intersect(const Bezier2& a, const Rect& b)
+		bool Intersects(const Bezier2& a, const Bezier3& b)
 		{
-			return Intersect(a, RectF{ b });
+			const RectF aRect = a.computeBoundingRect();
+			const RectF bRect = b.computeBoundingRect();
+
+			if (not Intersects(aRect, bRect))
+			{
+				return false;
+			}
+
+			return Intersects(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
-		bool Intersect(const Bezier2& a, const RectF& b)
+		bool Intersects(const Bezier2& a, const Rect& b)
+		{
+			return Intersects(a, RectF{ b });
+		}
+
+		bool Intersects(const Bezier2& a, const RectF& b)
 		{
 			// 端点が内側にある場合
-			if (Intersect(a.p0, b) || Intersect(a.p2, b))
+			if (Intersects(a.p0, b) || Intersects(a.p2, b))
 			{
 				return true;
 			}
@@ -884,7 +884,7 @@ namespace s3d
 			// 制御点の AABB と矩形が交差しない場合は交差しない
 			const RectF bezierAABB = a.controlPointsBoundingRect();
 			
-			if (not Intersect(bezierAABB, b))
+			if (not Intersects(bezierAABB, b))
 			{
 				return false;
 			}
@@ -893,13 +893,13 @@ namespace s3d
 			for (const Line& line : { b.top(), b.right(), b.bottom(), b.left() })
 			{
 				// 線分の AABB と制御点の AABB が交差しない場合は交差しない
-				if (not Intersect(bezierAABB, line))
+				if (not Intersects(bezierAABB, line))
 				{
 					continue;
 				}
 
 				// 線分とベジェ曲線の交差判定（計算コスト高）
-				if (Intersect(line, a))
+				if (Intersects(line, a))
 				{
 					return true;
 				}
@@ -908,20 +908,20 @@ namespace s3d
 			return false;
 		}
 
-		bool Intersect(const Bezier2& a, const Circle& b)
+		bool Intersects(const Bezier2& a, const Circle& b)
 		{
 			// 制御点の AABB が交差しない場合は交差しない
 			{
 				const RectF bezierAABB = a.controlPointsBoundingRect();
 
-				if (not Intersect(bezierAABB, b))
+				if (not Intersects(bezierAABB, b))
 				{
 					return false;
 				}
 			}
 
 			// 端点が円の内側にあれば交差
-			if (Intersect(a.p0, b) || Intersect(a.p2, b))
+			if (Intersects(a.p0, b) || Intersects(a.p2, b))
 			{
 				return true;
 			}
@@ -930,20 +930,20 @@ namespace s3d
 			return (closestPoint.distanceFromSq(b.center) <= (b.r * b.r));
 		}
 
-		bool Intersect(const Bezier2& a, const Ellipse& b)
+		bool Intersects(const Bezier2& a, const Ellipse& b)
 		{
 			// 制御点の AABB が交差しない場合は交差しない
 			{
 				const RectF bezierAABB = a.controlPointsBoundingRect();
 
-				if (not Intersect(bezierAABB, b))
+				if (not Intersects(bezierAABB, b))
 				{
 					return false;
 				}
 			}
 
 			// 端点のいずれかが楕円の内側にあれば交差
-			if (Intersect(a.p0, b) || Intersect(a.p2, b))
+			if (Intersects(a.p0, b) || Intersects(a.p2, b))
 			{
 				return true;
 			}
@@ -960,173 +960,173 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Bezier3, _)
+		//	Intersects(Bezier3, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Bezier3& a, const Point& b)
+		bool Intersects(const Bezier3& a, const Point& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Bezier3& a, const Vec2& b)
+		bool Intersects(const Bezier3& a, const Vec2& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Bezier3& a, const Line& b)
+		bool Intersects(const Bezier3& a, const Line& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Bezier3& a, const Bezier2& b)
+		bool Intersects(const Bezier3& a, const Bezier2& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Bezier3& a, const Bezier3& b)
+		bool Intersects(const Bezier3& a, const Bezier3& b)
 		{
 			const RectF aRect = a.computeBoundingRect();
 			const RectF bRect = b.computeBoundingRect();
 
-			if (not Intersect(aRect, bRect))
+			if (not Intersects(aRect, bRect))
 			{
 				return false;
 			}
 
-			return Intersect(a.toLineStringAdaptive(), b.toLineStringAdaptive());
+			return Intersects(a.toLineStringAdaptive(), b.toLineStringAdaptive());
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Rect, _)
+		//	Intersects(Rect, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Rect& a, const Line& b) noexcept
+		bool Intersects(const Rect& a, const Line& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Rect& a, const Bezier2& b)
+		bool Intersects(const Rect& a, const Bezier2& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Rect& a, const Triangle& b) noexcept
+		bool Intersects(const Rect& a, const Triangle& b) noexcept
 		{
-			return (Intersect(a.triangleAtIndex(0), b)
-				 || Intersect(a.triangleAtIndex(1), b));
+			return (Intersects(a.triangleAtIndex(0), b)
+				 || Intersects(a.triangleAtIndex(1), b));
 		}
 
-		bool Intersect(const Rect& a, const Quad& b) noexcept
+		bool Intersects(const Rect& a, const Quad& b) noexcept
 		{
-			return (Intersect(a, b.triangleAtIndex(0))
-				 || Intersect(a, b.triangleAtIndex(1)));
+			return (Intersects(a, b.triangleAtIndex(0))
+				 || Intersects(a, b.triangleAtIndex(1)));
 		}
 
-		bool Intersect(const Rect& a, const RoundRect& b) noexcept
+		bool Intersects(const Rect& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
 		}
 
-		bool Intersect(const Rect& a, const Polygon& b) noexcept
+		bool Intersects(const Rect& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(RectF, _)
+		//	Intersects(RectF, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const RectF& a, const Line& b) noexcept
+		bool Intersects(const RectF& a, const Line& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RectF& a, const Bezier2& b)
+		bool Intersects(const RectF& a, const Bezier2& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RectF& a, const Triangle& b) noexcept
+		bool Intersects(const RectF& a, const Triangle& b) noexcept
 		{
-			return (Intersect(a.triangleAtIndex(0), b)
-				|| Intersect(a.triangleAtIndex(1), b));
+			return (Intersects(a.triangleAtIndex(0), b)
+				|| Intersects(a.triangleAtIndex(1), b));
 		}
 
-		bool Intersect(const RectF& a, const Quad& b) noexcept
+		bool Intersects(const RectF& a, const Quad& b) noexcept
 		{
-			return (Intersect(a, b.triangleAtIndex(0))
-				|| Intersect(a, b.triangleAtIndex(1)));
+			return (Intersects(a, b.triangleAtIndex(0))
+				|| Intersects(a, b.triangleAtIndex(1)));
 		}
 
-		bool Intersect(const RectF& a, const RoundRect& b) noexcept
+		bool Intersects(const RectF& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
 		}
 
-		bool Intersect(const RectF& a, const Polygon& b) noexcept
+		bool Intersects(const RectF& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Circle, _)
+		//	Intersects(Circle, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Circle& a, const Line& b) noexcept
+		bool Intersects(const Circle& a, const Line& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Circle& a, const Bezier2& b)
+		bool Intersects(const Circle& a, const Bezier2& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Circle& a, const Triangle& b) noexcept
+		bool Intersects(const Circle& a, const Triangle& b) noexcept
 		{
 			return CircleTriangleIntersection(a, b);
 		}
 
-		bool Intersect(const Circle& a, const Quad& b) noexcept
+		bool Intersects(const Circle& a, const Quad& b) noexcept
 		{
 			return (CircleTriangleIntersection(a, b.triangleAtIndex(0))
 				 || CircleTriangleIntersection(a, b.triangleAtIndex(1)));
 		}
 
-		bool Intersect(const Circle& a, const RoundRect& b) noexcept
+		bool Intersects(const Circle& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
 		}
 
-		bool Intersect(const Circle& a, const Polygon& b) noexcept
+		bool Intersects(const Circle& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Ellipse, _)
+		//	Intersects(Ellipse, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Ellipse& a, const Line& b) noexcept
+		bool Intersects(const Ellipse& a, const Line& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Ellipse& a, const Bezier2& b)
+		bool Intersects(const Ellipse& a, const Bezier2& b)
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Ellipse& a, const Triangle& b) noexcept
+		bool Intersects(const Ellipse& a, const Triangle& b) noexcept
 		{
 			Triangle triangle = b.movedBy(-a.center);
 
@@ -1137,10 +1137,10 @@ namespace s3d
 				triangle.vertexAtIndex(i).y *= v;
 			}
 
-			return Intersect(Circle{ a.a }, triangle);
+			return Intersects(Circle{ a.a }, triangle);
 		}
 
-		bool Intersect(const Ellipse& a, const Quad& b) noexcept
+		bool Intersects(const Ellipse& a, const Quad& b) noexcept
 		{
 			Quad quad = b.movedBy(-a.center);
 
@@ -1151,46 +1151,46 @@ namespace s3d
 				quad.vertexAtIndex(i).y *= v;
 			}
 
-			return Intersect(Circle{ a.a }, quad);
+			return Intersects(Circle{ a.a }, quad);
 		}
 
-		bool Intersect(const Ellipse& a, const Polygon& b) noexcept
+		bool Intersects(const Ellipse& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Triangle, _)
+		//	Intersects(Triangle, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Triangle& a, const Line& b) noexcept
+		bool Intersects(const Triangle& a, const Line& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Triangle& a, const Rect& b) noexcept
+		bool Intersects(const Triangle& a, const Rect& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Triangle& a, const RectF& b) noexcept
+		bool Intersects(const Triangle& a, const RectF& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Triangle& a, const Circle& b) noexcept
+		bool Intersects(const Triangle& a, const Circle& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Triangle& a, const Ellipse& b) noexcept
+		bool Intersects(const Triangle& a, const Ellipse& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Triangle& a, const Triangle& b) noexcept
+		bool Intersects(const Triangle& a, const Triangle& b) noexcept
 		{
 			auto Project = [](const Triangle& t, const Vec2& axis) noexcept -> std::pair<double, double>
 			{
@@ -1253,123 +1253,123 @@ namespace s3d
 			return (TestAxesFrom(a, b) && TestAxesFrom(b, a));
 		}
 
-		bool Intersect(const Triangle& a, const Quad& b) noexcept
+		bool Intersects(const Triangle& a, const Quad& b) noexcept
 		{
-			return (Intersect(a, b.triangleAtIndex(0))
-				 || Intersect(a, b.triangleAtIndex(1)));
+			return (Intersects(a, b.triangleAtIndex(0))
+				 || Intersects(a, b.triangleAtIndex(1)));
 		}
 
-		bool Intersect(const Triangle& a, const RoundRect& b) noexcept
+		bool Intersects(const Triangle& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
 		}
 
-		bool Intersect(const Triangle& a, const Polygon& b) noexcept
+		bool Intersects(const Triangle& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Quad, _)
+		//	Intersects(Quad, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Quad& a, const Line& b) noexcept
+		bool Intersects(const Quad& a, const Line& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Quad& a, const Rect& b) noexcept
+		bool Intersects(const Quad& a, const Rect& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Quad& a, const RectF& b) noexcept
+		bool Intersects(const Quad& a, const RectF& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Quad& a, const Circle& b) noexcept
+		bool Intersects(const Quad& a, const Circle& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Quad& a, const Ellipse& b) noexcept
+		bool Intersects(const Quad& a, const Ellipse& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Quad& a, const Triangle& b) noexcept
+		bool Intersects(const Quad& a, const Triangle& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Quad& a, const Quad& b) noexcept
+		bool Intersects(const Quad& a, const Quad& b) noexcept
 		{
-			return (Intersect(a.triangleAtIndex(0), b)
-				 || Intersect(a.triangleAtIndex(1), b));
+			return (Intersects(a.triangleAtIndex(0), b)
+				 || Intersects(a.triangleAtIndex(1), b));
 		}
 
-		bool Intersect(const Quad& a, const RoundRect& b) noexcept
+		bool Intersects(const Quad& a, const RoundRect& b) noexcept
 		{
 			return RoundRectParts{ b }.intersects(a);
 		}
 
-		bool Intersect(const Quad& a, const Polygon& b) noexcept
+		bool Intersects(const Quad& a, const Polygon& b) noexcept
 		{
 			return b.intersects(a);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(RoundRect, _)
+		//	Intersects(RoundRect, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const RoundRect& a, const Point& b) noexcept
+		bool Intersects(const RoundRect& a, const Point& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const Vec2& b) noexcept
+		bool Intersects(const RoundRect& a, const Vec2& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const Line& b) noexcept
+		bool Intersects(const RoundRect& a, const Line& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const Rect& b) noexcept
+		bool Intersects(const RoundRect& a, const Rect& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const RectF& b) noexcept
+		bool Intersects(const RoundRect& a, const RectF& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const Circle& b) noexcept
+		bool Intersects(const RoundRect& a, const Circle& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const Triangle& b) noexcept
+		bool Intersects(const RoundRect& a, const Triangle& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const Quad& b) noexcept
+		bool Intersects(const RoundRect& a, const Quad& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const RoundRect& a, const RoundRect& b) noexcept
+		bool Intersects(const RoundRect& a, const RoundRect& b) noexcept
 		{
-			if (not Intersect(a.rect, b.rect))
+			if (not Intersects(a.rect, b.rect))
 			{
 				return false;
 			}
@@ -1385,14 +1385,14 @@ namespace s3d
 				 || partsA.intersects(partsB.circleBL));
 		}
 
-		bool Intersect(const RoundRect& a, const Polygon& b) noexcept
+		bool Intersects(const RoundRect& a, const Polygon& b) noexcept
 		{
 			if (b.isEmpty())
 			{
 				return false;
 			}
 
-			if (not Intersect(a, b.boundingRect()))
+			if (not Intersects(a, b.boundingRect()))
 			{
 				return false;
 			}
@@ -1414,79 +1414,79 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(Polygon, _)
+		//	Intersects(Polygon, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const Polygon& a, const Point& b) noexcept
+		bool Intersects(const Polygon& a, const Point& b) noexcept
 		{
 			return a.intersects(Vec2{ b });
 		}
 
-		bool Intersect(const Polygon& a, const Vec2& b) noexcept
+		bool Intersects(const Polygon& a, const Vec2& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const Line& b) noexcept
+		bool Intersects(const Polygon& a, const Line& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const Rect& b) noexcept
+		bool Intersects(const Polygon& a, const Rect& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const RectF& b) noexcept
+		bool Intersects(const Polygon& a, const RectF& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const Circle& b) noexcept
+		bool Intersects(const Polygon& a, const Circle& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const Ellipse& b) noexcept
+		bool Intersects(const Polygon& a, const Ellipse& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const Triangle& b) noexcept
+		bool Intersects(const Polygon& a, const Triangle& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const Quad& b) noexcept
+		bool Intersects(const Polygon& a, const Quad& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
-		bool Intersect(const Polygon& a, const RoundRect& b) noexcept
+		bool Intersects(const Polygon& a, const RoundRect& b) noexcept
 		{
-			return Intersect(b, a);
+			return Intersects(b, a);
 		}
 
-		bool Intersect(const Polygon& a, const Polygon& b) noexcept
+		bool Intersects(const Polygon& a, const Polygon& b) noexcept
 		{
 			return a.intersects(b);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(MultiPolygon, _)
+		//	Intersects(MultiPolygon, _)
 		//
 		////////////////////////////////////////////////////////////////
 
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersect(LineString, _)
+		//	Intersects(LineString, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersect(const LineString& a, const LineString& b) noexcept
+		bool Intersects(const LineString& a, const LineString& b) noexcept
 		{
 			const size_t an = a.size();
 			const size_t bn = b.size();
@@ -1572,7 +1572,7 @@ namespace s3d
 					}
 
 					// 本判定（Line vs Line）
-					if (Intersect(outerSeg, Line{ i0, i1 }))
+					if (Intersects(outerSeg, Line{ i0, i1 }))
 					{
 						return true;
 					}
