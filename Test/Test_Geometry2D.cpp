@@ -230,6 +230,18 @@ TEST_CASE("Geometry2D.Intersects.Line_Bezier")
 		CHECK(not Geometry2D::Intersects(Line{ Vec2{ 11, 0 }, Vec2{ 12, 0 } }, curve));
 	}
 
+	// Bezier2 が直線に退化し、交点が線分境界で丸められるケースの regression。
+	{
+		const Bezier2 curve{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ 11, 5 } };
+
+		CHECK(Geometry2D::Intersects(Line{ Vec2{ 0, 0 }, Vec2{ 0, 10 } }, curve));
+		CHECK(Geometry2D::Intersects(curve, Line{ Vec2{ 0, 0 }, Vec2{ 0, 10 } }));
+		CHECK(Geometry2D::Intersects(Line{ Vec2{ 10, 0 }, Vec2{ 10, 10 } }, curve));
+		CHECK(Geometry2D::Intersects(curve, Line{ Vec2{ 10, 0 }, Vec2{ 10, 10 } }));
+		CHECK(not Geometry2D::Intersects(Line{ Vec2{ 12, 0 }, Vec2{ 12, 10 } }, curve));
+		CHECK(not Geometry2D::Intersects(curve, Line{ Vec2{ 12, 0 }, Vec2{ 12, 10 } }));
+	}
+
 	{
 		const Bezier3 curve{ Vec2{ 0, 0 }, Vec2{ 3, 9 }, Vec2{ 7, 9 }, Vec2{ 10, 0 } };
 
@@ -244,6 +256,18 @@ TEST_CASE("Geometry2D.Intersects.Line_Bezier")
 
 		CHECK(Geometry2D::Intersects(Line{ Vec2{ 3, 0 }, Vec2{ 7, 0 } }, curve));
 		CHECK(not Geometry2D::Intersects(Line{ Vec2{ 11, 0 }, Vec2{ 12, 0 } }, curve));
+	}
+
+	// Bezier3 が直線に退化し、交点が線分境界で丸められるケースの regression。
+	{
+		const Bezier3 curve{ Vec2{ -1, 5 }, Vec2{ 3, 5 }, Vec2{ 7, 5 }, Vec2{ 11, 5 } };
+
+		CHECK(Geometry2D::Intersects(Line{ Vec2{ 0, 0 }, Vec2{ 0, 10 } }, curve));
+		CHECK(Geometry2D::Intersects(curve, Line{ Vec2{ 0, 0 }, Vec2{ 0, 10 } }));
+		CHECK(Geometry2D::Intersects(Line{ Vec2{ 10, 0 }, Vec2{ 10, 10 } }, curve));
+		CHECK(Geometry2D::Intersects(curve, Line{ Vec2{ 10, 0 }, Vec2{ 10, 10 } }));
+		CHECK(not Geometry2D::Intersects(Line{ Vec2{ 12, 0 }, Vec2{ 12, 10 } }, curve));
+		CHECK(not Geometry2D::Intersects(curve, Line{ Vec2{ 12, 0 }, Vec2{ 12, 10 } }));
 	}
 }
 
@@ -597,4 +621,189 @@ TEST_CASE("Geometry2D.Intersects.Point_EmptyPolygonContainers")
 	CHECK(not Geometry2D::Intersects(polygon, Line{ Vec2{ -1, 0 }, Vec2{ 1, 0 } }));
 	CHECK(not Geometry2D::Intersects(Line{ Vec2{ -1, 0 }, Vec2{ 1, 0 } }, multiPolygon));
 	CHECK(not Geometry2D::Intersects(multiPolygon, Line{ Vec2{ -1, 0 }, Vec2{ 1, 0 } }));
+}
+
+
+// Bezier2 と Rect / RectF は、内部通過、境界接触、empty、片側ゼロの線分矩形を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier2_Rect")
+{
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+		const Bezier2 crossing{ Vec2{ -5, 5 }, Vec2{ 5, 5 }, Vec2{ 15, 5 } };
+		const Bezier2 inside{ Vec2{ 2, 2 }, Vec2{ 5, 4 }, Vec2{ 8, 2 } };
+		const Bezier2 outside{ Vec2{ -5, -1 }, Vec2{ 5, -1 }, Vec2{ 15, -1 } };
+
+		CHECK(Geometry2D::Intersects(crossing, rect));
+		CHECK(Geometry2D::Intersects(rect, crossing));
+		CHECK(Geometry2D::Intersects(inside, rect));
+		CHECK(not Geometry2D::Intersects(outside, rect));
+	}
+
+	{
+		const Rect rect{ 0, 0, 10, 10 };
+		const RectF empty{ 0, 0, 0, 0 };
+		const RectF verticalSegment{ 0, 0, 0, 10 };
+		const RectF horizontalSegment{ 0, 0, 10, 0 };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -5, 5 }, Vec2{ 5, 5 }, Vec2{ 15, 5 } }, rect));
+		CHECK(Geometry2D::Intersects(rect, Bezier2{ Vec2{ -5, 5 }, Vec2{ 5, 5 }, Vec2{ 15, 5 } }));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -1, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 0 } }, empty));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 5 }, Vec2{ 0, 5 }, Vec2{ 1, 5 } }, verticalSegment));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -1, 11 }, Vec2{ 0, 11 }, Vec2{ 1, 11 } }, verticalSegment));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 5, -1 }, Vec2{ 5, 0 }, Vec2{ 5, 1 } }, horizontalSegment));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 11, -1 }, Vec2{ 11, 0 }, Vec2{ 11, 1 } }, horizontalSegment));
+	}
+}
+
+// Bezier2 と Circle / Ellipse は、最短距離判定、接線、empty、Ellipse 退化線分を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier2_RoundShapes")
+{
+	{
+		const Circle circle{ Vec2{ 0, 0 }, 5 };
+		const Circle empty{ Vec2{ 0, 0 }, 0 };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -10, 0 }, Vec2{ 0, 0 }, Vec2{ 10, 0 } }, circle));
+		CHECK(Geometry2D::Intersects(circle, Bezier2{ Vec2{ -10, 0 }, Vec2{ 0, 0 }, Vec2{ 10, 0 } }));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -10, 5 }, Vec2{ 0, 5 }, Vec2{ 10, 5 } }, circle));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 0 }, Vec2{ 0, 1 }, Vec2{ 1, 0 } }, circle));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 1, 1 } }, circle));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -10, 6 }, Vec2{ 0, 6 }, Vec2{ 10, 6 } }, circle));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } }, empty));
+	}
+
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 6, 3 };
+		const Ellipse empty{ Vec2{ 0, 0 }, 0, 0 };
+		const Ellipse verticalSegment{ Vec2{ 0, 0 }, 0, 5 };
+		const Ellipse horizontalSegment{ Vec2{ 0, 0 }, 5, 0 };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -10, 0 }, Vec2{ 0, 0 }, Vec2{ 10, 0 } }, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, Bezier2{ Vec2{ -10, 0 }, Vec2{ 0, 0 }, Vec2{ 10, 0 } }));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -10, 3 }, Vec2{ 0, 3 }, Vec2{ 10, 3 } }, ellipse));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -10, 4 }, Vec2{ 0, 4 }, Vec2{ 10, 4 } }, ellipse));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } }, empty));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 2 }, Vec2{ 0, 2 }, Vec2{ 1, 2 } }, verticalSegment));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -1, 6 }, Vec2{ 0, 6 }, Vec2{ 1, 6 } }, verticalSegment));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 2, -1 }, Vec2{ 2, 0 }, Vec2{ 2, 1 } }, horizontalSegment));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 6, -1 }, Vec2{ 6, 0 }, Vec2{ 6, 1 } }, horizontalSegment));
+	}
+}
+
+// Bezier2 と Triangle / Quad は、内部通過、境界接触、仕様で許可された単純な退化を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier2_PolygonalShapes")
+{
+	{
+		const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };
+		const Triangle segmentTriangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 5, 0 } };
+		const Triangle pointTriangle{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 5 }, Vec2{ 2, 5 }, Vec2{ 6, 5 } }, triangle));
+		CHECK(Geometry2D::Intersects(triangle, Bezier2{ Vec2{ -1, 5 }, Vec2{ 2, 5 }, Vec2{ 6, 5 } }));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 0, 0 }, Vec2{ 5, 0 }, Vec2{ 10, 0 } }, triangle));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 8, 8 }, Vec2{ 10, 10 }, Vec2{ 12, 12 } }, triangle));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 5, -1 }, Vec2{ 5, 0 }, Vec2{ 5, 1 } }, segmentTriangle));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 2, 4 }, Vec2{ 3, 4 }, Vec2{ 4, 4 } }, pointTriangle));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 2, 5 }, Vec2{ 3, 5 }, Vec2{ 4, 5 } }, pointTriangle));
+	}
+
+	{
+		const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+		const Quad segmentQuad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 0 } };
+		const Quad pointQuad{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ 11, 5 } }, quad));
+		CHECK(Geometry2D::Intersects(quad, Bezier2{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ 11, 5 } }));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 0, 0 }, Vec2{ 5, 0 }, Vec2{ 10, 0 } }, quad));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -1, -1 }, Vec2{ -2, -2 }, Vec2{ -3, -3 } }, quad));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 5, -1 }, Vec2{ 5, 0 }, Vec2{ 5, 1 } }, segmentQuad));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 2, 4 }, Vec2{ 3, 4 }, Vec2{ 4, 4 } }, pointQuad));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 2, 5 }, Vec2{ 3, 5 }, Vec2{ 4, 5 } }, pointQuad));
+	}
+}
+
+// 空の Polygon / MultiPolygon は、Bezier2 と交差しないことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier2_EmptyPolygonContainers")
+{
+	const Bezier2 curve{ Vec2{ -1, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 0 } };
+	const Polygon polygon;
+	const MultiPolygon multiPolygon;
+
+	CHECK(not Geometry2D::Intersects(curve, polygon));
+	CHECK(not Geometry2D::Intersects(polygon, curve));
+	CHECK(not Geometry2D::Intersects(curve, multiPolygon));
+	CHECK(not Geometry2D::Intersects(multiPolygon, curve));
+}
+
+
+// Bezier2 と SuperEllipse は、n == 2 の Ellipse 委譲、退化線分、近似判定を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier2_SuperEllipse")
+{
+	{
+		const SuperEllipse superEllipse{ Vec2{ 0, 0 }, SizeF{ 6, 3 }, 4.0 };
+		const SuperEllipse empty{ Vec2{ 0, 0 }, SizeF{ 0, 0 }, 4.0 };
+		const SuperEllipse verticalSegment{ Vec2{ 0, 0 }, SizeF{ 0, 5 }, 4.0 };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -10, 0 }, Vec2{ 0, 0 }, Vec2{ 10, 0 } }, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, Bezier2{ Vec2{ -10, 0 }, Vec2{ 0, 0 }, Vec2{ 10, 0 } }));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 1, 1 }, Vec2{ 2, 1 }, Vec2{ 3, 1 } }, superEllipse));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -10, 4 }, Vec2{ 0, 4 }, Vec2{ 10, 4 } }, superEllipse));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } }, empty));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 2 }, Vec2{ 0, 2 }, Vec2{ 1, 2 } }, verticalSegment));
+	}
+
+	{
+		const SuperEllipse ellipseEquivalent{ Vec2{ 0, 0 }, SizeF{ 6, 3 }, 2.0 };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -10, 3 }, Vec2{ 0, 3 }, Vec2{ 10, 3 } }, ellipseEquivalent));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -10, 4 }, Vec2{ 0, 4 }, Vec2{ 10, 4 } }, ellipseEquivalent));
+	}
+}
+
+// Bezier2 と RoundRect は、内部通過、境界接触、empty、RectF 退化を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier2_RoundRect")
+{
+	{
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2 };
+
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ 11, 5 } }, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, Bezier2{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ 11, 5 } }));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 2, 2 }, Vec2{ 5, 5 }, Vec2{ 8, 8 } }, roundRect));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ 0, 5 }, Vec2{ 0, 5 }, Vec2{ 0, 5 } }, roundRect));
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -5, -1 }, Vec2{ 5, -1 }, Vec2{ 15, -1 } }, roundRect));
+	}
+
+	{
+		const RoundRect empty{ RectF{ 0, 0, 0, 0 }, 2 };
+		const RoundRect verticalSegment{ RectF{ 0, 0, 0, 10 }, 2 };
+		const RoundRect squareCorners{ RectF{ 0, 0, 10, 10 }, 0 };
+
+		CHECK(not Geometry2D::Intersects(Bezier2{ Vec2{ -1, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 0 } }, empty));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 5 }, Vec2{ 0, 5 }, Vec2{ 1, 5 } }, verticalSegment));
+		CHECK(Geometry2D::Intersects(Bezier2{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ 11, 5 } }, squareCorners));
+	}
+}
+
+// Bezier2 と Bezier2 / Bezier3 は、近似線分化と既存 Line x Bezier kernel による交差判定を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier2_Curves")
+{
+	{
+		const Bezier2 arch{ Vec2{ 0, 0 }, Vec2{ 5, 10 }, Vec2{ 10, 0 } };
+		const Bezier2 vertical{ Vec2{ 5, -1 }, Vec2{ 5, 5 }, Vec2{ 5, 11 } };
+		const Bezier2 outside{ Vec2{ 20, -1 }, Vec2{ 20, 5 }, Vec2{ 20, 11 } };
+
+		CHECK(Geometry2D::Intersects(arch, vertical));
+		CHECK(Geometry2D::Intersects(vertical, arch));
+		CHECK(Geometry2D::Intersects(arch, arch));
+		CHECK(not Geometry2D::Intersects(arch, outside));
+	}
+
+	{
+		const Bezier2 arch{ Vec2{ 0, 0 }, Vec2{ 5, 10 }, Vec2{ 10, 0 } };
+		const Bezier3 vertical{ Vec2{ 5, -1 }, Vec2{ 5, 2 }, Vec2{ 5, 8 }, Vec2{ 5, 11 } };
+		const Bezier3 outside{ Vec2{ 20, -1 }, Vec2{ 20, 2 }, Vec2{ 20, 8 }, Vec2{ 20, 11 } };
+
+		CHECK(Geometry2D::Intersects(arch, vertical));
+		CHECK(Geometry2D::Intersects(vertical, arch));
+		CHECK(not Geometry2D::Intersects(arch, outside));
+	}
 }
