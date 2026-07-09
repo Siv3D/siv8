@@ -870,59 +870,59 @@ namespace s3d
 		[[nodiscard]]
 		bool intersects(const Shape2DType& other) const;
 
-		/// @brief 点と交差しているかを返します。
-		/// @param other 点
-		/// @return 点と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Vec2& other) const;
+		///// @brief 点と交差しているかを返します。
+		///// @param other 点
+		///// @return 点と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Vec2& other) const;
 
-		/// @brief 線分と交差しているかを返します。
-		/// @param other 線分
-		/// @return 線分と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Line& other) const;
+		///// @brief 線分と交差しているかを返します。
+		///// @param other 線分
+		///// @return 線分と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Line& other) const;
 
-		/// @brief 長方形と交差しているかを返します。
-		/// @param other 長方形
-		/// @return 長方形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Rect& other) const;
+		///// @brief 長方形と交差しているかを返します。
+		///// @param other 長方形
+		///// @return 長方形と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Rect& other) const;
 
-		/// @brief 長方形と交差しているかを返します。
-		/// @param other 長方形
-		/// @return 長方形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const RectF& other) const;
+		///// @brief 長方形と交差しているかを返します。
+		///// @param other 長方形
+		///// @return 長方形と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const RectF& other) const;
 
-		/// @brief 円と交差しているかを返します。
-		/// @param other 円
-		/// @return 円と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Circle& other) const;
+		///// @brief 円と交差しているかを返します。
+		///// @param other 円
+		///// @return 円と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Circle& other) const;
 
-		/// @brief 楕円と交差しているかを返します。
-		/// @param other 楕円
-		/// @return 楕円と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Ellipse& other) const;
+		///// @brief 楕円と交差しているかを返します。
+		///// @param other 楕円
+		///// @return 楕円と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Ellipse& other) const;
 
-		/// @brief 三角形と交差しているかを返します。
-		/// @param other 三角形
-		/// @return 三角形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Triangle& other) const;
+		///// @brief 三角形と交差しているかを返します。
+		///// @param other 三角形
+		///// @return 三角形と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Triangle& other) const;
 
-		/// @brief 四角形と交差しているかを返します。
-		/// @param other 四角形
-		/// @return 四角形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Quad& other) const;
+		///// @brief 四角形と交差しているかを返します。
+		///// @param other 四角形
+		///// @return 四角形と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Quad& other) const;
 
-		/// @brief 多角形と交差しているかを返します。
-		/// @param other 多角形
-		/// @return 多角形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Polygon& other) const;
+		///// @brief 多角形と交差しているかを返します。
+		///// @param other 多角形
+		///// @return 多角形と交差している場合 true, それ以外の場合は false
+		//[[nodiscard]]
+		//bool intersects(const Polygon& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -25,6 +25,9 @@ namespace s3d
 		constexpr bool Intersects(const Point& a, const Line& b) noexcept;
 
 		[[nodiscard]]
+		bool Intersects(const Point& a, const LineString& b) noexcept;
+
+		[[nodiscard]]
 		bool Intersects(const Point& a, const Bezier2& b);
 
 		[[nodiscard]]
@@ -43,25 +46,22 @@ namespace s3d
 		constexpr bool Intersects(const Point& a, const Ellipse& b) noexcept;
 
 		[[nodiscard]]
+		bool Intersects(const Point& a, const SuperEllipse& b) noexcept;
+
+		[[nodiscard]]
 		constexpr bool Intersects(const Point& a, const Triangle& b) noexcept;
 
 		[[nodiscard]]
 		constexpr bool Intersects(const Point& a, const Quad& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersects(const Point& a, const RoundRect& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const SuperEllipse& b) noexcept;
+		constexpr bool Intersects(const Point& a, const RoundRect& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersects(const Point& a, const Polygon& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersects(const Point& a, const MultiPolygon& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const LineString& b) noexcept;
 	}
 
 	////////////////////////////////////////////////////////////////

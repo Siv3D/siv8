@@ -274,6 +274,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PoissonDiskSampler2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonHolesView.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\PolynomialRoots.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolynomialSolver.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PowerStatus.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />

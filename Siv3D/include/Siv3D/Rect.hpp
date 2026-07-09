@@ -992,8 +992,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 長方形が大きさを持っているかを返します。
-		/// @return 長方形が大きさを持っている場合 true, それ以外の場合は false
+		/// @brief 長方形が面積を持っているかを返します。
+		/// @return 長方形が面積を持っている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool hasArea() const noexcept;
 

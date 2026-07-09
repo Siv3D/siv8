@@ -20,30 +20,73 @@ namespace s3d
 {
 	namespace detail
 	{
-		//
-		//	http://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
-		//
+		inline constexpr PointContainmentOptions ConvexClockwise{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
+		
 		[[nodiscard]]
-		constexpr double DistanceSq(const Vec2& start, const Vec2& end, const Vec2& p) noexcept
+		constexpr bool BetweenClosed(const double a, const double x, const double b) noexcept
 		{
-			const double l2 = start.distanceFromSq(end);
-
-			if (l2 == 0.0)
-			{
-				return start.distanceFromSq(p);
-			}
-
-			const double t = Max(0.0, Min(1.0, (p - start).dot(end - start) / l2));
-
-			const Vec2 projection = (start + (end - start) * t);
-
-			return p.distanceFromSq(projection);
+			return (a <= b)
+				? ((a <= x) && (x <= b))
+				: ((b <= x) && (x <= a));
 		}
 
 		[[nodiscard]]
-		constexpr double Sign(const Vec2& p1, const Vec2& p2, const Vec2& p3) noexcept
+		constexpr bool OppositeSigns(const double a, const double b) noexcept
 		{
-			return ((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y));
+			return (((a < 0.0) && (0.0 < b))
+				|| ((b < 0.0) && (0.0 < a)));
+		}
+
+		[[nodiscard]]
+		constexpr bool UpdateLineClipInterval(const double p, const double d, const double min, const double max, double& t0, double& t1) noexcept
+		{
+			if (d == 0.0)
+			{
+				return ((min <= p) && (p <= max));
+			}
+
+			double a = ((min - p) / d);
+			double b = ((max - p) / d);
+
+			if (b < a)
+			{
+				const double t = a;
+				a = b;
+				b = t;
+			}
+
+			t0 = Max(t0, a);
+			t1 = Min(t1, b);
+
+			return (t0 <= t1);
+		}
+
+		[[nodiscard]]
+		constexpr bool SegmentIntersectsDiskBox(const Line& segment, const Vec2& center, const double r, const double left, const double top, const double right, const double bottom) noexcept
+		{
+			const Vec2 d = (segment.end - segment.start);
+			double t0 = 0.0;
+			double t1 = 1.0;
+
+			if ((not UpdateLineClipInterval(segment.start.x, d.x, left, right, t0, t1))
+				|| (not UpdateLineClipInterval(segment.start.y, d.y, top, bottom, t0, t1)))
+			{
+				return false;
+			}
+
+			const double lengthSq = d.dot(d);
+
+			if (lengthSq == 0.0)
+			{
+				const Vec2 v = (segment.start - center);
+				return (v.dot(v) <= (r * r));
+			}
+
+			double t = ((center - segment.start).dot(d) / lengthSq);
+			t = Clamp(t, t0, t1);
+
+			const Vec2 v = ((segment.start + d * t) - center);
+			return (v.dot(v) <= (r * r));
 		}
 	}
 
@@ -55,66 +98,54 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Point& a, const Point& b) noexcept
+		constexpr bool Intersects(const Point& p1, const Point& p2) noexcept
 		{
-			return (a == b);
+			return (p1 == p2);
 		}
 
-		constexpr bool Intersects(const Point& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Point& p1, const Vec2& p2) noexcept
 		{
-			return (b.distanceFromSq(a) < 1.0);
+			return (Vec2{ p1 } == p2);
 		}
 
-		constexpr bool Intersects(const Point& a, const Line& b) noexcept
+		constexpr bool Intersects(const Point& p, const Line& segment) noexcept
 		{
-			return (detail::DistanceSq(b.start, b.end, a) < 1.0);
+			return Intersects(Vec2{ p }, segment);
 		}
 
-		constexpr bool Intersects(const Point& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Point& p, const Rect& rect) noexcept
 		{
-			return ((b.pos.x <= a.x)
-				 && (a.x < (b.pos.x + b.size.x))
-				 && (b.pos.y <= a.y)
-				 && (a.y < (b.pos.y + b.size.y)));
+			return Intersects(Vec2{ p }, RectF{ rect });
 		}
 
-		constexpr bool Intersects(const Point& a, const RectF& b) noexcept
+		constexpr bool Intersects(const Point& p, const RectF& rect) noexcept
 		{
-			return ((b.pos.x <= a.x)
-				 && (a.x < (b.pos.x + b.size.x))
-				 && (b.pos.y <= a.y)
-				 && (a.y < (b.pos.y + b.size.y)));
+			return Intersects(Vec2{ p }, rect);
 		}
 
-		constexpr bool Intersects(const Point& a, const Circle& b) noexcept
+		constexpr bool Intersects(const Point& p, const Circle& circle) noexcept
 		{
-			return (a.distanceFromSq(b.center) <= (b.r * b.r));
+			return Intersects(Vec2{ p }, circle);
 		}
 
-		constexpr bool Intersects(const Point& a, const Ellipse& b) noexcept
+		constexpr bool Intersects(const Point& p, const Ellipse& ellipse) noexcept
 		{
-			if ((b.axes.x == 0.0)
-				|| (b.axes.y == 0.0))
-			{
-				return false;
-			}
-
-			const double xh = (b.center.x - a.x);
-			const double yk = (b.center.y - a.y);
-
-			return (((xh * xh) / (b.axes.x * b.axes.x) + (yk * yk) / (b.axes.y * b.axes.y)) <= 1.0);
+			return Intersects(Vec2{ p }, ellipse);
 		}
 
-		constexpr bool Intersects(const Point& a, const Triangle& b) noexcept
+		constexpr bool Intersects(const Point& p, const Triangle& triangle) noexcept
 		{
-			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
-			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, a);
+			return Intersects(Vec2{ p }, triangle);
 		}
 
-		constexpr bool Intersects(const Point& a, const Quad& b) noexcept
+		constexpr bool Intersects(const Point& p, const Quad& quad) noexcept
 		{
-			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
-			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, b.p3, a);
+			return Intersects(Vec2{ p }, quad);
+		}
+
+		constexpr bool Intersects(const Point& p, const RoundRect& roundRect) noexcept
+		{
+			return Intersects(Vec2{ p }, roundRect);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -123,60 +154,184 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Vec2& a, const Point& b) noexcept
+		constexpr bool Intersects(const Vec2& p1, const Point& p2) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p2, p1);
 		}
 
-		constexpr bool Intersects(const Vec2& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Vec2& p1, const Vec2& p2) noexcept
 		{
-			return (a.distanceFromSq(b) < 1.0);
+			return (p1 == p2);
 		}
 
-		constexpr bool Intersects(const Vec2& a, const Line& b) noexcept
+		constexpr bool Intersects(const Vec2& p, const Line& segment) noexcept
 		{
-			return (detail::DistanceSq(b.start, b.end, a) < 1.0);
-		}
+			const Vec2 a = segment.start;
+			const Vec2 b = segment.end;
 
-		constexpr bool Intersects(const Vec2& a, const Rect& b) noexcept
-		{
-			return ((b.pos.x <= a.x) && (a.x < (b.pos.x + b.size.x))
-				 && (b.pos.y <= a.y) && (a.y < (b.pos.y + b.size.y)));
-		}
-
-		constexpr bool Intersects(const Vec2& a, const RectF& b) noexcept
-		{
-			return ((b.pos.x <= a.x) && (a.x < (b.pos.x + b.size.x))
-				 && (b.pos.y <= a.y) && (a.y < (b.pos.y + b.size.y)));
-		}
-
-		constexpr bool Intersects(const Vec2& a, const Circle& b) noexcept
-		{
-			return (a.distanceFromSq(b.center) <= (b.r * b.r));
-		}
-
-		constexpr bool Intersects(const Vec2& a, const Ellipse& b) noexcept
-		{
-			if ((b.axes.x == 0.0) || (b.axes.y == 0.0))
+			if ((not detail::BetweenClosed(a.x, p.x, b.x))
+				|| (not detail::BetweenClosed(a.y, p.y, b.y)))
 			{
 				return false;
 			}
 
-			const double xh = (b.center.x - a.x);
-			const double yk = (b.center.y - a.y);
-			return (((xh * xh) / (b.axes.x * b.axes.x) + (yk * yk) / (b.axes.y * b.axes.y)) <= 1.0);
+			const Vec2 ab = (b - a);
+			const Vec2 ap = (p - a);
+
+			return ((ab.x * ap.y - ab.y * ap.x) == 0.0);
 		}
 
-		constexpr bool Intersects(const Vec2& a, const Triangle& b) noexcept
+		constexpr bool Intersects(const Vec2& p, const Rect& rect) noexcept
 		{
-			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
-			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, a);
+			return Intersects(p, RectF{ rect });
 		}
 
-		constexpr bool Intersects(const Vec2& a, const Quad& b) noexcept
+		constexpr bool Intersects(const Vec2& p, const RectF& rect) noexcept
 		{
-			constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
-			return Geometry2D::ContainsPoint<Options>(b.p0, b.p1, b.p2, b.p3, a);
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
+
+			return ((left <= p.x)
+				&& (p.x <= right)
+				&& (top <= p.y)
+				&& (p.y <= bottom));
+		}
+
+		constexpr bool Intersects(const Vec2& p, const Circle& circle) noexcept
+		{
+			if (circle.r < 0.0)
+			{
+				assert(0.0 <= circle.r);
+				return false;
+			}
+
+			if (circle.r == 0.0)
+			{
+				return false;
+			}
+
+			return (p.distanceFromSq(circle.center) <= (circle.r * circle.r));
+		}
+
+		constexpr bool Intersects(const Vec2& p, const Ellipse& ellipse) noexcept
+		{
+			const double ax = ellipse.axes.x;
+			const double by = ellipse.axes.y;
+
+			if ((ax < 0.0) || (by < 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return ((p.x == ellipse.center.x)
+					&& (Abs(p.y - ellipse.center.y) <= by));
+			}
+
+			if (by == 0.0)
+			{
+				return ((p.y == ellipse.center.y)
+					&& (Abs(p.x - ellipse.center.x) <= ax));
+			}
+
+			const double dx = ((p.x - ellipse.center.x) / ax);
+			const double dy = ((p.y - ellipse.center.y) / by);
+			return ((dx * dx + dy * dy) <= 1.0);
+		}
+
+		constexpr bool Intersects(const Vec2& p, const RoundRect& roundRect) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			if ((w == 0.0) || (h == 0.0))
+			{
+				return Intersects(p, rect);
+			}
+
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+
+			if (er == 0.0)
+			{
+				return Intersects(p, rect);
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (not ((left <= p.x)
+				&& (p.x <= right)
+				&& (top <= p.y)
+				&& (p.y <= bottom)))
+			{
+				return false;
+			}
+
+			const double innerLeft = (left + er);
+			const double innerRight = (right - er);
+			const double innerTop = (top + er);
+			const double innerBottom = (bottom - er);
+
+			if (((innerLeft <= p.x) && (p.x <= innerRight))
+				|| ((innerTop <= p.y) && (p.y <= innerBottom)))
+			{
+				return true;
+			}
+
+			const double cx = ((p.x < innerLeft) ? innerLeft : innerRight);
+			const double cy = ((p.y < innerTop) ? innerTop : innerBottom);
+
+			const double dx = (p.x - cx);
+			const double dy = (p.y - cy);
+
+			return ((dx * dx + dy * dy) <= (er * er));
+		}
+
+		constexpr bool Intersects(const Vec2& p, const Triangle& triangle) noexcept
+		{
+			return ContainsPoint<detail::ConvexClockwise>(triangle.p0, triangle.p1, triangle.p2, p);
+		}
+
+		constexpr bool Intersects(const Vec2& p, const Quad& quad) noexcept
+		{
+			return ContainsPoint<detail::ConvexClockwise>(quad.p0, quad.p1, quad.p2, quad.p3, p);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -185,210 +340,418 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Line& a, const Point& b) noexcept
+		constexpr bool Intersects(const Line& segment, const Point& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, segment);
 		}
 
-		constexpr bool Intersects(const Line& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Line& segment, const Vec2& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, segment);
 		}
 
-		//////////////////////////////////////////////////
-		//
-		//	Intersects(Rect, _)
-		//
-		//////////////////////////////////////////////////
-
-		constexpr bool Intersects(const Rect& a, const Point& b) noexcept
+		constexpr bool Intersects(const Line& a, const Line& b) noexcept
 		{
-			return Intersects(b, a);
-		}
+			const Vec2 a0 = a.start;
+			const Vec2 a1 = a.end;
+			const Vec2 b0 = b.start;
+			const Vec2 b1 = b.end;
 
-		constexpr bool Intersects(const Rect& a, const Vec2& b) noexcept
-		{
-			return Intersects(b, a);
-		}
+			const Vec2 ad = (a1 - a0);
+			const Vec2 bd = (b1 - b0);
 
-		constexpr bool Intersects(const Rect& a, const Rect& b) noexcept
-		{
-			return ((a.pos.x < (b.pos.x + b.size.x))
-				 && (b.pos.x < (a.pos.x + a.size.x))
-				 && (a.pos.y < (b.pos.y + b.size.y))
-				 && (b.pos.y < (a.pos.y + a.size.y)));
-		}
+			const double c0 = ad.cross(b0 - a0);
+			const double c1 = ad.cross(b1 - a0);
+			const double c2 = bd.cross(a0 - b0);
+			const double c3 = bd.cross(a1 - b0);
 
-		constexpr bool Intersects(const Rect& a, const RectF& b) noexcept
-		{
-			return ((a.pos.x < (b.pos.x + b.size.x))
-				 && (b.pos.x < (a.pos.x + a.size.x))
-				 && (a.pos.y < (b.pos.y + b.size.y))
-				 && (b.pos.y < (a.pos.y + a.size.y)));
-		}
-
-		constexpr bool Intersects(const Rect& a, const Circle& b) noexcept
-		{
-			return Intersects(RectF{ a }, b);
-		}
-
-		constexpr bool Intersects(const Rect& a, const Ellipse& b) noexcept
-		{
-			return Intersects(RectF{ a }, b);
-		}
-
-		//////////////////////////////////////////////////
-		//
-		//	Intersects(RectF, _)
-		//
-		//////////////////////////////////////////////////
-
-		constexpr bool Intersects(const RectF& a, const Point& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		constexpr bool Intersects(const RectF& a, const Vec2& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		constexpr bool Intersects(const RectF& a, const Rect& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		constexpr bool Intersects(const RectF& a, const RectF& b) noexcept
-		{
-			return ((a.pos.x < (b.pos.x + b.size.x))
-				 && (b.pos.x < (a.pos.x + a.size.x))
-				 && (a.pos.y < (b.pos.y + b.size.y))
-				 && (b.pos.y < (a.pos.y + a.size.y)));
-		}
-
-		constexpr bool Intersects(const RectF& a, const Circle& b) noexcept
-		{
-			const double aw = (a.size.x * 0.5);
-			const double ah = (a.size.y * 0.5);
-			const double cX = Abs(b.center.x - a.pos.x - aw);
-			const double cY = Abs(b.center.y - a.pos.y - ah);
-
-			if (((aw + b.r) < cX)
-				|| ((ah + b.r) < cY))
-			{
-				return false;
-			}
-
-			if ((cX <= aw)
-				|| (cY <= ah))
+			if ((c0 == 0.0) && Intersects(b0, a))
 			{
 				return true;
 			}
 
-			return ((cX - aw) * (cX - aw) + (cY - ah) * (cY - ah) <= (b.r * b.r));
+			if ((c1 == 0.0) && Intersects(b1, a))
+			{
+				return true;
+			}
+
+			if ((c2 == 0.0) && Intersects(a0, b))
+			{
+				return true;
+			}
+
+			if ((c3 == 0.0) && Intersects(a1, b))
+			{
+				return true;
+			}
+
+			return (detail::OppositeSigns(c0, c1)
+				&& detail::OppositeSigns(c2, c3));
 		}
 
-		constexpr bool Intersects(const RectF& a, const Ellipse& b) noexcept
+		constexpr bool Intersects(const Line& segment, const Rect& rect) noexcept
 		{
-			RectF rect = a.movedBy(-b.center);
-
-			const double v = (b.a / b.b);
-			rect.y *= v;
-			rect.h *= v;
-
-			return Intersects(rect, Circle{ b.a });
+			return Intersects(segment, RectF{ rect });
 		}
 
-		//////////////////////////////////////////////////
+		constexpr bool Intersects(const Line& segment, const RectF& rect) noexcept
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			if (Intersects(segment.start, rect) || Intersects(segment.end, rect))
+			{
+				return true;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Intersects(segment, Line{ Vec2{ left, top }, Vec2{ left, bottom } });
+			}
+
+			if (h == 0.0)
+			{
+				return Intersects(segment, Line{ Vec2{ left, top }, Vec2{ right, top } });
+			}
+
+			return (Intersects(segment, Line{ Vec2{ left, top }, Vec2{ right, top } })
+				|| Intersects(segment, Line{ Vec2{ right, top }, Vec2{ right, bottom } })
+				|| Intersects(segment, Line{ Vec2{ right, bottom }, Vec2{ left, bottom } })
+				|| Intersects(segment, Line{ Vec2{ left, bottom }, Vec2{ left, top } }));
+		}
+
+		constexpr bool Intersects(const Line& segment, const Circle& circle) noexcept
+		{
+			if (circle.r < 0.0)
+			{
+				assert(0.0 <= circle.r);
+				return false;
+			}
+
+			if (circle.r == 0.0)
+			{
+				return false;
+			}
+
+			if (Intersects(segment.start, circle) || Intersects(segment.end, circle))
+			{
+				return true;
+			}
+
+			const Vec2 d = (segment.end - segment.start);
+			const double lengthSq = d.dot(d);
+
+			if (lengthSq == 0.0)
+			{
+				return false;
+			}
+
+			const Vec2 f = (circle.center - segment.start);
+			const double tNumerator = f.dot(d);
+
+			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
+			{
+				return false;
+			}
+
+			const double cross = d.cross(f);
+			return ((cross * cross) <= (circle.r * circle.r * lengthSq));
+		}
+
+		constexpr bool Intersects(const Line& segment, const Ellipse& ellipse) noexcept
+		{
+			const double ax = ellipse.axes.x;
+			const double by = ellipse.axes.y;
+
+			if ((ax < 0.0) || (by < 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Intersects(segment, Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } });
+			}
+
+			if (by == 0.0)
+			{
+				return Intersects(segment, Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } });
+			}
+
+			const Vec2 p0{ ((segment.start.x - ellipse.center.x) / ax), ((segment.start.y - ellipse.center.y) / by) };
+			const Vec2 p1{ ((segment.end.x - ellipse.center.x) / ax), ((segment.end.y - ellipse.center.y) / by) };
+
+			if ((p0.dot(p0) <= 1.0) || (p1.dot(p1) <= 1.0))
+			{
+				return true;
+			}
+
+			const Vec2 d = (p1 - p0);
+			const double lengthSq = d.dot(d);
+
+			if (lengthSq == 0.0)
+			{
+				return false;
+			}
+
+			const double tNumerator = -p0.dot(d);
+
+			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
+			{
+				return false;
+			}
+
+			const double cross = d.cross(p0);
+			return ((cross * cross) <= lengthSq);
+		}
+
+		constexpr bool Intersects(const Line& segment, const Triangle& triangle) noexcept
+		{
+			if (Intersects(segment.start, triangle) || Intersects(segment.end, triangle))
+			{
+				return true;
+			}
+
+			return (Intersects(segment, Line{ triangle.p0, triangle.p1 })
+				|| Intersects(segment, Line{ triangle.p1, triangle.p2 })
+				|| Intersects(segment, Line{ triangle.p2, triangle.p0 }));
+		}
+
+		constexpr bool Intersects(const Line& segment, const Quad& quad) noexcept
+		{
+			if (Intersects(segment.start, quad) || Intersects(segment.end, quad))
+			{
+				return true;
+			}
+
+			return (Intersects(segment, Line{ quad.p0, quad.p1 })
+				|| Intersects(segment, Line{ quad.p1, quad.p2 })
+				|| Intersects(segment, Line{ quad.p2, quad.p3 })
+				|| Intersects(segment, Line{ quad.p3, quad.p0 }));
+		}
+
+		constexpr bool Intersects(const Line& segment, const RoundRect& roundRect) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			if ((w == 0.0) || (h == 0.0))
+			{
+				return Intersects(segment, rect);
+			}
+
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+
+			if (er == 0.0)
+			{
+				return Intersects(segment, rect);
+			}
+
+			if (Intersects(segment.start, roundRect) || Intersects(segment.end, roundRect))
+			{
+				return true;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+			const double innerLeft = (left + er);
+			const double innerRight = (right - er);
+			const double innerTop = (top + er);
+			const double innerBottom = (bottom - er);
+
+			if (Intersects(segment, RectF{ innerLeft, top, (innerRight - innerLeft), h })
+				|| Intersects(segment, RectF{ left, innerTop, w, (innerBottom - innerTop) }))
+			{
+				return true;
+			}
+
+			return (detail::SegmentIntersectsDiskBox(segment, Vec2{ innerLeft, innerTop }, er, left, top, innerLeft, innerTop)
+				|| detail::SegmentIntersectsDiskBox(segment, Vec2{ innerRight, innerTop }, er, innerRight, top, right, innerTop)
+				|| detail::SegmentIntersectsDiskBox(segment, Vec2{ innerRight, innerBottom }, er, innerRight, innerBottom, right, bottom)
+				|| detail::SegmentIntersectsDiskBox(segment, Vec2{ innerLeft, innerBottom }, er, left, innerBottom, innerLeft, bottom));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(Rect, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr bool Intersects(const Rect& rect, const Point& p) noexcept
+		{
+			return Intersects(p, rect);
+		}
+
+		constexpr bool Intersects(const Rect& rect, const Vec2& p) noexcept
+		{
+			return Intersects(p, rect);
+		}
+
+		constexpr bool Intersects(const Rect& rect, const Line& segment) noexcept
+		{
+			return Intersects(segment, rect);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(RectF, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr bool Intersects(const RectF& rect, const Point& p) noexcept
+		{
+			return Intersects(p, rect);
+		}
+
+		constexpr bool Intersects(const RectF& rect, const Vec2& p) noexcept
+		{
+			return Intersects(p, rect);
+		}
+
+		constexpr bool Intersects(const RectF& rect, const Line& segment) noexcept
+		{
+			return Intersects(segment, rect);
+		}
+
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Circle, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Circle& a, const Point& b) noexcept
+		constexpr bool Intersects(const Circle& circle, const Point& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, circle);
 		}
 
-		constexpr bool Intersects(const Circle& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Circle& circle, const Vec2& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, circle);
 		}
 
-		constexpr bool Intersects(const Circle& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Circle& circle, const Line& segment) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(segment, circle);
 		}
 
-		constexpr bool Intersects(const Circle& a, const RectF& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		constexpr bool Intersects(const Circle& a, const Circle& b) noexcept
-		{
-			const double x = (a.center.x - b.center.x);
-			const double y = (a.center.y - b.center.y);
-			const double r = (a.r + b.r);
-			return ((x * x + y * y) <= (r * r));
-		}
-
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Ellipse, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Ellipse& a, const Point& b) noexcept
+		constexpr bool Intersects(const Ellipse& ellipse, const Point& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, ellipse);
 		}
 
-		constexpr bool Intersects(const Ellipse& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Ellipse& ellipse, const Vec2& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, ellipse);
 		}
 
-		constexpr bool Intersects(const Ellipse& a, const Rect& b) noexcept
+		constexpr bool Intersects(const Ellipse& ellipse, const Line& segment) noexcept
 		{
-			return Intersects(RectF{ b }, a);
+			return Intersects(segment, ellipse);
 		}
 
-		constexpr bool Intersects(const Ellipse& a, const RectF& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Triangle, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Triangle& a, const Point& b) noexcept
+		constexpr bool Intersects(const Triangle& triangle, const Point& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, triangle);
 		}
 
-		constexpr bool Intersects(const Triangle& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Triangle& triangle, const Vec2& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, triangle);
 		}
 
-		//////////////////////////////////////////////////
+		constexpr bool Intersects(const Triangle& triangle, const Line& segment) noexcept
+		{
+			return Intersects(segment, triangle);
+		}
+
+		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Quad, _)
 		//
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Quad& a, const Point& b) noexcept
+		constexpr bool Intersects(const Quad& quad, const Point& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, quad);
 		}
 
-		constexpr bool Intersects(const Quad& a, const Vec2& b) noexcept
+		constexpr bool Intersects(const Quad& quad, const Vec2& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, quad);
+		}
+
+		constexpr bool Intersects(const Quad& quad, const Line& segment) noexcept
+		{
+			return Intersects(segment, quad);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(RoundRect, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		constexpr bool Intersects(const RoundRect& roundRect, const Point& p) noexcept
+		{
+			return Intersects(p, roundRect);
+		}
+
+		constexpr bool Intersects(const RoundRect& roundRect, const Vec2& p) noexcept
+		{
+			return Intersects(p, roundRect);
+		}
+
+		constexpr bool Intersects(const RoundRect& roundRect, const Line& segment) noexcept
+		{
+			return Intersects(segment, roundRect);
 		}
 	}
 }

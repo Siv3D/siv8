@@ -28,197 +28,573 @@ namespace s3d
 {
 	namespace
 	{
-		constexpr double Epsilon = 1e-12;
+		inline constexpr double BezierRootTolerance = (64.0 * 2.2204460492503131e-16);
+		inline constexpr double BezierPointTolerance = (64.0 * 2.2204460492503131e-16);
 
 		[[nodiscard]]
-		static constexpr bool NearZero(const double v) noexcept
+		constexpr bool NearlyEqualBezierCoordinate(const double a, const double b) noexcept
 		{
-			return (Abs(v) <= Epsilon);
+			const double scale = Max({ Abs(a), Abs(b), 1.0 });
+			return (Abs(a - b) <= (BezierPointTolerance * scale));
 		}
 
 		[[nodiscard]]
-		static constexpr bool In01(const double t) noexcept
+		constexpr bool NearlyEqualBezierPoint(const Vec2& a, const Vec2& b) noexcept
 		{
-			return ((-Epsilon <= t) && (t <= (1.0 + Epsilon)));
+			return (NearlyEqualBezierCoordinate(a.x, b.x)
+				&& NearlyEqualBezierCoordinate(a.y, b.y));
 		}
 
-		struct RoundRectParts
+		template <class Fty>
+		[[nodiscard]]
+		bool CheckQuadraticRootsInUnitInterval(const double a, const double b, const double c, Fty&& callback)
 		{
-			RectF boundingRect;
-			RectF rectA;
-			RectF rectB;
-			Circle circleTL;
-			Circle circleTR;
-			Circle circleBR;
-			Circle circleBL;
+			const double scale = Max({ Abs(a), Abs(b), Abs(c), 1.0 });
+			const double coefficientTolerance = (BezierRootTolerance * scale);
 
-			RoundRectParts(const RoundRect& roundRect) noexcept
+			auto CheckRoot = [&](double t)
 			{
-				const RectF& rect = roundRect.rect;
-				const double rr = Min({ (rect.w * 0.5), (rect.h * 0.5), roundRect.r });
-				const double x0 = rect.x;
-				const double x1 = rect.x + rr;
-				const double x2 = rect.x + rect.w - rr;
-				const double y0 = rect.y;
-				const double y1 = rect.y + rr;
-				const double y2 = rect.y + rect.h - rr;
-				boundingRect = roundRect.rect;
-				rectA.set(x0, y1, rect.w, y2 - y1);
-				rectB.set(x1, y0, x2 - x1, rect.h);
-				circleTL.set(x1, y1, rr);
-				circleTR.set(x2, y1, rr);
-				circleBR.set(x2, y2, rr);
-				circleBL.set(x1, y2, rr);
-			}
+				if (InRange(t, -BezierRootTolerance, (1.0 + BezierRootTolerance)))
+				{
+					t = Clamp(t, 0.0, 1.0);
+					return callback(t);
+				}
 
-			template <class Shape>
-			bool intersects(const Shape& shape) const noexcept
+				return false;
+			};
+
+			if (Abs(a) <= coefficientTolerance)
 			{
-				if (not boundingRect.intersects(shape))
+				if (Abs(b) <= coefficientTolerance)
 				{
 					return false;
 				}
 
-				return (rectA.intersects(shape)
-						|| rectB.intersects(shape)
-						|| circleTL.intersects(shape)
-						|| circleTR.intersects(shape)
-						|| circleBR.intersects(shape)
-						|| circleBL.intersects(shape));
+				return CheckRoot(-c / b);
 			}
-		};
 
-		//
-		//	http://www.phatcode.net/articles.php?id=459
-		//
+			const double discriminantScale = Max({ b * b, Abs(4.0 * a * c), 1.0 });
+			const double discriminantTolerance = (BezierRootTolerance * discriminantScale);
+			double discriminant = std::fma(b, b, -4.0 * a * c);
+
+			if (discriminant < -discriminantTolerance)
+			{
+				return false;
+			}
+
+			if (discriminant < 0.0)
+			{
+				discriminant = 0.0;
+			}
+
+			const double s = std::sqrt(discriminant);
+
+			if (s == 0.0)
+			{
+				return CheckRoot(-b / (2.0 * a));
+			}
+
+			const double q = (-0.5 * (b + ((b < 0.0) ? -s : s)));
+
+			if (q == 0.0)
+			{
+				return CheckRoot(-b / (2.0 * a));
+			}
+
+			if (CheckRoot(q / a))
+			{
+				return true;
+			}
+
+			return CheckRoot(c / q);
+		}
+
+		template <class Fty>
 		[[nodiscard]]
-		static bool CircleTriangleIntersection(const Circle& circle, const Triangle& triangle) noexcept
+		bool CheckCubicRootsInUnitInterval(const double a, const double b, const double c, const double d, Fty&& callback)
 		{
-			const double centerX = circle.x;
-			const double centerY = circle.y;
-			const double radius = circle.r;
-			const double v1x = triangle.p0.x;
-			const double v1y = triangle.p0.y;
-			const double v2x = triangle.p1.x;
-			const double v2y = triangle.p1.y;
-			const double v3x = triangle.p2.x;
-			const double v3y = triangle.p2.y;
+			const double scale = Max({ Abs(a), Abs(b), Abs(c), Abs(d), 1.0 });
+			const double coefficientTolerance = (BezierRootTolerance * scale);
 
-			//
-			// TEST 1: Vertex within circle
-			//
-			const double c1x = centerX - v1x;
-			const double c1y = centerY - v1y;
-
-			const double radiusSqr = radius * radius;
-			const double c1sqr = c1x * c1x + c1y * c1y - radiusSqr;
-
-			if (c1sqr <= 0)
+			if (Abs(a) <= coefficientTolerance)
 			{
-				return true;
+				return CheckQuadraticRootsInUnitInterval(b, c, d, callback);
 			}
 
-			const double c2x = centerX - v2x;
-			const double c2y = centerY - v2y;
-			const double c2sqr = c2x * c2x + c2y * c2y - radiusSqr;
+			const auto roots = Math::SolveCubicEquation(a, b, c, d);
 
-			if (c2sqr <= 0)
+			for (const double t0 : roots)
 			{
-				return true;
-			}
-
-			const double c3x = centerX - v3x;
-			const double c3y = centerY - v3y;
-
-			//const double &c3sqr = radiusSqr;//; reference to radiusSqr
-			const double c3sqr = c3x * c3x + c3y * c3y - radiusSqr;
-
-			if (c3sqr <= 0)
-			{
-				return true;
-			}
-
-			//;
-			//; TEST 2: Circle centre within triangle
-			//;
-
-			//;
-			//; Calculate edges
-			//;
-			const double e1x = v2x - v1x;
-			const double e1y = v2y - v1y;
-
-			const double e2x = v3x - v2x;
-			const double e2y = v3y - v2y;
-
-			const double e3x = v1x - v3x;
-			const double e3y = v1y - v3y;
-
-			if (triangle.hasArea()
-				&& e1y * c1x >= e1x * c1y
-				&& e2y * c2x >= e2x * c2y
-				&& e3y * c3x >= e3x * c3y)
-			{
-				return true;
-			}
-
-			//;
-			//; TEST 3: Circle intersects edge
-			//;
-			double k = c1x * e1x + c1y * e1y;
-
-			if (k > 0)
-			{
-				const double len = e1x * e1x + e1y * e1y;//; squared len
-
-				if (k < len)
+				if (InRange(t0, -BezierRootTolerance, (1.0 + BezierRootTolerance)))
 				{
-					if (c1sqr * len <= k * k)
+					const double t = Clamp(t0, 0.0, 1.0);
+
+					if (callback(t))
 					{
 						return true;
 					}
 				}
 			}
 
-			//; Second edge
-			k = c2x * e2x + c2y * e2y;
+			return false;
+		}
 
-			if (k > 0)
+		[[nodiscard]]
+		constexpr bool ControlPointsBoundingRectContains(const Vec2& p, const Bezier2& curve) noexcept
+		{
+			const double minX = Min({ curve.p0.x, curve.p1.x, curve.p2.x });
+			const double maxX = Max({ curve.p0.x, curve.p1.x, curve.p2.x });
+			const double minY = Min({ curve.p0.y, curve.p1.y, curve.p2.y });
+			const double maxY = Max({ curve.p0.y, curve.p1.y, curve.p2.y });
+
+			return ((minX <= p.x) && (p.x <= maxX)
+				&& (minY <= p.y) && (p.y <= maxY));
+		}
+
+		[[nodiscard]]
+		constexpr bool ControlPointsBoundingRectContains(const Vec2& p, const Bezier3& curve) noexcept
+		{
+			const double minX = Min({ curve.p0.x, curve.p1.x, curve.p2.x, curve.p3.x });
+			const double maxX = Max({ curve.p0.x, curve.p1.x, curve.p2.x, curve.p3.x });
+			const double minY = Min({ curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y });
+			const double maxY = Max({ curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y });
+
+			return ((minX <= p.x) && (p.x <= maxX)
+				&& (minY <= p.y) && (p.y <= maxY));
+		}
+
+		[[nodiscard]]
+		constexpr double AxisVariation(const double p0, const double p1, const double p2) noexcept
+		{
+			return Max({ Abs(p1 - p0), Abs(p2 - p1), Abs(p2 - p0) });
+		}
+
+		[[nodiscard]]
+		constexpr double AxisVariation(const double p0, const double p1, const double p2, const double p3) noexcept
+		{
+			return Max({ Abs(p1 - p0), Abs(p2 - p1), Abs(p3 - p2), Abs(p3 - p0) });
+		}
+
+		[[nodiscard]]
+		bool CheckBezier2Axis(const Vec2& p, const Bezier2& curve, const bool useX)
+		{
+			const double p0 = (useX ? curve.p0.x : curve.p0.y);
+			const double p1 = (useX ? curve.p1.x : curve.p1.y);
+			const double p2 = (useX ? curve.p2.x : curve.p2.y);
+			const double target = (useX ? p.x : p.y);
+
+			const double a = (p0 - 2.0 * p1 + p2);
+			const double b = (2.0 * (p1 - p0));
+			const double c = (p0 - target);
+
+			return CheckQuadraticRootsInUnitInterval(a, b, c, [&](const double t)
 			{
-				const double len = e2x * e2x + e2y * e2y;
+				return NearlyEqualBezierPoint(curve.pointAt(t), p);
+			});
+		}
 
-				if (k < len)
-				{
-					if (c2sqr * len <= k * k)
-					{
-						return true;
-					}
-				}
+		[[nodiscard]]
+		bool CheckBezier3Axis(const Vec2& p, const Bezier3& curve, const bool useX)
+		{
+			const double p0 = (useX ? curve.p0.x : curve.p0.y);
+			const double p1 = (useX ? curve.p1.x : curve.p1.y);
+			const double p2 = (useX ? curve.p2.x : curve.p2.y);
+			const double p3 = (useX ? curve.p3.x : curve.p3.y);
+			const double target = (useX ? p.x : p.y);
+
+			const double a = (-p0 + 3.0 * p1 - 3.0 * p2 + p3);
+			const double b = (3.0 * p0 - 6.0 * p1 + 3.0 * p2);
+			const double c = (-3.0 * p0 + 3.0 * p1);
+			const double d = (p0 - target);
+
+			return CheckCubicRootsInUnitInterval(a, b, c, d, [&](const double t)
+			{
+				return NearlyEqualBezierPoint(curve.pointAt(t), p);
+			});
+		}
+
+		[[nodiscard]]
+		bool IntersectsPointBezier2(const Vec2& p, const Bezier2& curve)
+		{
+			if (not ControlPointsBoundingRectContains(p, curve))
+			{
+				return false;
 			}
 
-			//; Third edge
-			k = c3x * e3x + c3y * e3y;
-
-			if (k > 0)
-			{
-				const double len = e3x * e3x + e3y * e3y;
-
-				if (k < len)
-				{
-					if (c3sqr * len <= k * k)
-					{
-						return true;
-					}
-				}
-			}
-
-			// Within
-			if (circle.center.intersects(triangle))
+			if ((p == curve.p0) || (p == curve.p2))
 			{
 				return true;
 			}
 
-			//; We're done, no intersection
+			const double xVariation = AxisVariation(curve.p0.x, curve.p1.x, curve.p2.x);
+			const double yVariation = AxisVariation(curve.p0.y, curve.p1.y, curve.p2.y);
+
+			if ((xVariation == 0.0) && (yVariation == 0.0))
+			{
+				return false;
+			}
+
+			if (yVariation < xVariation)
+			{
+				if ((0.0 < xVariation) && CheckBezier2Axis(p, curve, true))
+				{
+					return true;
+				}
+
+				return ((0.0 < yVariation) && CheckBezier2Axis(p, curve, false));
+			}
+			else
+			{
+				if ((0.0 < yVariation) && CheckBezier2Axis(p, curve, false))
+				{
+					return true;
+				}
+
+				return ((0.0 < xVariation) && CheckBezier2Axis(p, curve, true));
+			}
+		}
+
+		[[nodiscard]]
+		bool IntersectsPointBezier3(const Vec2& p, const Bezier3& curve)
+		{
+			if (not ControlPointsBoundingRectContains(p, curve))
+			{
+				return false;
+			}
+
+			if ((p == curve.p0) || (p == curve.p3))
+			{
+				return true;
+			}
+
+			const double xVariation = AxisVariation(curve.p0.x, curve.p1.x, curve.p2.x, curve.p3.x);
+			const double yVariation = AxisVariation(curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y);
+
+			if ((xVariation == 0.0) && (yVariation == 0.0))
+			{
+				return false;
+			}
+
+			if (yVariation < xVariation)
+			{
+				if ((0.0 < xVariation) && CheckBezier3Axis(p, curve, true))
+				{
+					return true;
+				}
+
+				return ((0.0 < yVariation) && CheckBezier3Axis(p, curve, false));
+			}
+			else
+			{
+				if ((0.0 < yVariation) && CheckBezier3Axis(p, curve, false))
+				{
+					return true;
+				}
+
+				return ((0.0 < xVariation) && CheckBezier3Axis(p, curve, true));
+			}
+		}
+
+		[[nodiscard]]
+		constexpr double Bezier2AxisValue(const double p0, const double p1, const double p2, const double t) noexcept
+		{
+			const double s = (1.0 - t);
+			return ((s * s * p0) + (2.0 * s * t * p1) + (t * t * p2));
+		}
+
+		[[nodiscard]]
+		constexpr double Bezier3AxisValue(const double p0, const double p1, const double p2, const double p3, const double t) noexcept
+		{
+			const double s = (1.0 - t);
+			return ((s * s * s * p0) + (3.0 * s * s * t * p1) + (3.0 * s * t * t * p2) + (t * t * t * p3));
+		}
+
+		[[nodiscard]]
+		bool CollinearBezier2IntersectsLine(const Line& segment, const Bezier2& curve) noexcept
+		{
+			const Vec2 d = (segment.end - segment.start);
+			const bool useX = (Abs(d.y) <= Abs(d.x));
+
+			const double s0 = (useX ? segment.start.x : segment.start.y);
+			const double s1 = (useX ? segment.end.x : segment.end.y);
+			const double segmentMin = Min(s0, s1);
+			const double segmentMax = Max(s0, s1);
+
+			const double p0 = (useX ? curve.p0.x : curve.p0.y);
+			const double p1 = (useX ? curve.p1.x : curve.p1.y);
+			const double p2 = (useX ? curve.p2.x : curve.p2.y);
+
+			double curveMin = Min(p0, p2);
+			double curveMax = Max(p0, p2);
+
+			const double denominator = (p0 - 2.0 * p1 + p2);
+
+			if (denominator != 0.0)
+			{
+				const double t = ((p0 - p1) / denominator);
+
+				if (InRange(t, 0.0, 1.0))
+				{
+					const double v = Bezier2AxisValue(p0, p1, p2, t);
+					curveMin = Min(curveMin, v);
+					curveMax = Max(curveMax, v);
+				}
+			}
+
+			return ((curveMin <= segmentMax) && (segmentMin <= curveMax));
+		}
+
+		[[nodiscard]]
+		bool CollinearBezier3IntersectsLine(const Line& segment, const Bezier3& curve) noexcept
+		{
+			const Vec2 d = (segment.end - segment.start);
+			const bool useX = (Abs(d.y) <= Abs(d.x));
+
+			const double s0 = (useX ? segment.start.x : segment.start.y);
+			const double s1 = (useX ? segment.end.x : segment.end.y);
+			const double segmentMin = Min(s0, s1);
+			const double segmentMax = Max(s0, s1);
+
+			const double p0 = (useX ? curve.p0.x : curve.p0.y);
+			const double p1 = (useX ? curve.p1.x : curve.p1.y);
+			const double p2 = (useX ? curve.p2.x : curve.p2.y);
+			const double p3 = (useX ? curve.p3.x : curve.p3.y);
+
+			double curveMin = Min(p0, p3);
+			double curveMax = Max(p0, p3);
+
+			const double a = (-p0 + 3.0 * p1 - 3.0 * p2 + p3);
+			const double b = (3.0 * p0 - 6.0 * p1 + 3.0 * p2);
+			const double c = (-3.0 * p0 + 3.0 * p1);
+
+			std::ignore = CheckQuadraticRootsInUnitInterval((3.0 * a), (2.0 * b), c, [&](const double t)
+			{
+				const double v = Bezier3AxisValue(p0, p1, p2, p3, t);
+				curveMin = Min(curveMin, v);
+				curveMax = Max(curveMax, v);
+				return false;
+			});
+
+			return ((curveMin <= segmentMax) && (segmentMin <= curveMax));
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineBezier2(const Line& segment, const Bezier2& curve)
+		{
+			if (segment.start == segment.end)
+			{
+				return Geometry2D::Intersects(segment.start, curve);
+			}
+
+			const Vec2 d = (segment.end - segment.start);
+			const double c0 = d.cross(curve.p0 - segment.start);
+			const double c1 = d.cross(curve.p1 - segment.start);
+			const double c2 = d.cross(curve.p2 - segment.start);
+
+			const double a = (c0 - 2.0 * c1 + c2);
+			const double b = (2.0 * (c1 - c0));
+			const double c = c0;
+
+			if ((a == 0.0) && (b == 0.0) && (c == 0.0))
+			{
+				return CollinearBezier2IntersectsLine(segment, curve);
+			}
+
+			return CheckQuadraticRootsInUnitInterval(a, b, c, [&](const double t)
+			{
+				return Geometry2D::Intersects(curve.pointAt(t), segment);
+			});
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineBezier3(const Line& segment, const Bezier3& curve)
+		{
+			if (segment.start == segment.end)
+			{
+				return Geometry2D::Intersects(segment.start, curve);
+			}
+
+			const Vec2 d = (segment.end - segment.start);
+			const double c0 = d.cross(curve.p0 - segment.start);
+			const double c1 = d.cross(curve.p1 - segment.start);
+			const double c2 = d.cross(curve.p2 - segment.start);
+			const double c3 = d.cross(curve.p3 - segment.start);
+
+			const double a = (-c0 + 3.0 * c1 - 3.0 * c2 + c3);
+			const double b = (3.0 * c0 - 6.0 * c1 + 3.0 * c2);
+			const double c = (-3.0 * c0 + 3.0 * c1);
+			const double e = c0;
+
+			if ((a == 0.0) && (b == 0.0) && (c == 0.0) && (e == 0.0))
+			{
+				return CollinearBezier3IntersectsLine(segment, curve);
+			}
+
+			return CheckCubicRootsInUnitInterval(a, b, c, e, [&](const double t)
+			{
+				return Geometry2D::Intersects(curve.pointAt(t), segment);
+			});
+		}
+
+		[[nodiscard]]
+		double SuperEllipseLocalValue(const Vec2& p, const double n) noexcept
+		{
+			return (std::pow(Abs(p.x), n) + std::pow(Abs(p.y), n));
+		}
+
+		[[nodiscard]]
+		double SuperEllipseLocalDerivative(const Vec2& p, const Vec2& d, const double n) noexcept
+		{
+			auto Term = [n](const double x, const double dx) noexcept
+			{
+				if (x < 0.0)
+				{
+					return (-dx * std::pow(-x, (n - 1.0)));
+				}
+
+				if (0.0 < x)
+				{
+					return (dx * std::pow(x, (n - 1.0)));
+				}
+
+				return 0.0;
+			};
+
+			return (n * (Term(p.x, d.x) + Term(p.y, d.y)));
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineSuperEllipse(const Line& segment, const SuperEllipse& superEllipse) noexcept
+		{
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
+
+			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(segment, Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } });
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(segment, Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } });
+			}
+
+			if (n == 2.0)
+			{
+				return Geometry2D::Intersects(segment, Ellipse{ superEllipse.center, ax, by });
+			}
+
+			const Vec2 p0{ ((segment.start.x - superEllipse.center.x) / ax), ((segment.start.y - superEllipse.center.y) / by) };
+			const Vec2 p1{ ((segment.end.x - superEllipse.center.x) / ax), ((segment.end.y - superEllipse.center.y) / by) };
+			const Vec2 d = (p1 - p0);
+
+			if ((SuperEllipseLocalValue(p0, n) <= 1.0)
+				|| (SuperEllipseLocalValue(p1, n) <= 1.0))
+			{
+				return true;
+			}
+
+			if (d == Vec2{ 0, 0 })
+			{
+				return false;
+			}
+
+			std::array<double, 4> ts{ 0.0, 1.0, 0.0, 0.0 };
+			size_t tCount = 2;
+
+			if (d.x != 0.0)
+			{
+				const double tx = (-p0.x / d.x);
+
+				if (InRange(tx, 0.0, 1.0))
+				{
+					ts[tCount++] = tx;
+				}
+			}
+
+			if (d.y != 0.0)
+			{
+				const double ty = (-p0.y / d.y);
+
+				if (InRange(ty, 0.0, 1.0))
+				{
+					ts[tCount++] = ty;
+				}
+			}
+
+			std::sort(ts.begin(), (ts.begin() + tCount));
+
+			auto ValueAt = [&](const double t) noexcept
+			{
+				return SuperEllipseLocalValue((p0 + d * t), n);
+			};
+
+			auto DerivativeAt = [&](const double t) noexcept
+			{
+				return SuperEllipseLocalDerivative((p0 + d * t), d, n);
+			};
+
+			for (size_t i = 1; i < tCount; ++i)
+			{
+				const double t0 = ts[i - 1];
+				const double t1 = ts[i];
+
+				if (t0 == t1)
+				{
+					continue;
+				}
+
+				if ((ValueAt(t0) <= 1.0) || (ValueAt(t1) <= 1.0))
+				{
+					return true;
+				}
+
+				if (n <= 1.0)
+				{
+					continue;
+				}
+
+				const double derivative0 = DerivativeAt(t0);
+				const double derivative1 = DerivativeAt(t1);
+
+				if ((derivative0 < 0.0) && (0.0 < derivative1))
+				{
+					double left = t0;
+					double right = t1;
+
+					for (int32 k = 0; k < 48; ++k)
+					{
+						const double mid = ((left + right) * 0.5);
+
+						if (DerivativeAt(mid) < 0.0)
+						{
+							left = mid;
+						}
+						else
+						{
+							right = mid;
+						}
+					}
+
+					if (ValueAt((left + right) * 0.5) <= 1.0)
+					{
+						return true;
+					}
+				}
+			}
+
 			return false;
 		}
 	}
@@ -231,39 +607,34 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Point& a, const Bezier2& b)
-		{
-			return Intersects(Vec2{ a }, b);
-		}
-
-		bool Intersects(const Point& a, const Bezier3& b)
-		{
-			return Intersects(Vec2{ a }, b);
-		}
-
-		bool Intersects(const Point& a, const RoundRect& b) noexcept
-		{
-			return Intersects(Vec2{ a }, b);
-		}
-
-		bool Intersects(const Point& a, const SuperEllipse& b) noexcept
-		{
-			return Intersects(Vec2{ a }, b);
-		}
-
-		bool Intersects(const Point& a, const Polygon& b) noexcept
-		{
-			return b.intersects(Vec2{ a });
-		}
-
-		bool Intersects(const Point& a, const MultiPolygon& b) noexcept
-		{
-			return Intersects(Vec2{ a }, b);
-		}
-
 		bool Intersects(const Point& a, const LineString& b) noexcept
 		{
 			return Intersects(Vec2{ a }, b);
+		}
+
+		bool Intersects(const Point& p, const Bezier2& curve)
+		{
+			return Intersects(Vec2{ p }, curve);
+		}
+
+		bool Intersects(const Point& p, const Bezier3& curve)
+		{
+			return Intersects(Vec2{ p }, curve);
+		}
+
+		bool Intersects(const Point& p, const SuperEllipse& superEllipse) noexcept
+		{
+			return Intersects(Vec2{ p }, superEllipse);
+		}
+
+		bool Intersects(const Point& p, const Polygon& polygon) noexcept
+		{
+			return Intersects(Vec2{ p }, polygon);
+		}
+
+		bool Intersects(const Point& p, const MultiPolygon& multiPolygon) noexcept
+		{
+			return Intersects(Vec2{ p }, multiPolygon);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -272,60 +643,25 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Vec2& a, const Bezier2& b)
+		bool Intersects(const Vec2& p, const LineString& segments) noexcept
 		{
-			// 距離が 1 未満なら交差と判定
-			return (Distance(a, b) < 1.0);
-		}
+			const size_t n = segments.size();
 
-		bool Intersects(const Vec2& a, const Bezier3& b)
-		{
-			// 距離が 1 未満なら交差と判定
-			return (Distance(a, b) < 1.0);
-		}
-
-		bool Intersects(const Vec2& a, const RoundRect& b) noexcept
-		{
-			return RoundRectParts{ b }.intersects(a);
-		}
-
-		bool Intersects(const Vec2& a, const SuperEllipse& b) noexcept
-		{
-			const double ax = Abs(b.axes.x);
-			const double by = Abs(b.axes.y);
-
-			if ((ax == 0.0) || (by == 0.0))
+			if (n == 0)
 			{
 				return false;
 			}
 
-			if (b.n <= 0.0)
+			const Vec2* ps = segments.data();
+
+			if (n == 1)
 			{
-				return false;
+				return (p == ps[0]);
 			}
 
-			const double dx = Abs((a.x - b.center.x) / ax);
-			const double dy = Abs((a.y - b.center.y) / by);
-
-			if ((1.0 < dx) && (1.0 < dy))
+			for (size_t i = 0; i < (n - 1); ++i)
 			{
-				return false;
-			}
-
-			const double v = (std::pow(dx, b.n) + std::pow(dy, b.n));
-			return (v <= 1.0);
-		}
-
-		bool Intersects(const Vec2& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		bool Intersects(const Vec2& a, const MultiPolygon& b) noexcept
-		{
-			for (const auto& polygon : b)
-			{
-				if (Intersects(a, polygon))
+				if (Intersects(p, Line{ ps[i], ps[i + 1] }))
 				{
 					return true;
 				}
@@ -334,43 +670,91 @@ namespace s3d
 			return false;
 		}
 
-		bool Intersects(const Vec2& a, const LineString& b) noexcept
+		bool Intersects(const Vec2& p, const Bezier2& curve)
 		{
-			const size_t n = b.size();
-			
-			if (n < 2)
+			return IntersectsPointBezier2(p, curve);
+		}
+
+		bool Intersects(const Vec2& p, const Bezier3& curve)
+		{
+			return IntersectsPointBezier3(p, curve);
+		}
+
+		bool Intersects(const Vec2& p, const SuperEllipse& superEllipse) noexcept
+		{
+			const double ax	= superEllipse.axes.x;
+			const double by	= superEllipse.axes.y;
+			const double n	= superEllipse.n;
+
+			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
 			{
 				return false;
 			}
 
-			constexpr double Pad = 1.0;
-			const RectF boundingRect = b.computeBoundingRect().stretched(Pad);
+			if (ax == 0.0)
+			{
+				return ((p.x == superEllipse.center.x)
+					&& (Abs(p.y - superEllipse.center.y) <= by));
+			}
 
-			if (not boundingRect.contains(a))
+			if (by == 0.0)
+			{
+				return ((p.y == superEllipse.center.y)
+					&& (Abs(p.x - superEllipse.center.x) <= ax));
+			}
+
+			const double dx = Abs((p.x - superEllipse.center.x) / ax);
+			const double dy = Abs((p.y - superEllipse.center.y) / by);
+
+			if ((1.0 < dx) || (1.0 < dy))
 			{
 				return false;
 			}
 
-			const Vec2* pPoint = b.data();
-			Vec2 p0 = pPoint[0];
-
-			for (size_t i = 0; i < (n - 1); ++i)
+			if (n == 2.0)
 			{
-				const Vec2 p1 = *(++pPoint);
+				return ((dx * dx + dy * dy) <= 1.0);
+			}
 
-				auto [minX, maxX] = MinMax(p0.x, p1.x);
-				minX -= Pad; maxX += Pad;
+			return ((std::pow(dx, n) + std::pow(dy, n)) <= 1.0);
+		}
 
-				auto [minY, maxY] = MinMax(p0.y, p1.y);
-				minY -= Pad; maxY += Pad;
+		bool Intersects(const Vec2& p, const Polygon& polygon) noexcept
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
 
-				if ((a.x < minX) || (maxX < a.x) || (a.y < minY) || (maxY < a.y))
+			if (not Intersects(p, polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				if (ContainsPoint<detail::ConvexClockwise>(pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2], p))
 				{
-					p0 = p1;
-					continue;
+					return true;
 				}
+			}
 
-				if (detail::DistanceSq(p0, p1, a) < 1.0)
+			return false;
+		}
+
+		bool Intersects(const Vec2& p, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (Intersects(p, polygon))
 				{
 					return true;
 				}
@@ -385,440 +769,109 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Line& a, const Line& b) noexcept
+		bool Intersects(const Line& segment, const LineString& segments) noexcept
 		{
-			const Vec2 p = a.start;
-			const Vec2 r = (a.end - a.start);
-			const Vec2 q = b.start;
-			const Vec2 s = (b.end - b.start);
+			const size_t n = segments.size();
 
-			const Vec2 qp = (q - p);
-
-			const double rxs = (r.x * s.y - r.y * s.x);
-			const double qpxr = (qp.x * r.y - qp.y * r.x);
-
-			const double rr = r.dot(r);
-			const double ss = s.dot(s);
-
-			const bool rIsPoint = NearZero(rr);
-			const bool sIsPoint = NearZero(ss);
-
-			// a, b 両方が点
-			if (rIsPoint && sIsPoint)
-			{
-				return NearZero((a.start - b.start).dot(a.start - b.start));
-			}
-
-			// a が点（点が b 上にあるか）
-			if (rIsPoint)
-			{
-				// b も点は上で処理済みなのでここでは sIsPoint=false
-				const Vec2 ap = (a.start - b.start);
-				const double cross = (ap.x * s.y - ap.y * s.x);
-				
-				if (not NearZero(cross))
-				{
-					return false;
-				}
-
-				const double t = (ap.dot(s) / ss);
-				return In01(t);
-			}
-
-			// b が点（点が a 上にあるか）
-			if (sIsPoint)
-			{
-				const Vec2 bp = (b.start - a.start);
-				const double cross = (bp.x * r.y - bp.y * r.x);
-				
-				if (not NearZero(cross))
-				{
-					return false;
-				}
-
-				const double t = (bp.dot(r) / rr);
-				return In01(t);
-			}
-
-			// 平行
-			if (NearZero(rxs))
-			{
-				if (not NearZero(qpxr))
-				{
-					return false; // 平行で別線
-				}
-
-				// 同一直線：a 上の 1D 区間重なり判定
-				const double t0 = ((b.start - a.start).dot(r)) / rr;
-				const double t1 = ((b.end - a.start).dot(r)) / rr;
-
-				const auto [lo, hi] = MinMax(t0, t1);
-
-				// [lo,hi] と [0,1] が重なるか
-				return ((-Epsilon <= hi) && (lo <= (1.0 + Epsilon)));
-			}
-
-			// 一般位置
-			const double qpxs = (qp.x * s.y - qp.y * s.x);
-			const double t = (qpxs / rxs);
-			const double u = (qpxr / rxs);
-
-			return (In01(t) && In01(u));
-		}
-
-		bool Intersects(const Line& a, const Bezier2& b)
-		{
-			const double a1 = (a.start.y - a.end.y);
-			const double b1 = (a.end.x - a.start.x);
-			const double c1 = a.start.cross(a.end);
-
-			const double a2 = (a1 * (b.p0.x - 2 * b.p1.x + b.p2.x) + b1 * (b.p0.y - 2 * b.p1.y + b.p2.y));
-			const double b2 = (2 * (a1 * (b.p1 - b.p0).x + b1 * (b.p1 - b.p0).y));
-			const double c2 = std::fma(a1, b.p0.x, std::fma(b1, b.p0.y, c1));
-
-			if (const auto opt = Math::SolveQuadraticEquation(a2, b2, c2))
-			{
-				for (const double x : *opt)
-				{
-					if (In01(x))
-					{
-						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
-
-						if (Intersects(a, intersection))
-						{
-							return true;
-						}
-					}
-				}
-			}
-
-			return false;
-		}
-
-		bool Intersects(const Line& a, const Bezier3& b)
-		{
-			const Vec2 p0 = b.p0, p1 = b.p1, p2 = b.p2, p3 = b.p3;
-			const double a1 = (a.start.y - a.end.y);
-			const double b1 = (a.end.x - a.start.x);
-			const double c1 = a.start.cross(a.end);
-
-			std::array<Vec2, 4> v = { (-p0 + 3 * p1 - 3 * p2 + p3), (3 * p0 - 6 * p1 + 3 * p2), (-3 * p0 + 3 * p1), p0 };
-			std::array<double, 4> t;
-			for (size_t i = 0; i < 4; ++i)
-			{
-				t[i] = (a1 * v[i].x + b1 * v[i].y);
-			}
-			t[3] += c1;
-
-			if (const auto opt = Math::SolveCubicEquation(t[0], t[1], t[2], t[3]))
-			{
-				for (const double x : *opt)
-				{
-					if (In01(x))
-					{
-						const Vec2 intersection = b.pointAt(Clamp(x, 0.0, 1.0));
-
-						if (Intersects(a, intersection))
-						{
-							return true;
-						}
-					}
-				}
-			}
-
-			return false;
-		}
-
-		bool Intersects(const Line& a, const Rect& b) noexcept
-		{
-			if (Intersects(a.start, b) || Intersects(a.end, b))
-			{
-				return true;
-			}
-
-			const Vec2 tl = b.tl(), tr = b.tr(), br = b.br(), bl = b.bl();
-
-			return (Intersects(a, Line{ tl, tr })
-				 || Intersects(a, Line{ tr, br })
-				 || Intersects(a, Line{ br, bl })
-				 || Intersects(a, Line{ bl, tl }));
-		}
-
-		bool Intersects(const Line& a, const RectF& b) noexcept
-		{
-			if (Intersects(a.start, b) || Intersects(a.end, b))
-			{
-				return true;
-			}
-
-			const Vec2 tl = b.tl(), tr = b.tr(), br = b.br(), bl = b.bl();
-
-			return (Intersects(a, Line{ tl, tr })
-				 || Intersects(a, Line{ tr, br })
-				 || Intersects(a, Line{ br, bl })
-				 || Intersects(a, Line{ bl, tl }));
-		}
-
-		bool Intersects(const Line& a, const Circle& b) noexcept
-		{
-			const Vec2 ab = (a.end - a.start);
-			const Vec2 ac = (b.center - a.start);
-			const double e = ac.dot(ab);
-			const double rr = (b.r * b.r);
-
-			if (e <= 0.0)
-			{
-				return (ac.dot(ac) <= rr);
-			}
-
-			const double f = ab.dot(ab);
-
-			if (f <= e)
-			{
-				const Vec2 bc = (b.center - a.end);
-				return (bc.dot(bc) <= rr);
-			}
-
-			return ((ac.dot(ac) - e * e / f) <= rr);
-		}
-
-		//
-		//	https://github.com/thelonious/kld-intersections/blob/development/lib/Intersection.js
-		//
-		bool Intersects(const Line& a, const Ellipse& b) noexcept
-		{
-			const double rx = b.a;
-			const double ry = b.b;
-			const Vec2 dir(a.vector());
-			const Vec2 diff(a.start - b.center);
-			const Vec2 mDir(dir.x / (rx * rx), dir.y / (ry * ry));
-			const Vec2 mDiff(diff.x / (rx * rx), diff.y / (ry * ry));
-
-			const double va = dir.dot(mDir);
-			const double vb = dir.dot(mDiff);
-			const double vc = diff.dot(mDiff) - 1.0;
-			double vd = vb * vb - va * vc;
-
-			const double ERRF = 1e-15;
-			const double ZEROepsilon = 10 * Max({ std::abs(va), std::abs(vb), std::abs(vc) }) * ERRF;
-			if (std::abs(vd) < ZEROepsilon)
-			{
-				vd = 0;
-			}
-
-			if (vd < 0)
-			{
-				return false;
-			}
-			else if (vd > 0)
-			{
-				const double root = std::sqrt(vd);
-				double t_a = (-vb - root) / va;
-				double t_b = (-vb + root) / va;
-				t_b = (t_b > 1) ? t_b - ERRF : (t_b < 0) ? t_b + ERRF : t_b;
-				t_a = (t_a > 1) ? t_a - ERRF : (t_a < 0) ? t_a + ERRF : t_a;
-
-				if ((t_a < 0 || 1 < t_a) && (t_b < 0 || 1 < t_b))
-				{
-					return !((t_a < 0 && t_b < 0) || (t_a > 1 && t_b > 1));
-				}
-				else
-				{
-					return true;
-				}
-			}
-			else
-			{
-				const double t = -vb / va;
-				return (0 <= t && t <= 1);
-			}
-		}
-
-		bool Intersects(const Line& a, const Triangle& b) noexcept
-		{
-			if (Intersects(a.start, b) || Intersects(a.end, b))
-			{
-				return true;
-			}
-
-			return (Intersects(a, Line{ b.p0, b.p1 })
-				 || Intersects(a, Line{ b.p1, b.p2 })
-				 || Intersects(a, Line{ b.p2, b.p0 }));
-		}
-
-		bool Intersects(const Line& a, const Quad& b) noexcept
-		{
-			if (Intersects(a.start, b) || Intersects(a.end, b))
-			{
-				return true;
-			}
-
-			return (Intersects(a, Line{ b.p0, b.p1 })
-				 || Intersects(a, Line{ b.p1, b.p2 })
-				 || Intersects(a, Line{ b.p2, b.p3 })
-				 || Intersects(a, Line{ b.p3, b.p0 }));
-		}
-
-		bool Intersects(const Line& a, const RoundRect& b) noexcept
-		{
-			return RoundRectParts{ b }.intersects(a);
-		}
-
-		bool Intersects(const Line& a, const SuperEllipse& b) noexcept
-		{
-			const double ax = Abs(b.axes.x);
-			const double by = Abs(b.axes.y);
-
-			if ((ax == 0.0) || (by == 0.0) || (b.n <= 0.0))
+			if (n == 0)
 			{
 				return false;
 			}
 
-			// 線分が点なら点判定
-			if (a.start == a.end)
+			const Vec2* ps = segments.data();
+
+			if (n == 1)
 			{
-				return Intersects(a.start, b);
+				return Intersects(segment, ps[0]);
 			}
-
-			// AABB
-			if (not Intersects(a, b.boundingRect()))
-			{
-				return false;
-			}
-
-			// bounding circle
-			if (not Intersects(a, b.boundingCircle()))
-			{
-				return false;
-			}
-
-			// 線分の両端が内部にあるか
-			if (Intersects(a.start, b) || Intersects(a.end, b))
-			{
-				return true;
-			}
-
-			const Vec2 p0 = ((a.start - b.center) / Vec2{ ax, by });
-			const Vec2 p1 = ((a.end - b.center) / Vec2{ ax, by });
-			const Vec2 dir = (p1 - p0);
-
-			const auto Eval = [&](double t) noexcept -> double
-			{
-				const double x = (p0.x + dir.x * t);
-				const double y = (p0.y + dir.y * t);
-				return (std::pow(Abs(x), b.n) + std::pow(Abs(y), b.n));
-			};
-
-			double lo = 0.0;
-			double hi = 1.0;
-			constexpr double phi = 0.6180339887498948482;
-
-			double c = (hi - (hi - lo) * phi);
-			double d = (lo + (hi - lo) * phi);
-
-			double fc = Eval(c);
-			double fd = Eval(d);
-
-			for (int32 i = 0; i < 24; ++i)
-			{
-				if ((fc <= 1.0) || (fd <= 1.0))
-				{
-					return true;
-				}
-
-				if (fc < fd)
-				{
-					hi = d;
-					d = c;
-					fd = fc;
-					c = (hi - (hi - lo) * phi);
-					fc = Eval(c);
-				}
-				else
-				{
-					lo = c;
-					c = d;
-					fc = fd;
-					d = (lo + (hi - lo) * phi);
-					fd = Eval(d);
-				}
-			}
-
-			const double tMin = (0.5 * (lo + hi));
-			return (Eval(tMin) <= 1.0);
-		}
-
-		bool Intersects(const Line& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		bool Intersects(const Line& a, const MultiPolygon& b) noexcept
-		{
-			for (const auto& polygon : b)
-			{
-				if (Intersects(a, polygon))
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		bool Intersects(const Line& a, const LineString& b) noexcept
-		{
-			const size_t n = b.size();
-
-			if (n < 2)
-			{
-				return false;
-			}
-
-			// AABB による判定
-			constexpr double Pad = 1.0;
-			const RectF br = b.computeBoundingRect().stretched(Pad);
-			const RectF ar = RectF::FromPoints(a.start, a.end).stretched(Pad);
-			const double aLeft		= ar.leftX();
-			const double aRight		= ar.rightX();
-			const double aTop		= ar.topY();
-			const double aBottom	= ar.bottomY();
-
-			if (not br.intersects(ar))
-			{
-				return false;
-			}
-
-			const Vec2* pPoint = b.data();
-			Vec2 p0 = pPoint[0];
 
 			for (size_t i = 0; i < (n - 1); ++i)
 			{
-				const Vec2 p1 = *(++pPoint);
-
-				// 各セグメントの AABB で足切り
-				auto [minX, maxX] = MinMax(p0.x, p1.x);
-				auto [minY, maxY] = MinMax(p0.y, p1.y);
-				minX -= Pad; maxX += Pad;
-				minY -= Pad; maxY += Pad;
-
-				// Line a の AABB と重ならないなら交差しない
-				if ((aRight < minX) || (maxX < aLeft) || (aBottom < minY) || (maxY < aTop))
-				{
-					p0 = p1;
-					continue;
-				}
-
-				// 本判定
-				if (Intersects(a, Line{ p0, p1 }))
+				if (Intersects(segment, Line{ ps[i], ps[i + 1] }))
 				{
 					return true;
 				}
-
-				p0 = p1;
 			}
 
 			return false;
+		}
+
+		bool Intersects(const Line& segment, const Bezier2& curve)
+		{
+			return IntersectsLineBezier2(segment, curve);
+		}
+
+		bool Intersects(const Line& segment, const Bezier3& curve)
+		{
+			return IntersectsLineBezier3(segment, curve);
+		}
+
+		bool Intersects(const Line& segment, const SuperEllipse& superEllipse) noexcept
+		{
+			return IntersectsLineSuperEllipse(segment, superEllipse);
+		}
+
+		bool Intersects(const Line& segment, const Polygon& polygon) noexcept
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if (not Intersects(segment, polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (Intersects(segment, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool Intersects(const Line& segment, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (Intersects(segment, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(LineString, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const LineString& segments, const Point& p) noexcept
+		{
+			return Intersects(segments, Vec2{ p });
+		}
+
+		bool Intersects(const LineString& segments, const Vec2& p) noexcept
+		{
+			return Intersects(p, segments);
+		}
+
+		bool Intersects(const LineString& segments, const Line& segment) noexcept
+		{
+			return Intersects(segment, segments);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -827,135 +880,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Bezier2& a, const Point& b)
+		bool Intersects(const Bezier2& curve, const Point& p)
 		{
-			return Intersects(b, a);
+			return Intersects(p, curve);
 		}
 
-		bool Intersects(const Bezier2& a, const Vec2& b)
+		bool Intersects(const Bezier2& curve, const Vec2& p)
 		{
-			return Intersects(b, a);
+			return Intersects(p, curve);
 		}
 
-		bool Intersects(const Bezier2& a, const Line& b)
+		bool Intersects(const Bezier2& curve, const Line& segment)
 		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Bezier2& a, const Bezier2& b)
-		{
-			const RectF aRect = a.computeBoundingRect();
-			const RectF bRect = b.computeBoundingRect();
-
-			if (not Intersects(aRect, bRect))
-			{
-				return false;
-			}
-
-			return Intersects(a.toLineStringAdaptive(), b.toLineStringAdaptive());
-		}
-
-		bool Intersects(const Bezier2& a, const Bezier3& b)
-		{
-			const RectF aRect = a.computeBoundingRect();
-			const RectF bRect = b.computeBoundingRect();
-
-			if (not Intersects(aRect, bRect))
-			{
-				return false;
-			}
-
-			return Intersects(a.toLineStringAdaptive(), b.toLineStringAdaptive());
-		}
-
-		bool Intersects(const Bezier2& a, const Rect& b)
-		{
-			return Intersects(a, RectF{ b });
-		}
-
-		bool Intersects(const Bezier2& a, const RectF& b)
-		{
-			// 端点が内側にある場合
-			if (Intersects(a.p0, b) || Intersects(a.p2, b))
-			{
-				return true;
-			}
-
-			// 制御点の AABB と矩形が交差しない場合は交差しない
-			const RectF bezierAABB = a.controlPointsBoundingRect();
-			
-			if (not Intersects(bezierAABB, b))
-			{
-				return false;
-			}
-
-			// 長方形の各辺と交差するか
-			for (const Line& line : { b.top(), b.right(), b.bottom(), b.left() })
-			{
-				// 線分の AABB と制御点の AABB が交差しない場合は交差しない
-				if (not Intersects(bezierAABB, line))
-				{
-					continue;
-				}
-
-				// 線分とベジェ曲線の交差判定（計算コスト高）
-				if (Intersects(line, a))
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		bool Intersects(const Bezier2& a, const Circle& b)
-		{
-			// 制御点の AABB が交差しない場合は交差しない
-			{
-				const RectF bezierAABB = a.controlPointsBoundingRect();
-
-				if (not Intersects(bezierAABB, b))
-				{
-					return false;
-				}
-			}
-
-			// 端点が円の内側にあれば交差
-			if (Intersects(a.p0, b) || Intersects(a.p2, b))
-			{
-				return true;
-			}
-
-			const Vec2 closestPoint = a.computeClosestPoint(b.center);
-			return (closestPoint.distanceFromSq(b.center) <= (b.r * b.r));
-		}
-
-		bool Intersects(const Bezier2& a, const Ellipse& b)
-		{
-			// 制御点の AABB が交差しない場合は交差しない
-			{
-				const RectF bezierAABB = a.controlPointsBoundingRect();
-
-				if (not Intersects(bezierAABB, b))
-				{
-					return false;
-				}
-			}
-
-			// 端点のいずれかが楕円の内側にあれば交差
-			if (Intersects(a.p0, b) || Intersects(a.p2, b))
-			{
-				return true;
-			}
-			
-			const Vec2 invR{ (1.0 / b.a), (1.0 / b.b) };
-			Bezier2 localBezier;
-			localBezier.p0 = ((a.p0 - b.center) * invR);
-			localBezier.p1 = ((a.p1 - b.center) * invR);
-			localBezier.p2 = ((a.p2 - b.center) * invR);
-
-			const double distanceSq = localBezier.computeClosestPoint(Vec2{ 0, 0 }).lengthSq();
-			return (distanceSq <= 1.0);
+			return Intersects(segment, curve);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -964,452 +901,40 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Bezier3& a, const Point& b)
+		bool Intersects(const Bezier3& curve, const Point& p)
 		{
-			return Intersects(b, a);
+			return Intersects(p, curve);
 		}
 
-		bool Intersects(const Bezier3& a, const Vec2& b)
+		bool Intersects(const Bezier3& curve, const Vec2& p)
 		{
-			return Intersects(b, a);
+			return Intersects(p, curve);
 		}
 
-		bool Intersects(const Bezier3& a, const Line& b)
+		bool Intersects(const Bezier3& curve, const Line& segment)
 		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Bezier3& a, const Bezier2& b)
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Bezier3& a, const Bezier3& b)
-		{
-			const RectF aRect = a.computeBoundingRect();
-			const RectF bRect = b.computeBoundingRect();
-
-			if (not Intersects(aRect, bRect))
-			{
-				return false;
-			}
-
-			return Intersects(a.toLineStringAdaptive(), b.toLineStringAdaptive());
+			return Intersects(segment, curve);
 		}
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Intersects(Rect, _)
+		//	Intersects(SuperEllipse, _)
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Rect& a, const Line& b) noexcept
+		bool Intersects(const SuperEllipse& superEllipse, const Point& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, superEllipse);
 		}
 
-		bool Intersects(const Rect& a, const Bezier2& b)
+		bool Intersects(const SuperEllipse& superEllipse, const Vec2& p) noexcept
 		{
-			return Intersects(b, a);
+			return Intersects(p, superEllipse);
 		}
 
-		bool Intersects(const Rect& a, const Triangle& b) noexcept
+		bool Intersects(const SuperEllipse& superEllipse, const Line& segment) noexcept
 		{
-			return (Intersects(a.triangleAtIndex(0), b)
-				 || Intersects(a.triangleAtIndex(1), b));
-		}
-
-		bool Intersects(const Rect& a, const Quad& b) noexcept
-		{
-			return (Intersects(a, b.triangleAtIndex(0))
-				 || Intersects(a, b.triangleAtIndex(1)));
-		}
-
-		bool Intersects(const Rect& a, const RoundRect& b) noexcept
-		{
-			return RoundRectParts{ b }.intersects(a);
-		}
-
-		bool Intersects(const Rect& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(RectF, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		bool Intersects(const RectF& a, const Line& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RectF& a, const Bezier2& b)
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RectF& a, const Triangle& b) noexcept
-		{
-			return (Intersects(a.triangleAtIndex(0), b)
-				|| Intersects(a.triangleAtIndex(1), b));
-		}
-
-		bool Intersects(const RectF& a, const Quad& b) noexcept
-		{
-			return (Intersects(a, b.triangleAtIndex(0))
-				|| Intersects(a, b.triangleAtIndex(1)));
-		}
-
-		bool Intersects(const RectF& a, const RoundRect& b) noexcept
-		{
-			return RoundRectParts{ b }.intersects(a);
-		}
-
-		bool Intersects(const RectF& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Circle, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		bool Intersects(const Circle& a, const Line& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Circle& a, const Bezier2& b)
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Circle& a, const Triangle& b) noexcept
-		{
-			return CircleTriangleIntersection(a, b);
-		}
-
-		bool Intersects(const Circle& a, const Quad& b) noexcept
-		{
-			return (CircleTriangleIntersection(a, b.triangleAtIndex(0))
-				 || CircleTriangleIntersection(a, b.triangleAtIndex(1)));
-		}
-
-		bool Intersects(const Circle& a, const RoundRect& b) noexcept
-		{
-			return RoundRectParts{ b }.intersects(a);
-		}
-
-		bool Intersects(const Circle& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Ellipse, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		bool Intersects(const Ellipse& a, const Line& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Ellipse& a, const Bezier2& b)
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Ellipse& a, const Triangle& b) noexcept
-		{
-			Triangle triangle = b.movedBy(-a.center);
-
-			const double v = (a.a / a.b);
-
-			for (size_t i = 0; i < 3; ++i)
-			{
-				triangle.vertexAtIndex(i).y *= v;
-			}
-
-			return Intersects(Circle{ a.a }, triangle);
-		}
-
-		bool Intersects(const Ellipse& a, const Quad& b) noexcept
-		{
-			Quad quad = b.movedBy(-a.center);
-
-			const double v = (a.a / a.b);
-
-			for (size_t i = 0; i < 4; ++i)
-			{
-				quad.vertexAtIndex(i).y *= v;
-			}
-
-			return Intersects(Circle{ a.a }, quad);
-		}
-
-		bool Intersects(const Ellipse& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Triangle, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		bool Intersects(const Triangle& a, const Line& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Triangle& a, const Rect& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Triangle& a, const RectF& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Triangle& a, const Circle& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Triangle& a, const Ellipse& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Triangle& a, const Triangle& b) noexcept
-		{
-			auto Project = [](const Triangle& t, const Vec2& axis) noexcept -> std::pair<double, double>
-			{
-				double mn = axis.dot(t.vertexAtIndex(0));
-				double mx = mn;
-
-				for (int32 i = 1; i < 3; ++i)
-				{
-					const double d = axis.dot(t.vertexAtIndex(i));
-					
-					if (d < mn)
-					{
-						mn = d;
-					}
-					
-					if (mx < d)
-					{
-						mx = d;
-					}
-				}
-
-				return{ mn, mx };
-			};
-
-			auto Overlap = [](double minA, double maxA, double minB, double maxB) noexcept
-			{
-				return not((maxA < minB) || (maxB < minA));
-			};
-
-			auto TestAxesFrom = [&](const Triangle& t0, const Triangle& t1) noexcept -> bool
-			{
-				for (int32 i = 0; i < 3; ++i)
-				{
-					const Vec2 p0 = t0.vertexAtIndex(i);
-					const Vec2 p1 = t0.vertexAtIndex((i + 1) % 3);
-
-					const Vec2 edge = (p1 - p0);
-
-					// 軸 = edge の垂直
-					const Vec2 axis(edge.y, -edge.x);
-
-					// 退化（三角形が潰れている/辺がゼロ）
-					if ((axis.x == 0.0) && (axis.y == 0.0))
-					{
-						continue;
-					}
-
-					const auto [min0, max0] = Project(t0, axis);
-					const auto [min1, max1] = Project(t1, axis);
-
-					if (not Overlap(min0, max0, min1, max1))
-					{
-						return false; // 分離軸あり
-					}
-				}
-				return true;
-			};
-
-			// a の3軸 + b の3軸（合計6軸）
-			return (TestAxesFrom(a, b) && TestAxesFrom(b, a));
-		}
-
-		bool Intersects(const Triangle& a, const Quad& b) noexcept
-		{
-			return (Intersects(a, b.triangleAtIndex(0))
-				 || Intersects(a, b.triangleAtIndex(1)));
-		}
-
-		bool Intersects(const Triangle& a, const RoundRect& b) noexcept
-		{
-			return RoundRectParts{ b }.intersects(a);
-		}
-
-		bool Intersects(const Triangle& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Quad, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		bool Intersects(const Quad& a, const Line& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Quad& a, const Rect& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Quad& a, const RectF& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Quad& a, const Circle& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Quad& a, const Ellipse& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Quad& a, const Triangle& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Quad& a, const Quad& b) noexcept
-		{
-			return (Intersects(a.triangleAtIndex(0), b)
-				 || Intersects(a.triangleAtIndex(1), b));
-		}
-
-		bool Intersects(const Quad& a, const RoundRect& b) noexcept
-		{
-			return RoundRectParts{ b }.intersects(a);
-		}
-
-		bool Intersects(const Quad& a, const Polygon& b) noexcept
-		{
-			return b.intersects(a);
-		}
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(RoundRect, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		bool Intersects(const RoundRect& a, const Point& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const Vec2& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const Line& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const Rect& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const RectF& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const Circle& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const Triangle& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const Quad& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const RoundRect& a, const RoundRect& b) noexcept
-		{
-			if (not Intersects(a.rect, b.rect))
-			{
-				return false;
-			}
-
-			const RoundRectParts partsA{ a };
-			const RoundRectParts partsB{ b };
-
-			return (partsA.intersects(partsB.rectA)
-				 || partsA.intersects(partsB.rectB)
-				 || partsA.intersects(partsB.circleTL)
-				 || partsA.intersects(partsB.circleTR)
-				 || partsA.intersects(partsB.circleBR)
-				 || partsA.intersects(partsB.circleBL));
-		}
-
-		bool Intersects(const RoundRect& a, const Polygon& b) noexcept
-		{
-			if (b.isEmpty())
-			{
-				return false;
-			}
-
-			if (not Intersects(a, b.boundingRect()))
-			{
-				return false;
-			}
-
-			const RoundRectParts partsA{ a };
-
-			const size_t num_triangles = b.num_triangles();
-
-			for (size_t i = 0; i < num_triangles; ++i)
-			{
-				if (partsA.intersects(b.triangleAtIndex(i)))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return Intersects(segment, superEllipse);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1418,59 +943,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Polygon& a, const Point& b) noexcept
+		bool Intersects(const Polygon& polygon, const Point& p) noexcept
 		{
-			return a.intersects(Vec2{ b });
+			return Intersects(p, polygon);
 		}
 
-		bool Intersects(const Polygon& a, const Vec2& b) noexcept
+		bool Intersects(const Polygon& polygon, const Vec2& p) noexcept
 		{
-			return a.intersects(b);
+			return Intersects(p, polygon);
 		}
 
-		bool Intersects(const Polygon& a, const Line& b) noexcept
+		bool Intersects(const Polygon& polygon, const Line& segment) noexcept
 		{
-			return a.intersects(b);
-		}
-
-		bool Intersects(const Polygon& a, const Rect& b) noexcept
-		{
-			return a.intersects(b);
-		}
-
-		bool Intersects(const Polygon& a, const RectF& b) noexcept
-		{
-			return a.intersects(b);
-		}
-
-		bool Intersects(const Polygon& a, const Circle& b) noexcept
-		{
-			return a.intersects(b);
-		}
-
-		bool Intersects(const Polygon& a, const Ellipse& b) noexcept
-		{
-			return a.intersects(b);
-		}
-
-		bool Intersects(const Polygon& a, const Triangle& b) noexcept
-		{
-			return a.intersects(b);
-		}
-
-		bool Intersects(const Polygon& a, const Quad& b) noexcept
-		{
-			return a.intersects(b);
-		}
-
-		bool Intersects(const Polygon& a, const RoundRect& b) noexcept
-		{
-			return Intersects(b, a);
-		}
-
-		bool Intersects(const Polygon& a, const Polygon& b) noexcept
-		{
-			return a.intersects(b);
+			return Intersects(segment, polygon);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1479,111 +964,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(LineString, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		bool Intersects(const LineString& a, const LineString& b) noexcept
+		bool Intersects(const MultiPolygon& multiPolygon, const Point& p) noexcept
 		{
-			const size_t an = a.size();
-			const size_t bn = b.size();
+			return Intersects(p, multiPolygon);
+		}
 
-			if ((an < 2) || (bn < 2))
-			{
-				return false;
-			}
+		bool Intersects(const MultiPolygon& multiPolygon, const Vec2& p) noexcept
+		{
+			return Intersects(p, multiPolygon);
+		}
 
-			constexpr double Pad = 1.0;
-
-			// 全体 AABB による足切り
-			const RectF ar = a.computeBoundingRect().stretched(Pad);
-			const RectF br = b.computeBoundingRect().stretched(Pad);
-
-			if (not ar.intersects(br))
-			{
-				return false;
-			}
-
-			// 外側ループを短い方にすると少し得
-			const LineString* pOuter = &a;
-			const LineString* pInner = &b;
-			size_t on = an;
-			size_t in = bn;
-
-			if (bn < an)
-			{
-				pOuter = &b;
-				pInner = &a;
-				on = bn;
-				in = an;
-			}
-
-			const Vec2* oPtr = pOuter->data();
-			Vec2 o0 = oPtr[0];
-
-			for (size_t oi = 0; oi < (on - 1); ++oi)
-			{
-				const Vec2 o1 = *(++oPtr);
-
-				// Outer セグメント AABB
-				auto [oMinX, oMaxX] = MinMax(o0.x, o1.x);
-				auto [oMinY, oMaxY] = MinMax(o0.y, o1.y);
-				oMinX -= Pad; oMaxX += Pad;
-				oMinY -= Pad; oMaxY += Pad;
-
-				// Inner 全体 AABB と重ならないなら、この Outer セグメントは無視
-				{
-					const double iLeft = br.leftX();
-					const double iRight = br.rightX();
-					const double iTop = br.topY();
-					const double iBottom = br.bottomY();
-
-					if ((oMaxX < iLeft) || (iRight < oMinX) || (oMaxY < iTop) || (iBottom < oMinY))
-					{
-						o0 = o1;
-						continue;
-					}
-				}
-
-				const Line outerSeg{ o0, o1 };
-
-				// Inner の全セグメントと突き合わせ
-				const Vec2* iPtr = pInner->data();
-				Vec2 i0 = iPtr[0];
-
-				for (size_t ii = 0; ii < (in - 1); ++ii)
-				{
-					const Vec2 i1 = *(++iPtr);
-
-					// Inner セグメント AABB
-					auto [iMinX, iMaxX] = MinMax(i0.x, i1.x);
-					auto [iMinY, iMaxY] = MinMax(i0.y, i1.y);
-					iMinX -= Pad; iMaxX += Pad;
-					iMinY -= Pad; iMaxY += Pad;
-
-					// AABB が重ならないなら交差しない
-					if ((oMaxX < iMinX) || (iMaxX < oMinX) || (oMaxY < iMinY) || (iMaxY < oMinY))
-					{
-						i0 = i1;
-						continue;
-					}
-
-					// 本判定（Line vs Line）
-					if (Intersects(outerSeg, Line{ i0, i1 }))
-					{
-						return true;
-					}
-
-					i0 = i1;
-				}
-
-				o0 = o1;
-			}
-
-			return false;
+		bool Intersects(const MultiPolygon& multiPolygon, const Line& segment) noexcept
+		{
+			return Intersects(segment, multiPolygon);
 		}
 	}
 }

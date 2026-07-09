@@ -974,204 +974,204 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Polygon::PolygonDetail::intersects(const Vec2& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const Vec2& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		const Float2* pVertex = m_vertices.data();
+	//	const Float2* pVertex = m_vertices.data();
 
-		for (const auto& triangleIndex : m_indices)
-		{
-			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
+	//	for (const auto& triangleIndex : m_indices)
+	//	{
+	//		const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersects(other, triangle))
-			{
-				return true;
-			}
-		}
+	//		if (Geometry2D::Intersects(other, triangle))
+	//		{
+	//			return true;
+	//		}
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
-	bool Polygon::PolygonDetail::intersects(const Line& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const Line& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		const Float2* pVertex = m_vertices.data();
+	//	const Float2* pVertex = m_vertices.data();
 
-		for (const auto& triangleIndex : m_indices)
-		{
-			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
+	//	for (const auto& triangleIndex : m_indices)
+	//	{
+	//		const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersects(other, triangle))
-			{
-				return true;
-			}
-		}
+	//		if (Geometry2D::Intersects(other, triangle))
+	//		{
+	//			return true;
+	//		}
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
-	bool Polygon::PolygonDetail::intersects(const RectF& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const RectF& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		const boost::geometry::model::box<Vec2> box{ other.pos, other.br() };
+	//	const boost::geometry::model::box<Vec2> box{ other.pos, other.br() };
 
-		return boost::geometry::intersects(m_polygon, box);
-	}
+	//	return boost::geometry::intersects(m_polygon, box);
+	//}
 
-	bool Polygon::PolygonDetail::intersects(const Circle& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const Circle& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		const Float2* pVertex = m_vertices.data();
+	//	const Float2* pVertex = m_vertices.data();
 
-		for (const auto& triangleIndex : m_indices)
-		{
-			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
+	//	for (const auto& triangleIndex : m_indices)
+	//	{
+	//		const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersects(other, triangle))
-			{
-				return true;
-			}
-		}
+	//		if (Geometry2D::Intersects(other, triangle))
+	//		{
+	//			return true;
+	//		}
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
-	bool Polygon::PolygonDetail::intersects(const Ellipse& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const Ellipse& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		const Float2* pVertex = m_vertices.data();
+	//	const Float2* pVertex = m_vertices.data();
 
-		for (const auto& triangleIndex : m_indices)
-		{
-			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
+	//	for (const auto& triangleIndex : m_indices)
+	//	{
+	//		const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersects(other, triangle))
-			{
-				return true;
-			}
-		}
+	//		if (Geometry2D::Intersects(other, triangle))
+	//		{
+	//			return true;
+	//		}
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
-	bool Polygon::PolygonDetail::intersects(const Triangle& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const Triangle& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		const Float2* pVertex = m_vertices.data();
+	//	const Float2* pVertex = m_vertices.data();
 
-		for (const auto& triangleIndex : m_indices)
-		{
-			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
+	//	for (const auto& triangleIndex : m_indices)
+	//	{
+	//		const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersects(other, triangle))
-			{
-				return true;
-			}
-		}
+	//		if (Geometry2D::Intersects(other, triangle))
+	//		{
+	//			return true;
+	//		}
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
-	bool Polygon::PolygonDetail::intersects(const Quad& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const Quad& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		const Float2* pVertex = m_vertices.data();
+	//	const Float2* pVertex = m_vertices.data();
 
-		for (const auto& triangleIndex : m_indices)
-		{
-			const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
+	//	for (const auto& triangleIndex : m_indices)
+	//	{
+	//		const Triangle triangle{ pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2] };
 
-			if (Geometry2D::Intersects(other, triangle))
-			{
-				return true;
-			}
-		}
+	//		if (Geometry2D::Intersects(other, triangle))
+	//		{
+	//			return true;
+	//		}
+	//	}
 
-		return false;
-	}
+	//	return false;
+	//}
 
-	bool Polygon::PolygonDetail::intersects(const PolygonDetail& other) const
-	{
-		if (isEmpty())
-		{
-			return false;
-		}
+	//bool Polygon::PolygonDetail::intersects(const PolygonDetail& other) const
+	//{
+	//	if (isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (other.isEmpty())
-		{
-			return false;
-		}
+	//	if (other.isEmpty())
+	//	{
+	//		return false;
+	//	}
 
-		if (not Geometry2D::Intersects(other.m_boundingRect, m_boundingRect))
-		{
-			return false;
-		}
+	//	if (not Geometry2D::Intersects(other.m_boundingRect, m_boundingRect))
+	//	{
+	//		return false;
+	//	}
 
-		return boost::geometry::intersects(m_polygon, other.m_polygon);
-	}
+	//	return boost::geometry::intersects(m_polygon, other.m_polygon);
+	//}
 
 	////////////////////////////////////////////////////////////////
 	//

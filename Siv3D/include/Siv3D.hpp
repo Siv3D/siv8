@@ -689,6 +689,7 @@
 // 素数判定 | Primality test
 # include <Siv3D/IsPrime.hpp>
 
+# include <Siv3D/PolynomialRoots.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 
 ////////////////////////////////////////////////////////////////

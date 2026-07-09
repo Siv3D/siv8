@@ -254,7 +254,7 @@ namespace s3d
 		{
 			for (const Vec2& point : points)
 			{
-				if (not circle.intersects(point))
+				if (not Geometry2D::Intersects(point, circle))
 				{
 					return false;
 				}
