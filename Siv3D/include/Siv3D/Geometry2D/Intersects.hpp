@@ -395,6 +395,15 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const Rect& a, const Quad& b) noexcept;
 
+		[[nodiscard]]
+		bool Intersects(const Rect& a, const RoundRect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Rect& a, const Polygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Rect& a, const MultiPolygon& b) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(RectF, _)
@@ -439,6 +448,15 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const RectF& a, const Quad& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const RectF& a, const RoundRect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const RectF& a, const Polygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const RectF& a, const MultiPolygon& b) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -614,6 +632,12 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const RoundRect& a, const Bezier3& b);
 
+		[[nodiscard]]
+		bool Intersects(const RoundRect& a, const Rect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const RoundRect& a, const RectF& b) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Polygon, _)
@@ -637,6 +661,12 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const Polygon& a, const Bezier3& b);
+
+		[[nodiscard]]
+		bool Intersects(const Polygon& a, const Rect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Polygon& a, const RectF& b) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -662,15 +692,11 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const MultiPolygon& a, const Bezier3& b);
 
+		[[nodiscard]]
+		bool Intersects(const MultiPolygon& a, const Rect& b) noexcept;
 
-
-
-
-
-
-
-
-
+		[[nodiscard]]
+		bool Intersects(const MultiPolygon& a, const RectF& b) noexcept;
 
 
 

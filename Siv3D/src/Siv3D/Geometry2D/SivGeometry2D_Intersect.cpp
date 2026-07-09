@@ -1633,6 +1633,159 @@ namespace s3d
 				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, superEllipse)
 				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, superEllipse));
 		}
+
+		[[nodiscard]]
+		bool IntersectsRectFRoundRect(const RectF& rect, const RoundRect& roundRect) noexcept
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+			const RectF& rrRect = roundRect.rect;
+			const double rrW = rrRect.size.x;
+			const double rrH = rrRect.size.y;
+
+			if ((w < 0.0) || (h < 0.0) || (rrW < 0.0) || (rrH < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= rrW) && (0.0 <= rrH) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if (((w == 0.0) && (h == 0.0))
+				|| ((rrW == 0.0) && (rrH == 0.0)))
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, roundRect);
+			}
+
+			if (h == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, roundRect);
+			}
+
+			if ((rrW == 0.0) || (rrH == 0.0))
+			{
+				return Geometry2D::Intersects(rect, rrRect);
+			}
+
+			const double er = Min(roundRect.r, Min((rrW * 0.5), (rrH * 0.5)));
+
+			if (er == 0.0)
+			{
+				return Geometry2D::Intersects(rect, rrRect);
+			}
+
+			if (not BoundsIntersectClosed(rect, rrRect))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(Vec2{ left, top }, roundRect)
+				|| Geometry2D::Intersects(Vec2{ right, top }, roundRect)
+				|| Geometry2D::Intersects(Vec2{ right, bottom }, roundRect)
+				|| Geometry2D::Intersects(Vec2{ left, bottom }, roundRect))
+			{
+				return true;
+			}
+
+			const Vec2 rrCenter{ (rrRect.pos.x + (rrW * 0.5)), (rrRect.pos.y + (rrH * 0.5)) };
+
+			if (Geometry2D::Intersects(rrCenter, rect))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, roundRect)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, roundRect)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, roundRect)
+				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, roundRect));
+		}
+
+		[[nodiscard]]
+		bool IntersectsRectFPolygon(const RectF& rect, const Polygon& polygon) noexcept
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h));
+				return false;
+			}
+
+			if (((w == 0.0) && (h == 0.0))
+				|| polygon.isEmpty())
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, polygon);
+			}
+
+			if (h == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, polygon);
+			}
+
+			if (not BoundsIntersectClosed(rect, polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(Vec2{ left, top }, polygon)
+				|| Geometry2D::Intersects(Vec2{ right, top }, polygon)
+				|| Geometry2D::Intersects(Vec2{ right, bottom }, polygon)
+				|| Geometry2D::Intersects(Vec2{ left, bottom }, polygon))
+			{
+				return true;
+			}
+
+			for (const auto& vertex : polygon.vertices())
+			{
+				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, rect))
+				{
+					return true;
+				}
+			}
+
+			if (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, polygon)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, polygon)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, polygon)
+				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, polygon))
+			{
+				return true;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (IntersectsRectFTriangle(rect, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	namespace Geometry2D
@@ -2199,6 +2352,29 @@ namespace s3d
 			return IntersectsRectFQuad(RectF{ rect }, quad);
 		}
 
+		bool Intersects(const Rect& rect, const RoundRect& roundRect) noexcept
+		{
+			return IntersectsRectFRoundRect(RectF{ rect }, roundRect);
+		}
+
+		bool Intersects(const Rect& rect, const Polygon& polygon) noexcept
+		{
+			return IntersectsRectFPolygon(RectF{ rect }, polygon);
+		}
+
+		bool Intersects(const Rect& rect, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (Intersects(rect, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(RectF, _)
@@ -2233,6 +2409,29 @@ namespace s3d
 		bool Intersects(const RectF& rect, const Quad& quad) noexcept
 		{
 			return IntersectsRectFQuad(rect, quad);
+		}
+
+		bool Intersects(const RectF& rect, const RoundRect& roundRect) noexcept
+		{
+			return IntersectsRectFRoundRect(rect, roundRect);
+		}
+
+		bool Intersects(const RectF& rect, const Polygon& polygon) noexcept
+		{
+			return IntersectsRectFPolygon(rect, polygon);
+		}
+
+		bool Intersects(const RectF& rect, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (Intersects(rect, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2406,6 +2605,16 @@ namespace s3d
 			return Intersects(rect, quad);
 		}
 
+		bool Intersects(const RoundRect& roundRect, const Rect& rect) noexcept
+		{
+			return Intersects(rect, roundRect);
+		}
+
+		bool Intersects(const RoundRect& roundRect, const RectF& rect) noexcept
+		{
+			return Intersects(rect, roundRect);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Polygon, _)
@@ -2442,6 +2651,16 @@ namespace s3d
 			return Intersects(curve, polygon);
 		}
 
+		bool Intersects(const Polygon& polygon, const Rect& rect) noexcept
+		{
+			return Intersects(rect, polygon);
+		}
+
+		bool Intersects(const Polygon& polygon, const RectF& rect) noexcept
+		{
+			return Intersects(rect, polygon);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(MultiPolygon, _)
@@ -2476,6 +2695,16 @@ namespace s3d
 		bool Intersects(const MultiPolygon& multiPolygon, const Bezier3& curve)
 		{
 			return Intersects(curve, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const Rect& rect) noexcept
+		{
+			return Intersects(rect, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const RectF& rect) noexcept
+		{
+			return Intersects(rect, multiPolygon);
 		}
 	}
 }

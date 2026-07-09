@@ -338,6 +338,97 @@ TEST_CASE("Geometry2D.Intersects.Rect_RoundShapes")
 	}
 }
 
+
+// Rect / RectF と RoundRect は、内部、境界接触、empty、片側ゼロ形状を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Rect_RoundRect")
+{
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+		const RoundRect roundRect{ RectF{ 8, 2, 10, 6 }, 2 };
+		const RoundRect inside{ RectF{ 2, 2, 4, 4 }, 1 };
+		const RoundRect empty{ RectF{ 0, 0, 0, 0 }, 2 };
+		const RoundRect verticalSegment{ RectF{ 10, 0, 0, 10 }, 2 };
+		const RoundRect squareCorners{ RectF{ 10, 2, 5, 5 }, 0 };
+
+		CHECK(Geometry2D::Intersects(rect, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, rect));
+		CHECK(Geometry2D::Intersects(rect, inside));
+		CHECK(Geometry2D::Intersects(inside, rect));
+		CHECK(Geometry2D::Intersects(rect, squareCorners));
+		CHECK(Geometry2D::Intersects(squareCorners, rect));
+		CHECK(Geometry2D::Intersects(rect, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, rect));
+		CHECK(not Geometry2D::Intersects(rect, RoundRect{ RectF{ 11, 11, 4, 4 }, 2 }));
+		CHECK(not Geometry2D::Intersects(RoundRect{ RectF{ 11, 11, 4, 4 }, 2 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, empty));
+		CHECK(not Geometry2D::Intersects(empty, rect));
+	}
+
+	{
+		const Rect rect{ 0, 0, 10, 10 };
+
+		CHECK(Geometry2D::Intersects(rect, RoundRect{ RectF{ 8, 2, 10, 6 }, 2 }));
+		CHECK(Geometry2D::Intersects(RoundRect{ RectF{ 8, 2, 10, 6 }, 2 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, RoundRect{ RectF{ 11, 11, 4, 4 }, 2 }));
+	}
+
+	{
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2 };
+
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 2 }, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, RectF{ 5, -1, 0, 2 }));
+		CHECK(not Geometry2D::Intersects(RectF{ -1, -1, 0.5, 0.5 }, roundRect));
+	}
+}
+
+// Rect / RectF と Polygon / MultiPolygon は、包含、境界接触、empty container、片側ゼロ RectF を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Rect_PolygonContainers")
+{
+	const Polygon polygon{ Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } } };
+	const MultiPolygon multiPolygon{ polygon };
+	const Polygon emptyPolygon;
+	const MultiPolygon emptyMultiPolygon;
+
+	{
+		const RectF rect{ 5, 5, 10, 10 };
+
+		CHECK(Geometry2D::Intersects(rect, polygon));
+		CHECK(Geometry2D::Intersects(polygon, rect));
+		CHECK(Geometry2D::Intersects(rect, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, rect));
+	}
+
+	{
+		CHECK(Geometry2D::Intersects(RectF{ 10, 2, 5, 5 }, polygon));
+		CHECK(Geometry2D::Intersects(polygon, RectF{ 10, 2, 5, 5 }));
+		CHECK(Geometry2D::Intersects(RectF{ 10, 10, 5, 5 }, polygon));
+		CHECK(not Geometry2D::Intersects(RectF{ 11, 11, 2, 2 }, polygon));
+		CHECK(not Geometry2D::Intersects(polygon, RectF{ 11, 11, 2, 2 }));
+	}
+
+	{
+		CHECK(Geometry2D::Intersects(Rect{ 5, 5, 10, 10 }, polygon));
+		CHECK(Geometry2D::Intersects(polygon, Rect{ 5, 5, 10, 10 }));
+		CHECK(Geometry2D::Intersects(Rect{ 5, 5, 10, 10 }, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, Rect{ 5, 5, 10, 10 }));
+		CHECK(not Geometry2D::Intersects(Rect{ 11, 11, 2, 2 }, polygon));
+	}
+
+	{
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 3 }, polygon));
+		CHECK(Geometry2D::Intersects(polygon, RectF{ 5, -1, 0, 3 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 11, -1, 0, 3 }, polygon));
+	}
+
+	{
+		CHECK(not Geometry2D::Intersects(RectF{ 0, 0, 0, 0 }, polygon));
+		CHECK(not Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, emptyPolygon));
+		CHECK(not Geometry2D::Intersects(emptyPolygon, RectF{ 0, 0, 10, 10 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, emptyMultiPolygon));
+		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, RectF{ 0, 0, 10, 10 }));
+	}
+}
+
 // Rect / RectF と Triangle / Quad は、内部、境界接触、点接触、退化 polygonal shape、片側ゼロ RectF を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Rect_PolygonalShapes")
 {
