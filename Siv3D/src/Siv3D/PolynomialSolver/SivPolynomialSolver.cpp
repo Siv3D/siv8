@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -30,7 +30,7 @@ namespace s3d
 		// 重複根のマージ用。0 付近では実用上のスナップを許す。
 		constexpr double RootMergeEpsilon = 1e-12;
 
-		// cubic の近接多重根判定で生じうる偽の有限根を落とすための残差判定用。
+		// cubic の候補根を落とすための残差判定用。ゲーム・交差判定用途向けの実用閾値。
 		constexpr double CubicResidualRelEpsilon = 1e-8;
 
 		[[nodiscard]]
@@ -63,10 +63,22 @@ namespace s3d
 			return ((x == 0.0) ? 0.0 : x); // -0.0 を避ける
 		}
 
-		static void PushRoot(PolynomialRoots& result, const double x) noexcept
+		static bool PushRoot(PolynomialRoots& result, const double x) noexcept
 		{
+			if (not std::isfinite(x))
+			{
+				return false;
+			}
+
 			assert(result.count < 3);
+
+			if (result.count == 3)
+			{
+				return false;
+			}
+
 			result.roots[result.count++] = NormalizeZero(x);
+			return true;
 		}
 
 		static void Sort(PolynomialRoots& result) noexcept
@@ -134,8 +146,15 @@ namespace s3d
 			return std::fma(std::fma(std::fma(a, x, b), x, c), x, d);
 		}
 
+		struct CubicEval
+		{
+			double f = 0.0;
+			double scale = 0.0;
+			bool finite = false;
+		};
+
 		[[nodiscard]]
-		static double CubicRelativeResidual(const double x, const double a, const double b, const double c, const double d) noexcept
+		static CubicEval EvaluateCubicTermwise(const double x, const double a, const double b, const double c, const double d) noexcept
 		{
 			const double x2 = (x * x);
 
@@ -143,15 +162,76 @@ namespace s3d
 			const double ax3 = ((a * x2) * x);
 			const double bx2 = (b * x2);
 			const double cx = (c * x);
+
+			if (not (std::isfinite(ax3) && std::isfinite(bx2) && std::isfinite(cx)))
+			{
+				return CubicEval{ 0.0, 0.0, false };
+			}
+
 			const double f = (((ax3 + bx2) + cx) + d);
 			const double scale = Max(MaxAbs(ax3, bx2, cx), Abs(d));
 
-			if (scale == 0.0)
+			if (not (std::isfinite(f) && std::isfinite(scale)))
+			{
+				return CubicEval{ 0.0, 0.0, false };
+			}
+
+			return CubicEval{ f, scale, true };
+		}
+
+		[[nodiscard]]
+		static double CubicRelativeResidual(const double x, const double a, const double b, const double c, const double d) noexcept
+		{
+			const CubicEval eval = EvaluateCubicTermwise(x, a, b, c, d);
+
+			if (not eval.finite)
+			{
+				return std::numeric_limits<double>::infinity();
+			}
+
+			if (eval.scale == 0.0)
 			{
 				return 0.0;
 			}
 
-			return (Abs(f) / scale);
+			return (Abs(eval.f) / eval.scale);
+		}
+
+		static void PolishCubicRoot(double& x, const double a, const double b, const double c, const double d) noexcept
+		{
+			const double f = CubicValue(x, a, b, c, d);
+			const double df = std::fma(std::fma((3.0 * a), x, (2.0 * b)), x, c);
+
+			if (not (std::isfinite(f) && std::isfinite(df) && (df != 0.0)))
+			{
+				return;
+			}
+
+			const double next = NormalizeZero(x - (f / df));
+
+			if (not std::isfinite(next))
+			{
+				return;
+			}
+
+			const double fNext = CubicValue(next, a, b, c, d);
+
+			// loose な残差 filter だけでは悪化 step を受け入れうるため、単調改善する場合のみ採用する。
+			if (std::isfinite(fNext) && (Abs(fNext) <= Abs(f)))
+			{
+				x = next;
+			}
+		}
+
+		static void PolishCubicRoots(PolynomialRoots& result, const double a, const double b, const double c, const double d, const uint32 iterations = 1) noexcept
+		{
+			for (uint32 i = 0; i < result.count; ++i)
+			{
+				for (uint32 step = 0; step < iterations; ++step)
+				{
+					PolishCubicRoot(result.roots[i], a, b, c, d);
+				}
+			}
 		}
 
 		static void FilterCubicRoots(PolynomialRoots& result, const double a, const double b, const double c, const double d) noexcept
@@ -164,6 +244,12 @@ namespace s3d
 			for (uint32 readIndex = 0; readIndex < oldCount; ++readIndex)
 			{
 				const double root = result.roots[readIndex];
+
+				if (not std::isfinite(root))
+				{
+					continue;
+				}
+
 				const double residual = CubicRelativeResidual(root, a, b, c, d);
 
 				if (residual < bestResidual)
@@ -174,12 +260,12 @@ namespace s3d
 
 				if (residual <= CubicResidualRelEpsilon)
 				{
-					result.roots[writeIndex++] = root;
+					result.roots[writeIndex++] = NormalizeZero(root);
 				}
 			}
 
 			// cubic は少なくとも 1 つの実根を持つため、filter が全候補を落とす場合は最小残差の候補を残す。
-			if ((writeIndex == 0) && (0 < oldCount))
+			if ((writeIndex == 0) && (0 < oldCount) && std::isfinite(bestRoot))
 			{
 				result.roots[0] = NormalizeZero(bestRoot);
 				result.count = 1;
@@ -189,62 +275,201 @@ namespace s3d
 				result.count = writeIndex;
 			}
 
-			UniqueSorted(result);
+			Sort(result);
 		}
 
-		static void PolishCubicRoots(PolynomialRoots& result, const double a, const double b, const double c, const double d) noexcept
+		static void BackcheckCubicRootsInOriginalScale(PolynomialRoots& result, const double a, const double b, const double c, const double d) noexcept
 		{
-			for (uint32 i = 0; i < result.count; ++i)
+			const uint32 oldCount = result.count;
+			double bestRoot = 0.0;
+			double bestResidual = std::numeric_limits<double>::infinity();
+			uint32 writeIndex = 0;
+
+			for (uint32 readIndex = 0; readIndex < oldCount; ++readIndex)
 			{
-				const double x = result.roots[i];
+				double root = result.roots[readIndex];
 
-				// f(x) = ax^3 + bx^2 + cx + d
-				const double f = CubicValue(x, a, b, c, d);
-				const double df = std::fma(std::fma((3.0 * a), x, (2.0 * b)), x, c);
-				const double dfScale = MaxAbs((3.0 * a * x * x), (2.0 * b * x), c);
-
-				// 多重根付近では Newton step が不安定になりやすいためスキップする。
-				if ((dfScale != 0.0) && (not IsRelZero(df, dfScale, DiscriminantRelEpsilon)))
+				if (not std::isfinite(root))
 				{
-					const double next = NormalizeZero(x - (f / df));
-					const double fNext = CubicValue(next, a, b, c, d);
+					continue;
+				}
 
-					// loose な残差 filter だけでは悪化 step を受け入れうるため、単調改善する場合のみ採用する。
-					if (Abs(fNext) <= Abs(f))
+				CubicEval eval = EvaluateCubicTermwise(root, a, b, c, d);
+
+				if (not eval.finite)
+				{
+					// 元スケールで評価不能な巨大根は、スケール空間の verdict に委ねる。
+					result.roots[writeIndex++] = NormalizeZero(root);
+					continue;
+				}
+
+				const double df = std::fma(std::fma((3.0 * a), root, (2.0 * b)), root, c);
+
+				if (std::isfinite(df) && (df != 0.0))
+				{
+					const double next = NormalizeZero(root - (eval.f / df));
+
+					if (std::isfinite(next))
 					{
-						result.roots[i] = next;
+						const CubicEval nextEval = EvaluateCubicTermwise(next, a, b, c, d);
+
+						if (nextEval.finite && (Abs(nextEval.f) <= Abs(eval.f)))
+						{
+							root = next;
+							eval = nextEval;
+						}
 					}
+				}
+
+				const double residual = ((eval.scale == 0.0) ? 0.0 : (Abs(eval.f) / eval.scale));
+
+				if (residual < bestResidual)
+				{
+					bestResidual = residual;
+					bestRoot = root;
+				}
+
+				if (residual <= CubicResidualRelEpsilon)
+				{
+					result.roots[writeIndex++] = NormalizeZero(root);
 				}
 			}
 
-			FilterCubicRoots(result, a, b, c, d);
+			// genuine cubic の invariant: 表現可能な候補がすべて落ちる場合は最小残差の候補を残す。
+			if ((writeIndex == 0) && (0 < oldCount) && std::isfinite(bestRoot))
+			{
+				result.roots[0] = NormalizeZero(bestRoot);
+				result.count = 1;
+			}
+			else
+			{
+				result.count = writeIndex;
+			}
+
+			Sort(result);
 		}
 
 		[[nodiscard]]
-		static PolynomialRoots SolveDepressedCubicUnit(const double p, const double q)
+		static PolynomialRoots SolveQuadraticEquationRaw(double a, double b, double c, const bool mergeRoots)
 		{
-			PolynomialRoots result;
+			const double scale = MaxAbs(a, b, c);
 
-			if (q == 0.0) // x(x^2 + p) = 0
+			if (scale == 0.0)
 			{
-				PushRoot(result, 0.0);
+				return PolynomialRoots::Infinite();
+			}
 
-				if (p < 0.0)
+			a /= scale;
+			b /= scale;
+			c /= scale;
+
+			if (a == 0.0)
+			{
+				PolynomialRoots result;
+
+				if (b == 0.0)
 				{
-					const double r = std::sqrt(-p);
-					PushRoot(result, -r);
-					PushRoot(result, r);
+					return ((c == 0.0) ? PolynomialRoots::Infinite() : PolynomialRoots{});
 				}
 
-				UniqueSorted(result);
+				PushRoot(result, (-c / b));
 				return result;
 			}
 
-			if (p == 0.0) // x^3 + q = 0
+			if (c == 0.0)
 			{
-				PushRoot(result, std::cbrt(-q));
+				PolynomialRoots result;
+				PushRoot(result, 0.0);
+				PushRoot(result, (-b / a));
+
+				if (mergeRoots)
+				{
+					UniqueSorted(result);
+				}
+				else
+				{
+					Sort(result);
+				}
+
 				return result;
 			}
+
+			if (IsRelZero(a, 1.0, QuadraticDegreeRelEpsilon))
+			{
+				PolynomialRoots result;
+
+				if (PushRoot(result, (-c / b)))
+				{
+					return result;
+				}
+
+				return PolynomialRoots{};
+			}
+
+			const double ac4 = (4.0 * a * c);
+			const double discriminant = (b * b - ac4);
+			const double discriminantScale = (b * b + Abs(ac4));
+			const double discriminantEpsilon = (DiscriminantRelEpsilon * discriminantScale);
+
+			if (discriminant < -discriminantEpsilon)
+			{
+				return PolynomialRoots{}; // 実数解なし
+			}
+
+			PolynomialRoots result;
+
+			if (Abs(discriminant) <= discriminantEpsilon)
+			{
+				PushRoot(result, (-0.5 * b / a));
+				return result;
+			}
+
+			const double s = std::sqrt(Max(0.0, discriminant));
+			const double t = ((0.0 < b) ? (-b - s) : (-b + s));
+
+			if (t == 0.0)
+			{
+				PushRoot(result, (-0.5 * b / a));
+				return result;
+			}
+
+			PushRoot(result, ((2.0 * c) / t));
+			PushRoot(result, ((0.5 * t) / a));
+
+			if (mergeRoots)
+			{
+				UniqueSorted(result);
+			}
+			else
+			{
+				Sort(result);
+			}
+
+			return result;
+		}
+
+		[[nodiscard]]
+		static PolynomialRoots SolveCubicUnitMonic(const double a, const double b, const double c)
+		{
+			if (c == 0.0)
+			{
+				PolynomialRoots result;
+				PushRoot(result, 0.0);
+
+				const PolynomialRoots quadraticRoots = SolveQuadraticEquationRaw(1.0, a, b, false);
+
+				for (const double root : quadraticRoots)
+				{
+					PushRoot(result, root);
+				}
+
+				Sort(result);
+				return result;
+			}
+
+			const double aThird = (a / 3.0);
+			const double p = std::fma(-aThird, a, b);
+			const double q = std::fma(a, std::fma(((2.0 / 27.0) * a), a, (-b / 3.0)), c);
 
 			const double p3 = (p / 3.0);
 			const double q2 = (q / 2.0);
@@ -254,42 +479,67 @@ namespace s3d
 			const double discriminantScale = Max(q2Square, Abs(p3Cube));
 			const double discriminantEpsilon = (DiscriminantRelEpsilon * discriminantScale);
 
-			// exact fast paths の後では discriminantScale == 0.0 は通常到達しないが、防御的に多重根側へ倒す。
-			if ((discriminantScale == 0.0) || (Abs(discriminant) <= discriminantEpsilon))
+			PolynomialRoots result;
+
+			if (discriminant < -discriminantEpsilon)
 			{
-				// 多重根
-				const double u = std::cbrt(-q2);
-				PushRoot(result, (2.0 * u));
-				PushRoot(result, -u);
-				UniqueSorted(result);
+				// clean な 3 実根領域では三角関数法を維持する。
+				const double r = (2.0 * std::sqrt(-p3));
+				const double denom = std::sqrt(-p3Cube);
+				double cosphi = ((-q2) / denom);
+				cosphi = Max(-1.0, Min(1.0, cosphi));
+				const double phi = std::acos(cosphi);
+
+				PushRoot(result, ((r * std::cos(phi / 3.0)) - aThird));
+				PushRoot(result, ((r * std::cos((phi + 2.0 * Math::Pi) / 3.0)) - aThird));
+				PushRoot(result, ((r * std::cos((phi + 4.0 * Math::Pi) / 3.0)) - aThird));
+				Sort(result);
 				return result;
 			}
 
-			if (0.0 < discriminant)
+			// Δ >= 0 と near-zero Δ は、単一根を先に求めて scaled monic 空間で deflate する。
+			double x = 0.0;
+
+			if ((discriminantScale == 0.0) || (Abs(discriminant) <= discriminantEpsilon))
+			{
+				// Δ = 0 形の well-conditioned な単純根。三重根の場合もこの値が代表根になる。
+				const double u = std::cbrt(-q2);
+				x = ((2.0 * u) - aThird);
+			}
+			else
 			{
 				// 実根 1 つ。片側の cbrt は u * v = -p/3 から復元して cancellation を避ける。
 				const double s = std::sqrt(discriminant);
 				const double w = (-q2 - std::copysign(s, q2));
 				const double u = std::cbrt(w);
 				const double v = ((u == 0.0) ? 0.0 : (-p3 / u));
-
-				PushRoot(result, (u + v));
-				return result;
+				x = ((u + v) - aThird);
 			}
 
-			// discriminant < 0 : 実根 3 つ（三角関数）
-			const double r = (2.0 * std::sqrt(-p3));
+			if (std::isfinite(x))
+			{
+				PolishCubicRoot(x, 1.0, a, b, c);
+				PolishCubicRoot(x, 1.0, a, b, c);
+				PushRoot(result, x);
 
-			// cos(phi) = -q/2 / sqrt(-(p/3)^3)
-			const double denom = std::sqrt(-p3Cube);
-			double cosphi = ((-q2) / denom);
-			cosphi = Max(-1.0, Min(1.0, cosphi));
-			const double phi = std::acos(cosphi);
+				if (x != 0.0)
+				{
+					const double B = (a + x);
+					const double C = (-c / x);
 
-			PushRoot(result, (r * std::cos(phi / 3.0)));
-			PushRoot(result, (r * std::cos((phi + 2.0 * Math::Pi) / 3.0)));
-			PushRoot(result, (r * std::cos((phi + 4.0 * Math::Pi) / 3.0)));
-			UniqueSorted(result);
+					if (std::isfinite(B) && std::isfinite(C))
+					{
+						const PolynomialRoots quadraticRoots = SolveQuadraticEquationRaw(1.0, B, C, false);
+
+						for (const double root : quadraticRoots)
+						{
+							PushRoot(result, root);
+						}
+					}
+				}
+			}
+
+			Sort(result);
 			return result;
 		}
 	}
@@ -321,7 +571,7 @@ namespace s3d
 			}
 
 			PolynomialRoots result;
-			PushRoot(result, (-b / a));
+			PushRoot(result, (-b / a)); // overflow して非有限になる有限根は返さない。
 			return result;
 		}
 
@@ -333,62 +583,7 @@ namespace s3d
 
 		PolynomialRoots SolveQuadraticEquation(double a, double b, double c)
 		{
-			const double scale = MaxAbs(a, b, c);
-
-			if (scale == 0.0)
-			{
-				return PolynomialRoots::Infinite();
-			}
-
-			// 方程式全体をスケールして、判別式の overflow / underflow を抑える。
-			a /= scale;
-			b /= scale;
-			c /= scale;
-
-			if (a == 0.0)
-			{
-				return SolveLinearEquation(b, c);
-			}
-
-			if (c == 0.0)
-			{
-				PolynomialRoots result;
-				PushRoot(result, 0.0);
-				PushRoot(result, (-b / a));
-				UniqueSorted(result);
-				return result;
-			}
-
-			if (IsRelZero(a, 1.0, QuadraticDegreeRelEpsilon))
-			{
-				return SolveLinearEquation(b, c);
-			}
-
-			const double ac4 = (4.0 * a * c);
-			const double discriminant = (b * b - ac4);
-			const double discriminantScale = (b * b + Abs(ac4));
-			const double discriminantEpsilon = (DiscriminantRelEpsilon * discriminantScale);
-
-			if (discriminant < -discriminantEpsilon)
-			{
-				return PolynomialRoots{}; // 実数解なし
-			}
-
-			if (Abs(discriminant) <= discriminantEpsilon)
-			{
-				PolynomialRoots result;
-				PushRoot(result, (-0.5 * b / a));
-				return result;
-			}
-
-			const double s = std::sqrt(Max(0.0, discriminant));
-			const double t = ((0.0 < b) ? (-b - s) : (-b + s));
-
-			PolynomialRoots result;
-			PushRoot(result, ((2.0 * c) / t));
-			PushRoot(result, ((0.5 * t) / a));
-			UniqueSorted(result);
-			return result;
+			return SolveQuadraticEquationRaw(a, b, c, true);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -435,14 +630,17 @@ namespace s3d
 			const double scaledP = ((p / xScale) / xScale);
 			const double scaledQ = (((q / xScale) / xScale) / xScale);
 
-			PolynomialRoots result = SolveDepressedCubicUnit(scaledP, scaledQ);
-			PolishCubicRoots(result, 1.0, 0.0, scaledP, scaledQ);
+			PolynomialRoots result = SolveCubicUnitMonic(0.0, scaledP, scaledQ);
+			PolishCubicRoots(result, 1.0, 0.0, scaledP, scaledQ, 1);
+			FilterCubicRoots(result, 1.0, 0.0, scaledP, scaledQ);
 
 			for (double& y : result)
 			{
 				y = NormalizeZero(y * xScale);
 			}
 
+			BackcheckCubicRootsInOriginalScale(result, 1.0, 0.0, p, q);
+			UniqueSorted(result);
 			return result;
 		}
 
@@ -453,7 +651,7 @@ namespace s3d
 				PolynomialRoots result;
 				PushRoot(result, 0.0);
 
-				PolynomialRoots quadraticRoots = SolveQuadraticEquation(1.0, a, b);
+				const PolynomialRoots quadraticRoots = SolveQuadraticEquation(1.0, a, b);
 
 				for (const double root : quadraticRoots)
 				{
@@ -478,25 +676,17 @@ namespace s3d
 			const double scaledB = ((b / xScale) / xScale);
 			const double scaledC = (((c / xScale) / xScale) / xScale);
 
-			const double aThird = (scaledA / 3.0);
-			const double p = std::fma(-aThird, scaledA, scaledB);
-			const double q = std::fma(scaledA, std::fma(((2.0 / 27.0) * scaledA), scaledA, (-scaledB / 3.0)), scaledC);
-
-			PolynomialRoots result = SolveCubicEquation(p, q);
-
-			for (double& z : result)
-			{
-				z = NormalizeZero(z - aThird);
-			}
-
-			// polish / filter はスケーリング後の y 空間で行い、巨大根評価時の overflow を避ける。
-			PolishCubicRoots(result, 1.0, scaledA, scaledB, scaledC);
+			PolynomialRoots result = SolveCubicUnitMonic(scaledA, scaledB, scaledC);
+			PolishCubicRoots(result, 1.0, scaledA, scaledB, scaledC, 1);
+			FilterCubicRoots(result, 1.0, scaledA, scaledB, scaledC);
 
 			for (double& y : result)
 			{
 				y = NormalizeZero(y * xScale);
 			}
 
+			BackcheckCubicRootsInOriginalScale(result, 1.0, a, b, c);
+			UniqueSorted(result);
 			return result;
 		}
 

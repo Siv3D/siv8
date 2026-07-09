@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -58,6 +58,7 @@ namespace s3d
 		/// @param q 定数項 q です。
 		/// @return 数値的に近い重複解を除き、昇順に並んだ有限実数解を返します。
 		/// @remark 0 近傍では実用上の絶対許容誤差により、非常に近い別解が 1 つにマージされる場合があります。
+		/// @remark 極端な係数比では、実行時の実用性を優先して表現可能な有限実数解のみを返します。
 		[[nodiscard]]
 		PolynomialRoots SolveCubicEquation(double p, double q);
 
@@ -67,6 +68,7 @@ namespace s3d
 		/// @param c 定数項 c です。
 		/// @return 数値的に近い重複解を除き、昇順に並んだ有限実数解を返します。
 		/// @remark 0 近傍では実用上の絶対許容誤差により、非常に近い別解が 1 つにマージされる場合があります。
+		/// @remark 極端な係数比では、実行時の実用性を優先して表現可能な有限実数解のみを返します。
 		[[nodiscard]]
 		PolynomialRoots SolveCubicEquation(double a, double b, double c);
 
@@ -78,6 +80,7 @@ namespace s3d
 		/// @return 数値的に近い重複解を除き、昇順に並んだ有限実数解を返します。実数解が存在しない場合は count が 0 です。恒等式の場合は hasInfiniteSolutions が true です。
 		/// @remark 0 近傍では実用上の絶対許容誤差により、非常に近い別解が 1 つにマージされる場合があります。
 		/// @remark 極端に小さい最高次係数は、実行時の実用性を優先して低次方程式として扱う場合があります。
+		/// @remark 極端な係数比では、実行時の実用性を優先して表現可能な有限実数解のみを返します。
 		[[nodiscard]]
 		PolynomialRoots SolveCubicEquation(double a, double b, double c, double d);
 	}

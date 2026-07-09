@@ -54,14 +54,6 @@ namespace s3d
 			return (count == 0);
 		}
 
-		/// @brief 有限実数解を持たないかを返します。
-		/// @return 有限実数解を持たない場合 true
-		[[nodiscard]]
-		constexpr bool isEmpty() const noexcept
-		{
-			return (count == 0);
-		}
-
 		/// @brief 有限実数解、または無限個の解を持つかを返します。
 		/// @return 有限実数解、または無限個の解を持つ場合 true
 		[[nodiscard]]
