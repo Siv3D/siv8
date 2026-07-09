@@ -15,6 +15,31 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon::MultiPolygon(const container_type& other)
+		: m_polygons(other) {}
+
+	inline MultiPolygon::MultiPolygon(container_type&& other)
+		: m_polygons(std::move(other)) {}
+
+	inline MultiPolygon::MultiPolygon(size_type count)
+		: m_polygons(count) {}
+
+	template <std::input_iterator Iterator>
+	inline MultiPolygon::MultiPolygon(Iterator first, Iterator last)
+		: m_polygons(first, last) {}
+
+	inline MultiPolygon::MultiPolygon(std::initializer_list<value_type> init)
+		: m_polygons(init) {}
+
+	inline MultiPolygon::MultiPolygon(Arg::reserve_<size_type> size)
+		: m_polygons(size) {}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	operator =
 	//
 	////////////////////////////////////////////////////////////////
