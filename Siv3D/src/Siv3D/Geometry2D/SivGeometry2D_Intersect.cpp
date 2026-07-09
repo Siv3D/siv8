@@ -1057,6 +1057,300 @@ namespace s3d
 
 			return false;
 		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3RectF(const Bezier3& curve, const RectF& rect)
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, curve);
+			}
+
+			if (h == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, curve);
+			}
+
+			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(curve.p0, rect)
+				|| Geometry2D::Intersects(curve.p3, rect))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, curve)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, curve)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, curve)
+				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, curve));
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3Circle(const Bezier3& curve, const Circle& circle)
+		{
+			if (circle.r < 0.0)
+			{
+				assert(0.0 <= circle.r);
+				return false;
+			}
+
+			if (circle.r == 0.0)
+			{
+				return false;
+			}
+
+			const RectF circleBounds{
+				(circle.center.x - circle.r),
+				(circle.center.y - circle.r),
+				(circle.r * 2.0),
+				(circle.r * 2.0)
+			};
+
+			if (not BoundsIntersectClosed(curve.computeBoundingRect(), circleBounds))
+			{
+				return false;
+			}
+
+			const double t = curve.computeClosestT(circle.center);
+			return (curve.pointAt(t).distanceFromSq(circle.center) <= (circle.r * circle.r));
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3Ellipse(const Bezier3& curve, const Ellipse& ellipse)
+		{
+			const double ax = ellipse.axes.x;
+			const double by = ellipse.axes.y;
+
+			if ((ax < 0.0) || (by < 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } }, curve);
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } }, curve);
+			}
+
+			const RectF ellipseBounds{
+				(ellipse.center.x - ax),
+				(ellipse.center.y - by),
+				(ax * 2.0),
+				(by * 2.0)
+			};
+
+			if (not BoundsIntersectClosed(curve.computeBoundingRect(), ellipseBounds))
+			{
+				return false;
+			}
+
+			const Bezier3 local{
+				Vec2{ ((curve.p0.x - ellipse.center.x) / ax), ((curve.p0.y - ellipse.center.y) / by) },
+				Vec2{ ((curve.p1.x - ellipse.center.x) / ax), ((curve.p1.y - ellipse.center.y) / by) },
+				Vec2{ ((curve.p2.x - ellipse.center.x) / ax), ((curve.p2.y - ellipse.center.y) / by) },
+				Vec2{ ((curve.p3.x - ellipse.center.x) / ax), ((curve.p3.y - ellipse.center.y) / by) }
+			};
+
+			const double t = local.computeClosestT(Vec2{ 0, 0 });
+			return (local.pointAt(t).lengthSq() <= 1.0);
+		}
+
+		template <class Fty>
+		[[nodiscard]]
+		bool VisitBezier3ApproximateLineSegments(const Bezier3& curve, Fty&& callback, const double maxError = 0.25, const int32 maxDepth = 8)
+		{
+			const double maxErrorSq = (maxError * maxError);
+			const double flatnessK = (4.0 * maxErrorSq);
+			const double kNearlyZeroSq = 1e-12;
+			const int32 depthLimit = Max(0, maxDepth);
+
+			auto Visit = [&](auto&& self, const Bezier3& c, const int32 depth) -> bool
+				{
+					const Vec2 chord = (c.p3 - c.p0);
+					const double chordLenSq = chord.lengthSq();
+
+					if (chordLenSq < kNearlyZeroSq)
+					{
+						const double p0p1LenSq = (c.p1 - c.p0).lengthSq();
+						const double p1p2LenSq = (c.p2 - c.p1).lengthSq();
+						const double p2p3LenSq = (c.p3 - c.p2).lengthSq();
+						const double ctrlSpanSq = Max(Max(p0p1LenSq, p1p2LenSq), p2p3LenSq);
+
+						if (ctrlSpanSq < kNearlyZeroSq)
+						{
+							return callback(Line{ c.p0, c.p3 });
+						}
+
+						if (depthLimit <= depth)
+						{
+							return (callback(Line{ c.p0, c.p1 })
+								|| callback(Line{ c.p1, c.p2 })
+								|| callback(Line{ c.p2, c.p3 }));
+						}
+					}
+					else
+					{
+						const Vec2 v1 = (c.p1 - c.p0);
+						const Vec2 v2 = (c.p2 - c.p0);
+						const double cross1 = chord.cross(v1);
+						const double cross2 = chord.cross(v2);
+						bool acceptSegment = (((cross1 * cross1) <= (flatnessK * chordLenSq))
+							&& ((cross2 * cross2) <= (flatnessK * chordLenSq)));
+
+						if (acceptSegment)
+						{
+							const double dot1 = v1.dot(chord);
+							const double dot2 = v2.dot(chord);
+
+							if ((dot1 < 0.0) || (chordLenSq < dot1)
+								|| (dot2 < 0.0) || (chordLenSq < dot2))
+							{
+								acceptSegment = false;
+							}
+						}
+
+						if (acceptSegment || (depthLimit <= depth))
+						{
+							return callback(Line{ c.p0, c.p3 });
+						}
+					}
+
+					const auto [left, right] = c.split(0.5);
+					return (self(self, left, (depth + 1)) || self(self, right, (depth + 1)));
+				};
+
+			return Visit(Visit, curve, 0);
+		}
+
+		template <class Shape>
+		[[nodiscard]]
+		bool IntersectsBezier3ApproximateShape(const Bezier3& curve, const Shape& shape)
+		{
+			return VisitBezier3ApproximateLineSegments(curve, [&](const Line& segment)
+			{
+				return Geometry2D::Intersects(segment, shape);
+			});
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3SuperEllipse(const Bezier3& curve, const SuperEllipse& superEllipse)
+		{
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
+
+			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, curve);
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, curve);
+			}
+
+			if (n == 2.0)
+			{
+				return IntersectsBezier3Ellipse(curve, Ellipse{ superEllipse.center, ax, by });
+			}
+
+			if (not BoundsIntersectClosed(curve.computeBoundingRect(), superEllipse.boundingRect()))
+			{
+				return false;
+			}
+
+			return IntersectsBezier3ApproximateShape(curve, superEllipse);
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3Triangle(const Bezier3& curve, const RectF& curveBounds, const Triangle& triangle)
+		{
+			if (not BoundsIntersectClosed(curveBounds, triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(curve.p0, triangle)
+				|| Geometry2D::Intersects(curve.p3, triangle))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, curve)
+				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, curve)
+				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, curve));
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3Triangle(const Bezier3& curve, const Triangle& triangle)
+		{
+			return IntersectsBezier3Triangle(curve, curve.computeBoundingRect(), triangle);
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3Quad(const Bezier3& curve, const Quad& quad)
+		{
+			const RectF curveBounds = curve.computeBoundingRect();
+
+			if (not BoundsIntersectClosed(curveBounds, quad.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(curve.p0, quad)
+				|| Geometry2D::Intersects(curve.p3, quad))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ quad.p0, quad.p1 }, curve)
+				|| Geometry2D::Intersects(Line{ quad.p1, quad.p2 }, curve)
+				|| Geometry2D::Intersects(Line{ quad.p2, quad.p3 }, curve)
+				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, curve));
+		}
 	}
 
 	namespace Geometry2D
@@ -1524,6 +1818,41 @@ namespace s3d
 			return Intersects(curve2, curve1);
 		}
 
+		bool Intersects(const Bezier3& curve, const Rect& rect)
+		{
+			return IntersectsBezier3RectF(curve, RectF{ rect });
+		}
+
+		bool Intersects(const Bezier3& curve, const RectF& rect)
+		{
+			return IntersectsBezier3RectF(curve, rect);
+		}
+
+		bool Intersects(const Bezier3& curve, const Circle& circle)
+		{
+			return IntersectsBezier3Circle(curve, circle);
+		}
+
+		bool Intersects(const Bezier3& curve, const Ellipse& ellipse)
+		{
+			return IntersectsBezier3Ellipse(curve, ellipse);
+		}
+
+		bool Intersects(const Bezier3& curve, const SuperEllipse& superEllipse)
+		{
+			return IntersectsBezier3SuperEllipse(curve, superEllipse);
+		}
+
+		bool Intersects(const Bezier3& curve, const Triangle& triangle)
+		{
+			return IntersectsBezier3Triangle(curve, triangle);
+		}
+
+		bool Intersects(const Bezier3& curve, const Quad& quad)
+		{
+			return IntersectsBezier3Quad(curve, quad);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Rect, _)
@@ -1536,6 +1865,11 @@ namespace s3d
 		}
 
 		bool Intersects(const Rect& rect, const Bezier2& curve)
+		{
+			return Intersects(curve, rect);
+		}
+
+		bool Intersects(const Rect& rect, const Bezier3& curve)
 		{
 			return Intersects(curve, rect);
 		}
@@ -1556,6 +1890,11 @@ namespace s3d
 			return Intersects(curve, rect);
 		}
 
+		bool Intersects(const RectF& rect, const Bezier3& curve)
+		{
+			return Intersects(curve, rect);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Circle, _)
@@ -1572,6 +1911,11 @@ namespace s3d
 			return Intersects(curve, circle);
 		}
 
+		bool Intersects(const Circle& circle, const Bezier3& curve)
+		{
+			return Intersects(curve, circle);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Ellipse, _)
@@ -1584,6 +1928,11 @@ namespace s3d
 		}
 
 		bool Intersects(const Ellipse& ellipse, const Bezier2& curve)
+		{
+			return Intersects(curve, ellipse);
+		}
+
+		bool Intersects(const Ellipse& ellipse, const Bezier3& curve)
 		{
 			return Intersects(curve, ellipse);
 		}
@@ -1619,6 +1968,11 @@ namespace s3d
 			return Intersects(curve, superEllipse);
 		}
 
+		bool Intersects(const SuperEllipse& superEllipse, const Bezier3& curve)
+		{
+			return Intersects(curve, superEllipse);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Triangle, _)
@@ -1635,6 +1989,11 @@ namespace s3d
 			return Intersects(curve, triangle);
 		}
 
+		bool Intersects(const Triangle& triangle, const Bezier3& curve)
+		{
+			return Intersects(curve, triangle);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Quad, _)
@@ -1647,6 +2006,11 @@ namespace s3d
 		}
 
 		bool Intersects(const Quad& quad, const Bezier2& curve)
+		{
+			return Intersects(curve, quad);
+		}
+
+		bool Intersects(const Quad& quad, const Bezier3& curve)
 		{
 			return Intersects(curve, quad);
 		}
