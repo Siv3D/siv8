@@ -484,3 +484,78 @@ TEST_CASE("PolynomialSolver.residualContract")
 		}
 	}
 }
+
+// [R4-FAIL] 支配根に対して極端に小さい実根（原点近傍の t ヒット相当）。
+// 三角関数法の根は絶対誤差 ~eps * 根スケール を持つため、y 空間で支配根の
+// ~1e-15 倍以下の根は自身のスケールで精度を失い、Round 4 では filter に
+// 落とされて消失していた（fuzz で分離根 3 実根系の 1.2%）。
+// 修正は根の積の恒等式による最小根の再計算。実測: 相対誤差 ~1e-15。
+TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
+{
+	{
+		// 根 {1e-8, 2^12, 2^26}: 係数演算が double で正確なケース
+		const double r1 = 1e-8, r2 = 4096.0, r3 = 67108864.0;
+		const PolynomialRoots roots = Math::SolveCubicEquation(
+			-(r1 + r2 + r3), (r1 * r2 + r1 * r3 + r2 * r3), -(r1 * r2 * r3));
+
+		REQUIRE_EQ(roots.count, 3);
+		CHECK(IsClose(roots.roots[0], r1, 1e-6));
+		CHECK(IsClose(roots.roots[1], r2, 1e-9));
+		CHECK(IsClose(roots.roots[2], r3, 1e-9));
+	}
+
+	{
+		// 符号混在: 根 {-2^12, -1e-8, 2^26}
+		const double r1 = -1e-8, r2 = -4096.0, r3 = 67108864.0;
+		const PolynomialRoots roots = Math::SolveCubicEquation(
+			-(r1 + r2 + r3), (r1 * r2 + r1 * r3 + r2 * r3), -(r1 * r2 * r3));
+
+		REQUIRE_EQ(roots.count, 3);
+		CHECK(IsClose(roots.roots[0], r2, 1e-9));
+		CHECK(IsClose(roots.roots[1], r1, 1e-6));
+		CHECK(IsClose(roots.roots[2], r3, 1e-9));
+	}
+
+	{
+		// depressed 形の同族: x^3 - 1e308 x + 1e300 = 0
+		// 真の実根は {-1e154, ~1e-8, 1e154}。Round 4 は中央の微小根を失っていた。
+		const PolynomialRoots roots = Math::SolveCubicEquation(-1e308, 1e300);
+
+		REQUIRE_EQ(roots.count, 3);
+		CHECK(AllFinite(roots));
+		CHECK(IsClose(roots.roots[0], -1e154, 1e-9));
+		CHECK(IsClose(roots.roots[1], 1e-8, 1e-6));
+		CHECK(IsClose(roots.roots[2], 1e154, 1e-9));
+	}
+}
+
+// [R4-FAIL] quadratic の縮退ショートカット除去後の挙動。
+// 旧実装は |a| <= 1e-150 で一律に 1 次方程式として扱い、
+// (1) 実数解なしの方程式に残差 1e160 の誤根を返す、
+// (2) 表現可能な巨大根を不必要に捨てる、という 2 つの問題があった。
+// PushRoot が非有限根を拒否する現在は Citardauq 経路がそのまま安全。
+TEST_CASE("PolynomialSolver.Quadratic.degenerateLeadingCoefficient")
+{
+	{
+		// 1e-160 x^2 + 1e-160 x + 1 = 0: 判別式 < 0、実数解なし。
+		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-160, 1e-160, 1.0);
+		CHECK_EQ(roots.count, 0);
+	}
+
+	{
+		// 1e-200 x^2 + x + 1 = 0: 根 ~{-1e200, -1}、どちらも表現可能。
+		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-200, 1.0, 1.0);
+		REQUIRE_EQ(roots.count, 2);
+		CHECK(AllFinite(roots));
+		CHECK(IsClose(roots.roots[0], -1e200, 1e-12));
+		CHECK(IsClose(roots.roots[1], -1.0, 1e-12));
+	}
+
+	{
+		// 1e-320 x^2 + x + 1 = 0: 巨大根 ~-1e320 は表現不能なので落とし、-1 のみ返す。
+		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-320, 1.0, 1.0);
+		REQUIRE_EQ(roots.count, 1);
+		CHECK(AllFinite(roots));
+		CHECK(IsClose(roots.roots[0], -1.0, 1e-9));
+	}
+}

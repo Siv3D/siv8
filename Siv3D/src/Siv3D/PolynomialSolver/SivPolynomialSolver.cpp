@@ -24,7 +24,6 @@ namespace s3d
 		constexpr double DiscriminantRelEpsilon = 1e-12;
 
 		// 最高次係数の縮退判定用。通常の許容誤差ではなく、overflow と極端な係数比を避けるための下限。
-		constexpr double QuadraticDegreeRelEpsilon = 1e-150;
 		constexpr double CubicDegreeRelEpsilon = 1e-100;
 
 		// 重複根のマージ用。0 付近では実用上のスナップを許す。
@@ -265,7 +264,7 @@ namespace s3d
 			}
 
 			// cubic は少なくとも 1 つの実根を持つため、filter が全候補を落とす場合は最小残差の候補を残す。
-			if ((writeIndex == 0) && (0 < oldCount) && std::isfinite(bestRoot))
+			if ((writeIndex == 0) && (0 < oldCount) && (bestResidual < std::numeric_limits<double>::infinity()))
 			{
 				result.roots[0] = NormalizeZero(bestRoot);
 				result.count = 1;
@@ -336,7 +335,7 @@ namespace s3d
 			}
 
 			// genuine cubic の invariant: 表現可能な候補がすべて落ちる場合は最小残差の候補を残す。
-			if ((writeIndex == 0) && (0 < oldCount) && std::isfinite(bestRoot))
+			if ((writeIndex == 0) && (0 < oldCount) && (bestResidual < std::numeric_limits<double>::infinity()))
 			{
 				result.roots[0] = NormalizeZero(bestRoot);
 				result.count = 1;
@@ -392,18 +391,6 @@ namespace s3d
 				}
 
 				return result;
-			}
-
-			if (IsRelZero(a, 1.0, QuadraticDegreeRelEpsilon))
-			{
-				PolynomialRoots result;
-
-				if (PushRoot(result, (-c / b)))
-				{
-					return result;
-				}
-
-				return PolynomialRoots{};
 			}
 
 			const double ac4 = (4.0 * a * c);
@@ -490,9 +477,49 @@ namespace s3d
 				cosphi = Max(-1.0, Min(1.0, cosphi));
 				const double phi = std::acos(cosphi);
 
-				PushRoot(result, ((r * std::cos(phi / 3.0)) - aThird));
-				PushRoot(result, ((r * std::cos((phi + 2.0 * Math::Pi) / 3.0)) - aThird));
-				PushRoot(result, ((r * std::cos((phi + 4.0 * Math::Pi) / 3.0)) - aThird));
+				double y0 = ((r * std::cos(phi / 3.0)) - aThird);
+				double y1 = ((r * std::cos((phi + 2.0 * Math::Pi) / 3.0)) - aThird);
+				double y2 = ((r * std::cos((phi + 4.0 * Math::Pi) / 3.0)) - aThird);
+
+				// 三角関数法の根は絶対誤差 ~eps * (根スケール) を持つため、支配根に対して
+				// 極端に小さい根は自身のスケールで相対精度を失い、後段の filter に落とされうる
+				// （例: 根 {1e-8, 5e3, 9e7} で最小根が消失する）。
+				// 最小絶対値の根を根の積の恒等式 y0 * y1 * y2 = -c から再計算し、
+				// 残差が改善する場合のみ採用する。
+				{
+					double* ys[3] = { &y0, &y1, &y2 };
+					int minIndex = 0;
+
+					for (int i = 1; i < 3; ++i)
+					{
+						if (Abs(*ys[i]) < Abs(*ys[minIndex]))
+						{
+							minIndex = i;
+						}
+					}
+
+					const double others = ((*ys[(minIndex + 1) % 3]) * (*ys[(minIndex + 2) % 3]));
+
+					if ((others != 0.0) && std::isfinite(others))
+					{
+						const double candidate = (-c / others);
+
+						if (std::isfinite(candidate))
+						{
+							const double fOld = CubicValue(*ys[minIndex], 1.0, a, b, c);
+							const double fNew = CubicValue(candidate, 1.0, a, b, c);
+
+							if (std::isfinite(fNew) && (Abs(fNew) <= Abs(fOld)))
+							{
+								*ys[minIndex] = candidate;
+							}
+						}
+					}
+				}
+
+				PushRoot(result, y0);
+				PushRoot(result, y1);
+				PushRoot(result, y2);
 				Sort(result);
 				return result;
 			}
