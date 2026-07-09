@@ -21,7 +21,7 @@ namespace s3d
 	namespace detail
 	{
 		inline constexpr PointContainmentOptions ConvexClockwise{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
-		
+
 		[[nodiscard]]
 		constexpr bool BetweenClosed(const double a, const double x, const double b) noexcept
 		{
@@ -628,6 +628,41 @@ namespace s3d
 			return Intersects(segment, rect);
 		}
 
+		constexpr bool Intersects(const Rect& a, const Rect& b) noexcept
+		{
+			if ((a.size.x < 0) || (a.size.y < 0) || (b.size.x < 0) || (b.size.y < 0))
+			{
+				assert((0 <= a.size.x) && (0 <= a.size.y) && (0 <= b.size.x) && (0 <= b.size.y));
+				return false;
+			}
+
+			if (((a.size.x == 0) && (a.size.y == 0))
+				|| ((b.size.x == 0) && (b.size.y == 0)))
+			{
+				return false;
+			}
+
+			const int64 aLeft = a.pos.x;
+			const int64 aTop = a.pos.y;
+			const int64 aRight = (static_cast<int64>(a.pos.x) + static_cast<int64>(a.size.x));
+			const int64 aBottom = (static_cast<int64>(a.pos.y) + static_cast<int64>(a.size.y));
+
+			const int64 bLeft = b.pos.x;
+			const int64 bTop = b.pos.y;
+			const int64 bRight = (static_cast<int64>(b.pos.x) + static_cast<int64>(b.size.x));
+			const int64 bBottom = (static_cast<int64>(b.pos.y) + static_cast<int64>(b.size.y));
+
+			return ((aLeft <= bRight)
+				&& (bLeft <= aRight)
+				&& (aTop <= bBottom)
+				&& (bTop <= aBottom));
+		}
+
+		constexpr bool Intersects(const Rect& a, const RectF& b) noexcept
+		{
+			return Intersects(RectF{ a }, b);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(RectF, _)
@@ -647,6 +682,45 @@ namespace s3d
 		constexpr bool Intersects(const RectF& rect, const Line& segment) noexcept
 		{
 			return Intersects(segment, rect);
+		}
+
+		constexpr bool Intersects(const RectF& a, const Rect& b) noexcept
+		{
+			return Intersects(a, RectF{ b });
+		}
+
+		constexpr bool Intersects(const RectF& a, const RectF& b) noexcept
+		{
+			const double aw = a.size.x;
+			const double ah = a.size.y;
+			const double bw = b.size.x;
+			const double bh = b.size.y;
+
+			if ((aw < 0.0) || (ah < 0.0) || (bw < 0.0) || (bh < 0.0))
+			{
+				assert((0.0 <= aw) && (0.0 <= ah) && (0.0 <= bw) && (0.0 <= bh));
+				return false;
+			}
+
+			if (((aw == 0.0) && (ah == 0.0))
+				|| ((bw == 0.0) && (bh == 0.0)))
+			{
+				return false;
+			}
+
+			const double aLeft = a.pos.x;
+			const double aTop = a.pos.y;
+			const double aRight = (a.pos.x + aw);
+			const double aBottom = (a.pos.y + ah);
+			const double bLeft = b.pos.x;
+			const double bTop = b.pos.y;
+			const double bRight = (b.pos.x + bw);
+			const double bBottom = (b.pos.y + bh);
+
+			return ((aLeft <= bRight)
+				&& (bLeft <= aRight)
+				&& (aTop <= bBottom)
+				&& (bTop <= aBottom));
 		}
 
 		////////////////////////////////////////////////////////////////

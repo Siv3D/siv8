@@ -211,6 +211,119 @@ TEST_CASE("Geometry2D.Intersects.Line_PolygonalShapes")
 	}
 }
 
+
+// Rect / RectF 同士は、閉じた矩形集合として境界接触、点接触、empty、片側ゼロの線分矩形を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Rect_Rect")
+{
+	static_assert(Geometry2D::Intersects(Rect{ 0, 0, 10, 10 }, Rect{ 10, 0, 5, 5 }));
+	static_assert(Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, RectF{ 10, 10, 5, 5 }));
+	static_assert(not Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, RectF{ 11, 0, 5, 5 }));
+	static_assert(not Geometry2D::Intersects(RectF{ 0, 0, 0, 0 }, RectF{ 0, 0, 10, 10 }));
+
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+
+		CHECK(Geometry2D::Intersects(rect, RectF{ 5, 5, 10, 10 }));
+		CHECK(Geometry2D::Intersects(RectF{ 5, 5, 10, 10 }, rect));
+		CHECK(Geometry2D::Intersects(rect, RectF{ 10, 2, 5, 5 }));
+		CHECK(Geometry2D::Intersects(rect, RectF{ 10, 10, 5, 5 }));
+		CHECK(not Geometry2D::Intersects(rect, RectF{ 11, 0, 5, 5 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 0, 0, 0, 0 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, RectF{ 0, 0, 0, 0 }));
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 12 }, rect));
+		CHECK(Geometry2D::Intersects(rect, RectF{ 5, 10, 5, 0 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 11, 0, 0, 10 }, rect));
+	}
+
+	{
+		const Rect rect{ 0, 0, 10, 10 };
+
+		CHECK(Geometry2D::Intersects(rect, Rect{ 5, 5, 10, 10 }));
+		CHECK(Geometry2D::Intersects(Rect{ 5, 5, 10, 10 }, rect));
+		CHECK(Geometry2D::Intersects(rect, Rect{ 10, 0, 5, 5 }));
+		CHECK(not Geometry2D::Intersects(rect, Rect{ 11, 0, 5, 5 }));
+		CHECK(not Geometry2D::Intersects(rect, Rect{ 0, 0, 0, 0 }));
+		CHECK(Geometry2D::Intersects(rect, RectF{ 5, -1, 0, 12 }));
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 12 }, rect));
+	}
+}
+
+// Rect / RectF と Triangle / Quad は、内部、境界接触、点接触、退化 polygonal shape、片側ゼロ RectF を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Rect_PolygonalShapes")
+{
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+		const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };
+
+		CHECK(Geometry2D::Intersects(rect, triangle));
+		CHECK(Geometry2D::Intersects(triangle, rect));
+		CHECK(Geometry2D::Intersects(RectF{ 10, 0, 5, 5 }, triangle));
+		CHECK(Geometry2D::Intersects(triangle, RectF{ 10, 0, 5, 5 }));
+		CHECK(Geometry2D::Intersects(RectF{ 10, -5, 5, 5 }, triangle));
+		CHECK(not Geometry2D::Intersects(RectF{ 8, 8, 3, 3 }, triangle));
+		CHECK(not Geometry2D::Intersects(RectF{ 0, 0, 0, 0 }, triangle));
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 3 }, triangle));
+		CHECK(Geometry2D::Intersects(triangle, RectF{ 5, -1, 0, 3 }));
+	}
+
+	{
+		const Rect rect{ 0, 0, 10, 10 };
+		const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };
+
+		CHECK(Geometry2D::Intersects(rect, triangle));
+		CHECK(Geometry2D::Intersects(triangle, rect));
+		CHECK(not Geometry2D::Intersects(Rect{ 8, 8, 3, 3 }, triangle));
+	}
+
+	{
+		const Triangle segmentTriangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 5, 0 } };
+		const Triangle pointTriangle{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } };
+
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 2, 2 }, segmentTriangle));
+		CHECK(Geometry2D::Intersects(segmentTriangle, RectF{ 5, -1, 2, 2 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 5, 1, 2, 2 }, segmentTriangle));
+		CHECK(Geometry2D::Intersects(RectF{ 2, 3, 3, 3 }, pointTriangle));
+		CHECK(Geometry2D::Intersects(pointTriangle, RectF{ 2, 3, 3, 3 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 2, 5, 3, 3 }, pointTriangle));
+	}
+
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+		const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+
+		CHECK(Geometry2D::Intersects(rect, quad));
+		CHECK(Geometry2D::Intersects(quad, rect));
+		CHECK(Geometry2D::Intersects(RectF{ 10, 2, 5, 5 }, quad));
+		CHECK(Geometry2D::Intersects(quad, RectF{ 10, 2, 5, 5 }));
+		CHECK(Geometry2D::Intersects(RectF{ 10, 10, 5, 5 }, quad));
+		CHECK(not Geometry2D::Intersects(RectF{ 11, 11, 2, 2 }, quad));
+		CHECK(not Geometry2D::Intersects(RectF{ 0, 0, 0, 0 }, quad));
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 3 }, quad));
+		CHECK(Geometry2D::Intersects(quad, RectF{ 5, -1, 0, 3 }));
+	}
+
+	{
+		const Rect rect{ 0, 0, 10, 10 };
+		const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+
+		CHECK(Geometry2D::Intersects(rect, quad));
+		CHECK(Geometry2D::Intersects(quad, rect));
+		CHECK(not Geometry2D::Intersects(Rect{ 11, 11, 2, 2 }, quad));
+	}
+
+	{
+		const Quad segmentQuad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 0 } };
+		const Quad pointQuad{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } };
+
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 2 }, segmentQuad));
+		CHECK(Geometry2D::Intersects(segmentQuad, RectF{ 5, -1, 0, 2 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 5, 1, 0, 2 }, segmentQuad));
+		CHECK(Geometry2D::Intersects(RectF{ 2, 4, 2, 0 }, pointQuad));
+		CHECK(Geometry2D::Intersects(pointQuad, RectF{ 2, 4, 2, 0 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 2, 5, 2, 0 }, pointQuad));
+	}
+}
+
 // Line と Bezier2 / Bezier3 は、交差、端点接触、同一直線上の重なりを扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Line_Bezier")
 {

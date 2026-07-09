@@ -1438,6 +1438,123 @@ namespace s3d
 
 			return false;
 		}
+
+		[[nodiscard]]
+		bool IntersectsRectFTriangle(const RectF& rect, const Triangle& triangle) noexcept
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, triangle);
+			}
+
+			if (h == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, triangle);
+			}
+
+			if (not BoundsIntersectClosed(rect, triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(triangle.p0, rect)
+				|| Geometry2D::Intersects(triangle.p1, rect)
+				|| Geometry2D::Intersects(triangle.p2, rect))
+			{
+				return true;
+			}
+
+			if (Geometry2D::Intersects(Vec2{ left, top }, triangle)
+				|| Geometry2D::Intersects(Vec2{ right, top }, triangle)
+				|| Geometry2D::Intersects(Vec2{ right, bottom }, triangle)
+				|| Geometry2D::Intersects(Vec2{ left, bottom }, triangle))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, triangle)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, triangle)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, triangle)
+				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, triangle));
+		}
+
+		[[nodiscard]]
+		bool IntersectsRectFQuad(const RectF& rect, const Quad& quad) noexcept
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, quad);
+			}
+
+			if (h == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, quad);
+			}
+
+			if (not BoundsIntersectClosed(rect, quad.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(quad.p0, rect)
+				|| Geometry2D::Intersects(quad.p1, rect)
+				|| Geometry2D::Intersects(quad.p2, rect)
+				|| Geometry2D::Intersects(quad.p3, rect))
+			{
+				return true;
+			}
+
+			if (Geometry2D::Intersects(Vec2{ left, top }, quad)
+				|| Geometry2D::Intersects(Vec2{ right, top }, quad)
+				|| Geometry2D::Intersects(Vec2{ right, bottom }, quad)
+				|| Geometry2D::Intersects(Vec2{ left, bottom }, quad))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, quad)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, quad)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, quad)
+				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, quad));
+		}
 	}
 
 	namespace Geometry2D
@@ -1989,6 +2106,16 @@ namespace s3d
 			return Intersects(curve, rect);
 		}
 
+		bool Intersects(const Rect& rect, const Triangle& triangle) noexcept
+		{
+			return IntersectsRectFTriangle(RectF{ rect }, triangle);
+		}
+
+		bool Intersects(const Rect& rect, const Quad& quad) noexcept
+		{
+			return IntersectsRectFQuad(RectF{ rect }, quad);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(RectF, _)
@@ -2008,6 +2135,16 @@ namespace s3d
 		bool Intersects(const RectF& rect, const Bezier3& curve)
 		{
 			return Intersects(curve, rect);
+		}
+
+		bool Intersects(const RectF& rect, const Triangle& triangle) noexcept
+		{
+			return IntersectsRectFTriangle(rect, triangle);
+		}
+
+		bool Intersects(const RectF& rect, const Quad& quad) noexcept
+		{
+			return IntersectsRectFQuad(rect, quad);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2109,6 +2246,16 @@ namespace s3d
 			return Intersects(curve, triangle);
 		}
 
+		bool Intersects(const Triangle& triangle, const Rect& rect) noexcept
+		{
+			return Intersects(rect, triangle);
+		}
+
+		bool Intersects(const Triangle& triangle, const RectF& rect) noexcept
+		{
+			return Intersects(rect, triangle);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Quad, _)
@@ -2149,6 +2296,16 @@ namespace s3d
 		bool Intersects(const RoundRect& roundRect, const Bezier3& curve)
 		{
 			return Intersects(curve, roundRect);
+		}
+
+		bool Intersects(const Quad& quad, const Rect& rect) noexcept
+		{
+			return Intersects(rect, quad);
+		}
+
+		bool Intersects(const Quad& quad, const RectF& rect) noexcept
+		{
+			return Intersects(rect, quad);
 		}
 
 		////////////////////////////////////////////////////////////////
