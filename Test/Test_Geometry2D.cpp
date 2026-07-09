@@ -835,6 +835,20 @@ TEST_CASE("Geometry2D.Intersects.Bezier2_EmptyPolygonContainers")
 }
 
 
+// 空の Polygon / MultiPolygon は、Bezier3 と交差しないことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier3_EmptyPolygonContainers")
+{
+	const Bezier3 curve{ Vec2{ -1, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 0 } };
+	const Polygon polygon;
+	const MultiPolygon multiPolygon;
+
+	CHECK(not Geometry2D::Intersects(curve, polygon));
+	CHECK(not Geometry2D::Intersects(polygon, curve));
+	CHECK(not Geometry2D::Intersects(curve, multiPolygon));
+	CHECK(not Geometry2D::Intersects(multiPolygon, curve));
+}
+
+
 // Bezier2 と SuperEllipse は、n == 2 の Ellipse 委譲、退化線分、近似判定を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Bezier2_SuperEllipse")
 {
@@ -908,6 +922,31 @@ TEST_CASE("Geometry2D.Intersects.Bezier2_RoundRect")
 	}
 }
 
+
+// Bezier3 と RoundRect は、内部通過、境界接触、empty、RectF 退化を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier3_RoundRect")
+{
+	{
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2 };
+
+		CHECK(Geometry2D::Intersects(Bezier3{ Vec2{ -1, 5 }, Vec2{ 3, 5 }, Vec2{ 7, 5 }, Vec2{ 11, 5 } }, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, Bezier3{ Vec2{ -1, 5 }, Vec2{ 3, 5 }, Vec2{ 7, 5 }, Vec2{ 11, 5 } }));
+		CHECK(Geometry2D::Intersects(Bezier3{ Vec2{ 2, 2 }, Vec2{ 4, 4 }, Vec2{ 6, 6 }, Vec2{ 8, 8 } }, roundRect));
+		CHECK(Geometry2D::Intersects(Bezier3{ Vec2{ 0, 5 }, Vec2{ 0, 5 }, Vec2{ 0, 5 }, Vec2{ 0, 5 } }, roundRect));
+		CHECK(not Geometry2D::Intersects(Bezier3{ Vec2{ -5, -1 }, Vec2{ 0, -1 }, Vec2{ 10, -1 }, Vec2{ 15, -1 } }, roundRect));
+	}
+
+	{
+		const RoundRect empty{ RectF{ 0, 0, 0, 0 }, 2 };
+		const RoundRect verticalSegment{ RectF{ 0, 0, 0, 10 }, 2 };
+		const RoundRect squareCorners{ RectF{ 0, 0, 10, 10 }, 0 };
+
+		CHECK(not Geometry2D::Intersects(Bezier3{ Vec2{ -1, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 0 } }, empty));
+		CHECK(Geometry2D::Intersects(Bezier3{ Vec2{ -1, 5 }, Vec2{ 0, 5 }, Vec2{ 0, 5 }, Vec2{ 1, 5 } }, verticalSegment));
+		CHECK(Geometry2D::Intersects(Bezier3{ Vec2{ -1, 5 }, Vec2{ 3, 5 }, Vec2{ 7, 5 }, Vec2{ 11, 5 } }, squareCorners));
+	}
+}
+
 // Bezier2 と Bezier2 / Bezier3 は、近似線分化と既存 Line x Bezier kernel による交差判定を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Bezier2_Curves")
 {
@@ -931,4 +970,20 @@ TEST_CASE("Geometry2D.Intersects.Bezier2_Curves")
 		CHECK(Geometry2D::Intersects(vertical, arch));
 		CHECK(not Geometry2D::Intersects(arch, outside));
 	}
+}
+
+
+// Bezier3 と Bezier3 は、近似線分化と既存 Line x Bezier3 kernel による交差判定を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Bezier3_Curves")
+{
+	const Bezier3 arch{ Vec2{ 0, 0 }, Vec2{ 3, 9 }, Vec2{ 7, 9 }, Vec2{ 10, 0 } };
+	const Bezier3 vertical{ Vec2{ 5, -1 }, Vec2{ 5, 2 }, Vec2{ 5, 8 }, Vec2{ 5, 11 } };
+	const Bezier3 horizontal{ Vec2{ -1, 5 }, Vec2{ 3, 5 }, Vec2{ 7, 5 }, Vec2{ 11, 5 } };
+	const Bezier3 outside{ Vec2{ 20, -1 }, Vec2{ 20, 2 }, Vec2{ 20, 8 }, Vec2{ 20, 11 } };
+
+	CHECK(Geometry2D::Intersects(arch, vertical));
+	CHECK(Geometry2D::Intersects(vertical, arch));
+	CHECK(Geometry2D::Intersects(arch, horizontal));
+	CHECK(Geometry2D::Intersects(arch, arch));
+	CHECK(not Geometry2D::Intersects(arch, outside));
 }
