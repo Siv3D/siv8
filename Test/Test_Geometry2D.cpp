@@ -1344,3 +1344,159 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_Curves")
 	CHECK(Geometry2D::Intersects(arch, arch));
 	CHECK(not Geometry2D::Intersects(arch, outside));
 }
+
+// Triangle / Quad と Polygon / MultiPolygon は、包含、境界接触、empty container、退化 point / segment を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.PolygonalShapes_PolygonContainers")
+{
+	const Polygon polygon{ Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } } };
+	const MultiPolygon multiPolygon{ polygon };
+	const Polygon emptyPolygon;
+	const MultiPolygon emptyMultiPolygon;
+
+	{
+		const Triangle crossing{ Vec2{ 5, -1 }, Vec2{ 11, -1 }, Vec2{ 5, 5 } };
+		const Triangle inside{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 2, 4 } };
+		const Triangle containing{ Vec2{ -1, -1 }, Vec2{ 20, -1 }, Vec2{ -1, 20 } };
+		const Triangle touching{ Vec2{ 10, 2 }, Vec2{ 15, 2 }, Vec2{ 10, 8 } };
+		const Triangle outside{ Vec2{ 11, 11 }, Vec2{ 20, 11 }, Vec2{ 11, 20 } };
+
+		CHECK(Geometry2D::Intersects(crossing, polygon));
+		CHECK(Geometry2D::Intersects(polygon, crossing));
+		CHECK(Geometry2D::Intersects(inside, polygon));
+		CHECK(Geometry2D::Intersects(polygon, inside));
+		CHECK(Geometry2D::Intersects(containing, polygon));
+		CHECK(Geometry2D::Intersects(polygon, containing));
+		CHECK(Geometry2D::Intersects(touching, polygon));
+		CHECK(Geometry2D::Intersects(polygon, touching));
+		CHECK(not Geometry2D::Intersects(outside, polygon));
+		CHECK(not Geometry2D::Intersects(polygon, outside));
+
+		CHECK(Geometry2D::Intersects(crossing, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, crossing));
+		CHECK(not Geometry2D::Intersects(outside, multiPolygon));
+		CHECK(not Geometry2D::Intersects(multiPolygon, outside));
+	}
+
+	{
+		const Triangle segmentTriangle{ Vec2{ -1, 5 }, Vec2{ 11, 5 }, Vec2{ 5, 5 } };
+		const Triangle pointTriangle{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } };
+		const Triangle outsidePointTriangle{ Vec2{ 11, 11 }, Vec2{ 11, 11 }, Vec2{ 11, 11 } };
+
+		CHECK(Geometry2D::Intersects(segmentTriangle, polygon));
+		CHECK(Geometry2D::Intersects(polygon, segmentTriangle));
+		CHECK(Geometry2D::Intersects(pointTriangle, polygon));
+		CHECK(Geometry2D::Intersects(polygon, pointTriangle));
+		CHECK(not Geometry2D::Intersects(outsidePointTriangle, polygon));
+		CHECK(not Geometry2D::Intersects(polygon, outsidePointTriangle));
+	}
+
+	{
+		const Quad crossing{ Vec2{ 8, 2 }, Vec2{ 12, 2 }, Vec2{ 12, 8 }, Vec2{ 8, 8 } };
+		const Quad inside{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 4, 4 }, Vec2{ 2, 4 } };
+		const Quad containing{ Vec2{ -1, -1 }, Vec2{ 11, -1 }, Vec2{ 11, 11 }, Vec2{ -1, 11 } };
+		const Quad touching{ Vec2{ 10, 2 }, Vec2{ 15, 2 }, Vec2{ 15, 8 }, Vec2{ 10, 8 } };
+		const Quad outside{ Vec2{ 11, 11 }, Vec2{ 20, 11 }, Vec2{ 20, 20 }, Vec2{ 11, 20 } };
+
+		CHECK(Geometry2D::Intersects(crossing, polygon));
+		CHECK(Geometry2D::Intersects(polygon, crossing));
+		CHECK(Geometry2D::Intersects(inside, polygon));
+		CHECK(Geometry2D::Intersects(polygon, inside));
+		CHECK(Geometry2D::Intersects(containing, polygon));
+		CHECK(Geometry2D::Intersects(polygon, containing));
+		CHECK(Geometry2D::Intersects(touching, polygon));
+		CHECK(Geometry2D::Intersects(polygon, touching));
+		CHECK(not Geometry2D::Intersects(outside, polygon));
+		CHECK(not Geometry2D::Intersects(polygon, outside));
+
+		CHECK(Geometry2D::Intersects(crossing, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, crossing));
+		CHECK(not Geometry2D::Intersects(outside, multiPolygon));
+		CHECK(not Geometry2D::Intersects(multiPolygon, outside));
+	}
+
+	{
+		const Quad segmentQuad{ Vec2{ -1, 5 }, Vec2{ 11, 5 }, Vec2{ 11, 5 }, Vec2{ -1, 5 } };
+		const Quad pointQuad{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } };
+		const Quad outsidePointQuad{ Vec2{ 11, 11 }, Vec2{ 11, 11 }, Vec2{ 11, 11 }, Vec2{ 11, 11 } };
+
+		CHECK(Geometry2D::Intersects(segmentQuad, polygon));
+		CHECK(Geometry2D::Intersects(polygon, segmentQuad));
+		CHECK(Geometry2D::Intersects(pointQuad, polygon));
+		CHECK(Geometry2D::Intersects(polygon, pointQuad));
+		CHECK(not Geometry2D::Intersects(outsidePointQuad, polygon));
+		CHECK(not Geometry2D::Intersects(polygon, outsidePointQuad));
+	}
+
+	{
+		const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };
+		const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+
+		CHECK(not Geometry2D::Intersects(triangle, emptyPolygon));
+		CHECK(not Geometry2D::Intersects(emptyPolygon, triangle));
+		CHECK(not Geometry2D::Intersects(quad, emptyPolygon));
+		CHECK(not Geometry2D::Intersects(emptyPolygon, quad));
+		CHECK(not Geometry2D::Intersects(triangle, emptyMultiPolygon));
+		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, triangle));
+		CHECK(not Geometry2D::Intersects(quad, emptyMultiPolygon));
+		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, quad));
+	}
+}
+
+
+// Polygon / MultiPolygon 同士は、包含、境界接触、empty container、member-wise 判定を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.PolygonContainers_PolygonContainers")
+{
+	const Polygon base{ Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } } };
+	const Polygon overlap{ Array<Vec2>{ Vec2{ 5, 5 }, Vec2{ 15, 5 }, Vec2{ 15, 15 }, Vec2{ 5, 15 } } };
+	const Polygon inside{ Array<Vec2>{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 4, 4 }, Vec2{ 2, 4 } } };
+	const Polygon containing{ Array<Vec2>{ Vec2{ -1, -1 }, Vec2{ 11, -1 }, Vec2{ 11, 11 }, Vec2{ -1, 11 } } };
+	const Polygon edgeTouch{ Array<Vec2>{ Vec2{ 10, 2 }, Vec2{ 15, 2 }, Vec2{ 15, 8 }, Vec2{ 10, 8 } } };
+	const Polygon pointTouch{ Array<Vec2>{ Vec2{ 10, 10 }, Vec2{ 15, 10 }, Vec2{ 10, 15 } } };
+	const Polygon outside{ Array<Vec2>{ Vec2{ 11, 11 }, Vec2{ 20, 11 }, Vec2{ 20, 20 }, Vec2{ 11, 20 } } };
+	const Polygon emptyPolygon;
+
+	CHECK(Geometry2D::Intersects(base, overlap));
+	CHECK(Geometry2D::Intersects(overlap, base));
+	CHECK(Geometry2D::Intersects(base, inside));
+	CHECK(Geometry2D::Intersects(inside, base));
+	CHECK(Geometry2D::Intersects(base, containing));
+	CHECK(Geometry2D::Intersects(containing, base));
+	CHECK(Geometry2D::Intersects(base, edgeTouch));
+	CHECK(Geometry2D::Intersects(edgeTouch, base));
+	CHECK(Geometry2D::Intersects(base, pointTouch));
+	CHECK(Geometry2D::Intersects(pointTouch, base));
+	CHECK(not Geometry2D::Intersects(base, outside));
+	CHECK(not Geometry2D::Intersects(outside, base));
+	CHECK(not Geometry2D::Intersects(base, emptyPolygon));
+	CHECK(not Geometry2D::Intersects(emptyPolygon, base));
+
+	{
+		const MultiPolygon multi{ base };
+		const MultiPolygon overlapMulti{ overlap };
+		const MultiPolygon outsideMulti{ outside };
+		const MultiPolygon emptyMulti;
+
+		CHECK(Geometry2D::Intersects(base, overlapMulti));
+		CHECK(Geometry2D::Intersects(overlapMulti, base));
+		CHECK(Geometry2D::Intersects(multi, overlap));
+		CHECK(Geometry2D::Intersects(overlap, multi));
+		CHECK(Geometry2D::Intersects(multi, overlapMulti));
+		CHECK(Geometry2D::Intersects(overlapMulti, multi));
+		CHECK(not Geometry2D::Intersects(base, outsideMulti));
+		CHECK(not Geometry2D::Intersects(outsideMulti, base));
+		CHECK(not Geometry2D::Intersects(multi, outsideMulti));
+		CHECK(not Geometry2D::Intersects(outsideMulti, multi));
+		CHECK(not Geometry2D::Intersects(base, emptyMulti));
+		CHECK(not Geometry2D::Intersects(emptyMulti, base));
+		CHECK(not Geometry2D::Intersects(multi, emptyMulti));
+		CHECK(not Geometry2D::Intersects(emptyMulti, multi));
+	}
+
+	{
+		const Polygon far{ Array<Vec2>{ Vec2{ 100, 100 }, Vec2{ 110, 100 }, Vec2{ 110, 110 }, Vec2{ 100, 110 } } };
+		const MultiPolygon multi{ far, base };
+
+		CHECK(Geometry2D::Intersects(overlap, multi));
+		CHECK(Geometry2D::Intersects(multi, overlap));
+	}
+}

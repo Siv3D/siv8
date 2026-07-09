@@ -584,6 +584,12 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool Intersects(const Triangle& a, const Quad& b) noexcept;
 
+		[[nodiscard]]
+		bool Intersects(const Triangle& a, const Polygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Triangle& a, const MultiPolygon& b) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Quad, _)
@@ -619,6 +625,12 @@ namespace s3d
 
 		[[nodiscard]]
 		constexpr bool Intersects(const Quad& a, const Quad& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Quad& a, const Polygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Quad& a, const MultiPolygon& b) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -680,6 +692,19 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const Polygon& a, const RectF& b) noexcept;
 
+		[[nodiscard]]
+		bool Intersects(const Polygon& a, const Triangle& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Polygon& a, const Quad& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Polygon& a, const Polygon& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Polygon& a, const MultiPolygon& b) noexcept;
+
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(MultiPolygon, _)
@@ -710,398 +735,19 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const MultiPolygon& a, const RectF& b) noexcept;
 
-
-
-
-
-
-		/*
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Circle, _)
-		//
-		////////////////////////////////////////////////////////////////
+		[[nodiscard]]
+		bool Intersects(const MultiPolygon& a, const Triangle& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersects(const Circle& a, const Point& b) noexcept;
+		bool Intersects(const MultiPolygon& a, const Quad& b) noexcept;
 
 		[[nodiscard]]
-		constexpr bool Intersects(const Circle& a, const Vec2& b) noexcept;
+		bool Intersects(const MultiPolygon& a, const Polygon& b) noexcept;
 
 		[[nodiscard]]
-		bool Intersects(const Circle& a, const Line& b) noexcept;
+		bool Intersects(const MultiPolygon& a, const MultiPolygon& b) noexcept;
 
-		[[nodiscard]]
-		bool Intersects(const Circle& a, const Bezier2& b);
 
-		//[[nodiscard]]
-		//inline bool Intersects(const Circle& a, const Bezier3& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Circle& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Circle& a, const RectF& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Circle& a, const Circle& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Circle& a, const Ellipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Circle& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Circle& a, const Quad& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Circle& a, const RoundRect& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Circle& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Circle& a, const Polygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Circle& a, const MultiPolygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Circle& a, const LineString& b) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Ellipse, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Ellipse& a, const Point& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Ellipse& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Ellipse& a, const Line& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Ellipse& a, const Bezier2& b);
-
-		//[[nodiscard]]
-		//inline bool Intersects(const Ellipse& a, const Bezier3& b);
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Ellipse& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Ellipse& a, const RectF& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const Ellipse& a, const Circle& b);
-
-		//[[nodiscard]]
-		//bool Intersects(const Ellipse& a, const Ellipse& b);
-
-		[[nodiscard]]
-		bool Intersects(const Ellipse& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Ellipse& a, const Quad& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Ellipse& a, const RoundRect& b);
-
-		//[[nodiscard]]
-		//bool Intersects(const Ellipse& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Ellipse& a, const Polygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Ellipse& a, const MultiPolygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Ellipse& a, const LineString& b) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Triangle, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Triangle& a, const Point& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Triangle& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const Line& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const Triangle& a, const Bezier2& b);
-
-		////[[nodiscard]]
-		////bool Intersects(const Triangle& a, const Bezier3& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const RectF& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const Circle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const Ellipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const Quad& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const RoundRect& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Triangle& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Triangle& a, const Polygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Triangle& a, const MultiPolygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Triangle& a, const LineString& b) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Quad, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Quad& a, const Point& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Quad& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const Line& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Quad& a, const Bezier2& b);
-
-		////[[nodiscard]]
-		////bool Intersects(const Quad& a, const Bezier3& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const RectF& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const Circle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const Ellipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const Quad& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const RoundRect& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Quad& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Quad& a, const Polygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Quad& a, const MultiPolygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Quad& a, const LineString& b) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(RoundRect, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Point& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Line& b) noexcept;
-
-		////[[nodiscard]]
-		////bool Intersects(const RoundRect& a, const Bezier2& b) noexcept;
-
-		////[[nodiscard]]
-		////bool Intersects(const RoundRect& a, const Bezier3& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const RectF& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Circle& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const RoundRect& a, const Ellipse& b);
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Quad& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const RoundRect& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const RoundRect& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const RoundRect& a, const Polygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const RoundRect& a, const MultiPolygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const RoundRect& a, const LineString& b) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(SuperEllipse, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(Polygon, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Point& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Line& b) noexcept;
-
-		////[[nodiscard]]
-		////bool Intersects(const Polygon& a, const Bezier2& b) noexcept;
-
-		////[[nodiscard]]
-		////bool Intersects(const Polygon& a, const Bezier3& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const RectF& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Circle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Ellipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Quad& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const RoundRect& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Polygon& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Polygon& a, const Polygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Polygon& a, const MultiPolygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const Polygon& a, const LineString& b) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	Intersects(MultiPolygon, _)
-		//
-		////////////////////////////////////////////////////////////////
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Point& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Vec2& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Line& b) noexcept;
-
-		////[[nodiscard]]
-		////bool Intersects(const MultiPolygon& a, const Bezier2& b) noexcept;
-
-		////[[nodiscard]]
-		////bool Intersects(const MultiPolygon& a, const Bezier3& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Rect& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const RectF& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Circle& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Ellipse& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Triangle& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Quad& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const RoundRect& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const MultiPolygon& a, const SuperEllipse& b) noexcept;
-
-		//[[nodiscard]]
-		//inline bool Intersects(const MultiPolygon& a, const Polygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const MultiPolygon& a, const MultiPolygon& b) noexcept;
-
-		//[[nodiscard]]
-		//bool Intersects(const MultiPolygon& a, const LineString& b) noexcept;
-
-		*/
 	}
 }
 

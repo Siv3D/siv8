@@ -1786,6 +1786,142 @@ namespace s3d
 
 			return false;
 		}
+
+		[[nodiscard]]
+		bool IntersectsTrianglePolygon(const Triangle& triangle, const Polygon& polygon) noexcept
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if (not BoundsIntersectClosed(triangle.boundingRect(), polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(triangle.p0, polygon)
+				|| Geometry2D::Intersects(triangle.p1, polygon)
+				|| Geometry2D::Intersects(triangle.p2, polygon))
+			{
+				return true;
+			}
+
+			for (const auto& vertex : polygon.vertices())
+			{
+				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, triangle))
+				{
+					return true;
+				}
+			}
+
+			if (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, polygon)
+				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, polygon)
+				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, polygon))
+			{
+				return true;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (Geometry2D::Intersects(triangle, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsQuadPolygon(const Quad& quad, const Polygon& polygon) noexcept
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if (not BoundsIntersectClosed(quad.boundingRect(), polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(quad.p0, polygon)
+				|| Geometry2D::Intersects(quad.p1, polygon)
+				|| Geometry2D::Intersects(quad.p2, polygon)
+				|| Geometry2D::Intersects(quad.p3, polygon))
+			{
+				return true;
+			}
+
+			for (const auto& vertex : polygon.vertices())
+			{
+				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, quad))
+				{
+					return true;
+				}
+			}
+
+			if (Geometry2D::Intersects(Line{ quad.p0, quad.p1 }, polygon)
+				|| Geometry2D::Intersects(Line{ quad.p1, quad.p2 }, polygon)
+				|| Geometry2D::Intersects(Line{ quad.p2, quad.p3 }, polygon)
+				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, polygon))
+			{
+				return true;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (Geometry2D::Intersects(quad, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsPolygonPolygon(const Polygon& a, const Polygon& b) noexcept
+		{
+			if (a.isEmpty() || b.isEmpty())
+			{
+				return false;
+			}
+
+			if (not BoundsIntersectClosed(a.boundingRect(), b.boundingRect()))
+			{
+				return false;
+			}
+
+			const Float2* pVertex = a.vertices().data();
+
+			for (const auto& triangleIndex : a.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (IntersectsTrianglePolygon(Triangle{ p0, p1, p2 }, b))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	namespace Geometry2D
@@ -2553,6 +2689,24 @@ namespace s3d
 			return Intersects(rect, triangle);
 		}
 
+		bool Intersects(const Triangle& triangle, const Polygon& polygon) noexcept
+		{
+			return IntersectsTrianglePolygon(triangle, polygon);
+		}
+
+		bool Intersects(const Triangle& triangle, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (Geometry2D::Intersects(triangle, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Quad, _)
@@ -2574,6 +2728,34 @@ namespace s3d
 			return Intersects(curve, quad);
 		}
 
+		bool Intersects(const Quad& quad, const Rect& rect) noexcept
+		{
+			return Intersects(rect, quad);
+		}
+
+		bool Intersects(const Quad& quad, const RectF& rect) noexcept
+		{
+			return Intersects(rect, quad);
+		}
+
+		bool Intersects(const Quad& quad, const Polygon& polygon) noexcept
+		{
+			return IntersectsQuadPolygon(quad, polygon);
+		}
+
+		bool Intersects(const Quad& quad, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (Geometry2D::Intersects(quad, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(RoundRect, _)
@@ -2593,16 +2775,6 @@ namespace s3d
 		bool Intersects(const RoundRect& roundRect, const Bezier3& curve)
 		{
 			return Intersects(curve, roundRect);
-		}
-
-		bool Intersects(const Quad& quad, const Rect& rect) noexcept
-		{
-			return Intersects(rect, quad);
-		}
-
-		bool Intersects(const Quad& quad, const RectF& rect) noexcept
-		{
-			return Intersects(rect, quad);
 		}
 
 		bool Intersects(const RoundRect& roundRect, const Rect& rect) noexcept
@@ -2661,6 +2833,34 @@ namespace s3d
 			return Intersects(rect, polygon);
 		}
 
+		bool Intersects(const Polygon& polygon, const Triangle& triangle) noexcept
+		{
+			return Intersects(triangle, polygon);
+		}
+
+		bool Intersects(const Polygon& polygon, const Quad& quad) noexcept
+		{
+			return Intersects(quad, polygon);
+		}
+
+		bool Intersects(const Polygon& a, const Polygon& b) noexcept
+		{
+			return IntersectsPolygonPolygon(a, b);
+		}
+
+		bool Intersects(const Polygon& polygon, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& other : multiPolygon)
+			{
+				if (Geometry2D::Intersects(polygon, other))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(MultiPolygon, _)
@@ -2705,6 +2905,34 @@ namespace s3d
 		bool Intersects(const MultiPolygon& multiPolygon, const RectF& rect) noexcept
 		{
 			return Intersects(rect, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const Triangle& triangle) noexcept
+		{
+			return Intersects(triangle, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const Quad& quad) noexcept
+		{
+			return Intersects(quad, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const Polygon& polygon) noexcept
+		{
+			return Intersects(polygon, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& a, const MultiPolygon& b) noexcept
+		{
+			for (const auto& polygon : a)
+			{
+				if (Geometry2D::Intersects(polygon, b))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }
