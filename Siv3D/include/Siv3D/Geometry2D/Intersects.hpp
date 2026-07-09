@@ -381,6 +381,15 @@ namespace s3d
 		constexpr bool Intersects(const Rect& a, const RectF& b) noexcept;
 
 		[[nodiscard]]
+		constexpr bool Intersects(const Rect& a, const Circle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersects(const Rect& a, const Ellipse& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Rect& a, const SuperEllipse& b) noexcept;
+
+		[[nodiscard]]
 		bool Intersects(const Rect& a, const Triangle& b) noexcept;
 
 		[[nodiscard]]
@@ -417,6 +426,15 @@ namespace s3d
 		constexpr bool Intersects(const RectF& a, const RectF& b) noexcept;
 
 		[[nodiscard]]
+		constexpr bool Intersects(const RectF& a, const Circle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersects(const RectF& a, const Ellipse& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const RectF& a, const SuperEllipse& b) noexcept;
+
+		[[nodiscard]]
 		bool Intersects(const RectF& a, const Triangle& b) noexcept;
 
 		[[nodiscard]]
@@ -446,6 +464,12 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const Circle& a, const Bezier3& b);
 
+		[[nodiscard]]
+		constexpr bool Intersects(const Circle& a, const Rect& b) noexcept;
+		
+		[[nodiscard]]
+		constexpr bool Intersects(const Circle& a, const RectF& b) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Ellipse, _)
@@ -470,6 +494,12 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const Ellipse& a, const Bezier3& b);
 
+		[[nodiscard]]
+		constexpr bool Intersects(const Ellipse& a, const Rect& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersects(const Ellipse& a, const RectF& b) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(SuperEllipse, _)
@@ -493,6 +523,12 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Bezier3& b);
+
+		[[nodiscard]]
+		bool Intersects(const SuperEllipse& a, const Rect& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const SuperEllipse& a, const RectF& b) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -1555,6 +1555,84 @@ namespace s3d
 				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, quad)
 				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, quad));
 		}
+
+		[[nodiscard]]
+		bool IntersectsRectFSuperEllipse(const RectF& rect, const SuperEllipse& superEllipse) noexcept
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
+
+			if ((w < 0.0) || (h < 0.0) || (ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if (((w == 0.0) && (h == 0.0))
+				|| ((ax == 0.0) && (by == 0.0)))
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, superEllipse);
+			}
+
+			if (h == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, superEllipse);
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(rect, Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } });
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(rect, Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } });
+			}
+
+			if (n == 2.0)
+			{
+				return Geometry2D::Intersects(rect, Ellipse{ superEllipse.center, ax, by });
+			}
+
+			const RectF superEllipseBounds{
+				(superEllipse.center.x - ax),
+				(superEllipse.center.y - by),
+				(ax * 2.0),
+				(by * 2.0)
+			};
+
+			if (not BoundsIntersectClosed(rect, superEllipseBounds))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(superEllipse.center, rect)
+				|| Geometry2D::Intersects(Vec2{ left, top }, superEllipse)
+				|| Geometry2D::Intersects(Vec2{ right, top }, superEllipse)
+				|| Geometry2D::Intersects(Vec2{ right, bottom }, superEllipse)
+				|| Geometry2D::Intersects(Vec2{ left, bottom }, superEllipse))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, superEllipse)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, superEllipse)
+				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, superEllipse)
+				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, superEllipse));
+		}
 	}
 
 	namespace Geometry2D
@@ -2106,6 +2184,11 @@ namespace s3d
 			return Intersects(curve, rect);
 		}
 
+		bool Intersects(const Rect& rect, const SuperEllipse& superEllipse) noexcept
+		{
+			return IntersectsRectFSuperEllipse(RectF{ rect }, superEllipse);
+		}
+
 		bool Intersects(const Rect& rect, const Triangle& triangle) noexcept
 		{
 			return IntersectsRectFTriangle(RectF{ rect }, triangle);
@@ -2135,6 +2218,11 @@ namespace s3d
 		bool Intersects(const RectF& rect, const Bezier3& curve)
 		{
 			return Intersects(curve, rect);
+		}
+
+		bool Intersects(const RectF& rect, const SuperEllipse& superEllipse) noexcept
+		{
+			return IntersectsRectFSuperEllipse(rect, superEllipse);
 		}
 
 		bool Intersects(const RectF& rect, const Triangle& triangle) noexcept
@@ -2223,6 +2311,16 @@ namespace s3d
 		bool Intersects(const SuperEllipse& superEllipse, const Bezier3& curve)
 		{
 			return Intersects(curve, superEllipse);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const Rect& rect) noexcept
+		{
+			return Intersects(rect, superEllipse);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const RectF& rect) noexcept
+		{
+			return Intersects(rect, superEllipse);
 		}
 
 		////////////////////////////////////////////////////////////////

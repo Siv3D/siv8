@@ -663,6 +663,16 @@ namespace s3d
 			return Intersects(RectF{ a }, b);
 		}
 
+		constexpr bool Intersects(const Rect& rect, const Circle& circle) noexcept
+		{
+			return Intersects(RectF{ rect }, circle);
+		}
+
+		constexpr bool Intersects(const Rect& rect, const Ellipse& ellipse) noexcept
+		{
+			return Intersects(RectF{ rect }, ellipse);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(RectF, _)
@@ -723,6 +733,81 @@ namespace s3d
 				&& (bTop <= aBottom));
 		}
 
+		constexpr bool Intersects(const RectF& rect, const Circle& circle) noexcept
+		{
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0) || (circle.r < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= circle.r));
+				return false;
+			}
+
+			if (((w == 0.0) && (h == 0.0)) || (circle.r == 0.0))
+			{
+				return false;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + w);
+			const double bottom = (rect.pos.y + h);
+
+			if (w == 0.0)
+			{
+				return Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, circle);
+			}
+
+			if (h == 0.0)
+			{
+				return Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, circle);
+			}
+
+			const double closestX = (circle.center.x < left) ? left : ((right < circle.center.x) ? right : circle.center.x);
+			const double closestY = (circle.center.y < top) ? top : ((bottom < circle.center.y) ? bottom : circle.center.y);
+			const double dx = (closestX - circle.center.x);
+			const double dy = (closestY - circle.center.y);
+
+			return ((dx * dx + dy * dy) <= (circle.r * circle.r));
+		}
+
+		constexpr bool Intersects(const RectF& rect, const Ellipse& ellipse) noexcept
+		{
+			const double ax = ellipse.axes.x;
+			const double by = ellipse.axes.y;
+
+			if ((ax < 0.0) || (by < 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Intersects(rect, Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } });
+			}
+
+			if (by == 0.0)
+			{
+				return Intersects(rect, Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } });
+			}
+
+			const RectF localRect{
+				((rect.pos.x - ellipse.center.x) / ax),
+				((rect.pos.y - ellipse.center.y) / by),
+				(rect.size.x / ax),
+				(rect.size.y / by)
+			};
+
+			return Intersects(localRect, Circle{ Vec2{ 0.0, 0.0 }, 1.0 });
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Circle, _)
@@ -744,6 +829,16 @@ namespace s3d
 			return Intersects(segment, circle);
 		}
 
+		constexpr bool Intersects(const Circle& circle, const Rect& rect) noexcept
+		{
+			return Intersects(rect, circle);
+		}
+
+		constexpr bool Intersects(const Circle& circle, const RectF& rect) noexcept
+		{
+			return Intersects(rect, circle);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Ellipse, _)
@@ -763,6 +858,16 @@ namespace s3d
 		constexpr bool Intersects(const Ellipse& ellipse, const Line& segment) noexcept
 		{
 			return Intersects(segment, ellipse);
+		}
+
+		constexpr bool Intersects(const Ellipse& ellipse, const Rect& rect) noexcept
+		{
+			return Intersects(rect, ellipse);
+		}
+
+		constexpr bool Intersects(const Ellipse& ellipse, const RectF& rect) noexcept
+		{
+			return Intersects(rect, ellipse);
 		}
 
 		////////////////////////////////////////////////////////////////

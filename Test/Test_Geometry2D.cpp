@@ -248,6 +248,96 @@ TEST_CASE("Geometry2D.Intersects.Rect_Rect")
 	}
 }
 
+// Rect / RectF と Circle / Ellipse / SuperEllipse は、内部、境界接触、接線、empty、退化線分を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Rect_RoundShapes")
+{
+	static_assert(Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, Circle{ Vec2{ 15, 5 }, 5 }));
+	static_assert(Geometry2D::Intersects(Circle{ Vec2{ 15, 5 }, 5 }, RectF{ 0, 0, 10, 10 }));
+	static_assert(not Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, Circle{ Vec2{ 16, 5 }, 5 }));
+	static_assert(Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, Ellipse{ Vec2{ 15, 5 }, 5, 2 }));
+	static_assert(Geometry2D::Intersects(Ellipse{ Vec2{ 15, 5 }, 5, 2 }, RectF{ 0, 0, 10, 10 }));
+	static_assert(not Geometry2D::Intersects(RectF{ 0, 0, 10, 10 }, Ellipse{ Vec2{ 16, 5 }, 5, 2 }));
+	static_assert(not Geometry2D::Intersects(RectF{ 0, 0, 0, 0 }, Circle{ Vec2{ 0, 0 }, 5 }));
+
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+		const Circle circle{ Vec2{ 15, 5 }, 5 };
+		const Circle inside{ Vec2{ 5, 5 }, 2 };
+		const Circle empty{ Vec2{ 5, 5 }, 0 };
+
+		CHECK(Geometry2D::Intersects(rect, circle));
+		CHECK(Geometry2D::Intersects(circle, rect));
+		CHECK(Geometry2D::Intersects(rect, inside));
+		CHECK(Geometry2D::Intersects(inside, rect));
+		CHECK(not Geometry2D::Intersects(rect, Circle{ Vec2{ 16, 5 }, 5 }));
+		CHECK(not Geometry2D::Intersects(Circle{ Vec2{ 16, 5 }, 5 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, empty));
+		CHECK(not Geometry2D::Intersects(empty, rect));
+		CHECK(Geometry2D::Intersects(RectF{ 5, -1, 0, 2 }, Circle{ Vec2{ 0, 0 }, 5 }));
+		CHECK(Geometry2D::Intersects(Circle{ Vec2{ 0, 0 }, 5 }, RectF{ 5, -1, 0, 2 }));
+	}
+
+	{
+		const Rect rect{ 0, 0, 10, 10 };
+
+		CHECK(Geometry2D::Intersects(rect, Circle{ Vec2{ 15, 5 }, 5 }));
+		CHECK(Geometry2D::Intersects(Circle{ Vec2{ 15, 5 }, 5 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, Circle{ Vec2{ 16, 5 }, 5 }));
+		CHECK(Geometry2D::Intersects(rect, Ellipse{ Vec2{ 15, 5 }, 5, 2 }));
+		CHECK(Geometry2D::Intersects(Ellipse{ Vec2{ 15, 5 }, 5, 2 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, Ellipse{ Vec2{ 16, 5 }, 5, 2 }));
+	}
+
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+		const Ellipse ellipse{ Vec2{ 15, 5 }, 5, 2 };
+		const Ellipse inside{ Vec2{ 5, 5 }, 2, 1 };
+		const Ellipse empty{ Vec2{ 5, 5 }, 0, 0 };
+		const Ellipse verticalSegment{ Vec2{ 0, 0 }, 0, 5 };
+		const Ellipse horizontalSegment{ Vec2{ 0, 0 }, 5, 0 };
+
+		CHECK(Geometry2D::Intersects(rect, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, rect));
+		CHECK(Geometry2D::Intersects(rect, inside));
+		CHECK(Geometry2D::Intersects(inside, rect));
+		CHECK(not Geometry2D::Intersects(rect, Ellipse{ Vec2{ 16, 5 }, 5, 2 }));
+		CHECK(not Geometry2D::Intersects(Ellipse{ Vec2{ 16, 5 }, 5, 2 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, empty));
+		CHECK(not Geometry2D::Intersects(empty, rect));
+		CHECK(Geometry2D::Intersects(RectF{ -1, 2, 2, 0 }, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, RectF{ -1, 2, 2, 0 }));
+		CHECK(Geometry2D::Intersects(RectF{ 2, -1, 0, 2 }, horizontalSegment));
+		CHECK(Geometry2D::Intersects(horizontalSegment, RectF{ 2, -1, 0, 2 }));
+		CHECK(not Geometry2D::Intersects(RectF{ 6, -1, 0, 2 }, verticalSegment));
+	}
+
+	{
+		const RectF rect{ 0, 0, 10, 10 };
+		const SuperEllipse superEllipse{ Vec2{ 15, 5 }, SizeF{ 5, 2 }, 4.0 };
+		const SuperEllipse inside{ Vec2{ 5, 5 }, SizeF{ 2, 1 }, 4.0 };
+		const SuperEllipse empty{ Vec2{ 5, 5 }, SizeF{ 0, 0 }, 4.0 };
+		const SuperEllipse verticalSegment{ Vec2{ 0, 0 }, SizeF{ 0, 5 }, 4.0 };
+		const SuperEllipse horizontalSegment{ Vec2{ 0, 0 }, SizeF{ 5, 0 }, 4.0 };
+
+		CHECK(Geometry2D::Intersects(rect, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, rect));
+		CHECK(Geometry2D::Intersects(rect, SuperEllipse{ Vec2{ 15, 5 }, SizeF{ 5, 2 }, 2.0 }));
+		CHECK(Geometry2D::Intersects(SuperEllipse{ Vec2{ 15, 5 }, SizeF{ 5, 2 }, 2.0 }, rect));
+		CHECK(Geometry2D::Intersects(rect, inside));
+		CHECK(Geometry2D::Intersects(inside, rect));
+		CHECK(not Geometry2D::Intersects(rect, SuperEllipse{ Vec2{ 16, 5 }, SizeF{ 5, 2 }, 4.0 }));
+		CHECK(not Geometry2D::Intersects(SuperEllipse{ Vec2{ 16, 5 }, SizeF{ 5, 2 }, 4.0 }, rect));
+		CHECK(not Geometry2D::Intersects(rect, empty));
+		CHECK(not Geometry2D::Intersects(empty, rect));
+		CHECK(Geometry2D::Intersects(RectF{ -1, 2, 2, 0 }, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, RectF{ -1, 2, 2, 0 }));
+		CHECK(Geometry2D::Intersects(RectF{ 2, -1, 0, 2 }, horizontalSegment));
+		CHECK(Geometry2D::Intersects(horizontalSegment, RectF{ 2, -1, 0, 2 }));
+		CHECK(Geometry2D::Intersects(Rect{ 0, 0, 10, 10 }, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, Rect{ 0, 0, 10, 10 }));
+	}
+}
+
 // Rect / RectF と Triangle / Quad は、内部、境界接触、点接触、退化 polygonal shape、片側ゼロ RectF を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Rect_PolygonalShapes")
 {
