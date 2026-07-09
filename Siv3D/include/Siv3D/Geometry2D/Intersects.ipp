@@ -839,6 +839,23 @@ namespace s3d
 			return Intersects(rect, circle);
 		}
 
+		constexpr bool Intersects(const Circle& a, const Circle& b) noexcept
+		{
+			if ((a.r < 0.0) || (b.r < 0.0))
+			{
+				assert((0.0 <= a.r) && (0.0 <= b.r));
+				return false;
+			}
+
+			if ((a.r == 0.0) || (b.r == 0.0))
+			{
+				return false;
+			}
+
+			const double r = (a.r + b.r);
+			return (a.center.distanceFromSq(b.center) <= (r * r));
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Ellipse, _)

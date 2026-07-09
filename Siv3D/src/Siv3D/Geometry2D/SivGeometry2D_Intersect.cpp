@@ -1894,6 +1894,127 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsCircleTriangle(const Circle& circle, const Triangle& triangle) noexcept
+		{
+			if (circle.r < 0.0)
+			{
+				assert(0.0 <= circle.r);
+				return false;
+			}
+
+			if (circle.r == 0.0)
+			{
+				return false;
+			}
+
+			if (not BoundsIntersectClosed(circle.boundingRect(), triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(circle.center, triangle)
+				|| Geometry2D::Intersects(triangle.p0, circle)
+				|| Geometry2D::Intersects(triangle.p1, circle)
+				|| Geometry2D::Intersects(triangle.p2, circle))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, circle)
+				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, circle)
+				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, circle));
+		}
+
+		[[nodiscard]]
+		bool IntersectsCircleQuad(const Circle& circle, const Quad& quad) noexcept
+		{
+			if (circle.r < 0.0)
+			{
+				assert(0.0 <= circle.r);
+				return false;
+			}
+
+			if (circle.r == 0.0)
+			{
+				return false;
+			}
+
+			if (not BoundsIntersectClosed(circle.boundingRect(), quad.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(circle.center, quad)
+				|| Geometry2D::Intersects(quad.p0, circle)
+				|| Geometry2D::Intersects(quad.p1, circle)
+				|| Geometry2D::Intersects(quad.p2, circle)
+				|| Geometry2D::Intersects(quad.p3, circle))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ quad.p0, quad.p1 }, circle)
+				|| Geometry2D::Intersects(Line{ quad.p1, quad.p2 }, circle)
+				|| Geometry2D::Intersects(Line{ quad.p2, quad.p3 }, circle)
+				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, circle));
+		}
+
+		[[nodiscard]]
+		bool IntersectsCirclePolygon(const Circle& circle, const Polygon& polygon) noexcept
+		{
+			if (circle.r < 0.0)
+			{
+				assert(0.0 <= circle.r);
+				return false;
+			}
+
+			if ((circle.r == 0.0) || polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if (not BoundsIntersectClosed(circle.boundingRect(), polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(circle.center, polygon))
+			{
+				return true;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (IntersectsCircleTriangle(circle, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsCircleMultiPolygon(const Circle& circle, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (IntersectsCirclePolygon(circle, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
 		bool IntersectsPolygonPolygon(const Polygon& a, const Polygon& b) noexcept
 		{
 			if (a.isEmpty() || b.isEmpty())
@@ -2591,6 +2712,26 @@ namespace s3d
 			return Intersects(curve, circle);
 		}
 
+		bool Intersects(const Circle& a, const Triangle& b) noexcept
+		{
+			return IntersectsCircleTriangle(a, b);
+		}
+
+		bool Intersects(const Circle& a, const Quad& b) noexcept
+		{
+			return IntersectsCircleQuad(a, b);
+		}
+
+		bool Intersects(const Circle& a, const Polygon& b) noexcept
+		{
+			return IntersectsCirclePolygon(a, b);
+		}
+
+		bool Intersects(const Circle& a, const MultiPolygon& b) noexcept
+		{
+			return IntersectsCircleMultiPolygon(a, b);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Ellipse, _)
@@ -2689,6 +2830,11 @@ namespace s3d
 			return Intersects(rect, triangle);
 		}
 
+		bool Intersects(const Triangle& triangle, const Circle& circle) noexcept
+		{
+			return Intersects(circle, triangle);
+		}
+
 		bool Intersects(const Triangle& triangle, const Polygon& polygon) noexcept
 		{
 			return IntersectsTrianglePolygon(triangle, polygon);
@@ -2736,6 +2882,11 @@ namespace s3d
 		bool Intersects(const Quad& quad, const RectF& rect) noexcept
 		{
 			return Intersects(rect, quad);
+		}
+
+		bool Intersects(const Quad& quad, const Circle& circle) noexcept
+		{
+			return Intersects(circle, quad);
 		}
 
 		bool Intersects(const Quad& quad, const Polygon& polygon) noexcept
@@ -2833,6 +2984,11 @@ namespace s3d
 			return Intersects(rect, polygon);
 		}
 
+		bool Intersects(const Polygon& polygon, const Circle& circle) noexcept
+		{
+			return Intersects(circle, polygon);
+		}
+
 		bool Intersects(const Polygon& polygon, const Triangle& triangle) noexcept
 		{
 			return Intersects(triangle, polygon);
@@ -2905,6 +3061,11 @@ namespace s3d
 		bool Intersects(const MultiPolygon& multiPolygon, const RectF& rect) noexcept
 		{
 			return Intersects(rect, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const Circle& circle) noexcept
+		{
+			return Intersects(circle, multiPolygon);
 		}
 
 		bool Intersects(const MultiPolygon& multiPolygon, const Triangle& triangle) noexcept

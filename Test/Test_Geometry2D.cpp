@@ -1345,6 +1345,109 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_Curves")
 	CHECK(not Geometry2D::Intersects(arch, outside));
 }
 
+
+// Circle と Circle / Triangle / Quad / Polygon / MultiPolygon は、包含、境界接触、empty、退化 polygonal shape を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Circle_AreaShapes")
+{
+	{
+		const Circle circle{ Vec2{ 0, 0 }, 5 };
+
+		CHECK(Geometry2D::Intersects(circle, Circle{ Vec2{ 9, 0 }, 4 }));
+		CHECK(Geometry2D::Intersects(Circle{ Vec2{ 9, 0 }, 4 }, circle));
+		CHECK(Geometry2D::Intersects(circle, Circle{ Vec2{ 10, 0 }, 5 }));
+		CHECK(not Geometry2D::Intersects(circle, Circle{ Vec2{ 11, 0 }, 5 }));
+		CHECK(not Geometry2D::Intersects(circle, Circle{ Vec2{ 0, 0 }, 0 }));
+		CHECK(not Geometry2D::Intersects(Circle{ Vec2{ 0, 0 }, 0 }, circle));
+
+		static_assert(Geometry2D::Intersects(Circle{ Vec2{ 0, 0 }, 5 }, Circle{ Vec2{ 10, 0 }, 5 }));
+		static_assert(not Geometry2D::Intersects(Circle{ Vec2{ 0, 0 }, 5 }, Circle{ Vec2{ 11, 0 }, 5 }));
+	}
+
+	{
+		const Circle circle{ Vec2{ 5, 5 }, 3 };
+		const Triangle crossing{ Vec2{ 0, 5 }, Vec2{ 10, 5 }, Vec2{ 5, 10 } };
+		const Triangle inside{ Vec2{ 4, 4 }, Vec2{ 6, 4 }, Vec2{ 5, 6 } };
+		const Triangle containing{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };
+		const Triangle touching{ Vec2{ 8, 5 }, Vec2{ 12, 5 }, Vec2{ 8, 8 } };
+		const Triangle outside{ Vec2{ 9, 9 }, Vec2{ 12, 9 }, Vec2{ 9, 12 } };
+		const Triangle segmentTriangle{ Vec2{ 2, 5 }, Vec2{ 8, 5 }, Vec2{ 5, 5 } };
+		const Triangle pointTriangle{ Vec2{ 5, 5 }, Vec2{ 5, 5 }, Vec2{ 5, 5 } };
+		const Triangle outsidePointTriangle{ Vec2{ 9, 9 }, Vec2{ 9, 9 }, Vec2{ 9, 9 } };
+
+		CHECK(Geometry2D::Intersects(circle, crossing));
+		CHECK(Geometry2D::Intersects(crossing, circle));
+		CHECK(Geometry2D::Intersects(circle, inside));
+		CHECK(Geometry2D::Intersects(inside, circle));
+		CHECK(Geometry2D::Intersects(circle, containing));
+		CHECK(Geometry2D::Intersects(containing, circle));
+		CHECK(Geometry2D::Intersects(circle, touching));
+		CHECK(Geometry2D::Intersects(touching, circle));
+		CHECK(not Geometry2D::Intersects(circle, outside));
+		CHECK(not Geometry2D::Intersects(outside, circle));
+		CHECK(Geometry2D::Intersects(circle, segmentTriangle));
+		CHECK(Geometry2D::Intersects(segmentTriangle, circle));
+		CHECK(Geometry2D::Intersects(circle, pointTriangle));
+		CHECK(Geometry2D::Intersects(pointTriangle, circle));
+		CHECK(not Geometry2D::Intersects(circle, outsidePointTriangle));
+		CHECK(not Geometry2D::Intersects(outsidePointTriangle, circle));
+	}
+
+	{
+		const Circle circle{ Vec2{ 5, 5 }, 3 };
+		const Quad crossing{ Vec2{ 7, 2 }, Vec2{ 12, 2 }, Vec2{ 12, 8 }, Vec2{ 7, 8 } };
+		const Quad inside{ Vec2{ 4, 4 }, Vec2{ 6, 4 }, Vec2{ 6, 6 }, Vec2{ 4, 6 } };
+		const Quad containing{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+		const Quad touching{ Vec2{ 8, 4 }, Vec2{ 12, 4 }, Vec2{ 12, 6 }, Vec2{ 8, 6 } };
+		const Quad outside{ Vec2{ 9, 9 }, Vec2{ 12, 9 }, Vec2{ 12, 12 }, Vec2{ 9, 12 } };
+		const Quad segmentQuad{ Vec2{ 2, 5 }, Vec2{ 8, 5 }, Vec2{ 8, 5 }, Vec2{ 2, 5 } };
+		const Quad pointQuad{ Vec2{ 5, 5 }, Vec2{ 5, 5 }, Vec2{ 5, 5 }, Vec2{ 5, 5 } };
+		const Quad outsidePointQuad{ Vec2{ 9, 9 }, Vec2{ 9, 9 }, Vec2{ 9, 9 }, Vec2{ 9, 9 } };
+
+		CHECK(Geometry2D::Intersects(circle, crossing));
+		CHECK(Geometry2D::Intersects(crossing, circle));
+		CHECK(Geometry2D::Intersects(circle, inside));
+		CHECK(Geometry2D::Intersects(inside, circle));
+		CHECK(Geometry2D::Intersects(circle, containing));
+		CHECK(Geometry2D::Intersects(containing, circle));
+		CHECK(Geometry2D::Intersects(circle, touching));
+		CHECK(Geometry2D::Intersects(touching, circle));
+		CHECK(not Geometry2D::Intersects(circle, outside));
+		CHECK(not Geometry2D::Intersects(outside, circle));
+		CHECK(Geometry2D::Intersects(circle, segmentQuad));
+		CHECK(Geometry2D::Intersects(segmentQuad, circle));
+		CHECK(Geometry2D::Intersects(circle, pointQuad));
+		CHECK(Geometry2D::Intersects(pointQuad, circle));
+		CHECK(not Geometry2D::Intersects(circle, outsidePointQuad));
+		CHECK(not Geometry2D::Intersects(outsidePointQuad, circle));
+	}
+
+	{
+		const Circle circle{ Vec2{ 5, 5 }, 3 };
+		const Polygon polygon{ Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } } };
+		const Polygon crossing{ Array<Vec2>{ Vec2{ 7, 4 }, Vec2{ 12, 4 }, Vec2{ 12, 6 }, Vec2{ 7, 6 } } };
+		const Polygon outside{ Array<Vec2>{ Vec2{ 9, 9 }, Vec2{ 12, 9 }, Vec2{ 12, 12 }, Vec2{ 9, 12 } } };
+		const Polygon emptyPolygon;
+		const MultiPolygon multiPolygon{ polygon };
+		const MultiPolygon outsideMultiPolygon{ outside };
+		const MultiPolygon emptyMultiPolygon;
+
+		CHECK(Geometry2D::Intersects(circle, polygon));
+		CHECK(Geometry2D::Intersects(polygon, circle));
+		CHECK(Geometry2D::Intersects(circle, crossing));
+		CHECK(Geometry2D::Intersects(crossing, circle));
+		CHECK(not Geometry2D::Intersects(circle, outside));
+		CHECK(not Geometry2D::Intersects(outside, circle));
+		CHECK(not Geometry2D::Intersects(circle, emptyPolygon));
+		CHECK(not Geometry2D::Intersects(emptyPolygon, circle));
+		CHECK(Geometry2D::Intersects(circle, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, circle));
+		CHECK(not Geometry2D::Intersects(circle, outsideMultiPolygon));
+		CHECK(not Geometry2D::Intersects(outsideMultiPolygon, circle));
+		CHECK(not Geometry2D::Intersects(circle, emptyMultiPolygon));
+		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, circle));
+	}
+}
+
 // Triangle / Quad と Polygon / MultiPolygon は、包含、境界接触、empty container、退化 point / segment を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.PolygonalShapes_PolygonContainers")
 {
