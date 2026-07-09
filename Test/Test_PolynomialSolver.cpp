@@ -13,14 +13,10 @@
 # include <cmath>
 
 //
-//	Round 4 acceptance tests for PolynomialSolver.
+//	Tests for PolynomialSolver.
 //
-//	許容誤差はすべて修正版プロトタイプ（deflation + 最終 dedup の x 空間移動
-//	+ 元係数空間での backcheck）の実測値に基づく。実測値より 3〜6 桁緩い値を
-//	採用し、libm（cbrt / acos）やコンパイラの FMA 差によるプラットフォーム間の
-//	ぶれを吸収する。
-//
-//	[R3-FAIL] とマークされたケースは Round 3 実装では失敗する（修正のゲート）。
+//	有限な実数解のみを返す契約、実用的な重複根マージ、極端な係数スケール、
+//	および幾何交差判定で重要になる根配置を検査する。
 //
 
 namespace
@@ -122,7 +118,7 @@ TEST_CASE("PolynomialSolver.contract.basic")
 	}
 
 	{
-		// (x-1)(x-2)(x-3), 4 引数版 (a=2)。実測相対誤差 ~2e-15。
+		// (x-1)(x-2)(x-3), 4 引数版 (a=2)。
 		const PolynomialRoots roots = Math::SolveCubicEquation(2.0, -12.0, 22.0, -12.0);
 		REQUIRE_EQ(roots.count, 3u);
 		CHECK(AllFinite(roots));
@@ -148,10 +144,9 @@ TEST_CASE("PolynomialSolver.contract.basic")
 	}
 }
 
-// [R3-FAIL] 分離根ファミリー (x-1)(x-2)(x-R)。
-// Round 3 は R >= 3e6 で近接ペア {1, 2} を無音で削除し count=1 を返す。
-// 修正版の実測: R <= 1e12 で小根の相対誤差 <= 5e-16（backcheck の Newton による）。
-// テスト許容: 小根 1e-9、支配根 1e-12（プラットフォーム余裕込み）。
+// 分離根ファミリー (x-1)(x-2)(x-R)。
+// 大きな支配根と小さい正の根が共存する場合でも、表現可能な根を保持する。
+// 小根は相対誤差 1e-9、支配根は相対誤差 1e-12 で検査する。
 TEST_CASE("PolynomialSolver.Cubic.separatedRoots")
 {
 	constexpr std::array Ratios{ 1e6, 3e6, 1e8, 1e10, 1e12 };
@@ -171,7 +166,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots")
 	}
 
 	{
-		// 4 引数版も同じ修正を継承していること (R = 1e10)
+		// 4 引数版でも同じ根配置を検査する (R = 1e10)
 		const double R = 1e10;
 		const PolynomialRoots roots = Math::SolveCubicEquation(1.0, -(R + 3.0), (3.0 * R + 2.0), (-2.0 * R));
 
@@ -185,7 +180,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots")
 // 分離根ファミリーの契約限界 (R = 1e14)。
 // ペア間隔 (=1) が支配根の 1e-12 倍 (RootMergeEpsilon 相当の粒度) を下回るため、
 // 近接ペアの復元は実用契約の対象外。支配根の復元と有限性・非偽根のみを要求し、
-// 将来の実装がペアを復元しても失敗しないよう count は範囲で検査する。
+// 将来の実装がペアを復元する場合も許容できるよう、count は範囲で検査する。
 TEST_CASE("PolynomialSolver.Cubic.separatedRoots.contractLimit")
 {
 	const double R = 1e14;
@@ -206,7 +201,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots.contractLimit")
 	}
 }
 
-// [R3-FAIL] 符号バリエーション。
+// 分離根ファミリーの符号バリエーション。
 TEST_CASE("PolynomialSolver.Cubic.separatedRoots.signVariants")
 {
 	{
@@ -232,7 +227,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots.signVariants")
 	}
 
 	{
-		// 小スケール正クラスタ（Round 2 由来の回帰ケース）。実測相対誤差 ~9e-16。
+		// 小スケール正クラスタ。
 		const PolynomialRoots roots = Math::SolveCubicEquation(-0.06, 0.0011, -6e-6);
 
 		REQUIRE_EQ(roots.count, 3u);
@@ -289,7 +284,7 @@ TEST_CASE("PolynomialSolver.Cubic.repeatedRoots")
 	}
 }
 
-// [R3-FAIL: pq(1e300, 1.0)] 極端な係数の depressed cubic。
+// 極端な係数の depressed cubic。
 TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 {
 	{
@@ -310,8 +305,7 @@ TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 
 	{
 		// x^3 + 1e300 x + 1 = 0: 実根 1 つ ~ -q/p = -1e-300（正規化数として表現可能）。
-		// スケール後係数の underflow を backcheck の元空間 Newton が復元すること。
-		// Round 3 は残差 |f| = 1 の根 0 を返していた。
+		// スケール後係数が underflow する場合でも、元係数空間で妥当な根を返す。
 		const PolynomialRoots roots = Math::SolveCubicEquation(1e300, 1.0);
 
 		REQUIRE_EQ(roots.count, 1u);
@@ -320,7 +314,7 @@ TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 	}
 
 	{
-		// x(x^2 - 1e-108) = 0: 3 根が実用マージ許容内 → {0}（文書化済みの挙動）
+		// x(x^2 - 1e-108) = 0: 3 根が実用マージ許容内 → {0}
 		const PolynomialRoots roots = Math::SolveCubicEquation(-1e-108, 0.0);
 
 		REQUIRE_EQ(roots.count, 1u);
@@ -328,7 +322,7 @@ TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 	}
 }
 
-// [R3-FAIL: 偽根 0 の混入防止は現状運任せ] 極端な monic / 一般 cubic。
+// 極端な monic / 一般 cubic。
 TEST_CASE("PolynomialSolver.Cubic.extremeCoefficients")
 {
 	{
@@ -366,12 +360,11 @@ TEST_CASE("PolynomialSolver.Cubic.extremeCoefficients")
 	}
 }
 
-// [R3-FAIL] 有限性契約: いかなる入力でも inf / nan の根を返さない。
+// 有限性契約: いかなる入力でも inf / nan の根を返さない。
 TEST_CASE("PolynomialSolver.finiteContract")
 {
 	{
-		// -b/a ~ -1e320 は double で表現不能。Round 3 は count=1, root=-inf を
-		// 返していた。表現不能な有限実根は「返さない」（count == 0）。
+		// -b/a ~ -1e320 は double で表現不能。表現不能な有限実根は返さない。
 		const PolynomialRoots roots = Math::SolveLinearEquation(1e-160, 1e160);
 
 		CHECK_EQ(roots.count, 0u);
@@ -388,9 +381,7 @@ TEST_CASE("PolynomialSolver.finiteContract")
 	}
 
 	{
-		// quadratic の c == 0 分岐: -b/a が overflow するケース。
-		// Round 3 は inf 根を生成後、UniqueSorted の inf <= inf 比較で偶然
-		// 0 にマージしていた。明示的に {0} のみを返すこと。
+		// quadratic の c == 0 分岐: -b/a が overflow するケースでは {0} のみを返す。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-160, 1e160, 0.0);
 
 		REQUIRE_EQ(roots.count, 1u);
@@ -485,11 +476,9 @@ TEST_CASE("PolynomialSolver.residualContract")
 	}
 }
 
-// [R4-FAIL] 支配根に対して極端に小さい実根（原点近傍の t ヒット相当）。
-// 三角関数法の根は絶対誤差 ~eps * 根スケール を持つため、y 空間で支配根の
-// ~1e-15 倍以下の根は自身のスケールで精度を失い、Round 4 では filter に
-// 落とされて消失していた（fuzz で分離根 3 実根系の 1.2%）。
-// 修正は根の積の恒等式による最小根の再計算。実測: 相対誤差 ~1e-15。
+// 支配根に対して極端に小さい実根（原点近傍の t ヒット相当）。
+// 三角関数法では最小根が自身のスケールで精度を失いやすいため、
+// 根の積の恒等式による回復を含めて検査する。
 TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 {
 	{
@@ -498,7 +487,7 @@ TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 		const PolynomialRoots roots = Math::SolveCubicEquation(
 			-(r1 + r2 + r3), (r1 * r2 + r1 * r3 + r2 * r3), -(r1 * r2 * r3));
 
-		REQUIRE_EQ(roots.count, 3);
+		REQUIRE_EQ(roots.count, 3u);
 		CHECK(IsClose(roots.roots[0], r1, 1e-6));
 		CHECK(IsClose(roots.roots[1], r2, 1e-9));
 		CHECK(IsClose(roots.roots[2], r3, 1e-9));
@@ -510,7 +499,7 @@ TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 		const PolynomialRoots roots = Math::SolveCubicEquation(
 			-(r1 + r2 + r3), (r1 * r2 + r1 * r3 + r2 * r3), -(r1 * r2 * r3));
 
-		REQUIRE_EQ(roots.count, 3);
+		REQUIRE_EQ(roots.count, 3u);
 		CHECK(IsClose(roots.roots[0], r2, 1e-9));
 		CHECK(IsClose(roots.roots[1], r1, 1e-6));
 		CHECK(IsClose(roots.roots[2], r3, 1e-9));
@@ -518,10 +507,10 @@ TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 
 	{
 		// depressed 形の同族: x^3 - 1e308 x + 1e300 = 0
-		// 真の実根は {-1e154, ~1e-8, 1e154}。Round 4 は中央の微小根を失っていた。
+		// 真の実根は {-1e154, ~1e-8, 1e154}。
 		const PolynomialRoots roots = Math::SolveCubicEquation(-1e308, 1e300);
 
-		REQUIRE_EQ(roots.count, 3);
+		REQUIRE_EQ(roots.count, 3u);
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1e154, 1e-9));
 		CHECK(IsClose(roots.roots[1], 1e-8, 1e-6));
@@ -529,23 +518,20 @@ TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 	}
 }
 
-// [R4-FAIL] quadratic の縮退ショートカット除去後の挙動。
-// 旧実装は |a| <= 1e-150 で一律に 1 次方程式として扱い、
-// (1) 実数解なしの方程式に残差 1e160 の誤根を返す、
-// (2) 表現可能な巨大根を不必要に捨てる、という 2 つの問題があった。
-// PushRoot が非有限根を拒否する現在は Citardauq 経路がそのまま安全。
+// 極端に小さい 2 次係数を持つ quadratic。
+// 2 次式として判別式を評価し、表現可能な有限実根のみを返す。
 TEST_CASE("PolynomialSolver.Quadratic.degenerateLeadingCoefficient")
 {
 	{
 		// 1e-160 x^2 + 1e-160 x + 1 = 0: 判別式 < 0、実数解なし。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-160, 1e-160, 1.0);
-		CHECK_EQ(roots.count, 0);
+		CHECK_EQ(roots.count, 0u);
 	}
 
 	{
 		// 1e-200 x^2 + x + 1 = 0: 根 ~{-1e200, -1}、どちらも表現可能。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-200, 1.0, 1.0);
-		REQUIRE_EQ(roots.count, 2);
+		REQUIRE_EQ(roots.count, 2u);
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1e200, 1e-12));
 		CHECK(IsClose(roots.roots[1], -1.0, 1e-12));
@@ -554,7 +540,7 @@ TEST_CASE("PolynomialSolver.Quadratic.degenerateLeadingCoefficient")
 	{
 		// 1e-320 x^2 + x + 1 = 0: 巨大根 ~-1e320 は表現不能なので落とし、-1 のみ返す。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-320, 1.0, 1.0);
-		REQUIRE_EQ(roots.count, 1);
+		REQUIRE_EQ(roots.count, 1u);
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1.0, 1e-9));
 	}
