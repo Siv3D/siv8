@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
-# include <limits>
 
 // Point と Vec2 は、座標の完全一致で交差判定されることを確認する。
 TEST_CASE("Geometry2D.Intersects.Point_Vec2")
@@ -304,6 +303,94 @@ TEST_CASE("Geometry2D.Intersects.Point_LineString")
 		CHECK(Geometry2D::Intersects(Vec2{ 2, 2 }, lineString));
 		CHECK(Geometry2D::Intersects(Vec2{ 4, 2 }, lineString));
 		CHECK(not Geometry2D::Intersects(Vec2{ 4, 3 }, lineString));
+	}
+}
+
+// LineString と各 Shape は、closed segment union として既存の Line 判定に展開されることを確認する。
+TEST_CASE("Geometry2D.Intersects.LineString_Shapes")
+{
+	{
+		const LineString empty;
+		const RectF rect{ 0, 0, 10, 10 };
+
+		CHECK(not Geometry2D::Intersects(empty, rect));
+		CHECK(not Geometry2D::Intersects(rect, empty));
+	}
+
+	{
+		const LineString point{ Vec2{ 5, 5 } };
+		const RectF rect{ 0, 0, 10, 10 };
+		const Circle circle{ Vec2{ 0, 0 }, 5 };
+
+		CHECK(Geometry2D::Intersects(point, rect));
+		CHECK(Geometry2D::Intersects(rect, point));
+		CHECK(not Geometry2D::Intersects(point, circle));
+		CHECK(not Geometry2D::Intersects(circle, point));
+	}
+
+	{
+		const LineString segments{ Vec2{ -5, 5 }, Vec2{ 5, 5 }, Vec2{ 20, 5 } };
+		const Rect rect{ 0, 0, 10, 10 };
+		const RectF rectF{ 0, 0, 10, 10 };
+		const Circle circle{ Vec2{ 0, 0 }, 5 };
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 6, 3 };
+		const SuperEllipse superEllipse{ Vec2{ 0, 0 }, SizeF{ 6, 3 }, 4.0 };
+		const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };
+		const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2 };
+
+		CHECK(Geometry2D::Intersects(segments, rect));
+		CHECK(Geometry2D::Intersects(rect, segments));
+		CHECK(Geometry2D::Intersects(segments, rectF));
+		CHECK(Geometry2D::Intersects(rectF, segments));
+		CHECK(Geometry2D::Intersects(segments, circle));
+		CHECK(Geometry2D::Intersects(circle, segments));
+		CHECK(not Geometry2D::Intersects(segments, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, segments));
+		CHECK(not Geometry2D::Intersects(segments, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, segments));
+		CHECK(Geometry2D::Intersects(segments, triangle));
+		CHECK(Geometry2D::Intersects(triangle, segments));
+		CHECK(Geometry2D::Intersects(segments, quad));
+		CHECK(Geometry2D::Intersects(quad, segments));
+		CHECK(Geometry2D::Intersects(segments, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, segments));
+	}
+
+	{
+		const LineString a{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 } };
+		const LineString b{ Vec2{ 5, -5 }, Vec2{ 5, 5 } };
+		const LineString c{ Vec2{ 20, 20 }, Vec2{ 30, 30 } };
+		const LineString point{ Vec2{ 10, 5 } };
+
+		CHECK(Geometry2D::Intersects(a, b));
+		CHECK(Geometry2D::Intersects(b, a));
+		CHECK(not Geometry2D::Intersects(a, c));
+		CHECK(not Geometry2D::Intersects(c, a));
+		CHECK(Geometry2D::Intersects(a, point));
+		CHECK(Geometry2D::Intersects(point, a));
+	}
+
+	{
+		const LineString segments{ Vec2{ 0, 5 }, Vec2{ 10, 5 } };
+		const Bezier2 curve2{ Vec2{ 0, 0 }, Vec2{ 5, 10 }, Vec2{ 10, 0 } };
+		const Bezier3 curve3{ Vec2{ 0, 0 }, Vec2{ 3, 9 }, Vec2{ 7, 9 }, Vec2{ 10, 0 } };
+
+		CHECK(Geometry2D::Intersects(segments, curve2));
+		CHECK(Geometry2D::Intersects(curve2, segments));
+		CHECK(Geometry2D::Intersects(segments, curve3));
+		CHECK(Geometry2D::Intersects(curve3, segments));
+	}
+
+	{
+		const LineString segments{ Vec2{ -1, 0 }, Vec2{ 1, 0 } };
+		const Polygon polygon;
+		const MultiPolygon multiPolygon;
+
+		CHECK(not Geometry2D::Intersects(segments, polygon));
+		CHECK(not Geometry2D::Intersects(polygon, segments));
+		CHECK(not Geometry2D::Intersects(segments, multiPolygon));
+		CHECK(not Geometry2D::Intersects(multiPolygon, segments));
 	}
 }
 

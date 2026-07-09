@@ -597,6 +597,35 @@ namespace s3d
 
 			return false;
 		}
+
+		template <class Shape>
+		[[nodiscard]]
+		bool IntersectsLineStringShape(const LineString& segments, const Shape& shape)
+		{
+			const size_t n = segments.size();
+
+			if (n == 0)
+			{
+				return false;
+			}
+
+			const Vec2* ps = segments.data();
+
+			if (n == 1)
+			{
+				return Geometry2D::Intersects(ps[0], shape);
+			}
+
+			for (size_t i = 0; i < (n - 1); ++i)
+			{
+				if (Geometry2D::Intersects(Line{ ps[i], ps[i + 1] }, shape))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	namespace Geometry2D
@@ -874,6 +903,71 @@ namespace s3d
 			return Intersects(segment, segments);
 		}
 
+		bool Intersects(const LineString& segments1, const LineString& segments2) noexcept
+		{
+			return IntersectsLineStringShape(segments1, segments2);
+		}
+
+		bool Intersects(const LineString& segments, const Bezier2& curve)
+		{
+			return IntersectsLineStringShape(segments, curve);
+		}
+
+		bool Intersects(const LineString& segments, const Bezier3& curve)
+		{
+			return IntersectsLineStringShape(segments, curve);
+		}
+
+		bool Intersects(const LineString& segments, const Rect& rect) noexcept
+		{
+			return IntersectsLineStringShape(segments, rect);
+		}
+
+		bool Intersects(const LineString& segments, const RectF& rect) noexcept
+		{
+			return IntersectsLineStringShape(segments, rect);
+		}
+
+		bool Intersects(const LineString& segments, const Circle& circle) noexcept
+		{
+			return IntersectsLineStringShape(segments, circle);
+		}
+
+		bool Intersects(const LineString& segments, const Ellipse& ellipse) noexcept
+		{
+			return IntersectsLineStringShape(segments, ellipse);
+		}
+
+		bool Intersects(const LineString& segments, const SuperEllipse& superEllipse) noexcept
+		{
+			return IntersectsLineStringShape(segments, superEllipse);
+		}
+
+		bool Intersects(const LineString& segments, const Triangle& triangle) noexcept
+		{
+			return IntersectsLineStringShape(segments, triangle);
+		}
+
+		bool Intersects(const LineString& segments, const Quad& quad) noexcept
+		{
+			return IntersectsLineStringShape(segments, quad);
+		}
+
+		bool Intersects(const LineString& segments, const RoundRect& roundRect) noexcept
+		{
+			return IntersectsLineStringShape(segments, roundRect);
+		}
+
+		bool Intersects(const LineString& segments, const Polygon& polygon) noexcept
+		{
+			return IntersectsLineStringShape(segments, polygon);
+		}
+
+		bool Intersects(const LineString& segments, const MultiPolygon& multiPolygon) noexcept
+		{
+			return IntersectsLineStringShape(segments, multiPolygon);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Bezier2, _)
@@ -893,6 +987,11 @@ namespace s3d
 		bool Intersects(const Bezier2& curve, const Line& segment)
 		{
 			return Intersects(segment, curve);
+		}
+
+		bool Intersects(const Bezier2& curve, const LineString& segments)
+		{
+			return Intersects(segments, curve);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -916,6 +1015,55 @@ namespace s3d
 			return Intersects(segment, curve);
 		}
 
+		bool Intersects(const Bezier3& curve, const LineString& segments)
+		{
+			return Intersects(segments, curve);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(Rect, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const Rect& rect, const LineString& segments) noexcept
+		{
+			return Intersects(segments, rect);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(RectF, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const RectF& rect, const LineString& segments) noexcept
+		{
+			return Intersects(segments, rect);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(Circle, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const Circle& circle, const LineString& segments) noexcept
+		{
+			return Intersects(segments, circle);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(Ellipse, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const Ellipse& ellipse, const LineString& segments) noexcept
+		{
+			return Intersects(segments, ellipse);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(SuperEllipse, _)
@@ -935,6 +1083,44 @@ namespace s3d
 		bool Intersects(const SuperEllipse& superEllipse, const Line& segment) noexcept
 		{
 			return Intersects(segment, superEllipse);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const LineString& segments) noexcept
+		{
+			return Intersects(segments, superEllipse);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(Triangle, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const Triangle& triangle, const LineString& segments) noexcept
+		{
+			return Intersects(segments, triangle);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(Quad, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const Quad& quad, const LineString& segments) noexcept
+		{
+			return Intersects(segments, quad);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Intersects(RoundRect, _)
+		//
+		////////////////////////////////////////////////////////////////
+
+		bool Intersects(const RoundRect& roundRect, const LineString& segments) noexcept
+		{
+			return Intersects(segments, roundRect);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -958,6 +1144,11 @@ namespace s3d
 			return Intersects(segment, polygon);
 		}
 
+		bool Intersects(const Polygon& polygon, const LineString& segments) noexcept
+		{
+			return Intersects(segments, polygon);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(MultiPolygon, _)
@@ -977,6 +1168,11 @@ namespace s3d
 		bool Intersects(const MultiPolygon& multiPolygon, const Line& segment) noexcept
 		{
 			return Intersects(segment, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const LineString& segments) noexcept
+		{
+			return Intersects(segments, multiPolygon);
 		}
 	}
 }
