@@ -1643,9 +1643,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Intersects(const Point& a, const LineString& b) noexcept
+		bool Intersects(const Point& p, const LineString& segments) noexcept
 		{
-			return Intersects(Vec2{ a }, b);
+			return Intersects(Vec2{ p }, segments);
 		}
 
 		bool Intersects(const Point& p, const Bezier2& curve)
@@ -2001,14 +2001,14 @@ namespace s3d
 			return Intersects(segments, curve);
 		}
 
-		bool Intersects(const Bezier2& a, const Bezier2& b)
+		bool Intersects(const Bezier2& curve1, const Bezier2& curve2)
 		{
-			return IntersectsBezier2Bezier2Approximate(a, b);
+			return IntersectsBezier2Bezier2Approximate(curve1, curve2);
 		}
 
-		bool Intersects(const Bezier2& a, const Bezier3& b)
+		bool Intersects(const Bezier2& curve1, const Bezier3& curve2)
 		{
-			return IntersectsBezier2Bezier3Approximate(a, b);
+			return IntersectsBezier2Bezier3Approximate(curve1, curve2);
 		}
 
 		bool Intersects(const Bezier2& curve, const Rect& rect)
