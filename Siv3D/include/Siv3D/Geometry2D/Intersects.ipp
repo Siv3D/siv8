@@ -891,6 +891,41 @@ namespace s3d
 			return Intersects(segment, triangle);
 		}
 
+		constexpr bool Intersects(const Triangle& a, const Triangle& b) noexcept
+		{
+			if (Intersects(a.p0, b)
+				|| Intersects(a.p1, b)
+				|| Intersects(a.p2, b)
+				|| Intersects(b.p0, a)
+				|| Intersects(b.p1, a)
+				|| Intersects(b.p2, a))
+			{
+				return true;
+			}
+
+			return (Intersects(Line{ a.p0, a.p1 }, b)
+				|| Intersects(Line{ a.p1, a.p2 }, b)
+				|| Intersects(Line{ a.p2, a.p0 }, b));
+		}
+
+		constexpr bool Intersects(const Triangle& triangle, const Quad& quad) noexcept
+		{
+			if (Intersects(triangle.p0, quad)
+				|| Intersects(triangle.p1, quad)
+				|| Intersects(triangle.p2, quad)
+				|| Intersects(quad.p0, triangle)
+				|| Intersects(quad.p1, triangle)
+				|| Intersects(quad.p2, triangle)
+				|| Intersects(quad.p3, triangle))
+			{
+				return true;
+			}
+
+			return (Intersects(Line{ triangle.p0, triangle.p1 }, quad)
+				|| Intersects(Line{ triangle.p1, triangle.p2 }, quad)
+				|| Intersects(Line{ triangle.p2, triangle.p0 }, quad));
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Quad, _)
@@ -910,6 +945,31 @@ namespace s3d
 		constexpr bool Intersects(const Quad& quad, const Line& segment) noexcept
 		{
 			return Intersects(segment, quad);
+		}
+
+		constexpr bool Intersects(const Quad& quad, const Triangle& triangle) noexcept
+		{
+			return Intersects(triangle, quad);
+		}
+
+		constexpr bool Intersects(const Quad& a, const Quad& b) noexcept
+		{
+			if (Intersects(a.p0, b)
+				|| Intersects(a.p1, b)
+				|| Intersects(a.p2, b)
+				|| Intersects(a.p3, b)
+				|| Intersects(b.p0, a)
+				|| Intersects(b.p1, a)
+				|| Intersects(b.p2, a)
+				|| Intersects(b.p3, a))
+			{
+				return true;
+			}
+
+			return (Intersects(Line{ a.p0, a.p1 }, b)
+				|| Intersects(Line{ a.p1, a.p2 }, b)
+				|| Intersects(Line{ a.p2, a.p3 }, b)
+				|| Intersects(Line{ a.p3, a.p0 }, b));
 		}
 
 		////////////////////////////////////////////////////////////////

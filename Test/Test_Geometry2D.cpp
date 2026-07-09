@@ -505,6 +505,69 @@ TEST_CASE("Geometry2D.Intersects.Rect_PolygonalShapes")
 	}
 }
 
+// Triangle / Quad 同士は、内部、境界接触、点接触、退化 point / segment を閉じた点集合として扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.PolygonalShapes_PolygonalShapes")
+{
+	static_assert(Geometry2D::Intersects(
+		Triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } },
+		Triangle{ Vec2{ 5, -1 }, Vec2{ 11, -1 }, Vec2{ 5, 5 } }));
+
+	static_assert(not Geometry2D::Intersects(
+		Triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } },
+		Triangle{ Vec2{ 11, 11 }, Vec2{ 20, 11 }, Vec2{ 11, 20 } }));
+
+	static_assert(Geometry2D::Intersects(
+		Quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } },
+		Quad{ Vec2{ 10, 0 }, Vec2{ 20, 0 }, Vec2{ 20, 10 }, Vec2{ 10, 10 } }));
+
+	static_assert(not Geometry2D::Intersects(
+		Quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } },
+		Quad{ Vec2{ 11, 11 }, Vec2{ 20, 11 }, Vec2{ 20, 20 }, Vec2{ 11, 20 } }));
+
+	{
+		const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };
+
+		CHECK(Geometry2D::Intersects(triangle, Triangle{ Vec2{ 5, -1 }, Vec2{ 11, -1 }, Vec2{ 5, 5 } }));
+		CHECK(Geometry2D::Intersects(Triangle{ Vec2{ 5, -1 }, Vec2{ 11, -1 }, Vec2{ 5, 5 } }, triangle));
+		CHECK(Geometry2D::Intersects(triangle, Triangle{ Vec2{ 10, 0 }, Vec2{ 15, -5 }, Vec2{ 15, 5 } }));
+		CHECK(Geometry2D::Intersects(triangle, Triangle{ Vec2{ 5, -1 }, Vec2{ 5, 11 }, Vec2{ 5, 5 } }));
+		CHECK(Geometry2D::Intersects(triangle, Triangle{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } }));
+		CHECK(not Geometry2D::Intersects(triangle, Triangle{ Vec2{ 11, 11 }, Vec2{ 20, 11 }, Vec2{ 11, 20 } }));
+		CHECK(not Geometry2D::Intersects(triangle, Triangle{ Vec2{ 11, -1 }, Vec2{ 11, 11 }, Vec2{ 11, 5 } }));
+		CHECK(not Geometry2D::Intersects(triangle, Triangle{ Vec2{ 8, 8 }, Vec2{ 8, 8 }, Vec2{ 8, 8 } }));
+	}
+
+	{
+		const Triangle triangle{ Vec2{ 2, 2 }, Vec2{ 8, 2 }, Vec2{ 5, 8 } };
+		const Triangle bigTriangle{ Vec2{ -1, -1 }, Vec2{ 20, -1 }, Vec2{ -1, 20 } };
+		const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+		const Quad innerQuad{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 4, 4 }, Vec2{ 2, 4 } };
+
+		CHECK(Geometry2D::Intersects(triangle, quad));
+		CHECK(Geometry2D::Intersects(quad, triangle));
+		CHECK(Geometry2D::Intersects(bigTriangle, innerQuad));
+		CHECK(Geometry2D::Intersects(innerQuad, bigTriangle));
+		CHECK(Geometry2D::Intersects(Triangle{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ -1, 6 } }, quad));
+		CHECK(Geometry2D::Intersects(quad, Triangle{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ -1, 6 } }));
+		CHECK(Geometry2D::Intersects(Triangle{ Vec2{ 10, 10 }, Vec2{ 15, 10 }, Vec2{ 10, 15 } }, quad));
+		CHECK(not Geometry2D::Intersects(Triangle{ Vec2{ 11, 11 }, Vec2{ 12, 11 }, Vec2{ 11, 12 } }, quad));
+	}
+
+	{
+		const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
+
+		CHECK(Geometry2D::Intersects(quad, Quad{ Vec2{ 5, 5 }, Vec2{ 15, 5 }, Vec2{ 15, 15 }, Vec2{ 5, 15 } }));
+		CHECK(Geometry2D::Intersects(Quad{ Vec2{ 5, 5 }, Vec2{ 15, 5 }, Vec2{ 15, 15 }, Vec2{ 5, 15 } }, quad));
+		CHECK(Geometry2D::Intersects(quad, Quad{ Vec2{ 10, 0 }, Vec2{ 20, 0 }, Vec2{ 20, 10 }, Vec2{ 10, 10 } }));
+		CHECK(Geometry2D::Intersects(quad, Quad{ Vec2{ 10, 10 }, Vec2{ 20, 10 }, Vec2{ 20, 20 }, Vec2{ 10, 20 } }));
+		CHECK(Geometry2D::Intersects(quad, Quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 0 } }));
+		CHECK(Geometry2D::Intersects(quad, Quad{ Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 }, Vec2{ 3, 4 } }));
+		CHECK(not Geometry2D::Intersects(quad, Quad{ Vec2{ 11, 11 }, Vec2{ 20, 11 }, Vec2{ 20, 20 }, Vec2{ 11, 20 } }));
+		CHECK(not Geometry2D::Intersects(quad, Quad{ Vec2{ 11, 0 }, Vec2{ 20, 0 }, Vec2{ 20, 0 }, Vec2{ 11, 0 } }));
+		CHECK(not Geometry2D::Intersects(quad, Quad{ Vec2{ 11, 11 }, Vec2{ 11, 11 }, Vec2{ 11, 11 }, Vec2{ 11, 11 } }));
+	}
+}
+
 // Line と Bezier2 / Bezier3 は、交差、端点接触、同一直線上の重なりを扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Line_Bezier")
 {

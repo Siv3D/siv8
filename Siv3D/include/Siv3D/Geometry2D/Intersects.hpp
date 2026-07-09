@@ -578,6 +578,12 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const Triangle& a, const RectF& b) noexcept;
 
+		[[nodiscard]]
+		constexpr bool Intersects(const Triangle& a, const Triangle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersects(const Triangle& a, const Quad& b) noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Quad, _)
@@ -607,6 +613,12 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const Quad& a, const RectF& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersects(const Quad& a, const Triangle& b) noexcept;
+
+		[[nodiscard]]
+		constexpr bool Intersects(const Quad& a, const Quad& b) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
