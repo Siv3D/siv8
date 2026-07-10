@@ -1448,6 +1448,89 @@ TEST_CASE("Geometry2D.Intersects.Circle_AreaShapes")
 	}
 }
 
+// Circle と Ellipse / SuperEllipse / RoundRect は、曲面 area shape 同士の交差、接触、empty、退化を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Circle_CurvedAreaShapes")
+{
+	{
+		const Circle circle{ Vec2{ 0, 0 }, 5 };
+		const Ellipse crossing{ Vec2{ 7, 0 }, 4, 2 };
+		const Ellipse tangent{ Vec2{ 10, 0 }, 5, 2 };
+		const Ellipse outside{ Vec2{ 12, 0 }, 5, 2 };
+		const Ellipse empty{ Vec2{ 0, 0 }, 0, 0 };
+		const Ellipse verticalSegment{ Vec2{ 0, 0 }, 0, 6 };
+		const Ellipse outsideVerticalSegment{ Vec2{ 10, 0 }, 0, 3 };
+		const Ellipse horizontalSegment{ Vec2{ 0, 0 }, 6, 0 };
+
+		CHECK(Geometry2D::Intersects(circle, crossing));
+		CHECK(Geometry2D::Intersects(crossing, circle));
+		CHECK(Geometry2D::Intersects(circle, tangent));
+		CHECK(Geometry2D::Intersects(tangent, circle));
+		CHECK(not Geometry2D::Intersects(circle, outside));
+		CHECK(not Geometry2D::Intersects(outside, circle));
+		CHECK(not Geometry2D::Intersects(circle, empty));
+		CHECK(not Geometry2D::Intersects(empty, circle));
+		CHECK(Geometry2D::Intersects(circle, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, circle));
+		CHECK(not Geometry2D::Intersects(circle, outsideVerticalSegment));
+		CHECK(not Geometry2D::Intersects(outsideVerticalSegment, circle));
+		CHECK(Geometry2D::Intersects(circle, horizontalSegment));
+		CHECK(Geometry2D::Intersects(horizontalSegment, circle));
+	}
+
+	{
+		const Circle circle{ Vec2{ 0, 0 }, 5 };
+		const SuperEllipse crossing{ Vec2{ 7, 0 }, SizeF{ 4, 2 }, 4.0 };
+		const SuperEllipse ellipseEquivalent{ Vec2{ 10, 0 }, SizeF{ 5, 2 }, 2.0 };
+		const SuperEllipse outside{ Vec2{ 12, 0 }, SizeF{ 5, 2 }, 4.0 };
+		const SuperEllipse empty{ Vec2{ 0, 0 }, SizeF{ 0, 0 }, 4.0 };
+		const SuperEllipse verticalSegment{ Vec2{ 0, 0 }, SizeF{ 0, 6 }, 4.0 };
+		const SuperEllipse outsideVerticalSegment{ Vec2{ 10, 0 }, SizeF{ 0, 3 }, 4.0 };
+		const SuperEllipse horizontalSegment{ Vec2{ 0, 0 }, SizeF{ 6, 0 }, 4.0 };
+
+		CHECK(Geometry2D::Intersects(circle, crossing));
+		CHECK(Geometry2D::Intersects(crossing, circle));
+		CHECK(Geometry2D::Intersects(circle, ellipseEquivalent));
+		CHECK(Geometry2D::Intersects(ellipseEquivalent, circle));
+		CHECK(not Geometry2D::Intersects(circle, outside));
+		CHECK(not Geometry2D::Intersects(outside, circle));
+		CHECK(not Geometry2D::Intersects(circle, empty));
+		CHECK(not Geometry2D::Intersects(empty, circle));
+		CHECK(Geometry2D::Intersects(circle, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, circle));
+		CHECK(not Geometry2D::Intersects(circle, outsideVerticalSegment));
+		CHECK(not Geometry2D::Intersects(outsideVerticalSegment, circle));
+		CHECK(Geometry2D::Intersects(circle, horizontalSegment));
+		CHECK(Geometry2D::Intersects(horizontalSegment, circle));
+	}
+
+	{
+		const Circle circle{ Vec2{ 0, 0 }, 5 };
+		const RoundRect crossing{ RectF{ 4, -2, 6, 4 }, 1 };
+		const RoundRect tangent{ RectF{ 5, -1, 2, 2 }, 1 };
+		const RoundRect outside{ RectF{ 6, -1, 2, 2 }, 1 };
+		const RoundRect rectEquivalent{ RectF{ 4, -1, 2, 2 }, 0 };
+		const RoundRect empty{ RectF{ 0, 0, 0, 0 }, 5 };
+		const RoundRect verticalSegment{ RectF{ 0, -6, 0, 12 }, 5 };
+		const RoundRect outsideVerticalSegment{ RectF{ 10, -3, 0, 6 }, 5 };
+
+		CHECK(Geometry2D::Intersects(circle, crossing));
+		CHECK(Geometry2D::Intersects(crossing, circle));
+		CHECK(Geometry2D::Intersects(circle, tangent));
+		CHECK(Geometry2D::Intersects(tangent, circle));
+		CHECK(not Geometry2D::Intersects(circle, outside));
+		CHECK(not Geometry2D::Intersects(outside, circle));
+		CHECK(Geometry2D::Intersects(circle, rectEquivalent));
+		CHECK(Geometry2D::Intersects(rectEquivalent, circle));
+		CHECK(not Geometry2D::Intersects(circle, empty));
+		CHECK(not Geometry2D::Intersects(empty, circle));
+		CHECK(Geometry2D::Intersects(circle, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, circle));
+		CHECK(not Geometry2D::Intersects(circle, outsideVerticalSegment));
+		CHECK(not Geometry2D::Intersects(outsideVerticalSegment, circle));
+	}
+}
+
+
 // Triangle / Quad と Polygon / MultiPolygon は、包含、境界接触、empty container、退化 point / segment を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.PolygonalShapes_PolygonContainers")
 {

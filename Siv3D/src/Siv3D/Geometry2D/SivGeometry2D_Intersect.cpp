@@ -1788,6 +1788,221 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		double DistanceSqPointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
+		{
+			const double ax = ellipse.axes.x;
+			const double by = ellipse.axes.y;
+			const double x = Abs(p.x - ellipse.center.x);
+			const double y = Abs(p.y - ellipse.center.y);
+
+			const double nx = (x / ax);
+			const double ny = (y / by);
+
+			if (((nx * nx) + (ny * ny)) <= 1.0)
+			{
+				return 0.0;
+			}
+
+			if (y == 0.0)
+			{
+				const double dx = (x - ax);
+				return (dx * dx);
+			}
+
+			if (x == 0.0)
+			{
+				const double dy = (y - by);
+				return (dy * dy);
+			}
+
+			double t = std::atan2((by * y), (ax * x));
+
+			for (int32 i = 0; i < 16; ++i)
+			{
+				const double st = std::sin(t);
+				const double ct = std::cos(t);
+				const double f = (((by * by) - (ax * ax)) * st * ct + ax * x * st - by * y * ct);
+				const double df = (((by * by) - (ax * ax)) * (ct * ct - st * st) + ax * x * ct + by * y * st);
+
+				if (df == 0.0)
+				{
+					break;
+				}
+
+				t = Clamp((t - (f / df)), 0.0, Math::HalfPi);
+			}
+
+			const double cx = (ax * std::cos(t));
+			const double cy = (by * std::sin(t));
+			const double dx = (x - cx);
+			const double dy = (y - cy);
+
+			return ((dx * dx) + (dy * dy));
+		}
+
+		template <class Fty>
+		[[nodiscard]]
+		bool VisitCircleApproximateLineSegments(const Circle& circle, Fty&& callback)
+		{
+			constexpr int32 SegmentCount = 64;
+			constexpr double TwoPi = 6.2831853071795864769252867665590058;
+			constexpr double Step = (TwoPi / SegmentCount);
+
+			Vec2 previous{ (circle.center.x + circle.r), circle.center.y };
+
+			for (int32 i = 1; i <= SegmentCount; ++i)
+			{
+				const double angle = (Step * i);
+				const Vec2 current{ (circle.center.x + std::cos(angle) * circle.r), (circle.center.y + std::sin(angle) * circle.r) };
+
+				if (callback(Line{ previous, current }))
+				{
+					return true;
+				}
+
+				previous = current;
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsCircleEllipse(const Circle& circle, const Ellipse& ellipse) noexcept
+		{
+			const double ax = ellipse.axes.x;
+			const double by = ellipse.axes.y;
+
+			if ((circle.r < 0.0) || (ax < 0.0) || (by < 0.0))
+			{
+				assert((0.0 <= circle.r) && (0.0 <= ax) && (0.0 <= by));
+				return false;
+			}
+
+			if ((circle.r == 0.0) || ((ax == 0.0) && (by == 0.0)))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(circle, Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } });
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(circle, Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } });
+			}
+
+			if (not BoundsIntersectClosed(circle.boundingRect(), ellipse.boundingRect()))
+			{
+				return false;
+			}
+
+			return (DistanceSqPointEllipse(circle.center, ellipse) <= (circle.r * circle.r));
+		}
+
+		[[nodiscard]]
+		bool IntersectsCircleSuperEllipse(const Circle& circle, const SuperEllipse& superEllipse) noexcept
+		{
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
+
+			if ((circle.r < 0.0) || (ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= circle.r) && (0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if ((circle.r == 0.0) || ((ax == 0.0) && (by == 0.0)))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(circle, Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } });
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(circle, Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } });
+			}
+
+			if (n == 2.0)
+			{
+				return IntersectsCircleEllipse(circle, Ellipse{ superEllipse.center, ax, by });
+			}
+
+			const RectF superEllipseBounds{ (superEllipse.center.x - ax), (superEllipse.center.y - by), (ax * 2.0), (by * 2.0) };
+
+			if (not BoundsIntersectClosed(circle.boundingRect(), superEllipseBounds))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(circle.center, superEllipse)
+				|| Geometry2D::Intersects(superEllipse.center, circle))
+			{
+				return true;
+			}
+
+			return VisitCircleApproximateLineSegments(circle, [&](const Line& segment)
+			{
+				return Geometry2D::Intersects(segment, superEllipse);
+			});
+		}
+
+		[[nodiscard]]
+		bool IntersectsCircleRoundRect(const Circle& circle, const RoundRect& roundRect) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((circle.r < 0.0) || (w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= circle.r) && (0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if ((circle.r == 0.0) || ((w == 0.0) && (h == 0.0)))
+			{
+				return false;
+			}
+
+			if ((w == 0.0) || (h == 0.0))
+			{
+				return Geometry2D::Intersects(circle, rect);
+			}
+
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+
+			if (er == 0.0)
+			{
+				return Geometry2D::Intersects(circle, rect);
+			}
+
+			if (not BoundsIntersectClosed(circle.boundingRect(), rect))
+			{
+				return false;
+			}
+
+			const Vec2 roundRectCenter{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+
+			if (Geometry2D::Intersects(circle.center, roundRect)
+				|| Geometry2D::Intersects(roundRectCenter, circle))
+			{
+				return true;
+			}
+
+			return VisitCircleApproximateLineSegments(circle, [&](const Line& segment)
+			{
+				return Geometry2D::Intersects(segment, roundRect);
+			});
+		}
+
+		[[nodiscard]]
 		bool IntersectsTrianglePolygon(const Triangle& triangle, const Polygon& polygon) noexcept
 		{
 			if (polygon.isEmpty())
@@ -2712,6 +2927,16 @@ namespace s3d
 			return Intersects(curve, circle);
 		}
 
+		bool Intersects(const Circle& a, const Ellipse& b) noexcept
+		{
+			return IntersectsCircleEllipse(a, b);
+		}
+
+		bool Intersects(const Circle& a, const SuperEllipse& b) noexcept
+		{
+			return IntersectsCircleSuperEllipse(a, b);
+		}
+
 		bool Intersects(const Circle& a, const Triangle& b) noexcept
 		{
 			return IntersectsCircleTriangle(a, b);
@@ -2720,6 +2945,11 @@ namespace s3d
 		bool Intersects(const Circle& a, const Quad& b) noexcept
 		{
 			return IntersectsCircleQuad(a, b);
+		}
+
+		bool Intersects(const Circle& a, const RoundRect& b) noexcept
+		{
+			return IntersectsCircleRoundRect(a, b);
 		}
 
 		bool Intersects(const Circle& a, const Polygon& b) noexcept
@@ -2751,6 +2981,11 @@ namespace s3d
 		bool Intersects(const Ellipse& ellipse, const Bezier3& curve)
 		{
 			return Intersects(curve, ellipse);
+		}
+
+		bool Intersects(const Ellipse& ellipse, const Circle& circle) noexcept
+		{
+			return Intersects(circle, ellipse);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2797,6 +3032,11 @@ namespace s3d
 		bool Intersects(const SuperEllipse& superEllipse, const RectF& rect) noexcept
 		{
 			return Intersects(rect, superEllipse);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const Circle& circle) noexcept
+		{
+			return Intersects(circle, superEllipse);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2936,6 +3176,11 @@ namespace s3d
 		bool Intersects(const RoundRect& roundRect, const RectF& rect) noexcept
 		{
 			return Intersects(rect, roundRect);
+		}
+
+		bool Intersects(const RoundRect& roundRect, const Circle& circle) noexcept
+		{
+			return Intersects(circle, roundRect);
 		}
 
 		////////////////////////////////////////////////////////////////
