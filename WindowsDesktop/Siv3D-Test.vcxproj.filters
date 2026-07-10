@@ -142,10 +142,19 @@
     <ClCompile Include="..\Test\Test_INI.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Geometry2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">
+    <ClCompile Include="..\Test\Test_Geometry2D_Intersects_AreaShapes.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Intersects_Bezier.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Intersects_CurvedAreaShapes.cpp">
       <Filter>Test</Filter>
     </ClCompile>
   </ItemGroup>
