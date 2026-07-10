@@ -546,10 +546,19 @@ namespace s3d
 		bool Intersects(const Ellipse& a, const Circle& b) noexcept;
 
 		[[nodiscard]]
+		bool Intersects(const Ellipse& a, const Ellipse& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Ellipse& a, const SuperEllipse& b) noexcept;
+
+		[[nodiscard]]
 		bool Intersects(const Ellipse& a, const Triangle& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersects(const Ellipse& a, const Quad& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const Ellipse& a, const RoundRect& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersects(const Ellipse& a, const Polygon& b) noexcept;
@@ -589,6 +598,9 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Circle& b) noexcept;
+	
+		[[nodiscard]]
+		bool Intersects(const SuperEllipse& a, const Ellipse& b) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -718,6 +730,9 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const RoundRect& a, const Circle& b) noexcept;
+
+		[[nodiscard]]
+		bool Intersects(const RoundRect& a, const Ellipse& b) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

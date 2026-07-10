@@ -1784,3 +1784,90 @@ TEST_CASE("Geometry2D.Intersects.PolygonContainers_PolygonContainers")
 		CHECK(Geometry2D::Intersects(multi, overlap));
 	}
 }
+
+
+// Ellipse と曲線系 AreaShape は、包含、境界接触、empty、partial-zero degeneration、近似境界判定を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Ellipse_CurvedAreaShapes")
+{
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 5, 3 };
+		const Ellipse overlapping{ Vec2{ 6, 0 }, 4, 2 };
+		const Ellipse containing{ Vec2{ 0, 0 }, 10, 6 };
+		const Ellipse tangent{ Vec2{ 10, 0 }, 5, 3 };
+		const Ellipse outside{ Vec2{ 11, 0 }, 5, 3 };
+		const Ellipse empty{ Vec2{ 0, 0 }, 0, 0 };
+		const Ellipse verticalSegment{ Vec2{ 0, 0 }, 0, 5 };
+		const Ellipse horizontalSegment{ Vec2{ 0, 0 }, 5, 0 };
+		const Ellipse segmentHit{ Vec2{ 0, 2 }, 2, 0 };
+		const Ellipse segmentMiss{ Vec2{ 6, 6 }, 2, 0 };
+
+		CHECK(Geometry2D::Intersects(ellipse, overlapping));
+		CHECK(Geometry2D::Intersects(overlapping, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, containing));
+		CHECK(Geometry2D::Intersects(containing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, empty));
+		CHECK(not Geometry2D::Intersects(empty, ellipse));
+		CHECK(Geometry2D::Intersects(verticalSegment, segmentHit));
+		CHECK(Geometry2D::Intersects(segmentHit, verticalSegment));
+		CHECK(not Geometry2D::Intersects(verticalSegment, segmentMiss));
+		CHECK(not Geometry2D::Intersects(segmentMiss, verticalSegment));
+		CHECK(Geometry2D::Intersects(horizontalSegment, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, horizontalSegment));
+	}
+
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 5, 3 };
+		const SuperEllipse crossing{ Vec2{ 6, 0 }, SizeF{ 4, 2 }, 4.0 };
+		const SuperEllipse containing{ Vec2{ 0, 0 }, SizeF{ 10, 6 }, 4.0 };
+		const SuperEllipse tangent{ Vec2{ 10, 0 }, SizeF{ 5, 3 }, 4.0 };
+		const SuperEllipse outside{ Vec2{ 11, 0 }, SizeF{ 5, 3 }, 4.0 };
+		const SuperEllipse ellipseEquivalent{ Vec2{ 6, 0 }, SizeF{ 4, 2 }, 2.0 };
+		const SuperEllipse empty{ Vec2{ 0, 0 }, SizeF{ 0, 0 }, 4.0 };
+		const SuperEllipse verticalSegment{ Vec2{ 0, 0 }, SizeF{ 0, 5 }, 4.0 };
+
+		CHECK(Geometry2D::Intersects(ellipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, containing));
+		CHECK(Geometry2D::Intersects(containing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, ellipseEquivalent));
+		CHECK(Geometry2D::Intersects(ellipseEquivalent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, empty));
+		CHECK(not Geometry2D::Intersects(empty, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, ellipse));
+	}
+
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 5, 3 };
+		const RoundRect crossing{ RectF{ 4, -2, 5, 4 }, 1.0 };
+		const RoundRect containing{ RectF{ -8, -5, 16, 10 }, 2.0 };
+		const RoundRect tangent{ RectF{ -5, 3, 10, 4 }, 1.0 };
+		const RoundRect outside{ RectF{ 6, 4, 4, 4 }, 1.0 };
+		const RoundRect rectEquivalent{ RectF{ 4, -2, 5, 4 }, 0.0 };
+		const RoundRect empty{ RectF{ 0, 0, 0, 0 }, 1.0 };
+		const RoundRect verticalSegment{ RectF{ 0, -5, 0, 10 }, 1.0 };
+
+		CHECK(Geometry2D::Intersects(ellipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, containing));
+		CHECK(Geometry2D::Intersects(containing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, rectEquivalent));
+		CHECK(Geometry2D::Intersects(rectEquivalent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, empty));
+		CHECK(not Geometry2D::Intersects(empty, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, ellipse));
+	}
+}
