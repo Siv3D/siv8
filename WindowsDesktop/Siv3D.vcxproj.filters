@@ -4917,9 +4917,6 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\libcpprime\internal\Utils.hpp">
       <Filter>include\ThirdParty\libcpprime\internal</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.ipp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier2.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
@@ -5822,6 +5819,9 @@
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DCommon.ipp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ClosestPoints2D.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
   </ItemGroup>
