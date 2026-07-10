@@ -1531,6 +1531,104 @@ TEST_CASE("Geometry2D.Intersects.Circle_CurvedAreaShapes")
 }
 
 
+
+// Ellipse と polygonal / polygon container area shapes は、包含、境界接触、empty、片側ゼロ軸を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.Ellipse_PolygonalAreaShapes")
+{
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 5, 3 };
+		const Ellipse empty{ Vec2{ 0, 0 }, 0, 0 };
+		const Ellipse verticalSegment{ Vec2{ 0, 0 }, 0, 5 };
+		const Ellipse horizontalSegment{ Vec2{ 0, 0 }, 5, 0 };
+		const Triangle crossing{ Vec2{ 4, -1 }, Vec2{ 10, -1 }, Vec2{ 4, 1 } };
+		const Triangle containing{ Vec2{ -10, -10 }, Vec2{ 10, -10 }, Vec2{ 0, 10 } };
+		const Triangle tangent{ Vec2{ -5, 3 }, Vec2{ 5, 3 }, Vec2{ 0, 8 } };
+		const Triangle outside{ Vec2{ 6, 4 }, Vec2{ 10, 4 }, Vec2{ 6, 8 } };
+		const Triangle segmentTriangle{ Vec2{ -1, 0 }, Vec2{ 1, 0 }, Vec2{ 0, 0 } };
+		const Triangle outsideSegmentTriangle{ Vec2{ 6, 0 }, Vec2{ 7, 0 }, Vec2{ 6.5, 0 } };
+
+		CHECK(Geometry2D::Intersects(ellipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, containing));
+		CHECK(Geometry2D::Intersects(containing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, ellipse));
+		CHECK(not Geometry2D::Intersects(empty, containing));
+		CHECK(not Geometry2D::Intersects(containing, empty));
+		CHECK(Geometry2D::Intersects(verticalSegment, segmentTriangle));
+		CHECK(Geometry2D::Intersects(segmentTriangle, verticalSegment));
+		CHECK(Geometry2D::Intersects(horizontalSegment, segmentTriangle));
+		CHECK(Geometry2D::Intersects(segmentTriangle, horizontalSegment));
+		CHECK(not Geometry2D::Intersects(ellipse, outsideSegmentTriangle));
+		CHECK(not Geometry2D::Intersects(outsideSegmentTriangle, ellipse));
+	}
+
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 5, 3 };
+		const Quad crossing{ Vec2{ 4, -1 }, Vec2{ 8, -1 }, Vec2{ 8, 1 }, Vec2{ 4, 1 } };
+		const Quad containing{ Vec2{ -6, -4 }, Vec2{ 6, -4 }, Vec2{ 6, 4 }, Vec2{ -6, 4 } };
+		const Quad tangent{ Vec2{ -5, 3 }, Vec2{ 5, 3 }, Vec2{ 5, 5 }, Vec2{ -5, 5 } };
+		const Quad outside{ Vec2{ 6, 4 }, Vec2{ 10, 4 }, Vec2{ 10, 8 }, Vec2{ 6, 8 } };
+		const Quad segmentQuad{ Vec2{ -1, 0 }, Vec2{ 1, 0 }, Vec2{ 1, 0 }, Vec2{ -1, 0 } };
+		const Quad pointQuad{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } };
+		const Quad outsidePointQuad{ Vec2{ 6, 0 }, Vec2{ 6, 0 }, Vec2{ 6, 0 }, Vec2{ 6, 0 } };
+
+		CHECK(Geometry2D::Intersects(ellipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, containing));
+		CHECK(Geometry2D::Intersects(containing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, segmentQuad));
+		CHECK(Geometry2D::Intersects(segmentQuad, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, pointQuad));
+		CHECK(Geometry2D::Intersects(pointQuad, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outsidePointQuad));
+		CHECK(not Geometry2D::Intersects(outsidePointQuad, ellipse));
+	}
+
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 5, 3 };
+		const Ellipse empty{ Vec2{ 0, 0 }, 0, 0 };
+		const Ellipse verticalSegment{ Vec2{ 0, 0 }, 0, 5 };
+		const Polygon crossing{ Array<Vec2>{ Vec2{ 4, -1 }, Vec2{ 8, -1 }, Vec2{ 8, 1 }, Vec2{ 4, 1 } } };
+		const Polygon containing{ Array<Vec2>{ Vec2{ -6, -4 }, Vec2{ 6, -4 }, Vec2{ 6, 4 }, Vec2{ -6, 4 } } };
+		const Polygon tangent{ Array<Vec2>{ Vec2{ -5, 3 }, Vec2{ 5, 3 }, Vec2{ 5, 5 }, Vec2{ -5, 5 } } };
+		const Polygon outside{ Array<Vec2>{ Vec2{ 6, 4 }, Vec2{ 10, 4 }, Vec2{ 10, 8 }, Vec2{ 6, 8 } } };
+		const Polygon segmentHit{ Array<Vec2>{ Vec2{ -1, -1 }, Vec2{ 1, -1 }, Vec2{ 1, 1 }, Vec2{ -1, 1 } } };
+		const Polygon emptyPolygon;
+		const MultiPolygon multiPolygon{ outside, crossing };
+		const MultiPolygon outsideMultiPolygon{ outside };
+		const MultiPolygon emptyMultiPolygon;
+
+		CHECK(Geometry2D::Intersects(ellipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, containing));
+		CHECK(Geometry2D::Intersects(containing, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, emptyPolygon));
+		CHECK(not Geometry2D::Intersects(emptyPolygon, ellipse));
+		CHECK(not Geometry2D::Intersects(empty, containing));
+		CHECK(not Geometry2D::Intersects(containing, empty));
+		CHECK(Geometry2D::Intersects(verticalSegment, segmentHit));
+		CHECK(Geometry2D::Intersects(segmentHit, verticalSegment));
+		CHECK(Geometry2D::Intersects(ellipse, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outsideMultiPolygon));
+		CHECK(not Geometry2D::Intersects(outsideMultiPolygon, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, emptyMultiPolygon));
+		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, ellipse));
+	}
+}
+
+
 // Triangle / Quad と Polygon / MultiPolygon は、包含、境界接触、empty container、退化 point / segment を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.PolygonalShapes_PolygonContainers")
 {
