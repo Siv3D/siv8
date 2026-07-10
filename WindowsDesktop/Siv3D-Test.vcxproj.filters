@@ -160,6 +160,18 @@
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_Symmetry.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Overlaps.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Availability.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Symmetry.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">

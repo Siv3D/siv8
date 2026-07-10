@@ -1300,6 +1300,18 @@ namespace s3d
 		return Geometry2D::Intersects(*this, other);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Rect::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
+	}
+
 
 
 
