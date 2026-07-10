@@ -333,6 +333,21 @@ TEST_CASE("Geometry2D.Intersects.RemainingAreaShapes")
 		CHECK(Geometry2D::Intersects(verticalSegment, roundRect));
 	}
 
+	// Both operands are circle-equivalent RoundRects. The old 8-segments-per-
+	// corner approximation missed the near-tangent overlap at an arc midpoint.
+	{
+		const RoundRect large{ RectF{ -10.0, -10.0, 20.0, 20.0 }, 10.0 };
+		const Vec2 intersectingCenter{ 1.0781885435271514, -10.94703199239898 };
+		const Vec2 outsideCenter{ 1.0781885437231855, -10.94703199438935 };
+		const RoundRect intersecting{ RectF{ (intersectingCenter.x - 1.0), (intersectingCenter.y - 1.0), 2.0, 2.0 }, 1.0 };
+		const RoundRect outside{ RectF{ (outsideCenter.x - 1.0), (outsideCenter.y - 1.0), 2.0, 2.0 }, 1.0 };
+
+		CHECK(Geometry2D::Intersects(large, intersecting));
+		CHECK(Geometry2D::Intersects(intersecting, large));
+		CHECK(not Geometry2D::Intersects(large, outside));
+		CHECK(not Geometry2D::Intersects(outside, large));
+	}
+
 	{
 		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2.0 };
 		const Polygon polygon{ Array<Vec2>{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 4, 4 }, Vec2{ 2, 4 } } };

@@ -758,6 +758,68 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		constexpr double DistanceBetweenClosedIntervals(
+			const double aMin, const double aMax,
+			const double bMin, const double bMax) noexcept
+		{
+			if ((aMin <= bMax) && (bMin <= aMax))
+			{
+				return 0.0;
+			}
+
+			if (aMax < bMin)
+			{
+				return (bMin - aMax);
+			}
+
+			// For valid ordered finite intervals, this is the remaining
+			// disjoint case bMax < aMin. If a coordinate is NaN, the
+			// subtraction propagates NaN and the final <= test rejects it.
+			return (aMin - bMax);
+		}
+
+		[[nodiscard]]
+		double DistancePointClosedRect(const Vec2& p, const RectF& rect) noexcept
+		{
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (left + rect.size.x);
+			const double bottom = (top + rect.size.y);
+			const double dx = DistanceBetweenClosedIntervals(p.x, p.x, left, right);
+			const double dy = DistanceBetweenClosedIntervals(p.y, p.y, top, bottom);
+
+			return std::hypot(dx, dy);
+		}
+
+		[[nodiscard]]
+		double DistanceClosedRects(const RectF& a, const RectF& b) noexcept
+		{
+			const double aLeft = a.pos.x;
+			const double aTop = a.pos.y;
+			const double aRight = (aLeft + a.size.x);
+			const double aBottom = (aTop + a.size.y);
+			const double bLeft = b.pos.x;
+			const double bTop = b.pos.y;
+			const double bRight = (bLeft + b.size.x);
+			const double bBottom = (bTop + b.size.y);
+			const double dx = DistanceBetweenClosedIntervals(aLeft, aRight, bLeft, bRight);
+			const double dy = DistanceBetweenClosedIntervals(aTop, aBottom, bTop, bBottom);
+
+			return std::hypot(dx, dy);
+		}
+
+		[[nodiscard]]
+		constexpr RectF RoundRectCoreRect(const RectF& rect, const double effectiveRadius) noexcept
+		{
+			return RectF{
+				(rect.pos.x + effectiveRadius),
+				(rect.pos.y + effectiveRadius),
+				(rect.size.x - (effectiveRadius * 2.0)),
+				(rect.size.y - (effectiveRadius * 2.0))
+			};
+		}
+
+		[[nodiscard]]
 		bool IntersectsBezier2RectF(const Bezier2& curve, const RectF& rect)
 		{
 			const double w = rect.size.x;
@@ -1751,57 +1813,18 @@ namespace s3d
 				return false;
 			}
 
-			const double left = rect.pos.x;
-			const double top = rect.pos.y;
-			const double right = (rect.pos.x + w);
-			const double bottom = (rect.pos.y + h);
-
-			if (w == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, roundRect);
-			}
-
-			if (h == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, roundRect);
-			}
-
-			if ((rrW == 0.0) || (rrH == 0.0))
-			{
-				return Geometry2D::Intersects(rect, rrRect);
-			}
-
-			const double er = Min(roundRect.r, Min((rrW * 0.5), (rrH * 0.5)));
-
-			if (er == 0.0)
-			{
-				return Geometry2D::Intersects(rect, rrRect);
-			}
-
 			if (not BoundsIntersectClosed(rect, rrRect))
 			{
 				return false;
 			}
 
-			if (Geometry2D::Intersects(Vec2{ left, top }, roundRect)
-				|| Geometry2D::Intersects(Vec2{ right, top }, roundRect)
-				|| Geometry2D::Intersects(Vec2{ right, bottom }, roundRect)
-				|| Geometry2D::Intersects(Vec2{ left, bottom }, roundRect))
-			{
-				return true;
-			}
+			const double er = Min(roundRect.r, Min((rrW * 0.5), (rrH * 0.5)));
+			const RectF core = RoundRectCoreRect(rrRect, er);
 
-			const Vec2 rrCenter{ (rrRect.pos.x + (rrW * 0.5)), (rrRect.pos.y + (rrH * 0.5)) };
-
-			if (Geometry2D::Intersects(rrCenter, rect))
-			{
-				return true;
-			}
-
-			return (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, roundRect)
-				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, roundRect)
-				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, roundRect)
-				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, roundRect));
+			// A positive-size RoundRect is the Minkowski sum of its core
+			// rectangle and a closed disk of radius er. This also covers
+			// er == 0 and one-dimensional RectF / RoundRect degeneracies.
+			return (DistanceClosedRects(rect, core) <= er);
 		}
 
 		[[nodiscard]]
@@ -2112,35 +2135,17 @@ namespace s3d
 				return false;
 			}
 
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return Geometry2D::Intersects(circle, rect);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
-
-			if (er == 0.0)
-			{
-				return Geometry2D::Intersects(circle, rect);
-			}
-
 			if (not BoundsIntersectClosed(circle.boundingRect(), rect))
 			{
 				return false;
 			}
 
-			const Vec2 roundRectCenter{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const RectF core = RoundRectCoreRect(rect, er);
 
-			if (Geometry2D::Intersects(circle.center, roundRect)
-				|| Geometry2D::Intersects(roundRectCenter, circle))
-			{
-				return true;
-			}
-
-			return VisitCircleApproximateLineSegments(circle, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, roundRect);
-			});
+			// (core + disk(er)) intersects disk(circle.r) exactly when the
+			// circle center is no farther than the sum of the two radii.
+			return (DistancePointClosedRect(circle.center, core) <= (circle.r + er));
 		}
 
 		[[nodiscard]]
@@ -3283,91 +3288,6 @@ namespace s3d
 				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, roundRect));
 		}
 
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitRoundRectApproximateLineSegments(const RoundRect& roundRect, Fty&& callback)
-		{
-			constexpr int32 ArcSegmentCount = 8;
-			constexpr double HalfPi = 1.5707963267948966192313216916397514;
-
-			const RectF& rect = roundRect.rect;
-			const double left = rect.pos.x;
-			const double top = rect.pos.y;
-			const double right = (rect.pos.x + rect.size.x);
-			const double bottom = (rect.pos.y + rect.size.y);
-			const double er = Min(roundRect.r, Min((rect.size.x * 0.5), (rect.size.y * 0.5)));
-
-			Vec2 previous{ (left + er), top };
-
-			auto EmitPoint = [&](const Vec2& current)
-			{
-				if (previous != current)
-				{
-					if (callback(Line{ previous, current }))
-					{
-						return true;
-					}
-
-					previous = current;
-				}
-
-				return false;
-			};
-
-			auto EmitArc = [&](const Vec2& center, const double startAngle)
-			{
-				for (int32 i = 1; i <= ArcSegmentCount; ++i)
-				{
-					const double angle = (startAngle + HalfPi * (static_cast<double>(i) / ArcSegmentCount));
-					const Vec2 current{ (center.x + std::cos(angle) * er), (center.y + std::sin(angle) * er) };
-
-					if (EmitPoint(current))
-					{
-						return true;
-					}
-				}
-
-				return false;
-			};
-
-			if (EmitPoint(Vec2{ (right - er), top }))
-			{
-				return true;
-			}
-
-			if (EmitArc(Vec2{ (right - er), (top + er) }, -HalfPi))
-			{
-				return true;
-			}
-
-			if (EmitPoint(Vec2{ right, (bottom - er) }))
-			{
-				return true;
-			}
-
-			if (EmitArc(Vec2{ (right - er), (bottom - er) }, 0.0))
-			{
-				return true;
-			}
-
-			if (EmitPoint(Vec2{ (left + er), bottom }))
-			{
-				return true;
-			}
-
-			if (EmitArc(Vec2{ (left + er), (bottom - er) }, HalfPi))
-			{
-				return true;
-			}
-
-			if (EmitPoint(Vec2{ left, (top + er) }))
-			{
-				return true;
-			}
-
-			return EmitArc(Vec2{ (left + er), (top + er) }, (HalfPi * 2.0));
-		}
-
 		[[nodiscard]]
 		bool IntersectsRoundRectRoundRect(const RoundRect& a, const RoundRect& b) noexcept
 		{
@@ -3392,37 +3312,20 @@ namespace s3d
 				return false;
 			}
 
-			const double aer = Min(a.r, Min((aw * 0.5), (ah * 0.5)));
-			const double ber = Min(b.r, Min((bw * 0.5), (bh * 0.5)));
-
-			if ((aw == 0.0) || (ah == 0.0) || (aer == 0.0))
-			{
-				return IntersectsRectFRoundRect(ar, b);
-			}
-
-			if ((bw == 0.0) || (bh == 0.0) || (ber == 0.0))
-			{
-				return IntersectsRectFRoundRect(br, a);
-			}
-
 			if (not BoundsIntersectClosed(ar, br))
 			{
 				return false;
 			}
 
-			const Vec2 ac{ (ar.pos.x + (aw * 0.5)), (ar.pos.y + (ah * 0.5)) };
-			const Vec2 bc{ (br.pos.x + (bw * 0.5)), (br.pos.y + (bh * 0.5)) };
+			const double aer = Min(a.r, Min((aw * 0.5), (ah * 0.5)));
+			const double ber = Min(b.r, Min((bw * 0.5), (bh * 0.5)));
+			const RectF aCore = RoundRectCoreRect(ar, aer);
+			const RectF bCore = RoundRectCoreRect(br, ber);
 
-			if (Geometry2D::Intersects(ac, b)
-				|| Geometry2D::Intersects(bc, a))
-			{
-				return true;
-			}
-
-			return VisitRoundRectApproximateLineSegments(a, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, b);
-			});
+			// Each RoundRect is core + disk(radius). The two sets intersect
+			// exactly when the distance between the closed core rectangles is
+			// at most the sum of the effective radii.
+			return (DistanceClosedRects(aCore, bCore) <= (aer + ber));
 		}
 
 		[[nodiscard]]

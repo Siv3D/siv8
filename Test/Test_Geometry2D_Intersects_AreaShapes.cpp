@@ -206,6 +206,23 @@ TEST_CASE("Geometry2D.Intersects.Circle_CurvedAreaShapes")
 		CHECK(not Geometry2D::Intersects(circle, outsideVerticalSegment));
 		CHECK(not Geometry2D::Intersects(outsideVerticalSegment, circle));
 	}
+
+	// A square RoundRect with radius == half-size is exactly a Circle. The
+	// previous 64-segment inner approximation of the other Circle missed this
+	// near-tangent overlap when the contact direction lay halfway between two
+	// approximation vertices.
+	{
+		const Circle circle{ Vec2{ 0, 0 }, 10.0 };
+		const Vec2 intersectingCenter{ 10.986750017258101, 0.5397444175525304 };
+		const Vec2 outsideCenter{ 10.986750019255693, 0.5397444176506658 };
+		const RoundRect intersecting{ RectF{ (intersectingCenter.x - 1.0), (intersectingCenter.y - 1.0), 2.0, 2.0 }, 1.0 };
+		const RoundRect outside{ RectF{ (outsideCenter.x - 1.0), (outsideCenter.y - 1.0), 2.0, 2.0 }, 1.0 };
+
+		CHECK(Geometry2D::Intersects(circle, intersecting));
+		CHECK(Geometry2D::Intersects(intersecting, circle));
+		CHECK(not Geometry2D::Intersects(circle, outside));
+		CHECK(not Geometry2D::Intersects(outside, circle));
+	}
 }
 
 
