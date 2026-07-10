@@ -1956,3 +1956,161 @@ TEST_CASE("Geometry2D.Intersects.SuperEllipse_PolygonalAreaShapes")
 		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, superEllipse));
 	}
 }
+
+// SuperEllipse / RoundRect と残りの area shapes は、曲線境界、包含、境界接触、empty、退化を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.RemainingAreaShapes")
+{
+	{
+		const SuperEllipse superEllipse{ Vec2{ 0, 0 }, SizeF{ 5, 3 }, 4.0 };
+		const SuperEllipse crossing{ Vec2{ 6, 0 }, SizeF{ 4, 2 }, 4.0 };
+		const SuperEllipse containing{ Vec2{ 0, 0 }, SizeF{ 10, 6 }, 4.0 };
+		const SuperEllipse tangent{ Vec2{ 9, 0 }, SizeF{ 4, 2 }, 4.0 };
+		const SuperEllipse outside{ Vec2{ 10.5, 0 }, SizeF{ 4, 2 }, 4.0 };
+		const SuperEllipse ellipseEquivalent{ Vec2{ 6, 0 }, SizeF{ 4, 2 }, 2.0 };
+		const SuperEllipse empty{ Vec2{ 0, 0 }, SizeF{ 0, 0 }, 4.0 };
+		const SuperEllipse verticalSegment{ Vec2{ 0, 0 }, SizeF{ 0, 5 }, 4.0 };
+
+		CHECK(Geometry2D::Intersects(superEllipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, containing));
+		CHECK(Geometry2D::Intersects(containing, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, ellipseEquivalent));
+		CHECK(Geometry2D::Intersects(ellipseEquivalent, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, empty));
+		CHECK(not Geometry2D::Intersects(empty, superEllipse));
+		CHECK(Geometry2D::Intersects(verticalSegment, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, verticalSegment));
+	}
+
+	{
+		const SuperEllipse superEllipse{ Vec2{ 0, 0 }, SizeF{ 5, 3 }, 4.0 };
+		const RoundRect crossing{ RectF{ 4, -2, 5, 4 }, 1.0 };
+		const RoundRect containing{ RectF{ -8, -5, 16, 10 }, 2.0 };
+		const RoundRect tangent{ RectF{ -5, 3, 10, 4 }, 1.0 };
+		const RoundRect outside{ RectF{ 6, 4, 4, 4 }, 1.0 };
+		const RoundRect rectEquivalent{ RectF{ 4, -2, 5, 4 }, 0.0 };
+		const RoundRect empty{ RectF{ 0, 0, 0, 0 }, 1.0 };
+		const RoundRect verticalSegment{ RectF{ 0, -5, 0, 10 }, 1.0 };
+
+		CHECK(Geometry2D::Intersects(superEllipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, containing));
+		CHECK(Geometry2D::Intersects(containing, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, tangent));
+		CHECK(Geometry2D::Intersects(tangent, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, rectEquivalent));
+		CHECK(Geometry2D::Intersects(rectEquivalent, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, empty));
+		CHECK(not Geometry2D::Intersects(empty, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, superEllipse));
+	}
+
+	{
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2.0 };
+		const RoundRect empty{ RectF{ 0, 0, 0, 0 }, 2.0 };
+		const RoundRect verticalSegment{ RectF{ 5, -2, 0, 4 }, 2.0 };
+		const Triangle crossing{ Vec2{ -1, 5 }, Vec2{ 5, 5 }, Vec2{ -1, 8 } };
+		const Triangle inside{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 2, 4 } };
+		const Triangle containing{ Vec2{ -10, -10 }, Vec2{ 20, -10 }, Vec2{ -10, 20 } };
+		const Triangle outside{ Vec2{ 12, 12 }, Vec2{ 14, 12 }, Vec2{ 12, 14 } };
+		const Triangle segmentHit{ Vec2{ 5, -1 }, Vec2{ 5, 3 }, Vec2{ 5, 1 } };
+		const Triangle segmentMiss{ Vec2{ 12, 0 }, Vec2{ 12, 4 }, Vec2{ 12, 2 } };
+
+		CHECK(Geometry2D::Intersects(roundRect, crossing));
+		CHECK(Geometry2D::Intersects(crossing, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, inside));
+		CHECK(Geometry2D::Intersects(inside, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, containing));
+		CHECK(Geometry2D::Intersects(containing, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, outside));
+		CHECK(not Geometry2D::Intersects(outside, roundRect));
+		CHECK(not Geometry2D::Intersects(empty, containing));
+		CHECK(not Geometry2D::Intersects(containing, empty));
+		CHECK(Geometry2D::Intersects(verticalSegment, segmentHit));
+		CHECK(Geometry2D::Intersects(segmentHit, verticalSegment));
+		CHECK(not Geometry2D::Intersects(verticalSegment, segmentMiss));
+		CHECK(not Geometry2D::Intersects(segmentMiss, verticalSegment));
+	}
+
+	{
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2.0 };
+		const Quad crossing{ Vec2{ -1, 4 }, Vec2{ 2, 4 }, Vec2{ 2, 6 }, Vec2{ -1, 6 } };
+		const Quad inside{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 4, 4 }, Vec2{ 2, 4 } };
+		const Quad containing{ Vec2{ -10, -10 }, Vec2{ 20, -10 }, Vec2{ 20, 20 }, Vec2{ -10, 20 } };
+		const Quad outside{ Vec2{ 12, 12 }, Vec2{ 14, 12 }, Vec2{ 14, 14 }, Vec2{ 12, 14 } };
+		const Quad segmentHit{ Vec2{ 5, -1 }, Vec2{ 5, 3 }, Vec2{ 5, 3 }, Vec2{ 5, -1 } };
+		const Quad pointHit{ Vec2{ 5, 5 }, Vec2{ 5, 5 }, Vec2{ 5, 5 }, Vec2{ 5, 5 } };
+		const Quad pointMiss{ Vec2{ 12, 12 }, Vec2{ 12, 12 }, Vec2{ 12, 12 }, Vec2{ 12, 12 } };
+
+		CHECK(Geometry2D::Intersects(roundRect, crossing));
+		CHECK(Geometry2D::Intersects(crossing, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, inside));
+		CHECK(Geometry2D::Intersects(inside, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, containing));
+		CHECK(Geometry2D::Intersects(containing, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, outside));
+		CHECK(not Geometry2D::Intersects(outside, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, segmentHit));
+		CHECK(Geometry2D::Intersects(segmentHit, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, pointHit));
+		CHECK(Geometry2D::Intersects(pointHit, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, pointMiss));
+		CHECK(not Geometry2D::Intersects(pointMiss, roundRect));
+	}
+
+	{
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2.0 };
+		const RoundRect overlapping{ RectF{ 8, 2, 5, 5 }, 1.0 };
+		const RoundRect containing{ RectF{ -5, -5, 20, 20 }, 3.0 };
+		const RoundRect tangent{ RectF{ 10, 2, 4, 4 }, 1.0 };
+		const RoundRect outside{ RectF{ 11, 0, 4, 4 }, 1.0 };
+		const RoundRect rectEquivalent{ RectF{ 8, 2, 5, 5 }, 0.0 };
+		const RoundRect verticalSegment{ RectF{ 5, -2, 0, 4 }, 1.0 };
+
+		CHECK(Geometry2D::Intersects(roundRect, overlapping));
+		CHECK(Geometry2D::Intersects(overlapping, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, containing));
+		CHECK(Geometry2D::Intersects(containing, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, tangent));
+		CHECK(Geometry2D::Intersects(tangent, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, outside));
+		CHECK(not Geometry2D::Intersects(outside, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, rectEquivalent));
+		CHECK(Geometry2D::Intersects(rectEquivalent, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, verticalSegment));
+		CHECK(Geometry2D::Intersects(verticalSegment, roundRect));
+	}
+
+	{
+		const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2.0 };
+		const Polygon polygon{ Array<Vec2>{ Vec2{ 2, 2 }, Vec2{ 4, 2 }, Vec2{ 4, 4 }, Vec2{ 2, 4 } } };
+		const Polygon crossingPolygon{ Array<Vec2>{ Vec2{ -1, 4 }, Vec2{ 2, 4 }, Vec2{ 2, 6 }, Vec2{ -1, 6 } } };
+		const Polygon outsidePolygon{ Array<Vec2>{ Vec2{ 12, 12 }, Vec2{ 14, 12 }, Vec2{ 14, 14 }, Vec2{ 12, 14 } } };
+		const Polygon emptyPolygon;
+		const MultiPolygon multiPolygon{ polygon };
+		const MultiPolygon outsideMultiPolygon{ outsidePolygon };
+		const MultiPolygon emptyMultiPolygon;
+
+		CHECK(Geometry2D::Intersects(roundRect, polygon));
+		CHECK(Geometry2D::Intersects(polygon, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, crossingPolygon));
+		CHECK(Geometry2D::Intersects(crossingPolygon, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, outsidePolygon));
+		CHECK(not Geometry2D::Intersects(outsidePolygon, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, emptyPolygon));
+		CHECK(not Geometry2D::Intersects(emptyPolygon, roundRect));
+		CHECK(Geometry2D::Intersects(roundRect, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, outsideMultiPolygon));
+		CHECK(not Geometry2D::Intersects(outsideMultiPolygon, roundRect));
+		CHECK(not Geometry2D::Intersects(roundRect, emptyMultiPolygon));
+		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, roundRect));
+	}
+}

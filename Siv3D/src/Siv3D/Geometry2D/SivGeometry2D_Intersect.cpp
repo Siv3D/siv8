@@ -2777,6 +2777,504 @@ namespace s3d
 			});
 		}
 
+		template <class Fty>
+		[[nodiscard]]
+		bool VisitSuperEllipseApproximateLineSegments(const SuperEllipse& superEllipse, Fty&& callback)
+		{
+			constexpr int32 SegmentCount = 96;
+			constexpr double TwoPi = 6.2831853071795864769252867665590058;
+			constexpr double Step = (TwoPi / SegmentCount);
+
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double exponent = (2.0 / superEllipse.n);
+
+			auto SignedUnitPower = [exponent](const double v) noexcept
+			{
+				const double p = std::pow(Abs(v), exponent);
+				return ((v < 0.0) ? -p : p);
+			};
+
+			auto PointAtAngle = [&](const double angle) noexcept
+			{
+				return Vec2{
+					(superEllipse.center.x + ax * SignedUnitPower(std::cos(angle))),
+					(superEllipse.center.y + by * SignedUnitPower(std::sin(angle)))
+				};
+			};
+
+			Vec2 previous = PointAtAngle(0.0);
+
+			for (int32 i = 1; i <= SegmentCount; ++i)
+			{
+				const Vec2 current = PointAtAngle(Step * i);
+
+				if ((previous != current) && callback(Line{ previous, current }))
+				{
+					return true;
+				}
+
+				previous = current;
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsSuperEllipseSuperEllipse(const SuperEllipse& a, const SuperEllipse& b) noexcept
+		{
+			const double ax = a.axes.x;
+			const double ay = a.axes.y;
+			const double bx = b.axes.x;
+			const double by = b.axes.y;
+
+			if ((ax < 0.0) || (ay < 0.0) || (a.n <= 0.0)
+				|| (bx < 0.0) || (by < 0.0) || (b.n <= 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= ay) && (0.0 < a.n)
+					&& (0.0 <= bx) && (0.0 <= by) && (0.0 < b.n));
+				return false;
+			}
+
+			if (((ax == 0.0) && (ay == 0.0))
+				|| ((bx == 0.0) && (by == 0.0)))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ a.center.x, (a.center.y - ay) }, Vec2{ a.center.x, (a.center.y + ay) } }, b);
+			}
+
+			if (ay == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ (a.center.x - ax), a.center.y }, Vec2{ (a.center.x + ax), a.center.y } }, b);
+			}
+
+			if (bx == 0.0)
+			{
+				return Geometry2D::Intersects(a, Line{ Vec2{ b.center.x, (b.center.y - by) }, Vec2{ b.center.x, (b.center.y + by) } });
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(a, Line{ Vec2{ (b.center.x - bx), b.center.y }, Vec2{ (b.center.x + bx), b.center.y } });
+			}
+
+			if (a.n == 2.0)
+			{
+				return IntersectsEllipseSuperEllipse(Ellipse{ a.center, ax, ay }, b);
+			}
+
+			if (b.n == 2.0)
+			{
+				return IntersectsEllipseSuperEllipse(Ellipse{ b.center, bx, by }, a);
+			}
+
+			if (not BoundsIntersectClosed(a.boundingRect(), b.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(a.center, b)
+				|| Geometry2D::Intersects(b.center, a))
+			{
+				return true;
+			}
+
+			return VisitSuperEllipseApproximateLineSegments(a, [&](const Line& segment)
+			{
+				return Geometry2D::Intersects(segment, b);
+			});
+		}
+
+		[[nodiscard]]
+		bool IntersectsSuperEllipseRoundRect(const SuperEllipse& superEllipse, const RoundRect& roundRect) noexcept
+		{
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const RectF& rect = roundRect.rect;
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((ax < 0.0) || (by < 0.0) || (superEllipse.n <= 0.0)
+				|| (w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < superEllipse.n)
+					&& (0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if (((ax == 0.0) && (by == 0.0))
+				|| ((w == 0.0) && (h == 0.0)))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, roundRect);
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, roundRect);
+			}
+
+			if (superEllipse.n == 2.0)
+			{
+				return IntersectsEllipseRoundRect(Ellipse{ superEllipse.center, ax, by }, roundRect);
+			}
+
+			if ((w == 0.0) || (h == 0.0))
+			{
+				return Geometry2D::Intersects(superEllipse, rect);
+			}
+
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+
+			if (er == 0.0)
+			{
+				return IntersectsRectFSuperEllipse(rect, superEllipse);
+			}
+
+			if (not BoundsIntersectClosed(superEllipse.boundingRect(), rect))
+			{
+				return false;
+			}
+
+			const Vec2 roundRectCenter{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+
+			if (Geometry2D::Intersects(superEllipse.center, roundRect)
+				|| Geometry2D::Intersects(roundRectCenter, superEllipse))
+			{
+				return true;
+			}
+
+			return VisitSuperEllipseApproximateLineSegments(superEllipse, [&](const Line& segment)
+			{
+				return Geometry2D::Intersects(segment, roundRect);
+			});
+		}
+
+		[[nodiscard]]
+		bool IntersectsRoundRectTriangle(const RoundRect& roundRect, const Triangle& triangle) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			if ((w == 0.0) || (h == 0.0))
+			{
+				return IntersectsRectFTriangle(rect, triangle);
+			}
+
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+
+			if (er == 0.0)
+			{
+				return IntersectsRectFTriangle(rect, triangle);
+			}
+
+			if (not BoundsIntersectClosed(rect, triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			const Vec2 center{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+
+			if (Geometry2D::Intersects(center, triangle)
+				|| Geometry2D::Intersects(triangle.p0, roundRect)
+				|| Geometry2D::Intersects(triangle.p1, roundRect)
+				|| Geometry2D::Intersects(triangle.p2, roundRect))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, roundRect)
+				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, roundRect)
+				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, roundRect));
+		}
+
+		[[nodiscard]]
+		bool IntersectsRoundRectQuad(const RoundRect& roundRect, const Quad& quad) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if ((w == 0.0) && (h == 0.0))
+			{
+				return false;
+			}
+
+			if ((w == 0.0) || (h == 0.0))
+			{
+				return IntersectsRectFQuad(rect, quad);
+			}
+
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+
+			if (er == 0.0)
+			{
+				return IntersectsRectFQuad(rect, quad);
+			}
+
+			if (not BoundsIntersectClosed(rect, quad.boundingRect()))
+			{
+				return false;
+			}
+
+			const Vec2 center{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+
+			if (Geometry2D::Intersects(center, quad)
+				|| Geometry2D::Intersects(quad.p0, roundRect)
+				|| Geometry2D::Intersects(quad.p1, roundRect)
+				|| Geometry2D::Intersects(quad.p2, roundRect)
+				|| Geometry2D::Intersects(quad.p3, roundRect))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ quad.p0, quad.p1 }, roundRect)
+				|| Geometry2D::Intersects(Line{ quad.p1, quad.p2 }, roundRect)
+				|| Geometry2D::Intersects(Line{ quad.p2, quad.p3 }, roundRect)
+				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, roundRect));
+		}
+
+		template <class Fty>
+		[[nodiscard]]
+		bool VisitRoundRectApproximateLineSegments(const RoundRect& roundRect, Fty&& callback)
+		{
+			constexpr int32 ArcSegmentCount = 8;
+			constexpr double HalfPi = 1.5707963267948966192313216916397514;
+
+			const RectF& rect = roundRect.rect;
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
+			const double er = Min(roundRect.r, Min((rect.size.x * 0.5), (rect.size.y * 0.5)));
+
+			Vec2 previous{ (left + er), top };
+
+			auto EmitPoint = [&](const Vec2& current)
+			{
+				if (previous != current)
+				{
+					if (callback(Line{ previous, current }))
+					{
+						return true;
+					}
+
+					previous = current;
+				}
+
+				return false;
+			};
+
+			auto EmitArc = [&](const Vec2& center, const double startAngle)
+			{
+				for (int32 i = 1; i <= ArcSegmentCount; ++i)
+				{
+					const double angle = (startAngle + HalfPi * (static_cast<double>(i) / ArcSegmentCount));
+					const Vec2 current{ (center.x + std::cos(angle) * er), (center.y + std::sin(angle) * er) };
+
+					if (EmitPoint(current))
+					{
+						return true;
+					}
+				}
+
+				return false;
+			};
+
+			if (EmitPoint(Vec2{ (right - er), top }))
+			{
+				return true;
+			}
+
+			if (EmitArc(Vec2{ (right - er), (top + er) }, -HalfPi))
+			{
+				return true;
+			}
+
+			if (EmitPoint(Vec2{ right, (bottom - er) }))
+			{
+				return true;
+			}
+
+			if (EmitArc(Vec2{ (right - er), (bottom - er) }, 0.0))
+			{
+				return true;
+			}
+
+			if (EmitPoint(Vec2{ (left + er), bottom }))
+			{
+				return true;
+			}
+
+			if (EmitArc(Vec2{ (left + er), (bottom - er) }, HalfPi))
+			{
+				return true;
+			}
+
+			if (EmitPoint(Vec2{ left, (top + er) }))
+			{
+				return true;
+			}
+
+			return EmitArc(Vec2{ (left + er), (top + er) }, (HalfPi * 2.0));
+		}
+
+		[[nodiscard]]
+		bool IntersectsRoundRectRoundRect(const RoundRect& a, const RoundRect& b) noexcept
+		{
+			const RectF& ar = a.rect;
+			const RectF& br = b.rect;
+			const double aw = ar.size.x;
+			const double ah = ar.size.y;
+			const double bw = br.size.x;
+			const double bh = br.size.y;
+
+			if ((aw < 0.0) || (ah < 0.0) || (a.r < 0.0)
+				|| (bw < 0.0) || (bh < 0.0) || (b.r < 0.0))
+			{
+				assert((0.0 <= aw) && (0.0 <= ah) && (0.0 <= a.r)
+					&& (0.0 <= bw) && (0.0 <= bh) && (0.0 <= b.r));
+				return false;
+			}
+
+			if (((aw == 0.0) && (ah == 0.0))
+				|| ((bw == 0.0) && (bh == 0.0)))
+			{
+				return false;
+			}
+
+			const double aer = Min(a.r, Min((aw * 0.5), (ah * 0.5)));
+			const double ber = Min(b.r, Min((bw * 0.5), (bh * 0.5)));
+
+			if ((aw == 0.0) || (ah == 0.0) || (aer == 0.0))
+			{
+				return IntersectsRectFRoundRect(ar, b);
+			}
+
+			if ((bw == 0.0) || (bh == 0.0) || (ber == 0.0))
+			{
+				return IntersectsRectFRoundRect(br, a);
+			}
+
+			if (not BoundsIntersectClosed(ar, br))
+			{
+				return false;
+			}
+
+			const Vec2 ac{ (ar.pos.x + (aw * 0.5)), (ar.pos.y + (ah * 0.5)) };
+			const Vec2 bc{ (br.pos.x + (bw * 0.5)), (br.pos.y + (bh * 0.5)) };
+
+			if (Geometry2D::Intersects(ac, b)
+				|| Geometry2D::Intersects(bc, a))
+			{
+				return true;
+			}
+
+			return VisitRoundRectApproximateLineSegments(a, [&](const Line& segment)
+			{
+				return Geometry2D::Intersects(segment, b);
+			});
+		}
+
+		[[nodiscard]]
+		bool IntersectsRoundRectPolygon(const RoundRect& roundRect, const Polygon& polygon) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+			const double w = rect.size.x;
+			const double h = rect.size.y;
+
+			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
+			{
+				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
+				return false;
+			}
+
+			if (((w == 0.0) && (h == 0.0)) || polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if ((w == 0.0) || (h == 0.0))
+			{
+				return IntersectsRectFPolygon(rect, polygon);
+			}
+
+			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+
+			if (er == 0.0)
+			{
+				return IntersectsRectFPolygon(rect, polygon);
+			}
+
+			if (not BoundsIntersectClosed(rect, polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			const Vec2 center{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+
+			if (Geometry2D::Intersects(center, polygon))
+			{
+				return true;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (IntersectsRoundRectTriangle(roundRect, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsRoundRectMultiPolygon(const RoundRect& roundRect, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (IntersectsRoundRectPolygon(roundRect, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		[[nodiscard]]
 		bool IntersectsPolygonPolygon(const Polygon& a, const Polygon& b) noexcept
 		{
@@ -3627,6 +4125,11 @@ namespace s3d
 			return Intersects(ellipse, superEllipse);
 		}
 
+		bool Intersects(const SuperEllipse& a, const SuperEllipse& b) noexcept
+		{
+			return IntersectsSuperEllipseSuperEllipse(a, b);
+		}
+
 		bool Intersects(const SuperEllipse& superEllipse, const Triangle& triangle) noexcept
 		{
 			return IntersectsSuperEllipseTriangle(superEllipse, triangle);
@@ -3635,6 +4138,11 @@ namespace s3d
 		bool Intersects(const SuperEllipse& superEllipse, const Quad& quad) noexcept
 		{
 			return IntersectsSuperEllipseQuad(superEllipse, quad);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const RoundRect& roundRect) noexcept
+		{
+			return IntersectsSuperEllipseRoundRect(superEllipse, roundRect);
 		}
 
 		bool Intersects(const SuperEllipse& superEllipse, const Polygon& polygon) noexcept
@@ -3691,6 +4199,11 @@ namespace s3d
 		bool Intersects(const Triangle& triangle, const SuperEllipse& superEllipse) noexcept
 		{
 			return Intersects(superEllipse, triangle);
+		}
+
+		bool Intersects(const Triangle& triangle, const RoundRect& roundRect) noexcept
+		{
+			return Intersects(roundRect, triangle);
 		}
 
 		bool Intersects(const Triangle& triangle, const Polygon& polygon) noexcept
@@ -3757,6 +4270,11 @@ namespace s3d
 			return Intersects(superEllipse, quad);
 		}
 
+		bool Intersects(const Quad& quad, const RoundRect& roundRect) noexcept
+		{
+			return Intersects(roundRect, quad);
+		}
+
 		bool Intersects(const Quad& quad, const Polygon& polygon) noexcept
 		{
 			return IntersectsQuadPolygon(quad, polygon);
@@ -3814,6 +4332,36 @@ namespace s3d
 		bool Intersects(const RoundRect& roundRect, const Ellipse& ellipse) noexcept
 		{
 			return Intersects(ellipse, roundRect);
+		}
+
+		bool Intersects(const RoundRect& roundRect, const SuperEllipse& superEllipse) noexcept
+		{
+			return Intersects(superEllipse, roundRect);
+		}
+
+		bool Intersects(const RoundRect& roundRect, const Triangle& triangle) noexcept
+		{
+			return IntersectsRoundRectTriangle(roundRect, triangle);
+		}
+
+		bool Intersects(const RoundRect& roundRect, const Quad& quad) noexcept
+		{
+			return IntersectsRoundRectQuad(roundRect, quad);
+		}
+
+		bool Intersects(const RoundRect& a, const RoundRect& b) noexcept
+		{
+			return IntersectsRoundRectRoundRect(a, b);
+		}
+
+		bool Intersects(const RoundRect& roundRect, const Polygon& polygon) noexcept
+		{
+			return IntersectsRoundRectPolygon(roundRect, polygon);
+		}
+
+		bool Intersects(const RoundRect& roundRect, const MultiPolygon& multiPolygon) noexcept
+		{
+			return IntersectsRoundRectMultiPolygon(roundRect, multiPolygon);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3885,6 +4433,11 @@ namespace s3d
 		bool Intersects(const Polygon& polygon, const Quad& quad) noexcept
 		{
 			return Intersects(quad, polygon);
+		}
+
+		bool Intersects(const Polygon& polygon, const RoundRect& roundRect) noexcept
+		{
+			return Intersects(roundRect, polygon);
 		}
 
 		bool Intersects(const Polygon& a, const Polygon& b) noexcept
@@ -3974,6 +4527,11 @@ namespace s3d
 		bool Intersects(const MultiPolygon& multiPolygon, const Quad& quad) noexcept
 		{
 			return Intersects(quad, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const RoundRect& roundRect) noexcept
+		{
+			return Intersects(roundRect, multiPolygon);
 		}
 
 		bool Intersects(const MultiPolygon& multiPolygon, const Polygon& polygon) noexcept
