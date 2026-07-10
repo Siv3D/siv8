@@ -1313,22 +1313,17 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsBezier2Polygon(const Bezier2& curve, const Polygon& polygon)
+		bool IntersectsBezier2PolygonNonEmpty(
+			const Bezier2& curve, const RectF& curveBounds,
+			const Polygon& polygon, const RectF& polygonBounds)
 		{
-			if (polygon.isEmpty())
+			if (not BoundsIntersectClosed(curveBounds, polygonBounds))
 			{
 				return false;
 			}
 
-			const RectF curveBounds = curve.computeBoundingRect();
-
-			if (not BoundsIntersectClosed(curveBounds, polygon.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(curve.p0, polygon)
-				|| Geometry2D::Intersects(curve.p2, polygon))
+			if (IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(curve.p2, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -1348,6 +1343,20 @@ namespace s3d
 			}
 
 			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier2Polygon(const Bezier2& curve, const Polygon& polygon)
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			const RectF curveBounds = curve.computeBoundingRect();
+			const RectF polygonBounds = polygon.boundingRect();
+
+			return IntersectsBezier2PolygonNonEmpty(curve, curveBounds, polygon, polygonBounds);
 		}
 
 		template <class Shape>
@@ -1658,22 +1667,17 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsBezier3Polygon(const Bezier3& curve, const Polygon& polygon)
+		bool IntersectsBezier3PolygonNonEmpty(
+			const Bezier3& curve, const RectF& curveBounds,
+			const Polygon& polygon, const RectF& polygonBounds)
 		{
-			if (polygon.isEmpty())
+			if (not BoundsIntersectClosed(curveBounds, polygonBounds))
 			{
 				return false;
 			}
 
-			const RectF curveBounds = curve.computeBoundingRect();
-
-			if (not BoundsIntersectClosed(curveBounds, polygon.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(curve.p0, polygon)
-				|| Geometry2D::Intersects(curve.p3, polygon))
+			if (IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(curve.p3, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -1693,6 +1697,20 @@ namespace s3d
 			}
 
 			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsBezier3Polygon(const Bezier3& curve, const Polygon& polygon)
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			const RectF curveBounds = curve.computeBoundingRect();
+			const RectF polygonBounds = polygon.boundingRect();
+
+			return IntersectsBezier3PolygonNonEmpty(curve, curveBounds, polygon, polygonBounds);
 		}
 
 		[[nodiscard]]
@@ -2574,21 +2592,18 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsTrianglePolygon(const Triangle& triangle, const Polygon& polygon) noexcept
+		bool IntersectsTrianglePolygonNonEmpty(
+			const Triangle& triangle, const RectF& triangleBounds,
+			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			if (polygon.isEmpty())
+			if (not BoundsIntersectClosed(triangleBounds, polygonBounds))
 			{
 				return false;
 			}
 
-			if (not BoundsIntersectClosed(triangle.boundingRect(), polygon.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(triangle.p0, polygon)
-				|| Geometry2D::Intersects(triangle.p1, polygon)
-				|| Geometry2D::Intersects(triangle.p2, polygon))
+			if (IntersectsPointPolygonNonEmpty(triangle.p0, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(triangle.p1, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(triangle.p2, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -2601,9 +2616,9 @@ namespace s3d
 				}
 			}
 
-			if (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, polygon)
-				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, polygon)
-				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, polygon))
+			if (IntersectsLinePolygonNonEmpty(Line{ triangle.p0, triangle.p1 }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ triangle.p1, triangle.p2 }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ triangle.p2, triangle.p0 }, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -2626,22 +2641,33 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsQuadPolygon(const Quad& quad, const Polygon& polygon) noexcept
+		bool IntersectsTrianglePolygon(const Triangle& triangle, const Polygon& polygon) noexcept
 		{
 			if (polygon.isEmpty())
 			{
 				return false;
 			}
 
-			if (not BoundsIntersectClosed(quad.boundingRect(), polygon.boundingRect()))
+			const RectF triangleBounds = triangle.boundingRect();
+			const RectF polygonBounds = polygon.boundingRect();
+
+			return IntersectsTrianglePolygonNonEmpty(triangle, triangleBounds, polygon, polygonBounds);
+		}
+
+		[[nodiscard]]
+		bool IntersectsQuadPolygonNonEmpty(
+			const Quad& quad, const RectF& quadBounds,
+			const Polygon& polygon, const RectF& polygonBounds) noexcept
+		{
+			if (not BoundsIntersectClosed(quadBounds, polygonBounds))
 			{
 				return false;
 			}
 
-			if (Geometry2D::Intersects(quad.p0, polygon)
-				|| Geometry2D::Intersects(quad.p1, polygon)
-				|| Geometry2D::Intersects(quad.p2, polygon)
-				|| Geometry2D::Intersects(quad.p3, polygon))
+			if (IntersectsPointPolygonNonEmpty(quad.p0, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(quad.p1, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(quad.p2, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(quad.p3, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -2654,10 +2680,10 @@ namespace s3d
 				}
 			}
 
-			if (Geometry2D::Intersects(Line{ quad.p0, quad.p1 }, polygon)
-				|| Geometry2D::Intersects(Line{ quad.p1, quad.p2 }, polygon)
-				|| Geometry2D::Intersects(Line{ quad.p2, quad.p3 }, polygon)
-				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, polygon))
+			if (IntersectsLinePolygonNonEmpty(Line{ quad.p0, quad.p1 }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ quad.p1, quad.p2 }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ quad.p2, quad.p3 }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ quad.p3, quad.p0 }, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -2677,6 +2703,20 @@ namespace s3d
 			}
 
 			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsQuadPolygon(const Quad& quad, const Polygon& polygon) noexcept
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			const RectF quadBounds = quad.boundingRect();
+			const RectF polygonBounds = polygon.boundingRect();
+
+			return IntersectsQuadPolygonNonEmpty(quad, quadBounds, polygon, polygonBounds);
 		}
 
 		[[nodiscard]]
@@ -3433,14 +3473,11 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsPolygonPolygon(const Polygon& a, const Polygon& b) noexcept
+		bool IntersectsPolygonPolygonNonEmpty(
+			const Polygon& a, const RectF& aBounds,
+			const Polygon& b, const RectF& bBounds) noexcept
 		{
-			if (a.isEmpty() || b.isEmpty())
-			{
-				return false;
-			}
-
-			if (not BoundsIntersectClosed(a.boundingRect(), b.boundingRect()))
+			if (not BoundsIntersectClosed(aBounds, bBounds))
 			{
 				return false;
 			}
@@ -3452,14 +3489,30 @@ namespace s3d
 				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
 				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
 				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+				const Triangle triangle{ p0, p1, p2 };
+				const RectF triangleBounds = triangle.boundingRect();
 
-				if (IntersectsTrianglePolygon(Triangle{ p0, p1, p2 }, b))
+				if (IntersectsTrianglePolygonNonEmpty(triangle, triangleBounds, b, bBounds))
 				{
 					return true;
 				}
 			}
 
 			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsPolygonPolygon(const Polygon& a, const Polygon& b) noexcept
+		{
+			if (a.isEmpty() || b.isEmpty())
+			{
+				return false;
+			}
+
+			const RectF aBounds = a.boundingRect();
+			const RectF bBounds = b.boundingRect();
+
+			return IntersectsPolygonPolygonNonEmpty(a, aBounds, b, bBounds);
 		}
 	}
 
@@ -4533,9 +4586,23 @@ namespace s3d
 
 		bool Intersects(const Polygon& polygon, const MultiPolygon& multiPolygon) noexcept
 		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			const RectF polygonBounds = polygon.boundingRect();
+
 			for (const auto& other : multiPolygon)
 			{
-				if (Geometry2D::Intersects(polygon, other))
+				if (other.isEmpty())
+				{
+					continue;
+				}
+
+				const RectF otherBounds = other.boundingRect();
+
+				if (IntersectsPolygonPolygonNonEmpty(polygon, polygonBounds, other, otherBounds))
 				{
 					return true;
 				}
@@ -4629,9 +4696,26 @@ namespace s3d
 		{
 			for (const auto& polygon : a)
 			{
-				if (Geometry2D::Intersects(polygon, b))
+				if (polygon.isEmpty())
 				{
-					return true;
+					continue;
+				}
+
+				const RectF polygonBounds = polygon.boundingRect();
+
+				for (const auto& other : b)
+				{
+					if (other.isEmpty())
+					{
+						continue;
+					}
+
+					const RectF otherBounds = other.boundingRect();
+
+					if (IntersectsPolygonPolygonNonEmpty(polygon, polygonBounds, other, otherBounds))
+					{
+						return true;
+					}
 				}
 			}
 
