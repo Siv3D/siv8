@@ -3209,7 +3209,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsRoundRectTriangleArea(const RoundRect& roundRect, const double effectiveRadius, const Triangle& triangle) noexcept
+		bool IntersectsTriangleRoundRectArea(const Triangle& triangle, const RoundRect& roundRect, const double effectiveRadius) noexcept
 		{
 			const RectF& rect = roundRect.rect;
 
@@ -3239,7 +3239,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsRoundRectTriangle(const RoundRect& roundRect, const Triangle& triangle) noexcept
+		bool IntersectsTriangleRoundRect(const Triangle& triangle, const RoundRect& roundRect) noexcept
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
 
@@ -3253,11 +3253,11 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), triangle);
 			}
 
-			return IntersectsRoundRectTriangleArea(roundRect, detail::GetGeometry2DEffectiveRadius(roundRect), triangle);
+			return IntersectsTriangleRoundRectArea(triangle, roundRect, detail::GetGeometry2DEffectiveRadius(roundRect));
 		}
 
 		[[nodiscard]]
-		bool IntersectsRoundRectQuad(const RoundRect& roundRect, const Quad& quad) noexcept
+		bool IntersectsQuadRoundRect(const Quad& quad, const RoundRect& roundRect) noexcept
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
 
@@ -3377,7 +3377,7 @@ namespace s3d
 				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
 				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
 
-				if (IntersectsRoundRectTriangleArea(roundRect, effectiveRadius, Triangle{ p0, p1, p2 }))
+				if (IntersectsTriangleRoundRectArea(Triangle{ p0, p1, p2 }, roundRect, effectiveRadius))
 				{
 					return true;
 				}
@@ -3670,7 +3670,7 @@ namespace s3d
 
 		bool Intersects(const LineString& segments, const Point& p) noexcept
 		{
-			return Intersects(segments, Vec2{ p });
+			return Intersects(p, segments);
 		}
 
 		bool Intersects(const LineString& segments, const Vec2& p) noexcept
@@ -4289,7 +4289,7 @@ namespace s3d
 
 		bool Intersects(const Triangle& triangle, const RoundRect& roundRect) noexcept
 		{
-			return Intersects(roundRect, triangle);
+			return IntersectsTriangleRoundRect(triangle, roundRect);
 		}
 
 		bool Intersects(const Triangle& triangle, const Polygon& polygon) noexcept
@@ -4358,7 +4358,7 @@ namespace s3d
 
 		bool Intersects(const Quad& quad, const RoundRect& roundRect) noexcept
 		{
-			return Intersects(roundRect, quad);
+			return IntersectsQuadRoundRect(quad, roundRect);
 		}
 
 		bool Intersects(const Quad& quad, const Polygon& polygon) noexcept
@@ -4427,12 +4427,12 @@ namespace s3d
 
 		bool Intersects(const RoundRect& roundRect, const Triangle& triangle) noexcept
 		{
-			return IntersectsRoundRectTriangle(roundRect, triangle);
+			return Intersects(triangle, roundRect);
 		}
 
 		bool Intersects(const RoundRect& roundRect, const Quad& quad) noexcept
 		{
-			return IntersectsRoundRectQuad(roundRect, quad);
+			return Intersects(quad, roundRect);
 		}
 
 		bool Intersects(const RoundRect& a, const RoundRect& b) noexcept

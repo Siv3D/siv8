@@ -670,7 +670,7 @@ namespace s3d
 
 		constexpr bool Intersects(const RectF& a, const Rect& b) noexcept
 		{
-			return Intersects(a, RectF{ b });
+			return Intersects(b, a);
 		}
 
 		constexpr bool Intersects(const RectF& a, const RectF& b) noexcept

@@ -31,6 +31,7 @@
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_AreaShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_Bezier.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_CurvedAreaShapes.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_Intersects_Symmetry.cpp" />
     <ClCompile Include="..\Test\Test_Grid.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
