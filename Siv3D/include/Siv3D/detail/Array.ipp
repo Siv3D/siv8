@@ -2130,33 +2130,18 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
+	template <class ResultType>
 	constexpr auto Array<Type, Allocator>::sum() const
-		requires (Concept::Addable<value_type> || Concept::AddAssignable<value_type>)
+		requires (std::default_initializable<ResultType>&& requires (ResultType& r, const value_type& v) { r += v; })
 	{
-		if constexpr (Concept::AddAssignable<value_type>)
+		ResultType result{};
+
+		for (const auto& elem : m_container)
 		{
-			value_type result{};
-
-			for (const auto& elem : m_container)
-			{
-				result += elem;
-			}
-
-			return result;
+			result += elem;
 		}
-		else
-		{
-			using result_type = decltype(std::declval<value_type>() + std::declval<value_type>());
 
-			result_type result{};
-
-			for (const auto& elem : m_container)
-			{
-				result = (result + elem);
-			}
-
-			return result;
-		}
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
