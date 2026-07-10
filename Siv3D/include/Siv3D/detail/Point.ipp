@@ -62,6 +62,54 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const Point& a, const MultiPolygon& b) noexcept;
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Point& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Vec2& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Line& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const LineString& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Bezier2& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Bezier3& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Rect& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const RectF& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Circle& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Ellipse& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const SuperEllipse& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Triangle& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Quad& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const RoundRect& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Polygon& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Point& a, const MultiPolygon& b);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -841,6 +889,18 @@ namespace s3d
 	constexpr bool Point::intersects(const Shape2DType& other) const
 	{
 		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Point::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

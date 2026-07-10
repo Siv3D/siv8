@@ -756,6 +756,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool RoundRect::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	contains
 	//
 	////////////////////////////////////////////////////////////////
@@ -764,5 +776,17 @@ namespace s3d
 	constexpr bool RoundRect::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> RoundRect::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 }

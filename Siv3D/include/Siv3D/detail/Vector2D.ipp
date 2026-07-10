@@ -62,6 +62,54 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const Vec2& a, const MultiPolygon& b) noexcept;
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Point& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Vec2& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Line& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const LineString& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Bezier2& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Bezier3& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Rect& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const RectF& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Circle& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Ellipse& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const SuperEllipse& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Triangle& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Quad& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const RoundRect& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const Polygon& b);
+
+		[[nodiscard]]
+		Optional<Array<Vec2>> IntersectsAt(const Vec2& a, const MultiPolygon& b);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1047,6 +1095,26 @@ namespace s3d
 		else
 		{
 			return Geometry2D::Intersects(Vector2D<double>{ *this }, other);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Vector2D<Float>::intersectsAt(const Shape2DType& other) const
+	{
+		if constexpr (std::is_same_v<value_type, double>)
+		{
+			return Geometry2D::IntersectsAt(*this, other);
+		}
+		else
+		{
+			return Geometry2D::IntersectsAt(Vector2D<double>{ *this }, other);
 		}
 	}
 

@@ -28,6 +28,10 @@
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_IntersectsAt.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_IntersectsAt_Availability.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_IntersectsAt_MemberAvailability.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_IntersectsAt_Symmetry.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_AreaShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_Bezier.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_CurvedAreaShapes.cpp" />

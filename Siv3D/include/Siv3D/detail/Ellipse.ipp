@@ -530,9 +530,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
-	inline constexpr bool Ellipse::intersects(const Shape2DType& other) const
+	constexpr bool Ellipse::intersects(const Shape2DType& other) const
 	{
 		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Ellipse::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -545,5 +557,17 @@ namespace s3d
 	constexpr bool Ellipse::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Ellipse::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 }

@@ -485,6 +485,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool SuperEllipse::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	contains
 	//
 	////////////////////////////////////////////////////////////////
@@ -493,5 +505,17 @@ namespace s3d
 	constexpr bool SuperEllipse::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> SuperEllipse::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 }

@@ -1312,9 +1312,6 @@ namespace s3d
 		return Geometry2D::Overlaps(*this, other);
 	}
 
-
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	contains
@@ -1327,10 +1324,17 @@ namespace s3d
 		return Geometry2D::Contains(*this, other);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
 
-
-
-
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Rect::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

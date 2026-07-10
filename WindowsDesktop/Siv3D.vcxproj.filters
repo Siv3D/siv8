@@ -745,9 +745,6 @@
     <Filter Include="src\Siv3D\Graphics">
       <UniqueIdentifier>{da935cbc-dce2-47ef-9f5b-e5b4a7414476}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\HLSL">
-      <UniqueIdentifier>{1dbed38d-0db0-40c7-abb8-0ab7d0c95c5e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\HLSL">
       <UniqueIdentifier>{5670f361-13a6-4c5c-b047-11e97d4e35ad}</UniqueIdentifier>
     </Filter>
@@ -1416,6 +1413,9 @@
     </Filter>
     <Filter Include="src\Siv3D\QuarterArcTable">
       <UniqueIdentifier>{3d1d9bff-9ad9-45f8-9781-6ae8450303bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\HLSL">
+      <UniqueIdentifier>{1dbed38d-0db0-40c7-abb8-0ab7d0c95c5e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -8028,7 +8028,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\InputDeviceType\SivInputDeviceType.cpp">
       <Filter>src\Siv3D\InputDeviceType</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp">
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersects.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp">
@@ -8904,7 +8904,13 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.cpp">
       <Filter>src\Siv3D\Polygon</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Overlap.cpp">
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Overlaps.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Contains.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IntersectsAt.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
   </ItemGroup>

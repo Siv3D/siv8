@@ -355,9 +355,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
-	bool Bezier2::intersects(const Shape2DType& other) const
+	constexpr bool Bezier2::intersects(const Shape2DType& other) const
 	{
 		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Bezier2::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

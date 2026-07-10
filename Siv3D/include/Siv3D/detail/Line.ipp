@@ -653,11 +653,15 @@ namespace s3d
 		return Geometry2D::Intersects(*this, other);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Line::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
+	}
 }

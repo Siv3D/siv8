@@ -1690,13 +1690,15 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\FormatUtility\SivFormatUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FrameMetrics\SivFrameMetrics.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_BoundingRect.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Contains.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_ConvexHull.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Distance.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersect.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IntersectsAt.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Intersects.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IsClockwise.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Jitter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Misc.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Overlap.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Overlaps.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_PoleOfInaccessibility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SmallestEnclosingCircle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics2D\SivGraphics2D.cpp" />
