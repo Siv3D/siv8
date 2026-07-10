@@ -11,6 +11,37 @@
 
 # include "Siv3DTest.hpp"
 
+
+// 有効なサイズ依存形状の empty / segment / area 分類と -0.0 の扱いを確認する。
+TEST_CASE("Geometry2D.Common.SizedShapeClassification")
+{
+	using Kind = s3d::detail::Geometry2DSizedShapeKind;
+	using s3d::detail::ClassifyGeometry2DSizedShape;
+
+	CHECK(ClassifyGeometry2DSizedShape(RectF{ 0, 0, 0, 0 }) == Kind::Empty);
+	CHECK(ClassifyGeometry2DSizedShape(RectF{ 0, 0, -0.0, 5.0 }) == Kind::VerticalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(RectF{ 0, 0, 5.0, -0.0 }) == Kind::HorizontalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(RectF{ 0, 0, 5.0, 5.0 }) == Kind::Area);
+
+	CHECK(ClassifyGeometry2DSizedShape(Circle{ Vec2{ 0, 0 }, -0.0 }) == Kind::Empty);
+	CHECK(ClassifyGeometry2DSizedShape(Circle{ Vec2{ 0, 0 }, 1.0 }) == Kind::Area);
+
+	CHECK(ClassifyGeometry2DSizedShape(Ellipse{ Vec2{ 0, 0 }, -0.0, 3.0 }) == Kind::VerticalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(Ellipse{ Vec2{ 0, 0 }, 3.0, -0.0 }) == Kind::HorizontalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(Ellipse{ Vec2{ 0, 0 }, 3.0, 2.0 }) == Kind::Area);
+
+	CHECK(ClassifyGeometry2DSizedShape(SuperEllipse{ Vec2{ 0, 0 }, SizeF{ -0.0, 3.0 }, 4.0 }) == Kind::VerticalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(SuperEllipse{ Vec2{ 0, 0 }, SizeF{ 3.0, -0.0 }, 4.0 }) == Kind::HorizontalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(SuperEllipse{ Vec2{ 0, 0 }, SizeF{ 3.0, 2.0 }, 4.0 }) == Kind::Area);
+
+	CHECK(ClassifyGeometry2DSizedShape(RoundRect{ RectF{ 0, 0, -0.0, 5.0 }, 2.0 }) == Kind::VerticalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(RoundRect{ RectF{ 0, 0, 5.0, -0.0 }, 2.0 }) == Kind::HorizontalSegment);
+	CHECK(ClassifyGeometry2DSizedShape(RoundRect{ RectF{ 0, 0, 5.0, 5.0 }, -0.0 }) == Kind::Area);
+
+	CHECK(s3d::detail::GetGeometry2DEffectiveRadius(
+		RoundRect{ RectF{ 0, 0, 4.0, 10.0 }, 100.0 }) == 2.0);
+}
+
 // Point と Vec2 は、座標の完全一致で交差判定されることを確認する。
 TEST_CASE("Geometry2D.Intersects.Point_Vec2")
 {

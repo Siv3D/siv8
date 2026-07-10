@@ -205,6 +205,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ConvexHull.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DCommon.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DCommon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IntersectsAt.hpp" />

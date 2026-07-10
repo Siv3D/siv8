@@ -567,30 +567,21 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsLineSuperEllipse(const Line& segment, const SuperEllipse& superEllipse) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(segment, detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(segment, Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } });
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(segment, Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } });
-			}
 
 			if (n == 2.0)
 			{
@@ -808,48 +799,27 @@ namespace s3d
 			return std::hypot(dx, dy);
 		}
 
-		[[nodiscard]]
-		constexpr RectF RoundRectCoreRect(const RectF& rect, const double effectiveRadius) noexcept
-		{
-			return RectF{
-				(rect.pos.x + effectiveRadius),
-				(rect.pos.y + effectiveRadius),
-				(rect.size.x - (effectiveRadius * 2.0)),
-				(rect.size.y - (effectiveRadius * 2.0))
-			};
-		}
+
 
 		[[nodiscard]]
 		bool IntersectsBezier2RectF(const Bezier2& curve, const RectF& rect)
 		{
-			const double w = rect.size.x;
-			const double h = rect.size.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
 
-			if ((w < 0.0) || (h < 0.0))
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
-				assert((0.0 <= w) && (0.0 <= h));
 				return false;
 			}
 
-			if ((w == 0.0) && (h == 0.0))
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return false;
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), curve);
 			}
 
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
-			const double right = (rect.pos.x + w);
-			const double bottom = (rect.pos.y + h);
-
-			if (w == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, curve);
-			}
-
-			if (h == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, curve);
-			}
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
 
 			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
 			{
@@ -871,13 +841,7 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier2Circle(const Bezier2& curve, const Circle& circle)
 		{
-			if (circle.r < 0.0)
-			{
-				assert(0.0 <= circle.r);
-				return false;
-			}
-
-			if (circle.r == 0.0)
+			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
@@ -901,29 +865,20 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier2Ellipse(const Bezier2& curve, const Ellipse& ellipse)
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), curve);
+			}
+
 			const double ax = ellipse.axes.x;
 			const double by = ellipse.axes.y;
-
-			if ((ax < 0.0) || (by < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } }, curve);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } }, curve);
-			}
 
 			const RectF ellipseBounds{
 				(ellipse.center.x - ax),
@@ -1048,30 +1003,21 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier2SuperEllipse(const Bezier2& curve, const SuperEllipse& superEllipse)
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), curve);
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, curve);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, curve);
-			}
 
 			if (n == 2.0)
 			{
@@ -1136,31 +1082,24 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier2RoundRect(const Bezier2& curve, const RoundRect& roundRect)
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), curve);
+			}
+
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if ((w == 0.0) && (h == 0.0))
-			{
-				return false;
-			}
-
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return IntersectsBezier2RectF(curve, rect);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
-				return IntersectsBezier2RectF(curve, rect);
+				return Geometry2D::Intersects(rect, curve);
 			}
 
 			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
@@ -1240,34 +1179,22 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier3RectF(const Bezier3& curve, const RectF& rect)
 		{
-			const double w = rect.size.x;
-			const double h = rect.size.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
 
-			if ((w < 0.0) || (h < 0.0))
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
-				assert((0.0 <= w) && (0.0 <= h));
 				return false;
 			}
 
-			if ((w == 0.0) && (h == 0.0))
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return false;
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), curve);
 			}
 
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
-			const double right = (rect.pos.x + w);
-			const double bottom = (rect.pos.y + h);
-
-			if (w == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, curve);
-			}
-
-			if (h == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, curve);
-			}
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
 
 			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
 			{
@@ -1289,13 +1216,7 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier3Circle(const Bezier3& curve, const Circle& circle)
 		{
-			if (circle.r < 0.0)
-			{
-				assert(0.0 <= circle.r);
-				return false;
-			}
-
-			if (circle.r == 0.0)
+			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
@@ -1319,29 +1240,20 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier3Ellipse(const Bezier3& curve, const Ellipse& ellipse)
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), curve);
+			}
+
 			const double ax = ellipse.axes.x;
 			const double by = ellipse.axes.y;
-
-			if ((ax < 0.0) || (by < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } }, curve);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } }, curve);
-			}
 
 			const RectF ellipseBounds{
 				(ellipse.center.x - ax),
@@ -1436,30 +1348,21 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier3SuperEllipse(const Bezier3& curve, const SuperEllipse& superEllipse)
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), curve);
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, curve);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, curve);
-			}
 
 			if (n == 2.0)
 			{
@@ -1524,31 +1427,24 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsBezier3RoundRect(const Bezier3& curve, const RoundRect& roundRect)
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), curve);
+			}
+
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if ((w == 0.0) && (h == 0.0))
-			{
-				return false;
-			}
-
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return IntersectsBezier3RectF(curve, rect);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
-				return IntersectsBezier3RectF(curve, rect);
+				return Geometry2D::Intersects(rect, curve);
 			}
 
 			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
@@ -1600,34 +1496,22 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRectFTriangle(const RectF& rect, const Triangle& triangle) noexcept
 		{
-			const double w = rect.size.x;
-			const double h = rect.size.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
 
-			if ((w < 0.0) || (h < 0.0))
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
-				assert((0.0 <= w) && (0.0 <= h));
 				return false;
 			}
 
-			if ((w == 0.0) && (h == 0.0))
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return false;
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), triangle);
 			}
 
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
-			const double right = (rect.pos.x + w);
-			const double bottom = (rect.pos.y + h);
-
-			if (w == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, triangle);
-			}
-
-			if (h == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, triangle);
-			}
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
 
 			if (not BoundsIntersectClosed(rect, triangle.boundingRect()))
 			{
@@ -1658,34 +1542,22 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRectFQuad(const RectF& rect, const Quad& quad) noexcept
 		{
-			const double w = rect.size.x;
-			const double h = rect.size.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
 
-			if ((w < 0.0) || (h < 0.0))
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
-				assert((0.0 <= w) && (0.0 <= h));
 				return false;
 			}
 
-			if ((w == 0.0) && (h == 0.0))
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return false;
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), quad);
 			}
 
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
-			const double right = (rect.pos.x + w);
-			const double bottom = (rect.pos.y + h);
-
-			if (w == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, quad);
-			}
-
-			if (h == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, quad);
-			}
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
 
 			if (not BoundsIntersectClosed(rect, quad.boundingRect()))
 			{
@@ -1717,53 +1589,38 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRectFSuperEllipse(const RectF& rect, const SuperEllipse& superEllipse) noexcept
 		{
-			const double w = rect.size.x;
-			const double h = rect.size.y;
+			const auto rectKind = detail::ClassifyGeometry2DSizedShape(rect);
+			const auto superEllipseKind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if ((rectKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (superEllipseKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(rectKind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, rectKind), superEllipse);
+			}
+
+			if (detail::IsGeometry2DSegment(superEllipseKind))
+			{
+				return Geometry2D::Intersects(rect, detail::GetGeometry2DDegenerateSegment(superEllipse, superEllipseKind));
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((w < 0.0) || (h < 0.0) || (ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if (((w == 0.0) && (h == 0.0))
-				|| ((ax == 0.0) && (by == 0.0)))
-			{
-				return false;
-			}
-
-			const double left = rect.pos.x;
-			const double top = rect.pos.y;
-			const double right = (rect.pos.x + w);
-			const double bottom = (rect.pos.y + h);
-
-			if (w == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, superEllipse);
-			}
-
-			if (h == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, superEllipse);
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(rect, Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } });
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(rect, Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } });
-			}
 
 			if (n == 2.0)
 			{
 				return Geometry2D::Intersects(rect, Ellipse{ superEllipse.center, ax, by });
 			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
 
 			const RectF superEllipseBounds{
 				(superEllipse.center.x - ax),
@@ -1795,31 +1652,28 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRectFRoundRect(const RectF& rect, const RoundRect& roundRect) noexcept
 		{
-			const double w = rect.size.x;
-			const double h = rect.size.y;
+			const auto rectKind = detail::ClassifyGeometry2DSizedShape(rect);
+			const auto roundRectKind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if ((rectKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (roundRectKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
 			const RectF& rrRect = roundRect.rect;
-			const double rrW = rrRect.size.x;
-			const double rrH = rrRect.size.y;
-
-			if ((w < 0.0) || (h < 0.0) || (rrW < 0.0) || (rrH < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= rrW) && (0.0 <= rrH) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if (((w == 0.0) && (h == 0.0))
-				|| ((rrW == 0.0) && (rrH == 0.0)))
-			{
-				return false;
-			}
 
 			if (not BoundsIntersectClosed(rect, rrRect))
 			{
 				return false;
 			}
 
-			const double er = Min(roundRect.r, Min((rrW * 0.5), (rrH * 0.5)));
-			const RectF core = RoundRectCoreRect(rrRect, er);
+			const double er = (roundRectKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DEffectiveRadius(roundRect)
+				: 0.0;
+			const RectF core = (roundRectKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DRoundRectCore(roundRect, er)
+				: rrRect;
 
 			// A positive-size RoundRect is the Minkowski sum of its core
 			// rectangle and a closed disk of radius er. This also covers
@@ -1830,35 +1684,22 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRectFPolygon(const RectF& rect, const Polygon& polygon) noexcept
 		{
-			const double w = rect.size.x;
-			const double h = rect.size.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
 
-			if ((w < 0.0) || (h < 0.0))
+			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
 			{
-				assert((0.0 <= w) && (0.0 <= h));
 				return false;
 			}
 
-			if (((w == 0.0) && (h == 0.0))
-				|| polygon.isEmpty())
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return false;
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), polygon);
 			}
 
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
-			const double right = (rect.pos.x + w);
-			const double bottom = (rect.pos.y + h);
-
-			if (w == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ left, bottom } }, polygon);
-			}
-
-			if (h == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, polygon);
-			}
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
 
 			if (not BoundsIntersectClosed(rect, polygon.boundingRect()))
 			{
@@ -2033,28 +1874,18 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsCircleEllipse(const Circle& circle, const Ellipse& ellipse) noexcept
 		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
+			const auto circleKind = detail::ClassifyGeometry2DSizedShape(circle);
+			const auto ellipseKind = detail::ClassifyGeometry2DSizedShape(ellipse);
 
-			if ((circle.r < 0.0) || (ax < 0.0) || (by < 0.0))
-			{
-				assert((0.0 <= circle.r) && (0.0 <= ax) && (0.0 <= by));
-				return false;
-			}
-
-			if ((circle.r == 0.0) || ((ax == 0.0) && (by == 0.0)))
+			if ((circleKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (ellipseKind == detail::Geometry2DSizedShapeKind::Empty))
 			{
 				return false;
 			}
 
-			if (ax == 0.0)
+			if (detail::IsGeometry2DSegment(ellipseKind))
 			{
-				return Geometry2D::Intersects(circle, Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } });
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(circle, Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } });
+				return Geometry2D::Intersects(circle, detail::GetGeometry2DDegenerateSegment(ellipse, ellipseKind));
 			}
 
 			if (not BoundsIntersectClosed(circle.boundingRect(), ellipse.boundingRect()))
@@ -2068,30 +1899,23 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsCircleSuperEllipse(const Circle& circle, const SuperEllipse& superEllipse) noexcept
 		{
+			const auto circleKind = detail::ClassifyGeometry2DSizedShape(circle);
+			const auto superEllipseKind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if ((circleKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (superEllipseKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(superEllipseKind))
+			{
+				return Geometry2D::Intersects(circle, detail::GetGeometry2DDegenerateSegment(superEllipse, superEllipseKind));
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((circle.r < 0.0) || (ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= circle.r) && (0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if ((circle.r == 0.0) || ((ax == 0.0) && (by == 0.0)))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(circle, Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } });
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(circle, Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } });
-			}
 
 			if (n == 2.0)
 			{
@@ -2120,28 +1944,28 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsCircleRoundRect(const Circle& circle, const RoundRect& roundRect) noexcept
 		{
+			const auto circleKind = detail::ClassifyGeometry2DSizedShape(circle);
+			const auto roundRectKind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if ((circleKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (roundRectKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((circle.r < 0.0) || (w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= circle.r) && (0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if ((circle.r == 0.0) || ((w == 0.0) && (h == 0.0)))
-			{
-				return false;
-			}
 
 			if (not BoundsIntersectClosed(circle.boundingRect(), rect))
 			{
 				return false;
 			}
 
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
-			const RectF core = RoundRectCoreRect(rect, er);
+			const double er = (roundRectKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DEffectiveRadius(roundRect)
+				: 0.0;
+			const RectF core = (roundRectKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DRoundRectCore(roundRect, er)
+				: rect;
 
 			// (core + disk(er)) intersects disk(circle.r) exactly when the
 			// circle center is no farther than the sum of the two radii.
@@ -2151,28 +1975,16 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsEllipseTriangle(const Ellipse& ellipse, const Triangle& triangle) noexcept
 		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
 
-			if ((ax < 0.0) || (by < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
 
-			if (ax == 0.0)
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } }, triangle);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } }, triangle);
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), triangle);
 			}
 
 			if (not BoundsIntersectClosed(ellipse.boundingRect(), triangle.boundingRect()))
@@ -2196,28 +2008,16 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsEllipseQuad(const Ellipse& ellipse, const Quad& quad) noexcept
 		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
 
-			if ((ax < 0.0) || (by < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
 
-			if (ax == 0.0)
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } }, quad);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } }, quad);
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), quad);
 			}
 
 			if (not BoundsIntersectClosed(ellipse.boundingRect(), quad.boundingRect()))
@@ -2243,28 +2043,16 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsEllipsePolygon(const Ellipse& ellipse, const Polygon& polygon) noexcept
 		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
 
-			if ((ax < 0.0) || (by < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by));
-				return false;
-			}
-
-			if (((ax == 0.0) && (by == 0.0)) || polygon.isEmpty())
+			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
 			{
 				return false;
 			}
 
-			if (ax == 0.0)
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } }, polygon);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } }, polygon);
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), polygon);
 			}
 
 			if (not BoundsIntersectClosed(ellipse.boundingRect(), polygon.boundingRect()))
@@ -2311,30 +2099,21 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsSuperEllipseTriangle(const SuperEllipse& superEllipse, const Triangle& triangle) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), triangle);
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, triangle);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, triangle);
-			}
 
 			if (n == 2.0)
 			{
@@ -2362,30 +2141,21 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsSuperEllipseQuad(const SuperEllipse& superEllipse, const Quad& quad) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), quad);
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, quad);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, quad);
-			}
 
 			if (n == 2.0)
 			{
@@ -2415,30 +2185,21 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsSuperEllipsePolygon(const SuperEllipse& superEllipse, const Polygon& polygon) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), polygon);
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if (((ax == 0.0) && (by == 0.0)) || polygon.isEmpty())
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, polygon);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, polygon);
-			}
 
 			if (n == 2.0)
 			{
@@ -2595,13 +2356,7 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsCircleTriangle(const Circle& circle, const Triangle& triangle) noexcept
 		{
-			if (circle.r < 0.0)
-			{
-				assert(0.0 <= circle.r);
-				return false;
-			}
-
-			if (circle.r == 0.0)
+			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
@@ -2627,13 +2382,7 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsCircleQuad(const Circle& circle, const Quad& quad) noexcept
 		{
-			if (circle.r < 0.0)
-			{
-				assert(0.0 <= circle.r);
-				return false;
-			}
-
-			if (circle.r == 0.0)
+			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
@@ -2661,13 +2410,8 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsCirclePolygon(const Circle& circle, const Polygon& polygon) noexcept
 		{
-			if (circle.r < 0.0)
-			{
-				assert(0.0 <= circle.r);
-				return false;
-			}
-
-			if ((circle.r == 0.0) || polygon.isEmpty())
+			if ((detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
+				|| polygon.isEmpty())
 			{
 				return false;
 			}
@@ -2744,41 +2488,23 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsEllipseEllipse(const Ellipse& a, const Ellipse& b) noexcept
 		{
-			const double ax = a.axes.x;
-			const double ay = a.axes.y;
-			const double bx = b.axes.x;
-			const double by = b.axes.y;
+			const auto aKind = detail::ClassifyGeometry2DSizedShape(a);
+			const auto bKind = detail::ClassifyGeometry2DSizedShape(b);
 
-			if ((ax < 0.0) || (ay < 0.0) || (bx < 0.0) || (by < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= ay) && (0.0 <= bx) && (0.0 <= by));
-				return false;
-			}
-
-			if (((ax == 0.0) && (ay == 0.0))
-				|| ((bx == 0.0) && (by == 0.0)))
+			if ((aKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (bKind == detail::Geometry2DSizedShapeKind::Empty))
 			{
 				return false;
 			}
 
-			if (ax == 0.0)
+			if (detail::IsGeometry2DSegment(aKind))
 			{
-				return Geometry2D::Intersects(Line{ Vec2{ a.center.x, (a.center.y - ay) }, Vec2{ a.center.x, (a.center.y + ay) } }, b);
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(a, aKind), b);
 			}
 
-			if (ay == 0.0)
+			if (detail::IsGeometry2DSegment(bKind))
 			{
-				return Geometry2D::Intersects(Line{ Vec2{ (a.center.x - ax), a.center.y }, Vec2{ (a.center.x + ax), a.center.y } }, b);
-			}
-
-			if (bx == 0.0)
-			{
-				return Geometry2D::Intersects(a, Line{ Vec2{ b.center.x, (b.center.y - by) }, Vec2{ b.center.x, (b.center.y + by) } });
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(a, Line{ Vec2{ (b.center.x - bx), b.center.y }, Vec2{ (b.center.x + bx), b.center.y } });
+				return Geometry2D::Intersects(a, detail::GetGeometry2DDegenerateSegment(b, bKind));
 			}
 
 			if (not BoundsIntersectClosed(a.boundingRect(), b.boundingRect()))
@@ -2801,43 +2527,28 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsEllipseSuperEllipse(const Ellipse& ellipse, const SuperEllipse& superEllipse) noexcept
 		{
-			const double ex = ellipse.axes.x;
-			const double ey = ellipse.axes.y;
+			const auto ellipseKind = detail::ClassifyGeometry2DSizedShape(ellipse);
+			const auto superEllipseKind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if ((ellipseKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (superEllipseKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(ellipseKind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, ellipseKind), superEllipse);
+			}
+
+			if (detail::IsGeometry2DSegment(superEllipseKind))
+			{
+				return Geometry2D::Intersects(ellipse, detail::GetGeometry2DDegenerateSegment(superEllipse, superEllipseKind));
+			}
+
 			const double sx = superEllipse.axes.x;
 			const double sy = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if ((ex < 0.0) || (ey < 0.0) || (sx < 0.0) || (sy < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ex) && (0.0 <= ey) && (0.0 <= sx) && (0.0 <= sy) && (0.0 < n));
-				return false;
-			}
-
-			if (((ex == 0.0) && (ey == 0.0))
-				|| ((sx == 0.0) && (sy == 0.0)))
-			{
-				return false;
-			}
-
-			if (ex == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - ey) }, Vec2{ ellipse.center.x, (ellipse.center.y + ey) } }, superEllipse);
-			}
-
-			if (ey == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ex), ellipse.center.y }, Vec2{ (ellipse.center.x + ex), ellipse.center.y } }, superEllipse);
-			}
-
-			if (sx == 0.0)
-			{
-				return Geometry2D::Intersects(ellipse, Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - sy) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + sy) } });
-			}
-
-			if (sy == 0.0)
-			{
-				return Geometry2D::Intersects(ellipse, Line{ Vec2{ (superEllipse.center.x - sx), superEllipse.center.y }, Vec2{ (superEllipse.center.x + sx), superEllipse.center.y } });
-			}
 
 			if (n == 2.0)
 			{
@@ -2866,40 +2577,27 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsEllipseRoundRect(const Ellipse& ellipse, const RoundRect& roundRect) noexcept
 		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
+			const auto ellipseKind = detail::ClassifyGeometry2DSizedShape(ellipse);
+			const auto roundRectKind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if ((ellipseKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (roundRectKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(ellipseKind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, ellipseKind), roundRect);
+			}
+
+			if (detail::IsGeometry2DSegment(roundRectKind))
+			{
+				return Geometry2D::Intersects(ellipse, detail::GetGeometry2DDegenerateSegment(roundRect, roundRectKind));
+			}
+
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((ax < 0.0) || (by < 0.0) || (w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if (((ax == 0.0) && (by == 0.0))
-				|| ((w == 0.0) && (h == 0.0)))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ ellipse.center.x, (ellipse.center.y - by) }, Vec2{ ellipse.center.x, (ellipse.center.y + by) } }, roundRect);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (ellipse.center.x - ax), ellipse.center.y }, Vec2{ (ellipse.center.x + ax), ellipse.center.y } }, roundRect);
-			}
-
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return Geometry2D::Intersects(ellipse, rect);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
@@ -2911,7 +2609,7 @@ namespace s3d
 				return false;
 			}
 
-			const Vec2 roundRectCenter{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+			const Vec2 roundRectCenter{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
 
 			if (Geometry2D::Intersects(ellipse.center, roundRect)
 				|| Geometry2D::Intersects(roundRectCenter, ellipse))
@@ -3065,44 +2763,29 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsSuperEllipseSuperEllipse(const SuperEllipse& a, const SuperEllipse& b) noexcept
 		{
+			const auto aKind = detail::ClassifyGeometry2DSizedShape(a);
+			const auto bKind = detail::ClassifyGeometry2DSizedShape(b);
+
+			if ((aKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (bKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(aKind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(a, aKind), b);
+			}
+
+			if (detail::IsGeometry2DSegment(bKind))
+			{
+				return Geometry2D::Intersects(a, detail::GetGeometry2DDegenerateSegment(b, bKind));
+			}
+
 			const double ax = a.axes.x;
 			const double ay = a.axes.y;
 			const double bx = b.axes.x;
 			const double by = b.axes.y;
-
-			if ((ax < 0.0) || (ay < 0.0) || (a.n <= 0.0)
-				|| (bx < 0.0) || (by < 0.0) || (b.n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= ay) && (0.0 < a.n)
-					&& (0.0 <= bx) && (0.0 <= by) && (0.0 < b.n));
-				return false;
-			}
-
-			if (((ax == 0.0) && (ay == 0.0))
-				|| ((bx == 0.0) && (by == 0.0)))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ a.center.x, (a.center.y - ay) }, Vec2{ a.center.x, (a.center.y + ay) } }, b);
-			}
-
-			if (ay == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (a.center.x - ax), a.center.y }, Vec2{ (a.center.x + ax), a.center.y } }, b);
-			}
-
-			if (bx == 0.0)
-			{
-				return Geometry2D::Intersects(a, Line{ Vec2{ b.center.x, (b.center.y - by) }, Vec2{ b.center.x, (b.center.y + by) } });
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(a, Line{ Vec2{ (b.center.x - bx), b.center.y }, Vec2{ (b.center.x + bx), b.center.y } });
-			}
 
 			if (a.n == 2.0)
 			{
@@ -3120,47 +2803,35 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsSuperEllipseRoundRect(const SuperEllipse& superEllipse, const RoundRect& roundRect) noexcept
 		{
+			const auto superEllipseKind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+			const auto roundRectKind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if ((superEllipseKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (roundRectKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(superEllipseKind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, superEllipseKind), roundRect);
+			}
+
+			if (detail::IsGeometry2DSegment(roundRectKind))
+			{
+				return Geometry2D::Intersects(superEllipse, detail::GetGeometry2DDegenerateSegment(roundRect, roundRectKind));
+			}
+
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((ax < 0.0) || (by < 0.0) || (superEllipse.n <= 0.0)
-				|| (w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < superEllipse.n)
-					&& (0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if (((ax == 0.0) && (by == 0.0))
-				|| ((w == 0.0) && (h == 0.0)))
-			{
-				return false;
-			}
-
-			if (ax == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, roundRect);
-			}
-
-			if (by == 0.0)
-			{
-				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, roundRect);
-			}
 
 			if (superEllipse.n == 2.0)
 			{
 				return IntersectsEllipseRoundRect(Ellipse{ superEllipse.center, ax, by }, roundRect);
 			}
 
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return Geometry2D::Intersects(superEllipse, rect);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
@@ -3172,7 +2843,7 @@ namespace s3d
 				return false;
 			}
 
-			const Vec2 roundRectCenter{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+			const Vec2 roundRectCenter{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
 
 			if (Geometry2D::Intersects(superEllipse.center, roundRect)
 				|| Geometry2D::Intersects(roundRectCenter, superEllipse))
@@ -3189,27 +2860,20 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRoundRectTriangle(const RoundRect& roundRect, const Triangle& triangle) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), triangle);
+			}
+
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if ((w == 0.0) && (h == 0.0))
-			{
-				return false;
-			}
-
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return IntersectsRectFTriangle(rect, triangle);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
@@ -3221,7 +2885,7 @@ namespace s3d
 				return false;
 			}
 
-			const Vec2 center{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+			const Vec2 center{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
 
 			if (Geometry2D::Intersects(center, triangle)
 				|| Geometry2D::Intersects(triangle.p0, roundRect)
@@ -3239,27 +2903,20 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRoundRectQuad(const RoundRect& roundRect, const Quad& quad) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), quad);
+			}
+
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if ((w == 0.0) && (h == 0.0))
-			{
-				return false;
-			}
-
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return IntersectsRectFQuad(rect, quad);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
@@ -3271,7 +2928,7 @@ namespace s3d
 				return false;
 			}
 
-			const Vec2 center{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+			const Vec2 center{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
 
 			if (Geometry2D::Intersects(center, quad)
 				|| Geometry2D::Intersects(quad.p0, roundRect)
@@ -3291,36 +2948,35 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRoundRectRoundRect(const RoundRect& a, const RoundRect& b) noexcept
 		{
+			const auto aKind = detail::ClassifyGeometry2DSizedShape(a);
+			const auto bKind = detail::ClassifyGeometry2DSizedShape(b);
+
+			if ((aKind == detail::Geometry2DSizedShapeKind::Empty)
+				|| (bKind == detail::Geometry2DSizedShapeKind::Empty))
+			{
+				return false;
+			}
+
 			const RectF& ar = a.rect;
 			const RectF& br = b.rect;
-			const double aw = ar.size.x;
-			const double ah = ar.size.y;
-			const double bw = br.size.x;
-			const double bh = br.size.y;
-
-			if ((aw < 0.0) || (ah < 0.0) || (a.r < 0.0)
-				|| (bw < 0.0) || (bh < 0.0) || (b.r < 0.0))
-			{
-				assert((0.0 <= aw) && (0.0 <= ah) && (0.0 <= a.r)
-					&& (0.0 <= bw) && (0.0 <= bh) && (0.0 <= b.r));
-				return false;
-			}
-
-			if (((aw == 0.0) && (ah == 0.0))
-				|| ((bw == 0.0) && (bh == 0.0)))
-			{
-				return false;
-			}
 
 			if (not BoundsIntersectClosed(ar, br))
 			{
 				return false;
 			}
 
-			const double aer = Min(a.r, Min((aw * 0.5), (ah * 0.5)));
-			const double ber = Min(b.r, Min((bw * 0.5), (bh * 0.5)));
-			const RectF aCore = RoundRectCoreRect(ar, aer);
-			const RectF bCore = RoundRectCoreRect(br, ber);
+			const double aer = (aKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DEffectiveRadius(a)
+				: 0.0;
+			const double ber = (bKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DEffectiveRadius(b)
+				: 0.0;
+			const RectF aCore = (aKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DRoundRectCore(a, aer)
+				: ar;
+			const RectF bCore = (bKind == detail::Geometry2DSizedShapeKind::Area)
+				? detail::GetGeometry2DRoundRectCore(b, ber)
+				: br;
 
 			// Each RoundRect is core + disk(radius). The two sets intersect
 			// exactly when the distance between the closed core rectangles is
@@ -3331,27 +2987,20 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsRoundRectPolygon(const RoundRect& roundRect, const Polygon& polygon) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), polygon);
+			}
+
 			const RectF& rect = roundRect.rect;
-			const double w = rect.size.x;
-			const double h = rect.size.y;
-
-			if ((w < 0.0) || (h < 0.0) || (roundRect.r < 0.0))
-			{
-				assert((0.0 <= w) && (0.0 <= h) && (0.0 <= roundRect.r));
-				return false;
-			}
-
-			if (((w == 0.0) && (h == 0.0)) || polygon.isEmpty())
-			{
-				return false;
-			}
-
-			if ((w == 0.0) || (h == 0.0))
-			{
-				return IntersectsRectFPolygon(rect, polygon);
-			}
-
-			const double er = Min(roundRect.r, Min((w * 0.5), (h * 0.5)));
+			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
@@ -3363,7 +3012,7 @@ namespace s3d
 				return false;
 			}
 
-			const Vec2 center{ (rect.pos.x + (w * 0.5)), (rect.pos.y + (h * 0.5)) };
+			const Vec2 center{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
 
 			if (Geometry2D::Intersects(center, polygon))
 			{
@@ -3515,33 +3164,21 @@ namespace s3d
 
 		bool Intersects(const Vec2& p, const SuperEllipse& superEllipse) noexcept
 		{
-			const double ax	= superEllipse.axes.x;
-			const double by	= superEllipse.axes.y;
-			const double n	= superEllipse.n;
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
 
-			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
-			{
-				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
-				return false;
-			}
-
-			if ((ax == 0.0) && (by == 0.0))
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
 
-			if (ax == 0.0)
+			if (detail::IsGeometry2DSegment(kind))
 			{
-				return ((p.x == superEllipse.center.x)
-					&& (Abs(p.y - superEllipse.center.y) <= by));
+				return Geometry2D::Intersects(p, detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
 			}
 
-			if (by == 0.0)
-			{
-				return ((p.y == superEllipse.center.y)
-					&& (Abs(p.x - superEllipse.center.x) <= ax));
-			}
-
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
 			const double dx = Abs((p.x - superEllipse.center.x) / ax);
 			const double dy = Abs((p.y - superEllipse.center.y) / by);
 
