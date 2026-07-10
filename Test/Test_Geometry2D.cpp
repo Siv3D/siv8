@@ -1331,6 +1331,14 @@ TEST_CASE("Geometry2D.Intersects.Bezier2_Curves")
 		CHECK(not Geometry2D::Intersects(arch, outside));
 	}
 
+	// 片側だけを線分近似する実装でも、引数順によって結果が変化しないことを確認する。
+	{
+		const Bezier2 a{ Vec2{ 0, 2 }, Vec2{ 2, -2 }, Vec2{ -4, -4 } };
+		const Bezier2 b{ Vec2{ 2, -6 }, Vec2{ 4, 2 }, Vec2{ -4, 4 } };
+
+		CHECK(Geometry2D::Intersects(a, b) == Geometry2D::Intersects(b, a));
+	}
+
 	{
 		const Bezier2 arch{ Vec2{ 0, 0 }, Vec2{ 5, 10 }, Vec2{ 10, 0 } };
 		const Bezier3 vertical{ Vec2{ 5, -1 }, Vec2{ 5, 2 }, Vec2{ 5, 8 }, Vec2{ 5, 11 } };
@@ -1356,6 +1364,14 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_Curves")
 	CHECK(Geometry2D::Intersects(arch, horizontal));
 	CHECK(Geometry2D::Intersects(arch, arch));
 	CHECK(not Geometry2D::Intersects(arch, outside));
+
+	// 片側だけを線分近似する実装でも、引数順によって結果が変化しないことを確認する。
+	{
+		const Bezier3 a{ Vec2{ -2, 4 }, Vec2{ 4, -4 }, Vec2{ -2, 0 }, Vec2{ -2, -6 } };
+		const Bezier3 b{ Vec2{ 6, 2 }, Vec2{ -6, 0 }, Vec2{ 2, 4 }, Vec2{ 4, 4 } };
+
+		CHECK(Geometry2D::Intersects(a, b) == Geometry2D::Intersects(b, a));
+	}
 }
 
 
@@ -2010,6 +2026,26 @@ TEST_CASE("Geometry2D.Intersects.RemainingAreaShapes")
 		CHECK(not Geometry2D::Intersects(empty, superEllipse));
 		CHECK(Geometry2D::Intersects(verticalSegment, superEllipse));
 		CHECK(Geometry2D::Intersects(superEllipse, verticalSegment));
+	}
+
+	// n < 1 では、境界のサンプル点を結ぶ chord が実際の集合の外側を通る。
+	// 96 分割 chord 上に極小形状を置いても、実形状同士が離れていれば交差しないことを確認する。
+	{
+		const SuperEllipse concave{ Vec2{ 0, 0 }, SizeF{ 10, 10 }, 0.5 };
+		const SuperEllipse chordOnlyHit{
+			Vec2{ 9.957315794865192, 0.00009148799614165133 },
+			SizeF{ 1e-6, 1e-6 },
+			4.0
+		};
+		const SuperEllipse tangent{ Vec2{ 10.001, 0 }, SizeF{ 0.001, 0.001 }, 4.0 };
+		const SuperEllipse outside{ Vec2{ 10.0011, 0 }, SizeF{ 0.001, 0.001 }, 4.0 };
+
+		CHECK(not Geometry2D::Intersects(concave, chordOnlyHit));
+		CHECK(not Geometry2D::Intersects(chordOnlyHit, concave));
+		CHECK(Geometry2D::Intersects(concave, tangent));
+		CHECK(Geometry2D::Intersects(tangent, concave));
+		CHECK(not Geometry2D::Intersects(concave, outside));
+		CHECK(not Geometry2D::Intersects(outside, concave));
 	}
 
 	{

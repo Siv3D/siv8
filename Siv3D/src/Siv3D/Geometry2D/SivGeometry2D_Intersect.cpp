@@ -214,6 +214,69 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		constexpr int32 CompareBezierPointLexicographically(const Vec2& a, const Vec2& b) noexcept
+		{
+			if (a.x < b.x)
+			{
+				return -1;
+			}
+
+			if (b.x < a.x)
+			{
+				return 1;
+			}
+
+			if (a.y < b.y)
+			{
+				return -1;
+			}
+
+			if (b.y < a.y)
+			{
+				return 1;
+			}
+
+			return 0;
+		}
+
+		[[nodiscard]]
+		constexpr bool BezierLexicographicalLess(const Bezier2& a, const Bezier2& b) noexcept
+		{
+			if (const int32 order = CompareBezierPointLexicographically(a.p0, b.p0))
+			{
+				return (order < 0);
+			}
+
+			if (const int32 order = CompareBezierPointLexicographically(a.p1, b.p1))
+			{
+				return (order < 0);
+			}
+
+			return (CompareBezierPointLexicographically(a.p2, b.p2) < 0);
+		}
+
+		[[nodiscard]]
+		constexpr bool BezierLexicographicalLess(const Bezier3& a, const Bezier3& b) noexcept
+		{
+			if (const int32 order = CompareBezierPointLexicographically(a.p0, b.p0))
+			{
+				return (order < 0);
+			}
+
+			if (const int32 order = CompareBezierPointLexicographically(a.p1, b.p1))
+			{
+				return (order < 0);
+			}
+
+			if (const int32 order = CompareBezierPointLexicographically(a.p2, b.p2))
+			{
+				return (order < 0);
+			}
+
+			return (CompareBezierPointLexicographically(a.p3, b.p3) < 0);
+		}
+
+		[[nodiscard]]
 		bool CheckBezier2Axis(const Vec2& p, const Bezier2& curve, const bool useX)
 		{
 			const double p0 = (useX ? curve.p0.x : curve.p0.y);
@@ -899,6 +962,13 @@ namespace s3d
 				return false;
 			}
 
+			// The approximation direction must not depend on operand order.
+			// Invalid non-finite control points are outside the geometry contract.
+			if (BezierLexicographicalLess(b, a))
+			{
+				return IntersectsBezier2ApproximateShape(b, a);
+			}
+
 			return IntersectsBezier2ApproximateShape(a, b);
 		}
 
@@ -1093,6 +1163,13 @@ namespace s3d
 			if (not BoundsIntersectClosed(a.computeBoundingRect(), b.computeBoundingRect()))
 			{
 				return false;
+			}
+
+			// The approximation direction must not depend on operand order.
+			// Invalid non-finite control points are outside the geometry contract.
+			if (BezierLexicographicalLess(b, a))
+			{
+				return IntersectsBezier3ApproximateShape(b, a);
 			}
 
 			return IntersectsBezier3ApproximateShape(a, b);
@@ -2887,6 +2964,100 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		double SuperEllipseVerticalRadiusAtX(const SuperEllipse& shape, const double x) noexcept
+		{
+			const double normalizedX = Abs((x - shape.center.x) / shape.axes.x);
+
+			if (1.0 <= normalizedX)
+			{
+				return 0.0;
+			}
+
+			const double remaining = Max(0.0, (1.0 - std::pow(normalizedX, shape.n)));
+			return (shape.axes.y * std::pow(remaining, (1.0 / shape.n)));
+		}
+
+		[[nodiscard]]
+		double MaximumSuperEllipseVerticalRadiusInInterval(const SuperEllipse& shape, const double left, const double right) noexcept
+		{
+			return SuperEllipseVerticalRadiusAtX(shape, Clamp(shape.center.x, left, right));
+		}
+
+		[[nodiscard]]
+		bool IntersectsPositiveAreaSuperEllipses(const SuperEllipse& a, const SuperEllipse& b) noexcept
+		{
+			const double left = Max((a.center.x - a.axes.x), (b.center.x - b.axes.x));
+			const double right = Min((a.center.x + a.axes.x), (b.center.x + b.axes.x));
+
+			if (right < left)
+			{
+				return false;
+			}
+
+			const double centerDistanceY = Abs(a.center.y - b.center.y);
+
+			auto VerticalIntervalsOverlapAt = [&](const double x) noexcept
+			{
+				return (centerDistanceY <= (SuperEllipseVerticalRadiusAtX(a, x)
+					+ SuperEllipseVerticalRadiusAtX(b, x)));
+			};
+
+			// These points include the interval endpoints and both possible cusp / maximum locations.
+			if (VerticalIntervalsOverlapAt(left)
+				|| VerticalIntervalsOverlapAt(right)
+				|| VerticalIntervalsOverlapAt(Clamp(a.center.x, left, right))
+				|| VerticalIntervalsOverlapAt(Clamp(b.center.x, left, right)))
+			{
+				return true;
+			}
+
+			struct Interval
+			{
+				double left;
+				double right;
+				int32 depth;
+			};
+
+			constexpr int32 MaxDepth = 64;
+			std::array<Interval, (MaxDepth + 2)> stack;
+			size_t stackSize = 0;
+			stack[stackSize++] = Interval{ left, right, 0 };
+
+			while (stackSize)
+			{
+				const Interval interval = stack[--stackSize];
+				const double upperBound = (MaximumSuperEllipseVerticalRadiusInInterval(a, interval.left, interval.right)
+					+ MaximumSuperEllipseVerticalRadiusInInterval(b, interval.left, interval.right));
+
+				if (upperBound < centerDistanceY)
+				{
+					continue;
+				}
+
+				const double middle = (interval.left + ((interval.right - interval.left) * 0.5));
+
+				if (VerticalIntervalsOverlapAt(middle))
+				{
+					return true;
+				}
+
+				if ((MaxDepth <= interval.depth)
+					|| (middle == interval.left)
+					|| (middle == interval.right))
+				{
+					// At machine-resolution ambiguity, prefer the closed-set result.
+					return true;
+				}
+
+				assert((stackSize + 2) <= stack.size());
+				stack[stackSize++] = Interval{ middle, interval.right, (interval.depth + 1) };
+				stack[stackSize++] = Interval{ interval.left, middle, (interval.depth + 1) };
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
 		bool IntersectsSuperEllipseSuperEllipse(const SuperEllipse& a, const SuperEllipse& b) noexcept
 		{
 			const double ax = a.axes.x;
@@ -2938,21 +3109,7 @@ namespace s3d
 				return IntersectsEllipseSuperEllipse(Ellipse{ b.center, bx, by }, a);
 			}
 
-			if (not BoundsIntersectClosed(a.boundingRect(), b.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(a.center, b)
-				|| Geometry2D::Intersects(b.center, a))
-			{
-				return true;
-			}
-
-			return VisitSuperEllipseApproximateLineSegments(a, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, b);
-			});
+			return IntersectsPositiveAreaSuperEllipses(a, b);
 		}
 
 		[[nodiscard]]
