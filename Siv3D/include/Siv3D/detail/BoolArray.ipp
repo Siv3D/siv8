@@ -1684,7 +1684,7 @@ namespace s3d
 		/// @param n 1 つのグループが持つ要素数
 		/// @return 分割されたグループ
 		[[nodiscard]]
-		constexpr Array<Array<value_type>> chunk(size_type n) const
+		constexpr Array<Array<value_type>> chunk(const size_type n) const
 		{
 			Array<Array<value_type>> result;
 
@@ -1693,9 +1693,17 @@ namespace s3d
 				return result;
 			}
 
-			for (size_t i = 0; i < (size() + n - 1) / n; ++i)
+			const size_type s = size();
+			const size_type chunkCount = (s / n) + static_cast<size_type>((s % n) != 0);
+
+			result.reserve(chunkCount);
+
+			for (size_type i = 0; i < chunkCount; ++i)
 			{
-				result.push_back(slice((i * n), n));
+				const size_type index = (i * n);
+				const size_type length = (((s - index) < n) ? (s - index) : n);
+
+				result.push_back(slice(index, length));
 			}
 
 			return result;
@@ -1978,28 +1986,75 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	headView
+		//	head_span
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
-		/// @param n 参照する要素数
-		/// @return 先頭から最大 n 個を参照する span
-		/// @remark n が size() を超える場合は size() にクランプされます。
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
-		constexpr std::span<value_type> headView(size_type n) & noexcept
+		constexpr std::span<value_type> head_span(size_type n) & noexcept
 		{
-			return std::span<value_type>{ m_container }.first(Min(n, size()));
+			const auto k = Min(n, m_container.size());
+			return std::span<value_type>{ m_container }.first(k);
 		}
 
-		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
-		/// @param n 参照する要素数
-		/// @return 先頭から最大 n 個を参照する span
-		/// @remark n が size() を超える場合は size() にクランプされます。
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
 		[[nodiscard]]
-		constexpr std::span<const value_type> headView(size_type n) const& noexcept
+		constexpr std::span<const value_type> head_span(size_type n) const& noexcept
 		{
-			return std::span<const value_type>{ m_container }.first(Min(n, size()));
+			const auto k = Min(n, m_container.size());
+			return std::span<const value_type>{ m_container }.first(k);
+		}
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
+		constexpr std::span<value_type> head_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) & noexcept
+		{
+			return std::views::take(m_container, n);
+		}
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) const& noexcept
+		{
+			return std::views::take(m_container, n);
+		}
+
+		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto head_view(size_type n) && noexcept
+		{
+			return std::views::take(std::move(*this), n);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2383,18 +2438,32 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	reverseView
+		//	reverse_view
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr auto reverseView()
+		/// @brief 配列の逆順ビューを返します。
+		/// @return 配列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view()&
 		{
 			return std::views::reverse(m_container);
 		}
 
-		constexpr auto reverseView() const
+		/// @brief 配列の逆順ビューを返します。
+		/// @return 配列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view() const&
 		{
 			return std::views::reverse(m_container);
+		}
+
+		/// @brief 配列の逆順ビューを返します。
+		/// @return 配列の逆順ビュー
+		[[nodiscard]]
+		constexpr auto reverse_view()&&
+		{
+			return std::views::reverse(std::move(*this));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2876,32 +2945,80 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	tailView
+		//	tail_span
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 末尾から最大 n 個の要素を参照するビューを返します。
-		/// @param n 参照する要素数
-		/// @return 末尾から最大 n 個を参照する span
-		/// @remark n が size() を超える場合は size() にクランプされます。
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
-		constexpr std::span<value_type> tailView(size_type n) & noexcept
+		constexpr std::span<value_type> tail_span(size_type n) & noexcept
 		{
 			const auto k = Min(n, m_container.size());
 			return std::span<value_type>{ m_container }.last(k);
 		}
 
-		/// @brief 末尾から最大 n 個の要素を参照するビューを返します。
-		/// @param n 参照する要素数
-		/// @return 末尾から最大 n 個を参照する span
-		/// @remark n が size() を超える場合は size() にクランプされます。
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
 		[[nodiscard]]
-		constexpr std::span<const value_type> tailView(size_type n) const& noexcept
+		constexpr std::span<const value_type> tail_span(size_type n) const& noexcept
 		{
 			const auto k = Min(n, m_container.size());
 			return std::span<const value_type>{ m_container }.last(k);
 		}
-		
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		/// @remark メモリのコピーは発生しません。元の配列が破棄・再確保されると参照先が無効になるため注意してください。
+		/// @remark `n` が現在の要素数を超える場合は現在の要素数にクランプされます。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
+		constexpr std::span<value_type> tail_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) & noexcept
+		{
+			const auto dropCount = (n < size()) ? (size() - n) : 0;
+			return std::views::drop(m_container, dropCount);
+		}
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) const& noexcept
+		{
+			const auto dropCount = (n < size()) ? (size() - n) : 0;
+			return std::views::drop(m_container, dropCount);
+		}
+
+		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
+		/// @param n 取り出す最大要素数
+		/// @return `std::views::take` による遅延評価ビュー
+		[[nodiscard]]
+		constexpr auto tail_view(size_type n) && noexcept
+		{
+			const auto dropCount = (n < size()) ? (size() - n) : 0;
+			return std::views::drop(std::move(*this), dropCount);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	take
