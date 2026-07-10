@@ -2161,6 +2161,184 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsSuperEllipseTriangle(const SuperEllipse& superEllipse, const Triangle& triangle) noexcept
+		{
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
+
+			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, triangle);
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, triangle);
+			}
+
+			if (n == 2.0)
+			{
+				return IntersectsEllipseTriangle(Ellipse{ superEllipse.center, ax, by }, triangle);
+			}
+
+			if (not BoundsIntersectClosed(superEllipse.boundingRect(), triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(superEllipse.center, triangle)
+				|| Geometry2D::Intersects(triangle.p0, superEllipse)
+				|| Geometry2D::Intersects(triangle.p1, superEllipse)
+				|| Geometry2D::Intersects(triangle.p2, superEllipse))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, superEllipse)
+				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, superEllipse)
+				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, superEllipse));
+		}
+
+		[[nodiscard]]
+		bool IntersectsSuperEllipseQuad(const SuperEllipse& superEllipse, const Quad& quad) noexcept
+		{
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
+
+			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if ((ax == 0.0) && (by == 0.0))
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, quad);
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, quad);
+			}
+
+			if (n == 2.0)
+			{
+				return IntersectsEllipseQuad(Ellipse{ superEllipse.center, ax, by }, quad);
+			}
+
+			if (not BoundsIntersectClosed(superEllipse.boundingRect(), quad.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(superEllipse.center, quad)
+				|| Geometry2D::Intersects(quad.p0, superEllipse)
+				|| Geometry2D::Intersects(quad.p1, superEllipse)
+				|| Geometry2D::Intersects(quad.p2, superEllipse)
+				|| Geometry2D::Intersects(quad.p3, superEllipse))
+			{
+				return true;
+			}
+
+			return (Geometry2D::Intersects(Line{ quad.p0, quad.p1 }, superEllipse)
+				|| Geometry2D::Intersects(Line{ quad.p1, quad.p2 }, superEllipse)
+				|| Geometry2D::Intersects(Line{ quad.p2, quad.p3 }, superEllipse)
+				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, superEllipse));
+		}
+
+		[[nodiscard]]
+		bool IntersectsSuperEllipsePolygon(const SuperEllipse& superEllipse, const Polygon& polygon) noexcept
+		{
+			const double ax = superEllipse.axes.x;
+			const double by = superEllipse.axes.y;
+			const double n = superEllipse.n;
+
+			if ((ax < 0.0) || (by < 0.0) || (n <= 0.0))
+			{
+				assert((0.0 <= ax) && (0.0 <= by) && (0.0 < n));
+				return false;
+			}
+
+			if (((ax == 0.0) && (by == 0.0)) || polygon.isEmpty())
+			{
+				return false;
+			}
+
+			if (ax == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ superEllipse.center.x, (superEllipse.center.y - by) }, Vec2{ superEllipse.center.x, (superEllipse.center.y + by) } }, polygon);
+			}
+
+			if (by == 0.0)
+			{
+				return Geometry2D::Intersects(Line{ Vec2{ (superEllipse.center.x - ax), superEllipse.center.y }, Vec2{ (superEllipse.center.x + ax), superEllipse.center.y } }, polygon);
+			}
+
+			if (n == 2.0)
+			{
+				return IntersectsEllipsePolygon(Ellipse{ superEllipse.center, ax, by }, polygon);
+			}
+
+			if (not BoundsIntersectClosed(superEllipse.boundingRect(), polygon.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(superEllipse.center, polygon))
+			{
+				return true;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (IntersectsSuperEllipseTriangle(superEllipse, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsSuperEllipseMultiPolygon(const SuperEllipse& superEllipse, const MultiPolygon& multiPolygon) noexcept
+		{
+			for (const auto& polygon : multiPolygon)
+			{
+				if (IntersectsSuperEllipsePolygon(superEllipse, polygon))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
 		bool IntersectsTrianglePolygon(const Triangle& triangle, const Polygon& polygon) noexcept
 		{
 			if (polygon.isEmpty())
@@ -3297,39 +3475,39 @@ namespace s3d
 			return Intersects(curve, circle);
 		}
 
-		bool Intersects(const Circle& a, const Ellipse& b) noexcept
+		bool Intersects(const Circle& circle, const Ellipse& ellipse) noexcept
 		{
-			return IntersectsCircleEllipse(a, b);
+			return IntersectsCircleEllipse(circle, ellipse);
 		}
 
-		bool Intersects(const Circle& a, const SuperEllipse& b) noexcept
+		bool Intersects(const Circle& circle, const SuperEllipse& superEllipse) noexcept
 		{
-			return IntersectsCircleSuperEllipse(a, b);
+			return IntersectsCircleSuperEllipse(circle, superEllipse);
 		}
 
-		bool Intersects(const Circle& a, const Triangle& b) noexcept
+		bool Intersects(const Circle& circle, const Triangle& triangle) noexcept
 		{
-			return IntersectsCircleTriangle(a, b);
+			return IntersectsCircleTriangle(circle, triangle);
 		}
 
-		bool Intersects(const Circle& a, const Quad& b) noexcept
+		bool Intersects(const Circle& circle, const Quad& quad) noexcept
 		{
-			return IntersectsCircleQuad(a, b);
+			return IntersectsCircleQuad(circle, quad);
 		}
 
-		bool Intersects(const Circle& a, const RoundRect& b) noexcept
+		bool Intersects(const Circle& circle, const RoundRect& roundRect) noexcept
 		{
-			return IntersectsCircleRoundRect(a, b);
+			return IntersectsCircleRoundRect(circle, roundRect);
 		}
 
-		bool Intersects(const Circle& a, const Polygon& b) noexcept
+		bool Intersects(const Circle& circle, const Polygon& polygon) noexcept
 		{
-			return IntersectsCirclePolygon(a, b);
+			return IntersectsCirclePolygon(circle, polygon);
 		}
 
-		bool Intersects(const Circle& a, const MultiPolygon& b) noexcept
+		bool Intersects(const Circle& circle, const MultiPolygon& multiPolygon) noexcept
 		{
-			return IntersectsCircleMultiPolygon(a, b);
+			return IntersectsCircleMultiPolygon(circle, multiPolygon);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3449,6 +3627,26 @@ namespace s3d
 			return Intersects(ellipse, superEllipse);
 		}
 
+		bool Intersects(const SuperEllipse& superEllipse, const Triangle& triangle) noexcept
+		{
+			return IntersectsSuperEllipseTriangle(superEllipse, triangle);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const Quad& quad) noexcept
+		{
+			return IntersectsSuperEllipseQuad(superEllipse, quad);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const Polygon& polygon) noexcept
+		{
+			return IntersectsSuperEllipsePolygon(superEllipse, polygon);
+		}
+
+		bool Intersects(const SuperEllipse& superEllipse, const MultiPolygon& multiPolygon) noexcept
+		{
+			return IntersectsSuperEllipseMultiPolygon(superEllipse, multiPolygon);
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Triangle, _)
@@ -3488,6 +3686,11 @@ namespace s3d
 		bool Intersects(const Triangle& triangle, const Ellipse& ellipse) noexcept
 		{
 			return Intersects(ellipse, triangle);
+		}
+
+		bool Intersects(const Triangle& triangle, const SuperEllipse& superEllipse) noexcept
+		{
+			return Intersects(superEllipse, triangle);
 		}
 
 		bool Intersects(const Triangle& triangle, const Polygon& polygon) noexcept
@@ -3547,6 +3750,11 @@ namespace s3d
 		bool Intersects(const Quad& quad, const Ellipse& ellipse) noexcept
 		{
 			return Intersects(ellipse, quad);
+		}
+
+		bool Intersects(const Quad& quad, const SuperEllipse& superEllipse) noexcept
+		{
+			return Intersects(superEllipse, quad);
 		}
 
 		bool Intersects(const Quad& quad, const Polygon& polygon) noexcept
@@ -3664,6 +3872,11 @@ namespace s3d
 			return Intersects(ellipse, polygon);
 		}
 
+		bool Intersects(const Polygon& polygon, const SuperEllipse& superEllipse) noexcept
+		{
+			return Intersects(superEllipse, polygon);
+		}
+
 		bool Intersects(const Polygon& polygon, const Triangle& triangle) noexcept
 		{
 			return Intersects(triangle, polygon);
@@ -3746,6 +3959,11 @@ namespace s3d
 		bool Intersects(const MultiPolygon& multiPolygon, const Ellipse& ellipse) noexcept
 		{
 			return Intersects(ellipse, multiPolygon);
+		}
+
+		bool Intersects(const MultiPolygon& multiPolygon, const SuperEllipse& superEllipse) noexcept
+		{
+			return Intersects(superEllipse, multiPolygon);
 		}
 
 		bool Intersects(const MultiPolygon& multiPolygon, const Triangle& triangle) noexcept

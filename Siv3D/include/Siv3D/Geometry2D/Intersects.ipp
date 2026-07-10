@@ -98,14 +98,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Point& p1, const Point& p2) noexcept
+		constexpr bool Intersects(const Point& a, const Point& b) noexcept
 		{
-			return (p1 == p2);
+			return (a == b);
 		}
 
-		constexpr bool Intersects(const Point& p1, const Vec2& p2) noexcept
+		constexpr bool Intersects(const Point& a, const Vec2& b) noexcept
 		{
-			return (Vec2{ p1 } == p2);
+			return (Vec2{ a } == b);
 		}
 
 		constexpr bool Intersects(const Point& p, const Line& segment) noexcept
@@ -154,14 +154,14 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr bool Intersects(const Vec2& p1, const Point& p2) noexcept
+		constexpr bool Intersects(const Vec2& a, const Point& b) noexcept
 		{
-			return Intersects(p2, p1);
+			return Intersects(b, a);
 		}
 
-		constexpr bool Intersects(const Vec2& p1, const Vec2& p2) noexcept
+		constexpr bool Intersects(const Vec2& a, const Vec2& b) noexcept
 		{
-			return (p1 == p2);
+			return (a == b);
 		}
 
 		constexpr bool Intersects(const Vec2& p, const Line& segment) noexcept

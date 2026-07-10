@@ -1871,3 +1871,88 @@ TEST_CASE("Geometry2D.Intersects.Ellipse_CurvedAreaShapes")
 		CHECK(Geometry2D::Intersects(verticalSegment, ellipse));
 	}
 }
+
+
+// SuperEllipse と polygonal area shapes は、包含、境界接触、empty、partial-zero axis を扱うことを確認する。
+TEST_CASE("Geometry2D.Intersects.SuperEllipse_PolygonalAreaShapes")
+{
+	const SuperEllipse superEllipse{ Vec2{ 0, 0 }, SizeF{ 5, 3 }, 4.0 };
+	const SuperEllipse empty{ Vec2{ 0, 0 }, SizeF{ 0, 0 }, 4.0 };
+	const SuperEllipse verticalSegment{ Vec2{ 0, 0 }, SizeF{ 0, 5 }, 4.0 };
+	const SuperEllipse ellipseEquivalent{ Vec2{ 0, 0 }, SizeF{ 5, 3 }, 2.0 };
+	const Polygon polygon{ Array<Vec2>{ Vec2{ -2, -2 }, Vec2{ 2, -2 }, Vec2{ 2, 2 }, Vec2{ -2, 2 } } };
+	const Polygon crossingPolygon{ Array<Vec2>{ Vec2{ 4, -1 }, Vec2{ 7, -1 }, Vec2{ 7, 1 }, Vec2{ 4, 1 } } };
+	const Polygon outsidePolygon{ Array<Vec2>{ Vec2{ 6, 4 }, Vec2{ 8, 4 }, Vec2{ 8, 6 }, Vec2{ 6, 6 } } };
+	const Polygon emptyPolygon;
+	const MultiPolygon multiPolygon{ polygon };
+	const MultiPolygon outsideMultiPolygon{ outsidePolygon };
+	const MultiPolygon emptyMultiPolygon;
+
+	{
+		const Triangle crossing{ Vec2{ 5, -1 }, Vec2{ 8, -1 }, Vec2{ 5, 2 } };
+		const Triangle inside{ Vec2{ -1, -1 }, Vec2{ 1, -1 }, Vec2{ 0, 1 } };
+		const Triangle containing{ Vec2{ -10, -10 }, Vec2{ 10, -10 }, Vec2{ -10, 10 } };
+		const Triangle outside{ Vec2{ 6, 4 }, Vec2{ 8, 4 }, Vec2{ 6, 6 } };
+		const Triangle segmentHit{ Vec2{ -1, 0 }, Vec2{ 1, 0 }, Vec2{ 0, 0 } };
+		const Triangle segmentMiss{ Vec2{ 1, 4 }, Vec2{ 2, 4 }, Vec2{ 3, 4 } };
+
+		CHECK(Geometry2D::Intersects(superEllipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, inside));
+		CHECK(Geometry2D::Intersects(inside, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, containing));
+		CHECK(Geometry2D::Intersects(containing, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, superEllipse));
+		CHECK(not Geometry2D::Intersects(empty, containing));
+		CHECK(not Geometry2D::Intersects(containing, empty));
+		CHECK(Geometry2D::Intersects(verticalSegment, segmentHit));
+		CHECK(Geometry2D::Intersects(segmentHit, verticalSegment));
+		CHECK(not Geometry2D::Intersects(verticalSegment, segmentMiss));
+		CHECK(not Geometry2D::Intersects(segmentMiss, verticalSegment));
+		CHECK(Geometry2D::Intersects(ellipseEquivalent, crossing));
+		CHECK(Geometry2D::Intersects(crossing, ellipseEquivalent));
+	}
+
+	{
+		const Quad crossing{ Vec2{ 4, -1 }, Vec2{ 7, -1 }, Vec2{ 7, 1 }, Vec2{ 4, 1 } };
+		const Quad inside{ Vec2{ -1, -1 }, Vec2{ 1, -1 }, Vec2{ 1, 1 }, Vec2{ -1, 1 } };
+		const Quad containing{ Vec2{ -10, -10 }, Vec2{ 10, -10 }, Vec2{ 10, 10 }, Vec2{ -10, 10 } };
+		const Quad outside{ Vec2{ 6, 4 }, Vec2{ 8, 4 }, Vec2{ 8, 6 }, Vec2{ 6, 6 } };
+		const Quad segmentHit{ Vec2{ -1, 0 }, Vec2{ 1, 0 }, Vec2{ 1, 0 }, Vec2{ -1, 0 } };
+		const Quad pointHit{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 } };
+		const Quad pointMiss{ Vec2{ 6, 6 }, Vec2{ 6, 6 }, Vec2{ 6, 6 }, Vec2{ 6, 6 } };
+
+		CHECK(Geometry2D::Intersects(superEllipse, crossing));
+		CHECK(Geometry2D::Intersects(crossing, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, inside));
+		CHECK(Geometry2D::Intersects(inside, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, containing));
+		CHECK(Geometry2D::Intersects(containing, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, outside));
+		CHECK(not Geometry2D::Intersects(outside, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, segmentHit));
+		CHECK(Geometry2D::Intersects(segmentHit, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, pointHit));
+		CHECK(Geometry2D::Intersects(pointHit, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, pointMiss));
+		CHECK(not Geometry2D::Intersects(pointMiss, superEllipse));
+	}
+
+	{
+		CHECK(Geometry2D::Intersects(superEllipse, polygon));
+		CHECK(Geometry2D::Intersects(polygon, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, crossingPolygon));
+		CHECK(Geometry2D::Intersects(crossingPolygon, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, outsidePolygon));
+		CHECK(not Geometry2D::Intersects(outsidePolygon, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, emptyPolygon));
+		CHECK(not Geometry2D::Intersects(emptyPolygon, superEllipse));
+		CHECK(Geometry2D::Intersects(superEllipse, multiPolygon));
+		CHECK(Geometry2D::Intersects(multiPolygon, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, outsideMultiPolygon));
+		CHECK(not Geometry2D::Intersects(outsideMultiPolygon, superEllipse));
+		CHECK(not Geometry2D::Intersects(superEllipse, emptyMultiPolygon));
+		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, superEllipse));
+	}
+}
