@@ -2045,10 +2045,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 要素を `+` 演算子を用いて合計します。
+		/// @brief 要素を `+` 演算子を用いて合計します。a
 		/// @tparam ResultType 合計値の型
 		/// @return 合計値
-		template <class ResultType = value_type>
+		template <class ResultType = Type>
 		[[nodiscard]]
 		constexpr auto sum() const
 			requires (std::default_initializable<ResultType>&& requires (ResultType& r, const value_type& v) { r += v; });
