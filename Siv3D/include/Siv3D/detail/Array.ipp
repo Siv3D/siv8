@@ -1815,6 +1815,11 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::rotated(const size_type middle) const&
 	{
+		if (m_container.size() < middle)
+		{
+			detail::ThrowArrayRotateMiddleOutOfRange();
+		}
+
 		Array result(Arg::reserve = m_container.size());
 
 		result.insert(result.end(), (m_container.begin() + middle), m_container.end());

@@ -479,16 +479,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	operator container_type
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief std::basic_string&gt;bool&lt; への暗黙の変換を行います。
-		[[nodiscard]]
-		constexpr operator container_type() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	asArray
 		//
 		////////////////////////////////////////////////////////////////
@@ -1162,7 +1152,7 @@ namespace s3d
 		constexpr size_type erase_all(const value_type value)
 		{
 			const size_type erasedCount = static_cast<size_type>(std::ranges::count(m_container, value));
-			m_container.assing((m_container.size() - erasedCount), (not value));
+			m_container.assign((m_container.size() - erasedCount), (not value));
 			return erasedCount;
 		}
 
@@ -1400,6 +1390,7 @@ namespace s3d
 		{
 			const value_type value(std::forward<Args>(args)...);
 			push_back(value);
+			return m_container.back();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2417,6 +2408,11 @@ namespace s3d
 		/// @return *this
 		constexpr Array& rotate(size_type middle)& SIV3D_LIFETIMEBOUND
 		{
+			if (m_container.size() < middle)
+			{
+				detail::ThrowArrayRotateMiddleOutOfRange();
+			}
+
 			std::rotate(m_container.begin(), (m_container.begin() + middle), m_container.end());
 			return *this;
 		}
@@ -2436,6 +2432,11 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array rotated(size_type middle) const&
 		{
+			if (m_container.size() < middle)
+			{
+				detail::ThrowArrayRotateMiddleOutOfRange();
+			}
+
 			Array result(Arg::reserve = m_container.size());
 
 			result.insert(result.end(), (m_container.begin() + middle), m_container.end());
@@ -2609,11 +2610,10 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array sorted() const&
 		{
-			const isize trueCount = std::ranges::count(m_container, true);
+			const size_type falseCount = static_cast<size_type>(std::ranges::count(m_container, false));
 
-			Array result(m_container.size(), true);
-			std::fill(result.begin(), (result.begin() + trueCount), false);
-
+			Array result(size(), true, get_allocator());
+			std::fill_n(result.begin(), falseCount, false);
 			return result;
 		}
 
