@@ -717,3 +717,63 @@ TEST_CASE("Geometry2D.Intersects.Point_LineString")
 		CHECK(not Geometry2D::Intersects(Vec2{ 4, 3 }, lineString));
 	}
 }
+
+// LineString とサイズ依存形状は、相手形状を一度だけ分類する経路でも
+// 各線分を個別に判定した場合と同じ点集合の結果になることを確認する。
+TEST_CASE("Geometry2D.Intersects.LineString_SizedShapes_Equivalence")
+{
+	auto CheckEquivalent = [](const LineString& lineString, const auto& shape)
+	{
+		bool expected = false;
+		const size_t n = lineString.size();
+
+		if (n == 1)
+		{
+			expected = Geometry2D::Intersects(lineString[0], shape);
+		}
+		else if (2 <= n)
+		{
+			for (size_t i = 0; i < (n - 1); ++i)
+			{
+				if (Geometry2D::Intersects(Line{ lineString[i], lineString[i + 1] }, shape))
+				{
+					expected = true;
+					break;
+				}
+			}
+		}
+
+		CHECK(Geometry2D::Intersects(lineString, shape) == expected);
+		CHECK(Geometry2D::Intersects(shape, lineString) == expected);
+	};
+
+	const LineString empty;
+	const LineString point{ Vec2{ 5, 5 } };
+	const LineString duplicatePoint{ Vec2{ 5, 5 }, Vec2{ 5, 5 } };
+	const LineString crossing{ Vec2{ -5, 5 }, Vec2{ 5, 5 }, Vec2{ 15, 5 } };
+	const LineString outside{ Vec2{ -5, 20 }, Vec2{ 5, 20 }, Vec2{ 15, 20 } };
+
+	auto CheckShape = [&](const auto& shape)
+	{
+		CheckEquivalent(empty, shape);
+		CheckEquivalent(point, shape);
+		CheckEquivalent(duplicatePoint, shape);
+		CheckEquivalent(crossing, shape);
+		CheckEquivalent(outside, shape);
+	};
+
+	CheckShape(Rect{ 0, 0, 10, 10 });
+	CheckShape(RectF{ 0, 0, 10, 10 });
+	CheckShape(RectF{ 5, 0, 0, 10 });
+	CheckShape(RectF{ 0, 0, 0, 0 });
+	CheckShape(Circle{ Vec2{ 5, 5 }, 5 });
+	CheckShape(Circle{ Vec2{ 5, 5 }, 0 });
+	CheckShape(Ellipse{ Vec2{ 5, 5 }, 6, 3 });
+	CheckShape(Ellipse{ Vec2{ 5, 5 }, 0, 5 });
+	CheckShape(SuperEllipse{ Vec2{ 5, 5 }, SizeF{ 6, 3 }, 4.0 });
+	CheckShape(SuperEllipse{ Vec2{ 5, 5 }, SizeF{ 6, 3 }, 2.0 });
+	CheckShape(SuperEllipse{ Vec2{ 5, 5 }, SizeF{ 0, 5 }, 4.0 });
+	CheckShape(RoundRect{ RectF{ 0, 0, 10, 10 }, 2.0 });
+	CheckShape(RoundRect{ RectF{ 0, 0, 10, 10 }, 0.0 });
+	CheckShape(RoundRect{ RectF{ 5, 0, 0, 10 }, 2.0 });
+}

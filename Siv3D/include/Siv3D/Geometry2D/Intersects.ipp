@@ -88,6 +88,198 @@ namespace s3d
 			const Vec2 v = ((segment.start + d * t) - center);
 			return (v.dot(v) <= (r * r));
 		}
+
+		// The following helpers assume valid non-empty / positive-area input.
+		// Public overloads perform the size classification once before calling them.
+
+		[[nodiscard]]
+		constexpr bool IntersectsPointRectFNonEmpty(const Vec2& p, const RectF& rect) noexcept
+		{
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
+
+			return ((left <= p.x)
+				&& (p.x <= right)
+				&& (top <= p.y)
+				&& (p.y <= bottom));
+		}
+
+		[[nodiscard]]
+		constexpr bool IntersectsPointCircleArea(const Vec2& p, const Circle& circle) noexcept
+		{
+			return (p.distanceFromSq(circle.center) <= (circle.r * circle.r));
+		}
+
+		[[nodiscard]]
+		constexpr bool IntersectsPointEllipseArea(const Vec2& p, const Ellipse& ellipse) noexcept
+		{
+			const double dx = ((p.x - ellipse.center.x) / ellipse.axes.x);
+			const double dy = ((p.y - ellipse.center.y) / ellipse.axes.y);
+			return ((dx * dx + dy * dy) <= 1.0);
+		}
+
+		[[nodiscard]]
+		constexpr bool IntersectsPointRoundRectArea(const Vec2& p, const RoundRect& roundRect, const double effectiveRadius) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+
+			if (effectiveRadius == 0.0)
+			{
+				return IntersectsPointRectFNonEmpty(p, rect);
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
+
+			if (not ((left <= p.x)
+				&& (p.x <= right)
+				&& (top <= p.y)
+				&& (p.y <= bottom)))
+			{
+				return false;
+			}
+
+			const double innerLeft = (left + effectiveRadius);
+			const double innerRight = (right - effectiveRadius);
+			const double innerTop = (top + effectiveRadius);
+			const double innerBottom = (bottom - effectiveRadius);
+
+			if (((innerLeft <= p.x) && (p.x <= innerRight))
+				|| ((innerTop <= p.y) && (p.y <= innerBottom)))
+			{
+				return true;
+			}
+
+			const double cx = ((p.x < innerLeft) ? innerLeft : innerRight);
+			const double cy = ((p.y < innerTop) ? innerTop : innerBottom);
+			const double dx = (p.x - cx);
+			const double dy = (p.y - cy);
+
+			return ((dx * dx + dy * dy) <= (effectiveRadius * effectiveRadius));
+		}
+
+		[[nodiscard]]
+		constexpr bool IntersectsLineRectFNonEmpty(const Line& segment, const RectF& rect) noexcept
+		{
+			if (IntersectsPointRectFNonEmpty(segment.start, rect)
+				|| IntersectsPointRectFNonEmpty(segment.end, rect))
+			{
+				return true;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
+
+			return (Geometry2D::Intersects(segment, Line{ Vec2{ left, top }, Vec2{ right, top } })
+				|| Geometry2D::Intersects(segment, Line{ Vec2{ right, top }, Vec2{ right, bottom } })
+				|| Geometry2D::Intersects(segment, Line{ Vec2{ right, bottom }, Vec2{ left, bottom } })
+				|| Geometry2D::Intersects(segment, Line{ Vec2{ left, bottom }, Vec2{ left, top } }));
+		}
+
+		[[nodiscard]]
+		constexpr bool IntersectsLineCircleArea(const Line& segment, const Circle& circle) noexcept
+		{
+			if (IntersectsPointCircleArea(segment.start, circle)
+				|| IntersectsPointCircleArea(segment.end, circle))
+			{
+				return true;
+			}
+
+			const Vec2 d = (segment.end - segment.start);
+			const double lengthSq = d.dot(d);
+
+			if (lengthSq == 0.0)
+			{
+				return false;
+			}
+
+			const Vec2 f = (circle.center - segment.start);
+			const double tNumerator = f.dot(d);
+
+			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
+			{
+				return false;
+			}
+
+			const double cross = d.cross(f);
+			return ((cross * cross) <= (circle.r * circle.r * lengthSq));
+		}
+
+		[[nodiscard]]
+		constexpr bool IntersectsLineEllipseArea(const Line& segment, const Ellipse& ellipse) noexcept
+		{
+			const double ax = ellipse.axes.x;
+			const double by = ellipse.axes.y;
+			const Vec2 p0{ ((segment.start.x - ellipse.center.x) / ax), ((segment.start.y - ellipse.center.y) / by) };
+			const Vec2 p1{ ((segment.end.x - ellipse.center.x) / ax), ((segment.end.y - ellipse.center.y) / by) };
+
+			if ((p0.dot(p0) <= 1.0) || (p1.dot(p1) <= 1.0))
+			{
+				return true;
+			}
+
+			const Vec2 d = (p1 - p0);
+			const double lengthSq = d.dot(d);
+
+			if (lengthSq == 0.0)
+			{
+				return false;
+			}
+
+			const double tNumerator = -p0.dot(d);
+
+			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
+			{
+				return false;
+			}
+
+			const double cross = d.cross(p0);
+			return ((cross * cross) <= lengthSq);
+		}
+
+		[[nodiscard]]
+		constexpr bool IntersectsLineRoundRectArea(const Line& segment, const RoundRect& roundRect, const double effectiveRadius) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+
+			if (effectiveRadius == 0.0)
+			{
+				return IntersectsLineRectFNonEmpty(segment, rect);
+			}
+
+			if (IntersectsPointRoundRectArea(segment.start, roundRect, effectiveRadius)
+				|| IntersectsPointRoundRectArea(segment.end, roundRect, effectiveRadius))
+			{
+				return true;
+			}
+
+			const double left = rect.pos.x;
+			const double top = rect.pos.y;
+			const double right = (rect.pos.x + rect.size.x);
+			const double bottom = (rect.pos.y + rect.size.y);
+			const double innerLeft = (left + effectiveRadius);
+			const double innerRight = (right - effectiveRadius);
+			const double innerTop = (top + effectiveRadius);
+			const double innerBottom = (bottom - effectiveRadius);
+
+			if (IntersectsLineRectFNonEmpty(segment, RectF{ innerLeft, top, (innerRight - innerLeft), rect.size.y })
+				|| IntersectsLineRectFNonEmpty(segment, RectF{ left, innerTop, rect.size.x, (innerBottom - innerTop) }))
+			{
+				return true;
+			}
+
+			return (SegmentIntersectsDiskBox(segment, Vec2{ innerLeft, innerTop }, effectiveRadius, left, top, innerLeft, innerTop)
+				|| SegmentIntersectsDiskBox(segment, Vec2{ innerRight, innerTop }, effectiveRadius, innerRight, top, right, innerTop)
+				|| SegmentIntersectsDiskBox(segment, Vec2{ innerRight, innerBottom }, effectiveRadius, innerRight, innerBottom, right, bottom)
+				|| SegmentIntersectsDiskBox(segment, Vec2{ innerLeft, innerBottom }, effectiveRadius, left, innerBottom, innerLeft, bottom));
+		}
+
 	}
 
 	namespace Geometry2D
@@ -188,22 +380,12 @@ namespace s3d
 
 		constexpr bool Intersects(const Vec2& p, const RectF& rect) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			if (detail::ClassifyGeometry2DSizedShape(rect) == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
 
-			const double left = rect.pos.x;
-			const double top = rect.pos.y;
-			const double right = (rect.pos.x + rect.size.x);
-			const double bottom = (rect.pos.y + rect.size.y);
-
-			return ((left <= p.x)
-				&& (p.x <= right)
-				&& (top <= p.y)
-				&& (p.y <= bottom));
+			return detail::IntersectsPointRectFNonEmpty(p, rect);
 		}
 
 		constexpr bool Intersects(const Vec2& p, const Circle& circle) noexcept
@@ -213,7 +395,7 @@ namespace s3d
 				return false;
 			}
 
-			return (p.distanceFromSq(circle.center) <= (circle.r * circle.r));
+			return detail::IntersectsPointCircleArea(p, circle);
 		}
 
 		constexpr bool Intersects(const Vec2& p, const Ellipse& ellipse) noexcept
@@ -230,9 +412,7 @@ namespace s3d
 				return Intersects(p, detail::GetGeometry2DDegenerateSegment(ellipse, kind));
 			}
 
-			const double dx = ((p.x - ellipse.center.x) / ellipse.axes.x);
-			const double dy = ((p.y - ellipse.center.y) / ellipse.axes.y);
-			return ((dx * dx + dy * dy) <= 1.0);
+			return detail::IntersectsPointEllipseArea(p, ellipse);
 		}
 
 		constexpr bool Intersects(const Vec2& p, const RoundRect& roundRect) noexcept
@@ -249,44 +429,7 @@ namespace s3d
 				return Intersects(p, detail::GetGeometry2DDegenerateSegment(roundRect, kind));
 			}
 
-			const RectF& rect = roundRect.rect;
-			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
-
-			if (er == 0.0)
-			{
-				return Intersects(p, rect);
-			}
-
-			const double left = rect.pos.x;
-			const double top = rect.pos.y;
-			const double right = (rect.pos.x + rect.size.x);
-			const double bottom = (rect.pos.y + rect.size.y);
-
-			if (not ((left <= p.x)
-				&& (p.x <= right)
-				&& (top <= p.y)
-				&& (p.y <= bottom)))
-			{
-				return false;
-			}
-
-			const double innerLeft = (left + er);
-			const double innerRight = (right - er);
-			const double innerTop = (top + er);
-			const double innerBottom = (bottom - er);
-
-			if (((innerLeft <= p.x) && (p.x <= innerRight))
-				|| ((innerTop <= p.y) && (p.y <= innerBottom)))
-			{
-				return true;
-			}
-
-			const double cx = ((p.x < innerLeft) ? innerLeft : innerRight);
-			const double cy = ((p.y < innerTop) ? innerTop : innerBottom);
-			const double dx = (p.x - cx);
-			const double dy = (p.y - cy);
-
-			return ((dx * dx + dy * dy) <= (er * er));
+			return detail::IntersectsPointRoundRectArea(p, roundRect, detail::GetGeometry2DEffectiveRadius(roundRect));
 		}
 
 		constexpr bool Intersects(const Vec2& p, const Triangle& triangle) noexcept
@@ -361,32 +504,12 @@ namespace s3d
 
 		constexpr bool Intersects(const Line& segment, const RectF& rect) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			if (detail::ClassifyGeometry2DSizedShape(rect) == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
 
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Intersects(segment, detail::GetGeometry2DDegenerateSegment(rect, kind));
-			}
-
-			if (Intersects(segment.start, rect) || Intersects(segment.end, rect))
-			{
-				return true;
-			}
-
-			const double left = rect.pos.x;
-			const double top = rect.pos.y;
-			const double right = (rect.pos.x + rect.size.x);
-			const double bottom = (rect.pos.y + rect.size.y);
-
-			return (Intersects(segment, Line{ Vec2{ left, top }, Vec2{ right, top } })
-				|| Intersects(segment, Line{ Vec2{ right, top }, Vec2{ right, bottom } })
-				|| Intersects(segment, Line{ Vec2{ right, bottom }, Vec2{ left, bottom } })
-				|| Intersects(segment, Line{ Vec2{ left, bottom }, Vec2{ left, top } }));
+			return detail::IntersectsLineRectFNonEmpty(segment, rect);
 		}
 
 		constexpr bool Intersects(const Line& segment, const Circle& circle) noexcept
@@ -396,29 +519,7 @@ namespace s3d
 				return false;
 			}
 
-			if (Intersects(segment.start, circle) || Intersects(segment.end, circle))
-			{
-				return true;
-			}
-
-			const Vec2 d = (segment.end - segment.start);
-			const double lengthSq = d.dot(d);
-
-			if (lengthSq == 0.0)
-			{
-				return false;
-			}
-
-			const Vec2 f = (circle.center - segment.start);
-			const double tNumerator = f.dot(d);
-
-			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
-			{
-				return false;
-			}
-
-			const double cross = d.cross(f);
-			return ((cross * cross) <= (circle.r * circle.r * lengthSq));
+			return detail::IntersectsLineCircleArea(segment, circle);
 		}
 
 		constexpr bool Intersects(const Line& segment, const Ellipse& ellipse) noexcept
@@ -435,33 +536,7 @@ namespace s3d
 				return Intersects(segment, detail::GetGeometry2DDegenerateSegment(ellipse, kind));
 			}
 
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			const Vec2 p0{ ((segment.start.x - ellipse.center.x) / ax), ((segment.start.y - ellipse.center.y) / by) };
-			const Vec2 p1{ ((segment.end.x - ellipse.center.x) / ax), ((segment.end.y - ellipse.center.y) / by) };
-
-			if ((p0.dot(p0) <= 1.0) || (p1.dot(p1) <= 1.0))
-			{
-				return true;
-			}
-
-			const Vec2 d = (p1 - p0);
-			const double lengthSq = d.dot(d);
-
-			if (lengthSq == 0.0)
-			{
-				return false;
-			}
-
-			const double tNumerator = -p0.dot(d);
-
-			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
-			{
-				return false;
-			}
-
-			const double cross = d.cross(p0);
-			return ((cross * cross) <= lengthSq);
+			return detail::IntersectsLineEllipseArea(segment, ellipse);
 		}
 
 		constexpr bool Intersects(const Line& segment, const Triangle& triangle) noexcept
@@ -503,38 +578,7 @@ namespace s3d
 				return Intersects(segment, detail::GetGeometry2DDegenerateSegment(roundRect, kind));
 			}
 
-			const RectF& rect = roundRect.rect;
-			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
-
-			if (er == 0.0)
-			{
-				return Intersects(segment, rect);
-			}
-
-			if (Intersects(segment.start, roundRect) || Intersects(segment.end, roundRect))
-			{
-				return true;
-			}
-
-			const double left = rect.pos.x;
-			const double top = rect.pos.y;
-			const double right = (rect.pos.x + rect.size.x);
-			const double bottom = (rect.pos.y + rect.size.y);
-			const double innerLeft = (left + er);
-			const double innerRight = (right - er);
-			const double innerTop = (top + er);
-			const double innerBottom = (bottom - er);
-
-			if (Intersects(segment, RectF{ innerLeft, top, (innerRight - innerLeft), rect.size.y })
-				|| Intersects(segment, RectF{ left, innerTop, rect.size.x, (innerBottom - innerTop) }))
-			{
-				return true;
-			}
-
-			return (detail::SegmentIntersectsDiskBox(segment, Vec2{ innerLeft, innerTop }, er, left, top, innerLeft, innerTop)
-				|| detail::SegmentIntersectsDiskBox(segment, Vec2{ innerRight, innerTop }, er, innerRight, top, right, innerTop)
-				|| detail::SegmentIntersectsDiskBox(segment, Vec2{ innerRight, innerBottom }, er, innerRight, innerBottom, right, bottom)
-				|| detail::SegmentIntersectsDiskBox(segment, Vec2{ innerLeft, innerBottom }, er, left, innerBottom, innerLeft, bottom));
+			return detail::IntersectsLineRoundRectArea(segment, roundRect, detail::GetGeometry2DEffectiveRadius(roundRect));
 		}
 
 		////////////////////////////////////////////////////////////////

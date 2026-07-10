@@ -479,3 +479,53 @@ TEST_CASE("Geometry2D.Intersects.PolygonContainers_PolygonContainers")
 		CHECK(Geometry2D::Intersects(multi, overlap));
 	}
 }
+
+// サイズ依存形状と MultiPolygon は、形状分類を member loop の外へ出した経路でも
+// Polygon ごとの member-wise 判定および member 順序と同じ結果になることを確認する。
+TEST_CASE("Geometry2D.Intersects.SizedShapes_MultiPolygon_Equivalence")
+{
+	const Polygon far{ Array<Vec2>{ Vec2{ 100, 100 }, Vec2{ 110, 100 }, Vec2{ 110, 110 }, Vec2{ 100, 110 } } };
+	const Polygon hit{ Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } } };
+	const MultiPolygon farThenHit{ far, hit };
+	const MultiPolygon hitThenFar{ hit, far };
+	const MultiPolygon empty;
+
+	auto CheckEquivalent = [](const auto& shape, const MultiPolygon& multiPolygon)
+	{
+		bool expected = false;
+
+		for (const Polygon& polygon : multiPolygon)
+		{
+			if (Geometry2D::Intersects(shape, polygon))
+			{
+				expected = true;
+				break;
+			}
+		}
+
+		CHECK(Geometry2D::Intersects(shape, multiPolygon) == expected);
+		CHECK(Geometry2D::Intersects(multiPolygon, shape) == expected);
+	};
+
+	auto CheckShape = [&](const auto& shape)
+	{
+		CheckEquivalent(shape, farThenHit);
+		CheckEquivalent(shape, hitThenFar);
+		CheckEquivalent(shape, empty);
+		CHECK(Geometry2D::Intersects(shape, farThenHit) == Geometry2D::Intersects(shape, hitThenFar));
+	};
+
+	CheckShape(Rect{ 2, 2, 4, 4 });
+	CheckShape(RectF{ 2, 2, 4, 4 });
+	CheckShape(RectF{ 5, -1, 0, 12 });
+	CheckShape(Circle{ Vec2{ 5, 5 }, 2 });
+	CheckShape(Circle{ Vec2{ 5, 5 }, 0 });
+	CheckShape(Ellipse{ Vec2{ 5, 5 }, 3, 2 });
+	CheckShape(Ellipse{ Vec2{ 5, 5 }, 0, 4 });
+	CheckShape(SuperEllipse{ Vec2{ 5, 5 }, SizeF{ 3, 2 }, 4.0 });
+	CheckShape(SuperEllipse{ Vec2{ 5, 5 }, SizeF{ 3, 2 }, 2.0 });
+	CheckShape(SuperEllipse{ Vec2{ 5, 5 }, SizeF{ 0, 4 }, 4.0 });
+	CheckShape(RoundRect{ RectF{ 2, 2, 6, 6 }, 2.0 });
+	CheckShape(RoundRect{ RectF{ 2, 2, 6, 6 }, 0.0 });
+	CheckShape(RoundRect{ RectF{ 5, -1, 0, 12 }, 2.0 });
+}

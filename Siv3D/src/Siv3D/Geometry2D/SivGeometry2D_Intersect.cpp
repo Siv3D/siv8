@@ -565,28 +565,25 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsLineSuperEllipse(const Line& segment, const SuperEllipse& superEllipse) noexcept
+		bool IntersectsPointSuperEllipseArea(const Vec2& p, const SuperEllipse& superEllipse) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+			const double dx = Abs((p.x - superEllipse.center.x) / superEllipse.axes.x);
+			const double dy = Abs((p.y - superEllipse.center.y) / superEllipse.axes.y);
 
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			if ((1.0 < dx) || (1.0 < dy))
 			{
 				return false;
 			}
 
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(segment, detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
-			}
+			return ((std::pow(dx, superEllipse.n) + std::pow(dy, superEllipse.n)) <= 1.0);
+		}
 
+		[[nodiscard]]
+		bool IntersectsLineSuperEllipseArea(const Line& segment, const SuperEllipse& superEllipse) noexcept
+		{
 			const double ax = superEllipse.axes.x;
 			const double by = superEllipse.axes.y;
 			const double n = superEllipse.n;
-
-			if (n == 2.0)
-			{
-				return Geometry2D::Intersects(segment, Ellipse{ superEllipse.center, ax, by });
-			}
 
 			const Vec2 p0{ ((segment.start.x - superEllipse.center.x) / ax), ((segment.start.y - superEllipse.center.y) / by) };
 			const Vec2 p1{ ((segment.end.x - superEllipse.center.x) / ax), ((segment.end.y - superEllipse.center.y) / by) };
@@ -690,6 +687,29 @@ namespace s3d
 			return false;
 		}
 
+		[[nodiscard]]
+		bool IntersectsLineSuperEllipse(const Line& segment, const SuperEllipse& superEllipse) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(segment, detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
+			}
+
+			if (superEllipse.n == 2.0)
+			{
+				return detail::IntersectsLineEllipseArea(segment, Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
+			}
+
+			return IntersectsLineSuperEllipseArea(segment, superEllipse);
+		}
+
 		template <class Shape>
 		[[nodiscard]]
 		bool IntersectsLineStringShape(const LineString& segments, const Shape& shape)
@@ -719,6 +739,128 @@ namespace s3d
 			return false;
 		}
 
+		template <class PointIntersector, class SegmentIntersector>
+		[[nodiscard]]
+		bool IntersectsLineStringWith(const LineString& segments, PointIntersector&& pointIntersector, SegmentIntersector&& segmentIntersector) noexcept
+		{
+			const size_t n = segments.size();
+
+			if (n == 0)
+			{
+				return false;
+			}
+
+			const Vec2* ps = segments.data();
+
+			if (n == 1)
+			{
+				return pointIntersector(ps[0]);
+			}
+
+			for (size_t i = 0; i < (n - 1); ++i)
+			{
+				if (segmentIntersector(Line{ ps[i], ps[i + 1] }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineStringRectF(const LineString& segments, const RectF& rect) noexcept
+		{
+			if (detail::ClassifyGeometry2DSizedShape(rect) == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			return IntersectsLineStringWith(segments,
+				[&](const Vec2& p) noexcept { return detail::IntersectsPointRectFNonEmpty(p, rect); },
+				[&](const Line& segment) noexcept { return detail::IntersectsLineRectFNonEmpty(segment, rect); });
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineStringCircle(const LineString& segments, const Circle& circle) noexcept
+		{
+			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			return IntersectsLineStringWith(segments,
+				[&](const Vec2& p) noexcept { return detail::IntersectsPointCircleArea(p, circle); },
+				[&](const Line& segment) noexcept { return detail::IntersectsLineCircleArea(segment, circle); });
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineStringEllipse(const LineString& segments, const Ellipse& ellipse) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(segments, detail::GetGeometry2DDegenerateSegment(ellipse, kind));
+			}
+
+			return IntersectsLineStringWith(segments,
+				[&](const Vec2& p) noexcept { return detail::IntersectsPointEllipseArea(p, ellipse); },
+				[&](const Line& segment) noexcept { return detail::IntersectsLineEllipseArea(segment, ellipse); });
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineStringSuperEllipse(const LineString& segments, const SuperEllipse& superEllipse) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(segments, detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
+			}
+
+			if (superEllipse.n == 2.0)
+			{
+				return IntersectsLineStringEllipse(segments, Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
+			}
+
+			return IntersectsLineStringWith(segments,
+				[&](const Vec2& p) noexcept { return IntersectsPointSuperEllipseArea(p, superEllipse); },
+				[&](const Line& segment) noexcept { return IntersectsLineSuperEllipseArea(segment, superEllipse); });
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineStringRoundRect(const LineString& segments, const RoundRect& roundRect) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(segments, detail::GetGeometry2DDegenerateSegment(roundRect, kind));
+			}
+
+			const double effectiveRadius = detail::GetGeometry2DEffectiveRadius(roundRect);
+
+			return IntersectsLineStringWith(segments,
+				[&](const Vec2& p) noexcept { return detail::IntersectsPointRoundRectArea(p, roundRect, effectiveRadius); },
+				[&](const Line& segment) noexcept { return detail::IntersectsLineRoundRectArea(segment, roundRect, effectiveRadius); });
+		}
+
 		[[nodiscard]]
 		constexpr bool BoundsIntersectClosed(const RectF& a, const RectF& b) noexcept
 		{
@@ -746,6 +888,68 @@ namespace s3d
 				&& (bLeft <= aRight)
 				&& (aTop <= bBottom)
 				&& (bTop <= aBottom));
+		}
+
+		[[nodiscard]]
+		bool IntersectsPointPolygonNonEmpty(const Vec2& p, const Polygon& polygon, const RectF& polygonBounds) noexcept
+		{
+			if (not detail::IntersectsPointRectFNonEmpty(p, polygonBounds))
+			{
+				return false;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				if (Geometry2D::ContainsPoint<detail::ConvexClockwise>(
+					pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2], p))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsLinePolygonNonEmpty(const Line& segment, const Polygon& polygon, const RectF& polygonBounds) noexcept
+		{
+			if (not detail::IntersectsLineRectFNonEmpty(segment, polygonBounds))
+			{
+				return false;
+			}
+
+			const Float2* pVertex = polygon.vertices().data();
+
+			for (const auto& triangleIndex : polygon.indices())
+			{
+				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
+				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
+				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
+
+				if (Geometry2D::Intersects(segment, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsLineStringPolygon(const LineString& segments, const Polygon& polygon) noexcept
+		{
+			if (polygon.isEmpty())
+			{
+				return false;
+			}
+
+			const RectF polygonBounds = polygon.boundingRect();
+
+			return IntersectsLineStringWith(segments,
+				[&](const Vec2& p) noexcept { return IntersectsPointPolygonNonEmpty(p, polygon, polygonBounds); },
+				[&](const Line& segment) noexcept { return IntersectsLinePolygonNonEmpty(segment, polygon, polygonBounds); });
 		}
 
 		[[nodiscard]]
@@ -798,8 +1002,6 @@ namespace s3d
 
 			return std::hypot(dx, dy);
 		}
-
-
 
 		[[nodiscard]]
 		bool IntersectsBezier2RectF(const Bezier2& curve, const RectF& rect)
@@ -1494,20 +1696,8 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsRectFTriangle(const RectF& rect, const Triangle& triangle) noexcept
+		bool IntersectsRectFTriangleArea(const RectF& rect, const Triangle& triangle) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), triangle);
-			}
-
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
 			const double right = (rect.pos.x + rect.size.x);
@@ -1518,9 +1708,9 @@ namespace s3d
 				return false;
 			}
 
-			if (Geometry2D::Intersects(triangle.p0, rect)
-				|| Geometry2D::Intersects(triangle.p1, rect)
-				|| Geometry2D::Intersects(triangle.p2, rect))
+			if (detail::IntersectsPointRectFNonEmpty(triangle.p0, rect)
+				|| detail::IntersectsPointRectFNonEmpty(triangle.p1, rect)
+				|| detail::IntersectsPointRectFNonEmpty(triangle.p2, rect))
 			{
 				return true;
 			}
@@ -1537,6 +1727,24 @@ namespace s3d
 				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, triangle)
 				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, triangle)
 				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, triangle));
+		}
+
+		[[nodiscard]]
+		bool IntersectsRectFTriangle(const RectF& rect, const Triangle& triangle) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), triangle);
+			}
+
+			return IntersectsRectFTriangleArea(rect, triangle);
 		}
 
 		[[nodiscard]]
@@ -1682,18 +1890,11 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsRectFPolygon(const RectF& rect, const Polygon& polygon) noexcept
+		bool IntersectsRectFPolygonArea(const RectF& rect, const Polygon& polygon) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
-
-			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
+			if (polygon.isEmpty())
 			{
 				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), polygon);
 			}
 
 			const double left = rect.pos.x;
@@ -1701,31 +1902,33 @@ namespace s3d
 			const double right = (rect.pos.x + rect.size.x);
 			const double bottom = (rect.pos.y + rect.size.y);
 
-			if (not BoundsIntersectClosed(rect, polygon.boundingRect()))
+			const RectF polygonBounds = polygon.boundingRect();
+
+			if (not BoundsIntersectClosed(rect, polygonBounds))
 			{
 				return false;
 			}
 
-			if (Geometry2D::Intersects(Vec2{ left, top }, polygon)
-				|| Geometry2D::Intersects(Vec2{ right, top }, polygon)
-				|| Geometry2D::Intersects(Vec2{ right, bottom }, polygon)
-				|| Geometry2D::Intersects(Vec2{ left, bottom }, polygon))
+			if (IntersectsPointPolygonNonEmpty(Vec2{ left, top }, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(Vec2{ right, top }, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(Vec2{ right, bottom }, polygon, polygonBounds)
+				|| IntersectsPointPolygonNonEmpty(Vec2{ left, bottom }, polygon, polygonBounds))
 			{
 				return true;
 			}
 
 			for (const auto& vertex : polygon.vertices())
 			{
-				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, rect))
+				if (detail::IntersectsPointRectFNonEmpty(Vec2{ vertex.x, vertex.y }, rect))
 				{
 					return true;
 				}
 			}
 
-			if (Geometry2D::Intersects(Line{ Vec2{ left, top }, Vec2{ right, top } }, polygon)
-				|| Geometry2D::Intersects(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, polygon)
-				|| Geometry2D::Intersects(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, polygon)
-				|| Geometry2D::Intersects(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, polygon))
+			if (IntersectsLinePolygonNonEmpty(Line{ Vec2{ left, top }, Vec2{ right, top } }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, polygon, polygonBounds)
+				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -1738,7 +1941,51 @@ namespace s3d
 				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
 				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
 
-				if (IntersectsRectFTriangle(rect, Triangle{ p0, p1, p2 }))
+				if (IntersectsRectFTriangleArea(rect, Triangle{ p0, p1, p2 }))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsRectFPolygon(const RectF& rect, const Polygon& polygon) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), polygon);
+			}
+
+			return IntersectsRectFPolygonArea(rect, polygon);
+		}
+
+		[[nodiscard]]
+		bool IntersectsRectFMultiPolygon(const RectF& rect, const MultiPolygon& multiPolygon) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(rect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(rect, kind), multiPolygon);
+			}
+
+			for (const auto& polygon : multiPolygon)
+			{
+				if (IntersectsRectFPolygonArea(rect, polygon))
 				{
 					return true;
 				}
@@ -1973,6 +2220,27 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsEllipseTriangleArea(const Ellipse& ellipse, const RectF& ellipseBounds, const Triangle& triangle) noexcept
+		{
+			if (not BoundsIntersectClosed(ellipseBounds, triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(ellipse.center, triangle)
+				|| detail::IntersectsPointEllipseArea(triangle.p0, ellipse)
+				|| detail::IntersectsPointEllipseArea(triangle.p1, ellipse)
+				|| detail::IntersectsPointEllipseArea(triangle.p2, ellipse))
+			{
+				return true;
+			}
+
+			return (detail::IntersectsLineEllipseArea(Line{ triangle.p0, triangle.p1 }, ellipse)
+				|| detail::IntersectsLineEllipseArea(Line{ triangle.p1, triangle.p2 }, ellipse)
+				|| detail::IntersectsLineEllipseArea(Line{ triangle.p2, triangle.p0 }, ellipse));
+		}
+
+		[[nodiscard]]
 		bool IntersectsEllipseTriangle(const Ellipse& ellipse, const Triangle& triangle) noexcept
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
@@ -1987,22 +2255,7 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), triangle);
 			}
 
-			if (not BoundsIntersectClosed(ellipse.boundingRect(), triangle.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(ellipse.center, triangle)
-				|| Geometry2D::Intersects(triangle.p0, ellipse)
-				|| Geometry2D::Intersects(triangle.p1, ellipse)
-				|| Geometry2D::Intersects(triangle.p2, ellipse))
-			{
-				return true;
-			}
-
-			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, ellipse)
-				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, ellipse)
-				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, ellipse));
+			return IntersectsEllipseTriangleArea(ellipse, ellipse.boundingRect(), triangle);
 		}
 
 		[[nodiscard]]
@@ -2041,26 +2294,21 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsEllipsePolygon(const Ellipse& ellipse, const Polygon& polygon) noexcept
+		bool IntersectsEllipsePolygonArea(const Ellipse& ellipse, const RectF& ellipseBounds, const Polygon& polygon) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
-
-			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
+			if (polygon.isEmpty())
 			{
 				return false;
 			}
 
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), polygon);
-			}
+			const RectF polygonBounds = polygon.boundingRect();
 
-			if (not BoundsIntersectClosed(ellipse.boundingRect(), polygon.boundingRect()))
+			if (not BoundsIntersectClosed(ellipseBounds, polygonBounds))
 			{
 				return false;
 			}
 
-			if (Geometry2D::Intersects(ellipse.center, polygon))
+			if (IntersectsPointPolygonNonEmpty(ellipse.center, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -2073,7 +2321,7 @@ namespace s3d
 				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
 				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
 
-				if (IntersectsEllipseTriangle(ellipse, Triangle{ p0, p1, p2 }))
+				if (IntersectsEllipseTriangleArea(ellipse, ellipseBounds, Triangle{ p0, p1, p2 }))
 				{
 					return true;
 				}
@@ -2083,17 +2331,70 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsEllipsePolygon(const Ellipse& ellipse, const Polygon& polygon) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), polygon);
+			}
+
+			return IntersectsEllipsePolygonArea(ellipse, ellipse.boundingRect(), polygon);
+		}
+
+		[[nodiscard]]
 		bool IntersectsEllipseMultiPolygon(const Ellipse& ellipse, const MultiPolygon& multiPolygon) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(ellipse, kind), multiPolygon);
+			}
+
+			const RectF ellipseBounds = ellipse.boundingRect();
+
 			for (const auto& polygon : multiPolygon)
 			{
-				if (IntersectsEllipsePolygon(ellipse, polygon))
+				if (IntersectsEllipsePolygonArea(ellipse, ellipseBounds, polygon))
 				{
 					return true;
 				}
 			}
 
 			return false;
+		}
+
+		[[nodiscard]]
+		bool IntersectsSuperEllipseTriangleArea(const SuperEllipse& superEllipse, const RectF& superEllipseBounds, const Triangle& triangle) noexcept
+		{
+			if (not BoundsIntersectClosed(superEllipseBounds, triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(superEllipse.center, triangle)
+				|| IntersectsPointSuperEllipseArea(triangle.p0, superEllipse)
+				|| IntersectsPointSuperEllipseArea(triangle.p1, superEllipse)
+				|| IntersectsPointSuperEllipseArea(triangle.p2, superEllipse))
+			{
+				return true;
+			}
+
+			return (IntersectsLineSuperEllipseArea(Line{ triangle.p0, triangle.p1 }, superEllipse)
+				|| IntersectsLineSuperEllipseArea(Line{ triangle.p1, triangle.p2 }, superEllipse)
+				|| IntersectsLineSuperEllipseArea(Line{ triangle.p2, triangle.p0 }, superEllipse));
 		}
 
 		[[nodiscard]]
@@ -2111,31 +2412,14 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), triangle);
 			}
 
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			if (n == 2.0)
+			if (superEllipse.n == 2.0)
 			{
-				return IntersectsEllipseTriangle(Ellipse{ superEllipse.center, ax, by }, triangle);
+				return IntersectsEllipseTriangleArea(
+					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y },
+					superEllipse.boundingRect(), triangle);
 			}
 
-			if (not BoundsIntersectClosed(superEllipse.boundingRect(), triangle.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(superEllipse.center, triangle)
-				|| Geometry2D::Intersects(triangle.p0, superEllipse)
-				|| Geometry2D::Intersects(triangle.p1, superEllipse)
-				|| Geometry2D::Intersects(triangle.p2, superEllipse))
-			{
-				return true;
-			}
-
-			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, superEllipse)
-				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, superEllipse)
-				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, superEllipse));
+			return IntersectsSuperEllipseTriangleArea(superEllipse, superEllipse.boundingRect(), triangle);
 		}
 
 		[[nodiscard]]
@@ -2183,35 +2467,21 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsSuperEllipsePolygon(const SuperEllipse& superEllipse, const Polygon& polygon) noexcept
+		bool IntersectsSuperEllipsePolygonArea(const SuperEllipse& superEllipse, const RectF& superEllipseBounds, const Polygon& polygon) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
-
-			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
+			if (polygon.isEmpty())
 			{
 				return false;
 			}
 
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), polygon);
-			}
+			const RectF polygonBounds = polygon.boundingRect();
 
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			if (n == 2.0)
-			{
-				return IntersectsEllipsePolygon(Ellipse{ superEllipse.center, ax, by }, polygon);
-			}
-
-			if (not BoundsIntersectClosed(superEllipse.boundingRect(), polygon.boundingRect()))
+			if (not BoundsIntersectClosed(superEllipseBounds, polygonBounds))
 			{
 				return false;
 			}
 
-			if (Geometry2D::Intersects(superEllipse.center, polygon))
+			if (IntersectsPointPolygonNonEmpty(superEllipse.center, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -2224,7 +2494,7 @@ namespace s3d
 				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
 				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
 
-				if (IntersectsSuperEllipseTriangle(superEllipse, Triangle{ p0, p1, p2 }))
+				if (IntersectsSuperEllipseTriangleArea(superEllipse, superEllipseBounds, Triangle{ p0, p1, p2 }))
 				{
 					return true;
 				}
@@ -2234,11 +2504,67 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsSuperEllipsePolygon(const SuperEllipse& superEllipse, const Polygon& polygon) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), polygon);
+			}
+
+			const RectF superEllipseBounds = superEllipse.boundingRect();
+
+			if (superEllipse.n == 2.0)
+			{
+				return IntersectsEllipsePolygonArea(
+					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y },
+					superEllipseBounds, polygon);
+			}
+
+			return IntersectsSuperEllipsePolygonArea(superEllipse, superEllipseBounds, polygon);
+		}
+
+		[[nodiscard]]
 		bool IntersectsSuperEllipseMultiPolygon(const SuperEllipse& superEllipse, const MultiPolygon& multiPolygon) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), multiPolygon);
+			}
+
+			const RectF superEllipseBounds = superEllipse.boundingRect();
+
+			if (superEllipse.n == 2.0)
+			{
+				const Ellipse ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y };
+
+				for (const auto& polygon : multiPolygon)
+				{
+					if (IntersectsEllipsePolygonArea(ellipse, superEllipseBounds, polygon))
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+
 			for (const auto& polygon : multiPolygon)
 			{
-				if (IntersectsSuperEllipsePolygon(superEllipse, polygon))
+				if (IntersectsSuperEllipsePolygonArea(superEllipse, superEllipseBounds, polygon))
 				{
 					return true;
 				}
@@ -2354,6 +2680,27 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsCircleTriangleArea(const Circle& circle, const RectF& circleBounds, const Triangle& triangle) noexcept
+		{
+			if (not BoundsIntersectClosed(circleBounds, triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			if (Geometry2D::Intersects(circle.center, triangle)
+				|| detail::IntersectsPointCircleArea(triangle.p0, circle)
+				|| detail::IntersectsPointCircleArea(triangle.p1, circle)
+				|| detail::IntersectsPointCircleArea(triangle.p2, circle))
+			{
+				return true;
+			}
+
+			return (detail::IntersectsLineCircleArea(Line{ triangle.p0, triangle.p1 }, circle)
+				|| detail::IntersectsLineCircleArea(Line{ triangle.p1, triangle.p2 }, circle)
+				|| detail::IntersectsLineCircleArea(Line{ triangle.p2, triangle.p0 }, circle));
+		}
+
+		[[nodiscard]]
 		bool IntersectsCircleTriangle(const Circle& circle, const Triangle& triangle) noexcept
 		{
 			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
@@ -2361,22 +2708,7 @@ namespace s3d
 				return false;
 			}
 
-			if (not BoundsIntersectClosed(circle.boundingRect(), triangle.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(circle.center, triangle)
-				|| Geometry2D::Intersects(triangle.p0, circle)
-				|| Geometry2D::Intersects(triangle.p1, circle)
-				|| Geometry2D::Intersects(triangle.p2, circle))
-			{
-				return true;
-			}
-
-			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, circle)
-				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, circle)
-				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, circle));
+			return IntersectsCircleTriangleArea(circle, circle.boundingRect(), triangle);
 		}
 
 		[[nodiscard]]
@@ -2408,20 +2740,21 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsCirclePolygon(const Circle& circle, const Polygon& polygon) noexcept
+		bool IntersectsCirclePolygonArea(const Circle& circle, const RectF& circleBounds, const Polygon& polygon) noexcept
 		{
-			if ((detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
-				|| polygon.isEmpty())
+			if (polygon.isEmpty())
 			{
 				return false;
 			}
 
-			if (not BoundsIntersectClosed(circle.boundingRect(), polygon.boundingRect()))
+			const RectF polygonBounds = polygon.boundingRect();
+
+			if (not BoundsIntersectClosed(circleBounds, polygonBounds))
 			{
 				return false;
 			}
 
-			if (Geometry2D::Intersects(circle.center, polygon))
+			if (IntersectsPointPolygonNonEmpty(circle.center, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -2434,7 +2767,7 @@ namespace s3d
 				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
 				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
 
-				if (IntersectsCircleTriangle(circle, Triangle{ p0, p1, p2 }))
+				if (IntersectsCircleTriangleArea(circle, circleBounds, Triangle{ p0, p1, p2 }))
 				{
 					return true;
 				}
@@ -2444,11 +2777,29 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsCirclePolygon(const Circle& circle, const Polygon& polygon) noexcept
+		{
+			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			return IntersectsCirclePolygonArea(circle, circle.boundingRect(), polygon);
+		}
+
+		[[nodiscard]]
 		bool IntersectsCircleMultiPolygon(const Circle& circle, const MultiPolygon& multiPolygon) noexcept
 		{
+			if (detail::ClassifyGeometry2DSizedShape(circle) == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			const RectF circleBounds = circle.boundingRect();
+
 			for (const auto& polygon : multiPolygon)
 			{
-				if (IntersectsCirclePolygon(circle, polygon))
+				if (IntersectsCirclePolygonArea(circle, circleBounds, polygon))
 				{
 					return true;
 				}
@@ -2858,6 +3209,36 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsRoundRectTriangleArea(const RoundRect& roundRect, const double effectiveRadius, const Triangle& triangle) noexcept
+		{
+			const RectF& rect = roundRect.rect;
+
+			if (effectiveRadius == 0.0)
+			{
+				return IntersectsRectFTriangleArea(rect, triangle);
+			}
+
+			if (not BoundsIntersectClosed(rect, triangle.boundingRect()))
+			{
+				return false;
+			}
+
+			const Vec2 center{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
+
+			if (Geometry2D::Intersects(center, triangle)
+				|| detail::IntersectsPointRoundRectArea(triangle.p0, roundRect, effectiveRadius)
+				|| detail::IntersectsPointRoundRectArea(triangle.p1, roundRect, effectiveRadius)
+				|| detail::IntersectsPointRoundRectArea(triangle.p2, roundRect, effectiveRadius))
+			{
+				return true;
+			}
+
+			return (detail::IntersectsLineRoundRectArea(Line{ triangle.p0, triangle.p1 }, roundRect, effectiveRadius)
+				|| detail::IntersectsLineRoundRectArea(Line{ triangle.p1, triangle.p2 }, roundRect, effectiveRadius)
+				|| detail::IntersectsLineRoundRectArea(Line{ triangle.p2, triangle.p0 }, roundRect, effectiveRadius));
+		}
+
+		[[nodiscard]]
 		bool IntersectsRoundRectTriangle(const RoundRect& roundRect, const Triangle& triangle) noexcept
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
@@ -2872,32 +3253,7 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), triangle);
 			}
 
-			const RectF& rect = roundRect.rect;
-			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
-
-			if (er == 0.0)
-			{
-				return IntersectsRectFTriangle(rect, triangle);
-			}
-
-			if (not BoundsIntersectClosed(rect, triangle.boundingRect()))
-			{
-				return false;
-			}
-
-			const Vec2 center{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
-
-			if (Geometry2D::Intersects(center, triangle)
-				|| Geometry2D::Intersects(triangle.p0, roundRect)
-				|| Geometry2D::Intersects(triangle.p1, roundRect)
-				|| Geometry2D::Intersects(triangle.p2, roundRect))
-			{
-				return true;
-			}
-
-			return (Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, roundRect)
-				|| Geometry2D::Intersects(Line{ triangle.p1, triangle.p2 }, roundRect)
-				|| Geometry2D::Intersects(Line{ triangle.p2, triangle.p0 }, roundRect));
+			return IntersectsRoundRectTriangleArea(roundRect, detail::GetGeometry2DEffectiveRadius(roundRect), triangle);
 		}
 
 		[[nodiscard]]
@@ -2985,36 +3341,30 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsRoundRectPolygon(const RoundRect& roundRect, const Polygon& polygon) noexcept
+		bool IntersectsRoundRectPolygonArea(const RoundRect& roundRect, const double effectiveRadius, const Polygon& polygon) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
-
-			if ((kind == detail::Geometry2DSizedShapeKind::Empty) || polygon.isEmpty())
+			if (polygon.isEmpty())
 			{
 				return false;
 			}
 
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), polygon);
-			}
-
 			const RectF& rect = roundRect.rect;
-			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
-			if (er == 0.0)
+			if (effectiveRadius == 0.0)
 			{
-				return IntersectsRectFPolygon(rect, polygon);
+				return IntersectsRectFPolygonArea(rect, polygon);
 			}
 
-			if (not BoundsIntersectClosed(rect, polygon.boundingRect()))
+			const RectF polygonBounds = polygon.boundingRect();
+
+			if (not BoundsIntersectClosed(rect, polygonBounds))
 			{
 				return false;
 			}
 
 			const Vec2 center{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
 
-			if (Geometry2D::Intersects(center, polygon))
+			if (IntersectsPointPolygonNonEmpty(center, polygon, polygonBounds))
 			{
 				return true;
 			}
@@ -3027,7 +3377,7 @@ namespace s3d
 				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
 				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
 
-				if (IntersectsRoundRectTriangle(roundRect, Triangle{ p0, p1, p2 }))
+				if (IntersectsRoundRectTriangleArea(roundRect, effectiveRadius, Triangle{ p0, p1, p2 }))
 				{
 					return true;
 				}
@@ -3037,11 +3387,43 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsRoundRectPolygon(const RoundRect& roundRect, const Polygon& polygon) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), polygon);
+			}
+
+			return IntersectsRoundRectPolygonArea(roundRect, detail::GetGeometry2DEffectiveRadius(roundRect), polygon);
+		}
+
+		[[nodiscard]]
 		bool IntersectsRoundRectMultiPolygon(const RoundRect& roundRect, const MultiPolygon& multiPolygon) noexcept
 		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind))
+			{
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), multiPolygon);
+			}
+
+			const double effectiveRadius = detail::GetGeometry2DEffectiveRadius(roundRect);
+
 			for (const auto& polygon : multiPolygon)
 			{
-				if (IntersectsRoundRectPolygon(roundRect, polygon))
+				if (IntersectsRoundRectPolygonArea(roundRect, effectiveRadius, polygon))
 				{
 					return true;
 				}
@@ -3176,23 +3558,12 @@ namespace s3d
 				return Geometry2D::Intersects(p, detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
 			}
 
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-			const double dx = Abs((p.x - superEllipse.center.x) / ax);
-			const double dy = Abs((p.y - superEllipse.center.y) / by);
-
-			if ((1.0 < dx) || (1.0 < dy))
+			if (superEllipse.n == 2.0)
 			{
-				return false;
+				return detail::IntersectsPointEllipseArea(p, Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
-			if (n == 2.0)
-			{
-				return ((dx * dx + dy * dy) <= 1.0);
-			}
-
-			return ((std::pow(dx, n) + std::pow(dy, n)) <= 1.0);
+			return IntersectsPointSuperEllipseArea(p, superEllipse);
 		}
 
 		bool Intersects(const Vec2& p, const Polygon& polygon) noexcept
@@ -3202,22 +3573,8 @@ namespace s3d
 				return false;
 			}
 
-			if (not Intersects(p, polygon.boundingRect()))
-			{
-				return false;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				if (ContainsPoint<detail::ConvexClockwise>(pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2], p))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			const RectF polygonBounds = polygon.boundingRect();
+			return IntersectsPointPolygonNonEmpty(p, polygon, polygonBounds);
 		}
 
 		bool Intersects(const Vec2& p, const MultiPolygon& multiPolygon) noexcept
@@ -3288,26 +3645,8 @@ namespace s3d
 				return false;
 			}
 
-			if (not Intersects(segment, polygon.boundingRect()))
-			{
-				return false;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (Intersects(segment, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			const RectF polygonBounds = polygon.boundingRect();
+			return IntersectsLinePolygonNonEmpty(segment, polygon, polygonBounds);
 		}
 
 		bool Intersects(const Line& segment, const MultiPolygon& multiPolygon) noexcept
@@ -3361,27 +3700,27 @@ namespace s3d
 
 		bool Intersects(const LineString& segments, const Rect& rect) noexcept
 		{
-			return IntersectsLineStringShape(segments, rect);
+			return IntersectsLineStringRectF(segments, RectF{ rect });
 		}
 
 		bool Intersects(const LineString& segments, const RectF& rect) noexcept
 		{
-			return IntersectsLineStringShape(segments, rect);
+			return IntersectsLineStringRectF(segments, rect);
 		}
 
 		bool Intersects(const LineString& segments, const Circle& circle) noexcept
 		{
-			return IntersectsLineStringShape(segments, circle);
+			return IntersectsLineStringCircle(segments, circle);
 		}
 
 		bool Intersects(const LineString& segments, const Ellipse& ellipse) noexcept
 		{
-			return IntersectsLineStringShape(segments, ellipse);
+			return IntersectsLineStringEllipse(segments, ellipse);
 		}
 
 		bool Intersects(const LineString& segments, const SuperEllipse& superEllipse) noexcept
 		{
-			return IntersectsLineStringShape(segments, superEllipse);
+			return IntersectsLineStringSuperEllipse(segments, superEllipse);
 		}
 
 		bool Intersects(const LineString& segments, const Triangle& triangle) noexcept
@@ -3396,12 +3735,12 @@ namespace s3d
 
 		bool Intersects(const LineString& segments, const RoundRect& roundRect) noexcept
 		{
-			return IntersectsLineStringShape(segments, roundRect);
+			return IntersectsLineStringRoundRect(segments, roundRect);
 		}
 
 		bool Intersects(const LineString& segments, const Polygon& polygon) noexcept
 		{
-			return IntersectsLineStringShape(segments, polygon);
+			return IntersectsLineStringPolygon(segments, polygon);
 		}
 
 		bool Intersects(const LineString& segments, const MultiPolygon& multiPolygon) noexcept
@@ -3645,15 +3984,7 @@ namespace s3d
 
 		bool Intersects(const Rect& rect, const MultiPolygon& multiPolygon) noexcept
 		{
-			for (const auto& polygon : multiPolygon)
-			{
-				if (Intersects(rect, polygon))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsRectFMultiPolygon(RectF{ rect }, multiPolygon);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3704,15 +4035,7 @@ namespace s3d
 
 		bool Intersects(const RectF& rect, const MultiPolygon& multiPolygon) noexcept
 		{
-			for (const auto& polygon : multiPolygon)
-			{
-				if (Intersects(rect, polygon))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsRectFMultiPolygon(rect, multiPolygon);
 		}
 
 		////////////////////////////////////////////////////////////////
