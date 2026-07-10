@@ -809,6 +809,19 @@ TEST_CASE("Geometry2D.Intersects.Point_Bezier")
 		CHECK(Geometry2D::Intersects(Vec2{ 2, 3 }, curve));
 		CHECK(not Geometry2D::Intersects(Vec2{ 2, 3.0001 }, curve));
 	}
+
+	// 多項式係数が 1.0 より十分小さくても、曲線全体の相対スケールで解かれることを確認する。
+	{
+		const Bezier2 curve{ Vec2{ 0, 0 }, Vec2{ 5e-17, 0 }, Vec2{ 1e-16, 0 } };
+
+		CHECK(Geometry2D::Intersects(Vec2{ 5e-17, 0 }, curve));
+	}
+
+	{
+		const Bezier3 curve{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 1e-16, 0 } };
+
+		CHECK(Geometry2D::Intersects(Vec2{ 1.25e-17, 0 }, curve));
+	}
 }
 
 // 点と Rect / RectF は、境界を含み、all-zero は empty、片側ゼロは線分として扱うことを確認する。
@@ -1475,6 +1488,19 @@ TEST_CASE("Geometry2D.Intersects.Circle_CurvedAreaShapes")
 		CHECK(not Geometry2D::Intersects(outsideVerticalSegment, circle));
 		CHECK(Geometry2D::Intersects(circle, horizontalSegment));
 		CHECK(Geometry2D::Intersects(horizontalSegment, circle));
+	}
+
+	// 扁平な Ellipse の近傍で、角度 Newton 法が誤った端点へ clamp されるケースの regression。
+	{
+		const Ellipse ellipse{ Vec2{ 0, 0 }, 10.0, 1.0 };
+		const Vec2 center{ 8.776703201465617, 0.479473481158063 };
+		const Circle intersecting{ center, 0.0003 };
+		const Circle outside{ center, 0.0001 };
+
+		CHECK(Geometry2D::Intersects(intersecting, ellipse));
+		CHECK(Geometry2D::Intersects(ellipse, intersecting));
+		CHECK(not Geometry2D::Intersects(outside, ellipse));
+		CHECK(not Geometry2D::Intersects(ellipse, outside));
 	}
 
 	{

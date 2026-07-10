@@ -26,8 +26,10 @@ namespace s3d
 {
 	namespace
 	{
-		inline constexpr double BezierRootTolerance = (64.0 * 2.2204460492503131e-16);
-		inline constexpr double BezierPointTolerance = (64.0 * 2.2204460492503131e-16);
+		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
+		inline constexpr double BezierRootTolerance = (64.0 * DoubleEpsilon);
+		inline constexpr double BezierPointTolerance = (64.0 * DoubleEpsilon);
+		inline constexpr double EllipseDistanceRootTolerance = (16.0 * DoubleEpsilon);
 
 		[[nodiscard]]
 		constexpr bool NearlyEqualBezierCoordinate(const double a, const double b) noexcept
@@ -66,8 +68,18 @@ namespace s3d
 		[[nodiscard]]
 		bool CheckQuadraticRootsInUnitInterval(const double a, const double b, const double c, Fty&& callback)
 		{
-			const double scale = Max({ Abs(a), Abs(b), Abs(c), 1.0 });
-			const double coefficientTolerance = (BezierRootTolerance * scale);
+			// Normalize by the polynomial's own scale. Using a fixed 1.0 floor here
+			// incorrectly classifies valid small-scale polynomials as identically zero.
+			const double coefficientScale = Max({ Abs(a), Abs(b), Abs(c) });
+
+			if (coefficientScale == 0.0)
+			{
+				return false;
+			}
+
+			const double na = (a / coefficientScale);
+			const double nb = (b / coefficientScale);
+			const double nc = (c / coefficientScale);
 
 			auto CheckRoot = [&](double t)
 			{
@@ -80,19 +92,19 @@ namespace s3d
 				return false;
 			};
 
-			if (Abs(a) <= coefficientTolerance)
+			if (Abs(na) <= BezierRootTolerance)
 			{
-				if (Abs(b) <= coefficientTolerance)
+				if (Abs(nb) <= BezierRootTolerance)
 				{
 					return false;
 				}
 
-				return CheckRoot(-c / b);
+				return CheckRoot(-nc / nb);
 			}
 
-			const double discriminantScale = Max({ b * b, Abs(4.0 * a * c), 1.0 });
+			const double discriminantScale = (Abs(nb * nb) + Abs(4.0 * na * nc));
 			const double discriminantTolerance = (BezierRootTolerance * discriminantScale);
-			double discriminant = std::fma(b, b, -4.0 * a * c);
+			double discriminant = std::fma(nb, nb, -4.0 * na * nc);
 
 			if (discriminant < -discriminantTolerance)
 			{
@@ -108,37 +120,46 @@ namespace s3d
 
 			if (s == 0.0)
 			{
-				return CheckRoot(-b / (2.0 * a));
+				return CheckRoot(-nb / (2.0 * na));
 			}
 
-			const double q = (-0.5 * (b + ((b < 0.0) ? -s : s)));
+			const double q = (-0.5 * (nb + ((nb < 0.0) ? -s : s)));
 
 			if (q == 0.0)
 			{
-				return CheckRoot(-b / (2.0 * a));
+				return CheckRoot(-nb / (2.0 * na));
 			}
 
-			if (CheckRoot(q / a))
+			if (CheckRoot(q / na))
 			{
 				return true;
 			}
 
-			return CheckRoot(c / q);
+			return CheckRoot(nc / q);
 		}
 
 		template <class Fty>
 		[[nodiscard]]
 		bool CheckCubicRootsInUnitInterval(const double a, const double b, const double c, const double d, Fty&& callback)
 		{
-			const double scale = Max({ Abs(a), Abs(b), Abs(c), Abs(d), 1.0 });
-			const double coefficientTolerance = (BezierRootTolerance * scale);
+			const double coefficientScale = Max({ Abs(a), Abs(b), Abs(c), Abs(d) });
 
-			if (Abs(a) <= coefficientTolerance)
+			if (coefficientScale == 0.0)
 			{
-				return CheckQuadraticRootsInUnitInterval(b, c, d, callback);
+				return false;
 			}
 
-			const auto roots = Math::SolveCubicEquation(a, b, c, d);
+			const double na = (a / coefficientScale);
+			const double nb = (b / coefficientScale);
+			const double nc = (c / coefficientScale);
+			const double nd = (d / coefficientScale);
+
+			if (Abs(na) <= BezierRootTolerance)
+			{
+				return CheckQuadraticRootsInUnitInterval(nb, nc, nd, callback);
+			}
+
+			const auto roots = Math::SolveCubicEquation(na, nb, nc, nd);
 
 			for (const double t0 : roots)
 			{
@@ -1786,7 +1807,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		double DistanceSqPointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
+		double DistancePointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
 		{
 			const double ax = ellipse.axes.x;
 			const double by = ellipse.axes.y;
@@ -1803,39 +1824,84 @@ namespace s3d
 
 			if (y == 0.0)
 			{
-				const double dx = (x - ax);
-				return (dx * dx);
+				return (x - ax);
 			}
 
 			if (x == 0.0)
 			{
-				const double dy = (y - by);
-				return (dy * dy);
+				return (y - by);
 			}
 
-			double t = std::atan2((by * y), (ax * x));
+			// For an outside point, the closest ellipse point is obtained from the
+			// unique non-negative Lagrange multiplier lambda satisfying
+			//   (a*x/(lambda+a^2))^2 + (b*y/(lambda+b^2))^2 = 1.
+			// The left-hand side is strictly decreasing, so a bracketed Newton step
+			// cannot converge to the wrong stationary point as the angle-based
+			// unbracketed Newton iteration can.
+			const double scale = Max({ ax, by, x, y });
+			const double a = (ax / scale);
+			const double b = (by / scale);
+			const double px = (x / scale);
+			const double py = (y / scale);
+			const double aa = (a * a);
+			const double bb = (b * b);
 
-			for (int32 i = 0; i < 16; ++i)
+			double lower = 0.0;
+			double upper = 1.0;
+
+			const double ux0 = (px / a);
+			const double uy0 = (py / b);
+			const double f0 = ((ux0 * ux0) + (uy0 * uy0) - 1.0);
+			const double df0 = (-2.0 * (((ux0 * ux0) / aa) + ((uy0 * uy0) / bb)));
+			const double initialNewton = (-f0 / df0);
+			double lambda = (((0.0 < initialNewton) && (initialNewton < 1.0)) ? initialNewton : 0.5);
+
+			// With the normalization above, lambda = 1 is always outside the root:
+			// each squared term is at most 1/4. Newton from lambda = 0 gives a
+			// useful lower-side initial estimate, and every later step remains bracketed.
+			for (int32 i = 0; i < 64; ++i)
 			{
-				const double st = std::sin(t);
-				const double ct = std::cos(t);
-				const double f = (((by * by) - (ax * ax)) * st * ct + ax * x * st - by * y * ct);
-				const double df = (((by * by) - (ax * ax)) * (ct * ct - st * st) + ax * x * ct + by * y * st);
+				const double da = (lambda + aa);
+				const double db = (lambda + bb);
+				const double ux = ((a * px) / da);
+				const double uy = ((b * py) / db);
+				const double f = ((ux * ux) + (uy * uy) - 1.0);
 
-				if (df == 0.0)
+				if (Abs(f) <= EllipseDistanceRootTolerance)
 				{
+					lower = lambda;
+					upper = lambda;
 					break;
 				}
 
-				t = Clamp((t - (f / df)), 0.0, Math::HalfPi);
+				if (0.0 < f)
+				{
+					lower = lambda;
+				}
+				else
+				{
+					upper = lambda;
+				}
+
+				const double df = (-2.0 * (((ux * ux) / da) + ((uy * uy) / db)));
+				const double newton = (lambda - (f / df));
+
+				if ((lower < newton) && (newton < upper))
+				{
+					lambda = newton;
+				}
+				else
+				{
+					lambda = ((lower + upper) * 0.5);
+				}
 			}
 
-			const double cx = (ax * std::cos(t));
-			const double cy = (by * std::sin(t));
-			const double dx = (x - cx);
-			const double dy = (y - cy);
+			lambda = ((lower + upper) * 0.5);
 
-			return ((dx * dx) + (dy * dy));
+			const double closestX = ((aa * px) / (lambda + aa));
+			const double closestY = ((bb * py) / (lambda + bb));
+
+			return (scale * std::hypot((px - closestX), (py - closestY)));
 		}
 
 		template <class Fty>
@@ -1896,7 +1962,7 @@ namespace s3d
 				return false;
 			}
 
-			return (DistanceSqPointEllipse(circle.center, ellipse) <= (circle.r * circle.r));
+			return (DistancePointEllipse(circle.center, ellipse) <= circle.r);
 		}
 
 		[[nodiscard]]
