@@ -5824,6 +5824,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ClosestPoints2D.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DPointVectorFwd.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SignedDistance.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8911,6 +8917,9 @@
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_IntersectsAt.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SignedDistance.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
   </ItemGroup>

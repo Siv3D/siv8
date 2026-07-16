@@ -941,11 +941,13 @@
 # include <Siv3D/JitterSettings.hpp>
 
 # include <Siv3D/Geometry2D/PointContainment.hpp>
+# include <Siv3D/Geometry2D/ClosestPoints2D.hpp>
+# include <Siv3D/Geometry2D/Distance.hpp>
+# include <Siv3D/Geometry2D/SignedDistance.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/Overlaps.hpp>
-# include <Siv3D/Geometry2D/Contains.hpp> // ToDo
-# include <Siv3D/Geometry2D/IntersectsAt.hpp> // ToDo
-# include <Siv3D/Geometry2D/Distance.hpp> // ToDo
+# include <Siv3D/Geometry2D/Contains.hpp>
+# include <Siv3D/Geometry2D/IntersectsAt.hpp>
 # include <Siv3D/Geometry2D/Center.hpp> // ToDo
 # include <Siv3D/Geometry2D/ConvexHull.hpp>
 # include <Siv3D/Geometry2D/IsClockwise.hpp>

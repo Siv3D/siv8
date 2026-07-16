@@ -207,6 +207,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Distance.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DCommon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DCommon.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DPointVectorFwd.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IntersectsAt.hpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PointContainment.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PointContainment.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PoleOfInaccessibility.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SignedDistance.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Glyph.hpp" />
@@ -1700,6 +1702,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Misc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Overlaps.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_PoleOfInaccessibility.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SignedDistance.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SmallestEnclosingCircle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics2D\SivGraphics2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics\SivGraphics.cpp" />

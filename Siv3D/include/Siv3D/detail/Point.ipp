@@ -10,108 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
+# include "../Geometry2D/Geometry2DPointVectorFwd.hpp"
 
 namespace s3d
 {
-	namespace Geometry2D
-	{
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Point& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Line& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const LineString& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const Bezier2& b);
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const Bezier3& b);
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const RectF& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Circle& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Ellipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const Quad& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersects(const Point& a, const RoundRect& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const Polygon& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersects(const Point& a, const MultiPolygon& b) noexcept;
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Point& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Vec2& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Line& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const LineString& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Bezier2& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Bezier3& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Rect& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const RectF& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Circle& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Ellipse& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const SuperEllipse& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Triangle& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Quad& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const RoundRect& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const Polygon& b);
-
-		[[nodiscard]]
-		Optional<Array<Vec2>> IntersectsAt(const Point& a, const MultiPolygon& b);
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -698,6 +600,12 @@ namespace s3d
 	Float Point::distanceTo(const Vector2D<Float> p) const noexcept
 	{
 		return distanceFrom(p);
+	}
+
+	template <class Shape2DType>
+	double Point::distanceTo(const Shape2DType& other) const
+	{
+		return Geometry2D::Distance(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

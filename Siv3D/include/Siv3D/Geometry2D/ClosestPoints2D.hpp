@@ -17,7 +17,9 @@ namespace s3d
 	struct ClosestPoints2D
 	{
 		Vec2 pointA;
+		
 		Vec2 pointB;
+		
 		double distance = 0.0;
 	};
 }

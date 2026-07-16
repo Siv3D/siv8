@@ -1650,7 +1650,5 @@ namespace s3d
 
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const MultiPolygon& a, const MultiPolygon& b);
-
 	}
 }
-
