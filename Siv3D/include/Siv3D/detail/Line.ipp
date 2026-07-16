@@ -650,7 +650,7 @@ namespace s3d
 
 	inline uint64 Line::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(start.x, start.y, end.x, end.y);
 	}
 
 	////////////////////////////////////////////////////////////////

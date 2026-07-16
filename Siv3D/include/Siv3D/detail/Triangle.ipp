@@ -587,7 +587,7 @@ namespace s3d
 
 	inline uint64 Triangle::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
 	}
 
 	////////////////////////////////////////////////////////////////

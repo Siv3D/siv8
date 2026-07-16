@@ -444,7 +444,7 @@ namespace s3d
 
 	inline uint64 Circle::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(center.x, center.y, r);
 	}
 
 	////////////////////////////////////////////////////////////////

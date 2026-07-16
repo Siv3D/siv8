@@ -1042,7 +1042,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float>
 	uint64 Vector2D<Float>::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(x, y);
 	}
 
 	////////////////////////////////////////////////////////////////

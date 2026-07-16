@@ -468,7 +468,7 @@ namespace s3d
 
 	inline uint64 SuperEllipse::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(center.x, center.y, axes.x, axes.y, n);
 	}
 
 	////////////////////////////////////////////////////////////////

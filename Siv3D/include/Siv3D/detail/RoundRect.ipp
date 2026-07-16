@@ -739,7 +739,7 @@ namespace s3d
 
 	inline uint64 RoundRect::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, r);
 	}
 
 	////////////////////////////////////////////////////////////////

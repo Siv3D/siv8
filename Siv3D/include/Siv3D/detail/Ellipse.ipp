@@ -520,7 +520,7 @@ namespace s3d
 
 	inline uint64 Ellipse::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(center.x, center.y, axes.x, axes.y);
 	}
 
 	////////////////////////////////////////////////////////////////

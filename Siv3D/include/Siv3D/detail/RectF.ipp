@@ -1121,7 +1121,7 @@ namespace s3d
 
 	inline uint64 RectF::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(pos.x, pos.y, size.x, size.y);
 	}
 
 	////////////////////////////////////////////////////////////////
