@@ -602,12 +602,6 @@ namespace s3d
 		return distanceFrom(p);
 	}
 
-	template <class Shape2DType>
-	double Point::distanceTo(const Shape2DType& other) const
-	{
-		return Geometry2D::Distance(*this, other);
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	distanceToSq

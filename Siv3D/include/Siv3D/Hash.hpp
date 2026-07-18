@@ -12,7 +12,6 @@
 # pragma once
 # include <memory> // std::addressof
 # include <span>
-# include <array>
 # include "Types.hpp"
 # include "Concepts.hpp"
 # include "Byte.hpp"

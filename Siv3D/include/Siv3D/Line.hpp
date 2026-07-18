@@ -756,14 +756,6 @@ namespace s3d
 		[[nodiscard]]
 		double distanceTo(position_type pos) const noexcept;
 
-		/// @brief 別の図形との距離を返します。
-		/// @tparam Shape2DType 別の図形の型
-		/// @param other 別の図形
-		/// @return 別の図形との距離
-		template <class Shape2DType>
-		[[nodiscard]]
-		double distanceTo(const Shape2DType& other) const;
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	distanceToSq

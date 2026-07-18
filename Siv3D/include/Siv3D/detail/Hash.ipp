@@ -75,7 +75,7 @@ namespace s3d
 	{
 		using U = std::conditional_t<std::same_as<T, float>, uint32, uint64>;
 		// -0.0 を +0.0 に正規化
-		const std::array<U, 1 + sizeof...(Ts)> bits{
+		const U bits[1 + sizeof...(Ts)] = {
 			std::bit_cast<U>(x ? x : T{}),
 			std::bit_cast<U>(xs ? xs : T{})...
 		};

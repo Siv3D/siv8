@@ -30,7 +30,6 @@
     <ClCompile Include="..\Test\Test_Geometry2D.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Distance.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Distance_Availability.cpp" />
-    <ClCompile Include="..\Test\Test_Geometry2D_Distance_MemberAvailability.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Distance_Symmetry.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_IntersectsAt.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_IntersectsAt_Availability.cpp" />

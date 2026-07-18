@@ -619,20 +619,6 @@ namespace s3d
 		return distanceFrom(v.x, v.y);
 	}
 
-	template <Concept::FloatingPoint Float>
-	template <class Shape2DType>
-	double Vector2D<Float>::distanceTo(const Shape2DType& other) const
-	{
-		if constexpr (std::is_same_v<value_type, double>)
-		{
-			return Geometry2D::Distance(*this, other);
-		}
-		else
-		{
-			return Geometry2D::Distance(Vector2D<double>{ *this }, other);
-		}
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	distanceToSq
