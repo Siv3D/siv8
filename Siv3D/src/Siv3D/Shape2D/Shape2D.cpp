@@ -928,7 +928,7 @@ namespace s3d
 	{
 		const Vec2 cursorPos = Cursor::PosF();
 
-		if (not Geometry2D::Intersect(this->boundingRect(), cursorPos))
+		if (not Geometry2D::Intersects(cursorPos, this->boundingRect()))
 		{
 			return false;
 		}

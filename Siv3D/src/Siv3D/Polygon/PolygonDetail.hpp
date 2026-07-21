@@ -20,6 +20,22 @@ namespace s3d
 		Polygon ToPolygon(const CwOpenPolygon& polygon);
 	}
 
+	struct PolygonData
+	{
+		// 外周の頂点配列（時計回り）
+		Array<Vec2> outer;
+
+		// 穴を構成する頂点配列（反時計回り）の配列
+		Array<Array<Vec2>> inners;
+	};
+
+	struct PolygonCentroidResult
+	{
+		Vec2 centroid;
+		
+		double area;
+	};
+
 	class Polygon::PolygonDetail
 	{
 	public:
@@ -73,7 +89,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		PolygonHolesView inners() const noexcept;
+		const Array<Array<Vec2>>& inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -101,15 +117,6 @@ namespace s3d
 
 		[[nodiscard]]
 		const RectF& boundingRect() const noexcept;
-
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getBoostPolygon
-		//
-		////////////////////////////////////////////////////////////////
-
-		const CwOpenPolygon& getBoostPolygon() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -180,7 +187,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Vec2 centroid() const;
+		Optional<PolygonCentroidResult> centroid() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -230,41 +237,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	intersects
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		bool intersects(const Vec2& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Line& other) const;
-
-		[[nodiscard]]
-		bool intersects(const RectF& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Circle& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Ellipse& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Triangle& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Quad& other) const;
-
-		[[nodiscard]]
-		bool intersects(const PolygonDetail& other) const;
-
-
-
-
-
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	draw
 		//
 		////////////////////////////////////////////////////////////////
@@ -305,6 +277,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	toCwOpenPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		CwOpenPolygon toCwOpenPolygon() const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Validate
 		//
 		////////////////////////////////////////////////////////////////
@@ -323,7 +303,7 @@ namespace s3d
 
 	private:
 
-		CwOpenPolygon m_polygon;
+		PolygonData m_polygon;
 
 		Array<Float2> m_vertices;
 

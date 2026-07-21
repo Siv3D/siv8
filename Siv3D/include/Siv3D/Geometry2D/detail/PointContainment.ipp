@@ -87,9 +87,9 @@ namespace s3d
 			if constexpr (Boundary == BoundaryPolicy::Excluded)
 			{
 				// 境界上 ⇔ 実辺(ゼロ長でない辺)の支持直線上
-				const bool onBoundary = (((c0 == 0.0) & IsDistinct(p0, p1))
-					| ((c1 == 0.0) & IsDistinct(p1, p2))
-					| ((c2 == 0.0) & IsDistinct(p2, p0)));
+				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
+					| static_cast<unsigned>((c1 == 0.0) & IsDistinct(p1, p2))
+					| static_cast<unsigned>((c2 == 0.0) & IsDistinct(p2, p0)));
 
 				// 内部 ⇔ 非縮退(正の cross が存在)かつ境界上でない
 				return (hasPositive && (not onBoundary));
@@ -129,10 +129,10 @@ namespace s3d
 
 			if constexpr (Boundary == BoundaryPolicy::Excluded)
 			{
-				const bool onBoundary = (((c0 == 0.0) & IsDistinct(p0, p1))
-					| ((c1 == 0.0) & IsDistinct(p1, p2))
-					| ((c2 == 0.0) & IsDistinct(p2, p3))
-					| ((c3 == 0.0) & IsDistinct(p3, p0)));
+				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
+					| static_cast<unsigned>((c1 == 0.0) & IsDistinct(p1, p2))
+					| static_cast<unsigned>((c2 == 0.0) & IsDistinct(p2, p3))
+					| static_cast<unsigned>((c3 == 0.0) & IsDistinct(p3, p0)));
 
 				return (hasPositive && (not onBoundary));
 			}
@@ -173,9 +173,9 @@ namespace s3d
 			if constexpr (Boundary == BoundaryPolicy::Excluded)
 			{
 				// 境界上 ⇔ 実辺(ゼロ長でない辺)の支持直線上
-				const bool onBoundary = (((c0 == 0.0) & IsDistinct(p0, p1))
-					| ((c1 == 0.0) & IsDistinct(p1, p2))
-					| ((c2 == 0.0) & IsDistinct(p2, p0)));
+				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
+					| static_cast<unsigned>((c1 == 0.0) & IsDistinct(p1, p2))
+					| static_cast<unsigned>((c2 == 0.0) & IsDistinct(p2, p0)));
 
 				// 内部 ⇔ 非縮退(いずれかの符号が存在)かつ境界上でない
 				return ((hasPositive | hasNegative) && (not onBoundary));
@@ -214,10 +214,10 @@ namespace s3d
 
 			if constexpr (Boundary == BoundaryPolicy::Excluded)
 			{
-				const bool onBoundary = (((c0 == 0.0) & IsDistinct(p0, p1))
-					| ((c1 == 0.0) & IsDistinct(p1, p2))
-					| ((c2 == 0.0) & IsDistinct(p2, p3))
-					| ((c3 == 0.0) & IsDistinct(p3, p0)));
+				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
+					| static_cast<unsigned>((c1 == 0.0) & IsDistinct(p1, p2))
+					| static_cast<unsigned>((c2 == 0.0) & IsDistinct(p2, p3))
+					| static_cast<unsigned>((c3 == 0.0) & IsDistinct(p3, p0)));
 
 				return ((hasPositive | hasNegative) && (not onBoundary));
 			}

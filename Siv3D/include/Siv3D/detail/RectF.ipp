@@ -1121,7 +1121,7 @@ namespace s3d
 
 	inline uint64 RectF::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(pos.x, pos.y, size.x, size.y);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1133,7 +1133,19 @@ namespace s3d
 	template <class Shape2DType>
 	constexpr bool RectF::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool RectF::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1146,6 +1158,18 @@ namespace s3d
 	constexpr bool RectF::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> RectF::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -17,6 +17,7 @@
 # include "2DShapesFwd.hpp"
 # include "Utility.hpp"
 # include "MinMax.hpp"
+# include "Array.hpp"
 # include "CommonFloat.hpp"
 # include "MathConstants.hpp"
 # include "FormatLiteral.hpp"
@@ -929,6 +930,20 @@ namespace s3d
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//

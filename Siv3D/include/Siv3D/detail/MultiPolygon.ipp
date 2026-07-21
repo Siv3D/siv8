@@ -15,6 +15,31 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon::MultiPolygon(const container_type& other)
+		: m_polygons(other) {}
+
+	inline MultiPolygon::MultiPolygon(container_type&& other)
+		: m_polygons(std::move(other)) {}
+
+	inline MultiPolygon::MultiPolygon(size_type count)
+		: m_polygons(count) {}
+
+	template <std::input_iterator Iterator>
+	MultiPolygon::MultiPolygon(Iterator first, Iterator last)
+		: m_polygons(first, last) {}
+
+	inline MultiPolygon::MultiPolygon(std::initializer_list<value_type> init)
+		: m_polygons(init) {}
+
+	inline MultiPolygon::MultiPolygon(Arg::reserve_<size_type> size)
+		: m_polygons(size) {}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	operator =
 	//
 	////////////////////////////////////////////////////////////////
@@ -43,9 +68,85 @@ namespace s3d
 		return *this;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	assign
+	//
+	////////////////////////////////////////////////////////////////
 
+	template <std::input_iterator Iterator>
+	MultiPolygon& MultiPolygon::assign(Iterator first, Iterator last)
+	{
+		m_polygons.assign(first, last);
+		return *this;
+	}
 
+	inline MultiPolygon& MultiPolygon::assign(std::initializer_list<value_type> list)
+	{
+		m_polygons.assign(list);
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	assign_range
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::ContainerCompatibleRange<Polygon> Range>
+	MultiPolygon& MultiPolygon::assign_range(Range&& range)
+	{
+		m_polygons.assign_range(std::forward<Range>(range));
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	get_allocator
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon::allocator_type MultiPolygon::get_allocator() const noexcept
+	{
+		return m_polygons.get_allocator();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	asArray
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon::container_type& MultiPolygon::asArray() const& noexcept
+	{
+		return m_polygons;
+	}
+
+	inline MultiPolygon::container_type MultiPolygon::asArray() && noexcept
+	{
+		return std::move(m_polygons);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	at
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon::value_type& MultiPolygon::at(const size_type index) const&
+	{
+		return m_polygons.at(index);
+	}
+
+	inline MultiPolygon::value_type& MultiPolygon::at(const size_type index)&
+	{
+		return m_polygons.at(index);
+	}
+
+	inline MultiPolygon::value_type MultiPolygon::at(const size_type index)&&
+	{
+		return std::move(m_polygons.at(index));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -210,7 +311,49 @@ namespace s3d
 		return m_polygons.crend();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	empty
+	//
+	////////////////////////////////////////////////////////////////
 
+	inline bool MultiPolygon::empty() const noexcept
+	{
+		return m_polygons.empty();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline bool MultiPolygon::isEmpty() const noexcept
+	{
+		return m_polygons.empty();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	indexInBounds
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline bool MultiPolygon::indexInBounds(const size_type index) const noexcept
+	{
+		return (index < m_polygons.size());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator bool
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon::operator bool() const noexcept
+	{
+		return (not m_polygons.empty());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -223,10 +366,121 @@ namespace s3d
 		return m_polygons.size();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	ssize
+	//
+	////////////////////////////////////////////////////////////////
 
+	inline isize MultiPolygon::ssize() const noexcept
+	{
+		return m_polygons.ssize();
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	max_size
+	//
+	////////////////////////////////////////////////////////////////
 
+	inline size_t MultiPolygon::max_size() const noexcept
+	{
+		return m_polygons.max_size();
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	reserve
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::reserve(const size_type newCapacity)
+	{
+		m_polygons.reserve(newCapacity);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	capacity
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline size_t MultiPolygon::capacity() const noexcept
+	{
+		return m_polygons.capacity();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shrink_to_fit
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::shrink_to_fit()
+	{
+		m_polygons.shrink_to_fit();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clear
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::clear() noexcept
+	{
+		m_polygons.clear();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	release
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::release()
+	{
+		m_polygons.release();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	insert
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, const value_type& value)
+	{
+		return m_polygons.insert(pos, value);
+	}
+
+	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, const size_type count, const value_type& value)
+	{
+		return m_polygons.insert(pos, count, value);
+	}
+
+	template <std::input_iterator Iterator>
+	MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, Iterator first, Iterator last)
+	{
+		return m_polygons.insert(pos, first, last);
+	}
+
+	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, std::initializer_list<value_type> list)
+	{
+		return m_polygons.insert(pos, list);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	emplace
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class... Args>
+	MultiPolygon::iterator MultiPolygon::emplace(const_iterator pos, Args&&... args)
+	{
+		return m_polygons.emplace(pos, std::forward<Args>(args)...);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -238,5 +492,220 @@ namespace s3d
 	void MultiPolygon::append_range(Range&& range)
 	{
 		m_polygons.append_range(std::forward<Range>(range));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon::iterator MultiPolygon::erase(const_iterator pos)
+	{
+		return m_polygons.erase(pos);
+	}
+
+	inline MultiPolygon::iterator MultiPolygon::erase(const_iterator first, const_iterator last)
+	{
+		return m_polygons.erase(first, last);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	push_back
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::push_back(const value_type& value)
+	{
+		m_polygons.push_back(value);
+	}
+
+	inline void MultiPolygon::push_back(value_type&& value)
+	{
+		m_polygons.push_back(std::move(value));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	emplace_back
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class... Args>
+	MultiPolygon::reference MultiPolygon::emplace_back(Args&&... args)
+	{
+		return m_polygons.emplace_back(std::forward<Args>(args)...);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pop_back
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::pop_back()
+	{
+		m_polygons.pop_back();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	resize
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::resize(const size_type newSize)
+	{
+		m_polygons.resize(newSize);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	swap
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::swap(MultiPolygon& other) noexcept
+	{
+		m_polygons.swap(other.m_polygons);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	push_front
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::push_front(const value_type& value)
+	{
+		m_polygons.push_front(value);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	emplace_front
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class... Args>
+	MultiPolygon::reference MultiPolygon::emplace_front(Args&&... args)
+	{
+		return m_polygons.emplace_front(std::forward<Args>(args)...);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pop_front
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::pop_front()
+	{
+		m_polygons.pop_front();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pop_front_N
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::pop_front_N(const size_type count)
+	{
+		m_polygons.pop_front_N(count);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	pop_back_N
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::pop_back_N(const size_type count)
+	{
+		m_polygons.pop_back_N(count);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator <<
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon& MultiPolygon::operator <<(const value_type& value)
+	{
+		m_polygons.push_back(value);
+		return *this;
+	}
+
+	inline MultiPolygon& MultiPolygon::operator <<(value_type&& value)
+	{
+		m_polygons.push_back(std::move(value));
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	subspan
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline std::span<MultiPolygon::value_type> MultiPolygon::subspan(const size_type offset, const size_type count) noexcept
+	{
+		return m_polygons.subspan(offset, count);
+	}
+
+	inline std::span<const MultiPolygon::value_type> MultiPolygon::subspan(const size_type offset, const size_type count) const noexcept
+	{
+		return m_polygons.subspan(offset, count);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersects
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool MultiPolygon::intersects(const Shape2DType& other) const
+	{
+		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool MultiPolygon::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool MultiPolygon::contains(const Shape2DType& other) const
+	{
+		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> MultiPolygon::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 }

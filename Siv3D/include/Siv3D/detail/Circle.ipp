@@ -330,6 +330,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool Circle::isEmpty() const noexcept
+	{
+		return (r == 0.0);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	hasArea
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr bool Circle::hasArea() const noexcept
+	{
+		return (r != 0.0);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	top, right, bottom, left
 	//
 	////////////////////////////////////////////////////////////////
@@ -422,7 +444,7 @@ namespace s3d
 
 	inline uint64 Circle::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(center.x, center.y, r);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -434,7 +456,19 @@ namespace s3d
 	template <class Shape2DType>
 	constexpr bool Circle::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool Circle::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -447,5 +481,17 @@ namespace s3d
 	constexpr bool Circle::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Circle::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 }

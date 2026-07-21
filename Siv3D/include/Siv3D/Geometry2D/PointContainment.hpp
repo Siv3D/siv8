@@ -162,4 +162,4 @@ namespace s3d
 	}
 }
 
-#include "PointContainment.ipp"
+#include "detail/PointContainment.ipp"

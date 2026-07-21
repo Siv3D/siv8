@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/MultiPolygon.hpp>
+# include <Siv3D/Polygon/PolygonDetail.hpp>
 
 namespace s3d
 {
@@ -393,5 +394,83 @@ namespace s3d
 		}
 		
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	area
+	//
+	////////////////////////////////////////////////////////////////
+
+	double MultiPolygon::area() const noexcept
+	{
+		KahanSummation<double> totalArea;
+
+		for (const auto& polygon : m_polygons)
+		{
+			totalArea += polygon.area();
+		}
+
+		return totalArea.value();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	perimeter
+	//
+	////////////////////////////////////////////////////////////////
+
+	double MultiPolygon::perimeter() const noexcept
+	{
+		KahanSummation<double> totalPerimeter;
+
+		for (const auto& polygon : m_polygons)
+		{
+			totalPerimeter += polygon.perimeter();
+		}
+
+		return totalPerimeter.value();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	centroid
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Vec2> MultiPolygon::centroid() const noexcept
+	{
+		Optional<Vec2> reference;
+		KahanSummation<double> totalArea;
+		KahanSummation<double> weightedX;
+		KahanSummation<double> weightedY;
+
+		for (const auto& polygon : m_polygons)
+		{
+			const auto result = polygon._detail()->centroid();
+
+			if (not result)
+			{
+				continue;
+			}
+
+			if (not reference)
+			{
+				reference = result->centroid;
+			}
+
+			totalArea += result->area;
+			weightedX += ((result->centroid.x - reference->x) * result->area);
+			weightedY += ((result->centroid.y - reference->y) * result->area);
+		}
+
+		const double area = totalArea.value();
+
+		if ((not reference) || (area == 0.0))
+		{
+			return none;
+		}
+
+		return Vec2{ (reference->x + (weightedX.value() / area)), (reference->y + (weightedY.value() / area)) };
 	}
 }

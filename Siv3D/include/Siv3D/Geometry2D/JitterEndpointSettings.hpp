@@ -10,7 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
-# include "Common.hpp"
+# include "../Common.hpp"
+# include "JitterEndpointMode.hpp"
 
 namespace s3d
 {

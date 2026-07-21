@@ -1297,11 +1297,20 @@ namespace s3d
 	template <class Shape2DType>
 	constexpr bool Rect::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
 
-
+	template <class Shape2DType>
+	constexpr bool Rect::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1315,10 +1324,17 @@ namespace s3d
 		return Geometry2D::Contains(*this, other);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
 
-
-
-
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Rect::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

@@ -19,7 +19,6 @@
 # include "PolygonFailureType.hpp"
 # include "QualityFactor.hpp"
 # include "PredefinedYesNo.hpp"
-# include "PolygonHolesView.hpp"
 
 namespace s3d
 {
@@ -156,7 +155,7 @@ namespace s3d
 		/// @brief 多角形を作成します。
 		/// @param shape 2D 形状
 		[[nodiscard]]
-		Polygon(const Shape2D& shape);
+		explicit Polygon(const Shape2D& shape);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -257,7 +256,7 @@ namespace s3d
 		/// @brief 多角形の穴を構成する頂点配列を返します。
 		/// @return 多角形の穴を構成する頂点配列
 		[[nodiscard]]
-		PolygonHolesView inners() const noexcept;
+		const Array<Array<Vec2>>& inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -769,9 +768,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の重心の座標を返します。
-		/// @return 多角形の重心の座標、多角形が空の場合は `Vec2{ 0, 0 }`
+		/// @return 多角形の重心の座標、面積を持たない場合は none
 		[[nodiscard]]
-		Vec2 centroid() const;
+		Optional<Vec2> centroid() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -868,71 +867,21 @@ namespace s3d
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
-		bool intersects(const Shape2DType& other) const;
-
-		/// @brief 点と交差しているかを返します。
-		/// @param other 点
-		/// @return 点と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Vec2& other) const;
-
-		/// @brief 線分と交差しているかを返します。
-		/// @param other 線分
-		/// @return 線分と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Line& other) const;
-
-		/// @brief 長方形と交差しているかを返します。
-		/// @param other 長方形
-		/// @return 長方形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Rect& other) const;
-
-		/// @brief 長方形と交差しているかを返します。
-		/// @param other 長方形
-		/// @return 長方形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const RectF& other) const;
-
-		/// @brief 円と交差しているかを返します。
-		/// @param other 円
-		/// @return 円と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Circle& other) const;
-
-		/// @brief 楕円と交差しているかを返します。
-		/// @param other 楕円
-		/// @return 楕円と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Ellipse& other) const;
-
-		/// @brief 三角形と交差しているかを返します。
-		/// @param other 三角形
-		/// @return 三角形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Triangle& other) const;
-
-		/// @brief 四角形と交差しているかを返します。
-		/// @param other 四角形
-		/// @return 四角形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Quad& other) const;
-
-		/// @brief 多角形と交差しているかを返します。
-		/// @param other 多角形
-		/// @return 多角形と交差している場合 true, それ以外の場合は false
-		[[nodiscard]]
-		bool intersects(const Polygon& other) const;
+		constexpr bool intersects(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	intersectsAt
+		//	overlaps
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+		/// @brief 別の図形と交差する領域が面積を持つかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool overlaps(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -946,7 +895,21 @@ namespace s3d
 		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
-		bool contains(const Shape2DType& other) const;
+		constexpr bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1345,6 +1308,8 @@ namespace s3d
 		friend void Formatter(FormatData& formatData, const Polygon& value);
 
 	private:
+
+		bool addHoleCCW(Array<Vec2> hole);
 
 		[[noreturn]]
 		static void ThrowTriangleAtIndexOutOfRange();

@@ -74,4 +74,4 @@ namespace s3d
 	}
 }
 
-# include "SmallestEnclosingCircle.ipp"
+# include "detail/SmallestEnclosingCircle.ipp"

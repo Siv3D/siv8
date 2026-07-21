@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -10,16 +10,18 @@
 //-----------------------------------------------
 
 # pragma once
+# include "PointVector.hpp"
 
 namespace s3d
 {
-	namespace Geometry2D
+	struct RaycastHit2D
 	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	Center
-		//
-		////////////////////////////////////////////////////////////////
-
-	}
+		Vec2 position{ 0.0, 0.0 };
+		
+		Vec2 normal{ 0.0, 0.0 };
+		
+		double distance = 0.0;
+		
+		bool startsInside = false;
+	};
 }

@@ -861,27 +861,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の線分との交点を返します。
-		/// @param other 別の線分
-		/// @return 交差しない場合は none, 交差する場合はその座標、2 つの線分が重なっている場合 (QNaN, QNaN)
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
 		[[nodiscard]]
-		Optional<position_type> intersectsAt(const Line& other) const;
-
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	intersectsAtCanonical
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 別の線分 other との交点を返します。線分の向きと呼び出し順を正規化してから、intersectsAt() に渡します。
-		/// @param other 別の線分
-		/// @return 交差しない場合は none, 交差する場合はその座標、2 つの線分が重なっている場合 (QNaN, QNaN)
-		[[nodiscard]]
-		Optional<position_type> intersectsAtCanonical(const Line& other) const;
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -689,6 +689,7 @@
 // 素数判定 | Primality test
 # include <Siv3D/IsPrime.hpp>
 
+# include <Siv3D/PolynomialRoots.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 
 ////////////////////////////////////////////////////////////////
@@ -930,27 +931,32 @@
 // 2D 形状コレクション | 2D shapes collection
 # include <Siv3D/Shape2D.hpp>
 
-//// 2D 描画バッファ | Native 2D drawing buffer
-//# include <Siv3D/Buffer2D.hpp>
+//# include <Siv3D/Mesh2D.hpp>
+
+# include <Siv3D/Ray2D.hpp>
+
+# include <Siv3D/RaycastHit2D.hpp>
 
 // 2D 幾何 | 2D geometry processing
-
-# include <Siv3D/JitterEndpointMode.hpp>
-# include <Siv3D/JitterEndpointSettings.hpp>
-# include <Siv3D/JitterSettings.hpp>
-
-# include <Siv3D/Geometry2D/PointContainment.hpp>
-# include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
-# include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
-# include <Siv3D/Geometry2D/Distance.hpp> // ToDo
-# include <Siv3D/Geometry2D/Center.hpp> // ToDo
-# include <Siv3D/Geometry2D/Contains.hpp> // ToDo
+# include <Siv3D/Geometry2D/BoundingRect.hpp>
+# include <Siv3D/Geometry2D/ClosestPoints2D.hpp>
+# include <Siv3D/Geometry2D/Contains.hpp>
 # include <Siv3D/Geometry2D/ConvexHull.hpp>
+# include <Siv3D/Geometry2D/Distance.hpp>
+# include <Siv3D/Geometry2D/Intersects.hpp>
+# include <Siv3D/Geometry2D/IntersectsAt.hpp>
 # include <Siv3D/Geometry2D/IsClockwise.hpp>
-# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
-# include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
-# include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 # include <Siv3D/Geometry2D/Jitter.hpp>
+# include <Siv3D/Geometry2D/JitterEndpointMode.hpp>
+# include <Siv3D/Geometry2D/JitterEndpointSettings.hpp>
+# include <Siv3D/Geometry2D/JitterSettings.hpp>
+# include <Siv3D/Geometry2D/Misc.hpp>
+# include <Siv3D/Geometry2D/PointContainment.hpp>
+# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
+# include <Siv3D/Geometry2D/Raycast.hpp>
+# include <Siv3D/Geometry2D/SignedDistance.hpp>
+# include <Siv3D/Geometry2D/Overlaps.hpp>
+# include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
 
 // 長方形詰込み | Rectangle packing
 # include <Siv3D/RectanglePack.hpp>

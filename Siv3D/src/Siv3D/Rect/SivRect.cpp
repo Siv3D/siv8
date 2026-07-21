@@ -429,7 +429,9 @@ namespace s3d
 
 	bool Rect::mouseOver() const noexcept
 	{
-		return Geometry2D::Intersect(Cursor::PosF(), *this);
+		const Vec2 cursorPos = Cursor::PosF();
+		return ((pos.x <= cursorPos.x) && (cursorPos.x < (pos.x + size.x))
+			&& (pos.y <= cursorPos.y) && (cursorPos.y < (pos.y + size.y)));
 	}
 
 	////////////////////////////////////////////////////////////////

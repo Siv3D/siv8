@@ -1,4 +1,4 @@
-﻿//-----------------------------------------------
+//-----------------------------------------------
 //
 //	This file is part of the Siv3D Engine.
 //
@@ -11,8 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
-# include "Optional.hpp"
-# include "Array.hpp"
+# include "PolynomialRoots.hpp"
 
 namespace s3d
 {
@@ -27,9 +26,10 @@ namespace s3d
 		/// @brief 1 次方程式 ax + b = 0 の実数解を求めます。
 		/// @param a x の係数 a です。
 		/// @param b 定数項 b です。
-		/// @return 実数解が存在する場合は昇順に並んだ解の配列を返します。解が存在しない場合は none を返します。
+		/// @return 昇順に並んだ有限実数解を返します。実数解が存在しない場合は count が 0 です。恒等式の場合は hasInfiniteSolutions が true です。
+		/// @remark 極端な係数比では、実行時の実用性を優先して解を返さない場合があります。
 		[[nodiscard]]
-		Optional<Array<double>> SolveLinearEquation(double a, double b);
+		PolynomialRoots SolveLinearEquation(double a, double b);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -41,9 +41,11 @@ namespace s3d
 		/// @param a x^2 の係数 a です。
 		/// @param b x の係数 b です。
 		/// @param c 定数項 c です。
-		/// @return 実数解が存在する場合は重複を除き昇順に並んだ解の配列を返します。実数解が存在しない場合は none を返します。
+		/// @return 数値的に近い重複解を除き、昇順に並んだ有限実数解を返します。実数解が存在しない場合は count が 0 です。恒等式の場合は hasInfiniteSolutions が true です。
+		/// @remark 0 近傍では実用上の絶対許容誤差により、非常に近い別解が 1 つにマージされる場合があります。
+		/// @remark 極端な係数比では、実行時の実用性を優先して表現可能な有限実数解のみを返します。
 		[[nodiscard]]
-		Optional<Array<double>> SolveQuadraticEquation(double a, double b, double c);
+		PolynomialRoots SolveQuadraticEquation(double a, double b, double c);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -54,25 +56,32 @@ namespace s3d
 		/// @brief 3 次方程式 x^3 + px + q = 0 の実数解を求めます。
 		/// @param p x の係数 p です。
 		/// @param q 定数項 q です。
-		/// @return 実数解が存在する場合は重複を除き昇順に並んだ解の配列を返します。実数解が存在しない場合は none を返します。
+		/// @return 数値的に近い重複解を除き、昇順に並んだ有限実数解を返します。
+		/// @remark 0 近傍では実用上の絶対許容誤差により、非常に近い別解が 1 つにマージされる場合があります。
+		/// @remark 極端な係数比では、実行時の実用性を優先して表現可能な有限実数解のみを返します。
 		[[nodiscard]]
-		Optional<Array<double>> SolveCubicEquation(double p, double q);
+		PolynomialRoots SolveCubicEquation(double p, double q);
 
 		/// @brief 3 次方程式 x^3 + ax^2 + bx + c = 0 の実数解を求めます。
 		/// @param a x^2 の係数 a です。
 		/// @param b x の係数 b です。
 		/// @param c 定数項 c です。
-		/// @return 実数解が存在する場合は重複を除き昇順に並んだ解の配列を返します。実数解が存在しない場合は none を返します。
+		/// @return 数値的に近い重複解を除き、昇順に並んだ有限実数解を返します。
+		/// @remark 0 近傍では実用上の絶対許容誤差により、非常に近い別解が 1 つにマージされる場合があります。
+		/// @remark 極端な係数比では、実行時の実用性を優先して表現可能な有限実数解のみを返します。
 		[[nodiscard]]
-		Optional<Array<double>> SolveCubicEquation(double a, double b, double c);
+		PolynomialRoots SolveCubicEquation(double a, double b, double c);
 
 		/// @brief 3 次方程式 ax^3 + bx^2 + cx + d = 0 の実数解を求めます。
 		/// @param a x^3 の係数 a です。
 		/// @param b x^2 の係数 b です。
 		/// @param c x の係数 c です。
 		/// @param d 定数項 d です。
-		/// @return 実数解が存在する場合は重複を除き昇順に並んだ解の配列を返します。実数解が存在しない場合は none を返します。
+		/// @return 数値的に近い重複解を除き、昇順に並んだ有限実数解を返します。実数解が存在しない場合は count が 0 です。恒等式の場合は hasInfiniteSolutions が true です。
+		/// @remark 0 近傍では実用上の絶対許容誤差により、非常に近い別解が 1 つにマージされる場合があります。
+		/// @remark 極端に小さい最高次係数は、実行時の実用性を優先して低次方程式として扱う場合があります。
+		/// @remark 極端な係数比では、実行時の実用性を優先して表現可能な有限実数解のみを返します。
 		[[nodiscard]]
-		Optional<Array<double>> SolveCubicEquation(double a, double b, double c, double d);
+		PolynomialRoots SolveCubicEquation(double a, double b, double c, double d);
 	}
 }
