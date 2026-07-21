@@ -29,6 +29,13 @@ namespace s3d
 		Array<Array<Vec2>> inners;
 	};
 
+	struct PolygonCentroidResult
+	{
+		Vec2 centroid;
+		
+		double area;
+	};
+
 	class Polygon::PolygonDetail
 	{
 	public:
@@ -180,7 +187,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		Vec2 centroid() const;
+		Optional<PolygonCentroidResult> centroid() const;
 
 		////////////////////////////////////////////////////////////////
 		//

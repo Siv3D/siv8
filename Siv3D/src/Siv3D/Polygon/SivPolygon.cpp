@@ -721,9 +721,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 Polygon::centroid() const
+	Optional<Vec2> Polygon::centroid() const noexcept
 	{
-		return pImpl->centroid();
+		if (const auto result = pImpl->centroid())
+		{
+			return result->centroid;
+		}
+
+		return none;
 	}
 
 	////////////////////////////////////////////////////////////////

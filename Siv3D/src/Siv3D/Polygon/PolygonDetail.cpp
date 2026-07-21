@@ -209,7 +209,11 @@ namespace s3d
 		[[nodiscard]]
 		static constexpr double TriangleArea2x(const Float2& p0, const Float2& p1, const Float2& p2) noexcept
 		{
-			return Abs((p0.x - p2.x) * (p1.y - p0.y) - (p0.x - p1.x) * (p2.y - p0.y));
+			const double ax = (static_cast<double>(p1.x) - static_cast<double>(p0.x));
+			const double ay = (static_cast<double>(p1.y) - static_cast<double>(p0.y));
+			const double bx = (static_cast<double>(p2.x) - static_cast<double>(p0.x));
+			const double by = (static_cast<double>(p2.y) - static_cast<double>(p0.y));
+			return Abs((ax * by) - (ay * bx));
 		}
 	}
 
@@ -742,15 +746,15 @@ namespace s3d
 		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
 		const Float2* pVertex = m_vertices.data();
 
-		double result = 0.0;
+		KahanSummation<double> area2x;
 
 		while (pIndex != pIndexEnd)
 		{
-			result += TriangleArea2x(pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2]);
+			area2x += TriangleArea2x(pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2]);
 			++pIndex;
 		}
 
-		return (result * 0.5);
+		return (area2x.value() * 0.5);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -761,7 +765,7 @@ namespace s3d
 
 	double Polygon::PolygonDetail::perimeter() const noexcept
 	{
-		double result = 0.0;
+		KahanSummation<double> result;
 
 		// 外周の長さ
 		{
@@ -796,7 +800,7 @@ namespace s3d
 			}
 		}
 
-		return result;
+		return result.value();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -805,18 +809,61 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Vec2 Polygon::PolygonDetail::centroid() const
+	Optional<PolygonCentroidResult> Polygon::PolygonDetail::centroid() const
 	{
-		if (outer().isEmpty())
+		if (m_indices.empty())
 		{
-			return{ 0, 0 };
+			return none;
 		}
 
-		Vec2 centroid;
+		const Float2* const pVertex = m_vertices.data();
 
-		boost::geometry::centroid(toCwOpenPolygon(), centroid);
+		const Float2& referenceVertex = pVertex[m_indices.front().i0];
+		const double referenceX = static_cast<double>(referenceVertex.x);
+		const double referenceY = static_cast<double>(referenceVertex.y);
 
-		return centroid;
+		KahanSummation<double> totalArea2x;
+		KahanSummation<double> weightedX;
+		KahanSummation<double> weightedY;
+
+		for (const TriangleIndex& index : m_indices)
+		{
+			const Float2& p0 = pVertex[index.i0];
+			const Float2& p1 = pVertex[index.i1];
+			const Float2& p2 = pVertex[index.i2];
+
+			const double area2x = TriangleArea2x(p0, p1, p2);
+
+			if (area2x == 0.0)
+			{
+				continue;
+			}
+
+			const double x0 = (static_cast<double>(p0.x) - referenceX);
+			const double y0 = (static_cast<double>(p0.y) - referenceY);
+			const double x1 = (static_cast<double>(p1.x) - referenceX);
+			const double y1 = (static_cast<double>(p1.y) - referenceY);
+			const double x2 = (static_cast<double>(p2.x) - referenceX);
+			const double y2 = (static_cast<double>(p2.y) - referenceY);
+
+			totalArea2x += area2x;
+			weightedX += (area2x * (x0 + x1 + x2));
+			weightedY += (area2x * (y0 + y1 + y2));
+		}
+
+		const double area2x = totalArea2x.value();
+
+		if (area2x == 0.0)
+		{
+			return none;
+		}
+
+		const double denominator = (3.0 * area2x);
+
+		return PolygonCentroidResult{
+			.centroid = { (referenceX + (weightedX.value() / denominator)), (referenceY + (weightedY.value() / denominator)) },
+			.area = (area2x * 0.5)
+		};
 	}
 
 	////////////////////////////////////////////////////////////////
