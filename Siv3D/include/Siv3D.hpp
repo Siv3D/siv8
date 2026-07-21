@@ -950,7 +950,7 @@
 # include <Siv3D/Geometry2D/JitterEndpointMode.hpp>
 # include <Siv3D/Geometry2D/JitterEndpointSettings.hpp>
 # include <Siv3D/Geometry2D/JitterSettings.hpp>
-# include <Siv3D/Geometry2D/Misc.hpp> // ToDo
+# include <Siv3D/Geometry2D/Misc.hpp>
 # include <Siv3D/Geometry2D/PointContainment.hpp>
 # include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
 # include <Siv3D/Geometry2D/Raycast.hpp>

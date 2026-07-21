@@ -53,7 +53,148 @@ namespace s3d
 			return results.map(detail::ToPolygon);
 		}
 
+		//////////////////////////////////////////////////
+		//
+		//	Or
+		//
+		//////////////////////////////////////////////////
 
+		MultiPolygon Or(const RectF& a, const Polygon& b)
+		{
+			Array<CwOpenPolygon> results;
+			boost::geometry::union_(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
+			return results.map(detail::ToPolygon);
+		}
+
+		MultiPolygon Or(const Polygon& a, const RectF& b)
+		{
+			return Or(b, a);
+		}
+
+		MultiPolygon Or(const Polygon& a, const Polygon& b)
+		{
+			Array<CwOpenPolygon> results;
+			boost::geometry::union_(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
+			return results.map(detail::ToPolygon);
+		}
+
+		MultiPolygon Or(const MultiPolygon& a, const Polygon& b)
+		{
+			boost::geometry::model::multi_polygon<CwOpenPolygon> polygons;
+			{
+				for (const auto& ap : a)
+				{
+					polygons.push_back(ap._detail()->toCwOpenPolygon());
+				}
+			}
+
+			boost::geometry::model::multi_polygon<CwOpenPolygon> unions;
+			boost::geometry::union_(polygons, b._detail()->toCwOpenPolygon(), unions);
+
+			MultiPolygon results;
+			{
+				for (const auto& polygon : unions)
+				{
+					Array<Array<Vec2>> retHoles;
+
+					for (const auto& hole : polygon.inners())
+					{
+						retHoles.emplace_back(hole.begin(), hole.end());
+					}
+
+					if (Polygon newPolygon{ polygon.outer(), retHoles, SkipValidation::No })
+					{
+						results.push_back(std::move(newPolygon));
+					}
+				}
+			}
+
+			return results;
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Xor
+		//
+		//////////////////////////////////////////////////
+
+		MultiPolygon Xor(const RectF& a, const Polygon& b)
+		{
+			Array<CwOpenPolygon> results;
+			boost::geometry::sym_difference(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
+			return results.map(detail::ToPolygon);
+		}
+
+		MultiPolygon Xor(const Polygon& a, const RectF& b)
+		{
+			return Xor(b, a);
+		}
+
+		MultiPolygon Xor(const Polygon& a, const Polygon& b)
+		{
+			Array<CwOpenPolygon> results;
+			boost::geometry::sym_difference(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
+			return results.map(detail::ToPolygon);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	Subtract
+		//
+		//////////////////////////////////////////////////
+
+		MultiPolygon Subtract(const RectF& a, const Polygon& b)
+		{
+			Array<CwOpenPolygon> results;
+			boost::geometry::difference(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
+			return results.map(detail::ToPolygon);
+		}
+
+		MultiPolygon Subtract(const Polygon& a, const RectF& b)
+		{
+			Array<CwOpenPolygon> results;
+			boost::geometry::difference(a._detail()->toCwOpenPolygon(), ToGBox(b), results);
+			return results.map(detail::ToPolygon);
+		}
+
+		MultiPolygon Subtract(const Polygon& a, const Polygon& b)
+		{
+			Array<CwOpenPolygon> results;
+			boost::geometry::difference(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
+			return results.map(detail::ToPolygon);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	DiscreteFrechetDistance
+		//
+		//////////////////////////////////////////////////
+
+		double DiscreteFrechetDistance(const LineString& a, const LineString& b)
+		{
+			if (a.isEmpty() || b.isEmpty())
+			{
+				return Math::Inf;
+			}
+
+			return boost::geometry::discrete_frechet_distance(a, b);
+		}
+
+		//////////////////////////////////////////////////
+		//
+		//	DiscreteHausdorffDistance
+		//
+		//////////////////////////////////////////////////
+
+		double DiscreteHausdorffDistance(const LineString& a, const LineString& b)
+		{
+			if (a.isEmpty() || b.isEmpty())
+			{
+				return Math::Inf;
+			}
+
+			return boost::geometry::discrete_hausdorff_distance(a, b);
+		}
 
 		//////////////////////////////////////////////////
 		//
