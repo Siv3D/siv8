@@ -67,12 +67,19 @@ namespace s3d
 			EllipseBoundary,
 			SuperEllipseBoundary>;
 
+		enum class RayHitCandidateKind : uint8
+		{
+			IsolatedPoint,
+			BoundaryOverlap,
+		};
+
 		struct RayHitCandidate
 		{
 			Vec2 position{ 0.0, 0.0 };
 			Vec2 normal{ 0.0, 0.0 };
 			double distance = std::numeric_limits<double>::infinity();
 			size_t order = 0;
+			RayHitCandidateKind kind = RayHitCandidateKind::IsolatedPoint;
 		};
 
 		struct HitAccumulator
@@ -114,7 +121,8 @@ namespace s3d
 		}
 
 		void AppendCandidate(HitAccumulator& accumulator,
-			const Ray2D& ray, double distance, const Vec2& normal, const size_t order)
+			const Ray2D& ray, double distance, const Vec2& normal, const size_t order,
+			const RayHitCandidateKind kind = RayHitCandidateKind::IsolatedPoint)
 		{
 			const double tolerance = MergeTolerance(distance);
 
@@ -156,8 +164,8 @@ namespace s3d
 			}
 
 			accumulator.candidates.push_back(RayHitCandidate{
-				ray.pointAt(distance), unitNormal, distance, order
-			});
+				ray.pointAt(distance), unitNormal, distance, order, kind
+				});
 		}
 
 		[[nodiscard]]
@@ -207,7 +215,7 @@ namespace s3d
 
 			pieces.emplace_back(LineBoundary{
 				Line{ start, end }, NormalizeOrZero(outwardNormal), pieces.size()
-			});
+				});
 		}
 
 		void AppendOrderedRing(Array<BoundaryPiece>& pieces,
@@ -455,13 +463,20 @@ namespace s3d
 
 			const double t0 = (boundary.line.start - ray.origin).dot(ray.direction);
 			const double t1 = (boundary.line.end - ray.origin).dot(ray.direction);
-			const double overlapStart = Max(0.0, Min(t0, t1));
-			const double overlapEnd = Min(accumulator.maxDistance, Max(t0, t1));
+			const double rawOverlapStart = Max(0.0, Min(t0, t1));
+			const double rawOverlapEnd = Max(t0, t1);
+			const double overlapEnd = Min(accumulator.maxDistance, rawOverlapEnd);
 
-			if (overlapStart <= overlapEnd)
+			if (rawOverlapStart <= overlapEnd)
 			{
-				AppendCandidate(accumulator, ray, overlapStart,
-					boundary.outwardNormal, boundary.order);
+				const bool hasPositiveLengthOverlap =
+					(MergeTolerance(rawOverlapStart) < (rawOverlapEnd - rawOverlapStart));
+
+				AppendCandidate(accumulator, ray, rawOverlapStart,
+					boundary.outwardNormal, boundary.order,
+					hasPositiveLengthOverlap
+					? RayHitCandidateKind::BoundaryOverlap
+					: RayHitCandidateKind::IsolatedPoint);
 			}
 		}
 
@@ -706,6 +721,23 @@ namespace s3d
 			for (size_t i = 1; i < accumulator.candidates.size(); ++i)
 			{
 				const RayHitCandidate& candidate = accumulator.candidates[i];
+
+				// When the ray shares a positive-length interval with a straight
+				// boundary, the hit belongs to that boundary feature even if the
+				// beginning of the interval is also an adjacent vertex. Preserve
+				// the overlapping boundary's normal instead of applying the generic
+				// non-smooth vertex facing rule.
+				if (candidate.kind != selected.kind)
+				{
+					if (candidate.kind == RayHitCandidateKind::BoundaryOverlap)
+					{
+						selected = candidate;
+						selectedDot = ray.direction.dot(selected.normal);
+					}
+
+					continue;
+				}
+
 				const double candidateDot = ray.direction.dot(candidate.normal);
 				const bool betterFacing = startsInside
 					? (selectedDot < candidateDot)
