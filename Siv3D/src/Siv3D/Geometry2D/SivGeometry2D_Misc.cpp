@@ -20,7 +20,11 @@
 
 namespace s3d
 {
-	using GBox = boost::geometry::model::box<Vec2>;
+	[[nodiscard]]
+	static constexpr boost::geometry::model::box<Vec2> ToGBox(const RectF& rect) noexcept
+	{
+		return{ rect.pos, rect.br() };
+	}
 
 	namespace Geometry2D
 	{
@@ -33,7 +37,7 @@ namespace s3d
 		Array<Polygon> And(const RectF& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::intersection(GBox{ a.pos, a.br() }, b._detail()->toCwOpenPolygon(), results);
+			boost::geometry::intersection(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
 			return results.map(detail::ToPolygon);
 		}
 
