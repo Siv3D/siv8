@@ -233,10 +233,10 @@ namespace s3d
 			ThrowTriangleAtIndexOutOfRange();
 		}
 
+		const auto& [i0, i1, i2] = indices[index];
 		const Float2* pVertices = pImpl->vertices().data();
-		const auto& triangleIndex = indices[index];
 
-		return{ pVertices[triangleIndex.i0], pVertices[triangleIndex.i1], pVertices[triangleIndex.i2] };
+		return{ pVertices[i0], pVertices[i1], pVertices[i2] };
 	}
 
 	////////////////////////////////////////////////////////////////
