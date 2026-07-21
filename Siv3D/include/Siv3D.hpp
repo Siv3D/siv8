@@ -933,6 +933,10 @@
 
 //# include <Siv3D/Mesh2D.hpp>
 
+# include <Siv3D/Ray2D.hpp>
+
+# include <Siv3D/RaycastHit2D.hpp>
+
 // 2D 幾何 | 2D geometry processing
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Geometry2D/ClosestPoints2D.hpp>
@@ -949,6 +953,7 @@
 # include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 # include <Siv3D/Geometry2D/PointContainment.hpp>
 # include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
+# include <Siv3D/Geometry2D/Raycast.hpp>
 # include <Siv3D/Geometry2D/SignedDistance.hpp>
 # include <Siv3D/Geometry2D/Overlaps.hpp>
 # include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>

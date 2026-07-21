@@ -43,6 +43,8 @@
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Availability.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Symmetry.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_Raycast.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_Raycast_Availability.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_SignedDistance.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_SignedDistance_Availability.cpp" />
     <ClCompile Include="..\Test\Test_Grid.cpp" />

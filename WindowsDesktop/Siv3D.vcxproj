@@ -144,6 +144,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\PrintBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\QualityFactor.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Ray2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RectanglePack.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Sample.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Serial.ipp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Overlaps.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PointContainment.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PoleOfInaccessibility.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Raycast.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SignedDistance.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Glyph.hpp" />
@@ -280,6 +282,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Print.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PrintBuffer.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\QuarterArcTable.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Ray2D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RaycastHit2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ReadingDirection.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RectangularDashStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ResolvedGlyph.hpp" />
@@ -1698,6 +1702,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Misc.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Overlaps.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_PoleOfInaccessibility.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Raycast.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SignedDistance.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SmallestEnclosingCircle.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Graphics2D\SivGraphics2D.cpp" />
@@ -1849,6 +1854,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Random\SivRandom.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerStateBuilder\SivRasterizerStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RasterizerState\SivRasterizerState.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Ray2D\SivRay2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RectanglePack\SivRectanglePack.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RectF\SivRectF.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Rect\SivRect.cpp" />

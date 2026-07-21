@@ -1420,6 +1420,9 @@
     <Filter Include="include\Siv3D\Geometry2D\detail">
       <UniqueIdentifier>{cc2642f9-09ca-4d72-bbd3-903fcf5074d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Ray2D">
+      <UniqueIdentifier>{a8540bf4-9150-4cde-a052-824c04efc5a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5821,6 +5824,18 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\detail\JitterEndpointSettings.ipp">
       <Filter>include\Siv3D\Geometry2D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Ray2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\RaycastHit2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Ray2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Raycast.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -8911,6 +8926,12 @@
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_SignedDistance.cpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Ray2D\SivRay2D.cpp">
+      <Filter>src\Siv3D\Ray2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_Raycast.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
   </ItemGroup>
