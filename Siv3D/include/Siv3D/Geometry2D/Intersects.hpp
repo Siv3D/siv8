@@ -893,4 +893,4 @@ namespace s3d
 	}
 }
 
-# include "Intersects.ipp"
+# include "detail/Intersects.ipp"

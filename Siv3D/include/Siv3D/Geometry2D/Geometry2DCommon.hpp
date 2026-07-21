@@ -67,4 +67,4 @@ namespace s3d
 	}
 }
 
-# include "Geometry2DCommon.ipp"
+# include "detail/Geometry2DCommon.ipp"

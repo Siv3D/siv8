@@ -500,6 +500,5 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Contains(const MultiPolygon& a, const MultiPolygon& b) noexcept;
-
 	}
 }

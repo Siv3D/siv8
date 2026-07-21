@@ -1417,6 +1417,9 @@
     <Filter Include="src\Siv3D\HLSL">
       <UniqueIdentifier>{1dbed38d-0db0-40c7-abb8-0ab7d0c95c5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Siv3D\Geometry2D\detail">
+      <UniqueIdentifier>{cc2642f9-09ca-4d72-bbd3-903fcf5074d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -3855,16 +3858,10 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Intersects.ipp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp">
       <Filter>src\Siv3D\Renderer2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.hpp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IsClockwise.ipp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\LineCap.hpp">
@@ -3925,9 +3922,6 @@
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\IntersectsAt.hpp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Center.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Misc.hpp">
@@ -4126,9 +4120,6 @@
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\ChildProcess</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.hpp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SmallestEnclosingCircle.ipp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TextureDesc.hpp">
@@ -4857,9 +4848,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Contains.ipp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\IEffect.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -4951,18 +4939,6 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Transition.ipp">
-      <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointMode.hpp">
-      <Filter>include\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\JitterEndpointSettings.hpp">
-      <Filter>include\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\JitterSettings.hpp">
-      <Filter>include\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\JitterEndpointSettings.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Jitter.hpp">
@@ -5800,9 +5776,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PointContainment.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\PointContainment.ipp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Overlaps.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
@@ -5812,17 +5785,41 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DCommon.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DCommon.ipp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ClosestPoints2D.hpp">
-      <Filter>include\Siv3D\Geometry2D</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Geometry2DPointVectorFwd.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\SignedDistance.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\detail\Geometry2DCommon.ipp">
+      <Filter>include\Siv3D\Geometry2D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\detail\Intersects.ipp">
+      <Filter>include\Siv3D\Geometry2D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\detail\IsClockwise.ipp">
+      <Filter>include\Siv3D\Geometry2D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\detail\PointContainment.ipp">
+      <Filter>include\Siv3D\Geometry2D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\detail\SmallestEnclosingCircle.ipp">
+      <Filter>include\Siv3D\Geometry2D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ClosestPoints2D.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\JitterEndpointMode.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\JitterEndpointSettings.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\JitterSettings.hpp">
+      <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\detail\JitterEndpointSettings.ipp">
+      <Filter>include\Siv3D\Geometry2D\detail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
