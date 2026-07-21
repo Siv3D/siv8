@@ -5790,12 +5790,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\QuarterArcTable.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\PolygonHolesView.hpp">
-      <Filter>include\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\detail\PolygonHolesView.ipp">
-      <Filter>include\Siv3D\detail</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\CircularDashStyle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RectangularDashStyle.hpp">
       <Filter>include\Siv3D</Filter>

@@ -19,7 +19,6 @@
 # include "PolygonFailureType.hpp"
 # include "QualityFactor.hpp"
 # include "PredefinedYesNo.hpp"
-# include "PolygonHolesView.hpp"
 
 namespace s3d
 {
@@ -257,7 +256,7 @@ namespace s3d
 		/// @brief 多角形の穴を構成する頂点配列を返します。
 		/// @return 多角形の穴を構成する頂点配列
 		[[nodiscard]]
-		PolygonHolesView inners() const noexcept;
+		const Array<Array<Vec2>>& inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

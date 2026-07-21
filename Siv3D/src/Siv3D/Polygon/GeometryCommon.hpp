@@ -19,6 +19,7 @@ SIV3D_DISABLE_MSVC_WARNINGS_PUSH(5311)
 # include <boost/geometry/geometries/register/point.hpp>
 # include <boost/geometry/geometries/register/segment.hpp>
 # include <boost/geometry/geometries/register/linestring.hpp>
+# include <boost/geometry/geometries/register/multi_point.hpp>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Point, s3d::int32, boost::geometry::cs::cartesian, x, y)
@@ -26,6 +27,7 @@ BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Float2, float, boost::geometry::cs::cartes
 BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Vec2, double, boost::geometry::cs::cartesian, x, y)
 BOOST_GEOMETRY_REGISTER_SEGMENT(s3d::Line, s3d::Vec2, start, end)
 BOOST_GEOMETRY_REGISTER_LINESTRING(s3d::LineString)
+BOOST_GEOMETRY_REGISTER_MULTI_POINT(s3d::Array<s3d::Vec2>)
 
 namespace s3d
 {

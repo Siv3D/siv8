@@ -20,6 +20,15 @@ namespace s3d
 		Polygon ToPolygon(const CwOpenPolygon& polygon);
 	}
 
+	struct PolygonData
+	{
+		// 外周の頂点配列（時計回り）
+		Array<Vec2> outer;
+
+		// 穴を構成する頂点配列（反時計回り）の配列
+		Array<Array<Vec2>> inners;
+	};
+
 	class Polygon::PolygonDetail
 	{
 	public:
@@ -73,7 +82,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		PolygonHolesView inners() const noexcept;
+		const Array<Array<Vec2>>& inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -101,15 +110,6 @@ namespace s3d
 
 		[[nodiscard]]
 		const RectF& boundingRect() const noexcept;
-
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	getBoostPolygon
-		//
-		////////////////////////////////////////////////////////////////
-
-		const CwOpenPolygon& getBoostPolygon() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -270,6 +270,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	toCwOpenPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		CwOpenPolygon toCwOpenPolygon() const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Validate
 		//
 		////////////////////////////////////////////////////////////////
@@ -288,7 +296,7 @@ namespace s3d
 
 	private:
 
-		CwOpenPolygon m_polygon;
+		PolygonData m_polygon;
 
 		Array<Float2> m_vertices;
 

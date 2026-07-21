@@ -23,7 +23,7 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Polygon AddHole(const Array<Vec2>& outer, const PolygonHolesView currentInners, Array<Vec2> hole)
+		static Polygon AddHole(const Array<Vec2>& outer, const Array<Array<Vec2>>& currentInners, Array<Vec2> hole)
 		{
 			Array<Array<Vec2>> inners(Arg::reserve = (currentInners.size() + 1));
 			{
@@ -188,7 +188,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	PolygonHolesView Polygon::inners() const noexcept
+	const Array<Array<Vec2>>& Polygon::inners() const noexcept
 	{
 		return pImpl->inners();
 	}

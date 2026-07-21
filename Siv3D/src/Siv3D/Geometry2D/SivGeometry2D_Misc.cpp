@@ -33,7 +33,7 @@ namespace s3d
 		Array<Polygon> And(const RectF& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::intersection(GBox{ a.pos, a.br() }, b._detail()->getBoostPolygon(), results);
+			boost::geometry::intersection(GBox{ a.pos, a.br() }, b._detail()->toCwOpenPolygon(), results);
 			return results.map(detail::ToPolygon);
 		}
 
@@ -45,7 +45,7 @@ namespace s3d
 		Array<Polygon> And(const Polygon& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::intersection(a._detail()->getBoostPolygon(), b._detail()->getBoostPolygon(), results);
+			boost::geometry::intersection(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
 			return results.map(detail::ToPolygon);
 		}
 
