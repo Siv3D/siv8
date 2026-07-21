@@ -34,19 +34,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Array<Polygon> And(const RectF& a, const Polygon& b)
+		MultiPolygon And(const RectF& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
 			boost::geometry::intersection(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
 			return results.map(detail::ToPolygon);
 		}
 
-		Array<Polygon> And(const Polygon& a, const RectF& b)
+		MultiPolygon And(const Polygon& a, const RectF& b)
 		{
 			return And(b, a);
 		}
 
-		Array<Polygon> And(const Polygon& a, const Polygon& b)
+		MultiPolygon And(const Polygon& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
 			boost::geometry::intersection(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);

@@ -29,25 +29,102 @@ namespace s3d
 		/// @param b 他方の図形
 		/// @return 2 つの図形の重なる領域
 		[[nodiscard]]
-		Array<Polygon> And(const RectF& a, const Polygon& b);
+		MultiPolygon And(const RectF& a, const Polygon& b);
 
 		/// @brief 2 つの図形の重なる領域を返します。
 		/// @param a 図形
 		/// @param b 他方の図形
 		/// @return 2 つの図形の重なる領域
 		[[nodiscard]]
-		Array<Polygon> And(const Polygon& a, const RectF& b);
+		MultiPolygon And(const Polygon& a, const RectF& b);
 
 		/// @brief 2 つの図形の重なる領域を返します。
 		/// @param a 図形
 		/// @param b 他方の図形
 		/// @return 2 つの図形の重なる領域
 		[[nodiscard]]
-		Array<Polygon> And(const Polygon& a, const Polygon& b);
+		MultiPolygon And(const Polygon& a, const Polygon& b);
 
+		//////////////////////////////////////////////////
+		//
+		//	Or
+		//
+		//////////////////////////////////////////////////
 
+		[[nodiscard]]
+		MultiPolygon Or(const RectF& a, const Polygon& b);
 
+		[[nodiscard]]
+		MultiPolygon Or(const Polygon& a, const RectF& b);
 
+		[[nodiscard]]
+		MultiPolygon Or(const Polygon& a, const Polygon& b);
+
+		[[nodiscard]]
+		MultiPolygon Or(const MultiPolygon& a, const Polygon& b);
+
+		//////////////////////////////////////////////////
+		//
+		//	Xor
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MultiPolygon Xor(const RectF& a, const Polygon& b);
+
+		[[nodiscard]]
+		MultiPolygon Xor(const Polygon& a, const RectF& b);
+
+		[[nodiscard]]
+		MultiPolygon Xor(const Polygon& a, const Polygon& b);
+
+		//////////////////////////////////////////////////
+		//
+		//	Subtract
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MultiPolygon Subtract(const RectF& a, const Polygon& b);
+
+		[[nodiscard]]
+		MultiPolygon Subtract(const Polygon& a, const RectF& b);
+
+		[[nodiscard]]
+		MultiPolygon Subtract(const Polygon& a, const Polygon& b);
+
+		//////////////////////////////////////////////////
+		//
+		//	SymmetricDifference
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		MultiPolygon SymmetricDifference(const RectF& a, const Polygon& b);
+		
+		[[nodiscard]]
+		MultiPolygon SymmetricDifference(const Polygon& a, const RectF& b);
+		
+		[[nodiscard]]
+		MultiPolygon SymmetricDifference(const Polygon& a, const Polygon& b);
+
+		//////////////////////////////////////////////////
+		//
+		//	DiscreteFrechetDistance
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		double DiscreteFrechetDistance(const LineString& a, const LineString& b);
+
+		//////////////////////////////////////////////////
+		//
+		//	DiscreteHausdorffDistance
+		//
+		//////////////////////////////////////////////////
+
+		[[nodiscard]]
+		double DiscreteHausdorffDistance(const LineString& a, const LineString& b);
 
 		//////////////////////////////////////////////////
 		//
