@@ -81,16 +81,16 @@ TEST_CASE("LineString.state_capacity")
 	CHECK(line.empty());
 	CHECK(line.isEmpty());
 	CHECK_FALSE(static_cast<bool>(line));
-	CHECK_EQ(line.size(), 0);
+	CHECK_EQ(line.size(), 0u);
 	CHECK_EQ(line.ssize(), 0);
 	CHECK_FALSE(line.indexInBounds(0));
 
 	line.reserve(4);
-	CHECK(line.capacity() >= 4);
+	CHECK(line.capacity() >= 4u);
 	line << Vec2{ 1, 1 } << Vec2{ 2, 2 };
 	CHECK_FALSE(line.empty());
 	CHECK(static_cast<bool>(line));
-	CHECK_EQ(line.size(), 2);
+	CHECK_EQ(line.size(), 2u);
 	CHECK_EQ(line.ssize(), 2);
 	CHECK_EQ(line.size_bytes(), (sizeof(Vec2) * 2));
 	CHECK(line.indexInBounds(1));
@@ -197,9 +197,9 @@ TEST_CASE("LineString.erase_at")
 TEST_CASE("LineString.erase_all")
 {
 	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 2 } };
-	CHECK_EQ(line.erase_all(Vec2{ 0, 0 }), 2);
+	CHECK_EQ(line.erase_all(Vec2{ 0, 0 }), 2u);
 	CHECK_EQ(line, LineString{ Vec2{ 1, 1 }, Vec2{ 2, 2 } });
-	CHECK_EQ(line.erase_all(Vec2{ 9, 9 }), 0);
+	CHECK_EQ(line.erase_all(Vec2{ 9, 9 }), 0u);
 }
 
 TEST_CASE("LineString.erase_first")
@@ -213,7 +213,7 @@ TEST_CASE("LineString.erase_first")
 TEST_CASE("LineString.erase_all_if")
 {
 	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 }, Vec2{ 3, 1 } };
-	CHECK_EQ(line.erase_all_if([](const Vec2& p) { return (p.y == 0); }), 2);
+	CHECK_EQ(line.erase_all_if([](const Vec2& p) { return (p.y == 0); }), 2u);
 	CHECK_EQ(line, LineString{ Vec2{ 1, 1 }, Vec2{ 3, 1 } });
 }
 
@@ -260,12 +260,12 @@ TEST_CASE("LineString.subspan")
 {
 	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	auto span = line.subspan(1, 2);
-	CHECK_EQ(span.size(), 2);
+	CHECK_EQ(span.size(), 2u);
 	span[0] = Vec2{ 9, 9 };
 	CHECK_EQ(line, LineString{ Vec2{ 0, 0 }, Vec2{ 9, 9 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } });
 
 	const auto constSpan = std::as_const(line).subspan(2, 2);
-	CHECK_EQ(constSpan.size(), 2);
+	CHECK_EQ(constSpan.size(), 2u);
 	CHECK_EQ(constSpan[0], Vec2{ 2, 2 });
 }
 
@@ -433,7 +433,7 @@ TEST_CASE("LineString.indexOf")
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
 	const auto index = line.indexOf(Vec2{ 1, 1 });
 	CHECK(index.has_value());
-	CHECK_EQ(*index, 1);
+	CHECK_EQ(*index, 1u);
 	CHECK_FALSE(line.indexOf(Vec2{ 9, 9 }).has_value());
 }
 
@@ -458,7 +458,7 @@ TEST_CASE("LineString.each_index")
 	const LineString constLine{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 } };
 	size_t indexSum = 0;
 	constLine.each_index([&](size_t i, const Vec2&) { indexSum += i; });
-	CHECK_EQ(indexSum, 3);
+	CHECK_EQ(indexSum, 3u);
 }
 
 TEST_CASE("LineString.each_sindex")
@@ -563,7 +563,7 @@ TEST_CASE("LineString.head_span")
 {
 	LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	auto head = line.head_span(2);
-	CHECK_EQ(head.size(), 2);
+	CHECK_EQ(head.size(), 2u);
 	head[0] = Vec2{ 9, 9 };
 	CHECK_EQ(line.front(), Vec2{ 9, 9 });
 }
@@ -572,7 +572,7 @@ TEST_CASE("LineString.tail_span")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
 	const auto tail = line.tail_span(2);
-	CHECK_EQ(tail.size(), 2);
+	CHECK_EQ(tail.size(), 2u);
 	CHECK_EQ(tail[0], Vec2{ 2, 2 });
 }
 
@@ -756,10 +756,10 @@ TEST_CASE("LineString.sum")
 TEST_CASE("LineString.num_vertices_segments")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 3, 0 }, Vec2{ 3, 4 } };
-	CHECK_EQ(line.num_vertices(), 3);
-	CHECK_EQ(line.num_segments(), 2);
-	CHECK_EQ(line.num_segments(CloseRing::Yes), 3);
-	CHECK_EQ(LineString{ Vec2{ 0, 0 } }.num_segments(CloseRing::Yes), 0);
+	CHECK_EQ(line.num_vertices(), 3u);
+	CHECK_EQ(line.num_segments(), 2u);
+	CHECK_EQ(line.num_segments(CloseRing::Yes), 3u);
+	CHECK_EQ(LineString{ Vec2{ 0, 0 } }.num_segments(CloseRing::Yes), 0u);
 }
 
 TEST_CASE("LineString.segment")
@@ -860,12 +860,12 @@ TEST_CASE("LineString.catmullRom")
 
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 0 }, Vec2{ 1, 1 } };
 	const LineString curve = line.catmullRom(2);
-	CHECK_EQ(curve.size(), 5);
+	CHECK_EQ(curve.size(), 5u);
 	CHECK_EQ(curve.front(), line.front());
 	CHECK_EQ(curve.back(), line.back());
 
 	const LineString closedCurve = line.catmullRom(CloseRing::Yes, 2);
-	CHECK_EQ(closedCurve.size(), 7);
+	CHECK_EQ(closedCurve.size(), 7u);
 	CHECK_EQ(closedCurve.front(), line.front());
 	CHECK_EQ(closedCurve.back(), line.front());
 }
@@ -888,3 +888,4 @@ TEST_CASE("LineString.sorted_by")
 	CHECK_EQ(line, LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } });
 	CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
 }
+

@@ -86,7 +86,7 @@ TEST_CASE("Geometry2D.Distance.UniqueWitnessReversal")
 	REQUIRE(linePoint);
 	CHECK(pointLine->pointA.distanceFrom(linePoint->pointB) <= 1.0e-12);
 	CHECK(pointLine->pointB.distanceFrom(linePoint->pointA) <= 1.0e-12);
-	CHECK(pointLine->distance == Approx(linePoint->distance));
+	CHECK(pointLine->distance == doctest::Approx(linePoint->distance));
 
 	const Circle circleA{ Vec2{ 0, 0 }, 2.0 };
 	const Circle circleB{ Vec2{ 7, 4 }, 1.0 };

@@ -44,8 +44,8 @@ TEST_CASE("Geometry2D.Distance.PointAndLine")
 		REQUIRE(result);
 		CHECK((result->pointA == Vec2{ 0, 0 }));
 		CHECK((result->pointB == Vec2{ 3, 4 }));
-		CHECK(result->distance == Approx(5.0));
-		CHECK(Geometry2D::Distance(Point{ 0, 0 }, Vec2{ 3, 4 }) == Approx(5.0));
+		CHECK(result->distance == doctest::Approx(5.0));
+		CHECK(Geometry2D::Distance(Point{ 0, 0 }, Vec2{ 3, 4 }) == doctest::Approx(5.0));
 		CheckWitnessConsistency(*result);
 	}
 
@@ -55,7 +55,7 @@ TEST_CASE("Geometry2D.Distance.PointAndLine")
 		REQUIRE(result);
 		CHECK((result->pointA == Vec2{ 4, 3 }));
 		CHECK((result->pointB == Vec2{ 4, 0 }));
-		CHECK(result->distance == Approx(3.0));
+		CHECK(result->distance == doctest::Approx(3.0));
 		CheckWitnessConsistency(*result);
 	}
 
@@ -64,7 +64,7 @@ TEST_CASE("Geometry2D.Distance.PointAndLine")
 		const Line b{ Vec2{ 4, 3 }, Vec2{ 7, 3 } };
 		const auto result = Geometry2D::ClosestPoints(a, b);
 		REQUIRE(result);
-		CHECK(result->distance == Approx(3.0));
+		CHECK(result->distance == doctest::Approx(3.0));
 		CHECK(Geometry2D::Intersects(result->pointA, a));
 		CHECK(Geometry2D::Intersects(result->pointB, b));
 		CheckWitnessConsistency(*result);
@@ -142,19 +142,19 @@ TEST_CASE("Geometry2D.Distance.DegenerateGeometry")
 		const Vec2 point{ 5, 4 };
 		const auto result = Geometry2D::ClosestPoints(verticalSegment, point);
 		REQUIRE(result);
-		CHECK(result->distance == Approx(3.0));
+		CHECK(result->distance == doctest::Approx(3.0));
 		CHECK((result->pointA == Vec2{ 2, 4 }));
 		CheckWitnessConsistency(*result);
 	}
 
 	{
 		const Triangle segment{ Vec2{ 0, 0 }, Vec2{ 5, 0 }, Vec2{ 10, 0 } };
-		CHECK(Geometry2D::Distance(segment, Vec2{ 4, 3 }) == Approx(3.0));
+		CHECK(Geometry2D::Distance(segment, Vec2{ 4, 3 }) == doctest::Approx(3.0));
 	}
 
 	{
 		const Bezier2 pointCurve{ Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 1, 1 } };
-		CHECK(Geometry2D::Distance(pointCurve, Vec2{ 4, 5 }) == Approx(5.0));
+		CHECK(Geometry2D::Distance(pointCurve, Vec2{ 4, 5 }) == doctest::Approx(5.0));
 	}
 }
 
@@ -168,7 +168,7 @@ TEST_CASE("Geometry2D.Distance.PolygonHoleAndMultiPolygon")
 	{
 		const auto result = Geometry2D::ClosestPoints(polygon, Vec2{ 10, 10 });
 		REQUIRE(result);
-		CHECK(result->distance == Approx(4.0));
+		CHECK(result->distance == doctest::Approx(4.0));
 		CHECK(Geometry2D::Intersects(result->pointA, polygon));
 		CHECK((result->pointB == Vec2{ 10, 10 }));
 		CheckWitnessConsistency(*result);
@@ -178,7 +178,7 @@ TEST_CASE("Geometry2D.Distance.PolygonHoleAndMultiPolygon")
 		const Polygon left{ Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 4, 0 }, Vec2{ 4, 4 }, Vec2{ 0, 4 } } };
 		const Polygon right{ Array<Vec2>{ Vec2{ 10, 0 }, Vec2{ 14, 0 }, Vec2{ 14, 4 }, Vec2{ 10, 4 } } };
 		const MultiPolygon multi{ left, right };
-		CHECK(Geometry2D::Distance(multi, Vec2{ 7, 2 }) == Approx(3.0));
+		CHECK(Geometry2D::Distance(multi, Vec2{ 7, 2 }) == doctest::Approx(3.0));
 	}
 }
 

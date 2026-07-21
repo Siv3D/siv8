@@ -68,12 +68,6 @@ namespace s3d
 		};
 
 		[[nodiscard]]
-		constexpr double Square(const double x) noexcept
-		{
-			return (x * x);
-		}
-
-		[[nodiscard]]
 		constexpr double ClampUnit(const double value) noexcept
 		{
 			return Clamp(value, 0.0, 1.0);

@@ -87,14 +87,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		constexpr bool BetweenClosed(const double a, const double x, const double b) noexcept
-		{
-			return (a <= b)
-				? ((a <= x) && (x <= b))
-				: ((b <= x) && (x <= a));
-		}
-
-		[[nodiscard]]
 		bool PointOnLine(const Vec2& p, const Line& line) noexcept
 		{
 			const Vec2 d = (line.end - line.start);
