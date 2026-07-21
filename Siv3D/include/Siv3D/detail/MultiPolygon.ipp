@@ -449,11 +449,38 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, const value_type& value)
+	{
+		return m_polygons.insert(pos, value);
+	}
+
+	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, const size_type count, const value_type& value)
+	{
+		return m_polygons.insert(pos, count, value);
+	}
+
+	template <std::input_iterator Iterator>
+	MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, Iterator first, Iterator last)
+	{
+		return m_polygons.insert(pos, first, last);
+	}
+
+	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, std::initializer_list<value_type> list)
+	{
+		return m_polygons.insert(pos, list);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	emplace
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class... Args>
+	MultiPolygon::iterator MultiPolygon::emplace(const_iterator pos, Args&&... args)
+	{
+		return m_polygons.emplace(pos, std::forward<Args>(args)...);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -473,11 +500,31 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline MultiPolygon::iterator MultiPolygon::erase(const_iterator pos)
+	{
+		return m_polygons.erase(pos);
+	}
+
+	inline MultiPolygon::iterator MultiPolygon::erase(const_iterator first, const_iterator last)
+	{
+		return m_polygons.erase(first, last);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	push_back
 	//
 	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::push_back(const value_type& value)
+	{
+		m_polygons.push_back(value);
+	}
+
+	inline void MultiPolygon::push_back(value_type&& value)
+	{
+		m_polygons.push_back(std::move(value));
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -485,11 +532,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	template <class... Args>
+	MultiPolygon::reference MultiPolygon::emplace_back(Args&&... args)
+	{
+		return m_polygons.emplace_back(std::forward<Args>(args)...);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	pop_back
 	//
 	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::pop_back()
+	{
+		m_polygons.pop_back();
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -497,11 +555,21 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline void MultiPolygon::resize(const size_type newSize)
+	{
+		m_polygons.resize(newSize);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	swap
 	//
 	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::swap(MultiPolygon& other) noexcept
+	{
+		m_polygons.swap(other.m_polygons);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -509,11 +577,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline void MultiPolygon::push_front(const value_type& value)
+	{
+		m_polygons.push_front(value);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	emplace_front
 	//
 	////////////////////////////////////////////////////////////////
+
+	template <class... Args>
+	MultiPolygon::reference MultiPolygon::emplace_front(Args&&... args)
+	{
+		return m_polygons.emplace_front(std::forward<Args>(args)...);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -521,11 +600,21 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline void MultiPolygon::pop_front()
+	{
+		m_polygons.pop_front();
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	pop_front_N
 	//
 	////////////////////////////////////////////////////////////////
+
+	inline void MultiPolygon::pop_front_N(const size_type count)
+	{
+		m_polygons.pop_front_N(count);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -533,14 +622,44 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline void MultiPolygon::pop_back_N(const size_type count)
+	{
+		m_polygons.pop_back_N(count);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	operator <<
 	//
 	////////////////////////////////////////////////////////////////
 
+	inline MultiPolygon& MultiPolygon::operator <<(const value_type& value)
+	{
+		m_polygons.push_back(value);
+		return *this;
+	}
 
+	inline MultiPolygon& MultiPolygon::operator <<(value_type&& value)
+	{
+		m_polygons.push_back(std::move(value));
+		return *this;
+	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	subspan
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline std::span<MultiPolygon::value_type> MultiPolygon::subspan(const size_type offset, const size_type count) noexcept
+	{
+		return m_polygons.subspan(offset, count);
+	}
+
+	inline std::span<const MultiPolygon::value_type> MultiPolygon::subspan(const size_type offset, const size_type count) const noexcept
+	{
+		return m_polygons.subspan(offset, count);
+	}
 
 	////////////////////////////////////////////////////////////////
 	//

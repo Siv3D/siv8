@@ -594,6 +594,10 @@ namespace s3d
 		/// @param value 追加する値
 		void push_back(const value_type& value);
 
+		/// @brief 配列の末尾に要素をムーブして追加します。
+		/// @param value 追加する値
+		void push_back(value_type&& value);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	emplace_back
@@ -701,6 +705,11 @@ namespace s3d
 		/// @param value 追加する値
 		/// @return *this
 		MultiPolygon& operator <<(const value_type& value);
+
+		/// @brief 配列の末尾に要素をムーブして追加します。
+		/// @param value 追加する値
+		/// @return *this
+		MultiPolygon& operator <<(value_type&& value);
 
 		////////////////////////////////////////////////////////////////
 		//
