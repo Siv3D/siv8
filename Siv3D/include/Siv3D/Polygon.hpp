@@ -1309,6 +1309,8 @@ namespace s3d
 
 	private:
 
+		bool addHoleCCW(Array<Vec2> hole);
+
 		[[noreturn]]
 		static void ThrowTriangleAtIndexOutOfRange();
 
