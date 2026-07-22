@@ -155,7 +155,7 @@ namespace s3d
 		/// @brief 多角形を作成します。
 		/// @param shape 2D 形状
 		[[nodiscard]]
-		explicit Polygon(const Shape2D& shape);
+		Polygon(const Shape2D& shape);
 
 		////////////////////////////////////////////////////////////////
 		//
