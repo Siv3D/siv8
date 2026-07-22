@@ -1209,6 +1209,46 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	subdivided
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Array<RectF> RectF::subdivided(const size_t xCount, const size_t yCount) const noexcept
+	{
+		if ((xCount == 0) || (yCount == 0))
+		{
+			return{};
+		}
+
+		const double cellW = (size.x / static_cast<double>(xCount));
+		const double cellH = (size.y / static_cast<double>(yCount));
+
+		Array<RectF> rects(xCount * yCount);
+
+		for (size_t yi = 0; yi < yCount; ++yi)
+		{
+			for (size_t xi = 0; xi < xCount; ++xi)
+			{
+				rects[yi * xCount + xi] = RectF{ (pos.x + cellW * xi), (pos.y + cellH * yi), cellW, cellH };
+			}
+		}
+
+		return rects;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	subdivided
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Array<RectF> Rect::subdivided(const size_t xCount, const size_t yCount) const noexcept
+	{
+		return RectF{ *this }.subdivided(xCount, yCount);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	lerp
 	//
 	////////////////////////////////////////////////////////////////

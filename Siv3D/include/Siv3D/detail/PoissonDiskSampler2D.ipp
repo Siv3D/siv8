@@ -23,19 +23,19 @@ namespace s3d
 		: PoissonDiskSampler2D{ Rect{ size }, r, RandomVec2(RectF{ size }), precompute } {}
 
 	PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
-		: PoissonDiskSampler2D{ Rect{ size }, r, RandomVec2(RectF{ size }, std::forward<decltype(urbg)>(urbg)), std::forward<decltype(urbg)>(urbg), precompute } {}
+		: PoissonDiskSampler2D{ Rect{ size }, r, RandomVec2(RectF{ size }, urbg), urbg, precompute } {}
 
 	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, const Vec2& initialPos, const Precompute precompute)
 		: PoissonDiskSampler2D{ Rect{ size }, r, initialPos, GetDefaultRNG(), precompute } {}
 
 	PoissonDiskSampler2D::PoissonDiskSampler2D(const Size& size, const double r, const Vec2& initialPos, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
-		: PoissonDiskSampler2D{ Rect{ size }, r, initialPos, std::forward<decltype(urbg)>(urbg), precompute } {}
+		: PoissonDiskSampler2D{ Rect{ size }, r, initialPos, urbg, precompute } {}
 
 	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Rect& rect, const double r, const Precompute precompute)
 		: PoissonDiskSampler2D{ rect, r, RandomVec2(rect), precompute } {}
 
 	PoissonDiskSampler2D::PoissonDiskSampler2D(const Rect& rect, const double r, Concept::UniformRandomBitGenerator auto&& urbg, const Precompute precompute)
-		: PoissonDiskSampler2D{ rect, r, RandomVec2(rect, std::forward<decltype(urbg)>(urbg)), std::forward<decltype(urbg)>(urbg), precompute } {}
+		: PoissonDiskSampler2D{ rect, r, RandomVec2(rect, urbg), urbg, precompute } {}
 
 	inline PoissonDiskSampler2D::PoissonDiskSampler2D(const Rect& rect, const double r, const Vec2& initialPos, const Precompute precompute)
 		: PoissonDiskSampler2D{ rect, r, initialPos, GetDefaultRNG(), precompute } {}
@@ -62,7 +62,7 @@ namespace s3d
 
 		if (precompute)
 		{
-			update(std::forward<decltype(urbg)>(urbg), Largest<size_t>);
+			update(urbg, Largest<size_t>);
 		}
 	}
 
@@ -106,7 +106,7 @@ namespace s3d
 				break;
 			}
 
-			const size_t randomIndex = Random((m_activeList.size() - 1), std::forward<decltype(urbg)>(urbg));
+			const size_t randomIndex = Random((m_activeList.size() - 1), urbg);
 			const Vec2 pos = m_activeList[randomIndex];
 			const int32 cols = static_cast<int32>(m_grid.width());
 			const int32 rows = static_cast<int32>(m_grid.height());
@@ -115,7 +115,7 @@ namespace s3d
 
 			for (size_t n = 0; n < k; ++n)
 			{
-				const Vec2 sample = (pos + RandomVec2InsideAnnulus(m_r, (2 * m_r), std::forward<decltype(urbg)>(urbg)));
+				const Vec2 sample = (pos + RandomVec2InsideAnnulus(m_r, (2 * m_r), urbg));
 				const int32 x = static_cast<int32>(sample.x / m_cellSize);
 				const int32 y = static_cast<int32>(sample.y / m_cellSize);
 

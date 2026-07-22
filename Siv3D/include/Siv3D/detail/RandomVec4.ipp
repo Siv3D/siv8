@@ -35,10 +35,10 @@ namespace s3d
 		const std::pair<double, double>& wMinMax, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		return{
-			RandomClosed(xMinMax.first, xMinMax.second, std::forward<decltype(urbg)>(urbg)),
-			RandomClosed(yMinMax.first, yMinMax.second, std::forward<decltype(urbg)>(urbg)),
-			RandomClosed(zMinMax.first, zMinMax.second, std::forward<decltype(urbg)>(urbg)),
-			RandomClosed(wMinMax.first, wMinMax.second, std::forward<decltype(urbg)>(urbg)),
+			RandomClosed(xMinMax.first, xMinMax.second, urbg),
+			RandomClosed(yMinMax.first, yMinMax.second, urbg),
+			RandomClosed(zMinMax.first, zMinMax.second, urbg),
+			RandomClosed(wMinMax.first, wMinMax.second, urbg),
 		};
 	}
 
@@ -50,10 +50,10 @@ namespace s3d
 	Vec4 RandomVec4(const double xMax, const double yMax, const double zMax, const double wMax, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		return{
-			RandomClosed(0.0, xMax, std::forward<decltype(urbg)>(urbg)),
-			RandomClosed(0.0, yMax, std::forward<decltype(urbg)>(urbg)),
-			RandomClosed(0.0, zMax, std::forward<decltype(urbg)>(urbg)),
-			RandomClosed(0.0, wMax, std::forward<decltype(urbg)>(urbg)),
+			RandomClosed(0.0, xMax, urbg),
+			RandomClosed(0.0, yMax, urbg),
+			RandomClosed(0.0, zMax, urbg),
+			RandomClosed(0.0, wMax, urbg),
 		};
 	}
 }

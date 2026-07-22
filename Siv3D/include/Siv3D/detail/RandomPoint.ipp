@@ -26,8 +26,10 @@ namespace s3d
 
 	Point RandomPoint(const std::pair<int32, int32> xMinMax, const std::pair<int32, int32> yMinMax, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ Random(xMinMax.first, xMinMax.second, std::forward<decltype(urbg)>(urbg)),
-			Random(yMinMax.first, yMinMax.second, std::forward<decltype(urbg)>(urbg)) };
+		return{
+			Random(xMinMax.first, xMinMax.second, urbg),
+			Random(yMinMax.first, yMinMax.second, urbg)
+		};
 	}
 
 	inline Point RandomPoint(const Rect& rect)
@@ -37,8 +39,10 @@ namespace s3d
 
 	Point RandomPoint(const Rect& rect, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ Random(rect.x, (rect.x + rect.w - 1), std::forward<decltype(urbg)>(urbg)),
-			Random(rect.y, (rect.y + rect.h - 1), std::forward<decltype(urbg)>(urbg)) };
+		return{
+			Random(rect.x, (rect.x + rect.w - 1), urbg),
+			Random(rect.y, (rect.y + rect.h - 1), urbg)
+		};
 	}
 
 	inline Point RandomPoint(const int32 xMax, const int32 yMax)
@@ -48,7 +52,9 @@ namespace s3d
 
 	Point RandomPoint(const int32 xMax, const int32 yMax, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ Random(xMax, std::forward<decltype(urbg)>(urbg)),
-			Random(yMax, std::forward<decltype(urbg)>(urbg)) };
+		return{
+			Random(xMax, urbg),
+			Random(yMax, urbg)
+		};
 	}
 }
