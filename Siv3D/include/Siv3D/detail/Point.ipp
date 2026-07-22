@@ -196,7 +196,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator +=(const Point p) noexcept
+	constexpr Point& Point::operator +=(const Point p) & noexcept
 	{
 		x += p.x;
 		y += p.y;
@@ -209,7 +209,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator -=(const Point p) noexcept
+	constexpr Point& Point::operator -=(const Point p) & noexcept
 	{
 		x -= p.x;
 		y -= p.y;
@@ -222,7 +222,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator *=(const int32 s) noexcept
+	constexpr Point& Point::operator *=(const int32 s) & noexcept
 	{
 		x *= s;
 		y *= s;
@@ -235,7 +235,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator /=(const int32 s) noexcept
+	constexpr Point& Point::operator /=(const int32 s) & noexcept
 	{
 		assert(s != 0);
 		x /= s;
@@ -249,7 +249,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator %=(const int32 s) noexcept
+	constexpr Point& Point::operator %=(const int32 s) & noexcept
 	{
 		assert(s != 0);
 		x %= s;

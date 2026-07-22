@@ -104,7 +104,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Date& Date::operator +=(const Days& days) noexcept
+	Date& Date::operator +=(const Days& days) & noexcept
 	{
 		return (*this = EpochDaysToDate(detail::DateToEpochDays(*this) + days.count()));
 	}
@@ -115,7 +115,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Date& Date::operator -=(const Days& days) noexcept
+	Date& Date::operator -=(const Days& days) & noexcept
 	{
 		return (*this += (-days));
 	}

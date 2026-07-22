@@ -196,7 +196,7 @@ namespace s3d
 		/// @brief ベクトルを加算します。
 		/// @param v 加算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator +=(Vector2D v) noexcept;
+		constexpr Vector2D& operator +=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -207,7 +207,7 @@ namespace s3d
 		/// @brief ベクトルを減算します。
 		/// @param v 減算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator -=(Vector2D v) noexcept;
+		constexpr Vector2D& operator -=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -218,12 +218,12 @@ namespace s3d
 		/// @brief ベクトルの各成分にスカラーを乗算します。
 		/// @param s スカラー
 		/// @return *this
-		constexpr Vector2D& operator *=(value_type s) noexcept;
+		constexpr Vector2D& operator *=(value_type s) & noexcept;
 
 		/// @brief ベクトル同士の各成分同士を乗算します。
 		/// @param v 乗算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator *=(Vector2D v) noexcept;
+		constexpr Vector2D& operator *=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -234,12 +234,12 @@ namespace s3d
 		/// @brief ベクトルの各成分をスカラーで除算します。
 		/// @param s スカラー
 		/// @return *this
-		constexpr Vector2D& operator /=(value_type s) noexcept;
+		constexpr Vector2D& operator /=(value_type s) & noexcept;
 
 		/// @brief ベクトル同士の各成分同士を除算します。
 		/// @param v 除算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator /=(Vector2D v) noexcept;
+		constexpr Vector2D& operator /=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

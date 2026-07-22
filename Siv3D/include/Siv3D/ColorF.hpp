@@ -182,7 +182,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr ColorF& operator +=(const ColorF& rgb) noexcept;
+		constexpr ColorF& operator +=(const ColorF& rgb) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -199,7 +199,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr ColorF& operator -=(const ColorF& rgb) noexcept;
+		constexpr ColorF& operator -=(const ColorF& rgb) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -225,9 +225,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr ColorF& operator *=(double s) noexcept;
+		constexpr ColorF& operator *=(double s) & noexcept;
 
-		constexpr ColorF& operator *=(const ColorF& rgba) noexcept;
+		constexpr ColorF& operator *=(const ColorF& rgba) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -904,14 +904,14 @@ namespace s3d
 		return m_vertices.choice();
 	}
 
-	inline LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg)
+	inline LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return m_vertices.choice(std::forward<decltype(rbg)>(rbg));
+		return m_vertices.choice(urbg);
 	}
 
-	inline const LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	inline const LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
-		return m_vertices.choice(std::forward<decltype(rbg)>(rbg));
+		return m_vertices.choice(urbg);
 	}
 
 	inline LineString LineString::choice(const size_t n) const
@@ -919,9 +919,9 @@ namespace s3d
 		return LineString{ m_vertices.choice(n) };
 	}
 
-	inline LineString LineString::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	inline LineString LineString::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
-		return LineString{ m_vertices.choice(n, std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ m_vertices.choice(n, urbg) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1579,25 +1579,25 @@ namespace s3d
 		return LineString{ std::move(m_vertices).shuffled() };
 	}
 
-	constexpr LineString& LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	constexpr LineString& LineString::shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&
 	{
-		m_vertices.shuffle(std::forward<decltype(rbg)>(rbg));
+		m_vertices.shuffle(urbg);
 		return *this;
 	}
 
-	constexpr LineString LineString::shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&
+	constexpr LineString LineString::shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &&
 	{
-		return LineString{ std::move(m_vertices).shuffle(std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ std::move(m_vertices).shuffle(urbg) };
 	}
 
-	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&
 	{
-		return LineString{ m_vertices.shuffled(std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ m_vertices.shuffled(urbg) };
 	}
 
-	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&
+	constexpr LineString LineString::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) &&
 	{
-		return LineString{ std::move(m_vertices).shuffled(std::forward<decltype(rbg)>(rbg)) };
+		return LineString{ std::move(m_vertices).shuffled(urbg) };
 	}
 
 	////////////////////////////////////////////////////////////////

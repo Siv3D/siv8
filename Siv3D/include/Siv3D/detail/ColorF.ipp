@@ -163,7 +163,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr ColorF& ColorF::operator +=(const ColorF& rgb) noexcept
+	constexpr ColorF& ColorF::operator +=(const ColorF& rgb) & noexcept
 	{
 		r += rgb.r;
 		g += rgb.g;
@@ -188,7 +188,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr ColorF& ColorF::operator -=(const ColorF& rgb) noexcept
+	constexpr ColorF& ColorF::operator -=(const ColorF& rgb) & noexcept
 	{
 		r -= rgb.r;
 		g -= rgb.g;
@@ -218,7 +218,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr ColorF& ColorF::operator *=(const double s) noexcept
+	constexpr ColorF& ColorF::operator *=(const double s) & noexcept
 	{
 		r *= s;
 		g *= s;
@@ -226,7 +226,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr ColorF& ColorF::operator *=(const ColorF& rgba) noexcept
+	constexpr ColorF& ColorF::operator *=(const ColorF& rgba) & noexcept
 	{
 		r *= rgba.r;
 		g *= rgba.g;

@@ -32,7 +32,7 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg)
+	typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		const size_t size = m_container.size();
 
@@ -41,11 +41,11 @@ namespace s3d
 			detail::ThrowArrayChoiceOutOfRange();
 		}
 
-		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_container[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 
 	template <class Type, class Allocator>
-	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	const typename Array<Type, Allocator>::value_type& Array<Type, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
 		const size_t size = m_container.size();
 
@@ -54,7 +54,7 @@ namespace s3d
 			detail::ThrowArrayChoiceOutOfRange();
 		}
 
-		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_container[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 
 	template <class Type, class Allocator>
@@ -64,11 +64,11 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	Array<Type, Allocator> Array<Type, Allocator>::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	Array<Type, Allocator> Array<Type, Allocator>::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
 		Array result(Arg::reserve = Min(n, m_container.size()));
 
-		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
+		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, urbg);
 
 		return result;
 	}
@@ -107,30 +107,30 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&
 	{
-		Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
+		Shuffle(m_container.begin(), m_container.end(), urbg);
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&&
 	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		return std::move(shuffle(urbg));
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&
 	{
 		Array result(*this);
-		result.shuffle(std::forward<decltype(rbg)>(rbg));
+		result.shuffle(urbg);
 		return result;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& urbg)&&
 	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		return std::move(shuffle(urbg));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -152,7 +152,7 @@ namespace s3d
 	}
 
 	template <class Allocator>
-	typename Array<bool, Allocator>::value_type& Array<bool, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg)
+	typename Array<bool, Allocator>::value_type& Array<bool, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		const size_t size = m_container.size();
 
@@ -161,11 +161,11 @@ namespace s3d
 			detail::ThrowArrayChoiceOutOfRange();
 		}
 
-		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_container[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 
 	template <class Allocator>
-	const typename Array<bool, Allocator>::value_type& Array<bool, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	const typename Array<bool, Allocator>::value_type& Array<bool, Allocator>::choice(Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
 		const size_t size = m_container.size();
 
@@ -174,7 +174,7 @@ namespace s3d
 			detail::ThrowArrayChoiceOutOfRange();
 		}
 
-		return m_container[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_container[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 
 	template <class Allocator>
@@ -184,11 +184,11 @@ namespace s3d
 	}
 
 	template <class Allocator>
-	Array<bool, Allocator> Array<bool, Allocator>::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const
+	Array<bool, Allocator> Array<bool, Allocator>::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
 		Array result(Arg::reserve = Min(n, m_container.size()));
 
-		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, std::forward<decltype(rbg)>(rbg));
+		std::sample(m_container.begin(), m_container.end(), std::back_inserter(result), n, urbg);
 
 		return result;
 	}
@@ -227,29 +227,29 @@ namespace s3d
 	}
 
 	template <class Allocator>
-	constexpr Array<bool, Allocator>& Array<bool, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	constexpr Array<bool, Allocator>& Array<bool, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&
 	{
-		Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
+		Shuffle(m_container.begin(), m_container.end(), urbg);
 		return *this;
 	}
 
 	template <class Allocator>
-	constexpr Array<bool, Allocator> Array<bool, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	constexpr Array<bool, Allocator> Array<bool, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&&
 	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		return std::move(shuffle(urbg));
 	}
 
 	template <class Allocator>
-	constexpr Array<bool, Allocator> Array<bool, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	constexpr Array<bool, Allocator> Array<bool, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&
 	{
 		Array result(*this);
-		result.shuffle(std::forward<decltype(rbg)>(rbg));
+		result.shuffle(urbg);
 		return result;
 	}
 
 	template <class Allocator>
-	constexpr Array<bool, Allocator> Array<bool, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	constexpr Array<bool, Allocator> Array<bool, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& urbg)&&
 	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		return std::move(shuffle(urbg));
 	}
 }

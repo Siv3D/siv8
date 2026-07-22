@@ -1365,27 +1365,27 @@ namespace s3d
 		constexpr Grid shuffled()&&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルします。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return *this
-		constexpr Grid& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)& SIV3D_LIFETIMEBOUND;
+		constexpr Grid& shuffle(Concept::UniformRandomBitGenerator auto&& urbg)& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Grid shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&;
+		constexpr Grid shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Grid shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+		constexpr Grid shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Grid shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&;
+		constexpr Grid shuffled(Concept::UniformRandomBitGenerator auto&& urbg)&&;
 
 		////////////////////////////////////////////////////////////////
 		//

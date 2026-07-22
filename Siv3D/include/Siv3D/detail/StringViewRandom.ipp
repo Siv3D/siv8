@@ -24,7 +24,7 @@ namespace s3d
 		return choice(GetDefaultRNG());
 	}
 
-	String::value_type StringView::choice(Concept::UniformRandomBitGenerator auto&& rbg) const
+	String::value_type StringView::choice(Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
 		const size_t size = m_view.size();
 
@@ -33,7 +33,7 @@ namespace s3d
 			ThrowChoiceOutOfRange();
 		}
 
-		return m_view[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_view[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 	
 	////////////////////////////////////////////////////////////////
@@ -47,12 +47,10 @@ namespace s3d
 		return shuffled(GetDefaultRNG());
 	}
 
-	String StringView::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const
+	String StringView::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const
 	{
 		String result{ m_view };
-		result.shuffle(std::forward<decltype(rbg)>(rbg));
+		result.shuffle(urbg);
 		return result;
 	}
-
-
 }

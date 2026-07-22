@@ -1033,16 +1033,16 @@ namespace s3d
 		const value_type& choice() const;
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の要素を 1 つランダムに返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg);
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg);
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の要素を 1 つランダムに返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const;
 
 		/// @brief 頂点列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
@@ -1052,10 +1052,10 @@ namespace s3d
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の LineString
 		[[nodiscard]]
-		LineString choice(size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const;
+		LineString choice(size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1740,27 +1740,27 @@ namespace s3d
 		constexpr LineString shuffled() &&;
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルします。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return *this
-		constexpr LineString& shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&;
+		constexpr LineString& shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&;
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい LineString
 		[[nodiscard]]
-		constexpr LineString shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+		constexpr LineString shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &&;
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい LineString
 		[[nodiscard]]
-		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の並び順をランダムにシャッフルした新しい LineString を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい LineString
 		[[nodiscard]]
-		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+		constexpr LineString shuffled(Concept::UniformRandomBitGenerator auto&& urbg) &&;
 
 		////////////////////////////////////////////////////////////////
 		//

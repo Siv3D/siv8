@@ -1148,16 +1148,16 @@ namespace s3d
 		const value_type& choice() const SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) SIV3D_LIFETIMEBOUND;
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg) const SIV3D_LIFETIMEBOUND;
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const SIV3D_LIFETIMEBOUND;
 
 		/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
@@ -1167,10 +1167,10 @@ namespace s3d
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return ランダムに選ばれた要素の配列
 		[[nodiscard]]
-		Array choice(size_t n, Concept::UniformRandomBitGenerator auto&& rbg) const;
+		Array choice(size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1792,27 +1792,27 @@ namespace s3d
 		constexpr Array shuffled() &&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルします。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return *this
-		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& rbg) & SIV3D_LIFETIMEBOUND;
+		constexpr Array& shuffle(Concept::UniformRandomBitGenerator auto&& urbg) & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffle(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+		constexpr Array shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素の並び順をランダムにシャッフルした新しい配列を返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 新しい配列
 		[[nodiscard]]
-		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& rbg) &&;
+		constexpr Array shuffled(Concept::UniformRandomBitGenerator auto&& urbg) &&;
 
 		////////////////////////////////////////////////////////////////
 		//

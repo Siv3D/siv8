@@ -162,7 +162,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::FloatingPoint Float>
-	constexpr Vector2D<Float>& Vector2D<Float>::operator +=(const Vector2D v) noexcept
+	constexpr Vector2D<Float>& Vector2D<Float>::operator +=(const Vector2D v) & noexcept
 	{
 		x += v.x;
 		y += v.y;
@@ -176,7 +176,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 	
 	template <Concept::FloatingPoint Float>
-	constexpr Vector2D<Float>& Vector2D<Float>::operator -=(const Vector2D v) noexcept
+	constexpr Vector2D<Float>& Vector2D<Float>::operator -=(const Vector2D v) & noexcept
 	{
 		x -= v.x;
 		y -= v.y;
@@ -190,7 +190,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::FloatingPoint Float>
-	constexpr Vector2D<Float>& Vector2D<Float>::operator *=(const value_type s) noexcept
+	constexpr Vector2D<Float>& Vector2D<Float>::operator *=(const value_type s) & noexcept
 	{
 		x *= s;
 		y *= s;
@@ -198,7 +198,7 @@ namespace s3d
 	}
 
 	template <Concept::FloatingPoint Float>
-	constexpr Vector2D<Float>& Vector2D<Float>::operator *=(const Vector2D v) noexcept
+	constexpr Vector2D<Float>& Vector2D<Float>::operator *=(const Vector2D v) & noexcept
 	{
 		x *= v.x;
 		y *= v.y;
@@ -212,13 +212,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::FloatingPoint Float>
-	constexpr Vector2D<Float>& Vector2D<Float>::operator /=(const value_type s) noexcept
+	constexpr Vector2D<Float>& Vector2D<Float>::operator /=(const value_type s) & noexcept
 	{
 		return (*this *= (static_cast<value_type>(1.0) / s));
 	}
 
 	template <Concept::FloatingPoint Float>
-	constexpr Vector2D<Float>& Vector2D<Float>::operator /=(const Vector2D v) noexcept
+	constexpr Vector2D<Float>& Vector2D<Float>::operator /=(const Vector2D v) & noexcept
 	{
 		x /= v.x;
 		y /= v.y;

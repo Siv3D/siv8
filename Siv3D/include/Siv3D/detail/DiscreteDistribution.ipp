@@ -64,9 +64,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	DiscreteDistribution::result_type DiscreteDistribution::operator ()(Concept::UniformRandomBitGenerator auto&& rbg)
+	DiscreteDistribution::result_type DiscreteDistribution::operator ()(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return m_distribution(std::forward<decltype(rbg)>(rbg));
+		return m_distribution(urbg);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -109,12 +109,12 @@ namespace s3d
 	}
 
 	template <class Iterator>
-	decltype(auto) DiscreteSample(Iterator begin, [[maybe_unused]] Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg)
+	decltype(auto) DiscreteSample(Iterator begin, [[maybe_unused]] Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		assert(begin != end);
 		assert(std::distance(begin, end) == static_cast<int64>(weight.size()));
 
-		std::advance(begin, weight(std::forward<decltype(rbg)>(rbg)));
+		std::advance(begin, weight(urbg));
 		return *begin;
 	}
 
@@ -125,13 +125,13 @@ namespace s3d
 	}
 
 	template <class Container>
-	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg)
+	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		assert(std::size(c) != 0);
 		assert(std::size(c) == weight.size());
 
 		auto it = std::begin(c);
-		std::advance(it, weight(std::forward<decltype(rbg)>(rbg)));
+		std::advance(it, weight(urbg));
 		return *it;
 	}
 
@@ -142,9 +142,9 @@ namespace s3d
 	}
 
 	template <class Type>
-	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg)
+	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
 		assert(ilist.size() != 0);
-		return *(ilist.begin() + weight(std::forward<decltype(rbg)>(rbg)));
+		return *(ilist.begin() + weight(urbg));
 	}
 }

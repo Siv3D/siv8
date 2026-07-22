@@ -52,7 +52,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, Concept::UniformRandomBitGenerator auto&& rbg)
+		Circle SmallestEnclosingCircle(Array<Vec2> points, const double tolerance, Concept::UniformRandomBitGenerator auto&& urbg)
 		{
 			if (points.size() == 0)
 			{
@@ -75,7 +75,7 @@ namespace s3d
 				return SmallestEnclosingCircle(points[0], points[1], points[2], points[3], tolerance);
 			}
 
-			points.shuffle(std::forward<decltype(rbg)>(rbg));
+			points.shuffle(urbg);
 			
 			// 適当な 1 点を含む最小包含円から始めて、少しずつ広げていく戦略を取る。
 			// 含まれない点があったら、それが境界上になるように新たに取り直す。
@@ -114,9 +114,9 @@ namespace s3d
 			return circle;
 		}
 		
-		Circle SmallestEnclosingCircle(Array<Vec2> points, Concept::UniformRandomBitGenerator auto&& rbg, const double tolerance)
+		Circle SmallestEnclosingCircle(Array<Vec2> points, Concept::UniformRandomBitGenerator auto&& urbg, const double tolerance)
 		{
-			return SmallestEnclosingCircle(std::move(points), tolerance, std::forward<decltype(rbg)>(rbg));
+			return SmallestEnclosingCircle(std::move(points), tolerance, urbg);
 		}
 	}
 }

@@ -43,7 +43,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::FloatingPoint Float>
-	constexpr KahanSummation<Float>& KahanSummation<Float>::operator +=(const Float value) noexcept
+	constexpr KahanSummation<Float>& KahanSummation<Float>::operator +=(const Float value) & noexcept
 	{
 		const Float t = (m_sum + value);
 
@@ -67,7 +67,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::FloatingPoint Float>
-	constexpr KahanSummation<Float>& KahanSummation<Float>::operator -=(const Float value) noexcept
+	constexpr KahanSummation<Float>& KahanSummation<Float>::operator -=(const Float value) & noexcept
 	{
 		return (*this += (-value));
 	}

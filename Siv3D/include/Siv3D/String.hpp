@@ -1694,22 +1694,22 @@ namespace s3d
 		value_type choice()&&;
 
 		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& rbg)& SIV3D_LIFETIMEBOUND;
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg)& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type choice(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+		value_type choice(Concept::UniformRandomBitGenerator auto&& urbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて、文字列の要素を 1 つランダムに返します。
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素
 		[[nodiscard]]
-		value_type choice(Concept::UniformRandomBitGenerator auto&& rbg)&&;
+		value_type choice(Concept::UniformRandomBitGenerator auto&& urbg)&&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2527,27 +2527,27 @@ namespace s3d
 		String shuffled() && noexcept;
 
 		/// @brief 指定された乱数生成器を使って要素をシャッフルします。
-		/// @param rbg 乱数生成器
+		/// @param urbg 乱数生成器
 		/// @return *this
-		String& shuffle(Concept::UniformRandomBitGenerator auto&& rbg) & noexcept SIV3D_LIFETIMEBOUND;
+		String& shuffle(Concept::UniformRandomBitGenerator auto&& urbg) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定された乱数生成器を使って要素をシャッフルした新しい文字列を返します。
-		/// @param rbg 乱数生成器
+		/// @param urbg 乱数生成器
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String shuffle(Concept::UniformRandomBitGenerator auto&& rbg) && noexcept;
+		String shuffle(Concept::UniformRandomBitGenerator auto&& urbg) && noexcept;
 
 		/// @brief 指定された乱数生成器を使って要素をシャッフルした新しい文字列を返します。
-		/// @param rbg 乱数生成器
+		/// @param urbg 乱数生成器
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&;
+		String shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&;
 
 		/// @brief 指定された乱数生成器を使って要素をシャッフルした新しい文字列を返します。
-		/// @param rbg 乱数生成器
+		/// @param urbg 乱数生成器
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String shuffled(Concept::UniformRandomBitGenerator auto&& rbg) && noexcept;
+		String shuffled(Concept::UniformRandomBitGenerator auto&& urbg) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

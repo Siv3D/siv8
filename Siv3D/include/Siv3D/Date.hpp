@@ -220,12 +220,12 @@ namespace s3d
 		/// @brief 日付を進めます | Advances the date
 		/// @param days 進める日数 | Days to advance
 		/// @return *this
-		Date& operator +=(const Days& days) noexcept;
+		Date& operator +=(const Days& days) & noexcept;
 
 		/// @brief 日付を戻します | Moves the date back
 		/// @param days 戻す日数 | Days to move back
 		/// @return *this
-		Date& operator -=(const Days& days) noexcept;
+		Date& operator -=(const Days& days) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -280,7 +280,7 @@ namespace s3d
 		/// @brief 座標を加算します。
 		/// @param p 加算する座標
 		/// @return *this
-		constexpr Point& operator +=(Point p) noexcept;
+		constexpr Point& operator +=(Point p) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -291,7 +291,7 @@ namespace s3d
 		/// @brief 座標を減算します。
 		/// @param p 減算する座標
 		/// @return *this
-		constexpr Point& operator -=(Point p) noexcept;
+		constexpr Point& operator -=(Point p) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -302,7 +302,7 @@ namespace s3d
 		/// @brief 各成分にスカラーを乗算します。
 		/// @param s スカラー
 		/// @return *this
-		constexpr Point& operator *=(int32 s) noexcept;
+		constexpr Point& operator *=(int32 s) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -313,7 +313,7 @@ namespace s3d
 		/// @brief 各成分をスカラーで除算します。
 		/// @param s スカラー
 		/// @return *this
-		constexpr Point& operator /=(int32 s) noexcept;
+		constexpr Point& operator /=(int32 s) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -324,7 +324,7 @@ namespace s3d
 		/// @brief 各成分をスカラーで割った余りを代入します。
 		/// @param s スカラー
 		/// @return *this
-		constexpr Point& operator %=(int32 s) noexcept;
+		constexpr Point& operator %=(int32 s) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

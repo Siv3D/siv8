@@ -938,11 +938,11 @@ namespace s3d
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @tparam URBG 乱数生成器の型
-		/// @param rbg 使用する乱数エンジン
+		/// @param urbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
 		/// @throws std::out_of_range 文字列が空の場合
 		[[nodiscard]]
-		value_type choice(Concept::UniformRandomBitGenerator auto&& rbg) const;
+		value_type choice(Concept::UniformRandomBitGenerator auto&& urbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1383,10 +1383,10 @@ namespace s3d
 
 		/// @brief 指定された乱数生成器を使って要素をシャッフルした新しい文字列を返します。
 		/// @tparam URBG 乱数生成器の型
-		/// @param rbg 乱数生成器
+		/// @param urbg 乱数生成器
 		/// @return 新しい文字列
 		[[nodiscard]]
-		String shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const;
+		String shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const;
 
 		////////////////////////////////////////////////////////////////
 		//
