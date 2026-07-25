@@ -847,6 +847,71 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	choice
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon::value_type& MultiPolygon::choice()
+	{
+		return m_polygons.choice();
+	}
+
+	inline const MultiPolygon::value_type& MultiPolygon::choice() const
+	{
+		return m_polygons.choice();
+	}
+
+	inline MultiPolygon::value_type& MultiPolygon::choice(Concept::UniformRandomBitGenerator auto&& urbg)
+	{
+		return m_polygons.choice(urbg);
+	}
+
+	inline const MultiPolygon::value_type& MultiPolygon::choice(Concept::UniformRandomBitGenerator auto&& urbg) const
+	{
+		return m_polygons.choice(urbg);
+	}
+
+	inline MultiPolygon MultiPolygon::choice(const size_t n) const
+	{
+		return MultiPolygon{ m_polygons.choice(n) };
+	}
+
+	inline MultiPolygon MultiPolygon::choice(const size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const
+	{
+		return MultiPolygon{ m_polygons.choice(n, urbg) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	chunk
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Array<MultiPolygon> MultiPolygon::chunk(const size_type n) const
+	{
+		Array<MultiPolygon> result;
+
+		if (n == 0)
+		{
+			return result;
+		}
+
+		const size_type s = size();
+		const size_type chunkCount = (s + n - 1) / n;
+		result.reserve(chunkCount);
+
+		for (size_type i = 0; i < chunkCount; ++i)
+		{
+			const size_type index = (i * n);
+			const size_type length = Min((s - index), n);
+			result.push_back(slice(index, length));
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	contains_if
 	//
 	////////////////////////////////////////////////////////////////
@@ -1104,6 +1169,46 @@ namespace s3d
 	inline auto MultiPolygon::head_view(const size_type n) && noexcept
 	{
 		return std::move(m_polygons).head_view(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	in_groups
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Array<MultiPolygon> MultiPolygon::in_groups(const size_type group) const
+	{
+		Array<MultiPolygon> result;
+
+		if (group == 0)
+		{
+			return result;
+		}
+
+		const size_type s = size();
+
+		if (s == 0)
+		{
+			return result;
+		}
+
+		const size_type g = Min(group, s);
+		result.reserve(g);
+
+		const size_type div = (s / g);
+		const size_type mod = (s % g);
+
+		size_type index = 0;
+
+		for (size_type i = 0; i < g; ++i)
+		{
+			const size_type length = (div + (i < mod ? 1 : 0));
+			result.push_back(slice(index, length));
+			index += length;
+		}
+
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////

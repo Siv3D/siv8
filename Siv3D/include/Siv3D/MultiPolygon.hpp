@@ -902,6 +902,59 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	choice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列から要素を 1 つランダムに返します。
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice();
+
+		/// @brief 多角形の配列から要素を 1 つランダムに返します。
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const;
+
+		/// @brief 指定した乱数エンジンを用いて、多角形の配列から要素を 1 つランダムに返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg);
+
+		/// @brief 指定した乱数エンジンを用いて、多角形の配列から要素を 1 つランダムに返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const;
+
+		/// @brief 多角形の配列から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @return ランダムに選ばれた要素の MultiPolygon
+		[[nodiscard]]
+		MultiPolygon choice(size_t n) const;
+
+		/// @brief 指定した乱数エンジンを用いて、多角形の配列から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @param urbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素の MultiPolygon
+		[[nodiscard]]
+		MultiPolygon choice(size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	chunk
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列を指定した個数の要素を持つグループに分割します。最後のグループの要素数は n 個未満になることがあります。
+		/// @param n 1 つのグループが持つ要素数
+		/// @return 分割された MultiPolygon のグループ
+		[[nodiscard]]
+		Array<MultiPolygon> chunk(size_type n) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	contains_if
 		//
 		////////////////////////////////////////////////////////////////
@@ -1172,6 +1225,19 @@ namespace s3d
 		/// @brief 先頭から最大 n 個の要素を保持するビューを返します。
 		[[nodiscard]]
 		auto head_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	in_groups
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列を指定したグループ数に分割します。
+		/// @param group グループ数
+		/// @remark group が要素数より大きい場合、空のグループは作られず、返されるグループ数は要素数になります。
+		/// @return 分割した MultiPolygon のグループ
+		[[nodiscard]]
+		Array<MultiPolygon> in_groups(size_type group) const;
 
 		////////////////////////////////////////////////////////////////
 		//
