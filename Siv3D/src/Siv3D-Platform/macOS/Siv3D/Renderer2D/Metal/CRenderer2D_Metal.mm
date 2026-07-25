@@ -1519,6 +1519,49 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addMesh2D
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::addMesh2D(const std::span<const Vertex2D> vertices, const std::span<const TriangleIndex> indices, const Optional<Float2>& offset)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildMesh2D(std::bind_front(&CRenderer2D_Metal::createBuffer, this), vertices, indices, offset))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+			
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psShape);
+			}
+			
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_Metal::addMesh2D(const Texture& texture, const std::span<const Vertex2D> vertices, const std::span<const TriangleIndex> indices, const Optional<Float2>& offset)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildMesh2D(std::bind_front(&CRenderer2D_Metal::createBuffer, this), vertices, indices, offset))
+		{
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+			}
+			
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psTexture);
+			}
+			
+			m_commandManager.pushPSTexture(0, texture);
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addQuadWarp
 	//
 	////////////////////////////////////////////////////////////////

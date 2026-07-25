@@ -1,0 +1,556 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2026 Ryo Suzuki
+//	Copyright (c) 2016-2026 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include <Siv3D/Mesh2D.hpp>
+# include <Siv3D/ColorHSV.hpp>
+# include <Siv3D/Mat3x2.hpp>
+# include <Siv3D/Polygon.hpp>
+# include <Siv3D/Shape2D.hpp>
+# include <Siv3D/Renderer2D/IRenderer2D.hpp>
+# include <Siv3D/Engine/Siv3DEngine.hpp>
+
+namespace s3d
+{
+	namespace
+	{
+		constexpr Float4 DefaultVertexColor{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+		template <class UVGenerator>
+		void AssignVertices(Array<Vertex2D>& dst, const Array<Float2>& src, UVGenerator&& uvGenerator)
+		{
+			dst.resize(src.size());
+
+			for (size_t i = 0; i < src.size(); ++i)
+			{
+				const Float2 pos = src[i];
+				dst[i].set(pos, uvGenerator(pos), DefaultVertexColor);
+			}
+		}
+
+		void AssignVertices(Array<Vertex2D>& dst, const Array<Float2>& src)
+		{
+			dst.resize(src.size());
+
+			for (size_t i = 0; i < src.size(); ++i)
+			{
+				dst[i].set(src[i], Float2{ 0.0f, 0.0f }, DefaultVertexColor);
+			}
+		}
+
+		template <class PositionGenerator>
+		[[nodiscard]]
+		Mesh2D MakeGrid(const Size& divisions, PositionGenerator&& positionGenerator)
+		{
+			if ((divisions.x <= 0) || (divisions.y <= 0))
+			{
+				return{};
+			}
+
+			const size_t xDivisions = static_cast<size_t>(divisions.x);
+			const size_t yDivisions = static_cast<size_t>(divisions.y);
+			const size_t columns = (xDivisions + 1);
+			const size_t rows = (yDivisions + 1);
+
+			// columns * rows のオーバーフローを避けつつ、頂点数の上限を検証する
+			if ((Mesh2D::MaxVertexCount / columns) < rows)
+			{
+				return{};
+			}
+
+			const size_t vertexCount = (columns * rows);
+			const size_t triangleCount = (xDivisions * yDivisions * 2);
+			Mesh2D mesh{ vertexCount, triangleCount };
+
+			for (size_t y = 0; y <= yDivisions; ++y)
+			{
+				const double v = (static_cast<double>(y) / yDivisions);
+
+				for (size_t x = 0; x <= xDivisions; ++x)
+				{
+					const double u = (static_cast<double>(x) / xDivisions);
+					const size_t vertexIndex = (y * columns + x);
+
+					mesh.vertices[vertexIndex].set(
+						positionGenerator(u, v),
+						Float2{ static_cast<float>(u), static_cast<float>(v) },
+						DefaultVertexColor);
+				}
+			}
+
+			size_t triangleIndex = 0;
+
+			for (size_t y = 0; y < yDivisions; ++y)
+			{
+				for (size_t x = 0; x < xDivisions; ++x)
+				{
+					const size_t topLeft = (y * columns + x);
+					const size_t topRight = (topLeft + 1);
+					const size_t bottomLeft = (topLeft + columns);
+					const size_t bottomRight = (bottomLeft + 1);
+
+					mesh.indices[triangleIndex++] = TriangleIndex{
+						static_cast<TriangleIndex::value_type>(topLeft),
+						static_cast<TriangleIndex::value_type>(topRight),
+						static_cast<TriangleIndex::value_type>(bottomRight)
+					};
+
+					mesh.indices[triangleIndex++] = TriangleIndex{
+						static_cast<TriangleIndex::value_type>(topLeft),
+						static_cast<TriangleIndex::value_type>(bottomRight),
+						static_cast<TriangleIndex::value_type>(bottomLeft)
+					};
+				}
+			}
+
+			return mesh;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D::Mesh2D(const Polygon& polygon)
+	{
+		const auto& srcVertices = polygon.vertices();
+
+		if (MaxVertexCount < srcVertices.size())
+		{
+			return;
+		}
+
+		AssignVertices(vertices, srcVertices);
+		indices = polygon.indices();
+	}
+
+	Mesh2D::Mesh2D(const Polygon& polygon, const RectF& mappingRect)
+	{
+		const auto& srcVertices = polygon.vertices();
+
+		if ((MaxVertexCount < srcVertices.size())
+			|| (mappingRect.w == 0.0)
+			|| (mappingRect.h == 0.0))
+		{
+			return;
+		}
+
+		const Float2 uvOrigin{
+			static_cast<float>(mappingRect.x),
+			static_cast<float>(mappingRect.y)
+		};
+		const Float2 uvScale{
+			static_cast<float>(1.0 / mappingRect.w),
+			static_cast<float>(1.0 / mappingRect.h)
+		};
+
+		AssignVertices(vertices, srcVertices,
+			[uvOrigin, uvScale](const Float2 pos) noexcept
+			{
+				return ((pos - uvOrigin) * uvScale);
+			});
+
+		indices = polygon.indices();
+	}
+
+	Mesh2D::Mesh2D(const Polygon& polygon, const Mat3x2& uvTransform)
+	{
+		const auto& srcVertices = polygon.vertices();
+
+		if (MaxVertexCount < srcVertices.size())
+		{
+			return;
+		}
+
+		AssignVertices(vertices, srcVertices,
+			[&uvTransform](const Float2 pos) noexcept
+			{
+				return uvTransform.transformPoint(pos);
+			});
+
+		indices = polygon.indices();
+	}
+
+	Mesh2D::Mesh2D(const Shape2D& shape2D)
+	{
+		const auto& srcVertices = shape2D.vertices();
+
+		if (MaxVertexCount < srcVertices.size())
+		{
+			return;
+		}
+
+		AssignVertices(vertices, srcVertices);
+		indices = shape2D.indices();
+	}
+
+	Mesh2D::Mesh2D(const Shape2D& shape2D, const RectF& mappingRect)
+	{
+		const auto& srcVertices = shape2D.vertices();
+
+		if ((MaxVertexCount < srcVertices.size())
+			|| (mappingRect.w == 0.0)
+			|| (mappingRect.h == 0.0))
+		{
+			return;
+		}
+
+		const Float2 uvOrigin{
+			static_cast<float>(mappingRect.x),
+			static_cast<float>(mappingRect.y)
+		};
+		const Float2 uvScale{
+			static_cast<float>(1.0 / mappingRect.w),
+			static_cast<float>(1.0 / mappingRect.h)
+		};
+
+		AssignVertices(vertices, srcVertices,
+			[uvOrigin, uvScale](const Float2 pos) noexcept
+			{
+				return ((pos - uvOrigin) * uvScale);
+			});
+
+		indices = shape2D.indices();
+	}
+
+	Mesh2D::Mesh2D(const Shape2D& shape2D, const Mat3x2& uvTransform)
+	{
+		const auto& srcVertices = shape2D.vertices();
+
+		if (MaxVertexCount < srcVertices.size())
+		{
+			return;
+		}
+
+		AssignVertices(vertices, srcVertices,
+			[&uvTransform](const Float2 pos) noexcept
+			{
+				return uvTransform.transformPoint(pos);
+			});
+
+		indices = shape2D.indices();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh2D::isEmpty() const noexcept
+	{
+		return (vertices.empty() || indices.empty());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isValid
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh2D::isValid() const noexcept
+	{
+		if (MaxVertexCount < vertices.size())
+		{
+			return false;
+		}
+
+		const size_t vertexCount = vertices.size();
+
+		for (const auto& triangle : indices)
+		{
+			if ((vertexCount <= triangle.i0)
+				|| (vertexCount <= triangle.i1)
+				|| (vertexCount <= triangle.i2))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	num_vertices
+	//
+	////////////////////////////////////////////////////////////////
+
+	size_t Mesh2D::num_vertices() const noexcept
+	{
+		return vertices.size();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	num_triangles
+	//
+	////////////////////////////////////////////////////////////////
+
+	size_t Mesh2D::num_triangles() const noexcept
+	{
+		return indices.size();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	append
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh2D::append(const Mesh2D& mesh)
+	{
+		if (not mesh.isValid())
+		{
+			return false;
+		}
+
+		if (this == &mesh)
+		{
+			const Mesh2D copy = mesh;
+			return append(copy);
+		}
+
+		if ((MaxVertexCount < vertices.size())
+			|| (MaxVertexCount < mesh.vertices.size())
+			|| ((MaxVertexCount - vertices.size()) < mesh.vertices.size()))
+		{
+			return false;
+		}
+
+		const size_t vertexOffset = vertices.size();
+		Array<TriangleIndex> adjustedIndices = mesh.indices;
+
+		for (auto& triangle : adjustedIndices)
+		{
+			const size_t i0 = (vertexOffset + triangle.i0);
+			const size_t i1 = (vertexOffset + triangle.i1);
+			const size_t i2 = (vertexOffset + triangle.i2);
+
+			if ((MaxVertexIndex < i0)
+				|| (MaxVertexIndex < i1)
+				|| (MaxVertexIndex < i2))
+			{
+				return false;
+			}
+
+			triangle.i0 = static_cast<TriangleIndex::value_type>(i0);
+			triangle.i1 = static_cast<TriangleIndex::value_type>(i1);
+			triangle.i2 = static_cast<TriangleIndex::value_type>(i2);
+		}
+
+		vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
+		indices.insert(indices.end(), adjustedIndices.begin(), adjustedIndices.end());
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	setColor
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D& Mesh2D::setColor(const ColorF& color) noexcept
+	{
+		const Float4 vertexColor = color.toFloat4();
+
+		for (auto& vertex : vertices)
+		{
+			vertex.color = vertexColor;
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transformUV
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D& Mesh2D::transformUV(const Mat3x2& transform) noexcept
+	{
+		for (auto& vertex : vertices)
+		{
+			vertex.tex = transform.transformPoint(vertex.tex);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Mesh2D::draw() const
+	{
+		if (isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, indices, none);
+	}
+
+	void Mesh2D::draw(const Vec2& offset) const
+	{
+		if (isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, indices, offset);
+	}
+
+	void Mesh2D::draw(const Texture& texture) const
+	{
+		if (isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, indices, none);
+	}
+
+	void Mesh2D::draw(const Vec2& offset, const Texture& texture) const
+	{
+		if (isEmpty())
+		{
+			return;
+		}
+
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, indices, offset);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawSubset
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount) const
+	{
+		if (vertices.empty()
+			|| (triangleCount == 0)
+			|| (indices.size() <= startTriangle))
+		{
+			return;
+		}
+
+		const size_t availableTriangleCount = (indices.size() - startTriangle);
+
+		if (availableTriangleCount < triangleCount)
+		{
+			triangleCount = availableTriangleCount;
+		}
+
+		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, subsetIndices, none);
+	}
+
+	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount, const Vec2& offset) const
+	{
+		if (vertices.empty()
+			|| (triangleCount == 0)
+			|| (indices.size() <= startTriangle))
+		{
+			return;
+		}
+		
+		const size_t availableTriangleCount = (indices.size() - startTriangle);
+		
+		if (availableTriangleCount < triangleCount)
+		{
+			triangleCount = availableTriangleCount;
+		}
+		
+		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, subsetIndices, offset);
+	}
+
+	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount, const Texture& texture) const
+	{
+		if (vertices.empty()
+			|| (triangleCount == 0)
+			|| (indices.size() <= startTriangle))
+		{
+			return;
+		}
+
+		const size_t availableTriangleCount = (indices.size() - startTriangle);
+
+		if (availableTriangleCount < triangleCount)
+		{
+			triangleCount = availableTriangleCount;
+		}
+
+		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, subsetIndices, none);
+	}
+
+	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount, const Vec2& offset, const Texture& texture) const
+	{
+		if (vertices.empty()
+			|| (triangleCount == 0)
+			|| (indices.size() <= startTriangle))
+		{
+			return;
+		}
+	
+		const size_t availableTriangleCount = (indices.size() - startTriangle);
+		
+		if (availableTriangleCount < triangleCount)
+		{
+			triangleCount = availableTriangleCount;
+		}
+		
+		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
+		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, subsetIndices, offset);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Grid
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D Mesh2D::Grid(const RectF& rect, const Size& divisions)
+	{
+		return MakeGrid(divisions,
+			[&rect](const double u, const double v) noexcept
+			{
+				return Float2{
+					static_cast<float>(rect.x + rect.w * u),
+					static_cast<float>(rect.y + rect.h * v)
+				};
+			});
+	}
+
+	Mesh2D Mesh2D::Grid(const Quad& quad, const Size& divisions)
+	{
+		return MakeGrid(divisions,
+			[&quad](const double u, const double v) noexcept
+			{
+				const Vec2 top = (quad.p0 + (quad.p1 - quad.p0) * u);
+				const Vec2 bottom = (quad.p3 + (quad.p2 - quad.p3) * u);
+				const Vec2 pos = (top + (bottom - top) * v);
+
+				return Float2{
+					static_cast<float>(pos.x),
+					static_cast<float>(pos.y)
+				};
+			});
+	}
+}

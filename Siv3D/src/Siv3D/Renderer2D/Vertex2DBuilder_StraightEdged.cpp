@@ -846,5 +846,49 @@ namespace s3d
 
 			return IndexCount;
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BuildTexturedQuad
+		//
+		////////////////////////////////////////////////////////////////
+
+		Vertex2D::IndexType BuildMesh2D(const BufferCreatorFunc& bufferCreator, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset)
+		{
+			const Vertex2D::IndexType VertexCount = static_cast<Vertex2D::IndexType>(vertices.size());
+			const Vertex2D::IndexType IndexCount = static_cast<Vertex2D::IndexType>(triangleIndices.size() * 3);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			if (not pVertex)
+			{
+				return 0;
+			}
+
+			// 頂点バッファへの書き込み
+			{
+				std::memcpy(pVertex, vertices.data(), vertices.size_bytes());
+
+				if (offset)
+				{
+					const Float2 _offset = *offset;
+
+					for (Vertex2D::IndexType i = 0; i < VertexCount; ++i)
+					{
+						pVertex[i].pos += _offset;
+					}
+				}
+			}
+
+			// インデックスバッファへの書き込み
+			{
+				std::memcpy(pIndex, triangleIndices.data(), triangleIndices.size_bytes());
+				
+				for (size_t i = 0; i < IndexCount; ++i)
+				{
+					*(pIndex++) += indexOffset;
+				}
+			}
+
+			return IndexCount;
+		}
 	}
 }

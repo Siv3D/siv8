@@ -18,6 +18,7 @@
 
 namespace s3d
 {
+	struct ColorF;
 	class Polygon;
 	class Shape2D;
 	class Texture;
@@ -75,7 +76,7 @@ namespace s3d
 		/// @remark 各頂点の色は白に、UV 座標は `(0, 0)` に設定されます。
 		/// @remark `polygon` の頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を作成します。
 		[[nodiscard]]
-		Mesh2D(const Polygon& polygon);
+		explicit Mesh2D(const Polygon& polygon);
 
 		/// @brief Polygon から、指定した矩形を UV 空間に対応させた Mesh2D を作成します。
 		/// @param polygon Mesh2D に変換する Polygon
@@ -99,7 +100,7 @@ namespace s3d
 		/// @remark 各頂点の色は白に、UV 座標は `(0, 0)` に設定されます。
 		/// @remark `shape2D` の頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を作成します。
 		[[nodiscard]]
-		Mesh2D(const Shape2D& shape2D);
+		explicit Mesh2D(const Shape2D& shape2D);
 
 		/// @brief Shape2D から、指定した矩形を UV 空間に対応させた Mesh2D を作成します。
 		/// @param shape2D Mesh2D に変換する Shape2D
@@ -212,11 +213,20 @@ namespace s3d
 		/// @remark 各頂点の色が描画色として使用されます。
 		void draw() const;
 
+		/// @brief 移動させた位置に Mesh2D を描画します。
+		/// @param offset 座標のオフセット
+		void draw(const Vec2& offset) const;
+
 		/// @brief テクスチャを使用して Mesh2D を描画します。
 		/// @param texture 描画に使用するテクスチャ
 		/// @remark 各頂点の UV 座標がテクスチャ座標として使用されます。
 		/// @remark 各頂点の色がテクスチャの色に乗算されます。
 		void draw(const Texture& texture) const;
+
+		/// @brief 移動させた位置にテクスチャを使用して Mesh2D を描画します。
+		/// @param offset 座標のオフセット
+		/// @param texture 描画に使用するテクスチャ
+		void draw(const Vec2& offset, const Texture& texture) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -231,6 +241,14 @@ namespace s3d
 		/// @remark `startTriangle` が三角形配列の範囲外の場合は何も描画されません。
 		void drawSubset(size_t startTriangle, size_t triangleCount) const;
 
+		/// @brief 移動させた位置に、指定した範囲の三角形を描画します。
+		/// @param startTriangle 描画を開始する三角形のインデックス
+		/// @param triangleCount 描画する三角形の個数
+		/// @param offset 座標のオフセット
+		/// @remark `startTriangle + triangleCount` が三角形配列の末尾を超える場合、存在する範囲のみ描画されます。
+		/// @remark `startTriangle` が三角形配列の範囲外の場合は何も描画されません。
+		void drawSubset(size_t startTriangle, size_t triangleCount, const Vec2& offset) const;
+
 		/// @brief テクスチャを使用して、指定した範囲の三角形を描画します。
 		/// @param startTriangle 描画を開始する三角形のインデックス
 		/// @param triangleCount 描画する三角形の個数
@@ -239,6 +257,15 @@ namespace s3d
 		/// @remark `startTriangle` が三角形配列の範囲外の場合は何も描画されません。
 		/// @remark 各頂点の UV 座標がテクスチャ座標として使用されます。
 		void drawSubset(size_t startTriangle, size_t triangleCount, const Texture& texture) const;
+
+		/// @brief 移動させた位置に、テクスチャを使用して指定した範囲の三角形を描画します。
+		/// @param startTriangle 描画を開始する三角形のインデックス
+		/// @param triangleCount 描画する三角形の個数
+		/// @param offset 座標のオフセット
+		/// @param texture 描画に使用するテクスチャ
+		/// @remark `startTriangle + triangleCount` が三角形配列の末尾を超える場合、存在する範囲のみ描画されます。
+		/// @remark `startTriangle` が三角形配列の範囲外の場合は何も描画されません。
+		void drawSubset(size_t startTriangle, size_t triangleCount, const Vec2& offset, const Texture& texture) const;
 
 		////////////////////////////////////////////////////////////////
 		//

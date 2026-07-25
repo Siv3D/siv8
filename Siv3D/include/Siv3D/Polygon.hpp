@@ -1198,24 +1198,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toMesh2D
-		//
-		////////////////////////////////////////////////////////////////
-
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
-
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
-
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
-
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(const Mat3x2& uvMat) const;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	_detail
 		//
 		////////////////////////////////////////////////////////////////
