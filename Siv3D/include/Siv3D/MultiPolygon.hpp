@@ -634,33 +634,15 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定したインデックスの要素を削除します。削除後の順序は保証されません。
+		/// @param index 削除する要素のインデックス
+		/// @return *this
 		MultiPolygon& erase_at_unstable(size_type index) &;
 
 		/// @brief 指定したインデックスの要素を削除します。削除後の順序は保証されません。
+		/// @param index 削除する要素のインデックス
+		/// @return 削除後の MultiPolygon
 		[[nodiscard]]
 		MultiPolygon erase_at_unstable(size_type index) &&;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	erase_all_if_unstable
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 条件を満たすすべての要素を削除します。削除後の順序は保証されません。
-		template <class Fty>
-		size_type erase_all_if_unstable(Fty f)
-			requires std::predicate<Fty&, const value_type&>;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	erase_first_if_unstable
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 条件を満たす最初の要素を削除します。削除後の順序は保証されません。
-		template <class Fty>
-		bool erase_first_if_unstable(Fty f)
-			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -677,6 +659,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_all_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を削除します。削除後の順序は保証されません。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 削除した要素の個数
+		template <class Fty>
+		size_type erase_all_if_unstable(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	erase_first_if
 		//
 		////////////////////////////////////////////////////////////////
@@ -687,6 +683,20 @@ namespace s3d
 		/// @return 要素を削除した場合 true, それ以外の場合は false
 		template <class Fty>
 		bool erase_first_if(Fty f) requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす最初の要素を削除します。削除後の順序は保証されません。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 要素を削除した場合 true, それ以外の場合は false
+		template <class Fty>
+		bool erase_first_if_unstable(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -891,13 +901,22 @@ namespace s3d
 		MultiPolygon& append(const container_type& other);
 
 		/// @brief 配列の末尾に指定した範囲の要素を追加します。
+		/// @tparam Iterator イテレータの型
+		/// @param first 範囲の先頭を指すイテレータ
+		/// @param last 範囲の終端を指すイテレータ
+		/// @return *this
 		template <std::input_iterator Iterator>
 		MultiPolygon& append(Iterator first, Iterator last);
 
 		/// @brief 配列の末尾にリストの要素を追加します。
+		/// @param list 追加する要素のリスト
+		/// @return *this
 		MultiPolygon& append(std::initializer_list<value_type> list);
 
 		/// @brief 配列の末尾に count 個の value を追加します。
+		/// @param count 追加する要素数
+		/// @param value 追加する値
+		/// @return *this
 		MultiPolygon& append(size_type count, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
@@ -1045,26 +1064,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	reverse_each
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
-		/// @tparam Fty 呼び出す関数の型
-		/// @param f 呼び出す関数
-		template <class Fty>
-		void reverse_each(Fty f)
-			requires std::invocable<Fty&, value_type&>;
-
-		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
-		/// @tparam Fty 呼び出す関数の型
-		/// @param f 呼び出す関数
-		template <class Fty>
-		void reverse_each(Fty f) const
-			requires std::invocable<Fty&, const value_type&>;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	fetch
 		//
 		////////////////////////////////////////////////////////////////
@@ -1108,6 +1107,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	fold_left
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を左から順番に関数へ適用し、1 つの値にまとめます。
+		/// @tparam R 初期値の型
+		/// @tparam Fty 適用する関数の型
+		/// @param init 初期値
+		/// @param f 適用する関数
+		/// @return まとめられた値
+		template <class R, class Fty>
+		auto fold_left(R init, Fty f) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	map
 		//
 		////////////////////////////////////////////////////////////////
@@ -1135,24 +1149,6 @@ namespace s3d
 		[[nodiscard]]
 		bool none(Fty f) const
 			requires std::predicate<Fty&, const value_type&>;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	reverse_view
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 要素を逆順に参照するビューを返します。
-		[[nodiscard]]
-		auto reverse_view() &;
-
-		/// @brief 要素を逆順に参照するビューを返します。
-		[[nodiscard]]
-		auto reverse_view() const&;
-
-		/// @brief 要素を逆順に参照するビューを返します。
-		[[nodiscard]]
-		auto reverse_view() &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1360,26 +1356,22 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 条件を満たす要素を除いた新しい MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素を除いた MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon without_if(Fty f) const&
 			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たす要素を除いた新しい MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素を除いた MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon without_if(Fty f) &&
 			requires std::predicate<Fty&, const value_type&>;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	fold_left
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 要素を左から順番に関数へ適用し、1 つの値にまとめます。
-		template <class R, class Fty>
-		auto fold_left(R init, Fty f) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1388,23 +1380,39 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 条件を満たすすべての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return *this
 		template <class Fty>
 		MultiPolygon& replace_if(Fty f, const value_type& newValue) &
 			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return 置き換え後の MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon replace_if(Fty f, const value_type& newValue) &&
 			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return 置き換え後の MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon replaced_if(Fty f, const value_type& newValue) const&
 			requires std::predicate<Fty&, const value_type&>;
 
 		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return 置き換え後の MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon replaced_if(Fty f, const value_type& newValue) &&
@@ -1417,19 +1425,64 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 要素を逆順に並び替えます。
+		/// @return *this
 		MultiPolygon& reverse() &;
 
 		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		/// @return 逆順に並び替えた MultiPolygon
 		[[nodiscard]]
 		MultiPolygon reverse() &&;
 
 		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		/// @return 逆順に並び替えた MultiPolygon
 		[[nodiscard]]
 		MultiPolygon reversed() const&;
 
 		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		/// @return 逆順に並び替えた MultiPolygon
 		[[nodiscard]]
 		MultiPolygon reversed() &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を逆順に参照するビューを返します。
+		/// @return 要素を逆順に参照するビュー
+		[[nodiscard]]
+		auto reverse_view() &;
+
+		/// @brief 要素を逆順に参照するビューを返します。
+		/// @return 要素を逆順に参照するビュー
+		[[nodiscard]]
+		auto reverse_view() const&;
+
+		/// @brief 要素を逆順に保持するビューを返します。
+		/// @return 要素を逆順に保持するビュー
+		[[nodiscard]]
+		auto reverse_view() &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1438,32 +1491,44 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 要素の並び順をランダムにシャッフルします。
+		/// @return *this
 		MultiPolygon& shuffle() &;
 
 		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		/// @return シャッフルした MultiPolygon
 		[[nodiscard]]
 		MultiPolygon shuffle() &&;
 
 		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		/// @return シャッフルした MultiPolygon
 		[[nodiscard]]
 		MultiPolygon shuffled() const&;
 
 		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		/// @return シャッフルした MultiPolygon
 		[[nodiscard]]
 		MultiPolygon shuffled() &&;
 
 		/// @brief 指定した乱数エンジンを用いて要素をシャッフルします。
+		/// @param urbg 使用する乱数エンジン
+		/// @return *this
 		MultiPolygon& shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &;
 
 		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return シャッフルした MultiPolygon
 		[[nodiscard]]
 		MultiPolygon shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &&;
 
 		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return シャッフルした MultiPolygon
 		[[nodiscard]]
 		MultiPolygon shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&;
 
 		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return シャッフルした MultiPolygon
 		[[nodiscard]]
 		MultiPolygon shuffled(Concept::UniformRandomBitGenerator auto&& urbg) &&;
 
@@ -1474,23 +1539,35 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した比較関数を用いて要素を並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
 		template <class Fty>
 		MultiPolygon& sort_by(Fty f) &
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 並び替えた MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon sort_by(Fty f) &&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 並び替えた MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon sorted_by(Fty f) const&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 並び替えた MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon sorted_by(Fty f) &&
@@ -1503,23 +1580,35 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
 		template <class Fty>
 		MultiPolygon& stable_sort_by(Fty f) &
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 安定ソートした MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon stable_sort_by(Fty f) &&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 安定ソートした MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon stable_sorted_by(Fty f) const&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
 
 		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 安定ソートした MultiPolygon
 		template <class Fty>
 		[[nodiscard]]
 		MultiPolygon stable_sorted_by(Fty f) &&
@@ -1532,6 +1621,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 各要素に関数を適用します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @remark Fty が戻り値を持たない場合は `.each(f)`、戻り値を持つ場合は `.map(f)` と同じです。
+		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合は void
 		template <class Fty>
 		auto operator >>(Fty f) const
 			requires std::invocable<Fty&, const value_type&>;
@@ -1814,7 +1907,6 @@ namespace s3d
 		/// @return *this
 		MultiPolygon& scaleFrom(Vec2 pos, Vec2 s);
 
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	area
@@ -1904,6 +1996,55 @@ namespace s3d
 		template <class Shape2DType>
 		[[nodiscard]]
 		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paint(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を描画します。
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& draw(const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& draw(const Vec2& offset, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を塗りつぶしパターンで描画します。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& draw(const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形を移動させた位置に塗りつぶしパターンで描画します。
+		/// @param offset 座標のオフセット
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& draw(const Vec2& offset, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -998,26 +998,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	reverse_each
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class Fty>
-	void MultiPolygon::reverse_each(Fty f)
-		requires std::invocable<Fty&, value_type&>
-	{
-		m_polygons.reverse_each(std::forward<Fty>(f));
-	}
-
-	template <class Fty>
-	void MultiPolygon::reverse_each(Fty f) const
-		requires std::invocable<Fty&, const value_type&>
-	{
-		m_polygons.reverse_each(std::forward<Fty>(f));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	fetch
 	//
 	////////////////////////////////////////////////////////////////
@@ -1057,6 +1037,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	fold_left
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class R, class Fty>
+	auto MultiPolygon::fold_left(R init, Fty f) const
+	{
+		return m_polygons.fold_left(std::move(init), std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	map
 	//
 	////////////////////////////////////////////////////////////////
@@ -1079,27 +1071,6 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_polygons.none(std::forward<Fty>(f));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	reverse_view
-	//
-	////////////////////////////////////////////////////////////////
-
-	inline auto MultiPolygon::reverse_view() &
-	{
-		return m_polygons.reverse_view();
-	}
-
-	inline auto MultiPolygon::reverse_view() const&
-	{
-		return m_polygons.reverse_view();
-	}
-
-	inline auto MultiPolygon::reverse_view() &&
-	{
-		return std::move(m_polygons).reverse_view();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1349,18 +1320,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	fold_left
-	//
-	////////////////////////////////////////////////////////////////
-
-	template <class R, class Fty>
-	auto MultiPolygon::fold_left(R init, Fty f) const
-	{
-		return m_polygons.fold_left(std::move(init), std::forward<Fty>(f));
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	replace_if, replaced_if
 	//
 	////////////////////////////////////////////////////////////////
@@ -1419,6 +1378,47 @@ namespace s3d
 	inline MultiPolygon MultiPolygon::reversed() &&
 	{
 		return MultiPolygon{ std::move(m_polygons).reversed() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	void MultiPolygon::reverse_each(Fty f)
+		requires std::invocable<Fty&, value_type&>
+	{
+		m_polygons.reverse_each(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	void MultiPolygon::reverse_each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		m_polygons.reverse_each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline auto MultiPolygon::reverse_view() &
+	{
+		return m_polygons.reverse_view();
+	}
+
+	inline auto MultiPolygon::reverse_view() const&
+	{
+		return m_polygons.reverse_view();
+	}
+
+	inline auto MultiPolygon::reverse_view() &&
+	{
+		return std::move(m_polygons).reverse_view();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1607,5 +1607,77 @@ namespace s3d
 	Optional<Array<Vec2>> MultiPolygon::intersectsAt(const Shape2DType& other) const
 	{
 		return Geometry2D::IntersectsAt(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paint
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::paint(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.paint(dst, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::paint(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.paint(dst, offset, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	draw
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::draw(const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.draw(color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::draw(const Vec2& offset, const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.draw(offset, color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::draw(const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.draw(pattern);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::draw(const Vec2& offset, const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.draw(offset, pattern);
+		}
+
+		return *this;
 	}
 }
