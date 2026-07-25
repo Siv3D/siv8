@@ -104,6 +104,14 @@ namespace s3d
 		[[nodiscard]]
 		MultiPolygon(std::initializer_list<value_type> init);
 
+		/// @brief 範囲から多角形の配列を作成します。
+		/// @tparam Range 多角形の範囲
+		/// @param tag 範囲から作成することを示すタグ
+		/// @param range 多角形の範囲
+		template <Concept::ContainerCompatibleRange<Polygon> Range>
+		[[nodiscard]]
+		MultiPolygon(std::from_range_t tag, Range&& range);
+
 		/// @brief 空の多角形の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
 		[[nodiscard]]
@@ -122,6 +130,11 @@ namespace s3d
 		MultiPolygon& operator =(const container_type& other);
 
 		MultiPolygon& operator =(container_type&& other) noexcept;
+
+		/// @brief リストから多角形の配列を代入します。
+		/// @param list 多角形のリスト
+		/// @return *this
+		MultiPolygon& operator =(std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -519,12 +532,11 @@ namespace s3d
 		/// @return 挿入された要素を指すイテレータ
 		iterator insert(const_iterator pos, const value_type& value);
 
-		/// @brief 指定した位置に count 個の value を挿入します。
+		/// @brief 指定した位置に要素を挿入します。
 		/// @param pos 挿入する位置
-		/// @param count 挿入する個数
 		/// @param value 挿入する値
-		/// @return 挿入された要素の先頭を指すイテレータ
-		iterator insert(const_iterator pos, size_type count, const value_type& value);
+		/// @return 挿入された要素を指すイテレータ
+		iterator insert(const_iterator pos, value_type&& value);
 
 		/// @brief 指定した位置にイテレータが指す範囲の要素を挿入します。
 		/// @tparam Iterator イテレータ
@@ -540,6 +552,19 @@ namespace s3d
 		/// @param list リスト
 		/// @return 挿入された要素の先頭を指すイテレータ
 		iterator insert(const_iterator pos, std::initializer_list<value_type> list);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	insert_range
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に範囲の要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @param range 挿入する要素の範囲
+		/// @return 挿入された要素の先頭を指すイテレータ
+		template <Concept::ContainerCompatibleRange<Polygon> Range>
+		iterator insert_range(const_iterator pos, Range&& range);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -583,6 +608,48 @@ namespace s3d
 		/// @param last 削除する範囲の終端位置
 		/// @return 削除された範囲の次を指すイテレータ
 		iterator erase(const_iterator first, const_iterator last);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を削除します。
+		/// @param index 削除する要素のインデックス
+		/// @return *this
+		MultiPolygon& erase_at(size_type index) &;
+
+		/// @brief 指定したインデックスの要素を削除します。
+		/// @param index 削除する要素のインデックス
+		/// @return 削除後の配列
+		MultiPolygon erase_at(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を削除します。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 削除した要素の個数
+		template <class Fty>
+		size_type erase_all_if(Fty f) requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす最初の要素を削除します。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 要素を削除した場合 true, それ以外の場合は false
+		template <class Fty>
+		bool erase_first_if(Fty f) requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -650,6 +717,10 @@ namespace s3d
 		/// @brief 配列の先頭に要素を追加します。
 		/// @param value 追加する値
 		void push_front(const value_type& value);
+
+		/// @brief 配列の先頭に要素を追加します。
+		/// @param value 追加する値
+		void push_front(value_type&& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -731,10 +802,16 @@ namespace s3d
 		[[nodiscard]]
 		std::span<const value_type> subspan(size_type pos, size_type count) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	fill
+		//
+		////////////////////////////////////////////////////////////////
 
-
-
-
+		/// @brief すべての要素に同じ値を代入します。
+		/// @param value 代入する値
+		/// @return *this
+		MultiPolygon& fill(const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//

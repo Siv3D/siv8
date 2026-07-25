@@ -35,6 +35,10 @@ namespace s3d
 	inline MultiPolygon::MultiPolygon(std::initializer_list<value_type> init)
 		: m_polygons(init) {}
 
+	template <Concept::ContainerCompatibleRange<Polygon> Range>
+	MultiPolygon::MultiPolygon(std::from_range_t tag, Range&& range)
+		: m_polygons(tag, std::forward<Range>(range)) {}
+
 	inline MultiPolygon::MultiPolygon(Arg::reserve_<size_type> size)
 		: m_polygons(size) {}
 
@@ -65,6 +69,12 @@ namespace s3d
 	inline MultiPolygon& MultiPolygon::operator =(container_type&& other) noexcept
 	{
 		m_polygons = std::move(other);
+		return *this;
+	}
+
+	inline MultiPolygon& MultiPolygon::operator =(std::initializer_list<value_type> list)
+	{
+		m_polygons = list;
 		return *this;
 	}
 
@@ -454,9 +464,9 @@ namespace s3d
 		return m_polygons.insert(pos, value);
 	}
 
-	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, const size_type count, const value_type& value)
+	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, value_type&& value)
 	{
-		return m_polygons.insert(pos, count, value);
+		return m_polygons.insert(pos, std::move(value));
 	}
 
 	template <std::input_iterator Iterator>
@@ -468,6 +478,18 @@ namespace s3d
 	inline MultiPolygon::iterator MultiPolygon::insert(const_iterator pos, std::initializer_list<value_type> list)
 	{
 		return m_polygons.insert(pos, list);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	insert_range
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::ContainerCompatibleRange<Polygon> Range>
+	MultiPolygon::iterator MultiPolygon::insert_range(const_iterator pos, Range&& range)
+	{
+		return m_polygons.insert_range(pos, std::forward<Range>(range));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -508,6 +530,50 @@ namespace s3d
 	inline MultiPolygon::iterator MultiPolygon::erase(const_iterator first, const_iterator last)
 	{
 		return m_polygons.erase(first, last);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon& MultiPolygon::erase_at(const size_type index) &
+	{
+		m_polygons.erase_at(index);
+		return *this;
+	}
+
+	inline MultiPolygon MultiPolygon::erase_at(const size_type index) &&
+	{
+		m_polygons.erase_at(index);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_all_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon::size_type MultiPolygon::erase_all_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.erase_all_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	bool MultiPolygon::erase_first_if(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.erase_first_if(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -580,6 +646,11 @@ namespace s3d
 	inline void MultiPolygon::push_front(const value_type& value)
 	{
 		m_polygons.push_front(value);
+	}
+
+	inline void MultiPolygon::push_front(value_type&& value)
+	{
+		m_polygons.push_front(std::move(value));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -659,6 +730,18 @@ namespace s3d
 	inline std::span<const MultiPolygon::value_type> MultiPolygon::subspan(const size_type offset, const size_type count) const noexcept
 	{
 		return m_polygons.subspan(offset, count);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fill
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon& MultiPolygon::fill(const value_type& value)
+	{
+		m_polygons.fill(value);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
