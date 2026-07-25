@@ -1323,14 +1323,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr bool Rect::containsIndex(const int32 x, const int32 y) const noexcept
+	constexpr bool Rect::containsIndex(const int32 indexX, const int32 indexY) const noexcept
 	{
-		return ((pos.x <= x) && (x < (pos.x + size.x)) && (pos.y <= y) && (y < (pos.y + size.y)));
+		return ((pos.x <= indexX) && (indexX < (pos.x + size.x)) && (pos.y <= indexY) && (indexY < (pos.y + size.y)));
 	}
 
-	constexpr bool Rect::containsIndex(const Point p) const noexcept
+	constexpr bool Rect::containsIndex(const Point index) const noexcept
 	{
-		return containsIndex(p.x, p.y);
+		return containsIndex(index.x, index.y);
 	}
 
 	////////////////////////////////////////////////////////////////

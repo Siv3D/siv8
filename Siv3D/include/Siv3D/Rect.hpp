@@ -1754,17 +1754,17 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定したインデックスが長方形の範囲内に含まれているかを返します。
-		/// @param x インデックスの X 座標
-		/// @param y インデックスの Y 座標
+		/// @param indexX インデックスの X 座標
+		/// @param indexY インデックスの Y 座標
 		/// @return 指定したインデックスが長方形の範囲内に含まれている場合 true, それ以外の場合は false
 		[[nodiscard]]
-		constexpr bool containsIndex(int32 x, int32 y) const noexcept;
+		constexpr bool containsIndex(int32 indexX, int32 indexY) const noexcept;
 
 		/// @brief 指定したインデックスが長方形の範囲内に含まれているかを返します。
-		/// @param p インデックスの座標
+		/// @param index インデックスの座標
 		/// @return 指定したインデックスが長方形の範囲内に含まれている場合 true, それ以外の場合は false
 		[[nodiscard]]
-		constexpr bool containsIndex(Point p) const noexcept;
+		constexpr bool containsIndex(Point index) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
