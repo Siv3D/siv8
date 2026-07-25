@@ -1048,22 +1048,6 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Vec2> centroid() const noexcept;
 
-
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	distanceTo
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 別の図形との距離を返します。
-		/// @tparam Shape2DType 別の図形の型
-		/// @param other 別の図形
-		/// @return 別の図形との距離
-		template <class Shape2DType>
-		[[nodiscard]]
-		double distanceTo(const Shape2DType& other) const;
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	intersects
@@ -1148,5 +1132,21 @@ namespace s3d
 		container_type m_polygons;
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::MultiPolygon, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::MultiPolygon& value, s3d::BufferContext& ctx) const;
+};
 
 # include "detail/MultiPolygon.ipp"

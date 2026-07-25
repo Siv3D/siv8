@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/MultiPolygon.hpp>
+# include <Siv3D/RangeFormatter.hpp>
 # include <Siv3D/Polygon/PolygonDetail.hpp>
 
 namespace s3d
@@ -473,4 +474,31 @@ namespace s3d
 
 		return Vec2{ (reference->x + (weightedX.value() / area)), (reference->y + (weightedY.value() / area)) };
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	void Formatter(FormatData& formatData, const MultiPolygon& value)
+	{
+		Formatter(formatData, value.asArray());
+	}
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+s3d::ParseContext::iterator fmt::formatter<s3d::MultiPolygon, s3d::char32>::parse(s3d::ParseContext& ctx)
+{
+	return s3d::FmtHelper::GetFormatTag(tag, ctx);
+}
+
+s3d::BufferContext::iterator fmt::formatter<s3d::MultiPolygon, s3d::char32>::format(const s3d::MultiPolygon& value, s3d::BufferContext& ctx) const
+{
+	return s3d::FmtHelper::FormatSequence(tag, std::span(value), ctx);
 }

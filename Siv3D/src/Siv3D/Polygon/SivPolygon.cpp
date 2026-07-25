@@ -1281,6 +1281,12 @@ namespace s3d
 
 	void Formatter(FormatData& formatData, const Polygon& value)
 	{
+		if (value.isEmpty())
+		{
+			formatData.string.append(U"()");
+			return;
+		}
+
 		formatData.string.append(U"((");
 
 		bool b = false;

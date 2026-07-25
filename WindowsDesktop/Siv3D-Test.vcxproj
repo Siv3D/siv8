@@ -27,6 +27,7 @@
     <ClCompile Include="..\Test\Test_CSV.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
+    <ClCompile Include="..\Test\Test_Format_2DShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Distance.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Distance_Availability.cpp" />

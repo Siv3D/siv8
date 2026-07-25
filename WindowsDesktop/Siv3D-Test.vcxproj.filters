@@ -205,6 +205,9 @@
     <ClCompile Include="..\Test\Test_Geometry2D_Raycast_Availability.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Format_2DShapes.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
