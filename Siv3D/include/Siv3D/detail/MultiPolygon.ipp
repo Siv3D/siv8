@@ -1637,6 +1637,124 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	overwrite
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::overwrite(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.overwrite(dst, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::overwrite(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.overwrite(dst, offset, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paintFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::paintFrame(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.paintFrame(dst, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::paintFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.paintFrame(dst, thickness, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::paintFrame(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.paintFrame(dst, offset, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::paintFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.paintFrame(dst, offset, thickness, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overwriteFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::overwriteFrame(Image& dst, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.overwriteFrame(dst, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::overwriteFrame(Image& dst, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.overwriteFrame(dst, thickness, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::overwriteFrame(Image& dst, const Vec2& offset, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.overwriteFrame(dst, offset, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::overwriteFrame(Image& dst, const Vec2& offset, const double thickness, const Color& color, const EnableAntialiasing enableAntialiasing) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.overwriteFrame(dst, offset, thickness, color, enableAntialiasing);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	draw
 	//
 	////////////////////////////////////////////////////////////////
@@ -1676,6 +1794,144 @@ namespace s3d
 		for (const auto& polygon : m_polygons)
 		{
 			polygon.draw(offset, pattern);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawTransformed
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::drawTransformed(const double angle, const Vec2& pos, const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawTransformed(angle, pos, color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawTransformed(const double s, const double c, const Vec2& pos, const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawTransformed(s, c, pos, color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawTransformed(const double angle, const Vec2& pos, const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawTransformed(angle, pos, pattern);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawTransformed(const double s, const double c, const Vec2& pos, const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawTransformed(s, c, pos, pattern);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::drawFrame(const double thickness, const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawFrame(thickness, color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawFrame(const Vec2& offset, const double thickness, const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawFrame(offset, thickness, color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawFrame(const double thickness, const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawFrame(thickness, pattern);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawFrame(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawFrame(offset, thickness, pattern);
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drawWireframe
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline const MultiPolygon& MultiPolygon::drawWireframe(const double thickness, const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawWireframe(thickness, color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawWireframe(const Vec2& offset, const double thickness, const ColorF& color) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawWireframe(offset, thickness, color);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawWireframe(const double thickness, const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawWireframe(thickness, pattern);
+		}
+
+		return *this;
+	}
+
+	inline const MultiPolygon& MultiPolygon::drawWireframe(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
+	{
+		for (const auto& polygon : m_polygons)
+		{
+			polygon.drawWireframe(offset, thickness, pattern);
 		}
 
 		return *this;

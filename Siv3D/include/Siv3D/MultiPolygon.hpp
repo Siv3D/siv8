@@ -1999,6 +1999,59 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief いずれかの多角形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return いずれかの多角形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
+
+		/// @brief いずれかの多角形が左クリックされているかを返します。
+		/// @return いずれかの多角形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
+
+		/// @brief 現在のフレームでいずれかの多角形への左クリックが離されたかを返します。
+		/// @return 現在のフレームでいずれかの多角形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief いずれかの多角形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return いずれかの多角形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
+
+		/// @brief いずれかの多角形が右クリックされているかを返します。
+		/// @return いずれかの多角形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
+
+		/// @brief 現在のフレームでいずれかの多角形への右クリックが離されたかを返します。
+		/// @return 現在のフレームでいずれかの多角形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief いずれかの多角形上にマウスカーソルがあるかを返します。
+		/// @return いずれかの多角形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	paint
 		//
 		////////////////////////////////////////////////////////////////
@@ -2017,6 +2070,103 @@ namespace s3d
 		/// @param enableAntialiasing アンチエイリアスを有効にするか
 		/// @return *this
 		const MultiPolygon& paint(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwrite(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形の枠を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2045,6 +2195,106 @@ namespace s3d
 		/// @param pattern 塗りつぶしパターン
 		/// @return *this
 		const MultiPolygon& draw(const Vec2& offset, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawTransformed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawTransformed(double angle, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawTransformed(double s, double c, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawTransformed(double angle, const Vec2& pos, const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawTransformed(double s, double c, const Vec2& pos, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形の枠を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawFrame(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形の枠を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawFrame(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawWireframe
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形をワイヤフレーム表示で描画します。
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を移動させた位置にワイヤフレーム表示で描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawWireframe(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形をワイヤフレーム表示で描画します。
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawWireframe(double thickness, const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形を移動させた位置にワイヤフレーム表示で描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawWireframe(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
