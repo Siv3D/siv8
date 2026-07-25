@@ -804,6 +804,163 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	all
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素が条件を満たすかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool all(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	any
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool any(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
+		template <class Fty>
+		[[nodiscard]]
+		isize count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_index
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_index(Fty f)
+			requires std::invocable<Fty&, size_t, value_type&>;
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_sindex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とその符号付きインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_sindex(Fty f)
+			requires std::invocable<Fty&, isize, value_type&>;
+
+		/// @brief すべての要素とその符号付きインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fetch
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を返します。範囲外の場合はデフォルト値を返します。
+		/// @tparam U デフォルト値の型
+		/// @param index インデックス
+		/// @param defaultValue 範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスの要素、範囲外の場合は defaultValue
+		template <class U>
+		[[nodiscard]]
+		value_type fetch(size_type index, U&& defaultValue) const
+			noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+			requires std::constructible_from<value_type, U>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	fill
 		//
 		////////////////////////////////////////////////////////////////
@@ -812,6 +969,273 @@ namespace s3d
 		/// @param value 代入する値
 		/// @return *this
 		MultiPolygon& fill(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	filter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素だけを集めた新しい MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素を集めた新しい MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	map
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素に関数を適用した戻り値からなる新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	none
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素が存在しないかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が存在しなければ true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool none(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を逆順に参照するビューを返します。
+		[[nodiscard]]
+		auto reverse_view() &;
+
+		/// @brief 要素を逆順に参照するビューを返します。
+		[[nodiscard]]
+		auto reverse_view() const&;
+
+		/// @brief 要素を逆順に参照するビューを返します。
+		[[nodiscard]]
+		auto reverse_view() &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した範囲の要素からなる新しい MultiPolygon を返します。
+		/// @param index 開始インデックス
+		/// @param length 要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon slice(size_type index, size_type length) const&;
+
+		/// @brief 指定した範囲の要素からなる新しい MultiPolygon を返します。
+		/// @param index 開始インデックス
+		/// @param length 要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon slice(size_type index, size_type length) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon head(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon head(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<value_type> head_span(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<const value_type> head_span(size_type n) const& noexcept;
+
+		std::span<value_type> head_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto head_view(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto head_view(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を保持するビューを返します。
+		[[nodiscard]]
+		auto head_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon tail(size_type n) const&;
+
+		/// @brief 末尾の最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon tail(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<value_type> tail_span(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<const value_type> tail_span(size_type n) const& noexcept;
+
+		std::span<value_type> tail_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto tail_view(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto tail_view(size_type n) const& noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を保持するビューを返します。
+		[[nodiscard]]
+		auto tail_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon take(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon take(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take_while
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から条件を満たさなくなる直前までの要素からなる新しい MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon take_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 先頭から条件を満たさなくなる直前までの要素からなる新しい MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon take_while(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	values_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素からなる新しい MultiPolygon を返します。
+		/// @param indices インデックス
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を除いた新しい MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon without_at(size_type index) const&;
+
+		/// @brief 指定したインデックスの要素を除いた新しい MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon without_at(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を除いた新しい MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たす要素を除いた新しい MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon without_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

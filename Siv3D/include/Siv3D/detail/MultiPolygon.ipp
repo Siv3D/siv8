@@ -734,6 +734,152 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	all
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	bool MultiPolygon::all(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.all(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	any
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	bool MultiPolygon::any(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.any(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	contains_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	bool MultiPolygon::contains_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.contains_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	isize MultiPolygon::count_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.count_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	void MultiPolygon::each(Fty f)
+		requires std::invocable<Fty&, value_type&>
+	{
+		m_polygons.each(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	void MultiPolygon::each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		m_polygons.each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_index
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	void MultiPolygon::each_index(Fty f)
+		requires std::invocable<Fty&, size_t, value_type&>
+	{
+		m_polygons.each_index(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	void MultiPolygon::each_index(Fty f) const
+		requires std::invocable<Fty&, size_t, const value_type&>
+	{
+		m_polygons.each_index(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_sindex
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	void MultiPolygon::each_sindex(Fty f)
+		requires std::invocable<Fty&, isize, value_type&>
+	{
+		m_polygons.each_sindex(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	void MultiPolygon::each_sindex(Fty f) const
+		requires std::invocable<Fty&, isize, const value_type&>
+	{
+		m_polygons.each_sindex(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_each
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	void MultiPolygon::reverse_each(Fty f)
+		requires std::invocable<Fty&, value_type&>
+	{
+		m_polygons.reverse_each(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	void MultiPolygon::reverse_each(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		m_polygons.reverse_each(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fetch
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class U>
+	MultiPolygon::value_type MultiPolygon::fetch(const size_type index, U&& defaultValue) const
+		noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+		requires std::constructible_from<value_type, U>
+	{
+		return m_polygons.fetch(index, std::forward<U>(defaultValue));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	fill
 	//
 	////////////////////////////////////////////////////////////////
@@ -742,6 +888,271 @@ namespace s3d
 	{
 		m_polygons.fill(value);
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	filter
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::filter(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ m_polygons.filter(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	map
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	auto MultiPolygon::map(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		return m_polygons.map(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	none
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	bool MultiPolygon::none(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.none(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline auto MultiPolygon::reverse_view() &
+	{
+		return m_polygons.reverse_view();
+	}
+
+	inline auto MultiPolygon::reverse_view() const&
+	{
+		return m_polygons.reverse_view();
+	}
+
+	inline auto MultiPolygon::reverse_view() &&
+	{
+		return std::move(m_polygons).reverse_view();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	slice
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon MultiPolygon::slice(const size_type index, const size_type length) const&
+	{
+		return MultiPolygon{ m_polygons.slice(index, length) };
+	}
+
+	inline MultiPolygon MultiPolygon::slice(const size_type index, const size_type length) &&
+	{
+		return MultiPolygon{ std::move(m_polygons).slice(index, length) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon MultiPolygon::head(const size_type n) const&
+	{
+		return MultiPolygon{ m_polygons.head(n) };
+	}
+
+	inline MultiPolygon MultiPolygon::head(const size_type n) &&
+	{
+		return MultiPolygon{ std::move(m_polygons).head(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline std::span<MultiPolygon::value_type> MultiPolygon::head_span(const size_type n) & noexcept
+	{
+		return m_polygons.head_span(n);
+	}
+
+	inline std::span<const MultiPolygon::value_type> MultiPolygon::head_span(const size_type n) const& noexcept
+	{
+		return m_polygons.head_span(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	head_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline auto MultiPolygon::head_view(const size_type n) & noexcept
+	{
+		return m_polygons.head_view(n);
+	}
+
+	inline auto MultiPolygon::head_view(const size_type n) const& noexcept
+	{
+		return m_polygons.head_view(n);
+	}
+
+	inline auto MultiPolygon::head_view(const size_type n) && noexcept
+	{
+		return std::move(m_polygons).head_view(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon MultiPolygon::tail(const size_type n) const&
+	{
+		return MultiPolygon{ m_polygons.tail(n) };
+	}
+
+	inline MultiPolygon MultiPolygon::tail(const size_type n) &&
+	{
+		return MultiPolygon{ std::move(m_polygons).tail(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_span
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline std::span<MultiPolygon::value_type> MultiPolygon::tail_span(const size_type n) & noexcept
+	{
+		return m_polygons.tail_span(n);
+	}
+
+	inline std::span<const MultiPolygon::value_type> MultiPolygon::tail_span(const size_type n) const& noexcept
+	{
+		return m_polygons.tail_span(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	tail_view
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline auto MultiPolygon::tail_view(const size_type n) & noexcept
+	{
+		return m_polygons.tail_view(n);
+	}
+
+	inline auto MultiPolygon::tail_view(const size_type n) const& noexcept
+	{
+		return m_polygons.tail_view(n);
+	}
+
+	inline auto MultiPolygon::tail_view(const size_type n) && noexcept
+	{
+		return std::move(m_polygons).tail_view(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon MultiPolygon::take(const size_type n) const&
+	{
+		return MultiPolygon{ m_polygons.take(n) };
+	}
+
+	inline MultiPolygon MultiPolygon::take(const size_type n) &&
+	{
+		return MultiPolygon{ std::move(m_polygons).take(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take_while
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::take_while(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ m_polygons.take_while(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::take_while(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).take_while(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	values_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon MultiPolygon::values_at(const std::initializer_list<size_type> indices) const
+	{
+		return MultiPolygon{ m_polygons.values_at(indices) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_at
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon MultiPolygon::without_at(const size_type index) const&
+	{
+		return MultiPolygon{ m_polygons.without_at(index) };
+	}
+
+	inline MultiPolygon MultiPolygon::without_at(const size_type index) &&
+	{
+		return MultiPolygon{ std::move(m_polygons).without_at(index) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	without_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::without_if(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ m_polygons.without_if(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::without_if(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).without_if(std::forward<Fty>(f)) };
 	}
 
 	////////////////////////////////////////////////////////////////

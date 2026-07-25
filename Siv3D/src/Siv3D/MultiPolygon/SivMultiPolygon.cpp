@@ -469,7 +469,7 @@ namespace s3d
 
 		if ((not reference) || (area == 0.0))
 		{
-			return none;
+			return s3d::none;
 		}
 
 		return Vec2{ (reference->x + (weightedX.value() / area)), (reference->y + (weightedY.value() / area)) };
