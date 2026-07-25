@@ -552,6 +552,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	erase_at_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon& MultiPolygon::erase_at_unstable(const size_type index) &
+	{
+		m_polygons.erase_at_unstable(index);
+		return *this;
+	}
+
+	inline MultiPolygon MultiPolygon::erase_at_unstable(const size_type index) &&
+	{
+		m_polygons.erase_at_unstable(index);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	erase_all_if
 	//
 	////////////////////////////////////////////////////////////////
@@ -565,6 +583,19 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	erase_all_if_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon::size_type MultiPolygon::erase_all_if_unstable(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.erase_all_if_unstable(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	erase_first_if
 	//
 	////////////////////////////////////////////////////////////////
@@ -574,6 +605,19 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_polygons.erase_first_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	erase_first_if_unstable
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	bool MultiPolygon::erase_first_if_unstable(Fty f)
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_polygons.erase_first_if_unstable(std::forward<Fty>(f));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -756,6 +800,49 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_polygons.any(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	append
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon& MultiPolygon::append(const MultiPolygon& other)
+	{
+		m_polygons.append(other.m_polygons);
+		return *this;
+	}
+
+	inline MultiPolygon& MultiPolygon::append(MultiPolygon&& other)
+	{
+		m_polygons.append(std::move(other.m_polygons));
+		return *this;
+	}
+
+	inline MultiPolygon& MultiPolygon::append(const container_type& other)
+	{
+		m_polygons.append(other);
+		return *this;
+	}
+
+	template <std::input_iterator Iterator>
+	MultiPolygon& MultiPolygon::append(Iterator first, Iterator last)
+	{
+		m_polygons.append(first, last);
+		return *this;
+	}
+
+	inline MultiPolygon& MultiPolygon::append(std::initializer_list<value_type> list)
+	{
+		m_polygons.append(list);
+		return *this;
+	}
+
+	inline MultiPolygon& MultiPolygon::append(const size_type count, const value_type& value)
+	{
+		m_polygons.append(count, value);
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1153,6 +1240,220 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return MultiPolygon{ std::move(m_polygons).without_if(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fold_left
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class R, class Fty>
+	auto MultiPolygon::fold_left(R init, Fty f) const
+	{
+		return m_polygons.fold_left(std::move(init), std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replace_if, replaced_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon& MultiPolygon::replace_if(Fty f, const value_type& newValue) &
+		requires std::predicate<Fty&, const value_type&>
+	{
+		m_polygons.replace_if(std::forward<Fty>(f), newValue);
+		return *this;
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::replace_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).replace_if(std::forward<Fty>(f), newValue) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::replaced_if(Fty f, const value_type& newValue) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ m_polygons.replaced_if(std::forward<Fty>(f), newValue) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::replaced_if(Fty f, const value_type& newValue) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).replaced_if(std::forward<Fty>(f), newValue) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverse, reversed
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon& MultiPolygon::reverse() &
+	{
+		m_polygons.reverse();
+		return *this;
+	}
+
+	inline MultiPolygon MultiPolygon::reverse() &&
+	{
+		return MultiPolygon{ std::move(m_polygons).reverse() };
+	}
+
+	inline MultiPolygon MultiPolygon::reversed() const&
+	{
+		return MultiPolygon{ m_polygons.reversed() };
+	}
+
+	inline MultiPolygon MultiPolygon::reversed() &&
+	{
+		return MultiPolygon{ std::move(m_polygons).reversed() };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shuffle, shuffled
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline MultiPolygon& MultiPolygon::shuffle() &
+	{
+		m_polygons.shuffle();
+		return *this;
+	}
+
+	inline MultiPolygon MultiPolygon::shuffle() &&
+	{
+		return MultiPolygon{ std::move(m_polygons).shuffle() };
+	}
+
+	inline MultiPolygon MultiPolygon::shuffled() const&
+	{
+		return MultiPolygon{ m_polygons.shuffled() };
+	}
+
+	inline MultiPolygon MultiPolygon::shuffled() &&
+	{
+		return MultiPolygon{ std::move(m_polygons).shuffled() };
+	}
+
+	inline MultiPolygon& MultiPolygon::shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &
+	{
+		m_polygons.shuffle(urbg);
+		return *this;
+	}
+
+	inline MultiPolygon MultiPolygon::shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &&
+	{
+		return MultiPolygon{ std::move(m_polygons).shuffle(urbg) };
+	}
+
+	inline MultiPolygon MultiPolygon::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&
+	{
+		return MultiPolygon{ m_polygons.shuffled(urbg) };
+	}
+
+	inline MultiPolygon MultiPolygon::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) &&
+	{
+		return MultiPolygon{ std::move(m_polygons).shuffled(urbg) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	sort_by, sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon& MultiPolygon::sort_by(Fty f) &
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		m_polygons.sort_by(std::forward<Fty>(f));
+		return *this;
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::sort_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).sort_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::sorted_by(Fty f) const&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return MultiPolygon{ m_polygons.sorted_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::sorted_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).sorted_by(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	stable_sort_by, stable_sorted_by
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	MultiPolygon& MultiPolygon::stable_sort_by(Fty f) &
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		m_polygons.stable_sort_by(std::forward<Fty>(f));
+		return *this;
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::stable_sort_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).stable_sort_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::stable_sorted_by(Fty f) const&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return MultiPolygon{ m_polygons.stable_sorted_by(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	MultiPolygon MultiPolygon::stable_sorted_by(Fty f) &&
+		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+	{
+		return MultiPolygon{ std::move(m_polygons).stable_sorted_by(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator >>
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	auto MultiPolygon::operator >>(Fty f) const
+		requires std::invocable<Fty&, const value_type&>
+	{
+		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
+
+		if constexpr (std::is_same_v<result_value_type, void>)
+		{
+			each(std::forward<Fty>(f));
+		}
+		else
+		{
+			return map(std::forward<Fty>(f));
+		}
 	}
 
 	////////////////////////////////////////////////////////////////

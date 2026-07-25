@@ -12,6 +12,8 @@
 # pragma once
 # include "Common.hpp"
 # include "Array.hpp"
+# include "ArrayAlgorithm.hpp"
+# include "ArrayRandom.hpp"
 # include "Polygon.hpp"
 
 namespace s3d
@@ -627,6 +629,41 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_at_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を削除します。削除後の順序は保証されません。
+		MultiPolygon& erase_at_unstable(size_type index) &;
+
+		/// @brief 指定したインデックスの要素を削除します。削除後の順序は保証されません。
+		[[nodiscard]]
+		MultiPolygon erase_at_unstable(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を削除します。削除後の順序は保証されません。
+		template <class Fty>
+		size_type erase_all_if_unstable(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす最初の要素を削除します。削除後の順序は保証されません。
+		template <class Fty>
+		bool erase_first_if_unstable(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	erase_all_if
 		//
 		////////////////////////////////////////////////////////////////
@@ -831,6 +868,37 @@ namespace s3d
 		[[nodiscard]]
 		bool any(Fty f) const
 			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	append
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の末尾に別の MultiPolygon の要素を追加します。
+		/// @param other 追加する MultiPolygon
+		/// @return *this
+		MultiPolygon& append(const MultiPolygon& other);
+
+		/// @brief 配列の末尾に別の MultiPolygon の要素をムーブして追加します。
+		/// @param other 追加する MultiPolygon
+		/// @return *this
+		MultiPolygon& append(MultiPolygon&& other);
+
+		/// @brief 配列の末尾に別の配列の要素を追加します。
+		/// @param other 追加する配列
+		/// @return *this
+		MultiPolygon& append(const container_type& other);
+
+		/// @brief 配列の末尾に指定した範囲の要素を追加します。
+		template <std::input_iterator Iterator>
+		MultiPolygon& append(Iterator first, Iterator last);
+
+		/// @brief 配列の末尾にリストの要素を追加します。
+		MultiPolygon& append(std::initializer_list<value_type> list);
+
+		/// @brief 配列の末尾に count 個の value を追加します。
+		MultiPolygon& append(size_type count, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1236,6 +1304,171 @@ namespace s3d
 		[[nodiscard]]
 		MultiPolygon without_if(Fty f) &&
 			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fold_left
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を左から順番に関数へ適用し、1 つの値にまとめます。
+		template <class R, class Fty>
+		auto fold_left(R init, Fty f) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace_if, replaced_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えます。
+		template <class Fty>
+		MultiPolygon& replace_if(Fty f, const value_type& newValue) &
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon replace_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon replaced_if(Fty f, const value_type& newValue) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon replaced_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse, reversed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を逆順に並び替えます。
+		MultiPolygon& reverse() &;
+
+		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon reverse() &&;
+
+		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon reversed() const&;
+
+		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon reversed() &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shuffle, shuffled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素の並び順をランダムにシャッフルします。
+		MultiPolygon& shuffle() &;
+
+		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon shuffle() &&;
+
+		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon shuffled() const&;
+
+		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon shuffled() &&;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルします。
+		MultiPolygon& shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &&;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon shuffled(Concept::UniformRandomBitGenerator auto&& urbg) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sort_by, sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した比較関数を用いて要素を並び替えます。
+		template <class Fty>
+		MultiPolygon& sort_by(Fty f) &
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_sort_by, stable_sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えます。
+		template <class Fty>
+		MultiPolygon& stable_sort_by(Fty f) &
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon stable_sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon stable_sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon stable_sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用します。
+		template <class Fty>
+		auto operator >>(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
