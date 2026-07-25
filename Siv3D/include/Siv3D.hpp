@@ -931,7 +931,7 @@
 // 2D 形状コレクション | 2D shapes collection
 # include <Siv3D/Shape2D.hpp>
 
-//# include <Siv3D/Mesh2D.hpp>
+# include <Siv3D/Mesh2D.hpp>
 
 # include <Siv3D/Ray2D.hpp>
 

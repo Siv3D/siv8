@@ -1423,6 +1423,9 @@
     <Filter Include="src\Siv3D\Ray2D">
       <UniqueIdentifier>{a8540bf4-9150-4cde-a052-824c04efc5a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Mesh2D">
+      <UniqueIdentifier>{54df963e-fe04-4f37-80cf-e4c099ca287e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5835,6 +5838,12 @@
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\Raycast.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

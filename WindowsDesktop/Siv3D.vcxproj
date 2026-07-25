@@ -126,6 +126,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\ListUtility.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\LoggerBuffer.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat3x3.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OffsetCircular.ipp" />
@@ -245,6 +246,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MicrophoneInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MP3Quality.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
