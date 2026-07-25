@@ -197,18 +197,30 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Vector2D<Float> operator *(Vector2D<Float> v) const noexcept;
 
+		/// @brief 座標の各成分を整数倍した結果を返します。
+		/// @param s 倍率
+		/// @param p 座標
+		/// @return 整数倍した座標
 		[[nodiscard]]
 		friend constexpr Point operator *(int32 s, Point p) noexcept
 		{
 			return{ (s * p.x), (s * p.y) };
 		}
 
+		/// @brief 座標の各成分を浮動小数点数倍した結果を返します。
+		/// @param s 倍率
+		/// @param p 座標
+		/// @return 浮動小数点数倍した座標
 		[[nodiscard]]
 		friend constexpr Vector2D<float> operator *(float s, Point p) noexcept
 		{
 			return{ (s * p.x), (s * p.y) };
 		}
 
+		/// @brief 座標の各成分を浮動小数点数倍した結果を返します。
+		/// @param s 倍率
+		/// @param p 座標
+		/// @return 浮動小数点数倍した座標
 		[[nodiscard]]
 		friend constexpr Vector2D<double> operator *(double s, Point p) noexcept
 		{

@@ -103,6 +103,8 @@ namespace s3d
 		[[nodiscard]]
 		MultiPolygon(Iterator first, Iterator last);
 
+		/// @brief 初期化リストから多角形の配列を作成します。
+		/// @param init 初期化リスト
 		[[nodiscard]]
 		MultiPolygon(std::initializer_list<value_type> init);
 
@@ -125,12 +127,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief コピー代入演算子
+		/// @param other コピーする多角形の配列
+		/// @return *this
 		MultiPolygon& operator =(const MultiPolygon& other);
 
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする多角形の配列
+		/// @return *this
 		MultiPolygon& operator =(MultiPolygon&& other) noexcept;
 
+		/// @brief コピー代入演算子
+		/// @param other コピーする配列
+		/// @return *this
 		MultiPolygon& operator =(const container_type& other);
 
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする配列
+		/// @return *this
 		MultiPolygon& operator =(container_type&& other) noexcept;
 
 		/// @brief リストから多角形の配列を代入します。
@@ -1202,6 +1216,9 @@ namespace s3d
 		[[nodiscard]]
 		std::span<const value_type> head_span(size_type n) const& noexcept;
 
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
 		std::span<value_type> head_span(size_type n) && = delete;
 
 		////////////////////////////////////////////////////////////////
@@ -1267,6 +1284,9 @@ namespace s3d
 		[[nodiscard]]
 		std::span<const value_type> tail_span(size_type n) const& noexcept;
 
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
 		std::span<value_type> tail_span(size_type n) && = delete;
 
 		////////////////////////////////////////////////////////////////
@@ -1684,12 +1704,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(double x, double y) const&;
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(double x, double y) && noexcept;
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(Vec2 v) const&;
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(Vec2 v) && noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -1698,12 +1732,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief X 方向に平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetX(double x) const&;
 
+		/// @brief X 方向に平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetX(double x) && noexcept;
 
+		/// @brief Y 方向に平行移動した多角形の配列を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetY(double y) const&;
 
+		/// @brief Y 方向に平行移動した多角形の配列を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetY(double y) && noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -1712,9 +1758,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に回転した多角形の配列を返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotated(double angle) const&;
 
+		/// @brief 原点 (0, 0) を中心に回転した多角形の配列を返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotated(double angle)&&;
 
@@ -1724,9 +1776,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に回転した多角形の配列を返します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotatedAt(Vec2 pos, double angle) const&;
 
+		/// @brief 指定した座標を中心に回転した多角形の配列を返します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotatedAt(Vec2 pos, double angle)&&;
 
@@ -1736,6 +1796,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に多角形の配列を回転します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		MultiPolygon& rotate(double angle);
 
 		////////////////////////////////////////////////////////////////
@@ -1744,6 +1807,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に多角形の配列を回転します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		MultiPolygon& rotateAt(Vec2 pos, double angle);
 
 		////////////////////////////////////////////////////////////////
@@ -1752,9 +1819,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 回転と平行移動を適用した多角形の配列を返します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return 変換後の多角形の配列
 		[[nodiscard]]
 		MultiPolygon transformed(double s, double c, const Vec2& pos) const&;
 
+		/// @brief 回転と平行移動を適用した多角形の配列を返します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return 変換後の多角形の配列
 		[[nodiscard]]
 		MultiPolygon transformed(double s, double c, const Vec2& pos)&&;
 
@@ -1764,6 +1841,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形の配列に回転と平行移動を適用します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return *this
 		MultiPolygon& transform(double s, double c, const Vec2& pos);
 
 		////////////////////////////////////////////////////////////////
@@ -2340,6 +2422,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief MultiPolygon を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value MultiPolygon
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const MultiPolygon& value);
 
 	private:
