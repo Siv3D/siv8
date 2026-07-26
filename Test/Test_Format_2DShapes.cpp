@@ -81,6 +81,48 @@ TEST_CASE("LineString")
 	CHECK(U"{}"_fmt(empty) == U"[]");
 	CHECK(U"{}"_fmt(value) == U"[(1.5, -2.25), (3.75, 4.5)]");
 	CHECK(U"{:.1f}"_fmt(LineString{ Vec2{ 1, 2 }, Vec2{ 3, 4 } }) == U"[(1.0, 2.0), (3.0, 4.0)]");
+
+	const LineString precise{
+		Vec2{ -1.2345678901234567, -0.000000000000001 },
+		Vec2{ 9.876543210987654, 4.567890123456789 },
+	};
+
+	const auto parsedEmpty = LineString::Parse(Format(empty));
+	REQUIRE(parsedEmpty);
+	CHECK_EQ(*parsedEmpty, empty);
+
+	const auto parsedValue = LineString::Parse(Format(value).toUTF8());
+	REQUIRE(parsedValue);
+	CHECK_EQ(*parsedValue, value);
+
+	const auto parsedPrecise = LineString::Parse(Format(precise));
+	REQUIRE(parsedPrecise);
+	CHECK_EQ(*parsedPrecise, precise);
+
+	const auto parsedWithSpaces = LineString::Parse(
+		U" \n [ (0e0, 1), (-2.5, 3E+2) ] \t");
+	REQUIRE(parsedWithSpaces);
+	CHECK_EQ(*parsedWithSpaces, LineString{ Vec2{ 0, 1 }, Vec2{ -2.5, 300 } });
+
+	const auto parsedSingle = LineString::Parse(U"[(1, 2)]");
+	REQUIRE(parsedSingle);
+	CHECK_EQ(*parsedSingle, LineString{ Vec2{ 1, 2 } });
+
+	const Array<StringView> invalidSources{
+		U"",
+		U" ",
+		U"[",
+		U"[()]",
+		U"[(0, 0),]",
+		U"[(0foo, 0)]",
+		U"[(0, 1e999)]",
+		U"[(0, 0)] trailing",
+	};
+
+	for (const auto source : invalidSources)
+	{
+		CHECK_FALSE(LineString::Parse(source));
+	}
 }
 
 TEST_CASE("Bezier2")

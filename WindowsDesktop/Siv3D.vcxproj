@@ -1020,6 +1020,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\LineStringBuffer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonBuffer.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\LineString\LineStringParser.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonParser.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\CPrint.hpp" />
@@ -1773,6 +1774,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\LicenseManagerFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LicenseManager\SivLicenseManager.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\LineString\LineStringParser.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LineString\SivLineString.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LineType\SivLineType.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Line\SivLine.cpp" />

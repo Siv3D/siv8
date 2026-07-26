@@ -17,8 +17,10 @@
 # include "ArrayAlgorithm.hpp"
 # include "ArrayRandom.hpp"
 # include "2DShapes.hpp"
+# include "Optional.hpp"
 # include "PredefinedYesNo.hpp"
 # include "RangeFormatter.hpp"
+# include "StringView.hpp"
 
 namespace s3d
 {
@@ -2742,6 +2744,24 @@ namespace s3d
 		/// @return 生成した配列
 		[[nodiscard]]
 		static LineString IndexedGenerate(size_type size, FunctionRef<value_type(size_t)> generator);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Parse
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 文字列から LineString をパースします。
+		/// @param s パースする文字列
+		/// @return パースに成功した場合は LineString、失敗した場合は none
+		[[nodiscard]]
+		static Optional<LineString> Parse(std::string_view s);
+
+		/// @brief 文字列から LineString をパースします。
+		/// @param s パースする文字列
+		/// @return パースに成功した場合は LineString、失敗した場合は none
+		[[nodiscard]]
+		static Optional<LineString> Parse(StringView s);
 
 		////////////////////////////////////////////////////////////////
 		//

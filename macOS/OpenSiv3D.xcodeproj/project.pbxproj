@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F9C0D00130A0000100000001 /* LineStringParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9C0D00330A0000100000001 /* LineStringParser.cpp */; };
+		F9C0D00230A0000100000001 /* LineStringParser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9C0D00430A0000100000001 /* LineStringParser.hpp */; };
 		2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7F74E1CA7F43D00495647 /* Main.cpp */; };
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
@@ -3155,6 +3157,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F9C0D00330A0000100000001 /* LineStringParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LineStringParser.cpp; sourceTree = "<group>"; };
+		F9C0D00430A0000100000001 /* LineStringParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LineStringParser.hpp; sourceTree = "<group>"; };
 		2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siv3D-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C22E2C11FD5BAF0002735AB /* Siv3D-Test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Siv3D-Test.entitlements"; sourceTree = SOURCE_ROOT; };
@@ -13605,6 +13609,8 @@
 		F9F00A7E2CE06CA10097C165 /* LineString */ = {
 			isa = PBXGroup;
 			children = (
+				F9C0D00330A0000100000001 /* LineStringParser.cpp */,
+				F9C0D00430A0000100000001 /* LineStringParser.hpp */,
 				F9F00A7D2CE06CA10097C165 /* SivLineString.cpp */,
 			);
 			path = LineString;
@@ -13911,6 +13917,7 @@
 				F986FFFD2BCFBB53006A4C0F /* SkBBHFactory.h in Headers */,
 				F9DD965A2F1238B70026DFA5 /* FrameMetrics.hpp in Headers */,
 				F93BD7F93016AE7100B3542E /* PolygonParser.hpp in Headers */,
+				F9C0D00230A0000100000001 /* LineStringParser.hpp in Headers */,
 				F986019D2BCFBB53006A4C0F /* SkDevice.h in Headers */,
 				F98600722BCFBB53006A4C0F /* SkCPUTypes.h in Headers */,
 				F98600552BCFBB53006A4C0F /* SkXPSDocument.h in Headers */,
@@ -16825,6 +16832,7 @@
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
 				F9F00A7F2CE06CA10097C165 /* SivLineString.cpp in Sources */,
+				F9C0D00130A0000100000001 /* LineStringParser.cpp in Sources */,
 				F98601C92BCFBB53006A4C0F /* SkGlyphRunPainter.cpp in Sources */,
 				F98601922BCFBB53006A4C0F /* SkCpu.cpp in Sources */,
 				F986F9472BCA79DC006A4C0F /* SivRectF.cpp in Sources */,
