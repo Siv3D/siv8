@@ -41,7 +41,7 @@ namespace s3d
 		indices = std::move(_indices);
 	}
 
-	inline Mesh2D::Mesh2D(const std::span<const Vertex2D> _vertices, std::span<const TriangleIndex> _indices)
+	inline Mesh2D::Mesh2D(const std::span<const Vertex2D> _vertices, const std::span<const TriangleIndex> _indices)
 	{
 		if (MaxVertexCount < _vertices.size())
 		{

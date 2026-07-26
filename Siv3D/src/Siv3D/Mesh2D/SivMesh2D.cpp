@@ -14,6 +14,7 @@
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/Shape2D.hpp>
+# include <Siv3D/FastMath.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -21,10 +22,10 @@ namespace s3d
 {
 	namespace
 	{
-		constexpr Float4 DefaultVertexColor{ 1.0f, 1.0f, 1.0f, 1.0f };
+		inline constexpr Float4 DefaultVertexColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 		template <class UVGenerator>
-		void AssignVertices(Array<Vertex2D>& dst, const Array<Float2>& src, UVGenerator&& uvGenerator)
+		static void AssignVertices(Array<Vertex2D>& dst, const Array<Float2>& src, UVGenerator&& uvGenerator)
 		{
 			dst.resize(src.size());
 
@@ -35,7 +36,7 @@ namespace s3d
 			}
 		}
 
-		void AssignVertices(Array<Vertex2D>& dst, const Array<Float2>& src)
+		static void AssignVertices(Array<Vertex2D>& dst, const Array<Float2>& src)
 		{
 			dst.resize(src.size());
 
@@ -45,9 +46,41 @@ namespace s3d
 			}
 		}
 
+		[[nodiscard]]
+		static std::span<const TriangleIndex> GetTriangleSubset(const Array<TriangleIndex>& indices, const size_t startTriangle, const size_t triangleCount) noexcept
+		{
+			if ((triangleCount == 0)
+				|| (indices.size() <= startTriangle))
+			{
+				return{};
+			}
+
+			const size_t availableTriangleCount = (indices.size() - startTriangle);
+			const size_t actualTriangleCount = Min(triangleCount, availableTriangleCount);
+
+			return{ (indices.data() + startTriangle), actualTriangleCount };
+		}
+
+		static void DrawTriangles(const Array<Vertex2D>& vertices, const std::span<const TriangleIndex> indices, const Optional<Vec2>& offset, const Texture* texture)
+		{
+			if (vertices.empty() || indices.empty())
+			{
+				return;
+			}
+
+			if (texture)
+			{
+				SIV3D_ENGINE(Renderer2D)->addMesh2D(*texture, vertices, indices, offset);
+			}
+			else
+			{
+				SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, indices, offset);
+			}
+		}
+
 		template <class PositionGenerator>
 		[[nodiscard]]
-		Mesh2D MakeGrid(const Size& divisions, PositionGenerator&& positionGenerator)
+		static Mesh2D MakeGrid(const Size& divisions, PositionGenerator&& positionGenerator)
 		{
 			if ((divisions.x <= 0) || (divisions.y <= 0))
 			{
@@ -115,7 +148,7 @@ namespace s3d
 
 		template <class PositionGenerator>
 		[[nodiscard]]
-		Mesh2D MakeTriangleGrid(const Size& divisions, PositionGenerator&& positionGenerator)
+		static Mesh2D MakeTriangleGrid(const Size& divisions, PositionGenerator&& positionGenerator)
 		{
 			if ((divisions.x <= 0) || (divisions.y <= 0))
 			{
@@ -130,7 +163,6 @@ namespace s3d
 			const size_t evenRowVertexCount = (xDivisions + 1);
 			const size_t oddRowVertexCount = (xDivisions + 2);
 
-			// 偶数段は x + 1 頂点、奇数段は左右端を含む x + 2 頂点を持つ
 			if ((Mesh2D::MaxVertexCount / evenRowVertexCount) < evenRowCount)
 			{
 				return{};
@@ -149,37 +181,38 @@ namespace s3d
 			Mesh2D mesh{ vertexCount, triangleCount };
 
 			auto GetRowVertexCount = [xDivisions](const size_t y) noexcept
-				{
-					return (xDivisions + 1 + (y & 1));
-				};
+			{
+				return (xDivisions + 1 + (y & 1));
+			};
 
 			auto GetRowOffset = [xDivisions](const size_t y) noexcept
-				{
-					const size_t evenRowsBefore = ((y + 1) / 2);
-					const size_t oddRowsBefore = (y / 2);
-					return (evenRowsBefore * (xDivisions + 1)
-						+ oddRowsBefore * (xDivisions + 2));
-				};
+			{
+				const size_t evenRowsBefore = ((y + 1) / 2);
+				const size_t oddRowsBefore = (y / 2);
+
+				return (evenRowsBefore * (xDivisions + 1)
+					+ oddRowsBefore * (xDivisions + 2));
+			};
 
 			auto GetUNumerator = [xDivisions](const size_t y, const size_t x) noexcept
+			{
+				if ((y & 1) == 0)
 				{
-					if ((y & 1) == 0)
-					{
-						return (x * 2);
-					}
+					return (x * 2);
+				}
 
-					if (x == 0)
-					{
-						return size_t{ 0 };
-					}
+				if (x == 0)
+				{
+					return size_t{ 0 };
+				}
 
-					if (x == (xDivisions + 1))
-					{
-						return (xDivisions * 2);
-					}
+				if (x == (xDivisions + 1))
+				{
+					return (xDivisions * 2);
+				}
 
-					return (x * 2 - 1);
-				};
+				return (x * 2 - 1);
+			};
 
 			for (size_t y = 0; y <= yDivisions; ++y)
 			{
@@ -214,9 +247,34 @@ namespace s3d
 					const bool canAdvanceTop = ((top + 1) < topCount);
 					const bool canAdvanceBottom = ((bottom + 1) < bottomCount);
 
-					if (canAdvanceTop
-						&& (not canAdvanceBottom
-							|| (GetUNumerator(y, top + 1) <= GetUNumerator(y + 1, bottom + 1))))
+					bool advanceTop;
+
+					if (not canAdvanceBottom)
+					{
+						advanceTop = true;
+					}
+					else if (not canAdvanceTop)
+					{
+						advanceTop = false;
+					}
+					else
+					{
+						const size_t topNextU = GetUNumerator(y, top + 1);
+						const size_t bottomNextU = GetUNumerator(y + 1, bottom + 1);
+
+						if (topNextU != bottomNextU)
+						{
+							advanceTop = (topNextU < bottomNextU);
+						}
+						else
+						{
+							// 右端で両方の次の頂点が一致する場合は、
+							// 頂点数の少ない側を先に進めて左右対称に閉じる
+							advanceTop = (topCount < bottomCount);
+						}
+					}
+
+					if (advanceTop)
 					{
 						mesh.indices[triangleIndex++] = TriangleIndex{
 							static_cast<TriangleIndex::value_type>(topOffset + top),
@@ -236,6 +294,109 @@ namespace s3d
 
 						++bottom;
 					}
+				}
+			}
+
+			return mesh;
+		}
+
+		template <class PositionGenerator>
+		[[nodiscard]]
+		Mesh2D MakeRadialGrid(const Size& divisions, PositionGenerator&& positionGenerator)
+		{
+			if ((divisions.x < 3) || (divisions.y <= 0))
+			{
+				return{};
+			}
+
+			const size_t angularDivisions = static_cast<size_t>(divisions.x);
+			const size_t radialDivisions = static_cast<size_t>(divisions.y);
+
+			// 1 + angularDivisions * radialDivisions のオーバーフローを避けつつ、
+			// 頂点数の上限を検証する
+			if (((Mesh2D::MaxVertexCount - 1) / angularDivisions) < radialDivisions)
+			{
+				return{};
+			}
+
+			const size_t vertexCount = (1 + angularDivisions * radialDivisions);
+			const size_t triangleCount = (angularDivisions * (radialDivisions * 2 - 1));
+			Mesh2D mesh{ vertexCount, triangleCount };
+
+			// 中心頂点
+			mesh.vertices[0].set(
+				positionGenerator(Float2{ 0.0f, 0.0f }),
+				Float2{ 0.5f, 0.5f },
+				DefaultVertexColor);
+
+			constexpr float StartAngle = (-Math::HalfPiF);
+
+			// 同心円状に頂点を生成
+			// 周方向は 12 時方向から時計回り
+			for (size_t radialIndex = 1; radialIndex <= radialDivisions; ++radialIndex)
+			{
+				const float radius = (static_cast<float>(radialIndex) / radialDivisions);
+				const size_t ringOffset = (1 + (radialIndex - 1) * angularDivisions);
+
+				for (size_t angularIndex = 0; angularIndex < angularDivisions; ++angularIndex)
+				{
+					const float angle = (StartAngle + Math::TwoPiF * angularIndex / angularDivisions);
+					const auto sinCos = FastMath::SinCos(angle);
+					const float x = (radius * sinCos.second);
+					const float y = (radius * sinCos.first);
+					const Float2 normalizedPos{ x, y };
+
+					mesh.vertices[ringOffset + angularIndex].set(
+						positionGenerator(normalizedPos),
+						Float2{ (0.5f + x * 0.5f), (0.5f + y * 0.5f) },
+						DefaultVertexColor);
+				}
+			}
+
+			size_t triangleIndex = 0;
+
+			// 中心から最初のリングへの三角形
+			{
+				const size_t ringOffset = 1;
+
+				for (size_t angularIndex = 0; angularIndex < angularDivisions; ++angularIndex)
+				{
+					const size_t nextAngularIndex = ((angularIndex + 1) % angularDivisions);
+
+					mesh.indices[triangleIndex++] = TriangleIndex{
+						0,
+						static_cast<TriangleIndex::value_type>(ringOffset + angularIndex),
+						static_cast<TriangleIndex::value_type>(ringOffset + nextAngularIndex)
+					};
+				}
+			}
+
+			// リング間を接続
+			for (size_t radialIndex = 1; radialIndex < radialDivisions; ++radialIndex)
+			{
+				const size_t innerRingOffset = (1 + (radialIndex - 1) * angularDivisions);
+				const size_t outerRingOffset = (1 + radialIndex * angularDivisions);
+
+				for (size_t angularIndex = 0; angularIndex < angularDivisions; ++angularIndex)
+				{
+					const size_t nextAngularIndex = ((angularIndex + 1) % angularDivisions);
+
+					const size_t innerCurrent = (innerRingOffset + angularIndex);
+					const size_t innerNext = (innerRingOffset + nextAngularIndex);
+					const size_t outerCurrent = (outerRingOffset + angularIndex);
+					const size_t outerNext = (outerRingOffset + nextAngularIndex);
+
+					mesh.indices[triangleIndex++] = TriangleIndex{
+						static_cast<TriangleIndex::value_type>(innerCurrent),
+						static_cast<TriangleIndex::value_type>(outerCurrent),
+						static_cast<TriangleIndex::value_type>(outerNext)
+					};
+
+					mesh.indices[triangleIndex++] = TriangleIndex{
+						static_cast<TriangleIndex::value_type>(innerCurrent),
+						static_cast<TriangleIndex::value_type>(outerNext),
+						static_cast<TriangleIndex::value_type>(innerNext)
+					};
 				}
 			}
 
@@ -443,42 +604,55 @@ namespace s3d
 			return false;
 		}
 
-		if (this == &mesh)
-		{
-			const Mesh2D copy = mesh;
-			return append(copy);
-		}
+		const size_t vertexOffset = vertices.size();
+		const size_t sourceVertexCount = mesh.vertices.size();
 
-		if ((MaxVertexCount < vertices.size())
-			|| (MaxVertexCount < mesh.vertices.size())
-			|| ((MaxVertexCount - vertices.size()) < mesh.vertices.size()))
+		if ((MaxVertexCount < vertexOffset)
+			|| ((MaxVertexCount - vertexOffset) < sourceVertexCount))
 		{
 			return false;
 		}
 
-		const size_t vertexOffset = vertices.size();
-		Array<TriangleIndex> adjustedIndices = mesh.indices;
+		const size_t triangleOffset = indices.size();
+		const size_t sourceTriangleCount = mesh.indices.size();
 
-		for (auto& triangle : adjustedIndices)
+		if (this == &mesh)
 		{
-			const size_t i0 = (vertexOffset + triangle.i0);
-			const size_t i1 = (vertexOffset + triangle.i1);
-			const size_t i2 = (vertexOffset + triangle.i2);
+			vertices.resize(vertexOffset + sourceVertexCount);
 
-			if ((MaxVertexIndex < i0)
-				|| (MaxVertexIndex < i1)
-				|| (MaxVertexIndex < i2))
+			for (size_t i = 0; i < sourceVertexCount; ++i)
 			{
-				return false;
+				vertices[vertexOffset + i] = vertices[i];
 			}
 
-			triangle.i0 = static_cast<TriangleIndex::value_type>(i0);
-			triangle.i1 = static_cast<TriangleIndex::value_type>(i1);
-			triangle.i2 = static_cast<TriangleIndex::value_type>(i2);
+			indices.resize(triangleOffset + sourceTriangleCount);
+
+			for (size_t i = 0; i < sourceTriangleCount; ++i)
+			{
+				indices[triangleOffset + i] = indices[i];
+			}
+		}
+		else
+		{
+			vertices.insert(
+				vertices.end(),
+				mesh.vertices.begin(),
+				mesh.vertices.end());
+
+			indices.insert(
+				indices.end(),
+				mesh.indices.begin(),
+				mesh.indices.end());
 		}
 
-		vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
-		indices.insert(indices.end(), adjustedIndices.begin(), adjustedIndices.end());
+		for (size_t i = triangleOffset; i < indices.size(); ++i)
+		{
+			auto& triangle = indices[i];
+
+			triangle.i0 = static_cast<TriangleIndex::value_type>(vertexOffset + triangle.i0);
+			triangle.i1 = static_cast<TriangleIndex::value_type>(vertexOffset + triangle.i1);
+			triangle.i2 = static_cast<TriangleIndex::value_type>(vertexOffset + triangle.i2);
+		}
 
 		return true;
 	}
@@ -525,42 +699,22 @@ namespace s3d
 
 	void Mesh2D::draw() const
 	{
-		if (isEmpty())
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, indices, none);
+		DrawTriangles(vertices, indices, none, nullptr);
 	}
 
 	void Mesh2D::draw(const Vec2& offset) const
 	{
-		if (isEmpty())
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, indices, offset);
+		DrawTriangles(vertices, indices, offset, nullptr);
 	}
 
 	void Mesh2D::draw(const Texture& texture) const
 	{
-		if (isEmpty())
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, indices, none);
+		DrawTriangles(vertices, indices, none, &texture);
 	}
 
 	void Mesh2D::draw(const Vec2& offset, const Texture& texture) const
 	{
-		if (isEmpty())
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, indices, offset);
+		DrawTriangles(vertices, indices, offset, &texture);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -569,84 +723,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount) const
+	void Mesh2D::drawSubset(const size_t startTriangle, const size_t triangleCount) const
 	{
-		if (vertices.empty()
-			|| (triangleCount == 0)
-			|| (indices.size() <= startTriangle))
-		{
-			return;
-		}
-
-		const size_t availableTriangleCount = (indices.size() - startTriangle);
-
-		if (availableTriangleCount < triangleCount)
-		{
-			triangleCount = availableTriangleCount;
-		}
-
-		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, subsetIndices, none);
+		DrawTriangles(vertices, GetTriangleSubset(indices, startTriangle, triangleCount), none, nullptr);
 	}
 
-	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount, const Vec2& offset) const
+	void Mesh2D::drawSubset(const size_t startTriangle, const size_t triangleCount, const Vec2& offset) const
 	{
-		if (vertices.empty()
-			|| (triangleCount == 0)
-			|| (indices.size() <= startTriangle))
-		{
-			return;
-		}
-		
-		const size_t availableTriangleCount = (indices.size() - startTriangle);
-		
-		if (availableTriangleCount < triangleCount)
-		{
-			triangleCount = availableTriangleCount;
-		}
-		
-		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(vertices, subsetIndices, offset);
+		DrawTriangles(vertices, GetTriangleSubset(indices, startTriangle, triangleCount), offset, nullptr);
 	}
 
-	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount, const Texture& texture) const
+	void Mesh2D::drawSubset(const size_t startTriangle, const size_t triangleCount, const Texture& texture) const
 	{
-		if (vertices.empty()
-			|| (triangleCount == 0)
-			|| (indices.size() <= startTriangle))
-		{
-			return;
-		}
-
-		const size_t availableTriangleCount = (indices.size() - startTriangle);
-
-		if (availableTriangleCount < triangleCount)
-		{
-			triangleCount = availableTriangleCount;
-		}
-
-		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, subsetIndices, none);
+		DrawTriangles(vertices, GetTriangleSubset(indices, startTriangle, triangleCount), none, &texture);
 	}
 
-	void Mesh2D::drawSubset(const size_t startTriangle, size_t triangleCount, const Vec2& offset, const Texture& texture) const
+	void Mesh2D::drawSubset(const size_t startTriangle, const size_t triangleCount, const Vec2& offset, const Texture& texture) const
 	{
-		if (vertices.empty()
-			|| (triangleCount == 0)
-			|| (indices.size() <= startTriangle))
-		{
-			return;
-		}
-	
-		const size_t availableTriangleCount = (indices.size() - startTriangle);
-		
-		if (availableTriangleCount < triangleCount)
-		{
-			triangleCount = availableTriangleCount;
-		}
-		
-		const std::span<const TriangleIndex> subsetIndices{ (indices.data() + startTriangle), triangleCount };
-		SIV3D_ENGINE(Renderer2D)->addMesh2D(texture, vertices, subsetIndices, offset);
+		DrawTriangles(vertices, GetTriangleSubset(indices, startTriangle, triangleCount), offset, &texture);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -723,6 +817,24 @@ namespace s3d
 				return Float2{
 					static_cast<float>(pos.x),
 					static_cast<float>(pos.y)
+				};
+			});
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	RadialGrid
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D Mesh2D::RadialGrid(const Circle& circle, const Size& divisions)
+	{
+		return MakeRadialGrid(divisions,
+			[&circle](const Float2 normalizedPos) noexcept
+			{
+				return Float2{
+					static_cast<float>(circle.center.x + circle.r * normalizedPos.x),
+					static_cast<float>(circle.center.y + circle.r * normalizedPos.y)
 				};
 			});
 	}

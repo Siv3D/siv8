@@ -14,7 +14,6 @@
 # include "Array.hpp"
 # include "Vertex2D.hpp"
 # include "TriangleIndex.hpp"
-# include "PredefinedNamedParameter.hpp"
 
 namespace s3d
 {
@@ -23,6 +22,9 @@ namespace s3d
 	class Shape2D;
 	class Texture;
 	struct Mat3x2;
+	struct RectF;
+	struct Quad;
+	struct Circle;
 
 	/// @brief 2D 描画用のメッシュ
 	/// @remark 頂点配列と三角形インデックス配列を保持し、低いオーバーヘッドで 2D 描画を行います。
@@ -36,10 +38,12 @@ namespace s3d
 		Array<TriangleIndex> indices;
 
 		/// @brief 使用可能な最大の頂点インデックス
+		/// @remark 16-bit index の最大値 0xFFFF は、一部のグラフィックス API で
+		/// primitive restart / strip cut の特殊値として予約されているため使用しません。
 		static constexpr size_t MaxVertexIndex = 65534;
 
 		/// @brief Mesh2D が保持できる最大の頂点数
-		static constexpr size_t MaxVertexCount = 65535;
+		static constexpr size_t MaxVertexCount = (MaxVertexIndex + 1);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -60,6 +64,7 @@ namespace s3d
 
 		/// @brief 頂点配列と三角形インデックス配列から Mesh2D を作成します。
 		/// @param _vertices 頂点配列
+		/// @param _indices 三角形インデックス配列
 		/// @remark `_vertices` の要素数が `MaxVertexCount` を超える場合は空の Mesh2D を作成します。
 		[[nodiscard]]
 		Mesh2D(Array<Vertex2D> _vertices, Array<TriangleIndex> _indices);
@@ -175,8 +180,8 @@ namespace s3d
 		/// @param mesh 追加する Mesh2D
 		/// @return 追加に成功した場合 true, 追加できない場合は false
 		/// @remark 追加される三角形のインデックスは、追加先の既存の頂点数に合わせて自動的に調整されます。
-		/// @remark 追加後の頂点数が `MaxVertexCount` を超える場合、または調整後のインデックスが `MaxVertexIndex` を超える場合は追加に失敗します。
-		/// @remark 追加に失敗した場合、この Mesh2D の内容は変更されません。
+		/// @remark `mesh` が不正な Mesh2D である場合、または追加後の頂点数が `MaxVertexCount` を超える場合は追加に失敗します。
+		/// @remark この関数が false を返した場合、この Mesh2D の内容は変更されません。
 		[[nodiscard]]
 		bool append(const Mesh2D& mesh);
 
@@ -256,6 +261,7 @@ namespace s3d
 		/// @remark `startTriangle + triangleCount` が三角形配列の末尾を超える場合、存在する範囲のみ描画されます。
 		/// @remark `startTriangle` が三角形配列の範囲外の場合は何も描画されません。
 		/// @remark 各頂点の UV 座標がテクスチャ座標として使用されます。
+		/// @remark 各頂点の色がテクスチャの色に乗算されます。
 		void drawSubset(size_t startTriangle, size_t triangleCount, const Texture& texture) const;
 
 		/// @brief 移動させた位置に、テクスチャを使用して指定した範囲の三角形を描画します。
@@ -265,6 +271,8 @@ namespace s3d
 		/// @param texture 描画に使用するテクスチャ
 		/// @remark `startTriangle + triangleCount` が三角形配列の末尾を超える場合、存在する範囲のみ描画されます。
 		/// @remark `startTriangle` が三角形配列の範囲外の場合は何も描画されません。
+		/// @remark 各頂点の UV 座標がテクスチャ座標として使用されます。
+		/// @remark 各頂点の色がテクスチャの色に乗算されます。
 		void drawSubset(size_t startTriangle, size_t triangleCount, const Vec2& offset, const Texture& texture) const;
 
 		////////////////////////////////////////////////////////////////
@@ -277,6 +285,10 @@ namespace s3d
 		/// @param size Mesh2D を作成する長方形のサイズ
 		/// @param divisions 横方向および縦方向の分割数
 		/// @return 作成した Mesh2D
+		/// @remark `divisions` が `{ x, y }` の場合、頂点数は `(x + 1) * (y + 1)`、三角形数は `2 * x * y` になります。
+		/// @remark 長方形の左上から右下にかけて、UV 座標 `(0, 0)` から `(1, 1)` が割り当てられます。
+		/// @remark 各頂点の色は白に設定されます。
+		/// @remark 分割数が正でない場合、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
 		[[nodiscard]]
 		static Mesh2D Grid(const SizeF& size, const Size& divisions);
 
@@ -313,6 +325,12 @@ namespace s3d
 		/// @param size Mesh2D を作成する長方形のサイズ
 		/// @param divisions 横方向および縦方向の分割数
 		/// @return 作成した Mesh2D
+		/// @remark `divisions` が `{ x, y }` の場合、三角形数は `y * (2 * x + 1)` になります。
+		/// @remark 各行の頂点を 1 段おきに横方向へ半分ずらして配置します。
+		/// @remark 偶数行には `x + 1` 個、奇数行には `x + 2` 個の頂点を配置します。
+		/// @remark 長方形の左上から右下にかけて、UV 座標 `(0, 0)` から `(1, 1)` が割り当てられます。
+		/// @remark 各頂点の色は白に設定されます。
+		/// @remark 分割数が正でない場合、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
 		[[nodiscard]]
 		static Mesh2D TriangleGrid(const SizeF& size, const Size& divisions);
 
@@ -320,7 +338,9 @@ namespace s3d
 		/// @param rect Mesh2D を作成する長方形
 		/// @param divisions 横方向および縦方向の分割数
 		/// @return 作成した Mesh2D
-		/// @remark 1 段おきに内部頂点を横方向へ半分ずらして配置します。
+		/// @remark `divisions` が `{ x, y }` の場合、三角形数は `y * (2 * x + 1)` になります。
+		/// @remark 各行の頂点を 1 段おきに横方向へ半分ずらして配置します。
+		/// @remark 偶数行には `x + 1` 個、奇数行には `x + 2` 個の頂点を配置します。
 		/// @remark 長方形の左上から右下にかけて、UV 座標 `(0, 0)` から `(1, 1)` が割り当てられます。
 		/// @remark 各頂点の色は白に設定されます。
 		/// @remark 分割数が正でない場合、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
@@ -331,12 +351,31 @@ namespace s3d
 		/// @param quad Mesh2D を作成する四角形
 		/// @param divisions 横方向および縦方向の分割数
 		/// @return 作成した Mesh2D
-		/// @remark 1 段おきに内部頂点を横方向へ半分ずらして配置します。
-		/// @remark 四角形の `p0`, `p1`, `p2`, `p3` にそれぞれ UV 座標 `(0, 0)`, `(1, 0)`, `(1, 1)`, `(0, 1)` が対応します。
+		/// @remark `divisions` が `{ x, y }` の場合、三角形数は `y * (2 * x + 1)` になります。
+		/// @remark 各行の頂点を 1 段おきに横方向へ半分ずらして配置します。
+		/// @remark 偶数行には `x + 1` 個、奇数行には `x + 2` 個の頂点を配置します。
+		/// @remark 長方形の左上から右下にかけて、UV 座標 `(0, 0)` から `(1, 1)` が割り当てられます。
 		/// @remark 各頂点の色は白に設定されます。
 		/// @remark 分割数が正でない場合、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
 		[[nodiscard]]
 		static Mesh2D TriangleGrid(const Quad& quad, const Size& divisions);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	RadialGrid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 円を放射状の格子に分割した Mesh2D を作成します。
+		/// @param circle Mesh2D を作成する円
+		/// @param divisions `{ 周方向の分割数, 半径方向の分割数 }`
+		/// @return 作成した Mesh2D
+		/// @remark `divisions` が `{ x, y }` の場合、頂点数は `1 + x * y`、三角形数は `x * (2 * y - 1)` になります。
+		/// @remark 円の外接正方形の左上から右下にかけて、UV 座標 `(0, 0)` から `(1, 1)` が割り当てられます。
+		/// @remark 各頂点の色は白に設定されます。
+		/// @remark 周方向の分割数が 3 未満、半径方向の分割数が正でない、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		static Mesh2D RadialGrid(const Circle& circle, const Size& divisions);
 	};
 }
 
