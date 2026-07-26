@@ -220,77 +220,6 @@ void JSONSerializer<s3d::Mat3x3>::from_json(const s3d::JSON::json_base& j, s3d::
 
 ////////////////////////////////////////////////////////////////
 //
-//	LineString
-//
-////////////////////////////////////////////////////////////////
-
-void JSONSerializer<s3d::LineString>::to_json(s3d::JSON::json_base& j, const s3d::LineString& value)
-{
-	j = value.asArray();
-}
-
-void JSONSerializer<s3d::LineString>::from_json(const s3d::JSON::json_base& j, s3d::LineString& value)
-{
-	value = s3d::LineString{ j.get<s3d::Array<s3d::Vec2>>() };
-}
-
-////////////////////////////////////////////////////////////////
-//
-//	Polygon
-//
-////////////////////////////////////////////////////////////////
-
-void JSONSerializer<s3d::Polygon>::to_json(s3d::JSON::json_base& j, const s3d::Polygon& value)
-{
-	j = { { "outer", value.outer() },
-		  { "inners", value.inners() },
-		  { "vertices", value.vertices() },
-		  { "indices", value.indices() },
-		  { "boundingRect", value.boundingRect() }
-	};
-}
-
-void JSONSerializer<s3d::Polygon>::from_json(const s3d::JSON::json_base& j, s3d::Polygon& value)
-{
-	s3d::Array<s3d::Vec2> outer = j.at("outer").get<s3d::Array<s3d::Vec2>>();
-	s3d::Array<s3d::Array<s3d::Vec2>> inners = j.at("inners").get<s3d::Array<s3d::Array<s3d::Vec2>>>();
-	s3d::Array<s3d::Float2> vertices = j.at("vertices").get<s3d::Array<s3d::Float2>>();
-	s3d::Array<s3d::TriangleIndex> indices = j.at("indices").get<s3d::Array<s3d::TriangleIndex>>();
-	s3d::RectF boundingRect = j.at("boundingRect").get<s3d::RectF>();
-
-	value = s3d::Polygon{ outer, std::move(inners), std::move(vertices), std::move(indices), boundingRect, s3d::SkipValidation::No };
-}
-
-////////////////////////////////////////////////////////////////
-//
-//	MultiPolygon
-//
-////////////////////////////////////////////////////////////////
-
-//void JSONSerializer<s3d::MultiPolygon>::to_json(s3d::JSON::json_base& j, const s3d::MultiPolygon& value)
-//{
-//	j = value.asArray();
-//}
-//
-//void JSONSerializer<s3d::MultiPolygon>::from_json(const s3d::JSON::json_base& j, s3d::MultiPolygon& value)
-//{
-//	value = s3d::MultiPolygon{ j.get<s3d::Array<s3d::Polygon>>() };
-//}
-
-////////////////////////////////////////////////////////////////
-//
-//	Bezier2
-//
-////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////
-//
-//	Bezier3
-//
-////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////
-//
 //	TriangleIndex
 //
 ////////////////////////////////////////////////////////////////
@@ -433,23 +362,6 @@ void JSONSerializer<s3d::InputGroup>::from_json(const s3d::JSON::json_base& j, s
 
 ////////////////////////////////////////////////////////////////
 //
-//	Point
-//
-////////////////////////////////////////////////////////////////
-
-void JSONSerializer<s3d::Point>::to_json(s3d::JSON::json_base& j, const s3d::Point& value)
-{
-	j = { { "x", value.x }, { "y", value.y } };
-}
-
-void JSONSerializer<s3d::Point>::from_json(const s3d::JSON::json_base& j, s3d::Point& value)
-{
-	j.at("x").get_to(value.x);
-	j.at("y").get_to(value.y);
-}
-
-////////////////////////////////////////////////////////////////
-//
 //	Float2
 //
 ////////////////////////////////////////////////////////////////
@@ -460,23 +372,6 @@ void JSONSerializer<s3d::Float2>::to_json(s3d::JSON::json_base& j, const s3d::Fl
 }
 
 void JSONSerializer<s3d::Float2>::from_json(const s3d::JSON::json_base& j, s3d::Float2& value)
-{
-	j.at("x").get_to(value.x);
-	j.at("y").get_to(value.y);
-}
-
-////////////////////////////////////////////////////////////////
-//
-//	Vec2
-//
-////////////////////////////////////////////////////////////////
-
-void JSONSerializer<s3d::Vec2>::to_json(s3d::JSON::json_base& j, const s3d::Vec2& value)
-{
-	j = { { "x", value.x }, { "y", value.y } };
-}
-
-void JSONSerializer<s3d::Vec2>::from_json(const s3d::JSON::json_base& j, s3d::Vec2& value)
 {
 	j.at("x").get_to(value.x);
 	j.at("y").get_to(value.y);
@@ -615,6 +510,40 @@ void JSONSerializer<s3d::HSV>::from_json(const s3d::JSON::json_base& j, s3d::HSV
 
 ////////////////////////////////////////////////////////////////
 //
+//	Point
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Point>::to_json(s3d::JSON::json_base& j, const s3d::Point& value)
+{
+	j = { { "x", value.x }, { "y", value.y } };
+}
+
+void JSONSerializer<s3d::Point>::from_json(const s3d::JSON::json_base& j, s3d::Point& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Vec2
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Vec2>::to_json(s3d::JSON::json_base& j, const s3d::Vec2& value)
+{
+	j = { { "x", value.x }, { "y", value.y } };
+}
+
+void JSONSerializer<s3d::Vec2>::from_json(const s3d::JSON::json_base& j, s3d::Vec2& value)
+{
+	j.at("x").get_to(value.x);
+	j.at("y").get_to(value.y);
+}
+
+////////////////////////////////////////////////////////////////
+//
 //	Line
 //
 ////////////////////////////////////////////////////////////////
@@ -628,6 +557,59 @@ void JSONSerializer<s3d::Line>::from_json(const s3d::JSON::json_base& j, s3d::Li
 {
 	j.at("start").get_to(value.start);
 	j.at("end").get_to(value.end);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	LineString
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::LineString>::to_json(s3d::JSON::json_base& j, const s3d::LineString& value)
+{
+	j = value.asArray();
+}
+
+void JSONSerializer<s3d::LineString>::from_json(const s3d::JSON::json_base& j, s3d::LineString& value)
+{
+	value = s3d::LineString{ j.get<s3d::Array<s3d::Vec2>>() };
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Bezier2
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Bezier2>::to_json(s3d::JSON::json_base& j, const s3d::Bezier2& value)
+{
+	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 } };
+}
+
+void JSONSerializer<s3d::Bezier2>::from_json(const s3d::JSON::json_base& j, s3d::Bezier2& value)
+{
+	j.at("p0").get_to(value.p0);
+	j.at("p1").get_to(value.p1);
+	j.at("p2").get_to(value.p2);
+}
+
+////////////////////////////////////////////////////////////////
+//
+//	Bezier3
+//
+////////////////////////////////////////////////////////////////
+
+void JSONSerializer<s3d::Bezier3>::to_json(s3d::JSON::json_base& j, const s3d::Bezier3& value)
+{
+	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 }, { "p3", value.p3 } };
+}
+
+void JSONSerializer<s3d::Bezier3>::from_json(const s3d::JSON::json_base& j, s3d::Bezier3& value)
+{
+	j.at("p0").get_to(value.p0);
+	j.at("p1").get_to(value.p1);
+	j.at("p2").get_to(value.p2);
+	j.at("p3").get_to(value.p3);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -788,51 +770,32 @@ void JSONSerializer<s3d::RoundRect>::from_json(const s3d::JSON::json_base& j, s3
 //
 ////////////////////////////////////////////////////////////////
 
+void JSONSerializer<s3d::Polygon>::to_json(s3d::JSON::json_base& j, const s3d::Polygon& value)
+{
+	j = { { "outer", value.outer() },
+		  { "inners", value.inners() } };
+}
+
+void JSONSerializer<s3d::Polygon>::from_json(const s3d::JSON::json_base& j, s3d::Polygon& value)
+{
+	s3d::Array<s3d::Vec2> outer = j.at("outer").get<s3d::Array<s3d::Vec2>>();
+	s3d::Array<s3d::Array<s3d::Vec2>> inners = j.at("inners").get<s3d::Array<s3d::Array<s3d::Vec2>>>();
+
+	value = s3d::Polygon{ outer, std::move(inners) };
+}
+
 ////////////////////////////////////////////////////////////////
 //
 //	MultiPolygon
 //
 ////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////
-//
-//	LineString
-//
-////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////
-//
-//	Bezier2
-//
-////////////////////////////////////////////////////////////////
-
-void JSONSerializer<s3d::Bezier2>::to_json(s3d::JSON::json_base& j, const s3d::Bezier2& value)
+void JSONSerializer<s3d::MultiPolygon>::to_json(s3d::JSON::json_base& j, const s3d::MultiPolygon& value)
 {
-	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 } };
+	j = value.asArray();
 }
 
-void JSONSerializer<s3d::Bezier2>::from_json(const s3d::JSON::json_base& j, s3d::Bezier2& value)
+void JSONSerializer<s3d::MultiPolygon>::from_json(const s3d::JSON::json_base& j, s3d::MultiPolygon& value)
 {
-	j.at("p0").get_to(value.p0);
-	j.at("p1").get_to(value.p1);
-	j.at("p2").get_to(value.p2);
-}
-
-////////////////////////////////////////////////////////////////
-//
-//	Bezier3
-//
-////////////////////////////////////////////////////////////////
-
-void JSONSerializer<s3d::Bezier3>::to_json(s3d::JSON::json_base& j, const s3d::Bezier3& value)
-{
-	j = { { "p0", value.p0 }, { "p1", value.p1 }, { "p2", value.p2 }, { "p3", value.p3 } };
-}
-
-void JSONSerializer<s3d::Bezier3>::from_json(const s3d::JSON::json_base& j, s3d::Bezier3& value)
-{
-	j.at("p0").get_to(value.p0);
-	j.at("p1").get_to(value.p1);
-	j.at("p2").get_to(value.p2);
-	j.at("p3").get_to(value.p3);
+	value = s3d::MultiPolygon{ j.get<s3d::Array<s3d::Polygon>>() };
 }

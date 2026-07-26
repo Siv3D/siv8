@@ -749,6 +749,7 @@
 		F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7EB3016828C00B3542E /* Mesh2D.hpp */; };
 		F93BD7EE301682A900B3542E /* Mesh2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7ED301682A900B3542E /* Mesh2D.ipp */; };
 		F93BD7F1301682CB00B3542E /* SivMesh2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */; };
+		F93BD7F330168A0200B3542E /* Test_JSONSerialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */; };
 		F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAC72E2A099E001B4D43 /* DrawableText.hpp */; };
 		F943AACB2E2A09BB001B4D43 /* SivDrawableText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */; };
 		F943AACD2E2A09E5001B4D43 /* DrawableText.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */; };
@@ -3961,6 +3962,7 @@
 		F93BD7EB3016828C00B3542E /* Mesh2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.hpp; sourceTree = "<group>"; };
 		F93BD7ED301682A900B3542E /* Mesh2D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.ipp; sourceTree = "<group>"; };
 		F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMesh2D.cpp; sourceTree = "<group>"; };
+		F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_JSONSerialization.cpp; sourceTree = "<group>"; };
 		F943AAC72E2A099E001B4D43 /* DrawableText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.hpp; sourceTree = "<group>"; };
 		F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDrawableText.cpp; sourceTree = "<group>"; };
 		F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.ipp; sourceTree = "<group>"; };
@@ -6641,6 +6643,7 @@
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
 				F90F7A192FA9DB730077F398 /* Test_INI.cpp */,
 				F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */,
+				F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */,
 				F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */,
 				F90702C12B9DAEB900383E4D /* Test_Memory.cpp */,
 				F9528C512BC029E800222F45 /* Test_MemoryMappedFile.cpp */,
@@ -15875,6 +15878,7 @@
 				F90702FC2B9DAEB900383E4D /* Test_FileSystem.cpp in Sources */,
 				F93BD7EA3016825E00B3542E /* Test_Format_2DShapes.cpp in Sources */,
 				F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */,
+				F93BD7F330168A0200B3542E /* Test_JSONSerialization.cpp in Sources */,
 				F97E6DB72D7A8A1F0066E408 /* Test_RangeFormatter.cpp in Sources */,
 				F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */,
 				F93BD7D4300FB21400B3542E /* Test_Geometry2D_IntersectsAt.cpp in Sources */,
