@@ -10,11 +10,29 @@
 //-----------------------------------------------
 
 # include <Siv3D/DynamicTexture.hpp>
+# include <Siv3D/Anchor.hpp>
+# include <Siv3D/Rect.hpp>
 # include <Siv3D/Texture/ITexture.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		bool IsValidRegion(const Size& textureSize, const Rect& rect) noexcept
+		{
+			return ((0 <= rect.x)
+				&& (0 <= rect.y)
+				&& (0 < rect.w)
+				&& (0 < rect.h)
+				&& (rect.w <= textureSize.x)
+				&& (rect.h <= textureSize.y)
+				&& (rect.x <= (textureSize.x - rect.w))
+				&& (rect.y <= (textureSize.y - rect.h)));
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -324,6 +342,88 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	fillRegion
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool DynamicTexture::fillRegion(const ColorF& color, const Rect& rect)
+	{
+		if (isEmpty() || (not IsValidRegion(size(), rect)))
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fillRegion(m_handle->id(), color, rect);
+	}
+
+	bool DynamicTexture::fillRegion(const Image& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8G8B8A8_Unorm, true, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<uint8>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8_Unorm, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<HalfFloat>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R16_Float, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<std::pair<uint16, uint16>>& image, const Rect& rect)
+	{
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(uint16) * 2);
+
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), bytesPerRow,
+			TextureFormat::R16G16_Unorm, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<std::pair<HalfFloat, HalfFloat>>& image, const Rect& rect)
+	{
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 2);
+
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), bytesPerRow,
+			TextureFormat::R16G16_Float, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<Color>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8G8B8A8_Unorm, true, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<float>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R32_Float, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, const Rect& rect)
+	{
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 4);
+
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), bytesPerRow,
+			TextureFormat::R16G16B16A16_Float, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<Float2>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R32G32_Float, false, rect, true);
+	}
+
+	bool DynamicTexture::fillRegion(const Grid<Float4>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R32G32B32A32_Float, false, rect, true);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	fillIfNotBusy
 	//
 	////////////////////////////////////////////////////////////////
@@ -572,6 +672,100 @@ namespace s3d
 		}
 
 		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fillRegionIfNotBusy
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Image& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8G8B8A8_Unorm, true, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<uint8>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8_Unorm, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<HalfFloat>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R16_Float, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<std::pair<uint16, uint16>>& image, const Rect& rect)
+	{
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(uint16) * 2);
+
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), bytesPerRow,
+			TextureFormat::R16G16_Unorm, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<std::pair<HalfFloat, HalfFloat>>& image, const Rect& rect)
+	{
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 2);
+
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), bytesPerRow,
+			TextureFormat::R16G16_Float, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<Color>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R8G8B8A8_Unorm, true, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<float>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R32_Float, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, const Rect& rect)
+	{
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 4);
+
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), bytesPerRow,
+			TextureFormat::R16G16B16A16_Float, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<Float2>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R32G32_Float, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionIfNotBusy(const Grid<Float4>& image, const Rect& rect)
+	{
+		return fillRegionImpl(std::as_bytes(std::span{ image }), image.size(), image.bytesPerRow(),
+			TextureFormat::R32G32B32A32_Float, false, rect, false);
+	}
+
+	bool DynamicTexture::fillRegionImpl(const std::span<const Byte> src, const Size& srcSize, const uint32 srcBytesPerRow,
+		const TextureFormat& expectedFormat, const bool allowSRGB, const Rect& rect, const bool wait)
+	{
+		if (isEmpty()
+			|| (srcSize != rect.size)
+			|| (not IsValidRegion(size(), rect)))
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+		const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+
+		if ((format != expectedFormat)
+			&& ((not allowSRGB) || (format != TextureFormat::R8G8B8A8_Unorm_SRGB)))
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fillRegion(handleID, src, srcBytesPerRow, rect, wait);
 	}
 
 	////////////////////////////////////////////////////////////////
