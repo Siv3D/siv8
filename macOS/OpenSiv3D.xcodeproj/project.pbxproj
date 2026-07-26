@@ -3196,6 +3196,7 @@
 		F902E1142EA8B39D002C6B92 /* SivSimpleGUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimpleGUI.cpp; sourceTree = "<group>"; };
 		F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DTest.cpp; sourceTree = "<group>"; };
 		F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTest.hpp; sourceTree = "<group>"; };
+		F93BD7F63016950000B3542E /* Siv3DTestPCH.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTestPCH.hpp; sourceTree = "<group>"; };
 		F90702B62B9DAEB900383E4D /* Test_Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Array.cpp; sourceTree = "<group>"; };
 		F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryFileWriter.cpp; sourceTree = "<group>"; };
 		F90702B82B9DAEB900383E4D /* Test_Byte.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Byte.cpp; sourceTree = "<group>"; };
@@ -6670,6 +6671,7 @@
 				F90702CD2B9DAEB900383E4D /* Test_Version.cpp */,
 				F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */,
 				F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */,
+				F93BD7F63016950000B3542E /* Siv3DTestPCH.hpp */,
 				F986F86E2BC7EEF3006A4C0F /* data */,
 			);
 			name = Test;
@@ -17018,6 +17020,8 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ../Test/Siv3DTestPCH.hpp;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -17090,6 +17094,8 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ../Test/Siv3DTestPCH.hpp;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
