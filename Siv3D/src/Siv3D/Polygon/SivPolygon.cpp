@@ -17,6 +17,7 @@
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>
 # include <Siv3D/Unicode.hpp>
+# include <Siv3D/Mesh2D.hpp>
 # include "PolygonDetail.hpp"
 
 namespace s3d
@@ -1171,6 +1172,27 @@ namespace s3d
 	void Polygon::drawWireframe(const Vec2& offset, const double thickness, const PatternParameters& pattern) const
 	{
 		pImpl->drawWireframe(Float2{ offset }, thickness, pattern);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toMesh2D
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D Polygon::toMesh2D() const
+	{
+		return Mesh2D{ *this };
+	}
+
+	Mesh2D Polygon::toMesh2D(const RectF& mappingRect) const
+	{
+		return Mesh2D{ *this, mappingRect };
+	}
+
+	Mesh2D Polygon::toMesh2D(const Mat3x2& uvTransform) const
+	{
+		return Mesh2D{ *this, uvTransform };
 	}
 
 	////////////////////////////////////////////////////////////////

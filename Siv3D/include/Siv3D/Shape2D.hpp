@@ -15,11 +15,13 @@
 # include "PointVector.hpp"
 # include "TriangleIndex.hpp"
 # include "2DShapes.hpp"
-# include "PredefinedNamedParameter.hpp"
 # include "QualityFactor.hpp"
 
 namespace s3d
 {
+	struct Mat3x2;
+	struct Mesh2D;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Shape2D
@@ -615,17 +617,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
+		/// @brief 図形をもとに新しい Mesh2D を作成します。
+		/// @return 新しい Mesh2D
+		/// @remark 各頂点の色は白に、UV 座標は `(0, 0)` に設定されます。
+		/// @remark 頂点数が `Mesh2D::MaxVertexCount` を超える場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		Mesh2D toMesh2D() const;
 
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
+		/// @brief 図形をもとに、指定した長方形を UV 空間に対応させた新しい Mesh2D を作成します。
+		/// @param mappingRect UV 座標 `(0, 0)` から `(1, 1)` に対応させる座標空間上の長方形
+		/// @return 新しい Mesh2D
+		/// @remark `mappingRect` の左上が UV 座標 `(0, 0)`、右下が UV 座標 `(1, 1)` に対応します。
+		/// @remark `mappingRect` の外側にある頂点の UV 座標は `[0, 1]` の範囲外になることがあります。
+		/// @remark 頂点数が `Mesh2D::MaxVertexCount` を超える場合、または `mappingRect` の幅または高さが 0 の場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		Mesh2D toMesh2D(const RectF& mappingRect) const;
 
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
-
-		//[[nodiscard]]
-		//Mesh2D toMesh2D(const Mat3x2& uvMat) const;
+		/// @brief 図形をもとに、指定した変換によって UV 座標を生成した新しい Mesh2D を作成します。
+		/// @param uvTransform 頂点座標から UV 座標を計算する変換行列
+		/// @return 新しい Mesh2D
+		/// @remark 頂点数が `Mesh2D::MaxVertexCount` を超える場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		Mesh2D toMesh2D(const Mat3x2& uvTransform) const;
 
 	private:
 

@@ -17,6 +17,7 @@
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Polygon/PolygonBuffer.hpp>
+# include <Siv3D/Mesh2D.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -1143,5 +1144,26 @@ namespace s3d
 		}
 	
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toMesh2D
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D Shape2D::toMesh2D() const
+	{
+		return Mesh2D{ *this };
+	}
+
+	Mesh2D Shape2D::toMesh2D(const RectF& mappingRect) const
+	{
+		return Mesh2D{ *this, mappingRect };
+	}
+
+	Mesh2D Shape2D::toMesh2D(const Mat3x2& uvTransform) const
+	{
+		return Mesh2D{ *this, uvTransform };
 	}
 }
