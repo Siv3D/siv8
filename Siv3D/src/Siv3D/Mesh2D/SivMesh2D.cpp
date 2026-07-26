@@ -112,6 +112,135 @@ namespace s3d
 
 			return mesh;
 		}
+
+		template <class PositionGenerator>
+		[[nodiscard]]
+		Mesh2D MakeTriangleGrid(const Size& divisions, PositionGenerator&& positionGenerator)
+		{
+			if ((divisions.x <= 0) || (divisions.y <= 0))
+			{
+				return{};
+			}
+
+			const size_t xDivisions = static_cast<size_t>(divisions.x);
+			const size_t yDivisions = static_cast<size_t>(divisions.y);
+			const size_t rowCount = (yDivisions + 1);
+			const size_t evenRowCount = ((rowCount + 1) / 2);
+			const size_t oddRowCount = (rowCount / 2);
+			const size_t evenRowVertexCount = (xDivisions + 1);
+			const size_t oddRowVertexCount = (xDivisions + 2);
+
+			// 偶数段は x + 1 頂点、奇数段は左右端を含む x + 2 頂点を持つ
+			if ((Mesh2D::MaxVertexCount / evenRowVertexCount) < evenRowCount)
+			{
+				return{};
+			}
+
+			const size_t evenVertexCount = (evenRowVertexCount * evenRowCount);
+
+			if ((oddRowCount != 0)
+				&& ((Mesh2D::MaxVertexCount - evenVertexCount) / oddRowVertexCount) < oddRowCount)
+			{
+				return{};
+			}
+
+			const size_t vertexCount = (evenVertexCount + oddRowVertexCount * oddRowCount);
+			const size_t triangleCount = (yDivisions * (xDivisions * 2 + 1));
+			Mesh2D mesh{ vertexCount, triangleCount };
+
+			auto GetRowVertexCount = [xDivisions](const size_t y) noexcept
+				{
+					return (xDivisions + 1 + (y & 1));
+				};
+
+			auto GetRowOffset = [xDivisions](const size_t y) noexcept
+				{
+					const size_t evenRowsBefore = ((y + 1) / 2);
+					const size_t oddRowsBefore = (y / 2);
+					return (evenRowsBefore * (xDivisions + 1)
+						+ oddRowsBefore * (xDivisions + 2));
+				};
+
+			auto GetUNumerator = [xDivisions](const size_t y, const size_t x) noexcept
+				{
+					if ((y & 1) == 0)
+					{
+						return (x * 2);
+					}
+
+					if (x == 0)
+					{
+						return size_t{ 0 };
+					}
+
+					if (x == (xDivisions + 1))
+					{
+						return (xDivisions * 2);
+					}
+
+					return (x * 2 - 1);
+				};
+
+			for (size_t y = 0; y <= yDivisions; ++y)
+			{
+				const double v = (static_cast<double>(y) / yDivisions);
+				const size_t currentRowVertexCount = GetRowVertexCount(y);
+				const size_t rowOffset = GetRowOffset(y);
+
+				for (size_t x = 0; x < currentRowVertexCount; ++x)
+				{
+					const double u = (static_cast<double>(GetUNumerator(y, x)) / (xDivisions * 2));
+
+					mesh.vertices[rowOffset + x].set(
+						positionGenerator(u, v),
+						Float2{ static_cast<float>(u), static_cast<float>(v) },
+						DefaultVertexColor);
+				}
+			}
+
+			size_t triangleIndex = 0;
+
+			for (size_t y = 0; y < yDivisions; ++y)
+			{
+				const size_t topOffset = GetRowOffset(y);
+				const size_t bottomOffset = GetRowOffset(y + 1);
+				const size_t topCount = GetRowVertexCount(y);
+				const size_t bottomCount = GetRowVertexCount(y + 1);
+				size_t top = 0;
+				size_t bottom = 0;
+
+				while (((top + 1) < topCount) || ((bottom + 1) < bottomCount))
+				{
+					const bool canAdvanceTop = ((top + 1) < topCount);
+					const bool canAdvanceBottom = ((bottom + 1) < bottomCount);
+
+					if (canAdvanceTop
+						&& (not canAdvanceBottom
+							|| (GetUNumerator(y, top + 1) <= GetUNumerator(y + 1, bottom + 1))))
+					{
+						mesh.indices[triangleIndex++] = TriangleIndex{
+							static_cast<TriangleIndex::value_type>(topOffset + top),
+							static_cast<TriangleIndex::value_type>(topOffset + top + 1),
+							static_cast<TriangleIndex::value_type>(bottomOffset + bottom)
+						};
+
+						++top;
+					}
+					else
+					{
+						mesh.indices[triangleIndex++] = TriangleIndex{
+							static_cast<TriangleIndex::value_type>(topOffset + top),
+							static_cast<TriangleIndex::value_type>(bottomOffset + bottom + 1),
+							static_cast<TriangleIndex::value_type>(bottomOffset + bottom)
+						};
+
+						++bottom;
+					}
+				}
+			}
+
+			return mesh;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -526,6 +655,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	Mesh2D Mesh2D::Grid(const SizeF& size, const Size& divisions)
+	{
+		return Grid(RectF{ size }, divisions);
+	}
+
 	Mesh2D Mesh2D::Grid(const RectF& rect, const Size& divisions)
 	{
 		return MakeGrid(divisions,
@@ -541,6 +675,45 @@ namespace s3d
 	Mesh2D Mesh2D::Grid(const Quad& quad, const Size& divisions)
 	{
 		return MakeGrid(divisions,
+			[&quad](const double u, const double v) noexcept
+			{
+				const Vec2 top = (quad.p0 + (quad.p1 - quad.p0) * u);
+				const Vec2 bottom = (quad.p3 + (quad.p2 - quad.p3) * u);
+				const Vec2 pos = (top + (bottom - top) * v);
+
+				return Float2{
+					static_cast<float>(pos.x),
+					static_cast<float>(pos.y)
+				};
+			});
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	TriangleGrid
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh2D Mesh2D::TriangleGrid(const SizeF& size, const Size& divisions)
+	{
+		return TriangleGrid(RectF{ size }, divisions);
+	}
+
+	Mesh2D Mesh2D::TriangleGrid(const RectF& rect, const Size& divisions)
+	{
+		return MakeTriangleGrid(divisions,
+			[&rect](const double u, const double v) noexcept
+			{
+				return Float2{
+					static_cast<float>(rect.x + rect.w * u),
+					static_cast<float>(rect.y + rect.h * v)
+				};
+			});
+	}
+
+	Mesh2D Mesh2D::TriangleGrid(const Quad& quad, const Size& divisions)
+	{
+		return MakeTriangleGrid(divisions,
 			[&quad](const double u, const double v) noexcept
 			{
 				const Vec2 top = (quad.p0 + (quad.p1 - quad.p0) * u);

@@ -78,9 +78,9 @@ namespace s3d
 		[[nodiscard]]
 		explicit Mesh2D(const Polygon& polygon);
 
-		/// @brief Polygon から、指定した矩形を UV 空間に対応させた Mesh2D を作成します。
+		/// @brief Polygon から、指定した長方形を UV 空間に対応させた Mesh2D を作成します。
 		/// @param polygon Mesh2D に変換する Polygon
-		/// @param mappingRect UV 座標 `(0, 0)` から `(1, 1)` に対応させる座標空間上の矩形
+		/// @param mappingRect UV 座標 `(0, 0)` から `(1, 1)` に対応させる座標空間上の長方形
 		/// @remark `mappingRect` の左上が UV 座標 `(0, 0)`、右下が UV 座標 `(1, 1)` に対応します。
 		/// @remark `mappingRect` の外側にある頂点の UV 座標は `[0, 1]` の範囲外になることがあります。
 		/// @remark `polygon` の頂点数が `MaxVertexCount` を超える場合、または `mappingRect` の幅または高さが 0 の場合は空の Mesh2D を作成します。
@@ -102,9 +102,9 @@ namespace s3d
 		[[nodiscard]]
 		explicit Mesh2D(const Shape2D& shape2D);
 
-		/// @brief Shape2D から、指定した矩形を UV 空間に対応させた Mesh2D を作成します。
+		/// @brief Shape2D から、指定した長方形を UV 空間に対応させた Mesh2D を作成します。
 		/// @param shape2D Mesh2D に変換する Shape2D
-		/// @param mappingRect UV 座標 `(0, 0)` から `(1, 1)` に対応させる座標空間上の矩形
+		/// @param mappingRect UV 座標 `(0, 0)` から `(1, 1)` に対応させる座標空間上の長方形
 		/// @remark `mappingRect` の左上が UV 座標 `(0, 0)`、右下が UV 座標 `(1, 1)` に対応します。
 		/// @remark `mappingRect` の外側にある頂点の UV 座標は `[0, 1]` の範囲外になることがあります。
 		/// @remark `shape2D` の頂点数が `MaxVertexCount` を超える場合、または `mappingRect` の幅または高さが 0 の場合は空の Mesh2D を作成します。
@@ -274,6 +274,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 長方形を格子状に分割した Mesh2D を作成します。
+		/// @param size Mesh2D を作成する長方形のサイズ
+		/// @param divisions 横方向および縦方向の分割数
+		/// @return 作成した Mesh2D
+		[[nodiscard]]
+		static Mesh2D Grid(const SizeF& size, const Size& divisions);
+
+		/// @brief 長方形を格子状に分割した Mesh2D を作成します。
 		/// @param rect Mesh2D を作成する長方形
 		/// @param divisions 横方向および縦方向の分割数
 		/// @return 作成した Mesh2D
@@ -295,6 +302,41 @@ namespace s3d
 		/// @remark 分割数が正でない場合、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
 		[[nodiscard]]
 		static Mesh2D Grid(const Quad& quad, const Size& divisions);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	TriangleGrid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 長方形を三角格子状に分割した Mesh2D を作成します。
+		/// @param size Mesh2D を作成する長方形のサイズ
+		/// @param divisions 横方向および縦方向の分割数
+		/// @return 作成した Mesh2D
+		[[nodiscard]]
+		static Mesh2D TriangleGrid(const SizeF& size, const Size& divisions);
+
+		/// @brief 長方形を三角格子状に分割した Mesh2D を作成します。
+		/// @param rect Mesh2D を作成する長方形
+		/// @param divisions 横方向および縦方向の分割数
+		/// @return 作成した Mesh2D
+		/// @remark 1 段おきに内部頂点を横方向へ半分ずらして配置します。
+		/// @remark 長方形の左上から右下にかけて、UV 座標 `(0, 0)` から `(1, 1)` が割り当てられます。
+		/// @remark 各頂点の色は白に設定されます。
+		/// @remark 分割数が正でない場合、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		static Mesh2D TriangleGrid(const RectF& rect, const Size& divisions);
+
+		/// @brief 四角形を三角格子状に分割した Mesh2D を作成します。
+		/// @param quad Mesh2D を作成する四角形
+		/// @param divisions 横方向および縦方向の分割数
+		/// @return 作成した Mesh2D
+		/// @remark 1 段おきに内部頂点を横方向へ半分ずらして配置します。
+		/// @remark 四角形の `p0`, `p1`, `p2`, `p3` にそれぞれ UV 座標 `(0, 0)`, `(1, 0)`, `(1, 1)`, `(0, 1)` が対応します。
+		/// @remark 各頂点の色は白に設定されます。
+		/// @remark 分割数が正でない場合、または必要な頂点数が `MaxVertexCount` を超える場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		static Mesh2D TriangleGrid(const Quad& quad, const Size& divisions);
 	};
 }
 
