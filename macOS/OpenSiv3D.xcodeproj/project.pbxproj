@@ -745,6 +745,10 @@
 		F93BD7E6300FB21400B3542E /* Test_Geometry2D_Intersects_CurvedAreaShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7C5300FB21400B3542E /* Test_Geometry2D_Intersects_CurvedAreaShapes.cpp */; };
 		F93BD7E7300FB21400B3542E /* Test_Geometry2D_SignedDistance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7D1300FB21400B3542E /* Test_Geometry2D_SignedDistance.cpp */; };
 		F93BD7E8300FB21400B3542E /* Test_Geometry2D_Distance_Symmetry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7C2300FB21400B3542E /* Test_Geometry2D_Distance_Symmetry.cpp */; };
+		F93BD7EA3016825E00B3542E /* Test_Format_2DShapes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */; };
+		F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7EB3016828C00B3542E /* Mesh2D.hpp */; };
+		F93BD7EE301682A900B3542E /* Mesh2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7ED301682A900B3542E /* Mesh2D.ipp */; };
+		F93BD7F1301682CB00B3542E /* SivMesh2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */; };
 		F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAC72E2A099E001B4D43 /* DrawableText.hpp */; };
 		F943AACB2E2A09BB001B4D43 /* SivDrawableText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */; };
 		F943AACD2E2A09E5001B4D43 /* DrawableText.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */; };
@@ -3953,6 +3957,10 @@
 		F93BD7D1300FB21400B3542E /* Test_Geometry2D_SignedDistance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_SignedDistance.cpp; sourceTree = "<group>"; };
 		F93BD7D2300FB21400B3542E /* Test_Geometry2D_SignedDistance_Availability.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_SignedDistance_Availability.cpp; sourceTree = "<group>"; };
 		F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_PolynomialSolver.cpp; sourceTree = "<group>"; };
+		F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Format_2DShapes.cpp; sourceTree = "<group>"; };
+		F93BD7EB3016828C00B3542E /* Mesh2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.hpp; sourceTree = "<group>"; };
+		F93BD7ED301682A900B3542E /* Mesh2D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.ipp; sourceTree = "<group>"; };
+		F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMesh2D.cpp; sourceTree = "<group>"; };
 		F943AAC72E2A099E001B4D43 /* DrawableText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.hpp; sourceTree = "<group>"; };
 		F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDrawableText.cpp; sourceTree = "<group>"; };
 		F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.ipp; sourceTree = "<group>"; };
@@ -6605,6 +6613,7 @@
 				F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */,
 				F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */,
 				F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */,
+				F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */,
 				F90702BE2B9DAEB900383E4D /* Test_FunctionRef.cpp */,
 				F93BD7C1300FB21400B3542E /* Test_Geometry2D_Distance_Availability.cpp */,
 				F93BD7C2300FB21400B3542E /* Test_Geometry2D_Distance_Symmetry.cpp */,
@@ -7089,6 +7098,7 @@
 				F9528BAE2BBE7D1100222F45 /* MemoryReader.ipp */,
 				F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */,
 				F9528BAD2BBE7D1100222F45 /* MemoryWriter.ipp */,
+				F93BD7ED301682A900B3542E /* Mesh2D.ipp */,
 				F9528B582BB6DC6800222F45 /* MicrosecClock.ipp */,
 				F9528B592BB6DC6800222F45 /* MillisecClock.ipp */,
 				F9E7946A2C19B6F2002615BA /* MinMax.ipp */,
@@ -7439,6 +7449,7 @@
 				F9528BA92BBE7CF300222F45 /* MemoryReader.hpp */,
 				F9528BA22BBD706000222F45 /* MemoryViewReader.hpp */,
 				F9528BAA2BBE7CF300222F45 /* MemoryWriter.hpp */,
+				F93BD7EB3016828C00B3542E /* Mesh2D.hpp */,
 				F9807D882BF6677600D9B590 /* MessageBox.hpp */,
 				F9807D892BF6677600D9B590 /* MessageBoxResult.hpp */,
 				F9807D872BF6677600D9B590 /* MessageBoxStyle.hpp */,
@@ -8292,6 +8303,7 @@
 				F9528B2F2BB0562C00222F45 /* MemoryMappedFileView */,
 				F9528BB22BBE7D3400222F45 /* MemoryReader */,
 				F9528BA72BBDA25E00222F45 /* MemoryViewReader */,
+				F93BD7F0301682CB00B3542E /* Mesh2D */,
 				F9807D972BF667C300D9B590 /* MessageBox */,
 				F9797F132F6ED8DD00518D26 /* MicrophoneInfo */,
 				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
@@ -9275,6 +9287,14 @@
 				F93BD7BC300FB1C300B3542E /* SivRay2D.cpp */,
 			);
 			path = Ray2D;
+			sourceTree = "<group>";
+		};
+		F93BD7F0301682CB00B3542E /* Mesh2D */ = {
+			isa = PBXGroup;
+			children = (
+				F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */,
+			);
+			path = Mesh2D;
 			sourceTree = "<group>";
 		};
 		F943AACA2E2A09BB001B4D43 /* DrawableText */ = {
@@ -14085,6 +14105,7 @@
 				F9E794772C247C18002615BA /* MetalRenderer2DCommand.hpp in Headers */,
 				F98605F92BE61586006A4C0F /* RandomColor.ipp in Headers */,
 				F986032D2BCFBB54006A4C0F /* SkPathOpsTCurve.h in Headers */,
+				F93BD7EE301682A900B3542E /* Mesh2D.ipp in Headers */,
 				F9070C4E2B9F175000383E4D /* Date.ipp in Headers */,
 				F9807D852BF6676100D9B590 /* AssetIDWrapper.hpp in Headers */,
 				F9070D132B9F175100383E4D /* Window.hpp in Headers */,
@@ -15543,6 +15564,7 @@
 				F986FA662BCFB53B006A4C0F /* ftrfork.h in Headers */,
 				F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */,
 				F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */,
+				F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */,
 				F9FD0D1A2D215DB300A584CE /* TexturedRoundRect.hpp in Headers */,
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
@@ -15851,6 +15873,7 @@
 				F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */,
 				F9528B822BBC164800222F45 /* Test_ScopeExit.cpp in Sources */,
 				F90702FC2B9DAEB900383E4D /* Test_FileSystem.cpp in Sources */,
+				F93BD7EA3016825E00B3542E /* Test_Format_2DShapes.cpp in Sources */,
 				F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */,
 				F97E6DB72D7A8A1F0066E408 /* Test_RangeFormatter.cpp in Sources */,
 				F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */,
@@ -16785,6 +16808,7 @@
 				F9797F7C2FA73DBB00518D26 /* plutovg-surface.c in Sources */,
 				F9797F7D2FA73DBB00518D26 /* plutovg-blend.c in Sources */,
 				F9797F7E2FA73DBB00518D26 /* plutovg-ft-math.c in Sources */,
+				F93BD7F1301682CB00B3542E /* SivMesh2D.cpp in Sources */,
 				F99881D92F57399D00C8991D /* SivNetwork.cpp in Sources */,
 				F9070ED22B9F1C8900383E4D /* cocoa_init.m in Sources */,
 				F9070AF52B9DEB5900383E4D /* cached-powers.cc in Sources */,
