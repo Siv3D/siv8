@@ -750,6 +750,7 @@
 		F93BD7EE301682A900B3542E /* Mesh2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7ED301682A900B3542E /* Mesh2D.ipp */; };
 		F93BD7F1301682CB00B3542E /* SivMesh2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */; };
 		F93BD7F330168A0200B3542E /* Test_JSONSerialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */; };
+		F93BD7F53016936900B3542E /* Test_CSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F43016936900B3542E /* Test_CSV.cpp */; };
 		F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAC72E2A099E001B4D43 /* DrawableText.hpp */; };
 		F943AACB2E2A09BB001B4D43 /* SivDrawableText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */; };
 		F943AACD2E2A09E5001B4D43 /* DrawableText.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */; };
@@ -3963,6 +3964,7 @@
 		F93BD7ED301682A900B3542E /* Mesh2D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.ipp; sourceTree = "<group>"; };
 		F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMesh2D.cpp; sourceTree = "<group>"; };
 		F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_JSONSerialization.cpp; sourceTree = "<group>"; };
+		F93BD7F43016936900B3542E /* Test_CSV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CSV.cpp; sourceTree = "<group>"; };
 		F943AAC72E2A099E001B4D43 /* DrawableText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.hpp; sourceTree = "<group>"; };
 		F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDrawableText.cpp; sourceTree = "<group>"; };
 		F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.ipp; sourceTree = "<group>"; };
@@ -6613,6 +6615,7 @@
 				F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */,
 				F9528C482BBF028E00222F45 /* Test_Compression.cpp */,
 				F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */,
+				F93BD7F43016936900B3542E /* Test_CSV.cpp */,
 				F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */,
 				F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */,
 				F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */,
@@ -15885,6 +15888,7 @@
 				F93BD7D5300FB21400B3542E /* Test_Geometry2D_IntersectsAt_MemberAvailability.cpp in Sources */,
 				F93BD7D6300FB21400B3542E /* Test_Geometry2D_SignedDistance_Availability.cpp in Sources */,
 				F93BD7D7300FB21400B3542E /* Test_Geometry2D_Intersects_AreaShapes.cpp in Sources */,
+				F93BD7F53016936900B3542E /* Test_CSV.cpp in Sources */,
 				F93BD7D8300FB21400B3542E /* Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp in Sources */,
 				F93BD7D9300FB21400B3542E /* Test_Geometry2D_Distance_Availability.cpp in Sources */,
 				F93BD7DA300FB21400B3542E /* Test_Geometry2D_Raycast_Availability.cpp in Sources */,
