@@ -37,6 +37,8 @@
 # endif
 # include <ThirdParty/doctest/doctest.h>
 
+[[nodiscard]]
+int32 RunTest();
 
 namespace s3d
 {

@@ -23,9 +23,18 @@
 
 int32 RunTest()
 {
+	const auto& commandLineArgs = System::GetCommandLineArgs();
+	if (commandLineArgs.contains(U"--test-only")
+		&& (not commandLineArgs.contains(U"--test-verbose")))
+	{
+		Logger.setOutputLevel(LogType::Error);
+	}
+
 	Console.open();
 
 	doctest::Context context;
+	context.applyCommandLine(System::GetArgc(), System::GetArgv());
+
 	FileSystem::Remove(U"../../Test/output/");
 
 	const int32 exitCode = context.run();
