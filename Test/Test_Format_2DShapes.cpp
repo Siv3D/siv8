@@ -41,6 +41,191 @@ TEST_CASE("Point")
 	CHECK(U"{}"_fmt(maxMin) == U"(2147483647, -2147483648)");
 }
 
+TEST_CASE("Vec2")
+{
+	const Vec2 zero{ 0, 0 };
+	const Vec2 value{ 1.5, -2.25 };
+
+	CHECK(Format(zero) == U"(0, 0)");
+	CHECK(Format(value) == U"(1.5, -2.25)");
+
+	CHECK(U"{}"_fmt(zero) == U"(0, 0)");
+	CHECK(U"{}"_fmt(value) == U"(1.5, -2.25)");
+	CHECK(U"{:.1f}"_fmt(Vec2{ 1, -2 }) == U"(1.0, -2.0)");
+}
+
+TEST_CASE("Line")
+{
+	const Line zero{};
+	const Line value{ 1.5, -2.25, 3.75, 4.5 };
+
+	CHECK(Format(zero) == U"((0, 0), (0, 0))");
+	CHECK(Format(value) == U"((1.5, -2.25), (3.75, 4.5))");
+
+	CHECK(U"{}"_fmt(zero) == U"((0, 0), (0, 0))");
+	CHECK(U"{}"_fmt(value) == U"((1.5, -2.25), (3.75, 4.5))");
+	CHECK(U"{:.1f}"_fmt(Line{ 1, 2, 3, 4 }) == U"((1.0, 2.0), (3.0, 4.0))");
+}
+
+TEST_CASE("LineString")
+{
+	const LineString empty;
+	const LineString value{
+		Vec2{ 1.5, -2.25 },
+		Vec2{ 3.75, 4.5 },
+	};
+
+	CHECK(Format(empty) == U"[]");
+	CHECK(Format(value) == U"[(1.5, -2.25), (3.75, 4.5)]");
+
+	CHECK(U"{}"_fmt(empty) == U"[]");
+	CHECK(U"{}"_fmt(value) == U"[(1.5, -2.25), (3.75, 4.5)]");
+	CHECK(U"{:.1f}"_fmt(LineString{ Vec2{ 1, 2 }, Vec2{ 3, 4 } }) == U"[(1.0, 2.0), (3.0, 4.0)]");
+}
+
+TEST_CASE("Bezier2")
+{
+	const Bezier2 zero{};
+	const Bezier2 value{
+		Vec2{ 1.5, -2.25 },
+		Vec2{ 3.75, 4.5 },
+		Vec2{ 5.25, -6.5 },
+	};
+
+	CHECK(Format(zero) == U"((0, 0), (0, 0), (0, 0))");
+	CHECK(Format(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5))");
+
+	CHECK(U"{}"_fmt(zero) == U"((0, 0), (0, 0), (0, 0))");
+	CHECK(U"{}"_fmt(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5))");
+	CHECK(U"{:.1f}"_fmt(Bezier2{ Vec2{ 1, 2 }, Vec2{ 3, 4 }, Vec2{ 5, 6 } })
+		== U"((1.0, 2.0), (3.0, 4.0), (5.0, 6.0))");
+}
+
+TEST_CASE("Bezier3")
+{
+	const Bezier3 zero{};
+	const Bezier3 value{
+		Vec2{ 1.5, -2.25 },
+		Vec2{ 3.75, 4.5 },
+		Vec2{ 5.25, -6.5 },
+		Vec2{ 7.5, 8.25 },
+	};
+
+	CHECK(Format(zero) == U"((0, 0), (0, 0), (0, 0), (0, 0))");
+	CHECK(Format(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5), (7.5, 8.25))");
+
+	CHECK(U"{}"_fmt(zero) == U"((0, 0), (0, 0), (0, 0), (0, 0))");
+	CHECK(U"{}"_fmt(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5), (7.5, 8.25))");
+	CHECK(U"{:.1f}"_fmt(Bezier3{ Vec2{ 1, 2 }, Vec2{ 3, 4 }, Vec2{ 5, 6 }, Vec2{ 7, 8 } })
+		== U"((1.0, 2.0), (3.0, 4.0), (5.0, 6.0), (7.0, 8.0))");
+}
+
+TEST_CASE("Rect")
+{
+	const Rect zero{};
+	const Rect value{ -1, 2, 30, 40 };
+
+	CHECK(Format(zero) == U"(0, 0, 0, 0)");
+	CHECK(Format(value) == U"(-1, 2, 30, 40)");
+
+	CHECK(U"{}"_fmt(zero) == U"(0, 0, 0, 0)");
+	CHECK(U"{}"_fmt(value) == U"(-1, 2, 30, 40)");
+	CHECK(U"{:04d}"_fmt(value) == U"(-001, 0002, 0030, 0040)");
+}
+
+TEST_CASE("RectF")
+{
+	const RectF zero{};
+	const RectF value{ 1.5, -2.25, 3.75, 4.5 };
+
+	CHECK(Format(zero) == U"(0, 0, 0, 0)");
+	CHECK(Format(value) == U"(1.5, -2.25, 3.75, 4.5)");
+
+	CHECK(U"{}"_fmt(zero) == U"(0, 0, 0, 0)");
+	CHECK(U"{}"_fmt(value) == U"(1.5, -2.25, 3.75, 4.5)");
+	CHECK(U"{:.1f}"_fmt(RectF{ 1, 2, 3, 4 }) == U"(1.0, 2.0, 3.0, 4.0)");
+}
+
+TEST_CASE("Circle")
+{
+	const Circle zero{};
+	const Circle value{ 1.5, -2.25, 3.75 };
+
+	CHECK(Format(zero) == U"(0, 0, 0)");
+	CHECK(Format(value) == U"(1.5, -2.25, 3.75)");
+
+	CHECK(U"{}"_fmt(zero) == U"(0, 0, 0)");
+	CHECK(U"{}"_fmt(value) == U"(1.5, -2.25, 3.75)");
+	CHECK(U"{:.1f}"_fmt(Circle{ 1, 2, 3 }) == U"(1.0, 2.0, 3.0)");
+}
+
+TEST_CASE("Ellipse")
+{
+	const Ellipse zero{};
+	const Ellipse value{ 1.5, -2.25, 3.75, 4.5 };
+
+	CHECK(Format(zero) == U"(0, 0, 0, 0)");
+	CHECK(Format(value) == U"(1.5, -2.25, 3.75, 4.5)");
+
+	CHECK(U"{}"_fmt(zero) == U"(0, 0, 0, 0)");
+	CHECK(U"{}"_fmt(value) == U"(1.5, -2.25, 3.75, 4.5)");
+	CHECK(U"{:.1f}"_fmt(Ellipse{ 1, 2, 3, 4 }) == U"(1.0, 2.0, 3.0, 4.0)");
+}
+
+TEST_CASE("SuperEllipse")
+{
+	const SuperEllipse zero{};
+	const SuperEllipse value{ 1.5, -2.25, 3.75, 4.5, 5.25 };
+
+	CHECK(Format(zero) == U"(0, 0, 0, 0, 2)");
+	CHECK(Format(value) == U"(1.5, -2.25, 3.75, 4.5, 5.25)");
+
+	CHECK(U"{}"_fmt(zero) == U"(0, 0, 0, 0, 2)");
+	CHECK(U"{}"_fmt(value) == U"(1.5, -2.25, 3.75, 4.5, 5.25)");
+	CHECK(U"{:.1f}"_fmt(SuperEllipse{ 1, 2, 3, 4, 5 }) == U"(1.0, 2.0, 3.0, 4.0, 5.0)");
+}
+
+TEST_CASE("Triangle")
+{
+	const Triangle zero{};
+	const Triangle value{ 1.5, -2.25, 3.75, 4.5, 5.25, -6.5 };
+
+	CHECK(Format(zero) == U"((0, 0), (0, 0), (0, 0))");
+	CHECK(Format(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5))");
+
+	CHECK(U"{}"_fmt(zero) == U"((0, 0), (0, 0), (0, 0))");
+	CHECK(U"{}"_fmt(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5))");
+	CHECK(U"{:.1f}"_fmt(Triangle{ 1, 2, 3, 4, 5, 6 })
+		== U"((1.0, 2.0), (3.0, 4.0), (5.0, 6.0))");
+}
+
+TEST_CASE("Quad")
+{
+	const Quad zero{};
+	const Quad value{ 1.5, -2.25, 3.75, 4.5, 5.25, -6.5, 7.5, 8.25 };
+
+	CHECK(Format(zero) == U"((0, 0), (0, 0), (0, 0), (0, 0))");
+	CHECK(Format(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5), (7.5, 8.25))");
+
+	CHECK(U"{}"_fmt(zero) == U"((0, 0), (0, 0), (0, 0), (0, 0))");
+	CHECK(U"{}"_fmt(value) == U"((1.5, -2.25), (3.75, 4.5), (5.25, -6.5), (7.5, 8.25))");
+	CHECK(U"{:.1f}"_fmt(Quad{ 1, 2, 3, 4, 5, 6, 7, 8 })
+		== U"((1.0, 2.0), (3.0, 4.0), (5.0, 6.0), (7.0, 8.0))");
+}
+
+TEST_CASE("RoundRect")
+{
+	const RoundRect zero{};
+	const RoundRect value{ 1.5, -2.25, 3.75, 4.5, 5.25 };
+
+	CHECK(Format(zero) == U"(0, 0, 0, 0, 0)");
+	CHECK(Format(value) == U"(1.5, -2.25, 3.75, 4.5, 5.25)");
+
+	CHECK(U"{}"_fmt(zero) == U"(0, 0, 0, 0, 0)");
+	CHECK(U"{}"_fmt(value) == U"(1.5, -2.25, 3.75, 4.5, 5.25)");
+	CHECK(U"{:.1f}"_fmt(RoundRect{ 1, 2, 3, 4, 5 }) == U"(1.0, 2.0, 3.0, 4.0, 5.0)");
+}
+
 TEST_CASE("Polygon")
 {
 	const Polygon empty;
