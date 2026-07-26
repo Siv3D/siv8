@@ -53,6 +53,7 @@
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
+    <ClCompile Include="..\Test\Test_JSONSerialization.cpp" />
     <ClCompile Include="..\Test\Test_LineString.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />

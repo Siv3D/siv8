@@ -211,6 +211,9 @@
     <ClCompile Include="..\Test\Test_Format_2DShapes.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_JSONSerialization.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
