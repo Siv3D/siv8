@@ -414,7 +414,6 @@
 		F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E9D2B9F1C8900383E4D /* egl_context.c */; };
 		F9070EDC2B9F1C8900383E4D /* glfw3.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E9E2B9F1C8900383E4D /* glfw3.h */; };
 		F9070EDD2B9F1C8900383E4D /* glfw3native.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E9F2B9F1C8900383E4D /* glfw3native.h */; };
-		F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA02B9F1C8900383E4D /* glx_context.c */; };
 		F9070EDF2B9F1C8900383E4D /* init.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA12B9F1C8900383E4D /* init.c */; };
 		F9070EE02B9F1C8900383E4D /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EA22B9F1C8900383E4D /* input.c */; };
 		F9070EE12B9F1C8900383E4D /* internal.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EA32B9F1C8900383E4D /* internal.h */; };
@@ -423,16 +422,12 @@
 		F9070EEE2B9F1C8900383E4D /* platform.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB02B9F1C8900383E4D /* platform.c */; };
 		F9070EEF2B9F1C8900383E4D /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB12B9F1C8900383E4D /* platform.h */; };
 		F9070EF02B9F1C8900383E4D /* posix_module.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB22B9F1C8900383E4D /* posix_module.c */; };
-		F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB32B9F1C8900383E4D /* posix_poll.c */; };
 		F9070EF22B9F1C8900383E4D /* posix_poll.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB42B9F1C8900383E4D /* posix_poll.h */; };
 		F9070EF32B9F1C8900383E4D /* posix_thread.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB52B9F1C8900383E4D /* posix_thread.c */; };
 		F9070EF42B9F1C8900383E4D /* posix_thread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB62B9F1C8900383E4D /* posix_thread.h */; };
-		F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB72B9F1C8900383E4D /* posix_time.c */; };
 		F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB82B9F1C8900383E4D /* posix_time.h */; };
 		F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB92B9F1C8900383E4D /* vulkan.c */; };
-		F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EBA2B9F1C8900383E4D /* wgl_context.c */; };
 		F9070F042B9F1C8900383E4D /* window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EC62B9F1C8900383E4D /* window.c */; };
-		F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */; };
 		F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070ED02B9F1C8900383E4D /* xkb_unicode.h */; };
 		F9070F302B9F252E00383E4D /* null_init.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F292B9F252D00383E4D /* null_init.c */; };
 		F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2A2B9F252D00383E4D /* osmesa_context.c */; };
@@ -16135,7 +16130,6 @@
 				F986053C2BD104B4006A4C0F /* SivImagePixelFormat.cpp in Sources */,
 				F98602202BCFBB54006A4C0F /* SkPicturePlayback.cpp in Sources */,
 				F98602642BCFBB54006A4C0F /* SkScan_Hairline.cpp in Sources */,
-				F9070EF12B9F1C8900383E4D /* posix_poll.c in Sources */,
 				F9DD964B2F0965D00026DFA5 /* SivTwitter.cpp in Sources */,
 				F9DD964C2F0965D00026DFA5 /* SivPercentEncode.cpp in Sources */,
 				F98605132BCFBEF9006A4C0F /* SkGlobalInitialization_default.cpp in Sources */,
@@ -16265,7 +16259,6 @@
 				F9DD96452F0965C60026DFA5 /* EffectFactory.cpp in Sources */,
 				F9DD96462F0965C60026DFA5 /* EffectData.cpp in Sources */,
 				F98601E72BCFBB53006A4C0F /* SkMaskCache.cpp in Sources */,
-				F9070EF82B9F1C8900383E4D /* wgl_context.c in Sources */,
 				F9070F362B9F252E00383E4D /* null_joystick.c in Sources */,
 				F98602CC2BCFBB54006A4C0F /* SkBlenders.cpp in Sources */,
 				F98602802BCFBB54006A4C0F /* SkSwizzle.cpp in Sources */,
@@ -16459,7 +16452,6 @@
 				F95122582CB8239800151291 /* SivPolygon.cpp in Sources */,
 				F986015B2BCFBB53006A4C0F /* SkBitmapProcState_opts_ssse3.cpp in Sources */,
 				F9528C312BBF026F00222F45 /* zstd_ldm.c in Sources */,
-				F9070EDE2B9F1C8900383E4D /* glx_context.c in Sources */,
 				F9797E982F667E9900518D26 /* CDSPHBDownsampler.inc in Sources */,
 				F9797E992F667E9900518D26 /* pffft.c in Sources */,
 				F9797E9A2F667E9900518D26 /* pffft_double.c in Sources */,
@@ -16570,7 +16562,6 @@
 				F9797E4C2F643FC500518D26 /* CAudioDecoder.cpp in Sources */,
 				F986061E2BEB7CB3006A4C0F /* SivDirectoryWatcher.cpp in Sources */,
 				F98603B42BCFBB54006A4C0F /* SkShader.cpp in Sources */,
-				F9070F0D2B9F1C8900383E4D /* xkb_unicode.c in Sources */,
 				F9528C8A2BC05B5B00222F45 /* SivImageEncoder.cpp in Sources */,
 				F9797EE32F6E574E00518D26 /* SivDragDrop.cpp in Sources */,
 				F9797EE42F6E574E00518D26 /* DragDropFactory.cpp in Sources */,
@@ -16725,7 +16716,6 @@
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
 				F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */,
-				F9070EF52B9F1C8900383E4D /* posix_time.c in Sources */,
 				F9070DD52B9F175E00383E4D /* SivIntFormatter.cpp in Sources */,
 				F986026D2BCFBB54006A4C0F /* SkSpriteBlitter_ARGB32.cpp in Sources */,
 				F9797EC92F6DADCC00518D26 /* AACEncoder_CA.mm in Sources */,
