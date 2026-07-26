@@ -115,12 +115,17 @@ namespace s3d
 
 	private:
 
+		[[nodiscard]]
+		bool prepareUpload(bool wait);
+
 		MetalTexture2DDesc m_desc;
 
 		bool m_initialized = false;
-		
+
 		NS::SharedPtr<MTL::Texture> m_texture;
 		
 		NS::SharedPtr<MTL::Buffer> m_uploadBuffer;
+
+		NS::SharedPtr<MTL::CommandBuffer> m_uploadCommandBuffer;
 	};
 }

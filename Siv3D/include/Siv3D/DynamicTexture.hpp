@@ -146,15 +146,15 @@ namespace s3d
 
 		bool fillIfNotBusy(const Grid<HalfFloat>& image);
 
-		bool fillIfNotBusy(const Grid<uint16>& image);
+		bool fillIfNotBusy(const Grid<std::pair<uint16, uint16>>& image);
+
+		bool fillIfNotBusy(const Grid<std::pair<HalfFloat, HalfFloat>>& image);
 
 		bool fillIfNotBusy(const Grid<Color>& image);
 
 		bool fillIfNotBusy(const Grid<float>& image);
 
-		bool fillIfNotBusy(const Grid<uint32>& image);
-
-		bool fillIfNotBusy(const Grid<uint64>& image);
+		bool fillIfNotBusy(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image);
 
 		bool fillIfNotBusy(const Grid<Float2>& image);
 

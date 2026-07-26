@@ -324,6 +324,258 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	fillIfNotBusy
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool DynamicTexture::fillIfNotBusy(const Image& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			(format != TextureFormat::R8G8B8A8_Unorm) && (format != TextureFormat::R8G8B8A8_Unorm_SRGB))
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<uint8>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R8_Unorm)
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<HalfFloat>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R16_Float)
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<std::pair<uint16, uint16>>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R16G16_Unorm)
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(uint16) * 2);
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<std::pair<HalfFloat, HalfFloat>>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R16G16_Float)
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 2);
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<Color>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			(format != TextureFormat::R8G8B8A8_Unorm) && (format != TextureFormat::R8G8B8A8_Unorm_SRGB))
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<float>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R32_Float)
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R16G16B16A16_Float)
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = static_cast<uint32>(image.width() * sizeof(HalfFloat) * 4);
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), bytesPerRow, false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<Float2>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R32G32_Float)
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	bool DynamicTexture::fillIfNotBusy(const Grid<Float4>& image)
+	{
+		if (isEmpty())
+		{
+			*this = DynamicTexture{ image };
+			return true;
+		}
+
+		if (image.size() != size())
+		{
+			return false;
+		}
+
+		const auto handleID = m_handle->id();
+
+		if (const TextureFormat format = SIV3D_ENGINE(Texture)->getFormat(handleID);
+			format != TextureFormat::R32G32B32A32_Float)
+		{
+			return false;
+		}
+
+		return SIV3D_ENGINE(Texture)->fill(handleID, std::as_bytes(std::span{ image }), image.bytesPerRow(), false);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	generateMips
 	//
 	////////////////////////////////////////////////////////////////

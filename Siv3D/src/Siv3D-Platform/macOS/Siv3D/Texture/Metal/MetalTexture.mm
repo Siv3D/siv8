@@ -456,9 +456,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const ColorF& color, bool)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const ColorF& color, const bool wait)
 	{
 		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		if (not prepareUpload(wait))
 		{
 			return false;
 		}
@@ -483,13 +488,19 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
+		m_uploadCommandBuffer = std::move(commandBuffer);
 
 		return true;
 	}
 
-	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const std::span<const Byte> data, const uint32 srcBytesPerRow, bool)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const std::span<const Byte> data, const uint32 srcBytesPerRow, const bool wait)
 	{
 		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		if (not prepareUpload(wait))
 		{
 			return false;
 		}
@@ -513,8 +524,42 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
+		m_uploadCommandBuffer = std::move(commandBuffer);
 
 		return true;
+	}
+
+	bool MetalTexture::prepareUpload(const bool wait)
+	{
+		if (not m_uploadCommandBuffer)
+		{
+			return true;
+		}
+
+		MTL::CommandBufferStatus status = m_uploadCommandBuffer->status();
+
+		if (status == MTL::CommandBufferStatusCompleted)
+		{
+			m_uploadCommandBuffer.reset();
+			return true;
+		}
+
+		if (status == MTL::CommandBufferStatusError)
+		{
+			m_uploadCommandBuffer.reset();
+			return false;
+		}
+
+		if (not wait)
+		{
+			return false;
+		}
+
+		m_uploadCommandBuffer->waitUntilCompleted();
+		status = m_uploadCommandBuffer->status();
+		m_uploadCommandBuffer.reset();
+
+		return (status == MTL::CommandBufferStatusCompleted);
 	}
 
 	////////////////////////////////////////////////////////////////
