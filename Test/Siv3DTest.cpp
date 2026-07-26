@@ -21,16 +21,15 @@
 # endif
 # include <ThirdParty/doctest/doctest.h>
 
-void RunTest()
+int32 RunTest()
 {
 	Console.open();
 
 	doctest::Context context;
-	{
-		FileSystem::Remove(U"../../Test/output/");
+	FileSystem::Remove(U"../../Test/output/");
 
-		context.run();
+	const int32 exitCode = context.run();
 
-		FileSystem::Remove(U"../../Test/output/");
-	}
+	FileSystem::Remove(U"../../Test/output/");
+	return exitCode;
 }
