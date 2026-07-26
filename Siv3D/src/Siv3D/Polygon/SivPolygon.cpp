@@ -16,6 +16,7 @@
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Mouse.hpp>
 # include <Siv3D/ImageDraw.hpp>
+# include <Siv3D/Unicode.hpp>
 # include "PolygonDetail.hpp"
 
 namespace s3d
@@ -1181,6 +1182,22 @@ namespace s3d
 	const Polygon::PolygonDetail* Polygon::_detail() const noexcept
 	{
 		return pImpl.get();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Parse
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Polygon> Polygon::Parse(const std::string_view s)
+	{
+		return PolygonDetail::Parse(Unicode::FromUTF8(s));
+	}
+
+	Optional<Polygon> Polygon::Parse(const StringView s)
+	{
+		return PolygonDetail::Parse(s);
 	}
 
 	////////////////////////////////////////////////////////////////

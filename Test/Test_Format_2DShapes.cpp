@@ -259,6 +259,14 @@ TEST_CASE("Polygon")
 			}
 		}
 	};
+	const Polygon precise{
+		Array<Vec2>{
+			Vec2{ -1.2345678901234567, -0.000000000000001 },
+			Vec2{ 9.876543210987654, -0.000000000000001 },
+			Vec2{ 9.876543210987654, 4.567890123456789 },
+			Vec2{ -1.2345678901234567, 4.567890123456789 },
+		}
+	};
 
 	CHECK(Format(empty) == U"()");
 	CHECK(Format(square) == U"(((0, 0),(4, 0),(4, 4),(0, 4)))");
@@ -268,6 +276,46 @@ TEST_CASE("Polygon")
 	CHECK(U"{}"_fmt(square) == Format(square));
 	CHECK(U"{}"_fmt(donut) == Format(donut));
 	CHECK(U"{:.1f}"_fmt(square) == U"(((0.0, 0.0),(4.0, 0.0),(4.0, 4.0),(0.0, 4.0)))");
+
+	const auto parsedEmpty = Polygon::Parse(Format(empty));
+	REQUIRE(parsedEmpty);
+	CHECK(parsedEmpty->isEmpty());
+
+	const auto parsedSquare = Polygon::Parse(Format(square));
+	REQUIRE(parsedSquare);
+	CHECK_EQ(parsedSquare->outer(), square.outer());
+	CHECK_EQ(parsedSquare->inners(), square.inners());
+
+	const auto parsedDonut = Polygon::Parse(Format(donut).toUTF8());
+	REQUIRE(parsedDonut);
+	CHECK_EQ(parsedDonut->outer(), donut.outer());
+	CHECK_EQ(parsedDonut->inners(), donut.inners());
+
+	const auto parsedPrecise = Polygon::Parse(Format(precise));
+	REQUIRE(parsedPrecise);
+	CHECK_EQ(parsedPrecise->outer(), precise.outer());
+
+	const auto parsedWithSpaces = Polygon::Parse(
+		U" \n ( ( (0e0, 0), (4, 0), (4, 4), (0, 4) ) ) \t");
+	REQUIRE(parsedWithSpaces);
+	CHECK_EQ(parsedWithSpaces->outer(), square.outer());
+
+	const Array<StringView> invalidSources{
+		U"",
+		U" ",
+		U"(",
+		U"(())",
+		U"(((0, 0),(4, 0)))",
+		U"(((0, 0),(4, 0),(0, 4)),)",
+		U"(((0foo, 0),(4, 0),(0, 4)))",
+		U"(((0, 0),(4, 0),(0, 1e999)))",
+		U"(((0, 0),(4, 0),(0, 4))) trailing",
+	};
+
+	for (const auto source : invalidSources)
+	{
+		CHECK_FALSE(Polygon::Parse(source));
+	}
 }
 
 TEST_CASE("MultiPolygon")

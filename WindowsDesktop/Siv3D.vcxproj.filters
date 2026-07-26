@@ -3996,6 +3996,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.hpp">
       <Filter>src\Siv3D\Polygon</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonParser.hpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\PolygonFailureType.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -8074,6 +8077,9 @@
       <Filter>src\Siv3D\RectanglePack</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonDetail.cpp">
+      <Filter>src\Siv3D\Polygon</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\PolygonParser.cpp">
       <Filter>src\Siv3D\Polygon</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Polygon\SivPolygon.cpp">

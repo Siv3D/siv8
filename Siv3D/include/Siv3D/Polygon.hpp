@@ -13,8 +13,10 @@
 # include <memory>
 # include "Array.hpp"
 # include "Common.hpp"
+# include "Optional.hpp"
 # include "PointVector.hpp"
 # include "2DShapes.hpp"
+# include "StringView.hpp"
 # include "TriangleIndex.hpp"
 # include "PolygonFailureType.hpp"
 # include "QualityFactor.hpp"
@@ -1206,6 +1208,24 @@ namespace s3d
 		/// @return 内部実装へのポインタ
 		[[nodiscard]]
 		const PolygonDetail* _detail() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Parse
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 文字列から多角形をパースします。
+		/// @param s パースする文字列
+		/// @return パースに成功した場合は多角形、失敗した場合は none
+		[[nodiscard]]
+		static Optional<Polygon> Parse(std::string_view s);
+
+		/// @brief 文字列から多角形をパースします。
+		/// @param s パースする文字列
+		/// @return パースに成功した場合は多角形、失敗した場合は none
+		[[nodiscard]]
+		static Optional<Polygon> Parse(StringView s);
 
 		////////////////////////////////////////////////////////////////
 		//

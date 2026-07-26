@@ -22,6 +22,7 @@
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4127)
 # include <ThirdParty/boost/geometry/extensions/algorithms/dissolve.hpp>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
+# include "PolygonParser.hpp"
 
 namespace s3d
 {
@@ -1203,6 +1204,17 @@ namespace s3d
 	CwOpenPolygon Polygon::PolygonDetail::toCwOpenPolygon() const
 	{
 		return MakeCWOpenPolygon(m_polygon.outer, m_polygon.inners);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Parse
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<Polygon> Polygon::PolygonDetail::Parse(const StringView s)
+	{
+		return PolygonParser{ s }.parse();
 	}
 
 	////////////////////////////////////////////////////////////////
