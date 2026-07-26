@@ -864,40 +864,39 @@
 # include <Siv3D/RectangularDashStyle.hpp>
 
 // 線分 | Line segment
-# include <Siv3D/Line.hpp> // ToDo
+# include <Siv3D/Line.hpp>
 
 // 長方形 (int32) | Rectangle (int32)
-# include <Siv3D/Rect.hpp> // ToDo
+# include <Siv3D/Rect.hpp> 
 
 // 長方形 (double) | Rectangle (double)
-# include <Siv3D/RectF.hpp> // ToDo
+# include <Siv3D/RectF.hpp>
 
 // 円 | Circle
-# include <Siv3D/Circle.hpp> // ToDo
+# include <Siv3D/Circle.hpp>
 
 // 楕円 | Ellipse
-# include <Siv3D/Ellipse.hpp> // ToDo
+# include <Siv3D/Ellipse.hpp>
 
-# include <Siv3D/SuperEllipse.hpp> // ToDo
+# include <Siv3D/SuperEllipse.hpp>
 
 // 三角形 | Triangle
-# include <Siv3D/Triangle.hpp> // ToDo
+# include <Siv3D/Triangle.hpp>
 
 // 凸四角形 | Convex quadrilateral
-# include <Siv3D/Quad.hpp> // ToDo
+# include <Siv3D/Quad.hpp>
 
 // 角丸長方形 | Rounded rectangle
-# include <Siv3D/RoundRect.hpp> // ToDo
+# include <Siv3D/RoundRect.hpp>
 
 // 多角形 | Polygon
-# include <Siv3D/Polygon.hpp> // ToDo
+# include <Siv3D/Polygon.hpp>
 
 // 複数の多角形 | Multi-polygon
-# include <Siv3D/MultiPolygon.hpp> // ToDo
+# include <Siv3D/MultiPolygon.hpp>
 
 // 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
 # include <Siv3D/LineString.hpp> // ToDo
-
 
 # include <Siv3D/Bezier.hpp>
 
