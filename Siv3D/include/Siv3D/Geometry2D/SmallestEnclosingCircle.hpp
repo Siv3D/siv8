@@ -19,6 +19,8 @@
 
 # pragma once
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/Array.hpp>
+# include <Siv3D/ArrayRandom.hpp>
 
 namespace s3d
 {
