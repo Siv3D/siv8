@@ -11,8 +11,6 @@
 
 # include "Siv3DTest.hpp"
 
-# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(WINDOWS)
-
 TEST_CASE("DynamicTexture.fillRegion")
 {
 	DynamicTexture texture{ Size{ 64, 64 }, Palette::Black };
@@ -46,9 +44,7 @@ TEST_CASE("DynamicTexture.R16G16B16A16_Float.Array")
 	CHECK(texture.fillRegion(region, Rect{ 2, 1, region.size() }));
 }
 
-# if SIV3D_PLATFORM(WINDOWS)
-
-TEST_CASE("DynamicTexture.fill.D3D11.NonSquare")
+TEST_CASE("DynamicTexture.fill.NonSquare")
 {
 	DynamicTexture wideTexture{ Size{ 64, 7 }, Palette::Black };
 	DynamicTexture tallTexture{ Size{ 7, 64 }, Palette::Black };
@@ -57,7 +53,7 @@ TEST_CASE("DynamicTexture.fill.D3D11.NonSquare")
 	CHECK(tallTexture.fill(Palette::Blue));
 }
 
-TEST_CASE("DynamicTexture.generateMips.D3D11")
+TEST_CASE("DynamicTexture.generateMips")
 {
 	DynamicTexture texture{ Size{ 64, 64 }, Palette::Black, TextureFormat::R8G8B8A8_Unorm, TextureDesc::Mipmap };
 	const Image image{ Size{ 7, 5 }, Palette::Red };
@@ -68,7 +64,3 @@ TEST_CASE("DynamicTexture.generateMips.D3D11")
 	CHECK(texture.fillRegion(image, rect));
 	texture.generateMips();
 }
-
-# endif
-
-# endif
