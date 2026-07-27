@@ -297,10 +297,10 @@ namespace
 				return ColorF::PremultiplyAlpha(color).toR16G16B16A16_Float();
 			});
 			auto dynamicTexture = DynamicTexture::CreateR16G16B16A16_Float(PatternSize, Palette::Black);
-			const bool succeeded = FillQuadrants<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>(dynamicTexture, [](const ColorF& color)
+			const bool succeeded = FillQuadrants<std::array<HalfFloat, 4>>(dynamicTexture, [](const ColorF& color)
 			{
 				const ColorF colorPMA = ColorF::PremultiplyAlpha(color);
-				return std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>
+				return std::array<HalfFloat, 4>
 				{
 					HalfFloat{ colorPMA.r },
 					HalfFloat{ colorPMA.g },
@@ -308,7 +308,7 @@ namespace
 					HalfFloat{ colorPMA.a }
 				};
 			});
-			cases.push_back({ U"R16G16B16A16_Float", U"fillRegion(Grid<tuple<HalfFloat x4>>)",
+			cases.push_back({ U"R16G16B16A16_Float", U"fillRegion(Grid<std::array<HalfFloat, 4>>)",
 				Texture::CreateR16G16B16A16_Float(data), std::move(dynamicTexture), VisibleChannels::RGBA, succeeded });
 		}
 

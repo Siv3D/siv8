@@ -12,6 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "Texture.hpp"
+# include <array>
 
 namespace s3d
 {
@@ -102,7 +103,7 @@ namespace s3d
 		/// @param image テクスチャの内容
 		/// @param desc テクスチャの設定
 		[[nodiscard]]
-		explicit DynamicTexture(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, TextureDesc desc = TextureDesc::NoMipmap);
+		explicit DynamicTexture(const Grid<std::array<HalfFloat, 4>>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		/// @brief 1 要素を 1 ピクセルとして、`R32G32_Float` 形式の動的テクスチャを作成します。
 		/// @param image テクスチャの内容
@@ -168,7 +169,7 @@ namespace s3d
 		/// @brief 動的テクスチャの中身を同じ大きさの `R16G16B16A16_Float` データで更新します。
 		/// @param image テクスチャの内容
 		/// @return 動的テクスチャの更新または作成に成功した場合 true, それ以外の場合は false
-		bool fill(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image);
+		bool fill(const Grid<std::array<HalfFloat, 4>>& image);
 
 		/// @brief 動的テクスチャの中身を同じ大きさの `R32G32_Float` データで更新します。
 		/// @param image テクスチャの内容
@@ -238,7 +239,7 @@ namespace s3d
 		/// @param image 更新に使うデータ。サイズは `rect.size` と一致している必要があります。
 		/// @param rect 更新する領域。動的テクスチャの範囲内に収まっている必要があります。
 		/// @return 更新に成功した場合 true, それ以外の場合は false
-		bool fillRegion(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, const Rect& rect);
+		bool fillRegion(const Grid<std::array<HalfFloat, 4>>& image, const Rect& rect);
 
 		/// @brief 動的テクスチャの指定した領域を `R32G32_Float` データで更新します。
 		/// @param image 更新に使うデータ。サイズは `rect.size` と一致している必要があります。
@@ -304,7 +305,7 @@ namespace s3d
 		/// @remark 更新処理がビジー状態の場合は、更新を行わずに false を返します。
 		/// @param image テクスチャの内容。サイズは動的テクスチャと一致している必要があります。
 		/// @return 更新に成功した場合 true, 更新処理がビジー状態または更新できない場合は false
-		bool fillIfNotBusy(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image);
+		bool fillIfNotBusy(const Grid<std::array<HalfFloat, 4>>& image);
 
 		/// @brief 動的テクスチャが更新可能な場合に限り、全体を `R32G32_Float` データで更新します。
 		/// @remark 更新処理がビジー状態の場合は、更新を行わずに false を返します。
@@ -378,7 +379,7 @@ namespace s3d
 		/// @param image 更新に使うデータ。サイズは `rect.size` と一致している必要があります。
 		/// @param rect 更新する領域。動的テクスチャの範囲内に収まっている必要があります。
 		/// @return 更新に成功した場合 true, 更新処理がビジー状態または更新できない場合は false
-		bool fillRegionIfNotBusy(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, const Rect& rect);
+		bool fillRegionIfNotBusy(const Grid<std::array<HalfFloat, 4>>& image, const Rect& rect);
 
 		/// @brief 動的テクスチャが更新可能な場合に限り、指定した領域を `R32G32_Float` データで更新します。
 		/// @remark 更新処理がビジー状態の場合は、更新を行わずに false を返します。
@@ -671,7 +672,7 @@ namespace s3d
 		/// @param desc テクスチャの設定
 		/// @return 作成された動的テクスチャ
 		[[nodiscard]]
-		static DynamicTexture CreateR16G16B16A16_Float(const Grid<std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>>& image, TextureDesc desc = TextureDesc::NoMipmap);
+		static DynamicTexture CreateR16G16B16A16_Float(const Grid<std::array<HalfFloat, 4>>& image, TextureDesc desc = TextureDesc::NoMipmap);
 
 		/// @brief 各要素に R, G, B, A 成分が格納された `R16G16B16A16_Float` データから動的テクスチャを作成します。
 		/// @param image テクスチャの内容

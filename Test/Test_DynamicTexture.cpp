@@ -29,9 +29,9 @@ TEST_CASE("DynamicTexture.fillRegion")
 	CHECK_FALSE(texture.fillRegion(Image{ 6, 5 }, rect));
 }
 
-TEST_CASE("DynamicTexture.R16G16B16A16_Float.Tuple")
+TEST_CASE("DynamicTexture.R16G16B16A16_Float.Array")
 {
-	using Pixel = std::tuple<HalfFloat, HalfFloat, HalfFloat, HalfFloat>;
+	using Pixel = std::array<HalfFloat, 4>;
 
 	const Pixel fullPixel{ HalfFloat{ 0.125f }, HalfFloat{ 0.25f }, HalfFloat{ 0.5f }, HalfFloat{ 0.75f } };
 	const Grid<Pixel> image{ Size{ 7, 5 }, fullPixel };
