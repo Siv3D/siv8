@@ -39,8 +39,8 @@ TEST_CASE("CSV.default")
 	CHECK(csv.isValid());
 	CHECK(not csv.isInvalid());
 	CHECK(csv.isEmpty());
-	CHECK_EQ(csv.rows(), 0);
-	CHECK_EQ(csv.columns(0), 0);
+	CHECK_EQ(csv.rows(), 0u);
+	CHECK_EQ(csv.columns(0), 0u);
 	CHECK(not csv.inBounds(0, 0));
 	CHECK(csv.data().isEmpty());
 	CHECK(csv.format().isEmpty());
@@ -52,7 +52,7 @@ TEST_CASE("CSV.default")
 	CHECK(not invalid.isValid());
 	CHECK(invalid.isInvalid());
 	CHECK(invalid.isEmpty());
-	CHECK_EQ(invalid.rows(), 0);
+	CHECK_EQ(invalid.rows(), 0u);
 	CHECK(invalid.format().isEmpty());
 	CHECK(invalid.formatUTF8().empty());
 
@@ -71,10 +71,10 @@ TEST_CASE("CSV.Load.basic")
 
 	REQUIRE(csv);
 	CHECK(not csv.isEmpty());
-	CHECK_EQ(csv.rows(), 3);
-	CHECK_EQ(csv.columns(0), 3);
-	CHECK_EQ(csv.columns(1), 3);
-	CHECK_EQ(csv.columns(999), 0);
+	CHECK_EQ(csv.rows(), 3u);
+	CHECK_EQ(csv.columns(0), 3u);
+	CHECK_EQ(csv.columns(1), 3u);
+	CHECK_EQ(csv.columns(999), 0u);
 
 	CHECK(csv.inBounds(0, 0));
 	CHECK(csv.inBounds(2, 2));
@@ -99,7 +99,7 @@ TEST_CASE("CSV.Parse")
 		const CSV csv = CSV::Parse(U"a,b,c\n1,2,3\n");
 
 		REQUIRE(csv);
-		CHECK_EQ(csv.rows(), 2);
+		CHECK_EQ(csv.rows(), 2u);
 		CHECK_EQ(csv[0][0], U"a");
 		CHECK_EQ(csv[0][1], U"b");
 		CHECK_EQ(csv[0][2], U"c");
@@ -112,7 +112,7 @@ TEST_CASE("CSV.Parse")
 		const CSV csv = CSV::Parse(std::string{ "a,b,c\r\n1,2,3\r\n" });
 
 		REQUIRE(csv);
-		CHECK_EQ(csv.rows(), 2);
+		CHECK_EQ(csv.rows(), 2u);
 		CHECK_EQ(csv[1][0], U"1");
 		CHECK_EQ(csv[1][1], U"2");
 		CHECK_EQ(csv[1][2], U"3");
@@ -123,7 +123,7 @@ TEST_CASE("CSV.Parse")
 
 		REQUIRE(csv);
 		CHECK(csv.isEmpty());
-		CHECK_EQ(csv.rows(), 0);
+		CHECK_EQ(csv.rows(), 0u);
 	}
 
 	{
@@ -142,7 +142,7 @@ TEST_CASE("CSV.LoadResult.ParseResult")
 
 		REQUIRE(result);
 		CHECK(result.value());
-		CHECK_EQ(result.value().rows(), 3);
+		CHECK_EQ(result.value().rows(), 3u);
 	}
 
 	{
@@ -216,10 +216,10 @@ TEST_CASE("CSV.RFC4180_quoted_fields")
 	const CSV csv = CSV::Load(ValidQuoted);
 
 	REQUIRE(csv);
-	REQUIRE_EQ(csv.rows(), 3);
-	REQUIRE_EQ(csv.columns(0), 3);
-	REQUIRE_EQ(csv.columns(1), 3);
-	REQUIRE_EQ(csv.columns(2), 3);
+	REQUIRE_EQ(csv.rows(), 3u);
+	REQUIRE_EQ(csv.columns(0), 3u);
+	REQUIRE_EQ(csv.columns(1), 3u);
+	REQUIRE_EQ(csv.columns(2), 3u);
 
 	CHECK_EQ(csv[0][0], U"name");
 	CHECK_EQ(csv[0][1], U"note");
@@ -237,7 +237,7 @@ TEST_CASE("CSV.RFC4180_quoted_fields")
 		const CSV parsed = CSV::Parse(U"\"a,b\",\"c\"\"d\",\"e\r\nf\"\r\n");
 
 		REQUIRE(parsed);
-		REQUIRE_EQ(parsed.rows(), 1);
+		REQUIRE_EQ(parsed.rows(), 1u);
 		CHECK_EQ(parsed[0][0], U"a,b");
 		CHECK_EQ(parsed[0][1], U"c\"d");
 		CHECK_EQ(parsed[0][2], U"e\r\nf");
@@ -251,7 +251,7 @@ TEST_CASE("CSV.newlines_options")
 		const CSV csv = CSV::Load(ValidLF);
 
 		REQUIRE(csv);
-		CHECK_EQ(csv.rows(), 3);
+		CHECK_EQ(csv.rows(), 3u);
 		CHECK_EQ(csv[1][0], U"1");
 		CHECK_EQ(csv[2][1], U"Bob");
 	}
@@ -282,7 +282,7 @@ TEST_CASE("CSV.newlines_options")
 		const auto result = CSV::LoadResult(ValidLoneCR, options);
 
 		REQUIRE(result);
-		CHECK_EQ(result.value().rows(), 3);
+		CHECK_EQ(result.value().rows(), 3u);
 		CHECK_EQ(result.value()[2][1], U"Bob");
 	}
 
@@ -305,7 +305,7 @@ TEST_CASE("CSV.unicode_bom_empty")
 		const CSV csv = CSV::Load(ValidUnicode);
 
 		REQUIRE(csv);
-		REQUIRE_EQ(csv.rows(), 3);
+		REQUIRE_EQ(csv.rows(), 3u);
 		CHECK_EQ(csv[0][0], U"name");
 		CHECK_EQ(csv[1][0], U"太郎");
 		CHECK_EQ(csv[1][1], U"こんにちは");
@@ -319,7 +319,7 @@ TEST_CASE("CSV.unicode_bom_empty")
 		const CSV csv = CSV::Load(ValidUTF8BOM);
 
 		REQUIRE(csv);
-		REQUIRE_EQ(csv.rows(), 3);
+		REQUIRE_EQ(csv.rows(), 3u);
 		CHECK_EQ(csv[0][0], U"title");
 		CHECK_EQ(csv[0][1], U"value");
 		CHECK_EQ(csv[1][0], U"UTF-8 BOM test");
@@ -333,7 +333,7 @@ TEST_CASE("CSV.unicode_bom_empty")
 
 		REQUIRE(csv);
 		CHECK(csv.isEmpty());
-		CHECK_EQ(csv.rows(), 0);
+		CHECK_EQ(csv.rows(), 0u);
 	}
 }
 
@@ -344,10 +344,10 @@ TEST_CASE("CSV.consistent_columns")
 		const CSV csv = CSV::Load(ValidRagged);
 
 		REQUIRE(csv);
-		REQUIRE_EQ(csv.rows(), 3);
-		CHECK_EQ(csv.columns(0), 3);
-		CHECK_EQ(csv.columns(1), 2);
-		CHECK_EQ(csv.columns(2), 4);
+		REQUIRE_EQ(csv.rows(), 3u);
+		CHECK_EQ(csv.columns(0), 3u);
+		CHECK_EQ(csv.columns(1), 2u);
+		CHECK_EQ(csv.columns(2), 4u);
 	}
 
 	{
@@ -357,11 +357,11 @@ TEST_CASE("CSV.consistent_columns")
 		const auto result = CSV::LoadResult(ValidRagged, options);
 
 		REQUIRE(not result);
-		REQUIRE_EQ(result.error().size(), 2);
+		REQUIRE_EQ(result.error().size(), 2u);
 		CHECK_EQ(result.error()[0].code, CSVParseErrorCode::InconsistentColumns);
-		CHECK_EQ(result.error()[0].row, 1);
+		CHECK_EQ(result.error()[0].row, 1u);
 		CHECK_EQ(result.error()[1].code, CSVParseErrorCode::InconsistentColumns);
-		CHECK_EQ(result.error()[1].row, 2);
+		CHECK_EQ(result.error()[1].row, 2u);
 	}
 }
 
@@ -371,7 +371,7 @@ TEST_CASE("CSV.get_getOpt_getOr")
 	const CSV csv = CSV::Parse(U"int,float,text,bad\n123,3.5,Siv3D,abc\n");
 
 	REQUIRE(csv);
-	REQUIRE_EQ(csv.rows(), 2);
+	REQUIRE_EQ(csv.rows(), 2u);
 
 	CHECK_EQ(csv.get<String>(0, 0), U"int");
 	CHECK_EQ(csv.get<int32>(1, 0), 123);
@@ -427,7 +427,7 @@ TEST_CASE("CSV.modify")
 	csv.addRow(CSV::Row{ U"3", U"Charlie" });
 
 	REQUIRE(csv);
-	REQUIRE_EQ(csv.rows(), 4);
+	REQUIRE_EQ(csv.rows(), 4u);
 	CHECK(csv.data() == CSV::Table{
 		CSV::Row{ U"id", U"name" },
 		CSV::Row{ U"1", U"Alice" },
@@ -439,7 +439,7 @@ TEST_CASE("CSV.modify")
 
 	CHECK(csv);
 	CHECK(csv.isEmpty());
-	CHECK_EQ(csv.rows(), 0);
+	CHECK_EQ(csv.rows(), 0u);
 }
 
 // save を使わずに、CSVWriteOptions と RFC 4180 形式の文字列化を確認する。
@@ -471,7 +471,7 @@ TEST_CASE("CSV.format")
 
 		const std::string formatted = csv.formatUTF8(options);
 
-		REQUIRE(3 <= formatted.size());
+		REQUIRE(3u <= formatted.size());
 		CHECK_EQ(formatted.substr(0, 3), std::string{ "\xEF\xBB\xBF", 3 });
 	}
 }
@@ -485,9 +485,9 @@ TEST_CASE("CSV.error_codes")
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
 		CHECK_EQ(result.error().front().code, CSVParseErrorCode::UnexpectedQuoteInUnquotedField);
-		CHECK_EQ(result.error().front().line, 1);
-		CHECK_EQ(result.error().front().row, 0);
-		CHECK_EQ(result.error().front().column, 1);
+		CHECK_EQ(result.error().front().line, 1u);
+		CHECK_EQ(result.error().front().row, 0u);
+		CHECK_EQ(result.error().front().column, 1u);
 	}
 
 	{
