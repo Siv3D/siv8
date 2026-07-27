@@ -7,11 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F9C0D00130A0000100000001 /* LineStringParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9C0D00330A0000100000001 /* LineStringParser.cpp */; };
-		F9C0D00230A0000100000001 /* LineStringParser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9C0D00430A0000100000001 /* LineStringParser.hpp */; };
 		2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7F74E1CA7F43D00495647 /* Main.cpp */; };
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
+		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		F90000013000000000000008 /* libSiv3DSkiaCOLRv1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */; };
 		F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */; };
 		F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */; };
@@ -329,7 +328,6 @@
 		F9070DBE2B9F175E00383E4D /* SivDayOfWeek.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D362B9F175E00383E4D /* SivDayOfWeek.cpp */; };
 		F9070DBF2B9F175E00383E4D /* SivDemangle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D382B9F175E00383E4D /* SivDemangle.cpp */; };
 		F9070DC02B9F175E00383E4D /* SivDuration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D3A2B9F175E00383E4D /* SivDuration.cpp */; };
-		F9070DC12B9F175E00383E4D /* CEmpty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D3C2B9F175E00383E4D /* CEmpty.cpp */; };
 		F9070DC22B9F175E00383E4D /* CEmpty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070D3D2B9F175E00383E4D /* CEmpty.hpp */; };
 		F9070DC32B9F175E00383E4D /* EmptyFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D3E2B9F175E00383E4D /* EmptyFactory.cpp */; };
 		F9070DC42B9F175E00383E4D /* IEmpty.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070D3F2B9F175E00383E4D /* IEmpty.hpp */; };
@@ -884,7 +882,6 @@
 		F9528B3A2BB69C1800222F45 /* Image.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B392BB69C1800222F45 /* Image.hpp */; };
 		F9528B3C2BB69C2800222F45 /* Image.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B3B2BB69C2800222F45 /* Image.ipp */; };
 		F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */; };
-		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		F9528B412BB69C8200222F45 /* SivImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B3F2BB69C8200222F45 /* SivImage.cpp */; };
 		F9528B432BB69CA900222F45 /* BigFloat.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B422BB69CA900222F45 /* BigFloat.hpp */; };
 		F9528B452BB69D8500222F45 /* BigFloat.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B442BB69D8500222F45 /* BigFloat.ipp */; };
@@ -983,7 +980,6 @@
 		F9528C342BBF026F00222F45 /* zstd_opt.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528BEB2BBF026F00222F45 /* zstd_opt.h */; };
 		F9528C352BBF026F00222F45 /* zstdmt_compress.c in Sources */ = {isa = PBXBuildFile; fileRef = F9528BEC2BBF026F00222F45 /* zstdmt_compress.c */; };
 		F9528C362BBF026F00222F45 /* zstdmt_compress.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528BED2BBF026F00222F45 /* zstdmt_compress.h */; };
-		F9528C372BBF026F00222F45 /* huf_decompress_amd64.S in Sources */ = {isa = PBXBuildFile; fileRef = F9528BEF2BBF026F00222F45 /* huf_decompress_amd64.S */; };
 		F9528C382BBF026F00222F45 /* huf_decompress.c in Sources */ = {isa = PBXBuildFile; fileRef = F9528BF02BBF026F00222F45 /* huf_decompress.c */; };
 		F9528C392BBF026F00222F45 /* zstd_ddict.c in Sources */ = {isa = PBXBuildFile; fileRef = F9528BF12BBF026F00222F45 /* zstd_ddict.c */; };
 		F9528C3A2BBF026F00222F45 /* zstd_ddict.h in Headers */ = {isa = PBXBuildFile; fileRef = F9528BF22BBF026F00222F45 /* zstd_ddict.h */; };
@@ -2877,6 +2873,8 @@
 		F9B7DA192D8C72C0002ABACE /* bc7decomp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9B7D9FE2D8C72C0002ABACE /* bc7decomp.cpp */; };
 		F9B7DA1B2D8C72DF002ABACE /* BCnData.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */; };
 		F9B7DA1D2D8C72F5002ABACE /* BCnData.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */; };
+		F9C0D00130A0000100000001 /* LineStringParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9C0D00330A0000100000001 /* LineStringParser.cpp */; };
+		F9C0D00230A0000100000001 /* LineStringParser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9C0D00430A0000100000001 /* LineStringParser.hpp */; };
 		F9CD6A112DE226E800EFA782 /* ReadingDirection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */; };
 		F9CD6A132DE2270000EFA782 /* GlyphInfo.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A122DE2270000EFA782 /* GlyphInfo.ipp */; };
 		F9CD6A192DE2274400EFA782 /* BitmapGlyph.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A172DE2274400EFA782 /* BitmapGlyph.hpp */; };
@@ -3168,15 +3166,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F9C0D00330A0000100000001 /* LineStringParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LineStringParser.cpp; sourceTree = "<group>"; };
-		F9C0D00430A0000100000001 /* LineStringParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LineStringParser.hpp; sourceTree = "<group>"; };
 		2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siv3D-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C22E2C11FD5BAF0002735AB /* Siv3D-Test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Siv3D-Test.entitlements"; sourceTree = SOURCE_ROOT; };
 		2C8588EB1F929277000DA815 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		2CA7F73D1CA7F3B100495647 /* libSiv3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3DSkiaCOLRv1.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
+		F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3DSkiaCOLRv1.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.hpp; sourceTree = "<group>"; };
 		F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.ipp; sourceTree = "<group>"; };
 		F902E0D32E9E5E9C002C6B92 /* SivSuperEllipse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSuperEllipse.cpp; sourceTree = "<group>"; };
@@ -4114,7 +4111,6 @@
 		F9528B392BB69C1800222F45 /* Image.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.hpp; sourceTree = "<group>"; };
 		F9528B3B2BB69C2800222F45 /* Image.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Image.ipp; sourceTree = "<group>"; };
 		F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Image.cpp; sourceTree = "<group>"; };
-		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		F9528B3F2BB69C8200222F45 /* SivImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivImage.cpp; sourceTree = "<group>"; };
 		F9528B422BB69CA900222F45 /* BigFloat.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.hpp; sourceTree = "<group>"; };
 		F9528B442BB69D8500222F45 /* BigFloat.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BigFloat.ipp; sourceTree = "<group>"; };
@@ -6149,6 +6145,8 @@
 		F9B7DA0A2D8C72C0002ABACE /* utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
 		F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.hpp; sourceTree = "<group>"; };
 		F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.ipp; sourceTree = "<group>"; };
+		F9C0D00330A0000100000001 /* LineStringParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LineStringParser.cpp; sourceTree = "<group>"; };
+		F9C0D00430A0000100000001 /* LineStringParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LineStringParser.hpp; sourceTree = "<group>"; };
 		F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ReadingDirection.hpp; sourceTree = "<group>"; };
 		F9CD6A122DE2270000EFA782 /* GlyphInfo.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GlyphInfo.ipp; sourceTree = "<group>"; };
 		F9CD6A172DE2274400EFA782 /* BitmapGlyph.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BitmapGlyph.hpp; sourceTree = "<group>"; };
@@ -16253,7 +16251,6 @@
 				F986F9252BC8441F006A4C0F /* regtrav.c in Sources */,
 				F9070E8F2B9F183100383E4D /* CWindow.cpp in Sources */,
 				F98605D92BE4BE80006A4C0F /* SivKeyboard.cpp in Sources */,
-				F9070DC12B9F175E00383E4D /* CEmpty.cpp in Sources */,
 				F9712A532C26A4C80049CC26 /* SivColorWriteMask.cpp in Sources */,
 				F986F91A2BC8441F006A4C0F /* regcomp.c in Sources */,
 				F9070DD02B9F175E00383E4D /* SivFormatter.cpp in Sources */,
@@ -16622,7 +16619,6 @@
 				F9797E322F63314300518D26 /* SivAudioFormat.cpp in Sources */,
 				F9ED45C42CC2B06D006BA10F /* CScreenCapture.cpp in Sources */,
 				F9712A3F2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp in Sources */,
-				F9528C372BBF026F00222F45 /* huf_decompress_amd64.S in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -17458,8 +17454,6 @@
 		F90000013000000000000005 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
-				OTHER_LIBTOOLFLAGS = "-no_warning_for_no_symbols";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -17507,6 +17501,7 @@
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -17530,6 +17525,7 @@
 					"$(OTHER_CFLAGS)",
 					"-fvisibility-inlines-hidden",
 				);
+				OTHER_LIBTOOLFLAGS = "-no_warning_for_no_symbols";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
@@ -17543,8 +17539,6 @@
 		F90000013000000000000006 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
-				OTHER_LIBTOOLFLAGS = "-no_warning_for_no_symbols";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -17588,6 +17582,7 @@
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -17611,6 +17606,7 @@
 					"$(OTHER_CFLAGS)",
 					"-fvisibility-inlines-hidden",
 				);
+				OTHER_LIBTOOLFLAGS = "-no_warning_for_no_symbols";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				WARNING_CFLAGS = (
