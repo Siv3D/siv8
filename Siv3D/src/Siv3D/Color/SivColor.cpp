@@ -15,6 +15,40 @@
 
 namespace s3d
 {
+	namespace
+	{
+		[[nodiscard]]
+		uint32 PackUnsignedFloat(const uint8 channel, const uint32 mantissaBits) noexcept
+		{
+			if (channel == 0)
+			{
+				return 0;
+			}
+
+			const float value = (channel / 255.0f);
+			const uint32 bits = std::bit_cast<uint32>(value);
+			uint32 exponent = static_cast<uint32>(static_cast<int32>((bits >> 23) & 0xFFu) - 127 + 15);
+			const uint32 significand = ((bits & 0x7FFFFFu) | 0x800000u);
+			const uint32 shift = (23u - mantissaBits);
+			const uint32 halfway = (1u << (shift - 1));
+			const uint32 remainder = (significand & ((1u << shift) - 1u));
+			uint32 rounded = (significand >> shift);
+
+			if ((halfway < remainder) || ((remainder == halfway) && (rounded & 1u)))
+			{
+				++rounded;
+			}
+
+			if (rounded == (1u << (mantissaBits + 1u)))
+			{
+				++exponent;
+				rounded >>= 1;
+			}
+
+			return ((exponent << mantissaBits) | (rounded & ((1u << mantissaBits) - 1u)));
+		}
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	adjustHue
@@ -66,6 +100,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	toFloat4
+	//
+	////////////////////////////////////////////////////////////////
+
+	Float4 Color::toFloat4() const noexcept
+	{
+		return{ (r / 255.0f), (g / 255.0f), (b / 255.0f), (a / 255.0f) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	toR16_Float
 	//
 	////////////////////////////////////////////////////////////////
@@ -94,87 +139,28 @@ namespace s3d
 
 	uint32 Color::toR11G11B10_UFloat() const noexcept
 	{
-		const float rf = (r / 255.0f);
-		const float gf = (g / 255.0f);
-		const float bf = (b / 255.0f);
-
-		// R の 11-bit 浮動小数点変換 (5 ビット指数, 6 ビット仮数)
-		uint32 rBits = 0;
-		if (0.0f < rf)
-		{
-			int32 rExp = static_cast<int32>(std::floor(std::log2f(rf)));
-			float rMantissa = (rf / std::powf(2.0f, static_cast<float>(rExp)) - 1.0f);
-
-			rExp += 15; // バイアス調整
-
-			if (rExp <= 0)
-			{
-				// デノーマル数またはゼロ
-				rBits = 0;
-			}
-			else if (31 <= rExp)
-			{
-				// オーバーフロー - 最大値に設定
-				rBits = 0x7FF;
-			}
-			else
-			{
-				// 6ビット仮数に変換 (0-63)
-				uint32 rMantissaBits = static_cast<uint32>(std::roundf(rMantissa * 64.0f));
-				rBits = ((rExp << 6) | (rMantissaBits & 0x3F));
-			}
-		}
-
-		// G の 11-bit 浮動小数点変換
-		uint32 gBits = 0;
-		if (0.0f < gf)
-		{
-			int32 gExp = static_cast<int32>(std::floor(std::log2f(gf)));
-			float gMantissa = (gf / std::powf(2.0f, static_cast<float>(gExp)) - 1.0f);
-
-			gExp += 15; // バイアス調整
-
-			if (gExp <= 0)
-			{
-				gBits = 0;
-			}
-			else if (31 <= gExp)
-			{
-				gBits = 0x7FF;
-			}
-			else
-			{
-				uint32 gMantissaBits = static_cast<uint32>(std::roundf(gMantissa * 64.0f));
-				gBits = ((gExp << 6) | (gMantissaBits & 0x3F));
-			}
-		}
-
-		// B の 10-bit 浮動小数点変換 (5 ビット指数, 5 ビット仮数)
-		uint32 bBits = 0;
-		if (0.0f < bf)
-		{
-			int32 bExp = static_cast<int32>(std::floor(std::log2f(bf)));
-			float bMantissa = (bf / std::powf(2.0f, static_cast<float>(bExp)) - 1.0f);
-
-			bExp += 15; // バイアス調整
-
-			if (bExp <= 0)
-			{
-				bBits = 0;
-			}
-			else if (31 <= bExp)
-			{
-				bBits = 0x3FF;
-			}
-			else
-			{
-				uint32 bMantissaBits = static_cast<uint32>(std::roundf(bMantissa * 32.0f));
-				bBits = ((bExp << 5) | (bMantissaBits & 0x1F));
-			}
-		}
-
-		// R11G11B10 形式にパック
+		const uint32 rBits = PackUnsignedFloat(r, 6);
+		const uint32 gBits = PackUnsignedFloat(g, 6);
+		const uint32 bBits = PackUnsignedFloat(b, 5);
 		return (rBits | (gBits << 11) | (bBits << 22));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toR16G16B16A16_Float
+	//
+	////////////////////////////////////////////////////////////////
+
+	uint64 Color::toR16G16B16A16_Float() const noexcept
+	{
+		const uint16 r16 = HalfFloat{ r / 255.0f }.getBits();
+		const uint16 g16 = HalfFloat{ g / 255.0f }.getBits();
+		const uint16 b16 = HalfFloat{ b / 255.0f }.getBits();
+		const uint16 a16 = HalfFloat{ a / 255.0f }.getBits();
+		return ((static_cast<uint64>(a16) << 48)
+			| (static_cast<uint64>(b16) << 32)
+			| (static_cast<uint64>(g16) << 16)
+			| r16);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -196,7 +182,7 @@ namespace s3d
 
 	Float4 Color::toR32G32B32A32_Float() const noexcept
 	{
-		return{ (r / 255.0f), (g / 255.0f), (b / 255.0f), (a / 255.0f) };
+		return toFloat4();
 	}
 
 	////////////////////////////////////////////////////////////////

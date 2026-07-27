@@ -1,7 +1,7 @@
 # Repository instructions
 
-- When creating or editing source-code files, use CRLF line endings.
-- Preserve CRLF in existing source-code files; do not introduce mixed LF/CRLF line endings.
+- When creating or editing source-code files, use LF line endings.
+- Preserve LF in existing source-code files; do not introduce mixed LF/CRLF line endings.
 - Before finishing a source-code change, verify the line endings of every modified source file.
 
 # macOS development

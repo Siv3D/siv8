@@ -145,35 +145,42 @@ namespace s3d
 		, b{ 0 }
 		, a{ 255 }
 	{
-		if (code.size() == 4) // #RGB
+		if ((code.size() == 4) && (code[0] == U'#')) // #RGB
 		{
 			r = detail::HexToColor(code[1]);
 			g = detail::HexToColor(code[2]);
 			b = detail::HexToColor(code[3]);
 			a = 255;
 		}
-		else if (code.size() == 5) // #RGBA
+		else if ((code.size() == 5) && (code[0] == U'#')) // #RGBA
 		{
 			r = detail::HexToColor(code[1]);
 			g = detail::HexToColor(code[2]);
 			b = detail::HexToColor(code[3]);
 			a = detail::HexToColor(code[4]);
 		}
-		else if (code.size() == 7) // #RRGGBB
+		else if ((code.size() == 6) && (code[0] != U'#')) // RRGGBB
+		{
+			r = detail::HexToColor(code[0], code[1]);
+			g = detail::HexToColor(code[2], code[3]);
+			b = detail::HexToColor(code[4], code[5]);
+			a = 255;
+		}
+		else if ((code.size() == 7) && (code[0] == U'#')) // #RRGGBB
 		{
 			r = detail::HexToColor(code[1], code[2]);
 			g = detail::HexToColor(code[3], code[4]);
 			b = detail::HexToColor(code[5], code[6]);
 			a = 255;
 		}
-		else if (code.size() == 8) // RRGGBBAA
+		else if ((code.size() == 8) && (code[0] != U'#')) // RRGGBBAA
 		{
 			r = detail::HexToColor(code[0], code[1]);
 			g = detail::HexToColor(code[2], code[3]);
 			b = detail::HexToColor(code[4], code[5]);
 			a = detail::HexToColor(code[6], code[7]);
 		}
-		else if (code.size() == 9) // #RRGGBBAA
+		else if ((code.size() == 9) && (code[0] == U'#')) // #RRGGBBAA
 		{
 			r = detail::HexToColor(code[1], code[2]);
 			g = detail::HexToColor(code[3], code[4]);
@@ -351,13 +358,24 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	unpremultiplied
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Color Color::unpremultiplied() const noexcept
+	{
+		return Color::UnpremultiplyAlpha(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	grayscale0_255
 	//
 	////////////////////////////////////////////////////////////////
 
 	constexpr uint8 Color::grayscale0_255() const noexcept
 	{
-		return static_cast<uint8>((0.299 * r) + (0.587 * g) + (0.114 * b));
+		return static_cast<uint8>(((299u * r) + (587u * g) + (114u * b)) / 1000u);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -368,7 +386,7 @@ namespace s3d
 
 	constexpr double Color::grayscale() const noexcept
 	{
-		return ((0.299 / 255.0 * r) + (0.587 / 255.0 * g) + (0.114 / 255.0 * b));
+		return (((299u * r) + (587u * g) + (114u * b)) / 255000.0);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -422,10 +440,11 @@ namespace s3d
 
 	constexpr Color Color::lerp(const Color other, const double f) const noexcept
 	{
-		return{ static_cast<uint8>(int32(r) + (int32(other.r) - int32(r)) * f),
-				static_cast<uint8>(int32(g) + (int32(other.g) - int32(g)) * f),
-				static_cast<uint8>(int32(b) + (int32(other.b) - int32(b)) * f),
-				static_cast<uint8>(int32(a) + (int32(other.a) - int32(a)) * f) };
+		const double t = ((0.0 < f) ? Min(f, 1.0) : 0.0);
+		return{ static_cast<uint8>(int32(r) + (int32(other.r) - int32(r)) * t),
+				static_cast<uint8>(int32(g) + (int32(other.g) - int32(g)) * t),
+				static_cast<uint8>(int32(b) + (int32(other.b) - int32(b)) * t),
+				static_cast<uint8>(int32(a) + (int32(other.a) - int32(a)) * t) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -436,17 +455,19 @@ namespace s3d
 
 	constexpr Color Color::lightened(const double amount) const noexcept
 	{
-		return{ static_cast<uint8>(r + (255 - r) * amount),
-				static_cast<uint8>(g + (255 - g) * amount),
-				static_cast<uint8>(b + (255 - b) * amount),
+		const double t = ((0.0 < amount) ? Min(amount, 1.0) : 0.0);
+		return{ static_cast<uint8>(r + (255 - r) * t),
+				static_cast<uint8>(g + (255 - g) * t),
+				static_cast<uint8>(b + (255 - b) * t),
 				a };
 	}
 
 	constexpr Color Color::darkened(const double amount) const noexcept
 	{
-		return{ static_cast<uint8>(r * (1.0 - amount)),
-				static_cast<uint8>(g * (1.0 - amount)),
-				static_cast<uint8>(b * (1.0 - amount)),
+		const double t = ((0.0 < amount) ? Min(amount, 1.0) : 0.0);
+		return{ static_cast<uint8>(r * (1.0 - t)),
+				static_cast<uint8>(g * (1.0 - t)),
+				static_cast<uint8>(b * (1.0 - t)),
 				a };
 	}
 
@@ -472,7 +493,7 @@ namespace s3d
 
 	inline Color Color::gamma(const double gamma) const noexcept
 	{
-		if (gamma <= 0.0)
+		if (not (0.0 < gamma))
 		{
 			return{ 0, 0, 0, a };
 		}
@@ -564,9 +585,9 @@ namespace s3d
 
 	constexpr uint32 Color::toR16G16_Unorm() const noexcept
 	{
-		const uint16 r16 = static_cast<uint16>((r * 65535 + 127) / 255);
-		const uint16 g16 = static_cast<uint16>((g * 65535 + 127) / 255);
-		return ((g16 << 16) | r16);
+		const uint16 r16 = static_cast<uint16>(r * 257u);
+		const uint16 g16 = static_cast<uint16>(g * 257u);
+		return ((static_cast<uint32>(g16) << 16) | r16);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -615,7 +636,7 @@ namespace s3d
 
 	constexpr uint8 Color::ToUint8(const float x) noexcept
 	{
-		if (x <= 0.0f)
+		if (not (0.0f < x))
 		{
 			return 0;
 		}
@@ -631,7 +652,7 @@ namespace s3d
 
 	constexpr uint8 Color::ToUint8(const double x) noexcept
 	{
-		if (x <= 0.0)
+		if (not (0.0 < x))
 		{
 			return 0;
 		}
@@ -718,9 +739,9 @@ namespace s3d
 		}
 
 		const uint32 a = color.a;
-		const uint8 r = static_cast<uint8>((static_cast<uint32>(color.r) * 255u) / a);
-		const uint8 g = static_cast<uint8>((static_cast<uint32>(color.g) * 255u) / a);
-		const uint8 b = static_cast<uint8>((static_cast<uint32>(color.b) * 255u) / a);
+		const uint8 r = static_cast<uint8>(Min(((static_cast<uint32>(color.r) * 255u) + (a / 2)) / a, 255u));
+		const uint8 g = static_cast<uint8>(Min(((static_cast<uint32>(color.g) * 255u) + (a / 2)) / a, 255u));
+		const uint8 b = static_cast<uint8>(Min(((static_cast<uint32>(color.b) * 255u) + (a / 2)) / a, 255u));
 		return{ r, g, b, color.a };
 	}
 
