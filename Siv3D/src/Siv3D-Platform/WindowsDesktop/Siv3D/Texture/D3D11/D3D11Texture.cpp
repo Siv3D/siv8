@@ -14,6 +14,9 @@
 # include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/BCnData.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <Siv3D/Anchor.hpp>
+# include <Siv3D/Rect.hpp>
+# include <cstring>
 
 namespace s3d
 {
@@ -42,6 +45,19 @@ namespace s3d
 		static void Error_ShaderResourceView(const HRESULT hr)
 		{
 			LOG_FAIL(fmt::format("❌ D3D11Texture::D3D11Texture(): Failed to create ShaderResourceView. [Error {:#X}]", static_cast<uint32>(hr)));
+		}
+
+		[[nodiscard]]
+		static bool IsValidRegion(const Size& textureSize, const Rect& rect) noexcept
+		{
+			return ((0 <= rect.x)
+				&& (0 <= rect.y)
+				&& (0 < rect.w)
+				&& (0 < rect.h)
+				&& (rect.w <= textureSize.x)
+				&& (rect.h <= textureSize.y)
+				&& (rect.x <= (textureSize.x - rect.w))
+				&& (rect.y <= (textureSize.y - rect.h)));
 		}
 	}
 
@@ -420,6 +436,7 @@ namespace s3d
 			return false;
 		}
 
+		const uint32 bytesPerRow = (m_desc.size.x * m_desc.format.pixelSize());
 		D3D11_MAPPED_SUBRESOURCE mapped;
 		{
 			const UINT flag = (wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT);
@@ -435,9 +452,19 @@ namespace s3d
 				return false;
 			}
 
-			assert(m_desc.format.bytesPerRow(m_desc.size.x) <= mapped.RowPitch);
+			if (mapped.RowPitch < bytesPerRow)
+			{
+				context->Unmap(m_stagingTexture.Get(), 0);
+				return false;
+			}
 
-			FillWithColor(mapped.pData, (mapped.RowPitch * m_desc.size.x), color, m_desc.format);
+			Byte* pDstRow = static_cast<Byte*>(mapped.pData);
+
+			for (int32 y = 0; y < m_desc.size.y; ++y)
+			{
+				FillWithColor(pDstRow, bytesPerRow, color, m_desc.format);
+				pDstRow += mapped.RowPitch;
+			}
 
 			context->Unmap(m_stagingTexture.Get(), 0);
 		}
@@ -461,6 +488,15 @@ namespace s3d
 			return false;
 		}
 
+		const uint32 copyBytesPerRow = (m_desc.size.x * m_desc.format.pixelSize());
+		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * m_desc.size.y);
+
+		if ((srcBytesPerRow < copyBytesPerRow)
+			|| (data.size_bytes() < requiredSourceBytes))
+		{
+			return false;
+		}
+
 		D3D11_MAPPED_SUBRESOURCE mapped;
 		{
 			const UINT flag = (wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT);
@@ -476,9 +512,21 @@ namespace s3d
 				return false;
 			}
 
-			assert(m_desc.format.bytesPerRow(m_desc.size.x) <= mapped.RowPitch);
+			if (mapped.RowPitch < copyBytesPerRow)
+			{
+				context->Unmap(m_stagingTexture.Get(), 0);
+				return false;
+			}
 
-			FillWithImage(mapped.pData, m_desc.size, mapped.RowPitch, data, srcBytesPerRow);
+			Byte* pDstRow = static_cast<Byte*>(mapped.pData);
+			const Byte* pSrcRow = data.data();
+
+			for (int32 y = 0; y < m_desc.size.y; ++y)
+			{
+				std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
+				pDstRow += mapped.RowPitch;
+				pSrcRow += srcBytesPerRow;
+			}
 
 			context->Unmap(m_stagingTexture.Get(), 0);
 		}
@@ -492,6 +540,118 @@ namespace s3d
 			context->CopyResource(m_texture.Get(), m_stagingTexture.Get());
 		}
 
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	fillRegion
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool D3D11Texture::fillRegion(ID3D11DeviceContext* context, const ColorF& color, const Rect& rect)
+	{
+		if ((m_desc.type != TextureType::Dynamic)
+			|| (not IsValidRegion(m_desc.size, rect)))
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = (rect.w * m_desc.format.pixelSize());
+		D3D11_MAPPED_SUBRESOURCE mapped;
+
+		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, 0, &mapped)))
+		{
+			return false;
+		}
+
+		if ((mapped.pData == nullptr)
+			|| (mapped.RowPitch < bytesPerRow))
+		{
+			context->Unmap(m_stagingTexture.Get(), 0);
+			return false;
+		}
+
+		Byte* pDstRow = static_cast<Byte*>(mapped.pData);
+
+		for (int32 y = 0; y < rect.h; ++y)
+		{
+			FillWithColor(pDstRow, bytesPerRow, color, m_desc.format);
+			pDstRow += mapped.RowPitch;
+		}
+
+		context->Unmap(m_stagingTexture.Get(), 0);
+
+		const D3D11_BOX sourceBox
+		{
+			.left	= 0,
+			.top	= 0,
+			.front	= 0,
+			.right	= static_cast<uint32>(rect.w),
+			.bottom	= static_cast<uint32>(rect.h),
+			.back	= 1,
+		};
+
+		context->CopySubresourceRegion(m_texture.Get(), 0, rect.x, rect.y, 0, m_stagingTexture.Get(), 0, &sourceBox);
+		return true;
+	}
+
+	bool D3D11Texture::fillRegion(ID3D11DeviceContext* context, const std::span<const Byte> data,
+		const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
+	{
+		if ((m_desc.type != TextureType::Dynamic)
+			|| (not IsValidRegion(m_desc.size, rect)))
+		{
+			return false;
+		}
+
+		const uint32 copyBytesPerRow = (rect.w * m_desc.format.pixelSize());
+		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * rect.h);
+
+		if ((srcBytesPerRow < copyBytesPerRow)
+			|| (data.size_bytes() < requiredSourceBytes))
+		{
+			return false;
+		}
+
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		const UINT mapFlag = (wait ? 0 : D3D11_MAP_FLAG_DO_NOT_WAIT);
+
+		if (FAILED(context->Map(m_stagingTexture.Get(), 0, D3D11_MAP_WRITE, mapFlag, &mapped)))
+		{
+			return false;
+		}
+
+		if ((mapped.pData == nullptr)
+			|| (mapped.RowPitch < copyBytesPerRow))
+		{
+			context->Unmap(m_stagingTexture.Get(), 0);
+			return false;
+		}
+
+		Byte* pDstRow = static_cast<Byte*>(mapped.pData);
+		const Byte* pSrcRow = data.data();
+
+		for (int32 y = 0; y < rect.h; ++y)
+		{
+			std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
+			pDstRow += mapped.RowPitch;
+			pSrcRow += srcBytesPerRow;
+		}
+
+		context->Unmap(m_stagingTexture.Get(), 0);
+
+		const D3D11_BOX sourceBox
+		{
+			.left	= 0,
+			.top	= 0,
+			.front	= 0,
+			.right	= static_cast<uint32>(rect.w),
+			.bottom	= static_cast<uint32>(rect.h),
+			.back	= 1,
+		};
+
+		context->CopySubresourceRegion(m_texture.Get(), 0, rect.x, rect.y, 0, m_stagingTexture.Get(), 0, &sourceBox);
 		return true;
 	}
 
