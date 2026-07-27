@@ -312,7 +312,7 @@ namespace s3d
 			void* pSrc = premultiplied.data();
 			const size_t bytesPerRow = premultiplied.bytesPerRow();
 			const CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-			const CGBitmapInfo bitmapInfo = (kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast);
+			const CGBitmapInfo bitmapInfo = (static_cast<CGBitmapInfo>(kCGBitmapByteOrder32Big) | static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast));
 			const CGContextRef context = CGBitmapContextCreate(pSrc, w, h, 8, bytesPerRow, colorSpace, bitmapInfo);
 			CGColorSpaceRelease(colorSpace);
 			
@@ -396,7 +396,7 @@ namespace s3d
 			const size_t bytesPerRow = dst.bytesPerRow();
 			void* pDst = dst.data();
 			const CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-			const CGBitmapInfo bitmapInfo = (kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast);
+			const CGBitmapInfo bitmapInfo = (static_cast<CGBitmapInfo>(kCGBitmapByteOrder32Big) | static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast));
 			const CGContextRef context = CGBitmapContextCreate(pDst, w, h, 8, bytesPerRow, colorSpace, bitmapInfo);
 			CGColorSpaceRelease(colorSpace);
 			
