@@ -25,6 +25,11 @@ namespace s3d
 		template <class VectorType, class ValueType>
 		VectorType SmoothDamp_impl(const VectorType& from, const VectorType& to, VectorType& velocity, const ValueType smoothTime, const ValueType deltaTime, const Optional<ValueType>& maxSpeed)
 		{
+			if (deltaTime <= 0)
+			{
+				return from;
+			}
+
 			const ValueType omega = (static_cast<ValueType>(2.0) / smoothTime);
 			const ValueType x = (omega * deltaTime);
 			const ValueType exp = (static_cast<ValueType>(1.0) / (static_cast<ValueType>(1.0) + x + static_cast<ValueType>(0.48) * x * x + static_cast<ValueType>(0.235) * x * x * x));
@@ -56,7 +61,7 @@ namespace s3d
 				if ((0 < (to - from)) == (to < result))
 				{
 					result = to;
-					velocity = ((result - to) / deltaTime);
+					velocity = VectorType{};
 				}
 			}
 			else
@@ -64,7 +69,7 @@ namespace s3d
 				if (0 < (to - from).dot(result - to))
 				{
 					result = to;
-					velocity = ((result - to) / deltaTime);
+					velocity = VectorType{};
 				}
 			}
 

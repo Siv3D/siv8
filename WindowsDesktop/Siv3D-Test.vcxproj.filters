@@ -157,6 +157,9 @@
     <ClCompile Include="..\Test\Test_INI.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Interpolation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">
       <Filter>Test</Filter>
     </ClCompile>

@@ -232,6 +232,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地
 		[[nodiscard]]
 		float SmoothDamp(float current, float target, float& velocity, float smoothTime, const Optional<float>& maxSpeed = unspecified, float deltaTime = static_cast<float>(Scene::DeltaTime()));
@@ -243,6 +244,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地	
 		[[nodiscard]]
 		double SmoothDamp(double current, double target, double& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
@@ -254,6 +256,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地
 		[[nodiscard]]
 		Float2 SmoothDamp(const Float2& current, const Float2& target, Float2& velocity, float smoothTime, const Optional<float>& maxSpeed = unspecified, float deltaTime = static_cast<float>(Scene::DeltaTime()));
@@ -265,6 +268,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地
 		[[nodiscard]]
 		Vec2 SmoothDamp(const Vec2& current, const Vec2& target, Vec2& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
@@ -276,6 +280,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param deltaTime 前回からの経過時間
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地
 		[[nodiscard]]
 		Float3 SmoothDamp(const Float3& current, const Float3& target, Float3& velocity, float smoothTime, const Optional<float>& maxSpeed = unspecified, float deltaTime = static_cast<float>(Scene::DeltaTime()));
@@ -287,6 +292,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地
 		[[nodiscard]]
 		Vec3 SmoothDamp(const Vec3& current, const Vec3& target, Vec3& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
@@ -298,6 +304,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地
 		[[nodiscard]]
 		Float4 SmoothDamp(const Float4& current, const Float4& target, Float4& velocity, float smoothTime, const Optional<float>& maxSpeed = unspecified, float deltaTime = static_cast<float>(Scene::DeltaTime()));
@@ -309,6 +316,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい現在地
 		[[nodiscard]]
 		Vec4 SmoothDamp(const Vec4& current, const Vec4& target, Vec4& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
@@ -320,6 +328,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい色
 		[[nodiscard]]
 		ColorF SmoothDamp(const ColorF& current, const ColorF& target, ColorF& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());
@@ -331,6 +340,7 @@ namespace s3d
 		/// @param smoothTime 平滑化時間（最大速度で目標に向かうときに期待される所要時間）。動く目標を追いかけるときの遅延時間で、小さいと目標に早く到達する
 		/// @param maxSpeed 最大速度。無制限の場合は unspecified
 		/// @param deltaTime 前回からの経過時間。デフォルトでは Scene::DeltaTime()
+		/// @remark deltaTime が 0 以下の場合、current を返し、velocity を変更しません。
 		/// @return 新しい色
 		[[nodiscard]]
 		HSV SmoothDamp(const HSV& current, const HSV& target, HSV& velocity, double smoothTime, const Optional<double>& maxSpeed = unspecified, double deltaTime = Scene::DeltaTime());

@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "Duration.hpp"
 # include "PointVector.hpp"
 # include "Interpolation.hpp"
 

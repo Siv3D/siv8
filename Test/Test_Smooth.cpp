@@ -41,3 +41,29 @@ TEST_CASE("SmoothHSV.zero velocity")
 	smooth.setState(value, velocity).setTarget(HSV{ 240.0, 0.25, 0.5, 0.75 }).jumpToTarget();
 	CHECK(smooth.velocity() == HSV::Zero());
 }
+
+TEST_CASE("Smooth.update.non-positive deltaTime")
+{
+	{
+		SmoothDouble smooth{ 1.0 };
+		smooth.setState(1.0, 3.0);
+
+		CHECK(smooth.update(0.2, unspecified, 0.0) == 1.0);
+		CHECK(smooth.velocity() == 3.0);
+
+		smooth.setTarget(2.0);
+		CHECK(smooth.update(0.2, unspecified, -0.1) == 1.0);
+		CHECK(smooth.velocity() == 3.0);
+	}
+
+	{
+		constexpr HSV value{ 120.0, 0.5, 0.75, 0.25 };
+		constexpr HSV velocity{ 1.0, 0.1, 0.2, 0.3 };
+
+		SmoothHSV smooth{ value };
+		smooth.setState(value, velocity);
+
+		CHECK(smooth.update(0.2, unspecified, 0.0) == value);
+		CHECK(smooth.velocity() == velocity);
+	}
+}

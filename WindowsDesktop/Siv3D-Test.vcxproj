@@ -55,6 +55,7 @@
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
+    <ClCompile Include="..\Test\Test_Interpolation.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp" />
     <ClCompile Include="..\Test\Test_LineString.cpp" />
