@@ -277,8 +277,6 @@ namespace s3d
 
 	inline int64 Stopwatch::us() const noexcept
 	{
-		const int64 t = ISteadyClock::GetMicrosec(m_pSteadyClock);
-
 		if (not m_isStarted)
 		{
 			return 0;
@@ -288,6 +286,8 @@ namespace s3d
 		{
 			return m_accumulatedTimeMicrosec;
 		}
+
+		const int64 t = ISteadyClock::GetMicrosec(m_pSteadyClock);
 
 		return (m_accumulatedTimeMicrosec + (t - m_startTimeMicrosec));
 	}

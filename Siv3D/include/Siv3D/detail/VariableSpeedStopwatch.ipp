@@ -345,8 +345,6 @@ namespace s3d
 
 	inline int64 VariableSpeedStopwatch::ns() const noexcept
 	{
-		const int64 t = ISteadyClock::GetNanosec(m_pSteadyClock);
-
 		if (not m_isStarted)
 		{
 			return 0;
@@ -356,6 +354,8 @@ namespace s3d
 		{
 			return m_accumulatedNanosec;
 		}
+
+		const int64 t = ISteadyClock::GetNanosec(m_pSteadyClock);
 
 		const int64 delta = static_cast<int64>((t - m_lastTimeNanosec) * m_speed);
 
