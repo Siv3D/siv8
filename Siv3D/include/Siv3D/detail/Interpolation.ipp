@@ -23,7 +23,13 @@ namespace s3d
 
 		constexpr auto Lerp(const Concept::Arithmetic auto v1, const Concept::Arithmetic auto v2, const Concept::FloatingPoint auto f) noexcept
 		{
-			return (v1 + (v2 - v1) * f);
+			using Ret = decltype(v1 + (v2 - v1) * f);
+
+			const Ret v1F = static_cast<Ret>(v1);
+			const Ret v2F = static_cast<Ret>(v2);
+			const Ret fF = static_cast<Ret>(f);
+
+			return (v1F + (v2F - v1F) * fF);
 		}
 
 		template <HasLerp Type>
@@ -53,9 +59,11 @@ namespace s3d
 		{
 			using Ret = CommonFloat_t<decltype(from), decltype(to)>;
 
-			const auto diff = std::fmod((to - from), Math::TwoPi_v<Ret>);
+			const Ret fromF = static_cast<Ret>(from);
+			const Ret toF = static_cast<Ret>(to);
+			const Ret diff = std::fmod((toF - fromF), Math::TwoPi_v<Ret>);
 
-			return (from + (std::fmod((2 * diff), Math::TwoPi_v<Ret>) - diff) * t);
+			return (fromF + (std::fmod((2 * diff), Math::TwoPi_v<Ret>) - diff) * t);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -69,9 +77,10 @@ namespace s3d
 			using Ret = CommonFloat_t<decltype(a), decltype(b)>;
 
 			assert(a != 0);
-			assert(0 <= (b / a));
+			const Ret ratio = (static_cast<Ret>(b) / static_cast<Ret>(a));
+			assert(0 <= ratio);
 
-			return (a * std::pow((static_cast<Ret>(b) / a), t));
+			return (a * std::pow(ratio, t));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -99,11 +108,21 @@ namespace s3d
 
 		constexpr float MoveTowards(const float current, const float target, const float maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0f)
+			{
+				return current;
+			}
+
 			return (current + Clamp((target - current), -maxSpeed, maxSpeed));
 		}
 
 		constexpr double MoveTowards(const double current, const double target, const double maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0)
+			{
+				return current;
+			}
+
 			return (current + Clamp((target - current), -maxSpeed, maxSpeed));
 		}
 	}

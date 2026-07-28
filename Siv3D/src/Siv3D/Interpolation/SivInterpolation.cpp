@@ -30,7 +30,14 @@ namespace s3d
 				return from;
 			}
 
-			const ValueType omega = (static_cast<ValueType>(2.0) / smoothTime);
+			if (from == to)
+			{
+				velocity = VectorType{};
+				return to;
+			}
+
+			const ValueType adjustedSmoothTime = Max(smoothTime, static_cast<ValueType>(0.0001));
+			const ValueType omega = (static_cast<ValueType>(2.0) / adjustedSmoothTime);
 			const ValueType x = (omega * deltaTime);
 			const ValueType exp = (static_cast<ValueType>(1.0) / (static_cast<ValueType>(1.0) + x + static_cast<ValueType>(0.48) * x * x + static_cast<ValueType>(0.235) * x * x * x));
 			VectorType change = (from - to);
@@ -38,7 +45,7 @@ namespace s3d
 			// 速度を maxSpeed に制限
 			if (maxSpeed)
 			{
-				const ValueType maxChange = (*maxSpeed * smoothTime);
+				const ValueType maxChange = (Max(*maxSpeed, static_cast<ValueType>(0)) * adjustedSmoothTime);
 
 				if constexpr (std::is_arithmetic_v<VectorType>)
 				{
@@ -87,31 +94,61 @@ namespace s3d
 
 		Float2 MoveTowards(const Float2& current, const Float2& target, const float maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0f)
+			{
+				return current;
+			}
+
 			return (current + (target - current).setMaxLength(maxSpeed));
 		}
 
 		Vec2 MoveTowards(const Vec2& current, const Vec2& target, const double maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0)
+			{
+				return current;
+			}
+
 			return (current + (target - current).setMaxLength(maxSpeed));
 		}
 
 		Float3 MoveTowards(const Float3& current, const Float3& target, const float maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0f)
+			{
+				return current;
+			}
+
 			return (current + (target - current).setMaxLength(maxSpeed));
 		}
 
 		Vec3 MoveTowards(const Vec3& current, const Vec3& target, const double maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0)
+			{
+				return current;
+			}
+
 			return (current + (target - current).setMaxLength(maxSpeed));
 		}
 
 		Float4 MoveTowards(const Float4& current, const Float4& target, const float maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0f)
+			{
+				return current;
+			}
+
 			return (current + (target - current).setMaxLength(maxSpeed));
 		}
 
 		Vec4 MoveTowards(const Vec4& current, const Vec4& target, const double maxSpeed) noexcept
 		{
+			if (maxSpeed <= 0.0)
+			{
+				return current;
+			}
+
 			return (current + (target - current).setMaxLength(maxSpeed));
 		}
 

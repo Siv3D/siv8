@@ -8,6 +8,10 @@
 - Treat files under `Siv3D/src/ThirdParty/` as vendored code unless the task explicitly requires changing them. Prefer target- or file-scoped build settings over source edits when suppressing third-party warnings.
 - Byte-exact test fixtures are exempt from the source-code line-ending rules. Mark them as binary in the nearest `.gitattributes`, do not normalize their line endings, and verify their actual bytes.
 
+# Runtime performance
+
+- Before adding runtime overhead to a frequently called function to handle infinities, NaNs, extreme values, or similarly exceptional inputs, obtain the user's explicit approval. This includes adding branches or extra arithmetic for such defenses.
+
 # Public APIs and tests
 
 - When adding or changing a public API, update its Doxygen documentation and add focused tests for normal, boundary, and failure or round-trip cases as applicable.
