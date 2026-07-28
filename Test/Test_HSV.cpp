@@ -79,6 +79,9 @@ TEST_CASE("HSV.component operations")
 	static_assert(color.withA(0.5) == HSV{ 120.0, 0.5, 0.75, 0.5 });
 	static_assert(color.withAlpha(0.5) == HSV{ 120.0, 0.5, 0.75, 0.5 });
 	static_assert(color.hueShifted(360.0) == HSV{ 480.0, 0.5, 0.75, 0.25 });
+	static_assert(color.complemented() == HSV{ 300.0, 0.5, 0.75, 0.25 });
+	static_assert(HSV{ 300.0, 0.5, 0.75, 0.25 }.complemented()
+		== HSV{ 480.0, 0.5, 0.75, 0.25 });
 	static_assert(color.hsv() == Vec3{ 120.0, 0.5, 0.75 });
 	static_assert(color.sva() == Vec3{ 0.5, 0.75, 0.25 });
 	static_assert(color.hsva() == Vec4{ 120.0, 0.5, 0.75, 0.25 });

@@ -15,7 +15,16 @@ namespace s3d
 {
 	namespace TextEffect
 	{
-		constexpr HorizontalGradientHSV::HorizontalGradientHSV(const HSV& startColor, const HSV& endColor, const double startX, const double endX) noexcept
-			: m_startColor{ startColor }, m_endColor{ endColor }, m_startX{ startX }, m_endX{ endX } {}
+		constexpr HorizontalGradientHSV::HorizontalGradientHSV(
+			const HSV& startColor,
+			const HSV& endColor,
+			const double startX,
+			const double endX,
+			const HueInterpolation hueInterpolation) noexcept
+			: m_startColor{ startColor }
+			, m_endColor{ endColor }
+			, m_startX{ startX }
+			, m_endX{ endX }
+			, m_hueInterpolation{ hueInterpolation } {}
 	}
 }
