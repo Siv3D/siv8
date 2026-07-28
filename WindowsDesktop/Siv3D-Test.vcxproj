@@ -64,6 +64,7 @@
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
+    <ClCompile Include="..\Test\Test_Smooth.cpp" />
     <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />

@@ -54,6 +54,7 @@
 		F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B92B9DAEB900383E4D /* Test_Color.cpp */; };
 		F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */; };
 		F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A000022FC0000000000001 /* Test_HSV.cpp */; };
+		F9A000032FC0000000000001 /* Test_Smooth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A000042FC0000000000001 /* Test_Smooth.cpp */; };
 		F90702FB2B9DAEB900383E4D /* Test_Concepts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */; };
 		F90702FC2B9DAEB900383E4D /* Test_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */; };
 		F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */; };
@@ -3222,6 +3223,7 @@
 		F90702B92B9DAEB900383E4D /* Test_Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Color.cpp; sourceTree = "<group>"; };
 		F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ColorF.cpp; sourceTree = "<group>"; };
 		F9A000022FC0000000000001 /* Test_HSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_HSV.cpp; sourceTree = "<group>"; };
+		F9A000042FC0000000000001 /* Test_Smooth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Smooth.cpp; sourceTree = "<group>"; };
 		F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Concepts.cpp; sourceTree = "<group>"; };
 		F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FileSystem.cpp; sourceTree = "<group>"; };
 		F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FmtExtension.cpp; sourceTree = "<group>"; };
@@ -6696,6 +6698,7 @@
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
 				F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */,
 				F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */,
+				F9A000042FC0000000000001 /* Test_Smooth.cpp */,
 				F90702C62B9DAEB900383E4D /* Test_Step.cpp */,
 				F90F79E62FA85F6E0077F398 /* Test_Step2D.cpp */,
 				F9528B152BAC58A300222F45 /* Test_String.cpp */,
@@ -15933,6 +15936,7 @@
 				F90702FB2B9DAEB900383E4D /* Test_Concepts.cpp in Sources */,
 				F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */,
 				F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */,
+				F9A000032FC0000000000001 /* Test_Smooth.cpp in Sources */,
 				F9528B322BB0564800222F45 /* Test_MemoryMappedFileView.cpp in Sources */,
 				F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,
