@@ -114,11 +114,11 @@ TEST_CASE("Color.premultiplied")
 
 TEST_CASE("Color.grayscale")
 {
-	static_assert(Color{ 0, 0, 0 }.grayscale0_255() == 0);
-	static_assert(Color{ 255, 255, 255 }.grayscale0_255() == 255);
-	static_assert(Color{ 255, 0, 0 }.grayscale0_255() == 76);
-	static_assert(Color{ 0, 255, 0 }.grayscale0_255() == 149);
-	static_assert(Color{ 0, 0, 255 }.grayscale0_255() == 29);
+	static_assert(Color{ 0, 0, 0 }.grayscale8() == 0);
+	static_assert(Color{ 255, 255, 255 }.grayscale8() == 255);
+	static_assert(Color{ 255, 0, 0 }.grayscale8() == 76);
+	static_assert(Color{ 0, 255, 0 }.grayscale8() == 149);
+	static_assert(Color{ 0, 0, 255 }.grayscale8() == 29);
 
 	CHECK(Color{ 12, 34, 56 }.grayscale() == doctest::Approx(29930.0 / 255000.0));
 }
@@ -162,16 +162,51 @@ TEST_CASE("Color.color conversion")
 	CHECK(hsv.v == doctest::Approx(1.0));
 	CHECK(hsv.a == doctest::Approx(128.0 / 255.0));
 
-	CHECK(color.adjustHue(120.0) == Color{ 0, 255, 0, 128 });
+	CHECK(color.hueShifted(120.0) == Color{ 0, 255, 0, 128 });
 	CHECK(color.complemented() == Color{ 0, 255, 255, 128 });
 	CHECK(color.gamma(1.0) == color);
 	CHECK(color.gamma(0.0) == Color{ 0, 0, 0, 128 });
+
+	const Color roundTrip = Color{ 0x12, 0x34, 0x56, 0x78 }.srgbToLinear().linearToSRGB().toColor();
+	CHECK(roundTrip == Color{ 0x12, 0x34, 0x56, 0x78 });
+
+	const ColorF linearRed = HSV{ 0.0, 1.0, 1.0, 0.5 }.srgbToLinear();
+	CHECK(linearRed.r == doctest::Approx(1.0));
+	CHECK(linearRed.g == doctest::Approx(0.0));
+	CHECK(linearRed.b == doctest::Approx(0.0));
+	CHECK(linearRed.a == doctest::Approx(0.5));
+
+	const ColorF srgbRed = HSV{ 0.0, 1.0, 1.0, 0.5 }.linearToSRGB();
+	CHECK(srgbRed.r == doctest::Approx(1.0));
+	CHECK(srgbRed.g == doctest::Approx(0.0));
+	CHECK(srgbRed.b == doctest::Approx(0.0));
+	CHECK(srgbRed.a == doctest::Approx(0.5));
 }
 
-TEST_CASE("Color.toHex")
+TEST_CASE("Color.toHexRGB/toHexRGBA")
 {
-	CHECK(Color{ 0x12, 0xAB, 0xF0, 0x34 }.toHex() == U"12ABF0");
-	CHECK(Color{ Color{ 0x12, 0xAB, 0xF0, 0x34 }.toHex() } == Color{ 0x12, 0xAB, 0xF0 });
+	const Color color{ 0x12, 0xAB, 0xF0, 0x34 };
+
+	CHECK(color.toHexRGB() == U"12ABF0");
+	CHECK(color.toHexRGBA() == U"12ABF034");
+	CHECK(Color{ color.toHexRGB() } == Color{ 0x12, 0xAB, 0xF0 });
+	CHECK(Color{ color.toHexRGBA() } == color);
+	CHECK(Color::Zero().toHexRGB() == U"000000");
+	CHECK(Color::Zero().toHexRGBA() == U"00000000");
+}
+
+TEST_CASE("Color.RGBA8888 conversion")
+{
+	constexpr Color color{ 0x12, 0x34, 0x56, 0x78 };
+
+	static_assert(color.asUint32() == 0x78563412u);
+	static_assert(color.toRGBA8888() == 0x12345678u);
+	static_assert(color.toABGR8888() == 0x78563412u);
+	static_assert(Color::FromRGBA8888(color.toRGBA8888()) == color);
+	static_assert(Color::FromABGR8888(color.toABGR8888()) == color);
+
+	static_assert(Color::Zero().toRGBA8888() == 0x00000000u);
+	static_assert(Color{ 255, 255, 255, 255 }.toRGBA8888() == 0xFFFFFFFFu);
 }
 
 TEST_CASE("Color.normalized format conversion")
@@ -222,8 +257,8 @@ TEST_CASE("Color.static conversion")
 	static_assert(Color::ToUint8(1.0) == 255);
 	static_assert(Color::ToUint8(2.0) == 255);
 	static_assert(Color::FromFloat(0.5) == Color{ 128, 128, 128, 255 });
-	static_assert(Color::FromRGBA(0x12345678) == Color{ 0x12, 0x34, 0x56, 0x78 });
-	static_assert(Color::FromABGR(0x78563412) == Color{ 0x12, 0x34, 0x56, 0x78 });
+	static_assert(Color::FromRGBA8888(0x12345678) == Color{ 0x12, 0x34, 0x56, 0x78 });
+	static_assert(Color::FromABGR8888(0x78563412) == Color{ 0x12, 0x34, 0x56, 0x78 });
 	static_assert(Alpha(0x12) == Color{ 255, 255, 255, 0x12 });
 }
 

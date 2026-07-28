@@ -108,14 +108,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	adjustHue
+	//	hueShifted
 	//
 	////////////////////////////////////////////////////////////////
 
-	ColorF ColorF::adjustHue(const double amount) const noexcept
+	ColorF ColorF::hueShifted(const double degrees) const noexcept
 	{
 		HSV hsv{ *this };
-		hsv.h += amount;
+		hsv.h += degrees;
 		return hsv.toColorF();
 	}
 
@@ -134,11 +134,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	removeSRGBCurve, applySRGBCurve
+	//	srgbToLinear, linearToSRGB
 	//
 	////////////////////////////////////////////////////////////////
 
-	ColorF ColorF::removeSRGBCurve() const noexcept
+	ColorF ColorF::srgbToLinear() const noexcept
 	{
 		return{	RemoveSRGBCurve(r),
 				RemoveSRGBCurve(g),
@@ -147,7 +147,7 @@ namespace s3d
 		};
 	}
 
-	ColorF ColorF::applySRGBCurve() const noexcept
+	ColorF ColorF::linearToSRGB() const noexcept
 	{
 		return{	ApplySRGBCurve(r),
 				ApplySRGBCurve(g),

@@ -520,15 +520,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	adjustHue
+		//	hueShifted
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 色相を調整した色を返します。
-		/// @param amount 色相の調整量（度）
-		/// @return 色相を調整した色
+		/// @brief 色相をシフトした色を返します。
+		/// @param degrees 色相のシフト量（度）
+		/// @return 色相をシフトした色
 		[[nodiscard]]
-		ColorF adjustHue(double amount) const noexcept;
+		ColorF hueShifted(double degrees) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -569,21 +569,21 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	removeSRGBCurve, applySRGBCurve
+		//	srgbToLinear, linearToSRGB
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief リニアカラースペースに変換した色を返します。
-		/// @return リニアカラースペースに変換した色
-		/// @remark RGB 成分に sRGB の逆伝達関数を適用します。アルファ値は維持します。
+		/// @brief sRGB 色空間からリニア色空間に変換した色を返します。
+		/// @return リニア色空間に変換した色
+		/// @remark アルファ値は維持します。
 		[[nodiscard]]
-		ColorF removeSRGBCurve() const noexcept;
+		ColorF srgbToLinear() const noexcept;
 
-		/// @brief sRGB カーブを適用した色を返します。
-		/// @return sRGB カーブを適用した色
-		/// @remark RGB 成分に sRGB の伝達関数を適用します。アルファ値は維持します。
+		/// @brief リニア色空間から sRGB 色空間に変換した色を返します。
+		/// @return sRGB 色空間に変換した色
+		/// @remark アルファ値は維持します。
 		[[nodiscard]]
-		ColorF applySRGBCurve() const noexcept;
+		ColorF linearToSRGB() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

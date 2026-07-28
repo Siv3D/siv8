@@ -229,12 +229,12 @@ namespace
 		{
 			const auto data = MakePattern<Color>([](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).applySRGBCurve().toColor();
+				return ColorF::PremultiplyAlpha(color).linearToSRGB().toColor();
 			});
 			auto dynamicTexture = DynamicTexture::CreateR8G8B8A8_Unorm_SRGB(PatternSize, Palette::Black);
 			const bool succeeded = FillQuadrants<Color>(dynamicTexture, [](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).applySRGBCurve().toColor();
+				return ColorF::PremultiplyAlpha(color).linearToSRGB().toColor();
 			});
 			cases.push_back({ U"R8G8B8A8_Unorm_SRGB", U"fillRegion(Grid<Color>)",
 				Texture::CreateR8G8B8A8_Unorm_SRGB(data), std::move(dynamicTexture), VisibleChannels::RGBA, succeeded });

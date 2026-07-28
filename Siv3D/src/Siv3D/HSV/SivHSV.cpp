@@ -76,18 +76,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	removeSRGBCurve, applySRGBCurve
+	//	srgbToLinear, linearToSRGB
 	//
 	////////////////////////////////////////////////////////////////
 
-	ColorF HSV::removeSRGBCurve() const noexcept
+	ColorF HSV::srgbToLinear() const noexcept
 	{
-		return toColorF().removeSRGBCurve();
+		return toColorF().srgbToLinear();
 	}
 
-	ColorF HSV::applySRGBCurve() const noexcept
+	ColorF HSV::linearToSRGB() const noexcept
 	{
-		return toColorF().applySRGBCurve();
+		return toColorF().linearToSRGB();
 	}
 
 	////////////////////////////////////////////////////////////////

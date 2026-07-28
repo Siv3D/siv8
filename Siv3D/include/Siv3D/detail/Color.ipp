@@ -369,11 +369,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	grayscale0_255
+	//	grayscale8
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr uint8 Color::grayscale0_255() const noexcept
+	constexpr uint8 Color::grayscale8() const noexcept
 	{
 		return static_cast<uint8>(((299u * r) + (587u * g) + (114u * b)) / 1000u);
 	}
@@ -430,6 +430,34 @@ namespace s3d
 	constexpr uint32 Color::asUint32() const noexcept
 	{
 		return std::bit_cast<uint32>(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toRGBA8888
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint32 Color::toRGBA8888() const noexcept
+	{
+		return ((static_cast<uint32>(r) << 24)
+			| (static_cast<uint32>(g) << 16)
+			| (static_cast<uint32>(b) << 8)
+			| a);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	toABGR8888
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr uint32 Color::toABGR8888() const noexcept
+	{
+		return ((static_cast<uint32>(a) << 24)
+			| (static_cast<uint32>(b) << 16)
+			| (static_cast<uint32>(g) << 8)
+			| r);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -508,18 +536,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	removeSRGBCurve, applySRGBCurve
+	//	srgbToLinear, linearToSRGB
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline ColorF Color::removeSRGBCurve() const noexcept
+	inline ColorF Color::srgbToLinear() const noexcept
 	{
-		return ColorF{ *this }.removeSRGBCurve();
+		return ColorF{ *this }.srgbToLinear();
 	}
 
-	inline ColorF Color::applySRGBCurve() const noexcept
+	inline ColorF Color::linearToSRGB() const noexcept
 	{
-		return ColorF{ *this }.applySRGBCurve();
+		return ColorF{ *this }.linearToSRGB();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -684,11 +712,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	FromRGBA
+	//	FromRGBA8888
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Color Color::FromRGBA(const uint32 rgba) noexcept
+	constexpr Color Color::FromRGBA8888(const uint32 rgba) noexcept
 	{
 		return{ static_cast<uint8>((rgba >> 24) & 0xFF),
 				static_cast<uint8>((rgba >> 16) & 0xFF),
@@ -698,11 +726,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	FromABGR
+	//	FromABGR8888
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Color Color::FromABGR(const uint32 abgr) noexcept
+	constexpr Color Color::FromABGR8888(const uint32 abgr) noexcept
 	{
 		return{ static_cast<uint8>(abgr & 0xFF),
 				static_cast<uint8>((abgr >> 8) & 0xFF),

@@ -51,14 +51,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	adjustHue
+	//	hueShifted
 	//
 	////////////////////////////////////////////////////////////////
 
-	Color Color::adjustHue(const double amount) const noexcept
+	Color Color::hueShifted(const double degrees) const noexcept
 	{
 		HSV hsv{ *this };
-		hsv.h += amount;
+		hsv.h += degrees;
 		return hsv.toColor();
 	}
 
@@ -77,14 +77,19 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	toHex
+	//	toHexRGB, toHexRGBA
 	//
 	////////////////////////////////////////////////////////////////
 
-	String Color::toHex() const
+	String Color::toHexRGB() const
 	{
-		const uint32 rgb = ((r << 16) | (g << 8) | b);
+		const uint32 rgb = (toRGBA8888() >> 8);
 		return U"{:0>6X}"_fmt(rgb);
+	}
+
+	String Color::toHexRGBA() const
+	{
+		return U"{:0>8X}"_fmt(toRGBA8888());
 	}
 
 	////////////////////////////////////////////////////////////////

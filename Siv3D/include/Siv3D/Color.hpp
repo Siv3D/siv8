@@ -364,7 +364,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	grayscale0_255
+		//	grayscale8
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -372,7 +372,7 @@ namespace s3d
 		/// @return グレースケール値 [0, 255]
 		/// @remark `(0.299 * r) + (0.587 * g) + (0.114 * b)` によって計算されます。
 		[[nodiscard]]
-		constexpr uint8 grayscale0_255() const noexcept;
+		constexpr uint8 grayscale8() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -425,10 +425,31 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief Color のビット列を 32-bit 整数として解釈した値を返します。
-		/// @return Color のビット列を 32-bit 整数として解釈した値
-		/// @remark 数値としてのバイト順はプラットフォームのエンディアンに依存します。
+		/// @return `0xAABBGGRR` の形式の値
 		[[nodiscard]]
 		constexpr uint32 asUint32() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toRGBA8888
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief RGBA 成分を 32-bit 整数に変換して返します。
+		/// @return `0xRRGGBBAA` の形式の値
+		[[nodiscard]]
+		constexpr uint32 toRGBA8888() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	toABGR8888
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ABGR の順に並べた成分を 32-bit 整数に変換して返します。
+		/// @return `0xAABBGGRR` の形式の値
+		[[nodiscard]]
+		constexpr uint32 toABGR8888() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -477,15 +498,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	adjustHue
+		//	hueShifted
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 色相を調整した色を返します。
-		/// @param amount 色相の調整量（度）
-		/// @return 色相を調整した色
+		/// @brief 色相をシフトした色を返します。
+		/// @param degrees 色相のシフト量（度）
+		/// @return 色相をシフトした色
 		[[nodiscard]]
-		Color adjustHue(double amount) const noexcept;
+		Color hueShifted(double degrees) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -513,25 +534,25 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	removeSRGBCurve, applySRGBCurve
+		//	srgbToLinear, linearToSRGB
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief リニアカラースペースに変換した色を返します。
-		/// @return リニアカラースペースに変換した色
-		/// @remark RGB 成分から sRGB カーブを除去します。アルファ値は変更しません。
+		/// @brief sRGB 色空間からリニア色空間に変換した色を返します。
+		/// @return リニア色空間に変換した色
+		/// @remark アルファ値は変更しません。
 		[[nodiscard]]
-		ColorF removeSRGBCurve() const noexcept;
+		ColorF srgbToLinear() const noexcept;
 
-		/// @brief sRGB カーブを適用した色を返します。
-		/// @return sRGB カーブを適用した色
-		/// @remark RGB 成分に sRGB カーブを適用します。アルファ値は変更しません。
+		/// @brief リニア色空間から sRGB 色空間に変換した色を返します。
+		/// @return sRGB 色空間に変換した色
+		/// @remark アルファ値は変更しません。
 		[[nodiscard]]
-		ColorF applySRGBCurve() const noexcept;
+		ColorF linearToSRGB() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toHex
+		//	toHexRGB, toHexRGBA
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -539,7 +560,12 @@ namespace s3d
 		/// @return 16 進数のカラーコード RRGGBB
 		/// @remark アルファ値は出力されません。
 		[[nodiscard]]
-		String toHex() const;
+		String toHexRGB() const;
+
+		/// @brief 16 進数のカラーコード RRGGBBAA を返します。
+		/// @return 16 進数のカラーコード RRGGBBAA
+		[[nodiscard]]
+		String toHexRGBA() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -767,27 +793,27 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	FromRGBA
+		//	FromRGBA8888
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 32 ビット整数に格納された RGBA を Color に変換します。
-		/// @param rgba 32 ビット整数に格納された RGBA
+		/// @brief `0xRRGGBBAA` の形式の 32-bit 整数から Color を作成します。
+		/// @param rgba `0xRRGGBBAA` の形式の値
 		/// @return 変換された Color
 		[[nodiscard]]
-		static constexpr Color FromRGBA(uint32 rgba) noexcept;
+		static constexpr Color FromRGBA8888(uint32 rgba) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	FromABGR
+		//	FromABGR8888
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 32 ビット整数に格納された ABGR を Color に変換します。
-		/// @param abgr 32 ビット整数に格納された ABGR
+		/// @brief `0xAABBGGRR` の形式の 32-bit 整数から Color を作成します。
+		/// @param abgr `0xAABBGGRR` の形式の値
 		/// @return 変換された Color
 		[[nodiscard]]
-		static constexpr Color FromABGR(uint32 abgr) noexcept;
+		static constexpr Color FromABGR8888(uint32 abgr) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

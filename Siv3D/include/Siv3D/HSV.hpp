@@ -314,19 +314,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	removeSRGBCurve, applySRGBCurve
+		//	srgbToLinear, linearToSRGB
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief リニアカラースペースに変換した色を返します。
-		/// @return リニアカラースペースに変換した色
+		/// @brief sRGB 色空間からリニア色空間に変換した色を返します。
+		/// @return リニア色空間に変換した色
 		[[nodiscard]]
-		ColorF removeSRGBCurve() const noexcept;
+		ColorF srgbToLinear() const noexcept;
 
-		/// @brief sRGB カーブを適用した色を返します。
-		/// @return sRGB カーブを適用した色
+		/// @brief リニア色空間から sRGB 色空間に変換した色を返します。
+		/// @return sRGB 色空間に変換した色
 		[[nodiscard]]
-		ColorF applySRGBCurve() const noexcept;
+		ColorF linearToSRGB() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
