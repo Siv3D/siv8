@@ -11,6 +11,7 @@
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
+		F9A8A5C12FC0000000000001 /* Test_AsyncTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */; };
 		F90000013000000000000008 /* libSiv3DSkiaCOLRv1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */; };
 		F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */; };
 		F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */; };
@@ -3174,6 +3175,7 @@
 		2CA7F73D1CA7F3B100495647 /* libSiv3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
+		F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AsyncTask.cpp; sourceTree = "<group>"; };
 		F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3DSkiaCOLRv1.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.hpp; sourceTree = "<group>"; };
 		F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.ipp; sourceTree = "<group>"; };
@@ -6634,6 +6636,7 @@
 			children = (
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
+				F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */,
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
 				F90F2BDF2D91749500CC89CA /* Test_BinaryFileReader.cpp */,
 				F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */,
@@ -15904,6 +15907,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9A8A5C12FC0000000000001 /* Test_AsyncTask.cpp in Sources */,
 				F90703022B9DAEB900383E4D /* Test_NamedParameter.cpp in Sources */,
 				F90F79FF2FA9053B0077F398 /* Test_TOML.cpp in Sources */,
 				F90703062B9DAEB900383E4D /* Test_Step.cpp in Sources */,

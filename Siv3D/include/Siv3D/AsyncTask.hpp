@@ -10,12 +10,20 @@
 //-----------------------------------------------
 
 # pragma once
+# include <concepts>
 # include <future>
 # include <type_traits>
-# include "Platform.hpp"
 
 namespace s3d
 {
+	namespace detail
+	{
+		template <class Fty, class... Args>
+		concept AsyncInvocable = std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
+			&& std::constructible_from<std::decay_t<Fty>, Fty>
+			&& (std::constructible_from<std::decay_t<Args>, Args> && ...);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	AsyncTask
@@ -45,7 +53,7 @@ namespace s3d
 		[[nodiscard]]
 		AsyncTask(base_type&& other) noexcept;
 
-		[[nodiscard]] 
+		[[nodiscard]]
 		AsyncTask(AsyncTask&& other) noexcept;
 
 		/// @brief 非同期処理のタスクを作成します。
@@ -58,7 +66,8 @@ namespace s3d
 		template <class Fty, class... Args>
 		[[nodiscard]]
 		explicit AsyncTask(Fty&& f, Args&&... args)
-			requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>;
+			requires detail::AsyncInvocable<Fty, Args...>
+				&& std::same_as<Type, std::invoke_result_t<std::decay_t<Fty>, std::decay_t<Args>...>>;
 
 		AsyncTask(const base_type&) = delete;
 
@@ -165,8 +174,8 @@ namespace s3d
 	};
 
 	template <class Fty, class... Args>
-		requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
-	AsyncTask(Fty, Args...) -> AsyncTask<std::invoke_result_t<std::decay_t<Fty>, std::decay_t<Args>...>>;
+		requires detail::AsyncInvocable<Fty, Args...>
+	AsyncTask(Fty&&, Args&&...) -> AsyncTask<std::invoke_result_t<std::decay_t<Fty>, std::decay_t<Args>...>>;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -183,7 +192,7 @@ namespace s3d
 	/// @remark 参照を渡す場合は `std::ref()` を使ってください。
 	/// @return 作成された非同期処理のタスク
 	template <class Fty, class... Args>
-		requires std::invocable<std::decay_t<Fty>, std::decay_t<Args>...>
+		requires detail::AsyncInvocable<Fty, Args...>
 	[[nodiscard]]
 	auto Async(Fty&& f, Args&&... args);
 }

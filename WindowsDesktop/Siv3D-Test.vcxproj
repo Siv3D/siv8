@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
+    <ClCompile Include="..\Test\Test_AsyncTask.cpp" />
     <ClCompile Include="..\Test\Test_Base64Value.cpp" />
     <ClCompile Include="..\Test\Test_BinaryFileReader.cpp" />
     <ClCompile Include="..\Test\Test_BinaryFileWriter.cpp" />

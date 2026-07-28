@@ -61,6 +61,9 @@
     <ClCompile Include="..\Test\Test_Array.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_AsyncTask.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_StringView.cpp">
       <Filter>Test</Filter>
     </ClCompile>
