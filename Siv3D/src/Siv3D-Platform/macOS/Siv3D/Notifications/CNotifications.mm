@@ -12,6 +12,7 @@
 # include "CNotifications.hpp"
 # include <UserNotifications/UserNotifications.h>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/HashMap.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -31,6 +32,57 @@ namespace s3d
 		NotificationActionCategory category;
 		String categoryIdentifier;
 		Array<NotificationAction> actions;
+	};
+
+	struct NotificationsState
+	{
+		struct Entry
+		{
+			String requestIdentifier;
+			String categoryIdentifier;
+			Array<String> actionIDs;
+		};
+
+		void updateAvailability(const NotificationAvailability value)
+		{
+			std::lock_guard lock{ mutex };
+			availability = value;
+		}
+
+		void enqueueResponse(const NotificationID id, const NotificationResponseType responseType)
+		{
+			std::lock_guard lock{ mutex };
+			responseQueue.push_back(NotificationResponse{ id, responseType });
+		}
+
+		void enqueueResponse(const NotificationID id, const NotificationResponseType responseType, const String& actionID)
+		{
+			std::lock_guard lock{ mutex };
+			responseQueue.push_back(NotificationResponse{ id, responseType, actionID });
+		}
+
+		Optional<NotificationID> findIDFromRequestIdentifier(const String& requestIdentifier)
+		{
+			std::lock_guard lock{ mutex };
+
+			if (const auto it = requestIdentifierToID.find(requestIdentifier);
+				it != requestIdentifierToID.end())
+			{
+				return it->second;
+			}
+
+			return none;
+		}
+
+		std::mutex mutex;
+
+		Optional<NotificationAvailability> availability = NotificationAvailability::NotDetermined;
+
+		HashMap<NotificationID, Entry> entries;
+
+		HashMap<String, NotificationID> requestIdentifierToID;
+
+		Array<NotificationResponse> responseQueue;
 	};
 
 	static const std::array<NotificationCategoryDefinition, 11> kCategoryDefinitions =
@@ -131,25 +183,24 @@ namespace s3d
 		}
 	}
 
-	class CNotifications;
 }
 
 @interface Siv3DNotificationCenterDelegate : NSObject <UNUserNotificationCenterDelegate>
 {
 @private
-	s3d::CNotifications* _pNotifications;
+	std::shared_ptr<s3d::NotificationsState> _state;
 }
-- (instancetype)initWithNotifications:(s3d::CNotifications*)pNotifications;
+- (instancetype)initWithState:(const std::shared_ptr<s3d::NotificationsState>&)state;
 @end
 
 @implementation Siv3DNotificationCenterDelegate
 
-- (instancetype)initWithNotifications:(s3d::CNotifications*)pNotifications
+- (instancetype)initWithState:(const std::shared_ptr<s3d::NotificationsState>&)state
 {
 	self = [super init];
 	if (self)
 	{
-		_pNotifications = pNotifications;
+		_state = state;
 	}
 	return self;
 }
@@ -160,21 +211,21 @@ namespace s3d
 {
 	const s3d::String requestIdentifier = s3d::Unicode::FromUTF8([[response.notification.request.identifier description] UTF8String]);
 
-	if (const auto id = _pNotifications->findIDFromRequestIdentifier(requestIdentifier))
+	if (const auto id = _state->findIDFromRequestIdentifier(requestIdentifier))
 	{
 		NSString* actionIdentifier = response.actionIdentifier;
 
 		if ([actionIdentifier isEqualToString:UNNotificationDefaultActionIdentifier])
 		{
-			_pNotifications->enqueueResponse(*id, s3d::NotificationResponseType::DefaultActivated);
+			_state->enqueueResponse(*id, s3d::NotificationResponseType::DefaultActivated);
 		}
 		else if ([actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier])
 		{
-			_pNotifications->enqueueResponse(*id, s3d::NotificationResponseType::Dismissed);
+			_state->enqueueResponse(*id, s3d::NotificationResponseType::Dismissed);
 		}
 		else
 		{
-			_pNotifications->enqueueResponse(*id,
+			_state->enqueueResponse(*id,
 				s3d::NotificationResponseType::ActionActivated,
 				s3d::Unicode::FromUTF8([actionIdentifier UTF8String]));
 		}
@@ -207,7 +258,8 @@ namespace s3d
 
 namespace s3d
 {
-	CNotifications::CNotifications() = default;
+	CNotifications::CNotifications()
+		: m_state{ std::make_shared<NotificationsState>() } {}
 
 	CNotifications::~CNotifications()
 	{
@@ -236,7 +288,7 @@ namespace s3d
 		UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
 
 		Siv3DNotificationCenterDelegate* delegate
-			= [[Siv3DNotificationCenterDelegate alloc] initWithNotifications:this];
+			= [[Siv3DNotificationCenterDelegate alloc] initWithState:m_state];
 
 		center.delegate = delegate;
 		m_delegate = CFBridgingRetain(delegate);
@@ -268,34 +320,28 @@ namespace s3d
 
 		[center setNotificationCategories:categories];
 
-		m_availability = NotificationAvailability::NotDetermined;
 		refreshAvailabilityAsync();
 	}
 
 	void CNotifications::refreshAvailabilityAsync()
 	{
 		UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+		const std::shared_ptr<NotificationsState> state = m_state;
 
 		[center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings* _Nonnull settings)
 		{
-			this->updateAvailability(ToAvailability(settings.authorizationStatus));
+			state->updateAvailability(ToAvailability(settings.authorizationStatus));
 		}];
-	}
-
-	void CNotifications::updateAvailability(const NotificationAvailability availability)
-	{
-		std::lock_guard lock{ m_mutex };
-		m_availability = availability;
 	}
 
 	NotificationAvailability CNotifications::getAvailability()
 	{
 		{
-			std::lock_guard lock{ m_mutex };
+			std::lock_guard lock{ m_state->mutex };
 
-			if (m_availability)
+			if (m_state->availability)
 			{
-				return *m_availability;
+				return *m_state->availability;
 			}
 		}
 
@@ -306,6 +352,7 @@ namespace s3d
 	void CNotifications::requestPermission()
 	{
 		UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+		const std::shared_ptr<NotificationsState> state = m_state;
 
 		UNAuthorizationOptions options = (UNAuthorizationOptionAlert | UNAuthorizationOptionSound);
 
@@ -317,11 +364,11 @@ namespace s3d
 				LOG_FAIL(fmt::format("requestAuthorizationWithOptions failed: {}",
 					Unicode::FromUTF8([[error localizedDescription] UTF8String])));
 
-				this->updateAvailability(NotificationAvailability::Unavailable);
+				state->updateAvailability(NotificationAvailability::Unavailable);
 				return;
 			}
 
-			this->updateAvailability(granted
+			state->updateAvailability(granted
 				? NotificationAvailability::Available
 				: NotificationAvailability::Denied);
 		}];
@@ -386,16 +433,18 @@ namespace s3d
 												 trigger:nil];
 
 		{
-			std::lock_guard lock{ m_mutex };
+			std::lock_guard lock{ m_state->mutex };
 
-			m_entries.emplace(id, Entry{
+			m_state->entries.emplace(id, NotificationsState::Entry{
 				.requestIdentifier = requestIdentifier,
 				.categoryIdentifier = categoryDef.categoryIdentifier,
 				.actionIDs = categoryDef.actions.map([](const NotificationAction& action) { return action.id; })
 			});
 
-			m_requestIdentifierToID.emplace(requestIdentifier, id);
+			m_state->requestIdentifierToID.emplace(requestIdentifier, id);
 		}
+
+		const std::shared_ptr<NotificationsState> state = m_state;
 
 		[[UNUserNotificationCenter currentNotificationCenter]
 			addNotificationRequest:nativeRequest
@@ -405,7 +454,7 @@ namespace s3d
 			{
 				LOG_FAIL(fmt::format("addNotificationRequest failed: {}",
 					Unicode::FromUTF8([[error localizedDescription] UTF8String])));
-				this->enqueueResponse(id, NotificationResponseType::Failed);
+				state->enqueueResponse(id, NotificationResponseType::Failed);
 			}
 		}];
 
@@ -417,10 +466,10 @@ namespace s3d
 		String requestIdentifier;
 
 		{
-			std::lock_guard lock{ m_mutex };
+			std::lock_guard lock{ m_state->mutex };
 
-			if (const auto it = m_entries.find(id);
-				it != m_entries.end())
+			if (const auto it = m_state->entries.find(id);
+				it != m_state->entries.end())
 			{
 				requestIdentifier = it->second.requestIdentifier;
 			}
@@ -447,32 +496,7 @@ namespace s3d
 
 	Array<NotificationResponse> CNotifications::extractResponses()
 	{
-		std::lock_guard lock{ m_mutex };
-		return std::exchange(m_responseQueue, {});
-	}
-
-	void CNotifications::enqueueResponse(const NotificationID id, const NotificationResponseType responseType)
-	{
-		std::lock_guard lock{ m_mutex };
-		m_responseQueue.push_back(NotificationResponse{ id, responseType });
-	}
-
-	void CNotifications::enqueueResponse(const NotificationID id, const NotificationResponseType responseType, const String& actionID)
-	{
-		std::lock_guard lock{ m_mutex };
-		m_responseQueue.push_back(NotificationResponse{ id, responseType, actionID });
-	}
-
-	Optional<NotificationID> CNotifications::findIDFromRequestIdentifier(const String& requestIdentifier)
-	{
-		std::lock_guard lock{ m_mutex };
-
-		if (const auto it = m_requestIdentifierToID.find(requestIdentifier);
-			it != m_requestIdentifierToID.end())
-		{
-			return it->second;
-		}
-
-		return none;
+		std::lock_guard lock{ m_state->mutex };
+		return std::exchange(m_state->responseQueue, {});
 	}
 }
