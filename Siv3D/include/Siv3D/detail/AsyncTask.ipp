@@ -20,10 +20,6 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	AsyncTask<Type>::AsyncTask(base_type&& other) noexcept
-		: m_data{ std::move(other) } {}
-
-	template <class Type>
 	AsyncTask<Type>::AsyncTask(AsyncTask&& other) noexcept
 		: m_data{ std::move(other.m_data) } {}
 
@@ -39,13 +35,6 @@ namespace s3d
 	//	operator =
 	//
 	////////////////////////////////////////////////////////////////
-
-	template <class Type>
-	AsyncTask<Type>& AsyncTask<Type>::operator =(base_type&& other) noexcept
-	{
-		m_data = std::move(other);
-		return *this;
-	}
 
 	template <class Type>
 	AsyncTask<Type>& AsyncTask<Type>::operator =(AsyncTask&& other) noexcept
@@ -68,6 +57,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	status
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	AsyncTaskStatus AsyncTask<Type>::status() const
+	{
+		if (not m_data.valid())
+		{
+			return AsyncTaskStatus::Invalid;
+		}
+
+		if (m_data.wait_for(std::chrono::seconds{ 0 }) == std::future_status::ready)
+		{
+			return AsyncTaskStatus::Ready;
+		}
+
+		return AsyncTaskStatus::Running;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isReady
 	//
 	////////////////////////////////////////////////////////////////
@@ -75,8 +86,7 @@ namespace s3d
 	template <class Type>
 	bool AsyncTask<Type>::isReady() const
 	{
-		return (m_data.valid()
-			&& (m_data.wait_for(std::chrono::seconds{ 0 }) == std::future_status::ready));
+		return (status() == AsyncTaskStatus::Ready);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -136,7 +146,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type>
-	std::shared_future<Type> AsyncTask<Type>::share() noexcept
+	std::shared_future<Type> AsyncTask<Type>::share() && noexcept
 	{
 		return m_data.share();
 	}

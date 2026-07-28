@@ -242,6 +242,9 @@
 // スレッド | Thread
 # include <Siv3D/Threading.hpp>
 
+// 非同期タスクの状態 | Asynchronous task status
+# include <Siv3D/AsyncTaskStatus.hpp>
+
 // 非同期タスク | Asynchronous task
 # include <Siv3D/AsyncTask.hpp>
 

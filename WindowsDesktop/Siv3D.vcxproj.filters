@@ -220,6 +220,9 @@
     <Filter Include="src\Siv3D\Threading">
       <UniqueIdentifier>{27e582bc-241f-4a40-9ac6-0107026bfaac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\AsyncTaskStatus">
+      <UniqueIdentifier>{b413ff50-5104-4b92-8a7d-58b6cbd39c21}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\FileAction">
       <UniqueIdentifier>{30f78c1f-58b0-4d00-b612-240c86298321}</UniqueIdentifier>
     </Filter>
@@ -1993,6 +1996,9 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTask.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AsyncTaskStatus.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AsyncTask.ipp">
@@ -6014,6 +6020,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\FileAction\SivFileAction.cpp">
       <Filter>src\Siv3D\FileAction</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AsyncTaskStatus\SivAsyncTaskStatus.cpp">
+      <Filter>src\Siv3D\AsyncTaskStatus</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\DayOfWeek\SivDayOfWeek.cpp">
       <Filter>src\Siv3D\DayOfWeek</Filter>

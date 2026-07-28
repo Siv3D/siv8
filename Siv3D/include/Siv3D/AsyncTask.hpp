@@ -10,9 +10,12 @@
 //-----------------------------------------------
 
 # pragma once
+# include <chrono>
 # include <concepts>
 # include <future>
 # include <type_traits>
+# include <utility>
+# include "AsyncTaskStatus.hpp"
 
 namespace s3d
 {
@@ -37,8 +40,6 @@ namespace s3d
 	{
 	public:
 
-		using base_type = std::future<Type>;
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	(constructor)
@@ -51,9 +52,6 @@ namespace s3d
 		AsyncTask() = default;
 
 		[[nodiscard]]
-		AsyncTask(base_type&& other) noexcept;
-
-		[[nodiscard]]
 		AsyncTask(AsyncTask&& other) noexcept;
 
 		/// @brief 非同期処理のタスクを作成します。
@@ -63,15 +61,25 @@ namespace s3d
 		/// @param ...args 非同期処理のタスクで実行する関数の引数
 		/// @remark 作成と同時にタスクが非同期で実行されます。
 		/// @remark 参照を渡す場合は `std::ref()` を使ってください。
+		/// @throws std::system_error 非同期処理の開始に失敗した場合
+		/// @throws std::bad_alloc 非同期処理の開始に必要なメモリの確保に失敗した場合
 		template <class Fty, class... Args>
 		[[nodiscard]]
 		explicit AsyncTask(Fty&& f, Args&&... args)
 			requires detail::AsyncInvocable<Fty, Args...>
 				&& std::same_as<Type, std::invoke_result_t<std::decay_t<Fty>, std::decay_t<Args>...>>;
 
-		AsyncTask(const base_type&) = delete;
-
 		AsyncTask(const AsyncTask&) = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(destructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief デストラクタ
+		/// @remark 非同期処理を持っている場合、その完了まで待機することがあります。
+		~AsyncTask() = default;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -79,12 +87,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		AsyncTask& operator =(const base_type&) = delete;
-
 		AsyncTask& operator =(const AsyncTask&) = delete;
 
-		AsyncTask& operator =(base_type&& other) noexcept;
-
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする非同期タスク
+		/// @return *this
+		/// @remark 現在の非同期処理を持っている場合、その完了まで待機することがあります。
 		AsyncTask& operator =(AsyncTask&& other) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -98,6 +106,17 @@ namespace s3d
 		/// @return 非同期処理を持っている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isValid() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	status
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 非同期タスクの状態を返します。
+		/// @return 非同期タスクの状態
+		[[nodiscard]]
+		AsyncTaskStatus status() const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -119,7 +138,9 @@ namespace s3d
 
 		/// @brief タスクが完了した非同期処理の結果を返します。
 		/// @remark タスクが完了していない場合は、完了まで待機します。
+		/// @remark 非同期処理が例外を送出した場合、その例外を再送出します。
 		/// @return タスクが完了した非同期処理の結果
+		/// @pre `isValid() == true`
 		Type get();
 
 		////////////////////////////////////////////////////////////////
@@ -129,6 +150,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 非同期処理のタスク完了を待ちます。
+		/// @pre `isValid() == true`
 		void wait() const;
 
 		////////////////////////////////////////////////////////////////
@@ -142,6 +164,7 @@ namespace s3d
 		/// @tparam Period 時間の単位
 		/// @param relTime 時間
 		/// @return 非同期処理のタスクが完了した場合 std::future_status::ready, 指定した時間が経過した場合 std::future_status::timeout
+		/// @pre `isValid() == true`
 		template <class Rep, class Period>
 		std::future_status wait_for(const std::chrono::duration<Rep, Period>& relTime) const;
 
@@ -156,6 +179,7 @@ namespace s3d
 		/// @tparam Duration 時間の型
 		/// @param absTime 時刻
 		/// @return 非同期処理のタスクが完了した場合 std::future_status::ready, 指定した時刻になった場合 std::future_status::timeout
+		/// @pre `isValid() == true`
 		template <class Clock, class Duration>
 		std::future_status wait_until(const std::chrono::time_point<Clock, Duration>& absTime) const;
 
@@ -165,12 +189,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 非同期処理を共有可能な非同期処理に変換します。
+		/// @return 共有可能な非同期処理
+		/// @remark この関数を呼ぶと、この非同期タスクは非同期処理を持たない状態になります。
 		[[nodiscard]]
-		std::shared_future<Type> share() noexcept;
+		std::shared_future<Type> share() && noexcept;
 
 	private:
 
-		base_type m_data;
+		std::future<Type> m_data;
 	};
 
 	template <class Fty, class... Args>
@@ -191,6 +218,8 @@ namespace s3d
 	/// @remark 作成と同時にタスクが非同期で実行されます。
 	/// @remark 参照を渡す場合は `std::ref()` を使ってください。
 	/// @return 作成された非同期処理のタスク
+	/// @throws std::system_error 非同期処理の開始に失敗した場合
+	/// @throws std::bad_alloc 非同期処理の開始に必要なメモリの確保に失敗した場合
 	template <class Fty, class... Args>
 		requires detail::AsyncInvocable<Fty, Args...>
 	[[nodiscard]]

@@ -49,23 +49,41 @@ namespace
 		AsyncTask<Type>{ std::forward<Fty>(f), std::forward<Args>(args)... };
 	};
 
+	template <class Type>
+	concept AsyncTaskShareable = requires(Type&& task)
+	{
+		std::forward<Type>(task).share();
+	};
+
 	static_assert(AsyncTaskConstructible<int32, ReturnInt>);
 	static_assert(AsyncTaskConstructible<double, ReturnDouble>);
 	static_assert(not AsyncTaskConstructible<int32, ReturnDouble>);
 	static_assert(not AsyncTaskConstructible<double, ReturnInt>);
 	static_assert(AsyncTaskConstructible<int32, MoveOnlyCallable>);
 	static_assert(not AsyncTaskConstructible<int32, MoveOnlyCallable&>);
+	static_assert(not std::constructible_from<AsyncTask<int32>, std::future<int32>>);
+	static_assert(not std::is_assignable_v<AsyncTask<int32>&, std::future<int32>>);
+	static_assert(not AsyncTaskShareable<AsyncTask<int32>&>);
+	static_assert(AsyncTaskShareable<AsyncTask<int32>>);
 }
 
 TEST_CASE("AsyncTask")
 {
 	using namespace std::chrono_literals;
 
+	SUBCASE("AsyncTaskStatus Formatter")
+	{
+		CHECK_EQ(Format(AsyncTaskStatus::Invalid), U"Invalid");
+		CHECK_EQ(Format(AsyncTaskStatus::Running), U"Running");
+		CHECK_EQ(Format(AsyncTaskStatus::Ready), U"Ready");
+	}
+
 	SUBCASE("Default construction")
 	{
 		const AsyncTask<int32> task;
 
 		CHECK_FALSE(task.isValid());
+		CHECK_EQ(task.status(), AsyncTaskStatus::Invalid);
 		CHECK_FALSE(task.isReady());
 	}
 
@@ -82,14 +100,17 @@ TEST_CASE("AsyncTask")
 		static_assert(std::same_as<decltype(task), AsyncTask<int32>>);
 
 		CHECK(task.isValid());
+		CHECK_EQ(task.status(), AsyncTaskStatus::Running);
 		CHECK_EQ(task.wait_for(0ms), std::future_status::timeout);
 
 		promise.set_value();
 		task.wait();
 
+		CHECK_EQ(task.status(), AsyncTaskStatus::Ready);
 		CHECK(task.isReady());
 		CHECK_EQ(task.get(), 42);
 		CHECK_FALSE(task.isValid());
+		CHECK_EQ(task.status(), AsyncTaskStatus::Invalid);
 	}
 
 	SUBCASE("Void result")
@@ -142,5 +163,19 @@ TEST_CASE("AsyncTask")
 		task.get();
 
 		CHECK_EQ(value, 42);
+	}
+
+	SUBCASE("share")
+	{
+		AsyncTask task{ []
+		{
+			return int32{ 42 };
+		} };
+
+		const std::shared_future<int32> sharedTask = std::move(task).share();
+
+		CHECK_FALSE(task.isValid());
+		CHECK_EQ(task.status(), AsyncTaskStatus::Invalid);
+		CHECK_EQ(sharedTask.get(), 42);
 	}
 }

@@ -12,6 +12,8 @@
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		F9A8A5C12FC0000000000001 /* Test_AsyncTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */; };
+		F9A8A5D12FC0000000000001 /* AsyncTaskStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A8A5D22FC0000000000001 /* AsyncTaskStatus.hpp */; };
+		F9A8A5E12FC0000000000001 /* SivAsyncTaskStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */; };
 		F90000013000000000000008 /* libSiv3DSkiaCOLRv1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */; };
 		F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */; };
 		F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */; };
@@ -3176,6 +3178,8 @@
 		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AsyncTask.cpp; sourceTree = "<group>"; };
+		F9A8A5D22FC0000000000001 /* AsyncTaskStatus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AsyncTaskStatus.hpp; sourceTree = "<group>"; };
+		F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivAsyncTaskStatus.cpp; sourceTree = "<group>"; };
 		F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3DSkiaCOLRv1.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.hpp; sourceTree = "<group>"; };
 		F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.ipp; sourceTree = "<group>"; };
@@ -7270,6 +7274,7 @@
 				F9807D832BF6676100D9B590 /* AssetID.hpp */,
 				F9807D822BF6676100D9B590 /* AssetIDWrapper.hpp */,
 				F9070BBF2B9F175000383E4D /* AsyncTask.hpp */,
+				F9A8A5D22FC0000000000001 /* AsyncTaskStatus.hpp */,
 				F9797E232F631E6500518D26 /* AudioDecoder.hpp */,
 				F9797E242F631E6500518D26 /* AudioEncoder.hpp */,
 				F9797E252F631E6500518D26 /* AudioFormat.hpp */,
@@ -7875,6 +7880,14 @@
 			path = FileAction;
 			sourceTree = "<group>";
 		};
+		F9A8A5F12FC0000000000001 /* AsyncTaskStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */,
+			);
+			path = AsyncTaskStatus;
+			sourceTree = "<group>";
+		};
 		F9070D4E2B9F175E00383E4D /* FileSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -8274,6 +8287,7 @@
 				F986F8AC2BC806BF006A4C0F /* Exif */,
 				F98606262BEBA1B5006A4C0F /* ExtensionFilter */,
 				F99881962F48801900C8991D /* ExternalPowerStatus */,
+				F9A8A5F12FC0000000000001 /* AsyncTaskStatus */,
 				F9070D4C2B9F175E00383E4D /* FileAction */,
 				F9070D4E2B9F175E00383E4D /* FileSystem */,
 				F9070D502B9F175E00383E4D /* FloatFormatter */,
@@ -14139,6 +14153,7 @@
 				F986020C2BCFBB54006A4C0F /* SkPaintDefaults.h in Headers */,
 				F986F93E2BCA7996006A4C0F /* Vector3D.ipp in Headers */,
 				F9070C982B9F175000383E4D /* AsyncTask.hpp in Headers */,
+				F9A8A5D12FC0000000000001 /* AsyncTaskStatus.hpp in Headers */,
 				F986FA802BCFB53B006A4C0F /* ftgasp.h in Headers */,
 				F9E7942A2C12B861002615BA /* Interpolation.hpp in Headers */,
 				F998818C2F487FCE00C8991D /* PowerStatus.hpp in Headers */,
@@ -16311,6 +16326,7 @@
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F9F00A522CD2995D0097C165 /* SivQualityFactor.cpp in Sources */,
 				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
+				F9A8A5E12FC0000000000001 /* SivAsyncTaskStatus.cpp in Sources */,
 				F986F92E2BC8441F006A4C0F /* unicode_fold2_key.c in Sources */,
 				F9766B822C29C7A700DE4107 /* SivCamera2DControl.cpp in Sources */,
 				F9070DBE2B9F175E00383E4D /* SivDayOfWeek.cpp in Sources */,
