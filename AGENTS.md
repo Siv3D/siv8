@@ -22,4 +22,5 @@
 
 - Run Xcode and Metal builds outside the sandbox. A Metal Toolchain lookup failure inside the sandbox does not mean that it is not installed.
 - Keep test-only logging and configuration in `Test/`, not in `macOS/Main.cpp`.
+- Do not force new tests into an unrelated existing test file. Add a dedicated `Test/Test_<Feature>.cpp` when appropriate, and register it in the platform test projects.
 - Preserve the user's uncommitted changes and do not revert unrelated diffs.

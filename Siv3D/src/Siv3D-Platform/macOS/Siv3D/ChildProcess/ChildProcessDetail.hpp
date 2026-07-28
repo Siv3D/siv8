@@ -15,7 +15,7 @@
 
 namespace s3d
 {
-	class NSTaskWrapper;
+	class ChildProcessHandle;
 
 	class ChildProcess::ChildProcessDetail
 	{
@@ -43,6 +43,6 @@ namespace s3d
 
 	private:
 
-		std::unique_ptr<NSTaskWrapper> m_detail;
+		std::unique_ptr<ChildProcessHandle> m_handle;
 	};
 }

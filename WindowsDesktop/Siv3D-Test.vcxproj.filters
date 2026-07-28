@@ -46,6 +46,9 @@
     <ClCompile Include="..\Test\Test_Byte.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_ChildProcess.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Hash.cpp">
       <Filter>Test</Filter>
     </ClCompile>

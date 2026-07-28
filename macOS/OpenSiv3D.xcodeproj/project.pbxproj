@@ -12,6 +12,7 @@
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		F9A8A5C12FC0000000000001 /* Test_AsyncTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */; };
+		F9C1000130A0000000000001 /* Test_ChildProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9C1000230A0000000000001 /* Test_ChildProcess.cpp */; };
 		F9A8A5D12FC0000000000001 /* AsyncTaskStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A8A5D22FC0000000000001 /* AsyncTaskStatus.hpp */; };
 		F9A8A5E12FC0000000000001 /* SivAsyncTaskStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */; };
 		F90000013000000000000008 /* libSiv3DSkiaCOLRv1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */; };
@@ -824,8 +825,8 @@
 		F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */; };
 		F944BAB52CEACFAB00CC4D42 /* ChildProcessDetail.mm in Sources */ = {isa = PBXBuildFile; fileRef = F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */; };
 		F944BAB62CEACFAB00CC4D42 /* ChildProcessDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */; };
-		F944BABA2CEAD93900CC4D42 /* NSTaskWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB82CEAD93900CC4D42 /* NSTaskWrapper.hpp */; };
-		F944BABB2CEAD93900CC4D42 /* NSTaskWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F944BAB92CEAD93900CC4D42 /* NSTaskWrapper.mm */; };
+		F944BABA2CEAD93900CC4D42 /* ChildProcessHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB82CEAD93900CC4D42 /* ChildProcessHandle.hpp */; };
+		F944BABB2CEAD93900CC4D42 /* ChildProcessHandle.mm in Sources */ = {isa = PBXBuildFile; fileRef = F944BAB92CEAD93900CC4D42 /* ChildProcessHandle.mm */; };
 		F944BABC2CEAF38D00CC4D42 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */; };
 		F95121FB2CB62DF400151291 /* RectanglePack.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95121FA2CB62DF400151291 /* RectanglePack.hpp */; };
 		F95121FD2CB62E0800151291 /* RectanglePack.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F95121FC2CB62E0800151291 /* RectanglePack.ipp */; };
@@ -3178,6 +3179,7 @@
 		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AsyncTask.cpp; sourceTree = "<group>"; };
+		F9C1000230A0000000000001 /* Test_ChildProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ChildProcess.cpp; sourceTree = "<group>"; };
 		F9A8A5D22FC0000000000001 /* AsyncTaskStatus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AsyncTaskStatus.hpp; sourceTree = "<group>"; };
 		F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivAsyncTaskStatus.cpp; sourceTree = "<group>"; };
 		F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3DSkiaCOLRv1.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4058,8 +4060,8 @@
 		F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPipe.cpp; sourceTree = "<group>"; };
 		F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcessDetail.hpp; sourceTree = "<group>"; };
 		F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ChildProcessDetail.mm; sourceTree = "<group>"; };
-		F944BAB82CEAD93900CC4D42 /* NSTaskWrapper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = NSTaskWrapper.hpp; sourceTree = "<group>"; };
-		F944BAB92CEAD93900CC4D42 /* NSTaskWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSTaskWrapper.mm; sourceTree = "<group>"; };
+		F944BAB82CEAD93900CC4D42 /* ChildProcessHandle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcessHandle.hpp; sourceTree = "<group>"; };
+		F944BAB92CEAD93900CC4D42 /* ChildProcessHandle.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ChildProcessHandle.mm; sourceTree = "<group>"; };
 		F95121FA2CB62DF400151291 /* RectanglePack.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RectanglePack.hpp; sourceTree = "<group>"; };
 		F95121FC2CB62E0800151291 /* RectanglePack.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RectanglePack.ipp; sourceTree = "<group>"; };
 		F95121FE2CB62E2300151291 /* SivRectanglePack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivRectanglePack.cpp; sourceTree = "<group>"; };
@@ -6641,6 +6643,7 @@
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
 				F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */,
+				F9C1000230A0000000000001 /* Test_ChildProcess.cpp */,
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
 				F90F2BDF2D91749500CC89CA /* Test_BinaryFileReader.cpp */,
 				F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */,
@@ -9532,8 +9535,8 @@
 		F944BAB42CEACFAB00CC4D42 /* ChildProcess */ = {
 			isa = PBXGroup;
 			children = (
-				F944BAB82CEAD93900CC4D42 /* NSTaskWrapper.hpp */,
-				F944BAB92CEAD93900CC4D42 /* NSTaskWrapper.mm */,
+				F944BAB82CEAD93900CC4D42 /* ChildProcessHandle.hpp */,
+				F944BAB92CEAD93900CC4D42 /* ChildProcessHandle.mm */,
 				F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */,
 				F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */,
 			);
@@ -14667,7 +14670,7 @@
 				F986FA512BCFB53B006A4C0F /* svprop.h in Headers */,
 				F972030C2BEDF2FF000E21DD /* SceneTime.hpp in Headers */,
 				F9E5FC2D2BC15AEE0081A4F7 /* SIMDMath.hpp in Headers */,
-				F944BABA2CEAD93900CC4D42 /* NSTaskWrapper.hpp in Headers */,
+				F944BABA2CEAD93900CC4D42 /* ChildProcessHandle.hpp in Headers */,
 				F986FA492BCFB53B006A4C0F /* svgldict.h in Headers */,
 				F9070C782B9F175000383E4D /* ScopeExit.ipp in Headers */,
 				F97203182BF09E2E000E21DD /* SceneStyle.hpp in Headers */,
@@ -15923,6 +15926,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9A8A5C12FC0000000000001 /* Test_AsyncTask.cpp in Sources */,
+				F9C1000130A0000000000001 /* Test_ChildProcess.cpp in Sources */,
 				F90703022B9DAEB900383E4D /* Test_NamedParameter.cpp in Sources */,
 				F90F79FF2FA9053B0077F398 /* Test_TOML.cpp in Sources */,
 				F90703062B9DAEB900383E4D /* Test_Step.cpp in Sources */,
@@ -16068,7 +16072,7 @@
 				F95122532CB8239800151291 /* ClosedLineString.cpp in Sources */,
 				F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */,
 				F986057B2BDA7DFC006A4C0F /* CursorFactory.cpp in Sources */,
-				F944BABB2CEAD93900CC4D42 /* NSTaskWrapper.mm in Sources */,
+				F944BABB2CEAD93900CC4D42 /* ChildProcessHandle.mm in Sources */,
 				F9070DD32B9F175E00383E4D /* SivHSV.cpp in Sources */,
 				F99881CF2F57184300C8991D /* SivIPv4Address.cpp in Sources */,
 				F986F91B2BC8441F006A4C0F /* regenc.c in Sources */,
