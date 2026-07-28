@@ -91,6 +91,9 @@
     <ClCompile Include="..\Test\Test_ColorF.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_HSV.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_String.cpp">
       <Filter>Test</Filter>
     </ClCompile>

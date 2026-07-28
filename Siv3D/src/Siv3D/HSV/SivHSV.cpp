@@ -54,7 +54,13 @@ namespace s3d
 
 			const double delta = (g - b) * (360.0 / 6.0);
 			const double chroma = r - Min(g, b);
-			return HSV(Abs(K + delta / (chroma + 1e-20)), chroma / (r + 1e-20), r, a);
+
+			if (chroma == 0.0)
+			{
+				return HSV{ 0.0, 0.0, r, a };
+			}
+
+			return HSV{ Abs(K + (delta / chroma)), (chroma / r), r, a };
 		}
 	}
 
@@ -187,7 +193,7 @@ namespace s3d
 		{
 			0,
 			static_cast<uint8>((1.0 - fr) * 255.0 + 0.5),
-			static_cast<uint8>((1.0 - (1.0 - fr)) * 255.0 + 0.5),
+			static_cast<uint8>(fr * 255.0 + 0.5),
 			255
 		};
 
@@ -213,7 +219,7 @@ namespace s3d
 		{
 			0.0,
 			(1.0 - fr),
-			(1.0 - (1.0 - fr)),
+			fr,
 			1.0
 		};
 

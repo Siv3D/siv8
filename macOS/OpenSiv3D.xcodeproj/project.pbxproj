@@ -49,6 +49,7 @@
 		F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B82B9DAEB900383E4D /* Test_Byte.cpp */; };
 		F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B92B9DAEB900383E4D /* Test_Color.cpp */; };
 		F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */; };
+		F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A000022FC0000000000001 /* Test_HSV.cpp */; };
 		F90702FB2B9DAEB900383E4D /* Test_Concepts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */; };
 		F90702FC2B9DAEB900383E4D /* Test_FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */; };
 		F90702FD2B9DAEB900383E4D /* Test_FmtExtension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */; };
@@ -3212,6 +3213,7 @@
 		F90702B82B9DAEB900383E4D /* Test_Byte.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Byte.cpp; sourceTree = "<group>"; };
 		F90702B92B9DAEB900383E4D /* Test_Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Color.cpp; sourceTree = "<group>"; };
 		F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ColorF.cpp; sourceTree = "<group>"; };
+		F9A000022FC0000000000001 /* Test_HSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_HSV.cpp; sourceTree = "<group>"; };
 		F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Concepts.cpp; sourceTree = "<group>"; };
 		F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FileSystem.cpp; sourceTree = "<group>"; };
 		F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FmtExtension.cpp; sourceTree = "<group>"; };
@@ -6638,6 +6640,7 @@
 				F90702B82B9DAEB900383E4D /* Test_Byte.cpp */,
 				F90702B92B9DAEB900383E4D /* Test_Color.cpp */,
 				F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */,
+				F9A000022FC0000000000001 /* Test_HSV.cpp */,
 				F9528C482BBF028E00222F45 /* Test_Compression.cpp */,
 				F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */,
 				F93BD7F43016936900B3542E /* Test_CSV.cpp */,
@@ -15906,6 +15909,7 @@
 				F90703062B9DAEB900383E4D /* Test_Step.cpp in Sources */,
 				F90702FB2B9DAEB900383E4D /* Test_Concepts.cpp in Sources */,
 				F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */,
+				F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */,
 				F9528B322BB0564800222F45 /* Test_MemoryMappedFileView.cpp in Sources */,
 				F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,

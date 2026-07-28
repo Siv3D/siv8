@@ -109,28 +109,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	operator +
-	//
-	////////////////////////////////////////////////////////////////
-
-	inline constexpr HSV HSV::operator +(const HSV& hsv) const noexcept
-	{
-		return{ (h + hsv.h), Clamp((s + hsv.s), 0.0, 1.0), Clamp((v + hsv.v), 0.0, 1.0), a };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	operator -
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr HSV HSV::operator -(const HSV& hsv) const noexcept
-	{
-		return{ (h - hsv.h), Clamp((s - hsv.s), 0.0, 1.0), Clamp((v - hsv.v), 0.0, 1.0), a };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	withH, withS, withV, withA
 	//
 	////////////////////////////////////////////////////////////////
@@ -250,6 +228,23 @@ namespace s3d
 	constexpr HSV HSV::lerp(const HSV& other, const double f) const noexcept
 	{
 		return{ (h + (other.h - h) * f),
+				(s + (other.s - s) * f),
+				(v + (other.v - v) * f),
+				(a + (other.a - a) * f) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	lerpShortestHue
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline HSV HSV::lerpShortestHue(const HSV& other, const double f) const noexcept
+	{
+		const double hueDelta = std::fmod((other.h - h), 360.0);
+		const double shortestHueDelta = (std::fmod((2.0 * hueDelta), 360.0) - hueDelta);
+
+		return{ (h + shortestHueDelta * f),
 				(s + (other.s - s) * f),
 				(v + (other.v - v) * f),
 				(a + (other.a - a) * f) };
