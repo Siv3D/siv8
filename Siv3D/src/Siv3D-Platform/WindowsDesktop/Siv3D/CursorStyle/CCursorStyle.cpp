@@ -146,7 +146,7 @@ namespace s3d
 			{
 				for (size_t i = 0; i < image.num_pixels(); ++i)
 				{
-					const Color unmultiplied = Color::UnpremultiplyAlpha(*pSrc);
+					const Color unmultiplied = pSrc->unpremultiplied();
 
 					pDst[0] = unmultiplied.b;
 					pDst[1] = unmultiplied.g;

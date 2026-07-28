@@ -81,7 +81,6 @@ TEST_CASE("Color.component operations")
 	static_assert(color.withB(50) == Color{ 10, 20, 50, 40 });
 	static_assert(color.withA(50) == Color{ 10, 20, 30, 50 });
 	static_assert(color.withAlpha(50) == Color{ 10, 20, 30, 50 });
-	static_assert(color.abgr() == Color{ 40, 30, 20, 10 });
 
 	constexpr Color modified = []
 	{
@@ -100,11 +99,9 @@ TEST_CASE("Color.premultiplied")
 	constexpr Color premultiplied{ 128, 64, 32, 128 };
 
 	static_assert(color.premultiplied() == premultiplied);
-	static_assert(Color::PremultiplyAlpha(color) == premultiplied);
 	static_assert(premultiplied.unpremultiplied() == color);
-	static_assert(Color::UnpremultiplyAlpha(premultiplied) == color);
-	static_assert(Color::UnpremultiplyAlpha(Color{ 255, 128, 1, 0 }) == Color::Zero());
-	static_assert(Color::UnpremultiplyAlpha(Color{ 255, 255, 255, 1 }) == Color{ 255, 255, 255, 1 });
+	static_assert(Color{ 255, 128, 1, 0 }.unpremultiplied() == Color::Zero());
+	static_assert(Color{ 255, 255, 255, 1 }.unpremultiplied() == Color{ 255, 255, 255, 1 });
 
 	static_assert(Color::Div255Round(0) == 0);
 	static_assert(Color::Div255Round(127) == 0);
@@ -163,9 +160,10 @@ TEST_CASE("Color.color conversion")
 	CHECK(hsv.a == doctest::Approx(128.0 / 255.0));
 
 	CHECK(color.hueShifted(120.0) == Color{ 0, 255, 0, 128 });
+	CHECK(hsv.hueShifted(120.0) == HSV{ 120.0, 1.0, 1.0, (128.0 / 255.0) });
 	CHECK(color.complemented() == Color{ 0, 255, 255, 128 });
-	CHECK(color.gamma(1.0) == color);
-	CHECK(color.gamma(0.0) == Color{ 0, 0, 0, 128 });
+	CHECK(color.gammaCorrected(1.0) == color);
+	CHECK(color.gammaCorrected(0.0) == Color{ 0, 0, 0, 128 });
 
 	const Color roundTrip = Color{ 0x12, 0x34, 0x56, 0x78 }.srgbToLinear().linearToSRGB().toColor();
 	CHECK(roundTrip == Color{ 0x12, 0x34, 0x56, 0x78 });

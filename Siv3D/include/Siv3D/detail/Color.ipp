@@ -353,7 +353,11 @@ namespace s3d
 
 	constexpr Color Color::premultiplied() const noexcept
 	{
-		return Color::PremultiplyAlpha(*this);
+		const uint32 alpha = a;
+		const uint8 premultipliedR = Div255Round(static_cast<uint32>(r) * alpha);
+		const uint8 premultipliedG = Div255Round(static_cast<uint32>(g) * alpha);
+		const uint8 premultipliedB = Div255Round(static_cast<uint32>(b) * alpha);
+		return{ premultipliedR, premultipliedG, premultipliedB, a };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -364,7 +368,16 @@ namespace s3d
 
 	constexpr Color Color::unpremultiplied() const noexcept
 	{
-		return Color::UnpremultiplyAlpha(*this);
+		if (a == 0)
+		{
+			return{ 0, 0, 0, 0 };
+		}
+
+		const uint32 alpha = a;
+		const uint8 unpremultipliedR = static_cast<uint8>(Min(((static_cast<uint32>(r) * 255u) + (alpha / 2)) / alpha, 255u));
+		const uint8 unpremultipliedG = static_cast<uint8>(Min(((static_cast<uint32>(g) * 255u) + (alpha / 2)) / alpha, 255u));
+		const uint8 unpremultipliedB = static_cast<uint8>(Min(((static_cast<uint32>(b) * 255u) + (alpha / 2)) / alpha, 255u));
+		return{ unpremultipliedR, unpremultipliedG, unpremultipliedB, a };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -515,11 +528,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	gamma
+	//	gammaCorrected
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Color Color::gamma(const double gamma) const noexcept
+	inline Color Color::gammaCorrected(const double gamma) const noexcept
 	{
 		if (not (0.0 < gamma))
 		{
@@ -559,17 +572,6 @@ namespace s3d
 	inline uint64 Color::hash() const noexcept
 	{
 		return Hash(*this);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	abgr
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Color Color::abgr() const noexcept
-	{
-		return{ a, b, g, r };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -736,41 +738,6 @@ namespace s3d
 				static_cast<uint8>((abgr >> 8) & 0xFF),
 				static_cast<uint8>((abgr >> 16) & 0xFF),
 				static_cast<uint8>((abgr >> 24) & 0xFF) };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	PremultiplyAlpha
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Color Color::PremultiplyAlpha(const Color color) noexcept
-	{
-		const uint32 a = color.a;
-		const uint8 r = Div255Round(static_cast<uint32>(color.r) * a);
-		const uint8 g = Div255Round(static_cast<uint32>(color.g) * a);
-		const uint8 b = Div255Round(static_cast<uint32>(color.b) * a);
-		return{ r, g, b, color.a };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	UnpremultiplyAlpha
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr Color Color::UnpremultiplyAlpha(const Color color) noexcept
-	{
-		if (color.a == 0)
-		{
-			return{ 0, 0, 0, 0 };
-		}
-
-		const uint32 a = color.a;
-		const uint8 r = static_cast<uint8>(Min(((static_cast<uint32>(color.r) * 255u) + (a / 2)) / a, 255u));
-		const uint8 g = static_cast<uint8>(Min(((static_cast<uint32>(color.g) * 255u) + (a / 2)) / a, 255u));
-		const uint8 b = static_cast<uint8>(Min(((static_cast<uint32>(color.b) * 255u) + (a / 2)) / a, 255u));
-		return{ r, g, b, color.a };
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -58,7 +58,7 @@ namespace s3d
 		style.type = Type::Outline;
 		style.innerThickness = static_cast<float>(inner);
 		style.outerThickness = static_cast<float>(outer);
-		style.outlineColor = ColorF::PremultiplyAlpha(color).toFloat4();
+		style.outlineColor = color.premultiplied().toFloat4();
 		return style;
 	}
 
@@ -67,7 +67,7 @@ namespace s3d
 		TextStyle style;
 		style.type = Type::Shadow;
 		style.shadowOffset = offset;
-		style.shadowColor = ColorF::PremultiplyAlpha(color).toFloat4();
+		style.shadowColor = color.premultiplied().toFloat4();
 		return style;
 	}
 
@@ -83,8 +83,8 @@ namespace s3d
 		style.innerThickness = static_cast<float>(inner);
 		style.outerThickness = static_cast<float>(outer);
 		style.shadowOffset = offset;
-		style.outlineColor = ColorF::PremultiplyAlpha(outlineColor).toFloat4();
-		style.shadowColor = ColorF::PremultiplyAlpha(shadowColor).toFloat4();
+		style.outlineColor = outlineColor.premultiplied().toFloat4();
+		style.shadowColor = shadowColor.premultiplied().toFloat4();
 		return style;
 	}
 

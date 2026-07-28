@@ -138,7 +138,7 @@ namespace
 		for (int32 index = 0; index < 4; ++index)
 		{
 			const Point pos{ ((index % 2) * regionSize.x), ((index / 2) * regionSize.y) };
-			const ColorF colorPMA = ColorF::PremultiplyAlpha(colors[index]);
+			const ColorF colorPMA = colors[index].premultiplied();
 			succeeded = (texture.fillRegion(colorPMA, Rect{ pos, regionSize }) && succeeded);
 		}
 
@@ -215,12 +215,12 @@ namespace
 		{
 			const auto data = MakePattern<Color>([](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).toColor();
+				return color.premultiplied().toColor();
 			});
 			auto dynamicTexture = DynamicTexture::CreateR8G8B8A8_Unorm(PatternSize, Palette::Black);
 			const bool succeeded = FillQuadrants<Color>(dynamicTexture, [](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).toColor();
+				return color.premultiplied().toColor();
 			});
 			cases.push_back({ U"R8G8B8A8_Unorm", U"fillRegion(Grid<Color>)",
 				Texture::CreateR8G8B8A8_Unorm(data), std::move(dynamicTexture), VisibleChannels::RGBA, succeeded });
@@ -229,12 +229,12 @@ namespace
 		{
 			const auto data = MakePattern<Color>([](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).linearToSRGB().toColor();
+				return color.premultiplied().linearToSRGB().toColor();
 			});
 			auto dynamicTexture = DynamicTexture::CreateR8G8B8A8_Unorm_SRGB(PatternSize, Palette::Black);
 			const bool succeeded = FillQuadrants<Color>(dynamicTexture, [](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).linearToSRGB().toColor();
+				return color.premultiplied().linearToSRGB().toColor();
 			});
 			cases.push_back({ U"R8G8B8A8_Unorm_SRGB", U"fillRegion(Grid<Color>)",
 				Texture::CreateR8G8B8A8_Unorm_SRGB(data), std::move(dynamicTexture), VisibleChannels::RGBA, succeeded });
@@ -277,7 +277,7 @@ namespace
 		{
 			const auto data = MakePattern<uint32>([](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).toR10G10B10A2_Unorm();
+				return color.premultiplied().toR10G10B10A2_Unorm();
 			});
 			auto dynamicTexture = DynamicTexture::CreateR10G10B10A2_Unorm(data);
 			cases.push_back({ U"R10G10B10A2_Unorm", U"Create(Grid<uint32>)",
@@ -294,12 +294,12 @@ namespace
 		{
 			const auto data = MakePattern<uint64>([](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).toR16G16B16A16_Float();
+				return color.premultiplied().toR16G16B16A16_Float();
 			});
 			auto dynamicTexture = DynamicTexture::CreateR16G16B16A16_Float(PatternSize, Palette::Black);
 			const bool succeeded = FillQuadrants<std::array<HalfFloat, 4>>(dynamicTexture, [](const ColorF& color)
 			{
-				const ColorF colorPMA = ColorF::PremultiplyAlpha(color);
+				const ColorF colorPMA = color.premultiplied();
 				return std::array<HalfFloat, 4>
 				{
 					HalfFloat{ colorPMA.r },
@@ -323,12 +323,12 @@ namespace
 		{
 			const auto data = MakePattern<Float4>([](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).toR32G32B32A32_Float();
+				return color.premultiplied().toR32G32B32A32_Float();
 			});
 			auto dynamicTexture = DynamicTexture::CreateR32G32B32A32_Float(PatternSize, Palette::Black);
 			const bool succeeded = FillQuadrants<Float4>(dynamicTexture, [](const ColorF& color)
 			{
-				return ColorF::PremultiplyAlpha(color).toR32G32B32A32_Float();
+				return color.premultiplied().toR32G32B32A32_Float();
 			});
 			cases.push_back({ U"R32G32B32A32_Float", U"fillRegion(Grid<Float4>)",
 				Texture::CreateR32G32B32A32_Float(data), std::move(dynamicTexture), VisibleChannels::RGBA, succeeded });

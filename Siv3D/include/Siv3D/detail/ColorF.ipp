@@ -372,7 +372,7 @@ namespace s3d
 
 	constexpr ColorF ColorF::premultiplied() const noexcept
 	{
-		return ColorF::PremultiplyAlpha(*this);
+		return{ (r * a), (g * a), (b * a), a };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -383,7 +383,13 @@ namespace s3d
 
 	constexpr ColorF ColorF::unpremultiplied() const noexcept
 	{
-		return ColorF::UnpremultiplyAlpha(*this);
+		if (a == 0.0)
+		{
+			return{ 0.0, 0.0, 0.0, 0.0 };
+		}
+
+		const double invA = (1.0 / a);
+		return{ (r * invA), (g * invA), (b * invA), a };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -478,11 +484,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	gamma
+	//	gammaCorrected
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline ColorF ColorF::gamma(const double gamma) const noexcept
+	inline ColorF ColorF::gammaCorrected(const double gamma) const noexcept
 	{
 		if (gamma <= 0.0)
 		{
@@ -729,40 +735,6 @@ namespace s3d
 	constexpr Float4 ColorF::toR32G32B32A32_Float() const noexcept
 	{
 		return toFloat4();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	PremultiplyAlpha
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr ColorF ColorF::PremultiplyAlpha(const ColorF color) noexcept
-	{
-		const double r = (color.r * color.a);
-		const double g = (color.g * color.a);
-		const double b = (color.b * color.a);
-		return{ r, g, b, color.a };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	UnpremultiplyAlpha
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr ColorF ColorF::UnpremultiplyAlpha(const ColorF color) noexcept
-	{
-		if (color.a == 0.0)
-		{
-			return{ 0.0, 0.0, 0.0, 0.0 };
-		}
-
-		const double invA = (1.0 / color.a);
-		const double r = (color.r * invA);
-		const double g = (color.g * invA);
-		const double b = (color.b * invA);
-		return{ r, g, b, color.a };
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -688,7 +688,7 @@ namespace s3d
 								
 								if (premultiplyAlpha)
 								{
-									*dst++ = Color::PremultiplyAlpha(Color{ r, g, b, a });
+									*dst++ = Color{ r, g, b, a }.premultiplied();
 								}
 								else
 								{

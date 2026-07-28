@@ -157,10 +157,8 @@ TEST_CASE("ColorF.premultiplied")
 	constexpr ColorF premultiplied{ 0.5, 0.25, 0.125, 0.5 };
 
 	static_assert(color.premultiplied() == premultiplied);
-	static_assert(ColorF::PremultiplyAlpha(color) == premultiplied);
 	static_assert(premultiplied.unpremultiplied() == color);
-	static_assert(ColorF::UnpremultiplyAlpha(premultiplied) == color);
-	static_assert(ColorF::UnpremultiplyAlpha(ColorF{ 1.0, 0.5, 0.25, 0.0 }) == ColorF::Zero());
+	static_assert(ColorF{ 1.0, 0.5, 0.25, 0.0 }.unpremultiplied() == ColorF::Zero());
 }
 
 TEST_CASE("ColorF.grayscale and min/max")
@@ -209,8 +207,8 @@ TEST_CASE("ColorF.color conversion")
 	CHECK(color.complemented().r == doctest::Approx(0.0));
 	CHECK(color.complemented().g == doctest::Approx(1.0));
 	CHECK(color.complemented().b == doctest::Approx(1.0));
-	CHECK(color.gamma(1.0) == color);
-	CHECK(color.gamma(0.0) == ColorF{ 0.0, 0.0, 0.0, 0.5 });
+	CHECK(color.gammaCorrected(1.0) == color);
+	CHECK(color.gammaCorrected(0.0) == ColorF{ 0.0, 0.0, 0.0, 0.5 });
 
 	const ColorF srgb{ 0.25, 0.5, 0.75, 0.125 };
 	const ColorF roundTrip = srgb.srgbToLinear().linearToSRGB();

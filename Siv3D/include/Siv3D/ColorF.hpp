@@ -556,7 +556,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	gamma
+		//	gammaCorrected
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -564,8 +564,9 @@ namespace s3d
 		/// @param gamma ガンマ値
 		/// @return ガンマ補正された色
 		/// @remark `gamma <= 0.0` の場合、RGB 成分が 0.0 の色を返します。アルファ値は維持します。
+		/// @remark RGB の各成分を `pow(component, 1.0 / gamma)` によって変換します。
 		[[nodiscard]]
-		ColorF gamma(double gamma) const noexcept;
+		ColorF gammaCorrected(double gamma) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -879,31 +880,6 @@ namespace s3d
 		/// @return `Float4{ static_cast<float>(r), static_cast<float>(g), static_cast<float>(b), static_cast<float>(a) }`
 		[[nodiscard]]
 		constexpr Float4 toR32G32B32A32_Float() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	PremultiplyAlpha
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief アルファ乗算済みの色を返します。
-		/// @param color 色
-		/// @return RGB の各成分にアルファ値を乗算した色
-		[[nodiscard]]
-		static constexpr ColorF PremultiplyAlpha(ColorF color) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	UnpremultiplyAlpha
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief アルファ乗算済みの色を通常の色に戻します。
-		/// @param color アルファ乗算済みの色
-		/// @return RGB の各成分をアルファ値で除算した色
-		/// @remark アルファ値が 0.0 の場合は `ColorF::Zero()` を返します。
-		[[nodiscard]]
-		static constexpr ColorF UnpremultiplyAlpha(ColorF color) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

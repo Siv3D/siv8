@@ -486,15 +486,16 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	gamma
+		//	gammaCorrected
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 色をガンマ補正した色を返します。
 		/// @param gamma ガンマ値。0.0 以下の場合、RGB 成分はすべて 0 になります。
 		/// @return ガンマ補正された色
+		/// @remark RGB の各成分を [0.0, 1.0] に正規化し、`pow(component, 1.0 / gamma)` によって変換します。アルファ値は変更しません。
 		[[nodiscard]]
-		Color gamma(double gamma) const noexcept;
+		Color gammaCorrected(double gamma) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -577,17 +578,6 @@ namespace s3d
 		/// @return ハッシュ値
 		[[nodiscard]]
 		uint64 hash() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	abgr
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief Color{ a, b, g, r } を返します。
-		/// @return Color{ a, b, g, r }
-		[[nodiscard]]
-		constexpr Color abgr() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -814,31 +804,6 @@ namespace s3d
 		/// @return 変換された Color
 		[[nodiscard]]
 		static constexpr Color FromABGR8888(uint32 abgr) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	PremultiplyAlpha
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 色の RGB 成分にアルファ値を乗算します。
-		/// @param color 色
-		/// @return アルファ乗算済みの色
-		[[nodiscard]]
-		static constexpr Color PremultiplyAlpha(Color color) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	UnpremultiplyAlpha
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief アルファ乗算済みの色を通常の色に戻します。
-		/// @param color アルファ乗算済みの色
-		/// @return アルファ乗算を解除した色
-		/// @remark アルファ値が 0 の場合は `Color::Zero()` を返します。
-		[[nodiscard]]
-		static constexpr Color UnpremultiplyAlpha(Color color) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

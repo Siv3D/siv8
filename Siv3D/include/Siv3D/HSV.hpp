@@ -278,15 +278,15 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	withOffsetH
+		//	hueShifted
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief H 成分をオフセットした色を返します。
-		/// @param _h H オフセット量
-		/// @return オフセットした色
+		/// @brief 色相をシフトした色を返します。
+		/// @param degrees 色相のシフト量（度）
+		/// @return 色相をシフトした色
 		[[nodiscard]]
-		constexpr HSV withOffsetH(double _h) const noexcept;
+		constexpr HSV hueShifted(double degrees) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
