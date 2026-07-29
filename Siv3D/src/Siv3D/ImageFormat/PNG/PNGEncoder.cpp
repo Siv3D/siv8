@@ -23,11 +23,29 @@ namespace s3d
 {
 	namespace
 	{
+		[[noreturn]] static void PngErrorCallback(png_structp png_ptr, png_const_charp) noexcept
+		{
+			::png_longjmp(png_ptr, 1);
+		}
+
+		static void PngWarningCallback(png_structp, png_const_charp) noexcept
+		{
+		}
+
+		static void SetPNGErrorCallbacks(png_structp png_ptr) noexcept
+		{
+			::png_set_error_fn(png_ptr, nullptr, PngErrorCallback, PngWarningCallback);
+		}
+
 		static void PngWriteCallbackIWriter(png_structp png_ptr, png_bytep src, png_size_t length)
 		{
 			IWriter* pWriter = static_cast<IWriter*>(::png_get_io_ptr(png_ptr));
+			const int64 writeSize = pWriter->write(src, length);
 
-			pWriter->write(src, length);
+			if (writeSize != static_cast<int64>(length))
+			{
+				::png_error(png_ptr, "PNG write failed");
+			}
 		}
 
 		static void PngWriteCallbackBlob(png_structp png_ptr, png_bytep src, png_size_t length)
@@ -53,10 +71,16 @@ namespace s3d
 			const int bitDepth, const int colorType, const int filter,
 			const uint8* pixels, const size_t bytesPerRow, const bool swapEndian)
 		{
+			SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4611)
+
 			if (setjmp(png_jmpbuf(png_ptr)))
 			{
 				return false;
 			}
+
+			SIV3D_DISABLE_GCC_WARNINGS_POP()
+
+			SetPNGErrorCallbacks(png_ptr);
 
 			::png_set_write_fn(png_ptr, ioPtr, writeCallback, nullptr);
 			::png_set_IHDR(png_ptr, info_ptr, width, height, bitDepth, colorType,

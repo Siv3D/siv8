@@ -34,32 +34,63 @@ namespace s3d
 		{
 			png_uint_32 width = 0;
 			png_uint_32 height = 0;
+			png_size_t rowBytes = 0;
 			int bitDepth = 0;
 			int colorType = 0;
 			int channels = 0;
 		};
 
+		[[noreturn]] static void PngErrorCallback(png_structp png_ptr, png_const_charp) noexcept
+		{
+			::png_longjmp(png_ptr, 1);
+		}
+
+		static void PngWarningCallback(png_structp, png_const_charp) noexcept
+		{
+		}
+
+		static void SetPNGErrorCallbacks(png_structp png_ptr) noexcept
+		{
+			::png_set_error_fn(png_ptr, nullptr, PngErrorCallback, PngWarningCallback);
+		}
+
 		static void PngLookAheadCallback(png_structp png_ptr, png_bytep buf, png_size_t length)
 		{
 			const auto lookAheadReader = static_cast<LookAheadReader*>(::png_get_io_ptr(png_ptr));
 			const int64 startPos = lookAheadReader->pos;
-			lookAheadReader->reader->lookahead(buf, startPos, length);
-			lookAheadReader->pos += length;
+			const int64 readSize = lookAheadReader->reader->lookahead(buf, startPos, length);
+
+			if (readSize != static_cast<int64>(length))
+			{
+				::png_error(png_ptr, "PNG lookahead failed");
+			}
+
+			lookAheadReader->pos += static_cast<int64>(length);
 		}
 
 		static void PngReadCallback(png_structp png_ptr, png_bytep buf, png_size_t length)
 		{
 			const auto reader = static_cast<IReader*>(::png_get_io_ptr(png_ptr));
+			const int64 readSize = reader->read(buf, length);
 
-			reader->read(buf, length);
+			if (readSize != static_cast<int64>(length))
+			{
+				::png_error(png_ptr, "PNG read failed");
+			}
 		}
 
 		[[nodiscard]] static bool ReadPNGInfo(png_structp png_ptr, png_infop info_ptr, LookAheadReader* reader, PNGReadInfo* result)
 		{
+			SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4611)
+
 			if (setjmp(png_jmpbuf(png_ptr)))
 			{
 				return false;
 			}
+
+			SIV3D_DISABLE_GCC_WARNINGS_POP()
+
+			SetPNGErrorCallbacks(png_ptr);
 
 			::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
 			::png_set_read_fn(png_ptr, reader, PngLookAheadCallback);
@@ -78,6 +109,8 @@ namespace s3d
 			{
 				return false;
 			}
+
+			SetPNGErrorCallbacks(png_ptr);
 
 			::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
 			::png_set_read_fn(png_ptr, reader, PngReadCallback);
@@ -118,16 +151,21 @@ namespace s3d
 			}
 
 			::png_set_add_alpha(png_ptr, 0xff, PNG_FILLER_AFTER);
+			::png_read_update_info(png_ptr, info_ptr);
+			readInfo.rowBytes = ::png_get_rowbytes(png_ptr, info_ptr);
+			readInfo.bitDepth = ::png_get_bit_depth(png_ptr, info_ptr);
+			readInfo.colorType = ::png_get_color_type(png_ptr, info_ptr);
+			readInfo.channels = ::png_get_channels(png_ptr, info_ptr);
 
-			double gamma;
+			const png_size_t expectedRowBytes = (static_cast<png_size_t>(readInfo.width) * 4);
 
-			if (::png_get_gAMA(png_ptr, info_ptr, &gamma))
+			if ((readInfo.bitDepth != 8)
+				|| (readInfo.channels != 4)
+				|| (readInfo.rowBytes != expectedRowBytes))
 			{
-				::png_set_gamma(png_ptr, 2.2, gamma);
+				return false;
 			}
 
-			::png_read_update_info(png_ptr, info_ptr);
-			readInfo.channels = ::png_get_channels(png_ptr, info_ptr);
 			*result = readInfo;
 
 			return true;
@@ -139,6 +177,8 @@ namespace s3d
 			{
 				return false;
 			}
+
+			SetPNGErrorCallbacks(png_ptr);
 
 			::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
 			::png_set_read_fn(png_ptr, reader, PngReadCallback);
@@ -158,7 +198,20 @@ namespace s3d
 			// Siv3D supports little-endian platforms only.
 			::png_set_swap(png_ptr);
 			::png_read_update_info(png_ptr, info_ptr);
+			readInfo.rowBytes = ::png_get_rowbytes(png_ptr, info_ptr);
+			readInfo.bitDepth = ::png_get_bit_depth(png_ptr, info_ptr);
+			readInfo.colorType = ::png_get_color_type(png_ptr, info_ptr);
 			readInfo.channels = ::png_get_channels(png_ptr, info_ptr);
+
+			const png_size_t expectedRowBytes = (static_cast<png_size_t>(readInfo.width) * sizeof(uint16));
+
+			if ((readInfo.bitDepth != 16)
+				|| (readInfo.channels != 1)
+				|| (readInfo.rowBytes != expectedRowBytes))
+			{
+				return false;
+			}
+
 			*result = readInfo;
 
 			return true;
@@ -170,6 +223,8 @@ namespace s3d
 			{
 				return false;
 			}
+
+			SetPNGErrorCallbacks(png_ptr);
 
 			::png_read_image(png_ptr, rowPointers);
 			::png_read_end(png_ptr, nullptr);
@@ -354,9 +409,14 @@ namespace s3d
 
 		Image image(readInfo.width, readInfo.height);
 
-		Array<uint8*> rowPointers(readInfo.height);
+		if (image.bytesPerRow() < readInfo.rowBytes)
 		{
-			const size_t stride = (static_cast<size_t>(readInfo.width) * readInfo.channels);
+			return{};
+		}
+
+		Array<png_bytep> rowPointers(readInfo.height);
+		{
+			const size_t stride = image.bytesPerRow();
 			uint8* pixels = image.dataAsUint8();
 
 			for (size_t i = 0; i < readInfo.height; ++i)
@@ -434,18 +494,18 @@ namespace s3d
 
 		Grid<uint16> image(readInfo.width, readInfo.height);
 
-		Array<uint16*> rowPointers(readInfo.height);
+		Array<png_bytep> rowPointers(readInfo.height);
 		{
-			uint16* pixels = image.data();
+			png_bytep pixels = reinterpret_cast<png_bytep>(image.data());
 
 			for (size_t i = 0; i < readInfo.height; ++i)
 			{
 				rowPointers[i] = pixels;
-				pixels += readInfo.width;
+				pixels += readInfo.rowBytes;
 			}
 		}
 
-		if (not ReadPNGImage(png_ptr, static_cast<png_bytepp>(static_cast<void*>(rowPointers.data()))))
+		if (not ReadPNGImage(png_ptr, rowPointers.data()))
 		{
 			return{};
 		}
