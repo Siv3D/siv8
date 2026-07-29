@@ -120,6 +120,8 @@ namespace s3d
 			::png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		};
 
+		::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
+
 		// info_ptr
 		png_infop info_ptr = ::png_create_info_struct(png_ptr);
 		{
@@ -210,6 +212,8 @@ namespace s3d
 			::png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		};
 
+		::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
+
 		// info_ptr
 		png_infop info_ptr = ::png_create_info_struct(png_ptr);
 		{
@@ -263,12 +267,6 @@ namespace s3d
 		{
 			LOG_TRACE("png_set_scale_16()");
 			::png_set_scale_16(png_ptr);
-		}
-
-		if (iBitDepth < 8)
-		{
-			LOG_TRACE("png_set_packing()");
-			::png_set_packing(png_ptr);
 		}
 
 		if ((iColorType == PNG_COLOR_TYPE_GRAY)
@@ -356,6 +354,8 @@ namespace s3d
 			::png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		};
 
+		::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
+
 		// info_ptr
 		png_infop info_ptr = ::png_create_info_struct(png_ptr);
 		{
@@ -409,14 +409,6 @@ namespace s3d
 			|| (iColorType != PNG_COLOR_TYPE_GRAY))
 		{
 			return{};
-		}
-
-		double dGamma;
-
-		if (::png_get_gAMA(png_ptr, info_ptr, &dGamma))
-		{
-			LOG_TRACE("png_set_gamma()");
-			::png_set_gamma(png_ptr, 2.2, dGamma);
 		}
 
 		::png_read_update_info(png_ptr, info_ptr);
