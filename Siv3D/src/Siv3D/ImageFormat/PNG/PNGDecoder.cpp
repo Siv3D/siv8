@@ -40,7 +40,8 @@ namespace s3d
 			int channels = 0;
 		};
 
-		[[noreturn]] static void PngErrorCallback(png_structp png_ptr, png_const_charp) noexcept
+		[[noreturn]]
+		static void PngErrorCallback(png_structp png_ptr, png_const_charp) noexcept
 		{
 			::png_longjmp(png_ptr, 1);
 		}
@@ -79,7 +80,8 @@ namespace s3d
 			}
 		}
 
-		[[nodiscard]] static bool ReadPNGInfo(png_structp png_ptr, png_infop info_ptr, LookAheadReader* reader, PNGReadInfo* result)
+		[[nodiscard]]
+		static bool ReadPNGInfo(png_structp png_ptr, png_infop info_ptr, LookAheadReader* reader, PNGReadInfo* result)
 		{
 			SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4611)
 
@@ -103,7 +105,8 @@ namespace s3d
 			return true;
 		}
 
-		[[nodiscard]] static bool PreparePNGDecode(png_structp png_ptr, png_infop info_ptr, IReader* reader, PNGReadInfo* result)
+		[[nodiscard]]
+		static bool PreparePNGDecode(png_structp png_ptr, png_infop info_ptr, IReader* reader, PNGReadInfo* result)
 		{
 			if (setjmp(png_jmpbuf(png_ptr)))
 			{
@@ -171,7 +174,8 @@ namespace s3d
 			return true;
 		}
 
-		[[nodiscard]] static bool PreparePNGGray16Decode(png_structp png_ptr, png_infop info_ptr, IReader* reader, PNGReadInfo* result)
+		[[nodiscard]]
+		static bool PreparePNGGray16Decode(png_structp png_ptr, png_infop info_ptr, IReader* reader, PNGReadInfo* result)
 		{
 			if (setjmp(png_jmpbuf(png_ptr)))
 			{
@@ -217,7 +221,8 @@ namespace s3d
 			return true;
 		}
 
-		[[nodiscard]] static bool ReadPNGImage(png_structp png_ptr, png_bytepp rowPointers)
+		[[nodiscard]]
+		static bool ReadPNGImage(png_structp png_ptr, png_bytepp rowPointers)
 		{
 			if (setjmp(png_jmpbuf(png_ptr)))
 			{
@@ -232,6 +237,7 @@ namespace s3d
 			return true;
 		}
 	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	name
