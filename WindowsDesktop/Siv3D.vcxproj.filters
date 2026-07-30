@@ -406,6 +406,9 @@
     <Filter Include="src\Siv3D\ImageFormat\BMP">
       <UniqueIdentifier>{d2c478e3-cff9-48e5-a579-b420372e28e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ImageFormat\GIF">
+      <UniqueIdentifier>{733a2b7c-a631-41f1-85d7-f9c6bc203054}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\ImageEncoder">
       <UniqueIdentifier>{7cf0e64c-1f81-4e58-a56a-cc946e4acc02}</UniqueIdentifier>
     </Filter>
@@ -2545,6 +2548,9 @@
       <Filter>src\Siv3D\ImageDecoder</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\BMPDecoder.hpp">
+      <Filter>include\Siv3D\ImageFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ImageFormat\GIFDecoder.hpp">
       <Filter>include\Siv3D\ImageFormat</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPHeader.hpp">
@@ -5865,6 +5871,12 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\wuffs\wuffs-v0.4.h">
       <Filter>src\ThirdParty\wuffs</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\wuffs\WuffsCodecs.hpp">
+      <Filter>src\ThirdParty\wuffs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImage.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -6322,6 +6334,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\BMP\BMPEncoder.cpp">
       <Filter>src\Siv3D\ImageFormat\BMP</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ImageFormat\GIF\GIFDecoder.cpp">
+      <Filter>src\Siv3D\ImageFormat\GIF</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ImageEncoder\ImageEncoderFactory.cpp">
       <Filter>src\Siv3D\ImageEncoder</Filter>

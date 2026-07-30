@@ -1318,6 +1318,9 @@
 // PNG 画像フィルタ | PNG image filter
 # include <Siv3D/PNGFilter.hpp>
 
+// アニメーション画像 | Animated image
+# include <Siv3D/AnimatedImage.hpp>
+
 // PNG 画像 | PNG image
 # include <Siv3D/ImageFormat/PNGDecoder.hpp>
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
@@ -1337,7 +1340,7 @@
 //# include <Siv3D/ImageFormat/WebPDecoder.hpp>
 //# include <Siv3D/ImageFormat/WebPEncoder.hpp>
 //
-//# include <Siv3D/ImageFormat/GIFDecoder.hpp>
+# include <Siv3D/ImageFormat/GIFDecoder.hpp>
 //# include <Siv3D/ImageFormat/GIFEncoder.hpp>
 //
 //# include <Siv3D/ImageFormat/TIFFDecoder.hpp>
