@@ -2031,6 +2031,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MD5Value.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImage.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImageDecodeResult.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\RFC1321\RFC1321.hpp">
       <Filter>src\ThirdParty\RFC1321</Filter>
     </ClInclude>
@@ -5875,6 +5881,21 @@
       <Filter>src\ThirdParty\wuffs</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImage.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecodeError.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecodeOptions.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecodeResult.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecoder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageFrame.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>

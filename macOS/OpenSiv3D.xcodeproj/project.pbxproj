@@ -2847,6 +2847,13 @@
 		F9AB00013020000000000005 /* GIFDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000006 /* GIFDecoder.cpp */; };
 		F9AB00013020000000000008 /* WuffsCodecs.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000009 /* WuffsCodecs.hpp */; };
 		F9AB0001302000000000000A /* Test_AnimatedImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000000B /* Test_AnimatedImage.cpp */; };
+		F9AB0001302000000000000C /* AnimatedImageFrame.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000000D /* AnimatedImageFrame.hpp */; };
+		F9AB0001302000000000000E /* AnimatedImageDecodeError.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000000F /* AnimatedImageDecodeError.hpp */; };
+		F9AB00013020000000000010 /* AnimatedImageDecodeOptions.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000011 /* AnimatedImageDecodeOptions.hpp */; };
+		F9AB00013020000000000012 /* AnimatedImageDecodeResult.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000013 /* AnimatedImageDecodeResult.hpp */; };
+		F9AB00013020000000000014 /* AnimatedImageDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000015 /* AnimatedImageDecoder.hpp */; };
+		F9AB00013020000000000016 /* AnimatedImage.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000017 /* AnimatedImage.ipp */; };
+		F9AB00013020000000000018 /* AnimatedImageDecodeResult.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */; };
 		F9ADA8732FE314BA003EB3FA /* SivQuarterArcTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */; };
 		F9ADA8752FE314CE003EB3FA /* QuarterArcTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */; };
 		F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F62E6B3E27003734E7 /* Print.hpp */; };
@@ -6133,6 +6140,13 @@
 		F9AB00013020000000000006 /* GIFDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GIFDecoder.cpp; sourceTree = "<group>"; };
 		F9AB00013020000000000009 /* WuffsCodecs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WuffsCodecs.hpp; sourceTree = "<group>"; };
 		F9AB0001302000000000000B /* Test_AnimatedImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AnimatedImage.cpp; sourceTree = "<group>"; };
+		F9AB0001302000000000000D /* AnimatedImageFrame.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageFrame.hpp; sourceTree = "<group>"; };
+		F9AB0001302000000000000F /* AnimatedImageDecodeError.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageDecodeError.hpp; sourceTree = "<group>"; };
+		F9AB00013020000000000011 /* AnimatedImageDecodeOptions.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageDecodeOptions.hpp; sourceTree = "<group>"; };
+		F9AB00013020000000000013 /* AnimatedImageDecodeResult.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageDecodeResult.hpp; sourceTree = "<group>"; };
+		F9AB00013020000000000015 /* AnimatedImageDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageDecoder.hpp; sourceTree = "<group>"; };
+		F9AB00013020000000000017 /* AnimatedImage.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImage.ipp; sourceTree = "<group>"; };
+		F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageDecodeResult.ipp; sourceTree = "<group>"; };
 		F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuarterArcTable.cpp; sourceTree = "<group>"; };
 		F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QuarterArcTable.hpp; sourceTree = "<group>"; };
 		F9AEA4F62E6B3E27003734E7 /* Print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.hpp; sourceTree = "<group>"; };
@@ -7162,6 +7176,8 @@
 				F986F93B2BCA7996006A4C0F /* Math_impl.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
+				F9AB00013020000000000017 /* AnimatedImage.ipp */,
+				F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
 				F9528BAE2BBE7D1100222F45 /* MemoryReader.ipp */,
 				F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */,
@@ -7292,6 +7308,11 @@
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
 				F981118E2EC8C5D800C50DD1 /* Anchor.hpp */,
 				F9AB00013020000000000002 /* AnimatedImage.hpp */,
+				F9AB0001302000000000000F /* AnimatedImageDecodeError.hpp */,
+				F9AB00013020000000000011 /* AnimatedImageDecodeOptions.hpp */,
+				F9AB00013020000000000013 /* AnimatedImageDecodeResult.hpp */,
+				F9AB00013020000000000015 /* AnimatedImageDecoder.hpp */,
+				F9AB0001302000000000000D /* AnimatedImageFrame.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
 				F9E794642C19B6D6002615BA /* ArrayAlgorithm.hpp */,
 				F9E794462C1973FC002615BA /* ArrayParallel.hpp */,
@@ -14065,6 +14086,13 @@
 				F986046C2BCFBB54006A4C0F /* SkSLConstantFolder.h in Headers */,
 				F9528C682BC05B0200222F45 /* IImageDecoder.hpp in Headers */,
 				F9AB00013020000000000001 /* AnimatedImage.hpp in Headers */,
+				F9AB0001302000000000000C /* AnimatedImageFrame.hpp in Headers */,
+				F9AB0001302000000000000E /* AnimatedImageDecodeError.hpp in Headers */,
+				F9AB00013020000000000010 /* AnimatedImageDecodeOptions.hpp in Headers */,
+				F9AB00013020000000000012 /* AnimatedImageDecodeResult.hpp in Headers */,
+				F9AB00013020000000000014 /* AnimatedImageDecoder.hpp in Headers */,
+				F9AB00013020000000000016 /* AnimatedImage.ipp in Headers */,
+				F9AB00013020000000000018 /* AnimatedImageDecodeResult.ipp in Headers */,
 				F9AB00013020000000000003 /* GIFDecoder.hpp in Headers */,
 				F9AB00013020000000000008 /* WuffsCodecs.hpp in Headers */,
 				F95122212CB8227F00151291 /* TriangleIndex32.hpp in Headers */,

@@ -1318,8 +1318,23 @@
 // PNG 画像フィルタ | PNG image filter
 # include <Siv3D/PNGFilter.hpp>
 
+// アニメーション画像フレーム | Animated image frame
+# include <Siv3D/AnimatedImageFrame.hpp>
+
 // アニメーション画像 | Animated image
 # include <Siv3D/AnimatedImage.hpp>
+
+// アニメーション画像のデコード設定 | Animated image decode options
+# include <Siv3D/AnimatedImageDecodeOptions.hpp>
+
+// アニメーション画像のデコードエラー | Animated image decode error
+# include <Siv3D/AnimatedImageDecodeError.hpp>
+
+// アニメーション画像のデコード結果 | Animated image decode result
+# include <Siv3D/AnimatedImageDecodeResult.hpp>
+
+// アニメーション画像デコーダ | Animated image decoder
+# include <Siv3D/AnimatedImageDecoder.hpp>
 
 // PNG 画像 | PNG image
 # include <Siv3D/ImageFormat/PNGDecoder.hpp>

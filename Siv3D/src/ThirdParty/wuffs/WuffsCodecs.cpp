@@ -48,7 +48,7 @@ SIV3D_DISABLE_MSVC_WARNINGS_POP()
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 # include "WuffsCodecs.hpp"
-# include <Siv3D/AnimatedImage.hpp>
+# include <Siv3D/AnimatedImageDecoder.hpp>
 # include <Siv3D/Array.hpp>
 # include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/IReader.hpp>
