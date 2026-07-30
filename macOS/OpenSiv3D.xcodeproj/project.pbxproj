@@ -751,11 +751,6 @@
 		F93BD7F93016AE7100B3542E /* PolygonParser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7F63016AE7100B3542E /* PolygonParser.hpp */; };
 		F93BD7FD301B7D1900B3542E /* wuffs-v0.4.h in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7FA301B7D1900B3542E /* wuffs-v0.4.h */; };
 		F93BD7FE301B7D1900B3542E /* WuffsCodecs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7FB301B7D1900B3542E /* WuffsCodecs.cpp */; };
-		F9AB00013020000000000001 /* AnimatedImage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000002 /* AnimatedImage.hpp */; };
-		F9AB00013020000000000003 /* GIFDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000004 /* GIFDecoder.hpp */; };
-		F9AB00013020000000000005 /* GIFDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000006 /* GIFDecoder.cpp */; };
-		F9AB00013020000000000008 /* WuffsCodecs.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000009 /* WuffsCodecs.hpp */; };
-		F9AB0001302000000000000A /* Test_AnimatedImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000000B /* Test_AnimatedImage.cpp */; };
 		F943AAC82E2A099E001B4D43 /* DrawableText.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F943AAC72E2A099E001B4D43 /* DrawableText.hpp */; };
 		F943AACB2E2A09BB001B4D43 /* SivDrawableText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */; };
 		F943AACD2E2A09E5001B4D43 /* DrawableText.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */; };
@@ -2847,6 +2842,11 @@
 		F9AAE2C82EF0746400DE1655 /* SimpleGUILayer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */; };
 		F9AAE2CA2EF0748700DE1655 /* PerlinNoise.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */; };
 		F9AAE2CC2EF0749B00DE1655 /* PerlinNoise.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */; };
+		F9AB00013020000000000001 /* AnimatedImage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000002 /* AnimatedImage.hpp */; };
+		F9AB00013020000000000003 /* GIFDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000004 /* GIFDecoder.hpp */; };
+		F9AB00013020000000000005 /* GIFDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000006 /* GIFDecoder.cpp */; };
+		F9AB00013020000000000008 /* WuffsCodecs.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000009 /* WuffsCodecs.hpp */; };
+		F9AB0001302000000000000A /* Test_AnimatedImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000000B /* Test_AnimatedImage.cpp */; };
 		F9ADA8732FE314BA003EB3FA /* SivQuarterArcTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */; };
 		F9ADA8752FE314CE003EB3FA /* QuarterArcTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */; };
 		F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F62E6B3E27003734E7 /* Print.hpp */; };
@@ -3995,11 +3995,6 @@
 		F93BD7F73016AE7100B3542E /* PolygonParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PolygonParser.cpp; sourceTree = "<group>"; };
 		F93BD7FA301B7D1900B3542E /* wuffs-v0.4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "wuffs-v0.4.h"; sourceTree = "<group>"; };
 		F93BD7FB301B7D1900B3542E /* WuffsCodecs.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WuffsCodecs.cpp; sourceTree = "<group>"; };
-		F9AB00013020000000000002 /* AnimatedImage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImage.hpp; sourceTree = "<group>"; };
-		F9AB00013020000000000004 /* GIFDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GIFDecoder.hpp; sourceTree = "<group>"; };
-		F9AB00013020000000000006 /* GIFDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GIFDecoder.cpp; sourceTree = "<group>"; };
-		F9AB00013020000000000009 /* WuffsCodecs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WuffsCodecs.hpp; sourceTree = "<group>"; };
-		F9AB0001302000000000000B /* Test_AnimatedImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AnimatedImage.cpp; sourceTree = "<group>"; };
 		F943AAC72E2A099E001B4D43 /* DrawableText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.hpp; sourceTree = "<group>"; };
 		F943AAC92E2A09BB001B4D43 /* SivDrawableText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDrawableText.cpp; sourceTree = "<group>"; };
 		F943AACC2E2A09E5001B4D43 /* DrawableText.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DrawableText.ipp; sourceTree = "<group>"; };
@@ -6133,6 +6128,11 @@
 		F9AAE2C72EF0746400DE1655 /* SimpleGUILayer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimpleGUILayer.hpp; sourceTree = "<group>"; };
 		F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.hpp; sourceTree = "<group>"; };
 		F9AAE2CB2EF0749B00DE1655 /* PerlinNoise.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerlinNoise.ipp; sourceTree = "<group>"; };
+		F9AB00013020000000000002 /* AnimatedImage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImage.hpp; sourceTree = "<group>"; };
+		F9AB00013020000000000004 /* GIFDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GIFDecoder.hpp; sourceTree = "<group>"; };
+		F9AB00013020000000000006 /* GIFDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GIFDecoder.cpp; sourceTree = "<group>"; };
+		F9AB00013020000000000009 /* WuffsCodecs.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WuffsCodecs.hpp; sourceTree = "<group>"; };
+		F9AB0001302000000000000B /* Test_AnimatedImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AnimatedImage.cpp; sourceTree = "<group>"; };
 		F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuarterArcTable.cpp; sourceTree = "<group>"; };
 		F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QuarterArcTable.hpp; sourceTree = "<group>"; };
 		F9AEA4F62E6B3E27003734E7 /* Print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.hpp; sourceTree = "<group>"; };
@@ -7291,6 +7291,7 @@
 				F9797EAA2F667F0F00518D26 /* AACQuality.hpp */,
 				F9070BBD2B9F175000383E4D /* AlignedAllocator.hpp */,
 				F981118E2EC8C5D800C50DD1 /* Anchor.hpp */,
+				F9AB00013020000000000002 /* AnimatedImage.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
 				F9E794642C19B6D6002615BA /* ArrayAlgorithm.hpp */,
 				F9E794462C1973FC002615BA /* ArrayParallel.hpp */,
@@ -7447,7 +7448,6 @@
 				F9DD96342F0965890026DFA5 /* IEffect.hpp */,
 				F9528C5F2BC05B0200222F45 /* IImageDecoder.hpp */,
 				F9528C612BC05B0200222F45 /* IImageEncoder.hpp */,
-				F9AB00013020000000000002 /* AnimatedImage.hpp */,
 				F9528B392BB69C1800222F45 /* Image.hpp */,
 				F9528C5B2BC05B0200222F45 /* ImageDecoder.hpp */,
 				F90F7A7D2FACFB660077F398 /* ImageDraw.hpp */,
@@ -9983,14 +9983,6 @@
 				F9528C972BC1206E00222F45 /* PNGEncoder.cpp */,
 			);
 			path = PNG;
-			sourceTree = "<group>";
-		};
-		F9AB00013020000000000007 /* GIF */ = {
-			isa = PBXGroup;
-			children = (
-				F9AB00013020000000000006 /* GIFDecoder.cpp */,
-			);
-			path = GIF;
 			sourceTree = "<group>";
 		};
 		F9528C9E2BC1208B00222F45 /* libpng */ = {
@@ -13181,6 +13173,14 @@
 				F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */,
 			);
 			path = AsyncTaskStatus;
+			sourceTree = "<group>";
+		};
+		F9AB00013020000000000007 /* GIF */ = {
+			isa = PBXGroup;
+			children = (
+				F9AB00013020000000000006 /* GIFDecoder.cpp */,
+			);
+			path = GIF;
 			sourceTree = "<group>";
 		};
 		F9ADA8722FE314BA003EB3FA /* QuarterArcTable */ = {

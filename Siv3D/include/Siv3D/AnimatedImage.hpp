@@ -87,7 +87,7 @@ namespace s3d
 		uint32 maxFrames = DefaultMaxAnimatedImageFrames;
 
 		/// @brief 返却する各フレームにアルファ乗算処理を適用するか
-		PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::No;
+		PremultiplyAlpha premultiplyAlpha = PremultiplyAlpha::Yes;
 	};
 
 	/// @brief アニメーション画像のデコードエラー
