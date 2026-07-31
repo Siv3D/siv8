@@ -24,10 +24,168 @@ namespace s3d
 {
 	namespace
 	{
+		class PNGAnimationProbe
+		{
+		public:
+
+			void update(const uint8* data, size_t size) noexcept
+			{
+				while ((size != 0) && (not m_done))
+				{
+					if (m_signatureBytesRead < m_signature.size())
+					{
+						const size_t count = std::min(
+							(m_signature.size() - m_signatureBytesRead),
+							size);
+						std::memcpy(
+							(m_signature.data() + m_signatureBytesRead),
+							data,
+							count);
+						m_signatureBytesRead += count;
+						data += count;
+						size -= count;
+
+						if ((m_signatureBytesRead == m_signature.size())
+							&& (std::memcmp(m_signature.data(), PNGSignature.data(), PNGSignature.size()) != 0))
+						{
+							m_done = true;
+						}
+
+						continue;
+					}
+
+					if (m_chunkHeaderBytesRead < m_chunkHeader.size())
+					{
+						const size_t count = std::min(
+							(m_chunkHeader.size() - m_chunkHeaderBytesRead),
+							size);
+						std::memcpy(
+							(m_chunkHeader.data() + m_chunkHeaderBytesRead),
+							data,
+							count);
+						m_chunkHeaderBytesRead += count;
+						data += count;
+						size -= count;
+
+						if (m_chunkHeaderBytesRead == m_chunkHeader.size())
+						{
+							beginChunk();
+						}
+
+						continue;
+					}
+
+					if (m_chunkDataRemaining != 0)
+					{
+						const size_t count = static_cast<size_t>(
+							std::min<uint64>(m_chunkDataRemaining, size));
+
+						if (m_isAnimationControl)
+						{
+							std::memcpy(
+								(m_animationControlData.data() + m_chunkDataBytesRead),
+								data,
+								count);
+						}
+
+						m_chunkDataBytesRead += count;
+						m_chunkDataRemaining -= count;
+						data += count;
+						size -= count;
+
+						if (m_isAnimationControl && (m_chunkDataRemaining == 0))
+						{
+							const uint32 frameCount =
+								((static_cast<uint32>(m_animationControlData[0]) << 24)
+									| (static_cast<uint32>(m_animationControlData[1]) << 16)
+									| (static_cast<uint32>(m_animationControlData[2]) << 8)
+									| static_cast<uint32>(m_animationControlData[3]));
+							m_isAnimated = (1 < frameCount);
+							m_done = true;
+						}
+
+						continue;
+					}
+
+					const size_t count = std::min(m_crcBytesRemaining, size);
+					m_crcBytesRemaining -= count;
+					data += count;
+					size -= count;
+
+					if (m_crcBytesRemaining == 0)
+					{
+						m_chunkHeaderBytesRead = 0;
+						m_chunkDataBytesRead = 0;
+						m_isAnimationControl = false;
+					}
+				}
+			}
+
+			[[nodiscard]]
+			bool isAnimated() const noexcept
+			{
+				return m_isAnimated;
+			}
+
+		private:
+
+			void beginChunk() noexcept
+			{
+				const uint32 chunkLength =
+					((static_cast<uint32>(m_chunkHeader[0]) << 24)
+						| (static_cast<uint32>(m_chunkHeader[1]) << 16)
+						| (static_cast<uint32>(m_chunkHeader[2]) << 8)
+						| static_cast<uint32>(m_chunkHeader[3]));
+				const uint8* const chunkType = (m_chunkHeader.data() + 4);
+				m_isAnimationControl = (std::memcmp(chunkType, "acTL", 4) == 0);
+
+				if (m_isAnimationControl && (chunkLength != m_animationControlData.size()))
+				{
+					m_done = true;
+					return;
+				}
+
+				if (std::memcmp(chunkType, "IDAT", 4) == 0)
+				{
+					m_done = true;
+					return;
+				}
+
+				m_chunkDataRemaining = chunkLength;
+				m_crcBytesRemaining = 4;
+			}
+
+			static constexpr std::array<uint8, 8> PNGSignature =
+				{ 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A };
+
+			std::array<uint8, 8> m_signature{};
+
+			std::array<uint8, 8> m_chunkHeader{};
+
+			std::array<uint8, 8> m_animationControlData{};
+
+			size_t m_signatureBytesRead = 0;
+
+			size_t m_chunkHeaderBytesRead = 0;
+
+			uint64 m_chunkDataRemaining = 0;
+
+			size_t m_chunkDataBytesRead = 0;
+
+			size_t m_crcBytesRemaining = 0;
+
+			bool m_isAnimationControl = false;
+
+			bool m_isAnimated = false;
+
+			bool m_done = false;
+		};
+
 		struct LookAheadReader
 		{
 			int64 pos = 0;
 			const IReader* reader = nullptr;
+			PNGAnimationProbe animationProbe;
 		};
 
 		struct PNGReadInfo
@@ -38,6 +196,7 @@ namespace s3d
 			int bitDepth = 0;
 			int colorType = 0;
 			int channels = 0;
+			bool isAnimated = false;
 		};
 
 		[[noreturn]]
@@ -66,6 +225,7 @@ namespace s3d
 				::png_error(png_ptr, "PNG lookahead failed");
 			}
 
+			lookAheadReader->animationProbe.update(buf, length);
 			lookAheadReader->pos += static_cast<int64>(length);
 		}
 
@@ -100,6 +260,7 @@ namespace s3d
 
 			PNGReadInfo readInfo;
 			::png_get_IHDR(png_ptr, info_ptr, &readInfo.width, &readInfo.height, &readInfo.bitDepth, &readInfo.colorType, nullptr, nullptr, nullptr);
+			readInfo.isAnimated = reader->animationProbe.isAnimated();
 			*result = readInfo;
 
 			return true;
@@ -322,7 +483,7 @@ namespace s3d
 			::png_destroy_info_struct(png_ptr, &info_ptr);
 		};
 
-		LookAheadReader lookAheadReader{ 0, &reader };
+		LookAheadReader lookAheadReader{ 0, &reader, {} };
 		PNGReadInfo readInfo;
 
 		if (not ReadPNGInfo(png_ptr, info_ptr, &lookAheadReader, &readInfo))
@@ -359,7 +520,7 @@ namespace s3d
 			pixelFormat = ImagePixelFormat::R8G8B8;
 		}
 
-		return ImageInfo{ Size{ readInfo.width, readInfo.height }, ImageFormat::PNG, pixelFormat, false };
+		return ImageInfo{ Size{ readInfo.width, readInfo.height }, ImageFormat::PNG, pixelFormat, readInfo.isAnimated };
 	}
 
 	////////////////////////////////////////////////////////////////

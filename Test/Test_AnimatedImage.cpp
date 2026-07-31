@@ -183,7 +183,16 @@ TEST_CASE("GIFDecoder")
 	REQUIRE(info);
 	CHECK_EQ(info->size, Size{ 2, 1 });
 	CHECK_EQ(info->imageFormat, ImageFormat::GIF);
-	CHECK_FALSE(info->isAnimated);
+	CHECK(info->isAnimated);
+	CHECK_EQ(infoReader.getPos(), 0);
+
+	auto staticGIF = AnimatedGIF;
+	staticGIF[61] = 0x3B;
+	MemoryReader staticInfoReader{ staticGIF.data(), 62 };
+	const Optional<ImageInfo> staticInfo = decoder.getImageInfo(staticInfoReader);
+	REQUIRE(staticInfo);
+	CHECK_FALSE(staticInfo->isAnimated);
+	CHECK_EQ(staticInfoReader.getPos(), 0);
 
 	const Image image = decoder.decode(
 		MakeReader(AnimatedGIF),
@@ -202,6 +211,45 @@ TEST_CASE("GIFDecoder")
 		PremultiplyAlpha::No);
 	REQUIRE(shortReads);
 	CHECK_EQ(shortReads.size(), Size{ 2, 1 });
+}
+
+TEST_CASE("PNGDecoder animated image info")
+{
+	PNGDecoder decoder;
+	uint8 header[IImageDecoder::RequiredHeaderBytes]{};
+	std::memcpy(header, AnimatedPNG.data(), sizeof(header));
+
+	CHECK_EQ(decoder.name(), U"PNG");
+	CHECK_EQ(decoder.imageFormat(), ImageFormat::PNG);
+	CHECK(decoder.isHeader(header));
+
+	MemoryReader infoReader{ AnimatedPNG.data(), AnimatedPNG.size() };
+	const Optional<ImageInfo> info = decoder.getImageInfo(infoReader);
+	REQUIRE(info);
+	CHECK_EQ(info->size, Size{ 2, 1 });
+	CHECK_EQ(info->imageFormat, ImageFormat::PNG);
+	CHECK(info->isAnimated);
+	CHECK_EQ(infoReader.getPos(), 0);
+
+	auto singleFrameAPNG = AnimatedPNG;
+	singleFrameAPNG[44] = 0x01;
+	MemoryReader singleFrameInfoReader{
+		singleFrameAPNG.data(),
+		singleFrameAPNG.size()
+	};
+	const Optional<ImageInfo> singleFrameInfo =
+		decoder.getImageInfo(singleFrameInfoReader);
+	REQUIRE(singleFrameInfo);
+	CHECK_FALSE(singleFrameInfo->isAnimated);
+	CHECK_EQ(singleFrameInfoReader.getPos(), 0);
+
+	auto staticPNG = AnimatedPNG;
+	std::memcpy((staticPNG.data() + 37), "tEXt", 4);
+	MemoryReader staticInfoReader{ staticPNG.data(), staticPNG.size() };
+	const Optional<ImageInfo> staticInfo = decoder.getImageInfo(staticInfoReader);
+	REQUIRE(staticInfo);
+	CHECK_FALSE(staticInfo->isAnimated);
+	CHECK_EQ(staticInfoReader.getPos(), 0);
 }
 
 TEST_CASE("DecodeAnimatedImage GIF")
