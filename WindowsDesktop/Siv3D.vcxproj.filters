@@ -2037,6 +2037,12 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImageDecodeResult.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImageReadResult.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImageReader.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\RFC1321\RFC1321.hpp">
       <Filter>src\ThirdParty\RFC1321</Filter>
     </ClInclude>
@@ -5896,6 +5902,15 @@
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageFrame.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReadStatus.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReadResult.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReader.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1330,11 +1330,20 @@
 // アニメーション画像のデコードエラー | Animated image decode error
 # include <Siv3D/AnimatedImageDecodeError.hpp>
 
+// アニメーション画像のストリーム読み込み状態 | Animated image stream read status
+# include <Siv3D/AnimatedImageReadStatus.hpp>
+
 // アニメーション画像のデコード結果 | Animated image decode result
 # include <Siv3D/AnimatedImageDecodeResult.hpp>
 
+// アニメーション画像のストリーム読み込み結果 | Animated image stream read result
+# include <Siv3D/AnimatedImageReadResult.hpp>
+
 // アニメーション画像デコーダ | Animated image decoder
 # include <Siv3D/AnimatedImageDecoder.hpp>
+
+// アニメーション画像ストリームリーダー | Animated image stream reader
+# include <Siv3D/AnimatedImageReader.hpp>
 
 // PNG 画像 | PNG image
 # include <Siv3D/ImageFormat/PNGDecoder.hpp>
@@ -1378,9 +1387,6 @@
 # include <Siv3D/ImageFormat/TGADecoder.hpp>
 # include <Siv3D/ImageFormat/TGAEncoder.hpp>
 
-//// アニメーション GIF の読み込み | Animated GIF reader
-//# include <Siv3D/AnimatedGIFReader.hpp>
-//
 //// アニメーション GIF の書き出し | Animated GIF writer
 //# include <Siv3D/AnimatedGIFWriter.hpp>
 //

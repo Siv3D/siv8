@@ -334,3 +334,170 @@ TEST_CASE("DecodeAPNG")
 	CHECK_EQ(tooManyFrames.error, AnimatedImageDecodeError::TooManyFrames);
 	CHECK(tooManyFrames.image.isEmpty());
 }
+
+TEST_CASE("AnimatedImageReader GIF")
+{
+	AnimatedImageReader empty;
+	CHECK_FALSE(empty);
+	CHECK_EQ(empty.size(), Size{ 0, 0 });
+	CHECK_EQ(empty.playCount(), uint32{ 0 });
+	CHECK_EQ(empty.error(), AnimatedImageDecodeError::None);
+	AnimatedImageFrame emptyFrame;
+	CHECK_EQ(empty.readFrame(emptyFrame), AnimatedImageReadStatus::Error);
+	CHECK_EQ(empty.error(), AnimatedImageDecodeError::ReadError);
+	empty.close();
+	CHECK_EQ(empty.error(), AnimatedImageDecodeError::None);
+
+	AnimatedImageReader reader{ MemoryReader{ AnimatedGIF.data(), AnimatedGIF.size() } };
+	REQUIRE(reader);
+	CHECK_EQ(reader.size(), Size{ 2, 1 });
+	CHECK_EQ(reader.playCount(), uint32{ 3 });
+	CHECK_EQ(reader.error(), AnimatedImageDecodeError::None);
+
+	AnimatedImageFrame frame;
+	frame.image.resize(2, 1);
+	const Color* const imageData = frame.image.data();
+	CHECK_EQ(reader.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(frame.image.data(), imageData);
+	CHECK_EQ(frame.duration.count(), doctest::Approx(0.1));
+	CHECK_EQ(frame.image[0][0], Color{ 255, 0, 0 });
+
+	CHECK_EQ(reader.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(frame.image.data(), imageData);
+	CHECK_EQ(frame.duration.count(), doctest::Approx(0.2));
+	CHECK_EQ(frame.image[0][0], Color{ 0, 0, 255 });
+
+	const AnimatedImageReadResult end = reader.readFrame();
+	CHECK_FALSE(end);
+	CHECK_EQ(end.status, AnimatedImageReadStatus::EndOfStream);
+	CHECK_EQ(end.error, AnimatedImageDecodeError::None);
+	CHECK(reader);
+
+	AnimatedImageReader valueReader{ MakeReader(AnimatedGIF) };
+	const AnimatedImageReadResult first = valueReader.readFrame();
+	REQUIRE(first);
+	CHECK_EQ(first.status, AnimatedImageReadStatus::Frame);
+	CHECK_EQ(first.error, AnimatedImageDecodeError::None);
+	CHECK_EQ(first.frame.image[0][0], Color{ 255, 0, 0 });
+
+	AnimatedImageReader movedReader{ std::move(valueReader) };
+	CHECK_FALSE(valueReader);
+	REQUIRE(movedReader);
+	const AnimatedImageReadResult movedSecond = movedReader.readFrame();
+	REQUIRE(movedSecond);
+	CHECK_EQ(movedSecond.frame.image[0][0], Color{ 0, 0, 255 });
+	CHECK(valueReader.open(
+		MemoryReader{ AnimatedPNG.data(), AnimatedPNG.size() }));
+	CHECK(valueReader);
+	CHECK_EQ(valueReader.size(), Size{ 2, 1 });
+	CHECK_EQ(valueReader.playCount(), uint32{ 3 });
+
+	AnimatedImageDecodeOptions streamByteLimit;
+	streamByteLimit.maxTotalDecodedBytes = 8;
+	AnimatedImageReader byteLimitedReader{
+		MakeReader(AnimatedGIF),
+		streamByteLimit
+	};
+	REQUIRE(byteLimitedReader);
+	CHECK_EQ(
+		byteLimitedReader.readFrame(frame),
+		AnimatedImageReadStatus::Frame);
+	CHECK_EQ(
+		byteLimitedReader.readFrame(frame),
+		AnimatedImageReadStatus::Frame);
+	CHECK_EQ(
+		byteLimitedReader.readFrame(frame),
+		AnimatedImageReadStatus::EndOfStream);
+
+	AnimatedImageDecodeOptions insufficientByteLimit;
+	insufficientByteLimit.maxTotalDecodedBytes = 7;
+	AnimatedImageReader insufficientByteLimitedReader{
+		MakeReader(AnimatedGIF),
+		insufficientByteLimit
+	};
+	CHECK_FALSE(insufficientByteLimitedReader);
+	CHECK_EQ(
+		insufficientByteLimitedReader.error(),
+		AnimatedImageDecodeError::DecodedBytesLimitExceeded);
+
+	AnimatedImageDecodeOptions frameLimit;
+	frameLimit.maxFrames = 1;
+	AnimatedImageReader frameLimitedReader{
+		MakeReader(AnimatedGIF),
+		frameLimit
+	};
+	REQUIRE(frameLimitedReader);
+	CHECK_EQ(
+		frameLimitedReader.readFrame(frame),
+		AnimatedImageReadStatus::Frame);
+	const Color previousPixel = frame.image[0][0];
+	CHECK_EQ(
+		frameLimitedReader.readFrame(frame),
+		AnimatedImageReadStatus::Error);
+	CHECK_EQ(frameLimitedReader.error(), AnimatedImageDecodeError::TooManyFrames);
+	CHECK_EQ(frame.image[0][0], previousPixel);
+	CHECK_FALSE(frameLimitedReader);
+
+	AnimatedImageReader truncated{
+		std::make_unique<MemoryReader>(
+			AnimatedGIF.data(),
+			(AnimatedGIF.size() - 5))
+	};
+	REQUIRE(truncated);
+	CHECK_EQ(truncated.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(truncated.readFrame(frame), AnimatedImageReadStatus::Error);
+	CHECK_NE(truncated.error(), AnimatedImageDecodeError::None);
+}
+
+TEST_CASE("AnimatedImageReader APNG")
+{
+	AnimatedImageReader reader{
+		std::make_unique<OneByteReader>(
+			AnimatedPNG.data(),
+			AnimatedPNG.size())
+	};
+	REQUIRE(reader);
+	CHECK_EQ(reader.size(), Size{ 2, 1 });
+	CHECK_EQ(reader.playCount(), uint32{ 3 });
+
+	AnimatedImageFrame frame;
+	frame.image.resize(2, 1);
+	const Color* const imageData = frame.image.data();
+	CHECK_EQ(reader.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(frame.image.data(), imageData);
+	CHECK_EQ(frame.image[0][0], Color{ 255, 0, 0 });
+	CHECK_EQ(frame.image[0][1], Color{ 255, 0, 0 });
+
+	const AnimatedImageReadResult second = reader.readFrame();
+	REQUIRE(second);
+	CHECK_EQ(second.frame.image[0][0], Color{ 255, 0, 0 });
+	CHECK_EQ(second.frame.image[0][1], Color{ 0, 0, 255 });
+	CHECK_EQ(reader.readFrame(frame), AnimatedImageReadStatus::EndOfStream);
+
+	AnimatedImageReader composited{ MakeReader(CompositedPNG) };
+	REQUIRE(composited);
+	CHECK_EQ(composited.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(frame.image[0][0], Color{ 255, 0, 0 });
+	CHECK_EQ(composited.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(frame.image[0][1], Color{ 0, 0, 255 });
+	CHECK_EQ(composited.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(frame.image[0][0], Color{ 127, 128, 0 });
+	CHECK_EQ(frame.image[0][1], Color{ 0, 0 });
+	CHECK_EQ(composited.readFrame(frame), AnimatedImageReadStatus::Frame);
+	CHECK_EQ(frame.image[0][0], Color{ 255, 0, 0 });
+	CHECK_EQ(frame.image[0][1], Color{ 255, 255, 255 });
+	CHECK_EQ(
+		composited.readFrame(frame),
+		AnimatedImageReadStatus::EndOfStream);
+
+	auto staticPNG = AnimatedPNG;
+	std::memcpy((staticPNG.data() + 37), "tEXt", 4);
+	AnimatedImageReader notAnimated{ MakeReader(staticPNG) };
+	CHECK_FALSE(notAnimated);
+	CHECK_EQ(notAnimated.error(), AnimatedImageDecodeError::NotAnimated);
+
+	const std::array<uint8, 8> invalidData{};
+	AnimatedImageReader invalid{ MakeReader(invalidData) };
+	CHECK_FALSE(invalid);
+	CHECK_EQ(invalid.error(), AnimatedImageDecodeError::InvalidFormat);
+}

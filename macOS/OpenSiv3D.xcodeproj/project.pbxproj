@@ -2854,6 +2854,11 @@
 		F9AB00013020000000000014 /* AnimatedImageDecoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000015 /* AnimatedImageDecoder.hpp */; };
 		F9AB00013020000000000016 /* AnimatedImage.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000017 /* AnimatedImage.ipp */; };
 		F9AB00013020000000000018 /* AnimatedImageDecodeResult.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */; };
+		F9AB0001302000000000001A /* AnimatedImageReadStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000001B /* AnimatedImageReadStatus.hpp */; };
+		F9AB0001302000000000001C /* AnimatedImageReadResult.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000001D /* AnimatedImageReadResult.hpp */; };
+		F9AB0001302000000000001E /* AnimatedImageReadResult.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB0001302000000000001F /* AnimatedImageReadResult.ipp */; };
+		F9AB00013020000000000020 /* AnimatedImageReader.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000021 /* AnimatedImageReader.hpp */; };
+		F9AB00013020000000000022 /* AnimatedImageReader.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9AB00013020000000000023 /* AnimatedImageReader.ipp */; };
 		F9ADA8732FE314BA003EB3FA /* SivQuarterArcTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */; };
 		F9ADA8752FE314CE003EB3FA /* QuarterArcTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */; };
 		F9AEA4F82E6B3E27003734E7 /* Print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9AEA4F62E6B3E27003734E7 /* Print.hpp */; };
@@ -6147,6 +6152,11 @@
 		F9AB00013020000000000015 /* AnimatedImageDecoder.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageDecoder.hpp; sourceTree = "<group>"; };
 		F9AB00013020000000000017 /* AnimatedImage.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImage.ipp; sourceTree = "<group>"; };
 		F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageDecodeResult.ipp; sourceTree = "<group>"; };
+		F9AB0001302000000000001B /* AnimatedImageReadStatus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageReadStatus.hpp; sourceTree = "<group>"; };
+		F9AB0001302000000000001D /* AnimatedImageReadResult.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageReadResult.hpp; sourceTree = "<group>"; };
+		F9AB0001302000000000001F /* AnimatedImageReadResult.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageReadResult.ipp; sourceTree = "<group>"; };
+		F9AB00013020000000000021 /* AnimatedImageReader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageReader.hpp; sourceTree = "<group>"; };
+		F9AB00013020000000000023 /* AnimatedImageReader.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AnimatedImageReader.ipp; sourceTree = "<group>"; };
 		F9ADA8712FE314BA003EB3FA /* SivQuarterArcTable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuarterArcTable.cpp; sourceTree = "<group>"; };
 		F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QuarterArcTable.hpp; sourceTree = "<group>"; };
 		F9AEA4F62E6B3E27003734E7 /* Print.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Print.hpp; sourceTree = "<group>"; };
@@ -7178,6 +7188,8 @@
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
 				F9AB00013020000000000017 /* AnimatedImage.ipp */,
 				F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */,
+				F9AB0001302000000000001F /* AnimatedImageReadResult.ipp */,
+				F9AB00013020000000000023 /* AnimatedImageReader.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
 				F9528BAE2BBE7D1100222F45 /* MemoryReader.ipp */,
 				F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */,
@@ -7313,6 +7325,9 @@
 				F9AB00013020000000000013 /* AnimatedImageDecodeResult.hpp */,
 				F9AB00013020000000000015 /* AnimatedImageDecoder.hpp */,
 				F9AB0001302000000000000D /* AnimatedImageFrame.hpp */,
+				F9AB0001302000000000001B /* AnimatedImageReadStatus.hpp */,
+				F9AB0001302000000000001D /* AnimatedImageReadResult.hpp */,
+				F9AB00013020000000000021 /* AnimatedImageReader.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
 				F9E794642C19B6D6002615BA /* ArrayAlgorithm.hpp */,
 				F9E794462C1973FC002615BA /* ArrayParallel.hpp */,
@@ -14093,6 +14108,11 @@
 				F9AB00013020000000000014 /* AnimatedImageDecoder.hpp in Headers */,
 				F9AB00013020000000000016 /* AnimatedImage.ipp in Headers */,
 				F9AB00013020000000000018 /* AnimatedImageDecodeResult.ipp in Headers */,
+				F9AB0001302000000000001A /* AnimatedImageReadStatus.hpp in Headers */,
+				F9AB0001302000000000001C /* AnimatedImageReadResult.hpp in Headers */,
+				F9AB0001302000000000001E /* AnimatedImageReadResult.ipp in Headers */,
+				F9AB00013020000000000020 /* AnimatedImageReader.hpp in Headers */,
+				F9AB00013020000000000022 /* AnimatedImageReader.ipp in Headers */,
 				F9AB00013020000000000003 /* GIFDecoder.hpp in Headers */,
 				F9AB00013020000000000008 /* WuffsCodecs.hpp in Headers */,
 				F95122212CB8227F00151291 /* TriangleIndex32.hpp in Headers */,

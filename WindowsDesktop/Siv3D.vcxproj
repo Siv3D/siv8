@@ -23,6 +23,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecodeResult.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageFrame.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReadStatus.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReadResult.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Array.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ArrayAlgorithm.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ArrayParallel.hpp" />
@@ -370,6 +373,8 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MD5Value.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImage.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImageDecodeResult.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImageReadResult.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\AnimatedImageReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MemoryReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MemoryViewReader.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MemoryWriter.ipp" />
