@@ -335,6 +335,40 @@ TEST_CASE("DecodeAnimatedImage APNG")
 	CHECK(tooManyFrames.image.isEmpty());
 }
 
+TEST_CASE("GetAnimatedImageInfo")
+{
+	const Optional<AnimatedImageInfo> gif = GetAnimatedImageInfo(
+		std::make_unique<OneByteReader>(
+			AnimatedGIF.data(),
+			AnimatedGIF.size()));
+	REQUIRE(gif);
+	CHECK_EQ(gif->imageSize, Size{ 2, 1 });
+	CHECK_EQ(gif->frameCount, size_t{ 2 });
+	CHECK_EQ(gif->duration.count(), doctest::Approx(0.3));
+	CHECK_EQ(gif->playCount, uint32{ 3 });
+
+	const Optional<AnimatedImageInfo> apng = GetAnimatedImageInfo(
+		std::make_unique<OneByteReader>(
+			AnimatedPNG.data(),
+			AnimatedPNG.size()));
+	REQUIRE(apng);
+	CHECK_EQ(apng->imageSize, Size{ 2, 1 });
+	CHECK_EQ(apng->frameCount, size_t{ 2 });
+	CHECK_EQ(apng->duration.count(), doctest::Approx(0.3));
+	CHECK_EQ(apng->playCount, uint32{ 3 });
+
+	auto staticPNG = AnimatedPNG;
+	std::memcpy((staticPNG.data() + 37), "tEXt", 4);
+	CHECK_FALSE(GetAnimatedImageInfo(MakeReader(staticPNG)));
+	CHECK_FALSE(GetAnimatedImageInfo(
+		std::make_unique<MemoryReader>(
+			AnimatedGIF.data(),
+			(AnimatedGIF.size() - 5))));
+
+	const std::array<uint8, 8> invalidData{};
+	CHECK_FALSE(GetAnimatedImageInfo(MakeReader(invalidData)));
+}
+
 TEST_CASE("AnimatedImageReader GIF")
 {
 	AnimatedImageReader empty;

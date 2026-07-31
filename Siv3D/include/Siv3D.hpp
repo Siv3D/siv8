@@ -1321,6 +1321,9 @@
 // アニメーション画像フレーム | Animated image frame
 # include <Siv3D/AnimatedImageFrame.hpp>
 
+// アニメーション画像情報 | Animated image info
+# include <Siv3D/AnimatedImageInfo.hpp>
+
 // アニメーション画像 | Animated image
 # include <Siv3D/AnimatedImage.hpp>
 

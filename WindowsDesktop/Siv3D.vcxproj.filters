@@ -5904,6 +5904,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageFrame.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageInfo.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReadStatus.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>

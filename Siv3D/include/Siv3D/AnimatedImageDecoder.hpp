@@ -12,12 +12,27 @@
 # pragma once
 # include <memory>
 # include "Common.hpp"
+# include "Optional.hpp"
+# include "AnimatedImageInfo.hpp"
 # include "AnimatedImageDecodeOptions.hpp"
 # include "AnimatedImageDecodeResult.hpp"
 
 namespace s3d
 {
 	class IReader;
+
+	/// @brief アニメーション画像の情報を取得します。
+	/// @param path GIF または APNG ファイルのパス
+	/// @return アニメーション画像の情報。取得に失敗した場合は none
+	[[nodiscard]]
+	Optional<AnimatedImageInfo> GetAnimatedImageInfo(FilePathView path);
+
+	/// @brief アニメーション画像の情報を取得します。
+	/// @param reader Reader オブジェクト。関数が所有権を取得します。
+	/// @return アニメーション画像の情報。取得に失敗した場合は none
+	[[nodiscard]]
+	Optional<AnimatedImageInfo> GetAnimatedImageInfo(
+		std::unique_ptr<IReader> reader);
 
 	/// @brief アニメーション画像をデコードします。
 	/// @param path GIF または APNG ファイルのパス

@@ -23,6 +23,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecodeResult.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageDecoder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageFrame.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReadStatus.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReadResult.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReader.hpp" />

@@ -574,6 +574,13 @@ namespace s3d
 			}
 		}
 
+		enum class WuffsDecodeMode
+		{
+			AllFrames,
+			Stream,
+			Metadata,
+		};
+
 		class WuffsAnimatedImageDecoder
 		{
 		public:
@@ -582,14 +589,14 @@ namespace s3d
 				std::unique_ptr<IReader> reader,
 				const WuffsImageFormat format,
 				const AnimatedImageDecodeOptions& options,
-				const bool accumulateDecodedBytes)
+				const WuffsDecodeMode mode)
 				: m_format{ format }
 				, m_options{ options }
 				, m_input{
 					std::move(reader),
 					(format != WuffsImageFormat::GIF)
 				}
-				, m_accumulateDecodedBytes{ accumulateDecodedBytes }
+				, m_mode{ mode }
 			{
 				try
 				{
@@ -625,6 +632,35 @@ namespace s3d
 			}
 
 			[[nodiscard]]
+			AnimatedImageReadStatus readFrameInfo(Duration& duration)
+			{
+				if (m_error != AnimatedImageDecodeError::None)
+				{
+					return AnimatedImageReadStatus::Error;
+				}
+
+				if (m_endOfData)
+				{
+					return AnimatedImageReadStatus::EndOfStream;
+				}
+
+				const AnimatedImageReadStatus status = loadFrameConfig();
+
+				if (status != AnimatedImageReadStatus::Frame)
+				{
+					return status;
+				}
+
+				duration = Duration{
+					(static_cast<double>(m_frameConfig.duration())
+						/ static_cast<double>(WUFFS_BASE__FLICKS_PER_SECOND))
+				};
+				++m_frameCount;
+				m_hasFrameConfig = false;
+				return AnimatedImageReadStatus::Frame;
+			}
+
+			[[nodiscard]]
 			AnimatedImageDecodeError error() const noexcept
 			{
 				return m_error;
@@ -633,13 +669,13 @@ namespace s3d
 			[[nodiscard]]
 			Size imageSize() const noexcept
 			{
-				return m_canvas.size();
+				return m_imageSize;
 			}
 
 			[[nodiscard]]
 			uint32 reserveFrameCount() const noexcept
 			{
-				if ((not m_accumulateDecodedBytes)
+				if ((m_mode != WuffsDecodeMode::AllFrames)
 					|| (m_format != WuffsImageFormat::APNG)
 					|| (not m_pngProbeValidated))
 				{
@@ -794,6 +830,21 @@ namespace s3d
 					|| (Image::MaxWidth < width) || (Image::MaxHeight < height))
 				{
 					m_error = AnimatedImageDecodeError::InvalidData;
+					return;
+				}
+
+				m_imageSize = Size{
+					static_cast<int32>(width),
+					static_cast<int32>(height)
+				};
+
+				if (m_mode == WuffsDecodeMode::Metadata)
+				{
+					if (loadFrameConfig() != AnimatedImageReadStatus::Frame)
+					{
+						return;
+					}
+
 					return;
 				}
 
@@ -954,7 +1005,7 @@ namespace s3d
 					return fail(AnimatedImageDecodeError::TooManyFrames);
 				}
 
-				if (m_accumulateDecodedBytes
+				if ((m_mode == WuffsDecodeMode::AllFrames)
 					&& AddExceeds(
 						m_decodedBytes,
 						m_imageBytes,
@@ -1059,7 +1110,7 @@ namespace s3d
 					(static_cast<double>(frameConfig.duration())
 						/ static_cast<double>(WUFFS_BASE__FLICKS_PER_SECOND))
 				};
-				if (m_accumulateDecodedBytes)
+				if (m_mode == WuffsDecodeMode::AllFrames)
 				{
 					m_decodedBytes += m_imageBytes;
 				}
@@ -1092,6 +1143,8 @@ namespace s3d
 			wuffs_base__frame_config m_frameConfig =
 				wuffs_base__null_frame_config();
 
+			Size m_imageSize{ 0, 0 };
+
 			Image m_canvas;
 
 			wuffs_base__pixel_buffer m_pixelBuffer =
@@ -1114,7 +1167,7 @@ namespace s3d
 
 			uint64 m_decodedBytes = 0;
 
-			uint32 m_frameCount = 0;
+			size_t m_frameCount = 0;
 
 			AnimatedImageDecodeError m_error = AnimatedImageDecodeError::None;
 
@@ -1122,7 +1175,7 @@ namespace s3d
 
 			bool m_pngProbeValidated = false;
 
-			bool m_accumulateDecodedBytes = false;
+			WuffsDecodeMode m_mode = WuffsDecodeMode::Stream;
 
 			bool m_hasFrameConfig = false;
 		};
@@ -1137,7 +1190,7 @@ namespace s3d
 				std::move(reader),
 				WuffsImageFormat::Auto,
 				options,
-				true
+				WuffsDecodeMode::AllFrames
 			};
 
 			if (decoder.error() != AnimatedImageDecodeError::None)
@@ -1196,6 +1249,59 @@ namespace s3d
 				return{ {}, AnimatedImageDecodeError::OutOfMemory };
 			}
 		}
+
+		[[nodiscard]]
+		static Optional<AnimatedImageInfo> GetInfo(
+			std::unique_ptr<IReader> reader)
+		{
+			try
+			{
+				WuffsAnimatedImageDecoder decoder{
+					std::move(reader),
+					WuffsImageFormat::Auto,
+					{},
+					WuffsDecodeMode::Metadata
+				};
+
+				if (decoder.error() != AnimatedImageDecodeError::None)
+				{
+					return none;
+				}
+
+				AnimatedImageInfo info;
+				info.imageSize = decoder.imageSize();
+
+				for (;;)
+				{
+					Duration frameDuration{ 0 };
+					const AnimatedImageReadStatus status =
+						decoder.readFrameInfo(frameDuration);
+
+					if (status == AnimatedImageReadStatus::Frame)
+					{
+						++info.frameCount;
+						info.duration += frameDuration;
+						continue;
+					}
+
+					if (status == AnimatedImageReadStatus::EndOfStream)
+					{
+						break;
+					}
+
+					return none;
+				}
+
+				info.playCount = (info.frameCount == 1)
+					? 1
+					: decoder.playCount();
+				return info;
+			}
+			catch (const std::bad_alloc&)
+			{
+				return none;
+			}
+		}
 	}
 
 	class AnimatedImageReader::AnimatedImageReaderDetail
@@ -1215,7 +1321,7 @@ namespace s3d
 					std::move(reader),
 					WuffsImageFormat::Auto,
 					options,
-					false);
+					WuffsDecodeMode::Stream);
 				m_error = m_decoder->error();
 				m_isOpen = (m_error == AnimatedImageDecodeError::None);
 				return m_isOpen;
@@ -1389,6 +1495,18 @@ namespace s3d
 			: AnimatedImageDecodeError::None;
 	}
 
+	Optional<AnimatedImageInfo> GetAnimatedImageInfo(
+		const FilePathView path)
+	{
+		return GetInfo(std::make_unique<BinaryFileReader>(path));
+	}
+
+	Optional<AnimatedImageInfo> GetAnimatedImageInfo(
+		std::unique_ptr<IReader> reader)
+	{
+		return GetInfo(std::move(reader));
+	}
+
 	AnimatedImageDecodeResult DecodeAnimatedImage(
 		const FilePathView path,
 		const AnimatedImageDecodeOptions& options)
@@ -1419,7 +1537,7 @@ namespace s3d
 				std::move(reader),
 				WuffsImageFormat::GIF,
 				options,
-				false
+				WuffsDecodeMode::Stream
 			};
 			AnimatedImageFrame frame;
 
