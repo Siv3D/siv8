@@ -84,7 +84,7 @@ namespace s3d
 			void update(const uint8* data, size_t size) noexcept
 			{
 				while ((size != 0) && (m_error == AnimatedImageDecodeError::None)
-					&& (not m_isAnimated) && (not m_isStatic))
+					&& (not m_isDone))
 				{
 					if (m_signatureIndex < m_signature.size())
 					{
@@ -135,10 +135,34 @@ namespace s3d
 							m_isInterlaced = (interlaceMethod == 1);
 						}
 
+						if (m_isACTL)
+						{
+							std::memcpy(
+								(m_animationControlData.data() + m_chunkDataIndex),
+								data,
+								count);
+						}
+
 						m_chunkDataIndex += count;
 						m_chunkDataRemaining -= count;
 						data += count;
 						size -= count;
+
+						if (m_isACTL && (m_chunkDataRemaining == 0))
+						{
+							m_declaredFrameCount = ReadBigEndianUint32(
+								m_animationControlData.data());
+
+							if (m_declaredFrameCount == 0)
+							{
+								m_error = AnimatedImageDecodeError::InvalidData;
+								return;
+							}
+
+							m_isAnimated = true;
+							m_isDone = true;
+						}
+
 						continue;
 					}
 
@@ -152,6 +176,7 @@ namespace s3d
 						m_chunkHeaderIndex = 0;
 						m_chunkDataIndex = 0;
 						m_isIHDR = false;
+						m_isACTL = false;
 					}
 				}
 			}
@@ -179,6 +204,19 @@ namespace s3d
 				return AnimatedImageDecodeError::TruncatedInput;
 			}
 
+			[[nodiscard]]
+			uint32 declaredFrameCount() const noexcept
+			{
+				return m_declaredFrameCount;
+			}
+
+			[[nodiscard]]
+			bool isComplete() const noexcept
+			{
+				return (m_isDone
+					|| (m_error != AnimatedImageDecodeError::None));
+			}
+
 		private:
 
 			void beginChunk() noexcept
@@ -187,6 +225,7 @@ namespace s3d
 				const uint8* const chunkType = (m_chunkHeader.data() + 4);
 				const bool isFirstChunk = (m_chunkCount == 0);
 				m_isIHDR = (std::memcmp(chunkType, "IHDR", 4) == 0);
+				m_isACTL = (std::memcmp(chunkType, "acTL", 4) == 0);
 
 				if ((isFirstChunk && ((not m_isIHDR) || (chunkLength != 13)))
 					|| ((not isFirstChunk) && m_isIHDR))
@@ -197,15 +236,13 @@ namespace s3d
 
 				++m_chunkCount;
 
-				if (std::memcmp(chunkType, "acTL", 4) == 0)
+				if (m_isACTL)
 				{
 					if ((chunkLength != 8) || m_seenIDAT)
 					{
 						m_error = AnimatedImageDecodeError::InvalidData;
 						return;
 					}
-
-					m_isAnimated = true;
 				}
 				else if (std::memcmp(chunkType, "IDAT", 4) == 0)
 				{
@@ -214,6 +251,7 @@ namespace s3d
 					if (not m_isAnimated)
 					{
 						m_isStatic = true;
+						m_isDone = true;
 					}
 				}
 
@@ -224,6 +262,8 @@ namespace s3d
 			std::array<uint8, 8> m_signature{};
 
 			std::array<uint8, 8> m_chunkHeader{};
+
+			std::array<uint8, 8> m_animationControlData{};
 
 			size_t m_signatureIndex = 0;
 
@@ -239,7 +279,11 @@ namespace s3d
 
 			AnimatedImageDecodeError m_error = AnimatedImageDecodeError::None;
 
+			uint32 m_declaredFrameCount = 0;
+
 			bool m_isIHDR = false;
+
+			bool m_isACTL = false;
 
 			bool m_seenIDAT = false;
 
@@ -248,6 +292,8 @@ namespace s3d
 			bool m_isStatic = false;
 
 			bool m_isInterlaced = false;
+
+			bool m_isDone = false;
 		};
 
 		class WuffsInput
@@ -256,14 +302,15 @@ namespace s3d
 
 			WuffsInput(std::unique_ptr<IReader> reader, const bool probePNG)
 				: m_reader{ std::move(reader) }
-				, m_buffer(InputBufferSize)
-				, m_source{ wuffs_base__ptr_u8__writer(m_buffer.data(), m_buffer.size()) }
-				, m_probePNG{ probePNG }
+				, m_probePNG{ probePNG } {}
+
+			[[nodiscard]]
+			bool initialize()
 			{
 				if ((not m_reader) || (not *m_reader))
 				{
 					m_error = AnimatedImageDecodeError::ReadError;
-					return;
+					return false;
 				}
 
 				const int64 size = m_reader->size();
@@ -272,11 +319,16 @@ namespace s3d
 				if ((size < 0) || (pos < 0) || (size < pos))
 				{
 					m_error = AnimatedImageDecodeError::ReadError;
-					return;
+					return false;
 				}
 
+				m_buffer.resize(InputBufferSize);
+				m_source = wuffs_base__ptr_u8__writer(
+					m_buffer.data(),
+					m_buffer.size());
 				m_remaining = static_cast<uint64>(size - pos);
 				m_source.meta.closed = (m_remaining == 0);
+				return true;
 			}
 
 			[[nodiscard]]
@@ -361,6 +413,18 @@ namespace s3d
 				return m_pngProbe.result();
 			}
 
+			[[nodiscard]]
+			uint32 declaredFrameCount() const noexcept
+			{
+				return m_pngProbe.declaredFrameCount();
+			}
+
+			[[nodiscard]]
+			bool pngProbeIsComplete() const noexcept
+			{
+				return m_pngProbe.isComplete();
+			}
+
 		private:
 
 			std::unique_ptr<IReader> m_reader;
@@ -414,7 +478,6 @@ namespace s3d
 			wuffs_base__rect_ie_u32 bounds = wuffs_base__empty_rect_ie_u32();
 			wuffs_base__animation_disposal disposal = WUFFS_BASE__ANIMATION_DISPOSAL__NONE;
 			wuffs_base__color_u32_argb_premul backgroundColor = 0;
-			Array<Color> restorePixels;
 		};
 
 		[[nodiscard]]
@@ -457,7 +520,8 @@ namespace s3d
 		static void RestorePreviousFrame(
 			Image& canvas,
 			wuffs_base__pixel_buffer& pixelBuffer,
-			const PreviousFrame& previous)
+			const PreviousFrame& previous,
+			const Array<Color>& restorePixels)
 		{
 			if (previous.disposal == WUFFS_BASE__ANIMATION_DISPOSAL__RESTORE_BACKGROUND)
 			{
@@ -478,21 +542,21 @@ namespace s3d
 						+ previous.bounds.min_incl_x);
 					std::memcpy(
 						dst,
-						(previous.restorePixels.data() + sourceIndex),
+						(restorePixels.data() + sourceIndex),
 						(static_cast<size_t>(width) * sizeof(Color)));
 					sourceIndex += width;
 				}
 			}
 		}
 
-		[[nodiscard]]
-		static Array<Color> SaveFrameRectangle(
+		static void SaveFrameRectangle(
 			const Image& canvas,
-			const wuffs_base__rect_ie_u32 bounds)
+			const wuffs_base__rect_ie_u32 bounds,
+			Array<Color>& restorePixels)
 		{
 			const uint32 width = bounds.width();
 			const uint32 height = bounds.height();
-			Array<Color> result(static_cast<size_t>(width) * height);
+			restorePixels.resize(static_cast<size_t>(width) * height);
 			size_t destinationIndex = 0;
 
 			for (uint32 y = 0; y < height; ++y)
@@ -501,246 +565,356 @@ namespace s3d
 					+ (static_cast<size_t>(bounds.min_incl_y + y) * canvas.width())
 					+ bounds.min_incl_x);
 				std::memcpy(
-					(result.data() + destinationIndex),
+					(restorePixels.data() + destinationIndex),
 					src,
 					(static_cast<size_t>(width) * sizeof(Color)));
 				destinationIndex += width;
 			}
-
-			return result;
 		}
 
-		[[nodiscard]]
-		static AnimatedImageDecodeResult DecodeWuffs(
-			std::unique_ptr<IReader> reader,
-			const WuffsImageFormat format,
-			const AnimatedImageDecodeOptions& options,
-			const bool firstFrameOnly)
+		enum class FrameReadStatus
 		{
-			AnimatedImageDecodeResult result;
+			Frame,
+			EndOfData,
+			Error,
+		};
 
-			if (options.maxWorkingMemoryBytes < InputBufferSize)
+		class WuffsAnimatedImageDecoder
+		{
+		public:
+
+			WuffsAnimatedImageDecoder(
+				std::unique_ptr<IReader> reader,
+				const WuffsImageFormat format,
+				const AnimatedImageDecodeOptions& options)
+				: m_format{ format }
+				, m_options{ options }
+				, m_input{
+					std::move(reader),
+					(format == WuffsImageFormat::APNG)
+				}
 			{
-				result.error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
-				return result;
-			}
-
-			WuffsInput input{
-				std::move(reader),
-				(format == WuffsImageFormat::APNG)
-			};
-
-			if (input.error() != AnimatedImageDecodeError::None)
-			{
-				result.error = input.error();
-				return result;
-			}
-
-			const size_t requiredHeaderBytes =
-				(format == WuffsImageFormat::GIF) ? 6 : 8;
-
-			if (not input.prepareHeader(requiredHeaderBytes))
-			{
-				result.error = (input.error() == AnimatedImageDecodeError::None)
-					? AnimatedImageDecodeError::InvalidFormat
-					: input.error();
-				return result;
-			}
-
-			if ((format == WuffsImageFormat::GIF)
-				&& (std::memcmp(input.source().reader_pointer(), "GIF87a", 6) != 0)
-				&& (std::memcmp(input.source().reader_pointer(), "GIF89a", 6) != 0))
-			{
-				result.error = AnimatedImageDecodeError::InvalidFormat;
-				return result;
-			}
-
-			wuffs_base__image_decoder::unique_ptr decoder{ nullptr };
-
-			if (format == WuffsImageFormat::GIF)
-			{
-				decoder = wuffs_gif__decoder::alloc_as__wuffs_base__image_decoder();
-			}
-			else
-			{
-				decoder = wuffs_png__decoder::alloc_as__wuffs_base__image_decoder();
-			}
-
-			if (not decoder)
-			{
-				result.error = AnimatedImageDecodeError::OutOfMemory;
-				return result;
-			}
-
-			wuffs_base__image_config imageConfig = wuffs_base__null_image_config();
-			const PumpResult imageConfigResult = Pump(
-				input,
-				[&](wuffs_base__io_buffer& source)
+				try
 				{
-					return decoder->decode_image_config(&imageConfig, &source);
-				});
-
-			if (imageConfigResult.error != AnimatedImageDecodeError::None)
-			{
-				result.error = imageConfigResult.error;
-				return result;
-			}
-
-			if (imageConfigResult.status.repr != nullptr)
-			{
-				result.error = ToDecodeError(imageConfigResult.status, format);
-				return result;
-			}
-
-			if (format == WuffsImageFormat::APNG)
-			{
-				result.error = input.pngProbeResult();
-
-				if (result.error != AnimatedImageDecodeError::None)
+					initialize();
+				}
+				catch (const std::bad_alloc&)
 				{
-					return result;
+					m_error = AnimatedImageDecodeError::OutOfMemory;
 				}
 			}
 
-			const uint32 width = imageConfig.pixcfg.width();
-			const uint32 height = imageConfig.pixcfg.height();
-
-			if ((width == 0) || (height == 0)
-				|| (Image::MaxWidth < width) || (Image::MaxHeight < height))
+			[[nodiscard]]
+			FrameReadStatus readFrame(AnimatedImageFrame& frame)
 			{
-				result.error = AnimatedImageDecodeError::InvalidData;
-				return result;
+				if (m_error != AnimatedImageDecodeError::None)
+				{
+					return FrameReadStatus::Error;
+				}
+
+				if (m_endOfData)
+				{
+					return FrameReadStatus::EndOfData;
+				}
+
+				try
+				{
+					return readFrameImpl(frame);
+				}
+				catch (const std::bad_alloc&)
+				{
+					return fail(AnimatedImageDecodeError::OutOfMemory);
+				}
 			}
 
-			const uint64 imageBytes = (static_cast<uint64>(width)
-				* static_cast<uint64>(height) * sizeof(Color));
-
-			if (options.maxTotalDecodedBytes < imageBytes)
+			[[nodiscard]]
+			AnimatedImageDecodeError error() const noexcept
 			{
-				result.error = AnimatedImageDecodeError::DecodedBytesLimitExceeded;
-				return result;
+				return m_error;
 			}
 
-			wuffs_base__pixel_config pixelConfig = wuffs_base__null_pixel_config();
-			pixelConfig.set(
-				WUFFS_BASE__PIXEL_FORMAT__RGBA_NONPREMUL,
-				WUFFS_BASE__PIXEL_SUBSAMPLING__NONE,
-				width,
-				height);
-
-			const wuffs_base__range_ii_u64 workBufferRange = decoder->workbuf_len();
-			const uint64 workBufferLength = workBufferRange.min_incl;
-
-			if (static_cast<uint64>(std::numeric_limits<size_t>::max()) < workBufferLength)
+			[[nodiscard]]
+			uint32 reserveFrameCount() const noexcept
 			{
-				result.error = AnimatedImageDecodeError::OutOfMemory;
-				return result;
+				if ((m_format != WuffsImageFormat::APNG)
+					|| (not m_pngProbeValidated))
+				{
+					return 0;
+				}
+
+				const uint32 frameCount = m_input.declaredFrameCount();
+
+				if ((m_options.maxFrames < frameCount)
+					|| (m_imageBytes
+						&& (m_options.maxTotalDecodedBytes / m_imageBytes < frameCount)))
+				{
+					return 0;
+				}
+
+				return frameCount;
 			}
 
-			uint64 baseWorkingMemory = InputBufferSize;
-
-			if (AddExceeds(baseWorkingMemory, imageBytes, options.maxWorkingMemoryBytes))
+			[[nodiscard]]
+			uint32 playCount() const noexcept
 			{
-				result.error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
-				return result;
+				return m_decoder
+					? m_decoder->num_animation_loops()
+					: 0;
 			}
 
-			baseWorkingMemory += imageBytes;
+		private:
 
-			if (AddExceeds(baseWorkingMemory, imageBytes, options.maxWorkingMemoryBytes))
+			void initialize()
 			{
-				result.error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
-				return result;
-			}
+				if (m_options.maxWorkingMemoryBytes < InputBufferSize)
+				{
+					m_error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
+					return;
+				}
 
-			baseWorkingMemory += imageBytes;
+				if (not m_input.initialize())
+				{
+					m_error = m_input.error();
+					return;
+				}
 
-			if (AddExceeds(baseWorkingMemory, workBufferLength, options.maxWorkingMemoryBytes))
-			{
-				result.error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
-				return result;
-			}
+				const size_t requiredHeaderBytes =
+					(m_format == WuffsImageFormat::GIF) ? 6 : 8;
 
-			baseWorkingMemory += workBufferLength;
-			Image canvas(width, height, Color{ 0, 0 });
-			wuffs_base__pixel_buffer pixelBuffer = wuffs_base__null_pixel_buffer();
-			const wuffs_base__status pixelBufferStatus = pixelBuffer.set_from_slice(
-				&pixelConfig,
-				wuffs_base__make_slice_u8(canvas.dataAsUint8(), canvas.size_bytes()));
+				if (not m_input.prepareHeader(requiredHeaderBytes))
+				{
+					m_error = (m_input.error() == AnimatedImageDecodeError::None)
+						? AnimatedImageDecodeError::InvalidFormat
+						: m_input.error();
+					return;
+				}
 
-			if (pixelBufferStatus.repr != nullptr)
-			{
-				result.error = AnimatedImageDecodeError::InvalidData;
-				return result;
-			}
+				if ((m_format == WuffsImageFormat::GIF)
+					&& (std::memcmp(m_input.source().reader_pointer(), "GIF87a", 6) != 0)
+					&& (std::memcmp(m_input.source().reader_pointer(), "GIF89a", 6) != 0))
+				{
+					m_error = AnimatedImageDecodeError::InvalidFormat;
+					return;
+				}
 
-			Array<uint8> workBuffer(static_cast<size_t>(workBufferLength));
-			const wuffs_base__slice_u8 workBufferSlice =
-				wuffs_base__make_slice_u8(workBuffer.data(), workBuffer.size());
-			PreviousFrame previous;
-			uint64 decodedBytes = 0;
+				if (m_format == WuffsImageFormat::GIF)
+				{
+					m_decoder = wuffs_gif__decoder::alloc_as__wuffs_base__image_decoder();
+				}
+				else
+				{
+					m_decoder = wuffs_png__decoder::alloc_as__wuffs_base__image_decoder();
+				}
 
-			for (;;)
-			{
-				wuffs_base__frame_config frameConfig = wuffs_base__null_frame_config();
-				const PumpResult frameConfigResult = Pump(
-					input,
+				if (not m_decoder)
+				{
+					m_error = AnimatedImageDecodeError::OutOfMemory;
+					return;
+				}
+
+				wuffs_base__image_config imageConfig = wuffs_base__null_image_config();
+				const PumpResult imageConfigResult = Pump(
+					m_input,
 					[&](wuffs_base__io_buffer& source)
 					{
-						return decoder->decode_frame_config(&frameConfig, &source);
+						return m_decoder->decode_image_config(&imageConfig, &source);
+					});
+
+				if (imageConfigResult.error != AnimatedImageDecodeError::None)
+				{
+					m_error = imageConfigResult.error;
+					return;
+				}
+
+				if (imageConfigResult.status.repr != nullptr)
+				{
+					m_error = ToDecodeError(imageConfigResult.status, m_format);
+					return;
+				}
+
+				if ((m_format == WuffsImageFormat::APNG)
+					&& m_input.pngProbeIsComplete())
+				{
+					m_error = m_input.pngProbeResult();
+
+					if (m_error != AnimatedImageDecodeError::None)
+					{
+						return;
+					}
+
+					m_pngProbeValidated = true;
+				}
+
+				const uint32 width = imageConfig.pixcfg.width();
+				const uint32 height = imageConfig.pixcfg.height();
+
+				if ((width == 0) || (height == 0)
+					|| (Image::MaxWidth < width) || (Image::MaxHeight < height))
+				{
+					m_error = AnimatedImageDecodeError::InvalidData;
+					return;
+				}
+
+				m_imageBytes = (static_cast<uint64>(width)
+					* static_cast<uint64>(height) * sizeof(Color));
+
+				if (m_options.maxTotalDecodedBytes < m_imageBytes)
+				{
+					m_error = AnimatedImageDecodeError::DecodedBytesLimitExceeded;
+					return;
+				}
+
+				m_pixelConfig.set(
+					WUFFS_BASE__PIXEL_FORMAT__RGBA_NONPREMUL,
+					WUFFS_BASE__PIXEL_SUBSAMPLING__NONE,
+					width,
+					height);
+
+				const wuffs_base__range_ii_u64 workBufferRange =
+					m_decoder->workbuf_len();
+				const uint64 workBufferLength = workBufferRange.min_incl;
+
+				if (static_cast<uint64>(std::numeric_limits<size_t>::max())
+					< workBufferLength)
+				{
+					m_error = AnimatedImageDecodeError::OutOfMemory;
+					return;
+				}
+
+				m_baseWorkingMemory = InputBufferSize;
+
+				if (AddExceeds(
+					m_baseWorkingMemory,
+					m_imageBytes,
+					m_options.maxWorkingMemoryBytes))
+				{
+					m_error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
+					return;
+				}
+
+				m_baseWorkingMemory += m_imageBytes;
+
+				if (AddExceeds(
+					m_baseWorkingMemory,
+					m_imageBytes,
+					m_options.maxWorkingMemoryBytes))
+				{
+					m_error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
+					return;
+				}
+
+				m_baseWorkingMemory += m_imageBytes;
+
+				if (AddExceeds(
+					m_baseWorkingMemory,
+					workBufferLength,
+					m_options.maxWorkingMemoryBytes))
+				{
+					m_error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
+					return;
+				}
+
+				m_baseWorkingMemory += workBufferLength;
+				m_canvas = Image{ width, height, Color{ 0, 0 } };
+				const wuffs_base__status pixelBufferStatus =
+					m_pixelBuffer.set_from_slice(
+						&m_pixelConfig,
+						wuffs_base__make_slice_u8(
+							m_canvas.dataAsUint8(),
+							m_canvas.size_bytes()));
+
+				if (pixelBufferStatus.repr != nullptr)
+				{
+					m_error = AnimatedImageDecodeError::InvalidData;
+					return;
+				}
+
+				m_workBuffer.resize(static_cast<size_t>(workBufferLength));
+				m_workBufferSlice = wuffs_base__make_slice_u8(
+					m_workBuffer.data(),
+					m_workBuffer.size());
+			}
+
+			[[nodiscard]]
+			FrameReadStatus readFrameImpl(AnimatedImageFrame& frame)
+			{
+				wuffs_base__frame_config frameConfig =
+					wuffs_base__null_frame_config();
+				const PumpResult frameConfigResult = Pump(
+					m_input,
+					[&](wuffs_base__io_buffer& source)
+					{
+						return m_decoder->decode_frame_config(&frameConfig, &source);
 					});
 
 				if (frameConfigResult.error != AnimatedImageDecodeError::None)
 				{
-					result.image = {};
-					result.error = frameConfigResult.error;
-					return result;
+					return fail(frameConfigResult.error);
 				}
 
 				if (frameConfigResult.status.repr == wuffs_base__note__end_of_data)
 				{
-					break;
+					if (m_frameCount == 0)
+					{
+						return fail(AnimatedImageDecodeError::InvalidData);
+					}
+
+					m_endOfData = true;
+					return FrameReadStatus::EndOfData;
 				}
 
 				if (frameConfigResult.status.repr != nullptr)
 				{
-					result.image = {};
-					result.error = ToDecodeError(frameConfigResult.status, format);
-					return result;
+					return fail(ToDecodeError(frameConfigResult.status, m_format));
 				}
 
-				if ((not firstFrameOnly)
-					&& (options.maxFrames <= result.image.frames.size()))
+				if ((m_format == WuffsImageFormat::APNG)
+					&& (not m_pngProbeValidated))
 				{
-					result.image = {};
-					result.error = AnimatedImageDecodeError::TooManyFrames;
-					return result;
+					const AnimatedImageDecodeError probeError =
+						m_input.pngProbeResult();
+
+					if (probeError != AnimatedImageDecodeError::None)
+					{
+						return fail(probeError);
+					}
+
+					m_pngProbeValidated = true;
 				}
 
-				if (AddExceeds(decodedBytes, imageBytes, options.maxTotalDecodedBytes))
+				if (m_options.maxFrames <= m_frameCount)
 				{
-					result.image = {};
-					result.error = AnimatedImageDecodeError::DecodedBytesLimitExceeded;
-					return result;
+					return fail(AnimatedImageDecodeError::TooManyFrames);
+				}
+
+				if (AddExceeds(
+					m_decodedBytes,
+					m_imageBytes,
+					m_options.maxTotalDecodedBytes))
+				{
+					return fail(AnimatedImageDecodeError::DecodedBytesLimitExceeded);
 				}
 
 				const wuffs_base__rect_ie_u32 bounds = frameConfig.bounds();
-				const wuffs_base__rect_ie_u32 canvasBounds = pixelConfig.bounds();
+				const wuffs_base__rect_ie_u32 canvasBounds =
+					m_pixelConfig.bounds();
 
 				if (bounds.is_empty() || (not canvasBounds.contains_rect(bounds)))
 				{
-					result.image = {};
-					result.error = AnimatedImageDecodeError::InvalidData;
-					return result;
+					return fail(AnimatedImageDecodeError::InvalidData);
 				}
 
-				if (not result.image.frames.empty())
+				if (m_frameCount != 0)
 				{
-					RestorePreviousFrame(canvas, pixelBuffer, previous);
+					RestorePreviousFrame(
+						m_canvas,
+						m_pixelBuffer,
+						m_previous,
+						m_restorePixels);
 				}
 				else
 				{
-					pixelBuffer.set_color_u32_fill_rect(
+					m_pixelBuffer.set_color_u32_fill_rect(
 						canvasBounds,
 						frameConfig.background_color());
 				}
@@ -750,24 +924,34 @@ namespace s3d
 				current.disposal = frameConfig.disposal();
 				current.backgroundColor = frameConfig.background_color();
 
-				if ((current.disposal == WUFFS_BASE__ANIMATION_DISPOSAL__RESTORE_PREVIOUS)
-					&& result.image.frames.empty())
+				if ((current.disposal
+						== WUFFS_BASE__ANIMATION_DISPOSAL__RESTORE_PREVIOUS)
+					&& (m_frameCount == 0))
 				{
-					current.disposal = WUFFS_BASE__ANIMATION_DISPOSAL__RESTORE_BACKGROUND;
+					current.disposal =
+						WUFFS_BASE__ANIMATION_DISPOSAL__RESTORE_BACKGROUND;
 				}
-				else if (current.disposal == WUFFS_BASE__ANIMATION_DISPOSAL__RESTORE_PREVIOUS)
+				else if (current.disposal
+					== WUFFS_BASE__ANIMATION_DISPOSAL__RESTORE_PREVIOUS)
 				{
-					const uint64 restoreBytes = (static_cast<uint64>(bounds.width())
-						* static_cast<uint64>(bounds.height()) * sizeof(Color));
+					const uint64 restoreBytes =
+						(static_cast<uint64>(bounds.width())
+							* static_cast<uint64>(bounds.height())
+							* sizeof(Color));
+					const uint64 peakRestoreBytes =
+						std::max(m_restoreBytes, restoreBytes);
 
-					if (AddExceeds(baseWorkingMemory, restoreBytes, options.maxWorkingMemoryBytes))
+					if (AddExceeds(
+						m_baseWorkingMemory,
+						peakRestoreBytes,
+						m_options.maxWorkingMemoryBytes))
 					{
-						result.image = {};
-						result.error = AnimatedImageDecodeError::WorkingMemoryLimitExceeded;
-						return result;
+						return fail(
+							AnimatedImageDecodeError::WorkingMemoryLimitExceeded);
 					}
 
-					current.restorePixels = SaveFrameRectangle(canvas, bounds);
+					SaveFrameRectangle(m_canvas, bounds, m_restorePixels);
+					m_restoreBytes = peakRestoreBytes;
 				}
 
 				const wuffs_base__pixel_blend blend =
@@ -775,66 +959,144 @@ namespace s3d
 						? WUFFS_BASE__PIXEL_BLEND__SRC
 						: WUFFS_BASE__PIXEL_BLEND__SRC_OVER);
 				const PumpResult frameResult = Pump(
-					input,
+					m_input,
 					[&](wuffs_base__io_buffer& source)
 					{
-						return decoder->decode_frame(
-							&pixelBuffer,
+						return m_decoder->decode_frame(
+							&m_pixelBuffer,
 							&source,
 							blend,
-							workBufferSlice,
+							m_workBufferSlice,
 							nullptr);
 					});
 
 				if (frameResult.error != AnimatedImageDecodeError::None)
 				{
-					result.image = {};
-					result.error = frameResult.error;
-					return result;
+					return fail(frameResult.error);
 				}
 
 				if (frameResult.status.repr != nullptr)
 				{
-					result.image = {};
-					result.error = ToDecodeError(frameResult.status, format);
-					return result;
+					return fail(ToDecodeError(frameResult.status, m_format));
 				}
 
-				Image snapshot = canvas;
+				frame.image = m_canvas;
 
-				if (options.premultiplyAlpha == PremultiplyAlpha::Yes)
+				if (m_options.premultiplyAlpha == PremultiplyAlpha::Yes)
 				{
-					snapshot.premultiplyAlpha();
+					frame.image.premultiplyAlpha();
 				}
 
-				result.image.frames.push_back(AnimatedImageFrame{
-					std::move(snapshot),
-					Duration{ (static_cast<double>(frameConfig.duration())
-						/ static_cast<double>(WUFFS_BASE__FLICKS_PER_SECOND)) }
-				});
-				decodedBytes += imageBytes;
-				previous = std::move(current);
-
-				if (firstFrameOnly)
-				{
-					break;
-				}
+				frame.duration = Duration{
+					(static_cast<double>(frameConfig.duration())
+						/ static_cast<double>(WUFFS_BASE__FLICKS_PER_SECOND))
+				};
+				m_decodedBytes += m_imageBytes;
+				++m_frameCount;
+				m_previous = current;
+				return FrameReadStatus::Frame;
 			}
 
-			if (result.image.frames.empty())
+			[[nodiscard]]
+			FrameReadStatus fail(
+				const AnimatedImageDecodeError error) noexcept
 			{
-				result.error = AnimatedImageDecodeError::InvalidData;
+				m_error = error;
+				return FrameReadStatus::Error;
+			}
+
+			WuffsImageFormat m_format;
+
+			AnimatedImageDecodeOptions m_options;
+
+			WuffsInput m_input;
+
+			wuffs_base__image_decoder::unique_ptr m_decoder{ nullptr };
+
+			wuffs_base__pixel_config m_pixelConfig =
+				wuffs_base__null_pixel_config();
+
+			Image m_canvas;
+
+			wuffs_base__pixel_buffer m_pixelBuffer =
+				wuffs_base__null_pixel_buffer();
+
+			Array<uint8> m_workBuffer;
+
+			wuffs_base__slice_u8 m_workBufferSlice =
+				wuffs_base__empty_slice_u8();
+
+			PreviousFrame m_previous;
+
+			Array<Color> m_restorePixels;
+
+			uint64 m_imageBytes = 0;
+
+			uint64 m_baseWorkingMemory = 0;
+
+			uint64 m_restoreBytes = 0;
+
+			uint64 m_decodedBytes = 0;
+
+			uint32 m_frameCount = 0;
+
+			AnimatedImageDecodeError m_error = AnimatedImageDecodeError::None;
+
+			bool m_endOfData = false;
+
+			bool m_pngProbeValidated = false;
+		};
+
+		[[nodiscard]]
+		static AnimatedImageDecodeResult DecodeWuffs(
+			std::unique_ptr<IReader> reader,
+			const WuffsImageFormat format,
+			const AnimatedImageDecodeOptions& options)
+		{
+			AnimatedImageDecodeResult result;
+			WuffsAnimatedImageDecoder decoder{
+				std::move(reader),
+				format,
+				options
+			};
+
+			if (decoder.error() != AnimatedImageDecodeError::None)
+			{
+				result.error = decoder.error();
 				return result;
 			}
 
-			result.image.playCount = decoder->num_animation_loops();
-
-			if (result.image.frames.size() == 1)
+			if (const uint32 frameCount = decoder.reserveFrameCount())
 			{
-				result.image.playCount = 1;
+				result.image.frames.reserve(frameCount);
 			}
 
-			result.error = AnimatedImageDecodeError::None;
+			for (;;)
+			{
+				result.image.frames.emplace_back();
+				const FrameReadStatus status =
+					decoder.readFrame(result.image.frames.back());
+
+				if (status == FrameReadStatus::Frame)
+				{
+					continue;
+				}
+
+				result.image.frames.pop_back();
+
+				if (status == FrameReadStatus::EndOfData)
+				{
+					break;
+				}
+
+				result.image = {};
+				result.error = decoder.error();
+				return result;
+			}
+
+			result.image.playCount = (result.image.frames.size() == 1)
+				? 1
+				: decoder.playCount();
 			return result;
 		}
 
@@ -842,16 +1104,14 @@ namespace s3d
 		static AnimatedImageDecodeResult Decode(
 			std::unique_ptr<IReader> reader,
 			const WuffsImageFormat format,
-			const AnimatedImageDecodeOptions& options,
-			const bool firstFrameOnly)
+			const AnimatedImageDecodeOptions& options)
 		{
 			try
 			{
 				return DecodeWuffs(
 					std::move(reader),
 					format,
-					options,
-					firstFrameOnly);
+					options);
 			}
 			catch (const std::bad_alloc&)
 			{
@@ -867,8 +1127,7 @@ namespace s3d
 		return Decode(
 			std::make_unique<BinaryFileReader>(path),
 			WuffsImageFormat::GIF,
-			options,
-			false);
+			options);
 	}
 
 	AnimatedImageDecodeResult DecodeAnimatedGIF(
@@ -878,8 +1137,7 @@ namespace s3d
 		return Decode(
 			std::move(reader),
 			WuffsImageFormat::GIF,
-			options,
-			false);
+			options);
 	}
 
 	AnimatedImageDecodeResult DecodeAPNG(
@@ -889,8 +1147,7 @@ namespace s3d
 		return Decode(
 			std::make_unique<BinaryFileReader>(path),
 			WuffsImageFormat::APNG,
-			options,
-			false);
+			options);
 	}
 
 	AnimatedImageDecodeResult DecodeAPNG(
@@ -900,8 +1157,7 @@ namespace s3d
 		return Decode(
 			std::move(reader),
 			WuffsImageFormat::APNG,
-			options,
-			false);
+			options);
 	}
 
 	namespace detail
@@ -912,18 +1168,20 @@ namespace s3d
 		{
 			AnimatedImageDecodeOptions options;
 			options.premultiplyAlpha = premultiplyAlpha;
-			AnimatedImageDecodeResult result = Decode(
+			WuffsAnimatedImageDecoder decoder{
 				std::move(reader),
 				WuffsImageFormat::GIF,
-				options,
-				true);
+				options
+			};
+			AnimatedImageFrame frame;
 
-			if (result.image.frames.empty())
+			if ((decoder.error() != AnimatedImageDecodeError::None)
+				|| (decoder.readFrame(frame) != FrameReadStatus::Frame))
 			{
 				return{};
 			}
 
-			return std::move(result.image.frames.front().image);
+			return std::move(frame.image);
 		}
 	}
 }

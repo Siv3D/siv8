@@ -260,6 +260,13 @@ TEST_CASE("DecodeAPNG")
 	CHECK_EQ(result.image.frames[1].image[0][0], Color{ 255, 0, 0 });
 	CHECK_EQ(result.image.frames[1].image[0][1], Color{ 0, 0, 255 });
 
+	const AnimatedImageDecodeResult shortReads = DecodeAPNG(
+		std::make_unique<OneByteReader>(
+			AnimatedPNG.data(),
+			AnimatedPNG.size()));
+	REQUIRE(shortReads);
+	CHECK_EQ(shortReads.image.size(), size_t{ 2 });
+
 	const AnimatedImageDecodeResult composited = DecodeAPNG(MakeReader(CompositedPNG));
 	REQUIRE(composited);
 	REQUIRE_EQ(composited.image.size(), size_t{ 4 });
@@ -269,6 +276,29 @@ TEST_CASE("DecodeAPNG")
 	CHECK_EQ(composited.image.frames[2].image[0][1], Color{ 0, 0 });
 	CHECK_EQ(composited.image.frames[3].image[0][0], Color{ 255, 0, 0 });
 	CHECK_EQ(composited.image.frames[3].image[0][1], Color{ 255, 255, 255 });
+
+	auto consecutiveRestorePreviousPNG = CompositedPNG;
+	consecutiveRestorePreviousPNG[149] = 2;
+	consecutiveRestorePreviousPNG[151] = 0x75;
+	consecutiveRestorePreviousPNG[152] = 0x14;
+	consecutiveRestorePreviousPNG[153] = 0x1D;
+	consecutiveRestorePreviousPNG[154] = 0x96;
+	const AnimatedImageDecodeResult consecutiveRestorePrevious =
+		DecodeAPNG(MakeReader(consecutiveRestorePreviousPNG));
+	REQUIRE(consecutiveRestorePrevious);
+	REQUIRE_EQ(consecutiveRestorePrevious.image.size(), size_t{ 4 });
+	CHECK_EQ(
+		consecutiveRestorePrevious.image.frames[2].image[0][0],
+		Color{ 127, 128, 0 });
+	CHECK_EQ(
+		consecutiveRestorePrevious.image.frames[2].image[0][1],
+		Color{ 255, 0, 0 });
+	CHECK_EQ(
+		consecutiveRestorePrevious.image.frames[3].image[0][0],
+		Color{ 255, 0, 0 });
+	CHECK_EQ(
+		consecutiveRestorePrevious.image.frames[3].image[0][1],
+		Color{ 255, 255, 255 });
 
 	auto staticPNG = AnimatedPNG;
 	std::memcpy((staticPNG.data() + 37), "tEXt", 4);
@@ -294,4 +324,13 @@ TEST_CASE("DecodeAPNG")
 	CHECK_FALSE(limited);
 	CHECK_EQ(limited.error, AnimatedImageDecodeError::DecodedBytesLimitExceeded);
 	CHECK(limited.image.isEmpty());
+
+	AnimatedImageDecodeOptions frameLimit;
+	frameLimit.maxFrames = 1;
+	const AnimatedImageDecodeResult tooManyFrames = DecodeAPNG(
+		MakeReader(AnimatedPNG),
+		frameLimit);
+	CHECK_FALSE(tooManyFrames);
+	CHECK_EQ(tooManyFrames.error, AnimatedImageDecodeError::TooManyFrames);
+	CHECK(tooManyFrames.image.isEmpty());
 }

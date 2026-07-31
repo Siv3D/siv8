@@ -10,6 +10,8 @@
 
 # Runtime performance
 
+- Siv3D is used for games and other real-time applications. When designing or changing code that may run frequently or process substantial data, treat runtime performance as an important design constraint. Consider avoidable allocations, copies, and repeated work, and inspect nearby implementation patterns before choosing an approach.
+- Prefer designs that allow storage or state to be reused when repeated use would benefit from it. When both destination-writing and value-returning forms are appropriate, keep one canonical implementation and make the convenience form a wrapper around it.
 - Before adding runtime overhead to a frequently called function to handle infinities, NaNs, extreme values, or similarly exceptional inputs, obtain the user's explicit approval. This includes adding branches or extra arithmetic for such defenses.
 
 # Public APIs and tests
