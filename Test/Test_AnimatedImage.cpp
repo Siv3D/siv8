@@ -204,9 +204,9 @@ TEST_CASE("GIFDecoder")
 	CHECK_EQ(shortReads.size(), Size{ 2, 1 });
 }
 
-TEST_CASE("DecodeAnimatedGIF")
+TEST_CASE("DecodeAnimatedImage GIF")
 {
-	const AnimatedImageDecodeResult result = DecodeAnimatedGIF(MakeReader(AnimatedGIF));
+	const AnimatedImageDecodeResult result = DecodeAnimatedImage(MakeReader(AnimatedGIF));
 	REQUIRE(result);
 	CHECK_EQ(result.image.size(), size_t{ 2 });
 	CHECK_EQ(result.image.playCount, uint32{ 3 });
@@ -215,7 +215,7 @@ TEST_CASE("DecodeAnimatedGIF")
 	CHECK_EQ(result.image.frames[0].image[0][0], Color{ 255, 0, 0 });
 	CHECK_EQ(result.image.frames[1].image[0][0], Color{ 0, 0, 255 });
 
-	const AnimatedImageDecodeResult shortReads = DecodeAnimatedGIF(
+	const AnimatedImageDecodeResult shortReads = DecodeAnimatedImage(
 		std::make_unique<OneByteReader>(
 			AnimatedGIF.data(),
 			AnimatedGIF.size()));
@@ -224,7 +224,7 @@ TEST_CASE("DecodeAnimatedGIF")
 
 	AnimatedImageDecodeOptions frameLimit;
 	frameLimit.maxFrames = 1;
-	const AnimatedImageDecodeResult limited = DecodeAnimatedGIF(
+	const AnimatedImageDecodeResult limited = DecodeAnimatedImage(
 		MakeReader(AnimatedGIF),
 		frameLimit);
 	CHECK_FALSE(limited);
@@ -233,23 +233,23 @@ TEST_CASE("DecodeAnimatedGIF")
 
 	AnimatedImageDecodeOptions workingMemoryLimit;
 	workingMemoryLimit.maxWorkingMemoryBytes = 1;
-	const AnimatedImageDecodeResult workingMemoryLimited = DecodeAnimatedGIF(
+	const AnimatedImageDecodeResult workingMemoryLimited = DecodeAnimatedImage(
 		MakeReader(AnimatedGIF),
 		workingMemoryLimit);
 	CHECK_FALSE(workingMemoryLimited);
 	CHECK_EQ(workingMemoryLimited.error, AnimatedImageDecodeError::WorkingMemoryLimitExceeded);
 	CHECK(workingMemoryLimited.image.isEmpty());
 
-	const AnimatedImageDecodeResult invalid = DecodeAnimatedGIF(
+	const AnimatedImageDecodeResult invalid = DecodeAnimatedImage(
 		std::make_unique<MemoryReader>(
 			AnimatedGIF.data(),
 			(AnimatedGIF.size() - 5)));
 	CHECK_FALSE(invalid);
 }
 
-TEST_CASE("DecodeAPNG")
+TEST_CASE("DecodeAnimatedImage APNG")
 {
-	const AnimatedImageDecodeResult result = DecodeAPNG(MakeReader(AnimatedPNG));
+	const AnimatedImageDecodeResult result = DecodeAnimatedImage(MakeReader(AnimatedPNG));
 	REQUIRE(result);
 	CHECK_EQ(result.image.size(), size_t{ 2 });
 	CHECK_EQ(result.image.playCount, uint32{ 3 });
@@ -260,14 +260,14 @@ TEST_CASE("DecodeAPNG")
 	CHECK_EQ(result.image.frames[1].image[0][0], Color{ 255, 0, 0 });
 	CHECK_EQ(result.image.frames[1].image[0][1], Color{ 0, 0, 255 });
 
-	const AnimatedImageDecodeResult shortReads = DecodeAPNG(
+	const AnimatedImageDecodeResult shortReads = DecodeAnimatedImage(
 		std::make_unique<OneByteReader>(
 			AnimatedPNG.data(),
 			AnimatedPNG.size()));
 	REQUIRE(shortReads);
 	CHECK_EQ(shortReads.image.size(), size_t{ 2 });
 
-	const AnimatedImageDecodeResult composited = DecodeAPNG(MakeReader(CompositedPNG));
+	const AnimatedImageDecodeResult composited = DecodeAnimatedImage(MakeReader(CompositedPNG));
 	REQUIRE(composited);
 	REQUIRE_EQ(composited.image.size(), size_t{ 4 });
 	CHECK_EQ(composited.image.frames[0].image[0][0], Color{ 255, 0, 0 });
@@ -284,7 +284,7 @@ TEST_CASE("DecodeAPNG")
 	consecutiveRestorePreviousPNG[153] = 0x1D;
 	consecutiveRestorePreviousPNG[154] = 0x96;
 	const AnimatedImageDecodeResult consecutiveRestorePrevious =
-		DecodeAPNG(MakeReader(consecutiveRestorePreviousPNG));
+		DecodeAnimatedImage(MakeReader(consecutiveRestorePreviousPNG));
 	REQUIRE(consecutiveRestorePrevious);
 	REQUIRE_EQ(consecutiveRestorePrevious.image.size(), size_t{ 4 });
 	CHECK_EQ(
@@ -302,7 +302,7 @@ TEST_CASE("DecodeAPNG")
 
 	auto staticPNG = AnimatedPNG;
 	std::memcpy((staticPNG.data() + 37), "tEXt", 4);
-	const AnimatedImageDecodeResult notAnimated = DecodeAPNG(MakeReader(staticPNG));
+	const AnimatedImageDecodeResult notAnimated = DecodeAnimatedImage(MakeReader(staticPNG));
 	CHECK_FALSE(notAnimated);
 	CHECK_EQ(notAnimated.error, AnimatedImageDecodeError::NotAnimated);
 
@@ -312,13 +312,13 @@ TEST_CASE("DecodeAPNG")
 	interlacedPNG[30] = 0x25;
 	interlacedPNG[31] = 0x4F;
 	interlacedPNG[32] = 0x1C;
-	const AnimatedImageDecodeResult interlaced = DecodeAPNG(MakeReader(interlacedPNG));
+	const AnimatedImageDecodeResult interlaced = DecodeAnimatedImage(MakeReader(interlacedPNG));
 	CHECK_FALSE(interlaced);
 	CHECK_EQ(interlaced.error, AnimatedImageDecodeError::UnsupportedFeature);
 
 	AnimatedImageDecodeOptions byteLimit;
-	byteLimit.maxTotalDecodedBytes = 8;
-	const AnimatedImageDecodeResult limited = DecodeAPNG(
+	byteLimit.maxDecodedBytes = 8;
+	const AnimatedImageDecodeResult limited = DecodeAnimatedImage(
 		MakeReader(AnimatedPNG),
 		byteLimit);
 	CHECK_FALSE(limited);
@@ -327,7 +327,7 @@ TEST_CASE("DecodeAPNG")
 
 	AnimatedImageDecodeOptions frameLimit;
 	frameLimit.maxFrames = 1;
-	const AnimatedImageDecodeResult tooManyFrames = DecodeAPNG(
+	const AnimatedImageDecodeResult tooManyFrames = DecodeAnimatedImage(
 		MakeReader(AnimatedPNG),
 		frameLimit);
 	CHECK_FALSE(tooManyFrames);
@@ -339,7 +339,7 @@ TEST_CASE("AnimatedImageReader GIF")
 {
 	AnimatedImageReader empty;
 	CHECK_FALSE(empty);
-	CHECK_EQ(empty.size(), Size{ 0, 0 });
+	CHECK_EQ(empty.imageSize(), Size{ 0, 0 });
 	CHECK_EQ(empty.playCount(), uint32{ 0 });
 	CHECK_EQ(empty.error(), AnimatedImageDecodeError::None);
 	AnimatedImageFrame emptyFrame;
@@ -350,7 +350,7 @@ TEST_CASE("AnimatedImageReader GIF")
 
 	AnimatedImageReader reader{ MemoryReader{ AnimatedGIF.data(), AnimatedGIF.size() } };
 	REQUIRE(reader);
-	CHECK_EQ(reader.size(), Size{ 2, 1 });
+	CHECK_EQ(reader.imageSize(), Size{ 2, 1 });
 	CHECK_EQ(reader.playCount(), uint32{ 3 });
 	CHECK_EQ(reader.error(), AnimatedImageDecodeError::None);
 
@@ -389,11 +389,11 @@ TEST_CASE("AnimatedImageReader GIF")
 	CHECK(valueReader.open(
 		MemoryReader{ AnimatedPNG.data(), AnimatedPNG.size() }));
 	CHECK(valueReader);
-	CHECK_EQ(valueReader.size(), Size{ 2, 1 });
+	CHECK_EQ(valueReader.imageSize(), Size{ 2, 1 });
 	CHECK_EQ(valueReader.playCount(), uint32{ 3 });
 
 	AnimatedImageDecodeOptions streamByteLimit;
-	streamByteLimit.maxTotalDecodedBytes = 8;
+	streamByteLimit.maxDecodedBytes = 8;
 	AnimatedImageReader byteLimitedReader{
 		MakeReader(AnimatedGIF),
 		streamByteLimit
@@ -410,7 +410,7 @@ TEST_CASE("AnimatedImageReader GIF")
 		AnimatedImageReadStatus::EndOfStream);
 
 	AnimatedImageDecodeOptions insufficientByteLimit;
-	insufficientByteLimit.maxTotalDecodedBytes = 7;
+	insufficientByteLimit.maxDecodedBytes = 7;
 	AnimatedImageReader insufficientByteLimitedReader{
 		MakeReader(AnimatedGIF),
 		insufficientByteLimit
@@ -457,7 +457,7 @@ TEST_CASE("AnimatedImageReader APNG")
 			AnimatedPNG.size())
 	};
 	REQUIRE(reader);
-	CHECK_EQ(reader.size(), Size{ 2, 1 });
+	CHECK_EQ(reader.imageSize(), Size{ 2, 1 });
 	CHECK_EQ(reader.playCount(), uint32{ 3 });
 
 	AnimatedImageFrame frame;

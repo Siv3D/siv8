@@ -19,39 +19,21 @@ namespace s3d
 {
 	class IReader;
 
-	/// @brief Animated GIF をデコードします。
-	/// @param path GIF ファイルのパス
-	/// @param options デコード設定
-	/// @return デコード結果
-	[[nodiscard]]
-	AnimatedImageDecodeResult DecodeAnimatedGIF(
-		FilePathView path,
-		const AnimatedImageDecodeOptions& options = {});
-
-	/// @brief Animated GIF をデコードします。
-	/// @param reader Reader オブジェクト
-	/// @param options デコード設定
-	/// @return デコード結果
-	[[nodiscard]]
-	AnimatedImageDecodeResult DecodeAnimatedGIF(
-		std::unique_ptr<IReader> reader,
-		const AnimatedImageDecodeOptions& options = {});
-
-	/// @brief APNG をデコードします。
-	/// @param path PNG ファイルのパス
+	/// @brief アニメーション画像をデコードします。
+	/// @param path GIF または APNG ファイルのパス
 	/// @param options デコード設定
 	/// @return デコード結果。通常の PNG の場合は `AnimatedImageDecodeError::NotAnimated`
 	[[nodiscard]]
-	AnimatedImageDecodeResult DecodeAPNG(
+	AnimatedImageDecodeResult DecodeAnimatedImage(
 		FilePathView path,
 		const AnimatedImageDecodeOptions& options = {});
 
-	/// @brief APNG をデコードします。
+	/// @brief アニメーション画像をデコードします。
 	/// @param reader Reader オブジェクト
 	/// @param options デコード設定
 	/// @return デコード結果。通常の PNG の場合は `AnimatedImageDecodeError::NotAnimated`
 	[[nodiscard]]
-	AnimatedImageDecodeResult DecodeAPNG(
+	AnimatedImageDecodeResult DecodeAnimatedImage(
 		std::unique_ptr<IReader> reader,
 		const AnimatedImageDecodeOptions& options = {});
 }

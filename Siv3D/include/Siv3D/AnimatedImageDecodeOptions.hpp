@@ -27,8 +27,8 @@ namespace s3d
 	/// @brief アニメーション画像のデコード設定
 	struct AnimatedImageDecodeOptions
 	{
-		/// @brief 全フレームデコード時は返却する全フレーム、ストリーム読み込み時は 1 フレームのバイト数の上限
-		uint64 maxTotalDecodedBytes = DefaultMaxAnimatedImageDecodedBytes;
+		/// @brief デコード結果として保持する画像データのバイト数の上限
+		uint64 maxDecodedBytes = DefaultMaxAnimatedImageDecodedBytes;
 
 		/// @brief デコード中の作業メモリの上限
 		uint64 maxWorkingMemoryBytes = DefaultMaxAnimatedImageWorkingMemoryBytes;

@@ -631,7 +631,7 @@ namespace s3d
 			}
 
 			[[nodiscard]]
-			Size size() const noexcept
+			Size imageSize() const noexcept
 			{
 				return m_canvas.size();
 			}
@@ -650,7 +650,7 @@ namespace s3d
 
 				if ((m_options.maxFrames < frameCount)
 					|| (m_imageBytes
-						&& (m_options.maxTotalDecodedBytes / m_imageBytes < frameCount)))
+						&& (m_options.maxDecodedBytes / m_imageBytes < frameCount)))
 				{
 					return 0;
 				}
@@ -800,7 +800,7 @@ namespace s3d
 				m_imageBytes = (static_cast<uint64>(width)
 					* static_cast<uint64>(height) * sizeof(Color));
 
-				if (m_options.maxTotalDecodedBytes < m_imageBytes)
+				if (m_options.maxDecodedBytes < m_imageBytes)
 				{
 					m_error = AnimatedImageDecodeError::DecodedBytesLimitExceeded;
 					return;
@@ -958,7 +958,7 @@ namespace s3d
 					&& AddExceeds(
 						m_decodedBytes,
 						m_imageBytes,
-						m_options.maxTotalDecodedBytes))
+						m_options.maxDecodedBytes))
 				{
 					return fail(AnimatedImageDecodeError::DecodedBytesLimitExceeded);
 				}
@@ -1130,13 +1130,12 @@ namespace s3d
 		[[nodiscard]]
 		static AnimatedImageDecodeResult DecodeWuffs(
 			std::unique_ptr<IReader> reader,
-			const WuffsImageFormat format,
 			const AnimatedImageDecodeOptions& options)
 		{
 			AnimatedImageDecodeResult result;
 			WuffsAnimatedImageDecoder decoder{
 				std::move(reader),
-				format,
+				WuffsImageFormat::Auto,
 				options,
 				true
 			};
@@ -1184,14 +1183,12 @@ namespace s3d
 		[[nodiscard]]
 		static AnimatedImageDecodeResult Decode(
 			std::unique_ptr<IReader> reader,
-			const WuffsImageFormat format,
 			const AnimatedImageDecodeOptions& options)
 		{
 			try
 			{
 				return DecodeWuffs(
 					std::move(reader),
-					format,
 					options);
 			}
 			catch (const std::bad_alloc&)
@@ -1201,105 +1198,102 @@ namespace s3d
 		}
 	}
 
-	namespace detail
+	class AnimatedImageReader::AnimatedImageReaderDetail
 	{
-		class AnimatedImageReaderDetail
+	public:
+
+		[[nodiscard]]
+		bool open(
+			std::unique_ptr<IReader> reader,
+			const AnimatedImageDecodeOptions& options)
 		{
-		public:
+			close();
 
-			[[nodiscard]]
-			bool open(
-				std::unique_ptr<IReader> reader,
-				const AnimatedImageDecodeOptions& options)
+			try
 			{
-				close();
-
-				try
-				{
-					m_decoder = std::make_unique<WuffsAnimatedImageDecoder>(
-						std::move(reader),
-						WuffsImageFormat::Auto,
-						options,
-						false);
-					m_error = m_decoder->error();
-					m_isOpen = (m_error == AnimatedImageDecodeError::None);
-					return m_isOpen;
-				}
-				catch (const std::bad_alloc&)
-				{
-					m_decoder.reset();
-					m_error = AnimatedImageDecodeError::OutOfMemory;
-					return false;
-				}
+				m_decoder = std::make_unique<WuffsAnimatedImageDecoder>(
+					std::move(reader),
+					WuffsImageFormat::Auto,
+					options,
+					false);
+				m_error = m_decoder->error();
+				m_isOpen = (m_error == AnimatedImageDecodeError::None);
+				return m_isOpen;
 			}
-
-			void close() noexcept
+			catch (const std::bad_alloc&)
 			{
 				m_decoder.reset();
-				m_error = AnimatedImageDecodeError::None;
+				m_error = AnimatedImageDecodeError::OutOfMemory;
+				return false;
+			}
+		}
+
+		void close() noexcept
+		{
+			m_decoder.reset();
+			m_error = AnimatedImageDecodeError::None;
+			m_isOpen = false;
+		}
+
+		[[nodiscard]]
+		bool isOpen() const noexcept
+		{
+			return m_isOpen;
+		}
+
+		[[nodiscard]]
+		Size imageSize() const noexcept
+		{
+			return m_decoder ? m_decoder->imageSize() : Size{ 0, 0 };
+		}
+
+		[[nodiscard]]
+		uint32 playCount() const noexcept
+		{
+			return m_decoder ? m_decoder->playCount() : 0;
+		}
+
+		AnimatedImageReadStatus readFrame(AnimatedImageFrame& frame)
+		{
+			if (not m_isOpen)
+			{
+				if (m_error == AnimatedImageDecodeError::None)
+				{
+					m_error = AnimatedImageDecodeError::ReadError;
+				}
+
+				return AnimatedImageReadStatus::Error;
+			}
+
+			const AnimatedImageReadStatus status =
+				m_decoder->readFrame(frame);
+
+			if (status == AnimatedImageReadStatus::Error)
+			{
+				m_error = m_decoder->error();
 				m_isOpen = false;
 			}
 
-			[[nodiscard]]
-			bool isOpen() const noexcept
-			{
-				return m_isOpen;
-			}
+			return status;
+		}
 
-			[[nodiscard]]
-			Size size() const noexcept
-			{
-				return m_decoder ? m_decoder->size() : Size{ 0, 0 };
-			}
+		[[nodiscard]]
+		AnimatedImageDecodeError error() const noexcept
+		{
+			return m_error;
+		}
 
-			[[nodiscard]]
-			uint32 playCount() const noexcept
-			{
-				return m_decoder ? m_decoder->playCount() : 0;
-			}
+	private:
 
-			AnimatedImageReadStatus readFrame(AnimatedImageFrame& frame)
-			{
-				if (not m_isOpen)
-				{
-					if (m_error == AnimatedImageDecodeError::None)
-					{
-						m_error = AnimatedImageDecodeError::ReadError;
-					}
+		std::unique_ptr<WuffsAnimatedImageDecoder> m_decoder;
 
-					return AnimatedImageReadStatus::Error;
-				}
+		AnimatedImageDecodeError m_error = AnimatedImageDecodeError::None;
 
-				const AnimatedImageReadStatus status =
-					m_decoder->readFrame(frame);
-
-				if (status == AnimatedImageReadStatus::Error)
-				{
-					m_error = m_decoder->error();
-					m_isOpen = false;
-				}
-
-				return status;
-			}
-
-			[[nodiscard]]
-			AnimatedImageDecodeError error() const noexcept
-			{
-				return m_error;
-			}
-
-		private:
-
-			std::unique_ptr<WuffsAnimatedImageDecoder> m_decoder;
-
-			AnimatedImageDecodeError m_error = AnimatedImageDecodeError::None;
-
-			bool m_isOpen = false;
-		};
-	}
+		bool m_isOpen = false;
+	};
 
 	AnimatedImageReader::AnimatedImageReader()
-		: pImpl{ std::make_unique<detail::AnimatedImageReaderDetail>() } {}
+		: pImpl{ std::make_unique<AnimatedImageReaderDetail>() } {}
 
 	AnimatedImageReader::AnimatedImageReader(
 		const FilePathView path,
@@ -1336,7 +1330,7 @@ namespace s3d
 	{
 		if (not pImpl)
 		{
-			pImpl = std::make_unique<detail::AnimatedImageReaderDetail>();
+			pImpl = std::make_unique<AnimatedImageReaderDetail>();
 		}
 
 		return pImpl->open(
@@ -1362,9 +1356,9 @@ namespace s3d
 		return isOpen();
 	}
 
-	Size AnimatedImageReader::size() const noexcept
+	Size AnimatedImageReader::imageSize() const noexcept
 	{
-		return pImpl ? pImpl->size() : Size{ 0, 0 };
+		return pImpl ? pImpl->imageSize() : Size{ 0, 0 };
 	}
 
 	uint32 AnimatedImageReader::playCount() const noexcept
@@ -1395,43 +1389,21 @@ namespace s3d
 			: AnimatedImageDecodeError::None;
 	}
 
-	AnimatedImageDecodeResult DecodeAnimatedGIF(
+	AnimatedImageDecodeResult DecodeAnimatedImage(
 		const FilePathView path,
 		const AnimatedImageDecodeOptions& options)
 	{
 		return Decode(
 			std::make_unique<BinaryFileReader>(path),
-			WuffsImageFormat::GIF,
 			options);
 	}
 
-	AnimatedImageDecodeResult DecodeAnimatedGIF(
+	AnimatedImageDecodeResult DecodeAnimatedImage(
 		std::unique_ptr<IReader> reader,
 		const AnimatedImageDecodeOptions& options)
 	{
 		return Decode(
 			std::move(reader),
-			WuffsImageFormat::GIF,
-			options);
-	}
-
-	AnimatedImageDecodeResult DecodeAPNG(
-		const FilePathView path,
-		const AnimatedImageDecodeOptions& options)
-	{
-		return Decode(
-			std::make_unique<BinaryFileReader>(path),
-			WuffsImageFormat::APNG,
-			options);
-	}
-
-	AnimatedImageDecodeResult DecodeAPNG(
-		std::unique_ptr<IReader> reader,
-		const AnimatedImageDecodeOptions& options)
-	{
-		return Decode(
-			std::move(reader),
-			WuffsImageFormat::APNG,
 			options);
 	}
 

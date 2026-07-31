@@ -20,7 +20,7 @@ namespace s3d
 		/// @brief エラーなし
 		None,
 
-		/// @brief 指定された画像形式ではない
+		/// @brief 対応していない画像形式
 		InvalidFormat,
 
 		/// @brief PNG だが APNG ではない
@@ -41,7 +41,7 @@ namespace s3d
 		/// @brief フレーム数の上限を超えた
 		TooManyFrames,
 
-		/// @brief デコード済みフレームの合計バイト数上限を超えた
+		/// @brief デコード済み画像のバイト数上限を超えた
 		DecodedBytesLimitExceeded,
 
 		/// @brief 作業メモリ上限を超えた

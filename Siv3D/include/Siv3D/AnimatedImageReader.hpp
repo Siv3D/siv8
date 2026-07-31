@@ -18,11 +18,6 @@
 
 namespace s3d
 {
-	namespace detail
-	{
-		class AnimatedImageReaderDetail;
-	}
-
 	/// @brief アニメーション画像のストリームリーダー
 	/// @remark GIF および APNG に対応します。
 	class AnimatedImageReader
@@ -115,7 +110,7 @@ namespace s3d
 		/// @brief アニメーション画像のサイズを返します。
 		/// @return アニメーション画像のサイズ。画像情報を取得できなかった場合は (0, 0)
 		[[nodiscard]]
-		Size size() const noexcept;
+		Size imageSize() const noexcept;
 
 		/// @brief 総再生回数を返します。
 		/// @return 総再生回数。0 は無限再生、または画像情報を取得できなかったことを示す
@@ -142,7 +137,9 @@ namespace s3d
 
 	private:
 
-		std::unique_ptr<detail::AnimatedImageReaderDetail> pImpl;
+		class AnimatedImageReaderDetail;
+
+		std::unique_ptr<AnimatedImageReaderDetail> pImpl;
 	};
 }
 
