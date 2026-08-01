@@ -13,10 +13,10 @@
 # include <Siv3D.hpp>
 
 // ベンチマークを実行する場合 1, 実行しない場合 0
-# define SIV3D_RUN_BENCHMARK 1
+# define SIV3D_RUN_BENCHMARK 0
 
 // 所用時間の長いテストを実行する場合 1, 実行しない場合 0
-# define SIV3D_RUN_HEAVY_TEST 1
+# define SIV3D_RUN_HEAVY_TEST 0
 
 # if SIV3D_RUN_BENCHMARK
 
@@ -37,7 +37,7 @@
 # endif
 # include <ThirdParty/doctest/doctest.h>
 
-void RunTest();
+int32 RunTest();
 
 namespace s3d
 {

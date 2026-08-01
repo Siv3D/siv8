@@ -317,8 +317,6 @@ namespace s3d
 
 	inline int64 Timer::us() const noexcept
 	{
-		const int64 t = ISteadyClock::GetMicrosec(m_pSteadyClock);
-
 		if (not m_isStarted)
 		{
 			return m_durationMicrosec;
@@ -328,6 +326,8 @@ namespace s3d
 		{
 			return Max<int64>(m_remainingMicrosec, 0);
 		}
+
+		const int64 t = ISteadyClock::GetMicrosec(m_pSteadyClock);
 
 		return Max<int64>(m_remainingMicrosec - (t - m_startTimeMicrosec), 0);
 	}

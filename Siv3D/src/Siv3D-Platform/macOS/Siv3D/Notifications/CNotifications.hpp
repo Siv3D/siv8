@@ -11,12 +11,13 @@
 
 # pragma once
 # include <atomic>
-# include <mutex>
-# include <Siv3D/HashMap.hpp>
+# include <memory>
 # include <Siv3D/Notifications/INotifications.hpp>
 
 namespace s3d
 {
+	struct NotificationsState;
+
 	class CNotifications final : public ISiv3DNotifications
 	{
 	public:
@@ -39,36 +40,14 @@ namespace s3d
 
 		Array<NotificationResponse> extractResponses() override;
 
-		void enqueueResponse(NotificationID id, NotificationResponseType responseType);
-
-		void enqueueResponse(NotificationID id, NotificationResponseType responseType, const String& actionID);
-
-		void updateAvailability(NotificationAvailability availability);
-
-		Optional<NotificationID> findIDFromRequestIdentifier(const String& requestIdentifier);
-
 	private:
-
-		struct Entry
-		{
-			String requestIdentifier;
-			String categoryIdentifier;
-			Array<String> actionIDs;
-		};
 
 		void refreshAvailabilityAsync();
 
-		Optional<NotificationAvailability> m_availability;
-
 		////////////////////////////////////////////////////////////////
 		//
-		std::mutex m_mutex;
-
-		HashMap<NotificationID, Entry> m_entries;
-
-		HashMap<String, NotificationID> m_requestIdentifierToID;
-
-		Array<NotificationResponse> m_responseQueue;
+		// 非同期コールバックと共有し、CNotifications の破棄後も必要な状態を保持する
+		std::shared_ptr<NotificationsState> m_state;
 
 		std::atomic<NotificationID> m_nextID{ 1 };
 

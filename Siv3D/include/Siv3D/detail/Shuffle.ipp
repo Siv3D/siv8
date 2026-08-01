@@ -30,7 +30,7 @@ namespace s3d
 		requires std::permutable<std::ranges::iterator_t<Range>>
 	void Shuffle(Range&& range, Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		Shuffle(std::ranges::begin(range), std::ranges::end(range), std::forward<decltype(urbg)>(urbg));
+		Shuffle(std::ranges::begin(range), std::ranges::end(range), urbg);
 	}
 
 	template <class RandomIt>
@@ -54,7 +54,7 @@ namespace s3d
 		for (auto it = (first + 1); it < last; ++it)
 		{
 			const uint64 n = static_cast<uint64>(it - first);
-			std::iter_swap(it, first + static_cast<difference_type>(Random<uint64>(0, n, std::forward<decltype(urbg)>(urbg))));
+			std::iter_swap(it, first + static_cast<difference_type>(Random<uint64>(0, n, urbg)));
 		}
 	}
 }

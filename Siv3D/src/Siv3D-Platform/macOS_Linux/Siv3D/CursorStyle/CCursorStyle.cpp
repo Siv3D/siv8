@@ -31,7 +31,7 @@ namespace s3d
 			{
 				for (auto& pixel : pixels)
 				{
-					pixel = Color::UnpremultiplyAlpha(pixel);
+					pixel = pixel.unpremultiplied();
 				}
 			}
 

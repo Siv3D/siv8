@@ -205,7 +205,7 @@ namespace s3d
 
 	bool Ellipse::mouseOver() const noexcept
 	{
-		return Geometry2D::Intersect(Cursor::PosF(), *this);
+		return Geometry2D::Intersects(Cursor::PosF(), *this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -491,8 +491,8 @@ namespace s3d
 			static_cast<float>(Abs(axes.y)),
 			static_cast<float>(innerThickness),
 			static_cast<float>(outerThickness),
-			style.offset,
-			style.dashRatio,
+			static_cast<float>(style.offset),
+			static_cast<float>(style.dashRatio),
 			style.dashCount,
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
@@ -629,7 +629,7 @@ s3d::BufferContext::iterator fmt::formatter<s3d::Ellipse, s3d::char32>::format(c
 	else
 	{
 		const std::u32string format
-			= (U"({:" + tag + U"}, {:" + tag + U"}), {:" + tag + U"}, {:" + tag + U"})");
+			= (U"({:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
 		return format_to(ctx.out(), format, value.center.x, value.center.y, value.axes.x, value.axes.y);
 	}
 }

@@ -345,7 +345,7 @@ namespace s3d
 
 	inline uint64 Bezier2::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -355,9 +355,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
-	bool Bezier2::intersects(const Shape2DType& other) const
+	constexpr bool Bezier2::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Bezier2::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

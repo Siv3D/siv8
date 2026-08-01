@@ -76,7 +76,7 @@ TEST_CASE("INI.Load.basic")
 	CHECK(ini.hasSection(U"window"));
 	CHECK(ini.hasSection(U"player"));
 	CHECK(not ini.hasSection(U"missing"));
-	REQUIRE_EQ(ini.sections().size(), 3);
+	REQUIRE_EQ(ini.sections().size(), 3u);
 
 	CHECK(ini.hasGlobalProperty(U"title"));
 	CHECK(ini.hasGlobalProperty(U"version"));
@@ -324,7 +324,7 @@ TEST_CASE("INI.duplicate_policies")
 		const auto result = INI::ParseResult(U"[section]\na = 1\na = 2\nb = 1\nb = 2\n", options);
 
 		REQUIRE(not result);
-		REQUIRE_EQ(result.error().size(), 2);
+		REQUIRE_EQ(result.error().size(), 2u);
 		CHECK_EQ(result.error()[0].code, INIParseErrorCode::DuplicateKey);
 		CHECK_EQ(result.error()[0].section, U"section");
 		CHECK_EQ(result.error()[0].key, U"a");
@@ -465,7 +465,7 @@ TEST_CASE("INI.section_access")
 	const INISection& window = ini.getSection(U"window");
 	const Array<INISection::Property> properties = window.propertyView();
 
-	REQUIRE_EQ(properties.size(), 3);
+	REQUIRE_EQ(properties.size(), 3u);
 	CHECK_EQ(properties[0].key, U"width");
 	CHECK_EQ(properties[0].value, U"1280");
 	CHECK_EQ(properties[0].index, 0);
@@ -590,7 +590,7 @@ TEST_CASE("INI.error_codes")
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
 		CHECK_EQ(result.error().front().code, INIParseErrorCode::MissingClosingBracket);
-		CHECK_EQ(result.error().front().line, 1);
+		CHECK_EQ(result.error().front().line, 1u);
 	}
 
 	{

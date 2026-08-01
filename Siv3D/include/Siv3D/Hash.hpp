@@ -165,6 +165,31 @@ namespace s3d
 		uint64 Hash(const Concept::TriviallyHashable auto& data) noexcept;
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	HashFloats
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 1 個以上の浮動小数点数からハッシュ値を計算します。
+	/// @tparam T 浮動小数点数の型（float または double）
+	/// @tparam ...Ts T と同じ型（すべての引数は同一の型である必要があります）
+	/// @param x ハッシュ化する値
+	/// @param ...xs ハッシュ化する追加の値
+	/// @return 計算されたハッシュ値
+	/// @remark -0.0 は +0.0 に正規化されるため、`a == b` である 2 つの値は常に同じハッシュ値になります。
+	/// @remark NaN のハッシュ値はビットパターン（ペイロード）に依存するため、同じ NaN 同士でも異なる場合があります。
+	template<class T, std::same_as<T>... Ts>
+		requires std::same_as<T, float> || std::same_as<T, double>
+	[[nodiscard]]
+	uint64 HashFloats(T x, Ts... xs) noexcept;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	MixHash
+	//
+	////////////////////////////////////////////////////////////////
+
 	/// @brief 2 つのハッシュ値を混ぜます。 | Mixes two hash values.
 	/// @param a 一方のハッシュ値 | One of the hash values
 	/// @param b もう一方のハッシュ値 | The other hash value

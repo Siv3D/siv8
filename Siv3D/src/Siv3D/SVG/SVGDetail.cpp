@@ -97,7 +97,7 @@ namespace s3d
 
 		const int32 maxImageWidth = maxWidth.value_or(static_cast<int32>(std::ceil(m_document->width())));
 		const int32 maxImageHeight = maxHeight.value_or(static_cast<int32>(std::ceil(m_document->height())));
-		const uint32 color = background.abgr().asUint32();
+		const uint32 color = background.toRGBA8888();
 
 		lunasvg::Bitmap bitmap = m_document->renderToBitmap(maxImageWidth, maxImageHeight, color);
 

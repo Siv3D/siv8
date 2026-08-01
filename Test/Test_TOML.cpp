@@ -60,7 +60,7 @@ TEST_CASE("TOML.Load.basic")
 	REQUIRE(toml);
 	CHECK(toml.isTable());
 	CHECK_EQ(toml.getType(), TOMLValueType::Table);
-	CHECK_EQ(toml.size(), 5);
+	CHECK_EQ(toml.size(), 5u);
 
 	CHECK(toml.contains(U"title"));
 	CHECK(toml.contains(U"server"));
@@ -94,7 +94,7 @@ TEST_CASE("TOML.Load.basic")
 	const TOML users = toml[U"users"];
 	REQUIRE(users);
 	CHECK(users.isArray());
-	CHECK_EQ(users.size(), 2);
+	CHECK_EQ(users.size(), 2u);
 	CHECK_EQ(users[0][U"name"].get<String>(), U"Alice");
 	CHECK_EQ(users[0][U"admin"].get<bool>(), true);
 	CHECK_EQ(users[1][U"name"].get<String>(), U"Bob");
@@ -127,7 +127,7 @@ TEST_CASE("TOML.Parse")
 		REQUIRE(toml);
 		CHECK(toml.isTable());
 		CHECK(toml.isEmptyTable());
-		CHECK_EQ(toml.size(), 0);
+		CHECK_EQ(toml.size(), 0u);
 	}
 
 	{
@@ -375,7 +375,7 @@ TEST_CASE("TOML.getArray")
 	REQUIRE(basic);
 
 	const Array<TOML> users = basic[U"users"].getArray<TOML>();
-	REQUIRE_EQ(users.size(), 2);
+	REQUIRE_EQ(users.size(), 2u);
 	CHECK_EQ(users[0][U"name"].get<String>(), U"Alice");
 	CHECK_EQ(users[1][U"name"].get<String>(), U"Bob");
 }
@@ -459,15 +459,15 @@ TEST_CASE("TOML.nested")
 	CHECK(toml[U"graphics"][U"clear_color"][U"b"].get<double>() == doctest::Approx(0.3));
 	CHECK(toml[U"graphics"][U"clear_color"][U"a"].get<double>() == doctest::Approx(1.0));
 
-	CHECK_EQ(toml[U"stages"].size(), 2);
+	CHECK_EQ(toml[U"stages"].size(), 2u);
 	CHECK_EQ(toml[U"stages"][0][U"name"].get<String>(), U"forest");
 	CHECK_EQ(toml[U"stages"][0][U"difficulty"].get<int32>(), 1);
-	CHECK_EQ(toml[U"stages"][0][U"spawn_points"].size(), 3);
+	CHECK_EQ(toml[U"stages"][0][U"spawn_points"].size(), 3u);
 	CHECK(toml[U"stages"][0][U"spawn_points"][0].getArray<int32>() == Array<int32>{ 0, 0 });
 
 	CHECK_EQ(toml[U"stages"][1][U"name"].get<String>(), U"desert");
 	CHECK_EQ(toml[U"stages"][1][U"difficulty"].get<int32>(), 3);
-	CHECK_EQ(toml[U"stages"][1][U"spawn_points"].size(), 2);
+	CHECK_EQ(toml[U"stages"][1][U"spawn_points"].size(), 2u);
 	CHECK(toml[U"stages"][1][U"spawn_points"][1].getArray<int32>() == Array<int32>{ 200, 160 });
 }
 
@@ -495,7 +495,7 @@ TEST_CASE("TOML.unicode_bom_empty")
 		REQUIRE(toml);
 		CHECK(toml.isTable());
 		CHECK(toml.isEmptyTable());
-		CHECK_EQ(toml.size(), 0);
+		CHECK_EQ(toml.size(), 0u);
 	}
 
 	{

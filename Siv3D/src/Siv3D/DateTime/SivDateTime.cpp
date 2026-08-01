@@ -262,12 +262,16 @@ namespace s3d
 
 	DateTime DateTime::operator +(const Days& days) const noexcept
 	{
-		return (DateTime{ *this } += days);
+		DateTime result{ *this };
+		result += days;
+		return result;
 	}
 
 	DateTime DateTime::operator +(const Milliseconds& _milliseconds) const noexcept
 	{
-		return (DateTime{ *this } += _milliseconds);
+		DateTime result{ *this };
+		result += _milliseconds;
+		return result;
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -278,12 +282,16 @@ namespace s3d
 
 	DateTime DateTime::operator -(const Days& days) const noexcept
 	{
-		return (DateTime{ *this } -= days);
+		DateTime result{ *this };
+		result -= days;
+		return result;
 	}
 
 	DateTime DateTime::operator -(const Milliseconds& _milliseconds) const noexcept
 	{
-		return (DateTime{ *this } -= _milliseconds);
+		DateTime result{ *this };
+		result -= _milliseconds;
+		return result;
 	}
 		
 	////////////////////////////////////////////////////////////////
@@ -292,7 +300,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	DateTime& DateTime::operator +=(const Days& days) noexcept
+	DateTime& DateTime::operator +=(const Days& days) & noexcept
 	{
 		Date d = (date() + days);
 		year = d.year;
@@ -301,7 +309,7 @@ namespace s3d
 		return *this;
 	}
 
-	DateTime& DateTime::operator +=(const Milliseconds& _milliseconds) noexcept
+	DateTime& DateTime::operator +=(const Milliseconds& _milliseconds) & noexcept
 	{
 		constexpr int64 MilliSecIn1Day = (86400LL * 1000);
 
@@ -339,12 +347,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	DateTime& DateTime::operator -=(const Days& days) noexcept
+	DateTime& DateTime::operator -=(const Days& days) & noexcept
 	{
 		return (operator += (-days));
 	}
 
-	DateTime& DateTime::operator -=(const Milliseconds& _milliseconds) noexcept
+	DateTime& DateTime::operator -=(const Milliseconds& _milliseconds) & noexcept
 	{
 		return (operator += (-_milliseconds));
 	}

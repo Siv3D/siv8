@@ -96,6 +96,10 @@ namespace s3d
 
 		bool fill(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, bool wait);
 
+		bool fillRegion(MTL::CommandQueue* commandQueue, const ColorF& color, const Rect& rect);
+
+		bool fillRegion(MTL::CommandQueue* commandQueue, std::span<const Byte> data, uint32 srcBytesPerRow, const Rect& rect, bool wait);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	generateMips
@@ -115,12 +119,22 @@ namespace s3d
 
 	private:
 
+		[[nodiscard]]
+		bool prepareUpload(bool wait);
+
+		[[nodiscard]]
+		bool isValidRegion(const Rect& rect) const noexcept;
+
+		bool uploadRegion(MTL::CommandQueue* commandQueue, uint32 bytesPerRow, const Rect& rect);
+
 		MetalTexture2DDesc m_desc;
 
 		bool m_initialized = false;
-		
+
 		NS::SharedPtr<MTL::Texture> m_texture;
 		
 		NS::SharedPtr<MTL::Buffer> m_uploadBuffer;
+
+		NS::SharedPtr<MTL::CommandBuffer> m_uploadCommandBuffer;
 	};
 }

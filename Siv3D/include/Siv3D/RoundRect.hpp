@@ -619,8 +619,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 基本の長方形が大きさを持っているかを返します。
-		/// @return 基本の長方形が大きさを持っている場合 true, それ以外の場合は false
+		/// @brief 基本の長方形が面積を持っているかを返します。
+		/// @return 基本の長方形が面積を持っている場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool hasArea() const noexcept;
 
@@ -1013,13 +1013,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	intersectsAt
+		//	overlaps
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+		/// @brief 別の図形と交差する領域が面積を持つかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool overlaps(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1034,6 +1038,20 @@ namespace s3d
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1094,6 +1112,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角丸長方形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const RoundRect& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1102,6 +1125,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角丸長方形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const RoundRect& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1110,8 +1138,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角丸長方形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const RoundRect& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 角丸長方形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const RoundRect& paintFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1120,8 +1161,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 角丸長方形の枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const RoundRect& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 角丸長方形の枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param innerThickness 基準の角丸長方形から内側方向への枠の太さ
+		/// @param outerThickness 基準の角丸長方形から外側方向への枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const RoundRect& overwriteFrame(Image& dst, double innerThickness, double outerThickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1256,9 +1310,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャを角丸長方形に貼り付けた TexturedRoundRect を返します。
+		/// @param texture テクスチャ
+		/// @return TexturedRoundRect
 		[[nodiscard]]
 		TexturedRoundRect operator ()(const Texture& texture) const;
 
+		/// @brief テクスチャ領域を角丸長方形に貼り付けた TexturedRoundRect を返します。
+		/// @param textureRegion テクスチャ領域
+		/// @return TexturedRoundRect
 		[[nodiscard]]
 		TexturedRoundRect operator ()(const TextureRegion& textureRegion) const;
 

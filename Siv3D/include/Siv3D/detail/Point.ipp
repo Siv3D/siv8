@@ -10,60 +10,10 @@
 //-----------------------------------------------
 
 # pragma once
+# include "../Geometry2D/Geometry2DPointVectorFwd.hpp"
 
 namespace s3d
 {
-	namespace Geometry2D
-	{
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Point& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Vec2& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Line& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersect(const Point& a, const Bezier2& b);
-
-		[[nodiscard]]
-		bool Intersect(const Point& a, const Bezier3& b);
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Rect& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const RectF& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Circle& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Ellipse& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Triangle& b) noexcept;
-
-		[[nodiscard]]
-		constexpr bool Intersect(const Point& a, const Quad& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersect(const Point& a, const RoundRect& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersect(const Point& a, const SuperEllipse& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersect(const Point& a, const Polygon& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersect(const Point& a, const MultiPolygon& b) noexcept;
-
-		[[nodiscard]]
-		bool Intersect(const Point& a, const LineString& b) noexcept;
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -246,7 +196,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator +=(const Point p) noexcept
+	constexpr Point& Point::operator +=(const Point p) & noexcept
 	{
 		x += p.x;
 		y += p.y;
@@ -259,7 +209,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator -=(const Point p) noexcept
+	constexpr Point& Point::operator -=(const Point p) & noexcept
 	{
 		x -= p.x;
 		y -= p.y;
@@ -272,7 +222,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator *=(const int32 s) noexcept
+	constexpr Point& Point::operator *=(const int32 s) & noexcept
 	{
 		x *= s;
 		y *= s;
@@ -285,7 +235,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator /=(const int32 s) noexcept
+	constexpr Point& Point::operator /=(const int32 s) & noexcept
 	{
 		assert(s != 0);
 		x /= s;
@@ -299,7 +249,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Point& Point::operator %=(const int32 s) noexcept
+	constexpr Point& Point::operator %=(const int32 s) & noexcept
 	{
 		assert(s != 0);
 		x %= s;
@@ -840,7 +790,19 @@ namespace s3d
 	template <class Shape2DType>
 	constexpr bool Point::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Point::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -19,20 +19,28 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	RandomVec2
+	//	RandomUnitVec2
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 現在のスレッドの乱数エンジンを用いて、長さが 1 のランダムな 2 次元ベクトルを返します。
 	/// @return 長さが 1 のランダムな 2 次元ベクトル
+	/// @remark `RandomVec2()` と同じです。
 	[[nodiscard]]
-	Vec2 RandomVec2();
+	Vec2 RandomUnitVec2();
 
 	/// @brief 長さが 1 のランダムな 2 次元ベクトルを返します。
 	/// @param urbg 乱数エンジン
 	/// @return 長さが 1 のランダムな 2 次元ベクトル
+	/// @remark `RandomVec2(urbg)` と同じです。
 	[[nodiscard]]
-	Vec2 RandomVec2(Concept::UniformRandomBitGenerator auto&& urbg);
+	Vec2 RandomUnitVec2(Concept::UniformRandomBitGenerator auto&& urbg);
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	RandomVec2
+	//
+	////////////////////////////////////////////////////////////////
 
 	/// @brief 現在のスレッドの乱数エンジンを用いて、指定した長さを持つランダムな 2 次元ベクトルを返します。
 	/// @param length ベクトルの長さ
@@ -141,25 +149,6 @@ namespace s3d
 	/// @return 指定した四角形の内部のランダムな位置ベクトル
 	[[nodiscard]]
 	Vec2 RandomVec2(const Quad& quad, Concept::UniformRandomBitGenerator auto&& urbg);
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	RandomUnitVec2
-	//
-	////////////////////////////////////////////////////////////////
-
-	/// @brief 現在のスレッドの乱数エンジンを用いて、長さが 1 のランダムな 2 次元ベクトルを返します。
-	/// @return 長さが 1 のランダムな 2 次元ベクトル
-	/// @remark `RandomVec2()` と同じです。
-	[[nodiscard]]
-	Vec2 RandomUnitVec2();
-
-	/// @brief 長さが 1 のランダムな 2 次元ベクトルを返します。
-	/// @param urbg 乱数エンジン
-	/// @return 長さが 1 のランダムな 2 次元ベクトル
-	/// @remark `RandomVec2(urbg)` と同じです。
-	[[nodiscard]]
-	Vec2 RandomUnitVec2(Concept::UniformRandomBitGenerator auto&& urbg);
 
 	////////////////////////////////////////////////////////////////
 	//

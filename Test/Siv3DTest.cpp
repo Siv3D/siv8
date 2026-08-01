@@ -21,16 +21,24 @@
 # endif
 # include <ThirdParty/doctest/doctest.h>
 
-void RunTest()
+int32 RunTest()
 {
+	const auto& commandLineArgs = System::GetCommandLineArgs();
+	if (commandLineArgs.contains(U"--test-only")
+		&& (not commandLineArgs.contains(U"--test-verbose")))
+	{
+		Logger.setOutputLevel(LogType::Error);
+	}
+
 	Console.open();
 
 	doctest::Context context;
-	{
-		FileSystem::Remove(U"../../Test/output/");
+	context.applyCommandLine(System::GetArgc(), System::GetArgv());
 
-		context.run();
+	FileSystem::Remove(U"../../Test/output/");
 
-		FileSystem::Remove(U"../../Test/output/");
-	}
+	const int32 exitCode = context.run();
+
+	FileSystem::Remove(U"../../Test/output/");
+	return exitCode;
 }

@@ -12,8 +12,8 @@
 # include <Siv3D/ImageFormat/PNGDecoder.hpp>
 # include <Siv3D/IReader.hpp>
 # include <Siv3D/ScopeExit.hpp>
-# include <Siv3D/Endian.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <setjmp.h>
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
 #	include <ThirdParty-prebuilt/libpng/png.h>
 # else
@@ -24,25 +24,378 @@ namespace s3d
 {
 	namespace
 	{
+		class PNGAnimationProbe
+		{
+		public:
+
+			void update(const uint8* data, size_t size) noexcept
+			{
+				while ((size != 0) && (not m_done))
+				{
+					if (m_signatureBytesRead < m_signature.size())
+					{
+						const size_t count = std::min(
+							(m_signature.size() - m_signatureBytesRead),
+							size);
+						std::memcpy(
+							(m_signature.data() + m_signatureBytesRead),
+							data,
+							count);
+						m_signatureBytesRead += count;
+						data += count;
+						size -= count;
+
+						if ((m_signatureBytesRead == m_signature.size())
+							&& (std::memcmp(m_signature.data(), PNGSignature.data(), PNGSignature.size()) != 0))
+						{
+							m_done = true;
+						}
+
+						continue;
+					}
+
+					if (m_chunkHeaderBytesRead < m_chunkHeader.size())
+					{
+						const size_t count = std::min(
+							(m_chunkHeader.size() - m_chunkHeaderBytesRead),
+							size);
+						std::memcpy(
+							(m_chunkHeader.data() + m_chunkHeaderBytesRead),
+							data,
+							count);
+						m_chunkHeaderBytesRead += count;
+						data += count;
+						size -= count;
+
+						if (m_chunkHeaderBytesRead == m_chunkHeader.size())
+						{
+							beginChunk();
+						}
+
+						continue;
+					}
+
+					if (m_chunkDataRemaining != 0)
+					{
+						const size_t count = static_cast<size_t>(
+							std::min<uint64>(m_chunkDataRemaining, size));
+
+						if (m_isAnimationControl)
+						{
+							std::memcpy(
+								(m_animationControlData.data() + m_chunkDataBytesRead),
+								data,
+								count);
+						}
+
+						m_chunkDataBytesRead += count;
+						m_chunkDataRemaining -= count;
+						data += count;
+						size -= count;
+
+						if (m_isAnimationControl && (m_chunkDataRemaining == 0))
+						{
+							const uint32 frameCount =
+								((static_cast<uint32>(m_animationControlData[0]) << 24)
+									| (static_cast<uint32>(m_animationControlData[1]) << 16)
+									| (static_cast<uint32>(m_animationControlData[2]) << 8)
+									| static_cast<uint32>(m_animationControlData[3]));
+							m_isAnimated = (1 < frameCount);
+							m_done = true;
+						}
+
+						continue;
+					}
+
+					const size_t count = std::min(m_crcBytesRemaining, size);
+					m_crcBytesRemaining -= count;
+					data += count;
+					size -= count;
+
+					if (m_crcBytesRemaining == 0)
+					{
+						m_chunkHeaderBytesRead = 0;
+						m_chunkDataBytesRead = 0;
+						m_isAnimationControl = false;
+					}
+				}
+			}
+
+			[[nodiscard]]
+			bool isAnimated() const noexcept
+			{
+				return m_isAnimated;
+			}
+
+		private:
+
+			void beginChunk() noexcept
+			{
+				const uint32 chunkLength =
+					((static_cast<uint32>(m_chunkHeader[0]) << 24)
+						| (static_cast<uint32>(m_chunkHeader[1]) << 16)
+						| (static_cast<uint32>(m_chunkHeader[2]) << 8)
+						| static_cast<uint32>(m_chunkHeader[3]));
+				const uint8* const chunkType = (m_chunkHeader.data() + 4);
+				m_isAnimationControl = (std::memcmp(chunkType, "acTL", 4) == 0);
+
+				if (m_isAnimationControl && (chunkLength != m_animationControlData.size()))
+				{
+					m_done = true;
+					return;
+				}
+
+				if (std::memcmp(chunkType, "IDAT", 4) == 0)
+				{
+					m_done = true;
+					return;
+				}
+
+				m_chunkDataRemaining = chunkLength;
+				m_crcBytesRemaining = 4;
+			}
+
+			static constexpr std::array<uint8, 8> PNGSignature =
+				{ 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A };
+
+			std::array<uint8, 8> m_signature{};
+
+			std::array<uint8, 8> m_chunkHeader{};
+
+			std::array<uint8, 8> m_animationControlData{};
+
+			size_t m_signatureBytesRead = 0;
+
+			size_t m_chunkHeaderBytesRead = 0;
+
+			uint64 m_chunkDataRemaining = 0;
+
+			size_t m_chunkDataBytesRead = 0;
+
+			size_t m_crcBytesRemaining = 0;
+
+			bool m_isAnimationControl = false;
+
+			bool m_isAnimated = false;
+
+			bool m_done = false;
+		};
+
 		struct LookAheadReader
 		{
 			int64 pos = 0;
 			const IReader* reader = nullptr;
+			PNGAnimationProbe animationProbe;
 		};
+
+		struct PNGReadInfo
+		{
+			png_uint_32 width = 0;
+			png_uint_32 height = 0;
+			png_size_t rowBytes = 0;
+			int bitDepth = 0;
+			int colorType = 0;
+			int channels = 0;
+			bool isAnimated = false;
+		};
+
+		[[noreturn]]
+		static void PngErrorCallback(png_structp png_ptr, png_const_charp) noexcept
+		{
+			::png_longjmp(png_ptr, 1);
+		}
+
+		static void PngWarningCallback(png_structp, png_const_charp) noexcept
+		{
+		}
+
+		static void SetPNGErrorCallbacks(png_structp png_ptr) noexcept
+		{
+			::png_set_error_fn(png_ptr, nullptr, PngErrorCallback, PngWarningCallback);
+		}
 
 		static void PngLookAheadCallback(png_structp png_ptr, png_bytep buf, png_size_t length)
 		{
 			const auto lookAheadReader = static_cast<LookAheadReader*>(::png_get_io_ptr(png_ptr));
 			const int64 startPos = lookAheadReader->pos;
-			lookAheadReader->reader->lookahead(buf, startPos, length);
-			lookAheadReader->pos += length;
+			const int64 readSize = lookAheadReader->reader->lookahead(buf, startPos, length);
+
+			if (readSize != static_cast<int64>(length))
+			{
+				::png_error(png_ptr, "PNG lookahead failed");
+			}
+
+			lookAheadReader->animationProbe.update(buf, length);
+			lookAheadReader->pos += static_cast<int64>(length);
 		}
 
 		static void PngReadCallback(png_structp png_ptr, png_bytep buf, png_size_t length)
 		{
 			const auto reader = static_cast<IReader*>(::png_get_io_ptr(png_ptr));
+			const int64 readSize = reader->read(buf, length);
 
-			reader->read(buf, length);
+			if (readSize != static_cast<int64>(length))
+			{
+				::png_error(png_ptr, "PNG read failed");
+			}
+		}
+
+		[[nodiscard]]
+		static bool ReadPNGInfo(png_structp png_ptr, png_infop info_ptr, LookAheadReader* reader, PNGReadInfo* result)
+		{
+			SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4611)
+
+			if (setjmp(png_jmpbuf(png_ptr)))
+			{
+				return false;
+			}
+
+			SIV3D_DISABLE_GCC_WARNINGS_POP()
+
+			SetPNGErrorCallbacks(png_ptr);
+
+			::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
+			::png_set_read_fn(png_ptr, reader, PngLookAheadCallback);
+			::png_read_info(png_ptr, info_ptr);
+
+			PNGReadInfo readInfo;
+			::png_get_IHDR(png_ptr, info_ptr, &readInfo.width, &readInfo.height, &readInfo.bitDepth, &readInfo.colorType, nullptr, nullptr, nullptr);
+			readInfo.isAnimated = reader->animationProbe.isAnimated();
+			*result = readInfo;
+
+			return true;
+		}
+
+		[[nodiscard]]
+		static bool PreparePNGDecode(png_structp png_ptr, png_infop info_ptr, IReader* reader, PNGReadInfo* result)
+		{
+			if (setjmp(png_jmpbuf(png_ptr)))
+			{
+				return false;
+			}
+
+			SetPNGErrorCallbacks(png_ptr);
+
+			::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
+			::png_set_read_fn(png_ptr, reader, PngReadCallback);
+			::png_read_info(png_ptr, info_ptr);
+
+			PNGReadInfo readInfo;
+			::png_get_IHDR(png_ptr, info_ptr, &readInfo.width, &readInfo.height, &readInfo.bitDepth, &readInfo.colorType, nullptr, nullptr, nullptr);
+
+			if ((Image::MaxWidth < readInfo.width) || (Image::MaxHeight < readInfo.height))
+			{
+				return false;
+			}
+
+			if (readInfo.colorType == PNG_COLOR_TYPE_PALETTE)
+			{
+				::png_set_palette_to_rgb(png_ptr);
+			}
+
+			if (::png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
+			{
+				::png_set_tRNS_to_alpha(png_ptr);
+			}
+
+			if ((readInfo.colorType == PNG_COLOR_TYPE_GRAY) && (readInfo.bitDepth < 8))
+			{
+				::png_set_expand_gray_1_2_4_to_8(png_ptr);
+			}
+
+			if (readInfo.bitDepth == 16)
+			{
+				::png_set_scale_16(png_ptr);
+			}
+
+			if ((readInfo.colorType == PNG_COLOR_TYPE_GRAY)
+				|| (readInfo.colorType == PNG_COLOR_TYPE_GRAY_ALPHA))
+			{
+				::png_set_gray_to_rgb(png_ptr);
+			}
+
+			::png_set_add_alpha(png_ptr, 0xff, PNG_FILLER_AFTER);
+			::png_read_update_info(png_ptr, info_ptr);
+			readInfo.rowBytes = ::png_get_rowbytes(png_ptr, info_ptr);
+			readInfo.bitDepth = ::png_get_bit_depth(png_ptr, info_ptr);
+			readInfo.colorType = ::png_get_color_type(png_ptr, info_ptr);
+			readInfo.channels = ::png_get_channels(png_ptr, info_ptr);
+
+			const png_size_t expectedRowBytes = (static_cast<png_size_t>(readInfo.width) * 4);
+
+			if ((readInfo.bitDepth != 8)
+				|| (readInfo.channels != 4)
+				|| (readInfo.rowBytes != expectedRowBytes))
+			{
+				return false;
+			}
+
+			*result = readInfo;
+
+			return true;
+		}
+
+		[[nodiscard]]
+		static bool PreparePNGGray16Decode(png_structp png_ptr, png_infop info_ptr, IReader* reader, PNGReadInfo* result)
+		{
+			if (setjmp(png_jmpbuf(png_ptr)))
+			{
+				return false;
+			}
+
+			SetPNGErrorCallbacks(png_ptr);
+
+			::png_set_user_limits(png_ptr, static_cast<png_uint_32>(Image::MaxWidth), static_cast<png_uint_32>(Image::MaxHeight));
+			::png_set_read_fn(png_ptr, reader, PngReadCallback);
+			::png_read_info(png_ptr, info_ptr);
+
+			PNGReadInfo readInfo;
+			::png_get_IHDR(png_ptr, info_ptr, &readInfo.width, &readInfo.height, &readInfo.bitDepth, &readInfo.colorType, nullptr, nullptr, nullptr);
+
+			if ((Image::MaxWidth < readInfo.width)
+				|| (Image::MaxHeight < readInfo.height)
+				|| (readInfo.bitDepth != 16)
+				|| (readInfo.colorType != PNG_COLOR_TYPE_GRAY))
+			{
+				return false;
+			}
+
+			// Siv3D supports little-endian platforms only.
+			::png_set_swap(png_ptr);
+			::png_read_update_info(png_ptr, info_ptr);
+			readInfo.rowBytes = ::png_get_rowbytes(png_ptr, info_ptr);
+			readInfo.bitDepth = ::png_get_bit_depth(png_ptr, info_ptr);
+			readInfo.colorType = ::png_get_color_type(png_ptr, info_ptr);
+			readInfo.channels = ::png_get_channels(png_ptr, info_ptr);
+
+			const png_size_t expectedRowBytes = (static_cast<png_size_t>(readInfo.width) * sizeof(uint16));
+
+			if ((readInfo.bitDepth != 16)
+				|| (readInfo.channels != 1)
+				|| (readInfo.rowBytes != expectedRowBytes))
+			{
+				return false;
+			}
+
+			*result = readInfo;
+
+			return true;
+		}
+
+		[[nodiscard]]
+		static bool ReadPNGImage(png_structp png_ptr, png_bytepp rowPointers)
+		{
+			if (setjmp(png_jmpbuf(png_ptr)))
+			{
+				return false;
+			}
+
+			SetPNGErrorCallbacks(png_ptr);
+
+			::png_read_image(png_ptr, rowPointers);
+			::png_read_end(png_ptr, nullptr);
+
+			return true;
 		}
 	}
 
@@ -106,13 +459,11 @@ namespace s3d
 
 	Optional<ImageInfo> PNGDecoder::getImageInfo(const IReader& reader, const FilePathView) const
 	{
-		// png_ptr
 		png_structp png_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+
+		if (not png_ptr)
 		{
-			if (not png_ptr)
-			{
-				return{};
-			}
+			return{};
 		}
 
 		ScopeExit cleanup_struct = [&]()
@@ -120,13 +471,11 @@ namespace s3d
 			::png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		};
 
-		// info_ptr
 		png_infop info_ptr = ::png_create_info_struct(png_ptr);
+
+		if (not info_ptr)
 		{
-			if (not info_ptr)
-			{
-				return{};
-			}
+			return{};
 		}
 
 		ScopeExit cleanup_info = [&]()
@@ -134,21 +483,19 @@ namespace s3d
 			::png_destroy_info_struct(png_ptr, &info_ptr);
 		};
 
-		// decode
-		LookAheadReader lookAheadReader{ 0, &reader };
-		::png_set_read_fn(png_ptr, &lookAheadReader, PngLookAheadCallback);
-		::png_read_info(png_ptr, info_ptr);
+		LookAheadReader lookAheadReader{ 0, &reader, {} };
+		PNGReadInfo readInfo;
 
-		png_uint_32 width = 0, height = 0;
-		int iBitDepth, iColorType;
-
-		::png_get_IHDR(png_ptr, info_ptr, &width, &height, &iBitDepth, &iColorType, nullptr, nullptr, nullptr);
+		if (not ReadPNGInfo(png_ptr, info_ptr, &lookAheadReader, &readInfo))
+		{
+			return{};
+		}
 
 		ImagePixelFormat pixelFormat = ImagePixelFormat::R8G8B8A8;
 
-		if (iColorType == PNG_COLOR_TYPE_GRAY)
+		if (readInfo.colorType == PNG_COLOR_TYPE_GRAY)
 		{
-			if (iBitDepth == 16)
+			if (readInfo.bitDepth == 16)
 			{
 				pixelFormat = ImagePixelFormat::Gray16;
 			}
@@ -157,9 +504,9 @@ namespace s3d
 				pixelFormat = ImagePixelFormat::Gray8;
 			}
 		}
-		else if (iColorType == PNG_COLOR_TYPE_GRAY_ALPHA)
+		else if (readInfo.colorType == PNG_COLOR_TYPE_GRAY_ALPHA)
 		{
-			if (iBitDepth == 16)
+			if (readInfo.bitDepth == 16)
 			{
 				pixelFormat = ImagePixelFormat::Gray16A16;
 			}
@@ -168,12 +515,12 @@ namespace s3d
 				pixelFormat = ImagePixelFormat::Gray8A8;
 			}
 		}
-		else if (iColorType == PNG_COLOR_TYPE_RGB)
+		else if (readInfo.colorType == PNG_COLOR_TYPE_RGB)
 		{
 			pixelFormat = ImagePixelFormat::R8G8B8;
 		}
 
-		return ImageInfo{ Size{ width, height }, ImageFormat::PNG, pixelFormat, false };
+		return ImageInfo{ Size{ readInfo.width, readInfo.height }, ImageFormat::PNG, pixelFormat, readInfo.isAnimated };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -196,13 +543,11 @@ namespace s3d
 			return{};
 		}
 
-		// png_ptr
 		png_structp png_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+
+		if (not png_ptr)
 		{
-			if (not png_ptr)
-			{
-				return{};
-			}
+			return{};
 		}
 
 		ScopeExit cleanup_struct = [&]()
@@ -210,13 +555,11 @@ namespace s3d
 			::png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		};
 
-		// info_ptr
 		png_infop info_ptr = ::png_create_info_struct(png_ptr);
+
+		if (not info_ptr)
 		{
-			if (!info_ptr)
-			{
-				return{};
-			}
+			return{};
 		}
 
 		ScopeExit cleanup_info = [&]()
@@ -224,95 +567,38 @@ namespace s3d
 			::png_destroy_info_struct(png_ptr, &info_ptr);
 		};
 
-		// decode
-		::png_set_read_fn(png_ptr, reader.get(), PngReadCallback);
+		PNGReadInfo readInfo;
 
-		::png_read_info(png_ptr, info_ptr);
-
-		png_uint_32 width = 0, height = 0;
-
-		int iBitDepth, iColorType;
-
-		::png_get_IHDR(png_ptr, info_ptr, &width, &height, &iBitDepth, &iColorType, nullptr, nullptr, nullptr);
-
-		if ((Image::MaxWidth < width) || (Image::MaxHeight < height))
+		if (not PreparePNGDecode(png_ptr, info_ptr, reader.get(), &readInfo))
 		{
-			LOG_FAIL(fmt::format("PNGDecoder::decode(): Image size {}x{} is not supported", width, height));
 			return{};
 		}
 
-		if (iColorType == PNG_COLOR_TYPE_PALETTE)
+		Image image(readInfo.width, readInfo.height);
+
+		if (image.bytesPerRow() < readInfo.rowBytes)
 		{
-			LOG_TRACE("png_set_palette_to_rgb()");
-			::png_set_palette_to_rgb(png_ptr);
+			return{};
 		}
 
-		if (::png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
+		Array<png_bytep> rowPointers(readInfo.height);
 		{
-			LOG_TRACE("png_set_tRNS_to_alpha()");
-			::png_set_tRNS_to_alpha(png_ptr);
-		}
-
-		if (iColorType == PNG_COLOR_TYPE_GRAY && iBitDepth < 8)
-		{
-			LOG_TRACE("png_set_expand_gray_1_2_4_to_8()");
-			::png_set_expand_gray_1_2_4_to_8(png_ptr);
-		}
-
-		if (iBitDepth == 16)
-		{
-			LOG_TRACE("png_set_scale_16()");
-			::png_set_scale_16(png_ptr);
-		}
-
-		if (iBitDepth < 8)
-		{
-			LOG_TRACE("png_set_packing()");
-			::png_set_packing(png_ptr);
-		}
-
-		if ((iColorType == PNG_COLOR_TYPE_GRAY)
-			|| (iColorType == PNG_COLOR_TYPE_GRAY_ALPHA))
-		{
-			LOG_TRACE("png_set_gray_to_rgb()");
-			::png_set_gray_to_rgb(png_ptr);
-		}
-
-		::png_set_add_alpha(png_ptr, 0xff, PNG_FILLER_AFTER);
-
-		double dGamma;
-
-		if (::png_get_gAMA(png_ptr, info_ptr, &dGamma))
-		{
-			LOG_TRACE("png_set_gamma()");
-			::png_set_gamma(png_ptr, 2.2, dGamma);
-		}
-
-		::png_read_update_info(png_ptr, info_ptr);
-
-		const int nChannels = ::png_get_channels(png_ptr, info_ptr);
-
-		::png_get_IHDR(png_ptr, info_ptr, &width, &height, &iBitDepth, &iColorType, nullptr, nullptr, nullptr);
-
-		Image image(width, height);
-
-		Array<uint8*> ppbRowPointers(height);
-		{
-			const size_t stride = (static_cast<size_t>(width) * nChannels);
+			const size_t stride = image.bytesPerRow();
 			uint8* pixels = image.dataAsUint8();
 
-			for (size_t i = 0; i < height; ++i)
+			for (size_t i = 0; i < readInfo.height; ++i)
 			{
-				ppbRowPointers[i] = pixels;
+				rowPointers[i] = pixels;
 				pixels += stride;
 			}
 		}
 
-		::png_read_image(png_ptr, ppbRowPointers.data());
+		if (not ReadPNGImage(png_ptr, rowPointers.data()))
+		{
+			return{};
+		}
 
-		::png_read_end(png_ptr, nullptr);
-
-		LOG_TRACE(fmt::format("Image ({}x{}) decoded", width, height));
+		LOG_TRACE(fmt::format("Image ({}x{}) decoded", readInfo.width, readInfo.height));
 
 		if (premultiplyAlpha)
 		{
@@ -335,20 +621,18 @@ namespace s3d
 
 	Grid<uint16> PNGDecoder::decodeGray16(std::unique_ptr<IReader> reader, FilePathView) const
 	{
-		LOG_SCOPED_DEBUG("PNGDecoder::decode()");
+		LOG_SCOPED_DEBUG("PNGDecoder::decodeGray16()");
 
 		if (not reader)
 		{
 			return{};
 		}
 
-		// png_ptr
 		png_structp png_ptr = ::png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+
+		if (not png_ptr)
 		{
-			if (not png_ptr)
-			{
-				return{};
-			}
+			return{};
 		}
 
 		ScopeExit cleanup_struct = [&]()
@@ -356,13 +640,11 @@ namespace s3d
 			::png_destroy_read_struct(&png_ptr, nullptr, nullptr);
 		};
 
-		// info_ptr
 		png_infop info_ptr = ::png_create_info_struct(png_ptr);
+
+		if (not info_ptr)
 		{
-			if (not info_ptr)
-			{
-				return{};
-			}
+			return{};
 		}
 
 		ScopeExit cleanup_info = [&]()
@@ -370,85 +652,32 @@ namespace s3d
 			::png_destroy_info_struct(png_ptr, &info_ptr);
 		};
 
-		// decode
-		::png_set_read_fn(png_ptr, reader.get(), PngReadCallback);
+		PNGReadInfo readInfo;
 
-		::png_read_info(png_ptr, info_ptr);
-
-		png_uint_32 width = 0, height = 0;
-
-		int iBitDepth, iColorType;
-
-		::png_get_IHDR(png_ptr, info_ptr, &width, &height, &iBitDepth, &iColorType, nullptr, nullptr, nullptr);
-
-		if ((Image::MaxWidth < width) || (Image::MaxHeight < height))
-		{
-			LOG_FAIL(fmt::format("PNGDecoder::decode(): Image size {}x{} is not supported", width, height));
-			return{};
-		}
-
-		if (iColorType == PNG_COLOR_TYPE_PALETTE)
-		{
-			LOG_TRACE("png_set_palette_to_rgb()");
-			::png_set_palette_to_rgb(png_ptr);
-		}
-
-		if (::png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
-		{
-			LOG_TRACE("png_set_tRNS_to_alpha()");
-			::png_set_tRNS_to_alpha(png_ptr);
-		}
-
-		if (iColorType == PNG_COLOR_TYPE_GRAY && iBitDepth < 8)
-		{
-			LOG_TRACE("png_set_expand_gray_1_2_4_to_8()");
-			::png_set_expand_gray_1_2_4_to_8(png_ptr);
-		}
-
-		if (iBitDepth != 16
-			|| (iColorType != PNG_COLOR_TYPE_GRAY))
+		if (not PreparePNGGray16Decode(png_ptr, info_ptr, reader.get(), &readInfo))
 		{
 			return{};
 		}
 
-		double dGamma;
+		Grid<uint16> image(readInfo.width, readInfo.height);
 
-		if (::png_get_gAMA(png_ptr, info_ptr, &dGamma))
+		Array<png_bytep> rowPointers(readInfo.height);
 		{
-			LOG_TRACE("png_set_gamma()");
-			::png_set_gamma(png_ptr, 2.2, dGamma);
-		}
+			png_bytep pixels = reinterpret_cast<png_bytep>(image.data());
 
-		::png_read_update_info(png_ptr, info_ptr);
-
-		const int nChannels = ::png_get_channels(png_ptr, info_ptr);
-
-		::png_get_IHDR(png_ptr, info_ptr, &width, &height, &iBitDepth, &iColorType, nullptr, nullptr, nullptr);
-
-		Grid<uint16> image(width, height);
-
-		Array<uint16*> ppbRowPointers(height);
-		{
-			const size_t stride = (static_cast<size_t>(width) * nChannels);
-			uint16* pixels = image.data();
-
-			for (size_t i = 0; i < height; ++i)
+			for (size_t i = 0; i < readInfo.height; ++i)
 			{
-				ppbRowPointers[i] = pixels;
-				pixels += stride;
+				rowPointers[i] = pixels;
+				pixels += readInfo.rowBytes;
 			}
 		}
 
-		::png_read_image(png_ptr, static_cast<png_bytepp>(static_cast<void*>(ppbRowPointers.data())));
-
-		::png_read_end(png_ptr, nullptr);
-
-		for (auto& pixel : image)
+		if (not ReadPNGImage(png_ptr, rowPointers.data()))
 		{
-			pixel = SwapEndian(pixel);
+			return{};
 		}
 
-		LOG_TRACE(fmt::format("Image ({}x{}) decoded", width, height));
+		LOG_TRACE(fmt::format("Image ({}x{}) decoded", readInfo.width, readInfo.height));
 
 		return image;
 	}

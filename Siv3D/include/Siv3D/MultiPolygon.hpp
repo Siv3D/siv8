@@ -12,6 +12,8 @@
 # pragma once
 # include "Common.hpp"
 # include "Array.hpp"
+# include "ArrayAlgorithm.hpp"
+# include "ArrayRandom.hpp"
 # include "Polygon.hpp"
 
 namespace s3d
@@ -101,8 +103,18 @@ namespace s3d
 		[[nodiscard]]
 		MultiPolygon(Iterator first, Iterator last);
 
+		/// @brief 初期化リストから多角形の配列を作成します。
+		/// @param init 初期化リスト
 		[[nodiscard]]
 		MultiPolygon(std::initializer_list<value_type> init);
+
+		/// @brief 範囲から多角形の配列を作成します。
+		/// @tparam Range 多角形の範囲
+		/// @param tag 範囲から作成することを示すタグ
+		/// @param range 多角形の範囲
+		template <Concept::ContainerCompatibleRange<Polygon> Range>
+		[[nodiscard]]
+		MultiPolygon(std::from_range_t tag, Range&& range);
 
 		/// @brief 空の多角形の配列を作成し、`reserve()` します。
 		/// @param size `reserve()` するサイズ
@@ -115,13 +127,30 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief コピー代入演算子
+		/// @param other コピーする多角形の配列
+		/// @return *this
 		MultiPolygon& operator =(const MultiPolygon& other);
 
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする多角形の配列
+		/// @return *this
 		MultiPolygon& operator =(MultiPolygon&& other) noexcept;
 
+		/// @brief コピー代入演算子
+		/// @param other コピーする配列
+		/// @return *this
 		MultiPolygon& operator =(const container_type& other);
 
+		/// @brief ムーブ代入演算子
+		/// @param other ムーブする配列
+		/// @return *this
 		MultiPolygon& operator =(container_type&& other) noexcept;
+
+		/// @brief リストから多角形の配列を代入します。
+		/// @param list 多角形のリスト
+		/// @return *this
+		MultiPolygon& operator =(std::initializer_list<value_type> list);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -519,12 +548,11 @@ namespace s3d
 		/// @return 挿入された要素を指すイテレータ
 		iterator insert(const_iterator pos, const value_type& value);
 
-		/// @brief 指定した位置に count 個の value を挿入します。
+		/// @brief 指定した位置に要素を挿入します。
 		/// @param pos 挿入する位置
-		/// @param count 挿入する個数
 		/// @param value 挿入する値
-		/// @return 挿入された要素の先頭を指すイテレータ
-		iterator insert(const_iterator pos, size_type count, const value_type& value);
+		/// @return 挿入された要素を指すイテレータ
+		iterator insert(const_iterator pos, value_type&& value);
 
 		/// @brief 指定した位置にイテレータが指す範囲の要素を挿入します。
 		/// @tparam Iterator イテレータ
@@ -540,6 +568,19 @@ namespace s3d
 		/// @param list リスト
 		/// @return 挿入された要素の先頭を指すイテレータ
 		iterator insert(const_iterator pos, std::initializer_list<value_type> list);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	insert_range
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に範囲の要素を挿入します。
+		/// @param pos 挿入する位置
+		/// @param range 挿入する要素の範囲
+		/// @return 挿入された要素の先頭を指すイテレータ
+		template <Concept::ContainerCompatibleRange<Polygon> Range>
+		iterator insert_range(const_iterator pos, Range&& range);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -586,6 +627,93 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	erase_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を削除します。
+		/// @param index 削除する要素のインデックス
+		/// @return *this
+		MultiPolygon& erase_at(size_type index) &;
+
+		/// @brief 指定したインデックスの要素を削除します。
+		/// @param index 削除する要素のインデックス
+		/// @return 削除後の配列
+		MultiPolygon erase_at(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_at_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を削除します。削除後の順序は保証されません。
+		/// @param index 削除する要素のインデックス
+		/// @return *this
+		MultiPolygon& erase_at_unstable(size_type index) &;
+
+		/// @brief 指定したインデックスの要素を削除します。削除後の順序は保証されません。
+		/// @param index 削除する要素のインデックス
+		/// @return 削除後の MultiPolygon
+		[[nodiscard]]
+		MultiPolygon erase_at_unstable(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を削除します。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 削除した要素の個数
+		template <class Fty>
+		size_type erase_all_if(Fty f) requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_all_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を削除します。削除後の順序は保証されません。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 削除した要素の個数
+		template <class Fty>
+		size_type erase_all_if_unstable(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす最初の要素を削除します。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 要素を削除した場合 true, それ以外の場合は false
+		template <class Fty>
+		bool erase_first_if(Fty f) requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	erase_first_if_unstable
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす最初の要素を削除します。削除後の順序は保証されません。
+		/// @tparam Fty 要素が条件を満たすかを判定する関数オブジェクトの型
+		/// @param f 要素が条件を満たすかを判定する関数オブジェクト
+		/// @return 要素を削除した場合 true, それ以外の場合は false
+		template <class Fty>
+		bool erase_first_if_unstable(Fty f)
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	push_back
 		//
 		////////////////////////////////////////////////////////////////
@@ -593,6 +721,10 @@ namespace s3d
 		/// @brief 配列の末尾に要素を追加します。
 		/// @param value 追加する値
 		void push_back(const value_type& value);
+
+		/// @brief 配列の末尾に要素をムーブして追加します。
+		/// @param value 追加する値
+		void push_back(value_type&& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -646,6 +778,10 @@ namespace s3d
 		/// @brief 配列の先頭に要素を追加します。
 		/// @param value 追加する値
 		void push_front(const value_type& value);
+
+		/// @brief 配列の先頭に要素を追加します。
+		/// @param value 追加する値
+		void push_front(value_type&& value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -702,6 +838,11 @@ namespace s3d
 		/// @return *this
 		MultiPolygon& operator <<(const value_type& value);
 
+		/// @brief 配列の末尾に要素をムーブして追加します。
+		/// @param value 追加する値
+		/// @return *this
+		MultiPolygon& operator <<(value_type&& value);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	subspan
@@ -722,10 +863,791 @@ namespace s3d
 		[[nodiscard]]
 		std::span<const value_type> subspan(size_type pos, size_type count) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	all
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief すべての要素が条件を満たすかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return すべての要素が条件を満たすか、配列が空の場合 true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool all(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	any
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool any(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	append
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配列の末尾に別の MultiPolygon の要素を追加します。
+		/// @param other 追加する MultiPolygon
+		/// @return *this
+		MultiPolygon& append(const MultiPolygon& other);
+
+		/// @brief 配列の末尾に別の MultiPolygon の要素をムーブして追加します。
+		/// @param other 追加する MultiPolygon
+		/// @return *this
+		MultiPolygon& append(MultiPolygon&& other);
+
+		/// @brief 配列の末尾に別の配列の要素を追加します。
+		/// @param other 追加する配列
+		/// @return *this
+		MultiPolygon& append(const container_type& other);
+
+		/// @brief 配列の末尾に指定した範囲の要素を追加します。
+		/// @tparam Iterator イテレータの型
+		/// @param first 範囲の先頭を指すイテレータ
+		/// @param last 範囲の終端を指すイテレータ
+		/// @return *this
+		template <std::input_iterator Iterator>
+		MultiPolygon& append(Iterator first, Iterator last);
+
+		/// @brief 配列の末尾にリストの要素を追加します。
+		/// @param list 追加する要素のリスト
+		/// @return *this
+		MultiPolygon& append(std::initializer_list<value_type> list);
+
+		/// @brief 配列の末尾に count 個の value を追加します。
+		/// @param count 追加する要素数
+		/// @param value 追加する値
+		/// @return *this
+		MultiPolygon& append(size_type count, const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	choice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列から要素を 1 つランダムに返します。
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice();
+
+		/// @brief 多角形の配列から要素を 1 つランダムに返します。
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice() const;
+
+		/// @brief 指定した乱数エンジンを用いて、多角形の配列から要素を 1 つランダムに返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg);
+
+		/// @brief 指定した乱数エンジンを用いて、多角形の配列から要素を 1 つランダムに返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素への参照
+		[[nodiscard]]
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const;
+
+		/// @brief 多角形の配列から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @return ランダムに選ばれた要素の MultiPolygon
+		[[nodiscard]]
+		MultiPolygon choice(size_t n) const;
+
+		/// @brief 指定した乱数エンジンを用いて、多角形の配列から指定した個数だけ重複なくランダムに選んで返します。
+		/// @param n 選択する個数
+		/// @param urbg 使用する乱数エンジン
+		/// @return ランダムに選ばれた要素の MultiPolygon
+		[[nodiscard]]
+		MultiPolygon choice(size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	chunk
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列を指定した個数の要素を持つグループに分割します。最後のグループの要素数は n 個未満になることがあります。
+		/// @param n 1 つのグループが持つ要素数
+		/// @return 分割された MultiPolygon のグループ
+		[[nodiscard]]
+		Array<MultiPolygon> chunk(size_type n) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素があるかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が 1 つでもあれば true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool contains_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素の個数
+		template <class Fty>
+		[[nodiscard]]
+		isize count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_index
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_index(Fty f)
+			requires std::invocable<Fty&, size_t, value_type&>;
+
+		/// @brief すべての要素とそのインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_index(Fty f) const
+			requires std::invocable<Fty&, size_t, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_sindex
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とその符号付きインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_sindex(Fty f)
+			requires std::invocable<Fty&, isize, value_type&>;
+
+		/// @brief すべての要素とその符号付きインデックスを順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void each_sindex(Fty f) const
+			requires std::invocable<Fty&, isize, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fetch
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を返します。範囲外の場合はデフォルト値を返します。
+		/// @tparam U デフォルト値の型
+		/// @param index インデックス
+		/// @param defaultValue 範囲外の場合に返すデフォルト値
+		/// @return 指定したインデックスの要素、範囲外の場合は defaultValue
+		template <class U>
+		[[nodiscard]]
+		value_type fetch(size_type index, U&& defaultValue) const
+			noexcept(std::is_nothrow_constructible_v<value_type, U> && std::is_nothrow_copy_constructible_v<value_type>)
+			requires std::constructible_from<value_type, U>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fill
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素に同じ値を代入します。
+		/// @param value 代入する値
+		/// @return *this
+		MultiPolygon& fill(const value_type& value);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	filter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した条件を満たす要素だけを集めた新しい MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素を集めた新しい MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon filter(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	fold_left
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を左から順番に関数へ適用し、1 つの値にまとめます。
+		/// @tparam R 初期値の型
+		/// @tparam Fty 適用する関数の型
+		/// @param init 初期値
+		/// @param f 適用する関数
+		/// @return まとめられた値
+		template <class R, class Fty>
+		auto fold_left(R init, Fty f) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	map
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素に関数を適用した戻り値からなる新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		auto map(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	none
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素が存在しないかを返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素が存在しなければ true, それ以外の場合は false
+		template <class Fty>
+		[[nodiscard]]
+		bool none(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した範囲の要素からなる新しい MultiPolygon を返します。
+		/// @param index 開始インデックス
+		/// @param length 要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon slice(size_type index, size_type length) const&;
+
+		/// @brief 指定した範囲の要素からなる新しい MultiPolygon を返します。
+		/// @param index 開始インデックス
+		/// @param length 要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon slice(size_type index, size_type length) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon head(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon head(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<value_type> head_span(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<const value_type> head_span(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 先頭から最大 n 個の要素を参照する `std::span`
+		std::span<value_type> head_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	head_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto head_view(size_type n) & noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto head_view(size_type n) const& noexcept;
+
+		/// @brief 先頭から最大 n 個の要素を保持するビューを返します。
+		[[nodiscard]]
+		auto head_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	in_groups
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列を指定したグループ数に分割します。
+		/// @param group グループ数
+		/// @remark group が要素数より大きい場合、空のグループは作られず、返されるグループ数は要素数になります。
+		/// @return 分割した MultiPolygon のグループ
+		[[nodiscard]]
+		Array<MultiPolygon> in_groups(size_type group) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon tail(size_type n) const&;
+
+		/// @brief 末尾の最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon tail(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_span
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<value_type> tail_span(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		[[nodiscard]]
+		std::span<const value_type> tail_span(size_type n) const& noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
+		/// @param n 参照する最大要素数
+		/// @return 末尾の最大 n 個の要素を参照する `std::span`
+		std::span<value_type> tail_span(size_type n) && = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	tail_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 末尾の最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto tail_view(size_type n) & noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を参照するビューを返します。
+		[[nodiscard]]
+		auto tail_view(size_type n) const& noexcept;
+
+		/// @brief 末尾の最大 n 個の要素を保持するビューを返します。
+		[[nodiscard]]
+		auto tail_view(size_type n) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon take(size_type n) const&;
+
+		/// @brief 先頭から最大 n 個の要素を含む新しい MultiPolygon を返します。
+		/// @param n 取り出す最大要素数
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon take(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take_while
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から条件を満たさなくなる直前までの要素からなる新しい MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon take_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 先頭から条件を満たさなくなる直前までの要素からなる新しい MultiPolygon を返します。
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon take_while(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	values_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素からなる新しい MultiPolygon を返します。
+		/// @param indices インデックス
+		/// @return 新しい MultiPolygon
+		[[nodiscard]]
+		MultiPolygon values_at(std::initializer_list<size_type> indices) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_at
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したインデックスの要素を除いた新しい MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon without_at(size_type index) const&;
+
+		/// @brief 指定したインデックスの要素を除いた新しい MultiPolygon を返します。
+		[[nodiscard]]
+		MultiPolygon without_at(size_type index) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	without_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす要素を除いた新しい MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素を除いた MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon without_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たす要素を除いた新しい MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす要素を除いた MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon without_if(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	replace_if, replaced_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えます。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return *this
+		template <class Fty>
+		MultiPolygon& replace_if(Fty f, const value_type& newValue) &
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return 置き換え後の MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon replace_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return 置き換え後の MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon replaced_if(Fty f, const value_type& newValue) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 条件を満たすすべての要素を別の値に置き換えた MultiPolygon を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param f 条件を記述した関数
+		/// @param newValue 新しい値
+		/// @return 置き換え後の MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon replaced_if(Fty f, const value_type& newValue) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse, reversed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を逆順に並び替えます。
+		/// @return *this
+		MultiPolygon& reverse() &;
+
+		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		/// @return 逆順に並び替えた MultiPolygon
+		[[nodiscard]]
+		MultiPolygon reverse() &&;
+
+		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		/// @return 逆順に並び替えた MultiPolygon
+		[[nodiscard]]
+		MultiPolygon reversed() const&;
+
+		/// @brief 要素を逆順に並び替えた MultiPolygon を返します。
+		/// @return 逆順に並び替えた MultiPolygon
+		[[nodiscard]]
+		MultiPolygon reversed() &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_each
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void reverse_each(Fty f)
+			requires std::invocable<Fty&, value_type&>;
+
+		/// @brief すべての要素を逆順に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		template <class Fty>
+		void reverse_each(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverse_view
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を逆順に参照するビューを返します。
+		/// @return 要素を逆順に参照するビュー
+		[[nodiscard]]
+		auto reverse_view() &;
+
+		/// @brief 要素を逆順に参照するビューを返します。
+		/// @return 要素を逆順に参照するビュー
+		[[nodiscard]]
+		auto reverse_view() const&;
+
+		/// @brief 要素を逆順に保持するビューを返します。
+		/// @return 要素を逆順に保持するビュー
+		[[nodiscard]]
+		auto reverse_view() &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shuffle, shuffled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素の並び順をランダムにシャッフルします。
+		/// @return *this
+		MultiPolygon& shuffle() &;
+
+		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		/// @return シャッフルした MultiPolygon
+		[[nodiscard]]
+		MultiPolygon shuffle() &&;
+
+		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		/// @return シャッフルした MultiPolygon
+		[[nodiscard]]
+		MultiPolygon shuffled() const&;
+
+		/// @brief 要素の並び順をランダムにシャッフルした MultiPolygon を返します。
+		/// @return シャッフルした MultiPolygon
+		[[nodiscard]]
+		MultiPolygon shuffled() &&;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルします。
+		/// @param urbg 使用する乱数エンジン
+		/// @return *this
+		MultiPolygon& shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return シャッフルした MultiPolygon
+		[[nodiscard]]
+		MultiPolygon shuffle(Concept::UniformRandomBitGenerator auto&& urbg) &&;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return シャッフルした MultiPolygon
+		[[nodiscard]]
+		MultiPolygon shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&;
+
+		/// @brief 指定した乱数エンジンを用いて要素をシャッフルした MultiPolygon を返します。
+		/// @param urbg 使用する乱数エンジン
+		/// @return シャッフルした MultiPolygon
+		[[nodiscard]]
+		MultiPolygon shuffled(Concept::UniformRandomBitGenerator auto&& urbg) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	sort_by, sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した比較関数を用いて要素を並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		MultiPolygon& sort_by(Fty f) &
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 並び替えた MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 並び替えた MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 並び替えた MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_sort_by, stable_sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		MultiPolygon& stable_sort_by(Fty f) &
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 安定ソートした MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon stable_sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 安定ソートした MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon stable_sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		/// @brief 指定した比較関数を用いて要素を相対順序を保ちながら並び替えた MultiPolygon を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 安定ソートした MultiPolygon
+		template <class Fty>
+		[[nodiscard]]
+		MultiPolygon stable_sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	operator >>
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素に関数を適用します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @remark Fty が戻り値を持たない場合は `.each(f)`、戻り値を持つ場合は `.map(f)` と同じです。
+		/// @return 各要素に関数を適用した結果の配列。Fty が戻り値を持たない場合は void
+		template <class Fty>
+		auto operator >>(Fty f) const
+			requires std::invocable<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -782,12 +1704,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(double x, double y) const&;
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(double x, double y) && noexcept;
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(Vec2 v) const&;
 
+		/// @brief 平行移動した多角形の配列を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形の配列
 		MultiPolygon withOffset(Vec2 v) && noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -796,12 +1732,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief X 方向に平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetX(double x) const&;
 
+		/// @brief X 方向に平行移動した多角形の配列を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetX(double x) && noexcept;
 
+		/// @brief Y 方向に平行移動した多角形の配列を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetY(double y) const&;
 
+		/// @brief Y 方向に平行移動した多角形の配列を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した多角形の配列
 		MultiPolygon withOffsetY(double y) && noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -810,9 +1758,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に回転した多角形の配列を返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotated(double angle) const&;
 
+		/// @brief 原点 (0, 0) を中心に回転した多角形の配列を返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotated(double angle)&&;
 
@@ -822,9 +1776,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に回転した多角形の配列を返します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotatedAt(Vec2 pos, double angle) const&;
 
+		/// @brief 指定した座標を中心に回転した多角形の配列を返します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形の配列
 		[[nodiscard]]
 		MultiPolygon rotatedAt(Vec2 pos, double angle)&&;
 
@@ -834,6 +1796,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に多角形の配列を回転します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		MultiPolygon& rotate(double angle);
 
 		////////////////////////////////////////////////////////////////
@@ -842,6 +1807,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に多角形の配列を回転します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		MultiPolygon& rotateAt(Vec2 pos, double angle);
 
 		////////////////////////////////////////////////////////////////
@@ -850,9 +1819,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 回転と平行移動を適用した多角形の配列を返します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return 変換後の多角形の配列
 		[[nodiscard]]
 		MultiPolygon transformed(double s, double c, const Vec2& pos) const&;
 
+		/// @brief 回転と平行移動を適用した多角形の配列を返します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return 変換後の多角形の配列
 		[[nodiscard]]
 		MultiPolygon transformed(double s, double c, const Vec2& pos)&&;
 
@@ -862,6 +1841,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形の配列に回転と平行移動を適用します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return *this
 		MultiPolygon& transform(double s, double c, const Vec2& pos);
 
 		////////////////////////////////////////////////////////////////
@@ -1005,10 +1989,418 @@ namespace s3d
 		/// @return *this
 		MultiPolygon& scaleFrom(Vec2 pos, Vec2 s);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	boundingRect
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief すべての多角形を含む最小の長方形を返します。
+		/// @return すべての多角形を含む最小の長方形。空の多角形しかない場合は空の RectF
+		[[nodiscard]]
+		RectF boundingRect() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	area
+		//
+		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形の配列面積を返します。
+		/// @return 多角形の配列の面積
+		[[nodiscard]]
+		double area() const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	perimeter
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列の、穴を含めた輪郭の長さを返します。
+		/// @return 多角形の配列の、穴を含めた輪郭の長さ
+		[[nodiscard]]
+		double perimeter() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	centroid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形の配列の重心の座標を返します。
+		/// @return 多角形の配列の重心の座標、面積を持たない場合は none
+		[[nodiscard]]
+		Optional<Vec2> centroid() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	simplified
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各多角形を単純化した、新しい多角形の配列を返します。
+		/// @param maxDistance 単純化の許容誤差
+		/// @return 各多角形を単純化した、新しい多角形の配列
+		/// @remark 空の要素は空のまま保持されます。
+		[[nodiscard]]
+		MultiPolygon simplified(double maxDistance = 2.0) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersects
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool intersects(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overlaps
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と交差する領域が面積を持つかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool overlaps(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	contains
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		/// @remark 制約: 現在の実装では、複数の要素にまたがって完全に含まれる図形に対して false を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	leftClicked, leftPressed, leftReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief いずれかの多角形が現在のフレームで左クリックされ始めたかを返します。
+		/// @return いずれかの多角形が現在のフレームで左クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftClicked() const noexcept;
+
+		/// @brief いずれかの多角形が左クリックされているかを返します。
+		/// @return いずれかの多角形が左クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftPressed() const noexcept;
+
+		/// @brief 現在のフレームでいずれかの多角形への左クリックが離されたかを返します。
+		/// @return 現在のフレームでいずれかの多角形への左クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool leftReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rightClicked, rightPressed, rightReleased
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief いずれかの多角形が現在のフレームで右クリックされ始めたかを返します。
+		/// @return いずれかの多角形が現在のフレームで右クリックされ始めた場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightClicked() const noexcept;
+
+		/// @brief いずれかの多角形が右クリックされているかを返します。
+		/// @return いずれかの多角形が右クリックされている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightPressed() const noexcept;
+
+		/// @brief 現在のフレームでいずれかの多角形への右クリックが離されたかを返します。
+		/// @return 現在のフレームでいずれかの多角形への右クリックが離された場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool rightReleased() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	mouseOver
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief いずれかの多角形上にマウスカーソルがあるかを返します。
+		/// @return いずれかの多角形上にマウスカーソルがある場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool mouseOver() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paint
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paint(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwrite
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwrite(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paintFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& paintFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	overwriteFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形の枠を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		/// @brief すべての多角形の枠を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const MultiPolygon& overwriteFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	draw
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を描画します。
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& draw(const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& draw(const Vec2& offset, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を塗りつぶしパターンで描画します。
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& draw(const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形を移動させた位置に塗りつぶしパターンで描画します。
+		/// @param offset 座標のオフセット
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& draw(const Vec2& offset, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawTransformed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawTransformed(double angle, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawTransformed(double s, double c, const Vec2& pos, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param angle 回転角度（ラジアン）
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawTransformed(double angle, const Vec2& pos, const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形を回転 + 移動して描画します。
+		/// @param s 回転角度のサイン
+		/// @param c 回転角度のコサイン
+		/// @param pos 位置
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawTransformed(double s, double c, const Vec2& pos, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形の枠を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawFrame(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形の枠を描画します。
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawFrame(double thickness, const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形の枠を移動させた位置に描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawFrame(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drawWireframe
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての多角形をワイヤフレーム表示で描画します。
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawWireframe(double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形を移動させた位置にワイヤフレーム表示で描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param color 色
+		/// @return *this
+		const MultiPolygon& drawWireframe(const Vec2& offset, double thickness = 1.0, const ColorF& color = Palette::White) const;
+
+		/// @brief すべての多角形をワイヤフレーム表示で描画します。
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawWireframe(double thickness, const PatternParameters& pattern) const;
+
+		/// @brief すべての多角形を移動させた位置にワイヤフレーム表示で描画します。
+		/// @param offset 座標のオフセット
+		/// @param thickness ワイヤフレームの太さ（ピクセル）
+		/// @param pattern 塗りつぶしパターン
+		/// @return *this
+		const MultiPolygon& drawWireframe(const Vec2& offset, double thickness, const PatternParameters& pattern) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1030,6 +2422,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief MultiPolygon を文字列に変換します。
+		/// @param formatData 文字列バッファ
+		/// @param value MultiPolygon
+		/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
 		friend void Formatter(FormatData& formatData, const MultiPolygon& value);
 
 	private:
@@ -1037,5 +2433,21 @@ namespace s3d
 		container_type m_polygons;
 	};
 }
+
+////////////////////////////////////////////////////////////////
+//
+//	fmt
+//
+////////////////////////////////////////////////////////////////
+
+template <>
+struct fmt::formatter<s3d::MultiPolygon, s3d::char32>
+{
+	std::u32string tag;
+
+	s3d::ParseContext::iterator parse(s3d::ParseContext& ctx);
+
+	s3d::BufferContext::iterator format(const s3d::MultiPolygon& value, s3d::BufferContext& ctx) const;
+};
 
 # include "detail/MultiPolygon.ipp"

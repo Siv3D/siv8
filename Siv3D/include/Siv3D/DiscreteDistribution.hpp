@@ -75,7 +75,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		result_type operator ()(Concept::UniformRandomBitGenerator auto&& rbg);
+		result_type operator ()(Concept::UniformRandomBitGenerator auto&& urbg);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -117,7 +117,7 @@ namespace s3d
 
 	template <class Iterator>
 	[[nodiscard]]
-	decltype(auto) DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg);
+	decltype(auto) DiscreteSample(Iterator begin, Iterator end, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	template <class Container>
 	[[nodiscard]]
@@ -125,7 +125,7 @@ namespace s3d
 
 	template <class Container>
 	[[nodiscard]]
-	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg);
+	decltype(auto) DiscreteSample(const Container& c SIV3D_LIFETIMEBOUND, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
 
 	template <class Type>
 	[[nodiscard]]
@@ -133,7 +133,7 @@ namespace s3d
 	
 	template <class Type>
 	[[nodiscard]]
-	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& rbg);
+	auto DiscreteSample(std::initializer_list<Type> ilist, DiscreteDistribution& weight, Concept::UniformRandomBitGenerator auto&& urbg);
 }
 
 # include "detail/DiscreteDistribution.ipp"

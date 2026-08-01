@@ -82,10 +82,10 @@ namespace s3d
 					const auto p2 = l2.intersectsAt(l1);
 					const auto p3 = l3.intersectsAt(l1);
 
-					if (p2 && p3)
+					if (p2 && *p2 && p3 && *p3)
 					{
-						range_out.push_back(*p2);
-						range_out.push_back(*p3);
+						range_out.push_back(p2->front());
+						range_out.push_back(p3->front());
 					}
 				}
 

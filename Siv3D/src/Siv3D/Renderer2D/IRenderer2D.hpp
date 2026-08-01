@@ -168,6 +168,11 @@ namespace s3d
 		virtual void addRoundRectShadow(const RoundRect& roundRect, float blur, const Float4& color, bool fill) = 0;
 
 
+		virtual void addMesh2D(std::span<const Vertex2D> vertices, std::span<const TriangleIndex> indices, const Optional<Float2>& offset) = 0;
+
+		virtual void addMesh2D(const Texture& texture, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> indices, const Optional<Float2>& offset) = 0;
+
+
 		virtual void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) = 0;
 
 		virtual void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4]) = 0;

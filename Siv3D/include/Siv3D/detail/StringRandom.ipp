@@ -41,7 +41,7 @@ namespace s3d
 		return choice(GetDefaultRNG());
 	}
 
-	String::value_type& String::choice(Concept::UniformRandomBitGenerator auto&& rbg)&
+	String::value_type& String::choice(Concept::UniformRandomBitGenerator auto&& urbg)&
 	{
 		const size_t size = m_string.size();
 
@@ -50,10 +50,10 @@ namespace s3d
 			ThrowChoiceOutOfRange();
 		}
 
-		return m_string[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_string[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 
-	String::value_type String::choice(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	String::value_type String::choice(Concept::UniformRandomBitGenerator auto&& urbg) const&
 	{
 		const size_t size = m_string.size();
 
@@ -62,10 +62,10 @@ namespace s3d
 			ThrowChoiceOutOfRange();
 		}
 
-		return m_string[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_string[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 
-	String::value_type String::choice(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	String::value_type String::choice(Concept::UniformRandomBitGenerator auto&& urbg)&&
 	{
 		const size_t size = m_string.size();
 
@@ -74,7 +74,7 @@ namespace s3d
 			ThrowChoiceOutOfRange();
 		}
 
-		return m_string[RandomClosedOpen<size_t>(0, size, std::forward<decltype(rbg)>(rbg))];
+		return m_string[RandomClosedOpen<size_t>(0, size, urbg)];
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -83,27 +83,27 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String& String::shuffle(Concept::UniformRandomBitGenerator auto&& rbg) & noexcept
+	String& String::shuffle(Concept::UniformRandomBitGenerator auto&& urbg) & noexcept
 	{
-		Shuffle(m_string.begin(), m_string.end(), std::forward<decltype(rbg)>(rbg));
+		Shuffle(m_string.begin(), m_string.end(), urbg);
 		return *this;
 	}
 
-	String String::shuffle(Concept::UniformRandomBitGenerator auto&& rbg) && noexcept
+	String String::shuffle(Concept::UniformRandomBitGenerator auto&& urbg) && noexcept
 	{
-		Shuffle(m_string.begin(), m_string.end(), std::forward<decltype(rbg)>(rbg));
+		Shuffle(m_string.begin(), m_string.end(), urbg);
 		return std::move(*this);
 	}
 
-	String String::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	String String::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&
 	{
 		String result{ m_string };
-		result.shuffle(std::forward<decltype(rbg)>(rbg));
+		result.shuffle(urbg);
 		return result;
 	}
 
-	String String::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) && noexcept
+	String String::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) && noexcept
 	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		return std::move(shuffle(urbg));
 	}
 }

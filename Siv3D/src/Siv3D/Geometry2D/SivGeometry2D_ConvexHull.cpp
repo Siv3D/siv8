@@ -26,9 +26,9 @@ namespace s3d
 
 			CWOpenRing result;
 
-			boost::geometry::convex_hull(boost::geometry::model::multi_point<PointType>(points.begin(), points.end()), result);
+			boost::geometry::convex_hull(MultiPointView{ points.begin(), points.end() }, result);
 
-			return Polygon{ result };
+			return Polygon{ result, SkipValidation::Yes };
 		}
 	}
 

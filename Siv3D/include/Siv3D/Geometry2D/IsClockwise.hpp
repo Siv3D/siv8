@@ -64,4 +64,4 @@ namespace s3d
 	}
 }
 
-# include "IsClockwise.ipp"
+# include "detail/IsClockwise.ipp"

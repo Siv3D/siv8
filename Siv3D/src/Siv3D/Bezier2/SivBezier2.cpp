@@ -307,24 +307,24 @@ namespace s3d
 		const double c1 = (2.0 * N.dot(N) - M.dot(K));
 		const double c0 = -N.dot(K);
 
-		if (const auto opt = Math::SolveCubicEquation(c3, c2, c1, c0))
+		const PolynomialRoots roots = Math::SolveCubicEquation(c3, c2, c1, c0);
+
+		for (const double x : roots)
 		{
-			for (const double x : *opt)
+			if (InRange(x, -Eps, (1.0 + Eps)))
 			{
-				if (InRange(x, -Eps, (1.0 + Eps)))
+				const double t = Clamp(x, 0.0, 1.0);
+				const double d2 = targetPoint.distanceFromSq(pointAt(t));
+
+				if (d2 < bestDistSq)
 				{
-					const double t = Clamp(x, 0.0, 1.0);
-					const double d2 = targetPoint.distanceFromSq(pointAt(t));
-					if (d2 < bestDistSq)
-					{
-						bestDistSq = d2;
-						bestT = t;
-					}
+					bestDistSq = d2;
+					bestT = t;
 				}
 			}
 		}
 
-		return bestT; // 既に [0,1]
+		return bestT; // 既に [0, 1]
 	}
 
 	////////////////////////////////////////////////////////////////

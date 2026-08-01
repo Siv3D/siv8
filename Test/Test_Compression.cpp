@@ -11,6 +11,8 @@
 
 # include "Siv3DTest.hpp"
 
+# if SIV3D_RUN_HEAVY_TEST
+
 [[nodiscard]]
 static Blob MakeRandomBlob(size_t size)
 {
@@ -23,8 +25,6 @@ static Blob MakeRandomBlob(size_t size)
 
 	return Blob{ bytes };
 }
-
-# if SIV3D_RUN_HEAVY_TEST
 
 TEST_CASE("Compression")
 {

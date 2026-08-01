@@ -935,6 +935,12 @@ MIT_LICENSE
 },
 
 {
+R"-(Wuffs)-",
+R"-(Copyright 2023 The Wuffs Authors)-",
+MIT_LICENSE
+},
+
+{
 R"-(Xoshiro-cpp)-",
 R"-(Copyright (c) 2020 Ryo Suzuki <reputeless@gmail.com>)-",
 MIT_LICENSE

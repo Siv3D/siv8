@@ -62,9 +62,9 @@ namespace s3d
 				return Pad(us / (1000LL * 1000LL * 60LL * 60LL), { 2, U'0' });
 			case 5:	// H		時 (0-)
 				return ToString(us / (1000LL * 1000LL * 60LL * 60LL));
-			case 6:	// hh		時 (00-24)
+			case 6:	// hh		時 (00-23)
 				return Pad(us / (1000LL * 1000LL * 60LL * 60LL) % 24, { 2, U'0' });
-			case 7:	// h		時 (0-24)
+			case 7:	// h		時 (0-23)
 				return ToString(us / (1000LL * 1000LL * 60LL * 60LL) % 24);
 			case 8:	// MM		分 (00-)
 				return Pad(us / (1000LL * 1000LL * 60LL), { 2, U'0' });

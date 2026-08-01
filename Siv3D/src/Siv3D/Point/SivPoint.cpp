@@ -83,7 +83,7 @@ namespace s3d
 
 	bool Point::mouseOver() const noexcept
 	{
-		return Geometry2D::Intersect(*this, Cursor::PosF());
+		return Geometry2D::Intersects(Cursor::PosF(), Rect{ *this, 1 });
 	}
 
 	////////////////////////////////////////////////////////////////

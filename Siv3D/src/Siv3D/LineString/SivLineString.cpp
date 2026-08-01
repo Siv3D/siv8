@@ -18,6 +18,8 @@
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/Unicode.hpp>
+# include "LineStringParser.hpp"
 
 namespace s3d
 {
@@ -1095,6 +1097,22 @@ namespace s3d
 		}
 
 		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Parse
+	//
+	////////////////////////////////////////////////////////////////
+
+	Optional<LineString> LineString::Parse(const std::string_view s)
+	{
+		return LineStringParser{ Unicode::FromUTF8(s) }.parse();
+	}
+
+	Optional<LineString> LineString::Parse(const StringView s)
+	{
+		return LineStringParser{ s }.parse();
 	}
 
 	////////////////////////////////////////////////////////////////

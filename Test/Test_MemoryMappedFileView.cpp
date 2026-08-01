@@ -32,12 +32,12 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		MemoryMappedFileView file{ U"../../Test/data/text/utf8_chars.txt" };
 		CHECK(file.isOpen());
 		CHECK(static_cast<bool>(file));
-		CHECK_EQ(file.size(), 6200);
+		CHECK_EQ(file.size(), 6200u);
 
 		{
 			const auto mapped = file.mapAll();
 			CHECK(mapped.data != nullptr);
-			CHECK_EQ(mapped.size, 6200);
+			CHECK_EQ(mapped.size, 6200u);
 
 			std::string s(static_cast<const char*>(mapped.data), mapped.size);
 			CHECK_EQ(s, testData);
@@ -51,7 +51,7 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		{
 			const auto mapped = file.map(0, 0);
 			CHECK(mapped.data == nullptr);
-			CHECK_EQ(mapped.size, 0);
+			CHECK_EQ(mapped.size, 0u);
 
 			CHECK(file.mapAll());
 			CHECK_FALSE(file.map(0, 0));
@@ -62,7 +62,7 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		{
 			const auto mapped = file.map(0, 200);
 			CHECK(mapped.data != nullptr);
-			CHECK_EQ(mapped.size, 200);
+			CHECK_EQ(mapped.size, 200u);
 
 			std::string s(static_cast<const char*>(mapped.data), mapped.size);
 			CHECK_EQ(s, testData.substr(0, 200));
@@ -76,7 +76,7 @@ TEST_CASE("MemoryMappedFileView.TextFileTest")
 		{
 			const auto mapped = file.map(100, 200);
 			CHECK(mapped.data != nullptr);
-			CHECK_EQ(mapped.size, 200);
+			CHECK_EQ(mapped.size, 200u);
 
 			std::string s(static_cast<const char*>(mapped.data), mapped.size);
 			CHECK_EQ(s, testData.substr(100, 200));

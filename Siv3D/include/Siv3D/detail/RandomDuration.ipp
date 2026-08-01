@@ -26,7 +26,7 @@ namespace s3d
 
 	Duration Random(const Duration& max, Concept::UniformRandomBitGenerator auto&& urbg) noexcept
 	{
-		return Duration{ Random(max.count(), std::forward<decltype(urbg)>(urbg))};
+		return Duration{ Random(max.count(), urbg) };
 	}
 
 	inline Duration Random(const Duration& min, const Duration& max) noexcept
@@ -37,6 +37,6 @@ namespace s3d
 	[[nodiscard]]
 	Duration Random(const Duration& min, const Duration& max, Concept::UniformRandomBitGenerator auto&& urbg) noexcept
 	{
-		return Duration{ Random(min.count(), max.count(), std::forward<decltype(urbg)>(urbg))};
+		return Duration{ Random(min.count(), max.count(), urbg) };
 	}
 }

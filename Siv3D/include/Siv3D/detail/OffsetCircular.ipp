@@ -372,7 +372,7 @@ namespace s3d
 	template <Concept::FloatingPoint Float, int32 Oclock>
 	uint64 OffsetCircularBase<Float, Oclock>::hash() const noexcept
 	{
-		return Hash(*this);
+		return HashFloats(center.x, center.y, r, theta);
 	}
 
 	////////////////////////////////////////////////////////////////

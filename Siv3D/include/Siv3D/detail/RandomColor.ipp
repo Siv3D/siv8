@@ -26,7 +26,7 @@ namespace s3d
 
 	Color RandomColor(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return HueToColor(RandomClosedOpen(0.0, 360.0, std::forward<decltype(urbg)>(urbg)));
+		return HueToColor(RandomClosedOpen(0.0, 360.0, urbg));
 	}
 
 	inline Color RandomColor(
@@ -43,9 +43,11 @@ namespace s3d
 		const std::pair<uint32, uint32>& bMinMax,
 		Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ static_cast<uint8>(Random(rMinMax.first, rMinMax.second, std::forward<decltype(urbg)>(urbg))),
-				static_cast<uint8>(Random(gMinMax.first, gMinMax.second, std::forward<decltype(urbg)>(urbg))),
-				static_cast<uint8>(Random(bMinMax.first, bMinMax.second, std::forward<decltype(urbg)>(urbg))) };
+		return{
+			static_cast<uint8>(Random(rMinMax.first, rMinMax.second, urbg)),
+			static_cast<uint8>(Random(gMinMax.first, gMinMax.second, urbg)),
+			static_cast<uint8>(Random(bMinMax.first, bMinMax.second, urbg))
+		};
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -61,7 +63,7 @@ namespace s3d
 
 	ColorF RandomColorF(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return HueToColor(RandomClosedOpen(0.0, 360.0, std::forward<decltype(urbg)>(urbg)));
+		return HueToColor(RandomClosedOpen(0.0, 360.0, urbg));
 	}
 
 	inline ColorF RandomColorF(
@@ -78,9 +80,11 @@ namespace s3d
 		const std::pair<double, double>& bMinMax,
 		Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ Random(rMinMax.first, rMinMax.second, std::forward<decltype(urbg)>(urbg)),
-				Random(gMinMax.first, gMinMax.second, std::forward<decltype(urbg)>(urbg)),
-				Random(bMinMax.first, bMinMax.second, std::forward<decltype(urbg)>(urbg)) };
+		return{
+			Random(rMinMax.first, rMinMax.second, urbg),
+			Random(gMinMax.first, gMinMax.second, urbg),
+			Random(bMinMax.first, bMinMax.second, urbg)
+		};
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -96,7 +100,7 @@ namespace s3d
 
 	HSV RandomHSV(Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ RandomClosedOpen(0.0, 360.0, std::forward<decltype(urbg)>(urbg)), 1.0, 1.0 };
+		return{ RandomClosedOpen(0.0, 360.0, urbg), 1.0, 1.0 };
 	}
 
 	inline HSV RandomHSV(
@@ -113,8 +117,10 @@ namespace s3d
 		const std::pair<double, double>& vMinMax,
 		Concept::UniformRandomBitGenerator auto&& urbg)
 	{
-		return{ Random(hMinMax.first, hMinMax.second, std::forward<decltype(urbg)>(urbg)),
-				Random(sMinMax.first, sMinMax.second, std::forward<decltype(urbg)>(urbg)),
-				Random(vMinMax.first, vMinMax.second, std::forward<decltype(urbg)>(urbg)) };
+		return{
+			Random(hMinMax.first, hMinMax.second, urbg),
+			Random(sMinMax.first, sMinMax.second, urbg),
+			Random(vMinMax.first, vMinMax.second, urbg)
+		};
 	}
 }

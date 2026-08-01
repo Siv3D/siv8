@@ -31,7 +31,7 @@ namespace s3d
 	/// @brief ウィンドウの状態 | Window state
 	struct WindowState
 	{
-		/// @brief スクリーン座標におけるウィンドウの矩形
+		/// @brief スクリーン座標におけるウィンドウの長方形
 		Rect bounds = Rect::Empty();
 
 		/// @brief フレームの幅

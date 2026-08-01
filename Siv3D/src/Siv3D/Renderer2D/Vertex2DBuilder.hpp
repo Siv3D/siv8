@@ -149,5 +149,8 @@ namespace s3d
 
 		[[nodiscard]]
 		Vertex2D::IndexType BuildRoundRectShadow(const BufferCreatorFunc& bufferCreator, const RoundRect& roundRect, float blur, const Float4& color, float scale, bool fill);
+
+		[[nodiscard]]
+		Vertex2D::IndexType BuildMesh2D(const BufferCreatorFunc& bufferCreator, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> triangleIndices, const Optional<Float2>& offset);
 	}
 }

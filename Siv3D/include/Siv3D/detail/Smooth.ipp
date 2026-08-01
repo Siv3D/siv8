@@ -15,6 +15,25 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
+	//	MakeZeroVelocity
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type>
+	constexpr Smooth<Type>::value_type Smooth<Type>::MakeZeroVelocity() noexcept
+	{
+		if constexpr (std::is_same_v<value_type, HSV>)
+		{
+			return HSV::Zero();
+		}
+		else
+		{
+			return value_type{};
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	(constructor)
 	//
 	////////////////////////////////////////////////////////////////
@@ -69,7 +88,7 @@ namespace s3d
 	constexpr Smooth<Type>& Smooth<Type>::clearTarget() noexcept
 	{
 		m_target	= m_value;
-		m_velocity	= value_type{};
+		m_velocity	= MakeZeroVelocity();
 		return *this;
 	}
 
@@ -84,7 +103,7 @@ namespace s3d
 	{
 		m_value		= target;
 		m_target	= target;
-		m_velocity	= value_type{};
+		m_velocity	= MakeZeroVelocity();
 		return *this;
 	}
 
@@ -98,7 +117,7 @@ namespace s3d
 	constexpr Smooth<Type>& Smooth<Type>::jumpToTarget() noexcept
 	{
 		m_value		= m_target;
-		m_velocity	= value_type{};
+		m_velocity	= MakeZeroVelocity();
 		return *this;
 	}
 

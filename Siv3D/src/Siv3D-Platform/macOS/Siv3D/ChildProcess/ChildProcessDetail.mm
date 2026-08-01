@@ -10,53 +10,50 @@
 //-----------------------------------------------
 
 # include "ChildProcessDetail.hpp"
-# include "NSTaskWrapper.hpp"
+# include "ChildProcessHandle.hpp"
 
 namespace s3d
 {
 	ChildProcess::ChildProcessDetail::ChildProcessDetail()
-		: m_detail(std::make_unique<NSTaskWrapper>()) {}
+		: m_handle{ std::make_unique<ChildProcessHandle>() } {}
 
 	ChildProcess::ChildProcessDetail::ChildProcessDetail(const FilePathView path, const Array<String>& commands, const Pipe pipe)
-		: m_detail{ std::make_unique<NSTaskWrapper>(path.toUTF8().c_str(), commands, pipe) } {}
+		: m_handle{ std::make_unique<ChildProcessHandle>(path.toUTF8(), commands, pipe) } {}
 
-	ChildProcess::ChildProcessDetail::~ChildProcessDetail()
-	{
-
-	}
+	ChildProcess::ChildProcessDetail::~ChildProcessDetail() = default;
 
 	bool ChildProcess::ChildProcessDetail::isValid() const
 	{
-		return m_detail->isValid();
+		return m_handle->isValid();
 	}
 
 	bool ChildProcess::ChildProcessDetail::isRunning()
 	{
-		return m_detail->isRunning();
+		return m_handle->isRunning();
 	}
 
 	void ChildProcess::ChildProcessDetail::wait()
 	{
-		m_detail->wait();
+		m_handle->wait();
 	}
 
 	void ChildProcess::ChildProcessDetail::terminate()
 	{
-		m_detail->terminate();
+		m_handle->terminate();
 	}
 
 	Optional<int32> ChildProcess::ChildProcessDetail::getExitCode()
 	{
-		return m_detail->getExitCode();
+		return m_handle->getExitCode();
 	}
 
 	std::istream& ChildProcess::ChildProcessDetail::istream()
 	{
-		return m_detail->istream();
+		return m_handle->istream();
 	}
 
 	std::ostream& ChildProcess::ChildProcessDetail::ostream()
 	{
-		return m_detail->ostream();
+		return m_handle->ostream();
 	}
 }

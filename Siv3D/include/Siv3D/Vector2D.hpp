@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "2DShapesFwd.hpp"
+# include "Array.hpp"
 # include "FormatLiteral.hpp"
 
 namespace s3d
@@ -195,7 +196,7 @@ namespace s3d
 		/// @brief ベクトルを加算します。
 		/// @param v 加算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator +=(Vector2D v) noexcept;
+		constexpr Vector2D& operator +=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -206,7 +207,7 @@ namespace s3d
 		/// @brief ベクトルを減算します。
 		/// @param v 減算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator -=(Vector2D v) noexcept;
+		constexpr Vector2D& operator -=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -217,12 +218,12 @@ namespace s3d
 		/// @brief ベクトルの各成分にスカラーを乗算します。
 		/// @param s スカラー
 		/// @return *this
-		constexpr Vector2D& operator *=(value_type s) noexcept;
+		constexpr Vector2D& operator *=(value_type s) & noexcept;
 
 		/// @brief ベクトル同士の各成分同士を乗算します。
 		/// @param v 乗算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator *=(Vector2D v) noexcept;
+		constexpr Vector2D& operator *=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -233,12 +234,12 @@ namespace s3d
 		/// @brief ベクトルの各成分をスカラーで除算します。
 		/// @param s スカラー
 		/// @return *this
-		constexpr Vector2D& operator /=(value_type s) noexcept;
+		constexpr Vector2D& operator /=(value_type s) & noexcept;
 
 		/// @brief ベクトル同士の各成分同士を除算します。
 		/// @param v 除算するベクトル
 		/// @return *this
-		constexpr Vector2D& operator /=(Vector2D v) noexcept;
+		constexpr Vector2D& operator /=(Vector2D v) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -960,10 +961,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	paint
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief この座標のピクセルを Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @return *this
 		const Vector2D& paint(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -972,6 +991,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief この座標のピクセルを Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @return *this
 		const Vector2D& overwrite(Image& dst, const Color& color) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1129,6 +1152,7 @@ namespace s3d
 		static constexpr Vector2D Up(value_type length = 1) noexcept;
 
 		/// @brief Vector2D{ 0, length } を返します。
+		/// @param length 値
 		/// @return Vector2D{ 0, length }
 		[[nodiscard]]
 		static constexpr Vector2D Down(value_type length = 1) noexcept;

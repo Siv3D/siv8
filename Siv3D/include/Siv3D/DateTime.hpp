@@ -181,9 +181,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		DateTime& operator +=(const Days& days) noexcept;
+		DateTime& operator +=(const Days& days) & noexcept;
 
-		DateTime& operator +=(const Milliseconds& _milliseconds) noexcept;
+		DateTime& operator +=(const Milliseconds& _milliseconds) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -191,9 +191,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		DateTime& operator -=(const Days& days) noexcept;
+		DateTime& operator -=(const Days& days) & noexcept;
 
-		DateTime& operator -=(const Milliseconds & _milliseconds) noexcept;
+		DateTime& operator -=(const Milliseconds & _milliseconds) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

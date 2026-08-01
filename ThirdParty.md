@@ -64,6 +64,7 @@ Name | Version
 [toml11](https://github.com/ToruNiina/toml11) | 
 [variant](https://github.com/mapbox/variant) | 
 [WinToast](https://github.com/mohabouje/WinToast) | v1.3.2
+[Wuffs](https://github.com/google/wuffs) | v0.4.c
 [wyhash](https://github.com/wangyi-fudan/wyhash) | 
 [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) | v1.1
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2

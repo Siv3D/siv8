@@ -13,16 +13,19 @@
 # include <memory>
 # include "Array.hpp"
 # include "Common.hpp"
+# include "Optional.hpp"
 # include "PointVector.hpp"
 # include "2DShapes.hpp"
+# include "StringView.hpp"
 # include "TriangleIndex.hpp"
 # include "PolygonFailureType.hpp"
 # include "QualityFactor.hpp"
 # include "PredefinedYesNo.hpp"
-# include "PolygonHolesView.hpp"
 
 namespace s3d
 {
+	struct Mat3x2;
+	struct Mesh2D;
 	struct PatternParameters;
 
 	////////////////////////////////////////////////////////////////
@@ -257,7 +260,7 @@ namespace s3d
 		/// @brief 多角形の穴を構成する頂点配列を返します。
 		/// @return 多角形の穴を構成する頂点配列
 		[[nodiscard]]
-		PolygonHolesView inners() const noexcept;
+		const Array<Array<Vec2>>& inners() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -340,24 +343,48 @@ namespace s3d
 
 		/// @brief 多角形に穴を追加します。
 		/// @param triangle 穴の形状
-		/// @return  穴の追加に成功したら true, それ以外の場合は false
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Triangle& triangle);
 
 		/// @brief 多角形に穴を追加します。
 		/// @param quad 穴の形状
-		/// @return  穴の追加に成功したら true, それ以外の場合は false
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Quad& quad);
 
+		/// @brief 多角形に円形の穴を追加します。
+		/// @param circle 穴の形状
+		/// @param pointsPerCircle 円を近似する頂点数
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Circle& circle, const PointsPerCircle& pointsPerCircle);
 
+		/// @brief 多角形に円形の穴を追加します。
+		/// @param circle 穴の形状
+		/// @param qualityFactor 円を近似する品質係数
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Circle& circle, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
+		/// @brief 多角形に楕円形の穴を追加します。
+		/// @param ellipse 穴の形状
+		/// @param pointsPerCircle 楕円を近似する頂点数
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Ellipse& ellipse, const PointsPerCircle& pointsPerCircle);
 
+		/// @brief 多角形に楕円形の穴を追加します。
+		/// @param ellipse 穴の形状
+		/// @param qualityFactor 楕円を近似する品質係数
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const Ellipse& ellipse, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
+		/// @brief 多角形に角丸長方形の穴を追加します。
+		/// @param roundRect 穴の形状
+		/// @param pointsPerCircle 角の円弧を近似する頂点数
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const RoundRect& roundRect, const PointsPerCircle& pointsPerCircle);
 
+		/// @brief 多角形に角丸長方形の穴を追加します。
+		/// @param roundRect 穴の形状
+		/// @param qualityFactor 角の円弧を近似する品質係数
+		/// @return 穴の追加に成功したら true, それ以外の場合は false
 		bool addHole(const RoundRect& roundRect, const QualityFactor& qualityFactor = QualityFactor{ 1.0 });
 
 		/// @brief 多角形に穴を追加します。
@@ -431,12 +458,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形
 		Polygon withOffset(double x, double y) const&;
 
+		/// @brief 平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @param y Y 方向の移動量
+		/// @return 平行移動した多角形
 		Polygon withOffset(double x, double y) && noexcept;
 
+		/// @brief 平行移動した多角形を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形
 		Polygon withOffset(Vec2 v) const&;
 
+		/// @brief 平行移動した多角形を返します。
+		/// @param v 移動量
+		/// @return 平行移動した多角形
 		Polygon withOffset(Vec2 v) && noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -445,12 +486,24 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief X 方向に平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した多角形
 		Polygon withOffsetX(double x) const&;
 
+		/// @brief X 方向に平行移動した多角形を返します。
+		/// @param x X 方向の移動量
+		/// @return X 方向に平行移動した多角形
 		Polygon withOffsetX(double x) && noexcept;
 
+		/// @brief Y 方向に平行移動した多角形を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した多角形
 		Polygon withOffsetY(double y) const&;
 
+		/// @brief Y 方向に平行移動した多角形を返します。
+		/// @param y Y 方向の移動量
+		/// @return Y 方向に平行移動した多角形
 		Polygon withOffsetY(double y) && noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -459,9 +512,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に回転した多角形を返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形
 		[[nodiscard]]
 		Polygon rotated(double angle) const&;
 
+		/// @brief 原点 (0, 0) を中心に回転した多角形を返します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形
 		[[nodiscard]]
 		Polygon rotated(double angle) &&;
 
@@ -471,9 +530,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に回転した多角形を返します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形
 		[[nodiscard]]
 		Polygon rotatedAt(Vec2 pos, double angle) const&;
 
+		/// @brief 指定した座標を中心に回転した多角形を返します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return 回転した多角形
 		[[nodiscard]]
 		Polygon rotatedAt(Vec2 pos, double angle) &&;
 
@@ -483,6 +550,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点 (0, 0) を中心に多角形を回転します。
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		Polygon& rotate(double angle);
 
 		////////////////////////////////////////////////////////////////
@@ -491,6 +561,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定した座標を中心に多角形を回転します。
+		/// @param pos 回転の中心座標
+		/// @param angle 回転角度（ラジアン）
+		/// @return *this
 		Polygon& rotateAt(Vec2 pos, double angle);
 
 		////////////////////////////////////////////////////////////////
@@ -499,9 +573,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 回転と平行移動を適用した多角形を返します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return 変換後の多角形
 		[[nodiscard]]
 		Polygon transformed(double s, double c, const Vec2& pos) const&;
 
+		/// @brief 回転と平行移動を適用した多角形を返します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return 変換後の多角形
 		[[nodiscard]]
 		Polygon transformed(double s, double c, const Vec2& pos) &&;
 
@@ -511,6 +595,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形に回転と平行移動を適用します。
+		/// @param s 回転角度の sin
+		/// @param c 回転角度の cos
+		/// @param pos 平行移動量
+		/// @return *this
 		Polygon& transform(double s, double c, const Vec2& pos);
 
 		////////////////////////////////////////////////////////////////
@@ -683,9 +772,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の重心の座標を返します。
-		/// @return 多角形の重心の座標、多角形が空の場合は `Vec2{ 0, 0 }`
+		/// @return 多角形の重心の座標、面積を持たない場合は none
 		[[nodiscard]]
-		Vec2 centroid() const;
+		Optional<Vec2> centroid() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -776,46 +865,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 別の図形と交差しているかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差している場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
-		bool intersects(const Shape2DType& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Vec2& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Line& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Rect& other) const;
-
-		[[nodiscard]]
-		bool intersects(const RectF& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Circle& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Ellipse& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Triangle& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Quad& other) const;
-
-		[[nodiscard]]
-		bool intersects(const Polygon& other) const;
+		constexpr bool intersects(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	intersectsAt
+		//	overlaps
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+		/// @brief 別の図形と交差する領域が面積を持つかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool overlaps(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -829,7 +899,21 @@ namespace s3d
 		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
 		template <class Shape2DType>
 		[[nodiscard]]
-		bool contains(const Shape2DType& other) const;
+		constexpr bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -890,9 +974,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Polygon& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		const Polygon& paint(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		/// @brief 多角形を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const Polygon& paint(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -900,9 +995,20 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Polygon& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		const Polygon& overwrite(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		/// @brief 多角形を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
+		const Polygon& overwrite(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -910,13 +1016,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Polygon& paintFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 多角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Polygon& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		void paintFrame(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		/// @brief 多角形の枠を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		void paintFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		void paintFrame(Image& dst, const Vec2& pos, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		/// @brief 多角形の枠を移動させた位置で Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		void paintFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -924,13 +1052,35 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 多角形の枠を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Polygon& overwriteFrame(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
+		/// @brief 多角形の枠を Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Polygon& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		void overwriteFrame(Image& dst, const Vec2& pos, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		/// @brief 多角形の枠を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		void overwriteFrame(Image& dst, const Vec2& offset, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
-		void overwriteFrame(Image& dst, const Vec2& pos, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
+		/// @brief 多角形の枠を移動させた位置で Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param offset 座標のオフセット
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		void overwriteFrame(Image& dst, const Vec2& offset, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1052,21 +1202,32 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toBuffer2D
+		//	toMesh2D
 		//
 		////////////////////////////////////////////////////////////////
 
-		//[[nodiscard]]
-		//Buffer2D toBuffer2D(const Vec2& uvOrigin, const Vec2& uvScale) const;
+		/// @brief 多角形をもとに新しい Mesh2D を作成します。
+		/// @return 新しい Mesh2D
+		/// @remark 各頂点の色は白に、UV 座標は `(0, 0)` に設定されます。
+		/// @remark 頂点数が `Mesh2D::MaxVertexCount` を超える場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		Mesh2D toMesh2D() const;
 
-		//[[nodiscard]]
-		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale) const;
+		/// @brief 多角形をもとに、指定した長方形を UV 空間に対応させた新しい Mesh2D を作成します。
+		/// @param mappingRect UV 座標 `(0, 0)` から `(1, 1)` に対応させる座標空間上の長方形
+		/// @return 新しい Mesh2D
+		/// @remark `mappingRect` の左上が UV 座標 `(0, 0)`、右下が UV 座標 `(1, 1)` に対応します。
+		/// @remark `mappingRect` の外側にある頂点の UV 座標は `[0, 1]` の範囲外になることがあります。
+		/// @remark 頂点数が `Mesh2D::MaxVertexCount` を超える場合、または `mappingRect` の幅または高さが 0 の場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		Mesh2D toMesh2D(const RectF& mappingRect) const;
 
-		//[[nodiscard]]
-		//Buffer2D toBuffer2D(Arg::center_<Vec2> uvCenter, const Vec2& uvScale, double uvRotation) const;
-
-		//[[nodiscard]]
-		//Buffer2D toBuffer2D(const Mat3x2& uvMat) const;
+		/// @brief 多角形をもとに、指定した変換によって UV 座標を生成した新しい Mesh2D を作成します。
+		/// @param uvTransform 頂点座標から UV 座標を計算する変換行列
+		/// @return 新しい Mesh2D
+		/// @remark 頂点数が `Mesh2D::MaxVertexCount` を超える場合は空の Mesh2D を返します。
+		[[nodiscard]]
+		Mesh2D toMesh2D(const Mat3x2& uvTransform) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1074,8 +1235,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 内部実装へのポインタを返します。
+		/// @return 内部実装へのポインタ
 		[[nodiscard]]
 		const PolygonDetail* _detail() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Parse
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 文字列から多角形をパースします。
+		/// @param s パースする文字列
+		/// @return パースに成功した場合は多角形、失敗した場合は none
+		[[nodiscard]]
+		static Optional<Polygon> Parse(std::string_view s);
+
+		/// @brief 文字列から多角形をパースします。
+		/// @param s パースする文字列
+		/// @return パースに成功した場合は多角形、失敗した場合は none
+		[[nodiscard]]
+		static Optional<Polygon> Parse(StringView s);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1097,7 +1278,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 頂点配列を修正して多角形を生成します。
-		/// @param vertices 頂点配列
+		/// @param outer 外周の頂点配列
 		/// @param holes 多角形の穴
 		/// @return 頂点配列から生成した多角形の配列
 		[[nodiscard]]
@@ -1110,7 +1291,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 頂点配列を修正して多角形を生成し、最も面積の大きい多角形を返します。
-		/// @param vertices 頂点配列
+		/// @param outer 外周の頂点配列
 		/// @param holes 多角形の穴
 		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形
 		[[nodiscard]]
@@ -1160,6 +1341,8 @@ namespace s3d
 		friend void Formatter(FormatData& formatData, const Polygon& value);
 
 	private:
+
+		bool addHoleCCW(Array<Vec2> hole);
 
 		[[noreturn]]
 		static void ThrowTriangleAtIndexOutOfRange();

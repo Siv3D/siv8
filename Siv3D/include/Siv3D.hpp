@@ -242,6 +242,9 @@
 // スレッド | Thread
 # include <Siv3D/Threading.hpp>
 
+// 非同期タスクの状態 | Asynchronous task status
+# include <Siv3D/AsyncTaskStatus.hpp>
+
 // 非同期タスク | Asynchronous task
 # include <Siv3D/AsyncTask.hpp>
 
@@ -689,6 +692,7 @@
 // 素数判定 | Primality test
 # include <Siv3D/IsPrime.hpp>
 
+# include <Siv3D/PolynomialRoots.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 
 ////////////////////////////////////////////////////////////////
@@ -863,40 +867,39 @@
 # include <Siv3D/RectangularDashStyle.hpp>
 
 // 線分 | Line segment
-# include <Siv3D/Line.hpp> // ToDo
+# include <Siv3D/Line.hpp>
 
 // 長方形 (int32) | Rectangle (int32)
-# include <Siv3D/Rect.hpp> // ToDo
+# include <Siv3D/Rect.hpp> 
 
 // 長方形 (double) | Rectangle (double)
-# include <Siv3D/RectF.hpp> // ToDo
+# include <Siv3D/RectF.hpp>
 
 // 円 | Circle
-# include <Siv3D/Circle.hpp> // ToDo
+# include <Siv3D/Circle.hpp>
 
 // 楕円 | Ellipse
-# include <Siv3D/Ellipse.hpp> // ToDo
+# include <Siv3D/Ellipse.hpp>
 
-# include <Siv3D/SuperEllipse.hpp> // ToDo
+# include <Siv3D/SuperEllipse.hpp>
 
 // 三角形 | Triangle
-# include <Siv3D/Triangle.hpp> // ToDo
+# include <Siv3D/Triangle.hpp>
 
 // 凸四角形 | Convex quadrilateral
-# include <Siv3D/Quad.hpp> // ToDo
+# include <Siv3D/Quad.hpp>
 
 // 角丸長方形 | Rounded rectangle
-# include <Siv3D/RoundRect.hpp> // ToDo
+# include <Siv3D/RoundRect.hpp>
 
 // 多角形 | Polygon
-# include <Siv3D/Polygon.hpp> // ToDo
+# include <Siv3D/Polygon.hpp>
 
 // 複数の多角形 | Multi-polygon
-# include <Siv3D/MultiPolygon.hpp> // ToDo
+# include <Siv3D/MultiPolygon.hpp>
 
 // 点の集合（とそれをつないで表現される線分） | A sequence of points (and the line segments connecting them)
 # include <Siv3D/LineString.hpp> // ToDo
-
 
 # include <Siv3D/Bezier.hpp>
 
@@ -930,26 +933,32 @@
 // 2D 形状コレクション | 2D shapes collection
 # include <Siv3D/Shape2D.hpp>
 
-//// 2D 描画バッファ | Native 2D drawing buffer
-//# include <Siv3D/Buffer2D.hpp>
+# include <Siv3D/Mesh2D.hpp>
+
+# include <Siv3D/Ray2D.hpp>
+
+# include <Siv3D/RaycastHit2D.hpp>
 
 // 2D 幾何 | 2D geometry processing
-
-# include <Siv3D/JitterEndpointMode.hpp>
-# include <Siv3D/JitterEndpointSettings.hpp>
-# include <Siv3D/JitterSettings.hpp>
-
-# include <Siv3D/Geometry2D/Intersect.hpp> // ToDo
-# include <Siv3D/Geometry2D/IntersectAt.hpp> // ToDo
-# include <Siv3D/Geometry2D/Distance.hpp> // ToDo
-# include <Siv3D/Geometry2D/Center.hpp> // ToDo
-# include <Siv3D/Geometry2D/Contains.hpp> // ToDo
+# include <Siv3D/Geometry2D/BoundingRect.hpp>
+# include <Siv3D/Geometry2D/ClosestPoints2D.hpp>
+# include <Siv3D/Geometry2D/Contains.hpp>
 # include <Siv3D/Geometry2D/ConvexHull.hpp>
+# include <Siv3D/Geometry2D/Distance.hpp>
+# include <Siv3D/Geometry2D/Intersects.hpp>
+# include <Siv3D/Geometry2D/IntersectsAt.hpp>
 # include <Siv3D/Geometry2D/IsClockwise.hpp>
-# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
-# include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
-# include <Siv3D/Geometry2D/Misc.hpp> // ToDo
 # include <Siv3D/Geometry2D/Jitter.hpp>
+# include <Siv3D/Geometry2D/JitterEndpointMode.hpp>
+# include <Siv3D/Geometry2D/JitterEndpointSettings.hpp>
+# include <Siv3D/Geometry2D/JitterSettings.hpp>
+# include <Siv3D/Geometry2D/Misc.hpp>
+# include <Siv3D/Geometry2D/PointContainment.hpp>
+# include <Siv3D/Geometry2D/PoleOfInaccessibility.hpp>
+# include <Siv3D/Geometry2D/Raycast.hpp>
+# include <Siv3D/Geometry2D/SignedDistance.hpp>
+# include <Siv3D/Geometry2D/Overlaps.hpp>
+# include <Siv3D/Geometry2D/SmallestEnclosingCircle.hpp>
 
 // 長方形詰込み | Rectangle packing
 # include <Siv3D/RectanglePack.hpp>
@@ -1309,6 +1318,36 @@
 // PNG 画像フィルタ | PNG image filter
 # include <Siv3D/PNGFilter.hpp>
 
+// アニメーション画像フレーム | Animated image frame
+# include <Siv3D/AnimatedImageFrame.hpp>
+
+// アニメーション画像情報 | Animated image info
+# include <Siv3D/AnimatedImageInfo.hpp>
+
+// アニメーション画像 | Animated image
+# include <Siv3D/AnimatedImage.hpp>
+
+// アニメーション画像のデコード設定 | Animated image decode options
+# include <Siv3D/AnimatedImageDecodeOptions.hpp>
+
+// アニメーション画像のデコードエラー | Animated image decode error
+# include <Siv3D/AnimatedImageDecodeError.hpp>
+
+// アニメーション画像のストリーム読み込み状態 | Animated image stream read status
+# include <Siv3D/AnimatedImageReadStatus.hpp>
+
+// アニメーション画像のデコード結果 | Animated image decode result
+# include <Siv3D/AnimatedImageDecodeResult.hpp>
+
+// アニメーション画像のストリーム読み込み結果 | Animated image stream read result
+# include <Siv3D/AnimatedImageReadResult.hpp>
+
+// アニメーション画像デコーダ | Animated image decoder
+# include <Siv3D/AnimatedImageDecoder.hpp>
+
+// アニメーション画像ストリームリーダー | Animated image stream reader
+# include <Siv3D/AnimatedImageReader.hpp>
+
 // PNG 画像 | PNG image
 # include <Siv3D/ImageFormat/PNGDecoder.hpp>
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
@@ -1328,7 +1367,7 @@
 //# include <Siv3D/ImageFormat/WebPDecoder.hpp>
 //# include <Siv3D/ImageFormat/WebPEncoder.hpp>
 //
-//# include <Siv3D/ImageFormat/GIFDecoder.hpp>
+# include <Siv3D/ImageFormat/GIFDecoder.hpp>
 //# include <Siv3D/ImageFormat/GIFEncoder.hpp>
 //
 //# include <Siv3D/ImageFormat/TIFFDecoder.hpp>
@@ -1351,9 +1390,6 @@
 # include <Siv3D/ImageFormat/TGADecoder.hpp>
 # include <Siv3D/ImageFormat/TGAEncoder.hpp>
 
-//// アニメーション GIF の読み込み | Animated GIF reader
-//# include <Siv3D/AnimatedGIFReader.hpp>
-//
 //// アニメーション GIF の書き出し | Animated GIF writer
 //# include <Siv3D/AnimatedGIFWriter.hpp>
 //

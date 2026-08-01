@@ -11,6 +11,7 @@
 
 # pragma once
 # include "Common.hpp"
+# include "Duration.hpp"
 # include "PointVector.hpp"
 # include "Interpolation.hpp"
 
@@ -52,7 +53,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Smooth& setState(const value_type& value, const value_type& velocity = value_type{}) noexcept;
+		constexpr Smooth& setState(const value_type& value, const value_type& velocity = MakeZeroVelocity()) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -143,11 +144,14 @@ namespace s3d
 
 	private:
 
+		[[nodiscard]]
+		static constexpr value_type MakeZeroVelocity() noexcept;
+
 		value_type m_value{};
 
 		value_type m_target{};
 
-		value_type m_velocity{};
+		value_type m_velocity = MakeZeroVelocity();
 	};
 
 	using SmoothFloat	= Smooth<float>;

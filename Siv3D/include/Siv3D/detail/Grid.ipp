@@ -2094,30 +2094,30 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&
 	{
-		Shuffle(m_container.begin(), m_container.end(), std::forward<decltype(rbg)>(rbg));
+		Shuffle(m_container.begin(), m_container.end(), urbg);
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffle(Concept::UniformRandomBitGenerator auto&& urbg)&&
 	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		return std::move(shuffle(urbg));
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg) const&
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& urbg) const&
 	{
 		Grid result(*this);
-		result.shuffle(std::forward<decltype(rbg)>(rbg));
+		result.shuffle(urbg);
 		return result;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& rbg)&&
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shuffled(Concept::UniformRandomBitGenerator auto&& urbg)&&
 	{
-		return std::move(shuffle(std::forward<decltype(rbg)>(rbg)));
+		return std::move(shuffle(urbg));
 	}
 
 	////////////////////////////////////////////////////////////////

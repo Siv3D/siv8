@@ -12,6 +12,7 @@
 # include <Siv3D/ImageFormat/PNGEncoder.hpp>
 # include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <setjmp.h>
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
 #	include <ThirdParty-prebuilt/libpng/png.h>
 # else
@@ -22,11 +23,29 @@ namespace s3d
 {
 	namespace
 	{
+		[[noreturn]] static void PngErrorCallback(png_structp png_ptr, png_const_charp) noexcept
+		{
+			::png_longjmp(png_ptr, 1);
+		}
+
+		static void PngWarningCallback(png_structp, png_const_charp) noexcept
+		{
+		}
+
+		static void SetPNGErrorCallbacks(png_structp png_ptr) noexcept
+		{
+			::png_set_error_fn(png_ptr, nullptr, PngErrorCallback, PngWarningCallback);
+		}
+
 		static void PngWriteCallbackIWriter(png_structp png_ptr, png_bytep src, png_size_t length)
 		{
 			IWriter* pWriter = static_cast<IWriter*>(::png_get_io_ptr(png_ptr));
+			const int64 writeSize = pWriter->write(src, length);
 
-			pWriter->write(src, length);
+			if (writeSize != static_cast<int64>(length))
+			{
+				::png_error(png_ptr, "PNG write failed");
+			}
 		}
 
 		static void PngWriteCallbackBlob(png_structp png_ptr, png_bytep src, png_size_t length)
@@ -35,8 +54,60 @@ namespace s3d
 
 			pBlob->append(src, length);
 		}
-	}
 
+		[[nodiscard]] static bool IsValidPNGSize(const size_t width, const size_t height) noexcept
+		{
+			return ((0 < width)
+				&& (0 < height)
+				&& (width <= Image::MaxWidth)
+				&& (height <= Image::MaxHeight)
+				&& (width <= static_cast<size_t>(PNG_UINT_31_MAX))
+				&& (height <= static_cast<size_t>(PNG_UINT_31_MAX)));
+		}
+
+		[[nodiscard]] static bool WritePNG(png_structp png_ptr, png_infop info_ptr,
+			png_voidp ioPtr, png_rw_ptr writeCallback,
+			const png_uint_32 width, const png_uint_32 height,
+			const int bitDepth, const int colorType, const int filter,
+			const uint8* pixels, const size_t bytesPerRow, const bool swapEndian)
+		{
+			SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4611)
+
+			if (setjmp(png_jmpbuf(png_ptr)))
+			{
+				return false;
+			}
+
+			SIV3D_DISABLE_GCC_WARNINGS_POP()
+
+			SetPNGErrorCallbacks(png_ptr);
+
+			::png_set_write_fn(png_ptr, ioPtr, writeCallback, nullptr);
+			::png_set_IHDR(png_ptr, info_ptr, width, height, bitDepth, colorType,
+				PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+			::png_set_filter(png_ptr, 0, filter);
+
+			if (swapEndian)
+			{
+				// Siv3D supports little-endian platforms only.
+				::png_set_swap(png_ptr);
+			}
+
+			::png_write_info(png_ptr, info_ptr);
+
+			const uint8* row = pixels;
+
+			for (png_uint_32 y = 0; y < height; ++y)
+			{
+				::png_write_row(png_ptr, row);
+				row += bytesPerRow;
+			}
+
+			::png_write_end(png_ptr, info_ptr);
+
+			return true;
+		}
+	}
 	////////////////////////////////////////////////////////////////
 	//
 	//	name
@@ -84,9 +155,10 @@ namespace s3d
 
 	bool PNGEncoder::save(const Image& image, const FilePathView path, const PNGFilter filter) const
 	{
-		if (not image)
+		if ((not image)
+			|| (not IsValidPNGSize(image.width(), image.height())))
 		{
-			LOG_FAIL("❌ PNGEncoder::save(): image is empty");
+			LOG_FAIL("❌ PNGEncoder::save(): image size is invalid");
 			return false;
 		}
 
@@ -102,6 +174,12 @@ namespace s3d
 
 	bool PNGEncoder::save(const Grid<uint16>& image, const FilePathView path, const PNGFilter filter) const
 	{
+		if (not IsValidPNGSize(image.width(), image.height()))
+		{
+			LOG_FAIL("❌ PNGEncoder::save(): image size is invalid");
+			return false;
+		}
+
 		BinaryFileWriter writer{ path };
 
 		if (not writer)
@@ -125,10 +203,15 @@ namespace s3d
 
 	bool PNGEncoder::encode(const Image& image, IWriter& writer, const PNGFilter filter) const
 	{
-		if (not writer.isOpen())
+		if ((not writer.isOpen())
+			|| (not image)
+			|| (not IsValidPNGSize(image.width(), image.height())))
 		{
 			return false;
 		}
+
+		const png_uint_32 width = static_cast<png_uint_32>(image.width());
+		const png_uint_32 height = static_cast<png_uint_32>(image.height());
 
 		png_structp png_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
@@ -142,44 +225,29 @@ namespace s3d
 		if (not info_ptr)
 		{
 			::png_destroy_write_struct(&png_ptr, nullptr);
-
 			return false;
 		}
 
-		::png_set_write_fn(png_ptr, &writer, PngWriteCallbackIWriter, nullptr);
-
-		const png_uint_32 width = image.width();
-
-		const png_uint_32 height = image.height();
-
-		::png_set_IHDR(png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-
-		::png_set_filter(png_ptr, 0, FromEnum(filter));
-
-		::png_write_info(png_ptr, info_ptr);
-
-		const uint8* pRow = image.dataAsUint8();
-
-		for (uint32 y = 0; y < height; ++y)
-		{
-			::png_write_row(png_ptr, pRow);
-
-			pRow += image.bytesPerRow();
-		}
-
-		::png_write_end(png_ptr, info_ptr);
+		const bool succeeded = WritePNG(png_ptr, info_ptr,
+			&writer, PngWriteCallbackIWriter,
+			width, height, 8, PNG_COLOR_TYPE_RGB_ALPHA, FromEnum(filter),
+			image.dataAsUint8(), image.bytesPerRow(), false);
 
 		::png_destroy_write_struct(&png_ptr, &info_ptr);
 
-		return true;
+		return succeeded;
 	}
 
 	bool PNGEncoder::encode(const Grid<uint16>& image, IWriter& writer, const PNGFilter filter) const
 	{
-		if (not writer.isOpen())
+		if ((not writer.isOpen())
+			|| (not IsValidPNGSize(image.width(), image.height())))
 		{
 			return false;
 		}
+
+		const png_uint_32 width = static_cast<png_uint_32>(image.width());
+		const png_uint_32 height = static_cast<png_uint_32>(image.height());
 
 		png_structp png_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
@@ -193,42 +261,18 @@ namespace s3d
 		if (not info_ptr)
 		{
 			::png_destroy_write_struct(&png_ptr, nullptr);
-
 			return false;
 		}
 
-		::png_set_write_fn(png_ptr, &writer, PngWriteCallbackIWriter, nullptr);
-
-		const png_uint_32 width = static_cast<png_uint_32>(image.width());
-
-		const png_uint_32 height = static_cast<png_uint_32>(image.height());
-
-		::png_set_IHDR(png_ptr, info_ptr, width, height, 16, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-
-		::png_set_filter(png_ptr, 0, FromEnum(filter));
-
-		::png_write_info(png_ptr, info_ptr);
-
-		const uint8* pRow = static_cast<const uint8*>(static_cast<const void*>(image.data()));
-
-		const uint32 bytesPerRow = (width * sizeof(uint16));
-
-		Array<const uint8*> rows(image.height());
-
-		for (uint32 y = 0; y < height; ++y)
-		{
-			rows[y] = pRow;
-
-			pRow += bytesPerRow;
-		}
-
-		::png_set_rows(png_ptr, info_ptr, (png_bytepp)rows.data());
-
-		::png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_SWAP_ENDIAN, nullptr);
+		const bool succeeded = WritePNG(png_ptr, info_ptr,
+			&writer, PngWriteCallbackIWriter,
+			width, height, 16, PNG_COLOR_TYPE_GRAY, FromEnum(filter),
+			static_cast<const uint8*>(static_cast<const void*>(image.data())),
+			(static_cast<size_t>(width) * sizeof(uint16)), true);
 
 		::png_destroy_write_struct(&png_ptr, &info_ptr);
 
-		return true;
+		return succeeded;
 	}
 
 	Blob PNGEncoder::encode(const Image& image) const
@@ -238,6 +282,15 @@ namespace s3d
 
 	Blob PNGEncoder::encode(const Image& image, const PNGFilter filter) const
 	{
+		if ((not image)
+			|| (not IsValidPNGSize(image.width(), image.height())))
+		{
+			return{};
+		}
+
+		const png_uint_32 width = static_cast<png_uint_32>(image.width());
+		const png_uint_32 height = static_cast<png_uint_32>(image.height());
+
 		png_structp png_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
 		if (not png_ptr)
@@ -250,42 +303,36 @@ namespace s3d
 		if (not info_ptr)
 		{
 			::png_destroy_write_struct(&png_ptr, nullptr);
-
 			return{};
 		}
 
 		Blob blob;
 
-		::png_set_write_fn(png_ptr, &blob, PngWriteCallbackBlob, nullptr);
-
-		const png_uint_32 width = image.width();
-
-		const png_uint_32 height = image.height();
-
-		::png_set_IHDR(png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-
-		::png_set_filter(png_ptr, 0, FromEnum(filter));
-
-		::png_write_info(png_ptr, info_ptr);
-
-		const uint8* pRow = image.dataAsUint8();
-
-		for (uint32 y = 0; y < height; ++y)
-		{
-			::png_write_row(png_ptr, pRow);
-
-			pRow += image.bytesPerRow();
-		}
-
-		::png_write_end(png_ptr, info_ptr);
+		const bool succeeded = WritePNG(png_ptr, info_ptr,
+			&blob, PngWriteCallbackBlob,
+			width, height, 8, PNG_COLOR_TYPE_RGB_ALPHA, FromEnum(filter),
+			image.dataAsUint8(), image.bytesPerRow(), false);
 
 		::png_destroy_write_struct(&png_ptr, &info_ptr);
+
+		if (not succeeded)
+		{
+			return{};
+		}
 
 		return blob;
 	}
 
 	Blob PNGEncoder::encode(const Grid<uint16>& image, const PNGFilter filter) const
 	{
+		if (not IsValidPNGSize(image.width(), image.height()))
+		{
+			return{};
+		}
+
+		const png_uint_32 width = static_cast<png_uint_32>(image.width());
+		const png_uint_32 height = static_cast<png_uint_32>(image.height());
+
 		png_structp png_ptr = ::png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
 		if (not png_ptr)
@@ -298,42 +345,23 @@ namespace s3d
 		if (not info_ptr)
 		{
 			::png_destroy_write_struct(&png_ptr, nullptr);
-
 			return{};
 		}
 
 		Blob blob;
 
-		::png_set_write_fn(png_ptr, &blob, PngWriteCallbackBlob, nullptr);
-
-		const png_uint_32 width = static_cast<png_uint_32>(image.width());
-
-		const png_uint_32 height = static_cast<png_uint_32>(image.height());
-
-		::png_set_IHDR(png_ptr, info_ptr, width, height, 16, PNG_COLOR_TYPE_GRAY, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-
-		::png_set_filter(png_ptr, 0, FromEnum(filter));
-
-		::png_write_info(png_ptr, info_ptr);
-
-		const uint8* pRow = static_cast<const uint8*>(static_cast<const void*>(image.data()));
-
-		const uint32 bytesPerRow = (width * sizeof(uint16));
-
-		Array<const uint8*> rows(image.height());
-
-		for (uint32 y = 0; y < height; ++y)
-		{
-			rows[y] = pRow;
-
-			pRow += bytesPerRow;
-		}
-
-		::png_set_rows(png_ptr, info_ptr, (png_bytepp)rows.data());
-
-		::png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_SWAP_ENDIAN, nullptr);
+		const bool succeeded = WritePNG(png_ptr, info_ptr,
+			&blob, PngWriteCallbackBlob,
+			width, height, 16, PNG_COLOR_TYPE_GRAY, FromEnum(filter),
+			static_cast<const uint8*>(static_cast<const void*>(image.data())),
+			(static_cast<size_t>(width) * sizeof(uint16)), true);
 
 		::png_destroy_write_struct(&png_ptr, &info_ptr);
+
+		if (not succeeded)
+		{
+			return{};
+		}
 
 		return blob;
 	}

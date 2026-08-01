@@ -25,8 +25,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief 色を RGBA 各要素について浮動小数点数で表現するクラスです。
-	/// @remark 各要素は通常 0.0 以上 1.0 以下の値を持ちます。
+	/// @brief 色を RGBA 各成分について浮動小数点数で表現するクラスです。
+	/// @remark 各成分は通常 0.0 以上 1.0 以下の値を持ちますが、範囲外の値も保持できます。
 	struct ColorF
 	{
 		/// @brief 赤 | Red
@@ -48,12 +48,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief デフォルトコンストラクタ
+		/// @remark 各成分は初期化されません。
 		[[nodiscard]]
 		ColorF() = default;
 
 		/// @brief コピーコンストラクタ
+		/// @param color コピーする色
 		[[nodiscard]]
-		ColorF(const ColorF&) = default;
+		ColorF(const ColorF& color) = default;
 
 		/// @brief ColorF を作成します。
 		/// @param _r R 成分
@@ -102,7 +104,7 @@ namespace s3d
 		/// @brief Color から ColorF を作成します。
 		/// @param rgb Color
 		/// @param _a アルファ値
-		/// @remark 引数 `color` のアルファ値は無視されます。
+		/// @remark 引数 `rgb` のアルファ値は無視されます。
 		[[nodiscard]]
 		constexpr ColorF(Color rgb, double _a) noexcept;
 
@@ -161,10 +163,19 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr ColorF& operator =(const ColorF&) noexcept = default;
+		/// @brief 色をコピー代入します。
+		/// @param color コピーする色
+		/// @return *this
+		constexpr ColorF& operator =(const ColorF& color) noexcept = default;
 
+		/// @brief Color の各成分を [0.0, 1.0] に変換して代入します。
+		/// @param color 代入する色
+		/// @return *this
 		constexpr ColorF& operator =(Color color) noexcept;
 
+		/// @brief HSV を RGB に変換して代入します。
+		/// @param hsva 代入する色
+		/// @return *this
 		ColorF& operator =(const HSV& hsva) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -173,6 +184,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGB 成分を加算した色を返します。
+		/// @param rgb 加算する RGB 成分
+		/// @return RGB 成分を加算し、アルファ値を維持した色
 		[[nodiscard]]
 		constexpr ColorF operator +(const ColorF& rgb) const noexcept;
 
@@ -182,7 +196,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr ColorF& operator +=(const ColorF& rgb) noexcept;
+		/// @brief RGB 成分を加算します。
+		/// @param rgb 加算する RGB 成分
+		/// @return *this
+		/// @remark アルファ値は変更しません。
+		constexpr ColorF& operator +=(const ColorF& rgb) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -190,6 +208,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGB 成分を減算した色を返します。
+		/// @param rgb 減算する RGB 成分
+		/// @return RGB 成分を減算し、アルファ値を維持した色
 		[[nodiscard]]
 		constexpr ColorF operator -(const ColorF& rgb) const noexcept;
 
@@ -199,7 +220,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr ColorF& operator -=(const ColorF& rgb) noexcept;
+		/// @brief RGB 成分を減算します。
+		/// @param rgb 減算する RGB 成分
+		/// @return *this
+		/// @remark アルファ値は変更しません。
+		constexpr ColorF& operator -=(const ColorF& rgb) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -207,12 +232,22 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGB 成分をスカラー倍した色を返します。
+		/// @param s RGB 成分に掛ける値
+		/// @return RGB 成分をスカラー倍し、アルファ値を維持した色
 		[[nodiscard]]
 		constexpr ColorF operator *(double s) const noexcept;
 
+		/// @brief RGBA の各成分を乗算した色を返します。
+		/// @param rgba 各成分に掛ける色
+		/// @return RGBA の各成分を乗算した色
 		[[nodiscard]]
 		constexpr ColorF operator *(const ColorF& rgba) const noexcept;
 
+		/// @brief 色の RGB 成分をスカラー倍した色を返します。
+		/// @param s RGB 成分に掛ける値
+		/// @param color 色
+		/// @return RGB 成分をスカラー倍し、アルファ値を維持した色
 		[[nodiscard]]
 		friend constexpr ColorF operator *(double s, const ColorF& color) noexcept
 		{
@@ -225,9 +260,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr ColorF& operator *=(double s) noexcept;
+		/// @brief RGB 成分をスカラー倍します。
+		/// @param s RGB 成分に掛ける値
+		/// @return *this
+		/// @remark アルファ値は変更しません。
+		constexpr ColorF& operator *=(double s) & noexcept;
 
-		constexpr ColorF& operator *=(const ColorF& rgba) noexcept;
+		/// @brief RGBA の各成分を乗算します。
+		/// @param rgba 各成分に掛ける色
+		/// @return *this
+		constexpr ColorF& operator *=(const ColorF& rgba) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -247,6 +289,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 2 つの色が等しいかを返します。
+		/// @param lhs 一方の色
+		/// @param rhs もう一方の色
+		/// @return RGBA の全成分がそれぞれ等しい場合 true, それ以外の場合は false
+		/// @remark 各成分を浮動小数点数として厳密に比較します。
 		[[nodiscard]]
 		friend constexpr bool operator ==(const ColorF& lhs, const ColorF& rhs) noexcept
 		{
@@ -296,6 +343,7 @@ namespace s3d
 		/// @param _a 新しいアルファ値
 		/// @return アルファ値を変更したコピー
 		/// @remark `.withA(_a)` と同じです。
+		[[nodiscard]]
 		constexpr ColorF withAlpha(double _a) const noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -365,7 +413,30 @@ namespace s3d
 		/// @brief 色を変更します。
 		/// @param color 新しい色
 		/// @return *this
-		constexpr ColorF& set(const ColorF& ColorF) noexcept;
+		constexpr ColorF& set(const ColorF& color) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	premultiplied
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief アルファ乗算済みの色を返します。
+		/// @return アルファ乗算済みの色
+		[[nodiscard]]
+		constexpr ColorF premultiplied() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	unpremultiplied
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief アルファ乗算済みの色を通常の色に戻します。
+		/// @return アルファ乗算を解除した色
+		/// @remark アルファ値が 0.0 の場合は `ColorF::Zero()` を返します。
+		[[nodiscard]]
+		constexpr ColorF unpremultiplied() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -421,6 +492,7 @@ namespace s3d
 		/// @param other もう一方の色
 		/// @param f 補間係数
 		/// @return 補間された色
+		/// @remark `f` はクランプされません。範囲 [0.0, 1.0] の外では外挿します。
 		[[nodiscard]]
 		constexpr ColorF lerp(const ColorF& other, double f) const noexcept;
 
@@ -434,6 +506,7 @@ namespace s3d
 		/// @param amount 明るくする量 [0.0, 1.0]
 		/// @return 明るくした色
 		/// @remark `ColorF{ (r + (1.0 - r) * amount), (g + (1.0 - g) * amount), (b + (1.0 - b) * amount), a }` を返します。
+		/// @remark `amount` はクランプされません。
 		[[nodiscard]]
 		constexpr ColorF lightened(double amount) const noexcept;
 
@@ -441,20 +514,21 @@ namespace s3d
 		/// @param amount 暗くする量 [0.0, 1.0]
 		/// @return 暗くした色
 		/// @remark `ColorF{ (r * (1.0 - amount)), (g * (1.0 - amount)), (b * (1.0 - amount)), a }` を返します。
+		/// @remark `amount` はクランプされません。
 		[[nodiscard]]
 		constexpr ColorF darkened(double amount) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	adjustHue
+		//	hueShifted
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 色相を調整した色を返します。
-		/// @param amount 色相の調整量
-		/// @return 色相を調整した色
+		/// @brief 色相をシフトした色を返します。
+		/// @param degrees 色相のシフト量（度）
+		/// @return 色相をシフトした色
 		[[nodiscard]]
-		ColorF adjustHue(double amount) const noexcept;
+		ColorF hueShifted(double degrees) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -482,31 +556,35 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	gamma
+		//	gammaCorrected
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 色をガンマ補正した色を返します。
 		/// @param gamma ガンマ値
 		/// @return ガンマ補正された色
+		/// @remark `gamma <= 0.0` の場合、RGB 成分が 0.0 の色を返します。アルファ値は維持します。
+		/// @remark RGB の各成分を `pow(component, 1.0 / gamma)` によって変換します。
 		[[nodiscard]]
-		ColorF gamma(double gamma) const noexcept;
+		ColorF gammaCorrected(double gamma) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	removeSRGBCurve, applySRGBCurve
+		//	srgbToLinear, linearToSRGB
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief リニアカラースペースに変換した色を返します。
-		/// @return リニアカラースペースに変換した色
+		/// @brief sRGB 色空間からリニア色空間に変換した色を返します。
+		/// @return リニア色空間に変換した色
+		/// @remark アルファ値は維持します。
 		[[nodiscard]]
-		ColorF removeSRGBCurve() const noexcept;
+		ColorF srgbToLinear() const noexcept;
 
-		/// @brief sRGB カーブを適用した色を返します。
-		/// @return sRGB カーブを適用した色
+		/// @brief リニア色空間から sRGB 色空間に変換した色を返します。
+		/// @return sRGB 色空間に変換した色
+		/// @remark アルファ値は維持します。
 		[[nodiscard]]
-		ColorF applySRGBCurve() const noexcept;
+		ColorF linearToSRGB() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -528,6 +606,7 @@ namespace s3d
 		/// @brief 色を Color で返します。
 		/// @return Color
 		/// @remark 0.0 未満の成分は 0 に、1.0 より大きい成分は 255 になります。
+		/// @remark 各成分には有限値を指定してください。
 		[[nodiscard]]
 		constexpr Color toColor() const noexcept;
 
@@ -655,6 +734,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色を HSV に変換して返します。
+		/// @return HSV に変換した色
 		[[nodiscard]]
 		HSV toHSV() const noexcept;
 
@@ -664,6 +745,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief R 成分を `R8_Unorm` 形式で返します。
+		/// @return R 成分を [0, 255] に量子化した値
+		/// @remark R 成分は [0.0, 1.0] にクランプされます。
 		[[nodiscard]]
 		constexpr uint8 toR8_Unorm() const noexcept;
 
@@ -673,6 +757,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RG 成分を `R8G8_Unorm` 形式で返します。
+		/// @return bit 0-7 に R、bit 8-15 に G を格納した値
+		/// @remark 各成分は [0.0, 1.0] にクランプされます。
 		[[nodiscard]]
 		constexpr uint16 toR8G8_Unorm() const noexcept;
 
@@ -682,6 +769,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief R 成分を `R16_Float` 形式で返します。
+		/// @return R 成分を表す半精度浮動小数点数
 		[[nodiscard]]
 		HalfFloat toR16_Float() const noexcept;
 
@@ -691,6 +780,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGBA 成分を `R8G8B8A8_Unorm` 形式で返します。
+		/// @return RGBA の各成分を [0, 255] に量子化した Color
+		/// @remark 各成分は [0.0, 1.0] にクランプされます。
 		[[nodiscard]]
 		constexpr Color toR8G8B8A8_Unorm() const noexcept;
 
@@ -700,6 +792,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RG 成分を `R16G16_Unorm` 形式で返します。
+		/// @return bit 0-15 に R、bit 16-31 に G を格納した値
+		/// @remark 各成分は [0.0, 1.0] にクランプされます。
+		/// @remark 各成分には有限値を指定してください。
 		[[nodiscard]]
 		constexpr uint32 toR16G16_Unorm() const noexcept;
 
@@ -709,6 +805,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RG 成分を `R16G16_Float` 形式で返します。
+		/// @return bit 0-15 に R、bit 16-31 に G の半精度浮動小数点数を格納した値
 		[[nodiscard]]
 		uint32 toR16G16_Float() const noexcept;
 
@@ -718,6 +816,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief R 成分を `R32_Float` 形式で返します。
+		/// @return R 成分を float 型に変換した値
 		[[nodiscard]]
 		constexpr float toR32_Float() const noexcept;
 
@@ -727,6 +827,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGBA 成分を `R10G10B10A2_Unorm` 形式で返します。
+		/// @return bit 0-9 に R、bit 10-19 に G、bit 20-29 に B、bit 30-31 に A を格納した値
+		/// @remark 各成分は [0.0, 1.0] にクランプされます。
+		/// @remark 各成分には有限値を指定してください。
 		[[nodiscard]]
 		constexpr uint32 toR10G10B10A2_Unorm() const noexcept;
 
@@ -736,6 +840,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGB 成分を `R11G11B10_UFloat` 形式で返します。
+		/// @return bit 0-10 に R、bit 11-21 に G、bit 22-31 に B を格納した値
+		/// @remark 負の成分は 0 に、表現可能な最大値を超える成分は最大の有限値にクランプされます。
+		/// @remark R と G の最大値は 65024、B の最大値は 64512 です。
+		/// @remark 各成分には有限値を指定してください。
 		[[nodiscard]]
 		uint32 toR11G11B10_UFloat() const noexcept;
 
@@ -745,6 +854,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGBA 成分を `R16G16B16A16_Float` 形式で返します。
+		/// @return 下位から R, G, B, A の順に半精度浮動小数点数を格納した値
 		[[nodiscard]]
 		uint64 toR16G16B16A16_Float() const noexcept;
 
@@ -754,6 +865,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RG 成分を `R32G32_Float` 形式で返します。
+		/// @return `Float2{ static_cast<float>(r), static_cast<float>(g) }`
 		[[nodiscard]]
 		constexpr Float2 toR32G32_Float() const noexcept;
 
@@ -763,26 +876,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief RGBA 成分を `R32G32B32A32_Float` 形式で返します。
+		/// @return `Float4{ static_cast<float>(r), static_cast<float>(g), static_cast<float>(b), static_cast<float>(a) }`
 		[[nodiscard]]
 		constexpr Float4 toR32G32B32A32_Float() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	PremultiplyAlpha
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		static constexpr ColorF PremultiplyAlpha(ColorF color) noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	UnpremultiplyAlpha
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		static constexpr ColorF UnpremultiplyAlpha(ColorF color) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -790,6 +887,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 色を出力ストリームに書き込みます。
+		/// @param output 出力ストリーム
+		/// @param value 色
+		/// @return 出力ストリーム
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const ColorF& value)
 		{
@@ -806,6 +907,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 入力ストリームから色を読み込みます。
+		/// @param input 入力ストリーム
+		/// @param value 読み込んだ色の格納先
+		/// @return 入力ストリーム
+		/// @remark `(r, g, b)`, `(r, g, b, a)`, 16 進数カラーコードの形式に対応します。
 		template <class CharType>
 		friend std::basic_istream<CharType>& operator >>(std::basic_istream<CharType>& input, ColorF& value)
 		{

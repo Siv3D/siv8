@@ -249,7 +249,7 @@ namespace s3d
 
 	bool SuperEllipse::mouseOver() const noexcept
 	{
-		return Geometry2D::Intersect(Cursor::PosF(), *this);
+		return Geometry2D::Intersects(Cursor::PosF(), *this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -456,7 +456,7 @@ s3d::BufferContext::iterator fmt::formatter<s3d::SuperEllipse, s3d::char32>::for
 	else
 	{
 		const std::u32string format
-			= (U"({:" + tag + U"}, {:" + tag + U"}), {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
+			= (U"({:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
 		return format_to(ctx.out(), format, value.center.x, value.center.y, value.axes.x, value.axes.y, value.n);
 	}
 }

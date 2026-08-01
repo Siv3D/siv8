@@ -739,7 +739,7 @@ namespace s3d
 
 	inline uint64 RoundRect::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(rect.pos.x, rect.pos.y, rect.size.x, rect.size.y, r);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -751,7 +751,19 @@ namespace s3d
 	template <class Shape2DType>
 	constexpr bool RoundRect::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool RoundRect::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -764,5 +776,17 @@ namespace s3d
 	constexpr bool RoundRect::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> RoundRect::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 }

@@ -50,7 +50,7 @@ namespace s3d
 			// 下部（endOffset より下）は単色 c1
 			if (textureBottomHeight)
 			{
-				textureRegion(0, (textureHeight - textureBottomHeight), textureWidth, textureBottomHeight).draw(Arg::bottomLeft(glyphContext.pos.x, textureEndY), c1);
+				textureRegion(0, (textureHeight - textureBottomHeight), textureWidth, textureBottomHeight).draw(Anchor::BottomLeft, glyphContext.pos.x, textureEndY, c1);
 			}
 		}
 	}

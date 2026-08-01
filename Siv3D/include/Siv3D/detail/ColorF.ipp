@@ -163,7 +163,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr ColorF& ColorF::operator +=(const ColorF& rgb) noexcept
+	constexpr ColorF& ColorF::operator +=(const ColorF& rgb) & noexcept
 	{
 		r += rgb.r;
 		g += rgb.g;
@@ -188,7 +188,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr ColorF& ColorF::operator -=(const ColorF& rgb) noexcept
+	constexpr ColorF& ColorF::operator -=(const ColorF& rgb) & noexcept
 	{
 		r -= rgb.r;
 		g -= rgb.g;
@@ -218,7 +218,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr ColorF& ColorF::operator *=(const double s) noexcept
+	constexpr ColorF& ColorF::operator *=(const double s) & noexcept
 	{
 		r *= s;
 		g *= s;
@@ -226,7 +226,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr ColorF& ColorF::operator *=(const ColorF& rgba) noexcept
+	constexpr ColorF& ColorF::operator *=(const ColorF& rgba) & noexcept
 	{
 		r *= rgba.r;
 		g *= rgba.g;
@@ -366,6 +366,34 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	premultiplied
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr ColorF ColorF::premultiplied() const noexcept
+	{
+		return{ (r * a), (g * a), (b * a), a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	unpremultiplied
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr ColorF ColorF::unpremultiplied() const noexcept
+	{
+		if (a == 0.0)
+		{
+			return{ 0.0, 0.0, 0.0, 0.0 };
+		}
+
+		const double invA = (1.0 / a);
+		return{ (r * invA), (g * invA), (b * invA), a };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	grayscale
 	//
 	////////////////////////////////////////////////////////////////
@@ -456,11 +484,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	gamma
+	//	gammaCorrected
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline ColorF ColorF::gamma(const double gamma) const noexcept
+	inline ColorF ColorF::gammaCorrected(const double gamma) const noexcept
 	{
 		if (gamma <= 0.0)
 		{
@@ -480,7 +508,7 @@ namespace s3d
 
 	inline uint64 ColorF::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(r, g, b, a);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -657,7 +685,7 @@ namespace s3d
 	{
 		const uint16 r16 = static_cast<uint16>(Clamp(r, 0.0, 1.0) * 65535.0 + 0.5);
 		const uint16 g16 = static_cast<uint16>(Clamp(g, 0.0, 1.0) * 65535.0 + 0.5);
-		return ((g16 << 16) | r16);
+		return ((static_cast<uint32>(g16) << 16) | r16);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -707,40 +735,6 @@ namespace s3d
 	constexpr Float4 ColorF::toR32G32B32A32_Float() const noexcept
 	{
 		return toFloat4();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	PremultiplyAlpha
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr ColorF ColorF::PremultiplyAlpha(const ColorF color) noexcept
-	{
-		const double r = (color.r * color.a);
-		const double g = (color.g * color.a);
-		const double b = (color.b * color.a);
-		return{ r, g, b, color.a };
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	UnpremultiplyAlpha
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr ColorF ColorF::UnpremultiplyAlpha(const ColorF color) noexcept
-	{
-		if (color.a == 0.0)
-		{
-			return{ 0.0, 0.0, 0.0, 0.0 };
-		}
-
-		const double invA = (1.0 / color.a);
-		const double r = (color.r * invA);
-		const double g = (color.g * invA);
-		const double b = (color.b * invA);
-		return{ r, g, b, color.a };
 	}
 
 	////////////////////////////////////////////////////////////////

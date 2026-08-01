@@ -26,6 +26,6 @@ namespace s3d
 
 	double RandomAngle(Concept::UniformRandomBitGenerator auto&& urbg) noexcept
 	{
-		return RandomClosedOpen(0.0, Math::Constants::TwoPi, std::forward<decltype(urbg)>(urbg));
+		return RandomClosedOpen(0.0, Math::Constants::TwoPi, urbg);
 	}
 }

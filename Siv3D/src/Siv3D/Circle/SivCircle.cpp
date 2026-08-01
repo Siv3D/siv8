@@ -114,9 +114,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	double Circle::signedDistanceTo(const double x, const double y) const noexcept
+	double Circle::signedDistanceTo(const double _x, const double _y) const noexcept
 	{
-		return signedDistanceTo(position_type{ x, y });
+		return signedDistanceTo(position_type{ _x, _y });
 	}
 
 	double Circle::signedDistanceTo(const position_type point) const noexcept
@@ -349,11 +349,11 @@ namespace s3d
 			{
 				pIndex->i0 = i;
 				pIndex->i1 = (i + 1);
-				pIndex->i2 = ((vertexCount - 1) - i);
+				pIndex->i2 = static_cast<Vertex2D::IndexType>((vertexCount - 1) - i);
 				++pIndex;
-				pIndex->i0 = ((vertexCount - 1) - i);
+				pIndex->i0 = static_cast<Vertex2D::IndexType>((vertexCount - 1) - i);
 				pIndex->i1 = (i + 1);
-				pIndex->i2 = ((vertexCount - 2) - i);
+				pIndex->i2 = static_cast<Vertex2D::IndexType>((vertexCount - 2) - i);
 				++pIndex;
 			}
 		}
@@ -417,7 +417,7 @@ namespace s3d
 
 	bool Circle::mouseOver() const noexcept
 	{
-		return Geometry2D::Intersect(Cursor::PosF(), *this);
+		return Geometry2D::Intersects(Cursor::PosF(), *this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -684,9 +684,9 @@ namespace s3d
 		SIV3D_ENGINE(Renderer2D)->addCircleDashedFrame(
 			center,
 			static_cast<float>(Abs(r) - innerThickness),
-			style.startAngle,
+			static_cast<float>(style.startAngle),
 			static_cast<float>(innerThickness + outerThickness),
-			style.dashRatio,
+			static_cast<float>(style.dashRatio),
 			style.dashCount,
 			innerColor.toFloat4(),
 			outerColor.toFloat4()
@@ -1119,7 +1119,7 @@ s3d::BufferContext::iterator fmt::formatter<s3d::Circle, s3d::char32>::format(co
 	else
 	{
 		const std::u32string format
-			= (U"({:" + tag + U"}, {:" + tag + U"}), {:" + tag + U"})");
+			= (U"({:" + tag + U"}, {:" + tag + U"}, {:" + tag + U"})");
 		return format_to(ctx.out(), format, value.x, value.y, value.r);
 	}
 }

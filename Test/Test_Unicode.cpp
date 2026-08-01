@@ -21,25 +21,25 @@ TEST_CASE("Unicode.ValidateAscii")
 	{
 		const std::string s = "abcあdef";
 		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 3);
+		CHECK_EQ(Unicode::ValidateAscii(s).error(), 3u);
 	}
 
 	{
 		std::string s = "\x80" "abcdef";
 		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 0);
+		CHECK_EQ(Unicode::ValidateAscii(s).error(), 0u);
 	}
 
 	{
 		std::string s = "abc" "\x80" "def";
 		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 3);
+		CHECK_EQ(Unicode::ValidateAscii(s).error(), 3u);
 	}
 
 	{
 		const std::string s = "abcdef\x80";
 		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 6);
+		CHECK_EQ(Unicode::ValidateAscii(s).error(), 6u);
 	}
 
 }
@@ -59,19 +59,19 @@ TEST_CASE("Unicode.ValidateUTF8")
 	{
 		std::string s = "\x80" "abcdef";
 		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 0);
+		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 0u);
 	}
 
 	{
 		std::string s = "abc" "\x80" "def";
 		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 3);
+		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 3u);
 	}
 
 	{
 		const std::string s = "abcあdef\x80";
 		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 9);
+		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 9u);
 	}
 
 	{

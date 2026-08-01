@@ -638,7 +638,7 @@ namespace s3d
 
 	inline uint64 Line::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(start.x, start.y, end.x, end.y);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -650,14 +650,18 @@ namespace s3d
 	template <class Shape2DType>
 	constexpr bool Line::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
+	template <class Shape2DType>
+	Optional<Array<Vec2>> Line::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
+	}
 }

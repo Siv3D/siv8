@@ -11,9 +11,9 @@
 
 # pragma once
 # include "../2DShapes.hpp"
-# include "../JitterEndpointMode.hpp"
-# include "../JitterEndpointSettings.hpp"
-# include "../JitterSettings.hpp"
+# include "JitterEndpointMode.hpp"
+# include "JitterEndpointSettings.hpp"
+# include "JitterSettings.hpp"
 
 namespace s3d
 {

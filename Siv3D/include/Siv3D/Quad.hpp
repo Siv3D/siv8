@@ -509,9 +509,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 指定したインデックスの頂点への参照を返します。
+		/// @param index 頂点のインデックス（0 が p0, 1 が p1, 2 が p2, 3 が p3）
+		/// @return 指定したインデックスの頂点への参照
+		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
 		position_type& vertexAtIndex(size_t index);
 
+		/// @brief 指定したインデックスの頂点への参照を返します。
+		/// @param index 頂点のインデックス（0 が p0, 1 が p1, 2 が p2, 3 が p3）
+		/// @return 指定したインデックスの頂点への参照
+		/// @throw std::out_of_range index が範囲外の場合
 		[[nodiscard]]
 		const position_type& vertexAtIndex(size_t index) const;
 
@@ -611,8 +619,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 四角形の周上の指定した距離に対応する辺のインデックスを返します。
-		/// @param length 距離（p0-p1-p2 の順）
-		/// @return 四角形の周上の指定した距離に対応する辺のインデックス（0 が p0-p1, 1 が p1-p2, 2 が p2-p0）
+		/// @param length 距離（p0-p1-p2-p3 の順）
+		/// @return 四角形の周上の指定した距離に対応する辺のインデックス（0 が p0-p1, 1 が p1-p2, 2 が p2-p3, 3 が p3-p0）
 		[[nodiscard]]
 		size_t sideIndexAtLength(double length) const noexcept;
 
@@ -622,6 +630,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形を構成する 2 つの三角形のうち、指定したインデックスの三角形を返します。
+		/// @param index 三角形のインデックス（0 または 1）
+		/// @return 指定したインデックスの三角形
 		[[nodiscard]]
 		constexpr Triangle triangleAtIndex(size_t index) const;
 
@@ -653,8 +664,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 四角形を囲む最小の矩形を返します。
-		/// @return 四角形を囲む最小の矩形
+		/// @brief 四角形を囲む最小の長方形を返します。
+		/// @return 四角形を囲む最小の長方形
 		[[nodiscard]]
 		RectF boundingRect() const noexcept;
 
@@ -705,6 +716,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の頂点の配列 { p0, p1, p2, p3, p0 } を返します。
+		/// @return 四角形の頂点の配列 { p0, p1, p2, p3, p0 }
 		[[nodiscard]]
 		Array<Vec2> ring() const;
 
@@ -798,13 +811,17 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	intersectsAt
+		//	overlaps
 		//
 		////////////////////////////////////////////////////////////////
 
-		//template <class Shape2DType>
-		//[[nodiscard]]
-		//Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+		/// @brief 別の図形と交差する領域が面積を持つかを返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		template <class Shape2DType>
+		[[nodiscard]]
+		constexpr bool overlaps(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -819,6 +836,20 @@ namespace s3d
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool contains(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -879,6 +910,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Quad& paint(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -887,6 +923,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Quad& overwrite(Image& dst, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -895,6 +936,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の枠を Image に描き込みます。
+		/// @param dst 描き込み先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Quad& paintFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -903,6 +950,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 四角形の枠を Image に上書きします。
+		/// @param dst 上書き先の画像
+		/// @param thickness 枠の太さ
+		/// @param color 色
+		/// @param enableAntialiasing アンチエイリアスを有効にするか
+		/// @return *this
 		const Quad& overwriteFrame(Image& dst, double thickness, const Color& color, EnableAntialiasing enableAntialiasing = EnableAntialiasing::Yes) const;
 
 		////////////////////////////////////////////////////////////////
@@ -969,9 +1022,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief テクスチャを四角形に貼り付けた TexturedQuad を返します。
+		/// @param texture テクスチャ
+		/// @return TexturedQuad
 		[[nodiscard]]
 		TexturedQuad operator ()(const Texture& texture) const;
 
+		/// @brief テクスチャ領域を四角形に貼り付けた TexturedQuad を返します。
+		/// @param textureRegion テクスチャ領域
+		/// @return TexturedQuad
 		[[nodiscard]]
 		TexturedQuad operator ()(const TextureRegion& textureRegion) const;
 

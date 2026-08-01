@@ -34,8 +34,7 @@ namespace s3d
 		/// @brief 画像のピクセルフォーマット
 		ImagePixelFormat pixelFormat = ImagePixelFormat::Unknown;
 
-		/// @brief アニメーションの有無
+		/// @brief 画像が複数の再生フレームを持つアニメーション画像であるか
 		bool isAnimated = false;
 	};
 }
-

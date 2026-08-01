@@ -17,6 +17,7 @@
 # include "2DShapesFwd.hpp"
 # include "Utility.hpp"
 # include "MinMax.hpp"
+# include "Array.hpp"
 # include "CommonFloat.hpp"
 # include "MathConstants.hpp"
 # include "FormatLiteral.hpp"
@@ -53,15 +54,27 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief デフォルトコンストラクタ
 		[[nodiscard]]
 		Point() = default;
 
+		/// @brief 2 次元の整数座標を作成します。
+		/// @param _x X 成分
+		/// @param _y Y 成分
 		[[nodiscard]]
 		constexpr Point(value_type _x, value_type _y) noexcept;
 
+		/// @brief 2 次元の整数座標を作成します。
+		/// @param _x X 成分
+		/// @param _y Y 成分
 		[[nodiscard]]
 		constexpr Point(Concept::Integral auto _x, Concept::Integral auto _y) noexcept;
 
+		/// @brief 非整数型からの構築を禁止します。
+		/// @tparam X X 成分の型
+		/// @tparam Y Y 成分の型
+		/// @param _x X 成分
+		/// @param _y Y 成分
 		template <class X, class Y>
 		constexpr Point(X _x, Y _y) noexcept
 			requires((not Concept::Integral<X>) || (not Concept::Integral<Y>)) = delete;
@@ -102,12 +115,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 自身を返します。
+		/// @return 自身のコピー
 		[[nodiscard]]
 		constexpr Point operator +() const noexcept;
 
+		/// @brief 座標を加算した結果を返します。
+		/// @param p 加算する座標
+		/// @return 加算した結果
 		[[nodiscard]]
 		constexpr Point operator +(Point p) const noexcept;
 
+		/// @brief ベクトルを加算した結果を返します。
+		/// @tparam Float ベクトルの要素の型
+		/// @param v 加算するベクトル
+		/// @return 加算した結果
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		constexpr Vector2D<Float> operator +(Vector2D<Float> v) const noexcept;
@@ -118,12 +140,21 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 符号を反転した座標を返します。
+		/// @return 符号を反転した座標
 		[[nodiscard]]
 		constexpr Point operator -() const noexcept;
 
+		/// @brief 座標を減算した結果を返します。
+		/// @param p 減算する座標
+		/// @return 減算した結果
 		[[nodiscard]]
 		constexpr Point operator -(Point p) const noexcept;
 
+		/// @brief ベクトルを減算した結果を返します。
+		/// @tparam Float ベクトルの要素の型
+		/// @param v 減算するベクトル
+		/// @return 減算した結果
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		constexpr Vector2D<Float> operator -(Vector2D<Float> v) const noexcept;
@@ -134,34 +165,62 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各成分にスカラーを乗算した結果を返します。
+		/// @param s スカラー
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Point operator *(int32 s) const noexcept;
 
+		/// @brief 各成分にスカラーを乗算した結果を返します。
+		/// @param s スカラー
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Float2 operator *(float s) const noexcept;
 
+		/// @brief 各成分にスカラーを乗算した結果を返します。
+		/// @param s スカラー
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Vec2 operator *(double s) const noexcept;
 
+		/// @brief 座標同士の各成分同士を乗算した結果を返します。
+		/// @param p 乗算する座標
+		/// @return 乗算した結果
 		[[nodiscard]]
 		constexpr Point operator *(Point p) const noexcept;
 
+		/// @brief ベクトルとの各成分同士を乗算した結果を返します。
+		/// @tparam Float ベクトルの要素の型
+		/// @param v 乗算するベクトル
+		/// @return 乗算した結果
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		constexpr Vector2D<Float> operator *(Vector2D<Float> v) const noexcept;
 
+		/// @brief 座標の各成分を整数倍した結果を返します。
+		/// @param s 倍率
+		/// @param p 座標
+		/// @return 整数倍した座標
 		[[nodiscard]]
 		friend constexpr Point operator *(int32 s, Point p) noexcept
 		{
 			return{ (s * p.x), (s * p.y) };
 		}
 
+		/// @brief 座標の各成分を浮動小数点数倍した結果を返します。
+		/// @param s 倍率
+		/// @param p 座標
+		/// @return 浮動小数点数倍した座標
 		[[nodiscard]]
 		friend constexpr Vector2D<float> operator *(float s, Point p) noexcept
 		{
 			return{ (s * p.x), (s * p.y) };
 		}
 
+		/// @brief 座標の各成分を浮動小数点数倍した結果を返します。
+		/// @param s 倍率
+		/// @param p 座標
+		/// @return 浮動小数点数倍した座標
 		[[nodiscard]]
 		friend constexpr Vector2D<double> operator *(double s, Point p) noexcept
 		{
@@ -174,18 +233,34 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各成分をスカラーで除算した結果を返します。
+		/// @param s スカラー
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Point operator /(int32 s) const noexcept;
 
+		/// @brief 各成分をスカラーで除算した結果を返します。
+		/// @param s スカラー
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Float2 operator /(float s) const noexcept;
 
+		/// @brief 各成分をスカラーで除算した結果を返します。
+		/// @param s スカラー
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Vec2 operator /(double s) const noexcept;
 
+		/// @brief 座標同士の各成分同士を除算した結果を返します。
+		/// @param p 除算する座標
+		/// @return 除算した結果
 		[[nodiscard]]
 		constexpr Point operator /(Point p) const noexcept;
 
+		/// @brief ベクトルとの各成分同士を除算した結果を返します。
+		/// @tparam Float ベクトルの要素の型
+		/// @param v 除算するベクトル
+		/// @return 除算した結果
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		constexpr Vector2D<Float> operator /(Vector2D<Float> v) const noexcept;
@@ -196,9 +271,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各成分をスカラーで割った余りを返します。
+		/// @param s スカラー
+		/// @return 余り
 		[[nodiscard]]
 		constexpr Point operator %(int32 s) const noexcept;
 
+		/// @brief 座標同士の各成分同士を割った余りを返します。
+		/// @param p 除算する座標
+		/// @return 余り
 		[[nodiscard]]
 		constexpr Point operator %(Point p) const noexcept;
 
@@ -208,7 +289,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Point& operator +=(Point p) noexcept;
+		/// @brief 座標を加算します。
+		/// @param p 加算する座標
+		/// @return *this
+		constexpr Point& operator +=(Point p) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -216,7 +300,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Point& operator -=(Point p) noexcept;
+		/// @brief 座標を減算します。
+		/// @param p 減算する座標
+		/// @return *this
+		constexpr Point& operator -=(Point p) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -224,7 +311,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Point& operator *=(int32 s) noexcept;
+		/// @brief 各成分にスカラーを乗算します。
+		/// @param s スカラー
+		/// @return *this
+		constexpr Point& operator *=(int32 s) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -232,7 +322,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Point& operator /=(int32 s) noexcept;
+		/// @brief 各成分をスカラーで除算します。
+		/// @param s スカラー
+		/// @return *this
+		constexpr Point& operator /=(int32 s) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -240,7 +333,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		constexpr Point& operator %=(int32 s) noexcept;
+		/// @brief 各成分をスカラーで割った余りを代入します。
+		/// @param s スカラー
+		/// @return *this
+		constexpr Point& operator %=(int32 s) & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -321,8 +417,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 各成分を変更します。
+		/// @param _x X 成分
+		/// @param _y Y 成分
+		/// @return *this
 		constexpr Point& set(value_type _x, value_type _y) noexcept;
 
+		/// @brief 各成分を変更します。
+		/// @param p 新しい成分
+		/// @return *this
 		constexpr Point& set(Point p) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -724,10 +827,17 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 原点からこの座標への角度を返します。
+		/// @tparam Float 戻り値の型
+		/// @return 原点からこの座標への角度（ラジアン）
 		template <Concept::FloatingPoint Float = double>
 		[[nodiscard]]
 		Float getAngle() const noexcept;
 
+		/// @brief この座標から別の座標への角度を返します。
+		/// @tparam Float 戻り値および別の座標の要素の型
+		/// @param other 別の座標
+		/// @return この座標から別の座標への角度（ラジアン）
 		template <Concept::FloatingPoint Float>
 		[[nodiscard]]
 		Float getAngle(Vector2D<Float> other) const noexcept;
@@ -835,6 +945,20 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	intersectsAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @tparam Shape2DType 別の図形の型
+		/// @param other 別の図形
+		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		template <class Shape2DType>
+		[[nodiscard]]
+		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	leftClicked, leftPressed, leftReleased
 		//
 		////////////////////////////////////////////////////////////////
@@ -892,6 +1016,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief この座標のピクセルを Image に描き込みます。
+		/// @param dst 描き込み先の Image
+		/// @param color 色
+		/// @return *this
 		const Point& paint(Image& dst, const Color& color) const noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -900,6 +1028,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief この座標のピクセルを Image に上書きします。
+		/// @param dst 上書き先の Image
+		/// @param color 色
+		/// @return *this
 		const Point& overwrite(Image& dst, const Color& color) const noexcept;
 
 		////////////////////////////////////////////////////////////////

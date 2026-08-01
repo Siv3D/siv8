@@ -24,9 +24,13 @@ namespace s3d
 	isize Array<Type, Allocator>::parallel_count_if(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
 	{
+		// The same callable object is shared by all worker threads.
+		// Concurrent access to the callable and its referenced state must be synchronized by the caller.
+		const auto function = std::ref(f);
+
 	# if SIV3D_PLATFORM(WINDOWS)
 
-		return std::count_if(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return std::count_if(std::execution::par, m_container.begin(), m_container.end(), function);
 
 	# else
 
@@ -39,15 +43,18 @@ namespace s3d
 
 		if (numThreads <= 1)
 		{
-			return std::count_if(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return std::count_if(m_container.begin(), m_container.end(), function);
 		}
 
-		const size_t countPerThread = Max<size_t>(1, ((m_container.size() + (numThreads - 1)) / numThreads));
+		const size_t containerSize = m_container.size();
+		const size_t countPerThread = ((containerSize / numThreads)
+			+ static_cast<size_t>((containerSize % numThreads) != 0));
 
 		Array<std::future<isize>> tasks;
+		tasks.reserve(numThreads - 1);
 
 		auto it = m_container.begin();
-		size_t countLeft = m_container.size();
+		size_t countLeft = containerSize;
 
 		for (size_t i = 0; i < (numThreads - 1); ++i)
 		{
@@ -58,12 +65,15 @@ namespace s3d
 				break;
 			}
 
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
+			const auto first = it;
+			const auto last = (it + n);
+
+			tasks.emplace_back(std::async(std::launch::async, [first, last, function]()
 			{
-				return std::count_if(it, (it + n), detail::PassFunction(std::forward<Fty>(f)));
+				return std::count_if(first, last, function);
 			}));
 
-			it += n;
+			it = last;
 			countLeft -= n;
 		}
 
@@ -71,7 +81,7 @@ namespace s3d
 		
 		if (countLeft)
 		{
-			result = std::count_if(it, (it + countLeft), detail::PassFunction(std::forward<Fty>(f)));
+			result = std::count_if(it, (it + countLeft), function);
 		}
 
 		for (auto& task : tasks)
@@ -95,9 +105,13 @@ namespace s3d
 	void Array<Type, Allocator>::parallel_each(Fty f)
 		requires std::invocable<Fty&, value_type&>
 	{
+		// The same callable object is shared by all worker threads.
+		// Concurrent access to the callable and its referenced state must be synchronized by the caller.
+		const auto function = std::ref(f);
+
 	# if SIV3D_PLATFORM(WINDOWS)
 
-		std::for_each(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::for_each(std::execution::par, m_container.begin(), m_container.end(), function);
 
 	# else
 
@@ -110,15 +124,19 @@ namespace s3d
 
 		if (numThreads <= 1)
 		{
-			return each(std::forward<Fty>(f));
+			std::for_each(m_container.begin(), m_container.end(), function);
+			return;
 		}
 
-		const size_t countPerThread = Max<size_t>(1, ((size() + (numThreads - 1)) / numThreads));
+		const size_t containerSize = size();
+		const size_t countPerThread = ((containerSize / numThreads)
+			+ static_cast<size_t>((containerSize % numThreads) != 0));
 
 		Array<std::future<void>> tasks;
+		tasks.reserve(numThreads - 1);
 
 		auto it = m_container.begin();
-		size_t countLeft = size();
+		size_t countLeft = containerSize;
 
 		for (size_t i = 0; i < (numThreads - 1); ++i)
 		{
@@ -129,18 +147,21 @@ namespace s3d
 				break;
 			}
 
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
+			const auto first = it;
+			const auto last = (it + n);
+
+			tasks.emplace_back(std::async(std::launch::async, [first, last, function]()
 			{
-				std::for_each(it, (it + n), detail::PassFunction(std::forward<Fty>(f)));
+				std::for_each(first, last, function);
 			}));
 
-			it += n;
+			it = last;
 			countLeft -= n;
 		}
 
 		if (countLeft)
 		{
-			std::for_each(it, (it + countLeft), detail::PassFunction(std::forward<Fty>(f)));
+			std::for_each(it, (it + countLeft), function);
 		}
 
 		for (auto& task : tasks)
@@ -156,9 +177,13 @@ namespace s3d
 	void Array<Type, Allocator>::parallel_each(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
 	{
+		// The same callable object is shared by all worker threads.
+		// Concurrent access to the callable and its referenced state must be synchronized by the caller.
+		const auto function = std::ref(f);
+
 	# if SIV3D_PLATFORM(WINDOWS)
 
-		std::for_each(std::execution::par, m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		std::for_each(std::execution::par, m_container.begin(), m_container.end(), function);
 
 	# else
 
@@ -171,15 +196,19 @@ namespace s3d
 
 		if (numThreads <= 1)
 		{
-			return each(std::forward<Fty>(f));
+			std::for_each(m_container.begin(), m_container.end(), function);
+			return;
 		}
 
-		const size_t countPerThread = Max<size_t>(1, ((size() + (numThreads - 1)) / numThreads));
+		const size_t containerSize = size();
+		const size_t countPerThread = ((containerSize / numThreads)
+			+ static_cast<size_t>((containerSize % numThreads) != 0));
 
 		Array<std::future<void>> tasks;
+		tasks.reserve(numThreads - 1);
 
 		auto it = m_container.begin();
-		size_t countLeft = size();
+		size_t countLeft = containerSize;
 
 		for (size_t i = 0; i < (numThreads - 1); ++i)
 		{
@@ -190,18 +219,21 @@ namespace s3d
 				break;
 			}
 
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]()
+			const auto first = it;
+			const auto last = (it + n);
+
+			tasks.emplace_back(std::async(std::launch::async, [first, last, function]()
 			{
-				std::for_each(it, (it + n), detail::PassFunction(std::forward<Fty>(f)));
+				std::for_each(first, last, function);
 			}));
 
-			it += n;
+			it = last;
 			countLeft -= n;
 		}
 
 		if (countLeft)
 		{
-			std::for_each(it, (it + countLeft), detail::PassFunction(std::forward<Fty>(f)));
+			std::for_each(it, (it + countLeft), function);
 		}
 
 		for (auto& task : tasks)
@@ -230,22 +262,29 @@ namespace s3d
 			return Array<result_value_type>{};
 		}
 
+		// The same callable object is shared by all worker threads.
+		// Concurrent access to the callable and its referenced state must be synchronized by the caller.
+		const auto function = std::ref(f);
+
 		const size_t numThreads = Threading::GetConcurrency();
 
 		if (numThreads <= 1)
 		{
-			return map(std::forward<Fty>(f));
+			return map(function);
 		}
 
-		Array<result_value_type> result(m_container.size());
+		const size_t containerSize = m_container.size();
+		Array<result_value_type> result(containerSize);
 
-		const size_t countPerThread = Max<size_t>(1, ((m_container.size() + (numThreads - 1)) / numThreads));
+		const size_t countPerThread = ((containerSize / numThreads)
+			+ static_cast<size_t>((containerSize % numThreads) != 0));
 
 		Array<std::future<void>> tasks;
+		tasks.reserve(numThreads - 1);
 
 		auto itDst = result.begin();
 		auto itSrc = m_container.begin();
-		size_t countLeft = m_container.size();
+		size_t countLeft = containerSize;
 
 		for (size_t i = 0; i < (numThreads - 1); ++i)
 		{
@@ -256,13 +295,18 @@ namespace s3d
 				break;
 			}
 
-			tasks.emplace_back(std::async(std::launch::async, [=, &f]() mutable
-			{
-				const auto itSrcEnd = (itSrc + n);
+			const auto dstBegin = itDst;
+			const auto srcBegin = itSrc;
 
-				while (itSrc != itSrcEnd)
+			tasks.emplace_back(std::async(std::launch::async, [dstBegin, srcBegin, n, function]() mutable
+			{
+				auto dst = dstBegin;
+				auto src = srcBegin;
+				const auto srcEnd = (src + n);
+
+				while (src != srcEnd)
 				{
-					*itDst++ = f(*itSrc++);
+					*dst++ = function(*src++);
 				}
 			}));
 
@@ -277,7 +321,7 @@ namespace s3d
 
 			while (itSrc != itSrcEnd)
 			{
-				*itDst++ = f(*itSrc++);
+				*itDst++ = function(*itSrc++);
 			}
 		}
 
@@ -289,4 +333,3 @@ namespace s3d
 		return result;
 	}
 }
-

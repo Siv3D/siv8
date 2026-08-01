@@ -350,12 +350,12 @@ namespace s3d
 
 	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const ColorF& color, const Rect& rect)
 	{
-		return(false);
+		return m_textures[handleID]->fillRegion(m_context, color, rect);
 	}
 
 	bool CTexture_D3D11::fillRegion(const Texture::IDType handleID, const std::span<const Byte> src, const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
 	{
-		return(false);
+		return m_textures[handleID]->fillRegion(m_context, src, srcBytesPerRow, rect, wait);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -366,7 +366,7 @@ namespace s3d
 
 	void CTexture_D3D11::generateMips(const Texture::IDType handleID)
 	{
-		return (void)0;
+		m_textures[handleID]->generateMipmaps(m_context);
 	}
 
 	////////////////////////////////////////////////////////////////

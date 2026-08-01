@@ -468,7 +468,7 @@ namespace s3d
 
 	inline uint64 SuperEllipse::hash() const noexcept
 	{
-		return BitwiseHash(*this);
+		return HashFloats(center.x, center.y, axes.x, axes.y, n);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -478,9 +478,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
-	inline constexpr bool SuperEllipse::intersects(const Shape2DType& other) const
+	constexpr bool SuperEllipse::intersects(const Shape2DType& other) const
 	{
-		return Geometry2D::Intersect(*this, other);
+		return Geometry2D::Intersects(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	overlaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	constexpr bool SuperEllipse::overlaps(const Shape2DType& other) const
+	{
+		return Geometry2D::Overlaps(*this, other);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -493,5 +505,17 @@ namespace s3d
 	constexpr bool SuperEllipse::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	intersectsAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Shape2DType>
+	Optional<Array<Vec2>> SuperEllipse::intersectsAt(const Shape2DType& other) const
+	{
+		return Geometry2D::IntersectsAt(*this, other);
 	}
 }

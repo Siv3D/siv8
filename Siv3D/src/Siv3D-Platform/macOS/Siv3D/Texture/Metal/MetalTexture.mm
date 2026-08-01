@@ -10,10 +10,13 @@
 //-----------------------------------------------
 
 # include "MetalTexture.hpp"
+# include <Siv3D/Anchor.hpp>
+# include <Siv3D/Rect.hpp>
 # include <Siv3D/Texture/TextureUtility.hpp>
 # include <Siv3D/ImageProcessing.hpp>
 # include <Siv3D/BCnData.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <cstring>
 
 namespace s3d
 {
@@ -456,9 +459,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const ColorF& color, bool)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const ColorF& color, const bool wait)
 	{
 		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		if (not prepareUpload(wait))
 		{
 			return false;
 		}
@@ -483,13 +491,19 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
+		m_uploadCommandBuffer = std::move(commandBuffer);
 
 		return true;
 	}
 
-	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const std::span<const Byte> data, const uint32 srcBytesPerRow, bool)
+	bool MetalTexture::fill(MTL::CommandQueue* commandQueue, const std::span<const Byte> data, const uint32 srcBytesPerRow, const bool wait)
 	{
 		if (m_desc.type != TextureType::Dynamic)
+		{
+			return false;
+		}
+
+		if (not prepareUpload(wait))
 		{
 			return false;
 		}
@@ -513,6 +527,153 @@ namespace s3d
 		}
 		
 		commandBuffer->commit();
+		m_uploadCommandBuffer = std::move(commandBuffer);
+
+		return true;
+	}
+
+	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, const ColorF& color, const Rect& rect)
+	{
+		if ((not isValidRegion(rect))
+			|| (not prepareUpload(true)))
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = m_desc.format.bytesPerRow(rect.w);
+		const size_t totalBytes = (static_cast<size_t>(bytesPerRow) * rect.h);
+		void* const ptr = m_uploadBuffer->contents();
+
+		if (not ptr)
+		{
+			return false;
+		}
+
+		FillWithColor(ptr, totalBytes, color, m_desc.format);
+
+		return uploadRegion(commandQueue, bytesPerRow, rect);
+	}
+
+	bool MetalTexture::fillRegion(MTL::CommandQueue* commandQueue, const std::span<const Byte> data,
+		const uint32 srcBytesPerRow, const Rect& rect, const bool wait)
+	{
+		if ((not isValidRegion(rect))
+			|| (not prepareUpload(wait)))
+		{
+			return false;
+		}
+
+		const uint32 pixelSize = m_desc.format.pixelSize();
+		const size_t copyBytesPerRow = (static_cast<size_t>(rect.w) * pixelSize);
+		const size_t requiredSourceBytes = (static_cast<size_t>(srcBytesPerRow) * rect.h);
+
+		if ((pixelSize == 0)
+			|| (srcBytesPerRow < copyBytesPerRow)
+			|| (data.size_bytes() < requiredSourceBytes))
+		{
+			return false;
+		}
+
+		const uint32 bytesPerRow = m_desc.format.bytesPerRow(rect.w);
+		Byte* pDstRow = static_cast<Byte*>(m_uploadBuffer->contents());
+		const Byte* pSrcRow = data.data();
+
+		if (not pDstRow)
+		{
+			return false;
+		}
+
+		for (int32 y = 0; y < rect.h; ++y)
+		{
+			std::memcpy(pDstRow, pSrcRow, copyBytesPerRow);
+			pDstRow += bytesPerRow;
+			pSrcRow += srcBytesPerRow;
+		}
+
+		return uploadRegion(commandQueue, bytesPerRow, rect);
+	}
+
+	bool MetalTexture::prepareUpload(const bool wait)
+	{
+		if (not m_uploadCommandBuffer)
+		{
+			return true;
+		}
+
+		MTL::CommandBufferStatus status = m_uploadCommandBuffer->status();
+
+		if (status == MTL::CommandBufferStatusCompleted)
+		{
+			m_uploadCommandBuffer.reset();
+			return true;
+		}
+
+		if (status == MTL::CommandBufferStatusError)
+		{
+			m_uploadCommandBuffer.reset();
+			return false;
+		}
+
+		if (not wait)
+		{
+			return false;
+		}
+
+		m_uploadCommandBuffer->waitUntilCompleted();
+		status = m_uploadCommandBuffer->status();
+		m_uploadCommandBuffer.reset();
+
+		return (status == MTL::CommandBufferStatusCompleted);
+	}
+
+	bool MetalTexture::isValidRegion(const Rect& rect) const noexcept
+	{
+		return ((m_desc.type == TextureType::Dynamic)
+			&& (0 <= rect.x)
+			&& (0 <= rect.y)
+			&& (0 < rect.w)
+			&& (0 < rect.h)
+			&& (rect.w <= m_desc.size.x)
+			&& (rect.h <= m_desc.size.y)
+			&& (rect.x <= (m_desc.size.x - rect.w))
+			&& (rect.y <= (m_desc.size.y - rect.h)));
+	}
+
+	bool MetalTexture::uploadRegion(MTL::CommandQueue* commandQueue, const uint32 bytesPerRow, const Rect& rect)
+	{
+		auto commandBuffer = NS::TransferPtr(commandQueue->commandBuffer());
+
+		if (not commandBuffer)
+		{
+			return false;
+		}
+
+		auto blitCommandEncoder = NS::TransferPtr(commandBuffer->blitCommandEncoder());
+
+		if (not blitCommandEncoder)
+		{
+			return false;
+		}
+
+		const MTL::Size size
+		{
+			static_cast<NSUInteger>(rect.w),
+			static_cast<NSUInteger>(rect.h),
+			1
+		};
+
+		const MTL::Origin origin
+		{
+			static_cast<NSUInteger>(rect.x),
+			static_cast<NSUInteger>(rect.y),
+			0
+		};
+
+		blitCommandEncoder->copyFromBuffer(m_uploadBuffer.get(), 0, bytesPerRow, 0, size, m_texture.get(), 0, 0, origin);
+		blitCommandEncoder->endEncoding();
+
+		commandBuffer->commit();
+		m_uploadCommandBuffer = std::move(commandBuffer);
 
 		return true;
 	}

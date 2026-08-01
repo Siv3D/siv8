@@ -254,7 +254,7 @@ namespace s3d
 		{
 			for (const Vec2& point : points)
 			{
-				if (not circle.intersects(point))
+				if (not Geometry2D::Intersects(point, circle))
 				{
 					return false;
 				}
@@ -512,7 +512,7 @@ namespace s3d
 
 	bool Quad::mouseOver() const noexcept
 	{
-		return Geometry2D::Intersect(Cursor::PosF(), *this);
+		return Geometry2D::Intersects(Cursor::PosF(), *this);
 	}
 
 	////////////////////////////////////////////////////////////////

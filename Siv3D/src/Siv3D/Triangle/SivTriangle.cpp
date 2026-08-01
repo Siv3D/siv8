@@ -287,15 +287,15 @@ namespace s3d
 		const Circle c1{ p1, p2 };
 		const Circle c2{ p2, p0 };
 		
-		if (c0.intersects(p2))
+		if (Geometry2D::Intersects(p2, c0))
 		{
 			return c0;
 		}
-		else if (c1.intersects(p0))
+		else if (Geometry2D::Intersects(p0, c1))
 		{
 			return c1;
 		}
-		else if (c2.intersects(p1))
+		else if (Geometry2D::Intersects(p1, c2))
 		{
 			return c2;
 		}
@@ -566,7 +566,7 @@ namespace s3d
 
 	bool Triangle::mouseOver() const noexcept
 	{
-		return Geometry2D::Intersect(Cursor::PosF(), *this);
+		return Geometry2D::Intersects(Cursor::PosF(), *this);
 	}
 
 	////////////////////////////////////////////////////////////////
