@@ -274,6 +274,9 @@
 // 基本的なフォーマッタ | Basic formatters
 # include <Siv3D/Formatter.hpp>
 
+// エスケープフォーマッタ | Escaped formatter
+# include <Siv3D/EscapedFormatter.hpp>
+
 // 配列のフォーマッタ | Array formatter
 # include <Siv3D/RangeFormatter.hpp>
 
@@ -891,6 +894,9 @@
 
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp>
+
+// 多角形の検証結果 | Polygon validation result
+# include <Siv3D/PolygonFailureType.hpp>
 
 // 多角形 | Polygon
 # include <Siv3D/Polygon.hpp>
@@ -1621,6 +1627,9 @@
 // 比較関数 | Compare function
 # include <Siv3D/CompareFunction.hpp>
 
+// サンプリング時の境界色 | Border color for sampling
+# include <Siv3D/SampleBorderColor.hpp>
+
 // サンプラーステートの構築 | Builder for sampler state
 # include <Siv3D/SamplerStateBuilder.hpp>
 
@@ -1700,9 +1709,12 @@
 # include <Siv3D/Icon.hpp>
 
 # include <Siv3D/FontMethod.hpp>
+# include <Siv3D/Typeface.hpp>
+# include <Siv3D/FontVariationAxis.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/GlyphInfo.hpp>
 # include <Siv3D/Glyph.hpp>
+# include <Siv3D/MSDFGlyph.hpp>
 # include <Siv3D/ResolvedGlyph.hpp>
 # include <Siv3D/FontOptions.hpp>
 # include <Siv3D/Font.hpp>
@@ -1731,6 +1743,8 @@
 # include <Siv3D/Theme.hpp>
 # include <Siv3D/GUIColorStyle.hpp>
 # include <Siv3D/GUIShapeStyle.hpp>
+# include <Siv3D/SimpleGUI/SimpleGUILayer.hpp>
+# include <Siv3D/SimpleGUI/ISimpleGUIElement.hpp>
 # include <Siv3D/SimpleGUI.hpp>
 # include <Siv3D/SimpleGUI/SimpleButton.hpp>
 # include <Siv3D/SimpleGUI/SimpleCheckBox.hpp>
