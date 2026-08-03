@@ -504,6 +504,7 @@ TEST_CASE("Grid.generator CTAD")
 	static_assert(std::same_as<std::remove_cvref_t<decltype(indexedPointSize)>, Grid<int32>>);
 	CHECK(indexedPointSize == Grid<int32>{ { 0, 1 } });
 
+	SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4172)
 	const int32 referencedValue = 42;
 	const auto referenceResult = Grid(1, 1, Arg::generator = [&referencedValue]() -> const int32&
 		{
@@ -511,6 +512,7 @@ TEST_CASE("Grid.generator CTAD")
 		});
 	static_assert(std::same_as<std::remove_cvref_t<decltype(referenceResult)>, Grid<int32>>);
 	CHECK(referenceResult == Grid<int32>{ { 42 } });
+	SIV3D_DISABLE_MSVC_WARNINGS_POP()
 
 	const auto filled = Grid(2, 1, int16{ 9 });
 	static_assert(std::same_as<std::remove_cvref_t<decltype(filled)>, Grid<int16>>);
