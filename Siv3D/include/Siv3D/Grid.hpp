@@ -14,7 +14,7 @@
 # include "Common.hpp"
 # include "Array.hpp"
 # include "PointVector.hpp"
-# include "Random.hpp"
+# include "Shuffle.hpp"
 # include "GridConnectivity.hpp"
 
 namespace s3d
@@ -2095,6 +2095,7 @@ namespace s3d
 		/// @brief 指定した複数の位置にある要素を配列で取得します。
 		/// @param indices 取得する位置のリスト
 		/// @return 指定した位置にある要素の配列
+		/// @throw std::out_of_range 範囲外の位置が含まれている場合
 		[[nodiscard]]
 		constexpr Array<Type> values_at(std::initializer_list<Point> indices) const;
 		

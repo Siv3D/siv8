@@ -403,6 +403,24 @@ TEST_CASE("Grid.constructor")
 	}
 }
 
+TEST_CASE("Grid.assign")
+{
+	Grid<int32> grid = { { 1, 2 }, { 3, 4 } };
+
+	CHECK(&grid.assign(3, 2, 7) == &grid);
+	CHECK(grid == Grid<int32>(3, 2, 7));
+
+	CHECK(&grid.assign(Size{ 2, 3 }, 8) == &grid);
+	CHECK(grid == Grid<int32>(2, 3, 8));
+
+	CHECK(&grid.assign({ { 1, 2 }, { 3 } }) == &grid);
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 3, 0 } });
+
+	CHECK(&grid.assign({}) == &grid);
+	CHECK(grid.size() == Size{ 0, 0 });
+	CHECK(grid.empty());
+}
+
 TEST_CASE("Grid.Generate")
 {
 	static_assert(not std::default_initializable<NonDefaultConstructible>);
@@ -820,6 +838,21 @@ TEST_CASE("Grid.wrappedAt and clampedAt")
 	auto clampedMoved = std::move(clampedMoveGrid).clampedAt(Point{ 10, 0 });
 	REQUIRE(clampedMoved);
 	CHECK(*clampedMoved == 2);
+}
+
+TEST_CASE("Grid.values_at")
+{
+	const Grid<int32> grid = {
+		{ 11, 12, 13 },
+		{ 21, 22, 23 },
+	};
+
+	CHECK(grid.values_at({ Point{ 2, 1 }, Point{ 0, 0 }, Point{ 1, 1 } }) == Array<int32>{ 23, 11, 22 });
+	CHECK(grid.values_at({}).empty());
+	CHECK_THROWS_AS(static_cast<void>(grid.values_at({ Point{ -1, 0 } })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(grid.values_at({ Point{ 0, -1 } })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(grid.values_at({ Point{ 3, 0 } })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(grid.values_at({ Point{ 0, 2 } })), std::out_of_range);
 }
 
 TEST_CASE("Grid.each_neighbor4")

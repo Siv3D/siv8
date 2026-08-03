@@ -244,6 +244,7 @@ namespace s3d
 	{
 		m_size = detail::CheckedSize(w, h);
 		m_container.assign(m_size.area(), value);
+		return *this;
 	}
 
 	template <class Type, class Allocator>
@@ -251,6 +252,7 @@ namespace s3d
 	{
 		m_size = detail::CheckedSize(size);
 		m_container.assign(m_size.area(), value);
+		return *this;
 	}
 
 	template <class Type, class Allocator>
@@ -258,8 +260,9 @@ namespace s3d
 	{
 		m_container.clear();
 
-		resize(std::max_element(set.begin(), set.end(),
-			[](auto& lhs, auto& rhs) { return lhs.size() < rhs.size(); })->size(), set.size());
+		const size_type width = ((set.size() == 0) ? 0 : std::max_element(set.begin(), set.end(),
+			[](auto& lhs, auto& rhs) { return (lhs.size() < rhs.size()); })->size());
+		resize(width, set.size());
 
 		auto dst = m_container.begin();
 
@@ -268,6 +271,8 @@ namespace s3d
 			std::copy(a.begin(), a.end(), dst);
 			dst += m_size.x;
 		}
+
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1329,7 +1334,7 @@ namespace s3d
 					(m_container.begin() + destRowStart));
 			}
 
-			if (x < (oldWidth - 1))
+			if (x < static_cast<size_type>(oldWidth - 1))
 			{
 				std::move((m_container.begin() + srcRowStart + x + 1),
 					(m_container.begin() + srcRowStart + oldWidth),
@@ -3157,11 +3162,11 @@ namespace s3d
 		Array<value_type> result;
 		result.reserve(indices.size());
 
-		for (auto index : indices)
+		for (const Point index : indices)
 		{
-			if (index < m_container.size())
+			if (indexInBounds(index))
 			{
-				result.push_back(m_container[index.y * m_size.x + index.x]);
+				result.push_back(m_container[(static_cast<size_type>(index.y) * m_size.x + index.x)]);
 			}
 			else
 			{
