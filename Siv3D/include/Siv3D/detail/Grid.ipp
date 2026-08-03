@@ -96,6 +96,12 @@ namespace s3d
 		[[noreturn]]
 		void ThrowGridSubgridOutOfRange();
 
+		[[noreturn]]
+		void ThrowGridScaleInvalid();
+
+		[[noreturn]]
+		void ThrowGridScaleLengthError();
+
 		template <bool IncludeDiagonals, class GridType, class Fty>
 		constexpr void GridEachNeighbor(GridType& grid, const Point pos, Fty& f)
 		{
@@ -2532,6 +2538,185 @@ namespace s3d
 		requires Concept::LessThanComparable<value_type>
 	{
 		return std::move(rsort());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaled
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::scaled(const int32 n) const&
+	{
+		if (n <= 0)
+		{
+			detail::ThrowGridScaleInvalid();
+		}
+
+		if (n == 1)
+		{
+			return *this;
+		}
+
+		const int64 newWidth = (static_cast<int64>(m_size.x) * n);
+		const int64 newHeight = (static_cast<int64>(m_size.y) * n);
+		if ((std::numeric_limits<int32>::max() < newWidth)
+			|| (std::numeric_limits<int32>::max() < newHeight))
+		{
+			detail::ThrowGridScaleLengthError();
+		}
+
+		Grid result;
+		result.m_size = Size{ static_cast<int32>(newWidth), static_cast<int32>(newHeight) };
+		const uint64 count = (static_cast<uint64>(newWidth) * static_cast<uint64>(newHeight));
+		if (result.m_container.max_size() < count)
+		{
+			detail::ThrowGridScaleLengthError();
+		}
+		if (count == 0)
+		{
+			return result;
+		}
+
+		result.m_container.reserve(static_cast<size_type>(count));
+		for (int32 y = 0; y < m_size.y; ++y)
+		{
+			const auto srcRow = (m_container.begin() + (static_cast<size_type>(y) * m_size.x));
+			for (int32 repeatY = 0; repeatY < n; ++repeatY)
+			{
+				for (int32 x = 0; x < m_size.x; ++x)
+				{
+					result.m_container.insert(result.m_container.end(), static_cast<size_type>(n), srcRow[x]);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::scaled(const int32 n)&&
+	{
+		if (n <= 0)
+		{
+			detail::ThrowGridScaleInvalid();
+		}
+
+		if (n == 1)
+		{
+			return std::move(*this);
+		}
+
+		return static_cast<const Grid&>(*this).scaled(n);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	shift, shifted
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::shift(const int32 dx, const int32 dy, const value_type& fillValue)&
+	{
+		if (m_container.isEmpty() || ((dx == 0) && (dy == 0)))
+		{
+			return *this;
+		}
+
+		if ((dx <= -m_size.x) || (m_size.x <= dx)
+			|| (dy <= -m_size.y) || (m_size.y <= dy))
+		{
+			return fill(fillValue);
+		}
+
+		const value_type fillValueCopy(fillValue);
+		const int32 shiftX = ((dx < 0) ? -dx : dx);
+		const int32 shiftY = ((dy < 0) ? -dy : dy);
+		const int32 moveWidth = (m_size.x - shiftX);
+		const int32 moveHeight = (m_size.y - shiftY);
+		const int32 srcX = ((dx < 0) ? shiftX : 0);
+		const int32 srcY = ((dy < 0) ? shiftY : 0);
+		const int32 dstX = ((0 < dx) ? shiftX : 0);
+		const int32 dstY = ((0 < dy) ? shiftY : 0);
+
+		const auto moveRow = [this, srcX, dstX, moveWidth](const int32 sourceY, const int32 destinationY)
+		{
+			auto srcBegin = (m_container.begin() + (static_cast<size_type>(sourceY) * m_size.x + srcX));
+			auto dstBegin = (m_container.begin() + (static_cast<size_type>(destinationY) * m_size.x + dstX));
+			if (srcBegin < dstBegin)
+			{
+				std::move_backward(srcBegin, (srcBegin + moveWidth), (dstBegin + moveWidth));
+			}
+			else
+			{
+				std::move(srcBegin, (srcBegin + moveWidth), dstBegin);
+			}
+		};
+
+		if (0 < dy)
+		{
+			for (int32 y = moveHeight; 0 < y; --y)
+			{
+				moveRow((srcY + y - 1), (dstY + y - 1));
+			}
+		}
+		else
+		{
+			for (int32 y = 0; y < moveHeight; ++y)
+			{
+				moveRow((srcY + y), (dstY + y));
+			}
+		}
+
+		if (0 < dy)
+		{
+			std::fill_n(m_container.begin(), (static_cast<size_type>(shiftY) * m_size.x), fillValueCopy);
+		}
+		else if (dy < 0)
+		{
+			auto fillBegin = (m_container.begin() + (static_cast<size_type>(moveHeight) * m_size.x));
+			std::fill(fillBegin, m_container.end(), fillValueCopy);
+		}
+
+		if (dx != 0)
+		{
+			for (int32 y = dstY; y < (dstY + moveHeight); ++y)
+			{
+				auto rowBegin = (m_container.begin() + (static_cast<size_type>(y) * m_size.x));
+				if (0 < dx)
+				{
+					std::fill_n(rowBegin, shiftX, fillValueCopy);
+				}
+				else
+				{
+					std::fill((rowBegin + moveWidth), (rowBegin + m_size.x), fillValueCopy);
+				}
+			}
+		}
+
+		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shift(const int32 dx, const int32 dy, const value_type& fillValue)&&
+	{
+		return std::move(shift(dx, dy, fillValue));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shifted(const int32 dx, const int32 dy, const value_type& fillValue) const&
+	{
+		Grid result(*this);
+		result.shift(dx, dy, fillValue);
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::shifted(const int32 dx, const int32 dy, const value_type& fillValue)&&
+	{
+		return std::move(shift(dx, dy, fillValue));
 	}
 
 	////////////////////////////////////////////////////////////////

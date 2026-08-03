@@ -1738,6 +1738,69 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	scaled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素を縦横に指定した倍率で拡大した新しい二次元配列を返します。
+		/// @param n 拡大倍率
+		/// @return 拡大された新しい二次元配列
+		/// @throw std::invalid_argument `n <= 0` の場合
+		/// @throw std::length_error 拡大後の幅、高さ、または要素数を表現できない場合
+		[[nodiscard]]
+		constexpr Grid scaled(int32 n) const&;
+
+		/// @brief 各要素を縦横に指定した倍率で拡大した新しい二次元配列を返します。
+		/// @param n 拡大倍率
+		/// @return 拡大された新しい二次元配列
+		/// @throw std::invalid_argument `n <= 0` の場合
+		/// @throw std::length_error 拡大後の幅、高さ、または要素数を表現できない場合
+		[[nodiscard]]
+		constexpr Grid scaled(int32 n)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	shift, shifted
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 要素を指定した量だけ移動し、空いた領域を指定した値で埋めます。
+		/// @param dx X 方向の移動量。正の場合は右、負の場合は左に移動します。
+		/// @param dy Y 方向の移動量。正の場合は下、負の場合は上に移動します。
+		/// @param fillValue 空いた領域を埋める値
+		/// @return *this
+		/// @remark 範囲外に移動した要素は破棄されます。
+		constexpr Grid& shift(int32 dx, int32 dy, const value_type& fillValue)& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 要素を指定した量だけ移動し、空いた領域を指定した値で埋めます。
+		/// @param dx X 方向の移動量。正の場合は右、負の場合は左に移動します。
+		/// @param dy Y 方向の移動量。正の場合は下、負の場合は上に移動します。
+		/// @param fillValue 空いた領域を埋める値
+		/// @return 移動後の二次元配列
+		/// @remark 範囲外に移動した要素は破棄されます。
+		[[nodiscard]]
+		constexpr Grid shift(int32 dx, int32 dy, const value_type& fillValue)&&;
+
+		/// @brief 要素を指定した量だけ移動した新しい二次元配列を返します。
+		/// @param dx X 方向の移動量。正の場合は右、負の場合は左に移動します。
+		/// @param dy Y 方向の移動量。正の場合は下、負の場合は上に移動します。
+		/// @param fillValue 空いた領域を埋める値
+		/// @return 移動後の新しい二次元配列
+		/// @remark 範囲外に移動した要素は破棄されます。
+		[[nodiscard]]
+		constexpr Grid shifted(int32 dx, int32 dy, const value_type& fillValue) const&;
+
+		/// @brief 要素を指定した量だけ移動した新しい二次元配列を返します。
+		/// @param dx X 方向の移動量。正の場合は右、負の場合は左に移動します。
+		/// @param dy Y 方向の移動量。正の場合は下、負の場合は上に移動します。
+		/// @param fillValue 空いた領域を埋める値
+		/// @return 移動後の新しい二次元配列
+		/// @remark 範囲外に移動した要素は破棄されます。
+		[[nodiscard]]
+		constexpr Grid shifted(int32 dx, int32 dy, const value_type& fillValue)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	shuffle, shuffled
 		//
 		////////////////////////////////////////////////////////////////

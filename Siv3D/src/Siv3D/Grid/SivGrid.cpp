@@ -117,5 +117,15 @@ namespace s3d
 		{
 			throw std::out_of_range{ "Grid::subgrid(): region out of range" };
 		}
+
+		void ThrowGridScaleInvalid()
+		{
+			throw std::invalid_argument{ "Grid::scaled(): scale must be greater than 0" };
+		}
+
+		void ThrowGridScaleLengthError()
+		{
+			throw std::length_error{ "Grid::scaled(): result too large" };
+		}
 	}
 }

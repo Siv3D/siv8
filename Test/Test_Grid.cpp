@@ -884,6 +884,136 @@ TEST_CASE("Grid.count_neighbors")
 	CHECK(single.count_neighbors8_if(Point{ 0, 0 }, [](const int32) { return true; }) == 0);
 }
 
+TEST_CASE("Grid.shift and shifted")
+{
+	const Grid<int32> source = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+		{ 7, 8, 9 },
+	};
+
+	Grid<int32> downRight = source;
+	const auto* const oldData = downRight.data();
+	const size_t oldCapacity = downRight.capacity();
+	CHECK(&downRight.shift(1, 1, 0) == &downRight);
+	CHECK(downRight == Grid<int32>{ { 0, 0, 0 }, { 0, 1, 2 }, { 0, 4, 5 } });
+	CHECK(downRight.data() == oldData);
+	CHECK(downRight.capacity() == oldCapacity);
+
+	Grid<int32> upLeft = source;
+	upLeft.shift(-1, -1, 0);
+	CHECK(upLeft == Grid<int32>{ { 5, 6, 0 }, { 8, 9, 0 }, { 0, 0, 0 } });
+
+	Grid<int32> mixed = source;
+	mixed.shift(1, -1, -1);
+	CHECK(mixed == Grid<int32>{ { -1, 4, 5 }, { -1, 7, 8 }, { -1, -1, -1 } });
+
+	Grid<int32> zero = source;
+	zero.shift(0, 0, -1);
+	CHECK(zero == source);
+
+	Grid<int32> fullX = source;
+	fullX.shift(3, 0, -1);
+	CHECK(fullX == Grid<int32>(3, 3, -1));
+	Grid<int32> fullY = source;
+	fullY.shift(0, -3, -2);
+	CHECK(fullY == Grid<int32>(3, 3, -2));
+	Grid<int32> minX = source;
+	minX.shift(std::numeric_limits<int32>::min(), 0, -3);
+	CHECK(minX == Grid<int32>(3, 3, -3));
+	Grid<int32> maxY = source;
+	maxY.shift(0, std::numeric_limits<int32>::max(), -4);
+	CHECK(maxY == Grid<int32>(3, 3, -4));
+
+	Grid<int32> aliasLeft = { { 1, 2, 3 } };
+	aliasLeft.shift(-1, 0, aliasLeft[0][0]);
+	CHECK(aliasLeft == Grid<int32>{ { 2, 3, 1 } });
+	Grid<int32> aliasRight = { { 1, 2, 3 } };
+	aliasRight.shift(1, 0, aliasRight[0][2]);
+	CHECK(aliasRight == Grid<int32>{ { 3, 1, 2 } });
+	Grid<int32> aliasFull = { { 1, 2, 3 } };
+	aliasFull.shift(std::numeric_limits<int32>::min(), 0, aliasFull[0][1]);
+	CHECK(aliasFull == Grid<int32>{ { 2, 2, 2 } });
+
+	CHECK(source.shifted(-1, 1, 0) == Grid<int32>{ { 0, 0, 0 }, { 2, 3, 0 }, { 5, 6, 0 } });
+	CHECK(source == Grid<int32>{ { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
+	Grid<int32> rvalueSource = source;
+	CHECK(std::move(rvalueSource).shifted(0, 1, 0) == Grid<int32>{ { 0, 0, 0 }, { 1, 2, 3 }, { 4, 5, 6 } });
+	Grid<int32> rvalueShift = source;
+	CHECK(std::move(rvalueShift).shift(-1, 0, 0) == Grid<int32>{ { 2, 3, 0 }, { 5, 6, 0 }, { 8, 9, 0 } });
+
+	Grid<int32> emptyWidth{ Size{ 0, 3 } };
+	emptyWidth.shift(std::numeric_limits<int32>::min(), std::numeric_limits<int32>::max(), 0);
+	CHECK(emptyWidth.size() == Size{ 0, 3 });
+	Grid<int32> emptyHeight{ Size{ 3, 0 } };
+	emptyHeight.shift(std::numeric_limits<int32>::max(), std::numeric_limits<int32>::min(), 0);
+	CHECK(emptyHeight.size() == Size{ 3, 0 });
+
+	Grid<bool> boolGrid = { { true, false }, { false, true } };
+	boolGrid.shift(1, 0, true);
+	CHECK(boolGrid == Grid<bool>{ { true, true }, { true, false } });
+
+	for (int32 dy = -4; dy <= 4; ++dy)
+	{
+		for (int32 dx = -4; dx <= 4; ++dx)
+		{
+			Grid<int32> actual = source;
+			actual.shift(dx, dy, 0);
+			const auto expected = Grid<int32>::IndexedGenerate(source.size(),
+				[&source, dx, dy](const Point pos)
+				{
+					return source.fetch((pos.y - dy), (pos.x - dx), 0);
+				});
+			CHECK(actual == expected);
+		}
+	}
+}
+
+TEST_CASE("Grid.scaled")
+{
+	const Grid<int32> source = {
+		{ 1, 2 },
+		{ 3, 4 },
+	};
+
+	CHECK(source.scaled(1) == source);
+	CHECK(source.scaled(2) == Grid<int32>{
+		{ 1, 1, 2, 2 },
+		{ 1, 1, 2, 2 },
+		{ 3, 3, 4, 4 },
+		{ 3, 3, 4, 4 },
+	});
+	CHECK(source == Grid<int32>{ { 1, 2 }, { 3, 4 } });
+
+	CHECK(Grid<int32>{ Size{ 0, 3 } }.scaled(2).size() == Size{ 0, 6 });
+	CHECK(Grid<int32>{ Size{ 3, 0 } }.scaled(2).size() == Size{ 6, 0 });
+	const Grid<int32> zeroWidth{ Size{ 0, 1 } };
+	CHECK(zeroWidth.scaled(std::numeric_limits<int32>::max()).size()
+		== Size{ 0, std::numeric_limits<int32>::max() });
+	const Grid<int32> zeroHeight{ Size{ 1, 0 } };
+	CHECK(zeroHeight.scaled(std::numeric_limits<int32>::max()).size()
+		== Size{ std::numeric_limits<int32>::max(), 0 });
+	CHECK_THROWS_AS(static_cast<void>(source.scaled(0)), std::invalid_argument);
+	CHECK_THROWS_AS(static_cast<void>(source.scaled(-1)), std::invalid_argument);
+	CHECK_THROWS_AS(static_cast<void>(source.scaled(std::numeric_limits<int32>::min())), std::invalid_argument);
+
+	const Grid<int32> widthOverflow{ Size{ 2, 1 }, 0 };
+	CHECK_THROWS_AS(static_cast<void>(widthOverflow.scaled(std::numeric_limits<int32>::max())), std::length_error);
+	const Grid<int32> heightOverflow{ Size{ 1, 2 }, 0 };
+	CHECK_THROWS_AS(static_cast<void>(heightOverflow.scaled(std::numeric_limits<int32>::max())), std::length_error);
+
+	const auto nonDefault = Grid<NonDefaultConstructible>::IndexedGenerate(Size{ 2, 1 },
+		[](const Point pos) { return NonDefaultConstructible{ (pos.x + 1) }; });
+	CHECK(nonDefault.scaled(2).map(&NonDefaultConstructible::value)
+		== Grid<int32>{ { 1, 1, 2, 2 }, { 1, 1, 2, 2 } });
+
+	const Grid<bool> boolGrid = { { true, false } };
+	CHECK(boolGrid.scaled(2) == Grid<bool>{ { true, true, false, false }, { true, true, false, false } });
+
+	Grid<int32> rvalueSource = source;
+	CHECK(std::move(rvalueSource).scaled(1) == source);
+}
+
 TEST_CASE("Grid.rvalue operator[]")
 {
 	SUBCASE("Point")
