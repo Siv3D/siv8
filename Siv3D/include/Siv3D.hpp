@@ -1817,6 +1817,10 @@
 
 
 
+# include <Siv3D/Vertex3D.hpp>
+# include <Siv3D/Mesh3D.hpp>
+
+
 
 
 
