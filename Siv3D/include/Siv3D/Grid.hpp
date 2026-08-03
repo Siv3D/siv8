@@ -297,6 +297,60 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	wrappedAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を二次元配列の範囲内に循環させて、要素にアクセスします。
+		/// @param pos 位置
+		/// @return 要素への参照
+		/// @throw std::out_of_range 二次元配列の幅または高さが 0 の場合
+		[[nodiscard]]
+		constexpr reference wrappedAt(Point pos)& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した位置を二次元配列の範囲内に循環させて、要素にアクセスします。
+		/// @param pos 位置
+		/// @return 要素への参照
+		/// @throw std::out_of_range 二次元配列の幅または高さが 0 の場合
+		[[nodiscard]]
+		constexpr const_reference wrappedAt(Point pos) const& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した位置を二次元配列の範囲内に循環させて、要素にアクセスします。
+		/// @param pos 位置
+		/// @return 要素
+		/// @throw std::out_of_range 二次元配列の幅または高さが 0 の場合
+		[[nodiscard]]
+		constexpr value_type wrappedAt(Point pos)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	clampedAt
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置を二次元配列の範囲内に制限して、要素にアクセスします。
+		/// @param pos 位置
+		/// @return 要素への参照
+		/// @throw std::out_of_range 二次元配列の幅または高さが 0 の場合
+		[[nodiscard]]
+		constexpr reference clampedAt(Point pos)& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した位置を二次元配列の範囲内に制限して、要素にアクセスします。
+		/// @param pos 位置
+		/// @return 要素への参照
+		/// @throw std::out_of_range 二次元配列の幅または高さが 0 の場合
+		[[nodiscard]]
+		constexpr const_reference clampedAt(Point pos) const& SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した位置を二次元配列の範囲内に制限して、要素にアクセスします。
+		/// @param pos 位置
+		/// @return 要素
+		/// @throw std::out_of_range 二次元配列の幅または高さが 0 の場合
+		[[nodiscard]]
+		constexpr value_type clampedAt(Point pos)&&;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator []
 		//
 		////////////////////////////////////////////////////////////////
@@ -1254,6 +1308,112 @@ namespace s3d
 		template <class Fty>
 		constexpr void each_index(Fty f) const
 			requires std::invocable<Fty&, Point, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_neighbor4
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に隣接する 4 近傍の要素に関数を適用します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param pos 中心の位置
+		/// @param f 呼び出す関数
+		/// @pre `pos` が二次元配列の範囲内であること
+		/// @remark 関数には近傍の `Point{ x, y }` と要素への参照を渡します。
+		/// @remark 範囲外の近傍を除き、上、左、右、下の順に呼び出します。
+		template <class Fty>
+		constexpr void each_neighbor4(Point pos, Fty f)
+			requires std::invocable<Fty&, Point, value_type&>;
+
+		/// @brief 指定した位置に隣接する 4 近傍の要素に関数を適用します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param pos 中心の位置
+		/// @param f 呼び出す関数
+		/// @pre `pos` が二次元配列の範囲内であること
+		/// @remark 関数には近傍の `Point{ x, y }` と要素への const 参照を渡します。
+		/// @remark 範囲外の近傍を除き、上、左、右、下の順に呼び出します。
+		template <class Fty>
+		constexpr void each_neighbor4(Point pos, Fty f) const
+			requires std::invocable<Fty&, Point, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	each_neighbor8
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に隣接する 8 近傍の要素に関数を適用します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param pos 中心の位置
+		/// @param f 呼び出す関数
+		/// @pre `pos` が二次元配列の範囲内であること
+		/// @remark 関数には近傍の `Point{ x, y }` と要素への参照を渡します。
+		/// @remark 範囲外の近傍を除き、左上、上、右上、左、右、左下、下、右下の順に呼び出します。
+		template <class Fty>
+		constexpr void each_neighbor8(Point pos, Fty f)
+			requires std::invocable<Fty&, Point, value_type&>;
+
+		/// @brief 指定した位置に隣接する 8 近傍の要素に関数を適用します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param pos 中心の位置
+		/// @param f 呼び出す関数
+		/// @pre `pos` が二次元配列の範囲内であること
+		/// @remark 関数には近傍の `Point{ x, y }` と要素への const 参照を渡します。
+		/// @remark 範囲外の近傍を除き、左上、上、右上、左、右、左下、下、右下の順に呼び出します。
+		template <class Fty>
+		constexpr void each_neighbor8(Point pos, Fty f) const
+			requires std::invocable<Fty&, Point, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count_neighbors4, count_neighbors8
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置の 4 近傍にある、指定した値と等しい要素の個数を返します。
+		/// @param pos 中心の位置
+		/// @param value 検索する値
+		/// @return 指定した値と等しい近傍要素の個数
+		/// @pre `pos` が二次元配列の範囲内であること
+		[[nodiscard]]
+		constexpr isize count_neighbors4(Point pos, const value_type& value) const;
+
+		/// @brief 指定した位置の 8 近傍にある、指定した値と等しい要素の個数を返します。
+		/// @param pos 中心の位置
+		/// @param value 検索する値
+		/// @return 指定した値と等しい近傍要素の個数
+		/// @pre `pos` が二次元配列の範囲内であること
+		[[nodiscard]]
+		constexpr isize count_neighbors8(Point pos, const value_type& value) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	count_neighbors4_if, count_neighbors8_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置の 4 近傍にある、条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param pos 中心の位置
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす近傍要素の個数
+		/// @pre `pos` が二次元配列の範囲内であること
+		template <class Fty>
+		[[nodiscard]]
+		constexpr isize count_neighbors4_if(Point pos, Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 指定した位置の 8 近傍にある、条件を満たす要素の個数を返します。
+		/// @tparam Fty 条件を記述した関数の型
+		/// @param pos 中心の位置
+		/// @param f 条件を記述した関数
+		/// @return 条件を満たす近傍要素の個数
+		/// @pre `pos` が二次元配列の範囲内であること
+		template <class Fty>
+		[[nodiscard]]
+		constexpr isize count_neighbors8_if(Point pos, Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//

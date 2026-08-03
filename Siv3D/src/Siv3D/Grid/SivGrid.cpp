@@ -20,6 +20,16 @@ namespace s3d
 			throw std::out_of_range{ "Grid::at(): index out of range" };
 		}
 
+		void ThrowGridWrappedAtOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::wrappedAt(): Grid width or height is 0" };
+		}
+
+		void ThrowGridClampedAtOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::clampedAt(): Grid width or height is 0" };
+		}
+
 		void ThrowGridPopBackRowOutOfRange()
 		{
 			// 高さが 0 であるため、行を削除できません。

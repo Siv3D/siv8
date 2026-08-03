@@ -712,6 +712,178 @@ TEST_CASE("Grid.Rect region operations")
 	CHECK_THROWS_AS(grid.fill(Rect{ 0, 0, 1, -1 }, 0), std::invalid_argument);
 }
 
+TEST_CASE("Grid.wrappedAt and clampedAt")
+{
+	Grid<int32> grid = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+	};
+	const Grid<int32>& constGrid = grid;
+
+	static_assert(std::same_as<decltype(grid.wrappedAt(Point{})), int32&>);
+	static_assert(std::same_as<decltype(constGrid.wrappedAt(Point{})), const int32&>);
+	static_assert(std::same_as<decltype(std::move(grid).wrappedAt(Point{})), int32>);
+	static_assert(std::same_as<decltype(grid.clampedAt(Point{})), int32&>);
+	static_assert(std::same_as<decltype(constGrid.clampedAt(Point{})), const int32&>);
+	static_assert(std::same_as<decltype(std::move(grid).clampedAt(Point{})), int32>);
+
+	CHECK(constGrid.wrappedAt(Point{ 0, 0 }) == 1);
+	CHECK(constGrid.wrappedAt(Point{ 3, 2 }) == 1);
+	CHECK(constGrid.wrappedAt(Point{ -1, -1 }) == 6);
+	CHECK(constGrid.wrappedAt(Point{ INT32_MIN, INT32_MAX }) == 5);
+	grid.wrappedAt(Point{ -1, 0 }) = 30;
+	CHECK(grid[0][2] == 30);
+
+	CHECK(constGrid.clampedAt(Point{ 1, 1 }) == 5);
+	CHECK(constGrid.clampedAt(Point{ -1, -1 }) == 1);
+	CHECK(constGrid.clampedAt(Point{ 4, -1 }) == 30);
+	CHECK(constGrid.clampedAt(Point{ -1, 4 }) == 4);
+	CHECK(constGrid.clampedAt(Point{ 4, 4 }) == 6);
+	CHECK(constGrid.clampedAt(Point{ INT32_MIN, INT32_MAX }) == 4);
+	grid.clampedAt(Point{ INT32_MAX, INT32_MIN }) = 300;
+	CHECK(grid[0][2] == 300);
+
+	CHECK_THROWS_AS(static_cast<void>(Grid<int32>{}.wrappedAt(Point{})), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(Grid<int32>{ Size{ 0, 3 } }.wrappedAt(Point{})), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(Grid<int32>{ Size{ 3, 0 } }.wrappedAt(Point{})), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(Grid<int32>{}.clampedAt(Point{})), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(Grid<int32>{ Size{ 0, 3 } }.clampedAt(Point{})), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(Grid<int32>{ Size{ 3, 0 } }.clampedAt(Point{})), std::out_of_range);
+
+	Grid<std::unique_ptr<int32>> moveGrid = Grid<std::unique_ptr<int32>>::IndexedGenerate(Size{ 2, 1 },
+		[](const Point pos) { return std::make_unique<int32>(pos.x + 1); });
+	auto moved = std::move(moveGrid).wrappedAt(Point{ -1, 0 });
+	REQUIRE(moved);
+	CHECK(*moved == 2);
+
+	Grid<std::unique_ptr<int32>> clampedMoveGrid = Grid<std::unique_ptr<int32>>::IndexedGenerate(Size{ 2, 1 },
+		[](const Point pos) { return std::make_unique<int32>(pos.x + 1); });
+	auto clampedMoved = std::move(clampedMoveGrid).clampedAt(Point{ 10, 0 });
+	REQUIRE(clampedMoved);
+	CHECK(*clampedMoved == 2);
+}
+
+TEST_CASE("Grid.each_neighbor4")
+{
+	Grid<int32> grid = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+		{ 7, 8, 9 },
+	};
+	Array<Point> positions;
+	Array<int32> values;
+
+	grid.each_neighbor4(Point{ 1, 1 }, [&positions, &values](const Point pos, int32& value)
+	{
+		positions.push_back(pos);
+		values.push_back(value);
+		value *= 10;
+	});
+	CHECK(positions == Array<Point>{ Point{ 1, 0 }, Point{ 0, 1 }, Point{ 2, 1 }, Point{ 1, 2 } });
+	CHECK(values == Array<int32>{ 2, 4, 6, 8 });
+	CHECK(grid == Grid<int32>{ { 1, 20, 3 }, { 40, 5, 60 }, { 7, 80, 9 } });
+
+	positions.clear();
+	values.clear();
+	const Grid<int32>& constGrid = grid;
+	constGrid.each_neighbor4(Point{ 0, 0 }, [&positions, &values](const Point pos, const int32& value)
+	{
+		positions.push_back(pos);
+		values.push_back(value);
+	});
+	CHECK(positions == Array<Point>{ Point{ 1, 0 }, Point{ 0, 1 } });
+	CHECK(values == Array<int32>{ 20, 40 });
+
+	positions.clear();
+	constGrid.each_neighbor4(Point{ 1, 0 }, [&positions](const Point pos, const int32&)
+	{
+		positions.push_back(pos);
+	});
+	CHECK(positions == Array<Point>{ Point{ 0, 0 }, Point{ 2, 0 }, Point{ 1, 1 } });
+
+	CHECK_THROWS(constGrid.each_neighbor4(Point{ 1, 1 }, [](const Point, const int32&) { throw 42; }));
+
+	Grid<bool> boolGrid(3, 3, false);
+	boolGrid.each_neighbor4(Point{ 1, 1 }, [](const Point, bool& value) { value = true; });
+	CHECK(boolGrid.count(true) == 4);
+}
+
+TEST_CASE("Grid.each_neighbor8")
+{
+	Grid<int32> grid = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+		{ 7, 8, 9 },
+	};
+	Array<Point> positions;
+	Array<int32> values;
+
+	grid.each_neighbor8(Point{ 1, 1 }, [&positions, &values](const Point pos, int32& value)
+	{
+		positions.push_back(pos);
+		values.push_back(value);
+		value *= 10;
+	});
+	CHECK(positions == Array<Point>{ Point{ 0, 0 }, Point{ 1, 0 }, Point{ 2, 0 }, Point{ 0, 1 },
+		Point{ 2, 1 }, Point{ 0, 2 }, Point{ 1, 2 }, Point{ 2, 2 } });
+	CHECK(values == Array<int32>{ 1, 2, 3, 4, 6, 7, 8, 9 });
+	CHECK(grid == Grid<int32>{ { 10, 20, 30 }, { 40, 5, 60 }, { 70, 80, 90 } });
+
+	positions.clear();
+	values.clear();
+	const Grid<int32>& constGrid = grid;
+	constGrid.each_neighbor8(Point{ 0, 0 }, [&positions, &values](const Point pos, const int32& value)
+	{
+		positions.push_back(pos);
+		values.push_back(value);
+	});
+	CHECK(positions == Array<Point>{ Point{ 1, 0 }, Point{ 0, 1 }, Point{ 1, 1 } });
+	CHECK(values == Array<int32>{ 20, 40, 5 });
+
+	positions.clear();
+	constGrid.each_neighbor8(Point{ 1, 0 }, [&positions](const Point pos, const int32&)
+	{
+		positions.push_back(pos);
+	});
+	CHECK(positions == Array<Point>{ Point{ 0, 0 }, Point{ 2, 0 }, Point{ 0, 1 }, Point{ 1, 1 }, Point{ 2, 1 } });
+
+	CHECK_THROWS(constGrid.each_neighbor8(Point{ 1, 1 }, [](const Point, const int32&) { throw 42; }));
+}
+
+TEST_CASE("Grid.count_neighbors")
+{
+	const Grid<int32> grid = {
+		{ 1, 2, 1 },
+		{ 2, 1, 2 },
+		{ 1, 2, 1 },
+	};
+
+	CHECK(grid.count_neighbors4(Point{ 1, 1 }, 2) == 4);
+	CHECK(grid.count_neighbors8(Point{ 1, 1 }, 2) == 4);
+	CHECK(grid.count_neighbors4(Point{ 0, 0 }, 2) == 2);
+	CHECK(grid.count_neighbors8(Point{ 0, 0 }, 1) == 1);
+	CHECK(grid.count_neighbors4_if(Point{ 1, 1 }, [](const int32 value) { return ((value % 2) == 0); }) == 4);
+	CHECK(grid.count_neighbors8_if(Point{ 1, 1 }, [](const int32 value) { return ((value % 2) == 0); }) == 4);
+	CHECK(grid.count_neighbors4_if(Point{ 0, 0 }, [](const int32 value) { return (value == 2); }) == 2);
+	CHECK(grid.count_neighbors8_if(Point{ 0, 0 }, [](const int32 value) { return (value == 1); }) == 1);
+
+	const Grid<bool> boolGrid = {
+		{ true, false, true },
+		{ false, true, false },
+		{ true, false, true },
+	};
+	CHECK(boolGrid.count_neighbors4(Point{ 1, 1 }, false) == 4);
+	CHECK(boolGrid.count_neighbors8(Point{ 0, 0 }, true) == 1);
+	CHECK(boolGrid.count_neighbors8_if(Point{ 1, 1 }, Identity) == 4);
+
+	const Grid<int32> single = { { 42 } };
+	isize calls = 0;
+	single.each_neighbor8(Point{ 0, 0 }, [&calls](const Point, const int32&) { ++calls; });
+	CHECK(calls == 0);
+	CHECK(single.count_neighbors4(Point{ 0, 0 }, 42) == 0);
+	CHECK(single.count_neighbors8_if(Point{ 0, 0 }, [](const int32) { return true; }) == 0);
+}
+
 TEST_CASE("Grid.rvalue operator[]")
 {
 	SUBCASE("Point")

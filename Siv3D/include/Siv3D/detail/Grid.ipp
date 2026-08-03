@@ -46,6 +46,12 @@ namespace s3d
 		void ThrowGridAtOutOfRange();
 
 		[[noreturn]]
+		void ThrowGridWrappedAtOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridClampedAtOutOfRange();
+
+		[[noreturn]]
 		void ThrowGridPopBackRowOutOfRange();
 
 		[[noreturn]]
@@ -89,6 +95,40 @@ namespace s3d
 
 		[[noreturn]]
 		void ThrowGridSubgridOutOfRange();
+
+		template <bool IncludeDiagonals, class GridType, class Fty>
+		constexpr void GridEachNeighbor(GridType& grid, const Point pos, Fty& f)
+		{
+			assert(grid.indexInBounds(pos));
+
+			const int32 xBegin = Max((pos.x - 1), 0);
+			const int32 yBegin = Max((pos.y - 1), 0);
+			const int32 xEnd = Min((pos.x + 1), (grid.width() - 1));
+			const int32 yEnd = Min((pos.y + 1), (grid.height() - 1));
+			auto* const pData = grid.data();
+			const size_t width = static_cast<size_t>(grid.width());
+
+			for (int32 y = yBegin; y <= yEnd; ++y)
+			{
+				for (int32 x = xBegin; x <= xEnd; ++x)
+				{
+					if ((x == pos.x) && (y == pos.y))
+					{
+						continue;
+					}
+
+					if constexpr (not IncludeDiagonals)
+					{
+						if ((x != pos.x) && (y != pos.y))
+						{
+							continue;
+						}
+					}
+
+					std::invoke(f, Point{ x, y }, *(pData + (static_cast<size_t>(y) * width + x)));
+				}
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -324,6 +364,123 @@ namespace s3d
 		}
 
 		return std::move(*(m_container.data() + (pos.y * m_size.x + pos.x)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	wrappedAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::wrappedAt(const Point pos)&
+	{
+		if ((m_size.x == 0) || (m_size.y == 0))
+		{
+			detail::ThrowGridWrappedAtOutOfRange();
+		}
+
+		int32 x = (pos.x % m_size.x);
+		int32 y = (pos.y % m_size.y);
+		if (x < 0)
+		{
+			x += m_size.x;
+		}
+		if (y < 0)
+		{
+			y += m_size.y;
+		}
+
+		return m_container[(static_cast<size_type>(y) * m_size.x + x)];
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::wrappedAt(const Point pos) const&
+	{
+		if ((m_size.x == 0) || (m_size.y == 0))
+		{
+			detail::ThrowGridWrappedAtOutOfRange();
+		}
+
+		int32 x = (pos.x % m_size.x);
+		int32 y = (pos.y % m_size.y);
+		if (x < 0)
+		{
+			x += m_size.x;
+		}
+		if (y < 0)
+		{
+			y += m_size.y;
+		}
+
+		return m_container[(static_cast<size_type>(y) * m_size.x + x)];
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::wrappedAt(const Point pos)&&
+	{
+		if ((m_size.x == 0) || (m_size.y == 0))
+		{
+			detail::ThrowGridWrappedAtOutOfRange();
+		}
+
+		int32 x = (pos.x % m_size.x);
+		int32 y = (pos.y % m_size.y);
+		if (x < 0)
+		{
+			x += m_size.x;
+		}
+		if (y < 0)
+		{
+			y += m_size.y;
+		}
+
+		return std::move(m_container[(static_cast<size_type>(y) * m_size.x + x)]);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clampedAt
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::clampedAt(const Point pos)&
+	{
+		if ((m_size.x == 0) || (m_size.y == 0))
+		{
+			detail::ThrowGridClampedAtOutOfRange();
+		}
+
+		const int32 x = Min(Max(pos.x, 0), (m_size.x - 1));
+		const int32 y = Min(Max(pos.y, 0), (m_size.y - 1));
+		return m_container[(static_cast<size_type>(y) * m_size.x + x)];
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::clampedAt(const Point pos) const&
+	{
+		if ((m_size.x == 0) || (m_size.y == 0))
+		{
+			detail::ThrowGridClampedAtOutOfRange();
+		}
+
+		const int32 x = Min(Max(pos.x, 0), (m_size.x - 1));
+		const int32 y = Min(Max(pos.y, 0), (m_size.y - 1));
+		return m_container[(static_cast<size_type>(y) * m_size.x + x)];
+	}
+
+	template <class Type, class Allocator>
+	constexpr typename Grid<Type, Allocator>::value_type Grid<Type, Allocator>::clampedAt(const Point pos)&&
+	{
+		if ((m_size.x == 0) || (m_size.y == 0))
+		{
+			detail::ThrowGridClampedAtOutOfRange();
+		}
+
+		const int32 x = Min(Max(pos.x, 0), (m_size.x - 1));
+		const int32 y = Min(Max(pos.y, 0), (m_size.y - 1));
+		return std::move(m_container[(static_cast<size_type>(y) * m_size.x + x)]);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1861,6 +2018,110 @@ namespace s3d
 				std::invoke(f, Point{ x, y }, *it++);
 			}
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_neighbor4
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each_neighbor4(const Point pos, Fty f)
+		requires std::invocable<Fty&, Point, value_type&>
+	{
+		detail::GridEachNeighbor<false>(*this, pos, f);
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each_neighbor4(const Point pos, Fty f) const
+		requires std::invocable<Fty&, Point, const value_type&>
+	{
+		detail::GridEachNeighbor<false>(*this, pos, f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	each_neighbor8
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each_neighbor8(const Point pos, Fty f)
+		requires std::invocable<Fty&, Point, value_type&>
+	{
+		detail::GridEachNeighbor<true>(*this, pos, f);
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each_neighbor8(const Point pos, Fty f) const
+		requires std::invocable<Fty&, Point, const value_type&>
+	{
+		detail::GridEachNeighbor<true>(*this, pos, f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_neighbors4, count_neighbors8
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr isize Grid<Type, Allocator>::count_neighbors4(const Point pos, const value_type& value) const
+	{
+		isize result = 0;
+		each_neighbor4(pos, [&result, &value](const Point, const value_type& neighbor)
+		{
+			result += (neighbor == value);
+		});
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr isize Grid<Type, Allocator>::count_neighbors8(const Point pos, const value_type& value) const
+	{
+		isize result = 0;
+		each_neighbor8(pos, [&result, &value](const Point, const value_type& neighbor)
+		{
+			result += (neighbor == value);
+		});
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	count_neighbors4_if, count_neighbors8_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr isize Grid<Type, Allocator>::count_neighbors4_if(const Point pos, Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		isize result = 0;
+		each_neighbor4(pos, [&result, &f](const Point, const value_type& neighbor)
+		{
+			result += static_cast<bool>(std::invoke(f, neighbor));
+		});
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr isize Grid<Type, Allocator>::count_neighbors8_if(const Point pos, Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		isize result = 0;
+		each_neighbor8(pos, [&result, &f](const Point, const value_type& neighbor)
+		{
+			result += static_cast<bool>(std::invoke(f, neighbor));
+		});
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
