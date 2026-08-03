@@ -246,7 +246,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr const container_type& getContainer() const& noexcept SIV3D_LIFETIMEBOUND;
 
-		/// @brief Array を返します。
+		/// @brief Array を返し、この Grid を空にします。
 		/// @return Array
 		[[nodiscard]]
 		constexpr container_type getContainer() && noexcept;
@@ -853,6 +853,7 @@ namespace s3d
 
 		/// @brief 末尾に行を追加します。
 		/// @param value 追加した行の要素の初期値
+		/// @throw std::length_error 追加後の高さが Grid の寸法上限を超える場合
 		constexpr void push_back_row(const value_type& value);
 
 		////////////////////////////////////////////////////////////////
@@ -873,6 +874,7 @@ namespace s3d
 
 		/// @brief 末尾に列を追加します。
 		/// @param value 追加した列の要素の初期値
+		/// @throw std::length_error 追加後の幅が Grid の寸法上限を超える場合
 		constexpr void push_back_column(const value_type& value);
 
 		////////////////////////////////////////////////////////////////
@@ -895,6 +897,7 @@ namespace s3d
 		/// @param y 挿入する行のインデックス
 		/// @param value 挿入する行の要素の初期値
 		/// @throw std::out_of_range 挿入する行のインデックスが範囲外の場合
+		/// @throw std::length_error 挿入後の高さが Grid の寸法上限を超える場合
 		constexpr void insert_row(size_type y, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
@@ -908,6 +911,7 @@ namespace s3d
 		/// @param n 挿入する行の数
 		/// @param value 挿入する行の要素の初期値
 		/// @throw std::out_of_range 挿入する行のインデックスが範囲外の場合
+		/// @throw std::length_error 挿入後の高さが Grid の寸法上限を超える場合
 		constexpr void insert_rows(size_type y, size_type n, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
@@ -920,6 +924,7 @@ namespace s3d
 		/// @param x 挿入する列のインデックス
 		/// @param value 挿入する列の要素の初期値
 		/// @throw std::out_of_range 挿入する列のインデックスが範囲外の場合
+		/// @throw std::length_error 挿入後の幅が Grid の寸法上限を超える場合
 		constexpr void insert_column(size_type x, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
@@ -933,6 +938,7 @@ namespace s3d
 		/// @param n 挿入する列の数
 		/// @param value 挿入する列の要素の初期値
 		/// @throw std::out_of_range 挿入する列のインデックスが範囲外の場合
+		/// @throw std::length_error 挿入後の幅が Grid の寸法上限を超える場合
 		constexpr void insert_columns(size_type x, size_type n, const value_type& value);
 
 		////////////////////////////////////////////////////////////////
@@ -954,7 +960,7 @@ namespace s3d
 
 		/// @brief 指定した行を削除します。
 		/// @param y 削除を開始する行のインデックス
-		/// @param count 削除する行の数
+		/// @param n 削除する行の数
 		/// @throw std::out_of_range 削除する対象が範囲外の場合
 		constexpr void remove_rows(size_type y, size_type n);
 

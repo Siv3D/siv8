@@ -112,6 +112,11 @@ namespace s3d
 			throw std::out_of_range{ "Grid::rotate_rows(): middle out of range" };
 		}
 
+		void ThrowGridSizeLimitExceeded()
+		{
+			throw std::length_error{ "Grid size exceeds the supported dimension limit" };
+		}
+
 		void ThrowGridValuesAtOutOfRange()
 		{
 			// 指定したインデックスが範囲外のため、要素にアクセスできません。

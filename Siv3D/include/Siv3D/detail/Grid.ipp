@@ -18,8 +18,8 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Size CheckedSize(const size_t width, const size_t height) noexcept
 		{
-			if (static_cast<size_t>(std::numeric_limits<int32>::max() < width)
-				|| static_cast<size_t>(std::numeric_limits<int32>::max() < height))
+			if ((static_cast<size_t>(std::numeric_limits<int32>::max()) < width)
+				|| (static_cast<size_t>(std::numeric_limits<int32>::max()) < height))
 			{
 				return{ 0, 0 };
 			}
@@ -40,6 +40,12 @@ namespace s3d
 			{
 				return size;
 			}
+		}
+
+		[[nodiscard]]
+		constexpr bool GridDimensionAdditionExceedsLimit(const int32 current, const size_t addition) noexcept
+		{
+			return ((static_cast<size_t>(std::numeric_limits<int32>::max()) - current) < addition);
 		}
 
 		[[noreturn]]
@@ -92,6 +98,9 @@ namespace s3d
 
 		[[noreturn]]
 		void ThrowGridRotateRowsMiddleOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridSizeLimitExceeded();
 		
 		[[noreturn]]
 		void ThrowGridValuesAtOutOfRange();
@@ -308,7 +317,10 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::container_type Grid<Type, Allocator>::getContainer() && noexcept
 	{
-		return std::move(m_container);
+		m_size.setZero();
+		container_type result = std::move(m_container);
+		m_container.clear();
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -358,7 +370,7 @@ namespace s3d
 			detail::ThrowGridAtOutOfRange();
 		}
 
-		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+		return *(m_container.data() + (static_cast<size_type>(pos.y) * m_size.x + pos.x));
 	}
 
 	template <class Type, class Allocator>
@@ -369,7 +381,7 @@ namespace s3d
 			detail::ThrowGridAtOutOfRange();
 		}
 
-		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+		return *(m_container.data() + (static_cast<size_type>(pos.y) * m_size.x + pos.x));
 	}
 
 	template <class Type, class Allocator>
@@ -380,7 +392,7 @@ namespace s3d
 			detail::ThrowGridAtOutOfRange();
 		}
 
-		return std::move(*(m_container.data() + (pos.y * m_size.x + pos.x)));
+		return std::move(*(m_container.data() + (static_cast<size_type>(pos.y) * m_size.x + pos.x)));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -524,21 +536,21 @@ namespace s3d
 	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const Point pos)&
 	{
 		assert(indexInBounds(pos));
-		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+		return *(m_container.data() + (static_cast<size_type>(pos.y) * m_size.x + pos.x));
 	}
 
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::const_reference Grid<Type, Allocator>::operator [](const Point pos) const&
 	{
 		assert(indexInBounds(pos));
-		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+		return *(m_container.data() + (static_cast<size_type>(pos.y) * m_size.x + pos.x));
 	}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const Point pos)&&
 	{
 		assert(indexInBounds(pos));
-		return std::move(*(m_container.data() + (pos.y * m_size.x + pos.x)));
+		return std::move(*(m_container.data() + (static_cast<size_type>(pos.y) * m_size.x + pos.x)));
 	}
 
 	template <class Type, class Allocator>
@@ -857,14 +869,15 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::reserve(const size_type w, const size_type h)
 	{
-		m_container.reserve(w * h);
+		const Size newSize = detail::CheckedSize(w, h);
+		m_container.reserve(static_cast<size_type>(newSize.area()));
 	}
 
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::reserve(const Size size)
 	{
 		const Size newSize = detail::CheckedSize(size);
-		m_container.reserve(newSize.area());
+		m_container.reserve(static_cast<size_type>(newSize.area()));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1024,6 +1037,11 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::push_back_row(const value_type& value)
 	{
+		if (detail::GridDimensionAdditionExceedsLimit(m_size.y, 1))
+		{
+			detail::ThrowGridSizeLimitExceeded();
+		}
+
 		m_container.insert(m_container.end(), m_size.x, value);
 		++m_size.y;
 	}
@@ -1055,29 +1073,35 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::push_back_column(const value_type& value)
 	{
+		if (detail::GridDimensionAdditionExceedsLimit(m_size.x, 1))
+		{
+			detail::ThrowGridSizeLimitExceeded();
+		}
+
 		if (m_size.y == 0)
 		{
 			++m_size.x;
 			return;
 		}
 
-		const int32 oldWidth = m_size.x;
-		const int32 newWidth = (m_size.x + 1);
+		const size_type oldWidth = static_cast<size_type>(m_size.x);
+		const size_type newWidth = (oldWidth + 1);
 		const value_type valueCopy = value;
 
-		m_container.resize(m_size.y * newWidth);
+		m_container.resize(static_cast<size_type>(m_size.y) * newWidth);
 
 		for (int32 row = (m_size.y - 1); 0 <= row; --row)
 		{
-			const auto srcBegin = (m_container.begin() + row * oldWidth);
+			const size_type rowIndex = static_cast<size_type>(row);
+			const auto srcBegin = (m_container.begin() + rowIndex * oldWidth);
 			const auto srcEnd = (srcBegin + oldWidth);
-			const auto dstEnd = (m_container.begin() + row * newWidth + oldWidth);
+			const auto dstEnd = (m_container.begin() + rowIndex * newWidth + oldWidth);
 			
 			std::move_backward(srcBegin, srcEnd, dstEnd);
-			m_container[row * newWidth + oldWidth] = valueCopy;
+			m_container[rowIndex * newWidth + oldWidth] = valueCopy;
 		}
 		
-		m_size.x = newWidth;
+		m_size.x = static_cast<int32>(newWidth);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1100,19 +1124,21 @@ namespace s3d
 			return;
 		}
 		
-		const int32 newWidth = (m_size.x - 1);
+		const size_type oldWidth = static_cast<size_type>(m_size.x);
+		const size_type newWidth = (oldWidth - 1);
 
 		for (int32 row = 0; row < m_size.y; ++row)
 		{
-			const auto srcBegin = (m_container.begin() + row * m_size.x);
+			const size_type rowIndex = static_cast<size_type>(row);
+			const auto srcBegin = (m_container.begin() + rowIndex * oldWidth);
 			const auto srcEnd = (srcBegin + newWidth);
-			const auto dstBegin = (m_container.begin() + row * newWidth);
+			const auto dstBegin = (m_container.begin() + rowIndex * newWidth);
 
 			std::move(srcBegin, srcEnd, dstBegin);
 		}
 
-		m_container.resize(m_size.y * newWidth);
-		m_size.x = newWidth;
+		m_container.resize(static_cast<size_type>(m_size.y) * newWidth);
+		m_size.x = static_cast<int32>(newWidth);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1127,6 +1153,11 @@ namespace s3d
 		if (static_cast<size_type>(m_size.y) < y)
 		{
 			detail::ThrowGridInsertRowOutOfRange();
+		}
+
+		if (detail::GridDimensionAdditionExceedsLimit(m_size.y, 1))
+		{
+			detail::ThrowGridSizeLimitExceeded();
 		}
 
 		const auto it = (m_container.begin() + (y * m_size.x));
@@ -1150,11 +1181,16 @@ namespace s3d
 			detail::ThrowGridInsertRowsOutOfRange();
 		}
 
+		if (detail::GridDimensionAdditionExceedsLimit(m_size.y, count))
+		{
+			detail::ThrowGridSizeLimitExceeded();
+		}
+
 		const auto it = (m_container.begin() + (y * m_size.x));
 
-		m_container.insert(it, (m_size.x * count), value);
+		m_container.insert(it, (static_cast<size_type>(m_size.x) * count), value);
 		
-		m_size.y += count;
+		m_size.y += static_cast<int32>(count);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1170,6 +1206,11 @@ namespace s3d
 		{
 			detail::ThrowGridInsertColumnOutOfRange();
 		}
+
+		if (detail::GridDimensionAdditionExceedsLimit(m_size.x, 1))
+		{
+			detail::ThrowGridSizeLimitExceeded();
+		}
 		
 		if (m_size.y == 0)
 		{
@@ -1177,16 +1218,17 @@ namespace s3d
 			return;
 		}
 		
-		const int32 oldWidth = m_size.x;
-		const int32 newWidth = oldWidth + 1;
+		const size_type oldWidth = static_cast<size_type>(m_size.x);
+		const size_type newWidth = (oldWidth + 1);
 		const value_type valueCopy = value;
 
-		m_container.resize(m_size.y * newWidth);
+		m_container.resize(static_cast<size_type>(m_size.y) * newWidth);
 
 		for (int32 row = (m_size.y - 1); 0 <= row; --row)
 		{
-			const int32 oldRowStart = (row * oldWidth);
-			const int32 newRowStart = (row * newWidth);
+			const size_type rowIndex = static_cast<size_type>(row);
+			const size_type oldRowStart = (rowIndex * oldWidth);
+			const size_type newRowStart = (rowIndex * newWidth);
 
 			std::move_backward((m_container.begin() + oldRowStart + x),
 				(m_container.begin() + oldRowStart + oldWidth),
@@ -1202,7 +1244,7 @@ namespace s3d
 			}
 		}
 
-		m_size.x = newWidth;
+		m_size.x = static_cast<int32>(newWidth);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1224,22 +1266,28 @@ namespace s3d
 			return;
 		}
 
+		if (detail::GridDimensionAdditionExceedsLimit(m_size.x, n))
+		{
+			detail::ThrowGridSizeLimitExceeded();
+		}
+
 		if (m_size.y == 0)
 		{
 			m_size.x += static_cast<int32>(n);
 			return;
 		}
 
-		const int32 oldWidth = m_size.x;
-		const int32 newWidth = (oldWidth + static_cast<int32>(n));
+		const size_type oldWidth = static_cast<size_type>(m_size.x);
+		const size_type newWidth = (oldWidth + n);
 		const value_type valueCopy = value;
 
-		m_container.resize(m_size.y * newWidth);
+		m_container.resize(static_cast<size_type>(m_size.y) * newWidth);
 
 		for (int32 row = (m_size.y - 1); 0 <= row; --row)
 		{
-			const int32 oldRowStart = (row * oldWidth);
-			const int32 newRowStart = (row * newWidth);
+			const size_type rowIndex = static_cast<size_type>(row);
+			const size_type oldRowStart = (rowIndex * oldWidth);
+			const size_type newRowStart = (rowIndex * newWidth);
 
 			std::move_backward(
 				(m_container.begin() + oldRowStart + x),
@@ -1263,7 +1311,7 @@ namespace s3d
 			}
 		}
 
-		m_size.x = newWidth;
+		m_size.x = static_cast<int32>(newWidth);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1296,14 +1344,16 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::remove_rows(const size_type y, const size_type count)
 	{
-		if (static_cast<size_type>(m_size.y) < (y + count))
+		const size_type height = static_cast<size_type>(m_size.y);
+
+		if ((height < y) || ((height - y) < count))
 		{
 			detail::ThrowGridRemoveRowsOutOfRange();
 		}
 
 		const auto it = (m_container.begin() + (y * m_size.x));
 
-		m_container.erase(it, (it + m_size.x * count));
+		m_container.erase(it, (it + static_cast<size_type>(m_size.x) * count));
 
 		m_size.y -= static_cast<int32>(count);
 	}
@@ -1328,13 +1378,14 @@ namespace s3d
 			return;
 		}
 
-		const int32 oldWidth = m_size.x;
-		const int32 newWidth = (oldWidth - 1);
+		const size_type oldWidth = static_cast<size_type>(m_size.x);
+		const size_type newWidth = (oldWidth - 1);
 
 		for (int32 row = 0; row < m_size.y; ++row)
 		{
-			const int32 srcRowStart = (row * oldWidth);
-			const int32 destRowStart = (row * newWidth);
+			const size_type rowIndex = static_cast<size_type>(row);
+			const size_type srcRowStart = (rowIndex * oldWidth);
+			const size_type destRowStart = (rowIndex * newWidth);
 
 			if (0 < x)
 			{
@@ -1343,7 +1394,7 @@ namespace s3d
 					(m_container.begin() + destRowStart));
 			}
 
-			if (x < static_cast<size_type>(oldWidth - 1))
+			if (x < newWidth)
 			{
 				std::move((m_container.begin() + srcRowStart + x + 1),
 					(m_container.begin() + srcRowStart + oldWidth),
@@ -1351,8 +1402,8 @@ namespace s3d
 			}
 		}
 
-		m_container.resize(m_size.y * newWidth);
-		m_size.x = newWidth;
+		m_container.resize(static_cast<size_type>(m_size.y) * newWidth);
+		m_size.x = static_cast<int32>(newWidth);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1364,7 +1415,9 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Grid<Type, Allocator>::remove_columns(const size_type x, const size_type n)
 	{
-		if (static_cast<size_type>(m_size.x) < (x + n))
+		const size_type width = static_cast<size_type>(m_size.x);
+
+		if ((width < x) || ((width - x) < n))
 		{
 			detail::ThrowGridRemoveColumnsOutOfRange();
 		}
@@ -1380,8 +1433,8 @@ namespace s3d
 			return;
 		}
 
-		const int32 oldWidth = m_size.x;
-		const int32 newWidth = (oldWidth - static_cast<int32>(n));
+		const size_type oldWidth = width;
+		const size_type newWidth = (oldWidth - n);
 
 		if (newWidth == 0)
 		{
@@ -1392,8 +1445,9 @@ namespace s3d
 
 		for (int32 row = 0; row < m_size.y; ++row)
 		{
-			const int32 srcRowStart = (row * oldWidth);
-			const int32 destRowStart = (row * newWidth);
+			const size_type rowIndex = static_cast<size_type>(row);
+			const size_type srcRowStart = (rowIndex * oldWidth);
+			const size_type destRowStart = (rowIndex * newWidth);
 			
 			if (0 < x)
 			{
@@ -1402,7 +1456,7 @@ namespace s3d
 					(m_container.begin() + destRowStart));
 			}
 			
-			if (x < (oldWidth - n))
+			if (x < newWidth)
 			{
 				std::move((m_container.begin() + srcRowStart + x + n),
 					(m_container.begin() + srcRowStart + oldWidth),
@@ -1410,8 +1464,8 @@ namespace s3d
 			}
 		}
 
-		m_container.resize(m_size.y * newWidth);
-		m_size.x = newWidth;
+		m_container.resize(static_cast<size_type>(m_size.y) * newWidth);
+		m_size.x = static_cast<int32>(newWidth);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1501,7 +1555,7 @@ namespace s3d
 
 		if (m_container.isEmpty())
 		{
-			m_container.resize((newWidth * newHeight), value);
+			m_container.resize((static_cast<size_type>(newWidth) * newHeight), value);
 			m_size.x = newWidth;
 			m_size.y = newHeight;
 			return;
@@ -1514,7 +1568,7 @@ namespace s3d
 		}
 		else
 		{
-			m_container.reserve(newWidth * newHeight);
+			m_container.reserve(static_cast<size_type>(newWidth) * newHeight);
 			resizeWidth(newWidth, value);
 			resizeHeight(newHeight, value);
 		}
@@ -1773,8 +1827,9 @@ namespace s3d
 	{
 		for (int32 y = 0; y < (m_size.y / 2); ++y)
 		{
-			const auto rowTop = (m_container.begin() + (y * m_size.x));
-			const auto rowBottom = (m_container.begin() + ((m_size.y - 1 - y) * m_size.x));
+			const size_type width = static_cast<size_type>(m_size.x);
+			const auto rowTop = (m_container.begin() + (static_cast<size_type>(y) * width));
+			const auto rowBottom = (m_container.begin() + (static_cast<size_type>(m_size.y - 1 - y) * width));
 
 			std::swap_ranges(rowTop, (rowTop + m_size.x), rowBottom);
 		}

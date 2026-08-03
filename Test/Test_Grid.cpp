@@ -421,6 +421,17 @@ TEST_CASE("Grid.assign")
 	CHECK(grid.empty());
 }
 
+TEST_CASE("Grid.getContainer")
+{
+	Grid<int32> grid = { { 1, 2 }, { 3, 4 } };
+	const Array<int32> container = std::move(grid).getContainer();
+
+	CHECK(container == Array<int32>{ 1, 2, 3, 4 });
+	CHECK(grid.size() == Size{ 0, 0 });
+	CHECK(grid.num_elements() == 0);
+	CHECK(grid.empty());
+}
+
 TEST_CASE("Grid.Generate")
 {
 	static_assert(not std::default_initializable<NonDefaultConstructible>);
@@ -1116,6 +1127,134 @@ TEST_CASE("Grid.column mutations")
 		Grid<int32> grid(2, 2);
 		CHECK_THROWS_AS(grid.insert_column(3, 0), std::out_of_range);
 		CHECK_THROWS_AS(grid.insert_columns(3, 1, 0), std::out_of_range);
+	}
+}
+
+TEST_CASE("Grid.row mutations")
+{
+	Grid<int32> grid = { { 1, 2 }, { 3, 4 } };
+
+	grid.push_back_row(5);
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 3, 4 }, { 5, 5 } });
+
+	grid.pop_back_row();
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 3, 4 } });
+
+	grid.insert_row(1, 6);
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 6, 6 }, { 3, 4 } });
+
+	grid.insert_rows(2, 2, 7);
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 6, 6 }, { 7, 7 }, { 7, 7 }, { 3, 4 } });
+
+	grid.remove_row(1);
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 7, 7 }, { 7, 7 }, { 3, 4 } });
+
+	grid.remove_rows(1, 2);
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 3, 4 } });
+
+	CHECK_THROWS_AS(grid.insert_row(3, 0), std::out_of_range);
+	CHECK_THROWS_AS(grid.insert_rows(3, 1, 0), std::out_of_range);
+	CHECK_THROWS_AS(grid.remove_row(2), std::out_of_range);
+	CHECK_THROWS_AS(grid.remove_rows(1, std::numeric_limits<size_t>::max()), std::out_of_range);
+
+	CHECK_NOTHROW(grid.remove_rows(grid.height(), 0));
+	CHECK(grid == Grid<int32>{ { 1, 2 }, { 3, 4 } });
+}
+
+TEST_CASE("Grid.dimension safety")
+{
+	constexpr int32 MaxDimension = std::numeric_limits<int32>::max();
+
+	SUBCASE("reserve validates dimensions")
+	{
+		Grid<int32> grid;
+		grid.reserve(2, 3);
+		CHECK(6 <= grid.capacity());
+
+		Grid<int32> invalid;
+		CHECK_NOTHROW(invalid.reserve(std::numeric_limits<size_t>::max(), 2));
+		CHECK(invalid.capacity() == 0);
+	}
+
+	SUBCASE("height limit")
+	{
+		Grid<int32> grid{ Size{ 0, MaxDimension } };
+		CHECK_THROWS_AS(grid.push_back_row(0), std::length_error);
+		CHECK_THROWS_AS(grid.insert_row(MaxDimension, 0), std::length_error);
+		CHECK_THROWS_AS(grid.insert_rows(MaxDimension, 1, 0), std::length_error);
+		CHECK_THROWS_AS(grid.insert_rows(0, std::numeric_limits<size_t>::max(), 0), std::length_error);
+		CHECK_NOTHROW(grid.insert_rows(MaxDimension, 0, 0));
+		CHECK(grid.size() == Size{ 0, MaxDimension });
+	}
+
+	SUBCASE("width limit")
+	{
+		Grid<int32> grid{ Size{ MaxDimension, 0 } };
+		CHECK_THROWS_AS(grid.push_back_column(0), std::length_error);
+		CHECK_THROWS_AS(grid.insert_column(MaxDimension, 0), std::length_error);
+		CHECK_THROWS_AS(grid.insert_columns(MaxDimension, 1, 0), std::length_error);
+		CHECK_THROWS_AS(grid.insert_columns(0, std::numeric_limits<size_t>::max(), 0), std::length_error);
+		CHECK_NOTHROW(grid.insert_columns(MaxDimension, 0, 0));
+		CHECK(grid.size() == Size{ MaxDimension, 0 });
+	}
+
+	SUBCASE("removal range addition does not overflow")
+	{
+		Grid<int32> grid(2, 2, 1);
+		CHECK_THROWS_AS(grid.remove_rows(1, std::numeric_limits<size_t>::max()), std::out_of_range);
+		CHECK_THROWS_AS(grid.remove_columns(1, std::numeric_limits<size_t>::max()), std::out_of_range);
+		CHECK_NOTHROW(grid.remove_rows(2, 0));
+		CHECK_NOTHROW(grid.remove_columns(2, 0));
+		CHECK(grid == Grid<int32>(2, 2, 1));
+	}
+}
+
+TEST_CASE("Grid.resize")
+{
+	SUBCASE("expand and shrink")
+	{
+		Grid<int32> grid = { { 1, 2 }, { 3, 4 } };
+		grid.resize(3, 3, 9);
+		CHECK(grid == Grid<int32>{
+			{ 1, 2, 9 },
+			{ 3, 4, 9 },
+			{ 9, 9, 9 },
+		});
+
+		grid.resize(1, 3);
+		CHECK(grid == Grid<int32>{ { 1 }, { 3 }, { 9 } });
+
+		grid.resize(Size{ 2, 1 }, 8);
+		CHECK(grid == Grid<int32>{ { 1, 8 } });
+	}
+
+	SUBCASE("resizeWidth and resizeHeight")
+	{
+		Grid<int32> grid = { { 1, 2 }, { 3, 4 } };
+		grid.resizeWidth(3, 5);
+		CHECK(grid == Grid<int32>{ { 1, 2, 5 }, { 3, 4, 5 } });
+
+		grid.resizeHeight(3, 6);
+		CHECK(grid == Grid<int32>{ { 1, 2, 5 }, { 3, 4, 5 }, { 6, 6, 6 } });
+
+		grid.resizeWidth(1);
+		grid.resizeHeight(1);
+		CHECK(grid == Grid<int32>{ { 1 } });
+	}
+
+	SUBCASE("zero and invalid dimensions")
+	{
+		Grid<int32> grid(2, 2, 1);
+		grid.resize(Size{ 0, 3 });
+		CHECK(grid.size() == Size{ 0, 3 });
+		CHECK(grid.empty());
+
+		grid.resize(2, 3, 7);
+		CHECK(grid == Grid<int32>(2, 3, 7));
+
+		grid.resize(std::numeric_limits<size_t>::max(), 2);
+		CHECK(grid.size() == Size{ 0, 0 });
+		CHECK(grid.empty());
 	}
 }
 
