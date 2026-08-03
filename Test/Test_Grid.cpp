@@ -192,6 +192,64 @@ namespace
 		{ 18, 28, 38, 48, 58, 68, 78, 88, 98 },
 		{ 19, 29, 39, 49, 59, 69, 79, 89, 99 },
 	};
+
+	struct ThrowingMove
+	{
+		ThrowingMove() = default;
+
+		ThrowingMove(const ThrowingMove&) = default;
+
+		ThrowingMove(ThrowingMove&&)
+		{
+			throw 42;
+		}
+
+		ThrowingMove& operator =(const ThrowingMove&) = default;
+
+		ThrowingMove& operator =(ThrowingMove&&) = default;
+	};
+
+	struct ThrowingSwappable
+	{
+		friend void swap(ThrowingSwappable&, ThrowingSwappable&)
+		{
+			throw 42;
+		}
+	};
+
+	template <class Type>
+	struct StatefulAllocator
+	{
+		using value_type = Type;
+		using propagate_on_container_swap = std::false_type;
+		using is_always_equal = std::false_type;
+
+		int32 id = 0;
+
+		constexpr StatefulAllocator() noexcept = default;
+
+		template <class Other>
+		constexpr StatefulAllocator(const StatefulAllocator<Other>& other) noexcept
+			: id{ other.id } {}
+
+		[[nodiscard]]
+		Type* allocate(const size_t n)
+		{
+			return std::allocator<Type>{}.allocate(n);
+		}
+
+		void deallocate(Type* const p, const size_t n) noexcept
+		{
+			std::allocator<Type>{}.deallocate(p, n);
+		}
+
+		template <class Other>
+		[[nodiscard]]
+		constexpr bool operator ==(const StatefulAllocator<Other>& other) const noexcept
+		{
+			return (id == other.id);
+		}
+	};
 }
 
 TEST_CASE("Grid.constructor")
@@ -249,6 +307,49 @@ TEST_CASE("Grid.rvalue operator[]")
 		auto value = std::move(grid)[0, 0];
 		REQUIRE(value);
 		CHECK(*value == 42);
+	}
+}
+
+TEST_CASE("Grid.exception specifications")
+{
+	using StatefulGrid = Grid<int32, StatefulAllocator<int32>>;
+
+	static_assert(noexcept(std::declval<Grid<int32>&&>().front()));
+	static_assert(noexcept(std::declval<Grid<int32>&&>().back()));
+	static_assert(not noexcept(std::declval<Grid<ThrowingMove>&&>().front()));
+	static_assert(not noexcept(std::declval<Grid<ThrowingMove>&&>().back()));
+
+	static_assert(noexcept(std::declval<Grid<int32>&>().rotate180()));
+	static_assert(noexcept(std::declval<Grid<int32>&>().mirror()));
+	static_assert(noexcept(std::declval<Grid<int32>&>().flip()));
+	static_assert(not noexcept(std::declval<Grid<ThrowingSwappable>&>().rotate180()));
+	static_assert(not noexcept(std::declval<Grid<ThrowingSwappable>&>().mirror()));
+	static_assert(not noexcept(std::declval<Grid<ThrowingSwappable>&>().flip()));
+
+	static_assert(noexcept(std::declval<Grid<int32>&>().swap(std::declval<Grid<int32>&>())));
+	static_assert(not noexcept(std::declval<StatefulGrid&>().swap(std::declval<StatefulGrid&>())));
+	static_assert(std::is_nothrow_swappable_v<Grid<int32>>);
+	static_assert(not std::is_nothrow_swappable_v<StatefulGrid>);
+
+	SUBCASE("rvalue element access propagates move exceptions")
+	{
+		Grid<ThrowingMove> frontGrid(1, 1);
+		CHECK_THROWS(static_cast<void>(std::move(frontGrid).front()));
+
+		Grid<ThrowingMove> backGrid(1, 1);
+		CHECK_THROWS(static_cast<void>(std::move(backGrid).back()));
+	}
+
+	SUBCASE("geometric transformations propagate swap exceptions")
+	{
+		Grid<ThrowingSwappable> rotateGrid(2, 1);
+		CHECK_THROWS(rotateGrid.rotate180());
+
+		Grid<ThrowingSwappable> mirrorGrid(2, 1);
+		CHECK_THROWS(mirrorGrid.mirror());
+
+		Grid<ThrowingSwappable> flipGrid(1, 2);
+		CHECK_THROWS(flipGrid.flip());
 	}
 }
 
