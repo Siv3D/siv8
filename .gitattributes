@@ -3,3 +3,5 @@
 # Byte-exact test fixtures opt out by declaring `binary` in their own
 # .gitattributes (see Test/data/).
 * text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
