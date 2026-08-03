@@ -303,12 +303,24 @@ namespace
 		std::forward<GridType>(grid).row(0);
 	};
 
+	template <class GridType>
+	concept HasRows = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).rows();
+	};
+
 # if defined(__cpp_lib_ranges_stride)
 
 	template <class GridType>
 	concept HasColumn = requires(GridType&& grid)
 	{
 		std::forward<GridType>(grid).column(0);
+	};
+
+	template <class GridType>
+	concept HasColumns = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).columns();
 	};
 
 # endif
@@ -690,6 +702,97 @@ TEST_CASE("Grid.view lifetime")
 
 # endif
 }
+
+TEST_CASE("Grid.rows")
+{
+	static_assert(HasRows<Grid<int32>&>);
+	static_assert(HasRows<const Grid<int32>&>);
+	static_assert(not HasRows<Grid<int32>>);
+	static_assert(not HasRows<const Grid<int32>>);
+
+	Grid<int32> grid = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+	};
+
+	auto rows = grid.rows();
+	CHECK(std::ranges::distance(rows) == 2);
+	for (auto row : rows)
+	{
+		CHECK(row.size() == 3);
+		row.front() *= 10;
+	}
+	CHECK(grid == Grid<int32>{ { 10, 2, 3 }, { 40, 5, 6 } });
+
+	auto copiedRows = rows;
+	(*copiedRows.begin())[1] = 20;
+	CHECK(grid[0, 1] == 20);
+
+	Array<int32> values;
+	for (const auto row : std::as_const(grid).rows())
+	{
+		values.append(row.begin(), row.end());
+	}
+	CHECK(values == Array<int32>{ 10, 20, 3, 40, 5, 6 });
+
+	const Grid<int32> noRows(Size{ 3, 0 });
+	CHECK(std::ranges::empty(noRows.rows()));
+
+	const Grid<int32> emptyRows(Size{ 0, 3 });
+	CHECK(std::ranges::distance(emptyRows.rows()) == 3);
+	for (const auto row : emptyRows.rows())
+	{
+		CHECK(row.empty());
+	}
+}
+
+# if defined(__cpp_lib_ranges_stride)
+
+TEST_CASE("Grid.columns")
+{
+	static_assert(HasColumns<Grid<int32>&>);
+	static_assert(HasColumns<const Grid<int32>&>);
+	static_assert(not HasColumns<Grid<int32>>);
+	static_assert(not HasColumns<const Grid<int32>>);
+
+	Grid<int32> grid = {
+		{ 3, 6, 9 },
+		{ 1, 5, 8 },
+		{ 2, 4, 7 },
+	};
+
+	auto columns = grid.columns();
+	CHECK(std::ranges::distance(columns) == 3);
+	for (auto column : columns)
+	{
+		CHECK(std::ranges::distance(column) == 3);
+		std::ranges::sort(column);
+	}
+	CHECK(grid == Grid<int32>{ { 1, 4, 7 }, { 2, 5, 8 }, { 3, 6, 9 } });
+
+	auto copiedColumns = columns;
+	(*copiedColumns.begin()).front() = 10;
+	CHECK(grid[0, 0] == 10);
+
+	Array<int32> values;
+	for (const auto column : std::as_const(grid).columns())
+	{
+		values.append(column.begin(), column.end());
+	}
+	CHECK(values == Array<int32>{ 10, 2, 3, 4, 5, 6, 7, 8, 9 });
+
+	const Grid<int32> noColumns(Size{ 0, 3 });
+	CHECK(std::ranges::empty(noColumns.columns()));
+
+	const Grid<int32> emptyColumns(Size{ 3, 0 });
+	CHECK(std::ranges::distance(emptyColumns.columns()) == 3);
+	for (const auto column : emptyColumns.columns())
+	{
+		CHECK(std::ranges::empty(column));
+	}
+}
+
+# endif
 
 TEST_CASE("Grid.delegated operation constraints")
 {

@@ -705,6 +705,29 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	rows
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各行の要素にアクセスするビューを行優先で列挙する range を返します。
+		/// @return 各行の要素にアクセスする `std::span<value_type>` の range
+		/// @remark 返された range はこの Grid を参照します。Grid の破棄またはサイズ変更後は使用できません。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
+		[[nodiscard]]
+		constexpr auto rows() & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 各行の要素にアクセスするビューを行優先で列挙する range を返します。
+		/// @return 各行の要素にアクセスする `std::span<const value_type>` の range
+		/// @remark 返された range はこの Grid を参照します。Grid の破棄またはサイズ変更後は使用できません。
+		[[nodiscard]]
+		constexpr auto rows() const& noexcept SIV3D_LIFETIMEBOUND;
+
+		void rows() && = delete;
+
+		void rows() const&& = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	column
 		//
 		////////////////////////////////////////////////////////////////
@@ -727,6 +750,29 @@ namespace s3d
 		void column(size_type) && = delete;
 
 		void column(size_type) const&& = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	columns
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各列の要素にアクセスするビューを列優先で列挙する range を返します。
+		/// @return 各列の要素にアクセスする range の range
+		/// @remark 返された range はこの Grid を参照します。Grid の破棄またはサイズ変更後は使用できません。
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
+		[[nodiscard]]
+		constexpr auto columns() & noexcept SIV3D_LIFETIMEBOUND;
+
+		/// @brief 各列の要素にアクセスするビューを列優先で列挙する range を返します。
+		/// @return 各列の要素にアクセスする range の range
+		/// @remark 返された range はこの Grid を参照します。Grid の破棄またはサイズ変更後は使用できません。
+		[[nodiscard]]
+		constexpr auto columns() const& noexcept SIV3D_LIFETIMEBOUND;
+
+		void columns() && = delete;
+
+		void columns() const&& = delete;
 
 	# endif
 

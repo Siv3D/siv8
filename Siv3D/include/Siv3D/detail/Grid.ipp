@@ -773,6 +773,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	rows
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::rows() & noexcept
+	{
+		return (std::views::iota(size_type{ 0 }, static_cast<size_type>(m_size.y))
+			| std::views::transform([this](const size_type y) { return row(y); }));
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::rows() const& noexcept
+	{
+		return (std::views::iota(size_type{ 0 }, static_cast<size_type>(m_size.y))
+			| std::views::transform([this](const size_type y) { return row(y); }));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	column
 	//
 	////////////////////////////////////////////////////////////////
@@ -791,6 +811,26 @@ namespace s3d
 	{
 		assert(x < static_cast<size_type>(m_size.x));
 		return (m_container | std::views::drop(x) | std::views::stride(m_size.x));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	columns
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::columns() & noexcept
+	{
+		return (std::views::iota(size_type{ 0 }, static_cast<size_type>(m_size.x))
+			| std::views::transform([this](const size_type x) { return column(x); }));
+	}
+
+	template <class Type, class Allocator>
+	constexpr auto Grid<Type, Allocator>::columns() const& noexcept
+	{
+		return (std::views::iota(size_type{ 0 }, static_cast<size_type>(m_size.x))
+			| std::views::transform([this](const size_type x) { return column(x); }));
 	}
 
 # endif
