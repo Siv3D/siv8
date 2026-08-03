@@ -217,6 +217,16 @@ namespace
 		}
 	};
 
+	struct NonDefaultConstructible
+	{
+		int32 value;
+
+		NonDefaultConstructible() = delete;
+
+		constexpr explicit NonDefaultConstructible(const int32 value)
+			: value{ value } {}
+	};
+
 	template <class Type>
 	struct StatefulAllocator
 	{
@@ -379,6 +389,111 @@ TEST_CASE("Grid.constructor")
 		CHECK(grid.size() == Size{ 0, 0 });
 		CHECK(grid.empty());
 	}
+}
+
+TEST_CASE("Grid.Generate")
+{
+	static_assert(not std::default_initializable<NonDefaultConstructible>);
+
+	int32 value = 0;
+	const auto generated = Grid<NonDefaultConstructible>::Generate(Size{ 2, 2 },
+		[&value]() { return NonDefaultConstructible{ value++ }; });
+
+	CHECK(generated.size() == Size{ 2, 2 });
+	CHECK(generated[0, 0].value == 0);
+	CHECK(generated[0, 1].value == 1);
+	CHECK(generated[1, 0].value == 2);
+	CHECK(generated[1, 1].value == 3);
+
+	const Grid<NonDefaultConstructible> constructed(Size{ 2, 1 },
+		Arg::generator = []() { return NonDefaultConstructible{ 42 }; });
+	CHECK(constructed.size() == Size{ 2, 1 });
+	CHECK(constructed[0, 0].value == 42);
+	CHECK(constructed[0, 1].value == 42);
+
+	int32 calls = 0;
+	const auto empty = Grid<NonDefaultConstructible>::Generate(Size{ 3, 0 },
+		[&calls]() { ++calls; return NonDefaultConstructible{ 0 }; });
+	CHECK(empty.size() == Size{ 3, 0 });
+	CHECK(empty.empty());
+	CHECK(calls == 0);
+
+	const auto invalid = Grid<NonDefaultConstructible>::Generate(Size{ -1, 2 },
+		[&calls]() { ++calls; return NonDefaultConstructible{ 0 }; });
+	CHECK(invalid.size() == Size{ 0, 0 });
+	CHECK(invalid.empty());
+	CHECK(calls == 0);
+}
+
+TEST_CASE("Grid.IndexedGenerate")
+{
+	const auto generatedXY = Grid<NonDefaultConstructible>::IndexedGenerate(Size{ 2, 2 },
+		[](const int32 x, const int32 y) { return NonDefaultConstructible{ (y * 10 + x) }; });
+	CHECK(generatedXY[0, 0].value == 0);
+	CHECK(generatedXY[0, 1].value == 1);
+	CHECK(generatedXY[1, 0].value == 10);
+	CHECK(generatedXY[1, 1].value == 11);
+
+	const auto generatedPoint = Grid<NonDefaultConstructible>::IndexedGenerate(Size{ 2, 2 },
+		[](const Point pos) { return NonDefaultConstructible{ (pos.y * 10 + pos.x) }; });
+	CHECK(generatedPoint[0, 0].value == 0);
+	CHECK(generatedPoint[0, 1].value == 1);
+	CHECK(generatedPoint[1, 0].value == 10);
+	CHECK(generatedPoint[1, 1].value == 11);
+
+	const Grid<NonDefaultConstructible> constructedXY(Size{ 2, 1 },
+		Arg::generator = [](const int32 x, const int32 y) { return NonDefaultConstructible{ (y * 10 + x) }; });
+	CHECK(constructedXY[0, 0].value == 0);
+	CHECK(constructedXY[0, 1].value == 1);
+
+	const Grid<NonDefaultConstructible> constructedPoint(Size{ 1, 2 },
+		Arg::generator = [](const Point pos) { return NonDefaultConstructible{ (pos.y * 10 + pos.x) }; });
+	CHECK(constructedPoint[0, 0].value == 0);
+	CHECK(constructedPoint[1, 0].value == 10);
+
+	int32 calls = 0;
+	const auto empty = Grid<NonDefaultConstructible>::IndexedGenerate(Size{ 0, 3 },
+		[&calls](const int32, const int32) { ++calls; return NonDefaultConstructible{ 0 }; });
+	CHECK(empty.size() == Size{ 0, 3 });
+	CHECK(empty.empty());
+	CHECK(calls == 0);
+
+	const auto invalid = Grid<NonDefaultConstructible>::IndexedGenerate(Size{ 2, -1 },
+		[&calls](const Point) { ++calls; return NonDefaultConstructible{ 0 }; });
+	CHECK(invalid.size() == Size{ 0, 0 });
+	CHECK(invalid.empty());
+	CHECK(calls == 0);
+}
+
+TEST_CASE("Grid.map non-default-constructible result")
+{
+	const Grid<int32> source = {
+		{ 1, 2 },
+		{ 3, 4 },
+	};
+
+	const auto mapped = source.map([](const int32 value)
+		{
+			return NonDefaultConstructible{ (value * 2) };
+		});
+
+	static_assert(std::same_as<std::remove_cvref_t<decltype(mapped)>, Grid<NonDefaultConstructible>>);
+	CHECK(mapped.size() == source.size());
+	CHECK(mapped[0, 0].value == 2);
+	CHECK(mapped[0, 1].value == 4);
+	CHECK(mapped[1, 0].value == 6);
+	CHECK(mapped[1, 1].value == 8);
+	CHECK(mapped.map(&NonDefaultConstructible::value) == Grid<int32>{ { 2, 4 }, { 6, 8 } });
+
+	int32 calls = 0;
+	const auto empty = Grid<int32>{ Size{ 3, 0 } }.map([&calls](const int32)
+		{
+			++calls;
+			return NonDefaultConstructible{ 0 };
+		});
+	CHECK(empty.size() == Size{ 3, 0 });
+	CHECK(empty.empty());
+	CHECK(calls == 0);
 }
 
 TEST_CASE("Grid.rvalue operator[]")

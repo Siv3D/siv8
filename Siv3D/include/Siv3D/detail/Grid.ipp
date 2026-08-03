@@ -171,55 +171,15 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size, Arg::generator_<FunctionRef<value_type()>> generator)
-		: m_size{ detail::CheckedSize(size) }
-		, m_container(m_size.area())
-	{
-		const auto& f = *generator;
-
-		value_type* pDst = m_container.data();
-		const value_type* const pDstEnd = (pDst + m_container.size());
-
-		while (pDst != pDstEnd)
-		{
-			*pDst++ = f();
-		}
-	}
+		: Grid(Generate(size, *generator)) {}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size, Arg::generator_<FunctionRef<value_type(int32, int32)>> generator)
-		: m_size{ detail::CheckedSize(size) }
-		, m_container(m_size.area())
-	{
-		const auto& f = *generator;
-
-		value_type* pDst = m_container.data();
-
-		for (int32 y = 0; y < m_size.y; ++y)
-		{
-			for (int32 x = 0; x < m_size.x; ++x)
-			{
-				*pDst++ = f(x, y);
-			}
-		}
-	}
+		: Grid(IndexedGenerate(size, *generator)) {}
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const Size size, Arg::generator_<FunctionRef<value_type(Point)>> generator)
-		: m_size{ detail::CheckedSize(size) }
-		, m_container(m_size.area())
-	{
-		const auto& f = *generator;
-
-		value_type* pDst = m_container.data();
-
-		for (int32 y = 0; y < m_size.y; ++y)
-		{
-			for (int32 x = 0; x < m_size.x; ++x)
-			{
-				*pDst++ = f(Point{ x, y });
-			}
-		}
-	}
+		: Grid(IndexedGenerate(size, *generator)) {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1797,16 +1757,8 @@ namespace s3d
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
-		Grid<result_value_type> result(m_size);
-
-		auto itDst = result.begin();
-
-		for (const auto& value : m_container)
-		{
-			*itDst++ = f(value);
-		}
-
-		return result;
+		auto it = m_container.cbegin();
+		return Grid<result_value_type>::Generate(m_size, [&f, &it]() { return std::invoke(f, *it++); });
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2434,6 +2386,72 @@ namespace s3d
 			&& detail::GridHasParallelMap<const container_type, Fty>
 	{
 		return Grid(m_size, m_container.parallel_map(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Generate
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::Generate(const Size size, FunctionRef<value_type()> generator)
+	{
+		Grid result;
+		result.m_size = detail::CheckedSize(size);
+		const size_type count = static_cast<size_type>(result.m_size.area());
+		result.m_container.reserve(count);
+
+		for (size_type i = 0; i < count; ++i)
+		{
+			result.m_container.push_back(generator());
+		}
+
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	IndexedGenerate
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::IndexedGenerate(const Size size, FunctionRef<value_type(int32, int32)> generator)
+	{
+		Grid result;
+		result.m_size = detail::CheckedSize(size);
+		const size_type count = static_cast<size_type>(result.m_size.area());
+		result.m_container.reserve(count);
+
+		for (int32 y = 0; y < result.m_size.y; ++y)
+		{
+			for (int32 x = 0; x < result.m_size.x; ++x)
+			{
+				result.m_container.push_back(generator(x, y));
+			}
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::IndexedGenerate(const Size size, FunctionRef<value_type(Point)> generator)
+	{
+		Grid result;
+		result.m_size = detail::CheckedSize(size);
+		const size_type count = static_cast<size_type>(result.m_size.area());
+		result.m_container.reserve(count);
+
+		for (int32 y = 0; y < result.m_size.y; ++y)
+		{
+			for (int32 x = 0; x < result.m_size.x; ++x)
+			{
+				result.m_container.push_back(generator(Point{ x, y }));
+			}
+		}
+
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////

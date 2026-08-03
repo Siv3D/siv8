@@ -1678,6 +1678,39 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	Generate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 関数を用いて二次元配列を生成します。
+		/// @param size 生成する二次元配列の幅と高さ
+		/// @param generator 生成に使用する関数
+		/// @return 生成した二次元配列
+		[[nodiscard]]
+		static constexpr Grid Generate(Size size, FunctionRef<value_type()> generator);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IndexedGenerate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 座標と関数を用いて二次元配列を生成します。
+		/// @param size 生成する二次元配列の幅と高さ
+		/// @param generator 生成に使用する関数。列、行の順で座標 `(x, y)` を受け取ります。
+		/// @return 生成した二次元配列
+		[[nodiscard]]
+		static constexpr Grid IndexedGenerate(Size size, FunctionRef<value_type(int32, int32)> generator);
+
+		/// @brief 座標と関数を用いて二次元配列を生成します。
+		/// @param size 生成する二次元配列の幅と高さ
+		/// @param generator 生成に使用する関数。座標 `Point{ x, y }` を受け取ります。
+		/// @return 生成した二次元配列
+		[[nodiscard]]
+		static constexpr Grid IndexedGenerate(Size size, FunctionRef<value_type(Point)> generator);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	operator >>
 		//
 		////////////////////////////////////////////////////////////////
