@@ -496,6 +496,98 @@ TEST_CASE("Grid.map non-default-constructible result")
 	CHECK(calls == 0);
 }
 
+TEST_CASE("Grid.each_index")
+{
+	Grid<int32> grid = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+	};
+
+	Array<Point> positions;
+	grid.each_index([&positions](const Point pos, int32& value)
+		{
+			positions.push_back(pos);
+			value += (pos.y * 10 + pos.x);
+		});
+
+	CHECK(positions == Array<Point>{
+		Point{ 0, 0 }, Point{ 1, 0 }, Point{ 2, 0 },
+		Point{ 0, 1 }, Point{ 1, 1 }, Point{ 2, 1 } });
+	CHECK(grid == Grid<int32>{ { 1, 3, 5 }, { 14, 16, 18 } });
+
+	Array<int32> constValues;
+	const Grid<int32>& constGrid = grid;
+	constGrid.each_index([&constValues](const Point pos, const int32& value)
+		{
+			constValues.push_back(value + pos.x + pos.y);
+		});
+	CHECK(constValues == Array<int32>{ 1, 4, 7, 15, 18, 21 });
+
+	int32 calls = 0;
+	Grid<int32>{ Size{ 0, 3 } }.each_index([&calls](const Point, int32&) { ++calls; });
+	CHECK(calls == 0);
+
+	CHECK_THROWS(grid.each_index([](const Point, int32&) { throw 42; }));
+}
+
+TEST_CASE("Grid.map_indexed")
+{
+	const Grid<int32> source = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+	};
+
+	Array<Point> positions;
+	const auto mapped = source.map_indexed([&positions](const Point pos, const int32& value)
+		{
+			positions.push_back(pos);
+			return NonDefaultConstructible{ (value + pos.x * 10 + pos.y * 100) };
+		});
+
+	static_assert(std::same_as<std::remove_cvref_t<decltype(mapped)>, Grid<NonDefaultConstructible>>);
+	CHECK(positions == Array<Point>{
+		Point{ 0, 0 }, Point{ 1, 0 }, Point{ 2, 0 },
+		Point{ 0, 1 }, Point{ 1, 1 }, Point{ 2, 1 } });
+	CHECK(mapped.map(&NonDefaultConstructible::value) == Grid<int32>{ { 1, 12, 23 }, { 104, 115, 126 } });
+	CHECK(source == Grid<int32>{ { 1, 2, 3 }, { 4, 5, 6 } });
+
+	int32 calls = 0;
+	const auto empty = Grid<int32>{ Size{ 0, 3 } }.map_indexed(
+		[&calls](const Point, const int32) { ++calls; return NonDefaultConstructible{ 0 }; });
+	CHECK(empty.size() == Size{ 0, 3 });
+	CHECK(empty.empty());
+	CHECK(calls == 0);
+
+	Grid<std::unique_ptr<int32>> moveOnly(2, 1);
+	moveOnly.each_index([](const Point pos, std::unique_ptr<int32>& value)
+		{
+			value = std::make_unique<int32>(pos.x + 10);
+		});
+	const auto mappedMoveOnly = moveOnly.map_indexed(
+		[](const Point pos, const std::unique_ptr<int32>& value)
+		{
+			return NonDefaultConstructible{ (*value + pos.x) };
+		});
+	CHECK(mappedMoveOnly.map(&NonDefaultConstructible::value) == Grid<int32>{ { 10, 12 } });
+
+	Grid<bool> boolGrid = {
+		{ false, false },
+		{ false, false },
+	};
+	boolGrid.each_index([](const Point pos, bool& value)
+		{
+			value = ((pos.x + pos.y) % 2 == 0);
+		});
+	CHECK(boolGrid == Grid<bool>{ { true, false }, { false, true } });
+	CHECK(boolGrid.map_indexed([](const Point pos, const bool& value)
+		{
+			return (value ? (pos.x + pos.y * 10) : -1);
+		}) == Grid<int32>{ { 0, -1 }, { -1, 11 } });
+
+	CHECK_THROWS(static_cast<void>(source.map_indexed(
+		[](const Point, const int32&) -> int32 { throw 42; })));
+}
+
 TEST_CASE("Grid.rvalue operator[]")
 {
 	SUBCASE("Point")

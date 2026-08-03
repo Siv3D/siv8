@@ -1781,6 +1781,44 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	each_index
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each_index(Fty f)
+		requires std::invocable<Fty&, Point, value_type&>
+	{
+		auto it = m_container.begin();
+
+		for (int32 y = 0; y < m_size.y; ++y)
+		{
+			for (int32 x = 0; x < m_size.x; ++x)
+			{
+				std::invoke(f, Point{ x, y }, *it++);
+			}
+		}
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr void Grid<Type, Allocator>::each_index(Fty f) const
+		requires std::invocable<Fty&, Point, const value_type&>
+	{
+		auto it = m_container.cbegin();
+
+		for (int32 y = 0; y < m_size.y; ++y)
+		{
+			for (int32 x = 0; x < m_size.x; ++x)
+			{
+				std::invoke(f, Point{ x, y }, *it++);
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	fetch
 	//
 	////////////////////////////////////////////////////////////////
@@ -1849,6 +1887,24 @@ namespace s3d
 
 		auto it = m_container.cbegin();
 		return Grid<result_value_type>::Generate(m_size, [&f, &it]() { return std::invoke(f, *it++); });
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	map_indexed
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr auto Grid<Type, Allocator>::map_indexed(Fty f) const
+		requires std::invocable<Fty&, Point, const value_type&>
+	{
+		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, Point, const value_type&>>;
+
+		auto it = m_container.cbegin();
+		return Grid<result_value_type>::IndexedGenerate(m_size,
+			[&f, &it](const Point pos) { return std::invoke(f, pos, *it++); });
 	}
 
 	////////////////////////////////////////////////////////////////

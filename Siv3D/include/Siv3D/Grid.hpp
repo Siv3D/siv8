@@ -1173,6 +1173,30 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	each_index
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての要素とその位置を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark 関数には `Point{ x, y }` と要素への参照を渡します。
+		/// @remark `y = 0..height-1` の各行について `x = 0..width-1` の順（行優先）に呼び出します。
+		template <class Fty>
+		constexpr void each_index(Fty f)
+			requires std::invocable<Fty&, Point, value_type&>;
+
+		/// @brief すべての要素とその位置を順番に引数にして関数を呼び出します。
+		/// @tparam Fty 呼び出す関数の型
+		/// @param f 呼び出す関数
+		/// @remark 関数には `Point{ x, y }` と要素への const 参照を渡します。
+		/// @remark `y = 0..height-1` の各行について `x = 0..width-1` の順（行優先）に呼び出します。
+		template <class Fty>
+		constexpr void each_index(Fty f) const
+			requires std::invocable<Fty&, Point, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	fetch
 		//
 		////////////////////////////////////////////////////////////////
@@ -1237,6 +1261,23 @@ namespace s3d
 		[[nodiscard]]
 		constexpr auto map(Fty f) const
 			requires std::invocable<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	map_indexed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素とその位置に関数を適用した戻り値からなる新しい二次元配列を返します。
+		/// @tparam Fty 各要素に適用する関数の型
+		/// @param f 各要素に適用する関数
+		/// @return 各要素とその位置に関数を適用した戻り値からなる新しい二次元配列
+		/// @remark 関数には `Point{ x, y }` と要素への const 参照を渡します。
+		/// @remark `y = 0..height-1` の各行について `x = 0..width-1` の順（行優先）に適用します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr auto map_indexed(Fty f) const
+			requires std::invocable<Fty&, Point, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
 		//
