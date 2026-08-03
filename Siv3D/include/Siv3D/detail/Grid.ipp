@@ -83,6 +83,12 @@ namespace s3d
 		
 		[[noreturn]]
 		void ThrowGridValuesAtOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridRegionInvalidSize();
+
+		[[noreturn]]
+		void ThrowGridSubgridOutOfRange();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1899,6 +1905,33 @@ namespace s3d
 		return *this;
 	}
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::fill(const Point pos, const Size size, const value_type& value)
+	{
+		if ((size.x < 0) || (size.y < 0))
+		{
+			detail::ThrowGridRegionInvalidSize();
+		}
+
+		const int64 xBegin = std::max<int64>(pos.x, 0);
+		const int64 yBegin = std::max<int64>(pos.y, 0);
+		const int64 xEnd = std::min<int64>((static_cast<int64>(pos.x) + size.x), m_size.x);
+		const int64 yEnd = std::min<int64>((static_cast<int64>(pos.y) + size.y), m_size.y);
+
+		if ((xEnd <= xBegin) || (yEnd <= yBegin))
+		{
+			return *this;
+		}
+
+		for (int64 y = yBegin; y < yEnd; ++y)
+		{
+			auto first = (m_container.begin() + y * m_size.x + xBegin);
+			std::fill(first, (first + (xEnd - xBegin)), value);
+		}
+
+		return *this;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	isSorted
@@ -1959,6 +1992,44 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return m_container.none(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	paste
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::paste(const Point pos, const Grid& source)
+	{
+		if (this == &source)
+		{
+			return *this;
+		}
+
+		const int64 dstXBegin = std::max<int64>(pos.x, 0);
+		const int64 dstYBegin = std::max<int64>(pos.y, 0);
+		const int64 dstXEnd = std::min<int64>((static_cast<int64>(pos.x) + source.m_size.x), m_size.x);
+		const int64 dstYEnd = std::min<int64>((static_cast<int64>(pos.y) + source.m_size.y), m_size.y);
+
+		if ((dstXEnd <= dstXBegin) || (dstYEnd <= dstYBegin))
+		{
+			return *this;
+		}
+
+		const int64 srcXBegin = (dstXBegin - pos.x);
+		const int64 srcYBegin = (dstYBegin - pos.y);
+		const int64 writeWidth = (dstXEnd - dstXBegin);
+
+		for (int64 y = 0; y < (dstYEnd - dstYBegin); ++y)
+		{
+			const auto srcFirst = (source.m_container.begin() + (srcYBegin + y) * source.m_size.x + srcXBegin);
+			auto dstFirst = (m_container.begin() + (dstYBegin + y) * m_size.x + dstXBegin);
+			std::copy_n(srcFirst, writeWidth, dstFirst);
+		}
+
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2416,6 +2487,48 @@ namespace s3d
 		requires std::predicate<Fty&, const value_type&, const value_type&>
 	{
 		return std::move(stable_sort_by(std::forward<Fty>(f)));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	subgrid
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::subgrid(const Point pos, const Size size) const
+	{
+		if ((size.x < 0) || (size.y < 0))
+		{
+			detail::ThrowGridRegionInvalidSize();
+		}
+
+		if ((pos.x < 0) || (pos.y < 0)
+			|| (m_size.x < pos.x) || (m_size.y < pos.y)
+			|| ((m_size.x - pos.x) < size.x) || ((m_size.y - pos.y) < size.y))
+		{
+			detail::ThrowGridSubgridOutOfRange();
+		}
+
+		Grid result;
+		result.m_size = size;
+		result.m_container.reserve(static_cast<size_type>(size.area()));
+
+		for (int32 y = 0; y < size.y; ++y)
+		{
+			const size_type offset = (static_cast<size_type>(pos.y + y) * m_size.x + pos.x);
+			const auto first = (m_container.begin() + offset);
+			result.m_container.insert(result.m_container.end(), first, (first + size.x));
+		}
+
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::subgrid(
+		const int32 x, const int32 y, const int32 w, const int32 h) const
+	{
+		return subgrid(Point{ x, y }, Size{ w, h });
 	}
 
 	////////////////////////////////////////////////////////////////

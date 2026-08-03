@@ -208,6 +208,7 @@
 
 // 動的配列（二次元）| 2D array
 # include <Siv3D/Grid.hpp>
+# include <Siv3D/GridRect.hpp>
 
 // 文字列ルックアップヘルパー | Heterogeneous lookup helper
 # include <Siv3D/HeterogeneousLookupHelper.hpp>

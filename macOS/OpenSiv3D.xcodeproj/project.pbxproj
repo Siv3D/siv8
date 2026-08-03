@@ -869,6 +869,8 @@
 		F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */; };
 		F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B192BADCC7C00222F45 /* Grid.hpp */; };
 		F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1B2BADCC9900222F45 /* Grid.ipp */; };
+		FA0000013000000000000001 /* GridRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000023000000000000002 /* GridRect.hpp */; };
+		FA0000033000000000000003 /* GridRect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000043000000000000004 /* GridRect.ipp */; };
 		F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1D2BAFB65000222F45 /* Base64Value.ipp */; };
 		F9528B202BAFB66200222F45 /* Base64Value.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1F2BAFB66200222F45 /* Base64Value.hpp */; };
 		F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B212BAFB68400222F45 /* SivBase64Value.cpp */; };
@@ -4125,6 +4127,8 @@
 		F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStringView_SIMD.cpp; sourceTree = "<group>"; };
 		F9528B192BADCC7C00222F45 /* Grid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.hpp; sourceTree = "<group>"; };
 		F9528B1B2BADCC9900222F45 /* Grid.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.ipp; sourceTree = "<group>"; };
+		FA0000023000000000000002 /* GridRect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.hpp; sourceTree = "<group>"; };
+		FA0000043000000000000004 /* GridRect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.ipp; sourceTree = "<group>"; };
 		F9528B1D2BAFB65000222F45 /* Base64Value.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Base64Value.ipp; sourceTree = "<group>"; };
 		F9528B1F2BAFB66200222F45 /* Base64Value.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Base64Value.hpp; sourceTree = "<group>"; };
 		F9528B212BAFB68400222F45 /* SivBase64Value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBase64Value.cpp; sourceTree = "<group>"; };
@@ -7140,6 +7144,7 @@
 				F9CD6A122DE2270000EFA782 /* GlyphInfo.ipp */,
 				F9E7947B2C248B03002615BA /* Graphics2D.ipp */,
 				F9528B1B2BADCC9900222F45 /* Grid.ipp */,
+				FA0000043000000000000004 /* GridRect.ipp */,
 				F9E5FC2E2BC15B060081A4F7 /* HalfFloat.ipp */,
 				F9070B802B9F175000383E4D /* HardwareRNG.ipp */,
 				F9070B812B9F175000383E4D /* Hash.ipp */,
@@ -7469,6 +7474,7 @@
 				F97203132BF09DD9000E21DD /* Graphics.hpp */,
 				F9E794792C248AEE002615BA /* Graphics2D.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
+				FA0000023000000000000002 /* GridRect.hpp */,
 				F98111972EC8C68700C50DD1 /* GUIColorStyle.hpp */,
 				F98111982EC8C68700C50DD1 /* GUIShapeStyle.hpp */,
 				F9E5FC2A2BC15AEE0081A4F7 /* HalfFloat.hpp */,
@@ -14655,6 +14661,7 @@
 				F9797ED12F6DCC5D00518D26 /* dr_mp3.h in Headers */,
 				F9DD96672F13EFC00026DFA5 /* PoissonDiskSampler2D.ipp in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
+				FA0000013000000000000001 /* GridRect.hpp in Headers */,
 				F986FFEC2BCFBB53006A4C0F /* SkCodec.h in Headers */,
 				F98605BE2BE4B65B006A4C0F /* InputGroup.hpp in Headers */,
 				F97E6DAC2D79D68E0066E408 /* StringViewAlgorithm.hpp in Headers */,
@@ -15416,6 +15423,7 @@
 				F9070CA42B9F175000383E4D /* CommonFloat.hpp in Headers */,
 				F986014C2BCFBB53006A4C0F /* SkAnnotationKeys.h in Headers */,
 				F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */,
+				FA0000033000000000000003 /* GridRect.ipp in Headers */,
 				F9528C122BBF026F00222F45 /* pool.h in Headers */,
 				F9070CB42B9F175000383E4D /* Duration.hpp in Headers */,
 				F9E794762C247C18002615BA /* MetalRenderer2DCommandManager.hpp in Headers */,

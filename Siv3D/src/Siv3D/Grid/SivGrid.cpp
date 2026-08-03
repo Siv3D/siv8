@@ -97,5 +97,15 @@ namespace s3d
 			// 指定したインデックスが範囲外のため、要素にアクセスできません。
 			throw std::out_of_range{ "Grid::values_at(): index out of range" };
 		}
+
+		void ThrowGridRegionInvalidSize()
+		{
+			throw std::invalid_argument{ "Grid region width and height must not be negative" };
+		}
+
+		void ThrowGridSubgridOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::subgrid(): region out of range" };
+		}
 	}
 }

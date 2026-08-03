@@ -600,6 +600,118 @@ TEST_CASE("Grid.map_indexed")
 		[](const Point, const int32&) -> int32 { throw 42; })));
 }
 
+TEST_CASE("Grid.subgrid")
+{
+	const Grid<int32> source = {
+		{ 11, 12, 13, 14 },
+		{ 21, 22, 23, 24 },
+		{ 31, 32, 33, 34 },
+	};
+
+	CHECK(source.subgrid(Point{ 1, 1 }, Size{ 2, 2 }) == Grid<int32>{ { 22, 23 }, { 32, 33 } });
+	CHECK(source.subgrid(1, 0, 3, 2) == Grid<int32>{ { 12, 13, 14 }, { 22, 23, 24 } });
+	CHECK(source.subgrid(Point{ 0, 0 }, source.size()) == source);
+
+	const auto zeroWidth = source.subgrid(Point{ 4, 1 }, Size{ 0, 2 });
+	CHECK(zeroWidth.size() == Size{ 0, 2 });
+	CHECK(zeroWidth.empty());
+
+	const auto zeroHeight = source.subgrid(Point{ 2, 3 }, Size{ 2, 0 });
+	CHECK(zeroHeight.size() == Size{ 2, 0 });
+	CHECK(zeroHeight.empty());
+
+	const auto zeroSize = source.subgrid(Point{ 4, 3 }, Size{ 0, 0 });
+	CHECK(zeroSize.size() == Size{ 0, 0 });
+	CHECK(zeroSize.empty());
+
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ 0, 0 }, Size{ -1, 1 })), std::invalid_argument);
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ 0, 0 }, Size{ 1, -1 })), std::invalid_argument);
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ -1, 0 }, Size{ 1, 1 })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ 0, -1 }, Size{ 1, 1 })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ 3, 0 }, Size{ 2, 1 })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ 0, 2 }, Size{ 1, 2 })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ 4, 0 }, Size{ 1, 0 })), std::out_of_range);
+	CHECK_THROWS_AS(static_cast<void>(source.subgrid(Point{ std::numeric_limits<int32>::max(), 0 }, Size{ 1, 1 })), std::out_of_range);
+
+	const auto nonDefaultSource = Grid<NonDefaultConstructible>::IndexedGenerate(Size{ 3, 2 },
+		[](const Point pos) { return NonDefaultConstructible{ (pos.y * 10 + pos.x) }; });
+	const auto nonDefaultSubgrid = nonDefaultSource.subgrid(Point{ 1, 0 }, Size{ 2, 2 });
+	CHECK(nonDefaultSubgrid.map(&NonDefaultConstructible::value) == Grid<int32>{ { 1, 2 }, { 11, 12 } });
+}
+
+TEST_CASE("Grid.region fill")
+{
+	Grid<int32> grid(4, 3, 0);
+	CHECK(&grid.fill(Point{ 1, 1 }, Size{ 2, 2 }, 5) == &grid);
+	CHECK(grid == Grid<int32>{ { 0, 0, 0, 0 }, { 0, 5, 5, 0 }, { 0, 5, 5, 0 } });
+
+	grid.fill(Point{ -2, -1 }, Size{ 3, 3 }, 7);
+	CHECK(grid == Grid<int32>{ { 7, 0, 0, 0 }, { 7, 5, 5, 0 }, { 0, 5, 5, 0 } });
+
+	grid.fill(Point{ 3, 2 }, Size{ 3, 2 }, 9);
+	CHECK(grid == Grid<int32>{ { 7, 0, 0, 0 }, { 7, 5, 5, 0 }, { 0, 5, 5, 9 } });
+
+	const Grid<int32> beforeNoOverlap = grid;
+	grid.fill(Point{ 10, 10 }, Size{ 2, 2 }, 1);
+	grid.fill(Point{ std::numeric_limits<int32>::min(), std::numeric_limits<int32>::min() }, Size{ 2, 2 }, 1);
+	grid.fill(Point{ std::numeric_limits<int32>::max(), std::numeric_limits<int32>::max() }, Size{ 2, 2 }, 1);
+	grid.fill(Point{ 0, 0 }, Size{ 0, 2 }, 1);
+	grid.fill(Point{ 0, 0 }, Size{ 2, 0 }, 1);
+	CHECK(grid == beforeNoOverlap);
+
+	CHECK_THROWS_AS(grid.fill(Point{ 0, 0 }, Size{ -1, 1 }, 1), std::invalid_argument);
+	CHECK_THROWS_AS(grid.fill(Point{ 0, 0 }, Size{ 1, -1 }, 1), std::invalid_argument);
+}
+
+TEST_CASE("Grid.paste")
+{
+	const Grid<int32> source = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+	};
+
+	Grid<int32> clippedRight(4, 3, 0);
+	CHECK(&clippedRight.paste(Point{ 2, 1 }, source) == &clippedRight);
+	CHECK(clippedRight == Grid<int32>{ { 0, 0, 0, 0 }, { 0, 0, 1, 2 }, { 0, 0, 4, 5 } });
+
+	Grid<int32> clippedTopLeft(3, 2, 0);
+	clippedTopLeft.paste(Point{ -1, -1 }, source);
+	CHECK(clippedTopLeft == Grid<int32>{ { 5, 6, 0 }, { 0, 0, 0 } });
+
+	const Grid<int32> beforeNoOverlap = clippedTopLeft;
+	clippedTopLeft.paste(Point{ 10, 10 }, source);
+	clippedTopLeft.paste(Point{ std::numeric_limits<int32>::min(), 0 }, source);
+	clippedTopLeft.paste(Point{ std::numeric_limits<int32>::max(), 0 }, source);
+	clippedTopLeft.paste(Point{ 0, 0 }, Grid<int32>{ Size{ 3, 0 } });
+	CHECK(clippedTopLeft == beforeNoOverlap);
+
+	Grid<int32> self = source;
+	CHECK(&self.paste(Point{ 1, 1 }, self) == &self);
+	CHECK(self == source);
+
+	Grid<bool> boolGrid(2, 2, false);
+	boolGrid.paste(Point{ 0, 0 }, Grid<bool>{ { true, false }, { false, true } });
+	CHECK(boolGrid == Grid<bool>{ { true, false }, { false, true } });
+}
+
+TEST_CASE("Grid.Rect region operations")
+{
+	Grid<int32> grid = {
+		{ 1, 2, 3, 4 },
+		{ 5, 6, 7, 8 },
+		{ 9, 10, 11, 12 },
+	};
+
+	CHECK(grid.bounds() == Rect{ 0, 0, 4, 3 });
+	CHECK(Grid<int32>{ Size{ 0, 3 } }.bounds() == Rect{ 0, 0, 0, 3 });
+	CHECK(grid.subgrid(Rect{ 1, 1, 2, 2 }) == Grid<int32>{ { 6, 7 }, { 10, 11 } });
+	CHECK_THROWS_AS(static_cast<void>(grid.subgrid(Rect{ 0, 0, -1, 1 })), std::invalid_argument);
+
+	CHECK(&grid.fill(Rect{ -1, 1, 3, 3 }, 20) == &grid);
+	CHECK(grid == Grid<int32>{ { 1, 2, 3, 4 }, { 20, 20, 7, 8 }, { 20, 20, 11, 12 } });
+	CHECK_THROWS_AS(grid.fill(Rect{ 0, 0, 1, -1 }, 0), std::invalid_argument);
+}
+
 TEST_CASE("Grid.rvalue operator[]")
 {
 	SUBCASE("Point")

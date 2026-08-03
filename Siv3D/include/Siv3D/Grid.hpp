@@ -18,6 +18,8 @@
 
 namespace s3d
 {
+	struct Rect;
+
 	namespace detail
 	{
 		template <class Container, class Fty>
@@ -579,6 +581,18 @@ namespace s3d
 		/// @return 二次元配列の幅と高さ（列数と行数）
 		[[nodiscard]]
 		constexpr Size size() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	bounds
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief この二次元配列の範囲を表す長方形を返します。
+		/// @return `(0, 0)` を左上とし、配列の幅と高さを持つ長方形
+		/// @remark この関数を使用するには `<Siv3D/GridRect.hpp>` をインクルードしてください。
+		[[nodiscard]]
+		constexpr Rect bounds() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1281,6 +1295,24 @@ namespace s3d
 		/// @return *this
 		constexpr Grid& fill(const value_type& value) SIV3D_LIFETIMEBOUND;
 
+		/// @brief 指定した領域と重なる要素に値を代入します。
+		/// @param pos 領域の左上の位置
+		/// @param size 領域の幅と高さ
+		/// @param value 代入する値
+		/// @return *this
+		/// @throw std::invalid_argument 領域の幅または高さが負の場合
+		/// @remark 領域はこの二次元配列の範囲にクリップされます。重なる領域が無い場合は何もしません。
+		constexpr Grid& fill(Point pos, Size size, const value_type& value) SIV3D_LIFETIMEBOUND;
+
+		/// @brief 指定した長方形と重なる要素に値を代入します。
+		/// @param rect 領域を表す長方形
+		/// @param value 代入する値
+		/// @return *this
+		/// @throw std::invalid_argument 長方形の幅または高さが負の場合
+		/// @remark 長方形はこの二次元配列の範囲にクリップされます。重なる領域が無い場合は何もしません。
+		/// @remark この関数を使用するには `<Siv3D/GridRect.hpp>` をインクルードしてください。
+		constexpr Grid& fill(Rect rect, const value_type& value) SIV3D_LIFETIMEBOUND;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	isSorted
@@ -1339,6 +1371,20 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool none(Fty f = Identity) const
 			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	paste
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置に別の二次元配列を貼り付けます。
+		/// @param pos 貼り付け先の左上の位置
+		/// @param source 貼り付ける二次元配列
+		/// @return *this
+		/// @remark 貼り付ける領域はこの二次元配列の範囲にクリップされます。重なる領域が無い場合は何もしません。
+		/// @remark `source` がこの二次元配列自身である場合は何もしません。
+		constexpr Grid& paste(Point pos, const Grid& source) SIV3D_LIFETIMEBOUND;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1717,6 +1763,41 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Grid stable_sorted_by(Fty f) &&
 			requires std::predicate<Fty&, const value_type&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	subgrid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した領域の要素からなる新しい二次元配列を返します。
+		/// @param pos 領域の左上の位置
+		/// @param size 領域の幅と高さ
+		/// @return 指定した領域の要素からなる新しい二次元配列
+		/// @throw std::invalid_argument 領域の幅または高さが負の場合
+		/// @throw std::out_of_range 指定した領域全体がこの二次元配列に収まらない場合
+		[[nodiscard]]
+		constexpr Grid subgrid(Point pos, Size size) const;
+
+		/// @brief 指定した領域の要素からなる新しい二次元配列を返します。
+		/// @param x 領域の左上の X 座標
+		/// @param y 領域の左上の Y 座標
+		/// @param w 領域の幅
+		/// @param h 領域の高さ
+		/// @return 指定した領域の要素からなる新しい二次元配列
+		/// @throw std::invalid_argument 領域の幅または高さが負の場合
+		/// @throw std::out_of_range 指定した領域全体がこの二次元配列に収まらない場合
+		[[nodiscard]]
+		constexpr Grid subgrid(int32 x, int32 y, int32 w, int32 h) const;
+
+		/// @brief 指定した長方形の要素からなる新しい二次元配列を返します。
+		/// @param rect 領域を表す長方形
+		/// @return 指定した長方形の要素からなる新しい二次元配列
+		/// @throw std::invalid_argument 長方形の幅または高さが負の場合
+		/// @throw std::out_of_range 指定した長方形全体がこの二次元配列に収まらない場合
+		/// @remark この関数を使用するには `<Siv3D/GridRect.hpp>` をインクルードしてください。
+		[[nodiscard]]
+		constexpr Grid subgrid(Rect rect) const;
 
 		////////////////////////////////////////////////////////////////
 		//
