@@ -18,6 +18,27 @@
 
 namespace s3d
 {
+	namespace detail
+	{
+		template <class Container, class Fty>
+		concept GridHasParallelCountIf = requires(Container& container, Fty&& function)
+		{
+			container.parallel_count_if(std::forward<Fty>(function));
+		};
+
+		template <class Container, class Fty>
+		concept GridHasParallelEach = requires(Container& container, Fty&& function)
+		{
+			container.parallel_each(std::forward<Fty>(function));
+		};
+
+		template <class Container, class Fty>
+		concept GridHasParallelMap = requires(Container& container, Fty&& function)
+		{
+			container.parallel_map(std::forward<Fty>(function));
+		};
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	Grid
@@ -668,14 +689,19 @@ namespace s3d
 		/// @brief 指定した行の要素にアクセスするビューを返します。
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
-		constexpr std::span<value_type> row(size_type y) noexcept;
+		constexpr std::span<value_type> row(size_type y) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した行の要素にアクセスするビューを返します。
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr std::span<const value_type> row(size_type y) const noexcept;
+		constexpr std::span<const value_type> row(size_type y) const& noexcept SIV3D_LIFETIMEBOUND;
+
+		void row(size_type) && = delete;
+
+		void row(size_type) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -688,14 +714,19 @@ namespace s3d
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
-		constexpr auto column(size_type x) noexcept;
+		constexpr auto column(size_type x) & noexcept SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
 		[[nodiscard]]
-		constexpr auto column(size_type x) const noexcept;
+		constexpr auto column(size_type x) const& noexcept SIV3D_LIFETIMEBOUND;
+
+		void column(size_type) && = delete;
+
+		void column(size_type) const&& = delete;
 
 	# endif
 
@@ -1604,7 +1635,8 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		isize parallel_count_if(Fty f) const
-			requires std::predicate<Fty&, const value_type&>;
+			requires std::predicate<Fty&, const value_type&>
+				&& detail::GridHasParallelCountIf<const container_type, Fty>;
 		
 		////////////////////////////////////////////////////////////////
 		//
@@ -1617,14 +1649,16 @@ namespace s3d
 		/// @param f 関数
 		template <class Fty>
 		void parallel_each(Fty f)
-			requires std::invocable<Fty&, value_type&>;
+			requires std::invocable<Fty&, value_type&>
+				&& detail::GridHasParallelEach<container_type, Fty>;
 
 		/// @brief すべての要素に対して関数を並列実行します。
 		/// @tparam Fty 関数の型
 		/// @param f 関数
 		template <class Fty>
 		void parallel_each(Fty f) const
-			requires std::invocable<Fty&, const value_type&>;
+			requires std::invocable<Fty&, const value_type&>
+				&& detail::GridHasParallelEach<const container_type, Fty>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1639,7 +1673,8 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		auto parallel_map(Fty f) const
-			requires std::invocable<Fty&, const value_type&>;
+			requires std::invocable<Fty&, const value_type&>
+				&& detail::GridHasParallelMap<const container_type, Fty>;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -250,6 +250,100 @@ namespace
 			return (id == other.id);
 		}
 	};
+
+	struct GenericLess
+	{
+		template <class Type>
+		[[nodiscard]]
+		constexpr bool operator ()(const Type& lhs, const Type& rhs) const
+		{
+			return (lhs < rhs);
+		}
+	};
+
+	struct GenericPredicate
+	{
+		template <class Type>
+		[[nodiscard]]
+		constexpr bool operator ()(const Type& value) const
+		{
+			return static_cast<bool>(value);
+		}
+	};
+
+	struct GenericEach
+	{
+		template <class Type>
+		constexpr void operator ()(Type&&) const {}
+	};
+
+	struct GenericMap
+	{
+		template <class Type>
+		[[nodiscard]]
+		constexpr int32 operator ()(const Type&) const
+		{
+			return 0;
+		}
+	};
+
+	template <class GridType>
+	concept HasRow = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).row(0);
+	};
+
+# if defined(__cpp_lib_ranges_stride)
+
+	template <class GridType>
+	concept HasColumn = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).column(0);
+	};
+
+# endif
+
+	template <class GridType>
+	concept HasSortBy = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).sort_by(GenericLess{});
+	};
+
+	template <class GridType>
+	concept HasSortedBy = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).sorted_by(GenericLess{});
+	};
+
+	template <class GridType>
+	concept HasStableSortBy = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).stable_sort_by(GenericLess{});
+	};
+
+	template <class GridType>
+	concept HasStableSortedBy = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).stable_sorted_by(GenericLess{});
+	};
+
+	template <class GridType>
+	concept HasParallelCountIf = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).parallel_count_if(GenericPredicate{});
+	};
+
+	template <class GridType>
+	concept HasParallelEach = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).parallel_each(GenericEach{});
+	};
+
+	template <class GridType>
+	concept HasParallelMap = requires(GridType&& grid)
+	{
+		std::forward<GridType>(grid).parallel_map(GenericMap{});
+	};
 }
 
 TEST_CASE("Grid.constructor")
@@ -351,6 +445,96 @@ TEST_CASE("Grid.exception specifications")
 		Grid<ThrowingSwappable> flipGrid(1, 2);
 		CHECK_THROWS(flipGrid.flip());
 	}
+}
+
+TEST_CASE("Grid.view lifetime")
+{
+	static_assert(HasRow<Grid<int32>&>);
+	static_assert(HasRow<const Grid<int32>&>);
+	static_assert(not HasRow<Grid<int32>>);
+	static_assert(not HasRow<const Grid<int32>>);
+
+# if defined(__cpp_lib_ranges_stride)
+
+	static_assert(HasColumn<Grid<int32>&>);
+	static_assert(HasColumn<const Grid<int32>&>);
+	static_assert(not HasColumn<Grid<int32>>);
+	static_assert(not HasColumn<const Grid<int32>>);
+
+# endif
+
+	Grid<int32> grid = {
+		{ 1, 2 },
+		{ 3, 4 },
+	};
+
+	auto secondRow = grid.row(1);
+	secondRow[0] = 30;
+	CHECK(grid[Point{ 0, 1 }] == 30);
+
+	const Grid<int32>& constGrid = grid;
+	CHECK(constGrid.row(0)[1] == 2);
+
+# if defined(__cpp_lib_ranges_stride)
+
+	auto secondColumn = grid.column(1);
+	secondColumn.front() = 20;
+	CHECK(grid[Point{ 1, 0 }] == 20);
+
+# endif
+}
+
+TEST_CASE("Grid.delegated operation constraints")
+{
+	static_assert(HasSortBy<Grid<int32>&>);
+	static_assert(HasSortBy<Grid<int32>>);
+	static_assert(HasSortedBy<const Grid<int32>&>);
+	static_assert(HasSortedBy<Grid<int32>>);
+	static_assert(HasStableSortBy<Grid<int32>&>);
+	static_assert(HasStableSortBy<Grid<int32>>);
+	static_assert(HasStableSortedBy<const Grid<int32>&>);
+	static_assert(HasStableSortedBy<Grid<int32>>);
+
+	static_assert(HasSortBy<Grid<bool>&>);
+	static_assert(HasSortBy<Grid<bool>>);
+	static_assert(HasSortedBy<const Grid<bool>&>);
+	static_assert(HasSortedBy<Grid<bool>>);
+	static_assert(HasStableSortBy<Grid<bool>&>);
+	static_assert(HasStableSortBy<Grid<bool>>);
+	static_assert(HasStableSortedBy<const Grid<bool>&>);
+	static_assert(HasStableSortedBy<Grid<bool>>);
+
+	static_assert(HasParallelCountIf<const Grid<int32>&>);
+	static_assert(HasParallelEach<Grid<int32>&>);
+	static_assert(HasParallelEach<const Grid<int32>&>);
+	static_assert(HasParallelMap<const Grid<int32>&>);
+
+	static_assert(not HasParallelCountIf<const Grid<bool>&>);
+	static_assert(not HasParallelEach<Grid<bool>&>);
+	static_assert(not HasParallelEach<const Grid<bool>&>);
+	static_assert(not HasParallelMap<const Grid<bool>&>);
+
+	Grid<int32> grid = { { 3, 1, 2 } };
+	grid.sort_by(GenericLess{});
+	CHECK(grid == Grid<int32>{ { 1, 2, 3 } });
+
+	const auto stableSorted = grid.stable_sorted_by([](const int32 lhs, const int32 rhs)
+		{
+			return (rhs < lhs);
+		});
+	CHECK(stableSorted == Grid<int32>{ { 3, 2, 1 } });
+
+	CHECK(grid.parallel_count_if([](const int32 value) { return (1 < value); }) == 2);
+	grid.parallel_each([](int32& value) { ++value; });
+	CHECK(grid == Grid<int32>{ { 2, 3, 4 } });
+	CHECK(grid.parallel_map([](const int32 value) { return (value * 2); }) == Grid<int32>{ { 4, 6, 8 } });
+
+	Grid<bool> boolGrid = { { true, false, true, false } };
+	boolGrid.sort_by(std::greater<>{});
+	CHECK(boolGrid == Grid<bool>{ { true, true, false, false } });
+
+	const Grid<bool> constBoolGrid = { { true, false, true, false } };
+	CHECK(constBoolGrid.stable_sorted_by(std::less<>{}) == Grid<bool>{ { false, false, true, true } });
 }
 
 TEST_CASE("Grid.rotate90")

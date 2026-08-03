@@ -798,14 +798,14 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr std::span<typename Grid<Type, Allocator>::value_type> Grid<Type, Allocator>::row(const size_type y) noexcept
+	constexpr std::span<typename Grid<Type, Allocator>::value_type> Grid<Type, Allocator>::row(const size_type y) & noexcept
 	{
 		assert(y < static_cast<size_type>(m_size.y));
 		return std::span((m_container.data() + (y * m_size.x)), m_size.x);
 	}
 
 	template <class Type, class Allocator>
-	constexpr std::span<const typename Grid<Type, Allocator>::value_type> Grid<Type, Allocator>::row(const size_type y) const noexcept
+	constexpr std::span<const typename Grid<Type, Allocator>::value_type> Grid<Type, Allocator>::row(const size_type y) const& noexcept
 	{
 		assert(y < static_cast<size_type>(m_size.y));
 		return std::span((m_container.data() + (y * m_size.x)), m_size.x);
@@ -820,14 +820,14 @@ namespace s3d
 # if defined(__cpp_lib_ranges_stride)
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::column(const size_type x) noexcept
+	constexpr auto Grid<Type, Allocator>::column(const size_type x) & noexcept
 	{
 		assert(x < static_cast<size_type>(m_size.x));
 		return (m_container | std::views::drop(x) | std::views::stride(m_size.x));
 	}
 
 	template <class Type, class Allocator>
-	constexpr auto Grid<Type, Allocator>::column(const size_type x) const noexcept
+	constexpr auto Grid<Type, Allocator>::column(const size_type x) const& noexcept
 	{
 		assert(x < static_cast<size_type>(m_size.x));
 		return (m_container | std::views::drop(x) | std::views::stride(m_size.x));
@@ -2392,6 +2392,7 @@ namespace s3d
 	template <class Fty>
 	isize Grid<Type, Allocator>::parallel_count_if(Fty f) const
 		requires std::predicate<Fty&, const value_type&>
+			&& detail::GridHasParallelCountIf<const container_type, Fty>
 	{
 		return m_container.parallel_count_if(std::forward<Fty>(f));
 	}
@@ -2406,6 +2407,7 @@ namespace s3d
 	template <class Fty>
 	void Grid<Type, Allocator>::parallel_each(Fty f)
 		requires std::invocable<Fty&, value_type&>
+			&& detail::GridHasParallelEach<container_type, Fty>
 	{
 		m_container.parallel_each(std::forward<Fty>(f));
 	}
@@ -2414,6 +2416,7 @@ namespace s3d
 	template <class Fty>
 	void Grid<Type, Allocator>::parallel_each(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
+			&& detail::GridHasParallelEach<const container_type, Fty>
 	{
 		m_container.parallel_each(std::forward<Fty>(f));
 	}
@@ -2428,6 +2431,7 @@ namespace s3d
 	template <class Fty>
 	auto Grid<Type, Allocator>::parallel_map(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
+			&& detail::GridHasParallelMap<const container_type, Fty>
 	{
 		return Grid(m_size, m_container.parallel_map(std::forward<Fty>(f)));
 	}
