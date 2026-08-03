@@ -466,6 +466,57 @@ TEST_CASE("Grid.Generate")
 	CHECK(calls == 0);
 }
 
+TEST_CASE("Grid.generator CTAD")
+{
+	const auto generated = Grid(2, 2, Arg::generator = []() -> int16 { return 7; });
+	static_assert(std::same_as<std::remove_cvref_t<decltype(generated)>, Grid<int16>>);
+	CHECK(generated == Grid<int16>(2, 2, 7));
+
+	const auto generatedSize = Grid(Size{ 2, 1 }, Arg::generator = []() -> int32 { return 8; });
+	static_assert(std::same_as<std::remove_cvref_t<decltype(generatedSize)>, Grid<int32>>);
+	CHECK(generatedSize == Grid<int32>{ { 8, 8 } });
+
+	const auto indexedXY = Grid(2, 2, Arg::generator = [](const int32 x, const int32 y) -> int64
+		{
+			return (y * 10 + x);
+		});
+	static_assert(std::same_as<std::remove_cvref_t<decltype(indexedXY)>, Grid<int64>>);
+	CHECK(indexedXY == Grid<int64>{ { 0, 1 }, { 10, 11 } });
+
+	const auto indexedXYSize = Grid(Size{ 2, 1 }, Arg::generator = [](const int32 x, const int32 y) -> uint32
+		{
+			return static_cast<uint32>(y * 10 + x);
+		});
+	static_assert(std::same_as<std::remove_cvref_t<decltype(indexedXYSize)>, Grid<uint32>>);
+	CHECK(indexedXYSize == Grid<uint32>{ { 0, 1 } });
+
+	const auto indexedPoint = Grid(2, 2, Arg::generator = [](const Point pos)
+		{
+			return NonDefaultConstructible{ (pos.y * 10 + pos.x) };
+		});
+	static_assert(std::same_as<std::remove_cvref_t<decltype(indexedPoint)>, Grid<NonDefaultConstructible>>);
+	CHECK(indexedPoint.map(&NonDefaultConstructible::value) == Grid<int32>{ { 0, 1 }, { 10, 11 } });
+
+	const auto indexedPointSize = Grid(Size{ 2, 1 }, Arg::generator = [](const Point pos) -> int32
+		{
+			return pos.x;
+		});
+	static_assert(std::same_as<std::remove_cvref_t<decltype(indexedPointSize)>, Grid<int32>>);
+	CHECK(indexedPointSize == Grid<int32>{ { 0, 1 } });
+
+	const int32 referencedValue = 42;
+	const auto referenceResult = Grid(1, 1, Arg::generator = [&referencedValue]() -> const int32&
+		{
+			return referencedValue;
+		});
+	static_assert(std::same_as<std::remove_cvref_t<decltype(referenceResult)>, Grid<int32>>);
+	CHECK(referenceResult == Grid<int32>{ { 42 } });
+
+	const auto filled = Grid(2, 1, int16{ 9 });
+	static_assert(std::same_as<std::remove_cvref_t<decltype(filled)>, Grid<int16>>);
+	CHECK(filled == Grid<int16>{ { 9, 9 } });
+}
+
 TEST_CASE("Grid.IndexedGenerate")
 {
 	const auto generatedXY = Grid<NonDefaultConstructible>::IndexedGenerate(Size{ 2, 2 },

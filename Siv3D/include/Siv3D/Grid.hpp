@@ -2299,6 +2299,42 @@ namespace s3d
 
 	template <class Type>
 	Grid(Size, Array<Type>) -> Grid<Type>;
+
+	template <class Generator>
+		requires std::invocable<const Generator&>
+	Grid(size_t, size_t, Arg::generator_<Generator>)
+		-> Grid<std::decay_t<std::invoke_result_t<const Generator&>>>;
+
+	template <class Generator>
+		requires (not std::invocable<const Generator&>
+			&& std::invocable<const Generator&, int32, int32>)
+	Grid(size_t, size_t, Arg::generator_<Generator>)
+		-> Grid<std::decay_t<std::invoke_result_t<const Generator&, int32, int32>>>;
+
+	template <class Generator>
+		requires (not std::invocable<const Generator&>
+			&& not std::invocable<const Generator&, int32, int32>
+			&& std::invocable<const Generator&, Point>)
+	Grid(size_t, size_t, Arg::generator_<Generator>)
+		-> Grid<std::decay_t<std::invoke_result_t<const Generator&, Point>>>;
+
+	template <class Generator>
+		requires std::invocable<const Generator&>
+	Grid(Size, Arg::generator_<Generator>)
+		-> Grid<std::decay_t<std::invoke_result_t<const Generator&>>>;
+
+	template <class Generator>
+		requires (not std::invocable<const Generator&>
+			&& std::invocable<const Generator&, int32, int32>)
+	Grid(Size, Arg::generator_<Generator>)
+		-> Grid<std::decay_t<std::invoke_result_t<const Generator&, int32, int32>>>;
+
+	template <class Generator>
+		requires (not std::invocable<const Generator&>
+			&& not std::invocable<const Generator&, int32, int32>
+			&& std::invocable<const Generator&, Point>)
+	Grid(Size, Arg::generator_<Generator>)
+		-> Grid<std::decay_t<std::invoke_result_t<const Generator&, Point>>>;
 }
 
 # include "detail/Grid.ipp"
