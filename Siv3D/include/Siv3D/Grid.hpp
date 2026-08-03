@@ -940,59 +940,129 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	rotate90
+		//	rotate90, rotated90
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 90° 回転します。
+		/// @brief 時計回りに 90° 回転します。
 		/// @remark 幅と高さが入れ替わります。
+		/// @remark `rotate_rows()` / `rotate_columns()` は行・列の巡回シフトであり、この幾何回転とは異なります。
 		void rotate90();
 
+		/// @brief 時計回りに 90° 回転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		/// @remark 幅と高さが入れ替わります。
+		[[nodiscard]]
+		Grid rotated90() const&;
+
+		/// @brief 時計回りに 90° 回転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		/// @remark 幅と高さが入れ替わります。
+		[[nodiscard]]
+		Grid rotated90() &&;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	rotate180
+		//	rotate180, rotated180
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 180° 回転します。
 		constexpr void rotate180() noexcept(std::is_nothrow_swappable_v<value_type>);
 
+		/// @brief 180° 回転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		[[nodiscard]]
+		constexpr Grid rotated180() const&;
+
+		/// @brief 180° 回転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		[[nodiscard]]
+		constexpr Grid rotated180() &&;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	rotate270
+		//	rotate270, rotated270
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 270° 回転します。
+		/// @brief 時計回りに 270° 回転します。
 		/// @remark 幅と高さが入れ替わります。
+		/// @remark 反時計回りの 90° 回転と同じです。
+		/// @remark `rotate_rows()` / `rotate_columns()` は行・列の巡回シフトであり、この幾何回転とは異なります。
 		void rotate270();
 
+		/// @brief 時計回りに 270° 回転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		/// @remark 幅と高さが入れ替わります。
+		[[nodiscard]]
+		Grid rotated270() const&;
+
+		/// @brief 時計回りに 270° 回転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		/// @remark 幅と高さが入れ替わります。
+		[[nodiscard]]
+		Grid rotated270() &&;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	mirror
+		//	mirror, mirrored
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 左右反転します。
 		constexpr void mirror() noexcept(std::is_nothrow_swappable_v<value_type>);
 
+		/// @brief 左右反転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		[[nodiscard]]
+		constexpr Grid mirrored() const&;
+
+		/// @brief 左右反転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		[[nodiscard]]
+		constexpr Grid mirrored() &&;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	flip
+		//	flip, flipped
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 上下反転します。
 		constexpr void flip() noexcept(std::is_nothrow_swappable_v<value_type>);
 
+		/// @brief 上下反転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		[[nodiscard]]
+		constexpr Grid flipped() const&;
+
+		/// @brief 上下反転した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		[[nodiscard]]
+		constexpr Grid flipped() &&;
+
 		////////////////////////////////////////////////////////////////
 		//
-		//	transpose
+		//	transpose, transposed
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 転置します。
+		/// @remark 幅と高さが入れ替わります。
 		void transpose();
+
+		/// @brief 転置した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		/// @remark 幅と高さが入れ替わります。
+		[[nodiscard]]
+		Grid transposed() const&;
+
+		/// @brief 転置した新しい二次元配列を返します。
+		/// @return 新しい二次元配列
+		/// @remark 幅と高さが入れ替わります。
+		[[nodiscard]]
+		Grid transposed() &&;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -1383,6 +1383,21 @@ namespace s3d
 		}
 	}
 
+	template <class Type, class Allocator>
+	Grid<Type, Allocator> Grid<Type, Allocator>::rotated90() const&
+	{
+		Grid result(*this);
+		result.rotate90();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	Grid<Type, Allocator> Grid<Type, Allocator>::rotated90() &&
+	{
+		rotate90();
+		return std::move(*this);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	rotate180
@@ -1393,6 +1408,21 @@ namespace s3d
 	constexpr void Grid<Type, Allocator>::rotate180() noexcept(std::is_nothrow_swappable_v<value_type>)
 	{
 		std::reverse(m_container.begin(), m_container.end());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated180() const&
+	{
+		Grid result(*this);
+		result.rotate180();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated180() &&
+	{
+		rotate180();
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1468,6 +1498,21 @@ namespace s3d
 		}
 	}
 
+	template <class Type, class Allocator>
+	Grid<Type, Allocator> Grid<Type, Allocator>::rotated270() const&
+	{
+		Grid result(*this);
+		result.rotate270();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	Grid<Type, Allocator> Grid<Type, Allocator>::rotated270() &&
+	{
+		rotate270();
+		return std::move(*this);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	mirror
@@ -1486,6 +1531,21 @@ namespace s3d
 		}
 	}
 
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::mirrored() const&
+	{
+		Grid result(*this);
+		result.mirror();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::mirrored() &&
+	{
+		mirror();
+		return std::move(*this);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	flip
@@ -1502,6 +1562,21 @@ namespace s3d
 
 			std::swap_ranges(rowTop, (rowTop + m_size.x), rowBottom);
 		}
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::flipped() const&
+	{
+		Grid result(*this);
+		result.flip();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::flipped() &&
+	{
+		flip();
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1585,6 +1660,21 @@ namespace s3d
 
 			swap(newGrid);
 		}
+	}
+
+	template <class Type, class Allocator>
+	Grid<Type, Allocator> Grid<Type, Allocator>::transposed() const&
+	{
+		Grid result(*this);
+		result.transpose();
+		return result;
+	}
+
+	template <class Type, class Allocator>
+	Grid<Type, Allocator> Grid<Type, Allocator>::transposed() &&
+	{
+		transpose();
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

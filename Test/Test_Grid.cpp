@@ -823,3 +823,83 @@ TEST_CASE("Grid.transpose")
 		CHECK(grid == grid9x9_0);
 	}
 }
+
+TEST_CASE("Grid.non-mutating geometric transformations")
+{
+	const Grid<int32> source = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+	};
+
+	const Grid<int32> rotated90 = {
+		{ 4, 1 },
+		{ 5, 2 },
+		{ 6, 3 },
+	};
+	const Grid<int32> rotated180 = {
+		{ 6, 5, 4 },
+		{ 3, 2, 1 },
+	};
+	const Grid<int32> rotated270 = {
+		{ 3, 6 },
+		{ 2, 5 },
+		{ 1, 4 },
+	};
+	const Grid<int32> mirrored = {
+		{ 3, 2, 1 },
+		{ 6, 5, 4 },
+	};
+	const Grid<int32> flipped = {
+		{ 4, 5, 6 },
+		{ 1, 2, 3 },
+	};
+	const Grid<int32> transposed = {
+		{ 1, 4 },
+		{ 2, 5 },
+		{ 3, 6 },
+	};
+
+	CHECK(source.rotated90() == rotated90);
+	CHECK(source.rotated180() == rotated180);
+	CHECK(source.rotated270() == rotated270);
+	CHECK(source.mirrored() == mirrored);
+	CHECK(source.flipped() == flipped);
+	CHECK(source.transposed() == transposed);
+	CHECK(source == Grid<int32>{ { 1, 2, 3 }, { 4, 5, 6 } });
+	CHECK(source.rotated90().rotated90().rotated90().rotated90() == source);
+	CHECK(source.mirrored().mirrored() == source);
+	CHECK(source.transposed().transposed() == source);
+
+	CHECK(Grid<int32>{ source }.rotated90() == rotated90);
+	CHECK(Grid<int32>{ source }.rotated180() == rotated180);
+	CHECK(Grid<int32>{ source }.rotated270() == rotated270);
+	CHECK(Grid<int32>{ source }.mirrored() == mirrored);
+	CHECK(Grid<int32>{ source }.flipped() == flipped);
+	CHECK(Grid<int32>{ source }.transposed() == transposed);
+
+	const Grid<int32> empty;
+	CHECK(empty.rotated90().empty());
+	CHECK(empty.rotated180().empty());
+	CHECK(empty.rotated270().empty());
+	CHECK(empty.mirrored().empty());
+	CHECK(empty.flipped().empty());
+	CHECK(empty.transposed().empty());
+
+	Grid<std::unique_ptr<int32>> moveOnlyGrid(2, 1);
+	moveOnlyGrid[0, 0] = std::make_unique<int32>(10);
+	moveOnlyGrid[0, 1] = std::make_unique<int32>(20);
+	const int32* const first = moveOnlyGrid[0, 0].get();
+	const int32* const second = moveOnlyGrid[0, 1].get();
+
+	const auto movedAndRotated = std::move(moveOnlyGrid).rotated90();
+	CHECK(movedAndRotated.size() == Size{ 1, 2 });
+	CHECK(movedAndRotated[0, 0].get() == first);
+	CHECK(movedAndRotated[1, 0].get() == second);
+
+	const Grid<ThrowingSwappable> horizontal(2, 1);
+	CHECK_THROWS(static_cast<void>(horizontal.rotated180()));
+	CHECK_THROWS(static_cast<void>(horizontal.mirrored()));
+
+	const Grid<ThrowingSwappable> vertical(1, 2);
+	CHECK_THROWS(static_cast<void>(vertical.flipped()));
+}
