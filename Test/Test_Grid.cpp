@@ -194,6 +194,64 @@ namespace
 	};
 }
 
+TEST_CASE("Grid.constructor")
+{
+	SUBCASE("valid size with Array")
+	{
+		const Array<int32> data = { 1, 2, 3 };
+
+		const Grid<int32> copied(2, 2, data);
+		CHECK(copied == Grid<int32>{ { 1, 2 }, { 3, 0 } });
+
+		const Grid<int32> moved(2, 2, Array<int32>{ 1, 2, 3, 4, 5 });
+		CHECK(moved == Grid<int32>{ { 1, 2 }, { 3, 4 } });
+	}
+
+	SUBCASE("invalid size with Array")
+	{
+		const size_t invalidWidth = (static_cast<size_t>(std::numeric_limits<int32>::max()) + 1);
+		const Array<int32> data = { 1, 2, 3 };
+
+		const Grid<int32> copied(invalidWidth, 1, data);
+		CHECK(copied.size() == Size{ 0, 0 });
+		CHECK(copied.empty());
+
+		Grid<int32> moved(invalidWidth, 1, Array<int32>{ 1, 2, 3 });
+		CHECK(moved.size() == Size{ 0, 0 });
+		CHECK(moved.empty());
+	}
+
+	SUBCASE("empty initializer-list")
+	{
+		const Grid<int32> grid(std::initializer_list<std::initializer_list<int32>>{});
+		CHECK(grid.size() == Size{ 0, 0 });
+		CHECK(grid.empty());
+	}
+}
+
+TEST_CASE("Grid.rvalue operator[]")
+{
+	SUBCASE("Point")
+	{
+		Grid<std::unique_ptr<int32>> grid(1, 1);
+		grid[Point{ 0, 0 }] = std::make_unique<int32>(42);
+
+		auto value = std::move(grid)[Point{ 0, 0 }];
+		REQUIRE(value);
+		CHECK(*value == 42);
+	}
+
+	SUBCASE("y, x")
+	{
+		Grid<std::unique_ptr<int32>> grid(1, 1);
+		grid[0, 0] = std::make_unique<int32>(42);
+
+		auto value = std::move(grid)[0, 0];
+		REQUIRE(value);
+		CHECK(*value == 42);
+	}
+}
+
 TEST_CASE("Grid.rotate90")
 {
 	{

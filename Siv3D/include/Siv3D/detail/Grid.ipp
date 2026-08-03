@@ -113,10 +113,10 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const size_type w, const size_type h, const Array<value_type>& data)
-		: m_size{ w, h }
+		: m_size{ detail::CheckedSize(w, h) }
 		, m_container(data)
 	{
-		m_container.resize(w * h);
+		m_container.resize(m_size.area());
 	}
 
 	template <class Type, class Allocator>
@@ -124,7 +124,7 @@ namespace s3d
 		: m_size{ detail::CheckedSize(w, h) }
 		, m_container(std::move(data))
 	{
-		m_container.resize(w * h);
+		m_container.resize(m_size.area());
 	}
 
 	template <class Type, class Allocator>
@@ -145,8 +145,8 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>::Grid(const std::initializer_list<std::initializer_list<value_type>>& set)
-		: Grid(std::max_element(set.begin(), set.end(),
-			[](auto& lhs, auto& rhs) { return (lhs.size() < rhs.size()); })->size(), set.size())
+		: Grid(((set.size() == 0) ? 0 : std::max_element(set.begin(), set.end(),
+			[](auto& lhs, auto& rhs) { return (lhs.size() < rhs.size()); })->size()), set.size())
 	{
 		auto dst = m_container.begin();
 
@@ -383,6 +383,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr typename Grid<Type, Allocator>::reference Grid<Type, Allocator>::operator [](const Point pos)&
 	{
+		assert(indexInBounds(pos));
 		return *(m_container.data() + (pos.y * m_size.x + pos.x));
 	}
 
@@ -397,7 +398,7 @@ namespace s3d
 	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const Point pos)&&
 	{
 		assert(indexInBounds(pos));
-		return *(m_container.data() + (pos.y * m_size.x + pos.x));
+		return std::move(*(m_container.data() + (pos.y * m_size.x + pos.x)));
 	}
 
 	template <class Type, class Allocator>
@@ -418,7 +419,7 @@ namespace s3d
 	constexpr Grid<Type, Allocator>::value_type Grid<Type, Allocator>::operator [](const size_type y, const size_type x)&&
 	{
 		assert(indexInBounds(y, x));
-		return *(m_container.data() + (y * m_size.x + x));
+		return std::move(*(m_container.data() + (y * m_size.x + x)));
 	}
 
 	////////////////////////////////////////////////////////////////
