@@ -2201,6 +2201,99 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	floodFill
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr isize Grid<Type, Allocator>::floodFill(const Point pos, const value_type& newValue,
+		const GridConnectivity connectivity)
+	{
+		if (not indexInBounds(pos))
+		{
+			return 0;
+		}
+
+		const value_type oldValue = m_container[(static_cast<size_type>(pos.y) * m_size.x + pos.x)];
+		const value_type replacement = newValue;
+
+		if (oldValue == replacement)
+		{
+			return 0;
+		}
+
+		struct Span
+		{
+			int32 left;
+			int32 right;
+			int32 y;
+		};
+
+		Array<Span> work;
+		isize changed = 0;
+		const bool eightConnected = (connectivity == GridConnectivity::Eight);
+		const auto cellAt = [this](const int32 x, const int32 y) -> decltype(auto)
+			{
+				return m_container[(static_cast<size_type>(y) * m_size.x + x)];
+			};
+		const auto discover = [&](const int32 seedX, const int32 y)
+			{
+				int32 left = seedX;
+				int32 right = seedX;
+
+				while ((0 < left) && (cellAt((left - 1), y) == oldValue))
+				{
+					--left;
+				}
+
+				while (((right + 1) < m_size.x) && (cellAt((right + 1), y) == oldValue))
+				{
+					++right;
+				}
+
+				work.push_back(Span{ left, right, y });
+
+				for (int32 x = left; x <= right; ++x)
+				{
+					cellAt(x, y) = replacement;
+				}
+
+				changed += (static_cast<isize>(right) - left + 1);
+				return right;
+			};
+
+		discover(pos.x, pos.y);
+
+		while (not work.empty())
+		{
+			const Span span = work.back();
+			work.pop_back();
+
+			const int32 scanLeft = Max((span.left - static_cast<int32>(eightConnected)), 0);
+			const int32 scanRight = Min((span.right + static_cast<int32>(eightConnected)), (m_size.x - 1));
+
+			for (const int32 y : { (span.y - 1), (span.y + 1) })
+			{
+				if ((y < 0) || (m_size.y <= y))
+				{
+					continue;
+				}
+
+				for (int32 x = scanLeft; x <= scanRight; ++x)
+				{
+					if (cellAt(x, y) == oldValue)
+					{
+						x = discover(x, y);
+					}
+				}
+			}
+		}
+
+		return changed;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isSorted
 	//
 	////////////////////////////////////////////////////////////////

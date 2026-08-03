@@ -479,6 +479,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteralObject.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GlyphIndex.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Graphics.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\GridConnectivity.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\GridRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\HalfFloat.hpp" />

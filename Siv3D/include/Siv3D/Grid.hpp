@@ -15,6 +15,7 @@
 # include "Array.hpp"
 # include "PointVector.hpp"
 # include "Random.hpp"
+# include "GridConnectivity.hpp"
 
 namespace s3d
 {
@@ -1472,6 +1473,20 @@ namespace s3d
 		/// @remark 長方形はこの二次元配列の範囲にクリップされます。重なる領域が無い場合は何もしません。
 		/// @remark この関数を使用するには `<Siv3D/GridRect.hpp>` をインクルードしてください。
 		constexpr Grid& fill(Rect rect, const value_type& value) SIV3D_LIFETIMEBOUND;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	floodFill
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した位置につながる同じ値の要素を塗りつぶします。
+		/// @param pos 塗りつぶしを開始する位置
+		/// @param newValue 塗りつぶし後の値
+		/// @param connectivity セルの連結方法
+		/// @return 値を変更した要素の個数。`pos` が範囲外、または開始位置の値が `newValue` と等しい場合は 0
+		constexpr isize floodFill(Point pos, const value_type& newValue,
+			GridConnectivity connectivity = GridConnectivity::Four);
 
 		////////////////////////////////////////////////////////////////
 		//

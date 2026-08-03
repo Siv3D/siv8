@@ -663,6 +663,65 @@ TEST_CASE("Grid.region fill")
 	CHECK_THROWS_AS(grid.fill(Point{ 0, 0 }, Size{ 1, -1 }, 1), std::invalid_argument);
 }
 
+TEST_CASE("Grid.floodFill")
+{
+	const Grid<int32> source = {
+		{ 1, 1, 0, 1, 1 },
+		{ 1, 0, 0, 1, 0 },
+		{ 1, 1, 1, 1, 0 },
+		{ 0, 0, 0, 0, 0 },
+	};
+
+	Grid<int32> filled = source;
+	CHECK(filled.floodFill(Point{ 0, 0 }, 9) == 10);
+	CHECK(filled == Grid<int32>{
+		{ 9, 9, 0, 9, 9 },
+		{ 9, 0, 0, 9, 0 },
+		{ 9, 9, 9, 9, 0 },
+		{ 0, 0, 0, 0, 0 },
+	});
+
+	const Grid<int32> diagonal = {
+		{ 1, 0, 0 },
+		{ 0, 1, 0 },
+		{ 0, 0, 1 },
+	};
+
+	Grid<int32> fourConnected = diagonal;
+	CHECK(fourConnected.floodFill(Point{ 0, 0 }, 2, GridConnectivity::Four) == 1);
+	CHECK(fourConnected == Grid<int32>{ { 2, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } });
+
+	Grid<int32> eightConnected = diagonal;
+	CHECK(eightConnected.floodFill(Point{ 0, 0 }, 2, GridConnectivity::Eight) == 3);
+	CHECK(eightConnected == Grid<int32>{ { 2, 0, 0 }, { 0, 2, 0 }, { 0, 0, 2 } });
+
+	Grid<int32> noOp = source;
+	CHECK(noOp.floodFill(Point{ -1, 0 }, 9) == 0);
+	CHECK(noOp.floodFill(Point{ 0, -1 }, 9) == 0);
+	CHECK(noOp.floodFill(Point{ noOp.width(), 0 }, 9) == 0);
+	CHECK(noOp.floodFill(Point{ 0, noOp.height() }, 9) == 0);
+	CHECK(noOp.floodFill(Point{ std::numeric_limits<int32>::min(), 0 }, 9) == 0);
+	CHECK(noOp.floodFill(Point{ std::numeric_limits<int32>::max(), 0 }, 9) == 0);
+	CHECK(noOp.floodFill(Point{ 0, 0 }, 1) == 0);
+	CHECK(noOp == source);
+	CHECK(Grid<int32>{}.floodFill(Point{ 0, 0 }, 1) == 0);
+
+	Grid<int32> aliased = { { 1, 1, 2, 1, 1 } };
+	CHECK(aliased.floodFill(Point{ 0, 0 }, aliased[0][2]) == 2);
+	CHECK(aliased == Grid<int32>{ { 2, 2, 2, 1, 1 } });
+
+	Grid<bool> boolGrid = {
+		{ true, true, false },
+		{ false, true, false },
+	};
+	CHECK(boolGrid.floodFill(Point{ 0, 0 }, false) == 3);
+	CHECK(boolGrid == Grid<bool>(3, 2, false));
+
+	Grid<int32> large(512, 512, 1);
+	CHECK(large.floodFill(Point{ 256, 256 }, 2) == (512 * 512));
+	CHECK(large.count(2) == (512 * 512));
+}
+
 TEST_CASE("Grid.paste")
 {
 	const Grid<int32> source = {

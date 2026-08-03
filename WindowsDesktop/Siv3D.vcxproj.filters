@@ -2277,6 +2277,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Window.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\GridConnectivity.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Grid.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>

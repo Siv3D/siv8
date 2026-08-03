@@ -869,6 +869,7 @@
 		F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */; };
 		F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B192BADCC7C00222F45 /* Grid.hpp */; };
 		F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1B2BADCC9900222F45 /* Grid.ipp */; };
+		FA0000053000000000000005 /* GridConnectivity.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000063000000000000006 /* GridConnectivity.hpp */; };
 		FA0000013000000000000001 /* GridRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000023000000000000002 /* GridRect.hpp */; };
 		FA0000033000000000000003 /* GridRect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000043000000000000004 /* GridRect.ipp */; };
 		F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1D2BAFB65000222F45 /* Base64Value.ipp */; };
@@ -4127,6 +4128,7 @@
 		F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStringView_SIMD.cpp; sourceTree = "<group>"; };
 		F9528B192BADCC7C00222F45 /* Grid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.hpp; sourceTree = "<group>"; };
 		F9528B1B2BADCC9900222F45 /* Grid.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.ipp; sourceTree = "<group>"; };
+		FA0000063000000000000006 /* GridConnectivity.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridConnectivity.hpp; sourceTree = "<group>"; };
 		FA0000023000000000000002 /* GridRect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.hpp; sourceTree = "<group>"; };
 		FA0000043000000000000004 /* GridRect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.ipp; sourceTree = "<group>"; };
 		F9528B1D2BAFB65000222F45 /* Base64Value.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Base64Value.ipp; sourceTree = "<group>"; };
@@ -7473,6 +7475,7 @@
 				F91171272DCBBF67000A22E6 /* GlyphInfo.hpp */,
 				F97203132BF09DD9000E21DD /* Graphics.hpp */,
 				F9E794792C248AEE002615BA /* Graphics2D.hpp */,
+				FA0000063000000000000006 /* GridConnectivity.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
 				FA0000023000000000000002 /* GridRect.hpp */,
 				F98111972EC8C68700C50DD1 /* GUIColorStyle.hpp */,
@@ -14660,6 +14663,7 @@
 				F9DD96662F13EFC00026DFA5 /* Subdivision2D.ipp in Headers */,
 				F9797ED12F6DCC5D00518D26 /* dr_mp3.h in Headers */,
 				F9DD96672F13EFC00026DFA5 /* PoissonDiskSampler2D.ipp in Headers */,
+				FA0000053000000000000005 /* GridConnectivity.hpp in Headers */,
 				F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */,
 				FA0000013000000000000001 /* GridRect.hpp in Headers */,
 				F986FFEC2BCFBB53006A4C0F /* SkCodec.h in Headers */,
