@@ -86,6 +86,12 @@ namespace s3d
 
 		[[noreturn]]
 		void ThrowGridSwapRowsOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridRotateColumnsMiddleOutOfRange();
+
+		[[noreturn]]
+		void ThrowGridRotateRowsMiddleOutOfRange();
 		
 		[[noreturn]]
 		void ThrowGridValuesAtOutOfRange();
@@ -1057,6 +1063,7 @@ namespace s3d
 
 		const int32 oldWidth = m_size.x;
 		const int32 newWidth = (m_size.x + 1);
+		const value_type valueCopy = value;
 
 		m_container.resize(m_size.y * newWidth);
 
@@ -1067,7 +1074,7 @@ namespace s3d
 			const auto dstEnd = (m_container.begin() + row * newWidth + oldWidth);
 			
 			std::move_backward(srcBegin, srcEnd, dstEnd);
-			m_container[row * newWidth + oldWidth] = value;
+			m_container[row * newWidth + oldWidth] = valueCopy;
 		}
 		
 		m_size.x = newWidth;
@@ -1172,6 +1179,7 @@ namespace s3d
 		
 		const int32 oldWidth = m_size.x;
 		const int32 newWidth = oldWidth + 1;
+		const value_type valueCopy = value;
 
 		m_container.resize(m_size.y * newWidth);
 
@@ -1184,13 +1192,13 @@ namespace s3d
 				(m_container.begin() + oldRowStart + oldWidth),
 				(m_container.begin() + newRowStart + newWidth));
 
-			m_container[newRowStart + x] = value;
+			m_container[newRowStart + x] = valueCopy;
 
 			if (newRowStart != oldRowStart)
 			{
-				std::copy(m_container.begin() + oldRowStart,
+				std::move_backward(m_container.begin() + oldRowStart,
 					m_container.begin() + oldRowStart + x,
-					m_container.begin() + newRowStart);
+					m_container.begin() + newRowStart + x);
 			}
 		}
 
@@ -1224,6 +1232,7 @@ namespace s3d
 
 		const int32 oldWidth = m_size.x;
 		const int32 newWidth = (oldWidth + static_cast<int32>(n));
+		const value_type valueCopy = value;
 
 		m_container.resize(m_size.y * newWidth);
 
@@ -1241,7 +1250,7 @@ namespace s3d
 			std::fill(
 				(m_container.begin() + newRowStart + x),
 				(m_container.begin() + newRowStart + x + n),
-				value
+				valueCopy
 			);
 
 			if (newRowStart != oldRowStart)
@@ -1424,13 +1433,6 @@ namespace s3d
 
 		if (m_size.x == newWidth)
 		{
-			return;
-		}
-
-		if (m_size.x == 0)
-		{
-			m_container.clear();
-			m_size.x = newWidth;
 			return;
 		}
 
@@ -2519,6 +2521,11 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::rotate_columns(const size_type middle)&
 	{
+		if (static_cast<size_type>(m_size.x) < middle)
+		{
+			detail::ThrowGridRotateColumnsMiddleOutOfRange();
+		}
+
 		auto it = m_container.begin();
 
 		for (int32 y = 0; y < m_size.y; ++y)
@@ -2539,6 +2546,11 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated_columns(const size_type middle) const&
 	{
+		if (static_cast<size_type>(m_size.x) < middle)
+		{
+			detail::ThrowGridRotateColumnsMiddleOutOfRange();
+		}
+
 		Grid result(m_size);
 		auto itSrc = m_container.begin();
 		auto itDst = result.m_container.begin();
@@ -2570,6 +2582,11 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::rotate_rows(const size_type middle)&
 	{
+		if (static_cast<size_type>(m_size.y) < middle)
+		{
+			detail::ThrowGridRotateRowsMiddleOutOfRange();
+		}
+
 		const auto itMiddle = (m_container.begin() + (middle * m_size.x));
 
 		std::rotate(m_container.begin(), itMiddle, m_container.end());
@@ -2586,6 +2603,11 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::rotated_rows(const size_type middle) const&
 	{
+		if (static_cast<size_type>(m_size.y) < middle)
+		{
+			detail::ThrowGridRotateRowsMiddleOutOfRange();
+		}
+
 		Grid result(m_size);
 
 		const auto itMiddle = (m_container.begin() + (middle * m_size.x));

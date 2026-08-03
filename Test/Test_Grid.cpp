@@ -1061,6 +1061,137 @@ TEST_CASE("Grid.shift and shifted")
 	}
 }
 
+TEST_CASE("Grid.column mutations")
+{
+	SUBCASE("insert_column with overlapping rows")
+	{
+		Grid<int32> grid = Grid<int32>::IndexedGenerate(Size{ 5, 3 },
+			[](const Point pos) { return (pos.y * 5 + pos.x); });
+
+		grid.insert_column(4, 99);
+		CHECK(grid == Grid<int32>{
+			{ 0, 1, 2, 3, 99, 4 },
+			{ 5, 6, 7, 8, 99, 9 },
+			{ 10, 11, 12, 13, 99, 14 },
+		});
+	}
+
+	SUBCASE("values may refer to elements in the Grid")
+	{
+		Grid<int32> inserted = { { 1, 2 }, { 3, 4 } };
+		inserted.insert_column(1, inserted[0, 1]);
+		CHECK(inserted == Grid<int32>{ { 1, 2, 2 }, { 3, 2, 4 } });
+
+		Grid<int32> insertedMultiple = { { 1, 2 }, { 3, 4 } };
+		insertedMultiple.insert_columns(1, 2, insertedMultiple[1, 0]);
+		CHECK(insertedMultiple == Grid<int32>{ { 1, 3, 3, 2 }, { 3, 3, 3, 4 } });
+
+		Grid<int32> appended = { { 1, 2 }, { 3, 4 } };
+		appended.push_back_column(appended[1, 0]);
+		CHECK(appended == Grid<int32>{ { 1, 2, 3 }, { 3, 4, 3 } });
+
+		Grid<int32> resized = { { 1, 2 }, { 3, 4 } };
+		resized.resizeWidth(4, resized[1, 0]);
+		CHECK(resized == Grid<int32>{ { 1, 2, 3, 3 }, { 3, 4, 3, 3 } });
+	}
+
+	SUBCASE("resizeWidth from zero width")
+	{
+		Grid<int32> grid{ Size{ 0, 3 } };
+		grid.resizeWidth(2, 7);
+		CHECK(grid.size() == Size{ 2, 3 });
+		CHECK(grid.num_elements() == 6);
+		CHECK(grid == Grid<int32>(2, 3, 7));
+
+		grid.remove_columns(0, 2);
+		CHECK(grid.size() == Size{ 0, 3 });
+		CHECK(grid.empty());
+
+		grid.resizeWidth(1, 8);
+		CHECK(grid == Grid<int32>(1, 3, 8));
+	}
+
+	SUBCASE("out of range")
+	{
+		Grid<int32> grid(2, 2);
+		CHECK_THROWS_AS(grid.insert_column(3, 0), std::out_of_range);
+		CHECK_THROWS_AS(grid.insert_columns(3, 1, 0), std::out_of_range);
+	}
+}
+
+TEST_CASE("Grid.rotate columns and rows")
+{
+	const Grid<int32> source = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+		{ 7, 8, 9 },
+	};
+
+	SUBCASE("columns")
+	{
+		const Grid<int32> expected = {
+			{ 2, 3, 1 },
+			{ 5, 6, 4 },
+			{ 8, 9, 7 },
+		};
+
+		Grid<int32> mutated = source;
+		CHECK(&mutated.rotate_columns(1) == &mutated);
+		CHECK(mutated == expected);
+		CHECK(source.rotated_columns(1) == expected);
+
+		Grid<int32> rvalueRotate = source;
+		CHECK(std::move(rvalueRotate).rotate_columns(1) == expected);
+		Grid<int32> rvalueRotated = source;
+		CHECK(std::move(rvalueRotated).rotated_columns(1) == expected);
+
+		Grid<int32> boundary = source;
+		boundary.rotate_columns(0);
+		CHECK(boundary == source);
+		boundary.rotate_columns(boundary.width());
+		CHECK(boundary == source);
+
+		CHECK_THROWS_AS(boundary.rotate_columns(4), std::out_of_range);
+		CHECK_THROWS_AS(static_cast<void>(source.rotated_columns(4)), std::out_of_range);
+
+		Grid<int32> zeroWidth{ Size{ 0, 3 } };
+		CHECK_NOTHROW(zeroWidth.rotate_columns(0));
+		CHECK_THROWS_AS(zeroWidth.rotate_columns(1), std::out_of_range);
+	}
+
+	SUBCASE("rows")
+	{
+		const Grid<int32> expected = {
+			{ 4, 5, 6 },
+			{ 7, 8, 9 },
+			{ 1, 2, 3 },
+		};
+
+		Grid<int32> mutated = source;
+		CHECK(&mutated.rotate_rows(1) == &mutated);
+		CHECK(mutated == expected);
+		CHECK(source.rotated_rows(1) == expected);
+
+		Grid<int32> rvalueRotate = source;
+		CHECK(std::move(rvalueRotate).rotate_rows(1) == expected);
+		Grid<int32> rvalueRotated = source;
+		CHECK(std::move(rvalueRotated).rotated_rows(1) == expected);
+
+		Grid<int32> boundary = source;
+		boundary.rotate_rows(0);
+		CHECK(boundary == source);
+		boundary.rotate_rows(boundary.height());
+		CHECK(boundary == source);
+
+		CHECK_THROWS_AS(boundary.rotate_rows(4), std::out_of_range);
+		CHECK_THROWS_AS(static_cast<void>(source.rotated_rows(4)), std::out_of_range);
+
+		Grid<int32> zeroHeight{ Size{ 3, 0 } };
+		CHECK_NOTHROW(zeroHeight.rotate_rows(0));
+		CHECK_THROWS_AS(zeroHeight.rotate_rows(1), std::out_of_range);
+	}
+}
+
 TEST_CASE("Grid.scaled")
 {
 	const Grid<int32> source = {

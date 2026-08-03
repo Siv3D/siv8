@@ -1673,23 +1673,27 @@ namespace s3d
 		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えます。
 		/// @param middle 境の位置
 		/// @return *this
+		/// @throw std::out_of_range `middle` が幅より大きい場合
 		constexpr Grid& rotate_columns(size_type middle)& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えた新しい配列を返します。
 		/// @param middle 境の位置
 		/// @return 新しい配列
+		/// @throw std::out_of_range `middle` が幅より大きい場合
 		[[nodiscard]]
 		constexpr Grid rotate_columns(size_type middle)&&;
 
 		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えた新しい配列を返します。
 		/// @param middle 境の位置
 		/// @return 新しい配列
+		/// @throw std::out_of_range `middle` が幅より大きい場合
 		[[nodiscard]]
 		constexpr Grid rotated_columns(size_type middle) const&;
 
 		/// @brief 指定した位置を境に前半の列と後半の列を入れ替えた新しい配列を返します。
 		/// @param middle 境の位置
 		/// @return 新しい配列
+		/// @throw std::out_of_range `middle` が幅より大きい場合
 		[[nodiscard]]
 		constexpr Grid rotated_columns(size_type middle)&&;
 
@@ -1702,23 +1706,27 @@ namespace s3d
 		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えます。
 		/// @param middle 境の位置
 		/// @return *this
+		/// @throw std::out_of_range `middle` が高さより大きい場合
 		constexpr Grid& rotate_rows(size_type middle)& SIV3D_LIFETIMEBOUND;
 		
 		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えた新しい配列を返します。
 		/// @param middle 境の位置
 		/// @return 新しい配列
+		/// @throw std::out_of_range `middle` が高さより大きい場合
 		[[nodiscard]]
 		constexpr Grid rotate_rows(size_type middle)&&;
 
 		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えた新しい配列を返します。
 		/// @param middle 境の位置
 		/// @return 新しい配列
+		/// @throw std::out_of_range `middle` が高さより大きい場合
 		[[nodiscard]]
 		constexpr Grid rotated_rows(size_type middle) const&;
 
 		/// @brief 指定した位置を境に前半の行と後半の行を入れ替えた新しい配列を返します。
 		/// @param middle 境の位置
 		/// @return 新しい配列
+		/// @throw std::out_of_range `middle` が高さより大きい場合
 		[[nodiscard]]
 		constexpr Grid rotated_rows(size_type middle)&&;
 

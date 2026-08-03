@@ -102,6 +102,16 @@ namespace s3d
 			throw std::out_of_range{ "Grid::swap_rows(): index out of range" };
 		}
 
+		void ThrowGridRotateColumnsMiddleOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::rotate_columns(): middle out of range" };
+		}
+
+		void ThrowGridRotateRowsMiddleOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::rotate_rows(): middle out of range" };
+		}
+
 		void ThrowGridValuesAtOutOfRange()
 		{
 			// 指定したインデックスが範囲外のため、要素にアクセスできません。
