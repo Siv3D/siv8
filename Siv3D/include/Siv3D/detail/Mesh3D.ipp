@@ -24,4 +24,19 @@ namespace s3d
 	inline Mesh3D::Mesh3D(Array<Vertex3D> _vertices, Array<TriangleIndex32> _indices)
 		: vertices(std::move(_vertices))
 		, indices(std::move(_indices)) {}
+
+	inline Mesh3D::Mesh3D(std::span<const Vertex3D> _vertices, std::span<const TriangleIndex32> _indices)
+		: vertices(_vertices.begin(), _vertices.end())
+		, indices(_indices.begin(), _indices.end()) {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline bool Mesh3D::isEmpty() const noexcept
+	{
+		return (vertices.empty() || indices.empty());
+	}
 }

@@ -50,5 +50,16 @@ namespace s3d
 
 		vertices.assign(_vertices.begin(), _vertices.end());
 		indices.assign(_indices.begin(), _indices.end());
-	}	
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline bool Mesh2D::isEmpty() const noexcept
+	{
+		return (vertices.empty() || indices.empty());
+	}
 }

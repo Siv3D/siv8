@@ -53,6 +53,23 @@ namespace s3d
 		/// @param _indices 三角形インデックス配列
 		[[nodiscard]]
 		Mesh3D(Array<Vertex3D> _vertices, Array<TriangleIndex32> _indices);
+		
+		/// @brief 頂点と三角形インデックスの範囲から 3D メッシュを作成します。
+		/// @param _vertices コピーする頂点の範囲
+		/// @param _indices コピーする三角形インデックスの範囲
+		[[nodiscard]]
+		Mesh3D(std::span<const Vertex3D> _vertices, std::span<const TriangleIndex32> _indices);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isEmpty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 描画可能な三角形を持たないかを返します。
+		/// @return 頂点または三角形が空の場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool isEmpty() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
