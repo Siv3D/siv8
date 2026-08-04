@@ -11,7 +11,7 @@
 
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Error.hpp>
-# include <ThirdParty/DirectXMesh/DirectXMesh.h>
+# include "Mesh3DNormals.hpp"
 # include "Mesh3DMikkTSpace.hpp"
 
 namespace s3d
@@ -19,27 +19,27 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr DirectX::CNORM_FLAGS ToCNORMFlags(const VertexNormalWeighting weighting) noexcept
+		static constexpr CNORM_FLAGS ToCNORMFlags(const VertexNormalWeighting weighting) noexcept
 		{
-			uint32 flags = DirectX::CNORM_DEFAULT;
+			uint32 flags = CNORM_DEFAULT;
 
 			switch (weighting)
 			{
 			case VertexNormalWeighting::Angle:
-				flags |= DirectX::CNORM_DEFAULT;
+				flags |= CNORM_DEFAULT;
 				break;
 			case VertexNormalWeighting::Area:
-				flags |= DirectX::CNORM_WEIGHT_BY_AREA;
+				flags |= CNORM_WEIGHT_BY_AREA;
 				break;
 			case VertexNormalWeighting::Uniform:
-				flags |= DirectX::CNORM_WEIGHT_EQUAL;
+				flags |= CNORM_WEIGHT_EQUAL;
 				break;
 			default:
 				assert(false);
 				break;
 			}
 
-			return ToEnum<DirectX::CNORM_FLAGS>(flags);
+			return ToEnum<CNORM_FLAGS>(flags);
 		}
 	}
 
@@ -84,7 +84,7 @@ namespace s3d
 
 		Array<DirectX::XMFLOAT3> computedNormals(vertexCount);
 
-		const HRESULT hr = DirectX::ComputeNormals(
+		const bool result = ComputeNormals(
 			flatIndices.data(),
 			triangleCount,
 			positions.data(),
@@ -92,7 +92,7 @@ namespace s3d
 			ToCNORMFlags(weighting),
 			computedNormals.data());
 
-		if (FAILED(hr))
+		if (not result)
 		{
 			throw Error{ "Mesh3D::computeNormals(): DirectX::ComputeNormals() failed." };
 		};

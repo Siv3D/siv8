@@ -1029,6 +1029,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MediaTranscoder\IMediaTranscoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Notifications\INotifications.hpp" />
@@ -1256,9 +1257,6 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\bit_utils.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\cpuid_x86.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\cpu_features\internal\windows_utils.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMesh.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMeshP.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\scoped.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\bignum-dtoa.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\bignum.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\double-conversion\cached-powers.h" />
@@ -1833,6 +1831,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh2D\SivMesh2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBoxResult\SivMessageBoxResult.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrophoneInfo\SivMicrophoneInfo.cpp" />
@@ -2030,7 +2029,6 @@
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4100; 4132</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4100; 4132</DisableSpecificWarnings>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMeshNormals.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\bignum-dtoa.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\bignum.cc" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\double-conversion\cached-powers.cc" />
@@ -4097,7 +4095,6 @@
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\define_introspection.inl" />
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\equals.inl" />
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl" />
-    <None Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMesh.inl" />
     <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBDownsampler.inc" />
     <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBUpsampler.inc" />
     <None Include="..\Siv3D\src\ThirdParty\skia\src\opts\SkSwizzler_opts.inc" />

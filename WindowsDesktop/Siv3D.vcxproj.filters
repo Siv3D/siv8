@@ -1468,9 +1468,6 @@
     <Filter Include="src\ThirdParty\wuffs">
       <UniqueIdentifier>{fa032c75-863a-4a02-b00e-d736de4d20b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\ThirdParty\DirectXMesh">
-      <UniqueIdentifier>{f591c4ff-d8c6-4e3e-b23a-c565af40a4a3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\ThirdParty\MikkTSpace">
       <UniqueIdentifier>{f89470b1-2538-42e1-9dc0-c6995365e273}</UniqueIdentifier>
     </Filter>
@@ -5979,19 +5976,13 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReader.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMeshP.h">
-      <Filter>src\ThirdParty\DirectXMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMesh.h">
-      <Filter>src\ThirdParty\DirectXMesh</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\scoped.h">
-      <Filter>src\ThirdParty\DirectXMesh</Filter>
-    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\MikkTSpace\mikktspace.h">
       <Filter>src\ThirdParty\MikkTSpace</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.hpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.hpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClInclude>
   </ItemGroup>
@@ -9143,13 +9134,13 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\wuffs\WuffsCodecs.cpp">
       <Filter>src\ThirdParty\wuffs</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMeshNormals.cpp">
-      <Filter>src\ThirdParty\DirectXMesh</Filter>
-    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\MikkTSpace\mikktspace.c">
       <Filter>src\ThirdParty\MikkTSpace</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.cpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClCompile>
   </ItemGroup>
@@ -9195,9 +9186,6 @@
     </None>
     <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBUpsampler.inc">
       <Filter>src\ThirdParty\r8brain-free-src</Filter>
-    </None>
-    <None Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMesh.inl">
-      <Filter>src\ThirdParty\DirectXMesh</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

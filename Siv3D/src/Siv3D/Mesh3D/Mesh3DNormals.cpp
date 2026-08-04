@@ -1,7 +1,20 @@
-//-------------------------------------------------------------------------------------
-// DirectXMeshNormals.cpp
+//-----------------------------------------------
 //
-// DirectX Mesh Geometry Library - Normal computation
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2026 Ryo Suzuki
+//	Copyright (c) 2016-2026 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# include "Mesh3DNormals.hpp"
+# include <Siv3D/Windows/MinWindows.hpp>
+
+//-------------------------------------------------------------------------------------
+// 
+// DirectX Mesh Geometry Library
 //
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -9,7 +22,101 @@
 // https://go.microsoft.com/fwlink/?LinkID=324981
 //-------------------------------------------------------------------------------------
 
-#include "DirectXMeshP.h"
+#ifndef _WIN32
+#include <cstdlib>
+
+struct aligned_deleter { void operator()(void* p) noexcept { free(p); } };
+
+using ScopedAlignedArrayFloat = std::unique_ptr<float[], aligned_deleter>;
+
+inline ScopedAlignedArrayFloat make_AlignedArrayFloat(uint64_t count)
+{
+    uint64_t size = sizeof(float) * count;
+    size = (size + 15u) & ~0xF;
+    if (size > static_cast<uint64_t>(UINT32_MAX))
+        return nullptr;
+
+    auto ptr = aligned_alloc(16, static_cast<size_t>(size));
+    return ScopedAlignedArrayFloat(static_cast<float*>(ptr));
+}
+
+using ScopedAlignedArrayXMVECTOR = std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>;
+
+inline ScopedAlignedArrayXMVECTOR make_AlignedArrayXMVECTOR(uint64_t count)
+{
+    uint64_t size = sizeof(DirectX::XMVECTOR) * count;
+    if (size > static_cast<uint64_t>(UINT32_MAX))
+        return nullptr;
+    auto ptr = aligned_alloc(16, static_cast<size_t>(size));
+    return ScopedAlignedArrayXMVECTOR(static_cast<DirectX::XMVECTOR*>(ptr));
+}
+
+#else // WIN32
+//---------------------------------------------------------------------------------
+#include <malloc.h>
+
+struct aligned_deleter { void operator()(void* p) noexcept { _aligned_free(p); } };
+
+using ScopedAlignedArrayFloat = std::unique_ptr<float[], aligned_deleter>;
+
+inline ScopedAlignedArrayFloat make_AlignedArrayFloat(uint64_t count)
+{
+    const uint64_t size = sizeof(float) * count;
+    if (size > static_cast<uint64_t>(UINT32_MAX))
+        return nullptr;
+    auto ptr = _aligned_malloc(static_cast<size_t>(size), 16);
+    return ScopedAlignedArrayFloat(static_cast<float*>(ptr));
+}
+
+using ScopedAlignedArrayXMVECTOR = std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>;
+
+inline ScopedAlignedArrayXMVECTOR make_AlignedArrayXMVECTOR(uint64_t count)
+{
+    const uint64_t size = sizeof(DirectX::XMVECTOR) * count;
+    if (size > static_cast<uint64_t>(UINT32_MAX))
+        return nullptr;
+    auto ptr = _aligned_malloc(static_cast<size_t>(size), 16);
+    return ScopedAlignedArrayXMVECTOR(static_cast<DirectX::XMVECTOR*>(ptr));
+}
+
+//---------------------------------------------------------------------------------
+struct handle_closer { void operator()(HANDLE h) noexcept { assert(h != INVALID_HANDLE_VALUE); if (h) CloseHandle(h); } };
+
+using ScopedHandle = std::unique_ptr<void, handle_closer>;
+
+inline HANDLE safe_handle(HANDLE h) noexcept { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
+
+//---------------------------------------------------------------------------------
+struct find_closer { void operator()(HANDLE h) noexcept { assert(h != INVALID_HANDLE_VALUE); if (h) FindClose(h); } };
+
+using ScopedFindHandle = std::unique_ptr<void, find_closer>;
+
+//---------------------------------------------------------------------------------
+class auto_delete_file
+{
+public:
+    auto_delete_file(HANDLE hFile) noexcept : m_handle(hFile) {}
+
+    auto_delete_file(const auto_delete_file&) = delete;
+    auto_delete_file& operator=(const auto_delete_file&) = delete;
+
+    ~auto_delete_file()
+    {
+        if (m_handle)
+        {
+            FILE_DISPOSITION_INFO info = {};
+            info.DeleteFile = TRUE;
+            std::ignore = SetFileInformationByHandle(m_handle, FileDispositionInfo, &info, sizeof(info));
+        }
+    }
+
+    void clear() noexcept { m_handle = nullptr; }
+
+private:
+    HANDLE m_handle;
+};
+
+#endif // WIN32
 
 using namespace DirectX;
 
@@ -19,14 +126,14 @@ namespace
     // Compute normals with equal weighting
     //---------------------------------------------------------------------------------
     template<class index_t>
-    HRESULT ComputeNormalsEqualWeight(
+    bool ComputeNormalsEqualWeight(
         _In_reads_(nFaces * 3) const index_t* indices, size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, size_t nVerts,
         bool cw, _Out_writes_(nVerts) XMFLOAT3* normals) noexcept
     {
         auto temp = make_AlignedArrayXMVECTOR(nVerts);
         if (!temp)
-            return E_OUTOFMEMORY;
+            return false;
 
         XMVECTOR* vertNormals = temp.get();
         memset(vertNormals, 0, sizeof(XMVECTOR) * nVerts);
@@ -45,7 +152,7 @@ namespace
             if (i0 >= nVerts
                 || i1 >= nVerts
                 || i2 >= nVerts)
-                return E_UNEXPECTED;
+                return false;
 
             const XMVECTOR p1 = XMLoadFloat3(&positions[i0]);
             const XMVECTOR p2 = XMLoadFloat3(&positions[i1]);
@@ -80,7 +187,7 @@ namespace
             }
         }
 
-        return S_OK;
+        return true;
     }
 
 
@@ -88,14 +195,14 @@ namespace
     // Compute normals with weighting by angle
     //---------------------------------------------------------------------------------
     template<class index_t>
-    HRESULT ComputeNormalsWeightedByAngle(
+    bool ComputeNormalsWeightedByAngle(
         _In_reads_(nFaces * 3) const index_t* indices, size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, size_t nVerts,
         bool cw, _Out_writes_(nVerts) XMFLOAT3* normals) noexcept
     {
         auto temp = make_AlignedArrayXMVECTOR(nVerts);
         if (!temp)
-            return E_OUTOFMEMORY;
+            return false;
 
         XMVECTOR* vertNormals = temp.get();
         memset(vertNormals, 0, sizeof(XMVECTOR) * nVerts);
@@ -114,7 +221,7 @@ namespace
             if (i0 >= nVerts
                 || i1 >= nVerts
                 || i2 >= nVerts)
-                return E_UNEXPECTED;
+                return false;
 
             const XMVECTOR p0 = XMLoadFloat3(&positions[i0]);
             const XMVECTOR p1 = XMLoadFloat3(&positions[i1]);
@@ -170,7 +277,7 @@ namespace
             }
         }
 
-        return S_OK;
+        return true;
     }
 
 
@@ -178,14 +285,14 @@ namespace
     // Compute normals with weighting by face area
     //---------------------------------------------------------------------------------
     template<class index_t>
-    HRESULT ComputeNormalsWeightedByArea(
+    bool ComputeNormalsWeightedByArea(
         _In_reads_(nFaces * 3) const index_t* indices, size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, size_t nVerts,
         bool cw, _Out_writes_(nVerts) XMFLOAT3* normals) noexcept
     {
         auto temp = make_AlignedArrayXMVECTOR(nVerts);
         if (!temp)
-            return E_OUTOFMEMORY;
+            return false;
 
         XMVECTOR* vertNormals = temp.get();
         memset(vertNormals, 0, sizeof(XMVECTOR) * nVerts);
@@ -204,7 +311,7 @@ namespace
             if (i0 >= nVerts
                 || i1 >= nVerts
                 || i2 >= nVerts)
-                return E_UNEXPECTED;
+                return false;
 
             const XMVECTOR p0 = XMLoadFloat3(&positions[i0]);
             const XMVECTOR p1 = XMLoadFloat3(&positions[i1]);
@@ -255,79 +362,43 @@ namespace
             }
         }
 
-        return S_OK;
+        return true;
     }
 }
 
-//=====================================================================================
-// Entry-points
-//=====================================================================================
-
-//-------------------------------------------------------------------------------------
-_Use_decl_annotations_
-HRESULT DirectX::ComputeNormals(
-    const uint16_t* indices,
-    size_t nFaces,
-    const XMFLOAT3* positions,
-    size_t nVerts,
-    CNORM_FLAGS flags,
-    XMFLOAT3* normals) noexcept
+namespace s3d
 {
-    if (!indices || !positions || !nFaces || !nVerts || !normals)
-        return E_INVALIDARG;
-
-    if (nVerts >= UINT16_MAX)
-        return E_INVALIDARG;
-
-    if ((uint64_t(nFaces) * 3) >= UINT32_MAX)
-        return HRESULT_E_ARITHMETIC_OVERFLOW;
-
-    const bool cw = (flags & CNORM_WIND_CW) ? true : false;
-
-    if (flags & CNORM_WEIGHT_BY_AREA)
+    _Use_decl_annotations_
+    bool ComputeNormals(
+        const uint32_t* indices,
+        size_t nFaces,
+        const DirectX::XMFLOAT3* positions,
+        size_t nVerts,
+        CNORM_FLAGS flags,
+        DirectX::XMFLOAT3* normals) noexcept
     {
-        return ComputeNormalsWeightedByArea<uint16_t>(indices, nFaces, positions, nVerts, cw, normals);
-    }
-    else if (flags & CNORM_WEIGHT_EQUAL)
-    {
-        return ComputeNormalsEqualWeight<uint16_t>(indices, nFaces, positions, nVerts, cw, normals);
-    }
-    else
-    {
-        return ComputeNormalsWeightedByAngle<uint16_t>(indices, nFaces, positions, nVerts, cw, normals);
-    }
-}
+        if (!indices || !positions || !nFaces || !nVerts || !normals)
+            return false;
 
-_Use_decl_annotations_
-HRESULT DirectX::ComputeNormals(
-    const uint32_t* indices,
-    size_t nFaces,
-    const XMFLOAT3* positions,
-    size_t nVerts,
-    CNORM_FLAGS flags,
-    XMFLOAT3* normals) noexcept
-{
-    if (!indices || !positions || !nFaces || !nVerts || !normals)
-        return E_INVALIDARG;
+        if (nVerts >= UINT32_MAX)
+            return false;
 
-    if (nVerts >= UINT32_MAX)
-        return E_INVALIDARG;
+        if ((uint64_t(nFaces) * 3) >= UINT32_MAX)
+            return false;
 
-    if ((uint64_t(nFaces) * 3) >= UINT32_MAX)
-        return HRESULT_E_ARITHMETIC_OVERFLOW;
+        const bool cw = (flags & CNORM_WIND_CW) ? true : false;
 
-    const bool cw = (flags & CNORM_WIND_CW) ? true : false;
-
-    if (flags & CNORM_WEIGHT_BY_AREA)
-    {
-        return ComputeNormalsWeightedByArea<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
-    }
-    else if (flags & CNORM_WEIGHT_EQUAL)
-    {
-        return ComputeNormalsEqualWeight<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
-    }
-    else
-    {
-        return ComputeNormalsWeightedByAngle<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
+        if (flags & CNORM_WEIGHT_BY_AREA)
+        {
+            return ComputeNormalsWeightedByArea<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
+        }
+        else if (flags & CNORM_WEIGHT_EQUAL)
+        {
+            return ComputeNormalsEqualWeight<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
+        }
+        else
+        {
+            return ComputeNormalsWeightedByAngle<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
+        }
     }
 }
