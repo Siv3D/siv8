@@ -65,7 +65,7 @@ namespace s3d
 				.file = file
 			};
 
-			if (writeMode & FileWriteMode::Append)
+			if (writeMode == FileWriteMode::Append)
 			{
 				std::fseek(m_file.file, 0, SEEK_END);
 			}

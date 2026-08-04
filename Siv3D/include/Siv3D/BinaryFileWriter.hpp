@@ -44,7 +44,7 @@ namespace s3d
 
 		/// @brief ファイルを開きます。
 		/// @param path ファイルパス
-		/// @param writeMode 書き込みモード (`FileWriteMode` の組み合わせ）
+		/// @param writeMode 書き込みモード
 		[[nodiscard]]
 		explicit BinaryFileWriter(FilePathView path, FileWriteMode writeMode = FileWriteMode::Trunc);
 
@@ -84,7 +84,7 @@ namespace s3d
 
 		/// @brief ファイルを開きます。
 		/// @param path ファイルパス
-		/// @param writeMode 書き込みモード (`FileWriteMode` の組み合わせ）
+		/// @param writeMode 書き込みモード
 		/// @return ファイルのオープンに成功した場合 true, それ以外の場合は false
 		bool open(FilePathView path, FileWriteMode writeMode = FileWriteMode::Trunc);
 

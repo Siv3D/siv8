@@ -11,7 +11,6 @@
 
 # pragma once
 # include "Types.hpp"
-# include <ThirdParty/EnumBitmask/EnumBitmask.hpp>
 
 namespace s3d
 {
@@ -24,11 +23,10 @@ namespace s3d
 	/// @brief ファイルの書き込みモード | File write mode
 	enum class FileWriteMode : uint8
 	{
-		/// @brief 新規作成 | Truncate
-		Trunc	= (1 << 1),
+		/// @brief ファイルを新規作成するか、既存の内容を消去します。 | Create a new file or truncate an existing file
+		Trunc,
 
-		/// @brief 追加 | Append
-		Append	= (1 << 2),
+		/// @brief 既存の内容の末尾に追記します。 | Append to the end of an existing file
+		Append,
 	};
-	DEFINE_BITMASK_OPERATORS(FileWriteMode);
 }

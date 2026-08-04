@@ -23,11 +23,11 @@ namespace s3d
 		{
 			DWORD creationDisposition = 0;
 
-			if (writeMode & FileWriteMode::Append)
+			if (writeMode == FileWriteMode::Append)
 			{
 				creationDisposition = OPEN_ALWAYS;
 			}
-			else if (writeMode & FileWriteMode::Trunc)
+			else if (writeMode == FileWriteMode::Trunc)
 			{
 				creationDisposition = CREATE_ALWAYS;
 			}
@@ -95,7 +95,7 @@ namespace s3d
 				.handle = handle
 			};
 
-			if (writeMode & FileWriteMode::Append)
+			if (writeMode == FileWriteMode::Append)
 			{
 				LARGE_INTEGER distance{ 0, 0 };
 				::SetFilePointerEx(m_file.handle, distance, nullptr, FILE_END);
