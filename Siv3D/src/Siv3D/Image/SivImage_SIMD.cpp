@@ -23,10 +23,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		static void PremultiplyAlpha_plain(Color* pixels, const size_t num_pixels)
+		static void PremultiplyAlpha_plain(Color* pixels, const size_t pixelCount)
 		{
 			Color* p = pixels;
-			const Color* const pEnd = (pixels + num_pixels);
+			const Color* const pEnd = (pixels + pixelCount);
 
 			while (p != pEnd)
 			{
@@ -64,9 +64,9 @@ namespace s3d
 
 	# if SIV3D_INTRINSIC(SSE)
 
-		static void PremultiplyAlpha_SSE41(Color* pixels, const size_t num_pixels)
+		static void PremultiplyAlpha_SSE41(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((num_pixels + 3) / (sizeof(__m128i) / sizeof(Color)) / 2);
+			const size_t loopCount = ((pixelCount + 3) / (sizeof(__m128i) / sizeof(Color)) / 2);
 			uint32* p = reinterpret_cast<uint32*>(pixels);
 
 			const __m128i mask_ff00 = _mm_set1_epi16(static_cast<short>(0xFF00));
@@ -119,9 +119,9 @@ namespace s3d
 			}
 		}
 
-		static void PremultiplyAlpha_AVX2(Color* pixels, const size_t num_pixels)
+		static void PremultiplyAlpha_AVX2(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((num_pixels + 7) / (sizeof(__m256i) / sizeof(Color)));
+			const size_t loopCount = ((pixelCount + 7) / (sizeof(__m256i) / sizeof(Color)));
 			uint32* p = reinterpret_cast<uint32*>(pixels);
 
 			const __m256i mask_alpha_color_odd_255 = _mm256_set1_epi32(static_cast<int>(0xff000000));
@@ -205,10 +205,10 @@ namespace s3d
 			69632, 69343, 69057, 68772, 68490, 68211, 67934, 67659, 67386, 67115, 66847, 66580, 66316, 66054, 65794, 65536
 		};
 
-		static void UnpremultiplyAlpha_plain(Color* pixels, const size_t num_pixels)
+		static void UnpremultiplyAlpha_plain(Color* pixels, const size_t pixelCount)
 		{
 			Color* p = pixels;
-			const Color* const pEnd = (pixels + num_pixels);
+			const Color* const pEnd = (pixels + pixelCount);
 
 			while (p != pEnd)
 			{
@@ -239,9 +239,9 @@ namespace s3d
 
 	# if SIV3D_INTRINSIC(SSE)
 
-		static void UnpremultiplyAlpha_SSE41(Color* pixels, const size_t num_pixels)
+		static void UnpremultiplyAlpha_SSE41(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((num_pixels + 3) / 4);
+			const size_t loopCount = ((pixelCount + 3) / 4);
 
 			uint32_t* p = reinterpret_cast<uint32_t*>(pixels);
 
@@ -298,9 +298,9 @@ namespace s3d
 			}
 		}
 
-		static void UnpremultiplyAlpha_AVX2(Color* pixels, const size_t num_pixels)
+		static void UnpremultiplyAlpha_AVX2(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((num_pixels + 7) / 8);
+			const size_t loopCount = ((pixelCount + 7) / 8);
 
 			uint32_t* p = reinterpret_cast<uint32_t*>(pixels);
 
@@ -383,10 +383,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		static void BGRAtoRGBA_plain(Color* pixels, const size_t num_pixels)
+		static void BGRAtoRGBA_plain(Color* pixels, const size_t pixelCount)
 		{
 			Color* p = pixels;
-			const Color* const pEnd = (pixels + num_pixels);
+			const Color* const pEnd = (pixels + pixelCount);
 
 			while (p != pEnd)
 			{
@@ -399,9 +399,9 @@ namespace s3d
 
 	# if SIV3D_INTRINSIC(NEON)
 
-		static void BGRAtoRGBA_NEON(Color* pixels, const size_t num_pixels)
+		static void BGRAtoRGBA_NEON(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((num_pixels + 7) / 8);
+			const size_t loopCount = ((pixelCount + 7) / 8);
 			uint8* ptr = reinterpret_cast<uint8*>(pixels);
 			const uint8* const end = reinterpret_cast<const uint8*>(pixels + loopCount * 8);
 			
@@ -423,9 +423,9 @@ namespace s3d
 
 	# if SIV3D_INTRINSIC(SSE)
 
-		static void BGRAtoRGBA_SSSE3(Color* pixels, const size_t num_pixels)
+		static void BGRAtoRGBA_SSSE3(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = (((num_pixels + 7) / 8) * 2);
+			const size_t loopCount = (((pixelCount + 7) / 8) * 2);
 			const __m128i mask = ::_mm_set_epi8(15, 12, 13, 14, 11, 8, 9, 10, 7, 4, 5, 6, 3, 0, 1, 2);
 			
 			for (__m128i* ptr = reinterpret_cast<__m128i*>(pixels), *end = (ptr + loopCount); ptr != end; ptr += 2)
@@ -441,9 +441,9 @@ namespace s3d
 			}
 		}
 
-		static void BGRAtoRGBA_AVX2(Color* pixels, const size_t num_pixels)
+		static void BGRAtoRGBA_AVX2(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((num_pixels + 7) / 8);
+			const size_t loopCount = ((pixelCount + 7) / 8);
 			const __m256i mask = ::_mm256_setr_epi8(
 				2, 1, 0, 3, 6, 5, 4, 7, 
 				10, 9, 8, 11, 14, 13, 12, 15,

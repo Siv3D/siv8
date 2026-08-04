@@ -987,11 +987,11 @@ namespace s3d
 
 		const auto& result = results[0];
 
-		if (const size_t num_holes = result.inners().size())
+		if (const size_t holeCount = result.inners().size())
 		{
-			holes.resize(num_holes);
+			holes.resize(holeCount);
 
-			for (size_t i = 0; i < num_holes; ++i)
+			for (size_t i = 0; i < holeCount; ++i)
 			{
 				const auto& resultHole = result.inners()[i];
 				holes[i].assign(resultHole.begin(), resultHole.end());
@@ -1026,11 +1026,11 @@ namespace s3d
 
 		const auto& result = results[0];
 
-		if (const size_t num_holes = result.inners().size())
+		if (const size_t holeCount = result.inners().size())
 		{
-			holes.resize(num_holes);
+			holes.resize(holeCount);
 
-			for (size_t i = 0; i < num_holes; ++i)
+			for (size_t i = 0; i < holeCount; ++i)
 			{
 				const auto& resultHole = result.inners()[i];
 				holes[i].assign(resultHole.begin(), resultHole.end());

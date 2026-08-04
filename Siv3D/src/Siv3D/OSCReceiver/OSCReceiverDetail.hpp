@@ -31,7 +31,7 @@ namespace s3d
 		bool hasMessages();
 
 		[[nodiscard]]
-		size_t num_messages();
+		size_t messageCount();
 
 		[[nodiscard]]
 		OSCReceivedMessage pop();

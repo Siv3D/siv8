@@ -428,7 +428,7 @@ TEST_CASE("Grid.getContainer")
 
 	CHECK(container == Array<int32>{ 1, 2, 3, 4 });
 	CHECK(grid.size() == Size{ 0, 0 });
-	CHECK(grid.num_elements() == 0);
+	CHECK(grid.elementCount() == 0);
 	CHECK(grid.empty());
 }
 
@@ -1164,7 +1164,7 @@ TEST_CASE("Grid.column mutations")
 		Grid<int32> grid{ Size{ 0, 3 } };
 		grid.resizeWidth(2, 7);
 		CHECK(grid.size() == Size{ 2, 3 });
-		CHECK(grid.num_elements() == 6);
+		CHECK(grid.elementCount() == 6);
 		CHECK(grid == Grid<int32>(2, 3, 7));
 
 		grid.remove_columns(0, 2);

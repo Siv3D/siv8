@@ -757,9 +757,9 @@ namespace s3d
 			}
 		}
 
-		const size_t num_triangles = (4 * ((quality / 2) * 2 - 1) + 2);
+		const size_t triangleCount = (4 * ((quality / 2) * 2 - 1) + 2);
 
-		Array<TriangleIndex> indices(num_triangles);
+		Array<TriangleIndex> indices(triangleCount);
 		{
 			const Vertex2D::IndexType midIndex = (quality / 2);
 			const Vertex2D::IndexType fullIndex = (quality * 4);

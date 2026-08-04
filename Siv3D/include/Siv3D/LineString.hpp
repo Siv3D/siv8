@@ -1874,7 +1874,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	num_vertices
+		//	vertexCount
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1882,11 +1882,11 @@ namespace s3d
 		/// @remark `size()` と同じです。
 		/// @return LineString を構成する頂点の数
 		[[nodiscard]]
-		constexpr size_t num_vertices() const noexcept;
+		constexpr size_t vertexCount() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	num_segments
+		//	segmentCount
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1894,7 +1894,7 @@ namespace s3d
 		/// @param closeRing 終点と始点を結ぶか
 		/// @return LineString を構成する線分の数
 		[[nodiscard]]
-		constexpr size_t num_segments(CloseRing closeRing = CloseRing::No) const noexcept;
+		constexpr size_t segmentCount(CloseRing closeRing = CloseRing::No) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

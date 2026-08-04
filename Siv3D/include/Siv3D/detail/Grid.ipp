@@ -824,12 +824,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	num_elements
+	//	elementCount
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr size_t Grid<Type, Allocator>::num_elements() const noexcept
+	constexpr size_t Grid<Type, Allocator>::elementCount() const noexcept
 	{
 		return m_container.size();
 	}
