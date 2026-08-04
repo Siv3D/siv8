@@ -745,24 +745,6 @@
 		F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7EB3016828C00B3542E /* Mesh2D.hpp */; };
 		F93BD7EE301682A900B3542E /* Mesh2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD7ED301682A900B3542E /* Mesh2D.ipp */; };
 		F93BD7F1301682CB00B3542E /* SivMesh2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */; };
-		F9A3D00130A1000000C0DE01 /* Vertex3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01130A1000000C0DE01 /* Vertex3D.hpp */; };
-		F9A3D00230A1000000C0DE01 /* Vertex3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01230A1000000C0DE01 /* Vertex3D.ipp */; };
-		F9A3D00330A1000000C0DE01 /* Mesh3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */; };
-		F9A3D00430A1000000C0DE01 /* Mesh3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */; };
-		F9A3D00530A1000000C0DE01 /* Mesh3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */; };
-		F9A3D10130A1000000C0DE01 /* VertexNormalWeighting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */; };
-		F9A3D10230A1000000C0DE01 /* SivVertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */; };
-		F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */; };
-		F9A3D20130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */; };
-		F9A3D20230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */; };
-		F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */; };
-		F9A3D20430A1000000C0DE01 /* SivINIParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */; };
-		F9A3D20530A1000000C0DE01 /* SivLetterCase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */; };
-		F9A3D20630A1000000C0DE01 /* SivLogLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */; };
-		F9A3D20730A1000000C0DE01 /* SivMessageBoxResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */; };
-		F9A3D20830A1000000C0DE01 /* SivShaderStage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */; };
-		F9A3D20930A1000000C0DE01 /* SivTexturePixelFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */; };
-		F9A3D20A30A1000000C0DE01 /* Test_EnumFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */; };
 		F93BD7F330168A0200B3542E /* Test_JSONSerialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */; };
 		F93BD7F53016936900B3542E /* Test_CSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F43016936900B3542E /* Test_CSV.cpp */; };
 		F93BD7F83016AE7100B3542E /* PolygonParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F73016AE7100B3542E /* PolygonParser.cpp */; };
@@ -887,9 +869,6 @@
 		F9528B182BAC58D500222F45 /* SivStringView_SIMD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */; };
 		F9528B1A2BADCC7C00222F45 /* Grid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B192BADCC7C00222F45 /* Grid.hpp */; };
 		F9528B1C2BADCC9900222F45 /* Grid.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1B2BADCC9900222F45 /* Grid.ipp */; };
-		FA0000053000000000000005 /* GridConnectivity.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000063000000000000006 /* GridConnectivity.hpp */; };
-		FA0000013000000000000001 /* GridRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000023000000000000002 /* GridRect.hpp */; };
-		FA0000033000000000000003 /* GridRect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000043000000000000004 /* GridRect.ipp */; };
 		F9528B1E2BAFB65000222F45 /* Base64Value.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1D2BAFB65000222F45 /* Base64Value.ipp */; };
 		F9528B202BAFB66200222F45 /* Base64Value.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528B1F2BAFB66200222F45 /* Base64Value.hpp */; };
 		F9528B232BAFB68400222F45 /* SivBase64Value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528B212BAFB68400222F45 /* SivBase64Value.cpp */; };
@@ -2857,6 +2836,24 @@
 		F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A000022FC0000000000001 /* Test_HSV.cpp */; };
 		F9A000032FC0000000000001 /* Test_Smooth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A000042FC0000000000001 /* Test_Smooth.cpp */; };
 		F9A000052FC0000000000001 /* Test_Interpolation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A000062FC0000000000001 /* Test_Interpolation.cpp */; };
+		F9A3D00130A1000000C0DE01 /* Vertex3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01130A1000000C0DE01 /* Vertex3D.hpp */; };
+		F9A3D00230A1000000C0DE01 /* Vertex3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01230A1000000C0DE01 /* Vertex3D.ipp */; };
+		F9A3D00330A1000000C0DE01 /* Mesh3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */; };
+		F9A3D00430A1000000C0DE01 /* Mesh3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */; };
+		F9A3D00530A1000000C0DE01 /* Mesh3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */; };
+		F9A3D10130A1000000C0DE01 /* VertexNormalWeighting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */; };
+		F9A3D10230A1000000C0DE01 /* SivVertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */; };
+		F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */; };
+		F9A3D20130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */; };
+		F9A3D20230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */; };
+		F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */; };
+		F9A3D20430A1000000C0DE01 /* SivINIParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */; };
+		F9A3D20530A1000000C0DE01 /* SivLetterCase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */; };
+		F9A3D20630A1000000C0DE01 /* SivLogLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */; };
+		F9A3D20730A1000000C0DE01 /* SivMessageBoxResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */; };
+		F9A3D20830A1000000C0DE01 /* SivShaderStage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */; };
+		F9A3D20930A1000000C0DE01 /* SivTexturePixelFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */; };
+		F9A3D20A30A1000000C0DE01 /* Test_EnumFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */; };
 		F9A8A5C12FC0000000000001 /* Test_AsyncTask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */; };
 		F9A8A5D12FC0000000000001 /* AsyncTaskStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A8A5D22FC0000000000001 /* AsyncTaskStatus.hpp */; };
 		F9A8A5E12FC0000000000001 /* SivAsyncTaskStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */; };
@@ -3066,6 +3063,12 @@
 		F9E794852C2493FF002615BA /* ConstantBuffer_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794802C2493FF002615BA /* ConstantBuffer_Metal.mm */; };
 		F9E794862C2493FF002615BA /* ConstantBuffer_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9E794812C2493FF002615BA /* ConstantBuffer_Metal.hpp */; };
 		F9E794872C2493FF002615BA /* ConstantBufferFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9E794832C2493FF002615BA /* ConstantBufferFactory.mm */; };
+		F9ECFB563021C41B00D3EB2F /* mikktspace.c in Sources */ = {isa = PBXBuildFile; fileRef = F9ECFB543021C41B00D3EB2F /* mikktspace.c */; };
+		F9ECFB573021C41B00D3EB2F /* mikktspace.h in Headers */ = {isa = PBXBuildFile; fileRef = F9ECFB533021C41B00D3EB2F /* mikktspace.h */; };
+		F9ECFB5A3021C43800D3EB2F /* Mesh3DMikkTSpace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ECFB593021C43800D3EB2F /* Mesh3DMikkTSpace.cpp */; };
+		F9ECFB5B3021C43800D3EB2F /* Mesh3DMikkTSpace.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ECFB583021C43800D3EB2F /* Mesh3DMikkTSpace.hpp */; };
+		F9ECFB5E3021C81700D3EB2F /* Mesh3DNormals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ECFB5D3021C81700D3EB2F /* Mesh3DNormals.cpp */; };
+		F9ECFB5F3021C81700D3EB2F /* Mesh3DNormals.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ECFB5C3021C81700D3EB2F /* Mesh3DNormals.hpp */; };
 		F9ED45B32CC156EC006BA10F /* dissolve.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45A02CC156EC006BA10F /* dissolve.hpp */; };
 		F9ED45C42CC2B06D006BA10F /* CScreenCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9ED45BE2CC2B06D006BA10F /* CScreenCapture.cpp */; };
 		F9ED45C52CC2B06D006BA10F /* CScreenCapture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9ED45BF2CC2B06D006BA10F /* CScreenCapture.hpp */; };
@@ -3188,6 +3191,9 @@
 		F9FD0D2A2D21693100A584CE /* CAssetMonitor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */; };
 		F9FD0D2B2D21693100A584CE /* CAssetMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */; };
 		F9FD0D2C2D21693100A584CE /* AssetMonitorFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D242D21693100A584CE /* AssetMonitorFactory.cpp */; };
+		FA0000013000000000000001 /* GridRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000023000000000000002 /* GridRect.hpp */; };
+		FA0000033000000000000003 /* GridRect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000043000000000000004 /* GridRect.ipp */; };
+		FA0000053000000000000005 /* GridConnectivity.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000063000000000000006 /* GridConnectivity.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -4022,24 +4028,6 @@
 		F93BD7EB3016828C00B3542E /* Mesh2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.hpp; sourceTree = "<group>"; };
 		F93BD7ED301682A900B3542E /* Mesh2D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.ipp; sourceTree = "<group>"; };
 		F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMesh2D.cpp; sourceTree = "<group>"; };
-		F9A3D01130A1000000C0DE01 /* Vertex3D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vertex3D.hpp; sourceTree = "<group>"; };
-		F9A3D01230A1000000C0DE01 /* Vertex3D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vertex3D.ipp; sourceTree = "<group>"; };
-		F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3D.hpp; sourceTree = "<group>"; };
-		F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3D.ipp; sourceTree = "<group>"; };
-		F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3D.cpp; sourceTree = "<group>"; };
-		F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexNormalWeighting.hpp; sourceTree = "<group>"; };
-		F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexNormalWeighting.cpp; sourceTree = "<group>"; };
-		F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_VertexNormalWeighting.cpp; sourceTree = "<group>"; };
-		F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageDecodeError.cpp; sourceTree = "<group>"; };
-		F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageReadStatus.cpp; sourceTree = "<group>"; };
-		F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSVParseErrorCode.cpp; sourceTree = "<group>"; };
-		F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivINIParseErrorCode.cpp; sourceTree = "<group>"; };
-		F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLetterCase.cpp; sourceTree = "<group>"; };
-		F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLogLevel.cpp; sourceTree = "<group>"; };
-		F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBoxResult.cpp; sourceTree = "<group>"; };
-		F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivShaderStage.cpp; sourceTree = "<group>"; };
-		F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturePixelFormat.cpp; sourceTree = "<group>"; };
-		F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_EnumFormatter.cpp; sourceTree = "<group>"; };
 		F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_JSONSerialization.cpp; sourceTree = "<group>"; };
 		F93BD7F43016936900B3542E /* Test_CSV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CSV.cpp; sourceTree = "<group>"; };
 		F93BD7F63016950000B3542E /* Siv3DTestPCH.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTestPCH.hpp; sourceTree = "<group>"; };
@@ -4164,9 +4152,6 @@
 		F9528B172BAC58D500222F45 /* SivStringView_SIMD.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivStringView_SIMD.cpp; sourceTree = "<group>"; };
 		F9528B192BADCC7C00222F45 /* Grid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.hpp; sourceTree = "<group>"; };
 		F9528B1B2BADCC9900222F45 /* Grid.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.ipp; sourceTree = "<group>"; };
-		FA0000063000000000000006 /* GridConnectivity.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridConnectivity.hpp; sourceTree = "<group>"; };
-		FA0000023000000000000002 /* GridRect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.hpp; sourceTree = "<group>"; };
-		FA0000043000000000000004 /* GridRect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.ipp; sourceTree = "<group>"; };
 		F9528B1D2BAFB65000222F45 /* Base64Value.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Base64Value.ipp; sourceTree = "<group>"; };
 		F9528B1F2BAFB66200222F45 /* Base64Value.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Base64Value.hpp; sourceTree = "<group>"; };
 		F9528B212BAFB68400222F45 /* SivBase64Value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivBase64Value.cpp; sourceTree = "<group>"; };
@@ -6177,6 +6162,24 @@
 		F9A000022FC0000000000001 /* Test_HSV.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_HSV.cpp; sourceTree = "<group>"; };
 		F9A000042FC0000000000001 /* Test_Smooth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Smooth.cpp; sourceTree = "<group>"; };
 		F9A000062FC0000000000001 /* Test_Interpolation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Interpolation.cpp; sourceTree = "<group>"; };
+		F9A3D01130A1000000C0DE01 /* Vertex3D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vertex3D.hpp; sourceTree = "<group>"; };
+		F9A3D01230A1000000C0DE01 /* Vertex3D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vertex3D.ipp; sourceTree = "<group>"; };
+		F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3D.hpp; sourceTree = "<group>"; };
+		F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3D.ipp; sourceTree = "<group>"; };
+		F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3D.cpp; sourceTree = "<group>"; };
+		F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexNormalWeighting.hpp; sourceTree = "<group>"; };
+		F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexNormalWeighting.cpp; sourceTree = "<group>"; };
+		F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_VertexNormalWeighting.cpp; sourceTree = "<group>"; };
+		F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageDecodeError.cpp; sourceTree = "<group>"; };
+		F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageReadStatus.cpp; sourceTree = "<group>"; };
+		F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSVParseErrorCode.cpp; sourceTree = "<group>"; };
+		F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivINIParseErrorCode.cpp; sourceTree = "<group>"; };
+		F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLetterCase.cpp; sourceTree = "<group>"; };
+		F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLogLevel.cpp; sourceTree = "<group>"; };
+		F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBoxResult.cpp; sourceTree = "<group>"; };
+		F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivShaderStage.cpp; sourceTree = "<group>"; };
+		F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturePixelFormat.cpp; sourceTree = "<group>"; };
+		F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_EnumFormatter.cpp; sourceTree = "<group>"; };
 		F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_AsyncTask.cpp; sourceTree = "<group>"; };
 		F9A8A5D22FC0000000000001 /* AsyncTaskStatus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AsyncTaskStatus.hpp; sourceTree = "<group>"; };
 		F9A8A5E22FC0000000000001 /* SivAsyncTaskStatus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivAsyncTaskStatus.cpp; sourceTree = "<group>"; };
@@ -6394,6 +6397,12 @@
 		F9E794802C2493FF002615BA /* ConstantBuffer_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ConstantBuffer_Metal.mm; sourceTree = "<group>"; };
 		F9E794812C2493FF002615BA /* ConstantBuffer_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ConstantBuffer_Metal.hpp; sourceTree = "<group>"; };
 		F9E794832C2493FF002615BA /* ConstantBufferFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ConstantBufferFactory.mm; sourceTree = "<group>"; };
+		F9ECFB533021C41B00D3EB2F /* mikktspace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mikktspace.h; sourceTree = "<group>"; };
+		F9ECFB543021C41B00D3EB2F /* mikktspace.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mikktspace.c; sourceTree = "<group>"; };
+		F9ECFB583021C43800D3EB2F /* Mesh3DMikkTSpace.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DMikkTSpace.hpp; sourceTree = "<group>"; };
+		F9ECFB593021C43800D3EB2F /* Mesh3DMikkTSpace.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DMikkTSpace.cpp; sourceTree = "<group>"; };
+		F9ECFB5C3021C81700D3EB2F /* Mesh3DNormals.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DNormals.hpp; sourceTree = "<group>"; };
+		F9ECFB5D3021C81700D3EB2F /* Mesh3DNormals.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DNormals.cpp; sourceTree = "<group>"; };
 		F9ED1F672B931C3F00028F83 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../Siv3D/lib/macOS/boost/libboost_filesystem.a; sourceTree = "<group>"; };
 		F9ED45A02CC156EC006BA10F /* dissolve.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dissolve.hpp; sourceTree = "<group>"; };
 		F9ED45BE2CC2B06D006BA10F /* CScreenCapture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CScreenCapture.cpp; sourceTree = "<group>"; };
@@ -6517,6 +6526,9 @@
 		F9FD0D252D21693100A584CE /* CAssetMonitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CAssetMonitor.hpp; sourceTree = "<group>"; };
 		F9FD0D262D21693100A584CE /* CAssetMonitor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CAssetMonitor.cpp; sourceTree = "<group>"; };
 		F9FD0D272D21693100A584CE /* IAssetMonitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IAssetMonitor.hpp; sourceTree = "<group>"; };
+		FA0000023000000000000002 /* GridRect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.hpp; sourceTree = "<group>"; };
+		FA0000043000000000000004 /* GridRect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.ipp; sourceTree = "<group>"; };
+		FA0000063000000000000006 /* GridConnectivity.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridConnectivity.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -7054,6 +7066,7 @@
 				F9797F3E2FA73DB200518D26 /* lunasvg */,
 				F9F00A692CD299C10097C165 /* mapbox */,
 				F9FD0B702D1D334700A584CE /* Metal */,
+				F9ECFB553021C41B00D3EB2F /* MikkTSpace */,
 				F9797F062F6EC1D000518D26 /* miniaudio */,
 				F9070A732B9DEB5900383E4D /* miniutf */,
 				F933AD752E54A375005624D7 /* msdfgen */,
@@ -9296,86 +9309,6 @@
 			path = VertexShader;
 			sourceTree = "<group>";
 		};
-		F9A3D11630A1000000C0DE01 /* VertexNormalWeighting */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */,
-			);
-			path = VertexNormalWeighting;
-			sourceTree = "<group>";
-		};
-		F9A3D22130A1000000C0DE01 /* AnimatedImageDecodeError */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */,
-			);
-			path = AnimatedImageDecodeError;
-			sourceTree = "<group>";
-		};
-		F9A3D22230A1000000C0DE01 /* AnimatedImageReadStatus */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */,
-			);
-			path = AnimatedImageReadStatus;
-			sourceTree = "<group>";
-		};
-		F9A3D22330A1000000C0DE01 /* CSVParseErrorCode */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */,
-			);
-			path = CSVParseErrorCode;
-			sourceTree = "<group>";
-		};
-		F9A3D22430A1000000C0DE01 /* INIParseErrorCode */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */,
-			);
-			path = INIParseErrorCode;
-			sourceTree = "<group>";
-		};
-		F9A3D22530A1000000C0DE01 /* LetterCase */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */,
-			);
-			path = LetterCase;
-			sourceTree = "<group>";
-		};
-		F9A3D22630A1000000C0DE01 /* LogLevel */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */,
-			);
-			path = LogLevel;
-			sourceTree = "<group>";
-		};
-		F9A3D22730A1000000C0DE01 /* MessageBoxResult */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */,
-			);
-			path = MessageBoxResult;
-			sourceTree = "<group>";
-		};
-		F9A3D22830A1000000C0DE01 /* ShaderStage */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */,
-			);
-			path = ShaderStage;
-			sourceTree = "<group>";
-		};
-		F9A3D22930A1000000C0DE01 /* TexturePixelFormat */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */,
-			);
-			path = TexturePixelFormat;
-			sourceTree = "<group>";
-		};
 		F934BD772BF880620003EAD5 /* PixelShader */ = {
 			isa = PBXGroup;
 			children = (
@@ -9548,14 +9481,6 @@
 				F93BD7EF301682CB00B3542E /* SivMesh2D.cpp */,
 			);
 			path = Mesh2D;
-			sourceTree = "<group>";
-		};
-		F9A3D01630A1000000C0DE01 /* Mesh3D */ = {
-			isa = PBXGroup;
-			children = (
-				F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */,
-			);
-			path = Mesh3D;
 			sourceTree = "<group>";
 		};
 		F93BD7FC301B7D1900B3542E /* wuffs */ = {
@@ -13357,6 +13282,98 @@
 			path = Pentablet;
 			sourceTree = "<group>";
 		};
+		F9A3D01630A1000000C0DE01 /* Mesh3D */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */,
+				F9ECFB593021C43800D3EB2F /* Mesh3DMikkTSpace.cpp */,
+				F9ECFB5D3021C81700D3EB2F /* Mesh3DNormals.cpp */,
+				F9ECFB583021C43800D3EB2F /* Mesh3DMikkTSpace.hpp */,
+				F9ECFB5C3021C81700D3EB2F /* Mesh3DNormals.hpp */,
+			);
+			path = Mesh3D;
+			sourceTree = "<group>";
+		};
+		F9A3D11630A1000000C0DE01 /* VertexNormalWeighting */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */,
+			);
+			path = VertexNormalWeighting;
+			sourceTree = "<group>";
+		};
+		F9A3D22130A1000000C0DE01 /* AnimatedImageDecodeError */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */,
+			);
+			path = AnimatedImageDecodeError;
+			sourceTree = "<group>";
+		};
+		F9A3D22230A1000000C0DE01 /* AnimatedImageReadStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */,
+			);
+			path = AnimatedImageReadStatus;
+			sourceTree = "<group>";
+		};
+		F9A3D22330A1000000C0DE01 /* CSVParseErrorCode */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */,
+			);
+			path = CSVParseErrorCode;
+			sourceTree = "<group>";
+		};
+		F9A3D22430A1000000C0DE01 /* INIParseErrorCode */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */,
+			);
+			path = INIParseErrorCode;
+			sourceTree = "<group>";
+		};
+		F9A3D22530A1000000C0DE01 /* LetterCase */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */,
+			);
+			path = LetterCase;
+			sourceTree = "<group>";
+		};
+		F9A3D22630A1000000C0DE01 /* LogLevel */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */,
+			);
+			path = LogLevel;
+			sourceTree = "<group>";
+		};
+		F9A3D22730A1000000C0DE01 /* MessageBoxResult */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */,
+			);
+			path = MessageBoxResult;
+			sourceTree = "<group>";
+		};
+		F9A3D22830A1000000C0DE01 /* ShaderStage */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */,
+			);
+			path = ShaderStage;
+			sourceTree = "<group>";
+		};
+		F9A3D22930A1000000C0DE01 /* TexturePixelFormat */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */,
+			);
+			path = TexturePixelFormat;
+			sourceTree = "<group>";
+		};
 		F9A8A5F12FC0000000000001 /* AsyncTaskStatus */ = {
 			isa = PBXGroup;
 			children = (
@@ -13785,6 +13802,15 @@
 				F9E794832C2493FF002615BA /* ConstantBufferFactory.mm */,
 			);
 			path = ConstantBuffer;
+			sourceTree = "<group>";
+		};
+		F9ECFB553021C41B00D3EB2F /* MikkTSpace */ = {
+			isa = PBXGroup;
+			children = (
+				F9ECFB533021C41B00D3EB2F /* mikktspace.h */,
+				F9ECFB543021C41B00D3EB2F /* mikktspace.c */,
+			);
+			path = MikkTSpace;
 			sourceTree = "<group>";
 		};
 		F9ED45AB2CC156EC006BA10F /* algorithms */ = {
@@ -14736,6 +14762,7 @@
 				F9797EB12F667F3300518D26 /* CMediaTranscoder.hpp in Headers */,
 				F986031F2BCFBB54006A4C0F /* SkPathOpsCubic.h in Headers */,
 				F980C45D2C01B20F00A86B68 /* DepthStencilStateBuilder.hpp in Headers */,
+				F9ECFB5F3021C81700D3EB2F /* Mesh3DNormals.hpp in Headers */,
 				F986047C2BCFBB54006A4C0F /* SkSLMemoryLayout.h in Headers */,
 				F9528C462BBF026F00222F45 /* zstd_errors.h in Headers */,
 				F98603E92BCFBB54006A4C0F /* SkSLChildCall.h in Headers */,
@@ -15816,6 +15843,7 @@
 				F933AD1D2E54A2E7005624D7 /* VerticalScale.ipp in Headers */,
 				F986FA442BCFB53B006A4C0F /* public-macros.h in Headers */,
 				F98605222BD0E2A3006A4C0F /* CEngineResource.hpp in Headers */,
+				F9ECFB5B3021C43800D3EB2F /* Mesh3DMikkTSpace.hpp in Headers */,
 				F98605FB2BE61586006A4C0F /* Line.ipp in Headers */,
 				F986FA742BCFB53B006A4C0F /* ftbbox.h in Headers */,
 				F986030B2BCFBB54006A4C0F /* SkOpAngle.h in Headers */,
@@ -15946,6 +15974,7 @@
 				F986F8A22BC8003B006A4C0F /* EnvironmentVariable.hpp in Headers */,
 				F986001D2BCFBB53006A4C0F /* SkImage.h in Headers */,
 				F9E794522C197418002615BA /* Periodic.ipp in Headers */,
+				F9ECFB573021C41B00D3EB2F /* mikktspace.h in Headers */,
 				F9070C862B9F175000383E4D /* UniqueResource.ipp in Headers */,
 				F9070CB82B9F175000383E4D /* EscapedFormatter.hpp in Headers */,
 				F9528C872BC05B5B00222F45 /* CImageEncoder.hpp in Headers */,
@@ -16312,6 +16341,7 @@
 				F933ADAF2E54A375005624D7 /* render-sdf.cpp in Sources */,
 				F933ADB02E54A375005624D7 /* save-fl32.cpp in Sources */,
 				F933ADB12E54A375005624D7 /* rasterization.cpp in Sources */,
+				F9ECFB5E3021C81700D3EB2F /* Mesh3DNormals.cpp in Sources */,
 				F933ADB22E54A375005624D7 /* save-rgba.cpp in Sources */,
 				F933ADB32E54A375005624D7 /* sdf-error-estimation.cpp in Sources */,
 				F933ADB42E54A375005624D7 /* DistanceMapping.cpp in Sources */,
@@ -16655,6 +16685,7 @@
 				F9797E472F643FC500518D26 /* CAudioEncoder.cpp in Sources */,
 				F9797E482F643FC500518D26 /* AudioDecoderFactory.cpp in Sources */,
 				F9797E492F643FC500518D26 /* SivAudioDecoder.cpp in Sources */,
+				F9ECFB563021C41B00D3EB2F /* mikktspace.c in Sources */,
 				F9797E4A2F643FC500518D26 /* AudioEncoderFactory.cpp in Sources */,
 				F9797E4B2F643FC500518D26 /* SivAudioEncoder.cpp in Sources */,
 				F9797E4C2F643FC500518D26 /* CAudioDecoder.cpp in Sources */,
@@ -16754,6 +16785,7 @@
 				F90F7A3D2FAA3BF20077F398 /* toml11_types.cpp in Sources */,
 				F9D41CE32C9972D800290998 /* SivGrid.cpp in Sources */,
 				F9E794362C12BAC5002615BA /* SivMSL.cpp in Sources */,
+				F9ECFB5A3021C43800D3EB2F /* Mesh3DMikkTSpace.cpp in Sources */,
 				F9070DAF2B9F175E00383E4D /* SivBigInt.cpp in Sources */,
 				F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */,
 				F980C41B2C0023BB00A86B68 /* MetalPixelShader.mm in Sources */,
