@@ -8,3 +8,17 @@
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	bitangent
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Float3 Vertex3D::bitangent() const noexcept
+	{
+		return (Math::Cross(normal, tangent.xyz()) * tangent.w);
+	}
+}
