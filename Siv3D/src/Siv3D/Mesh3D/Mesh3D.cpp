@@ -12,13 +12,14 @@
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Error.hpp>
 # include <ThirdParty/DirectXMesh/DirectXMesh.h>
+# include "Mesh3DMikkTSpace.hpp"
 
 namespace s3d
 {
 	namespace
 	{
 		[[nodiscard]]
-		constexpr DirectX::CNORM_FLAGS ToCNORMFlags(const VertexNormalWeighting weighting) noexcept
+		static constexpr DirectX::CNORM_FLAGS ToCNORMFlags(const VertexNormalWeighting weighting) noexcept
 		{
 			uint32 flags = DirectX::CNORM_DEFAULT;
 
@@ -37,8 +38,6 @@ namespace s3d
 				assert(false);
 				break;
 			}
-
-			//flags |= DirectX::CNORM_WIND_CW;
 
 			return ToEnum<DirectX::CNORM_FLAGS>(flags);
 		}
@@ -121,8 +120,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	//Mesh3D& Mesh3D::computeTangents()
-	//{
+	Mesh3D& Mesh3D::computeTangents()
+	{
+		if (not GenerateMikkTSpaceTangents(vertices, indices))
+		{
+			throw Error{ "Mesh3D::computeTangents(): Failed to generate MikkTSpace tangents." };
+		}
 
-	//}
+		return *this;
+	}
 }

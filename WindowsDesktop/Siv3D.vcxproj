@@ -1028,6 +1028,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MediaTranscoder\IMediaTranscoder.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\NativeShare\INativeShare.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Notifications\INotifications.hpp" />
@@ -1310,6 +1311,7 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\recursive_wrapper.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant_visitor.hpp" />
+    <ClInclude Include="..\Siv3D\src\ThirdParty\MikkTSpace\mikktspace.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniutf\miniutf.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\arithmetics.hpp" />
@@ -1830,6 +1832,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\MemoryViewReader\SivMemoryViewReader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh2D\SivMesh2D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3D.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBoxResult\SivMessageBoxResult.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrophoneInfo\SivMicrophoneInfo.cpp" />
@@ -2046,6 +2049,9 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgproperty.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgrenderstate.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\lunasvg\svgtextelement.cpp" />
+    <ClCompile Include="..\Siv3D\src\ThirdParty\MikkTSpace\mikktspace.c">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4201;4456</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.c" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\contour-combiners.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\msdfgen\core\Contour.cpp" />
