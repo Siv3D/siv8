@@ -8,3 +8,121 @@
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
+
+# include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Error.hpp>
+# include <ThirdParty/DirectXMesh/DirectXMesh.h>
+
+namespace s3d
+{
+	namespace
+	{
+		[[nodiscard]]
+		constexpr DirectX::CNORM_FLAGS ToCNORMFlags(const VertexNormalWeighting weighting) noexcept
+		{
+			uint32 flags = DirectX::CNORM_DEFAULT;
+
+			switch (weighting)
+			{
+			case VertexNormalWeighting::Angle:
+				flags |= DirectX::CNORM_DEFAULT;
+				break;
+			case VertexNormalWeighting::Area:
+				flags |= DirectX::CNORM_WEIGHT_BY_AREA;
+				break;
+			case VertexNormalWeighting::Uniform:
+				flags |= DirectX::CNORM_WEIGHT_EQUAL;
+				break;
+			default:
+				assert(false);
+				break;
+			}
+
+			//flags |= DirectX::CNORM_WIND_CW;
+
+			return ToEnum<DirectX::CNORM_FLAGS>(flags);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeNormals
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::computeNormals(const VertexNormalWeighting weighting)
+	{
+		if (indices.isEmpty())
+		{
+			for (auto& vertex : vertices)
+			{
+				vertex.normal = Float3{ 0.0f, 0.0f, 0.0f };
+			}
+
+			return *this;
+		}
+
+		if (vertices.isEmpty())
+		{
+			return *this;
+		}
+
+		const size_t vertexCount = vertices.size();
+		const Array<DirectX::XMFLOAT3> positions = vertices.map([](const Vertex3D& vertex)
+		{
+			return DirectX::XMFLOAT3{ vertex.pos.x, vertex.pos.y, vertex.pos.z };
+		});
+
+		const size_t triangleCount = indices.size();
+		Array<uint32> flatIndices(triangleCount * 3);
+		for (size_t i = 0; i < triangleCount; ++i)
+		{
+			const TriangleIndex32& triangle = indices[i];
+			flatIndices[i * 3 + 0] = triangle.i0;
+			flatIndices[i * 3 + 1] = triangle.i1;
+			flatIndices[i * 3 + 2] = triangle.i2;
+		}
+
+		Array<DirectX::XMFLOAT3> computedNormals(vertexCount);
+
+		const HRESULT hr = DirectX::ComputeNormals(
+			flatIndices.data(),
+			triangleCount,
+			positions.data(),
+			vertexCount,
+			ToCNORMFlags(weighting),
+			computedNormals.data());
+
+		if (FAILED(hr))
+		{
+			throw Error{ "Mesh3D::computeNormals(): DirectX::ComputeNormals() failed." };
+		};
+
+		{
+			const DirectX::XMFLOAT3* pSrc = computedNormals.data();
+			const DirectX::XMFLOAT3* pSrcEnd = (pSrc + vertexCount);
+			Vertex3D* pDst = vertices.data();
+
+			while (pSrc != pSrcEnd)
+			{
+				const DirectX::XMFLOAT3& normal = *pSrc;
+				pDst->normal = Float3{ normal.x, normal.y, normal.z };
+				++pSrc;
+				++pDst;
+			}
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeTangents
+	//
+	////////////////////////////////////////////////////////////////
+
+	//Mesh3D& Mesh3D::computeTangents()
+	//{
+
+	//}
+}

@@ -1468,6 +1468,9 @@
     <Filter Include="src\ThirdParty\wuffs">
       <UniqueIdentifier>{fa032c75-863a-4a02-b00e-d736de4d20b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ThirdParty\DirectXMesh">
+      <UniqueIdentifier>{f591c4ff-d8c6-4e3e-b23a-c565af40a4a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Siv3D\include\Siv3D.hpp">
@@ -5973,6 +5976,15 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\AnimatedImageReader.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMeshP.h">
+      <Filter>src\ThirdParty\DirectXMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMesh.h">
+      <Filter>src\ThirdParty\DirectXMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\ThirdParty\DirectXMesh\scoped.h">
+      <Filter>src\ThirdParty\DirectXMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Siv3DMain.cpp">
@@ -9122,6 +9134,9 @@
     <ClCompile Include="..\Siv3D\src\ThirdParty\wuffs\WuffsCodecs.cpp">
       <Filter>src\ThirdParty\wuffs</Filter>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMeshNormals.cpp">
+      <Filter>src\ThirdParty\DirectXMesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Siv3D\src\ThirdParty\cpu_features\impl_x86__base_implementation.inl">
@@ -9165,6 +9180,9 @@
     </None>
     <None Include="..\Siv3D\src\ThirdParty\r8brain-free-src\CDSPHBUpsampler.inc">
       <Filter>src\ThirdParty\r8brain-free-src</Filter>
+    </None>
+    <None Include="..\Siv3D\src\ThirdParty\DirectXMesh\DirectXMesh.inl">
+      <Filter>src\ThirdParty\DirectXMesh</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

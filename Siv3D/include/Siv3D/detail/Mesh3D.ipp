@@ -8,3 +8,20 @@
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Mesh3D::Mesh3D(size_t vertexCount, size_t triangleCount)
+		: vertices(vertexCount)
+		, indices(triangleCount) {}
+
+	inline Mesh3D::Mesh3D(Array<Vertex3D> _vertices, Array<TriangleIndex32> _indices)
+		: vertices(std::move(_vertices))
+		, indices(std::move(_indices)) {}
+}
