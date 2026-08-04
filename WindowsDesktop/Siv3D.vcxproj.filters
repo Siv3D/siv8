@@ -1435,6 +1435,9 @@
     <Filter Include="src\Siv3D\Mesh3D">
       <UniqueIdentifier>{7a5296ba-b353-413a-a5c5-ea24657f9dc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\VertexNormalWeighting">
+      <UniqueIdentifier>{5f95438e-2709-433c-9195-43b82672ccfb}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\ThirdParty\wuffs">
       <UniqueIdentifier>{fa032c75-863a-4a02-b00e-d736de4d20b3}</UniqueIdentifier>
     </Filter>
@@ -3685,6 +3688,9 @@
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Vertex3D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\VertexNormalWeighting.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Vertex3D.ipp">
@@ -7957,6 +7963,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp">
       <Filter>src\Siv3D\MessageBox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\VertexNormalWeighting\SivVertexNormalWeighting.cpp">
+      <Filter>src\Siv3D\VertexNormalWeighting</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\VertexShader\SivVertexShader.cpp">
       <Filter>src\Siv3D\VertexShader</Filter>

@@ -136,6 +136,9 @@
     <ClCompile Include="..\Test\Test_Grid.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_VertexNormalWeighting.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_BinaryFileReader.cpp">
       <Filter>Test</Filter>
     </ClCompile>

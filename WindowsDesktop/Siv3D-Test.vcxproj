@@ -53,6 +53,7 @@
     <ClCompile Include="..\Test\Test_Geometry2D_SignedDistance.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_SignedDistance_Availability.cpp" />
     <ClCompile Include="..\Test\Test_Grid.cpp" />
+    <ClCompile Include="..\Test\Test_VertexNormalWeighting.cpp" />
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
