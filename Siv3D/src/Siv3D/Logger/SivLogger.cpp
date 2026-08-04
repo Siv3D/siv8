@@ -11,7 +11,7 @@
 
 # include <Siv3D/Logger.hpp>
 # include <Siv3D/Unicode.hpp>
-# include <Siv3D/LogType.hpp>
+# include <Siv3D/LogLevel.hpp>
 # include <Siv3D/Logger/ILogger.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 
@@ -38,7 +38,7 @@ namespace s3d
 
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->writeln(LogType::App, output);
+				pLogger->writeln(LogLevel::App, output);
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace s3d
 		{
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->writeln(LogType::App, s);
+				pLogger->writeln(LogLevel::App, s);
 			}
 		}
 
@@ -118,9 +118,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		void Logger_impl::setOutputLevel(const LogType logType) const noexcept
+		void Logger_impl::setOutputLevel(const LogLevel logLevel) const noexcept
 		{
-			SIV3D_ENGINE(Logger)->setOutputLevel(logType);
+			SIV3D_ENGINE(Logger)->setOutputLevel(logLevel);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -130,7 +130,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		[[nodiscard]]
-		LogType Logger_impl::getOutputLevel() const noexcept
+		LogLevel Logger_impl::getOutputLevel() const noexcept
 		{
 			return SIV3D_ENGINE(Logger)->getOutputLevel();
 		}

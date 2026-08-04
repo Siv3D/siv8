@@ -625,7 +625,7 @@
 ////////////////////////////////////////////////////////////////
 
 // ログの種類 | The type of the log message
-# include <Siv3D/LogType.hpp>
+# include <Siv3D/LogLevel.hpp>
 
 // ロガー | Logger
 # include <Siv3D/Logger.hpp>
@@ -1206,7 +1206,7 @@
 ////////////////////////////////////////////////////////////////
 
 // ドラッグするアイテムの種類 | Dragged item type
-# include <Siv3D/DragItemType.hpp>
+# include <Siv3D/DragDropItemType.hpp>
 
 // ドラッグの状態 | Dragging status
 # include <Siv3D/DragStatus.hpp>

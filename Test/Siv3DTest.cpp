@@ -27,7 +27,7 @@ int32 RunTest()
 	if (commandLineArgs.contains(U"--test-only")
 		&& (not commandLineArgs.contains(U"--test-verbose")))
 	{
-		Logger.setOutputLevel(LogType::Error);
+		Logger.setOutputLevel(LogLevel::Error);
 	}
 
 	Console.open();

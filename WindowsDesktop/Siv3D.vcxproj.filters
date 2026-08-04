@@ -1369,7 +1369,7 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\DragDrop">
       <UniqueIdentifier>{3b9d483e-a8ef-4c48-bc0c-72347a5e3179}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\DragItemType">
+    <Filter Include="src\Siv3D\DragDropItemType">
       <UniqueIdentifier>{7d42a633-512c-4f86-b158-d0a54a4757fc}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\Icon">
@@ -1453,7 +1453,7 @@
     <Filter Include="src\Siv3D\LetterCase">
       <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a205}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\LogType">
+    <Filter Include="src\Siv3D\LogLevel">
       <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a206}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\MessageBoxResult">
@@ -2088,7 +2088,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\EngineLog.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\LogType.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\LogLevel.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp">
@@ -5475,7 +5475,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\DragDrop.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\DragItemType.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\DragDropItemType.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\DragStatus.hpp">
@@ -8009,8 +8009,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LetterCase\SivLetterCase.cpp">
       <Filter>src\Siv3D\LetterCase</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\LogType\SivLogType.cpp">
-      <Filter>src\Siv3D\LogType</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LogLevel\SivLogLevel.cpp">
+      <Filter>src\Siv3D\LogLevel</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBoxResult\SivMessageBoxResult.cpp">
       <Filter>src\Siv3D\MessageBoxResult</Filter>
@@ -8933,8 +8933,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\DragDrop\SivDragDrop.cpp">
       <Filter>src\Siv3D\DragDrop</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\DragItemType\SivDragItemType.cpp">
-      <Filter>src\Siv3D\DragItemType</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\DragDropItemType\SivDragDropItemType.cpp">
+      <Filter>src\Siv3D\DragDropItemType</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Icon\IconFactory.cpp">
       <Filter>src\Siv3D\Icon</Filter>

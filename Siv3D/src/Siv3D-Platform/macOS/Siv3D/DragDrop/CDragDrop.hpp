@@ -84,7 +84,7 @@ namespace s3d
 		[[nodiscard]]
 		bool acceptsTextFromNative() const noexcept;
 
-		void setDragOverFromNative(const Point& rawClientPos, DragItemType itemType);
+		void setDragOverFromNative(const Point& rawClientPos, DragDropItemType itemType);
 
 		void clearDragOverFromNative();
 

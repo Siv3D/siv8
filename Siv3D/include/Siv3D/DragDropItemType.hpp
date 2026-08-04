@@ -18,14 +18,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	DragItemType
+	//	DragDropItemType
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief ウィンドウ上でドラッグ中のアイテムを、Siv3D がどの種類として扱うかを表します。
 	/// @remark この列挙は高レベル API 向けの分類です。
 	/// @remark OS ネイティブのすべての形式をそのまま公開するものではありません。
-	enum class DragItemType : uint8
+	enum class DragDropItemType : uint8
 	{
 		/// @brief ファイルパス群として扱うアイテムです。
 		FilePaths,
@@ -40,9 +40,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief DragItemType を文字列に変換します。
+	/// @brief ドラッグ＆ドロップアイテムの種類を文字列に変換します。
 	/// @param formatData 文字列バッファ
-	/// @param value DragItemType
+	/// @param value ドラッグ＆ドロップアイテムの種類
 	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
-	void Formatter(FormatData& formatData, DragItemType value);
+	void Formatter(FormatData& formatData, DragDropItemType value);
 }

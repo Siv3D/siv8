@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/LogType.hpp>
+# include <Siv3D/LogLevel.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
 # include <Siv3D/Utility.hpp>
@@ -19,7 +19,7 @@ namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array LogTypeStrings =
+		static constexpr std::array LogLevelStrings =
 		{
 			U"Error"_sv,
 			U"Fail"_sv,
@@ -37,9 +37,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const LogType value)
+	void Formatter(FormatData& formatData, const LogLevel value)
 	{
-		formatData.string.append(LogTypeStrings[FromEnum(value)]);
+		formatData.string.append(LogLevelStrings[FromEnum(value)]);
 	}
 }
-

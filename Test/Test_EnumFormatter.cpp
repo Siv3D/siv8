@@ -278,17 +278,28 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("LogType")
+	SUBCASE("LogLevel")
 	{
 		static constexpr std::array Cases =
 		{
-			std::pair{ LogType::Error, StringView{ U"Error" } },
-			std::pair{ LogType::Fail, StringView{ U"Fail" } },
-			std::pair{ LogType::Warning, StringView{ U"Warning" } },
-			std::pair{ LogType::App, StringView{ U"App" } },
-			std::pair{ LogType::Info, StringView{ U"Info" } },
-			std::pair{ LogType::Debug, StringView{ U"Debug" } },
-			std::pair{ LogType::Trace, StringView{ U"Trace" } },
+			std::pair{ LogLevel::Error, StringView{ U"Error" } },
+			std::pair{ LogLevel::Fail, StringView{ U"Fail" } },
+			std::pair{ LogLevel::Warning, StringView{ U"Warning" } },
+			std::pair{ LogLevel::App, StringView{ U"App" } },
+			std::pair{ LogLevel::Info, StringView{ U"Info" } },
+			std::pair{ LogLevel::Debug, StringView{ U"Debug" } },
+			std::pair{ LogLevel::Trace, StringView{ U"Trace" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
+	SUBCASE("DragDropItemType")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ DragDropItemType::FilePaths, StringView{ U"FilePaths" } },
+			std::pair{ DragDropItemType::Text, StringView{ U"Text" } },
 		};
 
 		CheckEnumFormatter(Cases);

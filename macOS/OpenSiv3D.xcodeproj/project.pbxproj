@@ -252,7 +252,7 @@
 		F9070CD42B9F175100383E4D /* LetterCase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BFB2B9F175000383E4D /* LetterCase.hpp */; };
 		F9070CD52B9F175100383E4D /* Logger.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BFC2B9F175000383E4D /* Logger.hpp */; };
 		F9070CD62B9F175100383E4D /* LoggerBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */; };
-		F9070CD72B9F175100383E4D /* LogType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BFE2B9F175000383E4D /* LogType.hpp */; };
+		F9070CD72B9F175100383E4D /* LogLevel.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BFE2B9F175000383E4D /* LogLevel.hpp */; };
 		F9070CD82B9F175100383E4D /* MapFormatter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BFF2B9F175000383E4D /* MapFormatter.hpp */; };
 		F9070CD92B9F175100383E4D /* MathConstants.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C002B9F175000383E4D /* MathConstants.hpp */; };
 		F9070CDA2B9F175100383E4D /* MD5Value.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C012B9F175000383E4D /* MD5Value.hpp */; };
@@ -758,7 +758,7 @@
 		F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */; };
 		F9A3D20430A1000000C0DE01 /* SivINIParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */; };
 		F9A3D20530A1000000C0DE01 /* SivLetterCase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */; };
-		F9A3D20630A1000000C0DE01 /* SivLogType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21630A1000000C0DE01 /* SivLogType.cpp */; };
+		F9A3D20630A1000000C0DE01 /* SivLogLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */; };
 		F9A3D20730A1000000C0DE01 /* SivMessageBoxResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */; };
 		F9A3D20830A1000000C0DE01 /* SivShaderStage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */; };
 		F9A3D20930A1000000C0DE01 /* SivTexturePixelFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */; };
@@ -1247,7 +1247,7 @@
 		F9797ECE2F6DCC4500518D26 /* MP3Decoder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ECD2F6DCC4500518D26 /* MP3Decoder.hpp */; };
 		F9797ED12F6DCC5D00518D26 /* dr_mp3.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */; };
 		F9797ED32F6DCC7600518D26 /* MP3Decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797ED22F6DCC7600518D26 /* MP3Decoder.cpp */; };
-		F9797ED92F6E572500518D26 /* DragItemType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED52F6E572500518D26 /* DragItemType.hpp */; };
+		F9797ED92F6E572500518D26 /* DragDropItemType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED52F6E572500518D26 /* DragDropItemType.hpp */; };
 		F9797EDA2F6E572500518D26 /* DroppedFilePath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED72F6E572500518D26 /* DroppedFilePath.hpp */; };
 		F9797EDB2F6E572500518D26 /* DragDrop.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED42F6E572500518D26 /* DragDrop.hpp */; };
 		F9797EDC2F6E572500518D26 /* DroppedText.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797ED82F6E572500518D26 /* DroppedText.hpp */; };
@@ -1259,7 +1259,7 @@
 		F9797EEA2F6E576F00518D26 /* CDragDrop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EE62F6E576F00518D26 /* CDragDrop.cpp */; };
 		F9797EEB2F6E576F00518D26 /* CDragDropBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9797EE72F6E576F00518D26 /* CDragDropBridge.mm */; };
 		F9797EED2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */; };
-		F9797EF02F6E60C200518D26 /* SivDragItemType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EEE2F6E60C200518D26 /* SivDragItemType.cpp */; };
+		F9797EF02F6E60C200518D26 /* SivDragDropItemType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9797EEE2F6E60C200518D26 /* SivDragDropItemType.cpp */; };
 		F9797EF22F6EB6C700518D26 /* Icon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF12F6EB6C700518D26 /* Icon.hpp */; };
 		F9797EF42F6EB6CD00518D26 /* TextLayoutResult.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF32F6EB6CD00518D26 /* TextLayoutResult.hpp */; };
 		F9797EF72F6EB6E800518D26 /* Icon.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9797EF52F6EB6E800518D26 /* Icon.ipp */; };
@@ -3464,7 +3464,7 @@
 		F9070BFB2B9F175000383E4D /* LetterCase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LetterCase.hpp; sourceTree = "<group>"; };
 		F9070BFC2B9F175000383E4D /* Logger.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Logger.hpp; sourceTree = "<group>"; };
 		F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LoggerBuffer.hpp; sourceTree = "<group>"; };
-		F9070BFE2B9F175000383E4D /* LogType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LogType.hpp; sourceTree = "<group>"; };
+		F9070BFE2B9F175000383E4D /* LogLevel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LogLevel.hpp; sourceTree = "<group>"; };
 		F9070BFF2B9F175000383E4D /* MapFormatter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MapFormatter.hpp; sourceTree = "<group>"; };
 		F9070C002B9F175000383E4D /* MathConstants.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MathConstants.hpp; sourceTree = "<group>"; };
 		F9070C012B9F175000383E4D /* MD5Value.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MD5Value.hpp; sourceTree = "<group>"; };
@@ -4035,7 +4035,7 @@
 		F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSVParseErrorCode.cpp; sourceTree = "<group>"; };
 		F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivINIParseErrorCode.cpp; sourceTree = "<group>"; };
 		F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLetterCase.cpp; sourceTree = "<group>"; };
-		F9A3D21630A1000000C0DE01 /* SivLogType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLogType.cpp; sourceTree = "<group>"; };
+		F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLogLevel.cpp; sourceTree = "<group>"; };
 		F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBoxResult.cpp; sourceTree = "<group>"; };
 		F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivShaderStage.cpp; sourceTree = "<group>"; };
 		F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturePixelFormat.cpp; sourceTree = "<group>"; };
@@ -4556,7 +4556,7 @@
 		F9797ECF2F6DCC5D00518D26 /* dr_mp3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dr_mp3.h; sourceTree = "<group>"; };
 		F9797ED22F6DCC7600518D26 /* MP3Decoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MP3Decoder.cpp; sourceTree = "<group>"; };
 		F9797ED42F6E572500518D26 /* DragDrop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DragDrop.hpp; sourceTree = "<group>"; };
-		F9797ED52F6E572500518D26 /* DragItemType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DragItemType.hpp; sourceTree = "<group>"; };
+		F9797ED52F6E572500518D26 /* DragDropItemType.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DragDropItemType.hpp; sourceTree = "<group>"; };
 		F9797ED62F6E572500518D26 /* DragStatus.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DragStatus.hpp; sourceTree = "<group>"; };
 		F9797ED72F6E572500518D26 /* DroppedFilePath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DroppedFilePath.hpp; sourceTree = "<group>"; };
 		F9797ED82F6E572500518D26 /* DroppedText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DroppedText.hpp; sourceTree = "<group>"; };
@@ -4567,7 +4567,7 @@
 		F9797EE62F6E576F00518D26 /* CDragDrop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CDragDrop.cpp; sourceTree = "<group>"; };
 		F9797EE72F6E576F00518D26 /* CDragDropBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CDragDropBridge.mm; sourceTree = "<group>"; };
 		F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GLFW_Siv3D_DragDropBridge.h; sourceTree = "<group>"; };
-		F9797EEE2F6E60C200518D26 /* SivDragItemType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDragItemType.cpp; sourceTree = "<group>"; };
+		F9797EEE2F6E60C200518D26 /* SivDragDropItemType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivDragDropItemType.cpp; sourceTree = "<group>"; };
 		F9797EF12F6EB6C700518D26 /* Icon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Icon.hpp; sourceTree = "<group>"; };
 		F9797EF32F6EB6CD00518D26 /* TextLayoutResult.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextLayoutResult.hpp; sourceTree = "<group>"; };
 		F9797EF52F6EB6E800518D26 /* Icon.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Icon.ipp; sourceTree = "<group>"; };
@@ -7463,7 +7463,7 @@
 				F9070BD92B9F175000383E4D /* Distribution.hpp */,
 				F9070BDA2B9F175000383E4D /* DLL.hpp */,
 				F9797ED42F6E572500518D26 /* DragDrop.hpp */,
-				F9797ED52F6E572500518D26 /* DragItemType.hpp */,
+				F9797ED52F6E572500518D26 /* DragDropItemType.hpp */,
 				F9797ED62F6E572500518D26 /* DragStatus.hpp */,
 				F943AAC72E2A099E001B4D43 /* DrawableText.hpp */,
 				F99881BD2F56CA5400C8991D /* DriveInfo.hpp */,
@@ -7590,7 +7590,7 @@
 				F9E7945F2C198133002615BA /* ListUtility.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
-				F9070BFE2B9F175000383E4D /* LogType.hpp */,
+				F9070BFE2B9F175000383E4D /* LogLevel.hpp */,
 				F9070BFF2B9F175000383E4D /* MapFormatter.hpp */,
 				F9528B282BAFCDB400222F45 /* MappedMemory.hpp */,
 				F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */,
@@ -8380,7 +8380,7 @@
 				F9797E9D2F667EC600518D26 /* Dialog */,
 				F986061D2BEB7CB3006A4C0F /* DirectoryWatcher */,
 				F9797EE12F6E574E00518D26 /* DragDrop */,
-				F9797EEF2F6E60C200518D26 /* DragItemType */,
+				F9797EEF2F6E60C200518D26 /* DragDropItemType */,
 				F943AACA2E2A09BB001B4D43 /* DrawableText */,
 				F99881C22F56CA7600C8991D /* DriveType */,
 				F9070D3B2B9F175E00383E4D /* Duration */,
@@ -8461,7 +8461,7 @@
 				F9A3D22530A1000000C0DE01 /* LetterCase */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
-				F9A3D22630A1000000C0DE01 /* LogType */,
+				F9A3D22630A1000000C0DE01 /* LogLevel */,
 				F98605702BDA32D4006A4C0F /* Mat3x2 */,
 				F9FD0BB42D1DA6EA00A584CE /* Mat3x3 */,
 				F98605422BD203BC006A4C0F /* MathParser */,
@@ -9344,12 +9344,12 @@
 			path = LetterCase;
 			sourceTree = "<group>";
 		};
-		F9A3D22630A1000000C0DE01 /* LogType */ = {
+		F9A3D22630A1000000C0DE01 /* LogLevel */ = {
 			isa = PBXGroup;
 			children = (
-				F9A3D21630A1000000C0DE01 /* SivLogType.cpp */,
+				F9A3D21630A1000000C0DE01 /* SivLogLevel.cpp */,
 			);
-			path = LogType;
+			path = LogLevel;
 			sourceTree = "<group>";
 		};
 		F9A3D22730A1000000C0DE01 /* MessageBoxResult */ = {
@@ -10752,12 +10752,12 @@
 			path = DragDrop;
 			sourceTree = "<group>";
 		};
-		F9797EEF2F6E60C200518D26 /* DragItemType */ = {
+		F9797EEF2F6E60C200518D26 /* DragDropItemType */ = {
 			isa = PBXGroup;
 			children = (
-				F9797EEE2F6E60C200518D26 /* SivDragItemType.cpp */,
+				F9797EEE2F6E60C200518D26 /* SivDragDropItemType.cpp */,
 			);
-			path = DragItemType;
+			path = DragDropItemType;
 			sourceTree = "<group>";
 		};
 		F9797EFE2F6EB70D00518D26 /* Icon */ = {
@@ -14555,7 +14555,7 @@
 				F943AB2F2E2A2E4F001B4D43 /* distribution_caller.h in Headers */,
 				F943AB302E2A2E4F001B4D43 /* policy_checks.h in Headers */,
 				F943AB312E2A2E4F001B4D43 /* nullability.h in Headers */,
-				F9797ED92F6E572500518D26 /* DragItemType.hpp in Headers */,
+				F9797ED92F6E572500518D26 /* DragDropItemType.hpp in Headers */,
 				F9797EDA2F6E572500518D26 /* DroppedFilePath.hpp in Headers */,
 				F9797EDB2F6E572500518D26 /* DragDrop.hpp in Headers */,
 				F9797EDC2F6E572500518D26 /* DroppedText.hpp in Headers */,
@@ -15731,7 +15731,7 @@
 				F9E786DA2EF1270100855B2F /* YAxisOrientation.h in Headers */,
 				F9528B792BB708A700222F45 /* ILicenseManager.hpp in Headers */,
 				F986FA8B2BCFB53B006A4C0F /* ftmm.h in Headers */,
-				F9070CD72B9F175100383E4D /* LogType.hpp in Headers */,
+				F9070CD72B9F175100383E4D /* LogLevel.hpp in Headers */,
 				F9070C6D2B9F175000383E4D /* NonNull.ipp in Headers */,
 				F98603E02BCFBB54006A4C0F /* SkSLSPIRVtoHLSL.h in Headers */,
 				F98600462BCFBB53006A4C0F /* SkSurfaceProps.h in Headers */,
@@ -16401,7 +16401,7 @@
 				F9070F332B9F252E00383E4D /* null_monitor.c in Sources */,
 				F9070DE02B9F175E00383E4D /* SivParseErrorReason.cpp in Sources */,
 				F998817D2F45A23900C8991D /* CClipboard.mm in Sources */,
-				F9797EF02F6E60C200518D26 /* SivDragItemType.cpp in Sources */,
+				F9797EF02F6E60C200518D26 /* SivDragDropItemType.cpp in Sources */,
 				F9528C182BBF026F00222F45 /* zstd_common.c in Sources */,
 				F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */,
 				F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */,
@@ -16810,7 +16810,7 @@
 				F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */,
 				F9A3D20430A1000000C0DE01 /* SivINIParseErrorCode.cpp in Sources */,
 				F9A3D20530A1000000C0DE01 /* SivLetterCase.cpp in Sources */,
-				F9A3D20630A1000000C0DE01 /* SivLogType.cpp in Sources */,
+				F9A3D20630A1000000C0DE01 /* SivLogLevel.cpp in Sources */,
 				F9A3D20730A1000000C0DE01 /* SivMessageBoxResult.cpp in Sources */,
 				F9A3D20830A1000000C0DE01 /* SivShaderStage.cpp in Sources */,
 				F9A3D20930A1000000C0DE01 /* SivTexturePixelFormat.cpp in Sources */,
