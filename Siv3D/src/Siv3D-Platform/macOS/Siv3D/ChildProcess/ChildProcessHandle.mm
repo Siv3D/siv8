@@ -248,7 +248,7 @@ namespace s3d
 		: m_inputStream{ &m_inputBuffer }
 		, m_outputStream{ &m_outputBuffer } {}
 
-	ChildProcessHandle::ChildProcessHandle(const std::string& path, const Array<String>& commands, const Pipe pipe)
+	ChildProcessHandle::ChildProcessHandle(const std::string& path, const Array<String>& commands, const ChildProcessPipe pipe)
 		: ChildProcessHandle{}
 	{
 		if (path.empty())
@@ -258,7 +258,7 @@ namespace s3d
 
 		const bool isApplicationBundle = IsApplicationBundle(path);
 
-		if (isApplicationBundle && (pipe != Pipe::None))
+		if (isApplicationBundle && (pipe != ChildProcessPipe::None))
 		{
 			return;
 		}
@@ -307,8 +307,8 @@ namespace s3d
 
 		argumentPointers.push_back(nullptr);
 
-		const bool captureStandardOutput = ((pipe == Pipe::StdIn) || (pipe == Pipe::StdInOut));
-		const bool provideStandardInput = ((pipe == Pipe::StdOut) || (pipe == Pipe::StdInOut));
+		const bool captureStandardOutput = ((pipe == ChildProcessPipe::StdIn) || (pipe == ChildProcessPipe::StdInOut));
+		const bool provideStandardInput = ((pipe == ChildProcessPipe::StdOut) || (pipe == ChildProcessPipe::StdInOut));
 		int standardOutputPipe[2] = { -1, -1 };
 		int standardInputPipe[2] = { -1, -1 };
 

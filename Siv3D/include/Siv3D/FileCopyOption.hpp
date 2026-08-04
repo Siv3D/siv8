@@ -16,12 +16,12 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	CopyOption
+	//	FileCopyOption
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief ファイルコピー時の動作
-	enum class CopyOption : uint8
+	enum class FileCopyOption : uint8
 	{
 		/// @brief ファイル名が既に使われていた場合、コピーを失敗させる。 | Report an error when the file already exists.
 		Default,

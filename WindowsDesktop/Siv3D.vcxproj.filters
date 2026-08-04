@@ -223,7 +223,7 @@
     <Filter Include="src\Siv3D\AsyncTaskStatus">
       <UniqueIdentifier>{b413ff50-5104-4b92-8a7d-58b6cbd39c21}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\FileAction">
+    <Filter Include="src\Siv3D\FileChangeAction">
       <UniqueIdentifier>{30f78c1f-58b0-4d00-b612-240c86298321}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\DayOfWeek">
@@ -985,7 +985,7 @@
     <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser">
       <UniqueIdentifier>{bbfc247f-2c1e-49d1-b2d9-718b583ff3fb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\Pipe">
+    <Filter Include="src\Siv3D\ChildProcessPipe">
       <UniqueIdentifier>{e8470321-bcc4-4d02-9972-c7b7b011d0a1}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\ChildProcess">
@@ -1848,7 +1848,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\SpecialFolder.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileCopyOption.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\FileSystem.hpp">
@@ -2025,7 +2025,7 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\EnumBitmask\EnumBitmask.hpp">
       <Filter>include\ThirdParty\EnumBitmask</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileWriteMode.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\System.hpp">
@@ -2055,7 +2055,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\BinaryFileWriter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileChangeAction.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\MD5Value.hpp">
@@ -4200,7 +4200,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Geometry2D\ConvexHull.hpp">
       <Filter>include\Siv3D\Geometry2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\Pipe.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\ChildProcessPipe.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ChildProcess.hpp">
@@ -6134,8 +6134,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Threading\SivThreading.cpp">
       <Filter>src\Siv3D\Threading</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\FileAction\SivFileAction.cpp">
-      <Filter>src\Siv3D\FileAction</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\FileChangeAction\SivFileChangeAction.cpp">
+      <Filter>src\Siv3D\FileChangeAction</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\AsyncTaskStatus\SivAsyncTaskStatus.cpp">
       <Filter>src\Siv3D\AsyncTaskStatus</Filter>
@@ -8306,8 +8306,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Geometry2D\SivGeometry2D_ConvexHull.cpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\Pipe\SivPipe.cpp">
-      <Filter>src\Siv3D\Pipe</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ChildProcessPipe\SivChildProcessPipe.cpp">
+      <Filter>src\Siv3D\ChildProcessPipe</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ChildProcess\SivChildProcess.cpp">
       <Filter>src\Siv3D\ChildProcess</Filter>

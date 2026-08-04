@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/FileAction.hpp>
+# include <Siv3D/FileChangeAction.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
 
@@ -18,7 +18,7 @@ namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array FileActionStrings =
+		static constexpr std::array FileChangeActionStrings =
 		{
 			U"Unknown"_sv,
 			U"Added"_sv,
@@ -33,8 +33,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const FileAction value)
+	void Formatter(FormatData& formatData, const FileChangeAction value)
 	{
-		formatData.string.append(FileActionStrings[FromEnum(value)]);
+		formatData.string.append(FileChangeActionStrings[FromEnum(value)]);
 	}
 }

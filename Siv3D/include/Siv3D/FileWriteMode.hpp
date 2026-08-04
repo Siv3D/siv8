@@ -9,32 +9,26 @@
 //
 //-----------------------------------------------
 
-# include <array>
-# include <Siv3D/Pipe.hpp>
-# include <Siv3D/StringView.hpp>
-# include <Siv3D/FormatData.hpp>
+# pragma once
+# include "Types.hpp"
+# include <ThirdParty/EnumBitmask/EnumBitmask.hpp>
 
 namespace s3d
 {
-	namespace
-	{
-		static constexpr std::array PipeStrings =
-		{
-			U"None"_sv,
-			U"StdIn"_sv,
-			U"StdOut"_sv,
-			U"StdInOut"_sv,
-		};
-	}
-		
 	////////////////////////////////////////////////////////////////
 	//
-	//	Formatter
+	//	FileWriteMode
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const Pipe value)
+	/// @brief ファイルの書き込みモード | File write mode
+	enum class FileWriteMode : uint8
 	{
-		formatData.string.append(PipeStrings[FromEnum(value)]);
-	}
+		/// @brief 新規作成 | Truncate
+		Trunc	= (1 << 1),
+
+		/// @brief 追加 | Append
+		Append	= (1 << 2),
+	};
+	DEFINE_BITMASK_OPERATORS(FileWriteMode);
 }

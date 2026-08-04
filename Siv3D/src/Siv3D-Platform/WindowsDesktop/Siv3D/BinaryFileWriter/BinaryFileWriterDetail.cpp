@@ -19,15 +19,15 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr DWORD MakeCreationDisposition(const OpenMode openMode) noexcept
+		static constexpr DWORD MakeCreationDisposition(const FileWriteMode writeMode) noexcept
 		{
 			DWORD creationDisposition = 0;
 
-			if (openMode & OpenMode::Append)
+			if (writeMode & FileWriteMode::Append)
 			{
 				creationDisposition = OPEN_ALWAYS;
 			}
-			else if (openMode & OpenMode::Trunc)
+			else if (writeMode & FileWriteMode::Trunc)
 			{
 				creationDisposition = CREATE_ALWAYS;
 			}
@@ -53,9 +53,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryFileWriter::BinaryFileWriterDetail::open(const FilePathView path, const OpenMode openMode)
+	bool BinaryFileWriter::BinaryFileWriterDetail::open(const FilePathView path, const FileWriteMode writeMode)
 	{
-		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path.toUTF8(), FromEnum(openMode)));
+		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path.toUTF8(), FromEnum(writeMode)));
 
 		close();
 
@@ -82,7 +82,7 @@ namespace s3d
 
 		// ファイルのオープン
 		{
-			const HANDLE handle = ::CreateFile2(path.toWstr().c_str(), GENERIC_WRITE, 0, MakeCreationDisposition(openMode), nullptr);
+			const HANDLE handle = ::CreateFile2(path.toWstr().c_str(), GENERIC_WRITE, 0, MakeCreationDisposition(writeMode), nullptr);
 
 			if (handle == INVALID_HANDLE_VALUE)
 			{
@@ -95,7 +95,7 @@ namespace s3d
 				.handle = handle
 			};
 
-			if (openMode & OpenMode::Append)
+			if (writeMode & FileWriteMode::Append)
 			{
 				LARGE_INTEGER distance{ 0, 0 };
 				::SetFilePointerEx(m_file.handle, distance, nullptr, FILE_END);

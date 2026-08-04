@@ -428,7 +428,7 @@
 # include <Siv3D/SpecialFolder.hpp>
 
 // ファイルコピーオプション | File copy option
-# include <Siv3D/CopyOption.hpp>
+# include <Siv3D/FileCopyOption.hpp>
 
 // ファイルとディレクトリ | Files and directories
 # include <Siv3D/FileSystem.hpp>
@@ -437,7 +437,7 @@
 # include <Siv3D/Resource.hpp>
 
 // ファイル操作のイベント | File action
-# include <Siv3D/FileAction.hpp>
+# include <Siv3D/FileChangeAction.hpp>
 
 // 変更されたファイルの情報 | Information about changed files
 # include <Siv3D/FileChange.hpp>
@@ -470,7 +470,7 @@
 # include <Siv3D/MemoryWriter.hpp>
 
 // ファイルオープンモード / File open mode
-# include <Siv3D/OpenMode.hpp>
+# include <Siv3D/FileWriteMode.hpp>
 
 // 読み込み専用バイナリファイル | Binary file reader
 # include <Siv3D/BinaryFileReader.hpp>
@@ -1126,12 +1126,12 @@
 
 ////////////////////////////////////////////////////////////////
 //
-//	パイプ | Pipe
+//	パイプ | ChildProcessPipe
 //
 ////////////////////////////////////////////////////////////////
 
-// パイプ通信 | Interprocess communication (Pipe)
-# include <Siv3D/Pipe.hpp>
+// パイプ通信 | Interprocess communication (ChildProcessPipe)
+# include <Siv3D/ChildProcessPipe.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

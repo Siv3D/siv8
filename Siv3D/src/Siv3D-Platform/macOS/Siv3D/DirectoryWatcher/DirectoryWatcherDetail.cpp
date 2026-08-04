@@ -211,21 +211,21 @@ namespace s3d
 			const bool removed	= (flag & kFSEventStreamEventFlagItemRemoved);
 			bool checkExistance	= false;
 			
-			FileAction action = FileAction::Unknown;
+			FileChangeAction action = FileChangeAction::Unknown;
 			
 			if (modified)
 			{
-				action = FileAction::Modified;
+				action = FileChangeAction::Modified;
 				checkExistance = true;
 			}
 			else if (renamed)
 			{
-				action = FileAction::Added;
+				action = FileChangeAction::Added;
 				checkExistance = true;
 			}
 			else if (added)
 			{
-				action = FileAction::Added;
+				action = FileChangeAction::Added;
 				
 				if (removed)
 				{
@@ -234,7 +234,7 @@ namespace s3d
 			}
 			else if (removed)
 			{
-				action = FileAction::Removed;
+				action = FileChangeAction::Removed;
 			}
 			else
 			{
@@ -252,7 +252,7 @@ namespace s3d
 			
 			if (checkExistance && (not FileSystem::Exists(fullPath)))
 			{
-				action = FileAction::Removed;
+				action = FileChangeAction::Removed;
 			}
 			
 			if (isFile && m_extensionFilter)

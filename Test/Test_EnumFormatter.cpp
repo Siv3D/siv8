@@ -138,6 +138,32 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
+	SUBCASE("ChildProcessPipe")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ ChildProcessPipe::None, StringView{ U"None" } },
+			std::pair{ ChildProcessPipe::StdIn, StringView{ U"StdIn" } },
+			std::pair{ ChildProcessPipe::StdOut, StringView{ U"StdOut" } },
+			std::pair{ ChildProcessPipe::StdInOut, StringView{ U"StdInOut" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
+	SUBCASE("FileChangeAction")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ FileChangeAction::Unknown, StringView{ U"Unknown" } },
+			std::pair{ FileChangeAction::Added, StringView{ U"Added" } },
+			std::pair{ FileChangeAction::Removed, StringView{ U"Removed" } },
+			std::pair{ FileChangeAction::Modified, StringView{ U"Modified" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
 	SUBCASE("PolygonFailureType")
 	{
 		static constexpr std::array Cases =

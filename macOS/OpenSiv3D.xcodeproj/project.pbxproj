@@ -207,7 +207,7 @@
 		F9070CA62B9F175000383E4D /* Concepts.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BCD2B9F175000383E4D /* Concepts.hpp */; };
 		F9070CA72B9F175000383E4D /* Console.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BCE2B9F175000383E4D /* Console.hpp */; };
 		F9070CA82B9F175000383E4D /* ConsoleBuffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BCF2B9F175000383E4D /* ConsoleBuffer.hpp */; };
-		F9070CA92B9F175000383E4D /* CopyOption.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BD02B9F175000383E4D /* CopyOption.hpp */; };
+		F9070CA92B9F175000383E4D /* FileCopyOption.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BD02B9F175000383E4D /* FileCopyOption.hpp */; };
 		F9070CAA2B9F175000383E4D /* CPUInfo.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BD12B9F175000383E4D /* CPUInfo.hpp */; };
 		F9070CAB2B9F175000383E4D /* Date.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BD22B9F175000383E4D /* Date.hpp */; };
 		F9070CAC2B9F175000383E4D /* DateTime.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BD32B9F175000383E4D /* DateTime.hpp */; };
@@ -224,7 +224,7 @@
 		F9070CB72B9F175000383E4D /* Error.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BDE2B9F175000383E4D /* Error.hpp */; };
 		F9070CB82B9F175000383E4D /* EscapedFormatter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BDF2B9F175000383E4D /* EscapedFormatter.hpp */; };
 		F9070CB92B9F175000383E4D /* FastMath.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BE02B9F175000383E4D /* FastMath.hpp */; };
-		F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BE12B9F175000383E4D /* FileAction.hpp */; };
+		F9070CBA2B9F175000383E4D /* FileChangeAction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BE12B9F175000383E4D /* FileChangeAction.hpp */; };
 		F9070CBB2B9F175000383E4D /* FileSystem.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BE22B9F175000383E4D /* FileSystem.hpp */; };
 		F9070CBC2B9F175000383E4D /* FloatFormatter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BE32B9F175000383E4D /* FloatFormatter.hpp */; };
 		F9070CBD2B9F175000383E4D /* FloatToString.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070BE42B9F175000383E4D /* FloatToString.hpp */; };
@@ -262,7 +262,7 @@
 		F9070CDE2B9F175100383E4D /* NonNull.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C052B9F175000383E4D /* NonNull.hpp */; };
 		F9070CDF2B9F175100383E4D /* Number.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C062B9F175000383E4D /* Number.hpp */; };
 		F9070CE02B9F175100383E4D /* Obfuscation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C072B9F175000383E4D /* Obfuscation.hpp */; };
-		F9070CE12B9F175100383E4D /* OpenMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C082B9F175000383E4D /* OpenMode.hpp */; };
+		F9070CE12B9F175100383E4D /* FileWriteMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C082B9F175000383E4D /* FileWriteMode.hpp */; };
 		F9070CE22B9F175100383E4D /* Optional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C092B9F175000383E4D /* Optional.hpp */; };
 		F9070CE52B9F175100383E4D /* Palette.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C0C2B9F175000383E4D /* Palette.hpp */; };
 		F9070CE62B9F175100383E4D /* Parse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C0D2B9F175000383E4D /* Parse.hpp */; };
@@ -337,7 +337,7 @@
 		F9070DC82B9F175E00383E4D /* SivEngineLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D452B9F175E00383E4D /* SivEngineLog.cpp */; };
 		F9070DC92B9F175E00383E4D /* SivError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D472B9F175E00383E4D /* SivError.cpp */; };
 		F9070DCA2B9F175E00383E4D /* SivEscapedFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D492B9F175E00383E4D /* SivEscapedFormatter.cpp */; };
-		F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D4B2B9F175E00383E4D /* SivFileAction.cpp */; };
+		F9070DCB2B9F175E00383E4D /* SivFileChangeAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D4B2B9F175E00383E4D /* SivFileChangeAction.cpp */; };
 		F9070DCC2B9F175E00383E4D /* SivFileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D4D2B9F175E00383E4D /* SivFileSystem.cpp */; };
 		F9070DCD2B9F175E00383E4D /* SivFloatFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D4F2B9F175E00383E4D /* SivFloatFormatter.cpp */; };
 		F9070DCE2B9F175E00383E4D /* SivFloatToString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D512B9F175E00383E4D /* SivFloatToString.cpp */; };
@@ -834,10 +834,10 @@
 		F943AB542E2A2E4F001B4D43 /* fastmath.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB102E2A2E4F001B4D43 /* fastmath.h */; };
 		F943AB572E2A2E8F001B4D43 /* zstd_preSplit.c in Sources */ = {isa = PBXBuildFile; fileRef = F943AB562E2A2E8F001B4D43 /* zstd_preSplit.c */; };
 		F943AB582E2A2E8F001B4D43 /* zstd_preSplit.h in Headers */ = {isa = PBXBuildFile; fileRef = F943AB552E2A2E8F001B4D43 /* zstd_preSplit.h */; };
-		F944BAAA2CEACF4300CC4D42 /* Pipe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA92CEACF4300CC4D42 /* Pipe.hpp */; };
+		F944BAAA2CEACF4300CC4D42 /* ChildProcessPipe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA92CEACF4300CC4D42 /* ChildProcessPipe.hpp */; };
 		F944BAAB2CEACF4300CC4D42 /* ChildProcess.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */; };
 		F944BAB02CEACF6C00CC4D42 /* SivChildProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAAC2CEACF6C00CC4D42 /* SivChildProcess.cpp */; };
-		F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */; };
+		F944BAB12CEACF6C00CC4D42 /* SivChildProcessPipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F944BAAE2CEACF6C00CC4D42 /* SivChildProcessPipe.cpp */; };
 		F944BAB52CEACFAB00CC4D42 /* ChildProcessDetail.mm in Sources */ = {isa = PBXBuildFile; fileRef = F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */; };
 		F944BAB62CEACFAB00CC4D42 /* ChildProcessDetail.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */; };
 		F944BABA2CEAD93900CC4D42 /* ChildProcessHandle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F944BAB82CEAD93900CC4D42 /* ChildProcessHandle.hpp */; };
@@ -3419,7 +3419,7 @@
 		F9070BCD2B9F175000383E4D /* Concepts.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Concepts.hpp; sourceTree = "<group>"; };
 		F9070BCE2B9F175000383E4D /* Console.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Console.hpp; sourceTree = "<group>"; };
 		F9070BCF2B9F175000383E4D /* ConsoleBuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ConsoleBuffer.hpp; sourceTree = "<group>"; };
-		F9070BD02B9F175000383E4D /* CopyOption.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CopyOption.hpp; sourceTree = "<group>"; };
+		F9070BD02B9F175000383E4D /* FileCopyOption.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FileCopyOption.hpp; sourceTree = "<group>"; };
 		F9070BD12B9F175000383E4D /* CPUInfo.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CPUInfo.hpp; sourceTree = "<group>"; };
 		F9070BD22B9F175000383E4D /* Date.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Date.hpp; sourceTree = "<group>"; };
 		F9070BD32B9F175000383E4D /* DateTime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DateTime.hpp; sourceTree = "<group>"; };
@@ -3436,7 +3436,7 @@
 		F9070BDE2B9F175000383E4D /* Error.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Error.hpp; sourceTree = "<group>"; };
 		F9070BDF2B9F175000383E4D /* EscapedFormatter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EscapedFormatter.hpp; sourceTree = "<group>"; };
 		F9070BE02B9F175000383E4D /* FastMath.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FastMath.hpp; sourceTree = "<group>"; };
-		F9070BE12B9F175000383E4D /* FileAction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FileAction.hpp; sourceTree = "<group>"; };
+		F9070BE12B9F175000383E4D /* FileChangeAction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FileChangeAction.hpp; sourceTree = "<group>"; };
 		F9070BE22B9F175000383E4D /* FileSystem.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FileSystem.hpp; sourceTree = "<group>"; };
 		F9070BE32B9F175000383E4D /* FloatFormatter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FloatFormatter.hpp; sourceTree = "<group>"; };
 		F9070BE42B9F175000383E4D /* FloatToString.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FloatToString.hpp; sourceTree = "<group>"; };
@@ -3474,7 +3474,7 @@
 		F9070C052B9F175000383E4D /* NonNull.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NonNull.hpp; sourceTree = "<group>"; };
 		F9070C062B9F175000383E4D /* Number.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Number.hpp; sourceTree = "<group>"; };
 		F9070C072B9F175000383E4D /* Obfuscation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Obfuscation.hpp; sourceTree = "<group>"; };
-		F9070C082B9F175000383E4D /* OpenMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = OpenMode.hpp; sourceTree = "<group>"; };
+		F9070C082B9F175000383E4D /* FileWriteMode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FileWriteMode.hpp; sourceTree = "<group>"; };
 		F9070C092B9F175000383E4D /* Optional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Optional.hpp; sourceTree = "<group>"; };
 		F9070C0C2B9F175000383E4D /* Palette.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Palette.hpp; sourceTree = "<group>"; };
 		F9070C0D2B9F175000383E4D /* Parse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Parse.hpp; sourceTree = "<group>"; };
@@ -3550,7 +3550,7 @@
 		F9070D452B9F175E00383E4D /* SivEngineLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEngineLog.cpp; sourceTree = "<group>"; };
 		F9070D472B9F175E00383E4D /* SivError.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivError.cpp; sourceTree = "<group>"; };
 		F9070D492B9F175E00383E4D /* SivEscapedFormatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivEscapedFormatter.cpp; sourceTree = "<group>"; };
-		F9070D4B2B9F175E00383E4D /* SivFileAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivFileAction.cpp; sourceTree = "<group>"; };
+		F9070D4B2B9F175E00383E4D /* SivFileChangeAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivFileChangeAction.cpp; sourceTree = "<group>"; };
 		F9070D4D2B9F175E00383E4D /* SivFileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivFileSystem.cpp; sourceTree = "<group>"; };
 		F9070D4F2B9F175E00383E4D /* SivFloatFormatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivFloatFormatter.cpp; sourceTree = "<group>"; };
 		F9070D512B9F175E00383E4D /* SivFloatToString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivFloatToString.cpp; sourceTree = "<group>"; };
@@ -4113,9 +4113,9 @@
 		F943AB552E2A2E8F001B4D43 /* zstd_preSplit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = zstd_preSplit.h; sourceTree = "<group>"; };
 		F943AB562E2A2E8F001B4D43 /* zstd_preSplit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = zstd_preSplit.c; sourceTree = "<group>"; };
 		F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcess.hpp; sourceTree = "<group>"; };
-		F944BAA92CEACF4300CC4D42 /* Pipe.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Pipe.hpp; sourceTree = "<group>"; };
+		F944BAA92CEACF4300CC4D42 /* ChildProcessPipe.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcessPipe.hpp; sourceTree = "<group>"; };
 		F944BAAC2CEACF6C00CC4D42 /* SivChildProcess.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivChildProcess.cpp; sourceTree = "<group>"; };
-		F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivPipe.cpp; sourceTree = "<group>"; };
+		F944BAAE2CEACF6C00CC4D42 /* SivChildProcessPipe.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivChildProcessPipe.cpp; sourceTree = "<group>"; };
 		F944BAB22CEACFAB00CC4D42 /* ChildProcessDetail.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcessDetail.hpp; sourceTree = "<group>"; };
 		F944BAB32CEACFAB00CC4D42 /* ChildProcessDetail.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ChildProcessDetail.mm; sourceTree = "<group>"; };
 		F944BAB82CEAD93900CC4D42 /* ChildProcessHandle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ChildProcessHandle.hpp; sourceTree = "<group>"; };
@@ -7439,7 +7439,7 @@
 				F9070BCE2B9F175000383E4D /* Console.hpp */,
 				F9070BCF2B9F175000383E4D /* ConsoleBuffer.hpp */,
 				F980C48A2C04B41300A86B68 /* ConstantBuffer.hpp */,
-				F9070BD02B9F175000383E4D /* CopyOption.hpp */,
+				F9070BD02B9F175000383E4D /* FileCopyOption.hpp */,
 				F9070BD12B9F175000383E4D /* CPUInfo.hpp */,
 				F90F7A002FA9B7A90077F398 /* CSV.hpp */,
 				F90F7A012FA9B7A90077F398 /* CSVParseErrorCode.hpp */,
@@ -7485,7 +7485,7 @@
 				F986F8A92BC806A7006A4C0F /* Exif.hpp */,
 				F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */,
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
-				F9070BE12B9F175000383E4D /* FileAction.hpp */,
+				F9070BE12B9F175000383E4D /* FileChangeAction.hpp */,
 				F98606162BEB7651006A4C0F /* FileChange.hpp */,
 				F91D41382F5DA80500E7FEEF /* FileDialogFilter.hpp */,
 				F9070BE22B9F175000383E4D /* FileSystem.hpp */,
@@ -7638,7 +7638,7 @@
 				F9070C072B9F175000383E4D /* Obfuscation.hpp */,
 				F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */,
 				F91D41392F5DA80500E7FEEF /* OpenFileDialogOptions.hpp */,
-				F9070C082B9F175000383E4D /* OpenMode.hpp */,
+				F9070C082B9F175000383E4D /* FileWriteMode.hpp */,
 				F9070C092B9F175000383E4D /* Optional.hpp */,
 				F99881DC2F5808C500C8991D /* OSCArgument.hpp */,
 				F99881DD2F5808C500C8991D /* OSCMessage.hpp */,
@@ -7665,7 +7665,7 @@
 				F9DD96512F09661B0026DFA5 /* PercentEncode.hpp */,
 				F9E794472C1973FC002615BA /* Periodic.hpp */,
 				F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */,
-				F944BAA92CEACF4300CC4D42 /* Pipe.hpp */,
+				F944BAA92CEACF4300CC4D42 /* ChildProcessPipe.hpp */,
 				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
 				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
@@ -7989,12 +7989,12 @@
 			path = EscapedFormatter;
 			sourceTree = "<group>";
 		};
-		F9070D4C2B9F175E00383E4D /* FileAction */ = {
+		F9070D4C2B9F175E00383E4D /* FileChangeAction */ = {
 			isa = PBXGroup;
 			children = (
-				F9070D4B2B9F175E00383E4D /* SivFileAction.cpp */,
+				F9070D4B2B9F175E00383E4D /* SivFileChangeAction.cpp */,
 			);
-			path = FileAction;
+			path = FileChangeAction;
 			sourceTree = "<group>";
 		};
 		F9070D4E2B9F175E00383E4D /* FileSystem */ = {
@@ -8400,7 +8400,7 @@
 				F98606262BEBA1B5006A4C0F /* ExtensionFilter */,
 				F99881962F48801900C8991D /* ExternalPowerStatus */,
 				F9A8A5F12FC0000000000001 /* AsyncTaskStatus */,
-				F9070D4C2B9F175E00383E4D /* FileAction */,
+				F9070D4C2B9F175E00383E4D /* FileChangeAction */,
 				F9070D4E2B9F175E00383E4D /* FileSystem */,
 				F9070D502B9F175E00383E4D /* FloatFormatter */,
 				F9070D522B9F175E00383E4D /* FloatToString */,
@@ -8506,7 +8506,7 @@
 				F9797DF52F62764B00518D26 /* PDFRenderer */,
 				F99882462F587C8000C8991D /* Pentablet */,
 				F9DD96482F0965D00026DFA5 /* PercentEncode */,
-				F944BAAF2CEACF6C00CC4D42 /* Pipe */,
+				F944BAAF2CEACF6C00CC4D42 /* ChildProcessPipe */,
 				F934BD772BF880620003EAD5 /* PixelShader */,
 				F9070D7A2B9F175E00383E4D /* Point */,
 				F9528B9C2BBC771000222F45 /* Point3D */,
@@ -9739,12 +9739,12 @@
 			path = ChildProcess;
 			sourceTree = "<group>";
 		};
-		F944BAAF2CEACF6C00CC4D42 /* Pipe */ = {
+		F944BAAF2CEACF6C00CC4D42 /* ChildProcessPipe */ = {
 			isa = PBXGroup;
 			children = (
-				F944BAAE2CEACF6C00CC4D42 /* SivPipe.cpp */,
+				F944BAAE2CEACF6C00CC4D42 /* SivChildProcessPipe.cpp */,
 			);
-			path = Pipe;
+			path = ChildProcessPipe;
 			sourceTree = "<group>";
 		};
 		F944BAB42CEACFAB00CC4D42 /* ChildProcess */ = {
@@ -14076,7 +14076,7 @@
 				F98603792BCFBB54006A4C0F /* SkOTTable_gasp.h in Headers */,
 				F98601AB2BCFBB53006A4C0F /* SkDrawShadowInfo.h in Headers */,
 				F9528B992BBC76EA00222F45 /* Step3D.ipp in Headers */,
-				F944BAAA2CEACF4300CC4D42 /* Pipe.hpp in Headers */,
+				F944BAAA2CEACF4300CC4D42 /* ChildProcessPipe.hpp in Headers */,
 				F944BAAB2CEACF4300CC4D42 /* ChildProcess.hpp in Headers */,
 				F986FA9E2BCFB53B006A4C0F /* tttables.h in Headers */,
 				F9528C3C2BBF026F00222F45 /* zstd_decompress_block.h in Headers */,
@@ -14785,7 +14785,7 @@
 				F9797E352F643F7F00518D26 /* AudioDecoder.ipp in Headers */,
 				F9797E362F643F7F00518D26 /* AudioEncoder.ipp in Headers */,
 				F95122132CB62E6B00151291 /* MultiPolygon.hpp in Headers */,
-				F9070CBA2B9F175000383E4D /* FileAction.hpp in Headers */,
+				F9070CBA2B9F175000383E4D /* FileChangeAction.hpp in Headers */,
 				F9E794532C197418002615BA /* StringRandom.ipp in Headers */,
 				F90F2BE72D9278BB00CC89CA /* IsPrime_impl.ipp in Headers */,
 				F98601DF2BCFBB53006A4C0F /* SkLocalMatrixImageFilter.h in Headers */,
@@ -14876,7 +14876,7 @@
 				F9528C072BBF026F00222F45 /* cpu.h in Headers */,
 				F9070C882B9F175000383E4D /* UtilityClass.ipp in Headers */,
 				F9070C572B9F175000383E4D /* FmtHelper.ipp in Headers */,
-				F9070CA92B9F175000383E4D /* CopyOption.hpp in Headers */,
+				F9070CA92B9F175000383E4D /* FileCopyOption.hpp in Headers */,
 				F986014A2BCFBB53006A4C0F /* SkAnalyticEdge.h in Headers */,
 				F9070CA22B9F175000383E4D /* ColorHSV.hpp in Headers */,
 				F98600AC2BCFBB53006A4C0F /* SkNWayCanvas.h in Headers */,
@@ -15112,7 +15112,7 @@
 				F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */,
 				F98600752BCFBB53006A4C0F /* SkFeatures.h in Headers */,
 				F9070C4D2B9F175000383E4D /* ConsoleBuffer.ipp in Headers */,
-				F9070CE12B9F175100383E4D /* OpenMode.hpp in Headers */,
+				F9070CE12B9F175100383E4D /* FileWriteMode.hpp in Headers */,
 				F9070DD72B9F175E00383E4D /* ILogger.hpp in Headers */,
 				F96F96022C359ED90033353E /* morton_BMI.h in Headers */,
 				F986026A2BCFBB54006A4C0F /* SkSLTypeShared.h in Headers */,
@@ -16592,7 +16592,7 @@
 				F9797E9B2F667E9900518D26 /* CDSPHBUpsampler.inc in Sources */,
 				F9070E562B9F176B00383E4D /* SivTime.cpp in Sources */,
 				F9F00A522CD2995D0097C165 /* SivQualityFactor.cpp in Sources */,
-				F9070DCB2B9F175E00383E4D /* SivFileAction.cpp in Sources */,
+				F9070DCB2B9F175E00383E4D /* SivFileChangeAction.cpp in Sources */,
 				F9A8A5E12FC0000000000001 /* SivAsyncTaskStatus.cpp in Sources */,
 				F986F92E2BC8441F006A4C0F /* unicode_fold2_key.c in Sources */,
 				F9766B822C29C7A700DE4107 /* SivCamera2DControl.cpp in Sources */,
@@ -16672,7 +16672,7 @@
 				F99881772F45A22000C8991D /* ClipboardFactory.cpp in Sources */,
 				F99881782F45A22000C8991D /* SivClipboard.cpp in Sources */,
 				F944BAB02CEACF6C00CC4D42 /* SivChildProcess.cpp in Sources */,
-				F944BAB12CEACF6C00CC4D42 /* SivPipe.cpp in Sources */,
+				F944BAB12CEACF6C00CC4D42 /* SivChildProcessPipe.cpp in Sources */,
 				F9B7DA142D8C72C0002ABACE /* rgbcx.cpp in Sources */,
 				F9B7DA152D8C72C0002ABACE /* utils.cpp in Sources */,
 				F99882322F58093E00C8991D /* OscTypes.cpp in Sources */,

@@ -304,7 +304,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ResolvedGlyph.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Graphics2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\IConstantBuffer.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\CopyOption.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileCopyOption.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CPUInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CullMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Cursor.hpp" />
@@ -476,7 +476,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Error\ParseError.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\EscapedFormatter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Exif.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\FileAction.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileChangeAction.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FileChange.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FmtHelper.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\FormatLiteralObject.hpp" />
@@ -567,7 +567,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\MSL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MultiPolygon.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\OffsetCircular.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\OpenMode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\FileWriteMode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BTreeSet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BTreeMap.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Palette.hpp" />
@@ -584,7 +584,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Triangle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PCG64.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Periodic.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\Pipe.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ChildProcessPipe.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PixelShader.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PNGFilter.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Point.hpp" />
@@ -1700,7 +1700,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Exif\SivExif.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ExtensionFilter\ExtensionFilter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ExternalPowerStatus\SivExternalPowerStatus.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\FileAction\SivFileAction.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\FileChangeAction\SivFileChangeAction.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FileSystem\SivFileSystem.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatFormatter\SivFloatFormatter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\FloatToString\SivFloatToString.cpp" />
@@ -1870,7 +1870,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\PentabletFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Pentablet\SivPentablet.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PercentEncode\SivPercentEncode.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\Pipe\SivPipe.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\ChildProcessPipe\SivChildProcessPipe.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\PixelShader\SivPixelShader.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point3D\SivPoint3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Point\SivPoint.cpp" />

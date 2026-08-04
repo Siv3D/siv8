@@ -14,7 +14,7 @@
 # include "Common.hpp"
 # include "IWriter.hpp"
 # include "StringView.hpp"
-# include "OpenMode.hpp"
+# include "FileWriteMode.hpp"
 
 namespace s3d
 {
@@ -44,9 +44,9 @@ namespace s3d
 
 		/// @brief ファイルを開きます。
 		/// @param path ファイルパス
-		/// @param openMode オープンモード (`OpenMode` の組み合わせ）
+		/// @param writeMode 書き込みモード (`FileWriteMode` の組み合わせ）
 		[[nodiscard]]
-		explicit BinaryFileWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc);
+		explicit BinaryFileWriter(FilePathView path, FileWriteMode writeMode = FileWriteMode::Trunc);
 
 		BinaryFileWriter(const BinaryFileWriter& other) = delete;
 
@@ -84,9 +84,9 @@ namespace s3d
 
 		/// @brief ファイルを開きます。
 		/// @param path ファイルパス
-		/// @param openMode オープンモード (`OpenMode` の組み合わせ）
+		/// @param writeMode 書き込みモード (`FileWriteMode` の組み合わせ）
 		/// @return ファイルのオープンに成功した場合 true, それ以外の場合は false
-		bool open(FilePathView path, OpenMode openMode = OpenMode::Trunc);
+		bool open(FilePathView path, FileWriteMode writeMode = FileWriteMode::Trunc);
 
 		////////////////////////////////////////////////////////////////
 		//

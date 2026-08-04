@@ -23,7 +23,7 @@ namespace s3d
 
 		ChildProcessDetail();
 
-		ChildProcessDetail(const FilePathView path, const Array<String>& commands, Pipe pipe);
+		ChildProcessDetail(const FilePathView path, const Array<String>& commands, ChildProcessPipe pipe);
 
 		~ChildProcessDetail();
 

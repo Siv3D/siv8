@@ -9,26 +9,32 @@
 //
 //-----------------------------------------------
 
-# pragma once
-# include "Types.hpp"
-# include <ThirdParty/EnumBitmask/EnumBitmask.hpp>
+# include <array>
+# include <Siv3D/ChildProcessPipe.hpp>
+# include <Siv3D/StringView.hpp>
+# include <Siv3D/FormatData.hpp>
 
 namespace s3d
 {
-	////////////////////////////////////////////////////////////////
-	//
-	//	OpenMode
-	//
-	////////////////////////////////////////////////////////////////
-
-	/// @brief ファイルのオープンモード | File open mode
-	enum class OpenMode : uint8
+	namespace
 	{
-		/// @brief 新規作成 | Truncate
-		Trunc	= (1 << 1),
+		static constexpr std::array ChildProcessPipeStrings =
+		{
+			U"None"_sv,
+			U"StdIn"_sv,
+			U"StdOut"_sv,
+			U"StdInOut"_sv,
+		};
+	}
+		
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
 
-		/// @brief 追加 | Append
-		Append	= (1 << 2),
-	};
-	DEFINE_BITMASK_OPERATORS(OpenMode);
+	void Formatter(FormatData& formatData, const ChildProcessPipe value)
+	{
+		formatData.string.append(ChildProcessPipeStrings[FromEnum(value)]);
+	}
 }

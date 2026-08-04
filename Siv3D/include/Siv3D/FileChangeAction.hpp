@@ -18,12 +18,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	FileAction
+	//	FileChangeAction
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief ファイルの操作 | File action
-	enum class FileAction : uint8
+	/// @brief ファイルの変更内容 | File change action
+	enum class FileChangeAction : uint8
 	{
 		/// @brief 不明な操作 | Unknown operation
 		Unknown,
@@ -44,9 +44,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief ファイルの操作を文字列に変換します。
+	/// @brief ファイルの変更内容を文字列に変換します。
 	/// @param formatData 文字列バッファ
-	/// @param value ファイルの操作
+	/// @param value ファイルの変更内容
 	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
-	void Formatter(FormatData& formatData, FileAction value);
+	void Formatter(FormatData& formatData, FileChangeAction value);
 }
