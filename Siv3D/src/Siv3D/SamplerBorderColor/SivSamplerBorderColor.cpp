@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/SampleBorderColor.hpp>
+# include <Siv3D/SamplerBorderColor.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
 
@@ -18,7 +18,7 @@ namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array SampleBorderColorStrings =
+		static constexpr std::array SamplerBorderColorStrings =
 		{
 			U"TransparentBlack"_sv,
 			U"OpaqueBlack"_sv,
@@ -32,8 +32,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const SampleBorderColor value)
+	void Formatter(FormatData& formatData, const SamplerBorderColor value)
 	{
-		formatData.string.append(SampleBorderColorStrings[FromEnum(value)]);
+		formatData.string.append(SamplerBorderColorStrings[FromEnum(value)]);
 	}
 }

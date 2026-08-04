@@ -78,7 +78,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorF.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorHSV.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Colormap.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\ColorScale.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColormapType.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ColorWriteMask.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\CommandLine.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Common.hpp" />
@@ -536,7 +536,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LineCap.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LineString.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LineStyle.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\LineType.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\LinePattern.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ListUtility.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Logger.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\LoggerBuffer.hpp" />
@@ -653,7 +653,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\PredefinedYesNo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RoundRect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Sample.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\SamplerBorderColor.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SamplerStateBuilder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\SaveFileDialogOptions.hpp" />
@@ -1809,7 +1809,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LineString\LineStringParser.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LineString\SivLineString.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\LineType\SivLineType.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\LinePattern\SivLinePattern.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Line\SivLine.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\LoggerBuffer\SivLoggerBuffer.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Logger\LoggerFactory.cpp" />
@@ -1909,7 +1909,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Renderer2D\Vertex2DBuilder_Rounded.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\ResizeMode\SivResizeMode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\RoundRect\SivRoundRect.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\SampleBorderColor\SivSampleBorderColor.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\SamplerBorderColor\SivSamplerBorderColor.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerStateBuilder\SivSamplerStateBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerState\SivSamplerState.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Scene\CScene.cpp" />

@@ -164,6 +164,33 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
+	SUBCASE("LinePattern")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ LinePattern::Solid, StringView{ U"Solid" } },
+			std::pair{ LinePattern::Dotted, StringView{ U"Dotted" } },
+			std::pair{ LinePattern::Dashed, StringView{ U"Dashed" } },
+			std::pair{ LinePattern::LongDash, StringView{ U"LongDash" } },
+			std::pair{ LinePattern::DashDot, StringView{ U"DashDot" } },
+			std::pair{ LinePattern::RoundDot, StringView{ U"RoundDot" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
+	SUBCASE("SamplerBorderColor")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ SamplerBorderColor::TransparentBlack, StringView{ U"TransparentBlack" } },
+			std::pair{ SamplerBorderColor::OpaqueBlack, StringView{ U"OpaqueBlack" } },
+			std::pair{ SamplerBorderColor::OpaqueWhite, StringView{ U"OpaqueWhite" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
 	SUBCASE("PolygonFailureType")
 	{
 		static constexpr std::array Cases =

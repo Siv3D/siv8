@@ -16,13 +16,13 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	ColorScale
+	//	ColormapType
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief カラーマップ用のカラースケールの種類
+	/// @brief カラーマップの種類 | Colormap type
 	/// @remark https://github.com/yuki-koyama/tinycolormap
-	enum class ColorScale : uint8
+	enum class ColormapType : uint8
 	{
 		/// @url https://raw.githubusercontent.com/yuki-koyama/tinycolormap/master/docs/samples/Parula.png
 		Parula,

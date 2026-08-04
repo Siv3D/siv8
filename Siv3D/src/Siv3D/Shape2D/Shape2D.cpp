@@ -934,7 +934,7 @@ namespace s3d
 			return false;
 		}
 		
-		constexpr PointContainmentOptions Options{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::General };
+		constexpr PointContainmentOptions Options{ .boundary = PointContainmentBoundaryPolicy::Included, .shape = PointContainmentShape::General };
 		return Geometry2D::ContainsPoint<Options, Float2>(m_vertices, cursorPos);
 	}
 

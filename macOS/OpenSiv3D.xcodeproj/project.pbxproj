@@ -2560,7 +2560,7 @@
 		F986F8932BC7EEF4006A4C0F /* utf16le_shortLF.txt in Resources */ = {isa = PBXBuildFile; fileRef = F986F86B2BC7EEF3006A4C0F /* utf16le_shortLF.txt */; };
 		F986F8942BC7EEF4006A4C0F /* utf16le_あ.txt in Resources */ = {isa = PBXBuildFile; fileRef = F986F86C2BC7EEF3006A4C0F /* utf16le_あ.txt */; };
 		F986F8972BC7FB32006A4C0F /* Colormap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8952BC7FB32006A4C0F /* Colormap.hpp */; };
-		F986F8982BC7FB32006A4C0F /* ColorScale.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8962BC7FB32006A4C0F /* ColorScale.hpp */; };
+		F986F8982BC7FB32006A4C0F /* ColormapType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F8962BC7FB32006A4C0F /* ColormapType.hpp */; };
 		F986F89B2BC7FB4D006A4C0F /* SivColormap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F986F8992BC7FB4D006A4C0F /* SivColormap.cpp */; };
 		F986F89E2BC7FB74006A4C0F /* tinycolormap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F89C2BC7FB74006A4C0F /* tinycolormap.hpp */; };
 		F986F8A12BC8003B006A4C0F /* CommandLine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F986F89F2BC8003B006A4C0F /* CommandLine.hpp */; };
@@ -2940,8 +2940,8 @@
 		F9CD6A322DE2276B00EFA782 /* agg_curves.h in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A1F2DE2276B00EFA782 /* agg_curves.h */; };
 		F9D41B5F2C4FCE4600290998 /* LineCap.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B5E2C4FCE4600290998 /* LineCap.hpp */; };
 		F9D41B622C4FCE6400290998 /* SivLineCap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41B602C4FCE6300290998 /* SivLineCap.cpp */; };
-		F9D41B642C534D8900290998 /* LineType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B632C534D8900290998 /* LineType.hpp */; };
-		F9D41B672C534DA900290998 /* SivLineType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41B652C534DA900290998 /* SivLineType.cpp */; };
+		F9D41B642C534D8900290998 /* LinePattern.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B632C534D8900290998 /* LinePattern.hpp */; };
+		F9D41B672C534DA900290998 /* SivLinePattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41B652C534DA900290998 /* SivLinePattern.cpp */; };
 		F9D41B822C56057700290998 /* Checker.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B782C56057700290998 /* Checker.hpp */; };
 		F9D41B842C56057700290998 /* HexGrid.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7A2C56057700290998 /* HexGrid.hpp */; };
 		F9D41B852C56057700290998 /* PatternParameters.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7B2C56057700290998 /* PatternParameters.hpp */; };
@@ -3176,8 +3176,8 @@
 		F9FD0D0B2D1DABA000A584CE /* libopencv_imgproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */; };
 		F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */; };
 		F9FD0D0F2D20436000A584CE /* RandomAngle.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */; };
-		F9FD0D112D204FA000A584CE /* SampleBorderColor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */; };
-		F9FD0D142D204FBE00A584CE /* SivSampleBorderColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */; };
+		F9FD0D112D204FA000A584CE /* SamplerBorderColor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D102D204FA000A584CE /* SamplerBorderColor.hpp */; };
+		F9FD0D142D204FBE00A584CE /* SivSamplerBorderColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0D122D204FBE00A584CE /* SivSamplerBorderColor.cpp */; };
 		F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D152D215DB300A584CE /* TexturedCircle.hpp */; };
 		F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D162D215DB300A584CE /* TexturedQuad.hpp */; };
 		F9FD0D1A2D215DB300A584CE /* TexturedRoundRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D172D215DB300A584CE /* TexturedRoundRect.hpp */; };
@@ -4952,7 +4952,7 @@
 		F986F86B2BC7EEF3006A4C0F /* utf16le_shortLF.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = utf16le_shortLF.txt; sourceTree = "<group>"; };
 		F986F86C2BC7EEF3006A4C0F /* utf16le_あ.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "utf16le_あ.txt"; sourceTree = "<group>"; };
 		F986F8952BC7FB32006A4C0F /* Colormap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Colormap.hpp; sourceTree = "<group>"; };
-		F986F8962BC7FB32006A4C0F /* ColorScale.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ColorScale.hpp; sourceTree = "<group>"; };
+		F986F8962BC7FB32006A4C0F /* ColormapType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ColormapType.hpp; sourceTree = "<group>"; };
 		F986F8992BC7FB4D006A4C0F /* SivColormap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivColormap.cpp; sourceTree = "<group>"; };
 		F986F89C2BC7FB74006A4C0F /* tinycolormap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tinycolormap.hpp; sourceTree = "<group>"; };
 		F986F89F2BC8003B006A4C0F /* CommandLine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CommandLine.hpp; sourceTree = "<group>"; };
@@ -6260,8 +6260,8 @@
 		F9CD6A262DE2276B00EFA782 /* OutlineGlyphRenderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutlineGlyphRenderer.cpp; sourceTree = "<group>"; };
 		F9D41B5E2C4FCE4600290998 /* LineCap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineCap.hpp; sourceTree = "<group>"; };
 		F9D41B602C4FCE6300290998 /* SivLineCap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLineCap.cpp; sourceTree = "<group>"; };
-		F9D41B632C534D8900290998 /* LineType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LineType.hpp; sourceTree = "<group>"; };
-		F9D41B652C534DA900290998 /* SivLineType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLineType.cpp; sourceTree = "<group>"; };
+		F9D41B632C534D8900290998 /* LinePattern.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LinePattern.hpp; sourceTree = "<group>"; };
+		F9D41B652C534DA900290998 /* SivLinePattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivLinePattern.cpp; sourceTree = "<group>"; };
 		F9D41B782C56057700290998 /* Checker.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Checker.hpp; sourceTree = "<group>"; };
 		F9D41B792C56057700290998 /* Grid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Grid.hpp; sourceTree = "<group>"; };
 		F9D41B7A2C56057700290998 /* HexGrid.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = HexGrid.hpp; sourceTree = "<group>"; };
@@ -6505,8 +6505,8 @@
 		F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgproc.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgproc.a; sourceTree = "<group>"; };
 		F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.hpp; sourceTree = "<group>"; };
 		F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.ipp; sourceTree = "<group>"; };
-		F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SampleBorderColor.hpp; sourceTree = "<group>"; };
-		F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSampleBorderColor.cpp; sourceTree = "<group>"; };
+		F9FD0D102D204FA000A584CE /* SamplerBorderColor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SamplerBorderColor.hpp; sourceTree = "<group>"; };
+		F9FD0D122D204FBE00A584CE /* SivSamplerBorderColor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSamplerBorderColor.cpp; sourceTree = "<group>"; };
 		F9FD0D152D215DB300A584CE /* TexturedCircle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturedCircle.hpp; sourceTree = "<group>"; };
 		F9FD0D162D215DB300A584CE /* TexturedQuad.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturedQuad.hpp; sourceTree = "<group>"; };
 		F9FD0D172D215DB300A584CE /* TexturedRoundRect.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TexturedRoundRect.hpp; sourceTree = "<group>"; };
@@ -7427,7 +7427,7 @@
 				F9070BC82B9F175000383E4D /* ColorF.hpp */,
 				F9070BC92B9F175000383E4D /* ColorHSV.hpp */,
 				F986F8952BC7FB32006A4C0F /* Colormap.hpp */,
-				F986F8962BC7FB32006A4C0F /* ColorScale.hpp */,
+				F986F8962BC7FB32006A4C0F /* ColormapType.hpp */,
 				F9712A4B2C269B850049CC26 /* ColorWriteMask.hpp */,
 				F986F89F2BC8003B006A4C0F /* CommandLine.hpp */,
 				F9070BCA2B9F175000383E4D /* Common.hpp */,
@@ -7586,7 +7586,7 @@
 				F9D41B5E2C4FCE4600290998 /* LineCap.hpp */,
 				F951220F2CB62E6B00151291 /* LineString.hpp */,
 				F9E7943A2C12F34D002615BA /* LineStyle.hpp */,
-				F9D41B632C534D8900290998 /* LineType.hpp */,
+				F9D41B632C534D8900290998 /* LinePattern.hpp */,
 				F9E7945F2C198133002615BA /* ListUtility.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
@@ -7713,7 +7713,7 @@
 				F9070C1D2B9F175000383E4D /* Result.hpp */,
 				F98606182BEB7651006A4C0F /* RoundRect.hpp */,
 				F9DD96572F0966400026DFA5 /* Sample.hpp */,
-				F9FD0D102D204FA000A584CE /* SampleBorderColor.hpp */,
+				F9FD0D102D204FA000A584CE /* SamplerBorderColor.hpp */,
 				F980C4262C00D2B500A86B68 /* SamplerState.hpp */,
 				F980C4572C01B20F00A86B68 /* SamplerStateBuilder.hpp */,
 				F91D413A2F5DA80500E7FEEF /* SaveFileDialogOptions.hpp */,
@@ -8457,7 +8457,7 @@
 				F9E794382C12DA78002615BA /* Line */,
 				F9D41B612C4FCE6300290998 /* LineCap */,
 				F9F00A7E2CE06CA10097C165 /* LineString */,
-				F9D41B662C534DA900290998 /* LineType */,
+				F9D41B662C534DA900290998 /* LinePattern */,
 				F9A3D22530A1000000C0DE01 /* LetterCase */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
@@ -8531,7 +8531,7 @@
 				F980C47F2C04B3EA00A86B68 /* Renderer2D */,
 				F97203042BEDF2FF000E21DD /* ResizeMode */,
 				F9D41CF22C9FCDC300290998 /* RoundRect */,
-				F9FD0D132D204FBE00A584CE /* SampleBorderColor */,
+				F9FD0D132D204FBE00A584CE /* SamplerBorderColor */,
 				F980C4532C00E2AE00A86B68 /* SamplerState */,
 				F980C46A2C01B4B600A86B68 /* SamplerStateBuilder */,
 				F97203022BEDF2FF000E21DD /* Scene */,
@@ -13486,12 +13486,12 @@
 			path = LineCap;
 			sourceTree = "<group>";
 		};
-		F9D41B662C534DA900290998 /* LineType */ = {
+		F9D41B662C534DA900290998 /* LinePattern */ = {
 			isa = PBXGroup;
 			children = (
-				F9D41B652C534DA900290998 /* SivLineType.cpp */,
+				F9D41B652C534DA900290998 /* SivLinePattern.cpp */,
 			);
-			path = LineType;
+			path = LinePattern;
 			sourceTree = "<group>";
 		};
 		F9D41B812C56057700290998 /* Pattern */ = {
@@ -13992,12 +13992,12 @@
 			path = Mat3x3;
 			sourceTree = "<group>";
 		};
-		F9FD0D132D204FBE00A584CE /* SampleBorderColor */ = {
+		F9FD0D132D204FBE00A584CE /* SamplerBorderColor */ = {
 			isa = PBXGroup;
 			children = (
-				F9FD0D122D204FBE00A584CE /* SivSampleBorderColor.cpp */,
+				F9FD0D122D204FBE00A584CE /* SivSamplerBorderColor.cpp */,
 			);
-			path = SampleBorderColor;
+			path = SamplerBorderColor;
 			sourceTree = "<group>";
 		};
 		F9FD0D1C2D215DE000A584CE /* TexturedCircle */ = {
@@ -14442,7 +14442,7 @@
 				F9528BB52BBF023600222F45 /* Compression.hpp in Headers */,
 				F9070D142B9F175100383E4D /* WindowState.hpp in Headers */,
 				F986052B2BD10459006A4C0F /* Circle.hpp in Headers */,
-				F9FD0D112D204FA000A584CE /* SampleBorderColor.hpp in Headers */,
+				F9FD0D112D204FA000A584CE /* SamplerBorderColor.hpp in Headers */,
 				F9070DC22B9F175E00383E4D /* CEmpty.hpp in Headers */,
 				F9E794412C158BA1002615BA /* Circular.ipp in Headers */,
 				F98603772BCFBB54006A4C0F /* SkOTTable_EBSC.h in Headers */,
@@ -15366,7 +15366,7 @@
 				F98600602BCFBB53006A4C0F /* SkHighContrastFilter.h in Headers */,
 				F986000A2BCFBB53006A4C0F /* SkColorTable.h in Headers */,
 				F9DD96372F0965A30026DFA5 /* IEffect.ipp in Headers */,
-				F9D41B642C534D8900290998 /* LineType.hpp in Headers */,
+				F9D41B642C534D8900290998 /* LinePattern.hpp in Headers */,
 				F980C4642C01B22900A86B68 /* RasterizerStateBuilder.ipp in Headers */,
 				F986F9C62BCA9D25006A4C0F /* SVG.hpp in Headers */,
 				F9070C6F2B9F175000383E4D /* Optional.ipp in Headers */,
@@ -15448,7 +15448,7 @@
 				F98602082BCFBB53006A4C0F /* SkOptsTargets.h in Headers */,
 				F98601D62BCFBB53006A4C0F /* SkImagePriv.h in Headers */,
 				F98604162BCFBB54006A4C0F /* SkSLFunctionReference.h in Headers */,
-				F986F8982BC7FB32006A4C0F /* ColorScale.hpp in Headers */,
+				F986F8982BC7FB32006A4C0F /* ColormapType.hpp in Headers */,
 				F98602952BCFBB54006A4C0F /* SkValidationUtils.h in Headers */,
 				F98111D82ECC08CA00C50DD1 /* INativeShare.hpp in Headers */,
 				F9070CCE2B9F175100383E4D /* IntFormatter.hpp in Headers */,
@@ -16521,7 +16521,7 @@
 				F980C4462C00D31000A86B68 /* SivBlendOperation.cpp in Sources */,
 				F9070DFE2B9F175E00383E4D /* SivVector2D.cpp in Sources */,
 				F9070DE72B9F175E00383E4D /* SivString.cpp in Sources */,
-				F9D41B672C534DA900290998 /* SivLineType.cpp in Sources */,
+				F9D41B672C534DA900290998 /* SivLinePattern.cpp in Sources */,
 				F9528C1D2BBF026F00222F45 /* fse_compress.c in Sources */,
 				F98605E42BE50038006A4C0F /* SivInputCombination.cpp in Sources */,
 				F99BC36D2FF6048900D4ECDE /* LineStringBuffer.cpp in Sources */,
@@ -16544,7 +16544,7 @@
 				F9712A532C26A4C80049CC26 /* SivColorWriteMask.cpp in Sources */,
 				F986F91A2BC8441F006A4C0F /* regcomp.c in Sources */,
 				F9070DD02B9F175E00383E4D /* SivFormatter.cpp in Sources */,
-				F9FD0D142D204FBE00A584CE /* SivSampleBorderColor.cpp in Sources */,
+				F9FD0D142D204FBE00A584CE /* SivSamplerBorderColor.cpp in Sources */,
 				F980C4562C00E2AE00A86B68 /* SivSamplerState.cpp in Sources */,
 				F902E1162EA8B39D002C6B92 /* SivSimpleGUI.cpp in Sources */,
 				F943AADD2E2A0A14001B4D43 /* GlyphCacheCommon.cpp in Sources */,

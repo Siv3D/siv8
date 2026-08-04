@@ -722,7 +722,7 @@
 # include <Siv3D/Palette.hpp>
 
 // カラーマップ用のカラースケール | Color scale for colormap
-# include <Siv3D/ColorScale.hpp>
+# include <Siv3D/ColormapType.hpp>
 
 // カラーマップ | Colormap
 # include <Siv3D/Colormap.hpp>
@@ -860,7 +860,7 @@
 // 線端のスタイル | Line cap
 # include <Siv3D/LineCap.hpp>
 
-# include <Siv3D/LineType.hpp>
+# include <Siv3D/LinePattern.hpp>
 
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>
@@ -1630,7 +1630,7 @@
 # include <Siv3D/CompareFunction.hpp>
 
 // サンプリング時の境界色 | Border color for sampling
-# include <Siv3D/SampleBorderColor.hpp>
+# include <Siv3D/SamplerBorderColor.hpp>
 
 // サンプラーステートの構築 | Builder for sampler state
 # include <Siv3D/SamplerStateBuilder.hpp>

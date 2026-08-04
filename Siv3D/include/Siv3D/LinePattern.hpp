@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include "Types.hpp"
+# include "Common.hpp"
 
 namespace s3d
 {
@@ -18,21 +18,30 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	SampleBorderColor
+	//	LinePattern
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief サンプリング時の境界色 | Border color for sampling
-	enum class SampleBorderColor : uint8
+	/// @brief 線のパターン | Line pattern
+	enum class LinePattern : uint8
 	{
-		/// @brief 透明な黒 (0, 0, 0, 0) | Transparent black (0, 0, 0, 0)
-		TransparentBlack = 0,
-		
-		/// @brief 不透明な黒 (0, 0, 0, 1) | Opaque black (0, 0, 0, 1)
-		OpaqueBlack = 1,
-		
-		/// @brief 不透明な白 (1, 1, 1, 1) | Opaque white (1, 1, 1, 1)
-		OpaqueWhite = 2,
+		/// @brief 実線
+		Solid,
+
+		/// @brief ドット
+		Dotted,
+
+		/// @brief ダッシュ
+		Dashed,
+
+		/// @brief 長いダッシュ
+		LongDash,
+
+		/// @brief ダッシュとドット
+		DashDot,
+
+		/// @brief 丸いドット
+		RoundDot,
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -41,10 +50,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief テクスチャフィルタの手法を文字列に変換します。
+	/// @brief 線のパターンを文字列に変換します。
 	/// @param formatData 文字列バッファ
-	/// @param value サンプリング時の境界色
+	/// @param value 線のパターン
 	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
-	void Formatter(FormatData& formatData, SampleBorderColor value);
+	void Formatter(FormatData& formatData, LinePattern value);
 }
-

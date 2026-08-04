@@ -1880,12 +1880,12 @@ namespace s3d
 		return *this;
 	}
 
-	const RectF& RectF::drawFrame(const double thickness, const LineType lineType, const ColorF& color) const
+	const RectF& RectF::drawFrame(const double thickness, const LinePattern linePattern, const ColorF& color) const
 	{
-		return drawFrame((thickness * 0.5), (thickness * 0.5), lineType, color);
+		return drawFrame((thickness * 0.5), (thickness * 0.5), linePattern, color);
 	}
 
-	const RectF& RectF::drawFrame(const double innerThickness, const double outerThickness, const LineType lineType, const ColorF& color) const
+	const RectF& RectF::drawFrame(const double innerThickness, const double outerThickness, const LinePattern linePattern, const ColorF& color) const
 	{
 		const float x0 = static_cast<float>(x - outerThickness);
 		const float x1 = static_cast<float>(x + innerThickness);
@@ -1911,7 +1911,7 @@ namespace s3d
 
 		const Float4 colors[2] = { color.toFloat4(), color.toFloat4() };
 
-		if (lineType == LineType::RoundDot)
+		if (linePattern == LinePattern::RoundDot)
 		{
 			const LineStyle style = LineStyle::RoundDot;
 			SIV3D_ENGINE(Renderer2D)->addLine(style, Float2{ px1, py1 }, Float2{ px2, py1 }, thickness, colors);
@@ -1921,7 +1921,7 @@ namespace s3d
 		}
 		else
 		{
-			const LineStyle lineStyle = LineStyle::Parameters{ lineType, LineCap::Flat };
+			const LineStyle lineStyle = LineStyle::Parameters{ linePattern, LineCap::Flat };
 			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ x0, py1 }, Float2{ x3, py1 }, thickness, colors);
 			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ px2, y0 }, Float2{ px2, y3 }, thickness, colors);
 			SIV3D_ENGINE(Renderer2D)->addLine(lineStyle, Float2{ x3, py2 }, Float2{ x0, py2 }, thickness, colors);

@@ -910,7 +910,7 @@
     <Filter Include="src\Siv3D\LineCap">
       <UniqueIdentifier>{f10c1d9c-ccba-48f8-b372-e605e94894c0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D\LineType">
+    <Filter Include="src\Siv3D\LinePattern">
       <UniqueIdentifier>{b3fd028d-6c26-4638-af04-ffcef97ca40e}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\Siv3D\Pattern">
@@ -1018,7 +1018,7 @@
     <Filter Include="src\Siv3D\Mat3x3">
       <UniqueIdentifier>{5b81c5fa-7ed8-4d07-b4ee-1ad8b7993733}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor">
+    <Filter Include="src\Siv3D\SamplerBorderColor">
       <UniqueIdentifier>{f6f2a0d7-2477-40aa-8053-22aa6c12e2bf}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Siv3D\TexturedQuad">
@@ -2730,7 +2730,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Colormap.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\ColorScale.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\ColormapType.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\tinycolormap\tinycolormap.hpp">
@@ -3951,7 +3951,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\LineCap.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\LineType.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\LinePattern.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\PatternParameters.hpp">
@@ -4272,7 +4272,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomAngle.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\Siv3D\include\Siv3D\SampleBorderColor.hpp">
+    <ClInclude Include="..\Siv3D\include\Siv3D\SamplerBorderColor.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\TexturedQuad.hpp">
@@ -8219,8 +8219,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\LineCap\SivLineCap.cpp">
       <Filter>src\Siv3D\LineCap</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\LineType\SivLineType.cpp">
-      <Filter>src\Siv3D\LineType</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LinePattern\SivLinePattern.cpp">
+      <Filter>src\Siv3D\LinePattern</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Grid\SivGrid.cpp">
       <Filter>src\Siv3D\Grid</Filter>
@@ -8348,8 +8348,8 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mat3x3\SivMat3x3.cpp">
       <Filter>src\Siv3D\Mat3x3</Filter>
     </ClCompile>
-    <ClCompile Include="..\Siv3D\src\Siv3D\SampleBorderColor\SivSampleBorderColor.cpp">
-      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\SampleBorderColor</Filter>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SamplerBorderColor\SivSamplerBorderColor.cpp">
+      <Filter>src\Siv3D\SamplerBorderColor</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\TexturedQuad\SivTexturedQuad.cpp">
       <Filter>src\Siv3D\TexturedQuad</Filter>
