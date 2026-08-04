@@ -41,7 +41,7 @@ namespace s3d
 			switch (failure)
 			{
 			case boost::geometry::no_failure:
-				return PolygonFailureType::OK;
+				return PolygonFailureType::Ok;
 			case boost::geometry::failure_few_points:
 				return PolygonFailureType::FewPoints;
 			case boost::geometry::failure_wrong_topological_dimension:
@@ -261,7 +261,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
+			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
 			{
 				return;
 			}
@@ -285,7 +285,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
+			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
 			{
 				return;
 			}
@@ -309,7 +309,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
+			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
 			{
 				return;
 			}
@@ -330,7 +330,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::OK)
+			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
 			{
 				return;
 			}
@@ -1238,7 +1238,7 @@ namespace s3d
 	{
 		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, holes);
 
-		if (ValidatePolygon(polygon) == PolygonFailureType::OK)
+		if (ValidatePolygon(polygon) == PolygonFailureType::Ok)
 		{
 			return{ Polygon{ outer, holes, SkipValidation::Yes } };
 		}
@@ -1259,7 +1259,7 @@ namespace s3d
 				retHoles.emplace_back(hole.begin(), hole.end());
 			}
 
-			if (Validate(solvedPolygon.outer(), retHoles) == PolygonFailureType::OK)
+			if (Validate(solvedPolygon.outer(), retHoles) == PolygonFailureType::Ok)
 			{
 				results.emplace_back(solvedPolygon.outer(), retHoles);
 			}

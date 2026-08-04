@@ -23,7 +23,7 @@ namespace s3d
 		/// @param text 本文
 		/// @param style スタイル
 		/// @remark この関数はユーザがボタンを押すかメッセージボックスを閉じるまで制御を返しません。
-		/// @return `MessageBoxResult::OK`
+		/// @return `MessageBoxResult::Ok`
 		MessageBoxResult MessageBoxOK(StringView text, MessageBoxStyle style = MessageBoxStyle::Default);
 
 		/// @brief 「OK」ボタンを持つメッセージボックスを表示する。
@@ -31,14 +31,14 @@ namespace s3d
 		/// @param text 本文
 		/// @param style スタイル
 		/// @remark この関数はユーザがボタンを押すかメッセージボックスを閉じるまで制御を返しません。
-		/// @return `MessageBoxResult::OK`
+		/// @return `MessageBoxResult::Ok`
 		MessageBoxResult MessageBoxOK(StringView title, StringView text, MessageBoxStyle style = MessageBoxStyle::Default);
 
 		/// @brief 「OK」「キャンセル」ボタンを持つメッセージボックスを表示する。
 		/// @param text 本文
 		/// @param style スタイル
 		/// @remark この関数はユーザがボタンを押すかメッセージボックスを閉じるまで制御を返しません。
-		/// @return `MessageBoxResult::OK` または `MessageBoxResult::Cancel`
+		/// @return `MessageBoxResult::Ok` または `MessageBoxResult::Cancel`
 		[[nodiscard]]
 		MessageBoxResult MessageBoxOKCancel(StringView text, MessageBoxStyle style = MessageBoxStyle::Default);
 
@@ -47,7 +47,7 @@ namespace s3d
 		/// @param text 本文
 		/// @param style スタイル
 		/// @remark この関数はユーザがボタンを押すかメッセージボックスを閉じるまで制御を返しません。
-		/// @return `MessageBoxResult::OK` または `MessageBoxResult::Cancel`
+		/// @return `MessageBoxResult::Ok` または `MessageBoxResult::Cancel`
 		[[nodiscard]]
 		MessageBoxResult MessageBoxOKCancel(StringView title, StringView text, MessageBoxStyle style = MessageBoxStyle::Default);
 
@@ -69,4 +69,3 @@ namespace s3d
 		MessageBoxResult MessageBoxYesNo(StringView title, StringView text, MessageBoxStyle style = MessageBoxStyle::Default);
 	}
 }
-

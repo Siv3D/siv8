@@ -10,25 +10,24 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/AudioFormat.hpp>
+# include <Siv3D/LogType.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
+# include <Siv3D/Utility.hpp>
 
 namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array AudioFormatStrings =
+		static constexpr std::array LogTypeStrings =
 		{
-			U"Unknown"_sv,
-			U"WAV"_sv,
-			U"MP3"_sv,
-			U"AAC"_sv,
-			U"OggVorbis"_sv,
-			U"Opus"_sv,
-			U"WMA"_sv,
-			U"FLAC"_sv,
-			U"MIDI"_sv,
+			U"Error"_sv,
+			U"Fail"_sv,
+			U"Warning"_sv,
+			U"App"_sv,
+			U"Info"_sv,
+			U"Debug"_sv,
+			U"Trace"_sv,
 		};
 	}
 
@@ -38,8 +37,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const AudioFormat value)
+	void Formatter(FormatData& formatData, const LogType value)
 	{
-		formatData.string.append(AudioFormatStrings[FromEnum(value)]);
+		formatData.string.append(LogTypeStrings[FromEnum(value)]);
 	}
 }
+

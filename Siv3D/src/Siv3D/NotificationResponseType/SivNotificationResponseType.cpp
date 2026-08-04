@@ -20,7 +20,7 @@ namespace s3d
 	{
 		static constexpr std::array NotificationResponseTypeStrings =
 		{
-			U"Unknown"_sv,
+			U"Unspecified"_sv,
 			U"DefaultActivated"_sv,
 			U"ActionActivated"_sv,
 			U"Dismissed"_sv,

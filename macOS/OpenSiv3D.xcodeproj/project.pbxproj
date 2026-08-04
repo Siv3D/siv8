@@ -753,6 +753,16 @@
 		F9A3D10130A1000000C0DE01 /* VertexNormalWeighting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */; };
 		F9A3D10230A1000000C0DE01 /* SivVertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */; };
 		F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */; };
+		F9A3D20130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */; };
+		F9A3D20230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */; };
+		F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */; };
+		F9A3D20430A1000000C0DE01 /* SivINIParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */; };
+		F9A3D20530A1000000C0DE01 /* SivLetterCase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */; };
+		F9A3D20630A1000000C0DE01 /* SivLogType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21630A1000000C0DE01 /* SivLogType.cpp */; };
+		F9A3D20730A1000000C0DE01 /* SivMessageBoxResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */; };
+		F9A3D20830A1000000C0DE01 /* SivShaderStage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */; };
+		F9A3D20930A1000000C0DE01 /* SivTexturePixelFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */; };
+		F9A3D20A30A1000000C0DE01 /* Test_EnumFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */; };
 		F93BD7F330168A0200B3542E /* Test_JSONSerialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */; };
 		F93BD7F53016936900B3542E /* Test_CSV.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F43016936900B3542E /* Test_CSV.cpp */; };
 		F93BD7F83016AE7100B3542E /* PolygonParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7F73016AE7100B3542E /* PolygonParser.cpp */; };
@@ -4020,6 +4030,16 @@
 		F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexNormalWeighting.hpp; sourceTree = "<group>"; };
 		F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexNormalWeighting.cpp; sourceTree = "<group>"; };
 		F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_VertexNormalWeighting.cpp; sourceTree = "<group>"; };
+		F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageDecodeError.cpp; sourceTree = "<group>"; };
+		F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageReadStatus.cpp; sourceTree = "<group>"; };
+		F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSVParseErrorCode.cpp; sourceTree = "<group>"; };
+		F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivINIParseErrorCode.cpp; sourceTree = "<group>"; };
+		F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLetterCase.cpp; sourceTree = "<group>"; };
+		F9A3D21630A1000000C0DE01 /* SivLogType.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLogType.cpp; sourceTree = "<group>"; };
+		F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMessageBoxResult.cpp; sourceTree = "<group>"; };
+		F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivShaderStage.cpp; sourceTree = "<group>"; };
+		F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTexturePixelFormat.cpp; sourceTree = "<group>"; };
+		F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_EnumFormatter.cpp; sourceTree = "<group>"; };
 		F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_JSONSerialization.cpp; sourceTree = "<group>"; };
 		F93BD7F43016936900B3542E /* Test_CSV.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CSV.cpp; sourceTree = "<group>"; };
 		F93BD7F63016950000B3542E /* Siv3DTestPCH.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTestPCH.hpp; sourceTree = "<group>"; };
@@ -6721,6 +6741,7 @@
 				F9528C482BBF028E00222F45 /* Test_Compression.cpp */,
 				F90702BB2B9DAEB900383E4D /* Test_Concepts.cpp */,
 				F93BD7F43016936900B3542E /* Test_CSV.cpp */,
+				F9A3D21A30A1000000C0DE01 /* Test_EnumFormatter.cpp */,
 				F90702BC2B9DAEB900383E4D /* Test_FileSystem.cpp */,
 				F90702BD2B9DAEB900383E4D /* Test_FmtExtension.cpp */,
 				F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */,
@@ -8300,6 +8321,8 @@
 			children = (
 				F9797EA02F667ED800518D26 /* AACQuality */,
 				F98111932EC8C60200C50DD1 /* Anchor */,
+				F9A3D22130A1000000C0DE01 /* AnimatedImageDecodeError */,
+				F9A3D22230A1000000C0DE01 /* AnimatedImageReadStatus */,
 				F9E794712C19B720002615BA /* Array */,
 				F934BD7C2BF880860003EAD5 /* AssetHandleManager */,
 				F9FD0D282D21693100A584CE /* AssetMonitor */,
@@ -8343,6 +8366,7 @@
 				F9070D2F2B9F175E00383E4D /* ConsoleBuffer */,
 				F9070D312B9F175E00383E4D /* CPUInfo */,
 				F90F7A0D2FA9B7DF0077F398 /* CSV */,
+				F9A3D22330A1000000C0DE01 /* CSVParseErrorCode */,
 				F980C4372C00D31000A86B68 /* CullMode */,
 				F986057A2BDA7DFC006A4C0F /* Cursor */,
 				F98605922BE33124006A4C0F /* CursorStyle */,
@@ -8409,6 +8433,7 @@
 				F986053B2BD104B4006A4C0F /* ImagePixelFormat */,
 				F90F2BE22D91861F00CC89CA /* ImageProcessing */,
 				F986F8372BC7B043006A4C0F /* INI */,
+				F9A3D22430A1000000C0DE01 /* INIParseErrorCode */,
 				F986F8352BC7B043006A4C0F /* INIItem */,
 				F986F8392BC7B043006A4C0F /* INISection */,
 				F98605CB2BE4B6A4006A4C0F /* Input */,
@@ -8433,8 +8458,10 @@
 				F9D41B612C4FCE6300290998 /* LineCap */,
 				F9F00A7E2CE06CA10097C165 /* LineString */,
 				F9D41B662C534DA900290998 /* LineType */,
+				F9A3D22530A1000000C0DE01 /* LetterCase */,
 				F9070D662B9F175E00383E4D /* Logger */,
 				F9070D682B9F175E00383E4D /* LoggerBuffer */,
+				F9A3D22630A1000000C0DE01 /* LogType */,
 				F98605702BDA32D4006A4C0F /* Mat3x2 */,
 				F9FD0BB42D1DA6EA00A584CE /* Mat3x3 */,
 				F98605422BD203BC006A4C0F /* MathParser */,
@@ -8447,6 +8474,7 @@
 				F93BD7F0301682CB00B3542E /* Mesh2D */,
 				F9A3D01630A1000000C0DE01 /* Mesh3D */,
 				F9807D972BF667C300D9B590 /* MessageBox */,
+				F9A3D22730A1000000C0DE01 /* MessageBoxResult */,
 				F9797F132F6ED8DD00518D26 /* MicrophoneInfo */,
 				F9528B5F2BB6DC9200222F45 /* MicrosecClock */,
 				F9528B632BB6DC9200222F45 /* MillisecClock */,
@@ -8517,6 +8545,7 @@
 				F99881A92F5587F800C8991D /* Serial */,
 				F934BD802BF880A10003EAD5 /* Shader */,
 				F9AEA5082E6B3E71003734E7 /* ShaderGroup */,
+				F9A3D22830A1000000C0DE01 /* ShaderStage */,
 				F9F00A462CD298E60097C165 /* Shape2D */,
 				F9E5FC452BC1AA820081A4F7 /* SIMDMath */,
 				F902E1152EA8B39D002C6B92 /* SimpleGUI */,
@@ -8541,6 +8570,7 @@
 				F9FD0D202D215DE000A584CE /* TexturedRoundRect */,
 				F97203062BEDF2FF000E21DD /* TextureFilter */,
 				F90DA05A2D1A91D90003E1E8 /* TextureFormat */,
+				F9A3D22930A1000000C0DE01 /* TexturePixelFormat */,
 				F9FD0B2E2D1D314A00A584CE /* TextureRegion */,
 				F98111BD2EC8C75300C50DD1 /* Theme */,
 				F9070D932B9F175E00383E4D /* ThousandSeparate */,
@@ -9272,6 +9302,78 @@
 				F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */,
 			);
 			path = VertexNormalWeighting;
+			sourceTree = "<group>";
+		};
+		F9A3D22130A1000000C0DE01 /* AnimatedImageDecodeError */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */,
+			);
+			path = AnimatedImageDecodeError;
+			sourceTree = "<group>";
+		};
+		F9A3D22230A1000000C0DE01 /* AnimatedImageReadStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */,
+			);
+			path = AnimatedImageReadStatus;
+			sourceTree = "<group>";
+		};
+		F9A3D22330A1000000C0DE01 /* CSVParseErrorCode */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */,
+			);
+			path = CSVParseErrorCode;
+			sourceTree = "<group>";
+		};
+		F9A3D22430A1000000C0DE01 /* INIParseErrorCode */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21430A1000000C0DE01 /* SivINIParseErrorCode.cpp */,
+			);
+			path = INIParseErrorCode;
+			sourceTree = "<group>";
+		};
+		F9A3D22530A1000000C0DE01 /* LetterCase */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21530A1000000C0DE01 /* SivLetterCase.cpp */,
+			);
+			path = LetterCase;
+			sourceTree = "<group>";
+		};
+		F9A3D22630A1000000C0DE01 /* LogType */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21630A1000000C0DE01 /* SivLogType.cpp */,
+			);
+			path = LogType;
+			sourceTree = "<group>";
+		};
+		F9A3D22730A1000000C0DE01 /* MessageBoxResult */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21730A1000000C0DE01 /* SivMessageBoxResult.cpp */,
+			);
+			path = MessageBoxResult;
+			sourceTree = "<group>";
+		};
+		F9A3D22830A1000000C0DE01 /* ShaderStage */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21830A1000000C0DE01 /* SivShaderStage.cpp */,
+			);
+			path = ShaderStage;
+			sourceTree = "<group>";
+		};
+		F9A3D22930A1000000C0DE01 /* TexturePixelFormat */ = {
+			isa = PBXGroup;
+			children = (
+				F9A3D21930A1000000C0DE01 /* SivTexturePixelFormat.cpp */,
+			);
+			path = TexturePixelFormat;
 			sourceTree = "<group>";
 		};
 		F934BD772BF880620003EAD5 /* PixelShader */ = {
@@ -16130,6 +16232,7 @@
 				F93BD7D6300FB21400B3542E /* Test_Geometry2D_SignedDistance_Availability.cpp in Sources */,
 				F93BD7D7300FB21400B3542E /* Test_Geometry2D_Intersects_AreaShapes.cpp in Sources */,
 				F93BD7F53016936900B3542E /* Test_CSV.cpp in Sources */,
+				F9A3D20A30A1000000C0DE01 /* Test_EnumFormatter.cpp in Sources */,
 				F93BD7D8300FB21400B3542E /* Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp in Sources */,
 				F93BD7D9300FB21400B3542E /* Test_Geometry2D_Distance_Availability.cpp in Sources */,
 				F93BD7DA300FB21400B3542E /* Test_Geometry2D_Raycast_Availability.cpp in Sources */,
@@ -16702,6 +16805,15 @@
 				F9070DD42B9F175E00383E4D /* SivInt128.cpp in Sources */,
 				F934BD782BF880620003EAD5 /* SivVertexShader.cpp in Sources */,
 				F9A3D10230A1000000C0DE01 /* SivVertexNormalWeighting.cpp in Sources */,
+				F9A3D20130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp in Sources */,
+				F9A3D20230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp in Sources */,
+				F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */,
+				F9A3D20430A1000000C0DE01 /* SivINIParseErrorCode.cpp in Sources */,
+				F9A3D20530A1000000C0DE01 /* SivLetterCase.cpp in Sources */,
+				F9A3D20630A1000000C0DE01 /* SivLogType.cpp in Sources */,
+				F9A3D20730A1000000C0DE01 /* SivMessageBoxResult.cpp in Sources */,
+				F9A3D20830A1000000C0DE01 /* SivShaderStage.cpp in Sources */,
+				F9A3D20930A1000000C0DE01 /* SivTexturePixelFormat.cpp in Sources */,
 				F986F8A52BC80100006A4C0F /* SivCommandLine.cpp in Sources */,
 				F9797E5E2F667E0400518D26 /* SivWave.cpp in Sources */,
 				F9797F142F6ED8DD00518D26 /* SivMicrophoneInfo.cpp in Sources */,

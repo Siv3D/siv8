@@ -10,25 +10,25 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/AudioFormat.hpp>
+# include <Siv3D/CSVParseErrorCode.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
+# include <Siv3D/Utility.hpp>
 
 namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array AudioFormatStrings =
+		static constexpr std::array CSVParseErrorCodeStrings =
 		{
-			U"Unknown"_sv,
-			U"WAV"_sv,
-			U"MP3"_sv,
-			U"AAC"_sv,
-			U"OggVorbis"_sv,
-			U"Opus"_sv,
-			U"WMA"_sv,
-			U"FLAC"_sv,
-			U"MIDI"_sv,
+			U"InvalidReader"_sv,
+			U"InvalidEncoding"_sv,
+			U"UnexpectedQuoteInUnquotedField"_sv,
+			U"UnexpectedCharacterAfterClosingQuote"_sv,
+			U"UnterminatedQuotedField"_sv,
+			U"BareCR"_sv,
+			U"BareLF"_sv,
+			U"InconsistentColumns"_sv,
 		};
 	}
 
@@ -38,8 +38,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const AudioFormat value)
+	void Formatter(FormatData& formatData, const CSVParseErrorCode value)
 	{
-		formatData.string.append(AudioFormatStrings[FromEnum(value)]);
+		formatData.string.append(CSVParseErrorCodeStrings[FromEnum(value)]);
 	}
 }
+

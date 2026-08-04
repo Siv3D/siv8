@@ -1267,7 +1267,7 @@ namespace s3d
 		/// @brief 頂点配列が多角形として有効かを検証します。
 		/// @param outer 外周の頂点配列（時計回り）
 		/// @param holes 多角形の穴の頂点配列（反時計回り）
-		/// @return 多角形として有効であれば `PolygonFailureType::OK`, それ以外の場合はエラーの種類
+		/// @return 多角形として有効であれば `PolygonFailureType::Ok`, それ以外の場合はエラーの種類
 		[[nodiscard]]
 		static PolygonFailureType Validate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 

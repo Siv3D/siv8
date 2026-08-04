@@ -14,6 +14,8 @@
 
 namespace s3d
 {
+	struct FormatData;
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	LogType
@@ -86,4 +88,16 @@ namespace s3d
 		/// @brief トレース | Trace
 		Trace,
 	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief ログの種類を文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value ログの種類
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
+	void Formatter(FormatData& formatData, LogType value);
 }

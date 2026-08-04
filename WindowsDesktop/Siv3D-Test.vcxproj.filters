@@ -160,6 +160,9 @@
     <ClCompile Include="..\Test\Test_CSV.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_EnumFormatter.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_INI.cpp">
       <Filter>Test</Filter>
     </ClCompile>

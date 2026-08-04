@@ -1438,6 +1438,33 @@
     <Filter Include="src\Siv3D\VertexNormalWeighting">
       <UniqueIdentifier>{5f95438e-2709-433c-9195-43b82672ccfb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\AnimatedImageDecodeError">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\AnimatedImageReadStatus">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\CSVParseErrorCode">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\INIParseErrorCode">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a204}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\LetterCase">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\LogType">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\MessageBoxResult">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\ShaderStage">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a208}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\TexturePixelFormat">
+      <UniqueIdentifier>{dcce0268-b417-40ef-9d95-90885362a209}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\ThirdParty\wuffs">
       <UniqueIdentifier>{fa032c75-863a-4a02-b00e-d736de4d20b3}</UniqueIdentifier>
     </Filter>
@@ -7966,6 +7993,33 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\VertexNormalWeighting\SivVertexNormalWeighting.cpp">
       <Filter>src\Siv3D\VertexNormalWeighting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AnimatedImageDecodeError\SivAnimatedImageDecodeError.cpp">
+      <Filter>src\Siv3D\AnimatedImageDecodeError</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\AnimatedImageReadStatus\SivAnimatedImageReadStatus.cpp">
+      <Filter>src\Siv3D\AnimatedImageReadStatus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\CSVParseErrorCode\SivCSVParseErrorCode.cpp">
+      <Filter>src\Siv3D\CSVParseErrorCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\INIParseErrorCode\SivINIParseErrorCode.cpp">
+      <Filter>src\Siv3D\INIParseErrorCode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LetterCase\SivLetterCase.cpp">
+      <Filter>src\Siv3D\LetterCase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\LogType\SivLogType.cpp">
+      <Filter>src\Siv3D\LogType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\MessageBoxResult\SivMessageBoxResult.cpp">
+      <Filter>src\Siv3D\MessageBoxResult</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ShaderStage\SivShaderStage.cpp">
+      <Filter>src\Siv3D\ShaderStage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\TexturePixelFormat\SivTexturePixelFormat.cpp">
+      <Filter>src\Siv3D\TexturePixelFormat</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\VertexShader\SivVertexShader.cpp">
       <Filter>src\Siv3D\VertexShader</Filter>
