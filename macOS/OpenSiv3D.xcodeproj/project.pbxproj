@@ -3176,6 +3176,15 @@
 		F9FD0BB02D1DA6B900A584CE /* Mat3x3.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */; };
 		F9FD0BB22D1DA6CC00A584CE /* Mat3x3.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */; };
 		F9FD0BB52D1DA6EA00A584CE /* SivMat3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */; };
+		FEFEB7EF231D4AD7A8CC5188 /* Mat4x4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 16BB937774E643DBA6B83738 /* Mat4x4.hpp */; };
+		2D2E4D0545A04EAAABA02DA2 /* Mat4x4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */; };
+		40FCEB7BAE3F41DCA87D5C72 /* SivMat4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */; };
+		9FF0D4D197374BE4BF710520 /* Quaternion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0D15A455331848599026324A /* Quaternion.hpp */; };
+		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
+		F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */; };
+		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
+		78488F66412F4B9983BAD8C7 /* SimdFloat4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 982422B376D849EEBEB93524 /* SimdFloat4.ipp */; };
+		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
 		F9FD0D0A2D1DABA000A584CE /* libopencv_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D082D1DABA000A584CE /* libopencv_core.a */; };
 		F9FD0D0B2D1DABA000A584CE /* libopencv_imgproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */; };
 		F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */; };
@@ -6512,6 +6521,15 @@
 		F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat3x3.hpp; sourceTree = "<group>"; };
 		F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat3x3.ipp; sourceTree = "<group>"; };
 		F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat3x3.cpp; sourceTree = "<group>"; };
+		16BB937774E643DBA6B83738 /* Mat4x4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.hpp; sourceTree = "<group>"; };
+		8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.ipp; sourceTree = "<group>"; };
+		46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat4x4.cpp; sourceTree = "<group>"; };
+		0D15A455331848599026324A /* Quaternion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.hpp; sourceTree = "<group>"; };
+		7D2189FE0435464583450CED /* Quaternion.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.ipp; sourceTree = "<group>"; };
+		3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuaternion.cpp; sourceTree = "<group>"; };
+		B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.hpp; sourceTree = "<group>"; };
+		982422B376D849EEBEB93524 /* SimdFloat4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.ipp; sourceTree = "<group>"; };
+		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
 		F9FD0D082D1DABA000A584CE /* libopencv_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_core.a; path = ../Siv3D/lib/macOS/opencv/libopencv_core.a; sourceTree = "<group>"; };
 		F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgproc.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgproc.a; sourceTree = "<group>"; };
 		F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.hpp; sourceTree = "<group>"; };
@@ -7245,6 +7263,9 @@
 				F9528C4F2BBFEC4D00222F45 /* MappedMemoryView.ipp */,
 				F986056D2BDA32B4006A4C0F /* Mat3x2.ipp */,
 				F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */,
+				8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */,
+				7D2189FE0435464583450CED /* Quaternion.ipp */,
+				982422B376D849EEBEB93524 /* SimdFloat4.ipp */,
 				F986F8B72BC843E0006A4C0F /* MatchResults.ipp */,
 				F986F93B2BCA7996006A4C0F /* Math_impl.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
@@ -7612,6 +7633,9 @@
 				F9528C4D2BBFEC3800222F45 /* MappedMemoryView.hpp */,
 				F986056B2BDA329E006A4C0F /* Mat3x2.hpp */,
 				F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */,
+				16BB937774E643DBA6B83738 /* Mat4x4.hpp */,
+				0D15A455331848599026324A /* Quaternion.hpp */,
+				B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */,
 				F986F8B42BC843CF006A4C0F /* MatchResults.hpp */,
 				F986F9412BCA79B4006A4C0F /* Math.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
@@ -8480,6 +8504,9 @@
 				F9A3D22630A1000000C0DE01 /* LogLevel */,
 				F98605702BDA32D4006A4C0F /* Mat3x2 */,
 				F9FD0BB42D1DA6EA00A584CE /* Mat3x3 */,
+				B87D8D8940C84FEDA05CCA7C /* Mat4x4 */,
+				6F09A29E7464484FA76482D4 /* Quaternion */,
+				E02963EE71FB4417B90BEBBE /* SimdFloat4 */,
 				F98605422BD203BC006A4C0F /* MathParser */,
 				F9070D6A2B9F175E00383E4D /* MD5Value */,
 				F9797EA32F667ED800518D26 /* MediaTranscoder */,
@@ -14021,6 +14048,30 @@
 			path = Mat3x3;
 			sourceTree = "<group>";
 		};
+		B87D8D8940C84FEDA05CCA7C /* Mat4x4 */ = {
+			isa = PBXGroup;
+			children = (
+				46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */,
+			);
+			path = Mat4x4;
+			sourceTree = "<group>";
+		};
+		6F09A29E7464484FA76482D4 /* Quaternion */ = {
+			isa = PBXGroup;
+			children = (
+				3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */,
+			);
+			path = Quaternion;
+			sourceTree = "<group>";
+		};
+		E02963EE71FB4417B90BEBBE /* SimdFloat4 */ = {
+			isa = PBXGroup;
+			children = (
+				E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */,
+			);
+			path = SimdFloat4;
+			sourceTree = "<group>";
+		};
 		F9FD0D132D204FBE00A584CE /* SamplerBorderColor */ = {
 			isa = PBXGroup;
 			children = (
@@ -14308,6 +14359,9 @@
 				F98600B02BCFBB53006A4C0F /* SkParsePath.h in Headers */,
 				F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */,
 				F9FD0BB02D1DA6B900A584CE /* Mat3x3.hpp in Headers */,
+				FEFEB7EF231D4AD7A8CC5188 /* Mat4x4.hpp in Headers */,
+				9FF0D4D197374BE4BF710520 /* Quaternion.hpp in Headers */,
+				EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */,
 				F98600062BCFBB53006A4C0F /* SkColor.h in Headers */,
 				F99881602F40B5FD00C8991D /* Spline.hpp in Headers */,
 				F98602412BCFBB54006A4C0F /* SkRecordDraw.h in Headers */,
@@ -15016,6 +15070,9 @@
 				F943AACD2E2A09E5001B4D43 /* DrawableText.ipp in Headers */,
 				F9528C6D2BC05B1A00222F45 /* ImageDecoder.ipp in Headers */,
 				F9FD0BB22D1DA6CC00A584CE /* Mat3x3.ipp in Headers */,
+				2D2E4D0545A04EAAABA02DA2 /* Mat4x4.ipp in Headers */,
+				E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */,
+				78488F66412F4B9983BAD8C7 /* SimdFloat4.ipp in Headers */,
 				F986029B2BCFBB54006A4C0F /* SkWriteBuffer.h in Headers */,
 				F98604812BCFBB54006A4C0F /* SkSLOperator.h in Headers */,
 				F9528C362BBF026F00222F45 /* zstdmt_compress.h in Headers */,
@@ -16568,6 +16625,9 @@
 				F9FD0D222D215DE000A584CE /* SivTexturedCircle.cpp in Sources */,
 				F9FD0D232D215DE000A584CE /* SivTexturedQuad.cpp in Sources */,
 				F9FD0BB52D1DA6EA00A584CE /* SivMat3x3.cpp in Sources */,
+				40FCEB7BAE3F41DCA87D5C72 /* SivMat4x4.cpp in Sources */,
+				F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */,
+				B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */,
 				F9070AEE2B9DEB5900383E4D /* int128.cc in Sources */,
 				F95122562CB8239800151291 /* PolygonDetail.cpp in Sources */,
 				F972030B2BEDF2FF000E21DD /* SceneTime.cpp in Sources */,

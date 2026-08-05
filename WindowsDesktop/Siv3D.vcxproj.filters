@@ -1018,6 +1018,15 @@
     <Filter Include="src\Siv3D\Mat3x3">
       <UniqueIdentifier>{5b81c5fa-7ed8-4d07-b4ee-1ad8b7993733}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Mat4x4">
+      <UniqueIdentifier>{efb8a9a6-f5b8-463e-aace-fb23fa024d72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Quaternion">
+      <UniqueIdentifier>{5f7686c9-8cae-403d-a352-a0d8d91999ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\SimdFloat4">
+      <UniqueIdentifier>{e2d3b7c1-ab5f-4d91-b980-2cb3625551e1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\SamplerBorderColor">
       <UniqueIdentifier>{f6f2a0d7-2477-40aa-8053-22aa6c12e2bf}</UniqueIdentifier>
     </Filter>
@@ -4266,7 +4275,25 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mat3x3.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mat4x4.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Quaternion.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SimdFloat4.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat3x3.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat4x4.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Quaternion.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\SimdFloat4.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomAngle.hpp">
@@ -8359,6 +8386,15 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mat3x3\SivMat3x3.cpp">
       <Filter>src\Siv3D\Mat3x3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mat4x4\SivMat4x4.cpp">
+      <Filter>src\Siv3D\Mat4x4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Quaternion\SivQuaternion.cpp">
+      <Filter>src\Siv3D\Quaternion</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\SimdFloat4\SivSimdFloat4.cpp">
+      <Filter>src\Siv3D\SimdFloat4</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\SamplerBorderColor\SivSamplerBorderColor.cpp">
       <Filter>src\Siv3D\SamplerBorderColor</Filter>

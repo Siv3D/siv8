@@ -685,8 +685,8 @@
 // SIMD 演算 | SIMD
 # include <Siv3D/SIMDMath.hpp>
 
-//// SIMD 対応 Float4 | SIMD Float4
-//# include <Siv3D/SIMD_Float4.hpp>
+// SIMD 対応 Float4 | SIMD Float4
+# include <Siv3D/SimdFloat4.hpp>
 
 // 数式パーサ | Math parser
 # include <Siv3D/MathParser.hpp>
@@ -849,6 +849,12 @@
 
 // 3x3 行列 | 3x3 matrix
 # include <Siv3D/Mat3x3.hpp>
+
+// クォータニオン | Quaternion
+# include <Siv3D/Quaternion.hpp>
+
+// 4x4 行列 | 4x4 matrix
+# include <Siv3D/Mat4x4.hpp>
 
 # include <Siv3D/PointsPerCircle.hpp>
 
