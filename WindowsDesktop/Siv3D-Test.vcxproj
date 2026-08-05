@@ -64,6 +64,7 @@
     <ClCompile Include="..\Test\Test_LineString.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3D.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />

@@ -2844,6 +2844,7 @@
 		F9A3D10130A1000000C0DE01 /* VertexNormalWeighting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */; };
 		F9A3D10230A1000000C0DE01 /* SivVertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */; };
 		F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */; };
+		F9A3D10430A1000000C0DE01 /* Test_Mesh3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */; };
 		F9A3D20130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */; };
 		F9A3D20230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */; };
 		F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */; };
@@ -6170,6 +6171,7 @@
 		F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexNormalWeighting.hpp; sourceTree = "<group>"; };
 		F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexNormalWeighting.cpp; sourceTree = "<group>"; };
 		F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_VertexNormalWeighting.cpp; sourceTree = "<group>"; };
+		F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3D.cpp; sourceTree = "<group>"; };
 		F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageDecodeError.cpp; sourceTree = "<group>"; };
 		F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageReadStatus.cpp; sourceTree = "<group>"; };
 		F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSVParseErrorCode.cpp; sourceTree = "<group>"; };
@@ -6809,6 +6811,7 @@
 				F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */,
 				F90702CC2B9DAEB900383E4D /* Test_Utility.cpp */,
 				F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */,
+				F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */,
 				F90702CD2B9DAEB900383E4D /* Test_Version.cpp */,
 				F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */,
 				F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */,
@@ -16236,6 +16239,7 @@
 				F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */,
 				F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */,
 				F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */,
+				F9A3D10430A1000000C0DE01 /* Test_Mesh3D.cpp in Sources */,
 				F90703032B9DAEB900383E4D /* Test_Platform.cpp in Sources */,
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
 				F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */,

@@ -45,6 +45,100 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	validate
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3D::validate() const noexcept
+	{
+		if (MaxVertexCount < vertices.size())
+		{
+			return false;
+		}
+
+		const size_t vertexCount = vertices.size();
+
+		for (const auto& triangle : indices)
+		{
+			if ((vertexCount <= triangle.i0)
+				|| (vertexCount <= triangle.i1)
+				|| (vertexCount <= triangle.i2))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	append
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3D::append(const Mesh3D& mesh)
+	{
+		if (not mesh.validate())
+		{
+			return false;
+		}
+
+		const size_t vertexOffset = vertices.size();
+		const size_t sourceVertexCount = mesh.vertices.size();
+
+		if ((MaxVertexCount < vertexOffset)
+			|| ((MaxVertexCount - vertexOffset) < sourceVertexCount))
+		{
+			return false;
+		}
+
+		const size_t triangleOffset = indices.size();
+		const size_t sourceTriangleCount = mesh.indices.size();
+
+		if (this == &mesh)
+		{
+			vertices.resize(vertexOffset + sourceVertexCount);
+
+			for (size_t i = 0; i < sourceVertexCount; ++i)
+			{
+				vertices[vertexOffset + i] = vertices[i];
+			}
+
+			indices.resize(triangleOffset + sourceTriangleCount);
+
+			for (size_t i = 0; i < sourceTriangleCount; ++i)
+			{
+				indices[triangleOffset + i] = indices[i];
+			}
+		}
+		else
+		{
+			vertices.insert(
+				vertices.end(),
+				mesh.vertices.begin(),
+				mesh.vertices.end());
+
+			indices.insert(
+				indices.end(),
+				mesh.indices.begin(),
+				mesh.indices.end());
+		}
+
+		for (size_t i = triangleOffset; i < indices.size(); ++i)
+		{
+			auto& triangle = indices[i];
+
+			triangle.i0 = static_cast<TriangleIndex32::value_type>(vertexOffset + triangle.i0);
+			triangle.i1 = static_cast<TriangleIndex32::value_type>(vertexOffset + triangle.i1);
+			triangle.i2 = static_cast<TriangleIndex32::value_type>(vertexOffset + triangle.i2);
+		}
+
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	computeNormals
 	//
 	////////////////////////////////////////////////////////////////
@@ -126,6 +220,53 @@ namespace s3d
 		{
 			throw Error{ "Mesh3D::computeTangents(): Failed to generate MikkTSpace tangents." };
 		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reverseWinding
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::reverseWinding() noexcept
+	{
+		for (auto& triangle : indices)
+		{
+			triangle.flip();
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	invertNormals
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::invertNormals() noexcept
+	{
+		for (auto& vertex : vertices)
+		{
+			vertex.normal = -vertex.normal;
+			vertex.tangent.w = -vertex.tangent.w;
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	invert
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::invert() noexcept
+	{
+		reverseWinding();
+		invertNormals();
 
 		return *this;
 	}
