@@ -393,6 +393,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	dot
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline float SIV3D_VECTOR_CALL SimdFloat4::dot(const SimdFloat4 other) const noexcept
+	{
+		return DirectX::XMVectorGetX(DirectX::XMVector4Dot(vec, other.vec));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	length, lengthSq
 	//
 	////////////////////////////////////////////////////////////////
@@ -405,6 +416,17 @@ namespace s3d
 	inline float SimdFloat4::lengthSq() const noexcept
 	{
 		return DirectX::XMVectorGetX(DirectX::XMVector4LengthSq(vec));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	invLength
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline float SimdFloat4::invLength() const noexcept
+	{
+		return DirectX::XMVectorGetX(DirectX::XMVector4ReciprocalLength(vec));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -534,6 +556,42 @@ namespace s3d
 	inline SimdFloat4 SIV3D_VECTOR_CALL SimdFloat4::xyz1() const noexcept
 	{
 		return DirectX::XMVectorSetW(vec, 1.0f);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	xyzw, xxxx, yyyy, zzzz, wwww, wzyx
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline SimdFloat4 SIV3D_VECTOR_CALL SimdFloat4::xyzw() const noexcept
+	{
+		return *this;
+	}
+
+	inline SimdFloat4 SIV3D_VECTOR_CALL SimdFloat4::xxxx() const noexcept
+	{
+		return DirectX::XMVectorSplatX(vec);
+	}
+
+	inline SimdFloat4 SIV3D_VECTOR_CALL SimdFloat4::yyyy() const noexcept
+	{
+		return DirectX::XMVectorSplatY(vec);
+	}
+
+	inline SimdFloat4 SIV3D_VECTOR_CALL SimdFloat4::zzzz() const noexcept
+	{
+		return DirectX::XMVectorSplatZ(vec);
+	}
+
+	inline SimdFloat4 SIV3D_VECTOR_CALL SimdFloat4::wwww() const noexcept
+	{
+		return DirectX::XMVectorSplatW(vec);
+	}
+
+	inline SimdFloat4 SIV3D_VECTOR_CALL SimdFloat4::wzyx() const noexcept
+	{
+		return DirectX::XMVectorSwizzle<3, 2, 1, 0>(vec);
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -657,6 +657,17 @@ namespace s3d
 		[[nodiscard]]
 		SimdFloat4 SIV3D_VECTOR_CALL withOffsetW(float _w) const noexcept;
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	dot
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ベクトル同士の内積を返します。 | Returns the dot product of two vectors.
+		/// @param other もう一方のベクトル | The other vector
+		/// @return 内積 | The dot product
+		[[nodiscard]]
+		float SIV3D_VECTOR_CALL dot(SimdFloat4 other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -680,6 +691,17 @@ namespace s3d
 		/// @remark 平方根を計算しないため `length()` より高速です。 | Faster than `length()` because it does not compute a square root.
 		[[nodiscard]]
 		float lengthSq() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	invLength
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief ベクトルの長さの逆数を返します。 | Returns the reciprocal of the vector length.
+		/// @return ベクトルの長さの逆数 | The reciprocal of the vector length
+		[[nodiscard]]
+		float invLength() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -836,6 +858,42 @@ namespace s3d
 		/// @return SimdFloat4{ x, y, z, 1 }
 		[[nodiscard]]
 		SimdFloat4 SIV3D_VECTOR_CALL xyz1() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	xyzw, xxxx, yyyy, zzzz, wwww, wzyx
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief SimdFloat4{ x, y, z, w } を返します。 | Returns SimdFloat4{ x, y, z, w }.
+		/// @return SimdFloat4{ x, y, z, w }
+		[[nodiscard]]
+		SimdFloat4 SIV3D_VECTOR_CALL xyzw() const noexcept;
+
+		/// @brief SimdFloat4{ x, x, x, x } を返します。 | Returns SimdFloat4{ x, x, x, x }.
+		/// @return SimdFloat4{ x, x, x, x }
+		[[nodiscard]]
+		SimdFloat4 SIV3D_VECTOR_CALL xxxx() const noexcept;
+
+		/// @brief SimdFloat4{ y, y, y, y } を返します。 | Returns SimdFloat4{ y, y, y, y }.
+		/// @return SimdFloat4{ y, y, y, y }
+		[[nodiscard]]
+		SimdFloat4 SIV3D_VECTOR_CALL yyyy() const noexcept;
+
+		/// @brief SimdFloat4{ z, z, z, z } を返します。 | Returns SimdFloat4{ z, z, z, z }.
+		/// @return SimdFloat4{ z, z, z, z }
+		[[nodiscard]]
+		SimdFloat4 SIV3D_VECTOR_CALL zzzz() const noexcept;
+
+		/// @brief SimdFloat4{ w, w, w, w } を返します。 | Returns SimdFloat4{ w, w, w, w }.
+		/// @return SimdFloat4{ w, w, w, w }
+		[[nodiscard]]
+		SimdFloat4 SIV3D_VECTOR_CALL wwww() const noexcept;
+
+		/// @brief SimdFloat4{ w, z, y, x } を返します。 | Returns SimdFloat4{ w, z, y, x }.
+		/// @return SimdFloat4{ w, z, y, x }
+		[[nodiscard]]
+		SimdFloat4 SIV3D_VECTOR_CALL wzyx() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

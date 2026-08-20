@@ -129,8 +129,12 @@ TEST_CASE("SimdFloat4.access_and_mutation")
 TEST_CASE("SimdFloat4.math")
 {
 	const SimdFloat4 v{ 1.0f, 2.0f, 2.0f, 4.0f };
+	CHECK_EQ(v.dot(SimdFloat4{ 2.0f, 3.0f, 4.0f, 5.0f }), 36.0f);
+	CHECK_EQ(v.dot(SimdFloat4::Zero()), 0.0f);
 	CHECK_EQ(v.lengthSq(), 25.0f);
 	CHECK_EQ(v.length(), 5.0f);
+	CHECK(v.invLength() == doctest::Approx(0.2f));
+	CHECK_FALSE(std::isfinite(SimdFloat4::Zero().invLength()));
 
 	CheckComponents(SimdFloat4{ 1.0f, 2.0f, 4.0f, 8.0f }.reciprocal(), Float4{ 1.0f, 0.5f, 0.25f, 0.125f });
 	CHECK((SimdFloat4{ 1.0f, 2.0f, 4.0f, 8.0f }.fastReciprocal().epsilonEquals(
@@ -172,6 +176,12 @@ TEST_CASE("SimdFloat4.classification_swizzles_and_constants")
 	CHECK_EQ(v.yzw(), (Float3{ 2.0f, 3.0f, 4.0f }));
 	CheckComponents(v.xyz0(), Float4{ 1.0f, 2.0f, 3.0f, 0.0f });
 	CheckComponents(v.xyz1(), Float4{ 1.0f, 2.0f, 3.0f, 1.0f });
+	CheckComponents(v.xyzw(), Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
+	CheckComponents(v.xxxx(), Float4{ 1.0f, 1.0f, 1.0f, 1.0f });
+	CheckComponents(v.yyyy(), Float4{ 2.0f, 2.0f, 2.0f, 2.0f });
+	CheckComponents(v.zzzz(), Float4{ 3.0f, 3.0f, 3.0f, 3.0f });
+	CheckComponents(v.wwww(), Float4{ 4.0f, 4.0f, 4.0f, 4.0f });
+	CheckComponents(v.wzyx(), Float4{ 4.0f, 3.0f, 2.0f, 1.0f });
 
 	CheckComponents(SimdFloat4::Zero(), Float4{ 0.0f, 0.0f, 0.0f, 0.0f });
 	CheckComponents(SimdFloat4::One(), Float4{ 1.0f, 1.0f, 1.0f, 1.0f });
