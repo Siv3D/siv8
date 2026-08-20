@@ -11,6 +11,7 @@
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
+		A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */; };
 		F90000013000000000000008 /* libSiv3DSkiaCOLRv1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */; };
 		F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */; };
 		F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */; };
@@ -3230,6 +3231,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
 		2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siv3D-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C22E2C11FD5BAF0002735AB /* Siv3D-Test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Siv3D-Test.entitlements"; sourceTree = SOURCE_ROOT; };
@@ -6818,6 +6820,7 @@
 				F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */,
 				F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */,
 				F9A000042FC0000000000001 /* Test_Smooth.cpp */,
+				A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */,
 				F90702C62B9DAEB900383E4D /* Test_Step.cpp */,
 				F90F79E62FA85F6E0077F398 /* Test_Step2D.cpp */,
 				F9528B152BAC58A300222F45 /* Test_String.cpp */,
@@ -16281,6 +16284,7 @@
 				F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */,
 				F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */,
 				F9A000032FC0000000000001 /* Test_Smooth.cpp in Sources */,
+				A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */,
 				F9A000052FC0000000000001 /* Test_Interpolation.cpp in Sources */,
 				F9528B322BB0564800222F45 /* Test_MemoryMappedFileView.cpp in Sources */,
 				F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */,
