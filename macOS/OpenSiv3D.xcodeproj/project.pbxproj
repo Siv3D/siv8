@@ -10,8 +10,16 @@
 		2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7F74E1CA7F43D00495647 /* Main.cpp */; };
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
-		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
+		2D2E4D0545A04EAAABA02DA2 /* Mat4x4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */; };
+		40FCEB7BAE3F41DCA87D5C72 /* SivMat4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */; };
+		78488F66412F4B9983BAD8C7 /* SimdFloat4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 982422B376D849EEBEB93524 /* SimdFloat4.ipp */; };
+		9FF0D4D197374BE4BF710520 /* Quaternion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0D15A455331848599026324A /* Quaternion.hpp */; };
 		A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */; };
+		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
+		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
+		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
+		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
+		F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */; };
 		F90000013000000000000008 /* libSiv3DSkiaCOLRv1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */; };
 		F902E0D02E9E5E49002C6B92 /* SuperEllipse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */; };
 		F902E0D22E9E5E5E002C6B92 /* SuperEllipse.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */; };
@@ -3177,15 +3185,6 @@
 		F9FD0BB02D1DA6B900A584CE /* Mat3x3.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */; };
 		F9FD0BB22D1DA6CC00A584CE /* Mat3x3.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */; };
 		F9FD0BB52D1DA6EA00A584CE /* SivMat3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */; };
-		FEFEB7EF231D4AD7A8CC5188 /* Mat4x4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 16BB937774E643DBA6B83738 /* Mat4x4.hpp */; };
-		2D2E4D0545A04EAAABA02DA2 /* Mat4x4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */; };
-		40FCEB7BAE3F41DCA87D5C72 /* SivMat4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */; };
-		9FF0D4D197374BE4BF710520 /* Quaternion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0D15A455331848599026324A /* Quaternion.hpp */; };
-		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
-		F601676853D745D7A2B3AE3D /* SivQuaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */; };
-		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
-		78488F66412F4B9983BAD8C7 /* SimdFloat4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 982422B376D849EEBEB93524 /* SimdFloat4.ipp */; };
-		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
 		F9FD0D0A2D1DABA000A584CE /* libopencv_core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D082D1DABA000A584CE /* libopencv_core.a */; };
 		F9FD0D0B2D1DABA000A584CE /* libopencv_imgproc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */; };
 		F9FD0D0D2D20434C00A584CE /* RandomAngle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */; };
@@ -3205,6 +3204,7 @@
 		FA0000013000000000000001 /* GridRect.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000023000000000000002 /* GridRect.hpp */; };
 		FA0000033000000000000003 /* GridRect.ipp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000043000000000000004 /* GridRect.ipp */; };
 		FA0000053000000000000005 /* GridConnectivity.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000063000000000000006 /* GridConnectivity.hpp */; };
+		FEFEB7EF231D4AD7A8CC5188 /* Mat4x4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 16BB937774E643DBA6B83738 /* Mat4x4.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3231,14 +3231,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
+		0D15A455331848599026324A /* Quaternion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.hpp; sourceTree = "<group>"; };
+		16BB937774E643DBA6B83738 /* Mat4x4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.hpp; sourceTree = "<group>"; };
 		2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siv3D-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C1778BF1CE0D5DB00BB8AD0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C22E2C11FD5BAF0002735AB /* Siv3D-Test.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Siv3D-Test.entitlements"; sourceTree = SOURCE_ROOT; };
 		2C8588EB1F929277000DA815 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		2CA7F73D1CA7F3B100495647 /* libSiv3D.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3D.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CA7F74E1CA7F43D00495647 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Main.cpp; sourceTree = "<group>"; };
+		3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuaternion.cpp; sourceTree = "<group>"; };
+		46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat4x4.cpp; sourceTree = "<group>"; };
+		7D2189FE0435464583450CED /* Quaternion.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.ipp; sourceTree = "<group>"; };
+		8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.ipp; sourceTree = "<group>"; };
+		982422B376D849EEBEB93524 /* SimdFloat4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.ipp; sourceTree = "<group>"; };
+		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
+		B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.hpp; sourceTree = "<group>"; };
+		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
 		F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3DSkiaCOLRv1.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F902E0CF2E9E5E49002C6B92 /* SuperEllipse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.hpp; sourceTree = "<group>"; };
 		F902E0D12E9E5E5E002C6B92 /* SuperEllipse.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipse.ipp; sourceTree = "<group>"; };
@@ -6523,15 +6532,6 @@
 		F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat3x3.hpp; sourceTree = "<group>"; };
 		F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat3x3.ipp; sourceTree = "<group>"; };
 		F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat3x3.cpp; sourceTree = "<group>"; };
-		16BB937774E643DBA6B83738 /* Mat4x4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.hpp; sourceTree = "<group>"; };
-		8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.ipp; sourceTree = "<group>"; };
-		46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivMat4x4.cpp; sourceTree = "<group>"; };
-		0D15A455331848599026324A /* Quaternion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.hpp; sourceTree = "<group>"; };
-		7D2189FE0435464583450CED /* Quaternion.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.ipp; sourceTree = "<group>"; };
-		3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivQuaternion.cpp; sourceTree = "<group>"; };
-		B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.hpp; sourceTree = "<group>"; };
-		982422B376D849EEBEB93524 /* SimdFloat4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.ipp; sourceTree = "<group>"; };
-		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
 		F9FD0D082D1DABA000A584CE /* libopencv_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_core.a; path = ../Siv3D/lib/macOS/opencv/libopencv_core.a; sourceTree = "<group>"; };
 		F9FD0D092D1DABA000A584CE /* libopencv_imgproc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libopencv_imgproc.a; path = ../Siv3D/lib/macOS/opencv/libopencv_imgproc.a; sourceTree = "<group>"; };
 		F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RandomAngle.hpp; sourceTree = "<group>"; };
@@ -6660,6 +6660,30 @@
 			);
 			name = Siv3D;
 			path = ../Siv3D;
+			sourceTree = "<group>";
+		};
+		6F09A29E7464484FA76482D4 /* Quaternion */ = {
+			isa = PBXGroup;
+			children = (
+				3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */,
+			);
+			path = Quaternion;
+			sourceTree = "<group>";
+		};
+		B87D8D8940C84FEDA05CCA7C /* Mat4x4 */ = {
+			isa = PBXGroup;
+			children = (
+				46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */,
+			);
+			path = Mat4x4;
+			sourceTree = "<group>";
+		};
+		E02963EE71FB4417B90BEBBE /* SimdFloat4 */ = {
+			isa = PBXGroup;
+			children = (
+				E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */,
+			);
+			path = SimdFloat4;
 			sourceTree = "<group>";
 		};
 		F902E0D42E9E5E9C002C6B92 /* SuperEllipse */ = {
@@ -7411,13 +7435,13 @@
 				F9AB00013020000000000002 /* AnimatedImage.hpp */,
 				F9AB0001302000000000000F /* AnimatedImageDecodeError.hpp */,
 				F9AB00013020000000000011 /* AnimatedImageDecodeOptions.hpp */,
-				F9AB00013020000000000013 /* AnimatedImageDecodeResult.hpp */,
 				F9AB00013020000000000015 /* AnimatedImageDecoder.hpp */,
+				F9AB00013020000000000013 /* AnimatedImageDecodeResult.hpp */,
 				F9AB0001302000000000000D /* AnimatedImageFrame.hpp */,
 				F9AB00013020000000000025 /* AnimatedImageInfo.hpp */,
-				F9AB0001302000000000001B /* AnimatedImageReadStatus.hpp */,
-				F9AB0001302000000000001D /* AnimatedImageReadResult.hpp */,
 				F9AB00013020000000000021 /* AnimatedImageReader.hpp */,
+				F9AB0001302000000000001D /* AnimatedImageReadResult.hpp */,
+				F9AB0001302000000000001B /* AnimatedImageReadStatus.hpp */,
 				F9070BBE2B9F175000383E4D /* Array.hpp */,
 				F9E794642C19B6D6002615BA /* ArrayAlgorithm.hpp */,
 				F9E794462C1973FC002615BA /* ArrayParallel.hpp */,
@@ -7458,6 +7482,7 @@
 				F9766B722C29C75E00DE4107 /* Camera2DControlBuilder.hpp */,
 				F9070BC62B9F175000383E4D /* Char.hpp */,
 				F944BAA82CEACF4300CC4D42 /* ChildProcess.hpp */,
+				F944BAA92CEACF4300CC4D42 /* ChildProcessPipe.hpp */,
 				F9D41CE62C99730500290998 /* Choice.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
 				F9E7943E2C158B8F002615BA /* Circular.hpp */,
@@ -7479,7 +7504,6 @@
 				F9070BCE2B9F175000383E4D /* Console.hpp */,
 				F9070BCF2B9F175000383E4D /* ConsoleBuffer.hpp */,
 				F980C48A2C04B41300A86B68 /* ConstantBuffer.hpp */,
-				F9070BD02B9F175000383E4D /* FileCopyOption.hpp */,
 				F9070BD12B9F175000383E4D /* CPUInfo.hpp */,
 				F90F7A002FA9B7A90077F398 /* CSV.hpp */,
 				F90F7A012FA9B7A90077F398 /* CSVParseErrorCode.hpp */,
@@ -7525,10 +7549,12 @@
 				F986F8A92BC806A7006A4C0F /* Exif.hpp */,
 				F998818A2F487FCE00C8991D /* ExternalPowerStatus.hpp */,
 				F9070BE02B9F175000383E4D /* FastMath.hpp */,
-				F9070BE12B9F175000383E4D /* FileChangeAction.hpp */,
 				F98606162BEB7651006A4C0F /* FileChange.hpp */,
+				F9070BE12B9F175000383E4D /* FileChangeAction.hpp */,
+				F9070BD02B9F175000383E4D /* FileCopyOption.hpp */,
 				F91D41382F5DA80500E7FEEF /* FileDialogFilter.hpp */,
 				F9070BE22B9F175000383E4D /* FileSystem.hpp */,
+				F9070C082B9F175000383E4D /* FileWriteMode.hpp */,
 				F9070BE32B9F175000383E4D /* FloatFormatter.hpp */,
 				F96F95E02C2B0F270033353E /* FloatQuad.hpp */,
 				F980C48B2C04B41300A86B68 /* FloatRect.hpp */,
@@ -7555,8 +7581,8 @@
 				F91171272DCBBF67000A22E6 /* GlyphInfo.hpp */,
 				F97203132BF09DD9000E21DD /* Graphics.hpp */,
 				F9E794792C248AEE002615BA /* Graphics2D.hpp */,
-				FA0000063000000000000006 /* GridConnectivity.hpp */,
 				F9528B192BADCC7C00222F45 /* Grid.hpp */,
+				FA0000063000000000000006 /* GridConnectivity.hpp */,
 				FA0000023000000000000002 /* GridRect.hpp */,
 				F98111972EC8C68700C50DD1 /* GUIColorStyle.hpp */,
 				F98111982EC8C68700C50DD1 /* GUIShapeStyle.hpp */,
@@ -7624,9 +7650,9 @@
 				F9528B692BB7087700222F45 /* LicenseManager.hpp */,
 				F98605282BD10459006A4C0F /* Line.hpp */,
 				F9D41B5E2C4FCE4600290998 /* LineCap.hpp */,
+				F9D41B632C534D8900290998 /* LinePattern.hpp */,
 				F951220F2CB62E6B00151291 /* LineString.hpp */,
 				F9E7943A2C12F34D002615BA /* LineStyle.hpp */,
-				F9D41B632C534D8900290998 /* LinePattern.hpp */,
 				F9E7945F2C198133002615BA /* ListUtility.hpp */,
 				F9070BFC2B9F175000383E4D /* Logger.hpp */,
 				F9070BFD2B9F175000383E4D /* LoggerBuffer.hpp */,
@@ -7637,8 +7663,6 @@
 				F986056B2BDA329E006A4C0F /* Mat3x2.hpp */,
 				F9FD0BAF2D1DA6B900A584CE /* Mat3x3.hpp */,
 				16BB937774E643DBA6B83738 /* Mat4x4.hpp */,
-				0D15A455331848599026324A /* Quaternion.hpp */,
-				B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */,
 				F986F8B42BC843CF006A4C0F /* MatchResults.hpp */,
 				F986F9412BCA79B4006A4C0F /* Math.hpp */,
 				F9070C002B9F175000383E4D /* MathConstants.hpp */,
@@ -7681,7 +7705,6 @@
 				F9070C072B9F175000383E4D /* Obfuscation.hpp */,
 				F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */,
 				F91D41392F5DA80500E7FEEF /* OpenFileDialogOptions.hpp */,
-				F9070C082B9F175000383E4D /* FileWriteMode.hpp */,
 				F9070C092B9F175000383E4D /* Optional.hpp */,
 				F99881DC2F5808C500C8991D /* OSCArgument.hpp */,
 				F99881DD2F5808C500C8991D /* OSCMessage.hpp */,
@@ -7708,7 +7731,6 @@
 				F9DD96512F09661B0026DFA5 /* PercentEncode.hpp */,
 				F9E794472C1973FC002615BA /* Periodic.hpp */,
 				F9AAE2C92EF0748700DE1655 /* PerlinNoise.hpp */,
-				F944BAA92CEACF4300CC4D42 /* ChildProcessPipe.hpp */,
 				F934BD6E2BF880330003EAD5 /* PixelShader.hpp */,
 				F9070C142B9F175000383E4D /* Platform.hpp */,
 				F9528C942BC1205300222F45 /* PNGFilter.hpp */,
@@ -7732,6 +7754,7 @@
 				F98605262BD10459006A4C0F /* Quad.hpp */,
 				F9F00A492CD299120097C165 /* QualityFactor.hpp */,
 				F9ADA8742FE314CE003EB3FA /* QuarterArcTable.hpp */,
+				0D15A455331848599026324A /* Quaternion.hpp */,
 				F9070C1A2B9F175000383E4D /* Random.hpp */,
 				F9FD0D0C2D20434C00A584CE /* RandomAngle.hpp */,
 				F98605EA2BE61563006A4C0F /* RandomColor.hpp */,
@@ -7777,6 +7800,7 @@
 				F951221B2CB8227E00151291 /* Shape2D.hpp */,
 				F9070C202B9F175000383E4D /* Shuffle.hpp */,
 				F9070C212B9F175000383E4D /* SIMD.hpp */,
+				B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */,
 				F9E5FC2B2BC15AEE0081A4F7 /* SIMDMath.hpp */,
 				F902E1092EA8B368002C6B92 /* SimpleGUI.hpp */,
 				F9712A542C289A5C0049CC26 /* Smooth.hpp */,
@@ -14049,30 +14073,6 @@
 				F9FD0BB32D1DA6EA00A584CE /* SivMat3x3.cpp */,
 			);
 			path = Mat3x3;
-			sourceTree = "<group>";
-		};
-		B87D8D8940C84FEDA05CCA7C /* Mat4x4 */ = {
-			isa = PBXGroup;
-			children = (
-				46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */,
-			);
-			path = Mat4x4;
-			sourceTree = "<group>";
-		};
-		6F09A29E7464484FA76482D4 /* Quaternion */ = {
-			isa = PBXGroup;
-			children = (
-				3F16F8203ECC4E2F856C7F44 /* SivQuaternion.cpp */,
-			);
-			path = Quaternion;
-			sourceTree = "<group>";
-		};
-		E02963EE71FB4417B90BEBBE /* SimdFloat4 */ = {
-			isa = PBXGroup;
-			children = (
-				E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */,
-			);
-			path = SimdFloat4;
 			sourceTree = "<group>";
 		};
 		F9FD0D132D204FBE00A584CE /* SamplerBorderColor */ = {
