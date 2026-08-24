@@ -16,6 +16,26 @@ namespace
 	constexpr float FrameEpsilon = 1e-5f;
 	constexpr float TriangleAreaEpsilon = 1e-10f;
 
+	static_assert(requires
+	{
+		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Box);
+		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Box);
+		static_cast<Mesh3D (*)(double, double)>(&Mesh3D::Pyramid);
+		static_cast<Mesh3D (*)(SizeF, double)>(&Mesh3D::Pyramid);
+		static_cast<Mesh3D (*)(SizeF, Vec2, Vec2)>(&Mesh3D::Plane);
+		static_cast<Mesh3D (*)(SizeF, uint32, uint32, Vec2, Vec2)>(&Mesh3D::Grid);
+		static_cast<Mesh3D (*)(double, double, uint32, uint32)>(&Mesh3D::Torus);
+		static_cast<Mesh3D (*)(double, double, uint32, uint32)>(&Mesh3D::Capsule);
+		static_cast<Mesh3D (*)(double, uint32, uint32)>(&Mesh3D::UVSphere);
+		static_cast<Mesh3D (*)(double, uint32, uint32)>(&Mesh3D::Hemisphere);
+		static_cast<Mesh3D (*)(double, CloseBottom, uint32, uint32)>(&Mesh3D::Hemisphere);
+		static_cast<Mesh3D (*)(double, uint32)>(&Mesh3D::Disc);
+		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Annulus);
+		static_cast<Mesh3D (*)(double, double, double, uint32)>(&Mesh3D::Frustum);
+		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Cylinder);
+		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Cone);
+	});
+
 	static void CheckVertexFrame(const Vertex3D& vertex)
 	{
 		CHECK(std::isfinite(vertex.pos.x));
@@ -56,7 +76,7 @@ namespace
 
 TEST_CASE("Mesh3D::Box")
 {
-	const Mesh3D mesh = Mesh3D::Box(Float3{ 2.0f, 4.0f, 6.0f });
+	const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 });
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
@@ -71,9 +91,10 @@ TEST_CASE("Mesh3D::Box")
 		CHECK((vertex.tex.y == 0.0f || vertex.tex.y == 1.0f));
 	}
 
-	CHECK(Mesh3D::Box(Float3{ 0.0f, 1.0f, 1.0f }).isEmpty());
-	CHECK(Mesh3D::Box(Float3{ 1.0f, -1.0f, 1.0f }).isEmpty());
-	CHECK(Mesh3D::Box(Float3{ 1.0f, 1.0f, std::numeric_limits<float>::infinity() }).isEmpty());
+	CHECK(Mesh3D::Box(Vec3{ 0.0, 1.0, 1.0 }).isEmpty());
+	CHECK(Mesh3D::Box(Vec3{ 1.0, -1.0, 1.0 }).isEmpty());
+	CHECK(Mesh3D::Box(Vec3{ 1.0, 1.0, std::numeric_limits<double>::infinity() }).isEmpty());
+	CHECK(Mesh3D::Box(Vec3{ 1.0, 1.0, std::numeric_limits<double>::max() }).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Box with UV mapping")
@@ -94,7 +115,7 @@ TEST_CASE("Mesh3D::Box with UV mapping")
 		uvMapping.positiveY,
 		uvMapping.negativeY,
 	};
-	const Mesh3D mesh = Mesh3D::Box(Float3{ 2.0f, 4.0f, 6.0f }, uvMapping);
+	const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, uvMapping);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
@@ -114,14 +135,14 @@ TEST_CASE("Mesh3D::Box with UV mapping")
 	{
 		BoxUVMapping invalid = uvMapping;
 		invalid.negativeX.left = std::numeric_limits<float>::quiet_NaN();
-		CHECK(Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, invalid).isEmpty());
+		CHECK(Mesh3D::Box(Vec3{ 1.0, 1.0, 1.0 }, invalid).isEmpty());
 
 		invalid = uvMapping;
 		invalid.positiveY.bottom = std::numeric_limits<float>::infinity();
-		CHECK(Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, invalid).isEmpty());
+		CHECK(Mesh3D::Box(Vec3{ 1.0, 1.0, 1.0 }, invalid).isEmpty());
 	}
 
-	CHECK(Mesh3D::Box(Float3{ 0.0f, 1.0f, 1.0f }, uvMapping).isEmpty());
+	CHECK(Mesh3D::Box(Vec3{ 0.0, 1.0, 1.0 }, uvMapping).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Box with flipped UV mapping")
@@ -132,7 +153,7 @@ TEST_CASE("Mesh3D::Box with flipped UV mapping")
 	uvMapping.positiveX = FloatRect{ 1.0f, 1.0f, 0.0f, 0.0f };
 
 	const Mesh3D defaultMesh = Mesh3D::Box();
-	const Mesh3D flippedMesh = Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, uvMapping);
+	const Mesh3D flippedMesh = Mesh3D::Box(Vec3{ 1.0, 1.0, 1.0 }, uvMapping);
 	CheckMeshGeometry(flippedMesh);
 
 	SUBCASE("U flip")
@@ -183,7 +204,7 @@ TEST_CASE("Mesh3D::Box with collapsed UV mapping")
 	uvMapping.positiveX = FloatRect{ 0.25f, 0.75f, 0.25f, 0.75f };
 
 	const Mesh3D defaultMesh = Mesh3D::Box();
-	const Mesh3D collapsedMesh = Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, uvMapping);
+	const Mesh3D collapsedMesh = Mesh3D::Box(Vec3{ 1.0, 1.0, 1.0 }, uvMapping);
 	CheckMeshGeometry(collapsedMesh);
 
 	SUBCASE("Collapsed U")
@@ -219,8 +240,8 @@ TEST_CASE("Mesh3D::Box with collapsed UV mapping")
 
 TEST_CASE("Mesh3D::Pyramid")
 {
-	const Float2 baseSizeXZ{ 4.0f, 2.0f };
-	constexpr float Height = 3.0f;
+	const SizeF baseSizeXZ{ 4.0, 2.0 };
+	constexpr double Height = 3.0;
 	const Mesh3D mesh = Mesh3D::Pyramid(baseSizeXZ, Height);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 16 });
@@ -284,8 +305,8 @@ TEST_CASE("Mesh3D::Pyramid")
 	}
 
 	CheckMeshGeometry(Mesh3D::Pyramid());
-	const Mesh3D squareMesh = Mesh3D::Pyramid(2.0f, Height);
-	const Mesh3D squareMeshFromSize = Mesh3D::Pyramid(Float2{ 2.0f, 2.0f }, Height);
+	const Mesh3D squareMesh = Mesh3D::Pyramid(2.0, Height);
+	const Mesh3D squareMeshFromSize = Mesh3D::Pyramid(SizeF{ 2.0, 2.0 }, Height);
 	CHECK_EQ(squareMesh.vertexCount(), squareMeshFromSize.vertexCount());
 	CHECK_EQ(squareMesh.triangleCount(), squareMeshFromSize.triangleCount());
 	for (size_t i = 0; i < squareMesh.vertices.size(); ++i)
@@ -295,36 +316,36 @@ TEST_CASE("Mesh3D::Pyramid")
 		CHECK_EQ(squareMesh.vertices[i].tex, squareMeshFromSize.vertices[i].tex);
 		CHECK_EQ(squareMesh.vertices[i].tangent, squareMeshFromSize.vertices[i].tangent);
 	}
-	CHECK(Mesh3D::Pyramid(-1.0f, 1.0f).isEmpty());
-	CHECK(Mesh3D::Pyramid(Float2{ 0.0f, 1.0f }, 1.0f).isEmpty());
-	CHECK(Mesh3D::Pyramid(Float2{ 1.0f, -1.0f }, 1.0f).isEmpty());
-	CHECK(Mesh3D::Pyramid(Float2{ 1.0f, 1.0f }, 0.0f).isEmpty());
-	CHECK(Mesh3D::Pyramid(Float2{ std::numeric_limits<float>::infinity(), 1.0f }, 1.0f).isEmpty());
-	CHECK(Mesh3D::Pyramid(Float2{ 1.0f, 1.0f }, std::numeric_limits<float>::quiet_NaN()).isEmpty());
+	CHECK(Mesh3D::Pyramid(-1.0, 1.0).isEmpty());
+	CHECK(Mesh3D::Pyramid(SizeF{ 0.0, 1.0 }, 1.0).isEmpty());
+	CHECK(Mesh3D::Pyramid(SizeF{ 1.0, -1.0 }, 1.0).isEmpty());
+	CHECK(Mesh3D::Pyramid(SizeF{ 1.0, 1.0 }, 0.0).isEmpty());
+	CHECK(Mesh3D::Pyramid(SizeF{ std::numeric_limits<double>::infinity(), 1.0 }, 1.0).isEmpty());
+	CHECK(Mesh3D::Pyramid(SizeF{ 1.0, 1.0 }, std::numeric_limits<double>::quiet_NaN()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Plane")
 {
-	const Float2 uvScale{ 2.0f, 3.0f };
-	const Float2 uvOffset{ -0.25f, 0.5f };
-	const Mesh3D mesh = Mesh3D::Plane(Float2{ 4.0f, 2.0f }, uvScale, uvOffset);
+	const Vec2 uvScale{ 2.0, 3.0 };
+	const Vec2 uvOffset{ -0.25, 0.5 };
+	const Mesh3D mesh = Mesh3D::Plane(SizeF{ 4.0, 2.0 }, uvScale, uvOffset);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 4 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 2 });
 	CheckMeshGeometry(mesh);
 	CHECK_EQ(mesh.vertices[0].pos, Float3{ -2.0f, 0.0f, 1.0f });
 	CHECK_EQ(mesh.vertices[3].pos, Float3{ 2.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[0].tex, uvOffset);
-	CHECK_EQ(mesh.vertices[3].tex, (uvOffset + uvScale));
+	CHECK_EQ(mesh.vertices[0].tex, Float2{ uvOffset });
+	CHECK_EQ(mesh.vertices[3].tex, Float2{ (uvOffset + uvScale) });
 
-	CHECK(Mesh3D::Plane(Float2{ -1.0f, 1.0f }).isEmpty());
+	CHECK(Mesh3D::Plane(SizeF{ -1.0, 1.0 }).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Grid")
 {
-	const Float2 uvScale{ 2.0f, 3.0f };
-	const Float2 uvOffset{ 0.25f, -0.5f };
-	const Mesh3D mesh = Mesh3D::Grid(Float2{ 4.0f, 2.0f }, 2, 1, uvScale, uvOffset);
+	const Vec2 uvScale{ 2.0, 3.0 };
+	const Vec2 uvOffset{ 0.25, -0.5 };
+	const Mesh3D mesh = Mesh3D::Grid(SizeF{ 4.0, 2.0 }, 2, 1, uvScale, uvOffset);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 6 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 4 });
@@ -334,20 +355,21 @@ TEST_CASE("Mesh3D::Grid")
 	CHECK_EQ(mesh.vertices[2].pos, Float3{ 2.0f, 0.0f, 1.0f });
 	CHECK_EQ(mesh.vertices[3].pos, Float3{ -2.0f, 0.0f, -1.0f });
 	CHECK_EQ(mesh.vertices[5].pos, Float3{ 2.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[0].tex, uvOffset);
-	CHECK_EQ(mesh.vertices[5].tex, (uvOffset + uvScale));
+	CHECK_EQ(mesh.vertices[0].tex, Float2{ uvOffset });
+	CHECK_EQ(mesh.vertices[5].tex, Float2{ (uvOffset + uvScale) });
 
-	CHECK(Mesh3D::Grid(Float2{ 1.0f, 1.0f }, 0, 1).isEmpty());
-	CHECK(Mesh3D::Grid(Float2{ 1.0f, 1.0f }, 1, 0).isEmpty());
-	CHECK(Mesh3D::Grid(Float2{ 0.0f, 1.0f }, 1, 1).isEmpty());
-	CHECK(Mesh3D::Grid(Float2{ 1.0f, 1.0f }, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::Grid(SizeF{ 1.0, 1.0 }, 0, 1).isEmpty());
+	CHECK(Mesh3D::Grid(SizeF{ 1.0, 1.0 }, 1, 0).isEmpty());
+	CHECK(Mesh3D::Grid(SizeF{ 0.0, 1.0 }, 1, 1).isEmpty());
+	CHECK(Mesh3D::Grid(SizeF{ 1.0, 1.0 }, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::Grid(SizeF{ 1.0, 1.0 }, 1, 1, Vec2{ std::numeric_limits<double>::max(), 1.0 }).isEmpty());
 }
 
 TEST_CASE("Mesh3D::UVSphere")
 {
 	constexpr uint32 Slices = 8;
 	constexpr uint32 Stacks = 4;
-	const Mesh3D mesh = Mesh3D::UVSphere(2.0f, Slices, Stacks);
+	const Mesh3D mesh = Mesh3D::UVSphere(2.0, Slices, Stacks);
 	const size_t expectedVertexCount = ((Stacks - 1) * (Slices + 1) + (2 * Slices));
 	const size_t expectedTriangleCount = (2 * Slices * (Stacks - 1));
 
@@ -369,15 +391,15 @@ TEST_CASE("Mesh3D::UVSphere")
 	CHECK_EQ(mesh.vertices[firstRingBase].tex.x, 0.0f);
 	CHECK_EQ(mesh.vertices[firstRingBase + Slices].tex.x, 1.0f);
 
-	CHECK(Mesh3D::UVSphere(0.0f, Slices, Stacks).isEmpty());
-	CHECK(Mesh3D::UVSphere(1.0f, 2, Stacks).isEmpty());
-	CHECK(Mesh3D::UVSphere(1.0f, Slices, 1).isEmpty());
-	CHECK(Mesh3D::UVSphere(1.0f, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::UVSphere(0.0, Slices, Stacks).isEmpty());
+	CHECK(Mesh3D::UVSphere(1.0, 2, Stacks).isEmpty());
+	CHECK(Mesh3D::UVSphere(1.0, Slices, 1).isEmpty());
+	CHECK(Mesh3D::UVSphere(1.0, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Hemisphere")
 {
-	constexpr float Radius = 2.0f;
+	constexpr double Radius = 2.0;
 	constexpr uint32 Slices = 8;
 	constexpr uint32 Stacks = 2;
 	const Mesh3D mesh = Mesh3D::Hemisphere(Radius, Slices, Stacks);
@@ -444,20 +466,20 @@ TEST_CASE("Mesh3D::Hemisphere")
 		CHECK((0.0f <= closedMesh.vertices[i].tex.y && closedMesh.vertices[i].tex.y <= 1.0f));
 	}
 
-	CheckMeshGeometry(Mesh3D::Hemisphere(1.0f, 3, 1));
-	CheckMeshGeometry(Mesh3D::Hemisphere(1.0f, CloseBottom::Yes, 3, 1));
-	CHECK(Mesh3D::Hemisphere(0.0f, Slices, Stacks).isEmpty());
-	CHECK(Mesh3D::Hemisphere(std::numeric_limits<float>::infinity(), Slices, Stacks).isEmpty());
-	CHECK(Mesh3D::Hemisphere(1.0f, 2, Stacks).isEmpty());
-	CHECK(Mesh3D::Hemisphere(1.0f, Slices, 0).isEmpty());
-	CHECK(Mesh3D::Hemisphere(1.0f, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
-	CHECK(Mesh3D::Hemisphere(1.0f, CloseBottom::Yes, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+	CheckMeshGeometry(Mesh3D::Hemisphere(1.0, 3, 1));
+	CheckMeshGeometry(Mesh3D::Hemisphere(1.0, CloseBottom::Yes, 3, 1));
+	CHECK(Mesh3D::Hemisphere(0.0, Slices, Stacks).isEmpty());
+	CHECK(Mesh3D::Hemisphere(std::numeric_limits<double>::infinity(), Slices, Stacks).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0, 2, Stacks).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0, Slices, 0).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0, CloseBottom::Yes, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Disc")
 {
 	constexpr uint32 Segments = 8;
-	const Mesh3D mesh = Mesh3D::Disc(2.0f, Segments);
+	const Mesh3D mesh = Mesh3D::Disc(2.0, Segments);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ Segments + 1 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ Segments });
@@ -470,16 +492,16 @@ TEST_CASE("Mesh3D::Disc")
 		CHECK(mesh.vertices[i].pos.length() == doctest::Approx(2.0f).epsilon(FrameEpsilon));
 	}
 
-	CheckMeshGeometry(Mesh3D::Disc(1.0f, 3));
-	CHECK(Mesh3D::Disc(0.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Disc(1.0f, 2).isEmpty());
-	CHECK(Mesh3D::Disc(1.0f, std::numeric_limits<uint32>::max()).isEmpty());
+	CheckMeshGeometry(Mesh3D::Disc(1.0, 3));
+	CHECK(Mesh3D::Disc(0.0, Segments).isEmpty());
+	CHECK(Mesh3D::Disc(1.0, 2).isEmpty());
+	CHECK(Mesh3D::Disc(1.0, std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Annulus")
 {
 	constexpr uint32 Segments = 8;
-	const Mesh3D mesh = Mesh3D::Annulus(1.0f, 2.0f, Segments);
+	const Mesh3D mesh = Mesh3D::Annulus(1.0, 2.0, Segments);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ Segments * 2 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ Segments * 2 });
@@ -491,17 +513,17 @@ TEST_CASE("Mesh3D::Annulus")
 		CHECK(mesh.vertices[Segments + i].pos.length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
 	}
 
-	CheckMeshGeometry(Mesh3D::Annulus(0.5f, 1.0f, 3));
-	CHECK(Mesh3D::Annulus(-1.0f, 2.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Annulus(2.0f, 2.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Annulus(2.0f, 1.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Annulus(1.0f, 2.0f, 2).isEmpty());
+	CheckMeshGeometry(Mesh3D::Annulus(0.5, 1.0, 3));
+	CHECK(Mesh3D::Annulus(-1.0, 2.0, Segments).isEmpty());
+	CHECK(Mesh3D::Annulus(2.0, 2.0, Segments).isEmpty());
+	CHECK(Mesh3D::Annulus(2.0, 1.0, Segments).isEmpty());
+	CHECK(Mesh3D::Annulus(1.0, 2.0, 2).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Torus")
 {
-	constexpr float MajorRadius = 3.0f;
-	constexpr float TubeRadius = 1.0f;
+	constexpr double MajorRadius = 3.0;
+	constexpr double TubeRadius = 1.0;
 	constexpr uint32 RingSegments = 8;
 	constexpr uint32 TubeSegments = 4;
 	const Mesh3D mesh = Mesh3D::Torus(MajorRadius, TubeRadius, RingSegments, TubeSegments);
@@ -525,27 +547,28 @@ TEST_CASE("Mesh3D::Torus")
 	for (const auto& vertex : mesh.vertices)
 	{
 		const float radialDistance = std::sqrt((vertex.pos.x * vertex.pos.x) + (vertex.pos.z * vertex.pos.z));
-		const float profileDistance = std::hypot((radialDistance - MajorRadius), vertex.pos.y);
+		const double profileDistance = std::hypot((radialDistance - MajorRadius), vertex.pos.y);
 		CHECK(profileDistance == doctest::Approx(TubeRadius).epsilon(FrameEpsilon));
 		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
 		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
 	}
 
-	CheckMeshGeometry(Mesh3D::Torus(2.0f, 0.5f, 3, 3));
-	CHECK(Mesh3D::Torus(0.0f, TubeRadius, RingSegments, TubeSegments).isEmpty());
-	CHECK(Mesh3D::Torus(MajorRadius, 0.0f, RingSegments, TubeSegments).isEmpty());
+	CheckMeshGeometry(Mesh3D::Torus(2.0, 0.5, 3, 3));
+	CHECK(Mesh3D::Torus(0.0, TubeRadius, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(MajorRadius, 0.0, RingSegments, TubeSegments).isEmpty());
 	CHECK(Mesh3D::Torus(MajorRadius, MajorRadius, RingSegments, TubeSegments).isEmpty());
-	CHECK(Mesh3D::Torus(1.0f, 2.0f, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(1.0, 2.0, RingSegments, TubeSegments).isEmpty());
 	CHECK(Mesh3D::Torus(MajorRadius, TubeRadius, 2, TubeSegments).isEmpty());
 	CHECK(Mesh3D::Torus(MajorRadius, TubeRadius, RingSegments, 2).isEmpty());
-	CHECK(Mesh3D::Torus(std::numeric_limits<float>::infinity(), TubeRadius, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(std::numeric_limits<double>::infinity(), TubeRadius, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(std::numeric_limits<double>::max(), TubeRadius, RingSegments, TubeSegments).isEmpty());
 	CHECK(Mesh3D::Torus(MajorRadius, TubeRadius, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Capsule")
 {
-	constexpr float Radius = 1.0f;
-	constexpr float CylinderHeight = 2.0f;
+	constexpr double Radius = 1.0;
+	constexpr double CylinderHeight = 2.0;
 	constexpr uint32 Slices = 8;
 	constexpr uint32 HemisphereStacks = 2;
 	const Mesh3D mesh = Mesh3D::Capsule(Radius, CylinderHeight, Slices, HemisphereStacks);
@@ -568,7 +591,7 @@ TEST_CASE("Mesh3D::Capsule")
 		CHECK_EQ(mesh.vertices[ringBase + Slices].tex.x, 1.0f);
 	}
 
-	const float halfCylinderHeight = (CylinderHeight * 0.5f);
+	const float halfCylinderHeight = static_cast<float>(CylinderHeight * 0.5);
 	for (const auto& vertex : mesh.vertices)
 	{
 		const float closestY = ((vertex.pos.y < -halfCylinderHeight) ? -halfCylinderHeight
@@ -581,7 +604,7 @@ TEST_CASE("Mesh3D::Capsule")
 
 	SUBCASE("Zero cylinder height")
 	{
-		const Mesh3D capsule = Mesh3D::Capsule(Radius, 0.0f, Slices, HemisphereStacks);
+		const Mesh3D capsule = Mesh3D::Capsule(Radius, 0.0, Slices, HemisphereStacks);
 		const Mesh3D sphere = Mesh3D::UVSphere(Radius, Slices, (HemisphereStacks * 2));
 		REQUIRE_EQ(capsule.vertexCount(), sphere.vertexCount());
 		REQUIRE_EQ(capsule.triangleCount(), sphere.triangleCount());
@@ -602,19 +625,19 @@ TEST_CASE("Mesh3D::Capsule")
 		}
 	}
 
-	CheckMeshGeometry(Mesh3D::Capsule(1.0f, 1.0f, 3, 1));
-	CHECK(Mesh3D::Capsule(0.0f, CylinderHeight, Slices, HemisphereStacks).isEmpty());
-	CHECK(Mesh3D::Capsule(Radius, -1.0f, Slices, HemisphereStacks).isEmpty());
+	CheckMeshGeometry(Mesh3D::Capsule(1.0, 1.0, 3, 1));
+	CHECK(Mesh3D::Capsule(0.0, CylinderHeight, Slices, HemisphereStacks).isEmpty());
+	CHECK(Mesh3D::Capsule(Radius, -1.0, Slices, HemisphereStacks).isEmpty());
 	CHECK(Mesh3D::Capsule(Radius, CylinderHeight, 2, HemisphereStacks).isEmpty());
 	CHECK(Mesh3D::Capsule(Radius, CylinderHeight, Slices, 0).isEmpty());
-	CHECK(Mesh3D::Capsule(Radius, std::numeric_limits<float>::infinity(), Slices, HemisphereStacks).isEmpty());
+	CHECK(Mesh3D::Capsule(Radius, std::numeric_limits<double>::infinity(), Slices, HemisphereStacks).isEmpty());
 	CHECK(Mesh3D::Capsule(Radius, CylinderHeight, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Frustum")
 {
 	constexpr uint32 Segments = 8;
-	const Mesh3D mesh = Mesh3D::Frustum(2.0f, 1.0f, 4.0f, Segments);
+	const Mesh3D mesh = Mesh3D::Frustum(2.0, 1.0, 4.0, Segments);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ (4 * Segments) + 4 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Segments });
@@ -626,35 +649,35 @@ TEST_CASE("Mesh3D::Frustum")
 		CHECK(std::sqrt((vertex.pos.x * vertex.pos.x) + (vertex.pos.z * vertex.pos.z)) <= (2.0f + FrameEpsilon));
 	}
 
-	const Mesh3D invertedFrustum = Mesh3D::Frustum(1.0f, 2.0f, 4.0f, Segments);
+	const Mesh3D invertedFrustum = Mesh3D::Frustum(1.0, 2.0, 4.0, Segments);
 	CHECK_EQ(invertedFrustum.vertexCount(), mesh.vertexCount());
 	CheckMeshGeometry(invertedFrustum);
-	CheckMeshGeometry(Mesh3D::Frustum(1.0f, 0.5f, 1.0f, 3));
+	CheckMeshGeometry(Mesh3D::Frustum(1.0, 0.5, 1.0, 3));
 
-	CHECK(Mesh3D::Frustum(0.0f, 1.0f, 1.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0f, -1.0f, 1.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0f, 1.0f, 0.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0f, 1.0f, 1.0f, 2).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0f, 1.0f, 1.0f, std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::Frustum(0.0, 1.0, 1.0, Segments).isEmpty());
+	CHECK(Mesh3D::Frustum(1.0, -1.0, 1.0, Segments).isEmpty());
+	CHECK(Mesh3D::Frustum(1.0, 1.0, 0.0, Segments).isEmpty());
+	CHECK(Mesh3D::Frustum(1.0, 1.0, 1.0, 2).isEmpty());
+	CHECK(Mesh3D::Frustum(1.0, 1.0, 1.0, std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Cylinder")
 {
 	constexpr uint32 Segments = 8;
-	const Mesh3D mesh = Mesh3D::Cylinder(2.0f, 4.0f, Segments);
+	const Mesh3D mesh = Mesh3D::Cylinder(2.0, 4.0, Segments);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ (4 * Segments) + 4 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Segments });
 	CheckMeshGeometry(mesh);
 
-	CHECK(Mesh3D::Cylinder(0.0f, 1.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Cylinder(1.0f, -1.0f, Segments).isEmpty());
+	CHECK(Mesh3D::Cylinder(0.0, 1.0, Segments).isEmpty());
+	CHECK(Mesh3D::Cylinder(1.0, -1.0, Segments).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Cone")
 {
 	constexpr uint32 Segments = 8;
-	const Mesh3D mesh = Mesh3D::Cone(2.0f, 4.0f, Segments);
+	const Mesh3D mesh = Mesh3D::Cone(2.0, 4.0, Segments);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ (3 * Segments) + 2 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * Segments });
@@ -666,7 +689,7 @@ TEST_CASE("Mesh3D::Cone")
 		CHECK_NE(mesh.vertices[i].tangent, mesh.vertices[0].tangent);
 	}
 
-	CheckMeshGeometry(Mesh3D::Cone(1.0f, 1.0f, 3));
-	CHECK(Mesh3D::Cone(0.0f, 1.0f, Segments).isEmpty());
-	CHECK(Mesh3D::Cone(1.0f, 0.0f, Segments).isEmpty());
+	CheckMeshGeometry(Mesh3D::Cone(1.0, 1.0, 3));
+	CHECK(Mesh3D::Cone(0.0, 1.0, Segments).isEmpty());
+	CHECK(Mesh3D::Cone(1.0, 0.0, Segments).isEmpty());
 }

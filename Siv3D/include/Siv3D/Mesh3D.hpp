@@ -84,10 +84,10 @@ namespace s3d
 
 		/// @brief 原点を中心とする直方体の 3D メッシュを作成します。
 		/// @param size 直方体の各軸方向の大きさ
-		/// @return 直方体の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合は空の 3D メッシュ
+		/// @return 直方体の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
 		/// @remark 各面は独立した頂点を持ち、面ごとに `[0, 1]` の UV 座標が割り当てられます。
 		[[nodiscard]]
-		static Mesh3D Box(Float3 size = Float3{ 1.0f, 1.0f, 1.0f });
+		static Mesh3D Box(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
 
 		/// @brief 原点を中心とする直方体の 3D メッシュを作成します。
 		/// @param size 直方体の各軸方向の大きさ
@@ -95,7 +95,7 @@ namespace s3d
 		/// @return 直方体の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
 		/// @remark 各面は独立した頂点を持ち、`uvMapping` の対応する矩形が割り当てられます。
 		[[nodiscard]]
-		static Mesh3D Box(Float3 size, const BoxUVMapping& uvMapping);
+		static Mesh3D Box(Vec3 size, const BoxUVMapping& uvMapping);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -106,20 +106,20 @@ namespace s3d
 		/// @brief 原点を中心とし、XZ 平面に平行な正方形の底面を持つ四角錐の 3D メッシュを作成します。
 		/// @param baseSize 底面の一辺の長さ
 		/// @param height 四角錐の高さ
-		/// @return 四角錐の 3D メッシュ。`baseSize` または `height` が正の有限値でない場合は空の 3D メッシュ
+		/// @return 四角錐の 3D メッシュ。`baseSize` または `height` が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
 		[[nodiscard]]
-		static Mesh3D Pyramid(float baseSize, float height);
+		static Mesh3D Pyramid(double baseSize, double height);
 
 		/// @brief 原点を中心とし、XZ 平面に平行な長方形の底面を持つ四角錐の 3D メッシュを作成します。
 		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 四角錐の高さ
-		/// @return 四角錐の 3D メッシュ。`baseSizeXZ` または `height` が正の有限値でない場合は空の 3D メッシュ
+		/// @return 四角錐の 3D メッシュ。`baseSizeXZ` または `height` が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
 		/// @remark 底面は `y = -height / 2`、頂点は `(0, height / 2, 0)` に配置されます。
 		/// @remark 各側面と底面は独立した頂点を持ち、それぞれに `[0, 1]` の UV 座標が割り当てられます。
 		[[nodiscard]]
 		static Mesh3D Pyramid(
-			Float2 baseSizeXZ = Float2{ 1.0f, 1.0f },
-			float height = 1.0f);
+			SizeF baseSizeXZ = SizeF{ 1.0, 1.0 },
+			double height = 1.0);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -135,9 +135,9 @@ namespace s3d
 		/// @remark UV 座標の V 成分は Z 軸の正方向から負方向へ向かって増加します。
 		[[nodiscard]]
 		static Mesh3D Plane(
-			Float2 sizeXZ = Float2{ 1.0f, 1.0f },
-			Float2 uvScale = Float2{ 1.0f, 1.0f },
-			Float2 uvOffset = Float2{ 0.0f, 0.0f });
+			SizeF sizeXZ = SizeF{ 1.0, 1.0 },
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -155,11 +155,11 @@ namespace s3d
 		/// @remark UV 座標の V 成分は Z 軸の正方向から負方向へ向かって増加します。
 		[[nodiscard]]
 		static Mesh3D Grid(
-			Float2 sizeXZ,
+			SizeF sizeXZ,
 			uint32 segmentsX,
 			uint32 segmentsZ,
-			Float2 uvScale = Float2{ 1.0f, 1.0f },
-			Float2 uvOffset = Float2{ 0.0f, 0.0f });
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -176,8 +176,8 @@ namespace s3d
 		/// @remark UV 座標および接線空間の不連続を表現するため、リング方向とチューブ断面方向の継ぎ目に頂点が複製されます。
 		[[nodiscard]]
 		static Mesh3D Torus(
-			float majorRadius,
-			float tubeRadius,
+			double majorRadius,
+			double tubeRadius,
 			uint32 ringSegments = 32,
 			uint32 tubeSegments = 16);
 
@@ -198,8 +198,8 @@ namespace s3d
 		/// @remark UV 座標および接線空間の不連続を表現するため、経度方向の継ぎ目と極に頂点が複製されます。
 		[[nodiscard]]
 		static Mesh3D Capsule(
-			float radius,
-			float cylinderHeight,
+			double radius,
+			double cylinderHeight,
 			uint32 slices = 32,
 			uint32 hemisphereStacks = 8);
 
@@ -217,7 +217,7 @@ namespace s3d
 		/// @remark 球の極は Y 軸上に配置されます。
 		/// @remark UV 座標および接線空間の不連続を表現するため、同じ位置に複数の頂点が作成されます。
 		[[nodiscard]]
-		static Mesh3D UVSphere(float radius, uint32 slices = 32, uint32 stacks = 16);
+		static Mesh3D UVSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -233,7 +233,7 @@ namespace s3d
 		/// @remark 半球の中心は原点、赤道は XZ 平面上、極は `(0, radius, 0)` に配置されます。
 		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
 		[[nodiscard]]
-		static Mesh3D Hemisphere(float radius, uint32 slices = 32, uint32 stacks = 8);
+		static Mesh3D Hemisphere(double radius, uint32 slices = 32, uint32 stacks = 8);
 
 		/// @brief Y 軸の正方向を向く半球の 3D メッシュを作成します。
 		/// @param radius 半球の半径
@@ -245,7 +245,7 @@ namespace s3d
 		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
 		/// @remark 底面を閉じる場合、底面には曲面とは独立した頂点を作成し、円全体を UV 座標の 0 から 1 に割り当てます。
 		[[nodiscard]]
-		static Mesh3D Hemisphere(float radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
+		static Mesh3D Hemisphere(double radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -258,7 +258,7 @@ namespace s3d
 		/// @param segments 円周の分割数。3 以上である必要があります。
 		/// @return 円盤の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		[[nodiscard]]
-		static Mesh3D Disc(float radius, uint32 segments = 32);
+		static Mesh3D Disc(double radius, uint32 segments = 32);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -273,7 +273,7 @@ namespace s3d
 		/// @return 円環の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark `innerRadius` が 0 の場合は、中心頂点を共有する円盤を作成します。
 		[[nodiscard]]
-		static Mesh3D Annulus(float innerRadius, float outerRadius, uint32 segments = 32);
+		static Mesh3D Annulus(double innerRadius, double outerRadius, uint32 segments = 32);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -289,7 +289,7 @@ namespace s3d
 		/// @return 円錐台の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark 底面の中心は `(0, -height / 2, 0)`、上面の中心は `(0, height / 2, 0)` に配置されます。
 		[[nodiscard]]
-		static Mesh3D Frustum(float bottomRadius, float topRadius, float height, uint32 segments = 32);
+		static Mesh3D Frustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -303,7 +303,7 @@ namespace s3d
 		/// @param segments 円周の分割数。3 以上である必要があります。
 		/// @return 円柱の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		[[nodiscard]]
-		static Mesh3D Cylinder(float radius, float height, uint32 segments = 32);
+		static Mesh3D Cylinder(double radius, double height, uint32 segments = 32);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -317,7 +317,7 @@ namespace s3d
 		/// @param segments 円周の分割数。3 以上である必要があります。
 		/// @return 円錐の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		[[nodiscard]]
-		static Mesh3D Cone(float radius, float height, uint32 segments = 32);
+		static Mesh3D Cone(double radius, double height, uint32 segments = 32);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -20,18 +20,27 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static bool IsFinite(const Float2 value) noexcept
+		static bool IsFloatRepresentable(const double value) noexcept
 		{
-			return (std::isfinite(value.x)
-				&& std::isfinite(value.y));
+			constexpr double MaxFloat = std::numeric_limits<float>::max();
+			return (std::isfinite(value)
+				&& (-MaxFloat <= value)
+				&& (value <= MaxFloat));
 		}
 
 		[[nodiscard]]
-		static bool IsFinite(const Float3 value) noexcept
+		static bool IsFloatRepresentable(const Vec2 value) noexcept
 		{
-			return (std::isfinite(value.x)
-				&& std::isfinite(value.y)
-				&& std::isfinite(value.z));
+			return (IsFloatRepresentable(value.x)
+				&& IsFloatRepresentable(value.y));
+		}
+
+		[[nodiscard]]
+		static bool IsFloatRepresentable(const Vec3 value) noexcept
+		{
+			return (IsFloatRepresentable(value.x)
+				&& IsFloatRepresentable(value.y)
+				&& IsFloatRepresentable(value.z));
 		}
 
 		[[nodiscard]]
@@ -105,15 +114,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Box(const Float3 size)
+	Mesh3D Mesh3D::Box(const Vec3 size)
 	{
 		return Box(size, BoxUVMapping{});
 	}
 
-	Mesh3D Mesh3D::Box(const Float3 size, const BoxUVMapping& uvMapping)
+	Mesh3D Mesh3D::Box(const Vec3 _size, const BoxUVMapping& uvMapping)
 	{
-		if ((not IsFinite(size))
-			|| (size.x <= 0.0f)
+		if (not IsFloatRepresentable(_size))
+		{
+			return{};
+		}
+
+		const Float3 size = _size;
+		if ((size.x <= 0.0f)
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
@@ -202,16 +216,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Pyramid(const float baseSize, const float height)
+	Mesh3D Mesh3D::Pyramid(const double baseSize, const double height)
 	{
-		return Pyramid(Float2{ baseSize, baseSize }, height);
+		return Pyramid(SizeF{ baseSize, baseSize }, height);
 	}
 
-	Mesh3D Mesh3D::Pyramid(const Float2 baseSizeXZ, const float height)
+	Mesh3D Mesh3D::Pyramid(const SizeF _baseSizeXZ, const double _height)
 	{
-		if ((not IsFinite(baseSizeXZ))
-			|| (not std::isfinite(height))
-			|| (baseSizeXZ.x <= 0.0f)
+		if ((not IsFloatRepresentable(_baseSizeXZ))
+			|| (not IsFloatRepresentable(_height)))
+		{
+			return{};
+		}
+
+		const Float2 baseSizeXZ = _baseSizeXZ;
+		const float height = static_cast<float>(_height);
+		if ((baseSizeXZ.x <= 0.0f)
 			|| (baseSizeXZ.y <= 0.0f)
 			|| (height <= 0.0f))
 		{
@@ -331,14 +351,20 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Mesh3D Mesh3D::Capsule(
-		const float radius,
-		const float cylinderHeight,
+		const double _radius,
+		const double _cylinderHeight,
 		const uint32 slices,
 		const uint32 hemisphereStacks)
 	{
-		if ((not std::isfinite(radius))
-			|| (not std::isfinite(cylinderHeight))
-			|| (radius <= 0.0f)
+		if ((not IsFloatRepresentable(_radius))
+			|| (not IsFloatRepresentable(_cylinderHeight)))
+		{
+			return{};
+		}
+
+		const float radius = static_cast<float>(_radius);
+		const float cylinderHeight = static_cast<float>(_cylinderHeight);
+		if ((radius <= 0.0f)
 			|| (cylinderHeight < 0.0f)
 			|| (slices < 3)
 			|| (hemisphereStacks < 1))
@@ -508,7 +534,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Plane(const Float2 sizeXZ, const Float2 uvScale, const Float2 uvOffset)
+	Mesh3D Mesh3D::Plane(const SizeF sizeXZ, const Vec2 uvScale, const Vec2 uvOffset)
 	{
 		return Grid(sizeXZ, 1, 1, uvScale, uvOffset);
 	}
@@ -520,16 +546,23 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Mesh3D Mesh3D::Grid(
-		const Float2 sizeXZ,
+		const SizeF _sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
-		const Float2 uvScale,
-		const Float2 uvOffset)
+		const Vec2 _uvScale,
+		const Vec2 _uvOffset)
 	{
-		if ((not IsFinite(sizeXZ))
-			|| (not IsFinite(uvScale))
-			|| (not IsFinite(uvOffset))
-			|| (sizeXZ.x <= 0.0f)
+		if ((not IsFloatRepresentable(_sizeXZ))
+			|| (not IsFloatRepresentable(_uvScale))
+			|| (not IsFloatRepresentable(_uvOffset)))
+		{
+			return{};
+		}
+
+		const Float2 sizeXZ = _sizeXZ;
+		const Float2 uvScale = _uvScale;
+		const Float2 uvOffset = _uvOffset;
+		if ((sizeXZ.x <= 0.0f)
 			|| (sizeXZ.y <= 0.0f)
 			|| (segmentsX == 0)
 			|| (segmentsZ == 0))
@@ -606,14 +639,20 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Mesh3D Mesh3D::Torus(
-		const float majorRadius,
-		const float tubeRadius,
+		const double _majorRadius,
+		const double _tubeRadius,
 		const uint32 ringSegments,
 		const uint32 tubeSegments)
 	{
-		if ((not std::isfinite(majorRadius))
-			|| (not std::isfinite(tubeRadius))
-			|| (majorRadius <= 0.0f)
+		if ((not IsFloatRepresentable(_majorRadius))
+			|| (not IsFloatRepresentable(_tubeRadius)))
+		{
+			return{};
+		}
+
+		const float majorRadius = static_cast<float>(_majorRadius);
+		const float tubeRadius = static_cast<float>(_tubeRadius);
+		if ((majorRadius <= 0.0f)
 			|| (tubeRadius <= 0.0f)
 			|| (majorRadius <= tubeRadius)
 			|| (ringSegments < 3)
@@ -695,10 +734,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::UVSphere(const float radius, const uint32 slices, const uint32 stacks)
+	Mesh3D Mesh3D::UVSphere(const double _radius, const uint32 slices, const uint32 stacks)
 	{
-		if ((not std::isfinite(radius))
-			|| (radius <= 0.0f)
+		if (not IsFloatRepresentable(_radius))
+		{
+			return{};
+		}
+
+		const float radius = static_cast<float>(_radius);
+		if ((radius <= 0.0f)
 			|| (slices < 3)
 			|| (stacks < 2))
 		{
@@ -826,15 +870,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Hemisphere(const float radius, const uint32 slices, const uint32 stacks)
+	Mesh3D Mesh3D::Hemisphere(const double radius, const uint32 slices, const uint32 stacks)
 	{
 		return Hemisphere(radius, CloseBottom::No, slices, stacks);
 	}
 
-	Mesh3D Mesh3D::Hemisphere(const float radius, const CloseBottom closeBottom, const uint32 slices, const uint32 stacks)
+	Mesh3D Mesh3D::Hemisphere(const double _radius, const CloseBottom closeBottom, const uint32 slices, const uint32 stacks)
 	{
-		if ((not std::isfinite(radius))
-			|| (radius <= 0.0f)
+		if (not IsFloatRepresentable(_radius))
+		{
+			return{};
+		}
+
+		const float radius = static_cast<float>(_radius);
+		if ((radius <= 0.0f)
 			|| (slices < 3)
 			|| (stacks < 1))
 		{
@@ -998,7 +1047,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Disc(const float radius, const uint32 segments)
+	Mesh3D Mesh3D::Disc(const double radius, const uint32 segments)
 	{
 		return Annulus(0.0f, radius, segments);
 	}
@@ -1009,11 +1058,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Annulus(const float innerRadius, const float outerRadius, const uint32 segments)
+	Mesh3D Mesh3D::Annulus(const double _innerRadius, const double _outerRadius, const uint32 segments)
 	{
-		if ((not std::isfinite(innerRadius))
-			|| (not std::isfinite(outerRadius))
-			|| (innerRadius < 0.0f)
+		if ((not IsFloatRepresentable(_innerRadius))
+			|| (not IsFloatRepresentable(_outerRadius)))
+		{
+			return{};
+		}
+
+		const float innerRadius = static_cast<float>(_innerRadius);
+		const float outerRadius = static_cast<float>(_outerRadius);
+		if ((innerRadius < 0.0f)
 			|| (outerRadius <= innerRadius)
 			|| (segments < 3))
 		{
@@ -1122,15 +1177,22 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Mesh3D Mesh3D::Frustum(
-		const float bottomRadius,
-		const float topRadius,
-		const float height,
+		const double _bottomRadius,
+		const double _topRadius,
+		const double _height,
 		const uint32 segments)
 	{
-		if ((not std::isfinite(bottomRadius))
-			|| (not std::isfinite(topRadius))
-			|| (not std::isfinite(height))
-			|| (bottomRadius <= 0.0f)
+		if ((not IsFloatRepresentable(_bottomRadius))
+			|| (not IsFloatRepresentable(_topRadius))
+			|| (not IsFloatRepresentable(_height)))
+		{
+			return{};
+		}
+
+		const float bottomRadius = static_cast<float>(_bottomRadius);
+		const float topRadius = static_cast<float>(_topRadius);
+		const float height = static_cast<float>(_height);
+		if ((bottomRadius <= 0.0f)
 			|| (topRadius < 0.0f)
 			|| (height <= 0.0f)
 			|| (segments < 3))
@@ -1351,7 +1413,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Cylinder(const float radius, const float height, const uint32 segments)
+	Mesh3D Mesh3D::Cylinder(const double radius, const double height, const uint32 segments)
 	{
 		return Frustum(radius, radius, height, segments);
 	}
@@ -1362,7 +1424,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Cone(const float radius, const float height, const uint32 segments)
+	Mesh3D Mesh3D::Cone(const double radius, const double height, const uint32 segments)
 	{
 		return Frustum(radius, 0.0f, height, segments);
 	}
