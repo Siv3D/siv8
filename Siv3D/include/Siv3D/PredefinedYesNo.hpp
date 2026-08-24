@@ -59,6 +59,9 @@ namespace s3d
 	/// @brief 先頭と終端を接続して閉じた輪にするかどうかを指定 | Whether to connect endpoints to form a closed ring
 	using CloseRing = YesNo<struct CloseRing_tag>;
 
+	/// @brief 半球の底面を閉じるかどうかを指定 | Whether to close the bottom of a hemisphere
+	using CloseBottom = YesNo<struct CloseBottom_tag>;
+
 	/// @brief 画像の拡大処理を許可するかどうかを指定 | Whether to allow image upscaling
 	using AllowUpscaling = YesNo<struct AllowUpscaling_tag>;
 

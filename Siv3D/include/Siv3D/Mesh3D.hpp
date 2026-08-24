@@ -15,6 +15,7 @@
 # include "Blob.hpp"
 # include "BoxUVMapping.hpp"
 # include "IWriter.hpp"
+# include "PredefinedYesNo.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
 # include "VertexNormalWeighting.hpp"
@@ -193,6 +194,34 @@ namespace s3d
 		/// @remark UV 座標および接線空間の不連続を表現するため、同じ位置に複数の頂点が作成されます。
 		[[nodiscard]]
 		static Mesh3D UVSphere(float radius, uint32 slices = 32, uint32 stacks = 16);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Hemisphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸の正方向を向く、底面のない半球の 3D メッシュを作成します。
+		/// @param radius 半球の半径
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
+		/// @return 半球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 半球の中心は原点、赤道は XZ 平面上、極は `(0, radius, 0)` に配置されます。
+		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
+		[[nodiscard]]
+		static Mesh3D Hemisphere(float radius, uint32 slices = 32, uint32 stacks = 8);
+
+		/// @brief Y 軸の正方向を向く半球の 3D メッシュを作成します。
+		/// @param radius 半球の半径
+		/// @param closeBottom 底面を閉じる場合は `CloseBottom::Yes`、底面を作成しない場合は `CloseBottom::No`
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
+		/// @return 半球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 半球の中心は原点、赤道は XZ 平面上、極は `(0, radius, 0)` に配置されます。
+		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
+		/// @remark 底面を閉じる場合、底面には曲面とは独立した頂点を作成し、円全体を UV 座標の 0 から 1 に割り当てます。
+		[[nodiscard]]
+		static Mesh3D Hemisphere(float radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
 
 		////////////////////////////////////////////////////////////////
 		//

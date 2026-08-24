@@ -289,6 +289,85 @@ TEST_CASE("Mesh3D::UVSphere")
 	CHECK(Mesh3D::UVSphere(1.0f, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
+TEST_CASE("Mesh3D::Hemisphere")
+{
+	constexpr float Radius = 2.0f;
+	constexpr uint32 Slices = 8;
+	constexpr uint32 Stacks = 2;
+	const Mesh3D mesh = Mesh3D::Hemisphere(Radius, Slices, Stacks);
+	const size_t expectedVertexCount = (Slices + Stacks * (Slices + 1));
+	const size_t expectedTriangleCount = (Slices * (2 * Stacks - 1));
+
+	CHECK_EQ(mesh.vertexCount(), expectedVertexCount);
+	CHECK_EQ(mesh.triangleCount(), expectedTriangleCount);
+	CheckMeshGeometry(mesh);
+
+	for (const auto& vertex : mesh.vertices)
+	{
+		CHECK(vertex.pos.length() == doctest::Approx(Radius).epsilon(FrameEpsilon));
+		CHECK(vertex.pos.y >= 0.0f);
+		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
+		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
+	}
+
+	CHECK_EQ(mesh.vertices[0].pos, Float3{ 0.0f, Radius, 0.0f });
+	CHECK_EQ(mesh.vertices[0].normal, Float3::UnitY());
+	CHECK_EQ(mesh.vertices[0].tex.y, 0.0f);
+
+	const size_t equatorBase = (Slices + (Stacks - 1) * (Slices + 1));
+	CHECK_EQ(mesh.vertices[equatorBase].pos, mesh.vertices[equatorBase + Slices].pos);
+	CHECK_EQ(mesh.vertices[equatorBase].normal, mesh.vertices[equatorBase + Slices].normal);
+	CHECK_EQ(mesh.vertices[equatorBase].tangent, mesh.vertices[equatorBase + Slices].tangent);
+	CHECK_EQ(mesh.vertices[equatorBase].pos.y, 0.0f);
+	CHECK_EQ(mesh.vertices[equatorBase].normal.y, 0.0f);
+	CHECK_EQ(mesh.vertices[equatorBase].tex, Float2{ 0.0f, 1.0f });
+	CHECK_EQ(mesh.vertices[equatorBase + Slices].tex, Float2{ 1.0f, 1.0f });
+
+	const Mesh3D explicitOpenMesh = Mesh3D::Hemisphere(Radius, CloseBottom::No, Slices, Stacks);
+	CHECK_EQ(explicitOpenMesh.vertexCount(), mesh.vertexCount());
+	CHECK_EQ(explicitOpenMesh.triangleCount(), mesh.triangleCount());
+
+	const Mesh3D closedMesh = Mesh3D::Hemisphere(Radius, CloseBottom::Yes, Slices, Stacks);
+	CHECK_EQ(closedMesh.vertexCount(), (expectedVertexCount + Slices + 1));
+	CHECK_EQ(closedMesh.triangleCount(), (expectedTriangleCount + Slices));
+	CheckMeshGeometry(closedMesh);
+
+	for (size_t i = 0; i < mesh.vertices.size(); ++i)
+	{
+		CHECK_EQ(closedMesh.vertices[i].pos, mesh.vertices[i].pos);
+		CHECK_EQ(closedMesh.vertices[i].normal, mesh.vertices[i].normal);
+		CHECK_EQ(closedMesh.vertices[i].tex, mesh.vertices[i].tex);
+		CHECK_EQ(closedMesh.vertices[i].tangent, mesh.vertices[i].tangent);
+	}
+
+	const size_t bottomCenterIndex = expectedVertexCount;
+	const size_t bottomRingBase = (bottomCenterIndex + 1);
+	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].pos, Float3::Zero());
+	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].normal, -Float3::UnitY());
+	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].tex, Float2{ 0.5f, 0.5f });
+	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].tangent, Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
+	CHECK_EQ(closedMesh.vertices[bottomRingBase].pos, Float3{ Radius, 0.0f, 0.0f });
+	CHECK_EQ(closedMesh.vertices[bottomRingBase].tex, Float2{ 1.0f, 0.5f });
+
+	for (size_t i = bottomRingBase; i < closedMesh.vertices.size(); ++i)
+	{
+		CHECK_EQ(closedMesh.vertices[i].pos.y, 0.0f);
+		CHECK_EQ(closedMesh.vertices[i].normal, -Float3::UnitY());
+		CHECK_EQ(closedMesh.vertices[i].tangent, Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
+		CHECK((0.0f <= closedMesh.vertices[i].tex.x && closedMesh.vertices[i].tex.x <= 1.0f));
+		CHECK((0.0f <= closedMesh.vertices[i].tex.y && closedMesh.vertices[i].tex.y <= 1.0f));
+	}
+
+	CheckMeshGeometry(Mesh3D::Hemisphere(1.0f, 3, 1));
+	CheckMeshGeometry(Mesh3D::Hemisphere(1.0f, CloseBottom::Yes, 3, 1));
+	CHECK(Mesh3D::Hemisphere(0.0f, Slices, Stacks).isEmpty());
+	CHECK(Mesh3D::Hemisphere(std::numeric_limits<float>::infinity(), Slices, Stacks).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0f, 2, Stacks).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0f, Slices, 0).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0f, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::Hemisphere(1.0f, CloseBottom::Yes, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+}
+
 TEST_CASE("Mesh3D::Disc")
 {
 	constexpr uint32 Segments = 8;

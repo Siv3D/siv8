@@ -694,6 +694,178 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	Hemisphere
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Hemisphere(const float radius, const uint32 slices, const uint32 stacks)
+	{
+		return Hemisphere(radius, CloseBottom::No, slices, stacks);
+	}
+
+	Mesh3D Mesh3D::Hemisphere(const float radius, const CloseBottom closeBottom, const uint32 slices, const uint32 stacks)
+	{
+		if ((not std::isfinite(radius))
+			|| (radius <= 0.0f)
+			|| (slices < 3)
+			|| (stacks < 1))
+		{
+			return{};
+		}
+
+		size_t ringStride;
+		size_t ringVertexCount;
+		size_t surfaceVertexCount;
+		size_t twiceStackCount;
+		size_t triangleFactor;
+		size_t surfaceTriangleCount;
+		size_t vertexCount;
+		size_t triangleCount;
+
+		if ((not CheckedAdd(static_cast<size_t>(slices), 1, ringStride))
+			|| (not CheckedMultiply(static_cast<size_t>(stacks), ringStride, ringVertexCount))
+			|| (not CheckedAdd(static_cast<size_t>(slices), ringVertexCount, surfaceVertexCount))
+			|| (not CheckedMultiply(static_cast<size_t>(stacks), 2, twiceStackCount)))
+		{
+			return{};
+		}
+
+		triangleFactor = (twiceStackCount - 1);
+		if (not CheckedMultiply(static_cast<size_t>(slices), triangleFactor, surfaceTriangleCount))
+		{
+			return{};
+		}
+
+		vertexCount = surfaceVertexCount;
+		triangleCount = surfaceTriangleCount;
+		if (closeBottom)
+		{
+			size_t bottomVertexCount;
+			if ((not CheckedAdd(static_cast<size_t>(slices), 1, bottomVertexCount))
+				|| (not CheckedAdd(vertexCount, bottomVertexCount, vertexCount))
+				|| (not CheckedAdd(triangleCount, static_cast<size_t>(slices), triangleCount)))
+			{
+				return{};
+			}
+		}
+
+		if (Mesh3D::MaxVertexCount < vertexCount)
+		{
+			return{};
+		}
+
+		Mesh3D mesh{ vertexCount, triangleCount };
+		const size_t firstRingBase = slices;
+		const float invSlices = (1.0f / static_cast<float>(slices));
+		const float invStacks = (1.0f / static_cast<float>(stacks));
+		const float longitudeStep = (Math::TwoPiF * invSlices);
+		const float latitudeStep = (Math::HalfPiF * invStacks);
+		const Array<CircleSample> longitudeSinCos = MakeCircleSamples(slices);
+
+		for (uint32 x = 0; x < slices; ++x)
+		{
+			const float middleLongitude = (longitudeStep * (static_cast<float>(x) + 0.5f));
+			const Float4 tangent{ -std::sin(middleLongitude), 0.0f, std::cos(middleLongitude), 1.0f };
+
+			mesh.vertices[x] = Vertex3D{
+				.pos = Float3{ 0.0f, radius, 0.0f },
+				.normal = Float3::UnitY(),
+				.tex = Float2{ ((static_cast<float>(x) + 0.5f) * invSlices), 0.0f },
+				.tangent = tangent
+			};
+		}
+
+		for (uint32 stack = 1; stack <= stacks; ++stack)
+		{
+			const bool isEquator = (stack == stacks);
+			const float latitude = (latitudeStep * static_cast<float>(stack));
+			const float latitudeSin = (isEquator ? 1.0f : std::sin(latitude));
+			const float latitudeCos = (isEquator ? 0.0f : std::cos(latitude));
+			const float v = (static_cast<float>(stack) * invStacks);
+			const size_t ringBase = (firstRingBase + (static_cast<size_t>(stack - 1) * ringStride));
+
+			for (uint32 x = 0; x <= slices; ++x)
+			{
+				const float longitudeSin = longitudeSinCos[x].sin;
+				const float longitudeCos = longitudeSinCos[x].cos;
+				const Float3 normal{
+					(latitudeSin * longitudeCos),
+					latitudeCos,
+					(latitudeSin * longitudeSin)
+				};
+
+				mesh.vertices[ringBase + x] = Vertex3D{
+					.pos = (normal * radius),
+					.normal = normal,
+					.tex = Float2{ (static_cast<float>(x) * invSlices), v },
+					.tangent = Float4{ -longitudeSin, 0.0f, longitudeCos, 1.0f }
+				};
+			}
+		}
+
+		TriangleIndex32* pTriangle = mesh.indices.data();
+		for (uint32 x = 0; x < slices; ++x)
+		{
+			const uint32 pole = x;
+			const uint32 ringLeft = static_cast<uint32>(firstRingBase + x);
+			const uint32 ringRight = (ringLeft + 1);
+			*pTriangle++ = TriangleIndex32{ pole, ringRight, ringLeft };
+		}
+
+		for (size_t ring = 0; (ring + 1) < stacks; ++ring)
+		{
+			const size_t upperRingBase = (firstRingBase + (ring * ringStride));
+			const size_t lowerRingBase = (upperRingBase + ringStride);
+
+			for (uint32 x = 0; x < slices; ++x)
+			{
+				const uint32 i0 = static_cast<uint32>(upperRingBase + x);
+				const uint32 i1 = (i0 + 1);
+				const uint32 i2 = static_cast<uint32>(lowerRingBase + x);
+				const uint32 i3 = (i2 + 1);
+
+				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
+			}
+		}
+
+		if (closeBottom)
+		{
+			const size_t bottomCenterIndex = surfaceVertexCount;
+			const size_t bottomRingBase = (bottomCenterIndex + 1);
+			mesh.vertices[bottomCenterIndex] = Vertex3D{
+				.pos = Float3::Zero(),
+				.normal = -Float3::UnitY(),
+				.tex = Float2{ 0.5f, 0.5f },
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+
+			for (uint32 x = 0; x < slices; ++x)
+			{
+				const float longitudeSin = longitudeSinCos[x].sin;
+				const float longitudeCos = longitudeSinCos[x].cos;
+				mesh.vertices[bottomRingBase + x] = Vertex3D{
+					.pos = Float3{ (radius * longitudeCos), 0.0f, (radius * longitudeSin) },
+					.normal = -Float3::UnitY(),
+					.tex = Float2{ (0.5f + 0.5f * longitudeCos), (0.5f + 0.5f * longitudeSin) },
+					.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+				};
+			}
+
+			for (uint32 x = 0; x < slices; ++x)
+			{
+				const uint32 center = static_cast<uint32>(bottomCenterIndex);
+				const uint32 current = static_cast<uint32>(bottomRingBase + x);
+				const uint32 next = static_cast<uint32>(bottomRingBase + ((x + 1) % slices));
+				*pTriangle++ = TriangleIndex32{ center, current, next };
+			}
+		}
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Disc
 	//
 	////////////////////////////////////////////////////////////////
