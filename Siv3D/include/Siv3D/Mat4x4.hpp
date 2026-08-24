@@ -324,6 +324,8 @@ namespace s3d
 		/// @param rotation 回転を表すクォータニオンの格納先
 		/// @param translation 平行移動量の格納先
 		/// @return 分解に成功した場合 true, それ以外の場合は false
+		/// @remark この行列は、有限な拡大・縮小、回転、平行移動のみで構成されたアフィン変換行列である必要があります。せん断変形や透視変換には対応しません。
+		/// @remark false を返した場合、出力引数の値は未規定です。
 		bool SIV3D_VECTOR_CALL decompose(Float3& scale, Quaternion& rotation, Float3& translation) const noexcept;
 
 		////////////////////////////////////////////////////////////////

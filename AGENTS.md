@@ -16,6 +16,7 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 # Public APIs and tests
 
 - When adding or changing a public API, update its Doxygen documentation and add focused tests for normal, boundary, and failure or round-trip cases as applicable.
+- Treat pre-implementation API documentation as provisional. If implementing it reveals that a guarantee or permissive precondition would require unusually complex or costly code, ask the user whether to revise the contract instead of silently preserving it.
 - Do not force new tests into an unrelated existing test file. Add a dedicated `Test/Test_<Feature>.cpp` when appropriate.
 - Store visual or interactive test programs under `Test/Manual/` as self-contained Markdown documentation with an English description, execution steps, expected results, and complete sample code. Do not leave temporary visual tests in a platform `Main.cpp`.
 

@@ -14,5 +14,22 @@
 
 namespace s3d
 {
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
 
+	void Formatter(FormatData& formatData, const Mat4x4& value)
+	{
+		formatData.string.push_back(U'(');
+		Formatter(formatData, SimdFloat4{ value.value.r[0] });
+		formatData.string.push_back(U',');
+		Formatter(formatData, SimdFloat4{ value.value.r[1] });
+		formatData.string.push_back(U',');
+		Formatter(formatData, SimdFloat4{ value.value.r[2] });
+		formatData.string.push_back(U',');
+		Formatter(formatData, SimdFloat4{ value.value.r[3] });
+		formatData.string.push_back(U')');
+	}
 }

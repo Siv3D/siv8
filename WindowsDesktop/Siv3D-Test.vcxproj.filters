@@ -127,6 +127,9 @@
 	<ClCompile Include="..\Test\Test_Quaternion.cpp">
 	  <Filter>Test</Filter>
 	</ClCompile>
+	<ClCompile Include="..\Test\Test_Mat4x4.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
 	<ClCompile Include="..\Test\Test_SimdFloat4.cpp">
 	  <Filter>Test</Filter>
 	</ClCompile>

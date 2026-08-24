@@ -488,9 +488,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief このクォータニオンが表す回転を回転軸と回転角に変換します。
-		/// @return 回転軸と回転角（ラジアン）のペア
+		/// @return 回転軸を表す単位ベクトルと回転角（ラジアン）のペア
 		/// @remark `*this` は正規化されている必要があります。
-		/// @remark 恒等回転の場合、回転軸は一意に定まりません。
+		/// @remark 恒等回転の場合、回転軸としてゼロベクトルを返します。
 		[[nodiscard]]
 		std::pair<Float3, float> SIV3D_VECTOR_CALL toAxisAngle() const noexcept;
 
