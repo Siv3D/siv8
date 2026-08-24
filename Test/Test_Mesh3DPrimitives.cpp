@@ -217,6 +217,92 @@ TEST_CASE("Mesh3D::Box with collapsed UV mapping")
 	}
 }
 
+TEST_CASE("Mesh3D::Pyramid")
+{
+	const Float2 baseSizeXZ{ 4.0f, 2.0f };
+	constexpr float Height = 3.0f;
+	const Mesh3D mesh = Mesh3D::Pyramid(baseSizeXZ, Height);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 16 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 6 });
+	CheckMeshGeometry(mesh);
+
+	for (const auto& vertex : mesh.vertices)
+	{
+		CHECK((-2.0f <= vertex.pos.x && vertex.pos.x <= 2.0f));
+		CHECK((-1.5f <= vertex.pos.y && vertex.pos.y <= 1.5f));
+		CHECK((-1.0f <= vertex.pos.z && vertex.pos.z <= 1.0f));
+		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
+		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
+	}
+
+	const Float3 expectedSideNormals[4] =
+	{
+		Float3{ 0.0f, 1.0f, -Height }.normalized(),
+		Float3{ 0.0f, 1.0f, Height }.normalized(),
+		Float3{ Height, 2.0f, 0.0f }.normalized(),
+		Float3{ -Height, 2.0f, 0.0f }.normalized(),
+	};
+	const Float3 expectedSideTangents[4] =
+	{
+		Float3::UnitX(),
+		-Float3::UnitX(),
+		Float3::UnitZ(),
+		-Float3::UnitZ(),
+	};
+
+	for (size_t faceIndex = 0; faceIndex < 4; ++faceIndex)
+	{
+		const size_t vertexOffset = (faceIndex * 3);
+		CHECK_EQ(mesh.vertices[vertexOffset + 0].tex, Float2{ 1.0f, 1.0f });
+		CHECK_EQ(mesh.vertices[vertexOffset + 1].tex, Float2{ 0.0f, 1.0f });
+		CHECK_EQ(mesh.vertices[vertexOffset + 2].pos, Float3{ 0.0f, 1.5f, 0.0f });
+		CHECK_EQ(mesh.vertices[vertexOffset + 2].tex, Float2{ 0.5f, 0.0f });
+
+		for (size_t i = 0; i < 3; ++i)
+		{
+			const Vertex3D& vertex = mesh.vertices[vertexOffset + i];
+			CHECK(vertex.normal.x == doctest::Approx(expectedSideNormals[faceIndex].x).epsilon(FrameEpsilon));
+			CHECK(vertex.normal.y == doctest::Approx(expectedSideNormals[faceIndex].y).epsilon(FrameEpsilon));
+			CHECK(vertex.normal.z == doctest::Approx(expectedSideNormals[faceIndex].z).epsilon(FrameEpsilon));
+			CHECK_EQ(vertex.tangent, Float4{ expectedSideTangents[faceIndex], 1.0f });
+		}
+	}
+
+	constexpr size_t BottomVertexBase = 12;
+	CHECK_EQ(mesh.vertices[BottomVertexBase + 0].pos, Float3{ -2.0f, -1.5f, -1.0f });
+	CHECK_EQ(mesh.vertices[BottomVertexBase + 1].pos, Float3{ 2.0f, -1.5f, -1.0f });
+	CHECK_EQ(mesh.vertices[BottomVertexBase + 2].pos, Float3{ -2.0f, -1.5f, 1.0f });
+	CHECK_EQ(mesh.vertices[BottomVertexBase + 3].pos, Float3{ 2.0f, -1.5f, 1.0f });
+	CHECK_EQ(mesh.vertices[BottomVertexBase + 0].tex, Float2{ 0.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[BottomVertexBase + 3].tex, Float2{ 1.0f, 1.0f });
+
+	for (size_t i = BottomVertexBase; i < mesh.vertices.size(); ++i)
+	{
+		CHECK_EQ(mesh.vertices[i].normal, -Float3::UnitY());
+		CHECK_EQ(mesh.vertices[i].tangent, Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
+	}
+
+	CheckMeshGeometry(Mesh3D::Pyramid());
+	const Mesh3D squareMesh = Mesh3D::Pyramid(2.0f, Height);
+	const Mesh3D squareMeshFromSize = Mesh3D::Pyramid(Float2{ 2.0f, 2.0f }, Height);
+	CHECK_EQ(squareMesh.vertexCount(), squareMeshFromSize.vertexCount());
+	CHECK_EQ(squareMesh.triangleCount(), squareMeshFromSize.triangleCount());
+	for (size_t i = 0; i < squareMesh.vertices.size(); ++i)
+	{
+		CHECK_EQ(squareMesh.vertices[i].pos, squareMeshFromSize.vertices[i].pos);
+		CHECK_EQ(squareMesh.vertices[i].normal, squareMeshFromSize.vertices[i].normal);
+		CHECK_EQ(squareMesh.vertices[i].tex, squareMeshFromSize.vertices[i].tex);
+		CHECK_EQ(squareMesh.vertices[i].tangent, squareMeshFromSize.vertices[i].tangent);
+	}
+	CHECK(Mesh3D::Pyramid(-1.0f, 1.0f).isEmpty());
+	CHECK(Mesh3D::Pyramid(Float2{ 0.0f, 1.0f }, 1.0f).isEmpty());
+	CHECK(Mesh3D::Pyramid(Float2{ 1.0f, -1.0f }, 1.0f).isEmpty());
+	CHECK(Mesh3D::Pyramid(Float2{ 1.0f, 1.0f }, 0.0f).isEmpty());
+	CHECK(Mesh3D::Pyramid(Float2{ std::numeric_limits<float>::infinity(), 1.0f }, 1.0f).isEmpty());
+	CHECK(Mesh3D::Pyramid(Float2{ 1.0f, 1.0f }, std::numeric_limits<float>::quiet_NaN()).isEmpty());
+}
+
 TEST_CASE("Mesh3D::Plane")
 {
 	const Float2 uvScale{ 2.0f, 3.0f };

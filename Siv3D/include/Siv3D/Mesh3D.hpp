@@ -99,6 +99,30 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	Pyramid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、XZ 平面に平行な正方形の底面を持つ四角錐の 3D メッシュを作成します。
+		/// @param baseSize 底面の一辺の長さ
+		/// @param height 四角錐の高さ
+		/// @return 四角錐の 3D メッシュ。`baseSize` または `height` が正の有限値でない場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D Pyramid(float baseSize, float height);
+
+		/// @brief 原点を中心とし、XZ 平面に平行な長方形の底面を持つ四角錐の 3D メッシュを作成します。
+		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 四角錐の高さ
+		/// @return 四角錐の 3D メッシュ。`baseSizeXZ` または `height` が正の有限値でない場合は空の 3D メッシュ
+		/// @remark 底面は `y = -height / 2`、頂点は `(0, height / 2, 0)` に配置されます。
+		/// @remark 各側面と底面は独立した頂点を持ち、それぞれに `[0, 1]` の UV 座標が割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Pyramid(
+			Float2 baseSizeXZ = Float2{ 1.0f, 1.0f },
+			float height = 1.0f);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Plane
 		//
 		////////////////////////////////////////////////////////////////

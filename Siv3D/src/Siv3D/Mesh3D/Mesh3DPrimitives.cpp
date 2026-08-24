@@ -198,6 +198,134 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	Pyramid
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Pyramid(const float baseSize, const float height)
+	{
+		return Pyramid(Float2{ baseSize, baseSize }, height);
+	}
+
+	Mesh3D Mesh3D::Pyramid(const Float2 baseSizeXZ, const float height)
+	{
+		if ((not IsFinite(baseSizeXZ))
+			|| (not std::isfinite(height))
+			|| (baseSizeXZ.x <= 0.0f)
+			|| (baseSizeXZ.y <= 0.0f)
+			|| (height <= 0.0f))
+		{
+			return{};
+		}
+
+		const float halfX = (baseSizeXZ.x * 0.5f);
+		const float halfZ = (baseSizeXZ.y * 0.5f);
+		const float halfHeight = (height * 0.5f);
+		const Float3 apex{ 0.0f, halfHeight, 0.0f };
+		const float inverseZSideLength = (1.0f / std::hypot(height, halfZ));
+		const float inverseXSideLength = (1.0f / std::hypot(height, halfX));
+
+		struct Side
+		{
+			Float3 firstBase;
+			Float3 secondBase;
+			Float3 normal;
+			Float3 tangent;
+		};
+
+		const std::array<Side, 4> sides =
+		{{
+			{
+				{ halfX, -halfHeight, -halfZ },
+				{ -halfX, -halfHeight, -halfZ },
+				(Float3{ 0.0f, halfZ, -height } * inverseZSideLength),
+				Float3::UnitX()
+			},
+			{
+				{ -halfX, -halfHeight, halfZ },
+				{ halfX, -halfHeight, halfZ },
+				(Float3{ 0.0f, halfZ, height } * inverseZSideLength),
+				-Float3::UnitX()
+			},
+			{
+				{ halfX, -halfHeight, halfZ },
+				{ halfX, -halfHeight, -halfZ },
+				(Float3{ height, halfX, 0.0f } * inverseXSideLength),
+				Float3::UnitZ()
+			},
+			{
+				{ -halfX, -halfHeight, -halfZ },
+				{ -halfX, -halfHeight, halfZ },
+				(Float3{ -height, halfX, 0.0f } * inverseXSideLength),
+				-Float3::UnitZ()
+			},
+		}};
+
+		Mesh3D mesh{ 16, 6 };
+		for (size_t faceIndex = 0; faceIndex < sides.size(); ++faceIndex)
+		{
+			const Side& side = sides[faceIndex];
+			const Float4 tangent{ side.tangent, 1.0f };
+			const size_t vertexOffset = (faceIndex * 3);
+			mesh.vertices[vertexOffset + 0] = Vertex3D{
+				.pos = side.firstBase,
+				.normal = side.normal,
+				.tex = Float2{ 1.0f, 1.0f },
+				.tangent = tangent
+			};
+			mesh.vertices[vertexOffset + 1] = Vertex3D{
+				.pos = side.secondBase,
+				.normal = side.normal,
+				.tex = Float2{ 0.0f, 1.0f },
+				.tangent = tangent
+			};
+			mesh.vertices[vertexOffset + 2] = Vertex3D{
+				.pos = apex,
+				.normal = side.normal,
+				.tex = Float2{ 0.5f, 0.0f },
+				.tangent = tangent
+			};
+
+			const uint32 i0 = static_cast<uint32>(vertexOffset);
+			mesh.indices[faceIndex] = TriangleIndex32{ i0, (i0 + 1), (i0 + 2) };
+		}
+
+		const size_t bottomVertexBase = 12;
+		const Float3 bottomNormal = -Float3::UnitY();
+		const Float4 bottomTangent{ 1.0f, 0.0f, 0.0f, 1.0f };
+		mesh.vertices[bottomVertexBase + 0] = Vertex3D{
+			.pos = Float3{ -halfX, -halfHeight, -halfZ },
+			.normal = bottomNormal,
+			.tex = Float2{ 0.0f, 0.0f },
+			.tangent = bottomTangent
+		};
+		mesh.vertices[bottomVertexBase + 1] = Vertex3D{
+			.pos = Float3{ halfX, -halfHeight, -halfZ },
+			.normal = bottomNormal,
+			.tex = Float2{ 1.0f, 0.0f },
+			.tangent = bottomTangent
+		};
+		mesh.vertices[bottomVertexBase + 2] = Vertex3D{
+			.pos = Float3{ -halfX, -halfHeight, halfZ },
+			.normal = bottomNormal,
+			.tex = Float2{ 0.0f, 1.0f },
+			.tangent = bottomTangent
+		};
+		mesh.vertices[bottomVertexBase + 3] = Vertex3D{
+			.pos = Float3{ halfX, -halfHeight, halfZ },
+			.normal = bottomNormal,
+			.tex = Float2{ 1.0f, 1.0f },
+			.tangent = bottomTangent
+		};
+
+		mesh.indices[4] = TriangleIndex32{ 12, 13, 14 };
+		mesh.indices[5] = TriangleIndex32{ 14, 13, 15 };
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Capsule
 	//
 	////////////////////////////////////////////////////////////////
