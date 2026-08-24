@@ -1839,6 +1839,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3D.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DPrimitives.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBoxResult\SivMessageBoxResult.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrophoneInfo\SivMicrophoneInfo.cpp" />
