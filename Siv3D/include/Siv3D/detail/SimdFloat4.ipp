@@ -45,6 +45,22 @@ namespace s3d
 	inline SimdFloat4::SimdFloat4(const Vector2D<U>& xy, const Vector2D<V>& zw) noexcept
 		: SimdFloat4{ static_cast<float>(xy.x), static_cast<float>(xy.y), static_cast<float>(zw.x), static_cast<float>(zw.y) } {}
 
+	inline SimdFloat4::SimdFloat4(const Float3& xyz) noexcept
+		: vec{ DirectX::XMLoadFloat3(
+			static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&xyz))) } {}
+
+	inline SimdFloat4::SimdFloat4(const Vec3& xyz) noexcept
+		: SimdFloat4{ static_cast<float>(xyz.x), static_cast<float>(xyz.y), static_cast<float>(xyz.z), 0.0f } {}
+
+	inline SimdFloat4::SimdFloat4(const Float3& xyz, const Concept::Arithmetic auto _w) noexcept
+		: vec{ DirectX::XMVectorSetW(
+			DirectX::XMLoadFloat3(static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&xyz))),
+			static_cast<float>(_w)) } {}
+
+	inline SimdFloat4::SimdFloat4(const Vec3& xyz, const Concept::Arithmetic auto _w) noexcept
+		: SimdFloat4{ static_cast<float>(xyz.x), static_cast<float>(xyz.y),
+			static_cast<float>(xyz.z), static_cast<float>(_w) } {}
+
 	template <Concept::FloatingPoint U>
 	inline SimdFloat4::SimdFloat4(const Vector3D<U>& xyz, const Concept::Arithmetic auto _w) noexcept
 		: SimdFloat4{ static_cast<float>(xyz.x), static_cast<float>(xyz.y), static_cast<float>(xyz.z), static_cast<float>(_w) } {}

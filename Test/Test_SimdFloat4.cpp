@@ -31,7 +31,12 @@ TEST_CASE("SimdFloat4.constructors")
 	CheckComponents(SimdFloat4{ 1, Vec2{ 2.0, 3.0 }, 4u }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 	CheckComponents(SimdFloat4{ 1.0, 2, Float2{ 3.0f, 4.0f } }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 	CheckComponents(SimdFloat4{ Float2{ 1.0f, 2.0f }, Vec2{ 3.0, 4.0 } }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
+	CheckComponents(SimdFloat4{ Float3{ 1.0f, 2.0f, 3.0f } }, Float4{ 1.0f, 2.0f, 3.0f, 0.0f });
+	CheckComponents(SimdFloat4{ Vec3{ 1.0, 2.0, 3.0 } }, Float4{ 1.0f, 2.0f, 3.0f, 0.0f });
 	CheckComponents(SimdFloat4{ Float3{ 1.0f, 2.0f, 3.0f }, 4 }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
+	CheckComponents(SimdFloat4{ Float3{ 1.0f, 2.0f, 3.0f }, 4.0 }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
+	CheckComponents(SimdFloat4{ Vec3{ 1.0, 2.0, 3.0 }, 4 }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
+	CheckComponents(SimdFloat4{ Vec3{ 1.0, 2.0, 3.0 }, 4.0f }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 	CheckComponents(SimdFloat4{ 1, Vec3{ 2.0, 3.0, 4.0 } }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 
 	CheckComponents(SimdFloat4{ Float4{ 1.0f, 2.0f, 3.0f, 4.0f } }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });

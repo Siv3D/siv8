@@ -102,6 +102,28 @@ namespace s3d
 		[[nodiscard]]
 		SimdFloat4(const Vector2D<U>& xy, const Vector2D<V>& zw) noexcept;
 
+		/// @brief 3 要素ベクトルから、w 成分が 0 のベクトルを作成します。 | Creates a vector with a w component of 0 from a 3-element vector.
+		/// @param xyz x, y, z 成分 | x, y, and z components
+		[[nodiscard]]
+		explicit SimdFloat4(const Float3& xyz) noexcept;
+
+		/// @brief 3 要素ベクトルから、w 成分が 0 のベクトルを作成します。 | Creates a vector with a w component of 0 from a 3-element vector.
+		/// @param xyz x, y, z 成分 | x, y, and z components
+		[[nodiscard]]
+		explicit SimdFloat4(const Vec3& xyz) noexcept;
+
+		/// @brief 3 要素ベクトルと w 成分からベクトルを作成します。 | Creates a vector from a 3-element vector and a w component.
+		/// @param xyz x, y, z 成分 | x, y, and z components
+		/// @param _w w 成分 | w component
+		[[nodiscard]]
+		SimdFloat4(const Float3& xyz, Concept::Arithmetic auto _w) noexcept;
+
+		/// @brief 3 要素ベクトルと w 成分からベクトルを作成します。 | Creates a vector from a 3-element vector and a w component.
+		/// @param xyz x, y, z 成分 | x, y, and z components
+		/// @param _w w 成分 | w component
+		[[nodiscard]]
+		SimdFloat4(const Vec3& xyz, Concept::Arithmetic auto _w) noexcept;
+
 		/// @brief ベクトルを作成します。 | Creates a vector.
 		/// @tparam U ベクトルの要素の型 | Element type of the vector
 		/// @param xyz x, y, z 成分 | x, y, and z components

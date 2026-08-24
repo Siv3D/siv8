@@ -11,6 +11,8 @@
 
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/Mat4x4.hpp>
+# include <Siv3D/Quaternion.hpp>
 # include "Mesh3DNormals.hpp"
 # include "Mesh3DMikkTSpace.hpp"
 
@@ -267,6 +269,252 @@ namespace s3d
 	{
 		reverseWinding();
 		invertNormals();
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transformed
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::transformed(const Mat4x4& matrix) const&
+	{
+		Mesh3D result{ *this };
+		result.transform(matrix);
+		return result;
+	}
+
+	Mesh3D Mesh3D::transformed(const Mat4x4& matrix) && noexcept
+	{
+		transform(matrix);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transform
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::transform(const Mat4x4& matrix) noexcept
+	{
+		if (vertices.isEmpty())
+		{
+			return *this;
+		}
+
+		DirectX::XMVECTOR determinantVector;
+		const DirectX::XMMATRIX inverseMatrix = DirectX::XMMatrixInverse(&determinantVector, matrix.value);
+		const float determinant = DirectX::XMVectorGetX(determinantVector);
+
+		if (determinant == 0.0f)
+		{
+			for (auto& vertex : vertices)
+			{
+				vertex.pos = SimdFloat4{ DirectX::XMVector3Transform(
+					SimdFloat4{ vertex.pos }.vec, matrix.value) }.xyz();
+			}
+
+			return *this;
+		}
+
+		const DirectX::XMMATRIX normalMatrix = DirectX::XMMatrixTranspose(inverseMatrix);
+		const bool flipHandedness = (determinant < 0.0f);
+
+		for (auto& vertex : vertices)
+		{
+			vertex.pos = SimdFloat4{ DirectX::XMVector3Transform(
+				SimdFloat4{ vertex.pos }.vec, matrix.value) }.xyz();
+
+			vertex.normal = SimdFloat4{ DirectX::XMVector3Normalize(
+				DirectX::XMVector3TransformNormal(
+					SimdFloat4{ vertex.normal }.vec, normalMatrix)) }.xyz();
+
+			const DirectX::XMVECTOR tangent = DirectX::XMVector3Normalize(
+				DirectX::XMVector3TransformNormal(
+					SimdFloat4{ vertex.tangent }.vec, matrix.value));
+			const float tangentW = (flipHandedness ? -vertex.tangent.w : vertex.tangent.w);
+			vertex.tangent = SimdFloat4{ DirectX::XMVectorSetW(tangent, tangentW) }.toFloat4();
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	translated
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::translated(const Float3 offset) const&
+	{
+		Mesh3D result{ *this };
+		result.translate(offset);
+		return result;
+	}
+
+	Mesh3D Mesh3D::translated(const Float3 offset) && noexcept
+	{
+		translate(offset);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	translate
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::translate(const Float3 offset) noexcept
+	{
+		for (auto& vertex : vertices)
+		{
+			vertex.pos += offset;
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotated
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::rotated(const Quaternion& rotation) const&
+	{
+		Mesh3D result{ *this };
+		result.rotate(rotation);
+		return result;
+	}
+
+	Mesh3D Mesh3D::rotated(const Quaternion& rotation) && noexcept
+	{
+		rotate(rotation);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	rotate
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::rotate(const Quaternion& rotation) noexcept
+	{
+		const DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(rotation.value.vec);
+
+		for (auto& vertex : vertices)
+		{
+			vertex.pos = SimdFloat4{ DirectX::XMVector3TransformNormal(
+				SimdFloat4{ vertex.pos }.vec, rotationMatrix) }.xyz();
+			vertex.normal = SimdFloat4{ DirectX::XMVector3TransformNormal(
+				SimdFloat4{ vertex.normal }.vec, rotationMatrix) }.xyz();
+
+			const DirectX::XMVECTOR tangent = DirectX::XMVector3TransformNormal(
+				SimdFloat4{ vertex.tangent }.vec, rotationMatrix);
+			vertex.tangent = SimdFloat4{ DirectX::XMVectorSetW(tangent, vertex.tangent.w) }.toFloat4();
+		}
+
+		return *this;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scaled
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::scaled(const float scale) const&
+	{
+		Mesh3D result{ *this };
+		result.scale(scale);
+		return result;
+	}
+
+	Mesh3D Mesh3D::scaled(const float scale) && noexcept
+	{
+		this->scale(scale);
+		return std::move(*this);
+	}
+
+	Mesh3D Mesh3D::scaled(const Float3 scale) const&
+	{
+		Mesh3D result{ *this };
+		result.scale(scale);
+		return result;
+	}
+
+	Mesh3D Mesh3D::scaled(const Float3 scale) && noexcept
+	{
+		this->scale(scale);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	scale
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::scale(const float scale) noexcept
+	{
+		if (scale < 0.0f)
+		{
+			for (auto& vertex : vertices)
+			{
+				vertex.pos *= scale;
+				vertex.normal = -vertex.normal;
+				vertex.tangent = -vertex.tangent;
+			}
+		}
+		else
+		{
+			for (auto& vertex : vertices)
+			{
+				vertex.pos *= scale;
+			}
+		}
+
+		return *this;
+	}
+
+	Mesh3D& Mesh3D::scale(const Float3 scale) noexcept
+	{
+		const DirectX::XMVECTOR scaleVector = SimdFloat4{ scale, 1.0f }.vec;
+
+		if ((scale.x == 0.0f)
+			|| (scale.y == 0.0f)
+			|| (scale.z == 0.0f))
+		{
+			for (auto& vertex : vertices)
+			{
+				vertex.pos = SimdFloat4{ DirectX::XMVectorMultiply(
+					SimdFloat4{ vertex.pos }.vec, scaleVector) }.xyz();
+			}
+
+			return *this;
+		}
+
+		const DirectX::XMVECTOR inverseScaleVector = DirectX::XMVectorReciprocal(scaleVector);
+		const bool flipHandedness = (((scale.x < 0.0f) != (scale.y < 0.0f)) != (scale.z < 0.0f));
+
+		for (auto& vertex : vertices)
+		{
+			vertex.pos = SimdFloat4{ DirectX::XMVectorMultiply(
+				SimdFloat4{ vertex.pos }.vec, scaleVector) }.xyz();
+
+			vertex.normal = SimdFloat4{ DirectX::XMVector3Normalize(
+				DirectX::XMVectorMultiply(
+					SimdFloat4{ vertex.normal }.vec, inverseScaleVector)) }.xyz();
+
+			const DirectX::XMVECTOR tangent = DirectX::XMVector3Normalize(
+				DirectX::XMVectorMultiply(SimdFloat4{ vertex.tangent }.vec, scaleVector));
+			const float tangentW = (flipHandedness ? -vertex.tangent.w : vertex.tangent.w);
+			vertex.tangent = SimdFloat4{ DirectX::XMVectorSetW(tangent, tangentW) }.toFloat4();
+		}
 
 		return *this;
 	}

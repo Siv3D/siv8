@@ -318,7 +318,7 @@ namespace s3d
 
 	inline Float3 SIV3D_VECTOR_CALL Quaternion::rotate(const Float3 v) const noexcept
 	{
-		return SimdFloat4{ DirectX::XMVector3Rotate(SimdFloat4{ v, 0.0f }.vec, value.vec) }.xyz();
+		return SimdFloat4{ DirectX::XMVector3Rotate(SimdFloat4{ v }.vec, value.vec) }.xyz();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -329,7 +329,7 @@ namespace s3d
 
 	inline Float3 SIV3D_VECTOR_CALL Quaternion::inverseRotate(const Float3 v) const noexcept
 	{
-		return SimdFloat4{ DirectX::XMVector3InverseRotate(SimdFloat4{ v, 0.0f }.vec, value.vec) }.xyz();
+		return SimdFloat4{ DirectX::XMVector3InverseRotate(SimdFloat4{ v }.vec, value.vec) }.xyz();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -420,7 +420,7 @@ namespace s3d
 
 	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RollPitchYaw(const Float3 pitchYawRoll) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationRollPitchYawFromVector(SimdFloat4{ pitchYawRoll, 0.0f }.vec) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationRollPitchYawFromVector(SimdFloat4{ pitchYawRoll }.vec) } };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -431,7 +431,7 @@ namespace s3d
 
 	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotationNormal(const Float3 normalAxis, const float angle) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(SimdFloat4{ normalAxis, 0.0f }.vec, angle) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(SimdFloat4{ normalAxis }.vec, angle) } };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -442,7 +442,7 @@ namespace s3d
 
 	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotationAxis(const Float3 axis, const float angle) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationAxis(SimdFloat4{ axis, 0.0f }.vec, angle) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationAxis(SimdFloat4{ axis }.vec, angle) } };
 	}
 
 	////////////////////////////////////////////////////////////////

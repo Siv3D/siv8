@@ -13,6 +13,8 @@
 
 namespace
 {
+	constexpr float Mesh3DEpsilon = 1e-5f;
+
 	[[nodiscard]]
 	static Vertex3D MakeVertex(const float x)
 	{
@@ -22,6 +24,57 @@ namespace
 			.tex = Float2{ (x + 6.0f), (x + 7.0f) },
 			.tangent = Float4{ (x + 8.0f), (x + 9.0f), (x + 10.0f), ((x == 0.0f) ? -1.0f : 1.0f) }
 		};
+	}
+
+	[[nodiscard]]
+	static Vertex3D MakeFrameVertex()
+	{
+		return Vertex3D{
+			.pos = Float3{ 1.0f, 2.0f, 3.0f },
+			.normal = Float3::UnitY(),
+			.tex = Float2{ 0.25f, 0.75f },
+			.tangent = Float4{ 1.0f, 0.0f, 0.0f, -1.0f }
+		};
+	}
+
+	[[nodiscard]]
+	static Mesh3D MakeFrameMesh()
+	{
+		return Mesh3D{
+			{ MakeFrameVertex() },
+			{ TriangleIndex32{ 0, 0, 0 } }
+		};
+	}
+
+	static void CheckFloat3(const Float3 actual, const Float3 expected)
+	{
+		CHECK(actual.epsilonEquals(expected, Mesh3DEpsilon));
+	}
+
+	static void CheckFloat4(const Float4 actual, const Float4 expected)
+	{
+		CHECK(actual.epsilonEquals(expected, Mesh3DEpsilon));
+	}
+
+	static void CheckMesh(const Mesh3D& actual, const Mesh3D& expected)
+	{
+		REQUIRE_EQ(actual.vertices.size(), expected.vertices.size());
+		REQUIRE_EQ(actual.indices.size(), expected.indices.size());
+
+		for (size_t i = 0; i < actual.vertices.size(); ++i)
+		{
+			CheckFloat3(actual.vertices[i].pos, expected.vertices[i].pos);
+			CheckFloat3(actual.vertices[i].normal, expected.vertices[i].normal);
+			CHECK_EQ(actual.vertices[i].tex, expected.vertices[i].tex);
+			CheckFloat4(actual.vertices[i].tangent, expected.vertices[i].tangent);
+		}
+
+		for (size_t i = 0; i < actual.indices.size(); ++i)
+		{
+			CHECK_EQ(actual.indices[i].i0, expected.indices[i].i0);
+			CHECK_EQ(actual.indices[i].i1, expected.indices[i].i1);
+			CHECK_EQ(actual.indices[i].i2, expected.indices[i].i2);
+		}
 	}
 
 	static void CheckTriangle(const TriangleIndex32& triangle, const uint32 i0, const uint32 i1, const uint32 i2)
@@ -171,5 +224,187 @@ TEST_CASE("Mesh3D::invert")
 	{
 		CHECK((mesh.vertices[i].normal == originalVertices[i].normal));
 		CHECK((mesh.vertices[i].tangent == originalVertices[i].tangent));
+	}
+}
+
+TEST_CASE("Mesh3D::transform")
+{
+	const Mesh3D source = MakeFrameMesh();
+
+	SUBCASE("Non-singular affine transform")
+	{
+		const Mat4x4 matrix{
+			1, 1, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			4, 5, 6, 1
+		};
+		Mesh3D mesh = source;
+
+		CHECK_EQ(&mesh.transform(matrix), &mesh);
+		CheckFloat3(mesh.vertices[0].pos, Float3{ 5.0f, 8.0f, 9.0f });
+		CheckFloat3(mesh.vertices[0].normal, Float3{ -1.0f, 1.0f, 0.0f }.normalized());
+		CheckFloat3(mesh.vertices[0].tangent.xyz(), Float3{ 1.0f, 1.0f, 0.0f }.normalized());
+		CHECK_EQ(mesh.vertices[0].tangent.w, -1.0f);
+		CHECK_EQ(mesh.vertices[0].tex, source.vertices[0].tex);
+		CheckTriangle(mesh.indices[0], 0, 0, 0);
+
+		const Mesh3D copiedResult = source.transformed(matrix);
+		const Mesh3D movedResult = Mesh3D{ source }.transformed(matrix);
+		CheckMesh(copiedResult, mesh);
+		CheckMesh(movedResult, mesh);
+		CheckMesh(source, MakeFrameMesh());
+	}
+
+	SUBCASE("Negative determinant")
+	{
+		Mesh3D mesh = source;
+		mesh.transform(Mat4x4::Scale(Float3{ -2.0f, 3.0f, 4.0f }));
+
+		CheckFloat3(mesh.vertices[0].pos, Float3{ -2.0f, 6.0f, 12.0f });
+		CheckFloat3(mesh.vertices[0].normal, Float3::UnitY());
+		CheckFloat3(mesh.vertices[0].tangent.xyz(), -Float3::UnitX());
+		CHECK_EQ(mesh.vertices[0].tangent.w, 1.0f);
+		CheckTriangle(mesh.indices[0], 0, 0, 0);
+	}
+
+	SUBCASE("Singular linear transform preserves the tangent frame")
+	{
+		Mesh3D mesh = source;
+		mesh.transform(Mat4x4::Scale(Float3{ 2.0f, 0.0f, 4.0f }));
+
+		CheckFloat3(mesh.vertices[0].pos, Float3{ 2.0f, 0.0f, 12.0f });
+		CHECK_EQ(mesh.vertices[0].normal, source.vertices[0].normal);
+		CHECK_EQ(mesh.vertices[0].tangent, source.vertices[0].tangent);
+		CHECK_EQ(mesh.vertices[0].tex, source.vertices[0].tex);
+	}
+
+	SUBCASE("Empty mesh")
+	{
+		Mesh3D mesh;
+		CHECK_EQ(&mesh.transform(Mat4x4::Identity()), &mesh);
+		CHECK(mesh.vertices.isEmpty());
+		CHECK(mesh.indices.isEmpty());
+	}
+}
+
+TEST_CASE("Mesh3D::translate")
+{
+	const Mesh3D source = MakeFrameMesh();
+	const Float3 offset{ 4.0f, -5.0f, 6.0f };
+	Mesh3D expected = source;
+	CHECK_EQ(&expected.translate(offset), &expected);
+	CheckFloat3(expected.vertices[0].pos, Float3{ 5.0f, -3.0f, 9.0f });
+	CHECK_EQ(expected.vertices[0].normal, source.vertices[0].normal);
+	CHECK_EQ(expected.vertices[0].tangent, source.vertices[0].tangent);
+	CHECK_EQ(expected.vertices[0].tex, source.vertices[0].tex);
+
+	const Mesh3D copiedResult = source.translated(offset);
+	CheckMesh(copiedResult, expected);
+	CheckMesh(source, MakeFrameMesh());
+
+	Mesh3D reusable = source;
+	const Vertex3D* const vertexData = reusable.vertices.data();
+	const TriangleIndex32* const indexData = reusable.indices.data();
+	const Mesh3D movedResult = std::move(reusable).translated(offset);
+	CHECK_EQ(movedResult.vertices.data(), vertexData);
+	CHECK_EQ(movedResult.indices.data(), indexData);
+	CheckMesh(movedResult, expected);
+}
+
+TEST_CASE("Mesh3D::rotate")
+{
+	const Mesh3D source = MakeFrameMesh();
+	const Quaternion rotation = Quaternion::RotateZ(Math::HalfPiF);
+	Mesh3D expected = source;
+
+	CHECK_EQ(&expected.rotate(rotation), &expected);
+	CheckFloat3(expected.vertices[0].pos, Float3{ -2.0f, 1.0f, 3.0f });
+	CheckFloat3(expected.vertices[0].normal, -Float3::UnitX());
+	CheckFloat3(expected.vertices[0].tangent.xyz(), Float3::UnitY());
+	CHECK_EQ(expected.vertices[0].tangent.w, -1.0f);
+	CHECK_EQ(expected.vertices[0].tex, source.vertices[0].tex);
+
+	const Mesh3D copiedResult = source.rotated(rotation);
+	const Mesh3D movedResult = Mesh3D{ source }.rotated(rotation);
+	CheckMesh(copiedResult, expected);
+	CheckMesh(movedResult, expected);
+	CheckMesh(source, MakeFrameMesh());
+}
+
+TEST_CASE("Mesh3D::scale_uniform")
+{
+	const Mesh3D source = MakeFrameMesh();
+
+	SUBCASE("Positive")
+	{
+		Mesh3D expected = source;
+		CHECK_EQ(&expected.scale(2.0f), &expected);
+		CheckFloat3(expected.vertices[0].pos, Float3{ 2.0f, 4.0f, 6.0f });
+		CHECK_EQ(expected.vertices[0].normal, source.vertices[0].normal);
+		CHECK_EQ(expected.vertices[0].tangent, source.vertices[0].tangent);
+
+		CheckMesh(source.scaled(2.0f), expected);
+		CheckMesh(Mesh3D{ source }.scaled(2.0f), expected);
+	}
+
+	SUBCASE("Negative")
+	{
+		Mesh3D mesh = source;
+		mesh.scale(-2.0f);
+		CheckFloat3(mesh.vertices[0].pos, Float3{ -2.0f, -4.0f, -6.0f });
+		CHECK_EQ(mesh.vertices[0].normal, -source.vertices[0].normal);
+		CHECK_EQ(mesh.vertices[0].tangent, -source.vertices[0].tangent);
+		CheckTriangle(mesh.indices[0], 0, 0, 0);
+	}
+
+	SUBCASE("Zero")
+	{
+		Mesh3D mesh = source;
+		mesh.scale(0.0f);
+		CHECK_EQ(mesh.vertices[0].pos, Float3::Zero());
+		CHECK_EQ(mesh.vertices[0].normal, source.vertices[0].normal);
+		CHECK_EQ(mesh.vertices[0].tangent, source.vertices[0].tangent);
+	}
+}
+
+TEST_CASE("Mesh3D::scale_non_uniform")
+{
+	Mesh3D source = MakeFrameMesh();
+	source.vertices[0].normal = Float3{ 1.0f, 1.0f, 0.0f }.normalized();
+	source.vertices[0].tangent = Float4{ Float3{ 1.0f, -1.0f, 0.0f }.normalized(), 1.0f };
+
+	SUBCASE("Non-singular")
+	{
+		const Float3 scale{ 2.0f, 3.0f, 4.0f };
+		Mesh3D expected = source;
+		CHECK_EQ(&expected.scale(scale), &expected);
+		CheckFloat3(expected.vertices[0].pos, Float3{ 2.0f, 6.0f, 12.0f });
+		CheckFloat3(expected.vertices[0].normal,
+			Float3{ (source.vertices[0].normal.x / scale.x), (source.vertices[0].normal.y / scale.y), 0.0f }.normalized());
+		CheckFloat3(expected.vertices[0].tangent.xyz(),
+			Float3{ (source.vertices[0].tangent.x * scale.x), (source.vertices[0].tangent.y * scale.y), 0.0f }.normalized());
+		CHECK_EQ(expected.vertices[0].tangent.w, 1.0f);
+		CHECK(std::abs(expected.vertices[0].normal.dot(expected.vertices[0].tangent.xyz())) < Mesh3DEpsilon);
+
+		CheckMesh(source.scaled(scale), expected);
+		CheckMesh(Mesh3D{ source }.scaled(scale), expected);
+	}
+
+	SUBCASE("Negative determinant")
+	{
+		Mesh3D mesh = source;
+		mesh.scale(Float3{ -2.0f, 3.0f, 4.0f });
+		CHECK_EQ(mesh.vertices[0].tangent.w, -1.0f);
+		CheckTriangle(mesh.indices[0], 0, 0, 0);
+	}
+
+	SUBCASE("Zero component preserves the tangent frame")
+	{
+		Mesh3D mesh = source;
+		mesh.scale(Float3{ 2.0f, 0.0f, 4.0f });
+		CheckFloat3(mesh.vertices[0].pos, Float3{ 2.0f, 0.0f, 12.0f });
+		CHECK_EQ(mesh.vertices[0].normal, source.vertices[0].normal);
+		CHECK_EQ(mesh.vertices[0].tangent, source.vertices[0].tangent);
 	}
 }
