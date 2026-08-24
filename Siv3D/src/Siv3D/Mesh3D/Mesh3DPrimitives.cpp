@@ -198,6 +198,184 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	Capsule
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Capsule(
+		const float radius,
+		const float cylinderHeight,
+		const uint32 slices,
+		const uint32 hemisphereStacks)
+	{
+		if ((not std::isfinite(radius))
+			|| (not std::isfinite(cylinderHeight))
+			|| (radius <= 0.0f)
+			|| (cylinderHeight < 0.0f)
+			|| (slices < 3)
+			|| (hemisphereStacks < 1))
+		{
+			return{};
+		}
+
+		if (cylinderHeight == 0.0f)
+		{
+			if ((std::numeric_limits<uint32>::max() / 2) < hemisphereStacks)
+			{
+				return{};
+			}
+
+			return UVSphere(radius, slices, (hemisphereStacks * 2));
+		}
+
+		size_t interiorRingCount;
+		size_t ringStride;
+		size_t ringVertexCount;
+		size_t poleVertexCount;
+		size_t vertexCount;
+		size_t triangleCount;
+
+		if ((not CheckedMultiply(static_cast<size_t>(hemisphereStacks), 2, interiorRingCount))
+			|| (not CheckedAdd(static_cast<size_t>(slices), 1, ringStride))
+			|| (not CheckedMultiply(interiorRingCount, ringStride, ringVertexCount))
+			|| (not CheckedMultiply(static_cast<size_t>(slices), 2, poleVertexCount))
+			|| (not CheckedAdd(ringVertexCount, poleVertexCount, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
+			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
+		{
+			return{};
+		}
+
+		Mesh3D mesh{ vertexCount, triangleCount };
+		const size_t firstRingBase = slices;
+		const size_t bottomPoleBase = (firstRingBase + ringVertexCount);
+		const float halfCylinderHeight = (cylinderHeight * 0.5f);
+		const float hemisphereAngleStep = (Math::HalfPiF / static_cast<float>(hemisphereStacks));
+		const float invSlices = (1.0f / static_cast<float>(slices));
+		const float longitudeStep = (Math::TwoPiF * invSlices);
+		const float profileLength = ((Math::PiF * radius) + cylinderHeight);
+		const float invProfileLength = (1.0f / profileLength);
+		const Array<CircleSample> longitudeSinCos = MakeCircleSamples(slices);
+
+		for (uint32 x = 0; x < slices; ++x)
+		{
+			const float middleLongitude = ((longitudeStep * x) + (longitudeStep * 0.5f));
+			const float middleSin = std::sin(middleLongitude);
+			const float middleCos = std::cos(middleLongitude);
+			const float u = ((x + 0.5f) * invSlices);
+			const Float4 tangent{ -middleSin, 0.0f, middleCos, 1.0f };
+
+			mesh.vertices[x] = Vertex3D{
+				.pos = Float3{ 0.0f, (halfCylinderHeight + radius), 0.0f },
+				.normal = Float3::UnitY(),
+				.tex = Float2{ u, 0.0f },
+				.tangent = tangent
+			};
+			mesh.vertices[bottomPoleBase + x] = Vertex3D{
+				.pos = Float3{ 0.0f, -(halfCylinderHeight + radius), 0.0f },
+				.normal = -Float3::UnitY(),
+				.tex = Float2{ u, 1.0f },
+				.tangent = tangent
+			};
+		}
+
+		const auto writeRing = [&](const size_t ringIndex, const float ringRadius, const float positionY,
+			const float normalRadial, const float normalY, const float v)
+		{
+			const size_t ringBase = (firstRingBase + (ringIndex * ringStride));
+
+			for (uint32 x = 0; x <= slices; ++x)
+			{
+				const float longitudeSin = longitudeSinCos[x].sin;
+				const float longitudeCos = longitudeSinCos[x].cos;
+
+				mesh.vertices[ringBase + x] = Vertex3D{
+					.pos = Float3{ (ringRadius * longitudeCos), positionY, (ringRadius * longitudeSin) },
+					.normal = Float3{ (normalRadial * longitudeCos), normalY, (normalRadial * longitudeSin) },
+					.tex = Float2{ (static_cast<float>(x) * invSlices), v },
+					.tangent = Float4{ -longitudeSin, 0.0f, longitudeCos, 1.0f }
+				};
+			}
+		};
+
+		for (uint32 stack = 1; stack <= hemisphereStacks; ++stack)
+		{
+			const float angle = (hemisphereAngleStep * stack);
+			const float angleSin = std::sin(angle);
+			const float angleCos = std::cos(angle);
+			writeRing(
+				(stack - 1),
+				(radius * angleSin),
+				(halfCylinderHeight + (radius * angleCos)),
+				angleSin,
+				angleCos,
+				((radius * angle) * invProfileLength));
+		}
+
+		writeRing(
+			hemisphereStacks,
+			radius,
+			-halfCylinderHeight,
+			1.0f,
+			0.0f,
+			(((Math::HalfPiF * radius) + cylinderHeight) * invProfileLength));
+
+		for (uint32 stack = 1; stack < hemisphereStacks; ++stack)
+		{
+			const float angle = (hemisphereAngleStep * stack);
+			const float angleSin = std::sin(angle);
+			const float angleCos = std::cos(angle);
+			writeRing(
+				(static_cast<size_t>(hemisphereStacks) + stack),
+				(radius * angleCos),
+				(-halfCylinderHeight - (radius * angleSin)),
+				angleCos,
+				-angleSin,
+				(((Math::HalfPiF * radius) + cylinderHeight + (radius * angle)) * invProfileLength));
+		}
+
+		TriangleIndex32* pTriangle = mesh.indices.data();
+
+		for (uint32 x = 0; x < slices; ++x)
+		{
+			const uint32 pole = x;
+			const uint32 ringLeft = static_cast<uint32>(firstRingBase + x);
+			const uint32 ringRight = (ringLeft + 1);
+			*pTriangle++ = TriangleIndex32{ pole, ringRight, ringLeft };
+		}
+
+		for (size_t ring = 0; (ring + 1) < interiorRingCount; ++ring)
+		{
+			const size_t upperRingBase = (firstRingBase + (ring * ringStride));
+			const size_t lowerRingBase = (upperRingBase + ringStride);
+
+			for (uint32 x = 0; x < slices; ++x)
+			{
+				const uint32 i0 = static_cast<uint32>(upperRingBase + x);
+				const uint32 i1 = (i0 + 1);
+				const uint32 i2 = static_cast<uint32>(lowerRingBase + x);
+				const uint32 i3 = (i2 + 1);
+
+				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
+			}
+		}
+
+		const size_t lastRingBase = (firstRingBase + ((interiorRingCount - 1) * ringStride));
+		for (uint32 x = 0; x < slices; ++x)
+		{
+			const uint32 ringLeft = static_cast<uint32>(lastRingBase + x);
+			const uint32 ringRight = (ringLeft + 1);
+			const uint32 pole = static_cast<uint32>(bottomPoleBase + x);
+			*pTriangle++ = TriangleIndex32{ ringLeft, ringRight, pole };
+		}
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Plane
 	//
 	////////////////////////////////////////////////////////////////

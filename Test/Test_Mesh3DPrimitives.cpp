@@ -377,6 +377,75 @@ TEST_CASE("Mesh3D::Torus")
 	CHECK(Mesh3D::Torus(MajorRadius, TubeRadius, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
+TEST_CASE("Mesh3D::Capsule")
+{
+	constexpr float Radius = 1.0f;
+	constexpr float CylinderHeight = 2.0f;
+	constexpr uint32 Slices = 8;
+	constexpr uint32 HemisphereStacks = 2;
+	const Mesh3D mesh = Mesh3D::Capsule(Radius, CylinderHeight, Slices, HemisphereStacks);
+	const size_t interiorRingCount = (HemisphereStacks * 2);
+	const size_t ringStride = (Slices + 1);
+	const size_t firstRingBase = Slices;
+
+	CHECK_EQ(mesh.vertexCount(), ((interiorRingCount * ringStride) + (2 * Slices)));
+	CHECK_EQ(mesh.triangleCount(), (2 * Slices * interiorRingCount));
+	CheckMeshGeometry(mesh);
+	CHECK_EQ(mesh.vertices[0].pos, Float3{ 0.0f, 2.0f, 0.0f });
+
+	for (size_t ring = 0; ring < interiorRingCount; ++ring)
+	{
+		const size_t ringBase = (firstRingBase + (ring * ringStride));
+		CHECK_EQ(mesh.vertices[ringBase].pos, mesh.vertices[ringBase + Slices].pos);
+		CHECK_EQ(mesh.vertices[ringBase].normal, mesh.vertices[ringBase + Slices].normal);
+		CHECK_EQ(mesh.vertices[ringBase].tangent, mesh.vertices[ringBase + Slices].tangent);
+		CHECK_EQ(mesh.vertices[ringBase].tex.x, 0.0f);
+		CHECK_EQ(mesh.vertices[ringBase + Slices].tex.x, 1.0f);
+	}
+
+	const float halfCylinderHeight = (CylinderHeight * 0.5f);
+	for (const auto& vertex : mesh.vertices)
+	{
+		const float closestY = ((vertex.pos.y < -halfCylinderHeight) ? -halfCylinderHeight
+			: ((halfCylinderHeight < vertex.pos.y) ? halfCylinderHeight : vertex.pos.y));
+		const Float3 closestAxisPoint{ 0.0f, closestY, 0.0f };
+		CHECK(vertex.pos.distanceFrom(closestAxisPoint) == doctest::Approx(Radius).epsilon(FrameEpsilon));
+		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
+		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
+	}
+
+	SUBCASE("Zero cylinder height")
+	{
+		const Mesh3D capsule = Mesh3D::Capsule(Radius, 0.0f, Slices, HemisphereStacks);
+		const Mesh3D sphere = Mesh3D::UVSphere(Radius, Slices, (HemisphereStacks * 2));
+		REQUIRE_EQ(capsule.vertexCount(), sphere.vertexCount());
+		REQUIRE_EQ(capsule.triangleCount(), sphere.triangleCount());
+
+		for (size_t i = 0; i < capsule.vertexCount(); ++i)
+		{
+			CHECK_EQ(capsule.vertices[i].pos, sphere.vertices[i].pos);
+			CHECK_EQ(capsule.vertices[i].normal, sphere.vertices[i].normal);
+			CHECK_EQ(capsule.vertices[i].tex, sphere.vertices[i].tex);
+			CHECK_EQ(capsule.vertices[i].tangent, sphere.vertices[i].tangent);
+		}
+
+		for (size_t i = 0; i < capsule.triangleCount(); ++i)
+		{
+			CHECK_EQ(capsule.indices[i].i0, sphere.indices[i].i0);
+			CHECK_EQ(capsule.indices[i].i1, sphere.indices[i].i1);
+			CHECK_EQ(capsule.indices[i].i2, sphere.indices[i].i2);
+		}
+	}
+
+	CheckMeshGeometry(Mesh3D::Capsule(1.0f, 1.0f, 3, 1));
+	CHECK(Mesh3D::Capsule(0.0f, CylinderHeight, Slices, HemisphereStacks).isEmpty());
+	CHECK(Mesh3D::Capsule(Radius, -1.0f, Slices, HemisphereStacks).isEmpty());
+	CHECK(Mesh3D::Capsule(Radius, CylinderHeight, 2, HemisphereStacks).isEmpty());
+	CHECK(Mesh3D::Capsule(Radius, CylinderHeight, Slices, 0).isEmpty());
+	CHECK(Mesh3D::Capsule(Radius, std::numeric_limits<float>::infinity(), Slices, HemisphereStacks).isEmpty());
+	CHECK(Mesh3D::Capsule(Radius, CylinderHeight, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+}
+
 TEST_CASE("Mesh3D::Frustum")
 {
 	constexpr uint32 Segments = 8;
