@@ -46,16 +46,24 @@ namespace s3d
 		: SimdFloat4{ static_cast<float>(xy.x), static_cast<float>(xy.y), static_cast<float>(zw.x), static_cast<float>(zw.y) } {}
 
 	inline SimdFloat4::SimdFloat4(const Float3& xyz) noexcept
+	# if SIV3D_BUILD(DEBUG)
+		: vec{ DirectX::XMVectorSet(xyz.x, xyz.y, xyz.z, 0.0f) } {}
+	# else
 		: vec{ DirectX::XMLoadFloat3(
 			static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&xyz))) } {}
+	# endif
 
 	inline SimdFloat4::SimdFloat4(const Vec3& xyz) noexcept
 		: SimdFloat4{ static_cast<float>(xyz.x), static_cast<float>(xyz.y), static_cast<float>(xyz.z), 0.0f } {}
 
 	inline SimdFloat4::SimdFloat4(const Float3& xyz, const Concept::Arithmetic auto _w) noexcept
+	# if SIV3D_BUILD(DEBUG)
+		: vec{ DirectX::XMVectorSet(xyz.x, xyz.y, xyz.z, static_cast<float>(_w)) } {}
+	# else
 		: vec{ DirectX::XMVectorSetW(
 			DirectX::XMLoadFloat3(static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&xyz))),
 			static_cast<float>(_w)) } {}
+	# endif
 
 	inline SimdFloat4::SimdFloat4(const Vec3& xyz, const Concept::Arithmetic auto _w) noexcept
 		: SimdFloat4{ static_cast<float>(xyz.x), static_cast<float>(xyz.y),
@@ -70,7 +78,12 @@ namespace s3d
 		: SimdFloat4{ static_cast<float>(_x), static_cast<float>(yzw.x), static_cast<float>(yzw.y), static_cast<float>(yzw.z) } {}
 
 	inline SimdFloat4::SimdFloat4(const Float4 xyzw) noexcept
-		: SimdFloat4{ xyzw.x, xyzw.y, xyzw.z, xyzw.w } {}
+	# if SIV3D_BUILD(DEBUG)
+		: vec{ DirectX::XMVectorSet(xyzw.x, xyzw.y, xyzw.z, xyzw.w) } {}
+	# else
+		: vec{ DirectX::XMLoadFloat4(
+			static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&xyzw))) } {}
+	# endif
 
 	inline SimdFloat4::SimdFloat4(const Vec4 xyzw) noexcept
 		: SimdFloat4{ static_cast<float>(xyzw.x), static_cast<float>(xyzw.y), static_cast<float>(xyzw.z), static_cast<float>(xyzw.w) } {}
@@ -168,12 +181,18 @@ namespace s3d
 
 	inline Float3 SimdFloat4::toFloat3() const noexcept
 	{
-		return{ DirectX::XMVectorGetX(vec), DirectX::XMVectorGetY(vec), DirectX::XMVectorGetZ(vec) };
+		Float3 result;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), vec);
+		return result;
 	}
 
 	inline Float4 SimdFloat4::toFloat4() const noexcept
 	{
-		return{ DirectX::XMVectorGetX(vec), DirectX::XMVectorGetY(vec), DirectX::XMVectorGetZ(vec), DirectX::XMVectorGetW(vec) };
+		Float4 result;
+		DirectX::XMStoreFloat4(
+			static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&result)), vec);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -328,7 +347,13 @@ namespace s3d
 
 	inline SimdFloat4& SimdFloat4::set(const Float4 xyzw) noexcept
 	{
-		return set(xyzw.x, xyzw.y, xyzw.z, xyzw.w);
+	# if SIV3D_BUILD(DEBUG)
+		vec = DirectX::XMVectorSet(xyzw.x, xyzw.y, xyzw.z, xyzw.w);
+	# else
+		vec = DirectX::XMLoadFloat4(
+			static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&xyzw)));
+	# endif
+		return *this;
 	}
 
 	inline SimdFloat4& SIV3D_VECTOR_CALL SimdFloat4::set(const SimdFloat4 xyzw) noexcept
@@ -529,17 +554,24 @@ namespace s3d
 
 	inline Float2 SimdFloat4::xy() const noexcept
 	{
-		return{ DirectX::XMVectorGetX(vec), DirectX::XMVectorGetY(vec) };
+		Float2 result;
+		DirectX::XMStoreFloat2(
+			static_cast<DirectX::XMFLOAT2*>(static_cast<void*>(&result)), vec);
+		return result;
 	}
 
 	inline Float2 SimdFloat4::yz() const noexcept
 	{
-		return{ DirectX::XMVectorGetY(vec), DirectX::XMVectorGetZ(vec) };
+		DirectX::XMFLOAT4 result;
+		DirectX::XMStoreFloat4(&result, vec);
+		return{ result.y, result.z };
 	}
 
 	inline Float2 SimdFloat4::zw() const noexcept
 	{
-		return{ DirectX::XMVectorGetZ(vec), DirectX::XMVectorGetW(vec) };
+		DirectX::XMFLOAT4 result;
+		DirectX::XMStoreFloat4(&result, vec);
+		return{ result.z, result.w };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -550,12 +582,17 @@ namespace s3d
 
 	inline Float3 SimdFloat4::xyz() const noexcept
 	{
-		return toFloat3();
+		Float3 result;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), vec);
+		return result;
 	}
 
 	inline Float3 SimdFloat4::yzw() const noexcept
 	{
-		return{ DirectX::XMVectorGetY(vec), DirectX::XMVectorGetZ(vec), DirectX::XMVectorGetW(vec) };
+		DirectX::XMFLOAT4 result;
+		DirectX::XMStoreFloat4(&result, vec);
+		return{ result.y, result.z, result.w };
 	}
 
 	////////////////////////////////////////////////////////////////
