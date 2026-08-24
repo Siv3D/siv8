@@ -157,6 +157,8 @@ namespace s3d
 		[[nodiscard]]
 		bool SIV3D_VECTOR_CALL rotationEquals(Quaternion other, float epsilon = 1e-5f) const noexcept;
 
+		// TODO: 回転間の角度を返す angleTo() は、角度の範囲と非正規化入力の契約を決めた後に追加する。
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	toFloat4
@@ -319,6 +321,10 @@ namespace s3d
 		[[nodiscard]]
 		Quaternion SIV3D_VECTOR_CALL normalized() const noexcept;
 
+		// TODO: fastNormalized() は、XMQuaternionNormalizeEst() の精度と性能を測定した後に追加を検討する。
+
+		// TODO: 符号を一意化する canonicalize(), canonicalized() は、w が 0 の場合の規則を決めた後に追加する。
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	conjugated
@@ -329,6 +335,8 @@ namespace s3d
 		/// @return 共役クォータニオン
 		[[nodiscard]]
 		Quaternion SIV3D_VECTOR_CALL conjugated() const noexcept;
+
+		// TODO: 破壊的な conjugate() は、破壊的・非破壊 API の命名方針を確定した後に追加する。
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -383,6 +391,8 @@ namespace s3d
 		[[nodiscard]]
 		Quaternion SIV3D_VECTOR_CALL slerp(Quaternion other, float t) const noexcept;
 
+		// TODO: nlerp(), squad(), log(), exp() は、アニメーション補間で必要になった段階で追加する。
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	toAxisAngle
@@ -421,6 +431,8 @@ namespace s3d
 		/// @remark 回転軸が一意に定まらない場合は、そのうち 1 つを選択します。
 		[[nodiscard]]
 		static Quaternion SIV3D_VECTOR_CALL FromUnitVectors(const Vec3& from, const Vec3& to) noexcept;
+
+		// TODO: 入力を内部で正規化する FromVectors() は、ゼロベクトル時の契約を決めた後に追加する。
 
 		////////////////////////////////////////////////////////////////
 		//
