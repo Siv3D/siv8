@@ -12,6 +12,8 @@
 # pragma once
 # include "Common.hpp"
 # include "Array.hpp"
+# include "Blob.hpp"
+# include "IWriter.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
 # include "VertexNormalWeighting.hpp"
@@ -258,6 +260,49 @@ namespace s3d
 		/// @return 三角形の個数
 		[[nodiscard]]
 		size_t triangleCount() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	saveOBJ
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュを Wavefront OBJ 形式でファイルに保存します。
+		/// @param path 保存するファイルのパス
+		/// @return 保存に成功した場合 true, それ以外の場合は false
+		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずに保存されます。
+		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
+		/// @remark 接線、材質、オブジェクト名、およびグループは保存されません。
+		/// @remark UTF-8（BOM なし）、LF 改行で保存されます。
+		/// @remark 空のメッシュ、インデックスが不正なメッシュ、または出力対象の頂点属性に非有限値が含まれるメッシュは保存できません。
+		bool saveOBJ(FilePathView path) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	encodeOBJ
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュを Wavefront OBJ 形式で Writer に書き出します。
+		/// @param writer 書き出し先の Writer
+		/// @return 書き出しに成功した場合 true, それ以外の場合は false
+		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずに書き出されます。
+		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
+		/// @remark 接線、材質、オブジェクト名、およびグループは書き出されません。
+		/// @remark UTF-8（BOM なし）、LF 改行で書き出されます。
+		/// @remark 空のメッシュ、インデックスが不正なメッシュ、または出力対象の頂点属性に非有限値が含まれるメッシュは書き出せません。
+		/// @remark 書き出し中に失敗した場合、Writer に途中までのデータが残ることがあります。
+		bool encodeOBJ(IWriter& writer) const;
+
+		/// @brief 3D メッシュを Wavefront OBJ 形式でエンコードします。
+		/// @return エンコードされたデータ。エンコードに失敗した場合は空の Blob
+		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずにエンコードされます。
+		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
+		/// @remark 接線、材質、オブジェクト名、およびグループはエンコードされません。
+		/// @remark UTF-8（BOM なし）、LF 改行でエンコードされます。
+		/// @remark 空のメッシュ、インデックスが不正なメッシュ、または出力対象の頂点属性に非有限値が含まれるメッシュはエンコードできません。
+		[[nodiscard]]
+		Blob encodeOBJ() const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -9179,6 +9179,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DOBJ.cpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DPrimitives.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClCompile>
