@@ -50,7 +50,6 @@
 
 ### 基本形状
 
-- tetrahedron、octahedron、icosahedron、dodecahedron を、外接球半径を共通のサイズ規約として追加する。
 - icosahedron の再帰分割と球面投影による `Mesh3D::IcoSphere()` を追加する。
 - UV と tangent の規約を設計して `Mesh3D::RoundedBox()` を追加する。
 - 補完候補として、double-sided plane、hollow cylinder、wedge を評価する。

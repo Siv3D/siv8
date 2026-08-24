@@ -15,6 +15,7 @@
 # include "Blob.hpp"
 # include "BoxUVMapping.hpp"
 # include "IWriter.hpp"
+# include "PolyhedronUVMapping.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
@@ -120,6 +121,56 @@ namespace s3d
 		static Mesh3D Pyramid(
 			SizeF baseSizeXZ = SizeF{ 1.0, 1.0 },
 			double height = 1.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Regular polyhedra
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする正四面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @param uvMapping UV マッピング方式
+		/// @return 正四面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark `PolyhedronUVMapping::PerFace` では、各面に独立した `[0, 1]` の UV 座標が割り当てられます。
+		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		[[nodiscard]]
+		static Mesh3D Tetrahedron(
+			double radius = 1.0,
+			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
+
+		/// @brief 原点を中心とする正八面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @param uvMapping UV マッピング方式
+		/// @return 正八面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark `PolyhedronUVMapping::PerFace` では、各面に独立した `[0, 1]` の UV 座標が割り当てられます。
+		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		[[nodiscard]]
+		static Mesh3D Octahedron(
+			double radius = 1.0,
+			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
+
+		/// @brief 原点を中心とする正二十面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @param uvMapping UV マッピング方式
+		/// @return 正二十面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark `PolyhedronUVMapping::PerFace` では、各面に独立した `[0, 1]` の UV 座標が割り当てられます。
+		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		[[nodiscard]]
+		static Mesh3D Icosahedron(
+			double radius = 1.0,
+			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
+
+		/// @brief 原点を中心とする正十二面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @param uvMapping UV マッピング方式
+		/// @return 正十二面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark `PolyhedronUVMapping::PerFace` では、各面に正五角形を含む独立した `[0, 1]` の UV 座標が割り当てられます。
+		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		[[nodiscard]]
+		static Mesh3D Dodecahedron(
+			double radius = 1.0,
+			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
 
 		////////////////////////////////////////////////////////////////
 		//
