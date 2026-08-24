@@ -14,6 +14,7 @@
 		40FCEB7BAE3F41DCA87D5C72 /* SivMat4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46305B1AE1A34B1EAE862643 /* SivMat4x4.cpp */; };
 		78488F66412F4B9983BAD8C7 /* SimdFloat4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 982422B376D849EEBEB93524 /* SimdFloat4.ipp */; };
 		9FF0D4D197374BE4BF710520 /* Quaternion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0D15A455331848599026324A /* Quaternion.hpp */; };
+		A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F41030A5000000000002 /* Test_Quaternion.cpp */; };
 		A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
@@ -3244,6 +3245,7 @@
 		7D2189FE0435464583450CED /* Quaternion.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.ipp; sourceTree = "<group>"; };
 		8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.ipp; sourceTree = "<group>"; };
 		982422B376D849EEBEB93524 /* SimdFloat4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.ipp; sourceTree = "<group>"; };
+		A5D4F41030A5000000000002 /* Test_Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Quaternion.cpp; sourceTree = "<group>"; };
 		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.hpp; sourceTree = "<group>"; };
@@ -6844,6 +6846,7 @@
 				F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */,
 				F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */,
 				F9A000042FC0000000000001 /* Test_Smooth.cpp */,
+				A5D4F41030A5000000000002 /* Test_Quaternion.cpp */,
 				A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */,
 				F90702C62B9DAEB900383E4D /* Test_Step.cpp */,
 				F90F79E62FA85F6E0077F398 /* Test_Step2D.cpp */,
@@ -7179,6 +7182,10 @@
 			children = (
 				F9070B642B9F175000383E4D /* AlignedAllocator.ipp */,
 				F98111902EC8C5E900C50DD1 /* Anchor.ipp */,
+				F9AB00013020000000000017 /* AnimatedImage.ipp */,
+				F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */,
+				F9AB00013020000000000023 /* AnimatedImageReader.ipp */,
+				F9AB0001302000000000001F /* AnimatedImageReadResult.ipp */,
 				F9070B652B9F175000383E4D /* Array.ipp */,
 				F9E7946B2C19B6F2002615BA /* ArrayAlgorithm.ipp */,
 				F9E7944D2C197417002615BA /* ArrayParallel.ipp */,
@@ -7291,16 +7298,10 @@
 				F986056D2BDA32B4006A4C0F /* Mat3x2.ipp */,
 				F9FD0BB12D1DA6CC00A584CE /* Mat3x3.ipp */,
 				8BEBAF62E4CC42858F2DB08E /* Mat4x4.ipp */,
-				7D2189FE0435464583450CED /* Quaternion.ipp */,
-				982422B376D849EEBEB93524 /* SimdFloat4.ipp */,
 				F986F8B72BC843E0006A4C0F /* MatchResults.ipp */,
 				F986F93B2BCA7996006A4C0F /* Math_impl.ipp */,
 				F9070B8E2B9F175000383E4D /* MathConstants.ipp */,
 				F9070B8F2B9F175000383E4D /* MD5Value.ipp */,
-				F9AB00013020000000000017 /* AnimatedImage.ipp */,
-				F9AB00013020000000000019 /* AnimatedImageDecodeResult.ipp */,
-				F9AB0001302000000000001F /* AnimatedImageReadResult.ipp */,
-				F9AB00013020000000000023 /* AnimatedImageReader.ipp */,
 				F9070B902B9F175000383E4D /* Memory.ipp */,
 				F9528BAE2BBE7D1100222F45 /* MemoryReader.ipp */,
 				F9528BA42BBD707100222F45 /* MemoryViewReader.ipp */,
@@ -7334,6 +7335,7 @@
 				F9AEA4FB2E6B3E48003734E7 /* PrintBuffer.ipp */,
 				F98605F62BE61586006A4C0F /* Quad.ipp */,
 				F9F00A4D2CD2993F0097C165 /* QualityFactor.ipp */,
+				7D2189FE0435464583450CED /* Quaternion.ipp */,
 				F9070B982B9F175000383E4D /* Random.ipp */,
 				F9FD0D0E2D20436000A584CE /* RandomAngle.ipp */,
 				F98605F22BE61586006A4C0F /* RandomColor.ipp */,
@@ -7359,6 +7361,7 @@
 				F998819F2F48997A00C8991D /* SerialPortInfo.ipp */,
 				F95122242CB8229400151291 /* Shape2D.ipp */,
 				F9070B9E2B9F175000383E4D /* Shuffle.ipp */,
+				982422B376D849EEBEB93524 /* SimdFloat4.ipp */,
 				F98111BA2EC8C71A00C50DD1 /* SimpleGUI.ipp */,
 				F9712A562C289A6D0049CC26 /* Smooth.ipp */,
 				F998815D2F40B5F200C8991D /* Spline.ipp */,
@@ -16284,6 +16287,7 @@
 				F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */,
 				F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */,
 				F9A000032FC0000000000001 /* Test_Smooth.cpp in Sources */,
+				A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */,
 				A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */,
 				F9A000052FC0000000000001 /* Test_Interpolation.cpp in Sources */,
 				F9528B322BB0564800222F45 /* Test_MemoryMappedFileView.cpp in Sources */,

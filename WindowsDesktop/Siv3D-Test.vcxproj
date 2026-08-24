@@ -70,6 +70,7 @@
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
     <ClCompile Include="..\Test\Test_Smooth.cpp" />
+	<ClCompile Include="..\Test\Test_Quaternion.cpp" />
 	<ClCompile Include="..\Test\Test_SimdFloat4.cpp" />
     <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />

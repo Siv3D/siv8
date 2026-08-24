@@ -37,6 +37,10 @@ TEST_CASE("SimdFloat4.constructors")
 	CheckComponents(SimdFloat4{ Float4{ 1.0f, 2.0f, 3.0f, 4.0f } }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 	CheckComponents(SimdFloat4{ Vec4{ 1.0, 2.0, 3.0, 4.0 } }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 	CheckComponents(SimdFloat4{ DirectX::XMVectorSet(1.0f, 2.0f, 3.0f, 4.0f) }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
+
+	SimdFloat4 assigned;
+	CHECK_EQ(&(assigned = SimdFloat4{ 1.0f, 2.0f, 3.0f, 4.0f }), &assigned);
+	CheckComponents(assigned, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 }
 
 TEST_CASE("SimdFloat4.arithmetic")
