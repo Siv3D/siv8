@@ -99,7 +99,10 @@ namespace s3d
 
 	inline Float4 Quaternion::toFloat4() const noexcept
 	{
-		return value.toFloat4();
+		Float4 result;
+		DirectX::XMStoreFloat4(
+			static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&result)), value.vec);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -110,7 +113,10 @@ namespace s3d
 
 	inline Float3 Quaternion::xyz() const noexcept
 	{
-		return value.xyz();
+		Float3 result;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), value.vec);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -202,7 +208,8 @@ namespace s3d
 
 	inline bool Quaternion::isFinite() const noexcept
 	{
-		return (not hasNaN() && not hasInf());
+		return (not DirectX::XMQuaternionIsNaN(value.vec)
+			&& not DirectX::XMQuaternionIsInfinite(value.vec));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -318,7 +325,13 @@ namespace s3d
 
 	inline Float3 SIV3D_VECTOR_CALL Quaternion::rotate(const Float3 v) const noexcept
 	{
-		return SimdFloat4{ DirectX::XMVector3Rotate(SimdFloat4{ v }.vec, value.vec) }.xyz();
+		const DirectX::XMVECTOR resultVector = DirectX::XMVector3Rotate(
+			DirectX::XMLoadFloat3(static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&v))),
+			value.vec);
+		Float3 result;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), resultVector);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -329,7 +342,13 @@ namespace s3d
 
 	inline Float3 SIV3D_VECTOR_CALL Quaternion::inverseRotate(const Float3 v) const noexcept
 	{
-		return SimdFloat4{ DirectX::XMVector3InverseRotate(SimdFloat4{ v }.vec, value.vec) }.xyz();
+		const DirectX::XMVECTOR resultVector = DirectX::XMVector3InverseRotate(
+			DirectX::XMLoadFloat3(static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&v))),
+			value.vec);
+		Float3 result;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), resultVector);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -389,11 +408,14 @@ namespace s3d
 
 	inline std::pair<Float3, float> SIV3D_VECTOR_CALL Quaternion::toAxisAngle() const noexcept
 	{
-		SimdFloat4 axis;
+		DirectX::XMVECTOR axis;
 		float angle;
-		DirectX::XMQuaternionToAxisAngle(&axis.vec, &angle, value.vec);
-		axis.vec = DirectX::XMVector3Normalize(axis.vec);
-		return{ axis.xyz(), angle };
+		DirectX::XMQuaternionToAxisAngle(&axis, &angle, value.vec);
+		axis = DirectX::XMVector3Normalize(axis);
+		Float3 resultAxis;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&resultAxis)), axis);
+		return{ resultAxis, angle };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -420,7 +442,9 @@ namespace s3d
 
 	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RollPitchYaw(const Float3 pitchYawRoll) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationRollPitchYawFromVector(SimdFloat4{ pitchYawRoll }.vec) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationRollPitchYawFromVector(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&pitchYawRoll)))) } };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -431,7 +455,9 @@ namespace s3d
 
 	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotationNormal(const Float3 normalAxis, const float angle) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(SimdFloat4{ normalAxis }.vec, angle) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationNormal(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&normalAxis))), angle) } };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -442,7 +468,9 @@ namespace s3d
 
 	inline Quaternion SIV3D_VECTOR_CALL Quaternion::RotationAxis(const Float3 axis, const float angle) noexcept
 	{
-		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationAxis(SimdFloat4{ axis }.vec, angle) } };
+		return Quaternion{ SimdFloat4{ DirectX::XMQuaternionRotationAxis(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&axis))), angle) } };
 	}
 
 	////////////////////////////////////////////////////////////////

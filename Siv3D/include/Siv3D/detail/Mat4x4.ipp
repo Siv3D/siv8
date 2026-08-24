@@ -26,7 +26,11 @@ namespace s3d
 		: value{ row0.vec, row1.vec, row2.vec, row3.vec } {}
 
 	inline Mat4x4::Mat4x4(const Float4 row0, const Float4 row1, const Float4 row2, const Float4 row3) noexcept
-		: Mat4x4{ SimdFloat4{ row0 }, SimdFloat4{ row1 }, SimdFloat4{ row2 }, SimdFloat4{ row3 } } {}
+		: value{
+			DirectX::XMLoadFloat4(static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&row0))),
+			DirectX::XMLoadFloat4(static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&row1))),
+			DirectX::XMLoadFloat4(static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&row2))),
+			DirectX::XMLoadFloat4(static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&row3))) } {}
 
 	inline Mat4x4::Mat4x4(
 		const float m00, const float m01, const float m02, const float m03,
@@ -218,7 +222,8 @@ namespace s3d
 
 	inline bool SIV3D_VECTOR_CALL Mat4x4::isFinite() const noexcept
 	{
-		return (not hasNaN() && not hasInf());
+		return (not DirectX::XMMatrixIsNaN(value)
+			&& not DirectX::XMMatrixIsInfinite(value));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -256,12 +261,14 @@ namespace s3d
 
 	inline bool SIV3D_VECTOR_CALL Mat4x4::decompose(Float3& scale, Quaternion& rotation, Float3& translation) const noexcept
 	{
-		SimdFloat4 scaleVector;
-		SimdFloat4 translationVector;
+		DirectX::XMVECTOR scaleVector;
+		DirectX::XMVECTOR translationVector;
 		const bool succeeded = DirectX::XMMatrixDecompose(
-			&scaleVector.vec, &rotation.value.vec, &translationVector.vec, value);
-		scale = scaleVector.xyz();
-		translation = translationVector.xyz();
+			&scaleVector, &rotation.value.vec, &translationVector, value);
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&scale)), scaleVector);
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&translation)), translationVector);
 		return succeeded;
 	}
 
@@ -443,7 +450,13 @@ namespace s3d
 
 	inline Float4 SIV3D_VECTOR_CALL Mat4x4::transform(const Float4 vector) const noexcept
 	{
-		return SimdFloat4{ DirectX::XMVector4Transform(SimdFloat4{ vector }.vec, value) }.toFloat4();
+		const DirectX::XMVECTOR resultVector = DirectX::XMVector4Transform(
+			DirectX::XMLoadFloat4(static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&vector))),
+			value);
+		Float4 result;
+		DirectX::XMStoreFloat4(
+			static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&result)), resultVector);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -454,7 +467,13 @@ namespace s3d
 
 	inline Float3 SIV3D_VECTOR_CALL Mat4x4::transformPoint(const Float3 point) const noexcept
 	{
-		return SimdFloat4{ DirectX::XMVector3TransformCoord(SimdFloat4{ point }.vec, value) }.xyz();
+		const DirectX::XMVECTOR resultVector = DirectX::XMVector3TransformCoord(
+			DirectX::XMLoadFloat3(static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&point))),
+			value);
+		Float3 result;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), resultVector);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -465,7 +484,13 @@ namespace s3d
 
 	inline Float3 SIV3D_VECTOR_CALL Mat4x4::transformVector(const Float3 vector) const noexcept
 	{
-		return SimdFloat4{ DirectX::XMVector3TransformNormal(SimdFloat4{ vector }.vec, value) }.xyz();
+		const DirectX::XMVECTOR resultVector = DirectX::XMVector3TransformNormal(
+			DirectX::XMLoadFloat3(static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vector))),
+			value);
+		Float3 result;
+		DirectX::XMStoreFloat3(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), resultVector);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -477,7 +502,10 @@ namespace s3d
 	inline void SIV3D_VECTOR_CALL Mat4x4::transformPoints(
 		Float3* const output, const Float3* const input, const size_t vectorCount) const noexcept
 	{
-		transformPoints(output, sizeof(Float3), input, sizeof(Float3), vectorCount);
+		DirectX::XMVector3TransformCoordStream(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(output)), sizeof(Float3),
+			static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(input)), sizeof(Float3),
+			vectorCount, value);
 	}
 
 	inline void SIV3D_VECTOR_CALL Mat4x4::transformPoints(
@@ -499,7 +527,10 @@ namespace s3d
 	inline void SIV3D_VECTOR_CALL Mat4x4::transformVectors(
 		Float3* const output, const Float3* const input, const size_t vectorCount) const noexcept
 	{
-		transformVectors(output, sizeof(Float3), input, sizeof(Float3), vectorCount);
+		DirectX::XMVector3TransformNormalStream(
+			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(output)), sizeof(Float3),
+			static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(input)), sizeof(Float3),
+			vectorCount, value);
 	}
 
 	inline void SIV3D_VECTOR_CALL Mat4x4::transformVectors(
@@ -536,7 +567,9 @@ namespace s3d
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::Translate(const Float3 offset) noexcept
 	{
-		return Mat4x4{ DirectX::XMMatrixTranslationFromVector(SimdFloat4{ offset }.vec) };
+		return Mat4x4{ DirectX::XMMatrixTranslationFromVector(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&offset)))) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -552,7 +585,9 @@ namespace s3d
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::Scale(const Float3 scale) noexcept
 	{
-		return Mat4x4{ DirectX::XMMatrixScalingFromVector(SimdFloat4{ scale }.vec) };
+		return Mat4x4{ DirectX::XMMatrixScalingFromVector(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&scale)))) };
 	}
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::Scale(const float scale, const Float3 center) noexcept
@@ -599,7 +634,9 @@ namespace s3d
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::RollPitchYaw(const Float3 pitchYawRoll) noexcept
 	{
-		return Mat4x4{ DirectX::XMMatrixRotationRollPitchYawFromVector(SimdFloat4{ pitchYawRoll }.vec) };
+		return Mat4x4{ DirectX::XMMatrixRotationRollPitchYawFromVector(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&pitchYawRoll)))) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -610,7 +647,9 @@ namespace s3d
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::RotateNormal(const Float3 normalAxis, const float angle) noexcept
 	{
-		return Mat4x4{ DirectX::XMMatrixRotationNormal(SimdFloat4{ normalAxis }.vec, angle) };
+		return Mat4x4{ DirectX::XMMatrixRotationNormal(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&normalAxis))), angle) };
 	}
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::RotateNormal(
@@ -629,7 +668,9 @@ namespace s3d
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::RotateAxis(const Float3 axis, const float angle) noexcept
 	{
-		return Mat4x4{ DirectX::XMMatrixRotationAxis(SimdFloat4{ axis }.vec, angle) };
+		return Mat4x4{ DirectX::XMMatrixRotationAxis(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&axis))), angle) };
 	}
 
 	inline Mat4x4 SIV3D_VECTOR_CALL Mat4x4::RotateAxis(
@@ -668,10 +709,12 @@ namespace s3d
 		const Float3 scale, const Quaternion rotation, const Float3 translation) noexcept
 	{
 		return Mat4x4{ DirectX::XMMatrixAffineTransformation(
-			SimdFloat4{ scale }.vec,
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&scale))),
 			DirectX::XMVectorZero(),
 			rotation.value.vec,
-			SimdFloat4{ translation }.vec) };
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&translation)))) };
 	}
 
 	////////////////////////////////////////////////////////////////

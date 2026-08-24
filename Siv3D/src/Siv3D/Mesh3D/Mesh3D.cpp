@@ -313,8 +313,11 @@ namespace s3d
 		{
 			for (auto& vertex : vertices)
 			{
-				vertex.pos = SimdFloat4{ DirectX::XMVector3Transform(
-					SimdFloat4{ vertex.pos }.vec, matrix.value) }.xyz();
+				const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(
+					static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.pos)));
+				DirectX::XMStoreFloat3(
+					static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.pos)),
+					DirectX::XMVector3Transform(position, matrix.value));
 			}
 
 			return *this;
@@ -325,18 +328,27 @@ namespace s3d
 
 		for (auto& vertex : vertices)
 		{
-			vertex.pos = SimdFloat4{ DirectX::XMVector3Transform(
-				SimdFloat4{ vertex.pos }.vec, matrix.value) }.xyz();
+			const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.pos)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.pos)),
+				DirectX::XMVector3Transform(position, matrix.value));
 
-			vertex.normal = SimdFloat4{ DirectX::XMVector3Normalize(
-				DirectX::XMVector3TransformNormal(
-					SimdFloat4{ vertex.normal }.vec, normalMatrix)) }.xyz();
+			const DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.normal)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.normal)),
+				DirectX::XMVector3Normalize(DirectX::XMVector3TransformNormal(normal, normalMatrix)));
 
 			const DirectX::XMVECTOR tangent = DirectX::XMVector3Normalize(
 				DirectX::XMVector3TransformNormal(
-					SimdFloat4{ vertex.tangent }.vec, matrix.value));
+					DirectX::XMLoadFloat4(
+						static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&vertex.tangent))),
+					matrix.value));
 			const float tangentW = (flipHandedness ? -vertex.tangent.w : vertex.tangent.w);
-			vertex.tangent = SimdFloat4{ DirectX::XMVectorSetW(tangent, tangentW) }.toFloat4();
+			DirectX::XMStoreFloat4(
+				static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&vertex.tangent)),
+				DirectX::XMVectorSetW(tangent, tangentW));
 		}
 
 		return *this;
@@ -408,14 +420,26 @@ namespace s3d
 
 		for (auto& vertex : vertices)
 		{
-			vertex.pos = SimdFloat4{ DirectX::XMVector3TransformNormal(
-				SimdFloat4{ vertex.pos }.vec, rotationMatrix) }.xyz();
-			vertex.normal = SimdFloat4{ DirectX::XMVector3TransformNormal(
-				SimdFloat4{ vertex.normal }.vec, rotationMatrix) }.xyz();
+			const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.pos)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.pos)),
+				DirectX::XMVector3TransformNormal(position, rotationMatrix));
+
+			const DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.normal)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.normal)),
+				DirectX::XMVector3TransformNormal(normal, rotationMatrix));
 
 			const DirectX::XMVECTOR tangent = DirectX::XMVector3TransformNormal(
-				SimdFloat4{ vertex.tangent }.vec, rotationMatrix);
-			vertex.tangent = SimdFloat4{ DirectX::XMVectorSetW(tangent, vertex.tangent.w) }.toFloat4();
+				DirectX::XMLoadFloat4(
+					static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&vertex.tangent))),
+				rotationMatrix);
+			const float tangentW = vertex.tangent.w;
+			DirectX::XMStoreFloat4(
+				static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&vertex.tangent)),
+				DirectX::XMVectorSetW(tangent, tangentW));
 		}
 
 		return *this;
@@ -483,7 +507,9 @@ namespace s3d
 
 	Mesh3D& Mesh3D::scale(const Float3 scale) noexcept
 	{
-		const DirectX::XMVECTOR scaleVector = SimdFloat4{ scale, 1.0f }.vec;
+		const DirectX::XMVECTOR scaleVector = DirectX::XMVectorSetW(
+			DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&scale))), 1.0f);
 
 		if ((scale.x == 0.0f)
 			|| (scale.y == 0.0f)
@@ -491,8 +517,11 @@ namespace s3d
 		{
 			for (auto& vertex : vertices)
 			{
-				vertex.pos = SimdFloat4{ DirectX::XMVectorMultiply(
-					SimdFloat4{ vertex.pos }.vec, scaleVector) }.xyz();
+				const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(
+					static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.pos)));
+				DirectX::XMStoreFloat3(
+					static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.pos)),
+					DirectX::XMVectorMultiply(position, scaleVector));
 			}
 
 			return *this;
@@ -503,17 +532,27 @@ namespace s3d
 
 		for (auto& vertex : vertices)
 		{
-			vertex.pos = SimdFloat4{ DirectX::XMVectorMultiply(
-				SimdFloat4{ vertex.pos }.vec, scaleVector) }.xyz();
+			const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.pos)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.pos)),
+				DirectX::XMVectorMultiply(position, scaleVector));
 
-			vertex.normal = SimdFloat4{ DirectX::XMVector3Normalize(
-				DirectX::XMVectorMultiply(
-					SimdFloat4{ vertex.normal }.vec, inverseScaleVector)) }.xyz();
+			const DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.normal)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.normal)),
+				DirectX::XMVector3Normalize(DirectX::XMVectorMultiply(normal, inverseScaleVector)));
 
 			const DirectX::XMVECTOR tangent = DirectX::XMVector3Normalize(
-				DirectX::XMVectorMultiply(SimdFloat4{ vertex.tangent }.vec, scaleVector));
+				DirectX::XMVectorMultiply(
+					DirectX::XMLoadFloat4(
+						static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&vertex.tangent))),
+					scaleVector));
 			const float tangentW = (flipHandedness ? -vertex.tangent.w : vertex.tangent.w);
-			vertex.tangent = SimdFloat4{ DirectX::XMVectorSetW(tangent, tangentW) }.toFloat4();
+			DirectX::XMStoreFloat4(
+				static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&vertex.tangent)),
+				DirectX::XMVectorSetW(tangent, tangentW));
 		}
 
 		return *this;
