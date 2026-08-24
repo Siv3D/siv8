@@ -333,6 +333,50 @@ TEST_CASE("Mesh3D::Annulus")
 	CHECK(Mesh3D::Annulus(1.0f, 2.0f, 2).isEmpty());
 }
 
+TEST_CASE("Mesh3D::Torus")
+{
+	constexpr float MajorRadius = 3.0f;
+	constexpr float TubeRadius = 1.0f;
+	constexpr uint32 RingSegments = 8;
+	constexpr uint32 TubeSegments = 4;
+	const Mesh3D mesh = Mesh3D::Torus(MajorRadius, TubeRadius, RingSegments, TubeSegments);
+	const size_t ringStride = (RingSegments + 1);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ (RingSegments + 1) * (TubeSegments + 1) });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * RingSegments * TubeSegments });
+	CheckMeshGeometry(mesh);
+	CHECK_EQ(mesh.vertices[0].pos, Float3{ MajorRadius, TubeRadius, 0.0f });
+	CHECK_EQ(mesh.vertices[RingSegments].pos, mesh.vertices[0].pos);
+	CHECK_EQ(mesh.vertices[RingSegments].normal, mesh.vertices[0].normal);
+	CHECK_EQ(mesh.vertices[RingSegments].tangent, mesh.vertices[0].tangent);
+	CHECK_EQ(mesh.vertices[RingSegments].tex, Float2{ 1.0f, 0.0f });
+
+	const size_t lastTubeRow = (TubeSegments * ringStride);
+	CHECK_EQ(mesh.vertices[lastTubeRow].pos, mesh.vertices[0].pos);
+	CHECK_EQ(mesh.vertices[lastTubeRow].normal, mesh.vertices[0].normal);
+	CHECK_EQ(mesh.vertices[lastTubeRow].tangent, mesh.vertices[0].tangent);
+	CHECK_EQ(mesh.vertices[lastTubeRow].tex, Float2{ 0.0f, 1.0f });
+
+	for (const auto& vertex : mesh.vertices)
+	{
+		const float radialDistance = std::sqrt((vertex.pos.x * vertex.pos.x) + (vertex.pos.z * vertex.pos.z));
+		const float profileDistance = std::hypot((radialDistance - MajorRadius), vertex.pos.y);
+		CHECK(profileDistance == doctest::Approx(TubeRadius).epsilon(FrameEpsilon));
+		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
+		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
+	}
+
+	CheckMeshGeometry(Mesh3D::Torus(2.0f, 0.5f, 3, 3));
+	CHECK(Mesh3D::Torus(0.0f, TubeRadius, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(MajorRadius, 0.0f, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(MajorRadius, MajorRadius, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(1.0f, 2.0f, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(MajorRadius, TubeRadius, 2, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(MajorRadius, TubeRadius, RingSegments, 2).isEmpty());
+	CHECK(Mesh3D::Torus(std::numeric_limits<float>::infinity(), TubeRadius, RingSegments, TubeSegments).isEmpty());
+	CHECK(Mesh3D::Torus(MajorRadius, TubeRadius, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+}
+
 TEST_CASE("Mesh3D::Frustum")
 {
 	constexpr uint32 Segments = 8;

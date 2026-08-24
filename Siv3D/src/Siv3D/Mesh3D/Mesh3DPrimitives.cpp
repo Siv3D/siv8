@@ -156,8 +156,8 @@ namespace s3d
 			const Float3 halfU = (face.u * 0.5f);
 			const Float3 halfV = (face.v * 0.5f);
 			const FloatRect uvRect = uvRects[faceIndex];
-		const float uSign = ((uvRect.right < uvRect.left) ? -1.0f : 1.0f);
-		const float vSign = ((uvRect.bottom < uvRect.top) ? -1.0f : 1.0f);
+			const float uSign = ((uvRect.right < uvRect.left) ? -1.0f : 1.0f);
+			const float vSign = ((uvRect.bottom < uvRect.top) ? -1.0f : 1.0f);
 			const Float3 tangent = (face.u.normalized() * uSign);
 			const Float4 tangentFrame{ tangent, (uSign * vSign) };
 			const size_t vertexOffset = (faceIndex * 4);
@@ -283,6 +283,96 @@ namespace s3d
 				const uint32 i0 = static_cast<uint32>(rowOffset + x);
 				const uint32 i1 = (i0 + 1);
 				const uint32 i2 = static_cast<uint32>(rowOffset + columnCount + x);
+				const uint32 i3 = (i2 + 1);
+
+				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
+			}
+		}
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Torus
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Torus(
+		const float majorRadius,
+		const float tubeRadius,
+		const uint32 ringSegments,
+		const uint32 tubeSegments)
+	{
+		if ((not std::isfinite(majorRadius))
+			|| (not std::isfinite(tubeRadius))
+			|| (majorRadius <= 0.0f)
+			|| (tubeRadius <= 0.0f)
+			|| (majorRadius <= tubeRadius)
+			|| (ringSegments < 3)
+			|| (tubeSegments < 3))
+		{
+			return{};
+		}
+
+		size_t ringStride;
+		size_t tubeRowCount;
+		size_t vertexCount;
+		size_t quadCount;
+		size_t triangleCount;
+
+		if ((not CheckedAdd(static_cast<size_t>(ringSegments), 1, ringStride))
+			|| (not CheckedAdd(static_cast<size_t>(tubeSegments), 1, tubeRowCount))
+			|| (not CheckedMultiply(ringStride, tubeRowCount, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(ringSegments), static_cast<size_t>(tubeSegments), quadCount))
+			|| (not CheckedMultiply(quadCount, 2, triangleCount)))
+		{
+			return{};
+		}
+
+		Mesh3D mesh{ vertexCount, triangleCount };
+		const Array<CircleSample> ringSinCos = MakeCircleSamples(ringSegments);
+		const Array<CircleSample> tubeSinCos = MakeCircleSamples(tubeSegments);
+		const float invRingSegments = (1.0f / static_cast<float>(ringSegments));
+		const float invTubeSegments = (1.0f / static_cast<float>(tubeSegments));
+
+		for (uint32 tubeIndex = 0; tubeIndex <= tubeSegments; ++tubeIndex)
+		{
+			const float tubeSin = tubeSinCos[tubeIndex].sin;
+			const float tubeCos = tubeSinCos[tubeIndex].cos;
+			const float ringRadius = (majorRadius + (tubeRadius * tubeSin));
+			const float positionY = (tubeRadius * tubeCos);
+			const float v = (static_cast<float>(tubeIndex) * invTubeSegments);
+			const size_t rowBase = (static_cast<size_t>(tubeIndex) * ringStride);
+
+			for (uint32 ringIndex = 0; ringIndex <= ringSegments; ++ringIndex)
+			{
+				const float ringSin = ringSinCos[ringIndex].sin;
+				const float ringCos = ringSinCos[ringIndex].cos;
+				const Float3 normal{ (ringCos * tubeSin), tubeCos, (ringSin * tubeSin) };
+
+				mesh.vertices[rowBase + ringIndex] = Vertex3D{
+					.pos = Float3{ (ringRadius * ringCos), positionY, (ringRadius * ringSin) },
+					.normal = normal,
+					.tex = Float2{ (static_cast<float>(ringIndex) * invRingSegments), v },
+					.tangent = Float4{ -ringSin, 0.0f, ringCos, 1.0f }
+				};
+			}
+		}
+
+		TriangleIndex32* pTriangle = mesh.indices.data();
+		for (uint32 tubeIndex = 0; tubeIndex < tubeSegments; ++tubeIndex)
+		{
+			const size_t rowBase = (static_cast<size_t>(tubeIndex) * ringStride);
+			const size_t nextRowBase = (rowBase + ringStride);
+
+			for (uint32 ringIndex = 0; ringIndex < ringSegments; ++ringIndex)
+			{
+				const uint32 i0 = static_cast<uint32>(rowBase + ringIndex);
+				const uint32 i1 = (i0 + 1);
+				const uint32 i2 = static_cast<uint32>(nextRowBase + ringIndex);
 				const uint32 i3 = (i2 + 1);
 
 				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };

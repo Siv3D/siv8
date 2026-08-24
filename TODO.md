@@ -50,9 +50,21 @@
 
 ### 基本形状
 
-- 共通の円形スイープ生成処理を使って `Mesh3D::Torus()` を追加する。
-- 共通の円形プロファイル生成処理を使って `Mesh3D::Capsule()` を追加する。
-- 追加候補として、icosphere、hemisphere、rounded box、回転体、押し出し形状を評価する。
+- `Mesh3D::Capsule()` を、円柱部分の長さを明示する API で追加する。
+- open surface の `Mesh3D::Hemisphere()` を追加し、将来の底面オプションを検討する。
+- 長方形の底面に対応する `Mesh3D::Pyramid()` を追加する。
+- tetrahedron、octahedron、icosahedron、dodecahedron を、外接球半径を共通のサイズ規約として追加する。
+- icosahedron の再帰分割と球面投影による `Mesh3D::IcoSphere()` を追加する。
+- UV と tangent の規約を設計して `Mesh3D::RoundedBox()` を追加する。
+- 補完候補として、double-sided plane、hollow cylinder、wedge を評価する。
+
+### 汎用形状生成
+
+- Torus、Capsule、Hemisphere で蓄積した実装を基に、2D プロファイルの回転体を作る `Lathe()` を設計する。
+- 穴を含む `Polygon` の押し出し形状を作る `Extrude()` を設計する。
+- parallel-transport frame を使い、3D 経路に沿うチューブを作る `Tube()` を設計する。
+- `Grid<float>` や画像の標高値から地形を作る height field API を設計する。
+- 応用候補として、torus arc、torus knot、superellipsoid、chamfered box、rounded cylinder を評価する。
 
 ### OBJ 入力
 
