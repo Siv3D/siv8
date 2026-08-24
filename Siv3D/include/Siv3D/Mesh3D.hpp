@@ -13,6 +13,7 @@
 # include "Common.hpp"
 # include "Array.hpp"
 # include "Blob.hpp"
+# include "BoxUVMapping.hpp"
 # include "IWriter.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
@@ -86,6 +87,14 @@ namespace s3d
 		/// @remark 各面は独立した頂点を持ち、面ごとに `[0, 1]` の UV 座標が割り当てられます。
 		[[nodiscard]]
 		static Mesh3D Box(Float3 size = Float3{ 1.0f, 1.0f, 1.0f });
+
+		/// @brief 原点を中心とする直方体の 3D メッシュを作成します。
+		/// @param size 直方体の各軸方向の大きさ
+		/// @param uvMapping 各面に割り当てる UV 矩形
+		/// @return 直方体の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark 各面は独立した頂点を持ち、`uvMapping` の対応する矩形が割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Box(Float3 size, const BoxUVMapping& uvMapping);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -318,6 +327,19 @@ namespace s3d
 		/// @remark この関数が false を返した場合、この 3D メッシュの内容は変更されません。
 		[[nodiscard]]
 		bool append(const Mesh3D& mesh);
+
+		/// @brief アフィン変換を適用した別の 3D メッシュの頂点と三角形を末尾に追加します。
+		/// @param mesh 追加する Mesh3D
+		/// @param matrix 追加する頂点に適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, 追加できない場合は false
+		/// @remark `matrix` はアフィン変換行列である必要があります。
+		/// @remark `append(mesh.transformed(matrix))` と同じ結果を、一時 Mesh3D を作成せずに生成します。
+		/// @remark `mesh` が不正な Mesh3D である場合、または追加後の頂点数が `MaxVertexCount` を超える場合は追加に失敗します。
+		/// @remark この関数が false を返した場合、この Mesh3D の内容は変更されません。
+		/// @remark 変換の線形部分が特異である場合、追加する頂点の法線および接線は変更されません。
+		/// @remark 変換の線形部分の行列式が負の場合、追加する頂点の接線の `w` 成分が反転しますが、三角形の巻き順は変更されません。
+		[[nodiscard]]
+		bool append(const Mesh3D& mesh, const Mat4x4& matrix);
 
 		////////////////////////////////////////////////////////////////
 		//

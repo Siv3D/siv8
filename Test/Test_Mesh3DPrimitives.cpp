@@ -76,6 +76,147 @@ TEST_CASE("Mesh3D::Box")
 	CHECK(Mesh3D::Box(Float3{ 1.0f, 1.0f, std::numeric_limits<float>::infinity() }).isEmpty());
 }
 
+TEST_CASE("Mesh3D::Box with UV mapping")
+{
+	const BoxUVMapping uvMapping{
+		.negativeZ = FloatRect{ -1.0f, -2.0f, 0.0f, -1.0f },
+		.positiveZ = FloatRect{ 0.0f, 0.0f, 0.25f, 0.5f },
+		.positiveX = FloatRect{ 0.25f, 0.0f, 0.5f, 0.5f },
+		.negativeX = FloatRect{ 0.5f, 0.0f, 0.75f, 0.5f },
+		.positiveY = FloatRect{ 0.75f, 0.0f, 1.0f, 0.5f },
+		.negativeY = FloatRect{ 1.0f, 0.0f, 1.25f, 0.5f },
+	};
+	const std::array<FloatRect, 6> uvRects{
+		uvMapping.negativeZ,
+		uvMapping.positiveZ,
+		uvMapping.positiveX,
+		uvMapping.negativeX,
+		uvMapping.positiveY,
+		uvMapping.negativeY,
+	};
+	const Mesh3D mesh = Mesh3D::Box(Float3{ 2.0f, 4.0f, 6.0f }, uvMapping);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CheckMeshGeometry(mesh);
+
+	for (size_t faceIndex = 0; faceIndex < uvRects.size(); ++faceIndex)
+	{
+		const FloatRect rect = uvRects[faceIndex];
+		const size_t vertexOffset = (faceIndex * 4);
+		CHECK_EQ(mesh.vertices[vertexOffset + 0].tex, Float2{ rect.left, rect.top });
+		CHECK_EQ(mesh.vertices[vertexOffset + 1].tex, Float2{ rect.right, rect.top });
+		CHECK_EQ(mesh.vertices[vertexOffset + 2].tex, Float2{ rect.left, rect.bottom });
+		CHECK_EQ(mesh.vertices[vertexOffset + 3].tex, Float2{ rect.right, rect.bottom });
+	}
+
+	SUBCASE("Invalid UV rectangles")
+	{
+		BoxUVMapping invalid = uvMapping;
+		invalid.negativeX.left = std::numeric_limits<float>::quiet_NaN();
+		CHECK(Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, invalid).isEmpty());
+
+		invalid = uvMapping;
+		invalid.positiveY.bottom = std::numeric_limits<float>::infinity();
+		CHECK(Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, invalid).isEmpty());
+	}
+
+	CHECK(Mesh3D::Box(Float3{ 0.0f, 1.0f, 1.0f }, uvMapping).isEmpty());
+}
+
+TEST_CASE("Mesh3D::Box with flipped UV mapping")
+{
+	BoxUVMapping uvMapping;
+	uvMapping.negativeZ = FloatRect{ 1.0f, 0.0f, 0.0f, 1.0f };
+	uvMapping.positiveZ = FloatRect{ 0.0f, 1.0f, 1.0f, 0.0f };
+	uvMapping.positiveX = FloatRect{ 1.0f, 1.0f, 0.0f, 0.0f };
+
+	const Mesh3D defaultMesh = Mesh3D::Box();
+	const Mesh3D flippedMesh = Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, uvMapping);
+	CheckMeshGeometry(flippedMesh);
+
+	SUBCASE("U flip")
+	{
+		constexpr size_t VertexOffset = 0;
+		CHECK_EQ(flippedMesh.vertices[VertexOffset + 0].tex, Float2{ 1.0f, 0.0f });
+		CHECK_EQ(flippedMesh.vertices[VertexOffset + 3].tex, Float2{ 0.0f, 1.0f });
+
+		for (size_t i = 0; i < 4; ++i)
+		{
+			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.xyz(), -defaultMesh.vertices[VertexOffset + i].tangent.xyz());
+			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.w, -defaultMesh.vertices[VertexOffset + i].tangent.w);
+		}
+	}
+
+	SUBCASE("V flip")
+	{
+		constexpr size_t VertexOffset = 4;
+		CHECK_EQ(flippedMesh.vertices[VertexOffset + 0].tex, Float2{ 0.0f, 1.0f });
+		CHECK_EQ(flippedMesh.vertices[VertexOffset + 3].tex, Float2{ 1.0f, 0.0f });
+
+		for (size_t i = 0; i < 4; ++i)
+		{
+			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.xyz(), defaultMesh.vertices[VertexOffset + i].tangent.xyz());
+			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.w, -defaultMesh.vertices[VertexOffset + i].tangent.w);
+		}
+	}
+
+	SUBCASE("U and V flip")
+	{
+		constexpr size_t VertexOffset = 8;
+		CHECK_EQ(flippedMesh.vertices[VertexOffset + 0].tex, Float2{ 1.0f, 1.0f });
+		CHECK_EQ(flippedMesh.vertices[VertexOffset + 3].tex, Float2{ 0.0f, 0.0f });
+
+		for (size_t i = 0; i < 4; ++i)
+		{
+			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.xyz(), -defaultMesh.vertices[VertexOffset + i].tangent.xyz());
+			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.w, defaultMesh.vertices[VertexOffset + i].tangent.w);
+		}
+	}
+}
+
+TEST_CASE("Mesh3D::Box with collapsed UV mapping")
+{
+	BoxUVMapping uvMapping;
+	uvMapping.negativeZ = FloatRect{ 0.25f, 0.0f, 0.25f, 1.0f };
+	uvMapping.positiveZ = FloatRect{ 0.0f, 0.75f, 1.0f, 0.75f };
+	uvMapping.positiveX = FloatRect{ 0.25f, 0.75f, 0.25f, 0.75f };
+
+	const Mesh3D defaultMesh = Mesh3D::Box();
+	const Mesh3D collapsedMesh = Mesh3D::Box(Float3{ 1.0f, 1.0f, 1.0f }, uvMapping);
+	CheckMeshGeometry(collapsedMesh);
+
+	SUBCASE("Collapsed U")
+	{
+		constexpr size_t VertexOffset = 0;
+		for (size_t i = 0; i < 4; ++i)
+		{
+			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tex.x, 0.25f);
+			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
+		}
+	}
+
+	SUBCASE("Collapsed V")
+	{
+		constexpr size_t VertexOffset = 4;
+		for (size_t i = 0; i < 4; ++i)
+		{
+			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tex.y, 0.75f);
+			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
+		}
+	}
+
+	SUBCASE("Collapsed U and V")
+	{
+		constexpr size_t VertexOffset = 8;
+		for (size_t i = 0; i < 4; ++i)
+		{
+			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tex, Float2{ 0.25f, 0.75f });
+			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
+		}
+	}
+}
+
 TEST_CASE("Mesh3D::Plane")
 {
 	const Float2 uvScale{ 2.0f, 3.0f };

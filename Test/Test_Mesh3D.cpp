@@ -156,6 +156,81 @@ TEST_CASE("Mesh3D::append")
 	}
 }
 
+TEST_CASE("Mesh3D::append with transform")
+{
+	const Mat4x4 matrix{
+		1, 1, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		4, 5, 6, 1
+	};
+
+	SUBCASE("Another mesh")
+	{
+		const Mesh3D source = MakeFrameMesh();
+		const Mesh3D destination{
+			{ MakeVertex(0.0f), MakeVertex(1.0f), MakeVertex(2.0f) },
+			{ TriangleIndex32{ 0, 1, 2 } }
+		};
+		Mesh3D expected = destination;
+		REQUIRE(expected.append(source.transformed(matrix)));
+
+		Mesh3D actual = destination;
+		CHECK(actual.append(source, matrix));
+		CheckMesh(actual, expected);
+		CheckMesh(source, MakeFrameMesh());
+	}
+
+	SUBCASE("Self append with negative determinant")
+	{
+		const Mat4x4 negativeScale = Mat4x4::Scale(Float3{ -2.0f, 3.0f, 4.0f });
+		const Mesh3D original = MakeFrameMesh();
+		Mesh3D expected = original;
+		REQUIRE(expected.append(original.transformed(negativeScale)));
+
+		Mesh3D actual = original;
+		CHECK(actual.append(actual, negativeScale));
+		CheckMesh(actual, expected);
+		CHECK_EQ(actual.vertices[1].tangent.w, -original.vertices[0].tangent.w);
+	}
+
+	SUBCASE("Singular transform")
+	{
+		const Mat4x4 singular = Mat4x4::Scale(Float3{ 2.0f, 0.0f, 4.0f });
+		const Mesh3D source = MakeFrameMesh();
+		Mesh3D expected;
+		REQUIRE(expected.append(source.transformed(singular)));
+
+		Mesh3D actual;
+		CHECK(actual.append(source, singular));
+		CheckMesh(actual, expected);
+		CHECK_EQ(actual.vertices[0].normal, source.vertices[0].normal);
+		CHECK_EQ(actual.vertices[0].tangent, source.vertices[0].tangent);
+	}
+
+	SUBCASE("Invalid source leaves the destination unchanged")
+	{
+		const Mesh3D source{
+			{ MakeVertex(3.0f), MakeVertex(4.0f), MakeVertex(5.0f) },
+			{ TriangleIndex32{ 0, 1, 3 } }
+		};
+		const Mesh3D original = MakeFrameMesh();
+		Mesh3D actual = original;
+
+		CHECK_FALSE(actual.append(source, matrix));
+		CheckMesh(actual, original);
+	}
+
+	SUBCASE("Empty source")
+	{
+		const Mesh3D original = MakeFrameMesh();
+		Mesh3D actual = original;
+
+		CHECK(actual.append(Mesh3D{}, matrix));
+		CheckMesh(actual, original);
+	}
+}
+
 TEST_CASE("Mesh3D::reverseWinding")
 {
 	Mesh3D mesh{

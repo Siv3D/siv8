@@ -35,6 +35,15 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static bool IsFinite(const FloatRect& rect) noexcept
+		{
+			return (std::isfinite(rect.left)
+				&& std::isfinite(rect.top)
+				&& std::isfinite(rect.right)
+				&& std::isfinite(rect.bottom));
+		}
+
+		[[nodiscard]]
 		static bool CheckedAdd(const size_t a, const size_t b, size_t& result) noexcept
 		{
 			if ((std::numeric_limits<size_t>::max() - a) < b)
@@ -98,6 +107,11 @@ namespace s3d
 
 	Mesh3D Mesh3D::Box(const Float3 size)
 	{
+		return Box(size, BoxUVMapping{});
+	}
+
+	Mesh3D Mesh3D::Box(const Float3 size, const BoxUVMapping& uvMapping)
+	{
 		if ((not IsFinite(size))
 			|| (size.x <= 0.0f)
 			|| (size.y <= 0.0f)
@@ -116,6 +130,23 @@ namespace s3d
 			{ { 0.0f,  halfSize.y, 0.0f }, { size.x, 0.0f, 0.0f }, { 0.0f, 0.0f, -size.z }, { 0.0f, 1.0f, 0.0f } },
 			{ { 0.0f, -halfSize.y, 0.0f }, { size.x, 0.0f, 0.0f }, { 0.0f, 0.0f, size.z }, { 0.0f, -1.0f, 0.0f } },
 		}};
+		const std::array<FloatRect, 6> uvRects =
+		{{
+			uvMapping.negativeZ,
+			uvMapping.positiveZ,
+			uvMapping.positiveX,
+			uvMapping.negativeX,
+			uvMapping.positiveY,
+			uvMapping.negativeY,
+		}};
+
+		for (const auto& uvRect : uvRects)
+		{
+			if (not IsFinite(uvRect))
+			{
+				return{};
+			}
+		}
 
 		Mesh3D mesh{ 24, 12 };
 
@@ -124,32 +155,35 @@ namespace s3d
 			const BoxFace& face = faces[faceIndex];
 			const Float3 halfU = (face.u * 0.5f);
 			const Float3 halfV = (face.v * 0.5f);
-			const Float3 tangent = face.u.normalized();
-			const Float4 tangentFrame{ tangent, 1.0f };
+			const FloatRect uvRect = uvRects[faceIndex];
+		const float uSign = ((uvRect.right < uvRect.left) ? -1.0f : 1.0f);
+		const float vSign = ((uvRect.bottom < uvRect.top) ? -1.0f : 1.0f);
+			const Float3 tangent = (face.u.normalized() * uSign);
+			const Float4 tangentFrame{ tangent, (uSign * vSign) };
 			const size_t vertexOffset = (faceIndex * 4);
 
 			mesh.vertices[vertexOffset + 0] = Vertex3D{
 				.pos = (face.center - halfU - halfV),
 				.normal = face.normal,
-				.tex = Float2{ 0.0f, 0.0f },
+				.tex = Float2{ uvRect.left, uvRect.top },
 				.tangent = tangentFrame
 			};
 			mesh.vertices[vertexOffset + 1] = Vertex3D{
 				.pos = (face.center + halfU - halfV),
 				.normal = face.normal,
-				.tex = Float2{ 1.0f, 0.0f },
+				.tex = Float2{ uvRect.right, uvRect.top },
 				.tangent = tangentFrame
 			};
 			mesh.vertices[vertexOffset + 2] = Vertex3D{
 				.pos = (face.center - halfU + halfV),
 				.normal = face.normal,
-				.tex = Float2{ 0.0f, 1.0f },
+				.tex = Float2{ uvRect.left, uvRect.bottom },
 				.tangent = tangentFrame
 			};
 			mesh.vertices[vertexOffset + 3] = Vertex3D{
 				.pos = (face.center + halfU + halfV),
 				.normal = face.normal,
-				.tex = Float2{ 1.0f, 1.0f },
+				.tex = Float2{ uvRect.right, uvRect.bottom },
 				.tangent = tangentFrame
 			};
 
