@@ -157,7 +157,19 @@ namespace s3d
 		[[nodiscard]]
 		bool SIV3D_VECTOR_CALL rotationEquals(Quaternion other, float epsilon = 1e-5f) const noexcept;
 
-		// TODO: 回転間の角度を返す angleTo() は、角度の範囲と非正規化入力の契約を決めた後に追加する。
+		////////////////////////////////////////////////////////////////
+		//
+		//	angleTo
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定したクォータニオンが表す回転までの最小回転角を返します。
+		/// @param other 別のクォータニオン
+		/// @return 2 つの回転間の角度（ラジアン）。範囲は `[0, Math::Pi]`
+		/// @remark `*this` と other は正規化されている必要があります。
+		/// @remark 符号が異なるクォータニオンも同じ回転を表すものとして扱います。
+		[[nodiscard]]
+		float SIV3D_VECTOR_CALL angleTo(Quaternion other) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -321,9 +333,39 @@ namespace s3d
 		[[nodiscard]]
 		Quaternion SIV3D_VECTOR_CALL normalized() const noexcept;
 
-		// TODO: fastNormalized() は、XMQuaternionNormalizeEst() の精度と性能を測定した後に追加を検討する。
+		////////////////////////////////////////////////////////////////
+		//
+		//	fastNormalized
+		//
+		////////////////////////////////////////////////////////////////
 
-		// TODO: 符号を一意化する canonicalize(), canonicalized() は、w が 0 の場合の規則を決めた後に追加する。
+		/// @brief 逆数平方根の近似値を用いて高速に正規化したクォータニオンを返します。
+		/// @return 近似的に正規化したクォータニオン
+		/// @remark `normalized()` より精度が低い代わりに高速です。
+		/// @remark 長さが 0 または無限大の場合、NaN を含むクォータニオンを返します。
+		[[nodiscard]]
+		Quaternion SIV3D_VECTOR_CALL fastNormalized() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	canonicalize, canonicalized
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 同じ回転を表す符号の異なるクォータニオンを一意な符号に揃えます。
+		/// @return *this
+		/// @remark 成分を `(w, x, y, z)` の順に見たとき、最初の非ゼロ成分が正になるよう、必要に応じて全成分の符号を反転します。
+		/// @remark 正規化は行いません。
+		/// @remark すべての成分は有限値である必要があります。
+		Quaternion& SIV3D_VECTOR_CALL canonicalize() & noexcept;
+
+		/// @brief 同じ回転を表す符号の異なるクォータニオンを一意な符号に揃えたクォータニオンを返します。
+		/// @return 一意な符号に揃えたクォータニオン
+		/// @remark 成分を `(w, x, y, z)` の順に見たとき、最初の非ゼロ成分が正になるよう、必要に応じて全成分の符号を反転します。
+		/// @remark 正規化は行いません。
+		/// @remark すべての成分は有限値である必要があります。
+		[[nodiscard]]
+		Quaternion SIV3D_VECTOR_CALL canonicalized() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -336,7 +378,15 @@ namespace s3d
 		[[nodiscard]]
 		Quaternion SIV3D_VECTOR_CALL conjugated() const noexcept;
 
-		// TODO: 破壊的な conjugate() は、破壊的・非破壊 API の命名方針を確定した後に追加する。
+		////////////////////////////////////////////////////////////////
+		//
+		//	conjugate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 自身を共役クォータニオンに変更します。
+		/// @return *this
+		Quaternion& SIV3D_VECTOR_CALL conjugate() & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -391,7 +441,45 @@ namespace s3d
 		[[nodiscard]]
 		Quaternion SIV3D_VECTOR_CALL slerp(Quaternion other, float t) const noexcept;
 
-		// TODO: nlerp(), squad(), log(), exp() は、アニメーション補間で必要になった段階で追加する。
+		////////////////////////////////////////////////////////////////
+		//
+		//	nlerp
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2 つの回転を正規化線形補間します。
+		/// @param other もう一方の回転
+		/// @param t 補間係数。0.0 の場合は `*this`, 1.0 の場合は other と同じ回転
+		/// @return 補間した回転
+		/// @remark `*this` と other は正規化されている必要があります。
+		/// @remark 最短経路となるよう other の符号を選択して線形補間し、結果を正規化します。
+		/// @remark t は `[0.0, 1.0]` の範囲にクランプされません。
+		[[nodiscard]]
+		Quaternion SIV3D_VECTOR_CALL nlerp(Quaternion other, float t) const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	log
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 単位クォータニオンの自然対数を返します。
+		/// @return クォータニオンの自然対数。w 成分は 0
+		/// @remark `*this` は正規化されている必要があります。
+		[[nodiscard]]
+		Quaternion SIV3D_VECTOR_CALL log() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	exp
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 純虚クォータニオンの指数関数を返します。
+		/// @return クォータニオンの指数関数
+		/// @remark `*this` の w 成分は 0 である必要があります。
+		[[nodiscard]]
+		Quaternion SIV3D_VECTOR_CALL exp() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -432,7 +520,21 @@ namespace s3d
 		[[nodiscard]]
 		static Quaternion SIV3D_VECTOR_CALL FromUnitVectors(const Vec3& from, const Vec3& to) noexcept;
 
-		// TODO: 入力を内部で正規化する FromVectors() は、ゼロベクトル時の契約を決めた後に追加する。
+		////////////////////////////////////////////////////////////////
+		//
+		//	FromVectors
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 1 つのベクトルの方向を別のベクトルの方向へ回転させるクォータニオンを返します。
+		/// @param from 回転前の方向を表すベクトル
+		/// @param to 回転後の方向を表すベクトル
+		/// @return from の方向を to の方向へ回転させる正規化済みのクォータニオン
+		/// @remark from と to は有限な非ゼロベクトルである必要があります。
+		/// @remark from と to の長さは回転結果に影響しません。
+		/// @remark 回転軸が一意に定まらない場合は、そのうち 1 つを選択します。
+		[[nodiscard]]
+		static Quaternion SIV3D_VECTOR_CALL FromVectors(const Vec3& from, const Vec3& to) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

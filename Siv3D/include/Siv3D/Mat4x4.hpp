@@ -301,7 +301,17 @@ namespace s3d
 		[[nodiscard]]
 		bool SIV3D_VECTOR_CALL isIdentity() const noexcept;
 
-		// TODO: アフィン行列であるかを判定する isAffine() は、許容誤差の契約を決めた後に追加する。
+		////////////////////////////////////////////////////////////////
+		//
+		//	isAffine
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief アフィン変換行列であるかを返します。
+		/// @param epsilon 第 0～2 行の w 成分と 0、および第 3 行の w 成分と 1 の差の許容量
+		/// @return アフィン変換行列である場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool SIV3D_VECTOR_CALL isAffine(float epsilon = 1e-5f) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -315,8 +325,6 @@ namespace s3d
 		/// @param translation 平行移動量の格納先
 		/// @return 分解に成功した場合 true, それ以外の場合は false
 		bool SIV3D_VECTOR_CALL decompose(Float3& scale, Quaternion& rotation, Float3& translation) const noexcept;
-
-		// TODO: 値返しの分解 API は、戻り値用の型を設計した後に追加する。
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -348,7 +356,28 @@ namespace s3d
 		[[nodiscard]]
 		Mat4x4 SIV3D_VECTOR_CALL inverse(float& determinant) const noexcept;
 
-		// TODO: 特異行列を明示的に扱う tryInverse() は、特異判定の契約を決めた後に追加する。
+		////////////////////////////////////////////////////////////////
+		//
+		//	tryInverse
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 逆行列を計算します。
+		/// @param result 逆行列の格納先
+		/// @return 逆行列が存在する場合 true, 行列式が 0 の場合は false
+		/// @remark この行列のすべての要素は有限値である必要があります。
+		/// @remark false を返した場合、result は変更されません。
+		[[nodiscard]]
+		bool SIV3D_VECTOR_CALL tryInverse(Mat4x4& result) const noexcept;
+
+		/// @brief 逆行列を計算し、行列式を取得します。
+		/// @param result 逆行列の格納先
+		/// @param determinant 行列式の格納先
+		/// @return 逆行列が存在する場合 true, 行列式が 0 の場合は false
+		/// @remark この行列のすべての要素は有限値である必要があります。
+		/// @remark false を返した場合、result は変更されません。determinant には 0 が格納されます。
+		[[nodiscard]]
+		bool SIV3D_VECTOR_CALL tryInverse(Mat4x4& result, float& determinant) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -523,8 +552,6 @@ namespace s3d
 		/// @remark 平行移動および同次座標の w 成分による除算は適用されません。
 		[[nodiscard]]
 		Float3 SIV3D_VECTOR_CALL transformVector(Float3 vector) const noexcept;
-
-		// TODO: 法線変換は逆転置と特異行列時の契約を決めた後に追加する。
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -760,12 +787,6 @@ namespace s3d
 		/// @remark rotation は正規化されている必要があります。
 		[[nodiscard]]
 		static Mat4x4 SIV3D_VECTOR_CALL AffineTransform(Float3 scale, Quaternion rotation, Float3 translation) noexcept;
-
-		// TODO: View / Projection 行列は、座標系、深度範囲、Reverse-Z の規約を決めた後に追加する。
-
-		// TODO: Reflect() は InfinitePlane の実装後に追加する。
-
-		// TODO: Shadow() は点光源と平行光源を区別する API を設計した後に追加する。
 
 		////////////////////////////////////////////////////////////////
 		//
