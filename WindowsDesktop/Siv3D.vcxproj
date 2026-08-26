@@ -261,6 +261,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\IPv4Endpoint.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\ITextEffect.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\JSONSerialization.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MaterialAlphaMode.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\MaterialTexture.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Material.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BoxUVMapping.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PolyhedronUVMapping.hpp" />

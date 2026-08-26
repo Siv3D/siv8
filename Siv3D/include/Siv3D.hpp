@@ -1823,6 +1823,9 @@
 
 
 
+# include <Siv3D/MaterialAlphaMode.hpp>
+# include <Siv3D/MaterialTexture.hpp>
+# include <Siv3D/Material.hpp>
 # include <Siv3D/VertexNormalWeighting.hpp>
 # include <Siv3D/Vertex3D.hpp>
 # include <Siv3D/BoxUVMapping.hpp>

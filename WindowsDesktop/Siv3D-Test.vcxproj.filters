@@ -247,6 +247,9 @@
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Material.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Mesh3D.cpp">
       <Filter>Test</Filter>
     </ClCompile>

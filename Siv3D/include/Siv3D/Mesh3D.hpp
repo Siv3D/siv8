@@ -15,6 +15,7 @@
 # include "Blob.hpp"
 # include "BoxUVMapping.hpp"
 # include "IWriter.hpp"
+# include "Material.hpp"
 # include "PolyhedronUVMapping.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Vertex3D.hpp"
@@ -431,6 +432,17 @@ namespace s3d
 		/// @remark UTF-8（BOM なし）、LF 改行で保存されます。
 		/// @remark 空のメッシュ、インデックスが不正なメッシュ、または出力対象の頂点属性に非有限値が含まれるメッシュは保存できません。
 		bool saveOBJ(FilePathView path) const;
+
+		/// @brief 3D メッシュとマテリアルを Wavefront OBJ / MTL 形式でファイルに保存します。
+		/// @param path 保存する OBJ ファイルのパス
+		/// @param material 保存するマテリアル
+		/// @return OBJ と MTL の保存に成功した場合 true, それ以外の場合は false
+		/// @remark MTL ファイルは OBJ ファイルと同じディレクトリに、同じベース名と `.mtl` 拡張子で保存されます。
+		/// @remark OBJ ファイルには `mtllib` と `usemtl` が書き込まれます。
+		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずに保存されます。
+		/// @remark マテリアルの PBR パラメータは、MTL で表現可能な値へ変換されます。
+		/// @remark テクスチャファイル自体はコピーされません。
+		bool saveOBJ(FilePathView path, const Material& material) const;
 
 		////////////////////////////////////////////////////////////////
 		//
