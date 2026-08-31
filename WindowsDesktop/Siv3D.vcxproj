@@ -266,7 +266,6 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Material.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BoxUVMapping.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\PolyhedronUVMapping.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MicrophoneInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MP3Quality.hpp" />

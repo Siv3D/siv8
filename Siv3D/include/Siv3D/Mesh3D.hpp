@@ -16,7 +16,6 @@
 # include "BoxUVMapping.hpp"
 # include "IWriter.hpp"
 # include "Material.hpp"
-# include "PolyhedronUVMapping.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
@@ -131,47 +130,31 @@ namespace s3d
 
 		/// @brief 原点を中心とする正四面体の 3D メッシュを作成します。
 		/// @param radius 外接球の半径
-		/// @param uvMapping UV マッピング方式
-		/// @return 正四面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
-		/// @remark `PolyhedronUVMapping::PerFace` では、各面に独立した `[0, 1]` の UV 座標が割り当てられます。
-		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		/// @return 正四面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には独立した `[0, 1]` の UV 座標が割り当てられます。
 		[[nodiscard]]
-		static Mesh3D Tetrahedron(
-			double radius = 1.0,
-			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
+		static Mesh3D Tetrahedron(double radius = 1.0);
 
 		/// @brief 原点を中心とする正八面体の 3D メッシュを作成します。
 		/// @param radius 外接球の半径
-		/// @param uvMapping UV マッピング方式
-		/// @return 正八面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
-		/// @remark `PolyhedronUVMapping::PerFace` では、各面に独立した `[0, 1]` の UV 座標が割り当てられます。
-		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		/// @return 正八面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には独立した `[0, 1]` の UV 座標が割り当てられます。
 		[[nodiscard]]
-		static Mesh3D Octahedron(
-			double radius = 1.0,
-			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
+		static Mesh3D Octahedron(double radius = 1.0);
 
 		/// @brief 原点を中心とする正二十面体の 3D メッシュを作成します。
 		/// @param radius 外接球の半径
-		/// @param uvMapping UV マッピング方式
-		/// @return 正二十面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
-		/// @remark `PolyhedronUVMapping::PerFace` では、各面に独立した `[0, 1]` の UV 座標が割り当てられます。
-		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		/// @return 正二十面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には独立した `[0, 1]` の UV 座標が割り当てられます。
 		[[nodiscard]]
-		static Mesh3D Icosahedron(
-			double radius = 1.0,
-			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
+		static Mesh3D Icosahedron(double radius = 1.0);
 
 		/// @brief 原点を中心とする正十二面体の 3D メッシュを作成します。
 		/// @param radius 外接球の半径
-		/// @param uvMapping UV マッピング方式
-		/// @return 正十二面体の 3D メッシュ。`radius` または `uvMapping` が不正な場合は空の 3D メッシュ
-		/// @remark `PolyhedronUVMapping::PerFace` では、各面に正五角形を含む独立した `[0, 1]` の UV 座標が割り当てられます。
-		/// @remark `PolyhedronUVMapping::Spherical` では、正距円筒図法の UV 座標が割り当てられます。経度の境界をまたぐ面では U 座標が 1.0 を超えることがあります。
+		/// @return 正十二面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には正五角形を含む独立した `[0, 1]` の UV 座標が割り当てられます。
 		[[nodiscard]]
-		static Mesh3D Dodecahedron(
-			double radius = 1.0,
-			PolyhedronUVMapping uvMapping = PolyhedronUVMapping::PerFace);
+		static Mesh3D Dodecahedron(double radius = 1.0);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -247,6 +230,7 @@ namespace s3d
 		/// @return カプセルの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark カプセルは原点を中心とし、全体の高さは `cylinderHeight + 2 * radius` です。
 		/// @remark `cylinderHeight` が 0 の場合は UV 球を作成します。
+		/// @remark U 座標は +X 方向を 0 とし、東向き（+Z 方向）へ増加します。
 		/// @remark UV 座標および接線空間の不連続を表現するため、経度方向の継ぎ目と極に頂点が複製されます。
 		[[nodiscard]]
 		static Mesh3D Capsule(
@@ -267,6 +251,7 @@ namespace s3d
 		/// @param stacks 緯度方向の分割数。2 以上である必要があります。
 		/// @return UV 球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark 球の極は Y 軸上に配置されます。
+		/// @remark UV 座標は、北極を V = 0、南極を V = 1 とし、U は +X 方向を 0 として東向き（+Z 方向）へ増加します。
 		/// @remark UV 座標および接線空間の不連続を表現するため、同じ位置に複数の頂点が作成されます。
 		[[nodiscard]]
 		static Mesh3D UVSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
@@ -284,6 +269,7 @@ namespace s3d
 		/// @return 半球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark 半球の中心は原点、赤道は XZ 平面上、極は `(0, radius, 0)` に配置されます。
 		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
+		/// @remark 曲面の U 座標は +X 方向を 0 とし、東向き（+Z 方向）へ増加します。
 		[[nodiscard]]
 		static Mesh3D Hemisphere(double radius, uint32 slices = 32, uint32 stacks = 8);
 
@@ -295,6 +281,7 @@ namespace s3d
 		/// @return 半球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark 半球の中心は原点、赤道は XZ 平面上、極は `(0, radius, 0)` に配置されます。
 		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
+		/// @remark 曲面の U 座標は +X 方向を 0 とし、東向き（+Z 方向）へ増加します。
 		/// @remark 底面を閉じる場合、底面には曲面とは独立した頂点を作成し、円全体を UV 座標の 0 から 1 に割り当てます。
 		[[nodiscard]]
 		static Mesh3D Hemisphere(double radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
@@ -340,6 +327,7 @@ namespace s3d
 		/// @param segments 円周の分割数。3 以上である必要があります。
 		/// @return 円錐台の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark 底面の中心は `(0, -height / 2, 0)`、上面の中心は `(0, height / 2, 0)` に配置されます。
+		/// @remark `topRadius` が 0 の場合、側面の U 座標は円周方向を 0 から 1、V 座標は頂点を 0、底面側を 1 とする矩形領域に割り当てられます。
 		[[nodiscard]]
 		static Mesh3D Frustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
 
@@ -368,6 +356,7 @@ namespace s3d
 		/// @param height 円錐の高さ
 		/// @param segments 円周の分割数。3 以上である必要があります。
 		/// @return 円錐の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 側面の U 座標は円周方向を 0 から 1、V 座標は頂点を 0、底面側を 1 とする矩形領域に割り当てられます。
 		[[nodiscard]]
 		static Mesh3D Cone(double radius, double height, uint32 segments = 32);
 
@@ -426,7 +415,8 @@ namespace s3d
 		/// @brief 3D メッシュを Wavefront OBJ 形式でファイルに保存します。
 		/// @param path 保存するファイルのパス
 		/// @return 保存に成功した場合 true, それ以外の場合は false
-		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずに保存されます。
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転して保存されます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` として保存されます。U 成分は変更されません。
 		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
 		/// @remark 接線、材質、オブジェクト名、およびグループは保存されません。
 		/// @remark UTF-8（BOM なし）、LF 改行で保存されます。
@@ -439,9 +429,13 @@ namespace s3d
 		/// @return OBJ と MTL の保存に成功した場合 true, それ以外の場合は false
 		/// @remark MTL ファイルは OBJ ファイルと同じディレクトリに、同じベース名と `.mtl` 拡張子で保存されます。
 		/// @remark OBJ ファイルには `mtllib` と `usemtl` が書き込まれます。
-		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずに保存されます。
-		/// @remark マテリアルの PBR パラメータは、MTL で表現可能な値へ変換されます。
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転して保存されます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` として保存されます。U 成分は変更されません。
+		/// @remark ベースカラー、金属度、粗さ、エミッシブカラー、アルファ値、および対応するテクスチャは、MTL で表現可能な値へ変換されます。
+		/// @remark 金属度と粗さは、従来の MTL パラメータへの変換に加えて `Pm` と `Pr` でも保存されます。
+		/// @remark MTL で直接表現できないアルファマスクのしきい値、両面描画、metallic-roughness テクスチャ、およびアンビエントオクルージョンは保存されません。
 		/// @remark テクスチャファイル自体はコピーされません。
+		/// @remark 空のマテリアル名、制御文字を含む名前やテクスチャパス、非有限値、または UV セット 0 以外を参照するマテリアルは保存できません。
 		bool saveOBJ(FilePathView path, const Material& material) const;
 
 		////////////////////////////////////////////////////////////////
@@ -453,7 +447,8 @@ namespace s3d
 		/// @brief 3D メッシュを Wavefront OBJ 形式で Writer に書き出します。
 		/// @param writer 書き出し先の Writer
 		/// @return 書き出しに成功した場合 true, それ以外の場合は false
-		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずに書き出されます。
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転して書き出されます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` として書き出されます。U 成分は変更されません。
 		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
 		/// @remark 接線、材質、オブジェクト名、およびグループは書き出されません。
 		/// @remark UTF-8（BOM なし）、LF 改行で書き出されます。
@@ -463,7 +458,8 @@ namespace s3d
 
 		/// @brief 3D メッシュを Wavefront OBJ 形式でエンコードします。
 		/// @return エンコードされたデータ。エンコードに失敗した場合は空の Blob
-		/// @remark 頂点座標、UV 座標、法線、および三角形の巻き順は変換せずにエンコードされます。
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転してエンコードされます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` としてエンコードされます。U 成分は変更されません。
 		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
 		/// @remark 接線、材質、オブジェクト名、およびグループはエンコードされません。
 		/// @remark UTF-8（BOM なし）、LF 改行でエンコードされます。

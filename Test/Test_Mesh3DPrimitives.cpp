@@ -22,10 +22,10 @@ namespace
 		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Box);
 		static_cast<Mesh3D (*)(double, double)>(&Mesh3D::Pyramid);
 		static_cast<Mesh3D (*)(SizeF, double)>(&Mesh3D::Pyramid);
-		static_cast<Mesh3D (*)(double, PolyhedronUVMapping)>(&Mesh3D::Tetrahedron);
-		static_cast<Mesh3D (*)(double, PolyhedronUVMapping)>(&Mesh3D::Octahedron);
-		static_cast<Mesh3D (*)(double, PolyhedronUVMapping)>(&Mesh3D::Icosahedron);
-		static_cast<Mesh3D (*)(double, PolyhedronUVMapping)>(&Mesh3D::Dodecahedron);
+		static_cast<Mesh3D (*)(double)>(&Mesh3D::Tetrahedron);
+		static_cast<Mesh3D (*)(double)>(&Mesh3D::Octahedron);
+		static_cast<Mesh3D (*)(double)>(&Mesh3D::Icosahedron);
+		static_cast<Mesh3D (*)(double)>(&Mesh3D::Dodecahedron);
 		static_cast<Mesh3D (*)(SizeF, Vec2, Vec2)>(&Mesh3D::Plane);
 		static_cast<Mesh3D (*)(SizeF, uint32, uint32, Vec2, Vec2)>(&Mesh3D::Grid);
 		static_cast<Mesh3D (*)(double, double, uint32, uint32)>(&Mesh3D::Torus);
@@ -110,57 +110,6 @@ namespace
 		}
 	}
 
-	static void CheckSphericalPolyhedron(
-		const Mesh3D& mesh,
-		const size_t faceCount,
-		const size_t verticesPerFace)
-	{
-		REQUIRE_EQ(mesh.vertexCount(), (faceCount * verticesPerFace));
-		REQUIRE_EQ(mesh.triangleCount(), (faceCount * (verticesPerFace - 2)));
-		CheckMeshGeometry(mesh);
-		bool hasUnwrappedU = false;
-
-		for (size_t faceIndex = 0; faceIndex < faceCount; ++faceIndex)
-		{
-			const size_t vertexBase = (faceIndex * verticesPerFace);
-			float minU = std::numeric_limits<float>::max();
-			float maxU = std::numeric_limits<float>::lowest();
-
-			for (size_t i = 0; i < verticesPerFace; ++i)
-			{
-				const Vertex3D& vertex = mesh.vertices[vertexBase + i];
-				const Float3 direction = vertex.pos.normalized();
-				const float expectedV = (std::acos(std::clamp(direction.y, -1.0f, 1.0f)) / Math::PiF);
-				CHECK(vertex.tex.y == doctest::Approx(expectedV).epsilon(FrameEpsilon));
-				CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
-
-				if ((direction.x != 0.0f) || (direction.z != 0.0f))
-				{
-					float expectedU = (std::atan2(direction.z, direction.x) / Math::TwoPiF);
-					if (expectedU < 0.0f)
-					{
-						expectedU += 1.0f;
-					}
-
-					const float wrappedU = (vertex.tex.x - std::floor(vertex.tex.x));
-					const float difference = std::abs(wrappedU - expectedU);
-					CHECK(std::min(difference, (1.0f - difference)) < FrameEpsilon);
-				}
-
-				const float longitude = (vertex.tex.x * Math::TwoPiF);
-				const Float3 east{ -std::sin(longitude), 0.0f, std::cos(longitude) };
-				const Float3 projectedEast = (east - vertex.normal * vertex.normal.dot(east)).normalized();
-				CHECK(vertex.tangent.xyz().dot(projectedEast) > (1.0f - FrameEpsilon));
-				minU = std::min(minU, vertex.tex.x);
-				maxU = std::max(maxU, vertex.tex.x);
-				hasUnwrappedU |= (1.0f <= vertex.tex.x);
-			}
-
-			CHECK((maxU - minU) <= (0.5f + FrameEpsilon));
-		}
-
-		CHECK(hasUnwrappedU);
-	}
 }
 
 TEST_CASE("Mesh3D::Box")
@@ -420,63 +369,33 @@ TEST_CASE("Mesh3D::Tetrahedron")
 	CHECK_EQ(mesh.vertices[0].tex, Float2{ 1.0f, 1.0f });
 	CHECK_EQ(mesh.vertices[1].tex, Float2{ 0.0f, 1.0f });
 	CHECK_EQ(mesh.vertices[2].tex, Float2{ 0.5f, 0.0f });
-	CheckSphericalPolyhedron(Mesh3D::Tetrahedron(2.0, PolyhedronUVMapping::Spherical), 4, 3);
-
 	CheckRegularPolyhedron(Mesh3D::Tetrahedron(), 1.0, 4, 3);
 	CHECK(Mesh3D::Tetrahedron(0.0).isEmpty());
 	CHECK(Mesh3D::Tetrahedron(std::numeric_limits<double>::infinity()).isEmpty());
-	CHECK(Mesh3D::Tetrahedron(1.0, static_cast<PolyhedronUVMapping>(255)).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Octahedron")
 {
 	CheckRegularPolyhedron(Mesh3D::Octahedron(2.0), 2.0, 8, 3);
-	const Mesh3D sphericalMesh = Mesh3D::Octahedron(2.0, PolyhedronUVMapping::Spherical);
-	CheckSphericalPolyhedron(sphericalMesh, 8, 3);
-	for (size_t faceIndex = 0; faceIndex < 8; ++faceIndex)
-	{
-		const size_t vertexBase = (faceIndex * 3);
-		size_t poleIndex = 0;
-		float equatorUSum = 0.0f;
-		for (size_t i = 0; i < 3; ++i)
-		{
-			const Vertex3D& vertex = sphericalMesh.vertices[vertexBase + i];
-			if ((vertex.pos.x == 0.0f) && (vertex.pos.z == 0.0f))
-			{
-				poleIndex = i;
-			}
-			else
-			{
-				equatorUSum += vertex.tex.x;
-			}
-		}
-		CHECK(sphericalMesh.vertices[vertexBase + poleIndex].tex.x
-			== doctest::Approx(equatorUSum * 0.5f).epsilon(FrameEpsilon));
-	}
 	CheckRegularPolyhedron(Mesh3D::Octahedron(), 1.0, 8, 3);
 	CHECK(Mesh3D::Octahedron(-1.0).isEmpty());
 	CHECK(Mesh3D::Octahedron(std::numeric_limits<double>::quiet_NaN()).isEmpty());
-	CHECK(Mesh3D::Octahedron(1.0, static_cast<PolyhedronUVMapping>(255)).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Icosahedron")
 {
 	CheckRegularPolyhedron(Mesh3D::Icosahedron(2.0), 2.0, 20, 3);
-	CheckSphericalPolyhedron(Mesh3D::Icosahedron(2.0, PolyhedronUVMapping::Spherical), 20, 3);
 	CheckRegularPolyhedron(Mesh3D::Icosahedron(), 1.0, 20, 3);
 	CHECK(Mesh3D::Icosahedron(0.0).isEmpty());
 	CHECK(Mesh3D::Icosahedron(std::numeric_limits<double>::max()).isEmpty());
-	CHECK(Mesh3D::Icosahedron(1.0, static_cast<PolyhedronUVMapping>(255)).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Dodecahedron")
 {
 	CheckRegularPolyhedron(Mesh3D::Dodecahedron(2.0), 2.0, 12, 5);
-	CheckSphericalPolyhedron(Mesh3D::Dodecahedron(2.0, PolyhedronUVMapping::Spherical), 12, 5);
 	CheckRegularPolyhedron(Mesh3D::Dodecahedron(), 1.0, 12, 5);
 	CHECK(Mesh3D::Dodecahedron(0.0).isEmpty());
 	CHECK(Mesh3D::Dodecahedron(std::numeric_limits<double>::infinity()).isEmpty());
-	CHECK(Mesh3D::Dodecahedron(1.0, static_cast<PolyhedronUVMapping>(255)).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Plane")
@@ -540,6 +459,31 @@ TEST_CASE("Mesh3D::UVSphere")
 	}
 
 	const size_t firstRingBase = Slices;
+	for (uint32 x = 0; x < Slices; ++x)
+	{
+		CHECK_EQ(mesh.vertices[x].pos, Float3{ 0.0f, 2.0f, 0.0f });
+		CHECK_EQ(mesh.vertices[x].tex.y, 0.0f);
+	}
+
+	const size_t equatorBase = (firstRingBase + (Stacks / 2 - 1) * (Slices + 1));
+	CHECK(mesh.vertices[equatorBase + 0].pos.x == doctest::Approx(2.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + 0].pos.y == doctest::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + 0].pos.z == doctest::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK_EQ(mesh.vertices[equatorBase + 0].tex, Float2{ 0.0f, 0.5f });
+	CHECK(mesh.vertices[equatorBase + 1].pos.z > 0.0f);
+	CHECK(mesh.vertices[equatorBase + 1].tex.x > mesh.vertices[equatorBase + 0].tex.x);
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.x == doctest::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.y == doctest::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.z == doctest::Approx(2.0f).epsilon(FrameEpsilon));
+	CHECK_EQ(mesh.vertices[equatorBase + Slices / 4].tex, Float2{ 0.25f, 0.5f });
+
+	const size_t bottomPoleBase = (firstRingBase + (Stacks - 1) * (Slices + 1));
+	for (uint32 x = 0; x < Slices; ++x)
+	{
+		CHECK_EQ(mesh.vertices[bottomPoleBase + x].pos, Float3{ 0.0f, -2.0f, 0.0f });
+		CHECK_EQ(mesh.vertices[bottomPoleBase + x].tex.y, 1.0f);
+	}
+
 	CHECK_EQ(mesh.vertices[firstRingBase].pos, mesh.vertices[firstRingBase + Slices].pos);
 	CHECK_EQ(mesh.vertices[firstRingBase].normal, mesh.vertices[firstRingBase + Slices].normal);
 	CHECK_EQ(mesh.vertices[firstRingBase].tangent, mesh.vertices[firstRingBase + Slices].tangent);
@@ -585,6 +529,12 @@ TEST_CASE("Mesh3D::Hemisphere")
 	CHECK_EQ(mesh.vertices[equatorBase].normal.y, 0.0f);
 	CHECK_EQ(mesh.vertices[equatorBase].tex, Float2{ 0.0f, 1.0f });
 	CHECK_EQ(mesh.vertices[equatorBase + Slices].tex, Float2{ 1.0f, 1.0f });
+	CHECK(mesh.vertices[equatorBase + 1].pos.z > 0.0f);
+	CHECK(mesh.vertices[equatorBase + 1].tex.x > mesh.vertices[equatorBase].tex.x);
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.x == doctest::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK_EQ(mesh.vertices[equatorBase + Slices / 4].pos.y, 0.0f);
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.z == doctest::Approx(Radius).epsilon(FrameEpsilon));
+	CHECK_EQ(mesh.vertices[equatorBase + Slices / 4].tex, Float2{ 0.25f, 1.0f });
 
 	const Mesh3D explicitOpenMesh = Mesh3D::Hemisphere(Radius, CloseBottom::No, Slices, Stacks);
 	CHECK_EQ(explicitOpenMesh.vertexCount(), mesh.vertexCount());
@@ -838,11 +788,24 @@ TEST_CASE("Mesh3D::Cone")
 	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * Segments });
 	CheckMeshGeometry(mesh);
 
-	for (size_t i = 1; i < Segments; ++i)
+	for (size_t i = 0; i < Segments; ++i)
 	{
 		CHECK_EQ(mesh.vertices[i].pos, mesh.vertices[0].pos);
-		CHECK_NE(mesh.vertices[i].tangent, mesh.vertices[0].tangent);
+		CHECK_EQ(mesh.vertices[i].tex,
+			Float2{ ((static_cast<float>(i) + 0.5f) / static_cast<float>(Segments)), 0.0f });
+		CHECK_EQ(mesh.vertices[i].tangent.w, 1.0f);
 	}
+
+	constexpr size_t BottomSideBase = Segments;
+	for (size_t i = 0; i <= Segments; ++i)
+	{
+		CHECK_EQ(mesh.vertices[BottomSideBase + i].tex,
+			Float2{ (static_cast<float>(i) / static_cast<float>(Segments)), 1.0f });
+		CHECK_EQ(mesh.vertices[BottomSideBase + i].tangent.w, 1.0f);
+	}
+	CHECK_EQ(mesh.vertices[BottomSideBase].pos, mesh.vertices[BottomSideBase + Segments].pos);
+	CHECK_EQ(mesh.vertices[BottomSideBase].tex, Float2{ 0.0f, 1.0f });
+	CHECK_EQ(mesh.vertices[BottomSideBase + Segments].tex, Float2{ 1.0f, 1.0f });
 
 	CheckMeshGeometry(Mesh3D::Cone(1.0, 1.0, 3));
 	CHECK(Mesh3D::Cone(0.0, 1.0, Segments).isEmpty());

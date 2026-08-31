@@ -134,127 +134,13 @@ namespace s3d
 			{ 4, 9, 5 }, { 2, 4, 11 }, { 6, 2, 10 }, { 8, 6, 7 }, { 9, 8, 1 },
 		}};
 
-		[[nodiscard]]
-		static constexpr bool IsValidPolyhedronUVMapping(const PolyhedronUVMapping uvMapping) noexcept
-		{
-			return ((uvMapping == PolyhedronUVMapping::PerFace)
-				|| (uvMapping == PolyhedronUVMapping::Spherical));
-		}
-
-		template <size_t VertexCount>
-		struct SphericalFaceMapping
-		{
-			std::array<Float2, VertexCount> texCoords;
-			std::array<Float4, VertexCount> tangents;
-		};
-
-		template <size_t VertexCount>
-		[[nodiscard]]
-		static SphericalFaceMapping<VertexCount> MakeSphericalFaceMapping(
-			const std::array<Float3, VertexCount>& positions,
-			const Float3 normal)
-		{
-			SphericalFaceMapping<VertexCount> mapping;
-			std::array<bool, VertexCount> isPole{};
-			std::array<float, VertexCount> longitudes{};
-			size_t longitudeCount = 0;
-
-			for (size_t i = 0; i < VertexCount; ++i)
-			{
-				const Float3 direction = positions[i].normalized();
-				const float horizontalLengthSq = (direction.x * direction.x + direction.z * direction.z);
-				isPole[i] = (horizontalLengthSq == 0.0f);
-				float u = 0.0f;
-
-				if (not isPole[i])
-				{
-					u = (std::atan2(direction.z, direction.x) / Math::TwoPiF);
-					if (u < 0.0f)
-					{
-						u += 1.0f;
-					}
-
-					longitudes[longitudeCount++] = u;
-				}
-
-				mapping.texCoords[i] = Float2{
-					u,
-					(std::acos(std::clamp(direction.y, -1.0f, 1.0f)) / Math::PiF)
-				};
-			}
-
-			std::sort(longitudes.begin(), (longitudes.begin() + longitudeCount));
-			float unwrapStart = 0.0f;
-			if (1 < longitudeCount)
-			{
-				float largestGap = ((longitudes[0] + 1.0f) - longitudes[longitudeCount - 1]);
-				for (size_t i = 0; (i + 1) < longitudeCount; ++i)
-				{
-					const float gap = (longitudes[i + 1] - longitudes[i]);
-					if (largestGap < gap)
-					{
-						largestGap = gap;
-						unwrapStart = longitudes[i + 1];
-					}
-				}
-			}
-
-			if (0.0f < unwrapStart)
-			{
-				for (size_t i = 0; i < VertexCount; ++i)
-				{
-					if ((not isPole[i]) && (mapping.texCoords[i].x < unwrapStart))
-					{
-						mapping.texCoords[i].x += 1.0f;
-					}
-				}
-			}
-
-			float longitudeSum = 0.0f;
-			for (size_t i = 0; i < VertexCount; ++i)
-			{
-				if (not isPole[i])
-				{
-					longitudeSum += mapping.texCoords[i].x;
-				}
-			}
-
-			const float poleU = (longitudeSum / static_cast<float>(longitudeCount));
-			for (size_t i = 0; i < VertexCount; ++i)
-			{
-				if (isPole[i])
-				{
-					mapping.texCoords[i].x = poleU;
-				}
-
-				const float longitude = (mapping.texCoords[i].x * Math::TwoPiF);
-				const float latitude = (mapping.texCoords[i].y * Math::PiF);
-				const float longitudeSin = std::sin(longitude);
-				const float longitudeCos = std::cos(longitude);
-				const float latitudeSin = std::sin(latitude);
-				const float latitudeCos = std::cos(latitude);
-				const Float3 east{ -longitudeSin, 0.0f, longitudeCos };
-				const Float3 south{
-					(latitudeCos * longitudeCos),
-					-latitudeSin,
-					(latitudeCos * longitudeSin)
-				};
-				const Float3 tangent = (east - normal * normal.dot(east)).normalized();
-				const float handedness = ((normal.cross(tangent).dot(south) < 0.0f) ? -1.0f : 1.0f);
-				mapping.tangents[i] = Float4{ tangent, handedness };
-			}
-
-			return mapping;
-		}
-
 		template <size_t VertexCount, size_t FaceCount>
 		[[nodiscard]]
 		static Mesh3D BuildTriangleFacedPolyhedron(
 			const float radius,
 			const std::array<Float3, VertexCount>& baseVertices,
 			const float baseRadius,
-			const std::array<std::array<uint32, 3>, FaceCount>& faces,
-			const PolyhedronUVMapping uvMapping)
+			const std::array<std::array<uint32, 3>, FaceCount>& faces)
 		{
 			Mesh3D mesh{ (FaceCount * 3), FaceCount };
 			const float scale = (radius / baseRadius);
@@ -272,30 +158,25 @@ namespace s3d
 					normal = -normal;
 				}
 
-				const std::array<Float3, 3> positions{ p0, p1, p2 };
-				const SphericalFaceMapping<3> sphericalMapping =
-					((uvMapping == PolyhedronUVMapping::Spherical)
-						? MakeSphericalFaceMapping(positions, normal)
-						: SphericalFaceMapping<3>{});
 				const Float4 faceTangent{ (p0 - p1).normalized(), 1.0f };
 				const size_t vertexBase = (faceIndex * 3);
 				mesh.vertices[vertexBase + 0] = Vertex3D{
 					.pos = (p0 * scale),
 					.normal = normal,
-					.tex = ((uvMapping == PolyhedronUVMapping::Spherical) ? sphericalMapping.texCoords[0] : Float2{ 1.0f, 1.0f }),
-					.tangent = ((uvMapping == PolyhedronUVMapping::Spherical) ? sphericalMapping.tangents[0] : faceTangent)
+					.tex = Float2{ 1.0f, 1.0f },
+					.tangent = faceTangent
 				};
 				mesh.vertices[vertexBase + 1] = Vertex3D{
 					.pos = (p1 * scale),
 					.normal = normal,
-					.tex = ((uvMapping == PolyhedronUVMapping::Spherical) ? sphericalMapping.texCoords[1] : Float2{ 0.0f, 1.0f }),
-					.tangent = ((uvMapping == PolyhedronUVMapping::Spherical) ? sphericalMapping.tangents[1] : faceTangent)
+					.tex = Float2{ 0.0f, 1.0f },
+					.tangent = faceTangent
 				};
 				mesh.vertices[vertexBase + 2] = Vertex3D{
 					.pos = (p2 * scale),
 					.normal = normal,
-					.tex = ((uvMapping == PolyhedronUVMapping::Spherical) ? sphericalMapping.texCoords[2] : Float2{ 0.5f, 0.0f }),
-					.tangent = ((uvMapping == PolyhedronUVMapping::Spherical) ? sphericalMapping.tangents[2] : faceTangent)
+					.tex = Float2{ 0.5f, 0.0f },
+					.tangent = faceTangent
 				};
 
 				const uint32 i0 = static_cast<uint32>(vertexBase);
@@ -605,10 +486,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Tetrahedron(const double _radius, const PolyhedronUVMapping uvMapping)
+	Mesh3D Mesh3D::Tetrahedron(const double _radius)
 	{
-		if ((not IsFloatRepresentable(_radius))
-			|| (not IsValidPolyhedronUVMapping(uvMapping)))
+		if (not IsFloatRepresentable(_radius))
 		{
 			return{};
 		}
@@ -631,13 +511,12 @@ namespace s3d
 			{ 0, 1, 2 }, { 0, 3, 1 }, { 0, 2, 3 }, { 1, 3, 2 },
 		}};
 
-		return BuildTriangleFacedPolyhedron(radius, Vertices, 1.7320508075688772935f, Faces, uvMapping);
+		return BuildTriangleFacedPolyhedron(radius, Vertices, 1.7320508075688772935f, Faces);
 	}
 
-	Mesh3D Mesh3D::Octahedron(const double _radius, const PolyhedronUVMapping uvMapping)
+	Mesh3D Mesh3D::Octahedron(const double _radius)
 	{
-		if ((not IsFloatRepresentable(_radius))
-			|| (not IsValidPolyhedronUVMapping(uvMapping)))
+		if (not IsFloatRepresentable(_radius))
 		{
 			return{};
 		}
@@ -663,13 +542,12 @@ namespace s3d
 			{ 3, 0, 4 }, { 3, 4, 1 }, { 3, 1, 5 }, { 3, 5, 0 },
 		}};
 
-		return BuildTriangleFacedPolyhedron(radius, Vertices, 1.0f, Faces, uvMapping);
+		return BuildTriangleFacedPolyhedron(radius, Vertices, 1.0f, Faces);
 	}
 
-	Mesh3D Mesh3D::Icosahedron(const double _radius, const PolyhedronUVMapping uvMapping)
+	Mesh3D Mesh3D::Icosahedron(const double _radius)
 	{
-		if ((not IsFloatRepresentable(_radius))
-			|| (not IsValidPolyhedronUVMapping(uvMapping)))
+		if (not IsFloatRepresentable(_radius))
 		{
 			return{};
 		}
@@ -684,14 +562,12 @@ namespace s3d
 			radius,
 			IcosahedronBaseVertices,
 			1.9021130325903071442f,
-			IcosahedronFaces,
-			uvMapping);
+			IcosahedronFaces);
 	}
 
-	Mesh3D Mesh3D::Dodecahedron(const double _radius, const PolyhedronUVMapping uvMapping)
+	Mesh3D Mesh3D::Dodecahedron(const double _radius)
 	{
-		if ((not IsFloatRepresentable(_radius))
-			|| (not IsValidPolyhedronUVMapping(uvMapping)))
+		if (not IsFloatRepresentable(_radius))
 		{
 			return{};
 		}
@@ -731,38 +607,22 @@ namespace s3d
 				positions[i] = data.vertices[face[i]];
 			}
 
-			if (uvMapping == PolyhedronUVMapping::Spherical)
-			{
-				const SphericalFaceMapping<5> mapping = MakeSphericalFaceMapping(positions, normal);
-				for (size_t i = 0; i < positions.size(); ++i)
-				{
-					mesh.vertices[vertexBase + i] = Vertex3D{
-						.pos = (positions[i] * radius),
-						.normal = normal,
-						.tex = mapping.texCoords[i],
-						.tangent = mapping.tangents[i]
-					};
-				}
-			}
-			else
-			{
-				const Float3 tangent = (positions[0] - faceCenter).normalized();
-				const Float3 bitangent = normal.cross(tangent);
-				const float inverseFaceRadius = (1.0f / positions[0].distanceFrom(faceCenter));
+			const Float3 tangent = (positions[0] - faceCenter).normalized();
+			const Float3 bitangent = normal.cross(tangent);
+			const float inverseFaceRadius = (1.0f / positions[0].distanceFrom(faceCenter));
 
-				for (size_t i = 0; i < positions.size(); ++i)
-				{
-					const Float3 offset = (positions[i] - faceCenter);
-					mesh.vertices[vertexBase + i] = Vertex3D{
-						.pos = (positions[i] * radius),
-						.normal = normal,
-						.tex = Float2{
-							std::clamp((0.5f + (0.5f * offset.dot(tangent) * inverseFaceRadius)), 0.0f, 1.0f),
-							std::clamp((0.5f + (0.5f * offset.dot(bitangent) * inverseFaceRadius)), 0.0f, 1.0f)
-						},
-						.tangent = Float4{ tangent, 1.0f }
-					};
-				}
+			for (size_t i = 0; i < positions.size(); ++i)
+			{
+				const Float3 offset = (positions[i] - faceCenter);
+				mesh.vertices[vertexBase + i] = Vertex3D{
+					.pos = (positions[i] * radius),
+					.normal = normal,
+					.tex = Float2{
+						std::clamp((0.5f + (0.5f * offset.dot(tangent) * inverseFaceRadius)), 0.0f, 1.0f),
+						std::clamp((0.5f + (0.5f * offset.dot(bitangent) * inverseFaceRadius)), 0.0f, 1.0f)
+					},
+					.tangent = Float4{ tangent, 1.0f }
+				};
 			}
 
 			const uint32 i0 = static_cast<uint32>(vertexBase);
