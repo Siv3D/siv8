@@ -1768,6 +1768,170 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	HollowCylinder
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::HollowCylinder(
+		const double _innerRadius,
+		const double _outerRadius,
+		const double _height,
+		const uint32 segments)
+	{
+		if ((not IsFloatRepresentable(_innerRadius))
+			|| (not IsFloatRepresentable(_outerRadius))
+			|| (not IsFloatRepresentable(_height)))
+		{
+			return{};
+		}
+
+		const float innerRadius = static_cast<float>(_innerRadius);
+		const float outerRadius = static_cast<float>(_outerRadius);
+		const float height = static_cast<float>(_height);
+		if ((innerRadius <= 0.0f)
+			|| (outerRadius <= innerRadius)
+			|| (height <= 0.0f)
+			|| (segments < 3))
+		{
+			return{};
+		}
+
+		size_t ringStride;
+		size_t vertexCount;
+		size_t triangleCount;
+		if ((not CheckedAdd(static_cast<size_t>(segments), 1, ringStride))
+			|| (not CheckedMultiply(static_cast<size_t>(segments), 8, vertexCount))
+			|| (not CheckedAdd(vertexCount, 4, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(segments), 8, triangleCount)))
+		{
+			return{};
+		}
+
+		Mesh3D mesh{ vertexCount, triangleCount };
+		const Array<CircleSample> circle = MakeCircleSamples(segments);
+		const float halfHeight = (height * 0.5f);
+		const float inverseSegments = (1.0f / static_cast<float>(segments));
+		const float innerUVScale = (0.5f * innerRadius / outerRadius);
+		const size_t outerTopBase = 0;
+		const size_t outerBottomBase = ringStride;
+		const size_t innerTopBase = (ringStride * 2);
+		const size_t innerBottomBase = (ringStride * 3);
+		const size_t topOuterBase = (ringStride * 4);
+		const size_t topInnerBase = (topOuterBase + segments);
+		const size_t bottomOuterBase = (topInnerBase + segments);
+		const size_t bottomInnerBase = (bottomOuterBase + segments);
+
+		for (uint32 i = 0; i <= segments; ++i)
+		{
+			const float u = (i * inverseSegments);
+			const CircleSample outerSample = circle[i];
+			const Float3 outerNormal{ outerSample.cos, 0.0f, outerSample.sin };
+			const Float4 outerTangent{ -outerSample.sin, 0.0f, outerSample.cos, 1.0f };
+			mesh.vertices[outerTopBase + i] = Vertex3D{
+				.pos = Float3{ (outerRadius * outerSample.cos), halfHeight, (outerRadius * outerSample.sin) },
+				.normal = outerNormal,
+				.tex = Float2{ u, 0.0f },
+				.tangent = outerTangent
+			};
+			mesh.vertices[outerBottomBase + i] = Vertex3D{
+				.pos = Float3{ (outerRadius * outerSample.cos), -halfHeight, (outerRadius * outerSample.sin) },
+				.normal = outerNormal,
+				.tex = Float2{ u, 1.0f },
+				.tangent = outerTangent
+			};
+
+			const CircleSample innerSample = circle[segments - i];
+			const Float3 innerNormal{ -innerSample.cos, 0.0f, -innerSample.sin };
+			const Float4 innerTangent{ innerSample.sin, 0.0f, -innerSample.cos, 1.0f };
+			mesh.vertices[innerTopBase + i] = Vertex3D{
+				.pos = Float3{ (innerRadius * innerSample.cos), halfHeight, (innerRadius * innerSample.sin) },
+				.normal = innerNormal,
+				.tex = Float2{ u, 0.0f },
+				.tangent = innerTangent
+			};
+			mesh.vertices[innerBottomBase + i] = Vertex3D{
+				.pos = Float3{ (innerRadius * innerSample.cos), -halfHeight, (innerRadius * innerSample.sin) },
+				.normal = innerNormal,
+				.tex = Float2{ u, 1.0f },
+				.tangent = innerTangent
+			};
+		}
+
+		for (uint32 i = 0; i < segments; ++i)
+		{
+			const CircleSample sample = circle[i];
+			const Float3 outerPosition{ (outerRadius * sample.cos), 0.0f, (outerRadius * sample.sin) };
+			const Float3 innerPosition{ (innerRadius * sample.cos), 0.0f, (innerRadius * sample.sin) };
+			const Float2 topOuterUV{ (0.5f + (0.5f * sample.cos)), (0.5f - (0.5f * sample.sin)) };
+			const Float2 topInnerUV{ (0.5f + (innerUVScale * sample.cos)), (0.5f - (innerUVScale * sample.sin)) };
+			const Float2 bottomOuterUV{ (0.5f + (0.5f * sample.cos)), (0.5f + (0.5f * sample.sin)) };
+			const Float2 bottomInnerUV{ (0.5f + (innerUVScale * sample.cos)), (0.5f + (innerUVScale * sample.sin)) };
+
+			mesh.vertices[topOuterBase + i] = Vertex3D{
+				.pos = Float3{ outerPosition.x, halfHeight, outerPosition.z },
+				.normal = Float3::UnitY(),
+				.tex = topOuterUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+			mesh.vertices[topInnerBase + i] = Vertex3D{
+				.pos = Float3{ innerPosition.x, halfHeight, innerPosition.z },
+				.normal = Float3::UnitY(),
+				.tex = topInnerUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+			mesh.vertices[bottomOuterBase + i] = Vertex3D{
+				.pos = Float3{ outerPosition.x, -halfHeight, outerPosition.z },
+				.normal = -Float3::UnitY(),
+				.tex = bottomOuterUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+			mesh.vertices[bottomInnerBase + i] = Vertex3D{
+				.pos = Float3{ innerPosition.x, -halfHeight, innerPosition.z },
+				.normal = -Float3::UnitY(),
+				.tex = bottomInnerUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+		}
+
+		TriangleIndex32* pTriangle = mesh.indices.data();
+		for (uint32 i = 0; i < segments; ++i)
+		{
+			const uint32 outerTopLeft = static_cast<uint32>(outerTopBase + i);
+			const uint32 outerTopRight = (outerTopLeft + 1);
+			const uint32 outerBottomLeft = static_cast<uint32>(outerBottomBase + i);
+			const uint32 outerBottomRight = (outerBottomLeft + 1);
+			*pTriangle++ = TriangleIndex32{ outerTopLeft, outerTopRight, outerBottomLeft };
+			*pTriangle++ = TriangleIndex32{ outerBottomLeft, outerTopRight, outerBottomRight };
+
+			const uint32 innerTopLeft = static_cast<uint32>(innerTopBase + i);
+			const uint32 innerTopRight = (innerTopLeft + 1);
+			const uint32 innerBottomLeft = static_cast<uint32>(innerBottomBase + i);
+			const uint32 innerBottomRight = (innerBottomLeft + 1);
+			*pTriangle++ = TriangleIndex32{ innerTopLeft, innerTopRight, innerBottomLeft };
+			*pTriangle++ = TriangleIndex32{ innerBottomLeft, innerTopRight, innerBottomRight };
+
+			const uint32 next = ((i + 1) % segments);
+			const uint32 topOuterCurrent = static_cast<uint32>(topOuterBase + i);
+			const uint32 topOuterNext = static_cast<uint32>(topOuterBase + next);
+			const uint32 topInnerCurrent = static_cast<uint32>(topInnerBase + i);
+			const uint32 topInnerNext = static_cast<uint32>(topInnerBase + next);
+			*pTriangle++ = TriangleIndex32{ topOuterCurrent, topInnerCurrent, topOuterNext };
+			*pTriangle++ = TriangleIndex32{ topInnerCurrent, topInnerNext, topOuterNext };
+
+			const uint32 bottomOuterCurrent = static_cast<uint32>(bottomOuterBase + i);
+			const uint32 bottomOuterNext = static_cast<uint32>(bottomOuterBase + next);
+			const uint32 bottomInnerCurrent = static_cast<uint32>(bottomInnerBase + i);
+			const uint32 bottomInnerNext = static_cast<uint32>(bottomInnerBase + next);
+			*pTriangle++ = TriangleIndex32{ bottomOuterCurrent, bottomOuterNext, bottomInnerCurrent };
+			*pTriangle++ = TriangleIndex32{ bottomInnerCurrent, bottomOuterNext, bottomInnerNext };
+		}
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Frustum
 	//
 	////////////////////////////////////////////////////////////////

@@ -52,7 +52,7 @@
 
 - icosahedron の再帰分割と球面投影による `Mesh3D::IcoSphere()` を追加する。
 - UV と tangent の規約を設計して `Mesh3D::RoundedBox()` を追加する。
-- 補完候補として、double-sided plane、hollow cylinder を評価する。
+- 補完候補として、double-sided plane を評価する。
 
 ### 汎用形状生成
 

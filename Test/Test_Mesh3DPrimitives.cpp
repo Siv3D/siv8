@@ -39,6 +39,7 @@ namespace
 		static_cast<Mesh3D (*)(double, CloseBottom, uint32, uint32)>(&Mesh3D::Hemisphere);
 		static_cast<Mesh3D (*)(double, uint32)>(&Mesh3D::Disc);
 		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Annulus);
+		static_cast<Mesh3D (*)(double, double, double, uint32)>(&Mesh3D::HollowCylinder);
 		static_cast<Mesh3D (*)(double, double, double, uint32)>(&Mesh3D::Frustum);
 		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Cylinder);
 		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Cone);
@@ -841,6 +842,73 @@ TEST_CASE("Mesh3D::Annulus")
 	CHECK(Mesh3D::Annulus(2.0, 2.0, Segments).isEmpty());
 	CHECK(Mesh3D::Annulus(2.0, 1.0, Segments).isEmpty());
 	CHECK(Mesh3D::Annulus(1.0, 2.0, 2).isEmpty());
+}
+
+TEST_CASE("Mesh3D::HollowCylinder")
+{
+	constexpr double InnerRadius = 1.0;
+	constexpr double OuterRadius = 2.0;
+	constexpr double Height = 4.0;
+	constexpr uint32 Segments = 8;
+	const Mesh3D mesh = Mesh3D::HollowCylinder(InnerRadius, OuterRadius, Height, Segments);
+	const size_t ringStride = (Segments + 1);
+	const size_t outerTopBase = 0;
+	const size_t outerBottomBase = ringStride;
+	const size_t innerTopBase = (ringStride * 2);
+	const size_t innerBottomBase = (ringStride * 3);
+	const size_t topOuterBase = (ringStride * 4);
+	const size_t topInnerBase = (topOuterBase + Segments);
+	const size_t bottomOuterBase = (topInnerBase + Segments);
+	const size_t bottomInnerBase = (bottomOuterBase + Segments);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ (8 * Segments) + 4 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 8 * Segments });
+	CheckMeshGeometry(mesh);
+
+	CHECK_EQ(mesh.vertices[outerTopBase].pos, Float3{ 2.0f, 2.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[outerTopBase].normal, Float3::UnitX());
+	CHECK_EQ(mesh.vertices[outerTopBase].tex, Float2{ 0.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[outerTopBase].tangent, Float4{ 0.0f, 0.0f, 1.0f, 1.0f });
+	CHECK_EQ(mesh.vertices[outerTopBase + Segments].pos, mesh.vertices[outerTopBase].pos);
+	CHECK_EQ(mesh.vertices[outerTopBase + Segments].normal, mesh.vertices[outerTopBase].normal);
+	CHECK_EQ(mesh.vertices[outerTopBase + Segments].tangent, mesh.vertices[outerTopBase].tangent);
+	CHECK_EQ(mesh.vertices[outerTopBase + Segments].tex, Float2{ 1.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[outerBottomBase].tex, Float2{ 0.0f, 1.0f });
+
+	CHECK_EQ(mesh.vertices[innerTopBase].pos, Float3{ 1.0f, 2.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[innerTopBase].normal, -Float3::UnitX());
+	CHECK_EQ(mesh.vertices[innerTopBase].tex, Float2{ 0.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[innerTopBase].tangent, Float4{ 0.0f, 0.0f, -1.0f, 1.0f });
+	CHECK_EQ(mesh.vertices[innerTopBase + Segments].pos, mesh.vertices[innerTopBase].pos);
+	CHECK_EQ(mesh.vertices[innerTopBase + Segments].normal, mesh.vertices[innerTopBase].normal);
+	CHECK_EQ(mesh.vertices[innerTopBase + Segments].tangent, mesh.vertices[innerTopBase].tangent);
+	CHECK_EQ(mesh.vertices[innerTopBase + Segments].tex, Float2{ 1.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[innerBottomBase].tex, Float2{ 0.0f, 1.0f });
+
+	for (size_t i = 0; i <= Segments; ++i)
+	{
+		const Vertex3D& outer = mesh.vertices[outerTopBase + i];
+		const Vertex3D& inner = mesh.vertices[innerTopBase + i];
+		CHECK(inner.pos.x == doctest::Approx(outer.pos.x * 0.5f).epsilon(FrameEpsilon));
+		CHECK(inner.pos.z == doctest::Approx(outer.pos.z * -0.5f).epsilon(FrameEpsilon));
+		CHECK_EQ(inner.tex.x, outer.tex.x);
+	}
+
+	CHECK_EQ(mesh.vertices[topOuterBase].tex, Float2{ 1.0f, 0.5f });
+	CHECK_EQ(mesh.vertices[topInnerBase].tex, Float2{ 0.75f, 0.5f });
+	CHECK_EQ(mesh.vertices[bottomOuterBase].tex, Float2{ 1.0f, 0.5f });
+	CHECK_EQ(mesh.vertices[bottomInnerBase].tex, Float2{ 0.75f, 0.5f });
+
+	CheckMeshGeometry(Mesh3D::HollowCylinder(0.5, 1.0, 1.0, 3));
+	CHECK(Mesh3D::HollowCylinder(0.0, OuterRadius, Height, Segments).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(-1.0, OuterRadius, Height, Segments).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(OuterRadius, OuterRadius, Height, Segments).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(3.0, OuterRadius, Height, Segments).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(InnerRadius, OuterRadius, 0.0, Segments).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(InnerRadius, OuterRadius, Height, 2).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(InnerRadius, std::numeric_limits<double>::infinity(), Height, Segments).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(InnerRadius, std::numeric_limits<double>::max(), Height, Segments).isEmpty());
+	CHECK(Mesh3D::HollowCylinder(InnerRadius, OuterRadius, Height, std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Torus")
