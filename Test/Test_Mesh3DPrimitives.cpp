@@ -20,6 +20,10 @@ namespace
 	{
 		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Box);
 		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Box);
+		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Wedge);
+		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Wedge);
+		static_cast<Mesh3D (*)(Vec3, uint32)>(&Mesh3D::Stairs);
+		static_cast<Mesh3D (*)(Vec3, uint32, const BoxUVMapping&)>(&Mesh3D::Stairs);
 		static_cast<Mesh3D (*)(double, double)>(&Mesh3D::Pyramid);
 		static_cast<Mesh3D (*)(SizeF, double)>(&Mesh3D::Pyramid);
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Tetrahedron);
@@ -75,6 +79,20 @@ namespace
 			CHECK(faceNormal.lengthSq() > TriangleAreaEpsilon);
 			CHECK(faceNormal.dot(vertexNormal) > 0.0f);
 		}
+	}
+
+	static Float2 MapUV(const FloatRect& rect, const float u, const float v)
+	{
+		return{
+			(rect.left + ((rect.right - rect.left) * u)),
+			(rect.top + ((rect.bottom - rect.top) * v))
+		};
+	}
+
+	static void CheckUV(const Float2 actual, const Float2 expected)
+	{
+		CHECK(actual.x == doctest::Approx(expected.x).epsilon(FrameEpsilon));
+		CHECK(actual.y == doctest::Approx(expected.y).epsilon(FrameEpsilon));
 	}
 
 	static void CheckRegularPolyhedron(
@@ -274,6 +292,206 @@ TEST_CASE("Mesh3D::Box with collapsed UV mapping")
 			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
 		}
 	}
+}
+
+TEST_CASE("Mesh3D::Wedge")
+{
+	const Vec3 size{ 4.0, 2.0, 6.0 };
+	const Mesh3D mesh = Mesh3D::Wedge(size);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 18 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 8 });
+	CheckMeshGeometry(mesh);
+
+	const Float3 expectedSlopeNormal = Float3{ 0.0f, 6.0f, -2.0f }.normalized();
+	size_t slopeVertexCount = 0;
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		CHECK((-2.0f <= vertex.pos.x && vertex.pos.x <= 2.0f));
+		CHECK((-1.0f <= vertex.pos.y && vertex.pos.y <= 1.0f));
+		CHECK((-3.0f <= vertex.pos.z && vertex.pos.z <= 3.0f));
+		if (vertex.normal.dot(expectedSlopeNormal) > (1.0f - FrameEpsilon))
+		{
+			++slopeVertexCount;
+			CHECK(vertex.pos.y == doctest::Approx(vertex.pos.z / 3.0f).epsilon(FrameEpsilon));
+		}
+	}
+	CHECK_EQ(slopeVertexCount, size_t{ 4 });
+
+	const Mesh3D defaultMappingMesh = Mesh3D::Wedge(size, BoxUVMapping{});
+	REQUIRE_EQ(defaultMappingMesh.vertexCount(), mesh.vertexCount());
+	REQUIRE_EQ(defaultMappingMesh.triangleCount(), mesh.triangleCount());
+	for (size_t i = 0; i < mesh.vertices.size(); ++i)
+	{
+		CHECK_EQ(defaultMappingMesh.vertices[i].pos, mesh.vertices[i].pos);
+		CHECK_EQ(defaultMappingMesh.vertices[i].normal, mesh.vertices[i].normal);
+		CHECK_EQ(defaultMappingMesh.vertices[i].tex, mesh.vertices[i].tex);
+		CHECK_EQ(defaultMappingMesh.vertices[i].tangent, mesh.vertices[i].tangent);
+	}
+
+	CHECK(Mesh3D::Wedge(Vec3{ 0.0, 1.0, 1.0 }).isEmpty());
+	CHECK(Mesh3D::Wedge(Vec3{ 1.0, -1.0, 1.0 }).isEmpty());
+	CHECK(Mesh3D::Wedge(Vec3{ 1.0, 1.0, std::numeric_limits<double>::infinity() }).isEmpty());
+	CHECK(Mesh3D::Wedge(Vec3{ std::numeric_limits<double>::max(), 1.0, 1.0 }).isEmpty());
+
+	const double maxFloat = std::numeric_limits<float>::max();
+	const Mesh3D maxSizeMesh = Mesh3D::Wedge(Vec3{ 1.0, maxFloat, maxFloat });
+	REQUIRE_FALSE(maxSizeMesh.isEmpty());
+	for (const Vertex3D& vertex : maxSizeMesh.vertices)
+	{
+		CheckVertexFrame(vertex);
+	}
+}
+
+TEST_CASE("Mesh3D::Wedge with projected UV mapping")
+{
+	const Vec3 size{ 4.0, 2.0, 6.0 };
+	const BoxUVMapping uvMapping{
+		.negativeZ = FloatRect{ 0.0f, 0.0f, 0.1f, 0.1f },
+		.positiveZ = FloatRect{ 0.8f, 0.1f, 0.2f, 0.7f },
+		.positiveX = FloatRect{ 0.1f, 0.2f, 0.4f, 0.8f },
+		.negativeX = FloatRect{ 0.9f, 0.8f, 0.5f, 0.2f },
+		.positiveY = FloatRect{ -1.0f, 0.25f, 1.0f, 0.75f },
+		.negativeY = FloatRect{ 0.2f, 0.9f, 0.8f, 0.3f },
+	};
+	const Mesh3D mesh = Mesh3D::Wedge(size, uvMapping);
+	CheckMeshGeometry(mesh);
+
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		const float x = (0.5f + (vertex.pos.x / static_cast<float>(size.x)));
+		const float y = (0.5f - (vertex.pos.y / static_cast<float>(size.y)));
+		const float z = (0.5f + (vertex.pos.z / static_cast<float>(size.z)));
+
+		if (vertex.normal == Float3::UnitZ())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveZ, (1.0f - x), y));
+		}
+		else if (vertex.normal == Float3::UnitX())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveX, z, y));
+		}
+		else if (vertex.normal == -Float3::UnitX())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeX, (1.0f - z), y));
+		}
+		else if (vertex.normal == -Float3::UnitY())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeY, x, z));
+		}
+		else
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveY, x, (1.0f - z)));
+		}
+	}
+
+	BoxUVMapping invalid = uvMapping;
+	invalid.positiveY.right = std::numeric_limits<float>::quiet_NaN();
+	CHECK(Mesh3D::Wedge(size, invalid).isEmpty());
+}
+
+TEST_CASE("Mesh3D::Stairs")
+{
+	constexpr uint32 Steps = 4;
+	const Vec3 size{ 4.0, 2.0, 8.0 };
+	const Mesh3D mesh = Mesh3D::Stairs(size, Steps);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ (16 * Steps) + 8 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ (8 * Steps) + 4 });
+	CheckMeshGeometry(mesh);
+
+	std::array<size_t, 6> normalCounts{};
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		CHECK((-2.0f <= vertex.pos.x && vertex.pos.x <= 2.0f));
+		CHECK((-1.0f <= vertex.pos.y && vertex.pos.y <= 1.0f));
+		CHECK((-4.0f <= vertex.pos.z && vertex.pos.z <= 4.0f));
+
+		if (vertex.normal == -Float3::UnitZ()) { ++normalCounts[0]; }
+		else if (vertex.normal == Float3::UnitZ()) { ++normalCounts[1]; }
+		else if (vertex.normal == Float3::UnitX()) { ++normalCounts[2]; }
+		else if (vertex.normal == -Float3::UnitX()) { ++normalCounts[3]; }
+		else if (vertex.normal == Float3::UnitY()) { ++normalCounts[4]; }
+		else if (vertex.normal == -Float3::UnitY()) { ++normalCounts[5]; }
+	}
+	CHECK_EQ(normalCounts[0], size_t{ 4 * Steps });
+	CHECK_EQ(normalCounts[1], size_t{ 4 });
+	CHECK_EQ(normalCounts[2], size_t{ 4 * Steps });
+	CHECK_EQ(normalCounts[3], size_t{ 4 * Steps });
+	CHECK_EQ(normalCounts[4], size_t{ 4 * Steps });
+	CHECK_EQ(normalCounts[5], size_t{ 4 });
+
+	const Mesh3D oneStep = Mesh3D::Stairs(size, 1);
+	CHECK_EQ(oneStep.vertexCount(), size_t{ 24 });
+	CHECK_EQ(oneStep.triangleCount(), size_t{ 12 });
+	CheckMeshGeometry(oneStep);
+
+	CHECK(Mesh3D::Stairs(size, 0).isEmpty());
+	CHECK(Mesh3D::Stairs(Vec3{ 0.0, 1.0, 1.0 }, Steps).isEmpty());
+	CHECK(Mesh3D::Stairs(Vec3{ 1.0, 1.0, -1.0 }, Steps).isEmpty());
+	CHECK(Mesh3D::Stairs(Vec3{ 1.0, std::numeric_limits<double>::infinity(), 1.0 }, Steps).isEmpty());
+	CHECK(Mesh3D::Stairs(size, std::numeric_limits<uint32>::max()).isEmpty());
+}
+
+TEST_CASE("Mesh3D::Stairs with projected UV mapping")
+{
+	constexpr uint32 Steps = 3;
+	const Vec3 size{ 4.0, 3.0, 6.0 };
+	const BoxUVMapping uvMapping{
+		.negativeZ = FloatRect{ 0.8f, 0.1f, 0.2f, 0.9f },
+		.positiveZ = FloatRect{ 0.1f, 0.2f, 0.4f, 0.8f },
+		.positiveX = FloatRect{ -1.0f, 0.0f, 1.0f, 0.5f },
+		.negativeX = FloatRect{ 1.0f, 0.75f, 0.0f, 0.25f },
+		.positiveY = FloatRect{ 0.2f, 0.9f, 0.8f, 0.3f },
+		.negativeY = FloatRect{ 0.0f, 0.0f, 0.5f, 1.0f },
+	};
+	const Mesh3D mesh = Mesh3D::Stairs(size, Steps, uvMapping);
+	CheckMeshGeometry(mesh);
+
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		const float x = (0.5f + (vertex.pos.x / static_cast<float>(size.x)));
+		const float y = (0.5f - (vertex.pos.y / static_cast<float>(size.y)));
+		const float z = (0.5f + (vertex.pos.z / static_cast<float>(size.z)));
+
+		if (vertex.normal == -Float3::UnitZ())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeZ, x, y));
+		}
+		else if (vertex.normal == Float3::UnitZ())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveZ, (1.0f - x), y));
+		}
+		else if (vertex.normal == Float3::UnitX())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveX, z, y));
+		}
+		else if (vertex.normal == -Float3::UnitX())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeX, (1.0f - z), y));
+		}
+		else if (vertex.normal == Float3::UnitY())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveY, x, (1.0f - z)));
+		}
+		else
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeY, x, z));
+		}
+	}
+
+	const Mesh3D defaultMesh = Mesh3D::Stairs(size, Steps);
+	const Mesh3D defaultMappingMesh = Mesh3D::Stairs(size, Steps, BoxUVMapping{});
+	REQUIRE_EQ(defaultMappingMesh.vertexCount(), defaultMesh.vertexCount());
+	for (size_t i = 0; i < defaultMesh.vertices.size(); ++i)
+	{
+		CHECK_EQ(defaultMappingMesh.vertices[i].tex, defaultMesh.vertices[i].tex);
+		CHECK_EQ(defaultMappingMesh.vertices[i].tangent, defaultMesh.vertices[i].tangent);
+	}
+
+	BoxUVMapping invalid = uvMapping;
+	invalid.negativeZ.top = std::numeric_limits<float>::infinity();
+	CHECK(Mesh3D::Stairs(size, Steps, invalid).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Pyramid")

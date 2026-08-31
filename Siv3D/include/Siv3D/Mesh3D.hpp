@@ -100,6 +100,54 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	Wedge
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上るくさび形の 3D メッシュを作成します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @return くさび形の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark X 軸方向を幅、Y 軸方向を高さ、Z 軸方向を奥行きとし、斜面は `-Z` 側の下端から `+Z` 側の上端へ伸びます。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。斜面には `BoxUVMapping::positiveY` が使用されます。
+		[[nodiscard]]
+		static Mesh3D Wedge(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上るくさび形の 3D メッシュを作成します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return くさび形の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark X 軸方向を幅、Y 軸方向を高さ、Z 軸方向を奥行きとし、斜面は `-Z` 側の下端から `+Z` 側の上端へ伸びます。
+		/// @remark 斜面には `BoxUVMapping::positiveY`、垂直な背面には `positiveZ`、底面には `negativeY`、左右の側面には `positiveX` と `negativeX` が使用されます。
+		[[nodiscard]]
+		static Mesh3D Wedge(Vec3 size, const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Stairs
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上る階段の 3D メッシュを作成します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数。1 以上である必要があります。
+		/// @return 階段の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark X 軸方向を幅、Y 軸方向を全体の高さ、Z 軸方向を全体の奥行きとします。
+		/// @remark UV 座標は、階段全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Stairs(Vec3 size, uint32 steps);
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上る階段の 3D メッシュを作成します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数。1 以上である必要があります。
+		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 階段の 3D メッシュ。引数または `uvMapping` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 踏み面には `BoxUVMapping::positiveY`、蹴上げ面には `negativeZ`、背面には `positiveZ`、底面には `negativeY`、左右の側面には `positiveX` と `negativeX` が使用されます。
+		/// @remark 各 UV 矩形は個々の段へ引き伸ばされず、階段全体のバウンディングボックスを基準に投影されます。
+		[[nodiscard]]
+		static Mesh3D Stairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Pyramid
 		//
 		////////////////////////////////////////////////////////////////

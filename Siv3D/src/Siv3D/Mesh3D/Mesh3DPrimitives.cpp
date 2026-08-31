@@ -108,6 +108,91 @@ namespace s3d
 			Float3 normal;
 		};
 
+		[[nodiscard]]
+		static bool IsFinite(const BoxUVMapping& uvMapping) noexcept
+		{
+			return (IsFinite(uvMapping.negativeZ)
+				&& IsFinite(uvMapping.positiveZ)
+				&& IsFinite(uvMapping.positiveX)
+				&& IsFinite(uvMapping.negativeX)
+				&& IsFinite(uvMapping.positiveY)
+				&& IsFinite(uvMapping.negativeY));
+		}
+
+		[[nodiscard]]
+		static Float2 MapProjectedUV(const FloatRect& uvRect, const Float2 uv) noexcept
+		{
+			return{
+				(uvRect.left + ((uvRect.right - uvRect.left) * uv.x)),
+				(uvRect.top + ((uvRect.bottom - uvRect.top) * uv.y))
+			};
+		}
+
+		[[nodiscard]]
+		static Float4 MakeProjectedTangent(const Float3 baseTangent, const FloatRect& uvRect) noexcept
+		{
+			const float uSign = ((uvRect.right < uvRect.left) ? -1.0f : 1.0f);
+			const float vSign = ((uvRect.bottom < uvRect.top) ? -1.0f : 1.0f);
+			return{ (baseTangent * uSign), (uSign * vSign) };
+		}
+
+		static void WriteProjectedTriangle(
+			Mesh3D& mesh,
+			size_t& vertexOffset,
+			size_t& triangleOffset,
+			const std::array<Float3, 3>& positions,
+			const std::array<Float2, 3>& projectedUVs,
+			const Float3 normal,
+			const Float3 baseTangent,
+			const FloatRect& uvRect)
+		{
+			const Float4 tangent = MakeProjectedTangent(baseTangent, uvRect);
+
+			for (size_t i = 0; i < positions.size(); ++i)
+			{
+				mesh.vertices[vertexOffset + i] = Vertex3D{
+					.pos = positions[i],
+					.normal = normal,
+					.tex = MapProjectedUV(uvRect, projectedUVs[i]),
+					.tangent = tangent
+				};
+			}
+
+			const uint32 i0 = static_cast<uint32>(vertexOffset);
+			mesh.indices[triangleOffset] = TriangleIndex32{ i0, (i0 + 1), (i0 + 2) };
+			vertexOffset += 3;
+			++triangleOffset;
+		}
+
+		static void WriteProjectedQuad(
+			Mesh3D& mesh,
+			size_t& vertexOffset,
+			size_t& triangleOffset,
+			const std::array<Float3, 4>& positions,
+			const std::array<Float2, 4>& projectedUVs,
+			const Float3 normal,
+			const Float3 baseTangent,
+			const FloatRect& uvRect)
+		{
+			const Float4 tangent = MakeProjectedTangent(baseTangent, uvRect);
+
+			for (size_t i = 0; i < positions.size(); ++i)
+			{
+				mesh.vertices[vertexOffset + i] = Vertex3D{
+					.pos = positions[i],
+					.normal = normal,
+					.tex = MapProjectedUV(uvRect, projectedUVs[i]),
+					.tangent = tangent
+				};
+			}
+
+			const uint32 i0 = static_cast<uint32>(vertexOffset);
+			mesh.indices[triangleOffset + 0] = TriangleIndex32{ i0, (i0 + 1), (i0 + 2) };
+			mesh.indices[triangleOffset + 1] = TriangleIndex32{ (i0 + 2), (i0 + 1), (i0 + 3) };
+			vertexOffset += 4;
+			triangleOffset += 2;
+		}
+
 		constexpr float GoldenRatio = 1.6180339887498948482f;
 
 		constexpr std::array<Float3, 12> IcosahedronBaseVertices =
@@ -341,6 +426,227 @@ namespace s3d
 			const size_t triangleOffset = (faceIndex * 2);
 			mesh.indices[triangleOffset + 0] = TriangleIndex32{ i0, (i0 + 1), (i0 + 2) };
 			mesh.indices[triangleOffset + 1] = TriangleIndex32{ (i0 + 2), (i0 + 1), (i0 + 3) };
+		}
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Wedge
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Wedge(const Vec3 size)
+	{
+		return Wedge(size, BoxUVMapping{});
+	}
+
+	Mesh3D Mesh3D::Wedge(const Vec3 _size, const BoxUVMapping& uvMapping)
+	{
+		if ((not IsFloatRepresentable(_size))
+			|| (not IsFinite(uvMapping)))
+		{
+			return{};
+		}
+
+		const Float3 size = _size;
+		if ((size.x <= 0.0f)
+			|| (size.y <= 0.0f)
+			|| (size.z <= 0.0f))
+		{
+			return{};
+		}
+
+		const Float3 halfSize = (size * 0.5f);
+		const float left = -halfSize.x;
+		const float right = halfSize.x;
+		const float bottom = -halfSize.y;
+		const float top = halfSize.y;
+		const float front = -halfSize.z;
+		const float back = halfSize.z;
+		const double inverseSlopeLength = (1.0 / std::hypot(_size.y, _size.z));
+		const Float3 slopeNormal{
+			0.0f,
+			static_cast<float>(_size.z * inverseSlopeLength),
+			static_cast<float>(-_size.y * inverseSlopeLength)
+		};
+		Mesh3D mesh{ 18, 8 };
+		size_t vertexOffset = 0;
+		size_t triangleOffset = 0;
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ right, top, back }, { left, top, back },
+				{ right, bottom, back }, { left, bottom, back }
+			}},
+			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
+			Float3::UnitZ(), -Float3::UnitX(), uvMapping.positiveZ);
+
+		WriteProjectedTriangle(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ right, bottom, front },
+				{ right, top, back },
+				{ right, bottom, back }
+			}},
+			{{ { 0.0f, 1.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f } }},
+			Float3::UnitX(), Float3::UnitZ(), uvMapping.positiveX);
+
+		WriteProjectedTriangle(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ left, bottom, front },
+				{ left, bottom, back },
+				{ left, top, back }
+			}},
+			{{ { 1.0f, 1.0f }, { 0.0f, 1.0f }, { 0.0f, 0.0f } }},
+			-Float3::UnitX(), -Float3::UnitZ(), uvMapping.negativeX);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ left, top, back }, { right, top, back },
+				{ left, bottom, front }, { right, bottom, front }
+			}},
+			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
+			slopeNormal, Float3::UnitX(), uvMapping.positiveY);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ left, bottom, front }, { right, bottom, front },
+				{ left, bottom, back }, { right, bottom, back }
+			}},
+			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
+			-Float3::UnitY(), Float3::UnitX(), uvMapping.negativeY);
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Stairs
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Stairs(const Vec3 size, const uint32 steps)
+	{
+		return Stairs(size, steps, BoxUVMapping{});
+	}
+
+	Mesh3D Mesh3D::Stairs(const Vec3 _size, const uint32 steps, const BoxUVMapping& uvMapping)
+	{
+		if ((not IsFloatRepresentable(_size))
+			|| (not IsFinite(uvMapping)))
+		{
+			return{};
+		}
+
+		const Float3 size = _size;
+		if ((size.x <= 0.0f)
+			|| (size.y <= 0.0f)
+			|| (size.z <= 0.0f)
+			|| (steps == 0))
+		{
+			return{};
+		}
+
+		size_t vertexCount;
+		size_t triangleCount;
+		if ((not CheckedMultiply(static_cast<size_t>(steps), 16, vertexCount))
+			|| (not CheckedAdd(vertexCount, 8, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(steps), 8, triangleCount))
+			|| (not CheckedAdd(triangleCount, 4, triangleCount)))
+		{
+			return{};
+		}
+
+		Mesh3D mesh{ vertexCount, triangleCount };
+		const Float3 halfSize = (size * 0.5f);
+		const float left = -halfSize.x;
+		const float right = halfSize.x;
+		const float bottom = -halfSize.y;
+		const float top = halfSize.y;
+		const float front = -halfSize.z;
+		const float back = halfSize.z;
+		const float inverseSteps = (1.0f / static_cast<float>(steps));
+		size_t vertexOffset = 0;
+		size_t triangleOffset = 0;
+
+		for (uint32 i = 0; i < steps; ++i)
+		{
+			const float t0 = (i * inverseSteps);
+			const float t1 = ((i + 1) * inverseSteps);
+			const float y0 = (bottom + (size.y * t0));
+			const float y1 = ((i + 1 == steps) ? top : (bottom + (size.y * t1)));
+			const float z0 = (front + (size.z * t0));
+			const float z1 = ((i + 1 == steps) ? back : (front + (size.z * t1)));
+
+			WriteProjectedQuad(
+				mesh, vertexOffset, triangleOffset,
+				{{
+					{ left, y1, z1 }, { right, y1, z1 },
+					{ left, y1, z0 }, { right, y1, z0 }
+				}},
+				{{ { 0.0f, (1.0f - t1) }, { 1.0f, (1.0f - t1) }, { 0.0f, (1.0f - t0) }, { 1.0f, (1.0f - t0) } }},
+				Float3::UnitY(), Float3::UnitX(), uvMapping.positiveY);
+
+			WriteProjectedQuad(
+				mesh, vertexOffset, triangleOffset,
+				{{
+					{ left, y1, z0 }, { right, y1, z0 },
+					{ left, y0, z0 }, { right, y0, z0 }
+				}},
+				{{ { 0.0f, (1.0f - t1) }, { 1.0f, (1.0f - t1) }, { 0.0f, (1.0f - t0) }, { 1.0f, (1.0f - t0) } }},
+				-Float3::UnitZ(), Float3::UnitX(), uvMapping.negativeZ);
+		}
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ right, top, back }, { left, top, back },
+				{ right, bottom, back }, { left, bottom, back }
+			}},
+			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
+			Float3::UnitZ(), -Float3::UnitX(), uvMapping.positiveZ);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ left, bottom, front }, { right, bottom, front },
+				{ left, bottom, back }, { right, bottom, back }
+			}},
+			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
+			-Float3::UnitY(), Float3::UnitX(), uvMapping.negativeY);
+
+		for (uint32 i = 0; i < steps; ++i)
+		{
+			const float t0 = (i * inverseSteps);
+			const float t1 = ((i + 1) * inverseSteps);
+			const float y1 = ((i + 1 == steps) ? top : (bottom + (size.y * t1)));
+			const float z0 = (front + (size.z * t0));
+			const float z1 = ((i + 1 == steps) ? back : (front + (size.z * t1)));
+
+			WriteProjectedQuad(
+				mesh, vertexOffset, triangleOffset,
+				{{
+					{ right, y1, z0 }, { right, y1, z1 },
+					{ right, bottom, z0 }, { right, bottom, z1 }
+				}},
+				{{ { t0, (1.0f - t1) }, { t1, (1.0f - t1) }, { t0, 1.0f }, { t1, 1.0f } }},
+				Float3::UnitX(), Float3::UnitZ(), uvMapping.positiveX);
+
+			WriteProjectedQuad(
+				mesh, vertexOffset, triangleOffset,
+				{{
+					{ left, y1, z1 }, { left, y1, z0 },
+					{ left, bottom, z1 }, { left, bottom, z0 }
+				}},
+				{{ { (1.0f - t1), (1.0f - t1) }, { (1.0f - t0), (1.0f - t1) }, { (1.0f - t1), 1.0f }, { (1.0f - t0), 1.0f } }},
+				-Float3::UnitX(), -Float3::UnitZ(), uvMapping.negativeX);
 		}
 
 		return mesh;
