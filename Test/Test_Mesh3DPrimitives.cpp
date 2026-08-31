@@ -24,10 +24,14 @@ namespace
 		static_cast<Mesh3D (*)(Vec3, double, uint32, const BoxUVMapping&)>(&Mesh3D::RoundedBox);
 		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Wedge);
 		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Wedge);
+		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::TriangularPrism);
+		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::TriangularPrism);
 		static_cast<Mesh3D (*)(Vec3, uint32)>(&Mesh3D::Stairs);
 		static_cast<Mesh3D (*)(Vec3, uint32, const BoxUVMapping&)>(&Mesh3D::Stairs);
 		static_cast<Mesh3D (*)(double, double)>(&Mesh3D::Pyramid);
 		static_cast<Mesh3D (*)(SizeF, double)>(&Mesh3D::Pyramid);
+		static_cast<Mesh3D (*)(SizeF, SizeF, double)>(&Mesh3D::RectangularFrustum);
+		static_cast<Mesh3D (*)(SizeF, SizeF, double, const BoxUVMapping&)>(&Mesh3D::RectangularFrustum);
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Tetrahedron);
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Octahedron);
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Icosahedron);
@@ -42,7 +46,7 @@ namespace
 		static_cast<Mesh3D (*)(double, uint32)>(&Mesh3D::Disc);
 		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Annulus);
 		static_cast<Mesh3D (*)(double, double, double, uint32)>(&Mesh3D::HollowCylinder);
-		static_cast<Mesh3D (*)(double, double, double, uint32)>(&Mesh3D::Frustum);
+		static_cast<Mesh3D (*)(double, double, double, uint32)>(&Mesh3D::ConicalFrustum);
 		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Cylinder);
 		static_cast<Mesh3D (*)(double, double, uint32)>(&Mesh3D::Cone);
 	});
@@ -508,6 +512,93 @@ TEST_CASE("Mesh3D::Wedge with projected UV mapping")
 	CHECK(Mesh3D::Wedge(size, invalid).isEmpty());
 }
 
+TEST_CASE("Mesh3D::TriangularPrism")
+{
+	const Vec3 size{ 4.0, 2.0, 6.0 };
+	const Mesh3D mesh = Mesh3D::TriangularPrism(size);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 18 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 8 });
+	CheckMeshGeometry(mesh);
+
+	const Float3 expectedFrontNormal = Float3{ 0.0f, 3.0f, -2.0f }.normalized();
+	const Float3 expectedBackNormal = Float3{ 0.0f, 3.0f, 2.0f }.normalized();
+	std::array<size_t, 5> normalCounts{};
+
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		CHECK((-2.0f <= vertex.pos.x && vertex.pos.x <= 2.0f));
+		CHECK((-1.0f <= vertex.pos.y && vertex.pos.y <= 1.0f));
+		CHECK((-3.0f <= vertex.pos.z && vertex.pos.z <= 3.0f));
+
+		if (vertex.normal == Float3::UnitX()) { ++normalCounts[0]; }
+		else if (vertex.normal == -Float3::UnitX()) { ++normalCounts[1]; }
+		else if (vertex.normal == -Float3::UnitY()) { ++normalCounts[2]; }
+		else if (vertex.normal.dot(expectedFrontNormal) > (1.0f - FrameEpsilon)) { ++normalCounts[3]; }
+		else if (vertex.normal.dot(expectedBackNormal) > (1.0f - FrameEpsilon)) { ++normalCounts[4]; }
+	}
+
+	CHECK_EQ(normalCounts, (std::array<size_t, 5>{ 3, 3, 4, 4, 4 }));
+	CHECK_EQ(mesh.vertices[2].pos, Float3{ 2.0f, 1.0f, 0.0f });
+	CHECK_EQ(mesh.vertices[5].pos, Float3{ -2.0f, 1.0f, 0.0f });
+
+	const Mesh3D defaultMappingMesh = Mesh3D::TriangularPrism(size, BoxUVMapping{});
+	REQUIRE_EQ(defaultMappingMesh.vertexCount(), mesh.vertexCount());
+	for (size_t i = 0; i < mesh.vertexCount(); ++i)
+	{
+		CHECK_EQ(defaultMappingMesh.vertices[i].pos, mesh.vertices[i].pos);
+		CHECK_EQ(defaultMappingMesh.vertices[i].normal, mesh.vertices[i].normal);
+		CHECK_EQ(defaultMappingMesh.vertices[i].tex, mesh.vertices[i].tex);
+		CHECK_EQ(defaultMappingMesh.vertices[i].tangent, mesh.vertices[i].tangent);
+	}
+
+	CHECK(Mesh3D::TriangularPrism(Vec3{ 0.0, 1.0, 1.0 }).isEmpty());
+	CHECK(Mesh3D::TriangularPrism(Vec3{ 1.0, -1.0, 1.0 }).isEmpty());
+	CHECK(Mesh3D::TriangularPrism(Vec3{ 1.0, 1.0, std::numeric_limits<double>::infinity() }).isEmpty());
+	CHECK(Mesh3D::TriangularPrism(Vec3{ std::numeric_limits<double>::max(), 1.0, 1.0 }).isEmpty());
+
+	BoxUVMapping invalidMapping;
+	invalidMapping.positiveY.left = std::numeric_limits<float>::quiet_NaN();
+	CHECK(Mesh3D::TriangularPrism(size, invalidMapping).isEmpty());
+}
+
+TEST_CASE("Mesh3D::TriangularPrism with projected UV mapping")
+{
+	const Vec3 size{ 4.0, 2.0, 6.0 };
+	const BoxUVMapping uvMapping{
+		.positiveX = FloatRect{ 0.1f, 0.2f, 0.4f, 0.8f },
+		.negativeX = FloatRect{ 0.9f, 0.8f, 0.5f, 0.2f },
+		.positiveY = FloatRect{ -1.0f, 0.25f, 1.0f, 0.75f },
+		.negativeY = FloatRect{ 0.2f, 0.9f, 0.8f, 0.3f },
+	};
+	const Mesh3D mesh = Mesh3D::TriangularPrism(size, uvMapping);
+	CheckMeshGeometry(mesh);
+
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		const float x = (0.5f + (vertex.pos.x / static_cast<float>(size.x)));
+		const float y = (0.5f - (vertex.pos.y / static_cast<float>(size.y)));
+		const float z = (0.5f + (vertex.pos.z / static_cast<float>(size.z)));
+
+		if (vertex.normal == Float3::UnitX())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveX, z, y));
+		}
+		else if (vertex.normal == -Float3::UnitX())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeX, (1.0f - z), y));
+		}
+		else if (vertex.normal == -Float3::UnitY())
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeY, x, z));
+		}
+		else
+		{
+			CheckUV(vertex.tex, MapUV(uvMapping.positiveY, x, (1.0f - z)));
+		}
+	}
+}
+
 TEST_CASE("Mesh3D::Stairs")
 {
 	constexpr uint32 Steps = 4;
@@ -696,6 +787,82 @@ TEST_CASE("Mesh3D::Pyramid")
 	CHECK(Mesh3D::Pyramid(SizeF{ 1.0, 1.0 }, 0.0).isEmpty());
 	CHECK(Mesh3D::Pyramid(SizeF{ std::numeric_limits<double>::infinity(), 1.0 }, 1.0).isEmpty());
 	CHECK(Mesh3D::Pyramid(SizeF{ 1.0, 1.0 }, std::numeric_limits<double>::quiet_NaN()).isEmpty());
+}
+
+TEST_CASE("Mesh3D::RectangularFrustum")
+{
+	const SizeF bottomSizeXZ{ 4.0, 6.0 };
+	const SizeF topSizeXZ{ 2.0, 2.0 };
+	constexpr double Height = 4.0;
+	const Mesh3D mesh = Mesh3D::RectangularFrustum(bottomSizeXZ, topSizeXZ, Height);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CheckMeshGeometry(mesh);
+
+	const std::array<Float3, 6> expectedNormals{
+		Float3{ 0.0f, 2.0f, -4.0f }.normalized(),
+		Float3{ 0.0f, 2.0f, 4.0f }.normalized(),
+		Float3{ 4.0f, 1.0f, 0.0f }.normalized(),
+		Float3{ -4.0f, 1.0f, 0.0f }.normalized(),
+		Float3::UnitY(),
+		-Float3::UnitY(),
+	};
+
+	for (size_t faceIndex = 0; faceIndex < expectedNormals.size(); ++faceIndex)
+	{
+		for (size_t i = 0; i < 4; ++i)
+		{
+			const Vertex3D& vertex = mesh.vertices[(faceIndex * 4) + i];
+			CHECK(vertex.normal.dot(expectedNormals[faceIndex]) > (1.0f - FrameEpsilon));
+		}
+	}
+
+	CHECK_EQ(mesh.vertices[0].pos, Float3{ -1.0f, 2.0f, -1.0f });
+	CHECK_EQ(mesh.vertices[2].pos, Float3{ -2.0f, -2.0f, -3.0f });
+	CheckUV(mesh.vertices[16].tex, Float2{ 0.25f, (1.0f / 3.0f) });
+	CheckUV(mesh.vertices[19].tex, Float2{ 0.75f, (2.0f / 3.0f) });
+
+	const Mesh3D inverted = Mesh3D::RectangularFrustum(topSizeXZ, bottomSizeXZ, Height);
+	CHECK_EQ(inverted.vertexCount(), mesh.vertexCount());
+	CheckMeshGeometry(inverted);
+
+	const BoxUVMapping uvMapping{
+		.negativeZ = FloatRect{ 0.1f, 0.2f, 0.4f, 0.8f },
+		.positiveZ = FloatRect{ 0.9f, 0.8f, 0.5f, 0.2f },
+		.positiveX = FloatRect{ -1.0f, 0.25f, 1.0f, 0.75f },
+		.negativeX = FloatRect{ 0.2f, 0.9f, 0.8f, 0.3f },
+		.positiveY = FloatRect{ 0.0f, 0.0f, 0.5f, 0.5f },
+		.negativeY = FloatRect{ 0.5f, 0.5f, 1.0f, 1.0f },
+	};
+	const Mesh3D mapped = Mesh3D::RectangularFrustum(bottomSizeXZ, topSizeXZ, Height, uvMapping);
+	CheckMeshGeometry(mapped);
+	CheckUV(mapped.vertices[0].tex, MapUV(uvMapping.negativeZ, 0.25f, 0.0f));
+	CheckUV(mapped.vertices[7].tex, MapUV(uvMapping.positiveZ, 1.0f, 1.0f));
+	CheckUV(mapped.vertices[16].tex, MapUV(uvMapping.positiveY, 0.25f, (1.0f / 3.0f)));
+	CheckUV(mapped.vertices[23].tex, MapUV(uvMapping.negativeY, 1.0f, 1.0f));
+
+	const Mesh3D box = Mesh3D::Box(Vec3{ 4.0, Height, 6.0 }, uvMapping);
+	const Mesh3D equalEnds = Mesh3D::RectangularFrustum(bottomSizeXZ, bottomSizeXZ, Height, uvMapping);
+	REQUIRE_EQ(equalEnds.vertexCount(), box.vertexCount());
+	REQUIRE_EQ(equalEnds.triangleCount(), box.triangleCount());
+	for (size_t i = 0; i < box.vertexCount(); ++i)
+	{
+		CHECK_EQ(equalEnds.vertices[i].pos, box.vertices[i].pos);
+		CHECK_EQ(equalEnds.vertices[i].normal, box.vertices[i].normal);
+		CHECK_EQ(equalEnds.vertices[i].tex, box.vertices[i].tex);
+		CHECK_EQ(equalEnds.vertices[i].tangent, box.vertices[i].tangent);
+	}
+
+	CHECK(Mesh3D::RectangularFrustum(SizeF{ 0.0, 1.0 }, topSizeXZ, Height).isEmpty());
+	CHECK(Mesh3D::RectangularFrustum(bottomSizeXZ, SizeF{ 1.0, -1.0 }, Height).isEmpty());
+	CHECK(Mesh3D::RectangularFrustum(bottomSizeXZ, topSizeXZ, 0.0).isEmpty());
+	CHECK(Mesh3D::RectangularFrustum(
+		SizeF{ std::numeric_limits<double>::infinity(), 1.0 }, topSizeXZ, Height).isEmpty());
+
+	BoxUVMapping invalidMapping;
+	invalidMapping.negativeZ.bottom = std::numeric_limits<float>::quiet_NaN();
+	CHECK(Mesh3D::RectangularFrustum(bottomSizeXZ, topSizeXZ, Height, invalidMapping).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Tetrahedron")
@@ -1142,10 +1309,10 @@ TEST_CASE("Mesh3D::Capsule")
 	CHECK(Mesh3D::Capsule(Radius, CylinderHeight, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
-TEST_CASE("Mesh3D::Frustum")
+TEST_CASE("Mesh3D::ConicalFrustum")
 {
 	constexpr uint32 Segments = 8;
-	const Mesh3D mesh = Mesh3D::Frustum(2.0, 1.0, 4.0, Segments);
+	const Mesh3D mesh = Mesh3D::ConicalFrustum(2.0, 1.0, 4.0, Segments);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ (4 * Segments) + 4 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Segments });
@@ -1157,16 +1324,16 @@ TEST_CASE("Mesh3D::Frustum")
 		CHECK(std::sqrt((vertex.pos.x * vertex.pos.x) + (vertex.pos.z * vertex.pos.z)) <= (2.0f + FrameEpsilon));
 	}
 
-	const Mesh3D invertedFrustum = Mesh3D::Frustum(1.0, 2.0, 4.0, Segments);
+	const Mesh3D invertedFrustum = Mesh3D::ConicalFrustum(1.0, 2.0, 4.0, Segments);
 	CHECK_EQ(invertedFrustum.vertexCount(), mesh.vertexCount());
 	CheckMeshGeometry(invertedFrustum);
-	CheckMeshGeometry(Mesh3D::Frustum(1.0, 0.5, 1.0, 3));
+	CheckMeshGeometry(Mesh3D::ConicalFrustum(1.0, 0.5, 1.0, 3));
 
-	CHECK(Mesh3D::Frustum(0.0, 1.0, 1.0, Segments).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0, -1.0, 1.0, Segments).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0, 1.0, 0.0, Segments).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0, 1.0, 1.0, 2).isEmpty());
-	CHECK(Mesh3D::Frustum(1.0, 1.0, 1.0, std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::ConicalFrustum(0.0, 1.0, 1.0, Segments).isEmpty());
+	CHECK(Mesh3D::ConicalFrustum(1.0, -1.0, 1.0, Segments).isEmpty());
+	CHECK(Mesh3D::ConicalFrustum(1.0, 1.0, 0.0, Segments).isEmpty());
+	CHECK(Mesh3D::ConicalFrustum(1.0, 1.0, 1.0, 2).isEmpty());
+	CHECK(Mesh3D::ConicalFrustum(1.0, 1.0, 1.0, std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Cylinder")

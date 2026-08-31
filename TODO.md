@@ -55,7 +55,7 @@
 
 ### 汎用形状生成
 
-- Torus、Capsule、Hemisphere で蓄積した実装を基に、2D プロファイルの回転体を作る `Lathe()` を設計する。
+- Torus、Capsule、Hemisphere で蓄積した実装を基に、2D プロファイルの回転体を作る `Revolve()` を設計する。
 - 穴を含む `Polygon` の押し出し形状を作る `Extrude()` を設計する。
 - parallel-transport frame を使い、3D 経路に沿うチューブを作る `Tube()` を設計する。
 - `Grid<float>` や画像の標高値から地形を作る height field API を設計する。

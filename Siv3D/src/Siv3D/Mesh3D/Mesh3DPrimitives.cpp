@@ -752,6 +752,97 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	TriangularPrism
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::TriangularPrism(const Vec3 size)
+	{
+		return TriangularPrism(size, BoxUVMapping{});
+	}
+
+	Mesh3D Mesh3D::TriangularPrism(const Vec3 _size, const BoxUVMapping& uvMapping)
+	{
+		if ((not IsFloatRepresentable(_size))
+			|| (not IsFinite(uvMapping)))
+		{
+			return{};
+		}
+
+		const Float3 size = _size;
+		if ((size.x <= 0.0f)
+			|| (size.y <= 0.0f)
+			|| (size.z <= 0.0f))
+		{
+			return{};
+		}
+
+		const Float3 halfSize = (size * 0.5f);
+		const float left = -halfSize.x;
+		const float right = halfSize.x;
+		const float bottom = -halfSize.y;
+		const float top = halfSize.y;
+		const float front = -halfSize.z;
+		const float back = halfSize.z;
+		const float inverseSlopeLength = static_cast<float>(1.0 / std::hypot(_size.y, (_size.z * 0.5)));
+		const Float3 frontSlopeNormal{ 0.0f, (halfSize.z * inverseSlopeLength), (-size.y * inverseSlopeLength) };
+		const Float3 backSlopeNormal{ 0.0f, (halfSize.z * inverseSlopeLength), (size.y * inverseSlopeLength) };
+		Mesh3D mesh{ 18, 8 };
+		size_t vertexOffset = 0;
+		size_t triangleOffset = 0;
+
+		WriteProjectedTriangle(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ right, bottom, back },
+				{ right, bottom, front },
+				{ right, top, 0.0f }
+			}},
+			{{ { 1.0f, 1.0f }, { 0.0f, 1.0f }, { 0.5f, 0.0f } }},
+			Float3::UnitX(), Float3::UnitZ(), uvMapping.positiveX);
+
+		WriteProjectedTriangle(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ left, bottom, front },
+				{ left, bottom, back },
+				{ left, top, 0.0f }
+			}},
+			{{ { 1.0f, 1.0f }, { 0.0f, 1.0f }, { 0.5f, 0.0f } }},
+			-Float3::UnitX(), -Float3::UnitZ(), uvMapping.negativeX);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ left, top, 0.0f }, { right, top, 0.0f },
+				{ left, bottom, front }, { right, bottom, front }
+			}},
+			{{ { 0.0f, 0.5f }, { 1.0f, 0.5f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
+			frontSlopeNormal, Float3::UnitX(), uvMapping.positiveY);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ right, top, 0.0f }, { left, top, 0.0f },
+				{ right, bottom, back }, { left, bottom, back }
+			}},
+			{{ { 1.0f, 0.5f }, { 0.0f, 0.5f }, { 1.0f, 0.0f }, { 0.0f, 0.0f } }},
+			backSlopeNormal, Float3::UnitX(), uvMapping.positiveY);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ left, bottom, front }, { right, bottom, front },
+				{ left, bottom, back }, { right, bottom, back }
+			}},
+			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
+			-Float3::UnitY(), Float3::UnitX(), uvMapping.negativeY);
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Stairs
 	//
 	////////////////////////////////////////////////////////////////
@@ -1007,6 +1098,156 @@ namespace s3d
 
 		mesh.indices[4] = TriangleIndex32{ 12, 13, 14 };
 		mesh.indices[5] = TriangleIndex32{ 14, 13, 15 };
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	RectangularFrustum
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::RectangularFrustum(
+		const SizeF bottomSizeXZ,
+		const SizeF topSizeXZ,
+		const double height)
+	{
+		return RectangularFrustum(bottomSizeXZ, topSizeXZ, height, BoxUVMapping{});
+	}
+
+	Mesh3D Mesh3D::RectangularFrustum(
+		const SizeF _bottomSizeXZ,
+		const SizeF _topSizeXZ,
+		const double _height,
+		const BoxUVMapping& uvMapping)
+	{
+		if ((not IsFloatRepresentable(_bottomSizeXZ))
+			|| (not IsFloatRepresentable(_topSizeXZ))
+			|| (not IsFloatRepresentable(_height))
+			|| (not IsFinite(uvMapping)))
+		{
+			return{};
+		}
+
+		const Float2 bottomSizeXZ = _bottomSizeXZ;
+		const Float2 topSizeXZ = _topSizeXZ;
+		const float height = static_cast<float>(_height);
+		if ((bottomSizeXZ.x <= 0.0f)
+			|| (bottomSizeXZ.y <= 0.0f)
+			|| (topSizeXZ.x <= 0.0f)
+			|| (topSizeXZ.y <= 0.0f)
+			|| (height <= 0.0f))
+		{
+			return{};
+		}
+
+		if (bottomSizeXZ == topSizeXZ)
+		{
+			return Box(Vec3{ bottomSizeXZ.x, height, bottomSizeXZ.y }, uvMapping);
+		}
+
+		const Float2 bottomHalf = (bottomSizeXZ * 0.5f);
+		const Float2 topHalf = (topSizeXZ * 0.5f);
+		const Float2 boundsHalf{
+			std::max(bottomHalf.x, topHalf.x),
+			std::max(bottomHalf.y, topHalf.y)
+		};
+		const float halfHeight = (height * 0.5f);
+		const float xDelta = (bottomHalf.x - topHalf.x);
+		const float zDelta = (bottomHalf.y - topHalf.y);
+		const float inverseXSideLength = static_cast<float>(1.0 / std::hypot(_height, static_cast<double>(xDelta)));
+		const float inverseZSideLength = static_cast<float>(1.0 / std::hypot(_height, static_cast<double>(zDelta)));
+		const Float3 negativeZNormal{ 0.0f, (zDelta * inverseZSideLength), (-height * inverseZSideLength) };
+		const Float3 positiveZNormal{ 0.0f, (zDelta * inverseZSideLength), (height * inverseZSideLength) };
+		const Float3 positiveXNormal{ (height * inverseXSideLength), (xDelta * inverseXSideLength), 0.0f };
+		const Float3 negativeXNormal{ (-height * inverseXSideLength), (xDelta * inverseXSideLength), 0.0f };
+		const auto mapX = [boundsHalf](const float x) { return (0.5f + (x / (2.0f * boundsHalf.x))); };
+		const auto mapZ = [boundsHalf](const float z) { return (0.5f + (z / (2.0f * boundsHalf.y))); };
+
+		const float bottomLeft = -bottomHalf.x;
+		const float bottomRight = bottomHalf.x;
+		const float bottomFront = -bottomHalf.y;
+		const float bottomBack = bottomHalf.y;
+		const float topLeft = -topHalf.x;
+		const float topRight = topHalf.x;
+		const float topFront = -topHalf.y;
+		const float topBack = topHalf.y;
+		Mesh3D mesh{ 24, 12 };
+		size_t vertexOffset = 0;
+		size_t triangleOffset = 0;
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ topLeft, halfHeight, topFront }, { topRight, halfHeight, topFront },
+				{ bottomLeft, -halfHeight, bottomFront }, { bottomRight, -halfHeight, bottomFront }
+			}},
+			{{
+				{ mapX(topLeft), 0.0f }, { mapX(topRight), 0.0f },
+				{ mapX(bottomLeft), 1.0f }, { mapX(bottomRight), 1.0f }
+			}},
+			negativeZNormal, Float3::UnitX(), uvMapping.negativeZ);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ topRight, halfHeight, topBack }, { topLeft, halfHeight, topBack },
+				{ bottomRight, -halfHeight, bottomBack }, { bottomLeft, -halfHeight, bottomBack }
+			}},
+			{{
+				{ (1.0f - mapX(topRight)), 0.0f }, { (1.0f - mapX(topLeft)), 0.0f },
+				{ (1.0f - mapX(bottomRight)), 1.0f }, { (1.0f - mapX(bottomLeft)), 1.0f }
+			}},
+			positiveZNormal, -Float3::UnitX(), uvMapping.positiveZ);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ topRight, halfHeight, topFront }, { topRight, halfHeight, topBack },
+				{ bottomRight, -halfHeight, bottomFront }, { bottomRight, -halfHeight, bottomBack }
+			}},
+			{{
+				{ mapZ(topFront), 0.0f }, { mapZ(topBack), 0.0f },
+				{ mapZ(bottomFront), 1.0f }, { mapZ(bottomBack), 1.0f }
+			}},
+			positiveXNormal, Float3::UnitZ(), uvMapping.positiveX);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ topLeft, halfHeight, topBack }, { topLeft, halfHeight, topFront },
+				{ bottomLeft, -halfHeight, bottomBack }, { bottomLeft, -halfHeight, bottomFront }
+			}},
+			{{
+				{ (1.0f - mapZ(topBack)), 0.0f }, { (1.0f - mapZ(topFront)), 0.0f },
+				{ (1.0f - mapZ(bottomBack)), 1.0f }, { (1.0f - mapZ(bottomFront)), 1.0f }
+			}},
+			negativeXNormal, -Float3::UnitZ(), uvMapping.negativeX);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ topLeft, halfHeight, topBack }, { topRight, halfHeight, topBack },
+				{ topLeft, halfHeight, topFront }, { topRight, halfHeight, topFront }
+			}},
+			{{
+				{ mapX(topLeft), (1.0f - mapZ(topBack)) }, { mapX(topRight), (1.0f - mapZ(topBack)) },
+				{ mapX(topLeft), (1.0f - mapZ(topFront)) }, { mapX(topRight), (1.0f - mapZ(topFront)) }
+			}},
+			Float3::UnitY(), Float3::UnitX(), uvMapping.positiveY);
+
+		WriteProjectedQuad(
+			mesh, vertexOffset, triangleOffset,
+			{{
+				{ bottomLeft, -halfHeight, bottomFront }, { bottomRight, -halfHeight, bottomFront },
+				{ bottomLeft, -halfHeight, bottomBack }, { bottomRight, -halfHeight, bottomBack }
+			}},
+			{{
+				{ mapX(bottomLeft), mapZ(bottomFront) }, { mapX(bottomRight), mapZ(bottomFront) },
+				{ mapX(bottomLeft), mapZ(bottomBack) }, { mapX(bottomRight), mapZ(bottomBack) }
+			}},
+			-Float3::UnitY(), Float3::UnitX(), uvMapping.negativeY);
 
 		return mesh;
 	}
@@ -2157,11 +2398,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	Frustum
+	//	ConicalFrustum
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Frustum(
+	Mesh3D Mesh3D::ConicalFrustum(
 		const double _bottomRadius,
 		const double _topRadius,
 		const double _height,
@@ -2400,7 +2641,7 @@ namespace s3d
 
 	Mesh3D Mesh3D::Cylinder(const double radius, const double height, const uint32 segments)
 	{
-		return Frustum(radius, radius, height, segments);
+		return ConicalFrustum(radius, radius, height, segments);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2411,6 +2652,6 @@ namespace s3d
 
 	Mesh3D Mesh3D::Cone(const double radius, const double height, const uint32 segments)
 	{
-		return Frustum(radius, 0.0f, height, segments);
+		return ConicalFrustum(radius, 0.0f, height, segments);
 	}
 }

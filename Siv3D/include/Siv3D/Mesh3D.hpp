@@ -156,6 +156,30 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	TriangularPrism
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Y-Z 平面に平行な二等辺三角形の断面を持つ三角柱の 3D メッシュを作成します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @return 三角柱の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark X 軸方向を長さ、Y 軸方向を全高、Z 軸方向を底面幅とします。
+		/// @remark Y-Z 断面の頂点は `(0, size.y / 2, 0)`、底辺は `y = -size.y / 2` に配置されます。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。2 枚の斜面には `BoxUVMapping::positiveY` が使用されます。
+		[[nodiscard]]
+		static Mesh3D TriangularPrism(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+
+		/// @brief 原点を中心とし、Y-Z 平面に平行な二等辺三角形の断面を持つ三角柱の 3D メッシュを作成します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 三角柱の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark X 軸方向を長さ、Y 軸方向を全高、Z 軸方向を底面幅とします。
+		/// @remark 2 枚の斜面には `BoxUVMapping::positiveY`、両端には `positiveX` と `negativeX`、底面には `negativeY` が使用されます。
+		[[nodiscard]]
+		static Mesh3D TriangularPrism(Vec3 size, const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Stairs
 		//
 		////////////////////////////////////////////////////////////////
@@ -202,6 +226,38 @@ namespace s3d
 		static Mesh3D Pyramid(
 			SizeF baseSizeXZ = SizeF{ 1.0, 1.0 },
 			double height = 1.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	RectangularFrustum
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、XZ 平面に平行な長方形の上下端を持つ角錐台の 3D メッシュを作成します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @return 角錐台の 3D メッシュ。いずれかの大きさが正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark 底面は `y = -height / 2`、上面は `y = height / 2` に配置されます。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D RectangularFrustum(
+			SizeF bottomSizeXZ,
+			SizeF topSizeXZ,
+			double height);
+
+		/// @brief 原点を中心とし、XZ 平面に平行な長方形の上下端を持つ角錐台の 3D メッシュを作成します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 角錐台の 3D メッシュ。大きさまたは `uvMapping` が不正な場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D RectangularFrustum(
+			SizeF bottomSizeXZ,
+			SizeF topSizeXZ,
+			double height,
+			const BoxUVMapping& uvMapping);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -419,7 +475,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	Frustum
+		//	ConicalFrustum
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -432,7 +488,7 @@ namespace s3d
 		/// @remark 底面の中心は `(0, -height / 2, 0)`、上面の中心は `(0, height / 2, 0)` に配置されます。
 		/// @remark `topRadius` が 0 の場合、側面の U 座標は円周方向を 0 から 1、V 座標は頂点を 0、底面側を 1 とする矩形領域に割り当てられます。
 		[[nodiscard]]
-		static Mesh3D Frustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
+		static Mesh3D ConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
 
 		////////////////////////////////////////////////////////////////
 		//
