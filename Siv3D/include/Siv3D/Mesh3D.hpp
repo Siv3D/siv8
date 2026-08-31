@@ -100,6 +100,39 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	RoundedBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする角丸直方体の 3D メッシュを作成します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
+		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
+		/// @return 角丸直方体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `radius == 0` の場合は `Box(size)` と同じ 3D メッシュを返します。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D RoundedBox(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double radius = 0.1,
+			uint32 subdivisions = 4);
+
+		/// @brief 原点を中心とする角丸直方体の 3D メッシュを作成します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
+		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
+		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
+		/// @return 角丸直方体の 3D メッシュ。引数または `uvMapping` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 丸い辺と角を含め、各面は `BoxUVMapping` の対応する矩形へ投影されます。面の境界は UV の継ぎ目になります。
+		[[nodiscard]]
+		static Mesh3D RoundedBox(
+			Vec3 size,
+			double radius,
+			uint32 subdivisions,
+			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Wedge
 		//
 		////////////////////////////////////////////////////////////////

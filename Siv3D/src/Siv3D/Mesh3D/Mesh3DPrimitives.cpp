@@ -433,6 +433,231 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	RoundedBox
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::RoundedBox(const Vec3 size, const double radius, const uint32 subdivisions)
+	{
+		return RoundedBox(size, radius, subdivisions, BoxUVMapping{});
+	}
+
+	Mesh3D Mesh3D::RoundedBox(
+		const Vec3 _size,
+		const double _radius,
+		const uint32 subdivisions,
+		const BoxUVMapping& uvMapping)
+	{
+		if ((not IsFloatRepresentable(_size))
+			|| (not IsFloatRepresentable(_radius))
+			|| (not IsFinite(uvMapping))
+			|| (_radius < 0.0)
+			|| (subdivisions == 0))
+		{
+			return{};
+		}
+
+		const Float3 size = _size;
+		const float radius = static_cast<float>(_radius);
+		if ((size.x <= 0.0f)
+			|| (size.y <= 0.0f)
+			|| (size.z <= 0.0f))
+		{
+			return{};
+		}
+
+		const double maxRadius = (std::min({ _size.x, _size.y, _size.z }) * 0.5);
+		if (maxRadius < _radius)
+		{
+			return{};
+		}
+
+		if (radius == 0.0f)
+		{
+			return Box(size, uvMapping);
+		}
+
+		const Float3 halfSize = (size * 0.5f);
+		const Float3 innerHalfSize{
+			std::max((halfSize.x - radius), 0.0f),
+			std::max((halfSize.y - radius), 0.0f),
+			std::max((halfSize.z - radius), 0.0f)
+		};
+		size_t twiceSubdivisions;
+		if (not CheckedMultiply(static_cast<size_t>(subdivisions), 2, twiceSubdivisions))
+		{
+			return{};
+		}
+
+		const auto getAxisPointCount = [twiceSubdivisions](const float innerHalfExtent) -> size_t
+		{
+			return (twiceSubdivisions + ((innerHalfExtent == 0.0f) ? 1 : 2));
+		};
+		const size_t xPointCount = getAxisPointCount(innerHalfSize.x);
+		const size_t yPointCount = getAxisPointCount(innerHalfSize.y);
+		const size_t zPointCount = getAxisPointCount(innerHalfSize.z);
+		size_t xyPointCount;
+		size_t xzPointCount;
+		size_t yzPointCount;
+		size_t pointCountSum;
+		size_t vertexCount;
+		size_t xyCellCount;
+		size_t xzCellCount;
+		size_t yzCellCount;
+		size_t cellCountSum;
+		size_t triangleCount;
+		if ((not CheckedMultiply(xPointCount, yPointCount, xyPointCount))
+			|| (not CheckedMultiply(xPointCount, zPointCount, xzPointCount))
+			|| (not CheckedMultiply(yPointCount, zPointCount, yzPointCount))
+			|| (not CheckedAdd(xyPointCount, xzPointCount, pointCountSum))
+			|| (not CheckedAdd(pointCountSum, yzPointCount, pointCountSum))
+			|| (not CheckedMultiply(pointCountSum, 2, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply((xPointCount - 1), (yPointCount - 1), xyCellCount))
+			|| (not CheckedMultiply((xPointCount - 1), (zPointCount - 1), xzCellCount))
+			|| (not CheckedMultiply((yPointCount - 1), (zPointCount - 1), yzCellCount))
+			|| (not CheckedAdd(xyCellCount, xzCellCount, cellCountSum))
+			|| (not CheckedAdd(cellCountSum, yzCellCount, cellCountSum))
+			|| (not CheckedMultiply(cellCountSum, 4, triangleCount)))
+		{
+			return{};
+		}
+
+		const size_t roundedSegmentCount = static_cast<size_t>(subdivisions);
+		Array<float> roundedOffsets(roundedSegmentCount + 1);
+		const float angleStep = (Math::QuarterPiF / static_cast<float>(subdivisions));
+		roundedOffsets[0] = 0.0f;
+		for (size_t i = 1; i < roundedSegmentCount; ++i)
+		{
+			roundedOffsets[i] = (radius * std::tan(angleStep * static_cast<float>(i)));
+		}
+		roundedOffsets[roundedSegmentCount] = radius;
+
+		const auto makeAxisSamples = [&roundedOffsets, roundedSegmentCount](
+			const float halfExtent,
+			const float innerHalfExtent)
+		{
+			const size_t pointCount = ((roundedSegmentCount * 2)
+				+ ((innerHalfExtent == 0.0f) ? 1 : 2));
+			Array<float> samples(pointCount);
+
+			for (size_t i = 0; i <= roundedSegmentCount; ++i)
+			{
+				samples[i] = (-innerHalfExtent - roundedOffsets[roundedSegmentCount - i]);
+			}
+			samples[0] = -halfExtent;
+
+			if (innerHalfExtent == 0.0f)
+			{
+				for (size_t i = 1; i <= roundedSegmentCount; ++i)
+				{
+					const size_t index = (roundedSegmentCount + i);
+					samples[index] = ((i == roundedSegmentCount)
+						? halfExtent
+						: roundedOffsets[i]);
+				}
+			}
+			else
+			{
+				samples[roundedSegmentCount + 1] = innerHalfExtent;
+				for (size_t i = 1; i <= roundedSegmentCount; ++i)
+				{
+					const size_t index = (roundedSegmentCount + 1 + i);
+					samples[index] = ((i == roundedSegmentCount)
+						? halfExtent
+						: (innerHalfExtent + roundedOffsets[i]));
+				}
+			}
+
+			return samples;
+		};
+
+		const Array<float> xSamples = makeAxisSamples(halfSize.x, innerHalfSize.x);
+		const Array<float> ySamples = makeAxisSamples(halfSize.y, innerHalfSize.y);
+		const Array<float> zSamples = makeAxisSamples(halfSize.z, innerHalfSize.z);
+		Mesh3D mesh{ vertexCount, triangleCount };
+		size_t vertexOffset = 0;
+		size_t triangleOffset = 0;
+
+		const auto writeFace = [
+			&mesh, &vertexOffset, &triangleOffset, &innerHalfSize, radius](
+			const Float3 center,
+			const Float3 uAxis,
+			const Float3 vAxis,
+			const Array<float>& uSamples,
+			const Array<float>& vSamples,
+			const float uSize,
+			const float vSize,
+			const FloatRect& uvRect)
+		{
+			const size_t rowStride = uSamples.size();
+
+			for (size_t v = 0; v < vSamples.size(); ++v)
+			{
+				for (size_t u = 0; u < uSamples.size(); ++u)
+				{
+					const Float3 cubePoint = (center
+						+ (uAxis * uSamples[u])
+						+ (vAxis * vSamples[v]));
+					const Float3 innerPoint{
+						std::clamp(cubePoint.x, -innerHalfSize.x, innerHalfSize.x),
+						std::clamp(cubePoint.y, -innerHalfSize.y, innerHalfSize.y),
+						std::clamp(cubePoint.z, -innerHalfSize.z, innerHalfSize.z)
+					};
+					const Float3 normal = (cubePoint - innerPoint).normalized();
+					const Float3 position = (innerPoint + (normal * radius));
+					const Float3 baseTangent = (uAxis - (normal * normal.dot(uAxis))).normalized();
+					const Float2 projectedUV{
+						(0.5f + (position.dot(uAxis) / uSize)),
+						(0.5f + (position.dot(vAxis) / vSize))
+					};
+					mesh.vertices[vertexOffset + (v * rowStride) + u] = Vertex3D{
+						.pos = position,
+						.normal = normal,
+						.tex = MapProjectedUV(uvRect, projectedUV),
+						.tangent = MakeProjectedTangent(baseTangent, uvRect)
+					};
+				}
+			}
+
+			for (size_t v = 0; (v + 1) < vSamples.size(); ++v)
+			{
+				for (size_t u = 0; (u + 1) < uSamples.size(); ++u)
+				{
+					const uint32 i0 = static_cast<uint32>(vertexOffset + (v * rowStride) + u);
+					const uint32 nextRow = (i0 + static_cast<uint32>(rowStride));
+					mesh.indices[triangleOffset++] = TriangleIndex32{ i0, (i0 + 1), nextRow };
+					mesh.indices[triangleOffset++] = TriangleIndex32{ nextRow, (i0 + 1), (nextRow + 1) };
+				}
+			}
+
+			vertexOffset += (uSamples.size() * vSamples.size());
+		};
+
+		writeFace({ 0.0f, 0.0f, -halfSize.z },
+			Float3::UnitX(), -Float3::UnitY(), xSamples, ySamples,
+			size.x, size.y, uvMapping.negativeZ);
+		writeFace({ 0.0f, 0.0f, halfSize.z },
+			-Float3::UnitX(), -Float3::UnitY(), xSamples, ySamples,
+			size.x, size.y, uvMapping.positiveZ);
+		writeFace({ halfSize.x, 0.0f, 0.0f },
+			Float3::UnitZ(), -Float3::UnitY(), zSamples, ySamples,
+			size.z, size.y, uvMapping.positiveX);
+		writeFace({ -halfSize.x, 0.0f, 0.0f },
+			-Float3::UnitZ(), -Float3::UnitY(), zSamples, ySamples,
+			size.z, size.y, uvMapping.negativeX);
+		writeFace({ 0.0f, halfSize.y, 0.0f },
+			Float3::UnitX(), -Float3::UnitZ(), xSamples, zSamples,
+			size.x, size.z, uvMapping.positiveY);
+		writeFace({ 0.0f, -halfSize.y, 0.0f },
+			Float3::UnitX(), Float3::UnitZ(), xSamples, zSamples,
+			size.x, size.z, uvMapping.negativeY);
+
+		return mesh;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Wedge
 	//
 	////////////////////////////////////////////////////////////////

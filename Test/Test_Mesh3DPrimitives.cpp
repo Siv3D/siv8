@@ -20,6 +20,8 @@ namespace
 	{
 		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Box);
 		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Box);
+		static_cast<Mesh3D (*)(Vec3, double, uint32)>(&Mesh3D::RoundedBox);
+		static_cast<Mesh3D (*)(Vec3, double, uint32, const BoxUVMapping&)>(&Mesh3D::RoundedBox);
 		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Wedge);
 		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Wedge);
 		static_cast<Mesh3D (*)(Vec3, uint32)>(&Mesh3D::Stairs);
@@ -292,6 +294,121 @@ TEST_CASE("Mesh3D::Box with collapsed UV mapping")
 			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tex, Float2{ 0.25f, 0.75f });
 			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
 		}
+	}
+}
+
+TEST_CASE("Mesh3D::RoundedBox")
+{
+	constexpr Vec3 Size{ 2.0, 4.0, 6.0 };
+	constexpr double Radius = 0.5;
+	constexpr uint32 Subdivisions = 2;
+	const Mesh3D mesh = Mesh3D::RoundedBox(Size, Radius, Subdivisions);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 216 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 300 });
+	CheckMeshGeometry(mesh);
+
+	const Float3 innerHalfSize{ 0.5f, 1.5f, 2.5f };
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		CHECK(std::abs(vertex.pos.x) <= 1.0f);
+		CHECK(std::abs(vertex.pos.y) <= 2.0f);
+		CHECK(std::abs(vertex.pos.z) <= 3.0f);
+
+		const Float3 innerPoint{
+			std::clamp(vertex.pos.x, -innerHalfSize.x, innerHalfSize.x),
+			std::clamp(vertex.pos.y, -innerHalfSize.y, innerHalfSize.y),
+			std::clamp(vertex.pos.z, -innerHalfSize.z, innerHalfSize.z)
+		};
+		const Float3 offset = (vertex.pos - innerPoint);
+		CHECK(offset.length() == doctest::Approx(Radius).epsilon(FrameEpsilon));
+		CHECK(vertex.normal.dot(offset.normalized()) == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+	}
+
+	SUBCASE("Box projection and flipped UV")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.negativeZ = FloatRect{ 2.0f, 3.0f, -2.0f, -1.0f };
+		const Mesh3D mappedMesh = Mesh3D::RoundedBox(Size, Radius, Subdivisions, uvMapping);
+		CheckMeshGeometry(mappedMesh);
+
+		constexpr size_t NegativeZVertexCount = 36;
+		for (size_t i = 0; i < NegativeZVertexCount; ++i)
+		{
+			const Vertex3D& vertex = mappedMesh.vertices[i];
+			const Float2 projectedUV{
+				(0.5f + (vertex.pos.x / static_cast<float>(Size.x))),
+				(0.5f - (vertex.pos.y / static_cast<float>(Size.y)))
+			};
+			CheckUV(vertex.tex, MapUV(uvMapping.negativeZ, projectedUV.x, projectedUV.y));
+			CHECK(vertex.tangent.xyz().dot(mesh.vertices[i].tangent.xyz()) == doctest::Approx(-1.0f).epsilon(FrameEpsilon));
+			CHECK_EQ(vertex.tangent.w, mesh.vertices[i].tangent.w);
+		}
+	}
+
+	SUBCASE("Zero radius equals Box")
+	{
+		const Mesh3D box = Mesh3D::Box(Size);
+		const Mesh3D zeroRadius = Mesh3D::RoundedBox(Size, 0.0, Subdivisions);
+		REQUIRE_EQ(zeroRadius.vertexCount(), box.vertexCount());
+		REQUIRE_EQ(zeroRadius.triangleCount(), box.triangleCount());
+
+		for (size_t i = 0; i < box.vertices.size(); ++i)
+		{
+			CHECK_EQ(zeroRadius.vertices[i].pos, box.vertices[i].pos);
+			CHECK_EQ(zeroRadius.vertices[i].normal, box.vertices[i].normal);
+			CHECK_EQ(zeroRadius.vertices[i].tex, box.vertices[i].tex);
+			CHECK_EQ(zeroRadius.vertices[i].tangent, box.vertices[i].tangent);
+		}
+
+		for (size_t i = 0; i < box.indices.size(); ++i)
+		{
+			CHECK_EQ(zeroRadius.indices[i].i0, box.indices[i].i0);
+			CHECK_EQ(zeroRadius.indices[i].i1, box.indices[i].i1);
+			CHECK_EQ(zeroRadius.indices[i].i2, box.indices[i].i2);
+		}
+	}
+
+	SUBCASE("Maximum radius on a cube")
+	{
+		const Mesh3D sphere = Mesh3D::RoundedBox(Vec3{ 2.0, 2.0, 2.0 }, 1.0, Subdivisions);
+		CHECK_EQ(sphere.vertexCount(), size_t{ 150 });
+		CHECK_EQ(sphere.triangleCount(), size_t{ 192 });
+		CheckMeshGeometry(sphere);
+
+		for (const Vertex3D& vertex : sphere.vertices)
+		{
+			CHECK(vertex.pos.length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+			CHECK(vertex.normal.dot(vertex.pos) == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+		}
+
+		const Mesh3D roundedCapsule = Mesh3D::RoundedBox(Size, 1.0, Subdivisions);
+		CHECK_EQ(roundedCapsule.vertexCount(), size_t{ 192 });
+		CHECK_EQ(roundedCapsule.triangleCount(), size_t{ 260 });
+		CheckMeshGeometry(roundedCapsule);
+	}
+
+	SUBCASE("Minimum subdivisions")
+	{
+		CheckMeshGeometry(Mesh3D::RoundedBox(Size, Radius, 1));
+	}
+
+	SUBCASE("Invalid arguments")
+	{
+		CHECK(Mesh3D::RoundedBox(Vec3{ 0.0, 1.0, 1.0 }, 0.1, 1).isEmpty());
+		CHECK(Mesh3D::RoundedBox(Vec3{ 1.0, -1.0, 1.0 }, 0.1, 1).isEmpty());
+		CHECK(Mesh3D::RoundedBox(Size, -0.1, 1).isEmpty());
+		CHECK(Mesh3D::RoundedBox(Size, 1.1, 1).isEmpty());
+		CHECK(Mesh3D::RoundedBox(Size, std::numeric_limits<double>::quiet_NaN(), 1).isEmpty());
+		CHECK(Mesh3D::RoundedBox(Size, std::numeric_limits<double>::infinity(), 1).isEmpty());
+		CHECK(Mesh3D::RoundedBox(Size, Radius, 0).isEmpty());
+		CHECK(Mesh3D::RoundedBox(Size, Radius, std::numeric_limits<uint32>::max()).isEmpty());
+		CHECK(Mesh3D::RoundedBox(
+			Vec3{ std::numeric_limits<double>::max(), 1.0, 1.0 }, Radius, 1).isEmpty());
+
+		BoxUVMapping invalidMapping;
+		invalidMapping.positiveY.left = std::numeric_limits<float>::quiet_NaN();
+		CHECK(Mesh3D::RoundedBox(Size, Radius, 1, invalidMapping).isEmpty());
 	}
 }
 
