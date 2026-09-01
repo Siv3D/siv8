@@ -23,6 +23,7 @@
 
 namespace s3d
 {
+	class Polygon;
 	struct Mat4x4;
 	struct Quaternion;
 
@@ -258,6 +259,32 @@ namespace s3d
 			SizeF topSizeXZ,
 			double height,
 			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Extrude
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2D の多角形を Y 軸方向に押し出した 3D メッシュを作成します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @return 押し出し形状の 3D メッシュ。`polygon` または `height` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `polygon` の X 座標を X 軸、Y 座標を Z 軸の負方向へ対応させます。多角形の位置は平行移動せず、高さ方向のみ原点を中心として、下面を `y = -height / 2`、上面を `y = height / 2` に配置します。
+		/// @remark 上下面は閉じられます。上面の UV 座標は多角形のバウンディングボックスを `[0, 1]` に正規化し、下面は表側から同じ向きに見えるよう V 座標を反転します。
+		/// @remark 側面の U 座標は外周および各穴の周長をそれぞれ `[0, 1]` に正規化し、V 座標は上端を 0、下端を 1 とします。多角形の各頂点はハードエッジになります。
+		[[nodiscard]]
+		static Mesh3D Extrude(const Polygon& polygon, double height);
+
+		/// @brief 2D の多角形を Y 軸方向に押し出し、側面の法線を角度に応じて補間した 3D メッシュを作成します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @return 押し出し形状の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `smoothingAngle` 以下の角度で接続する側面間では、共有する輪郭頂点の法線と接線を補間します。上下面と側面の境界は補間しません。
+		/// @remark 座標および UV 座標の規約は 2 引数版の `Extrude()` と同じです。
+		[[nodiscard]]
+		static Mesh3D Extrude(const Polygon& polygon, double height, double smoothingAngle);
 
 		////////////////////////////////////////////////////////////////
 		//
