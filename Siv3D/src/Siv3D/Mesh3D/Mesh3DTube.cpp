@@ -11,6 +11,7 @@
 
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/MathConstants.hpp>
+# include <Siv3D/Polygon.hpp>
 # include <algorithm>
 # include <cmath>
 # include <limits>
@@ -79,6 +80,13 @@ namespace s3d
 		{
 			double sin;
 			double cos;
+		};
+
+		struct PathData
+		{
+			Array<Float3> points;
+			Array<double> distances;
+			Array<PathFrame> frames;
 		};
 
 		[[nodiscard]]
@@ -157,6 +165,215 @@ namespace s3d
 				&& std::isfinite(result.y)
 				&& std::isfinite(result.z));
 		}
+
+		[[nodiscard]]
+		static bool MakePathData(
+			const std::span<const Vec3> path,
+			const double maxDistanceFromPath,
+			const Vec3* const initialNormal,
+			PathData& result)
+		{
+			if ((path.size() < 2)
+				|| (not IsFloatRepresentable(maxDistanceFromPath))
+				|| (maxDistanceFromPath < 0.0))
+			{
+				return false;
+			}
+
+			result.points.resize(path.size());
+			constexpr double MaxFloat = std::numeric_limits<float>::max();
+			for (size_t i = 0; i < path.size(); ++i)
+			{
+				if ((not ToFloat3(path[i], result.points[i]))
+					|| ((MaxFloat - std::abs(path[i].x)) < maxDistanceFromPath)
+					|| ((MaxFloat - std::abs(path[i].y)) < maxDistanceFromPath)
+					|| ((MaxFloat - std::abs(path[i].z)) < maxDistanceFromPath))
+				{
+					return false;
+				}
+
+				if ((0 < i) && (result.points[i] == result.points[i - 1]))
+				{
+					return false;
+				}
+			}
+
+			if (result.points.front() == result.points.back())
+			{
+				return false;
+			}
+
+			const size_t pathSegmentCount = (path.size() - 1);
+			Array<Vec3> segmentTangents(pathSegmentCount);
+			result.distances.assign(path.size(), 0.0);
+			for (size_t i = 0; i < pathSegmentCount; ++i)
+			{
+				const Vec3 delta = (Vec3{ result.points[i + 1] } - Vec3{ result.points[i] });
+				const double length = delta.length();
+				const double nextDistance = (result.distances[i] + length);
+				if ((not std::isfinite(length))
+					|| (length == 0.0)
+					|| (not std::isfinite(nextDistance)))
+				{
+					return false;
+				}
+
+				segmentTangents[i] = (delta / length);
+				result.distances[i + 1] = nextDistance;
+			}
+
+			result.frames.resize(path.size());
+			result.frames.front().tangent = segmentTangents.front();
+			if (initialNormal)
+			{
+				if (not IsFloatRepresentable(*initialNormal))
+				{
+					return false;
+				}
+
+				result.frames.front().normal = (*initialNormal
+					- (result.frames.front().tangent
+						* initialNormal->dot(result.frames.front().tangent)));
+				const double normalLengthSq = result.frames.front().normal.lengthSq();
+				if ((not std::isfinite(normalLengthSq))
+					|| (normalLengthSq == 0.0))
+				{
+					return false;
+				}
+
+				result.frames.front().normal /= std::sqrt(normalLengthSq);
+			}
+			else
+			{
+				result.frames.front().normal = MakeInitialNormal(result.frames.front().tangent);
+			}
+			result.frames.front().binormal = (
+				result.frames.front().normal.cross(result.frames.front().tangent));
+
+			for (size_t i = 1; i < path.size(); ++i)
+			{
+				if ((i + 1) == path.size())
+				{
+					result.frames[i].tangent = segmentTangents.back();
+				}
+				else
+				{
+					const Vec3 tangentSum = (segmentTangents[i - 1] + segmentTangents[i]);
+					const double tangentLengthSq = tangentSum.lengthSq();
+					if ((not std::isfinite(tangentLengthSq))
+						|| (tangentLengthSq == 0.0))
+					{
+						return false;
+					}
+
+					result.frames[i].tangent = (tangentSum / std::sqrt(tangentLengthSq));
+				}
+
+				if (not TransportNormal(
+					result.frames[i - 1].tangent,
+					result.frames[i].tangent,
+					result.frames[i - 1].normal,
+					result.frames[i].normal))
+				{
+					return false;
+				}
+
+				result.frames[i].binormal = (
+					result.frames[i].normal.cross(result.frames[i].tangent));
+			}
+
+			return true;
+		}
+
+		[[nodiscard]]
+		static bool ValidateSweepRing(
+			const std::span<const Vec2> ring,
+			const bool expectPositiveArea,
+			double& perimeter) noexcept
+		{
+			if (ring.size() < 3)
+			{
+				return false;
+			}
+
+			double twiceArea = 0.0;
+			perimeter = 0.0;
+			for (size_t i = 0; i < ring.size(); ++i)
+			{
+				if ((not IsFloatRepresentable(ring[i]))
+					|| (not IsFloatRepresentable(ring[(i + 1) % ring.size()])))
+				{
+					return false;
+				}
+
+				const Float2 current = ring[i];
+				const Float2 next = ring[(i + 1) % ring.size()];
+				const double dx = (static_cast<double>(next.x) - current.x);
+				const double dy = (static_cast<double>(next.y) - current.y);
+				const double edgeLength = std::hypot(dx, dy);
+				if ((not std::isfinite(edgeLength))
+					|| (edgeLength == 0.0))
+				{
+					return false;
+				}
+
+				perimeter += edgeLength;
+				twiceArea += ((static_cast<double>(current.x) * next.y)
+					- (static_cast<double>(next.x) * current.y));
+			}
+
+			if ((not std::isfinite(perimeter))
+				|| (not std::isfinite(twiceArea)))
+			{
+				return false;
+			}
+
+			return (expectPositiveArea ? (0.0 < twiceArea) : (twiceArea < 0.0));
+		}
+
+		[[nodiscard]]
+		static bool ValidateSweepCap(
+			const std::span<const Float2> vertices,
+			const std::span<const TriangleIndex> indices) noexcept
+		{
+			if ((vertices.size() < 3) || indices.empty())
+			{
+				return false;
+			}
+
+			for (const Float2 vertex : vertices)
+			{
+				if ((not std::isfinite(vertex.x))
+					|| (not std::isfinite(vertex.y)))
+				{
+					return false;
+				}
+			}
+
+			for (const TriangleIndex& index : indices)
+			{
+				if ((vertices.size() <= index.i0)
+					|| (vertices.size() <= index.i1)
+					|| (vertices.size() <= index.i2))
+				{
+					return false;
+				}
+
+				const Float2 p0 = vertices[index.i0];
+				const Float2 p1 = vertices[index.i1];
+				const Float2 p2 = vertices[index.i2];
+				const double twiceArea = (
+					((static_cast<double>(p1.x) - p0.x) * (static_cast<double>(p2.y) - p0.y))
+					- ((static_cast<double>(p1.y) - p0.y) * (static_cast<double>(p2.x) - p0.x)));
+				if ((not std::isfinite(twiceArea))
+					|| (twiceArea <= 0.0))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -202,47 +419,16 @@ namespace s3d
 			return{};
 		}
 
-		Array<Float3> points(path.size());
-		constexpr double MaxFloat = std::numeric_limits<float>::max();
-		for (size_t i = 0; i < path.size(); ++i)
-		{
-			if ((not ToFloat3(path[i], points[i]))
-				|| ((MaxFloat - std::abs(path[i].x)) < radius)
-				|| ((MaxFloat - std::abs(path[i].y)) < radius)
-				|| ((MaxFloat - std::abs(path[i].z)) < radius))
-			{
-				return{};
-			}
-
-			if ((0 < i) && (points[i] == points[i - 1]))
-			{
-				return{};
-			}
-		}
-
-		if (points.front() == points.back())
+		PathData pathData;
+		if (not MakePathData(path, radius, nullptr, pathData))
 		{
 			return{};
 		}
 
+		const auto& points = pathData.points;
+		const auto& distances = pathData.distances;
+		const auto& frames = pathData.frames;
 		const size_t pathSegmentCount = (path.size() - 1);
-		Array<Vec3> segmentTangents(pathSegmentCount);
-		Array<double> distances(path.size(), 0.0);
-		for (size_t i = 0; i < pathSegmentCount; ++i)
-		{
-			const Vec3 delta = (Vec3{ points[i + 1] } - Vec3{ points[i] });
-			const double length = delta.length();
-			const double nextDistance = (distances[i] + length);
-			if ((not std::isfinite(length))
-				|| (length == 0.0)
-				|| (not std::isfinite(nextDistance)))
-			{
-				return{};
-			}
-
-			segmentTangents[i] = (delta / length);
-			distances[i + 1] = nextDistance;
-		}
 
 		const double sideU0 = _uvOffset.x;
 		const double sideU1 = (_uvOffset.x + _uvScale.x);
@@ -256,42 +442,6 @@ namespace s3d
 			|| (not IsFloatRepresentable(capV1)))
 		{
 			return{};
-		}
-
-		Array<PathFrame> frames(path.size());
-		frames.front().tangent = segmentTangents.front();
-		frames.front().normal = MakeInitialNormal(frames.front().tangent);
-		frames.front().binormal = frames.front().normal.cross(frames.front().tangent);
-
-		for (size_t i = 1; i < path.size(); ++i)
-		{
-			if ((i + 1) == path.size())
-			{
-				frames[i].tangent = segmentTangents.back();
-			}
-			else
-			{
-				const Vec3 tangentSum = (segmentTangents[i - 1] + segmentTangents[i]);
-				const double tangentLengthSq = tangentSum.lengthSq();
-				if ((not std::isfinite(tangentLengthSq))
-					|| (tangentLengthSq == 0.0))
-				{
-					return{};
-				}
-
-				frames[i].tangent = (tangentSum / std::sqrt(tangentLengthSq));
-			}
-
-			if (not TransportNormal(
-				frames[i - 1].tangent,
-				frames[i].tangent,
-				frames[i - 1].normal,
-				frames[i].normal))
-			{
-				return{};
-			}
-
-			frames[i].binormal = frames[i].normal.cross(frames[i].tangent);
 		}
 
 		Array<CircleSample> circle(ringStride);
@@ -425,5 +575,313 @@ namespace s3d
 		}
 
 		return mesh;
+	}
+
+	namespace
+	{
+		[[nodiscard]]
+		static Mesh3D MakeSweep(
+			const Polygon& crossSection,
+			const std::span<const Vec3> path,
+			const Vec3* const initialNormal,
+			const Vec2 _uvScale,
+			const Vec2 _uvOffset)
+		{
+			if ((crossSection.isEmpty())
+				|| (path.size() < 2)
+				|| (not IsFloatRepresentable(_uvScale))
+				|| (not IsFloatRepresentable(_uvOffset)))
+			{
+				return{};
+			}
+
+			const auto& capVertices = crossSection.vertices();
+			const auto& capIndices = crossSection.indices();
+			if (not ValidateSweepCap(capVertices, capIndices))
+			{
+				return{};
+			}
+
+			size_t edgeCount = crossSection.outer().size();
+			for (const auto& inner : crossSection.inners())
+			{
+				if (not CheckedAdd(edgeCount, inner.size(), edgeCount))
+				{
+					return{};
+				}
+			}
+
+			size_t ringCount;
+			if (not CheckedAdd(crossSection.inners().size(), 1, ringCount))
+			{
+				return{};
+			}
+
+			Array<double> ringPerimeters(ringCount);
+			if (not ValidateSweepRing(crossSection.outer(), true, ringPerimeters[0]))
+			{
+				return{};
+			}
+
+			for (size_t i = 0; i < crossSection.inners().size(); ++i)
+			{
+				if (not ValidateSweepRing(crossSection.inners()[i], false, ringPerimeters[i + 1]))
+				{
+					return{};
+				}
+			}
+
+			float minX = capVertices.front().x;
+			float maxX = minX;
+			float minY = capVertices.front().y;
+			float maxY = minY;
+			double maxDistanceFromPath = 0.0;
+			for (const Float2 vertex : capVertices)
+			{
+				minX = std::min(minX, vertex.x);
+				maxX = std::max(maxX, vertex.x);
+				minY = std::min(minY, vertex.y);
+				maxY = std::max(maxY, vertex.y);
+				maxDistanceFromPath = std::max(maxDistanceFromPath,
+					std::hypot(static_cast<double>(vertex.x), static_cast<double>(vertex.y)));
+			}
+
+			const double width = (static_cast<double>(maxX) - minX);
+			const double height = (static_cast<double>(maxY) - minY);
+			if ((width <= 0.0)
+				|| (height <= 0.0)
+				|| (not IsFloatRepresentable(maxDistanceFromPath)))
+			{
+				return{};
+			}
+
+			size_t capVertexCount;
+			size_t verticesPerEdge;
+			size_t sideVertexCount;
+			size_t vertexCount;
+			size_t capTriangleCount;
+			const size_t pathSegmentCount = (path.size() - 1);
+			size_t sideQuadCount;
+			size_t sideTriangleCount;
+			size_t triangleCount;
+			if ((not CheckedMultiply(capVertices.size(), 2, capVertexCount))
+				|| (not CheckedMultiply(path.size(), 2, verticesPerEdge))
+				|| (not CheckedMultiply(edgeCount, verticesPerEdge, sideVertexCount))
+				|| (not CheckedAdd(capVertexCount, sideVertexCount, vertexCount))
+				|| (Mesh3D::MaxVertexCount < vertexCount)
+				|| (not CheckedMultiply(capIndices.size(), 2, capTriangleCount))
+				|| (not CheckedMultiply(edgeCount, pathSegmentCount, sideQuadCount))
+				|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
+				|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
+			{
+				return{};
+			}
+
+			PathData pathData;
+			if (not MakePathData(path, maxDistanceFromPath, initialNormal, pathData))
+			{
+				return{};
+			}
+
+			const double sideU0 = _uvOffset.x;
+			const double sideU1 = (_uvOffset.x + _uvScale.x);
+			const double sideV0 = _uvOffset.y;
+			const double sideV1 = (_uvOffset.y
+				+ (_uvScale.y * pathData.distances.back()));
+			const double capV1 = (_uvOffset.y + _uvScale.y);
+			if ((not IsFloatRepresentable(sideU0))
+				|| (not IsFloatRepresentable(sideU1))
+				|| (not IsFloatRepresentable(sideV0))
+				|| (not IsFloatRepresentable(sideV1))
+				|| (not IsFloatRepresentable(capV1)))
+			{
+				return{};
+			}
+
+			const Float2 uvScale = _uvScale;
+			const Float2 uvOffset = _uvOffset;
+			Mesh3D mesh{ vertexCount, triangleCount };
+			const size_t startCapBase = 0;
+			const size_t endCapBase = capVertices.size();
+
+			for (size_t capIndex = 0; capIndex < 2; ++capIndex)
+			{
+				const bool startCap = (capIndex == 0);
+				const size_t pathIndex = (startCap ? 0 : (path.size() - 1));
+				const size_t capBase = (startCap ? startCapBase : endCapBase);
+				const PathFrame& frame = pathData.frames[pathIndex];
+				const Vec3 center = pathData.points[pathIndex];
+				const Float3 capNormal = (startCap
+					? Float3{ -frame.tangent }
+					: Float3{ frame.tangent });
+				const Float4 capTangent{
+					static_cast<float>(frame.normal.x),
+					static_cast<float>(frame.normal.y),
+					static_cast<float>(frame.normal.z),
+					(startCap ? 1.0f : -1.0f)
+				};
+
+				for (size_t vertexIndex = 0; vertexIndex < capVertices.size(); ++vertexIndex)
+				{
+					const Float2 source = capVertices[vertexIndex];
+					Float3 position;
+					if (not ToFloat3((center
+						+ (frame.normal * source.x)
+						+ (frame.binormal * source.y)), position))
+					{
+						return{};
+					}
+
+					const float u = static_cast<float>(
+						(static_cast<double>(source.x) - minX) / width);
+					const float v = static_cast<float>(
+						(static_cast<double>(source.y) - minY) / height);
+					mesh.vertices[capBase + vertexIndex] = Vertex3D{
+						.pos = position,
+						.normal = capNormal,
+						.tex = Float2{
+							(uvOffset.x + (uvScale.x * u)),
+							(uvOffset.y + (uvScale.y * v))
+						},
+						.tangent = capTangent
+					};
+				}
+			}
+
+			TriangleIndex32* pTriangle = mesh.indices.data();
+			for (const TriangleIndex& source : capIndices)
+			{
+				const uint32 i0 = source.i0;
+				const uint32 i1 = source.i1;
+				const uint32 i2 = source.i2;
+				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+				*pTriangle++ = TriangleIndex32{
+					static_cast<uint32>(endCapBase + i0),
+					static_cast<uint32>(endCapBase + i2),
+					static_cast<uint32>(endCapBase + i1)
+				};
+			}
+
+			size_t sideVertexOffset = capVertexCount;
+			const auto writeRing = [&](const std::span<const Vec2> ring, const double perimeter)
+			{
+				double accumulatedLength = 0.0;
+				for (size_t edgeIndex = 0; edgeIndex < ring.size(); ++edgeIndex)
+				{
+					const Float2 current = ring[edgeIndex];
+					const Float2 next = ring[(edgeIndex + 1) % ring.size()];
+					const double dx = (static_cast<double>(next.x) - current.x);
+					const double dy = (static_cast<double>(next.y) - current.y);
+					const double edgeLength = std::hypot(dx, dy);
+					const double tangentX = (dx / edgeLength);
+					const double tangentY = (dy / edgeLength);
+					const float u0 = static_cast<float>(
+						(_uvOffset.x + (_uvScale.x * (accumulatedLength / perimeter))));
+					accumulatedLength += edgeLength;
+					const float u1 = static_cast<float>(
+						(_uvOffset.x + (_uvScale.x * (((edgeIndex + 1) == ring.size())
+							? 1.0
+							: (accumulatedLength / perimeter)))));
+					const size_t edgeVertexBase = sideVertexOffset;
+
+					for (size_t pathIndex = 0; pathIndex < path.size(); ++pathIndex)
+					{
+						const PathFrame& frame = pathData.frames[pathIndex];
+						const Vec3 center = pathData.points[pathIndex];
+						const Vec3 normal = ((frame.normal * tangentY)
+							- (frame.binormal * tangentX));
+						const Vec3 tangent = ((frame.normal * tangentX)
+							+ (frame.binormal * tangentY));
+						const Float4 vertexTangent{
+							static_cast<float>(tangent.x),
+							static_cast<float>(tangent.y),
+							static_cast<float>(tangent.z),
+							-1.0f
+						};
+						const float v = static_cast<float>(_uvOffset.y
+							+ (_uvScale.y * pathData.distances[pathIndex]));
+						Float3 currentPosition;
+						Float3 nextPosition;
+						if ((not ToFloat3((center
+							+ (frame.normal * current.x)
+							+ (frame.binormal * current.y)), currentPosition))
+							|| (not ToFloat3((center
+								+ (frame.normal * next.x)
+								+ (frame.binormal * next.y)), nextPosition)))
+						{
+							return false;
+						}
+
+						const size_t vertexBase = (edgeVertexBase + (pathIndex * 2));
+						mesh.vertices[vertexBase + 0] = Vertex3D{
+							.pos = currentPosition,
+							.normal = normal,
+							.tex = Float2{ u0, v },
+							.tangent = vertexTangent
+						};
+						mesh.vertices[vertexBase + 1] = Vertex3D{
+							.pos = nextPosition,
+							.normal = normal,
+							.tex = Float2{ u1, v },
+							.tangent = vertexTangent
+						};
+					}
+
+					for (size_t pathIndex = 0; pathIndex < pathSegmentCount; ++pathIndex)
+					{
+						const uint32 i0 = static_cast<uint32>(edgeVertexBase + (pathIndex * 2));
+						const uint32 i1 = (i0 + 1);
+						const uint32 i2 = (i0 + 2);
+						const uint32 i3 = (i0 + 3);
+						*pTriangle++ = TriangleIndex32{ i0, i2, i1 };
+						*pTriangle++ = TriangleIndex32{ i1, i2, i3 };
+					}
+
+					sideVertexOffset += verticesPerEdge;
+				}
+
+				return true;
+			};
+
+			if (not writeRing(crossSection.outer(), ringPerimeters[0]))
+			{
+				return{};
+			}
+
+			for (size_t i = 0; i < crossSection.inners().size(); ++i)
+			{
+				if (not writeRing(crossSection.inners()[i], ringPerimeters[i + 1]))
+				{
+					return{};
+				}
+			}
+
+			return mesh;
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Sweep
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return MakeSweep(crossSection, path, nullptr, uvScale, uvOffset);
+	}
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec3 initialNormal,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return MakeSweep(crossSection, path, &initialNormal, uvScale, uvOffset);
 	}
 }
