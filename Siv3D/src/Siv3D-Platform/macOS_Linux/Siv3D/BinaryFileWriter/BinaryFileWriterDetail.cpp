@@ -21,9 +21,9 @@ namespace s3d
 		close();
 	}
 
-	bool BinaryFileWriter::BinaryFileWriterDetail::open(const FilePathView path, const OpenMode openMode)
+	bool BinaryFileWriter::BinaryFileWriterDetail::open(const FilePathView path, const FileWriteMode writeMode)
 	{
-		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path.toUTF8(), FromEnum(openMode)));
+		LOG_DEBUG(fmt::format("BinaryFileWriter::BinaryFileWriterDetail::open(\"{0}\", {1})", path.toUTF8(), FromEnum(writeMode)));
 
 		close();
 
@@ -50,7 +50,7 @@ namespace s3d
 
 		// ファイルのオープン
 		{
-			const bool append = (openMode == OpenMode::Append && FileSystem::Exists(fullPath));
+			const bool append = (writeMode == FileWriteMode::Append && FileSystem::Exists(fullPath));
 			
 			std::FILE* file = std::fopen(Unicode::ToUTF8(fullPath).c_str(), (append ? "r+" : "w"));
 
@@ -65,7 +65,7 @@ namespace s3d
 				.file = file
 			};
 
-			if (openMode & OpenMode::Append)
+			if (writeMode == FileWriteMode::Append)
 			{
 				std::fseek(m_file.file, 0, SEEK_END);
 			}

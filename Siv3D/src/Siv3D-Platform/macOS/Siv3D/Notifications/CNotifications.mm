@@ -103,12 +103,12 @@ namespace s3d
 			{ { U"open", U"Open" }, { U"dismiss", U"Dismiss" } }
 		},
 		{
-			NotificationActionCategory::OK,
+			NotificationActionCategory::Ok,
 			U"s3d.notification.ok",
 			{ { U"ok", U"OK" } }
 		},
 		{
-			NotificationActionCategory::OKCancel,
+			NotificationActionCategory::OkCancel,
 			U"s3d.notification.ok_cancel",
 			{ { U"ok", U"OK" }, { U"cancel", U"Cancel" } }
 		},

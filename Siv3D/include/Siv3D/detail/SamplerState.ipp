@@ -28,7 +28,7 @@ namespace s3d
 		const TextureFilter _mipFilter,
 		const uint8 _maxAnisotropy,
 		const CompareFunction _compareFunction,
-		const SampleBorderColor _borderColor,
+		const SamplerBorderColor _borderColor,
 		const float _minLOD
 	) noexcept
 		: uAddressMode{ _uAddressMode }
@@ -82,7 +82,7 @@ namespace s3d
 			TextureFilter{ 0 },
 			0,
 			CompareFunction{ 0 },
-			SampleBorderColor::TransparentBlack,
+			SamplerBorderColor::TransparentBlack,
 			0.0f
 		};
 	}

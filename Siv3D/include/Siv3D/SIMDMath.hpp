@@ -44,19 +44,7 @@ namespace s3d
     //
     ////////////////////////////////////////////////////////////////
 
-#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-
-    using aligned_float4 = __m128;
-
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-    
-    using aligned_float4 = float32x4_t;
-
-#else
-    
-    using aligned_float4 = DirectX::__vector4;
-
-#endif
+	using aligned_float4 = DirectX::XMVECTOR;
 
 # define SIV3D_VECTOR_CALL XM_CALLCONV
 

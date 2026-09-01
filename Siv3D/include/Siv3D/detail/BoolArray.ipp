@@ -2765,6 +2765,73 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	sort_by, sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した関数を用いて要素を昇順に並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		constexpr Array& sort_by(Fty f)& SIV3D_LIFETIMEBOUND
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			const value_type falseValue = false;
+			const value_type trueValue = true;
+
+			if (std::invoke(f, trueValue, falseValue))
+			{
+				return rsort();
+			}
+			else if (std::invoke(f, falseValue, trueValue))
+			{
+				return sort();
+			}
+
+			return *this;
+		}
+
+		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			return std::move(sort_by(std::forward<Fty>(f)));
+		}
+
+		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			Array result(*this);
+			result.sort_by(std::forward<Fty>(f));
+			return result;
+		}
+
+		/// @brief 指定した関数を用いて要素を昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			return std::move(sort_by(std::forward<Fty>(f)));
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	stable_sort, stable_sorted
 		//
 		////////////////////////////////////////////////////////////////
@@ -2798,6 +2865,61 @@ namespace s3d
 		constexpr Array stable_sorted() &&
 		{
 			return std::move(sort());
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	stable_sort_by, stable_sorted_by
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えます。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return *this
+		template <class Fty>
+		constexpr Array& stable_sort_by(Fty f)& SIV3D_LIFETIMEBOUND
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			return sort_by(std::forward<Fty>(f));
+		}
+
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array stable_sort_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			return std::move(stable_sort_by(std::forward<Fty>(f)));
+		}
+
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array stable_sorted_by(Fty f) const&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			Array result(*this);
+			result.stable_sort_by(std::forward<Fty>(f));
+			return result;
+		}
+
+		/// @brief 指定した関数を用いて要素を相対順序を保ちながら昇順に並び替えた新しい配列を返します。
+		/// @tparam Fty 比較に使用する関数の型
+		/// @param f 比較に使用する関数
+		/// @return 新しい配列
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array stable_sorted_by(Fty f) &&
+			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
+		{
+			return std::move(stable_sort_by(std::forward<Fty>(f)));
 		}
 
 		////////////////////////////////////////////////////////////////

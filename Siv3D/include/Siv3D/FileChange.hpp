@@ -12,7 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "String.hpp"
-# include "FileAction.hpp"
+# include "FileChangeAction.hpp"
 
 namespace s3d
 {
@@ -22,15 +22,15 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief ファイルパスとファイルの操作 | File path and file action
+	/// @brief ファイルパスとファイルの変更内容 | File path and file change action
 	struct FileChange
 	{
 		/// @brief ファイルパス | File path
-		/// @remark Windows 10 1703 およびそれ以前のバージョンでは、`FileAction::Removed` の際、ディレクトリ名の末尾に '/' が付加されません。
-		/// @remark On Windows 10 1703 and earlier, '/' is not appended to the end of the directory name when `FileAction::Removed`.
+		/// @remark Windows 10 1703 およびそれ以前のバージョンでは、`FileChangeAction::Removed` の際、ディレクトリ名の末尾に '/' が付加されません。
+		/// @remark On Windows 10 1703 and earlier, '/' is not appended to the end of the directory name when `FileChangeAction::Removed`.
 		FilePath path;
 
-		/// @brief ファイルの操作 | File action
-		FileAction action;
+		/// @brief ファイルの変更内容 | File change action
+		FileChangeAction action;
 	};
 }

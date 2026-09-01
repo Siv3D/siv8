@@ -26,7 +26,7 @@ namespace s3d
 
 		~BinaryFileWriterDetail();
 
-		bool open(FilePathView path, OpenMode openMode);
+		bool open(FilePathView path, FileWriteMode writeMode);
 
 		void close();
 

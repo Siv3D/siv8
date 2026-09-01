@@ -53,17 +53,17 @@ namespace s3d
 			}
 
 			[[nodiscard]]
-			static Optional<DragItemType> DetectDragItemType(IDataObject* pDataObject)
+			static Optional<DragDropItemType> DetectDragItemType(IDataObject* pDataObject)
 			{
 				// 両方解釈可能な場合は FilePaths を優先
 				if (HasFormat(pDataObject, CF_HDROP))
 				{
-					return DragItemType::FilePaths;
+					return DragDropItemType::FilePaths;
 				}
 
 				if (HasFormat(pDataObject, CF_UNICODETEXT))
 				{
-					return DragItemType::Text;
+					return DragDropItemType::Text;
 				}
 
 				return none;
@@ -716,9 +716,9 @@ namespace s3d
 			}
 
 			[[nodiscard]]
-			bool accepts(const DragItemType itemType) const noexcept
+			bool accepts(const DragDropItemType itemType) const noexcept
 			{
-				if (itemType == DragItemType::FilePaths)
+				if (itemType == DragDropItemType::FilePaths)
 				{
 					return m_acceptFilePaths.load(std::memory_order_relaxed);
 				}
@@ -728,7 +728,7 @@ namespace s3d
 				}
 			}
 
-			void setDragOver(const Point pos, const DragItemType itemType)
+			void setDragOver(const Point pos, const DragDropItemType itemType)
 			{
 				std::lock_guard lock{ m_mutex };
 				m_dragOver = DragStatus
@@ -882,7 +882,7 @@ namespace s3d
 
 				m_pState->clearDragOver();
 
-				const Optional<DragItemType> itemType = DetectDragItemType(pDataObject);
+				const Optional<DragDropItemType> itemType = DetectDragItemType(pDataObject);
 				m_currentItemType.reset();
 
 				if (not itemType)
@@ -897,7 +897,7 @@ namespace s3d
 					return S_OK;
 				}
 
-				if (*itemType == DragItemType::FilePaths)
+				if (*itemType == DragDropItemType::FilePaths)
 				{
 					Array<DroppedFilePath> items;
 
@@ -932,7 +932,7 @@ namespace s3d
 			HWND m_hWnd = nullptr;
 			std::shared_ptr<DropTargetState> m_pState;
 			std::atomic<ULONG> m_refCount{ 1 };
-			Optional<DragItemType> m_currentItemType;
+			Optional<DragDropItemType> m_currentItemType;
 		};
 	}
 

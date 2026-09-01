@@ -30,7 +30,7 @@ namespace s3d
 	/// @param radix 基数（2 から 36 まで） | Radix (from 2 to 36)
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした整数値 | Parsed integer value
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::Integral Int>
 	[[nodiscard]]
 	Int ParseInt(std::string_view s, int32 radix = 10, const std::source_location& location = std::source_location::current());
@@ -41,7 +41,7 @@ namespace s3d
 	/// @param radix 基数（2 から 36 まで） | Radix (from 2 to 36)
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした整数値 | Parsed integer value
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::Integral Int>
 	[[nodiscard]]
 	Int ParseInt(StringView s, int32 radix = 10, const std::source_location& location = std::source_location::current());

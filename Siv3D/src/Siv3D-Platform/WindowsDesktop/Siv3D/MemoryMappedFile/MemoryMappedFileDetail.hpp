@@ -23,7 +23,7 @@ namespace s3d
 
 		~MemoryMappedFileDetail();
 
-		bool open(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound);
+		bool open(FilePathView path, ExistingFilePolicy ifExists, MissingFilePolicy ifNotFound);
 
 		void close();
 

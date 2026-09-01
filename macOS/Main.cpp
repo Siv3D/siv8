@@ -3,6 +3,7 @@
 
 void Main()
 {
+	// `macOS/run-tests.sh` depends on this early-exit block. Keep it intact.
 	const int32 exitCode = RunTest();
 
 	if (System::GetCommandLineArgs().contains(U"--test-only"))

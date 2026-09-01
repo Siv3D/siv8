@@ -47,7 +47,7 @@ namespace s3d
 
 		ScopedLogSilencer()
 		{
-			Logger.setOutputLevel(LogType::Error);
+			Logger.setOutputLevel(LogLevel::Error);
 		}
 
 		~ScopedLogSilencer()
@@ -57,6 +57,6 @@ namespace s3d
 
 	private:
 
-		LogType m_oldOutputLevel = Logger.getOutputLevel();
+		LogLevel m_oldOutputLevel = Logger.getOutputLevel();
 	};
 }

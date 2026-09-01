@@ -31,12 +31,12 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	OpenMode_if_Exists
+		//	ExistingFilePolicy
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 存在するファイルをオープンする際のオプション
-		enum class OpenMode_if_Exists : uint8
+		/// @brief 存在するファイルをオープンする際の方針
+		enum class ExistingFilePolicy : uint8
 		{
 			/// @brief ファイルが存在する場合、失敗にします。
 			Fail,
@@ -50,12 +50,12 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	OpenMode_if_NotFound
+		//	MissingFilePolicy
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 存在しないファイルをオープンする際のオプション
-		enum class OpenMode_if_NotFound : uint8
+		/// @brief 存在しないファイルをオープンする際の方針
+		enum class MissingFilePolicy : uint8
 		{
 			/// @brief ファイルが存在しない場合、失敗にします。
 			Fail,
@@ -76,10 +76,10 @@ namespace s3d
 
 		/// @brief メモリマップトファイルをオープンします。
 		/// @param path ファイルパス
-		/// @param ifExists ファイルが存在する場合のオプション
-		/// @param ifNotFound ファイルが存在しない場合のオプション
+		/// @param ifExists ファイルが存在する場合の方針
+		/// @param ifNotFound ファイルが存在しない場合の方針
 		[[nodiscard]]
-		MemoryMappedFile(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
+		MemoryMappedFile(FilePathView path, ExistingFilePolicy ifExists, MissingFilePolicy ifNotFound = MissingFilePolicy::Create);
 
 		MemoryMappedFile(const MemoryMappedFile& other) = delete;
 
@@ -117,10 +117,10 @@ namespace s3d
 
 		/// @brief メモリマップトファイルをオープンします。
 		/// @param path ファイルパス
-		/// @param ifExists ファイルが存在する場合のオプション
-		/// @param ifNotFound ファイルが存在しない場合のオプション
+		/// @param ifExists ファイルが存在する場合の方針
+		/// @param ifNotFound ファイルが存在しない場合の方針
 		/// @return メモリマップトファイルがオープンに成功した場合 true, それ以外の場合は false
-		bool open(FilePathView path, OpenMode_if_Exists ifExists, OpenMode_if_NotFound ifNotFound = OpenMode_if_NotFound::Create);
+		bool open(FilePathView path, ExistingFilePolicy ifExists, MissingFilePolicy ifNotFound = MissingFilePolicy::Create);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -12,7 +12,7 @@
 # pragma once
 # include "Common.hpp"
 # include "LineCap.hpp"
-# include "LineType.hpp"
+# include "LinePattern.hpp"
 
 namespace s3d
 {
@@ -21,7 +21,7 @@ namespace s3d
 	{
 		struct Parameters
 		{
-			LineType type;
+			LinePattern type;
 
 			LineCap cap;
 
@@ -31,7 +31,7 @@ namespace s3d
 			constexpr Parameters operator ()(double _dotOffset) const noexcept;
 		};
 
-		LineType type = LineType::Solid;
+		LinePattern type = LinePattern::Solid;
 
 		LineCap cap = LineCap::Square;
 
@@ -43,31 +43,31 @@ namespace s3d
 		[[nodiscard]]
 		constexpr LineStyle(const Parameters& params) noexcept;
 
-		static constexpr Parameters Square{ LineType::Solid, LineCap::Square, 0.0 };
+		static constexpr Parameters Square{ LinePattern::Solid, LineCap::Square, 0.0 };
 
-		static constexpr Parameters Round{ LineType::Solid, LineCap::Round, 0.0 };
+		static constexpr Parameters Round{ LinePattern::Solid, LineCap::Round, 0.0 };
 
-		static constexpr Parameters Flat{ LineType::Solid, LineCap::Flat, 0.0 };
+		static constexpr Parameters Flat{ LinePattern::Solid, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters Dotted{ LineType::Dotted, LineCap::Square, 0.0 };
+		static constexpr Parameters Dotted{ LinePattern::Dotted, LineCap::Square, 0.0 };
 
-		static constexpr Parameters Dashed{ LineType::Dashed, LineCap::Square, 0.0 };
+		static constexpr Parameters Dashed{ LinePattern::Dashed, LineCap::Square, 0.0 };
 
-		static constexpr Parameters LongDash{ LineType::LongDash, LineCap::Square, 0.0 };
+		static constexpr Parameters LongDash{ LinePattern::LongDash, LineCap::Square, 0.0 };
 
-		static constexpr Parameters DashDot{ LineType::DashDot, LineCap::Square, 0.0 };
+		static constexpr Parameters DashDot{ LinePattern::DashDot, LineCap::Square, 0.0 };
 
-		static constexpr Parameters RoundDot{ LineType::RoundDot, LineCap::Square, 0.0 };
+		static constexpr Parameters RoundDot{ LinePattern::RoundDot, LineCap::Square, 0.0 };
 
-		static constexpr Parameters DottedFlat{ LineType::Dotted, LineCap::Flat, 0.0 };
+		static constexpr Parameters DottedFlat{ LinePattern::Dotted, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters DashedFlat{ LineType::Dashed, LineCap::Flat, 0.0 };
+		static constexpr Parameters DashedFlat{ LinePattern::Dashed, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters LongDashFlat{ LineType::LongDash, LineCap::Flat, 0.0 };
+		static constexpr Parameters LongDashFlat{ LinePattern::LongDash, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters DashDotFlat{ LineType::DashDot, LineCap::Flat, 0.0 };
+		static constexpr Parameters DashDotFlat{ LinePattern::DashDot, LineCap::Flat, 0.0 };
 
-		static constexpr Parameters RoundDotFlat{ LineType::RoundDot, LineCap::Flat, 0.0 };
+		static constexpr Parameters RoundDotFlat{ LinePattern::RoundDot, LineCap::Flat, 0.0 };
 
 	};
 }

@@ -38,11 +38,11 @@ namespace s3d
 		
 		/// @brief 「OK」
 		/// @remark actionID は U"ok" です
-		OK,
+		Ok,
 		
 		/// @brief 「OK」「Cancel」
 		/// @remark actionID はそれぞれ U"ok", U"cancel" です
-		OKCancel,
+		OkCancel,
 		
 		/// @brief 「Yes」「No」
 		/// @remark actionID はそれぞれ U"yes", U"no" です

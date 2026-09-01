@@ -61,8 +61,8 @@ namespace s3d
 		/// @param ...args 非同期処理のタスクで実行する関数の引数
 		/// @remark 作成と同時にタスクが非同期で実行されます。
 		/// @remark 参照を渡す場合は `std::ref()` を使ってください。
-		/// @throws std::system_error 非同期処理の開始に失敗した場合
-		/// @throws std::bad_alloc 非同期処理の開始に必要なメモリの確保に失敗した場合
+		/// @throw std::system_error 非同期処理の開始に失敗した場合
+		/// @throw std::bad_alloc 非同期処理の開始に必要なメモリの確保に失敗した場合
 		template <class Fty, class... Args>
 		[[nodiscard]]
 		explicit AsyncTask(Fty&& f, Args&&... args)
@@ -218,8 +218,8 @@ namespace s3d
 	/// @remark 作成と同時にタスクが非同期で実行されます。
 	/// @remark 参照を渡す場合は `std::ref()` を使ってください。
 	/// @return 作成された非同期処理のタスク
-	/// @throws std::system_error 非同期処理の開始に失敗した場合
-	/// @throws std::bad_alloc 非同期処理の開始に必要なメモリの確保に失敗した場合
+	/// @throw std::system_error 非同期処理の開始に失敗した場合
+	/// @throw std::bad_alloc 非同期処理の開始に必要なメモリの確保に失敗した場合
 	template <class Fty, class... Args>
 		requires detail::AsyncInvocable<Fty, Args...>
 	[[nodiscard]]

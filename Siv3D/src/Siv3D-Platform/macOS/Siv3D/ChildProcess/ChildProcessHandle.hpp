@@ -82,7 +82,7 @@ namespace s3d
 
 		ChildProcessHandle();
 
-		ChildProcessHandle(const std::string& path, const Array<String>& commands, Pipe pipe);
+		ChildProcessHandle(const std::string& path, const Array<String>& commands, ChildProcessPipe pipe);
 
 		~ChildProcessHandle();
 

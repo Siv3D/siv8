@@ -28,9 +28,9 @@ namespace s3d
 		return pImpl->hasMessages();
 	}
 
-	size_t OSCReceiver::num_messages()
+	size_t OSCReceiver::messageCount()
 	{
-		return pImpl->num_messages();
+		return pImpl->messageCount();
 	}
 
 	OSCReceivedMessage OSCReceiver::pop()

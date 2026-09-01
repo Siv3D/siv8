@@ -34,11 +34,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool TextFileWriter::TextFileWriterDetail::open(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
+	bool TextFileWriter::TextFileWriterDetail::open(const FilePathView path, const FileWriteMode writeMode, const TextEncoding encoding)
 	{
 		close();
 
-		if (openMode == OpenMode::Append)
+		if (writeMode == FileWriteMode::Append)
 		{
 			m_encoding = Unicode::GetTextEncoding(path);
 		}
@@ -47,7 +47,7 @@ namespace s3d
 			m_encoding = encoding;
 		}
 
-		if (not m_binaryWriter.open(path, openMode))
+		if (not m_binaryWriter.open(path, writeMode))
 		{
 			return false;
 		}
@@ -120,7 +120,7 @@ namespace s3d
 
 		const FilePath path = m_binaryWriter.path();
 
-		open(path, OpenMode::Trunc, m_encoding);
+		open(path, FileWriteMode::Trunc, m_encoding);
 	}
 
 	////////////////////////////////////////////////////////////////

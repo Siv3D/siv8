@@ -23,7 +23,7 @@ namespace s3d
 	MemoryMappedFile::MemoryMappedFile()
 		: pImpl{ std::make_unique<MemoryMappedFileDetail>() } {}
 
-	MemoryMappedFile::MemoryMappedFile(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
+	MemoryMappedFile::MemoryMappedFile(const FilePathView path, const ExistingFilePolicy ifExists, const MissingFilePolicy ifNotFound)
 		: MemoryMappedFile{}
 	{
 		open(path, ifExists, ifNotFound);
@@ -53,7 +53,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool MemoryMappedFile::open(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
+	bool MemoryMappedFile::open(const FilePathView path, const ExistingFilePolicy ifExists, const MissingFilePolicy ifNotFound)
 	{
 		return pImpl->open(path, ifExists, ifNotFound);
 	}

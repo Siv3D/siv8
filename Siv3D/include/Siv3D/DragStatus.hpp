@@ -11,7 +11,7 @@
 
 # pragma once
 # include "PointVector.hpp"
-# include "DragItemType.hpp"
+# include "DragDropItemType.hpp"
 
 namespace s3d
 {
@@ -32,6 +32,6 @@ namespace s3d
 
 		/// @brief 現在のドラッグを、Siv3D がどの種類として扱うかを表します。
 		/// @remark ファイルパスとテキストの両方として解釈可能な場合は、ファイルパスが優先されます。
-		DragItemType itemType = DragItemType::FilePaths;
+		DragDropItemType itemType = DragDropItemType::FilePaths;
 	};
 }

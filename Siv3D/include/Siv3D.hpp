@@ -207,7 +207,9 @@
 # include <Siv3D/ArrayParallel.hpp>
 
 // 動的配列（二次元）| 2D array
+# include <Siv3D/GridConnectivity.hpp>
 # include <Siv3D/Grid.hpp>
+# include <Siv3D/GridRect.hpp>
 
 // 文字列ルックアップヘルパー | Heterogeneous lookup helper
 # include <Siv3D/HeterogeneousLookupHelper.hpp>
@@ -273,6 +275,9 @@
 
 // 基本的なフォーマッタ | Basic formatters
 # include <Siv3D/Formatter.hpp>
+
+// エスケープフォーマッタ | Escaped formatter
+# include <Siv3D/EscapedFormatter.hpp>
 
 // 配列のフォーマッタ | Array formatter
 # include <Siv3D/RangeFormatter.hpp>
@@ -423,7 +428,7 @@
 # include <Siv3D/SpecialFolder.hpp>
 
 // ファイルコピーオプション | File copy option
-# include <Siv3D/CopyOption.hpp>
+# include <Siv3D/FileCopyOption.hpp>
 
 // ファイルとディレクトリ | Files and directories
 # include <Siv3D/FileSystem.hpp>
@@ -432,7 +437,7 @@
 # include <Siv3D/Resource.hpp>
 
 // ファイル操作のイベント | File action
-# include <Siv3D/FileAction.hpp>
+# include <Siv3D/FileChangeAction.hpp>
 
 // 変更されたファイルの情報 | Information about changed files
 # include <Siv3D/FileChange.hpp>
@@ -465,7 +470,7 @@
 # include <Siv3D/MemoryWriter.hpp>
 
 // ファイルオープンモード / File open mode
-# include <Siv3D/OpenMode.hpp>
+# include <Siv3D/FileWriteMode.hpp>
 
 // 読み込み専用バイナリファイル | Binary file reader
 # include <Siv3D/BinaryFileReader.hpp>
@@ -620,7 +625,7 @@
 ////////////////////////////////////////////////////////////////
 
 // ログの種類 | The type of the log message
-# include <Siv3D/LogType.hpp>
+# include <Siv3D/LogLevel.hpp>
 
 // ロガー | Logger
 # include <Siv3D/Logger.hpp>
@@ -680,8 +685,8 @@
 // SIMD 演算 | SIMD
 # include <Siv3D/SIMDMath.hpp>
 
-//// SIMD 対応 Float4 | SIMD Float4
-//# include <Siv3D/SIMD_Float4.hpp>
+// SIMD 対応 Float4 | SIMD Float4
+# include <Siv3D/SimdFloat4.hpp>
 
 // 数式パーサ | Math parser
 # include <Siv3D/MathParser.hpp>
@@ -717,7 +722,7 @@
 # include <Siv3D/Palette.hpp>
 
 // カラーマップ用のカラースケール | Color scale for colormap
-# include <Siv3D/ColorScale.hpp>
+# include <Siv3D/ColormapType.hpp>
 
 // カラーマップ | Colormap
 # include <Siv3D/Colormap.hpp>
@@ -845,6 +850,12 @@
 // 3x3 行列 | 3x3 matrix
 # include <Siv3D/Mat3x3.hpp>
 
+// クォータニオン | Quaternion
+# include <Siv3D/Quaternion.hpp>
+
+// 4x4 行列 | 4x4 matrix
+# include <Siv3D/Mat4x4.hpp>
+
 # include <Siv3D/PointsPerCircle.hpp>
 
 # include <Siv3D/QualityFactor.hpp>
@@ -855,7 +866,7 @@
 // 線端のスタイル | Line cap
 # include <Siv3D/LineCap.hpp>
 
-# include <Siv3D/LineType.hpp>
+# include <Siv3D/LinePattern.hpp>
 
 // 線のスタイル | Line style
 # include <Siv3D/LineStyle.hpp>
@@ -891,6 +902,9 @@
 
 // 角丸長方形 | Rounded rectangle
 # include <Siv3D/RoundRect.hpp>
+
+// 多角形の検証結果 | Polygon validation result
+# include <Siv3D/PolygonFailureType.hpp>
 
 // 多角形 | Polygon
 # include <Siv3D/Polygon.hpp>
@@ -1118,12 +1132,12 @@
 
 ////////////////////////////////////////////////////////////////
 //
-//	パイプ | Pipe
+//	パイプ | ChildProcessPipe
 //
 ////////////////////////////////////////////////////////////////
 
-// パイプ通信 | Interprocess communication (Pipe)
-# include <Siv3D/Pipe.hpp>
+// パイプ通信 | Interprocess communication (ChildProcessPipe)
+# include <Siv3D/ChildProcessPipe.hpp>
 
 ////////////////////////////////////////////////////////////////
 //
@@ -1198,7 +1212,7 @@
 ////////////////////////////////////////////////////////////////
 
 // ドラッグするアイテムの種類 | Dragged item type
-# include <Siv3D/DragItemType.hpp>
+# include <Siv3D/DragDropItemType.hpp>
 
 // ドラッグの状態 | Dragging status
 # include <Siv3D/DragStatus.hpp>
@@ -1621,6 +1635,9 @@
 // 比較関数 | Compare function
 # include <Siv3D/CompareFunction.hpp>
 
+// サンプリング時の境界色 | Border color for sampling
+# include <Siv3D/SamplerBorderColor.hpp>
+
 // サンプラーステートの構築 | Builder for sampler state
 # include <Siv3D/SamplerStateBuilder.hpp>
 
@@ -1700,9 +1717,12 @@
 # include <Siv3D/Icon.hpp>
 
 # include <Siv3D/FontMethod.hpp>
+# include <Siv3D/Typeface.hpp>
+# include <Siv3D/FontVariationAxis.hpp>
 # include <Siv3D/FontFaceProperties.hpp>
 # include <Siv3D/GlyphInfo.hpp>
 # include <Siv3D/Glyph.hpp>
+# include <Siv3D/MSDFGlyph.hpp>
 # include <Siv3D/ResolvedGlyph.hpp>
 # include <Siv3D/FontOptions.hpp>
 # include <Siv3D/Font.hpp>
@@ -1731,6 +1751,8 @@
 # include <Siv3D/Theme.hpp>
 # include <Siv3D/GUIColorStyle.hpp>
 # include <Siv3D/GUIShapeStyle.hpp>
+# include <Siv3D/SimpleGUI/SimpleGUILayer.hpp>
+# include <Siv3D/SimpleGUI/ISimpleGUIElement.hpp>
 # include <Siv3D/SimpleGUI.hpp>
 # include <Siv3D/SimpleGUI/SimpleButton.hpp>
 # include <Siv3D/SimpleGUI/SimpleCheckBox.hpp>
@@ -1799,6 +1821,15 @@
 
 # include <Siv3D/EngineOption.hpp>
 
+
+
+# include <Siv3D/MaterialAlphaMode.hpp>
+# include <Siv3D/MaterialTexture.hpp>
+# include <Siv3D/Material.hpp>
+# include <Siv3D/VertexNormalWeighting.hpp>
+# include <Siv3D/Vertex3D.hpp>
+# include <Siv3D/BoxUVMapping.hpp>
+# include <Siv3D/Mesh3D.hpp>
 
 
 

@@ -932,7 +932,7 @@ namespace s3d
 
 		/// @brief 文字列の要素を 1 つランダムに返します。
 		/// @return 文字列からランダムに選ばれた要素への参照
-		/// @throws std::out_of_range 文字列が空の場合
+		/// @throw std::out_of_range 文字列が空の場合
 		[[nodiscard]]
 		value_type choice() const;
 
@@ -940,7 +940,7 @@ namespace s3d
 		/// @tparam URBG 乱数生成器の型
 		/// @param urbg 使用する乱数エンジン
 		/// @return 文字列からランダムに選ばれた要素への参照
-		/// @throws std::out_of_range 文字列が空の場合
+		/// @throw std::out_of_range 文字列が空の場合
 		[[nodiscard]]
 		value_type choice(Concept::UniformRandomBitGenerator auto&& urbg) const;
 
@@ -1586,7 +1586,7 @@ namespace s3d
 		/// @param indices インデックス
 		/// @remark `StringView{ U"abcde" }.values_at({0, 3, 4}); // U"ade"`
 		/// @return 新しい文字列
-		/// @throws std::out_of_range indices のいずれかが文字列の長さ以上の場合
+		/// @throw std::out_of_range indices のいずれかが文字列の長さ以上の場合
 		[[nodiscard]]
 		String values_at(std::initializer_list<size_type> indices) const;
 
@@ -1617,7 +1617,7 @@ namespace s3d
 		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
 		/// @param index インデックス
 		/// @return 新しい文字列
-		/// @throws std::out_of_range index が文字列の長さ以上の場合
+		/// @throw std::out_of_range index が文字列の長さ以上の場合
 		[[nodiscard]]
 		String without_at(size_type index) const;
 

@@ -11,7 +11,7 @@
 
 # pragma once
 # include "ColorHSV.hpp"
-# include "ColorScale.hpp"
+# include "ColormapType.hpp"
 
 namespace s3d
 {
@@ -23,17 +23,17 @@ namespace s3d
 
 	/// @brief 0.0 から 1.0 の範囲でのカラーマップの色を返します。
 	/// @param t 0.0 から 1.0 の範囲の値
-	/// @param colorScale 使用するカラースケールの種類
+	/// @param colormapType 使用するカラーマップの種類
 	/// @return カラーマップの色
 	[[nodiscard]]
-	ColorF Colormap(double t, ColorScale colorScale = ColorScale::Turbo);
+	ColorF Colormap(double t, ColormapType colormapType = ColormapType::Turbo);
 
 	/// @brief min から max の範囲でのカラーマップの色を返します。
 	/// @param t min から max の範囲の値
 	/// @param min 最小値
 	/// @param max 最大値
-	/// @param colorScale 使用するカラースケールの種類
+	/// @param colormapType 使用するカラーマップの種類
 	/// @return カラーマップの色
 	[[nodiscard]]
-	ColorF Colormap(double t, double min, double max, ColorScale colorScale = ColorScale::Turbo);
+	ColorF Colormap(double t, double min, double max, ColormapType colormapType = ColormapType::Turbo);
 }

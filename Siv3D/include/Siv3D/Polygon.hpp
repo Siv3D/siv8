@@ -231,14 +231,14 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	num_holes
+		//	holeCount
 		//
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形が持つ穴の個数を返します。
 		/// @return 多角形が持つ穴の個数
 		[[nodiscard]]
-		size_t num_holes() const noexcept;
+		size_t holeCount() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -299,7 +299,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	num_triangles
+		//	triangleCount
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -307,7 +307,7 @@ namespace s3d
 		/// @remark 三角形分割は計算済みであるため、この関数のコストは小さいです。
 		/// @return 三角形の個数
 		[[nodiscard]]
-		size_t num_triangles() const noexcept;
+		size_t triangleCount() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -316,7 +316,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の三角形分割での、個々の三角形を返します。
-		/// @param index 三角形のインデックス。0 以上 `(num_triangles() - 1)` 以下
+		/// @param index 三角形のインデックス。0 以上 `(triangleCount() - 1)` 以下
 		/// @return 三角形
 		[[nodiscard]]
 		Triangle triangleAtIndex(size_t index) const;
@@ -1267,7 +1267,7 @@ namespace s3d
 		/// @brief 頂点配列が多角形として有効かを検証します。
 		/// @param outer 外周の頂点配列（時計回り）
 		/// @param holes 多角形の穴の頂点配列（反時計回り）
-		/// @return 多角形として有効であれば `PolygonFailureType::OK`, それ以外の場合はエラーの種類
+		/// @return 多角形として有効であれば `PolygonFailureType::Ok`, それ以外の場合はエラーの種類
 		[[nodiscard]]
 		static PolygonFailureType Validate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 

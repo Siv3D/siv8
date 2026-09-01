@@ -20,20 +20,20 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static constexpr FileAction ToFileAction(DWORD action) noexcept
+		static constexpr FileChangeAction ToFileAction(DWORD action) noexcept
 		{
 			switch (action)
 			{
 			case FILE_ACTION_ADDED:
 			case FILE_ACTION_RENAMED_NEW_NAME:
-				return FileAction::Added;
+				return FileChangeAction::Added;
 			case FILE_ACTION_MODIFIED:
-				return FileAction::Modified;
+				return FileChangeAction::Modified;
 			case FILE_ACTION_REMOVED:
 			case FILE_ACTION_RENAMED_OLD_NAME:
-				return FileAction::Removed;
+				return FileChangeAction::Removed;
 			default:
-				return FileAction::Unknown;
+				return FileChangeAction::Unknown;
 			}
 		}
 	}
@@ -369,7 +369,7 @@ namespace s3d
 				const bool isDirectory = (notifyInfo->FileAttributes & FILE_ATTRIBUTE_DIRECTORY);
 				const String localPath = Unicode::FromWstring(localPathView).replace('\\', '/');
 				const FilePath fullPath = (m_directory + localPath + (isDirectory ? U"/" : U""));
-				const FileAction action = ToFileAction(notifyInfo->Action);
+				const FileChangeAction action = ToFileAction(notifyInfo->Action);
 
 				if (m_extensionFilter) // 拡張子フィルタがある場合
 				{
@@ -401,9 +401,9 @@ namespace s3d
 				const String localPath = Unicode::FromWstring(localPathView).replace('\\', '/');
 				FilePath fullPath = (m_directory + localPath);
 
-				const FileAction action = ToFileAction(notifyInfo->Action);
+				const FileChangeAction action = ToFileAction(notifyInfo->Action);
 
-				if (action != FileAction::Removed)
+				if (action != FileChangeAction::Removed)
 				{
 					if (FileSystem::IsDirectory(fullPath))
 					{
