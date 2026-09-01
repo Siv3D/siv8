@@ -2862,6 +2862,7 @@
 		F9A3D30130A1000000C0DE01 /* Mesh3DRevolve.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31130A1000000C0DE01 /* Mesh3DRevolve.cpp */; };
 		F9A3D30330A1000000C0DE01 /* Mesh3DTube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31330A1000000C0DE01 /* Mesh3DTube.cpp */; };
 		F9A3D30630A1000000C0DE01 /* Mesh3DHeightField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31630A1000000C0DE01 /* Mesh3DHeightField.cpp */; };
+		F9A3D30830A1000000C0DE01 /* Mesh3DLoft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31830A1000000C0DE01 /* Mesh3DLoft.cpp */; };
 		F9A3D10130A1000000C0DE01 /* VertexNormalWeighting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */; };
 		F9A3D10230A1000000C0DE01 /* SivVertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */; };
 		F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */; };
@@ -2874,6 +2875,7 @@
 		F9A3D30430A1000000C0DE01 /* Test_Mesh3DTube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31430A1000000C0DE01 /* Test_Mesh3DTube.cpp */; };
 		F9A3D30530A1000000C0DE01 /* Test_Mesh3DSweep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31530A1000000C0DE01 /* Test_Mesh3DSweep.cpp */; };
 		F9A3D30730A1000000C0DE01 /* Test_Mesh3DHeightField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31730A1000000C0DE01 /* Test_Mesh3DHeightField.cpp */; };
+		F9A3D30930A1000000C0DE01 /* Test_Mesh3DLoft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31930A1000000C0DE01 /* Test_Mesh3DLoft.cpp */; };
 		F9A3D20130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */; };
 		F9A3D20230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */; };
 		F9A3D20330A1000000C0DE01 /* SivCSVParseErrorCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */; };
@@ -6220,6 +6222,7 @@
 		F9A3D31130A1000000C0DE01 /* Mesh3DRevolve.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DRevolve.cpp; sourceTree = "<group>"; };
 		F9A3D31330A1000000C0DE01 /* Mesh3DTube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DTube.cpp; sourceTree = "<group>"; };
 		F9A3D31630A1000000C0DE01 /* Mesh3DHeightField.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DHeightField.cpp; sourceTree = "<group>"; };
+		F9A3D31830A1000000C0DE01 /* Mesh3DLoft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DLoft.cpp; sourceTree = "<group>"; };
 		F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexNormalWeighting.hpp; sourceTree = "<group>"; };
 		F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexNormalWeighting.cpp; sourceTree = "<group>"; };
 		F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_VertexNormalWeighting.cpp; sourceTree = "<group>"; };
@@ -6232,6 +6235,7 @@
 		F9A3D31430A1000000C0DE01 /* Test_Mesh3DTube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DTube.cpp; sourceTree = "<group>"; };
 		F9A3D31530A1000000C0DE01 /* Test_Mesh3DSweep.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DSweep.cpp; sourceTree = "<group>"; };
 		F9A3D31730A1000000C0DE01 /* Test_Mesh3DHeightField.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DHeightField.cpp; sourceTree = "<group>"; };
+		F9A3D31930A1000000C0DE01 /* Test_Mesh3DLoft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DLoft.cpp; sourceTree = "<group>"; };
 		F9A3D21130A1000000C0DE01 /* SivAnimatedImageDecodeError.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageDecodeError.cpp; sourceTree = "<group>"; };
 		F9A3D21230A1000000C0DE01 /* SivAnimatedImageReadStatus.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivAnimatedImageReadStatus.cpp; sourceTree = "<group>"; };
 		F9A3D21330A1000000C0DE01 /* SivCSVParseErrorCode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivCSVParseErrorCode.cpp; sourceTree = "<group>"; };
@@ -6901,6 +6905,7 @@
 				F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */,
 				F9A3D11930A1000000C0DE01 /* Test_Mesh3DExtrude.cpp */,
 				F9A3D31730A1000000C0DE01 /* Test_Mesh3DHeightField.cpp */,
+				F9A3D31930A1000000C0DE01 /* Test_Mesh3DLoft.cpp */,
 				F9A3D31230A1000000C0DE01 /* Test_Mesh3DRevolve.cpp */,
 				F9A3D31430A1000000C0DE01 /* Test_Mesh3DTube.cpp */,
 				F9A3D31530A1000000C0DE01 /* Test_Mesh3DSweep.cpp */,
@@ -13399,6 +13404,7 @@
 				F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */,
 				F9A3D01A30A1000000C0DE01 /* Mesh3DExtrude.cpp */,
 				F9A3D31630A1000000C0DE01 /* Mesh3DHeightField.cpp */,
+				F9A3D31830A1000000C0DE01 /* Mesh3DLoft.cpp */,
 				F9A3D31130A1000000C0DE01 /* Mesh3DRevolve.cpp */,
 				F9A3D31330A1000000C0DE01 /* Mesh3DTube.cpp */,
 				F9A3D01730A1000000C0DE01 /* Mesh3DPrimitives.cpp */,
@@ -16369,6 +16375,7 @@
 				F9A3D10430A1000000C0DE01 /* Test_Mesh3D.cpp in Sources */,
 				F9A3D10930A1000000C0DE01 /* Test_Mesh3DExtrude.cpp in Sources */,
 				F9A3D30730A1000000C0DE01 /* Test_Mesh3DHeightField.cpp in Sources */,
+				F9A3D30930A1000000C0DE01 /* Test_Mesh3DLoft.cpp in Sources */,
 				F9A3D30230A1000000C0DE01 /* Test_Mesh3DRevolve.cpp in Sources */,
 				F9A3D30430A1000000C0DE01 /* Test_Mesh3DTube.cpp in Sources */,
 				F9A3D30530A1000000C0DE01 /* Test_Mesh3DSweep.cpp in Sources */,
@@ -17007,6 +17014,7 @@
 				F9A3D00530A1000000C0DE01 /* Mesh3D.cpp in Sources */,
 				F9A3D00930A1000000C0DE01 /* Mesh3DExtrude.cpp in Sources */,
 				F9A3D30630A1000000C0DE01 /* Mesh3DHeightField.cpp in Sources */,
+				F9A3D30830A1000000C0DE01 /* Mesh3DLoft.cpp in Sources */,
 				F9A3D30130A1000000C0DE01 /* Mesh3DRevolve.cpp in Sources */,
 				F9A3D30330A1000000C0DE01 /* Mesh3DTube.cpp in Sources */,
 				F9A3D00630A1000000C0DE01 /* Mesh3DPrimitives.cpp in Sources */,

@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # pragma once
+# include <array>
+# include <span>
 # include "Common.hpp"
 # include "Array.hpp"
 # include "Blob.hpp"
@@ -478,6 +480,35 @@ namespace s3d
 		static Mesh3D HeightField(
 			const s3d::Grid<float>& heights,
 			SizeF sizeXZ,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Loft
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 複数の断面を高さ方向に接続した 3D メッシュを作成します。
+		/// @tparam SectionCount 断面数。2 以上である必要があります。
+		/// @tparam VertexCount 各断面の頂点数。3 以上である必要があります。
+		/// @param sections 各断面の頂点配列
+		/// @param heights 各断面の Y 座標。厳密な昇順である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 断面を接続した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 各断面の `Vec2` を `(X, -Z)` に対応させます。各断面は先頭頂点を末尾に重複させず、時計回りに指定します。
+		/// @remark `sections[i][j]` と `sections[i + 1][j]` を対応する頂点として接続します。始端と終端は閉じます。
+		/// @remark 側面の U 座標は最初の断面の周長に沿って `[0, 1]`、V 座標は `heights[0]` からの実距離です。
+		/// @remark 輪郭の各頂点はハードエッジとし、断面間では法線と接線を滑らかに接続します。
+		/// @remark 中間断面の自己交差、および異なる断面間での側面の自己交差は検査しません。
+		/// @remark `uvScale.y` を単位高さあたりの反復数として使用すると、Repeat sampler で高さ方向に一定密度のタイリングができます。
+		template <size_t SectionCount, size_t VertexCount>
+			requires ((2 <= SectionCount) && (3 <= VertexCount))
+		[[nodiscard]]
+		static Mesh3D Loft(
+			const std::array<std::array<Vec2, VertexCount>, SectionCount>& sections,
+			const std::array<double, SectionCount>& heights,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
@@ -1055,6 +1086,15 @@ namespace s3d
 		/// @remark UV 座標および三角形インデックスは変更されません。
 		/// @remark 拡大率の積が負の場合、接線の `w` 成分が反転しますが、三角形の巻き順は変更されません。必要に応じて `reverseWinding()` を使用してください。
 		Mesh3D& scale(Float3 scale) noexcept;
+
+	private:
+
+		[[nodiscard]]
+		static Mesh3D LoftImpl(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec2 uvScale,
+			Vec2 uvOffset);
 
 	};
 }

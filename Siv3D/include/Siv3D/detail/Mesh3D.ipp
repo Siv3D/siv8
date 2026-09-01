@@ -63,4 +63,27 @@ namespace s3d
 	{
 		return indices.size();
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Loft
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <size_t SectionCount, size_t VertexCount>
+		requires ((2 <= SectionCount) && (3 <= VertexCount))
+	inline Mesh3D Mesh3D::Loft(
+		const std::array<std::array<Vec2, VertexCount>, SectionCount>& sections,
+		const std::array<double, SectionCount>& heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		std::array<std::span<const Vec2>, SectionCount> sectionViews;
+		for (size_t i = 0; i < SectionCount; ++i)
+		{
+			sectionViews[i] = sections[i];
+		}
+
+		return LoftImpl(sectionViews, heights, uvScale, uvOffset);
+	}
 }
