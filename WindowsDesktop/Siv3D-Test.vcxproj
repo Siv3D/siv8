@@ -67,6 +67,7 @@
     <ClCompile Include="..\Test\Test_Material.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3D.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DExtrude.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DRevolve.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DOBJ.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DPrimitives.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />

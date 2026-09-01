@@ -55,7 +55,6 @@
 
 ### 汎用形状生成
 
-- Torus、Capsule、Hemisphere で蓄積した実装を基に、2D プロファイルの回転体を作る `Revolve()` を設計する。
 - parallel-transport frame を使い、3D 経路に沿うチューブを作る `Tube()` を設計する。
 - `Grid<float>` や画像の標高値から地形を作る height field API を設計する。
 - 応用候補として、torus arc、torus knot、superellipsoid、chamfered box、rounded cylinder を評価する。
