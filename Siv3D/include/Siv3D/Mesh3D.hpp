@@ -14,6 +14,7 @@
 # include "Array.hpp"
 # include "Blob.hpp"
 # include "BoxUVMapping.hpp"
+# include "Grid.hpp"
 # include "IWriter.hpp"
 # include "Material.hpp"
 # include "PredefinedYesNo.hpp"
@@ -454,6 +455,29 @@ namespace s3d
 			SizeF sizeXZ,
 			uint32 segmentsX,
 			uint32 segmentsZ,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	HeightField
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 格子状の高さデータから地形の 3D メッシュを作成します。
+		/// @param heights 各頂点の Y 座標を格納した高さデータ。幅と高さがそれぞれ 2 以上である必要があります。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 高さデータから作成した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `heights[y][x]` を対応する頂点の Y 座標としてそのまま使用します。Y 方向の平行移動やスケーリングは行いません。
+		/// @remark 列 0 を `X = -sizeXZ.x / 2`、最終列を `X = sizeXZ.x / 2`、行 0 を `Z = sizeXZ.y / 2`、最終行を `Z = -sizeXZ.y / 2` に配置します。
+		/// @remark UV 座標は左上を `(0, 0)`、右下を `(1, 1)` とし、`uvScale` と `uvOffset` を適用します。
+		/// @remark 隣接する高さの差分から、滑らかに接続する頂点法線と接線を計算します。
+		[[nodiscard]]
+		static Mesh3D HeightField(
+			const s3d::Grid<float>& heights,
+			SizeF sizeXZ,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 

@@ -55,7 +55,7 @@
 
 ### 汎用形状生成
 
-- `Grid<float>` や画像の標高値から地形を作る height field API を設計する。
+- `Image` の画素値から地形を作る `HeightField()` オーバーロードを設計する。
 - 応用候補として、torus arc、torus knot、superellipsoid、chamfered box、rounded cylinder を評価する。
 
 ### OBJ 入力
