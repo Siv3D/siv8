@@ -48,15 +48,28 @@
 
 ## `Siv3D/include/Siv3D/Mesh3D.hpp`
 
-### 基本形状
+### 次に検討する生成 API
 
-- icosahedron の再帰分割と球面投影による `Mesh3D::IcoSphere()` を追加する。
-- 補完候補として、double-sided plane を評価する。
+1. `Image` の画素値から地形を作る `HeightField()` オーバーロードを設計する。
+   - 使用する画素チャネル、または RGB からの輝度変換を決める。
+   - 画素値の正規化範囲と Y scale / offset の引数構成を決める。
+   - Image の上から下への行順を、既存 `HeightField(Grid<float>)` の `+Z` から `-Z` への行順と一致させるか確認する。
+   - alpha、16-bit、HDR 相当の入力を初期 API に含めるか決める。
+2. icosahedron の再帰分割と球面投影による `Mesh3D::IcoSphere()` を追加する。
+   - `subdivisions` の上限、頂点・三角形数の overflow、`MaxVertexCount` 超過を事前検出する。
+   - 均一な三角形を優先して UV を持たせない構成と、球面 UV seam のために頂点を複製する構成を比較する。
+3. 建築用途向けに、平面で面取りした `Mesh3D::ChamferedBox()` を検討する。
+   - bevel の有効範囲と最大値を決める。
+   - corner topology と hard / smooth normal の境界を決める。
+   - `BoxUVMapping` を面取り面へどう拡張するか決める。
 
-### 汎用形状生成
+`Image` 版 HeightField の仕様決定を保留する場合は、依存が少なく仕様を固めやすい `IcoSphere()` を先に進める。
 
-- `Image` の画素値から地形を作る `HeightField()` オーバーロードを設計する。
-- 応用候補として、torus arc、torus knot、superellipsoid、chamfered box、rounded cylinder を評価する。
+### 低優先度の形状候補
+
+- double-sided plane が必要か評価する。
+- torus arc、torus knot、superellipsoid を評価する。
+- `RegularPrism` は `Extrude()`、rounded cylinder は `Revolve()` での代替を先に評価する。
 
 ### OBJ 入力
 
