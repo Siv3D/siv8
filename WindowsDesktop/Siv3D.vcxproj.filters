@@ -9185,6 +9185,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DRevolve.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DTube.cpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClCompile>
     <ClCompile Include="..\Siv3D\src\ThirdParty\wuffs\WuffsCodecs.cpp">
       <Filter>src\ThirdParty\wuffs</Filter>
     </ClCompile>
