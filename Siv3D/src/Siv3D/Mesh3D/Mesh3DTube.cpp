@@ -383,6 +383,21 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Mesh3D Mesh3D::Tube(
+		const std::initializer_list<Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Tube(
+			std::span<const Vec3>{ path.begin(), path.size() },
+			radius,
+			sides,
+			uvScale,
+			uvOffset);
+	}
+
+	Mesh3D Mesh3D::Tube(
 		const std::span<const Vec3> path,
 		const double _radius,
 		const uint32 sides,
@@ -877,11 +892,39 @@ namespace s3d
 
 	Mesh3D Mesh3D::Sweep(
 		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Sweep(
+			crossSection,
+			std::span<const Vec3>{ path.begin(), path.size() },
+			uvScale,
+			uvOffset);
+	}
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec3 initialNormal,
 		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
 		return MakeSweep(crossSection, path, &initialNormal, uvScale, uvOffset);
+	}
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const Vec3 initialNormal,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Sweep(
+			crossSection,
+			std::span<const Vec3>{ path.begin(), path.size() },
+			initialNormal,
+			uvScale,
+			uvOffset);
 	}
 }

@@ -13,14 +13,29 @@
 
 namespace
 {
+	using Mesh3DTest::CheckMeshDataEqual;
 	using Mesh3DTest::CheckMeshGeometry;
 
 	static_assert(requires
 	{
 		static_cast<Mesh3D (*)(std::span<const Vec2>, uint32)>(&Mesh3D::Revolve);
 		static_cast<Mesh3D (*)(std::span<const Vec2>, uint32, double)>(&Mesh3D::Revolve);
+		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, uint32)>(&Mesh3D::Revolve);
+		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, uint32, double)>(&Mesh3D::Revolve);
 	});
 
+}
+
+TEST_CASE("Mesh3D::Revolve initializer list")
+{
+	const Array<Vec2> profile{ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } };
+	CheckMeshDataEqual(
+		Mesh3D::Revolve({ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } }, 12),
+		Mesh3D::Revolve(profile, 12));
+	CheckMeshDataEqual(
+		Mesh3D::Revolve({ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } }, 12, Math::QuarterPi),
+		Mesh3D::Revolve(profile, 12, Math::QuarterPi));
+	CHECK(Mesh3D::Revolve({}, 12).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Revolve open cylinder side")

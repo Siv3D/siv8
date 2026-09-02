@@ -133,6 +133,11 @@ namespace s3d
 		return Revolve(profile, segments, 0.0);
 	}
 
+	Mesh3D Mesh3D::Revolve(const std::initializer_list<Vec2> profile, const uint32 segments)
+	{
+		return Revolve(std::span<const Vec2>{ profile.begin(), profile.size() }, segments);
+	}
+
 	Mesh3D Mesh3D::Revolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
@@ -399,5 +404,16 @@ namespace s3d
 		}
 
 		return mesh;
+	}
+
+	Mesh3D Mesh3D::Revolve(
+		const std::initializer_list<Vec2> profile,
+		const uint32 segments,
+		const double smoothingAngle)
+	{
+		return Revolve(
+			std::span<const Vec2>{ profile.begin(), profile.size() },
+			segments,
+			smoothingAngle);
 	}
 }

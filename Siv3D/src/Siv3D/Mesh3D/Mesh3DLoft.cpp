@@ -130,11 +130,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	LoftImpl
+	//	Loft
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::LoftImpl(
+	Mesh3D Mesh3D::Loft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		Array<std::span<const Vec2>> sectionViews(sections.size());
+		for (size_t i = 0; i < sections.size(); ++i)
+		{
+			sectionViews[i] = sections[i];
+		}
+
+		return Loft(sectionViews, heights, uvScale, uvOffset);
+	}
+
+	Mesh3D Mesh3D::Loft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec2 _uvScale,

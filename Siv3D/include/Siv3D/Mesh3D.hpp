@@ -11,6 +11,7 @@
 
 # pragma once
 # include <array>
+# include <initializer_list>
 # include <span>
 # include "Common.hpp"
 # include "Array.hpp"
@@ -308,6 +309,14 @@ namespace s3d
 		[[nodiscard]]
 		static Mesh3D Revolve(std::span<const Vec2> profile, uint32 segments = 32);
 
+		/// @brief 2D プロファイルを Y 軸の周りに一周回転させた 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
+		/// @param segments 回転方向の分割数。3 以上である必要があります。
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark プロファイル、開口、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Revolve(std::initializer_list<Vec2> profile, uint32 segments = 32);
+
 		/// @brief 2D プロファイルを Y 軸の周りに一周回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
 		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
 		/// @param segments 回転方向の分割数。3 以上である必要があります。
@@ -317,6 +326,15 @@ namespace s3d
 		/// @remark 座標、開口、および UV 座標の規約は 2 引数版の `Revolve()` と同じです。
 		[[nodiscard]]
 		static Mesh3D Revolve(std::span<const Vec2> profile, uint32 segments, double smoothingAngle);
+
+		/// @brief 2D プロファイルを Y 軸の周りに一周回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
+		/// @param segments 回転方向の分割数。3 以上である必要があります。
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark プロファイル、開口、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Revolve(std::initializer_list<Vec2> profile, uint32 segments, double smoothingAngle);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -339,6 +357,22 @@ namespace s3d
 		[[nodiscard]]
 		static Mesh3D Tube(
 			std::span<const Vec3> path,
+			double radius,
+			uint32 sides = 12,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 3D 経路に沿う一定半径のチューブを作成します。
+		/// @param path チューブの中心を通る開いた経路。2 点以上である必要があります。
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数。3 以上である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 経路、端面、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Tube(
+			std::initializer_list<Vec3> path,
 			double radius,
 			uint32 sides = 12,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
@@ -369,6 +403,20 @@ namespace s3d
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
+		/// @brief 2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 断面、経路、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
 		/// @brief 開始時の断面方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
@@ -382,6 +430,22 @@ namespace s3d
 		static Mesh3D Sweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
+			Vec3 initialNormal,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 開始時の断面方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
+		/// @param initialNormal 開始時に断面の X 軸を向ける方向。最初の経路方向に垂直な平面へ投影して使用します。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 断面、経路、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
 			Vec3 initialNormal,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
@@ -488,6 +552,40 @@ namespace s3d
 		//	Loft
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 実行時に指定した複数の断面を高さ方向に接続した 3D メッシュを作成します。
+		/// @param sections 各断面の頂点範囲。断面数は 2 以上で、各断面は同じ 3 個以上の頂点を持つ必要があります。
+		/// @param heights 各断面の Y 座標。断面数と同じ要素数で、厳密な昇順である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 断面を接続した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 各断面の `Vec2` を `(X, -Z)` に対応させます。各断面は先頭頂点を末尾に重複させず、時計回りに指定します。
+		/// @remark `sections[i][j]` と `sections[i + 1][j]` を対応する頂点として接続します。始端と終端は閉じます。
+		/// @remark 側面の U 座標は最初の断面の周長に沿って `[0, 1]`、V 座標は `heights[0]` からの実距離です。
+		/// @remark 輪郭の各頂点はハードエッジとし、断面間では法線と接線を滑らかに接続します。
+		/// @remark 中間断面の自己交差、および異なる断面間での側面の自己交差は検査しません。
+		/// @remark `uvScale.y` を単位高さあたりの反復数として使用すると、Repeat sampler で高さ方向に一定密度のタイリングができます。
+		[[nodiscard]]
+		static Mesh3D Loft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 実行時に指定した複数の断面を高さ方向に接続した 3D メッシュを作成します。
+		/// @param sections 各断面の頂点配列。断面数は 2 以上で、各断面は同じ 3 個以上の頂点を持つ必要があります。
+		/// @param heights 各断面の Y 座標。断面数と同じ要素数で、厳密な昇順である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 断面を接続した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 座標、接続、端面、および UV 座標の規約は、断面を `std::span<const std::span<const Vec2>>` で受け取るオーバーロードと同じです。
+		/// @remark 呼び出し時に各断面を参照する一時配列を内部で作成します。繰り返し生成する場合は、断面を `std::span<const std::span<const Vec2>>` で受け取るオーバーロードを使用すると、この一時配列を呼び出し側で再利用できます。
+		[[nodiscard]]
+		static Mesh3D Loft(
+			const Array<Array<Vec2>>& sections,
+			std::span<const double> heights,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
 		/// @brief 複数の断面を高さ方向に接続した 3D メッシュを作成します。
 		/// @tparam SectionCount 断面数。2 以上である必要があります。
@@ -1088,15 +1186,6 @@ namespace s3d
 		/// @remark UV 座標および三角形インデックスは変更されません。
 		/// @remark 拡大率の積が負の場合、接線の `w` 成分が反転しますが、三角形の巻き順は変更されません。必要に応じて `reverseWinding()` を使用してください。
 		Mesh3D& scale(Float3 scale) noexcept;
-
-	private:
-
-		[[nodiscard]]
-		static Mesh3D LoftImpl(
-			std::span<const std::span<const Vec2>> sections,
-			std::span<const double> heights,
-			Vec2 uvScale,
-			Vec2 uvOffset);
 
 	};
 }

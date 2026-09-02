@@ -14,13 +14,28 @@
 namespace
 {
 	constexpr float FrameEpsilon = 1e-5f;
+	using Mesh3DTest::CheckMeshDataEqual;
 	using Mesh3DTest::CheckMeshGeometry;
 
 	static_assert(requires
 	{
 		static_cast<Mesh3D (*)(std::span<const Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
+		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
 	});
 
+}
+
+TEST_CASE("Mesh3D::Tube initializer list")
+{
+	const Array<Vec3> path{
+		{ 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 2.0, 1.0 }
+	};
+	CheckMeshDataEqual(
+		Mesh3D::Tube({
+			{ 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 2.0, 1.0 }
+		}, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }),
+		Mesh3D::Tube(path, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }));
+	CHECK(Mesh3D::Tube({}, 0.5).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Tube straight path and UV repeat")

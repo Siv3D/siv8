@@ -13,7 +13,18 @@
 
 namespace
 {
+	using Mesh3DTest::CheckMeshDataEqual;
 	using Mesh3DTest::CheckMeshGeometry;
+
+	static_assert(requires
+	{
+		static_cast<Mesh3D (*)(
+			std::span<const std::span<const Vec2>>,
+			std::span<const double>, Vec2, Vec2)>(&Mesh3D::Loft);
+		static_cast<Mesh3D (*)(
+			const Array<Array<Vec2>>&,
+			std::span<const double>, Vec2, Vec2)>(&Mesh3D::Loft);
+	});
 
 	template <size_t SectionCount, size_t HeightCount, size_t VertexCount>
 	concept LoftCallable = requires(
@@ -29,6 +40,66 @@ namespace
 	static_assert(not LoftCallable<2, 2, 2>);
 	static_assert(not LoftCallable<2, 3, 3>);
 
+}
+
+TEST_CASE("Mesh3D::Loft runtime sections")
+{
+	const std::array fixedSections{
+		std::array{
+			Vec2{ -2.0, -1.0 }, Vec2{ 2.0, -1.0 },
+			Vec2{ 2.0, 1.0 }, Vec2{ -2.0, 1.0 }
+		},
+		std::array{
+			Vec2{ -1.5, -0.75 }, Vec2{ 1.5, -0.75 },
+			Vec2{ 1.5, 0.75 }, Vec2{ -1.5, 0.75 }
+		},
+		std::array{
+			Vec2{ -1.0, -0.5 }, Vec2{ 1.0, -0.5 },
+			Vec2{ 1.0, 0.5 }, Vec2{ -1.0, 0.5 }
+		}
+	};
+	const std::array fixedHeights{ -1.0, 1.0, 4.0 };
+	const Array<Array<Vec2>> sections{
+		Array<Vec2>(fixedSections[0].begin(), fixedSections[0].end()),
+		Array<Vec2>(fixedSections[1].begin(), fixedSections[1].end()),
+		Array<Vec2>(fixedSections[2].begin(), fixedSections[2].end()),
+	};
+	const Array<double> heights(fixedHeights.begin(), fixedHeights.end());
+	const Vec2 uvScale{ 2.0, 0.5 };
+	const Vec2 uvOffset{ 0.25, -0.5 };
+	const Mesh3D expected = Mesh3D::Loft(fixedSections, fixedHeights, uvScale, uvOffset);
+
+	const Mesh3D arrayResult = Mesh3D::Loft(sections, heights, uvScale, uvOffset);
+	CheckMeshDataEqual(arrayResult, expected);
+
+	Array<std::span<const Vec2>> sectionViews(sections.size());
+	for (size_t i = 0; i < sections.size(); ++i)
+	{
+		sectionViews[i] = sections[i];
+	}
+	const Mesh3D spanResult = Mesh3D::Loft(sectionViews, heights, uvScale, uvOffset);
+	CheckMeshDataEqual(spanResult, expected);
+}
+
+TEST_CASE("Mesh3D::Loft runtime invalid dimensions")
+{
+	const Array<double> twoHeights{ 0.0, 1.0 };
+	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{}, Array<double>{}).isEmpty());
+	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
+		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 0.0, 1.0 } }
+	}, Array<double>{ 0.0 }).isEmpty());
+	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
+		{ { 0.0, 0.0 }, { 1.0, 0.0 } },
+		{ { 0.0, 0.0 }, { 1.0, 0.0 } }
+	}, twoHeights).isEmpty());
+	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
+		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 0.0, 1.0 } },
+		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } }
+	}, twoHeights).isEmpty());
+	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
+		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 0.0, 1.0 } },
+		{ { 0.0, 0.0 }, { 0.5, 0.0 }, { 0.0, 0.5 } }
+	}, Array<double>{ 0.0 }).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Loft rectangular sections")

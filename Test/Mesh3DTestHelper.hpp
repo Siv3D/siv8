@@ -72,4 +72,25 @@ namespace s3d::Mesh3DTest
 			CHECK(faceNormal.dot(vertexNormal) > 0.0f);
 		}
 	}
+
+	inline void CheckMeshDataEqual(const Mesh3D& actual, const Mesh3D& expected)
+	{
+		REQUIRE_EQ(actual.vertexCount(), expected.vertexCount());
+		REQUIRE_EQ(actual.triangleCount(), expected.triangleCount());
+
+		for (size_t i = 0; i < actual.vertexCount(); ++i)
+		{
+			CHECK_EQ(actual.vertices[i].pos, expected.vertices[i].pos);
+			CHECK_EQ(actual.vertices[i].normal, expected.vertices[i].normal);
+			CHECK_EQ(actual.vertices[i].tex, expected.vertices[i].tex);
+			CHECK_EQ(actual.vertices[i].tangent, expected.vertices[i].tangent);
+		}
+
+		for (size_t i = 0; i < actual.triangleCount(); ++i)
+		{
+			CHECK_EQ(actual.indices[i].i0, expected.indices[i].i0);
+			CHECK_EQ(actual.indices[i].i1, expected.indices[i].i1);
+			CHECK_EQ(actual.indices[i].i2, expected.indices[i].i2);
+		}
+	}
 }

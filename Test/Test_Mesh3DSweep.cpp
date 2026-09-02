@@ -14,14 +14,41 @@
 namespace
 {
 	constexpr float FrameEpsilon = 1e-5f;
+	using Mesh3DTest::CheckMeshDataEqual;
 	using Mesh3DTest::CheckMeshGeometry;
 
 	static_assert(requires
 	{
 		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
 		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Vec3, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Vec3, Vec2, Vec2)>(&Mesh3D::Sweep);
 	});
 
+}
+
+TEST_CASE("Mesh3D::Sweep initializer list")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -0.5, -0.25 }, { 0.5, -0.25 }, { 0.5, 0.25 }, { -0.5, 0.25 }
+	} };
+	const Array<Vec3> path{
+		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+	};
+	const Vec2 uvScale{ 2.0, 0.25 };
+	const Vec2 uvOffset{ 0.1, 0.2 };
+
+	CheckMeshDataEqual(
+		Mesh3D::Sweep(crossSection, {
+			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+		}, uvScale, uvOffset),
+		Mesh3D::Sweep(crossSection, path, uvScale, uvOffset));
+	CheckMeshDataEqual(
+		Mesh3D::Sweep(crossSection, {
+			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+		}, Vec3::UnitX(), uvScale, uvOffset),
+		Mesh3D::Sweep(crossSection, path, Vec3::UnitX(), uvScale, uvOffset));
+	CHECK(Mesh3D::Sweep(crossSection, {}).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Sweep rectangle and UV repeat")

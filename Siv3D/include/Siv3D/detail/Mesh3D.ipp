@@ -84,6 +84,6 @@ namespace s3d
 			sectionViews[i] = sections[i];
 		}
 
-		return LoftImpl(sectionViews, heights, uvScale, uvOffset);
+		return Loft(sectionViews, heights, uvScale, uvOffset);
 	}
 }
