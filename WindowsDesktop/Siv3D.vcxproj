@@ -1038,6 +1038,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Logger\ILogger.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MediaTranscoder\IMediaTranscoder.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DCommon.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />

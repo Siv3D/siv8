@@ -10,108 +10,23 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
+# include "Mesh3DCommon.hpp"
 # include <algorithm>
 # include <cmath>
-# include <limits>
 
 namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static Mesh3D GenerationFailed(const char* const message)
-		{
-			LOG_FAIL(message);
-			return{};
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const double value) noexcept
-		{
-			constexpr double MaxFloat = std::numeric_limits<float>::max();
-			return (std::isfinite(value)
-				&& (-MaxFloat <= value)
-				&& (value <= MaxFloat));
-		}
-
-		[[nodiscard]]
-		static bool CheckedAdd(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((std::numeric_limits<size_t>::max() - a) < b)
-			{
-				return false;
-			}
-
-			result = (a + b);
-			return true;
-		}
-
-		[[nodiscard]]
-		static bool CheckedMultiply(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((a != 0)
-				&& ((std::numeric_limits<size_t>::max() / a) < b))
-			{
-				return false;
-			}
-
-			result = (a * b);
-			return true;
-		}
-
-		[[nodiscard]]
-		static bool ValidateRing(
-			const std::span<const Vec2> ring,
-			const bool expectPositiveArea,
-			double& perimeter) noexcept
-		{
-			if (ring.size() < 3)
-			{
-				return false;
-			}
-
-			double twiceArea = 0.0;
-			perimeter = 0.0;
-
-			for (size_t i = 0; i < ring.size(); ++i)
-			{
-				const Vec2 current = ring[i];
-				const Vec2 next = ring[(i + 1) % ring.size()];
-				if ((not IsFloatRepresentable(current.x))
-					|| (not IsFloatRepresentable(current.y))
-					|| (not IsFloatRepresentable(next.x))
-					|| (not IsFloatRepresentable(next.y)))
-				{
-					return false;
-				}
-
-				const Float2 currentF = current;
-				const Float2 nextF = next;
-				const double dx = (static_cast<double>(nextF.x) - currentF.x);
-				const double dy = (static_cast<double>(nextF.y) - currentF.y);
-				const double edgeLength = std::hypot(dx, dy);
-				if ((not std::isfinite(edgeLength))
-					|| (edgeLength == 0.0))
-				{
-					return false;
-				}
-
-				perimeter += edgeLength;
-				twiceArea += ((static_cast<double>(currentF.x) * nextF.y)
-					- (static_cast<double>(nextF.x) * currentF.y));
-			}
-
-			if ((not std::isfinite(perimeter))
-				|| (not std::isfinite(twiceArea)))
-			{
-				return false;
-			}
-
-			return (expectPositiveArea ? (0.0 < twiceArea) : (twiceArea < 0.0));
-		}
+		using Mesh3DDetail::CheckedAdd;
+		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::GenerationFailed;
+		using Mesh3DDetail::IsFloatRepresentable;
+		using Mesh3DDetail::RingValidationResult;
+		using Mesh3DDetail::ValidateCapTriangles;
+		using Mesh3DDetail::ValidateRing;
 
 		[[nodiscard]]
 		static double ComputeRingPerimeter(const std::span<const Vec2> ring) noexcept
@@ -128,52 +43,6 @@ namespace s3d
 			}
 
 			return perimeter;
-		}
-
-		[[nodiscard]]
-		static bool ValidateCapTriangles(
-			const std::span<const Float2> vertices,
-			const std::span<const TriangleIndex> indices) noexcept
-		{
-			if ((vertices.size() < 3)
-				|| indices.empty())
-			{
-				return false;
-			}
-
-			for (const Float2 vertex : vertices)
-			{
-				if ((not std::isfinite(vertex.x))
-					|| (not std::isfinite(vertex.y)))
-				{
-					return false;
-				}
-			}
-
-			for (const TriangleIndex& index : indices)
-			{
-				if ((vertices.size() <= index.i0)
-					|| (vertices.size() <= index.i1)
-					|| (vertices.size() <= index.i2))
-				{
-					return false;
-				}
-
-				const Float2 p0 = vertices[index.i0];
-				const Float2 p1 = vertices[index.i1];
-				const Float2 p2 = vertices[index.i2];
-				const double twiceArea = (
-					((static_cast<double>(p1.x) - p0.x) * (static_cast<double>(p2.y) - p0.y))
-					- ((static_cast<double>(p1.y) - p0.y) * (static_cast<double>(p2.x) - p0.x)));
-
-				if ((not std::isfinite(twiceArea))
-					|| (twiceArea <= 0.0))
-				{
-					return false;
-				}
-			}
-
-			return true;
 		}
 
 		struct SideEdge
@@ -260,7 +129,7 @@ namespace s3d
 
 		const auto& capVertices = polygon.vertices();
 		const auto& capIndices = polygon.indices();
-		if (not ValidateCapTriangles(capVertices, capIndices))
+		if (not ValidateCapTriangles<true>(capVertices, capIndices))
 		{
 			return GenerationFailed("Mesh3D::Extrude(): The polygon cap triangulation is invalid");
 		}
@@ -275,7 +144,8 @@ namespace s3d
 		}
 
 		double outerPerimeter;
-		if (not ValidateRing(polygon.outer(), true, outerPerimeter))
+		if (ValidateRing(std::span<const Vec2>{ polygon.outer() }, true, outerPerimeter)
+			!= RingValidationResult::Valid)
 		{
 			return GenerationFailed("Mesh3D::Extrude(): The polygon outer ring is invalid");
 		}
@@ -283,7 +153,8 @@ namespace s3d
 		for (const auto& inner : polygon.inners())
 		{
 			double perimeter;
-			if (not ValidateRing(inner, false, perimeter))
+			if (ValidateRing(std::span<const Vec2>{ inner }, false, perimeter)
+				!= RingValidationResult::Valid)
 			{
 				return GenerationFailed("Mesh3D::Extrude(): A polygon inner ring is invalid");
 			}

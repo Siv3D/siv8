@@ -10,8 +10,8 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
+# include "Mesh3DCommon.hpp"
 # include <algorithm>
 # include <array>
 # include <cmath>
@@ -21,36 +21,11 @@ namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static Mesh3D GenerationFailed(const char* const message)
-		{
-			LOG_FAIL(message);
-			return{};
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const double value) noexcept
-		{
-			constexpr double MaxFloat = std::numeric_limits<float>::max();
-			return (std::isfinite(value)
-				&& (-MaxFloat <= value)
-				&& (value <= MaxFloat));
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const Vec2 value) noexcept
-		{
-			return (IsFloatRepresentable(value.x)
-				&& IsFloatRepresentable(value.y));
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const Vec3 value) noexcept
-		{
-			return (IsFloatRepresentable(value.x)
-				&& IsFloatRepresentable(value.y)
-				&& IsFloatRepresentable(value.z));
-		}
+		using Mesh3DDetail::CheckedAdd;
+		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::GenerationFailed;
+		using Mesh3DDetail::IsFloatRepresentable;
+		using CircleSample = Mesh3DDetail::CircleSample<float>;
 
 		[[nodiscard]]
 		static bool IsFinite(const FloatRect& rect) noexcept
@@ -59,53 +34,6 @@ namespace s3d
 				&& std::isfinite(rect.top)
 				&& std::isfinite(rect.right)
 				&& std::isfinite(rect.bottom));
-		}
-
-		[[nodiscard]]
-		static bool CheckedAdd(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((std::numeric_limits<size_t>::max() - a) < b)
-			{
-				return false;
-			}
-
-			result = (a + b);
-			return true;
-		}
-
-		[[nodiscard]]
-		static bool CheckedMultiply(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((a != 0)
-				&& ((std::numeric_limits<size_t>::max() / a) < b))
-			{
-				return false;
-			}
-
-			result = (a * b);
-			return true;
-		}
-
-		struct CircleSample
-		{
-			float sin;
-			float cos;
-		};
-
-		[[nodiscard]]
-		static Array<CircleSample> MakeCircleSamples(const uint32 segments)
-		{
-			Array<CircleSample> samples(static_cast<size_t>(segments) + 1);
-			const float angleStep = (Math::TwoPiF / static_cast<float>(segments));
-
-			for (uint32 i = 0; i < segments; ++i)
-			{
-				const float angle = (angleStep * i);
-				samples[i] = CircleSample{ std::sin(angle), std::cos(angle) };
-			}
-
-			samples[segments] = samples[0];
-			return samples;
 		}
 
 		struct BoxFace
@@ -1480,7 +1408,7 @@ namespace s3d
 		const float longitudeStep = (Math::TwoPiF * invSlices);
 		const float profileLength = ((Math::PiF * radius) + cylinderHeight);
 		const float invProfileLength = (1.0f / profileLength);
-		const Array<CircleSample> longitudeSinCos = MakeCircleSamples(slices);
+		const Array<CircleSample> longitudeSinCos = Mesh3DDetail::MakeCircleSamples<float>(slices);
 
 		for (uint32 x = 0; x < slices; ++x)
 		{
@@ -1748,8 +1676,8 @@ namespace s3d
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
-		const Array<CircleSample> ringSinCos = MakeCircleSamples(ringSegments);
-		const Array<CircleSample> tubeSinCos = MakeCircleSamples(tubeSegments);
+		const Array<CircleSample> ringSinCos = Mesh3DDetail::MakeCircleSamples<float>(ringSegments);
+		const Array<CircleSample> tubeSinCos = Mesh3DDetail::MakeCircleSamples<float>(tubeSegments);
 		const float invRingSegments = (1.0f / static_cast<float>(ringSegments));
 		const float invTubeSegments = (1.0f / static_cast<float>(tubeSegments));
 
@@ -1842,7 +1770,7 @@ namespace s3d
 		const size_t bottomPoleBase = (firstRingBase + ringVertexCount);
 		const float longitudeStep = (Math::TwoPiF / static_cast<float>(slices));
 		const float latitudeStep = (Math::PiF / static_cast<float>(stacks));
-		const Array<CircleSample> longitudeSinCos = MakeCircleSamples(slices);
+		const Array<CircleSample> longitudeSinCos = Mesh3DDetail::MakeCircleSamples<float>(slices);
 
 		for (uint32 x = 0; x < slices; ++x)
 		{
@@ -2007,7 +1935,7 @@ namespace s3d
 		const float invStacks = (1.0f / static_cast<float>(stacks));
 		const float longitudeStep = (Math::TwoPiF * invSlices);
 		const float latitudeStep = (Math::HalfPiF * invStacks);
-		const Array<CircleSample> longitudeSinCos = MakeCircleSamples(slices);
+		const Array<CircleSample> longitudeSinCos = Mesh3DDetail::MakeCircleSamples<float>(slices);
 
 		for (uint32 x = 0; x < slices; ++x)
 		{
@@ -2173,7 +2101,7 @@ namespace s3d
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
-		const Array<CircleSample> circle = MakeCircleSamples(segments);
+		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
 		const Float3 normal = Float3::UnitY();
 		const Float4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
 
@@ -2283,7 +2211,7 @@ namespace s3d
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
-		const Array<CircleSample> circle = MakeCircleSamples(segments);
+		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
 		const float halfHeight = (height * 0.5f);
 		const float inverseSegments = (1.0f / static_cast<float>(segments));
 		const float innerUVScale = (0.5f * innerRadius / outerRadius);
@@ -2469,7 +2397,7 @@ namespace s3d
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
-		const Array<CircleSample> circle = MakeCircleSamples(segments);
+		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
 		const float halfHeight = (height * 0.5f);
 		const float radiusDelta = (bottomRadius - topRadius);
 		const float inverseSideLength = (1.0f / std::sqrt((height * height) + (radiusDelta * radiusDelta)));

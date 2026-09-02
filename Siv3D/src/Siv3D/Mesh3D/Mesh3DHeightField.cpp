@@ -10,42 +10,16 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/EngineLog.hpp>
+# include "Mesh3DCommon.hpp"
 # include <cmath>
-# include <limits>
 
 namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static Mesh3D GenerationFailed(const char* const message)
-		{
-			LOG_FAIL(message);
-			return{};
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const double value) noexcept
-		{
-			constexpr double MaxFloat = std::numeric_limits<float>::max();
-			return (std::isfinite(value)
-				&& (-MaxFloat <= value)
-				&& (value <= MaxFloat));
-		}
-
-		[[nodiscard]]
-		static bool CheckedMultiply(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((a != 0)
-				&& ((std::numeric_limits<size_t>::max() / a) < b))
-			{
-				return false;
-			}
-
-			result = (a * b);
-			return true;
-		}
+		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::GenerationFailed;
+		using Mesh3DDetail::IsFloatRepresentable;
 	}
 
 	////////////////////////////////////////////////////////////////

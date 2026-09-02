@@ -6018,6 +6018,9 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\MikkTSpace\mikktspace.h">
       <Filter>src\ThirdParty\MikkTSpace</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DCommon.hpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.hpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClInclude>

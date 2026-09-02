@@ -10,9 +10,9 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
+# include "Mesh3DCommon.hpp"
 # include <algorithm>
 # include <cmath>
 # include <limits>
@@ -21,73 +21,20 @@ namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static Mesh3D GenerationFailed(const char* const message)
-		{
-			LOG_FAIL(message);
-			return{};
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const double value) noexcept
-		{
-			constexpr double MaxFloat = std::numeric_limits<float>::max();
-			return (std::isfinite(value)
-				&& (-MaxFloat <= value)
-				&& (value <= MaxFloat));
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const Vec2 value) noexcept
-		{
-			return (IsFloatRepresentable(value.x)
-				&& IsFloatRepresentable(value.y));
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const Vec3 value) noexcept
-		{
-			return (IsFloatRepresentable(value.x)
-				&& IsFloatRepresentable(value.y)
-				&& IsFloatRepresentable(value.z));
-		}
-
-		[[nodiscard]]
-		static bool CheckedAdd(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((std::numeric_limits<size_t>::max() - a) < b)
-			{
-				return false;
-			}
-
-			result = (a + b);
-			return true;
-		}
-
-		[[nodiscard]]
-		static bool CheckedMultiply(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((a != 0)
-				&& ((std::numeric_limits<size_t>::max() / a) < b))
-			{
-				return false;
-			}
-
-			result = (a * b);
-			return true;
-		}
+		using Mesh3DDetail::CheckedAdd;
+		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::GenerationFailed;
+		using Mesh3DDetail::IsFloatRepresentable;
+		using Mesh3DDetail::RingValidationResult;
+		using Mesh3DDetail::ValidateCapTriangles;
+		using Mesh3DDetail::ValidateRing;
+		using CircleSample = Mesh3DDetail::CircleSample<double>;
 
 		struct PathFrame
 		{
 			Vec3 tangent;
 			Vec3 normal;
 			Vec3 binormal;
-		};
-
-		struct CircleSample
-		{
-			double sin;
-			double cos;
 		};
 
 		struct PathData
@@ -293,95 +240,6 @@ namespace s3d
 			return true;
 		}
 
-		[[nodiscard]]
-		static bool ValidateSweepRing(
-			const std::span<const Vec2> ring,
-			const bool expectPositiveArea,
-			double& perimeter) noexcept
-		{
-			if (ring.size() < 3)
-			{
-				return false;
-			}
-
-			double twiceArea = 0.0;
-			perimeter = 0.0;
-			for (size_t i = 0; i < ring.size(); ++i)
-			{
-				if ((not IsFloatRepresentable(ring[i]))
-					|| (not IsFloatRepresentable(ring[(i + 1) % ring.size()])))
-				{
-					return false;
-				}
-
-				const Float2 current = ring[i];
-				const Float2 next = ring[(i + 1) % ring.size()];
-				const double dx = (static_cast<double>(next.x) - current.x);
-				const double dy = (static_cast<double>(next.y) - current.y);
-				const double edgeLength = std::hypot(dx, dy);
-				if ((not std::isfinite(edgeLength))
-					|| (edgeLength == 0.0))
-				{
-					return false;
-				}
-
-				perimeter += edgeLength;
-				twiceArea += ((static_cast<double>(current.x) * next.y)
-					- (static_cast<double>(next.x) * current.y));
-			}
-
-			if ((not std::isfinite(perimeter))
-				|| (not std::isfinite(twiceArea)))
-			{
-				return false;
-			}
-
-			return (expectPositiveArea ? (0.0 < twiceArea) : (twiceArea < 0.0));
-		}
-
-		[[nodiscard]]
-		static bool ValidateSweepCap(
-			const std::span<const Float2> vertices,
-			const std::span<const TriangleIndex> indices) noexcept
-		{
-			if ((vertices.size() < 3) || indices.empty())
-			{
-				return false;
-			}
-
-			for (const Float2 vertex : vertices)
-			{
-				if ((not std::isfinite(vertex.x))
-					|| (not std::isfinite(vertex.y)))
-				{
-					return false;
-				}
-			}
-
-			for (const TriangleIndex& index : indices)
-			{
-				if ((vertices.size() <= index.i0)
-					|| (vertices.size() <= index.i1)
-					|| (vertices.size() <= index.i2))
-				{
-					return false;
-				}
-
-				const Float2 p0 = vertices[index.i0];
-				const Float2 p1 = vertices[index.i1];
-				const Float2 p2 = vertices[index.i2];
-				const double twiceArea = (
-					((static_cast<double>(p1.x) - p0.x) * (static_cast<double>(p2.y) - p0.y))
-					- ((static_cast<double>(p1.y) - p0.y) * (static_cast<double>(p2.x) - p0.x)));
-				if ((not std::isfinite(twiceArea))
-					|| (twiceArea <= 0.0))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -467,14 +325,7 @@ namespace s3d
 			return GenerationFailed("Mesh3D::Tube(): The generated UV coordinates exceed the float range");
 		}
 
-		Array<CircleSample> circle(ringStride);
-		const double angleStep = (Math::TwoPi / sides);
-		for (uint32 i = 0; i < sides; ++i)
-		{
-			const double angle = (angleStep * i);
-			circle[i] = CircleSample{ std::sin(angle), std::cos(angle) };
-		}
-		circle[sides] = circle[0];
+		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<double>(sides);
 
 		const Float2 uvScale = _uvScale;
 		const Float2 uvOffset = _uvOffset;
@@ -620,7 +471,7 @@ namespace s3d
 
 			const auto& capVertices = crossSection.vertices();
 			const auto& capIndices = crossSection.indices();
-			if (not ValidateSweepCap(capVertices, capIndices))
+			if (not ValidateCapTriangles<true>(capVertices, capIndices))
 			{
 				return GenerationFailed("Mesh3D::Sweep(): The cross-section cap triangulation is invalid");
 			}
@@ -641,14 +492,16 @@ namespace s3d
 			}
 
 			Array<double> ringPerimeters(ringCount);
-			if (not ValidateSweepRing(crossSection.outer(), true, ringPerimeters[0]))
+			if (ValidateRing(std::span<const Vec2>{ crossSection.outer() }, true, ringPerimeters[0])
+				!= RingValidationResult::Valid)
 			{
 				return GenerationFailed("Mesh3D::Sweep(): The cross-section outer ring is invalid");
 			}
 
 			for (size_t i = 0; i < crossSection.inners().size(); ++i)
 			{
-				if (not ValidateSweepRing(crossSection.inners()[i], false, ringPerimeters[i + 1]))
+				if (ValidateRing(std::span<const Vec2>{ crossSection.inners()[i] }, false, ringPerimeters[i + 1])
+					!= RingValidationResult::Valid)
 				{
 					return GenerationFailed("Mesh3D::Sweep(): A cross-section inner ring is invalid");
 				}

@@ -2863,6 +2863,7 @@
 		F9A3D30330A1000000C0DE01 /* Mesh3DTube.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31330A1000000C0DE01 /* Mesh3DTube.cpp */; };
 		F9A3D30630A1000000C0DE01 /* Mesh3DHeightField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31630A1000000C0DE01 /* Mesh3DHeightField.cpp */; };
 		F9A3D30830A1000000C0DE01 /* Mesh3DLoft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D31830A1000000C0DE01 /* Mesh3DLoft.cpp */; };
+		F9A3D40130A2000000C0DE01 /* Mesh3DCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D41130A2000000C0DE01 /* Mesh3DCommon.hpp */; };
 		F9A3D10130A1000000C0DE01 /* VertexNormalWeighting.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */; };
 		F9A3D10230A1000000C0DE01 /* SivVertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */; };
 		F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */; };
@@ -6224,6 +6225,7 @@
 		F9A3D31330A1000000C0DE01 /* Mesh3DTube.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DTube.cpp; sourceTree = "<group>"; };
 		F9A3D31630A1000000C0DE01 /* Mesh3DHeightField.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DHeightField.cpp; sourceTree = "<group>"; };
 		F9A3D31830A1000000C0DE01 /* Mesh3DLoft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DLoft.cpp; sourceTree = "<group>"; };
+		F9A3D41130A2000000C0DE01 /* Mesh3DCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DCommon.hpp; sourceTree = "<group>"; };
 		F9A3D11130A1000000C0DE01 /* VertexNormalWeighting.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexNormalWeighting.hpp; sourceTree = "<group>"; };
 		F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexNormalWeighting.cpp; sourceTree = "<group>"; };
 		F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_VertexNormalWeighting.cpp; sourceTree = "<group>"; };
@@ -13407,6 +13409,7 @@
 			isa = PBXGroup;
 			children = (
 				F9A3D01530A1000000C0DE01 /* Mesh3D.cpp */,
+				F9A3D41130A2000000C0DE01 /* Mesh3DCommon.hpp */,
 				F9A3D01A30A1000000C0DE01 /* Mesh3DExtrude.cpp */,
 				F9A3D31630A1000000C0DE01 /* Mesh3DHeightField.cpp */,
 				F9A3D31830A1000000C0DE01 /* Mesh3DLoft.cpp */,
@@ -15978,6 +15981,7 @@
 				F986FA442BCFB53B006A4C0F /* public-macros.h in Headers */,
 				F98605222BD0E2A3006A4C0F /* CEngineResource.hpp in Headers */,
 				F9ECFB5B3021C43800D3EB2F /* Mesh3DMikkTSpace.hpp in Headers */,
+				F9A3D40130A2000000C0DE01 /* Mesh3DCommon.hpp in Headers */,
 				F98605FB2BE61586006A4C0F /* Line.ipp in Headers */,
 				F986FA742BCFB53B006A4C0F /* ftbbox.h in Headers */,
 				F986030B2BCFBB54006A4C0F /* SkOpAngle.h in Headers */,

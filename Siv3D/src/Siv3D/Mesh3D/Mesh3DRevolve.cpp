@@ -10,55 +10,19 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
+# include "Mesh3DCommon.hpp"
 # include <cmath>
-# include <limits>
 
 namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static Mesh3D GenerationFailed(const char* const message)
-		{
-			LOG_FAIL(message);
-			return{};
-		}
-
-		[[nodiscard]]
-		static bool IsFloatRepresentable(const double value) noexcept
-		{
-			constexpr double MaxFloat = std::numeric_limits<float>::max();
-			return (std::isfinite(value)
-				&& (-MaxFloat <= value)
-				&& (value <= MaxFloat));
-		}
-
-		[[nodiscard]]
-		static bool CheckedAdd(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((std::numeric_limits<size_t>::max() - a) < b)
-			{
-				return false;
-			}
-
-			result = (a + b);
-			return true;
-		}
-
-		[[nodiscard]]
-		static bool CheckedMultiply(const size_t a, const size_t b, size_t& result) noexcept
-		{
-			if ((a != 0)
-				&& ((std::numeric_limits<size_t>::max() / a) < b))
-			{
-				return false;
-			}
-
-			result = (a * b);
-			return true;
-		}
+		using Mesh3DDetail::CheckedAdd;
+		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::GenerationFailed;
+		using Mesh3DDetail::IsFloatRepresentable;
+		using CircleSample = Mesh3DDetail::CircleSample<float>;
 
 		[[nodiscard]]
 		static bool ToProfilePoint(const Vec2 source, Float2& result) noexcept
@@ -81,12 +45,6 @@ namespace s3d
 			Float2 normal;
 			double startDistance;
 			double endDistance;
-		};
-
-		struct CircleSample
-		{
-			float sin;
-			float cos;
 		};
 
 		[[nodiscard]]
