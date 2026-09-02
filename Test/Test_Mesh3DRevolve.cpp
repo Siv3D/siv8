@@ -9,12 +9,11 @@
 //
 //-----------------------------------------------
 
-# include "Siv3DTest.hpp"
+# include "Mesh3DTestHelper.hpp"
 
 namespace
 {
-	constexpr float FrameEpsilon = 1e-5f;
-	constexpr float TriangleAreaEpsilon = 1e-10f;
+	using Mesh3DTest::CheckMeshGeometry;
 
 	static_assert(requires
 	{
@@ -22,42 +21,6 @@ namespace
 		static_cast<Mesh3D (*)(std::span<const Vec2>, uint32, double)>(&Mesh3D::Revolve);
 	});
 
-	static void CheckVertexFrame(const Vertex3D& vertex)
-	{
-		CHECK(std::isfinite(vertex.pos.x));
-		CHECK(std::isfinite(vertex.pos.y));
-		CHECK(std::isfinite(vertex.pos.z));
-		CHECK(std::isfinite(vertex.tex.x));
-		CHECK(std::isfinite(vertex.tex.y));
-		CHECK(vertex.normal.length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-		CHECK(vertex.tangent.xyz().length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-		CHECK(std::abs(vertex.normal.dot(vertex.tangent.xyz())) < FrameEpsilon);
-		CHECK(std::abs(std::abs(vertex.tangent.w) - 1.0f) < FrameEpsilon);
-		CHECK(vertex.bitangent().length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-	}
-
-	static void CheckMeshGeometry(const Mesh3D& mesh)
-	{
-		REQUIRE_FALSE(mesh.isEmpty());
-		REQUIRE(mesh.validate());
-
-		for (const Vertex3D& vertex : mesh.vertices)
-		{
-			CheckVertexFrame(vertex);
-		}
-
-		for (const TriangleIndex32& triangle : mesh.indices)
-		{
-			const Vertex3D& v0 = mesh.vertices[triangle.i0];
-			const Vertex3D& v1 = mesh.vertices[triangle.i1];
-			const Vertex3D& v2 = mesh.vertices[triangle.i2];
-			const Float3 faceNormal = (v1.pos - v0.pos).cross(v2.pos - v0.pos);
-			const Float3 vertexNormal = (v0.normal + v1.normal + v2.normal);
-
-			CHECK(faceNormal.lengthSq() > TriangleAreaEpsilon);
-			CHECK(faceNormal.dot(vertexNormal) > 0.0f);
-		}
-	}
 }
 
 TEST_CASE("Mesh3D::Revolve open cylinder side")

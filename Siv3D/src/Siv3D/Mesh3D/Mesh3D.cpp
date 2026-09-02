@@ -225,11 +225,6 @@ namespace s3d
 	{
 		if (indices.isEmpty())
 		{
-			for (auto& vertex : vertices)
-			{
-				vertex.normal = Float3{ 0.0f, 0.0f, 0.0f };
-			}
-
 			return *this;
 		}
 

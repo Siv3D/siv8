@@ -262,6 +262,9 @@
     <ClCompile Include="..\Test\Test_Mesh3DLoft.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DNormals.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Mesh3DRevolve.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -289,6 +292,9 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Precompiled Headers</Filter>
     </ClInclude>

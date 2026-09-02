@@ -69,6 +69,7 @@
     <ClCompile Include="..\Test\Test_Mesh3DExtrude.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DHeightField.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DLoft.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DNormals.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DRevolve.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DSweep.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DTube.cpp" />
@@ -107,6 +108,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

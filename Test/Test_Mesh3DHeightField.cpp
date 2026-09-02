@@ -9,54 +9,18 @@
 //
 //-----------------------------------------------
 
-# include "Siv3DTest.hpp"
+# include "Mesh3DTestHelper.hpp"
 
 namespace
 {
 	constexpr float FrameEpsilon = 1e-5f;
-	constexpr float TriangleAreaEpsilon = 1e-10f;
+	using Mesh3DTest::TangentHandedness;
 
 	static_assert(requires
 	{
 		static_cast<Mesh3D (*)(const Grid<float>&, SizeF, Vec2, Vec2)>(&Mesh3D::HeightField);
 	});
 
-	static void CheckVertexFrame(const Vertex3D& vertex)
-	{
-		CHECK(std::isfinite(vertex.pos.x));
-		CHECK(std::isfinite(vertex.pos.y));
-		CHECK(std::isfinite(vertex.pos.z));
-		CHECK(std::isfinite(vertex.tex.x));
-		CHECK(std::isfinite(vertex.tex.y));
-		CHECK(vertex.normal.length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-		CHECK(vertex.tangent.xyz().length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-		CHECK(std::abs(vertex.normal.dot(vertex.tangent.xyz())) < FrameEpsilon);
-		CHECK(std::abs(vertex.tangent.w - 1.0f) < FrameEpsilon);
-		CHECK(vertex.bitangent().length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-	}
-
-	static void CheckMeshGeometry(const Mesh3D& mesh)
-	{
-		REQUIRE_FALSE(mesh.isEmpty());
-		REQUIRE(mesh.validate());
-
-		for (const Vertex3D& vertex : mesh.vertices)
-		{
-			CheckVertexFrame(vertex);
-		}
-
-		for (const TriangleIndex32& triangle : mesh.indices)
-		{
-			const Vertex3D& v0 = mesh.vertices[triangle.i0];
-			const Vertex3D& v1 = mesh.vertices[triangle.i1];
-			const Vertex3D& v2 = mesh.vertices[triangle.i2];
-			const Float3 faceNormal = (v1.pos - v0.pos).cross(v2.pos - v0.pos);
-			const Float3 vertexNormal = (v0.normal + v1.normal + v2.normal);
-
-			CHECK(faceNormal.lengthSq() > TriangleAreaEpsilon);
-			CHECK(faceNormal.dot(vertexNormal) > 0.0f);
-		}
-	}
 }
 
 TEST_CASE("Mesh3D::HeightField flat grid")
@@ -70,7 +34,7 @@ TEST_CASE("Mesh3D::HeightField flat grid")
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 6 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 4 });
-	CheckMeshGeometry(mesh);
+	Mesh3DTest::CheckMeshGeometry(mesh, TangentHandedness::Positive);
 	REQUIRE_EQ(mesh.vertexCount(), grid.vertexCount());
 	REQUIRE_EQ(mesh.triangleCount(), grid.triangleCount());
 	for (size_t i = 0; i < mesh.vertexCount(); ++i)
@@ -99,7 +63,7 @@ TEST_CASE("Mesh3D::HeightField sloped plane")
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 9 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 8 });
-	CheckMeshGeometry(mesh);
+	Mesh3DTest::CheckMeshGeometry(mesh, TangentHandedness::Positive);
 	for (const Vertex3D& vertex : mesh.vertices)
 	{
 		CHECK(vertex.normal.x == doctest::Approx(-Math::InvSqrt2).epsilon(FrameEpsilon));
@@ -127,7 +91,7 @@ TEST_CASE("Mesh3D::HeightField irregular heights")
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 12 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
-	CheckMeshGeometry(mesh);
+	Mesh3DTest::CheckMeshGeometry(mesh, TangentHandedness::Positive);
 	CHECK_EQ(mesh.vertices[0].tex, Float2{ -0.5f, 0.25f });
 	CHECK_EQ(mesh.vertices[11].tex, Float2{ 2.5f, 2.25f });
 	CHECK_EQ(mesh.vertices[5].pos, Float3{ -1.0f, 0.8f, 0.0f });
@@ -142,14 +106,14 @@ TEST_CASE("Mesh3D::HeightField boundary values")
 	const Mesh3D minimumMesh = Mesh3D::HeightField(minimum, SizeF{ 1.0, 1.0 });
 	CHECK_EQ(minimumMesh.vertexCount(), size_t{ 4 });
 	CHECK_EQ(minimumMesh.triangleCount(), size_t{ 2 });
-	CheckMeshGeometry(minimumMesh);
+	Mesh3DTest::CheckMeshGeometry(minimumMesh, TangentHandedness::Positive);
 
 	const Grid<float> maximum(2, 2, std::numeric_limits<float>::max());
 	const Mesh3D maximumMesh = Mesh3D::HeightField(maximum, SizeF{ 1.0, 1.0 });
 	REQUIRE(maximumMesh.validate());
 	for (const Vertex3D& vertex : maximumMesh.vertices)
 	{
-		CheckVertexFrame(vertex);
+		Mesh3DTest::CheckVertexFrame(vertex, TangentHandedness::Positive);
 		CHECK_EQ(vertex.pos.y, std::numeric_limits<float>::max());
 	}
 }

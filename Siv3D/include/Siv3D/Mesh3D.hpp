@@ -843,6 +843,7 @@ namespace s3d
 		/// @param weighting 各三角形の法線を合成するときの重み付け方式
 		/// @remark 同じ頂点インデックスを共有する三角形の法線が合成されます。
 		/// @remark ハードエッジを保持するには、その境界で頂点が分割されている必要があります。
+		/// @remark 三角形がない場合、頂点法線は変更されません。
 		/// @return *this
 		/// @throw Error 法線の計算に失敗した場合
 		Mesh3D& computeNormals(VertexNormalWeighting weighting = VertexNormalWeighting::Angle);
@@ -856,6 +857,7 @@ namespace s3d
 		/// @brief MikkTSpace を使用して頂点の接線を計算します。
 		/// @remark 頂点法線および UV 座標が設定済みである必要があります。
 		/// @remark 接線空間が不連続になる箇所では頂点が複製されるため、頂点数およびインデックス配列が変更されることがあります。
+		/// @remark 三角形がない場合、頂点の接線は変更されません。
 		/// @return *this
 		/// @throw Error 接線の計算に失敗した場合
 		Mesh3D& computeTangents();
