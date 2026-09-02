@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <cmath>
 # include <limits>
@@ -18,6 +19,13 @@ namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static Mesh3D GenerationFailed(const char* const message)
+		{
+			LOG_FAIL(message);
+			return{};
+		}
+
 		[[nodiscard]]
 		static bool IsFloatRepresentable(const double value) noexcept
 		{
@@ -149,13 +157,13 @@ namespace s3d
 			|| (smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): The profile, segment count, or smoothing angle is invalid");
 		}
 
 		const bool closedProfile = (profile.front() == profile.back());
 		if (closedProfile && (profile.size() < 4))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): A closed profile must contain at least three distinct points");
 		}
 
 		size_t ringStride;
@@ -163,7 +171,7 @@ namespace s3d
 		if ((not CheckedAdd(static_cast<size_t>(segments), 1, ringStride))
 			|| (not CheckedMultiply(ringStride, 2, fullSegmentVertexCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): The segment count exceeds the supported range");
 		}
 
 		const size_t profileSegmentCount = (profile.size() - 1);
@@ -171,7 +179,7 @@ namespace s3d
 		if ((not CheckedMultiply(profileSegmentCount, (fullSegmentVertexCount - 1), minimumVertexCount))
 			|| (Mesh3D::MaxVertexCount < minimumVertexCount))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): The generated vertex count exceeds the supported range");
 		}
 
 		Array<ProfileSegment> profileSegments;
@@ -180,7 +188,7 @@ namespace s3d
 		Float2 firstPoint;
 		if (not ToProfilePoint(profile.front(), firstPoint))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): Every profile point must be finite, float-representable, and have a non-negative radius");
 		}
 
 		Float2 current = firstPoint;
@@ -194,14 +202,14 @@ namespace s3d
 			Float2 next;
 			if (not ToProfilePoint(profile[i + 1], next))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Revolve(): Every profile point must be finite, float-representable, and have a non-negative radius");
 			}
 
 			const bool startOnAxis = (current.x == 0.0f);
 			const bool endOnAxis = (next.x == 0.0f);
 			if (startOnAxis && endOnAxis)
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Revolve(): A profile segment cannot lie entirely on the rotation axis");
 			}
 
 			const double dr = (static_cast<double>(next.x) - current.x);
@@ -210,13 +218,13 @@ namespace s3d
 			if ((not std::isfinite(length))
 				|| (length == 0.0))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Revolve(): Profile segments must have positive finite length");
 			}
 
 			const double endDistance = (totalDistance + length);
 			if (not std::isfinite(endDistance))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Revolve(): The profile length exceeds the supported range");
 			}
 
 			const bool touchesAxis = (startOnAxis || endOnAxis);
@@ -225,7 +233,7 @@ namespace s3d
 				|| (Mesh3D::MaxVertexCount < vertexCount)
 				|| (not CheckedAdd(trianglesPerSlice, (touchesAxis ? 1 : 2), trianglesPerSlice)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Revolve(): The generated mesh exceeds the supported size");
 			}
 
 			profileSegments.push_back(ProfileSegment{
@@ -249,19 +257,19 @@ namespace s3d
 
 		if ((not closedProfile) && (current == firstPoint))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): An open profile cannot end at its first point");
 		}
 
 		if (closedProfile
 			&& ((not std::isfinite(twiceArea)) || (twiceArea == 0.0)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): A closed profile must have non-zero finite area");
 		}
 
 		size_t triangleCount;
 		if (not CheckedMultiply(trianglesPerSlice, static_cast<size_t>(segments), triangleCount))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Revolve(): The generated triangle count exceeds the supported range");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };

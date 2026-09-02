@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <algorithm>
@@ -20,6 +21,13 @@ namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static Mesh3D GenerationFailed(const char* const message)
+		{
+			LOG_FAIL(message);
+			return{};
+		}
+
 		[[nodiscard]]
 		static bool IsFloatRepresentable(const double value) noexcept
 		{
@@ -236,13 +244,13 @@ namespace s3d
 			|| (smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Extrude(): The polygon, height, or smoothing angle is invalid");
 		}
 
 		const float height = static_cast<float>(_height);
 		if (height <= 0.0f)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Extrude(): height must be positive after conversion to float");
 		}
 
 		const bool smoothSide = (0.0 < smoothingAngle);
@@ -254,7 +262,7 @@ namespace s3d
 		const auto& capIndices = polygon.indices();
 		if (not ValidateCapTriangles(capVertices, capIndices))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Extrude(): The polygon cap triangulation is invalid");
 		}
 
 		size_t edgeCount = polygon.outer().size();
@@ -262,14 +270,14 @@ namespace s3d
 		{
 			if (not CheckedAdd(edgeCount, inner.size(), edgeCount))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Extrude(): The polygon edge count exceeds the supported range");
 			}
 		}
 
 		double outerPerimeter;
 		if (not ValidateRing(polygon.outer(), true, outerPerimeter))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Extrude(): The polygon outer ring is invalid");
 		}
 
 		for (const auto& inner : polygon.inners())
@@ -277,7 +285,7 @@ namespace s3d
 			double perimeter;
 			if (not ValidateRing(inner, false, perimeter))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Extrude(): A polygon inner ring is invalid");
 			}
 		}
 
@@ -295,7 +303,7 @@ namespace s3d
 			|| (not CheckedMultiply(edgeCount, 2, sideTriangleCount))
 			|| (not CheckedAdd(capTriangleTotal, sideTriangleCount, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Extrude(): The generated mesh exceeds the supported size");
 		}
 
 		float minX = capVertices.front().x;
@@ -315,7 +323,7 @@ namespace s3d
 		if ((width <= 0.0)
 			|| (depth <= 0.0))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Extrude(): The polygon bounds must have positive width and depth");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <cmath>
 # include <limits>
 
@@ -17,6 +18,13 @@ namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static Mesh3D GenerationFailed(const char* const message)
+		{
+			LOG_FAIL(message);
+			return{};
+		}
+
 		[[nodiscard]]
 		static bool IsFloatRepresentable(const double value) noexcept
 		{
@@ -63,21 +71,21 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvOffset.x + _uvScale.x))
 			|| (not IsFloatRepresentable(_uvOffset.y + _uvScale.y)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::HeightField(): The grid dimensions, size, or UV transform is invalid");
 		}
 
 		const Float2 sizeXZ = _sizeXZ;
 		if ((sizeXZ.x <= 0.0f)
 			|| (sizeXZ.y <= 0.0f))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::HeightField(): sizeXZ must remain positive after conversion to float");
 		}
 
 		for (const float height : heights)
 		{
 			if (not std::isfinite(height))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::HeightField(): Every height must be finite");
 			}
 		}
 
@@ -93,7 +101,7 @@ namespace s3d
 			|| (not CheckedMultiply(segmentsX, segmentsZ, cellCount))
 			|| (not CheckedMultiply(cellCount, 2, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::HeightField(): The generated mesh exceeds the supported size");
 		}
 
 		Array<float> xPositions(columnCount);
@@ -106,7 +114,7 @@ namespace s3d
 			xPositions[x] = static_cast<float>(-halfSizeX + (_sizeXZ.x * u));
 			if ((0 < x) && (not (xPositions[x - 1] < xPositions[x])))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::HeightField(): Adjacent X coordinates collapse after conversion to float");
 			}
 		}
 
@@ -116,7 +124,7 @@ namespace s3d
 			zPositions[z] = static_cast<float>(halfSizeZ - (_sizeXZ.y * v));
 			if ((0 < z) && (not (zPositions[z] < zPositions[z - 1])))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::HeightField(): Adjacent Z coordinates collapse after conversion to float");
 			}
 		}
 

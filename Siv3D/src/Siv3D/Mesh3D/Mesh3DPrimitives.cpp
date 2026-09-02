@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <algorithm>
 # include <array>
@@ -20,6 +21,13 @@ namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static Mesh3D GenerationFailed(const char* const message)
+		{
+			LOG_FAIL(message);
+			return{};
+		}
+
 		[[nodiscard]]
 		static bool IsFloatRepresentable(const double value) noexcept
 		{
@@ -344,7 +352,7 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_size))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Box(): size must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -352,7 +360,7 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Box(): Every size component must be positive after conversion to float");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -379,7 +387,7 @@ namespace s3d
 		{
 			if (not IsFinite(uvRect))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Box(): Every UV rectangle must be finite");
 			}
 		}
 
@@ -454,7 +462,7 @@ namespace s3d
 			|| (_radius < 0.0)
 			|| (subdivisions == 0))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::RoundedBox(): The size, radius, subdivisions, or UV mapping is invalid");
 		}
 
 		const Float3 size = _size;
@@ -463,13 +471,13 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::RoundedBox(): Every size component must be positive after conversion to float");
 		}
 
 		const double maxRadius = (std::min({ _size.x, _size.y, _size.z }) * 0.5);
 		if (maxRadius < _radius)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::RoundedBox(): radius must not exceed half of the smallest size component");
 		}
 
 		if (radius == 0.0f)
@@ -486,7 +494,7 @@ namespace s3d
 		size_t twiceSubdivisions;
 		if (not CheckedMultiply(static_cast<size_t>(subdivisions), 2, twiceSubdivisions))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::RoundedBox(): subdivisions exceed the supported range");
 		}
 
 		const auto getAxisPointCount = [twiceSubdivisions](const float innerHalfExtent) -> size_t
@@ -520,7 +528,7 @@ namespace s3d
 			|| (not CheckedAdd(cellCountSum, yzCellCount, cellCountSum))
 			|| (not CheckedMultiply(cellCountSum, 4, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::RoundedBox(): The generated mesh exceeds the supported size");
 		}
 
 		const size_t roundedSegmentCount = static_cast<size_t>(subdivisions);
@@ -672,7 +680,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_size))
 			|| (not IsFinite(uvMapping)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Wedge(): size and UV mapping must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -680,7 +688,7 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Wedge(): Every size component must be positive after conversion to float");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -766,7 +774,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_size))
 			|| (not IsFinite(uvMapping)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::TriangularPrism(): size and UV mapping must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -774,7 +782,7 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::TriangularPrism(): Every size component must be positive after conversion to float");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -857,7 +865,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_size))
 			|| (not IsFinite(uvMapping)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Stairs(): size and UV mapping must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -866,7 +874,7 @@ namespace s3d
 			|| (size.z <= 0.0f)
 			|| (steps == 0))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Stairs(): Every size component and the step count must be positive");
 		}
 
 		size_t vertexCount;
@@ -877,7 +885,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(steps), 8, triangleCount))
 			|| (not CheckedAdd(triangleCount, 4, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Stairs(): The generated mesh exceeds the supported size");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -984,7 +992,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_baseSizeXZ))
 			|| (not IsFloatRepresentable(_height)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Pyramid(): baseSizeXZ and height must be finite and float-representable");
 		}
 
 		const Float2 baseSizeXZ = _baseSizeXZ;
@@ -993,7 +1001,7 @@ namespace s3d
 			|| (baseSizeXZ.y <= 0.0f)
 			|| (height <= 0.0f))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Pyramid(): Every base size component and height must be positive after conversion to float");
 		}
 
 		const float halfX = (baseSizeXZ.x * 0.5f);
@@ -1127,7 +1135,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_height))
 			|| (not IsFinite(uvMapping)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::RectangularFrustum(): The sizes, height, and UV mapping must be finite and float-representable");
 		}
 
 		const Float2 bottomSizeXZ = _bottomSizeXZ;
@@ -1139,7 +1147,7 @@ namespace s3d
 			|| (topSizeXZ.y <= 0.0f)
 			|| (height <= 0.0f))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::RectangularFrustum(): Every size component and height must be positive after conversion to float");
 		}
 
 		if (bottomSizeXZ == topSizeXZ)
@@ -1262,13 +1270,13 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Tetrahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Tetrahedron(): radius must be positive after conversion to float");
 		}
 
 		constexpr std::array<Float3, 4> Vertices =
@@ -1290,13 +1298,13 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Octahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Octahedron(): radius must be positive after conversion to float");
 		}
 
 		constexpr std::array<Float3, 6> Vertices =
@@ -1321,13 +1329,13 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Icosahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Icosahedron(): radius must be positive after conversion to float");
 		}
 
 		return BuildTriangleFacedPolyhedron(
@@ -1341,13 +1349,13 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Dodecahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Dodecahedron(): radius must be positive after conversion to float");
 		}
 
 		const DodecahedronData& data = GetDodecahedronData();
@@ -1421,7 +1429,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_radius))
 			|| (not IsFloatRepresentable(_cylinderHeight)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Capsule(): radius and cylinderHeight must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
@@ -1431,14 +1439,14 @@ namespace s3d
 			|| (slices < 3)
 			|| (hemisphereStacks < 1))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Capsule(): The radius, cylinder height, slice count, or hemisphere stack count is invalid");
 		}
 
 		if (cylinderHeight == 0.0f)
 		{
 			if ((std::numeric_limits<uint32>::max() / 2) < hemisphereStacks)
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Capsule(): hemisphereStacks exceed the supported range for a zero-length cylinder");
 			}
 
 			return UVSphere(radius, slices, (hemisphereStacks * 2));
@@ -1460,7 +1468,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
 			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Capsule(): The generated mesh exceeds the supported size");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -1618,7 +1626,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvScale))
 			|| (not IsFloatRepresentable(_uvOffset)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Grid()/Plane(): sizeXZ and the UV transform must be finite and float-representable");
 		}
 
 		const Float2 sizeXZ = _sizeXZ;
@@ -1629,7 +1637,7 @@ namespace s3d
 			|| (segmentsX == 0)
 			|| (segmentsZ == 0))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Grid()/Plane(): Every size component and segment count must be positive");
 		}
 
 		size_t columnCount;
@@ -1645,7 +1653,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(segmentsX), static_cast<size_t>(segmentsZ), cellCount))
 			|| (not CheckedMultiply(cellCount, 2, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -1709,7 +1717,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_majorRadius))
 			|| (not IsFloatRepresentable(_tubeRadius)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Torus(): majorRadius and tubeRadius must be finite and float-representable");
 		}
 
 		const float majorRadius = static_cast<float>(_majorRadius);
@@ -1720,7 +1728,7 @@ namespace s3d
 			|| (ringSegments < 3)
 			|| (tubeSegments < 3))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Torus(): The radii or segment counts are invalid");
 		}
 
 		size_t ringStride;
@@ -1736,7 +1744,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(ringSegments), static_cast<size_t>(tubeSegments), quadCount))
 			|| (not CheckedMultiply(quadCount, 2, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Torus(): The generated mesh exceeds the supported size");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -1800,7 +1808,7 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::UVSphere(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
@@ -1808,7 +1816,7 @@ namespace s3d
 			|| (slices < 3)
 			|| (stacks < 2))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::UVSphere(): The radius, slice count, or stack count is invalid");
 		}
 
 		const size_t interiorRingCount = (static_cast<size_t>(stacks) - 1);
@@ -1826,7 +1834,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
 			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::UVSphere(): The generated mesh exceeds the supported size");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -1941,7 +1949,7 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Hemisphere(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
@@ -1949,7 +1957,7 @@ namespace s3d
 			|| (slices < 3)
 			|| (stacks < 1))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Hemisphere(): The radius, slice count, or stack count is invalid");
 		}
 
 		size_t ringStride;
@@ -1966,13 +1974,13 @@ namespace s3d
 			|| (not CheckedAdd(static_cast<size_t>(slices), ringVertexCount, surfaceVertexCount))
 			|| (not CheckedMultiply(static_cast<size_t>(stacks), 2, twiceStackCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Hemisphere(): The surface dimensions exceed the supported range");
 		}
 
 		triangleFactor = (twiceStackCount - 1);
 		if (not CheckedMultiply(static_cast<size_t>(slices), triangleFactor, surfaceTriangleCount))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Hemisphere(): The surface triangle count exceeds the supported range");
 		}
 
 		vertexCount = surfaceVertexCount;
@@ -1984,13 +1992,13 @@ namespace s3d
 				|| (not CheckedAdd(vertexCount, bottomVertexCount, vertexCount))
 				|| (not CheckedAdd(triangleCount, static_cast<size_t>(slices), triangleCount)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Hemisphere(): The closed-bottom mesh exceeds the supported size");
 			}
 		}
 
 		if (Mesh3D::MaxVertexCount < vertexCount)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Hemisphere(): The generated vertex count exceeds the supported range");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -2125,7 +2133,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_innerRadius))
 			|| (not IsFloatRepresentable(_outerRadius)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Annulus()/Disc(): The radii must be finite and float-representable");
 		}
 
 		const float innerRadius = static_cast<float>(_innerRadius);
@@ -2134,7 +2142,7 @@ namespace s3d
 			|| (outerRadius <= innerRadius)
 			|| (segments < 3))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Annulus()/Disc(): The radii or segment count is invalid");
 		}
 
 		const bool isDisc = (innerRadius == 0.0f);
@@ -2145,7 +2153,7 @@ namespace s3d
 		{
 			if (not CheckedAdd(static_cast<size_t>(segments), 1, vertexCount))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Disc(): The generated vertex count exceeds the supported range");
 			}
 
 			triangleCount = segments;
@@ -2155,13 +2163,13 @@ namespace s3d
 			if ((not CheckedMultiply(static_cast<size_t>(segments), 2, vertexCount))
 				|| (not CheckedMultiply(static_cast<size_t>(segments), 2, triangleCount)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Annulus(): The generated mesh exceeds the supported size");
 			}
 		}
 
 		if (Mesh3D::MaxVertexCount < vertexCount)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Annulus()/Disc(): The generated vertex count exceeds the supported range");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -2248,7 +2256,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_outerRadius))
 			|| (not IsFloatRepresentable(_height)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::HollowCylinder(): The radii and height must be finite and float-representable");
 		}
 
 		const float innerRadius = static_cast<float>(_innerRadius);
@@ -2259,7 +2267,7 @@ namespace s3d
 			|| (height <= 0.0f)
 			|| (segments < 3))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::HollowCylinder(): The radii, height, or segment count is invalid");
 		}
 
 		size_t ringStride;
@@ -2271,7 +2279,7 @@ namespace s3d
 			|| (Mesh3D::MaxVertexCount < vertexCount)
 			|| (not CheckedMultiply(static_cast<size_t>(segments), 8, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::HollowCylinder(): The generated mesh exceeds the supported size");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };
@@ -2412,7 +2420,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_topRadius))
 			|| (not IsFloatRepresentable(_height)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii and height must be finite and float-representable");
 		}
 
 		const float bottomRadius = static_cast<float>(_bottomRadius);
@@ -2423,7 +2431,7 @@ namespace s3d
 			|| (height <= 0.0f)
 			|| (segments < 3))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii, height, or segment count is invalid");
 		}
 
 		const bool isCone = (topRadius == 0.0f);
@@ -2433,7 +2441,7 @@ namespace s3d
 
 		if (not CheckedAdd(static_cast<size_t>(segments), 1, ringStride))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): segments exceed the supported range");
 		}
 
 		if (isCone)
@@ -2443,7 +2451,7 @@ namespace s3d
 				|| (not CheckedAdd(scaledSegments, 2, vertexCount))
 				|| (not CheckedMultiply(static_cast<size_t>(segments), 2, triangleCount)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Cone(): The generated mesh exceeds the supported size");
 			}
 		}
 		else
@@ -2451,13 +2459,13 @@ namespace s3d
 			if ((not CheckedMultiply(ringStride, 4, vertexCount))
 				|| (not CheckedMultiply(static_cast<size_t>(segments), 4, triangleCount)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::ConicalFrustum()/Cylinder(): The generated mesh exceeds the supported size");
 			}
 		}
 
 		if (Mesh3D::MaxVertexCount < vertexCount)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The generated vertex count exceeds the supported range");
 		}
 
 		Mesh3D mesh{ vertexCount, triangleCount };

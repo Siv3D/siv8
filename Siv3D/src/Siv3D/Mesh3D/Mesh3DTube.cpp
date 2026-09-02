@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <algorithm>
@@ -20,6 +21,13 @@ namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static Mesh3D GenerationFailed(const char* const message)
+		{
+			LOG_FAIL(message);
+			return{};
+		}
+
 		[[nodiscard]]
 		static bool IsFloatRepresentable(const double value) noexcept
 		{
@@ -410,13 +418,13 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvScale))
 			|| (not IsFloatRepresentable(_uvOffset)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Tube(): The path, radius, side count, or UV transform is invalid");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Tube(): radius must be positive after conversion to float");
 		}
 
 		size_t ringStride;
@@ -431,13 +439,13 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(sides), 2, twiceSides))
 			|| (not CheckedMultiply(path.size(), twiceSides, triangleCount)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Tube(): The generated mesh exceeds the supported size");
 		}
 
 		PathData pathData;
 		if (not MakePathData(path, radius, nullptr, pathData))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Tube(): The path is invalid or cannot produce stable frames");
 		}
 
 		const auto& points = pathData.points;
@@ -456,7 +464,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(sideV1))
 			|| (not IsFloatRepresentable(capV1)))
 		{
-			return{};
+			return GenerationFailed("Mesh3D::Tube(): The generated UV coordinates exceed the float range");
 		}
 
 		Array<CircleSample> circle(ringStride);
@@ -491,7 +499,7 @@ namespace s3d
 				Float3 position;
 				if (not ToFloat3((center + (normal * radius)), position))
 				{
-					return{};
+					return GenerationFailed("Mesh3D::Tube(): A generated side vertex exceeds the float range");
 				}
 
 				mesh.vertices[ringBase + sideIndex] = Vertex3D{
@@ -560,7 +568,7 @@ namespace s3d
 				Float3 position;
 				if (not ToFloat3((Vec3{ points[pathIndex] } + (radial * radius)), position))
 				{
-					return{};
+					return GenerationFailed("Mesh3D::Tube(): A generated cap vertex exceeds the float range");
 				}
 
 				mesh.vertices[capBase + 1 + sideIndex] = Vertex3D{
@@ -607,14 +615,14 @@ namespace s3d
 				|| (not IsFloatRepresentable(_uvScale))
 				|| (not IsFloatRepresentable(_uvOffset)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The cross section, path, or UV transform is invalid");
 			}
 
 			const auto& capVertices = crossSection.vertices();
 			const auto& capIndices = crossSection.indices();
 			if (not ValidateSweepCap(capVertices, capIndices))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The cross-section cap triangulation is invalid");
 			}
 
 			size_t edgeCount = crossSection.outer().size();
@@ -622,27 +630,27 @@ namespace s3d
 			{
 				if (not CheckedAdd(edgeCount, inner.size(), edgeCount))
 				{
-					return{};
+					return GenerationFailed("Mesh3D::Sweep(): The cross-section edge count exceeds the supported range");
 				}
 			}
 
 			size_t ringCount;
 			if (not CheckedAdd(crossSection.inners().size(), 1, ringCount))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The cross-section ring count exceeds the supported range");
 			}
 
 			Array<double> ringPerimeters(ringCount);
 			if (not ValidateSweepRing(crossSection.outer(), true, ringPerimeters[0]))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The cross-section outer ring is invalid");
 			}
 
 			for (size_t i = 0; i < crossSection.inners().size(); ++i)
 			{
 				if (not ValidateSweepRing(crossSection.inners()[i], false, ringPerimeters[i + 1]))
 				{
-					return{};
+					return GenerationFailed("Mesh3D::Sweep(): A cross-section inner ring is invalid");
 				}
 			}
 
@@ -667,7 +675,7 @@ namespace s3d
 				|| (height <= 0.0)
 				|| (not IsFloatRepresentable(maxDistanceFromPath)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The cross-section bounds or distance from the path is invalid");
 			}
 
 			size_t capVertexCount;
@@ -689,13 +697,13 @@ namespace s3d
 				|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
 				|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The generated mesh exceeds the supported size");
 			}
 
 			PathData pathData;
 			if (not MakePathData(path, maxDistanceFromPath, initialNormal, pathData))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The path or initial normal is invalid, or stable frames cannot be produced");
 			}
 
 			const double sideU0 = _uvOffset.x;
@@ -710,7 +718,7 @@ namespace s3d
 				|| (not IsFloatRepresentable(sideV1))
 				|| (not IsFloatRepresentable(capV1)))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): The generated UV coordinates exceed the float range");
 			}
 
 			const Float2 uvScale = _uvScale;
@@ -744,7 +752,7 @@ namespace s3d
 						+ (frame.normal * source.x)
 						+ (frame.binormal * source.y)), position))
 					{
-						return{};
+						return GenerationFailed("Mesh3D::Sweep(): A generated cap vertex exceeds the float range");
 					}
 
 					const float u = static_cast<float>(
@@ -860,14 +868,14 @@ namespace s3d
 
 			if (not writeRing(crossSection.outer(), ringPerimeters[0]))
 			{
-				return{};
+				return GenerationFailed("Mesh3D::Sweep(): A generated outer-ring vertex exceeds the float range");
 			}
 
 			for (size_t i = 0; i < crossSection.inners().size(); ++i)
 			{
 				if (not writeRing(crossSection.inners()[i], ringPerimeters[i + 1]))
 				{
-					return{};
+					return GenerationFailed("Mesh3D::Sweep(): A generated inner-ring vertex exceeds the float range");
 				}
 			}
 
