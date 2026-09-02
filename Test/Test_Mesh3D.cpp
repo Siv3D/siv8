@@ -85,6 +85,88 @@ namespace
 	}
 }
 
+TEST_CASE("Mesh3D constructors")
+{
+	SUBCASE("Counts")
+	{
+		const Mesh3D mesh{ 3, 2 };
+		CHECK_EQ(mesh.vertexCount(), size_t{ 3 });
+		CHECK_EQ(mesh.triangleCount(), size_t{ 2 });
+	}
+
+	SUBCASE("Arrays")
+	{
+		const Array<Vertex3D> vertices{ MakeVertex(0.0f), MakeVertex(1.0f), MakeVertex(2.0f) };
+		const Array<TriangleIndex32> indices{ TriangleIndex32{ 0, 1, 2 } };
+		const Mesh3D mesh{ vertices, indices };
+
+		REQUIRE_EQ(mesh.vertexCount(), vertices.size());
+		REQUIRE_EQ(mesh.triangleCount(), indices.size());
+		for (size_t i = 0; i < vertices.size(); ++i)
+		{
+			CHECK_EQ(mesh.vertices[i].pos, vertices[i].pos);
+			CHECK_EQ(mesh.vertices[i].normal, vertices[i].normal);
+			CHECK_EQ(mesh.vertices[i].tex, vertices[i].tex);
+			CHECK_EQ(mesh.vertices[i].tangent, vertices[i].tangent);
+		}
+		CheckTriangle(mesh.indices[0], 0, 1, 2);
+	}
+
+	SUBCASE("Spans")
+	{
+		const std::array vertices{ MakeVertex(0.0f), MakeVertex(1.0f), MakeVertex(2.0f) };
+		const std::array indices{ TriangleIndex32{ 0, 1, 2 } };
+		const Mesh3D mesh{ std::span<const Vertex3D>{ vertices }, std::span<const TriangleIndex32>{ indices } };
+
+		CHECK_EQ(mesh.vertexCount(), vertices.size());
+		CHECK_EQ(mesh.triangleCount(), indices.size());
+		CHECK_EQ(mesh.vertices[2].pos, vertices[2].pos);
+		CHECK_EQ(mesh.vertices[2].normal, vertices[2].normal);
+		CHECK_EQ(mesh.vertices[2].tex, vertices[2].tex);
+		CHECK_EQ(mesh.vertices[2].tangent, vertices[2].tangent);
+		CheckTriangle(mesh.indices[0], 0, 1, 2);
+	}
+
+	SUBCASE("Too many vertices")
+	{
+		if constexpr (Mesh3D::MaxVertexCount < std::numeric_limits<size_t>::max())
+		{
+			const Mesh3D mesh{ (Mesh3D::MaxVertexCount + 1), 1 };
+			CHECK(mesh.vertices.isEmpty());
+			CHECK(mesh.indices.isEmpty());
+		}
+	}
+}
+
+TEST_CASE("Mesh3D::reserve and clear")
+{
+	Mesh3D mesh{
+		{ MakeVertex(0.0f), MakeVertex(1.0f), MakeVertex(2.0f) },
+		{ TriangleIndex32{ 0, 1, 2 } }
+	};
+
+	mesh.reserve(16, 8);
+	CHECK(mesh.vertices.capacity() >= 16);
+	CHECK(mesh.indices.capacity() >= 8);
+	CHECK_EQ(mesh.vertexCount(), size_t{ 3 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 1 });
+
+	const size_t vertexCapacity = mesh.vertices.capacity();
+	const size_t triangleCapacity = mesh.indices.capacity();
+	mesh.clear();
+	CHECK(mesh.vertices.isEmpty());
+	CHECK(mesh.indices.isEmpty());
+	CHECK_EQ(mesh.vertices.capacity(), vertexCapacity);
+	CHECK_EQ(mesh.indices.capacity(), triangleCapacity);
+
+	if constexpr (Mesh3D::MaxVertexCount < std::numeric_limits<size_t>::max())
+	{
+		mesh.reserve((Mesh3D::MaxVertexCount + 1), 32);
+		CHECK_EQ(mesh.vertices.capacity(), vertexCapacity);
+		CHECK_EQ(mesh.indices.capacity(), triangleCapacity);
+	}
+}
+
 TEST_CASE("Mesh3D::validate")
 {
 	CHECK(Mesh3D{}.validate());
@@ -229,6 +311,32 @@ TEST_CASE("Mesh3D::append with transform")
 		CHECK(actual.append(Mesh3D{}, matrix));
 		CheckMesh(actual, original);
 	}
+}
+
+TEST_CASE("Mesh3D::transformUV")
+{
+	const Mesh3D source{
+		{ MakeVertex(0.0f), MakeVertex(1.0f), MakeVertex(2.0f) },
+		{ TriangleIndex32{ 0, 1, 2 } }
+	};
+	Mesh3D mesh = source;
+	const Mat3x2 transform{ 2.0f, 0.0f, 0.0f, 3.0f, 4.0f, -5.0f };
+
+	CHECK_EQ(&mesh.transformUV(transform), &mesh);
+	for (size_t i = 0; i < mesh.vertices.size(); ++i)
+	{
+		CHECK_EQ(mesh.vertices[i].pos, source.vertices[i].pos);
+		CHECK_EQ(mesh.vertices[i].normal, source.vertices[i].normal);
+		CHECK_EQ(mesh.vertices[i].tex, transform.transformPoint(source.vertices[i].tex));
+		CHECK_EQ(mesh.vertices[i].tangent, source.vertices[i].tangent);
+	}
+	REQUIRE_EQ(mesh.indices.size(), source.indices.size());
+	CheckTriangle(mesh.indices[0], source.indices[0].i0, source.indices[0].i1, source.indices[0].i2);
+
+	Mesh3D empty;
+	CHECK_EQ(&empty.transformUV(transform), &empty);
+	CHECK(empty.vertices.isEmpty());
+	CHECK(empty.indices.isEmpty());
 }
 
 TEST_CASE("Mesh3D::reverseWinding")

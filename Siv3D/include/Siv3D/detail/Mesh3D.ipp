@@ -19,17 +19,38 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Mesh3D::Mesh3D(size_t vertexCount, size_t triangleCount)
-		: vertices(vertexCount)
-		, indices(triangleCount) {}
+	inline Mesh3D::Mesh3D(const size_t vertexCount, const size_t triangleCount)
+	{
+		if (MaxVertexCount < vertexCount)
+		{
+			return;
+		}
+
+		vertices.resize(vertexCount);
+		indices.resize(triangleCount);
+	}
 
 	inline Mesh3D::Mesh3D(Array<Vertex3D> _vertices, Array<TriangleIndex32> _indices)
-		: vertices(std::move(_vertices))
-		, indices(std::move(_indices)) {}
+	{
+		if (MaxVertexCount < _vertices.size())
+		{
+			return;
+		}
 
-	inline Mesh3D::Mesh3D(std::span<const Vertex3D> _vertices, std::span<const TriangleIndex32> _indices)
-		: vertices(_vertices.begin(), _vertices.end())
-		, indices(_indices.begin(), _indices.end()) {}
+		vertices = std::move(_vertices);
+		indices = std::move(_indices);
+	}
+
+	inline Mesh3D::Mesh3D(const std::span<const Vertex3D> _vertices, const std::span<const TriangleIndex32> _indices)
+	{
+		if (MaxVertexCount < _vertices.size())
+		{
+			return;
+		}
+
+		vertices.assign(_vertices.begin(), _vertices.end());
+		indices.assign(_indices.begin(), _indices.end());
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -62,6 +83,35 @@ namespace s3d
 	inline size_t Mesh3D::triangleCount() const noexcept
 	{
 		return indices.size();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reserve
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void Mesh3D::reserve(const size_t vertexCapacity, const size_t triangleCapacity)
+	{
+		if (MaxVertexCount < vertexCapacity)
+		{
+			return;
+		}
+
+		vertices.reserve(vertexCapacity);
+		indices.reserve(triangleCapacity);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clear
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void Mesh3D::clear() noexcept
+	{
+		vertices.clear();
+		indices.clear();
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -28,6 +28,7 @@
 namespace s3d
 {
 	class Polygon;
+	struct Mat3x2;
 	struct Mat4x4;
 	struct Quaternion;
 
@@ -70,18 +71,21 @@ namespace s3d
 		/// @brief 指定した数の頂点と三角形を持つ 3D メッシュを作成します。
 		/// @param vertexCount 頂点数
 		/// @param triangleCount 三角形数
+		/// @remark `vertexCount` が `MaxVertexCount` を超える場合は空の 3D メッシュを作成します。
 		[[nodiscard]]
 		Mesh3D(size_t vertexCount, size_t triangleCount);
 
 		/// @brief 頂点配列と三角形インデックス配列から 3D メッシュを作成します。
 		/// @param _vertices 頂点配列
 		/// @param _indices 三角形インデックス配列
+		/// @remark `_vertices` の要素数が `MaxVertexCount` を超える場合は空の 3D メッシュを作成します。
 		[[nodiscard]]
 		Mesh3D(Array<Vertex3D> _vertices, Array<TriangleIndex32> _indices);
 		
 		/// @brief 頂点と三角形インデックスの範囲から 3D メッシュを作成します。
 		/// @param _vertices コピーする頂点の範囲
 		/// @param _indices コピーする三角形インデックスの範囲
+		/// @remark `_vertices` の要素数が `MaxVertexCount` を超える場合は空の 3D メッシュを作成します。
 		[[nodiscard]]
 		Mesh3D(std::span<const Vertex3D> _vertices, std::span<const TriangleIndex32> _indices);
 
@@ -847,6 +851,28 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	reserve
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した要素数まで再確保なしで格納できるよう、頂点配列と三角形インデックス配列の容量を確保します。
+		/// @param vertexCapacity 確保する頂点容量
+		/// @param triangleCapacity 確保する三角形容量
+		/// @remark `vertexCapacity` が `MaxVertexCount` を超える場合、容量は変更されません。
+		void reserve(size_t vertexCapacity, size_t triangleCapacity);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	clear
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点と三角形を削除し、空の 3D メッシュにします。
+		/// @remark 頂点配列と三角形インデックス配列の容量は変更されません。
+		void clear() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	saveOBJ
 		//
 		////////////////////////////////////////////////////////////////
@@ -933,6 +959,18 @@ namespace s3d
 		/// @remark 変換の線形部分の行列式が負の場合、追加する頂点の接線の `w` 成分が反転しますが、三角形の巻き順は変更されません。
 		[[nodiscard]]
 		bool append(const Mesh3D& mesh, const Mat4x4& matrix);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transformUV
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点の UV 座標を変換します。
+		/// @param transform UV 座標に適用する変換行列
+		/// @return *this
+		/// @remark 各頂点の現在の UV 座標に `transform` が適用されます。その他の頂点属性と三角形インデックスは変更されません。
+		Mesh3D& transformUV(const Mat3x2& transform) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

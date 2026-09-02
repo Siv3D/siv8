@@ -11,6 +11,7 @@
 
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Mat4x4.hpp>
 # include <Siv3D/Quaternion.hpp>
 # include "Mesh3DNormals.hpp"
@@ -213,6 +214,22 @@ namespace s3d
 		}
 
 		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	transformUV
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D& Mesh3D::transformUV(const Mat3x2& transform) noexcept
+	{
+		for (auto& vertex : vertices)
+		{
+			vertex.tex = transform.transformPoint(vertex.tex);
+		}
+
+		return *this;
 	}
 
 	////////////////////////////////////////////////////////////////
