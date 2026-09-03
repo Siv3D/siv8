@@ -515,6 +515,439 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addBoxShell
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const Vec3 offset,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, offset, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, offset, rotation, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const Mat4x4& transform,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, transform, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, thickness, BoxUVMapping{}, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const Vec3 offset,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, thickness, BoxUVMapping{}, offset, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, thickness, BoxUVMapping{}, offset, rotation, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const Mat4x4& transform,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, thickness, BoxUVMapping{}, transform, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const BoxUVMapping& uvMapping,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const BoxUVMapping& uvMapping,
+		const Vec3 offset,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, offset, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const BoxUVMapping& uvMapping,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, offset, rotation, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const BoxUVMapping& uvMapping,
+		const Mat4x4& transform,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, transform, openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 _outerSize,
+		const Vec3 _thickness,
+		const BoxUVMapping& uvMapping,
+		const BoxFace openFaces)
+	{
+		if ((not IsFloatRepresentable(_outerSize))
+			|| (not IsFloatRepresentable(_thickness)))
+		{
+			return GenerationFailed<bool>("Mesh3D::BoxShell(): outerSize and thickness must be finite and float-representable");
+		}
+
+		constexpr uint8 ValidFaceBits = static_cast<uint8>(BoxFace::All);
+		const uint8 openFaceBits = static_cast<uint8>(openFaces);
+		if (openFaceBits & ~ValidFaceBits)
+		{
+			return GenerationFailed<bool>("Mesh3D::BoxShell(): openFaces contains unsupported bits");
+		}
+
+		const Float3 outerSize = _outerSize;
+		const Float3 thickness = _thickness;
+		const Float3 outerHalf = (outerSize * 0.5f);
+		if ((outerSize.x <= 0.0f) || (outerSize.y <= 0.0f) || (outerSize.z <= 0.0f)
+			|| (thickness.x <= 0.0f) || (thickness.y <= 0.0f) || (thickness.z <= 0.0f)
+			|| (outerHalf.x <= thickness.x) || (outerHalf.y <= thickness.y) || (outerHalf.z <= thickness.z))
+		{
+			return GenerationFailed<bool>("Mesh3D::BoxShell(): Every size and thickness component must remain positive, and thickness must be smaller than half the corresponding size after conversion to float");
+		}
+
+		struct ShellFace
+		{
+			BoxFace mask;
+			size_t axis;
+			float sign;
+		};
+
+		constexpr std::array<ShellFace, 6> Faces
+		{{
+			{ BoxFace::NegativeX, 0, -1.0f },
+			{ BoxFace::PositiveX, 0, 1.0f },
+			{ BoxFace::NegativeY, 1, -1.0f },
+			{ BoxFace::PositiveY, 1, 1.0f },
+			{ BoxFace::NegativeZ, 2, -1.0f },
+			{ BoxFace::PositiveZ, 2, 1.0f },
+		}};
+
+		const auto isOpen = [openFaces](const BoxFace face) noexcept
+		{
+			return static_cast<bool>(openFaces & face);
+		};
+
+		const auto oppositeFace = [](const BoxFace face) noexcept
+		{
+			switch (face)
+			{
+			case BoxFace::NegativeX: return BoxFace::PositiveX;
+			case BoxFace::PositiveX: return BoxFace::NegativeX;
+			case BoxFace::NegativeY: return BoxFace::PositiveY;
+			case BoxFace::PositiveY: return BoxFace::NegativeY;
+			case BoxFace::NegativeZ: return BoxFace::PositiveZ;
+			default: return BoxFace::NegativeZ;
+			}
+		};
+
+		const auto faceForAxis = [](const size_t axis, const bool positive) noexcept
+		{
+			if (axis == 0) return (positive ? BoxFace::PositiveX : BoxFace::NegativeX);
+			if (axis == 1) return (positive ? BoxFace::PositiveY : BoxFace::NegativeY);
+			return (positive ? BoxFace::PositiveZ : BoxFace::NegativeZ);
+		};
+
+		size_t quadCount = 0;
+		uint8 requiredUVFaceBits = 0;
+		for (const ShellFace& face : Faces)
+		{
+			if (isOpen(face.mask))
+			{
+				bool hasRim = false;
+				for (const ShellFace& adjacent : Faces)
+				{
+					if ((adjacent.axis != face.axis) && (not isOpen(adjacent.mask)))
+					{
+						++quadCount;
+						hasRim = true;
+					}
+				}
+				if (hasRim)
+				{
+					requiredUVFaceBits |= static_cast<uint8>(face.mask);
+				}
+			}
+			else
+			{
+				quadCount += 2;
+				requiredUVFaceBits |= static_cast<uint8>(face.mask);
+				requiredUVFaceBits |= static_cast<uint8>(oppositeFace(face.mask));
+			}
+		}
+
+		const auto getUVRect = [&uvMapping](const BoxFace face) -> const FloatRect&
+		{
+			switch (face)
+			{
+			case BoxFace::NegativeX: return uvMapping.negativeX;
+			case BoxFace::PositiveX: return uvMapping.positiveX;
+			case BoxFace::NegativeY: return uvMapping.negativeY;
+			case BoxFace::PositiveY: return uvMapping.positiveY;
+			case BoxFace::NegativeZ: return uvMapping.negativeZ;
+			default: return uvMapping.positiveZ;
+			}
+		};
+
+		for (const ShellFace& face : Faces)
+		{
+			if ((requiredUVFaceBits & static_cast<uint8>(face.mask))
+				&& (not IsFinite(getUVRect(face.mask))))
+			{
+				return GenerationFailed<bool>("Mesh3D::BoxShell(): Every used UV rectangle must be finite");
+			}
+		}
+
+		size_t addedVertexCount;
+		size_t addedTriangleCount;
+		if ((not CheckedMultiply(quadCount, 4, addedVertexCount))
+			|| (not CheckedMultiply(quadCount, 2, addedTriangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3D::BoxShell(): The generated mesh exceeds the supported size");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(m_mesh, addedVertexCount, addedTriangleCount, vertexOffset, triangleOffset))
+		{
+			return GenerationFailed<bool>("Mesh3D::BoxShell(): The generated mesh exceeds the supported size");
+		}
+
+		const Float3 innerHalf = (outerHalf - thickness);
+		const auto projectUV = [outerSize](const Float3 position, const BoxFace projection) noexcept
+		{
+			switch (projection)
+			{
+			case BoxFace::NegativeX:
+				return Float2{ (0.5f - (position.z / outerSize.z)), (0.5f - (position.y / outerSize.y)) };
+			case BoxFace::PositiveX:
+				return Float2{ (0.5f + (position.z / outerSize.z)), (0.5f - (position.y / outerSize.y)) };
+			case BoxFace::NegativeY:
+				return Float2{ (0.5f + (position.x / outerSize.x)), (0.5f + (position.z / outerSize.z)) };
+			case BoxFace::PositiveY:
+				return Float2{ (0.5f + (position.x / outerSize.x)), (0.5f - (position.z / outerSize.z)) };
+			case BoxFace::PositiveZ:
+				return Float2{ (0.5f - (position.x / outerSize.x)), (0.5f - (position.y / outerSize.y)) };
+			default:
+				return Float2{ (0.5f + (position.x / outerSize.x)), (0.5f - (position.y / outerSize.y)) };
+			}
+		};
+
+		const auto normalForFace = [](const BoxFace face) noexcept
+		{
+			switch (face)
+			{
+			case BoxFace::NegativeX: return -Float3::UnitX();
+			case BoxFace::PositiveX: return Float3::UnitX();
+			case BoxFace::NegativeY: return -Float3::UnitY();
+			case BoxFace::PositiveY: return Float3::UnitY();
+			case BoxFace::NegativeZ: return -Float3::UnitZ();
+			default: return Float3::UnitZ();
+			}
+		};
+
+		const auto baseTangentForFace = [](const BoxFace face) noexcept
+		{
+			switch (face)
+			{
+			case BoxFace::NegativeX: return -Float3::UnitZ();
+			case BoxFace::PositiveX: return Float3::UnitZ();
+			case BoxFace::PositiveZ: return -Float3::UnitX();
+			default: return Float3::UnitX();
+			}
+		};
+
+		const auto makePosition = [](const size_t axis, const float coordinate,
+			const size_t pAxis, const float p, const size_t qAxis, const float q) noexcept
+		{
+			Float3 result{ 0.0f, 0.0f, 0.0f };
+			result.getPointer()[axis] = coordinate;
+			result.getPointer()[pAxis] = p;
+			result.getPointer()[qAxis] = q;
+			return result;
+		};
+
+		const auto writeQuad = [&](const size_t axis, const float coordinate,
+			const float p0, const float p1, const float q0, const float q1,
+			const BoxFace normalFace)
+		{
+			const size_t pAxis = ((axis + 1) % 3);
+			const size_t qAxis = ((axis + 2) % 3);
+			std::array<Float3, 4> positions
+			{{
+				makePosition(axis, coordinate, pAxis, p0, qAxis, q0),
+				makePosition(axis, coordinate, pAxis, p1, qAxis, q0),
+				makePosition(axis, coordinate, pAxis, p0, qAxis, q1),
+				makePosition(axis, coordinate, pAxis, p1, qAxis, q1),
+			}};
+			const Float3 normal = normalForFace(normalFace);
+			if ((positions[1] - positions[0]).cross(positions[2] - positions[0]).dot(normal) < 0.0f)
+			{
+				std::swap(positions[0], positions[1]);
+				std::swap(positions[2], positions[3]);
+			}
+
+			std::array<Float2, 4> projectedUVs;
+			for (size_t i = 0; i < positions.size(); ++i)
+			{
+				projectedUVs[i] = projectUV(positions[i], normalFace);
+			}
+
+			WriteProjectedQuad(m_mesh, vertexOffset, triangleOffset,
+				positions, projectedUVs, normal, baseTangentForFace(normalFace), getUVRect(normalFace));
+		};
+
+		for (const ShellFace& face : Faces)
+		{
+			const size_t pAxis = ((face.axis + 1) % 3);
+			const size_t qAxis = ((face.axis + 2) % 3);
+			const float pOuter = outerHalf.elem(pAxis);
+			const float qOuter = outerHalf.elem(qAxis);
+			const float pInner = innerHalf.elem(pAxis);
+			const float qInner = innerHalf.elem(qAxis);
+
+			if (not isOpen(face.mask))
+			{
+				writeQuad(face.axis, (face.sign * outerHalf.elem(face.axis)),
+					-pOuter, pOuter, -qOuter, qOuter, face.mask);
+
+				const float p0 = (isOpen(faceForAxis(pAxis, false)) ? -pOuter : -pInner);
+				const float p1 = (isOpen(faceForAxis(pAxis, true)) ? pOuter : pInner);
+				const float q0 = (isOpen(faceForAxis(qAxis, false)) ? -qOuter : -qInner);
+				const float q1 = (isOpen(faceForAxis(qAxis, true)) ? qOuter : qInner);
+				writeQuad(face.axis, (face.sign * innerHalf.elem(face.axis)),
+					p0, p1, q0, q1, oppositeFace(face.mask));
+				continue;
+			}
+
+			const bool negativeQClosed = (not isOpen(faceForAxis(qAxis, false)));
+			const bool positiveQClosed = (not isOpen(faceForAxis(qAxis, true)));
+			if (negativeQClosed)
+			{
+				writeQuad(face.axis, (face.sign * outerHalf.elem(face.axis)),
+					-pOuter, pOuter, -qOuter, -qInner, face.mask);
+			}
+			if (positiveQClosed)
+			{
+				writeQuad(face.axis, (face.sign * outerHalf.elem(face.axis)),
+					-pOuter, pOuter, qInner, qOuter, face.mask);
+			}
+
+			const float q0 = (negativeQClosed ? -qInner : -qOuter);
+			const float q1 = (positiveQClosed ? qInner : qOuter);
+			if (not isOpen(faceForAxis(pAxis, false)))
+			{
+				writeQuad(face.axis, (face.sign * outerHalf.elem(face.axis)),
+					-pOuter, -pInner, q0, q1, face.mask);
+			}
+			if (not isOpen(faceForAxis(pAxis, true)))
+			{
+				writeQuad(face.axis, (face.sign * outerHalf.elem(face.axis)),
+					pInner, pOuter, q0, q1, face.mask);
+			}
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const BoxUVMapping& uvMapping,
+		const Vec3 offset,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, thickness, uvMapping, Mat4x4::Translate(Float3{ offset }), openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const BoxUVMapping& uvMapping,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const BoxFace openFaces)
+	{
+		return addBoxShell(outerSize, thickness, uvMapping,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), openFaces);
+	}
+
+	bool Mesh3DBuilder::addBoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const BoxUVMapping& uvMapping,
+		const Mat4x4& transform,
+		const BoxFace openFaces)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addBoxShell(outerSize, thickness, uvMapping, openFaces))
+		{
+			return false;
+		}
+
+		if (vertexOffset < m_mesh.vertices.size())
+		{
+			TransformAddedVertices(m_mesh, vertexOffset, transform);
+		}
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addRoundedBox
 	//
 	////////////////////////////////////////////////////////////////

@@ -156,6 +156,150 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addBoxShell
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする、均一な厚みを持つ中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み。正の有限値で、`outerSize` の最小成分の半分未満である必要があります。
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark `openFaces == BoxFace::All` の場合、メッシュを変更せず true を返します。
+		bool addBoxShell(Vec3 outerSize = Vec3{ 1.0, 1.0, 1.0 }, double thickness = 0.1, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 平行移動した、均一な厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param offset 平行移動量
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, double thickness, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 回転および平行移動した、均一な厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, double thickness, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief アフィン変換を適用した、均一な厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param transform 適用するアフィン変換行列
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, double thickness, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 原点を中心とする、軸ごとの厚みを持つ中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み。各成分は正の有限値で、対応する `outerSize` 成分の半分未満である必要があります。
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark `openFaces == BoxFace::All` の場合、メッシュを変更せず true を返します。
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 平行移動した、軸ごとの厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param offset 平行移動量
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 回転および平行移動した、軸ごとの厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief アフィン変換を適用した、軸ごとの厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param transform 適用するアフィン変換行列
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、均一な厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動した均一な厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param offset 平行移動量
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動した均一な厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した均一な厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、軸ごとの厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動した軸ごとの厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param offset 平行移動量
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動した軸ごとの厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した軸ごとの厚みの中空直方体を追加します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addRoundedBox
 		//
 		////////////////////////////////////////////////////////////////

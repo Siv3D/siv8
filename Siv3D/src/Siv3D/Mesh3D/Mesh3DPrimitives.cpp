@@ -39,6 +39,54 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	BoxShell
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::BoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const BoxFace openFaces)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxShell(outerSize, thickness, openFaces);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::BoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const BoxFace openFaces)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxShell(outerSize, thickness, openFaces);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::BoxShell(
+		const Vec3 outerSize,
+		const double thickness,
+		const BoxUVMapping& uvMapping,
+		const BoxFace openFaces)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxShell(outerSize, thickness, uvMapping, openFaces);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::BoxShell(
+		const Vec3 outerSize,
+		const Vec3 thickness,
+		const BoxUVMapping& uvMapping,
+		const BoxFace openFaces)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxShell(outerSize, thickness, uvMapping, openFaces);
+		return std::move(builder).build();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	RoundedBox
 	//
 	////////////////////////////////////////////////////////////////

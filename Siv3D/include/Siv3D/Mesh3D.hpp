@@ -123,6 +123,66 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BoxShell
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする、均一な厚みを持つ中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み。正の有限値で、`outerSize` の最小成分の半分未満である必要があります。
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark 閉じた面には外面と内面を生成し、開口部には残る壁の厚みが見える縁面を生成します。内部面や重複面は生成しません。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		/// @remark `openFaces == BoxFace::All` の場合は空の 3D メッシュを返します。
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize = Vec3{ 1.0, 1.0, 1.0 },
+			double thickness = 0.1,
+			BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 原点を中心とする、軸ごとの厚みを持つ中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み。各成分は正の有限値で、対応する `outerSize` 成分の半分未満である必要があります。
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark 閉じた面には外面と内面を生成し、開口部には残る壁の厚みが見える縁面を生成します。内部面や重複面は生成しません。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		/// @remark `openFaces == BoxFace::All` の場合は空の 3D メッシュを返します。
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize,
+			Vec3 thickness,
+			BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、均一な厚みの中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数または使用する UV 矩形が不正な場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize,
+			double thickness,
+			const BoxUVMapping& uvMapping,
+			BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、軸ごとの厚みの中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数または使用する UV 矩形が不正な場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize,
+			Vec3 thickness,
+			const BoxUVMapping& uvMapping,
+			BoxFace openFaces = BoxFace::None_);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	RoundedBox
 		//
 		////////////////////////////////////////////////////////////////
