@@ -826,6 +826,207 @@ TEST_CASE("Mesh3DBuilder::addTorus")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addUVSphere")
+{
+	constexpr double Radius = 2.0;
+	constexpr uint32 Slices = 8;
+	constexpr uint32 Stacks = 4;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addUVSphere(Radius, Slices, Stacks));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::UVSphere(Radius, Slices, Stacks)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addUVSphere(Radius, Slices, Stacks, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::UVSphere(Radius, Slices, Stacks).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix transform")
+	{
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateX(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addUVSphere(Radius, Slices, Stacks, transform));
+
+		const Mesh3D expected = Mesh3D::UVSphere(Radius, Slices, Stacks).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addUVSphere(0.0, Slices, Stacks));
+		CHECK_FALSE(builder.addUVSphere(Radius, 2, Stacks));
+		CHECK_FALSE(builder.addUVSphere(
+			Radius,
+			std::numeric_limits<uint32>::max(),
+			std::numeric_limits<uint32>::max()));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addHemisphere")
+{
+	constexpr double Radius = 2.0;
+	constexpr uint32 Slices = 8;
+	constexpr uint32 Stacks = 3;
+
+	SUBCASE("Appends open and closed hemispheres with index offsets")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addHemisphere(Radius, Slices, Stacks));
+		REQUIRE(builder.addHemisphere(
+			Radius, CloseBottom::Yes, Slices, Stacks));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::Hemisphere(Radius, Slices, Stacks)));
+		REQUIRE(expected.append(Mesh3D::Hemisphere(
+			Radius, CloseBottom::Yes, Slices, Stacks)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Open hemisphere offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addHemisphere(
+			Radius, Slices, Stacks, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Hemisphere(Radius, Slices, Stacks).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Closed hemisphere matrix transform")
+	{
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addHemisphere(
+			Radius, CloseBottom::Yes, Slices, Stacks, transform));
+
+		const Mesh3D expected = Mesh3D::Hemisphere(
+			Radius, CloseBottom::Yes, Slices, Stacks).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addHemisphere(0.0, Slices, Stacks));
+		CHECK_FALSE(builder.addHemisphere(Radius, 2, Stacks));
+		CHECK_FALSE(builder.addHemisphere(
+			Radius,
+			CloseBottom::Yes,
+			std::numeric_limits<uint32>::max(),
+			std::numeric_limits<uint32>::max()));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addCapsule")
+{
+	constexpr double Radius = 1.0;
+	constexpr double CylinderHeight = 2.0;
+	constexpr uint32 Slices = 8;
+	constexpr uint32 HemisphereStacks = 3;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addCapsule(
+			Radius, CylinderHeight, Slices, HemisphereStacks, offset));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(
+			Mesh3D::Capsule(Radius, CylinderHeight, Slices, HemisphereStacks),
+			Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addCapsule(
+			Radius, CylinderHeight, Slices, HemisphereStacks, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Capsule(
+			Radius, CylinderHeight, Slices, HemisphereStacks).transformed(
+				Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix transform")
+	{
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateX(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addCapsule(
+			Radius, CylinderHeight, Slices, HemisphereStacks, transform));
+
+		const Mesh3D expected = Mesh3D::Capsule(
+			Radius, CylinderHeight, Slices, HemisphereStacks).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Zero cylinder height delegates to UV sphere generation")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addCapsule(Radius, 0.0, Slices, HemisphereStacks));
+		Mesh3DTest::CheckMeshDataEqual(
+			builder.getMesh(),
+			Mesh3D::UVSphere(Radius, Slices, (HemisphereStacks * 2)));
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addCapsule(0.0, CylinderHeight, Slices, HemisphereStacks));
+		CHECK_FALSE(builder.addCapsule(Radius, -1.0, Slices, HemisphereStacks));
+		CHECK_FALSE(builder.addCapsule(
+			Radius,
+			CylinderHeight,
+			std::numeric_limits<uint32>::max(),
+			std::numeric_limits<uint32>::max()));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder storage")
 {
 	Mesh3DBuilder builder;

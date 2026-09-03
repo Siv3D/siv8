@@ -1066,6 +1066,160 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, const Mat4x4& transform);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addUVSphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする UV 球を追加します。
+		/// @param radius 球の半径
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。2 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addUVSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
+
+		/// @brief 平行移動した UV 球を追加します。
+		/// @param radius 球の半径
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addUVSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
+
+		/// @brief 回転および平行移動した UV 球を追加します。
+		/// @param radius 球の半径
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addUVSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した UV 球を追加します。
+		/// @param radius 球の半径
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addUVSphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addHemisphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸の正方向を向く、底面のない半球を追加します。
+		/// @param radius 半球の半径
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, uint32 slices = 32, uint32 stacks = 8);
+
+		/// @brief 平行移動した、底面のない半球を追加します。
+		/// @param radius 半球の半径
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
+
+		/// @brief 回転および平行移動した、底面のない半球を追加します。
+		/// @param radius 半球の半径
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した、底面のない半球を追加します。
+		/// @param radius 半球の半径
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
+
+		/// @brief Y 軸の正方向を向く半球を追加します。
+		/// @param radius 半球の半径
+		/// @param closeBottom 底面を閉じる場合は `CloseBottom::Yes`、底面を作成しない場合は `CloseBottom::No`
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
+
+		/// @brief 平行移動した半球を追加します。
+		/// @param radius 半球の半径
+		/// @param closeBottom 底面を閉じるか
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, Vec3 offset);
+
+		/// @brief 回転および平行移動した半球を追加します。
+		/// @param radius 半球の半径
+		/// @param closeBottom 底面を閉じるか
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した半球を追加します。
+		/// @param radius 半球の半径
+		/// @param closeBottom 底面を閉じるか
+		/// @param slices 経度方向の分割数
+		/// @param stacks 緯度方向の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCapsule
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びるカプセルを追加します。
+		/// @param radius カプセルの半径
+		/// @param cylinderHeight 2 つの半球の間にある円柱部分の高さ。0 以上である必要があります。
+		/// @param slices 円周方向の分割数。3 以上である必要があります。
+		/// @param hemisphereStacks 各半球の緯度方向の分割数。1 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCapsule(double radius, double cylinderHeight, uint32 slices = 32, uint32 hemisphereStacks = 8);
+
+		/// @brief 平行移動したカプセルを追加します。
+		/// @param radius カプセルの半径
+		/// @param cylinderHeight 円柱部分の高さ
+		/// @param slices 円周方向の分割数
+		/// @param hemisphereStacks 各半球の緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, Vec3 offset);
+
+		/// @brief 回転および平行移動したカプセルを追加します。
+		/// @param radius カプセルの半径
+		/// @param cylinderHeight 円柱部分の高さ
+		/// @param slices 円周方向の分割数
+		/// @param hemisphereStacks 各半球の緯度方向の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用したカプセルを追加します。
+		/// @param radius カプセルの半径
+		/// @param cylinderHeight 円柱部分の高さ
+		/// @param slices 円周方向の分割数
+		/// @param hemisphereStacks 各半球の緯度方向の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, const Mat4x4& transform);
+
 	private:
 
 		Mesh3D m_mesh;

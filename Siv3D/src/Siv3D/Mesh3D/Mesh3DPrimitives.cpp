@@ -11,22 +11,9 @@
 
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Mesh3DBuilder.hpp>
-# include <Siv3D/MathConstants.hpp>
-# include "Mesh3DCommon.hpp"
-# include <cmath>
-# include <limits>
 
 namespace s3d
 {
-	namespace
-	{
-		using Mesh3DDetail::CheckedAdd;
-		using Mesh3DDetail::CheckedMultiply;
-		using Mesh3DDetail::GenerationFailed;
-		using Mesh3DDetail::IsFloatRepresentable;
-		using CircleSample = Mesh3DDetail::CircleSample<float>;
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	Box
@@ -219,181 +206,14 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Mesh3D Mesh3D::Capsule(
-		const double _radius,
-		const double _cylinderHeight,
+		const double radius,
+		const double cylinderHeight,
 		const uint32 slices,
 		const uint32 hemisphereStacks)
 	{
-		if ((not IsFloatRepresentable(_radius))
-			|| (not IsFloatRepresentable(_cylinderHeight)))
-		{
-			return GenerationFailed("Mesh3D::Capsule(): radius and cylinderHeight must be finite and float-representable");
-		}
-
-		const float radius = static_cast<float>(_radius);
-		const float cylinderHeight = static_cast<float>(_cylinderHeight);
-		if ((radius <= 0.0f)
-			|| (cylinderHeight < 0.0f)
-			|| (slices < 3)
-			|| (hemisphereStacks < 1))
-		{
-			return GenerationFailed("Mesh3D::Capsule(): The radius, cylinder height, slice count, or hemisphere stack count is invalid");
-		}
-
-		if (cylinderHeight == 0.0f)
-		{
-			if ((std::numeric_limits<uint32>::max() / 2) < hemisphereStacks)
-			{
-				return GenerationFailed("Mesh3D::Capsule(): hemisphereStacks exceed the supported range for a zero-length cylinder");
-			}
-
-			return UVSphere(radius, slices, (hemisphereStacks * 2));
-		}
-
-		size_t interiorRingCount;
-		size_t ringStride;
-		size_t ringVertexCount;
-		size_t poleVertexCount;
-		size_t vertexCount;
-		size_t triangleCount;
-
-		if ((not CheckedMultiply(static_cast<size_t>(hemisphereStacks), 2, interiorRingCount))
-			|| (not CheckedAdd(static_cast<size_t>(slices), 1, ringStride))
-			|| (not CheckedMultiply(interiorRingCount, ringStride, ringVertexCount))
-			|| (not CheckedMultiply(static_cast<size_t>(slices), 2, poleVertexCount))
-			|| (not CheckedAdd(ringVertexCount, poleVertexCount, vertexCount))
-			|| (Mesh3D::MaxVertexCount < vertexCount)
-			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
-			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
-		{
-			return GenerationFailed("Mesh3D::Capsule(): The generated mesh exceeds the supported size");
-		}
-
-		Mesh3D mesh{ vertexCount, triangleCount };
-		const size_t firstRingBase = slices;
-		const size_t bottomPoleBase = (firstRingBase + ringVertexCount);
-		const float halfCylinderHeight = (cylinderHeight * 0.5f);
-		const float hemisphereAngleStep = (Math::HalfPiF / static_cast<float>(hemisphereStacks));
-		const float invSlices = (1.0f / static_cast<float>(slices));
-		const float longitudeStep = (Math::TwoPiF * invSlices);
-		const float profileLength = ((Math::PiF * radius) + cylinderHeight);
-		const float invProfileLength = (1.0f / profileLength);
-		const Array<CircleSample> longitudeSinCos = Mesh3DDetail::MakeCircleSamples<float>(slices);
-
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const float middleLongitude = ((longitudeStep * x) + (longitudeStep * 0.5f));
-			const float middleSin = std::sin(middleLongitude);
-			const float middleCos = std::cos(middleLongitude);
-			const float u = ((x + 0.5f) * invSlices);
-			const Float4 tangent{ -middleSin, 0.0f, middleCos, 1.0f };
-
-			mesh.vertices[x] = Vertex3D{
-				.pos = Float3{ 0.0f, (halfCylinderHeight + radius), 0.0f },
-				.normal = Float3::UnitY(),
-				.tex = Float2{ u, 0.0f },
-				.tangent = tangent
-			};
-			mesh.vertices[bottomPoleBase + x] = Vertex3D{
-				.pos = Float3{ 0.0f, -(halfCylinderHeight + radius), 0.0f },
-				.normal = -Float3::UnitY(),
-				.tex = Float2{ u, 1.0f },
-				.tangent = tangent
-			};
-		}
-
-		const auto writeRing = [&](const size_t ringIndex, const float ringRadius, const float positionY,
-			const float normalRadial, const float normalY, const float v)
-		{
-			const size_t ringBase = (firstRingBase + (ringIndex * ringStride));
-
-			for (uint32 x = 0; x <= slices; ++x)
-			{
-				const float longitudeSin = longitudeSinCos[x].sin;
-				const float longitudeCos = longitudeSinCos[x].cos;
-
-				mesh.vertices[ringBase + x] = Vertex3D{
-					.pos = Float3{ (ringRadius * longitudeCos), positionY, (ringRadius * longitudeSin) },
-					.normal = Float3{ (normalRadial * longitudeCos), normalY, (normalRadial * longitudeSin) },
-					.tex = Float2{ (static_cast<float>(x) * invSlices), v },
-					.tangent = Float4{ -longitudeSin, 0.0f, longitudeCos, 1.0f }
-				};
-			}
-		};
-
-		for (uint32 stack = 1; stack <= hemisphereStacks; ++stack)
-		{
-			const float angle = (hemisphereAngleStep * stack);
-			const float angleSin = std::sin(angle);
-			const float angleCos = std::cos(angle);
-			writeRing(
-				(stack - 1),
-				(radius * angleSin),
-				(halfCylinderHeight + (radius * angleCos)),
-				angleSin,
-				angleCos,
-				((radius * angle) * invProfileLength));
-		}
-
-		writeRing(
-			hemisphereStacks,
-			radius,
-			-halfCylinderHeight,
-			1.0f,
-			0.0f,
-			(((Math::HalfPiF * radius) + cylinderHeight) * invProfileLength));
-
-		for (uint32 stack = 1; stack < hemisphereStacks; ++stack)
-		{
-			const float angle = (hemisphereAngleStep * stack);
-			const float angleSin = std::sin(angle);
-			const float angleCos = std::cos(angle);
-			writeRing(
-				(static_cast<size_t>(hemisphereStacks) + stack),
-				(radius * angleCos),
-				(-halfCylinderHeight - (radius * angleSin)),
-				angleCos,
-				-angleSin,
-				(((Math::HalfPiF * radius) + cylinderHeight + (radius * angle)) * invProfileLength));
-		}
-
-		TriangleIndex32* pTriangle = mesh.indices.data();
-
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const uint32 pole = x;
-			const uint32 ringLeft = static_cast<uint32>(firstRingBase + x);
-			const uint32 ringRight = (ringLeft + 1);
-			*pTriangle++ = TriangleIndex32{ pole, ringRight, ringLeft };
-		}
-
-		for (size_t ring = 0; (ring + 1) < interiorRingCount; ++ring)
-		{
-			const size_t upperRingBase = (firstRingBase + (ring * ringStride));
-			const size_t lowerRingBase = (upperRingBase + ringStride);
-
-			for (uint32 x = 0; x < slices; ++x)
-			{
-				const uint32 i0 = static_cast<uint32>(upperRingBase + x);
-				const uint32 i1 = (i0 + 1);
-				const uint32 i2 = static_cast<uint32>(lowerRingBase + x);
-				const uint32 i3 = (i2 + 1);
-
-				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
-				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
-			}
-		}
-
-		const size_t lastRingBase = (firstRingBase + ((interiorRingCount - 1) * ringStride));
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const uint32 ringLeft = static_cast<uint32>(lastRingBase + x);
-			const uint32 ringRight = (ringLeft + 1);
-			const uint32 pole = static_cast<uint32>(bottomPoleBase + x);
-			*pTriangle++ = TriangleIndex32{ ringLeft, ringRight, pole };
-		}
-
-		return mesh;
+		Mesh3DBuilder builder;
+		builder.addCapsule(radius, cylinderHeight, slices, hemisphereStacks);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -450,134 +270,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::UVSphere(const double _radius, const uint32 slices, const uint32 stacks)
+	Mesh3D Mesh3D::UVSphere(const double radius, const uint32 slices, const uint32 stacks)
 	{
-		if (not IsFloatRepresentable(_radius))
-		{
-			return GenerationFailed("Mesh3D::UVSphere(): radius must be finite and float-representable");
-		}
-
-		const float radius = static_cast<float>(_radius);
-		if ((radius <= 0.0f)
-			|| (slices < 3)
-			|| (stacks < 2))
-		{
-			return GenerationFailed("Mesh3D::UVSphere(): The radius, slice count, or stack count is invalid");
-		}
-
-		const size_t interiorRingCount = (static_cast<size_t>(stacks) - 1);
-		size_t ringStride;
-		size_t ringVertexCount;
-		size_t poleVertexCount;
-		size_t vertexCount;
-		size_t triangleCount;
-
-		if ((not CheckedAdd(static_cast<size_t>(slices), 1, ringStride))
-			|| (not CheckedMultiply(interiorRingCount, ringStride, ringVertexCount))
-			|| (not CheckedMultiply(static_cast<size_t>(slices), 2, poleVertexCount))
-			|| (not CheckedAdd(ringVertexCount, poleVertexCount, vertexCount))
-			|| (Mesh3D::MaxVertexCount < vertexCount)
-			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
-			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
-		{
-			return GenerationFailed("Mesh3D::UVSphere(): The generated mesh exceeds the supported size");
-		}
-
-		Mesh3D mesh{ vertexCount, triangleCount };
-		const size_t firstRingBase = slices;
-		const size_t bottomPoleBase = (firstRingBase + ringVertexCount);
-		const float longitudeStep = (Math::TwoPiF / static_cast<float>(slices));
-		const float latitudeStep = (Math::PiF / static_cast<float>(stacks));
-		const Array<CircleSample> longitudeSinCos = Mesh3DDetail::MakeCircleSamples<float>(slices);
-
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const float longitude = (longitudeStep * x);
-
-			const float middleLongitude = (longitude + (longitudeStep * 0.5f));
-			const float middleSin = std::sin(middleLongitude);
-			const float middleCos = std::cos(middleLongitude);
-			const float u = ((x + 0.5f) / static_cast<float>(slices));
-			const Float4 tangent{ -middleSin, 0.0f, middleCos, 1.0f };
-
-			mesh.vertices[x] = Vertex3D{
-				.pos = Float3{ 0.0f, radius, 0.0f },
-				.normal = Float3::UnitY(),
-				.tex = Float2{ u, 0.0f },
-				.tangent = tangent
-			};
-			mesh.vertices[bottomPoleBase + x] = Vertex3D{
-				.pos = Float3{ 0.0f, -radius, 0.0f },
-				.normal = -Float3::UnitY(),
-				.tex = Float2{ u, 1.0f },
-				.tangent = tangent
-			};
-		}
-
-		for (uint32 y = 1; y < stacks; ++y)
-		{
-			const float v = (static_cast<float>(y) / static_cast<float>(stacks));
-			const float latitude = (latitudeStep * y);
-			const float latitudeSin = std::sin(latitude);
-			const float latitudeCos = std::cos(latitude);
-			const size_t ringBase = (firstRingBase + (static_cast<size_t>(y - 1) * ringStride));
-
-			for (uint32 x = 0; x <= slices; ++x)
-			{
-				const float longitudeSin = longitudeSinCos[x].sin;
-				const float longitudeCos = longitudeSinCos[x].cos;
-				const Float3 normal{
-					(latitudeSin * longitudeCos),
-					latitudeCos,
-					(latitudeSin * longitudeSin)
-				};
-
-				mesh.vertices[ringBase + x] = Vertex3D{
-					.pos = (normal * radius),
-					.normal = normal,
-					.tex = Float2{ (static_cast<float>(x) / static_cast<float>(slices)), v },
-					.tangent = Float4{ -longitudeSin, 0.0f, longitudeCos, 1.0f }
-				};
-			}
-		}
-
-		TriangleIndex32* pTriangle = mesh.indices.data();
-
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const uint32 pole = x;
-			const uint32 ringLeft = static_cast<uint32>(firstRingBase + x);
-			const uint32 ringRight = (ringLeft + 1);
-			*pTriangle++ = TriangleIndex32{ pole, ringRight, ringLeft };
-		}
-
-		for (size_t ring = 0; (ring + 1) < interiorRingCount; ++ring)
-		{
-			const size_t upperRingBase = (firstRingBase + (ring * ringStride));
-			const size_t lowerRingBase = (upperRingBase + ringStride);
-
-			for (uint32 x = 0; x < slices; ++x)
-			{
-				const uint32 i0 = static_cast<uint32>(upperRingBase + x);
-				const uint32 i1 = (i0 + 1);
-				const uint32 i2 = static_cast<uint32>(lowerRingBase + x);
-				const uint32 i3 = (i2 + 1);
-
-				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
-				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
-			}
-		}
-
-		const size_t lastRingBase = (firstRingBase + ((interiorRingCount - 1) * ringStride));
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const uint32 ringLeft = static_cast<uint32>(lastRingBase + x);
-			const uint32 ringRight = (ringLeft + 1);
-			const uint32 pole = static_cast<uint32>(bottomPoleBase + x);
-			*pTriangle++ = TriangleIndex32{ ringLeft, ringRight, pole };
-		}
-
-		return mesh;
+		Mesh3DBuilder builder;
+		builder.addUVSphere(radius, slices, stacks);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -588,173 +285,20 @@ namespace s3d
 
 	Mesh3D Mesh3D::Hemisphere(const double radius, const uint32 slices, const uint32 stacks)
 	{
-		return Hemisphere(radius, CloseBottom::No, slices, stacks);
+		Mesh3DBuilder builder;
+		builder.addHemisphere(radius, slices, stacks);
+		return std::move(builder).build();
 	}
 
-	Mesh3D Mesh3D::Hemisphere(const double _radius, const CloseBottom closeBottom, const uint32 slices, const uint32 stacks)
+	Mesh3D Mesh3D::Hemisphere(
+		const double radius,
+		const CloseBottom closeBottom,
+		const uint32 slices,
+		const uint32 stacks)
 	{
-		if (not IsFloatRepresentable(_radius))
-		{
-			return GenerationFailed("Mesh3D::Hemisphere(): radius must be finite and float-representable");
-		}
-
-		const float radius = static_cast<float>(_radius);
-		if ((radius <= 0.0f)
-			|| (slices < 3)
-			|| (stacks < 1))
-		{
-			return GenerationFailed("Mesh3D::Hemisphere(): The radius, slice count, or stack count is invalid");
-		}
-
-		size_t ringStride;
-		size_t ringVertexCount;
-		size_t surfaceVertexCount;
-		size_t twiceStackCount;
-		size_t triangleFactor;
-		size_t surfaceTriangleCount;
-		size_t vertexCount;
-		size_t triangleCount;
-
-		if ((not CheckedAdd(static_cast<size_t>(slices), 1, ringStride))
-			|| (not CheckedMultiply(static_cast<size_t>(stacks), ringStride, ringVertexCount))
-			|| (not CheckedAdd(static_cast<size_t>(slices), ringVertexCount, surfaceVertexCount))
-			|| (not CheckedMultiply(static_cast<size_t>(stacks), 2, twiceStackCount)))
-		{
-			return GenerationFailed("Mesh3D::Hemisphere(): The surface dimensions exceed the supported range");
-		}
-
-		triangleFactor = (twiceStackCount - 1);
-		if (not CheckedMultiply(static_cast<size_t>(slices), triangleFactor, surfaceTriangleCount))
-		{
-			return GenerationFailed("Mesh3D::Hemisphere(): The surface triangle count exceeds the supported range");
-		}
-
-		vertexCount = surfaceVertexCount;
-		triangleCount = surfaceTriangleCount;
-		if (closeBottom)
-		{
-			size_t bottomVertexCount;
-			if ((not CheckedAdd(static_cast<size_t>(slices), 1, bottomVertexCount))
-				|| (not CheckedAdd(vertexCount, bottomVertexCount, vertexCount))
-				|| (not CheckedAdd(triangleCount, static_cast<size_t>(slices), triangleCount)))
-			{
-				return GenerationFailed("Mesh3D::Hemisphere(): The closed-bottom mesh exceeds the supported size");
-			}
-		}
-
-		if (Mesh3D::MaxVertexCount < vertexCount)
-		{
-			return GenerationFailed("Mesh3D::Hemisphere(): The generated vertex count exceeds the supported range");
-		}
-
-		Mesh3D mesh{ vertexCount, triangleCount };
-		const size_t firstRingBase = slices;
-		const float invSlices = (1.0f / static_cast<float>(slices));
-		const float invStacks = (1.0f / static_cast<float>(stacks));
-		const float longitudeStep = (Math::TwoPiF * invSlices);
-		const float latitudeStep = (Math::HalfPiF * invStacks);
-		const Array<CircleSample> longitudeSinCos = Mesh3DDetail::MakeCircleSamples<float>(slices);
-
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const float middleLongitude = (longitudeStep * (static_cast<float>(x) + 0.5f));
-			const Float4 tangent{ -std::sin(middleLongitude), 0.0f, std::cos(middleLongitude), 1.0f };
-
-			mesh.vertices[x] = Vertex3D{
-				.pos = Float3{ 0.0f, radius, 0.0f },
-				.normal = Float3::UnitY(),
-				.tex = Float2{ ((static_cast<float>(x) + 0.5f) * invSlices), 0.0f },
-				.tangent = tangent
-			};
-		}
-
-		for (uint32 stack = 1; stack <= stacks; ++stack)
-		{
-			const bool isEquator = (stack == stacks);
-			const float latitude = (latitudeStep * static_cast<float>(stack));
-			const float latitudeSin = (isEquator ? 1.0f : std::sin(latitude));
-			const float latitudeCos = (isEquator ? 0.0f : std::cos(latitude));
-			const float v = (static_cast<float>(stack) * invStacks);
-			const size_t ringBase = (firstRingBase + (static_cast<size_t>(stack - 1) * ringStride));
-
-			for (uint32 x = 0; x <= slices; ++x)
-			{
-				const float longitudeSin = longitudeSinCos[x].sin;
-				const float longitudeCos = longitudeSinCos[x].cos;
-				const Float3 normal{
-					(latitudeSin * longitudeCos),
-					latitudeCos,
-					(latitudeSin * longitudeSin)
-				};
-
-				mesh.vertices[ringBase + x] = Vertex3D{
-					.pos = (normal * radius),
-					.normal = normal,
-					.tex = Float2{ (static_cast<float>(x) * invSlices), v },
-					.tangent = Float4{ -longitudeSin, 0.0f, longitudeCos, 1.0f }
-				};
-			}
-		}
-
-		TriangleIndex32* pTriangle = mesh.indices.data();
-		for (uint32 x = 0; x < slices; ++x)
-		{
-			const uint32 pole = x;
-			const uint32 ringLeft = static_cast<uint32>(firstRingBase + x);
-			const uint32 ringRight = (ringLeft + 1);
-			*pTriangle++ = TriangleIndex32{ pole, ringRight, ringLeft };
-		}
-
-		for (size_t ring = 0; (ring + 1) < stacks; ++ring)
-		{
-			const size_t upperRingBase = (firstRingBase + (ring * ringStride));
-			const size_t lowerRingBase = (upperRingBase + ringStride);
-
-			for (uint32 x = 0; x < slices; ++x)
-			{
-				const uint32 i0 = static_cast<uint32>(upperRingBase + x);
-				const uint32 i1 = (i0 + 1);
-				const uint32 i2 = static_cast<uint32>(lowerRingBase + x);
-				const uint32 i3 = (i2 + 1);
-
-				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
-				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
-			}
-		}
-
-		if (closeBottom)
-		{
-			const size_t bottomCenterIndex = surfaceVertexCount;
-			const size_t bottomRingBase = (bottomCenterIndex + 1);
-			mesh.vertices[bottomCenterIndex] = Vertex3D{
-				.pos = Float3::Zero(),
-				.normal = -Float3::UnitY(),
-				.tex = Float2{ 0.5f, 0.5f },
-				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
-			};
-
-			for (uint32 x = 0; x < slices; ++x)
-			{
-				const float longitudeSin = longitudeSinCos[x].sin;
-				const float longitudeCos = longitudeSinCos[x].cos;
-				mesh.vertices[bottomRingBase + x] = Vertex3D{
-					.pos = Float3{ (radius * longitudeCos), 0.0f, (radius * longitudeSin) },
-					.normal = -Float3::UnitY(),
-					.tex = Float2{ (0.5f + 0.5f * longitudeCos), (0.5f + 0.5f * longitudeSin) },
-					.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
-				};
-			}
-
-			for (uint32 x = 0; x < slices; ++x)
-			{
-				const uint32 center = static_cast<uint32>(bottomCenterIndex);
-				const uint32 current = static_cast<uint32>(bottomRingBase + x);
-				const uint32 next = static_cast<uint32>(bottomRingBase + ((x + 1) % slices));
-				*pTriangle++ = TriangleIndex32{ center, current, next };
-			}
-		}
-
-		return mesh;
+		Mesh3DBuilder builder;
+		builder.addHemisphere(radius, closeBottom, slices, stacks);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////
