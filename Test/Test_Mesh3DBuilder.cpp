@@ -760,6 +760,72 @@ TEST_CASE("Mesh3DBuilder::addCylinder and addCone")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addTorus")
+{
+	constexpr double MajorRadius = 3.0;
+	constexpr double TubeRadius = 1.0;
+	constexpr uint32 RingSegments = 8;
+	constexpr uint32 TubeSegments = 6;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addTorus(
+			MajorRadius, TubeRadius, RingSegments, TubeSegments));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::Torus(
+			MajorRadius, TubeRadius, RingSegments, TubeSegments)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addTorus(
+			MajorRadius, TubeRadius, RingSegments, TubeSegments, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Torus(
+			MajorRadius, TubeRadius, RingSegments, TubeSegments).transformed(
+				Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix transform")
+	{
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addTorus(
+			MajorRadius, TubeRadius, RingSegments, TubeSegments, transform));
+
+		const Mesh3D expected = Mesh3D::Torus(
+			MajorRadius, TubeRadius, RingSegments, TubeSegments).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addTorus(TubeRadius, MajorRadius, RingSegments, TubeSegments));
+		CHECK_FALSE(builder.addTorus(MajorRadius, TubeRadius, 2, TubeSegments));
+		CHECK_FALSE(builder.addTorus(
+			MajorRadius,
+			TubeRadius,
+			std::numeric_limits<uint32>::max(),
+			std::numeric_limits<uint32>::max()));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder storage")
 {
 	Mesh3DBuilder builder;

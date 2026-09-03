@@ -1024,6 +1024,48 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addCone(double radius, double height, uint32 segments, const Mat4x4& transform);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addTorus
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸を回転軸とするトーラスを追加します。
+		/// @param majorRadius 原点からチューブ断面の中心までの半径
+		/// @param tubeRadius チューブ断面の半径。`majorRadius` より小さい必要があります。
+		/// @param ringSegments リング方向の分割数。3 以上である必要があります。
+		/// @param tubeSegments チューブ断面方向の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments = 32, uint32 tubeSegments = 16);
+
+		/// @brief 平行移動したトーラスを追加します。
+		/// @param majorRadius 原点からチューブ断面の中心までの半径
+		/// @param tubeRadius チューブ断面の半径
+		/// @param ringSegments リング方向の分割数
+		/// @param tubeSegments チューブ断面方向の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, Vec3 offset);
+
+		/// @brief 回転および平行移動したトーラスを追加します。
+		/// @param majorRadius 原点からチューブ断面の中心までの半径
+		/// @param tubeRadius チューブ断面の半径
+		/// @param ringSegments リング方向の分割数
+		/// @param tubeSegments チューブ断面方向の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用したトーラスを追加します。
+		/// @param majorRadius 原点からチューブ断面の中心までの半径
+		/// @param tubeRadius チューブ断面の半径
+		/// @param ringSegments リング方向の分割数
+		/// @param tubeSegments チューブ断面方向の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, const Mat4x4& transform);
+
 	private:
 
 		Mesh3D m_mesh;

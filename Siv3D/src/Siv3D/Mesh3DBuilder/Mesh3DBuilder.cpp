@@ -2998,4 +2998,147 @@ namespace s3d
 	{
 		return addConicalFrustum(radius, 0.0, height, segments, transform);
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addTorus
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addTorus(
+		const double _majorRadius,
+		const double _tubeRadius,
+		const uint32 ringSegments,
+		const uint32 tubeSegments)
+	{
+		if ((not IsFloatRepresentable(_majorRadius))
+			|| (not IsFloatRepresentable(_tubeRadius)))
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): majorRadius and tubeRadius must be finite and float-representable");
+		}
+
+		const float majorRadius = static_cast<float>(_majorRadius);
+		const float tubeRadius = static_cast<float>(_tubeRadius);
+		if ((majorRadius <= 0.0f)
+			|| (tubeRadius <= 0.0f)
+			|| (majorRadius <= tubeRadius)
+			|| (ringSegments < 3)
+			|| (tubeSegments < 3))
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): The radii or segment counts are invalid");
+		}
+
+		size_t ringStride;
+		size_t tubeRowCount;
+		size_t vertexCount;
+		size_t quadCount;
+		size_t triangleCount;
+
+		if ((not CheckedAdd(static_cast<size_t>(ringSegments), 1, ringStride))
+			|| (not CheckedAdd(static_cast<size_t>(tubeSegments), 1, tubeRowCount))
+			|| (not CheckedMultiply(ringStride, tubeRowCount, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(ringSegments), static_cast<size_t>(tubeSegments), quadCount))
+			|| (not CheckedMultiply(quadCount, 2, triangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): The generated mesh exceeds the supported size");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(
+			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): The generated mesh exceeds the supported size");
+		}
+
+		const Array<CircleSample> ringSinCos = Mesh3DDetail::MakeCircleSamples<float>(ringSegments);
+		const Array<CircleSample> tubeSinCos = Mesh3DDetail::MakeCircleSamples<float>(tubeSegments);
+		const float invRingSegments = (1.0f / static_cast<float>(ringSegments));
+		const float invTubeSegments = (1.0f / static_cast<float>(tubeSegments));
+
+		for (uint32 tubeIndex = 0; tubeIndex <= tubeSegments; ++tubeIndex)
+		{
+			const float tubeSin = tubeSinCos[tubeIndex].sin;
+			const float tubeCos = tubeSinCos[tubeIndex].cos;
+			const float ringRadius = (majorRadius + (tubeRadius * tubeSin));
+			const float positionY = (tubeRadius * tubeCos);
+			const float v = (static_cast<float>(tubeIndex) * invTubeSegments);
+			const size_t rowBase = (vertexOffset + (static_cast<size_t>(tubeIndex) * ringStride));
+
+			for (uint32 ringIndex = 0; ringIndex <= ringSegments; ++ringIndex)
+			{
+				const float ringSin = ringSinCos[ringIndex].sin;
+				const float ringCos = ringSinCos[ringIndex].cos;
+				const Float3 normal{ (ringCos * tubeSin), tubeCos, (ringSin * tubeSin) };
+
+				m_mesh.vertices[rowBase + ringIndex] = Vertex3D{
+					.pos = Float3{ (ringRadius * ringCos), positionY, (ringRadius * ringSin) },
+					.normal = normal,
+					.tex = Float2{ (static_cast<float>(ringIndex) * invRingSegments), v },
+					.tangent = Float4{ -ringSin, 0.0f, ringCos, 1.0f }
+				};
+			}
+		}
+
+		TriangleIndex32* pTriangle = (m_mesh.indices.data() + triangleOffset);
+		for (uint32 tubeIndex = 0; tubeIndex < tubeSegments; ++tubeIndex)
+		{
+			const size_t rowBase = (vertexOffset + (static_cast<size_t>(tubeIndex) * ringStride));
+			const size_t nextRowBase = (rowBase + ringStride);
+
+			for (uint32 ringIndex = 0; ringIndex < ringSegments; ++ringIndex)
+			{
+				const uint32 i0 = static_cast<uint32>(rowBase + ringIndex);
+				const uint32 i1 = (i0 + 1);
+				const uint32 i2 = static_cast<uint32>(nextRowBase + ringIndex);
+				const uint32 i3 = (i2 + 1);
+
+				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
+			}
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addTorus(
+		const double majorRadius,
+		const double tubeRadius,
+		const uint32 ringSegments,
+		const uint32 tubeSegments,
+		const Vec3 offset)
+	{
+		return addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments,
+			Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addTorus(
+		const double majorRadius,
+		const double tubeRadius,
+		const uint32 ringSegments,
+		const uint32 tubeSegments,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addTorus(
+		const double majorRadius,
+		const double tubeRadius,
+		const uint32 ringSegments,
+		const uint32 tubeSegments,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
 }
