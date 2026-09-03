@@ -281,4 +281,11 @@ namespace s3d::Mesh3DDetail
 
 		return true;
 	}
+
+	[[nodiscard]]
+	bool AppendExtrude(
+		Mesh3D& mesh,
+		const Polygon& polygon,
+		double height,
+		double smoothingAngle);
 }

@@ -551,6 +551,83 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addExtrude
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2D の多角形を Y 軸方向に押し出した形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 座標、UV 座標、および法線の規約は `Mesh3D::Extrude()` と同じです。
+		bool addExtrude(const Polygon& polygon, double height);
+
+		/// @brief 平行移動した押し出し形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addExtrude(const Polygon& polygon, double height, Vec3 offset);
+
+		/// @brief 回転および平行移動した押し出し形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addExtrude(const Polygon& polygon, double height, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した押し出し形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addExtrude(const Polygon& polygon, double height, const Mat4x4& transform);
+
+		/// @brief 2D の多角形を Y 軸方向に押し出し、側面の法線を角度に応じて補間した形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 座標、UV 座標、および法線の規約は `Mesh3D::Extrude()` と同じです。
+		bool addExtrude(const Polygon& polygon, double height, double smoothingAngle);
+
+		/// @brief 平行移動し、側面の法線を角度に応じて補間した押し出し形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addExtrude(const Polygon& polygon, double height, double smoothingAngle, Vec3 offset);
+
+		/// @brief 回転および平行移動し、側面の法線を角度に応じて補間した押し出し形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addExtrude(
+			const Polygon& polygon,
+			double height,
+			double smoothingAngle,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用し、側面の法線を角度に応じて補間した押し出し形状を追加します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addExtrude(
+			const Polygon& polygon,
+			double height,
+			double smoothingAngle,
+			const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addTetrahedron
 		//
 		////////////////////////////////////////////////////////////////

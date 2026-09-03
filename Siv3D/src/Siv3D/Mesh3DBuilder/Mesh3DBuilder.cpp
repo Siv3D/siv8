@@ -968,6 +968,95 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addExtrude
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addExtrude(const Polygon& polygon, const double height)
+	{
+		return Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0);
+	}
+
+	bool Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const Vec3 offset)
+	{
+		return addExtrude(polygon, height, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addExtrude(polygon, height,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	bool Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const double smoothingAngle)
+	{
+		return Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle);
+	}
+
+	bool Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const double smoothingAngle,
+		const Vec3 offset)
+	{
+		return addExtrude(
+			polygon, height, smoothingAngle, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const double smoothingAngle,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addExtrude(polygon, height, smoothingAngle,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const double smoothingAngle,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addTriangularPrism
 	//
 	////////////////////////////////////////////////////////////////

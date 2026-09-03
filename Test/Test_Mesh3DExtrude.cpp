@@ -21,6 +21,14 @@ namespace
 	{
 		static_cast<Mesh3D (*)(const Polygon&, double)>(&Mesh3D::Extrude);
 		static_cast<Mesh3D (*)(const Polygon&, double, double)>(&Mesh3D::Extrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double)>(&Mesh3DBuilder::addExtrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, Vec3)>(&Mesh3DBuilder::addExtrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double)>(&Mesh3DBuilder::addExtrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3)>(&Mesh3DBuilder::addExtrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
 	});
 
 }
@@ -234,4 +242,77 @@ TEST_CASE("Mesh3D::Extrude invalid arguments")
 		SkipValidation::Yes
 	};
 	CHECK(Mesh3D::Extrude(invalidOuter, 1.0).isEmpty());
+}
+
+TEST_CASE("Mesh3DBuilder::addExtrude")
+{
+	const Polygon polygon{ Array<Vec2>{
+		{ -2.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 3.0 }, { -2.0, 3.0 }
+	} };
+	constexpr double Height = 4.0;
+	constexpr double SmoothingAngle = Math::HalfPi;
+
+	SUBCASE("Direct append reuses reserved storage")
+	{
+		const Mesh3D source = Mesh3D::Extrude(polygon, Height);
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 2), (source.triangleCount() * 2));
+		REQUIRE(builder.addExtrude(polygon, Height));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+
+		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
+		REQUIRE(builder.addExtrude(polygon, Height, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(source, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Smoothing and transform overloads")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+		const Mesh3D hard = Mesh3D::Extrude(polygon, Height);
+		const Mesh3D smooth = Mesh3D::Extrude(polygon, Height, SmoothingAngle);
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addExtrude(polygon, Height, offset));
+		REQUIRE(builder.addExtrude(polygon, Height, offset, rotation));
+		REQUIRE(builder.addExtrude(polygon, Height, transform));
+		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle));
+		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, offset));
+		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, offset, rotation));
+		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, transform));
+
+		Mesh3D expected;
+		REQUIRE(expected.append(hard, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			hard, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(hard, transform));
+		REQUIRE(expected.append(smooth));
+		REQUIRE(expected.append(smooth, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			smooth, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(smooth, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addExtrude(Polygon{}, Height));
+		CHECK_FALSE(builder.addExtrude(polygon, 0.0));
+		CHECK_FALSE(builder.addExtrude(polygon, Height, -0.001));
+		CHECK_FALSE(builder.addExtrude(
+			polygon, Height, std::numeric_limits<double>::quiet_NaN(), Vec3{ 1.0, 2.0, 3.0 }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
 }

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include "Mesh3DCommon.hpp"
@@ -90,19 +91,12 @@ namespace s3d
 			return Float4{ normal.z, 0.0f, -normal.x, -1.0f };
 		}
 	}
+}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Extrude
-	//
-	////////////////////////////////////////////////////////////////
-
-	Mesh3D Mesh3D::Extrude(const Polygon& polygon, const double _height)
-	{
-		return Extrude(polygon, _height, 0.0);
-	}
-
-	Mesh3D Mesh3D::Extrude(
+namespace s3d::Mesh3DDetail
+{
+	bool AppendExtrude(
+		Mesh3D& mesh,
 		const Polygon& polygon,
 		const double _height,
 		const double smoothingAngle)
@@ -113,13 +107,13 @@ namespace s3d
 			|| (smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{
-			return GenerationFailed("Mesh3D::Extrude(): The polygon, height, or smoothing angle is invalid");
+			return GenerationFailed<bool>("Mesh3D::Extrude(): The polygon, height, or smoothing angle is invalid");
 		}
 
 		const float height = static_cast<float>(_height);
 		if (height <= 0.0f)
 		{
-			return GenerationFailed("Mesh3D::Extrude(): height must be positive after conversion to float");
+			return GenerationFailed<bool>("Mesh3D::Extrude(): height must be positive after conversion to float");
 		}
 
 		const bool smoothSide = (0.0 < smoothingAngle);
@@ -131,7 +125,7 @@ namespace s3d
 		const auto& capIndices = polygon.indices();
 		if (not ValidateCapTriangles<true>(capVertices, capIndices))
 		{
-			return GenerationFailed("Mesh3D::Extrude(): The polygon cap triangulation is invalid");
+			return GenerationFailed<bool>("Mesh3D::Extrude(): The polygon cap triangulation is invalid");
 		}
 
 		size_t edgeCount = polygon.outer().size();
@@ -139,7 +133,7 @@ namespace s3d
 		{
 			if (not CheckedAdd(edgeCount, inner.size(), edgeCount))
 			{
-				return GenerationFailed("Mesh3D::Extrude(): The polygon edge count exceeds the supported range");
+				return GenerationFailed<bool>("Mesh3D::Extrude(): The polygon edge count exceeds the supported range");
 			}
 		}
 
@@ -147,7 +141,7 @@ namespace s3d
 		if (ValidateRing(std::span<const Vec2>{ polygon.outer() }, true, outerPerimeter)
 			!= RingValidationResult::Valid)
 		{
-			return GenerationFailed("Mesh3D::Extrude(): The polygon outer ring is invalid");
+			return GenerationFailed<bool>("Mesh3D::Extrude(): The polygon outer ring is invalid");
 		}
 
 		for (const auto& inner : polygon.inners())
@@ -156,7 +150,7 @@ namespace s3d
 			if (ValidateRing(std::span<const Vec2>{ inner }, false, perimeter)
 				!= RingValidationResult::Valid)
 			{
-				return GenerationFailed("Mesh3D::Extrude(): A polygon inner ring is invalid");
+				return GenerationFailed<bool>("Mesh3D::Extrude(): A polygon inner ring is invalid");
 			}
 		}
 
@@ -174,7 +168,7 @@ namespace s3d
 			|| (not CheckedMultiply(edgeCount, 2, sideTriangleCount))
 			|| (not CheckedAdd(capTriangleTotal, sideTriangleCount, triangleCount)))
 		{
-			return GenerationFailed("Mesh3D::Extrude(): The generated mesh exceeds the supported size");
+			return GenerationFailed<bool>("Mesh3D::Extrude(): The generated mesh exceeds the supported size");
 		}
 
 		float minX = capVertices.front().x;
@@ -194,13 +188,25 @@ namespace s3d
 		if ((width <= 0.0)
 			|| (depth <= 0.0))
 		{
-			return GenerationFailed("Mesh3D::Extrude(): The polygon bounds must have positive width and depth");
+			return GenerationFailed<bool>("Mesh3D::Extrude(): The polygon bounds must have positive width and depth");
 		}
 
-		Mesh3D mesh{ vertexCount, triangleCount };
+		const size_t vertexBase = mesh.vertices.size();
+		const size_t triangleBase = mesh.indices.size();
+		size_t newVertexCount;
+		size_t newTriangleCount;
+		if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
+			|| (Mesh3D::MaxVertexCount < newVertexCount)
+			|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3D::Extrude(): The generated mesh exceeds the supported size");
+		}
+
+		mesh.vertices.resize(newVertexCount);
+		mesh.indices.resize(newTriangleCount);
 		const float halfHeight = (height * 0.5f);
-		const size_t topVertexBase = 0;
-		const size_t bottomVertexBase = capVertices.size();
+		const size_t topVertexBase = vertexBase;
+		const size_t bottomVertexBase = (topVertexBase + capVertices.size());
 		const Float4 capTangent{ 1.0f, 0.0f, 0.0f, 1.0f };
 
 		for (size_t i = 0; i < capVertices.size(); ++i)
@@ -225,13 +231,17 @@ namespace s3d
 			};
 		}
 
-		TriangleIndex32* pTriangle = mesh.indices.data();
+		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
 		for (const TriangleIndex& source : capIndices)
 		{
 			const uint32 i0 = source.i0;
 			const uint32 i1 = source.i1;
 			const uint32 i2 = source.i2;
-			*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+			*pTriangle++ = TriangleIndex32{
+				static_cast<uint32>(topVertexBase + i0),
+				static_cast<uint32>(topVertexBase + i1),
+				static_cast<uint32>(topVertexBase + i2)
+			};
 			*pTriangle++ = TriangleIndex32{
 				static_cast<uint32>(bottomVertexBase + i0),
 				static_cast<uint32>(bottomVertexBase + i2),
@@ -239,7 +249,7 @@ namespace s3d
 			};
 		}
 
-		size_t sideVertexOffset = capVertexTotal;
+		size_t sideVertexOffset = (vertexBase + capVertexTotal);
 		const auto writeRing = [&](const std::span<const Vec2> ring, const double perimeter)
 		{
 			double accumulatedLength = 0.0;
@@ -308,6 +318,32 @@ namespace s3d
 			writeRing(inner, ComputeRingPerimeter(inner));
 		}
 
-		return mesh;
+		return true;
+	}
+}
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	Extrude
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Extrude(const Polygon& polygon, const double height)
+	{
+		Mesh3DBuilder builder;
+		builder.addExtrude(polygon, height);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Extrude(
+		const Polygon& polygon,
+		const double height,
+		const double smoothingAngle)
+	{
+		Mesh3DBuilder builder;
+		builder.addExtrude(polygon, height, smoothingAngle);
+		return std::move(builder).build();
 	}
 }
