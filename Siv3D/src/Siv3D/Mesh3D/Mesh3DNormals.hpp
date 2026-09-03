@@ -33,8 +33,7 @@ namespace s3d
     };
 
     bool __cdecl ComputeNormals(
-        _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
-        _In_reads_(nVerts) const DirectX::XMFLOAT3* positions, _In_ size_t nVerts,
-        _In_ CNORM_FLAGS flags,
-        _Out_writes_(nVerts) DirectX::XMFLOAT3* normals) noexcept;
+        _In_reads_(nFaces) const TriangleIndex32* indices, _In_ size_t nFaces,
+        _Inout_updates_(nVerts) Vertex3D* vertices, _In_ size_t nVerts,
+        _In_ CNORM_FLAGS flags) noexcept;
 }

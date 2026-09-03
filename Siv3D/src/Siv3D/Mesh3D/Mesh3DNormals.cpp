@@ -119,17 +119,32 @@ private:
 #endif // WIN32
 
 using namespace DirectX;
+using s3d::Float3;
+using s3d::TriangleIndex32;
+using s3d::Vertex3D;
 
 namespace
 {
+    inline XMVECTOR LoadPosition(const Vertex3D* vertices, const uint32_t index) noexcept
+    {
+        const Float3& position = vertices[index].pos;
+        return XMVectorSet(position.x, position.y, position.z, 0.0f);
+    }
+
+    inline void StoreNormal(Vertex3D& vertex, const XMVECTOR normal) noexcept
+    {
+        XMFLOAT3 value;
+        XMStoreFloat3(&value, normal);
+        vertex.normal = Float3{ value.x, value.y, value.z };
+    }
+
     //---------------------------------------------------------------------------------
     // Compute normals with equal weighting
     //---------------------------------------------------------------------------------
-    template<class index_t>
     bool ComputeNormalsEqualWeight(
-        _In_reads_(nFaces * 3) const index_t* indices, size_t nFaces,
-        _In_reads_(nVerts) const XMFLOAT3* positions, size_t nVerts,
-        bool cw, _Out_writes_(nVerts) XMFLOAT3* normals) noexcept
+        _In_reads_(nFaces) const TriangleIndex32* indices, size_t nFaces,
+        _Inout_updates_(nVerts) Vertex3D* vertices, size_t nVerts,
+        bool cw) noexcept
     {
         auto temp = make_AlignedArrayXMVECTOR(nVerts);
         if (!temp)
@@ -140,13 +155,14 @@ namespace
 
         for (size_t face = 0; face < nFaces; ++face)
         {
-            index_t i0 = indices[face * 3];
-            index_t i1 = indices[face * 3 + 1];
-            index_t i2 = indices[face * 3 + 2];
+            const TriangleIndex32& triangle = indices[face];
+            const uint32_t i0 = triangle.i0;
+            const uint32_t i1 = triangle.i1;
+            const uint32_t i2 = triangle.i2;
 
-            if (i0 == index_t(-1)
-                || i1 == index_t(-1)
-                || i2 == index_t(-1))
+            if (i0 == uint32_t(-1)
+                || i1 == uint32_t(-1)
+                || i2 == uint32_t(-1))
                 continue;
 
             if (i0 >= nVerts
@@ -154,9 +170,9 @@ namespace
                 || i2 >= nVerts)
                 return false;
 
-            const XMVECTOR p1 = XMLoadFloat3(&positions[i0]);
-            const XMVECTOR p2 = XMLoadFloat3(&positions[i1]);
-            const XMVECTOR p3 = XMLoadFloat3(&positions[i2]);
+            const XMVECTOR p1 = LoadPosition(vertices, i0);
+            const XMVECTOR p2 = LoadPosition(vertices, i1);
+            const XMVECTOR p3 = LoadPosition(vertices, i2);
 
             const XMVECTOR u = XMVectorSubtract(p2, p1);
             const XMVECTOR v = XMVectorSubtract(p3, p1);
@@ -175,7 +191,7 @@ namespace
             {
                 XMVECTOR n = XMVector3Normalize(vertNormals[vert]);
                 n = XMVectorNegate(n);
-                XMStoreFloat3(&normals[vert], n);
+                StoreNormal(vertices[vert], n);
             }
         }
         else
@@ -183,7 +199,7 @@ namespace
             for (size_t vert = 0; vert < nVerts; ++vert)
             {
                 const XMVECTOR n = XMVector3Normalize(vertNormals[vert]);
-                XMStoreFloat3(&normals[vert], n);
+                StoreNormal(vertices[vert], n);
             }
         }
 
@@ -194,11 +210,10 @@ namespace
     //---------------------------------------------------------------------------------
     // Compute normals with weighting by angle
     //---------------------------------------------------------------------------------
-    template<class index_t>
     bool ComputeNormalsWeightedByAngle(
-        _In_reads_(nFaces * 3) const index_t* indices, size_t nFaces,
-        _In_reads_(nVerts) const XMFLOAT3* positions, size_t nVerts,
-        bool cw, _Out_writes_(nVerts) XMFLOAT3* normals) noexcept
+        _In_reads_(nFaces) const TriangleIndex32* indices, size_t nFaces,
+        _Inout_updates_(nVerts) Vertex3D* vertices, size_t nVerts,
+        bool cw) noexcept
     {
         auto temp = make_AlignedArrayXMVECTOR(nVerts);
         if (!temp)
@@ -209,13 +224,14 @@ namespace
 
         for (size_t face = 0; face < nFaces; ++face)
         {
-            index_t i0 = indices[face * 3];
-            index_t i1 = indices[face * 3 + 1];
-            index_t i2 = indices[face * 3 + 2];
+            const TriangleIndex32& triangle = indices[face];
+            const uint32_t i0 = triangle.i0;
+            const uint32_t i1 = triangle.i1;
+            const uint32_t i2 = triangle.i2;
 
-            if (i0 == index_t(-1)
-                || i1 == index_t(-1)
-                || i2 == index_t(-1))
+            if (i0 == uint32_t(-1)
+                || i1 == uint32_t(-1)
+                || i2 == uint32_t(-1))
                 continue;
 
             if (i0 >= nVerts
@@ -223,9 +239,9 @@ namespace
                 || i2 >= nVerts)
                 return false;
 
-            const XMVECTOR p0 = XMLoadFloat3(&positions[i0]);
-            const XMVECTOR p1 = XMLoadFloat3(&positions[i1]);
-            const XMVECTOR p2 = XMLoadFloat3(&positions[i2]);
+            const XMVECTOR p0 = LoadPosition(vertices, i0);
+            const XMVECTOR p1 = LoadPosition(vertices, i1);
+            const XMVECTOR p2 = LoadPosition(vertices, i2);
 
             const XMVECTOR u = XMVectorSubtract(p1, p0);
             const XMVECTOR v = XMVectorSubtract(p2, p0);
@@ -265,7 +281,7 @@ namespace
             {
                 XMVECTOR n = XMVector3Normalize(vertNormals[vert]);
                 n = XMVectorNegate(n);
-                XMStoreFloat3(&normals[vert], n);
+                StoreNormal(vertices[vert], n);
             }
         }
         else
@@ -273,7 +289,7 @@ namespace
             for (size_t vert = 0; vert < nVerts; ++vert)
             {
                 const XMVECTOR n = XMVector3Normalize(vertNormals[vert]);
-                XMStoreFloat3(&normals[vert], n);
+                StoreNormal(vertices[vert], n);
             }
         }
 
@@ -284,11 +300,10 @@ namespace
     //---------------------------------------------------------------------------------
     // Compute normals with weighting by face area
     //---------------------------------------------------------------------------------
-    template<class index_t>
     bool ComputeNormalsWeightedByArea(
-        _In_reads_(nFaces * 3) const index_t* indices, size_t nFaces,
-        _In_reads_(nVerts) const XMFLOAT3* positions, size_t nVerts,
-        bool cw, _Out_writes_(nVerts) XMFLOAT3* normals) noexcept
+        _In_reads_(nFaces) const TriangleIndex32* indices, size_t nFaces,
+        _Inout_updates_(nVerts) Vertex3D* vertices, size_t nVerts,
+        bool cw) noexcept
     {
         auto temp = make_AlignedArrayXMVECTOR(nVerts);
         if (!temp)
@@ -299,13 +314,14 @@ namespace
 
         for (size_t face = 0; face < nFaces; ++face)
         {
-            index_t i0 = indices[face * 3];
-            index_t i1 = indices[face * 3 + 1];
-            index_t i2 = indices[face * 3 + 2];
+            const TriangleIndex32& triangle = indices[face];
+            const uint32_t i0 = triangle.i0;
+            const uint32_t i1 = triangle.i1;
+            const uint32_t i2 = triangle.i2;
 
-            if (i0 == index_t(-1)
-                || i1 == index_t(-1)
-                || i2 == index_t(-1))
+            if (i0 == uint32_t(-1)
+                || i1 == uint32_t(-1)
+                || i2 == uint32_t(-1))
                 continue;
 
             if (i0 >= nVerts
@@ -313,9 +329,9 @@ namespace
                 || i2 >= nVerts)
                 return false;
 
-            const XMVECTOR p0 = XMLoadFloat3(&positions[i0]);
-            const XMVECTOR p1 = XMLoadFloat3(&positions[i1]);
-            const XMVECTOR p2 = XMLoadFloat3(&positions[i2]);
+            const XMVECTOR p0 = LoadPosition(vertices, i0);
+            const XMVECTOR p1 = LoadPosition(vertices, i1);
+            const XMVECTOR p2 = LoadPosition(vertices, i2);
 
             const XMVECTOR u = XMVectorSubtract(p1, p0);
             const XMVECTOR v = XMVectorSubtract(p2, p0);
@@ -350,7 +366,7 @@ namespace
             {
                 XMVECTOR n = XMVector3Normalize(vertNormals[vert]);
                 n = XMVectorNegate(n);
-                XMStoreFloat3(&normals[vert], n);
+                StoreNormal(vertices[vert], n);
             }
         }
         else
@@ -358,7 +374,7 @@ namespace
             for (size_t vert = 0; vert < nVerts; ++vert)
             {
                 const XMVECTOR n = XMVector3Normalize(vertNormals[vert]);
-                XMStoreFloat3(&normals[vert], n);
+                StoreNormal(vertices[vert], n);
             }
         }
 
@@ -370,14 +386,13 @@ namespace s3d
 {
     _Use_decl_annotations_
     bool ComputeNormals(
-        const uint32_t* indices,
+        const TriangleIndex32* indices,
         size_t nFaces,
-        const DirectX::XMFLOAT3* positions,
+        Vertex3D* vertices,
         size_t nVerts,
-        CNORM_FLAGS flags,
-        DirectX::XMFLOAT3* normals) noexcept
+        CNORM_FLAGS flags) noexcept
     {
-        if (!indices || !positions || !nFaces || !nVerts || !normals)
+        if (!indices || !vertices || !nFaces || !nVerts)
             return false;
 
         if (nVerts >= UINT32_MAX)
@@ -390,15 +405,15 @@ namespace s3d
 
         if (flags & CNORM_WEIGHT_BY_AREA)
         {
-            return ComputeNormalsWeightedByArea<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
+            return ComputeNormalsWeightedByArea(indices, nFaces, vertices, nVerts, cw);
         }
         else if (flags & CNORM_WEIGHT_EQUAL)
         {
-            return ComputeNormalsEqualWeight<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
+            return ComputeNormalsEqualWeight(indices, nFaces, vertices, nVerts, cw);
         }
         else
         {
-            return ComputeNormalsWeightedByAngle<uint32_t>(indices, nFaces, positions, nVerts, cw, normals);
+            return ComputeNormalsWeightedByAngle(indices, nFaces, vertices, nVerts, cw);
         }
     }
 }

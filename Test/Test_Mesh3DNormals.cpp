@@ -240,10 +240,24 @@ TEST_CASE("Mesh3D::computeNormals boundaries and failure")
 	SUBCASE("Invalid index")
 	{
 		Mesh3D mesh{
-			{ Vertex3D{ .pos = Float3::Zero() } },
-			{ TriangleIndex32{ 0, 1, 0 } }
+			{
+				Vertex3D{ .pos = Float3::Zero(), .normal = Float3::UnitX() },
+				Vertex3D{ .pos = Float3::UnitX(), .normal = Float3::UnitY() },
+				Vertex3D{ .pos = Float3::UnitY(), .normal = Float3::UnitZ() },
+			},
+			{
+				TriangleIndex32{ 0, 1, 2 },
+				TriangleIndex32{ 0, 3, 1 },
+			}
 		};
+		const Array<Vertex3D> expectedVertices = mesh.vertices;
+
 		CHECK_THROWS_AS(mesh.computeNormals(), Error);
+		REQUIRE_EQ(mesh.vertices.size(), expectedVertices.size());
+		for (size_t i = 0; i < mesh.vertices.size(); ++i)
+		{
+			CHECK_EQ(mesh.vertices[i].normal, expectedVertices[i].normal);
+		}
 	}
 }
 

@@ -250,50 +250,17 @@ namespace s3d
 			return *this;
 		}
 
-		const size_t vertexCount = vertices.size();
-		const Array<DirectX::XMFLOAT3> positions = vertices.map([](const Vertex3D& vertex)
-		{
-			return DirectX::XMFLOAT3{ vertex.pos.x, vertex.pos.y, vertex.pos.z };
-		});
-
-		const size_t triangleCount = indices.size();
-		Array<uint32> flatIndices(triangleCount * 3);
-		for (size_t i = 0; i < triangleCount; ++i)
-		{
-			const TriangleIndex32& triangle = indices[i];
-			flatIndices[i * 3 + 0] = triangle.i0;
-			flatIndices[i * 3 + 1] = triangle.i1;
-			flatIndices[i * 3 + 2] = triangle.i2;
-		}
-
-		Array<DirectX::XMFLOAT3> computedNormals(vertexCount);
-
 		const bool result = ComputeNormals(
-			flatIndices.data(),
-			triangleCount,
-			positions.data(),
-			vertexCount,
-			ToCNORMFlags(weighting),
-			computedNormals.data());
+			indices.data(),
+			indices.size(),
+			vertices.data(),
+			vertices.size(),
+			ToCNORMFlags(weighting));
 
 		if (not result)
 		{
 			throw Error{ "Mesh3D::computeNormals(): DirectX::ComputeNormals() failed." };
 		};
-
-		{
-			const DirectX::XMFLOAT3* pSrc = computedNormals.data();
-			const DirectX::XMFLOAT3* pSrcEnd = (pSrc + vertexCount);
-			Vertex3D* pDst = vertices.data();
-
-			while (pSrc != pSrcEnd)
-			{
-				const DirectX::XMFLOAT3& normal = *pSrc;
-				pDst->normal = Float3{ normal.x, normal.y, normal.z };
-				++pSrc;
-				++pDst;
-			}
-		}
 
 		return *this;
 	}
