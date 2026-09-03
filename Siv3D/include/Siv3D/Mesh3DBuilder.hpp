@@ -218,6 +218,444 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addWedge
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上るくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+
+		/// @brief 平行移動したくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size, Vec3 offset);
+
+		/// @brief 回転および平行移動したくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用したくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size, const Mat4x4& transform);
+
+		/// @brief 指定した UV マッピングを持つ、原点を中心とするくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動したくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動したくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用したくさび形を追加します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addTriangularPrism
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+
+		/// @brief 平行移動した三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size, Vec3 offset);
+
+		/// @brief 回転および平行移動した三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size, const Mat4x4& transform);
+
+		/// @brief 指定した UV マッピングを持つ、原点を中心とする三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動した三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動した三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した三角柱を追加します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addStairs
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上る階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数。1 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps);
+
+		/// @brief 平行移動した階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps, Vec3 offset);
+
+		/// @brief 回転および平行移動した階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps, const Mat4x4& transform);
+
+		/// @brief 指定した UV マッピングを持つ、原点を中心とする階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数。1 以上である必要があります。
+		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動した階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数
+		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, Vec3 offset);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動した階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数
+		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した階段を追加します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数
+		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addPyramid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする正方形底面の四角錐を追加します。
+		/// @param baseSize 底面の一辺の長さ
+		/// @param height 四角錐の高さ
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(double baseSize, double height);
+
+		/// @brief 平行移動した正方形底面の四角錐を追加します。
+		/// @param baseSize 底面の一辺の長さ
+		/// @param height 四角錐の高さ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(double baseSize, double height, Vec3 offset);
+
+		/// @brief 回転および平行移動した正方形底面の四角錐を追加します。
+		/// @param baseSize 底面の一辺の長さ
+		/// @param height 四角錐の高さ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(double baseSize, double height, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した正方形底面の四角錐を追加します。
+		/// @param baseSize 底面の一辺の長さ
+		/// @param height 四角錐の高さ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(double baseSize, double height, const Mat4x4& transform);
+
+		/// @brief 原点を中心とする長方形底面の四角錐を追加します。
+		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 四角錐の高さ
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(SizeF baseSizeXZ = SizeF{ 1.0, 1.0 }, double height = 1.0);
+
+		/// @brief 平行移動した長方形底面の四角錐を追加します。
+		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 四角錐の高さ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(SizeF baseSizeXZ, double height, Vec3 offset);
+
+		/// @brief 回転および平行移動した長方形底面の四角錐を追加します。
+		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 四角錐の高さ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(SizeF baseSizeXZ, double height, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した長方形底面の四角錐を追加します。
+		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 四角錐の高さ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPyramid(SizeF baseSizeXZ, double height, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addRectangularFrustum
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height);
+
+		/// @brief 平行移動した角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, Vec3 offset);
+
+		/// @brief 回転および平行移動した角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const Mat4x4& transform);
+
+		/// @brief 指定した UV マッピングを持つ、原点を中心とする角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動した角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, Vec3 offset);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動した角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した角錐台を追加します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addTetrahedron
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする正四面体を追加します。
+		/// @param radius 外接球の半径
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTetrahedron(double radius = 1.0);
+
+		/// @brief 平行移動した正四面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTetrahedron(double radius, Vec3 offset);
+
+		/// @brief 回転および平行移動した正四面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTetrahedron(double radius, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した正四面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTetrahedron(double radius, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addOctahedron
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする正八面体を追加します。
+		/// @param radius 外接球の半径
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addOctahedron(double radius = 1.0);
+
+		/// @brief 平行移動した正八面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addOctahedron(double radius, Vec3 offset);
+
+		/// @brief 回転および平行移動した正八面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addOctahedron(double radius, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した正八面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addOctahedron(double radius, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addIcosahedron
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする正二十面体を追加します。
+		/// @param radius 外接球の半径
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addIcosahedron(double radius = 1.0);
+
+		/// @brief 平行移動した正二十面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addIcosahedron(double radius, Vec3 offset);
+
+		/// @brief 回転および平行移動した正二十面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addIcosahedron(double radius, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した正二十面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addIcosahedron(double radius, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addDodecahedron
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする正十二面体を追加します。
+		/// @param radius 外接球の半径
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDodecahedron(double radius = 1.0);
+
+		/// @brief 平行移動した正十二面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDodecahedron(double radius, Vec3 offset);
+
+		/// @brief 回転および平行移動した正十二面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDodecahedron(double radius, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した正十二面体を追加します。
+		/// @param radius 外接球の半径
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDodecahedron(double radius, const Mat4x4& transform);
+
 	private:
 
 		Mesh3D m_mesh;

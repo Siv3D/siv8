@@ -156,6 +156,280 @@ TEST_CASE("Mesh3DBuilder::addRoundedBox")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addWedge")
+{
+	const Vec3 size{ 4.0, 2.0, 6.0 };
+
+	SUBCASE("Appends indices with an offset")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addWedge(size, offset));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::Wedge(size), Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset, rotation, and custom UV mapping")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.positiveY = FloatRect{ 0.1f, 0.2f, 0.8f, 0.7f };
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addWedge(size, uvMapping, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Wedge(size, uvMapping).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addWedge(Vec3{ 0.0, 1.0, 1.0 }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addTriangularPrism")
+{
+	const Vec3 size{ 4.0, 2.0, 6.0 };
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addTriangularPrism(size));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::TriangularPrism(size)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix and custom UV mapping")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.negativeX = FloatRect{ 0.9f, 0.8f, 0.5f, 0.2f };
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addTriangularPrism(size, uvMapping, transform));
+
+		const Mesh3D expected = Mesh3D::TriangularPrism(size, uvMapping).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addTriangularPrism(Vec3{ 1.0, -1.0, 1.0 }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addStairs")
+{
+	const Vec3 size{ 4.0, 3.0, 6.0 };
+	constexpr uint32 Steps = 3;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addStairs(size, Steps, offset));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(
+			Mesh3D::Stairs(size, Steps),
+			Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset, rotation, and custom UV mapping")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.negativeZ = FloatRect{ 0.1f, 0.2f, 0.8f, 0.7f };
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addStairs(size, Steps, uvMapping, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Stairs(size, Steps, uvMapping).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addStairs(size, 0));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addRectangularFrustum")
+{
+	const SizeF bottomSizeXZ{ 4.0, 6.0 };
+	const SizeF topSizeXZ{ 2.0, 3.0 };
+	constexpr double Height = 5.0;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addRectangularFrustum(bottomSizeXZ, topSizeXZ, Height));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::RectangularFrustum(bottomSizeXZ, topSizeXZ, Height)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix and custom UV mapping")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.positiveX = FloatRect{ 0.9f, 0.8f, 0.5f, 0.2f };
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRectangularFrustum(bottomSizeXZ, topSizeXZ, Height, uvMapping, transform));
+
+		const Mesh3D expected = Mesh3D::RectangularFrustum(
+			bottomSizeXZ, topSizeXZ, Height, uvMapping).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Equal ends delegate to addBox")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRectangularFrustum(bottomSizeXZ, bottomSizeXZ, Height));
+		Mesh3DTest::CheckMeshDataEqual(
+			builder.getMesh(),
+			Mesh3D::Box(Vec3{ bottomSizeXZ.x, Height, bottomSizeXZ.y }));
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addRectangularFrustum(bottomSizeXZ, topSizeXZ, 0.0));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addPyramid")
+{
+	const SizeF baseSizeXZ{ 4.0, 6.0 };
+	constexpr double Height = 5.0;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addPyramid(baseSizeXZ, Height));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::Pyramid(baseSizeXZ, Height)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Square base with offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addPyramid(4.0, Height, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Pyramid(4.0, Height).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addPyramid(baseSizeXZ, 0.0));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder regular polyhedra")
+{
+	SUBCASE("Appends all regular polyhedra with vertex offsets")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addTetrahedron(1.0));
+		REQUIRE(builder.addOctahedron(1.5));
+		REQUIRE(builder.addIcosahedron(2.0));
+		REQUIRE(builder.addDodecahedron(2.5));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::Tetrahedron(1.0)));
+		REQUIRE(expected.append(Mesh3D::Octahedron(1.5)));
+		REQUIRE(expected.append(Mesh3D::Icosahedron(2.0)));
+		REQUIRE(expected.append(Mesh3D::Dodecahedron(2.5)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Transform overloads")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addTetrahedron(1.0, offset));
+		REQUIRE(builder.addOctahedron(1.5, offset, rotation));
+		REQUIRE(builder.addIcosahedron(2.0, transform));
+		REQUIRE(builder.addDodecahedron(2.5, transform));
+
+		Mesh3D expected;
+		REQUIRE(expected.append(Mesh3D::Tetrahedron(1.0), Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			Mesh3D::Octahedron(1.5),
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(Mesh3D::Icosahedron(2.0), transform));
+		REQUIRE(expected.append(Mesh3D::Dodecahedron(2.5), transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addTetrahedron(0.0));
+		CHECK_FALSE(builder.addOctahedron(-1.0));
+		CHECK_FALSE(builder.addIcosahedron(std::numeric_limits<double>::infinity()));
+		CHECK_FALSE(builder.addDodecahedron(std::numeric_limits<double>::quiet_NaN()));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder storage")
 {
 	Mesh3DBuilder builder;
