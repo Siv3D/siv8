@@ -16,6 +16,7 @@
 # include "Common.hpp"
 # include "Array.hpp"
 # include "Blob.hpp"
+# include "BoxFace.hpp"
 # include "BoxUVMapping.hpp"
 # include "Grid.hpp"
 # include "IWriter.hpp"
@@ -97,18 +98,28 @@ namespace s3d
 
 		/// @brief 原点を中心とする直方体の 3D メッシュを作成します。
 		/// @param size 直方体の各軸方向の大きさ
+		/// @param faces 生成する面
 		/// @return 直方体の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
 		/// @remark 各面は独立した頂点を持ち、面ごとに `[0, 1]` の UV 座標が割り当てられます。
+		/// @remark `faces == BoxFace::None_` の場合は空の 3D メッシュを返します。
 		[[nodiscard]]
-		static Mesh3D Box(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+		static Mesh3D Box(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			BoxFace faces = BoxFace::All);
 
 		/// @brief 原点を中心とする直方体の 3D メッシュを作成します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
+		/// @param faces 生成する面
 		/// @return 直方体の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
 		/// @remark 各面は独立した頂点を持ち、`uvMapping` の対応する矩形が割り当てられます。
+		/// @remark `uvMapping` は `faces` で選択した面に対応する矩形のみ検証されます。
+		/// @remark `faces == BoxFace::None_` の場合は空の 3D メッシュを返します。
 		[[nodiscard]]
-		static Mesh3D Box(Vec3 size, const BoxUVMapping& uvMapping);
+		static Mesh3D Box(
+			Vec3 size,
+			const BoxUVMapping& uvMapping,
+			BoxFace faces = BoxFace::All);
 
 		////////////////////////////////////////////////////////////////
 		//

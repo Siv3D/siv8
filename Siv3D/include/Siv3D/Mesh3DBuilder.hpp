@@ -91,55 +91,68 @@ namespace s3d
 
 		/// @brief 原点を中心とする直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+		/// @remark `faces == BoxFace::None_` の場合、メッシュを変更せず true を返します。
+		bool addBox(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			BoxFace faces = BoxFace::All);
 
 		/// @brief 平行移動した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param offset 平行移動量
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, Vec3 offset);
+		bool addBox(Vec3 size, Vec3 offset, BoxFace faces = BoxFace::All);
 
 		/// @brief 回転および平行移動した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, Vec3 offset, const Quaternion& rotation);
+		bool addBox(Vec3 size, Vec3 offset, const Quaternion& rotation, BoxFace faces = BoxFace::All);
 
 		/// @brief アフィン変換を適用した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param transform 適用するアフィン変換行列
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const Mat4x4& transform);
+		bool addBox(Vec3 size, const Mat4x4& transform, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とする直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping);
+		/// @remark `uvMapping` は `faces` で選択した面に対応する矩形のみ検証されます。
+		/// @remark `faces == BoxFace::None_` の場合、メッシュを変更せず true を返します。
+		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
 		/// @param offset 平行移動量
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset);
+		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
 		/// @param transform 適用するアフィン変換行列
+		/// @param faces 生成する面
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace faces = BoxFace::All);
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -20,17 +20,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Box(const Vec3 size)
+	Mesh3D Mesh3D::Box(const Vec3 size, const BoxFace faces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBox(size);
+		builder.addBox(size, faces);
 		return std::move(builder).build();
 	}
 
-	Mesh3D Mesh3D::Box(const Vec3 size, const BoxUVMapping& uvMapping)
+	Mesh3D Mesh3D::Box(
+		const Vec3 size,
+		const BoxUVMapping& uvMapping,
+		const BoxFace faces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBox(size, uvMapping);
+		builder.addBox(size, uvMapping, faces);
 		return std::move(builder).build();
 	}
 

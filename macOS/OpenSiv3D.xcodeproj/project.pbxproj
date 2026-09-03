@@ -2853,6 +2853,7 @@
 		F9A3D00430A1000000C0DE01 /* Mesh3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */; };
 		F9A3D50130A3000000C0DE01 /* Mesh3DBuilder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */; };
 		F9A3D50230A3000000C0DE01 /* Mesh3DBuilder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D51230A3000000C0DE01 /* Mesh3DBuilder.ipp */; };
+		F9A3D60030A4000000C0DE01 /* BoxFace.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D60130A4000000C0DE01 /* BoxFace.hpp */; };
 		F9A3D00830A1000000C0DE01 /* BoxUVMapping.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01930A1000000C0DE01 /* BoxUVMapping.hpp */; };
 		F9A3D00A30A1000000C0DE01 /* MaterialAlphaMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01B30A1000000C0DE01 /* MaterialAlphaMode.hpp */; };
 		F9A3D00B30A1000000C0DE01 /* MaterialTexture.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01C30A1000000C0DE01 /* MaterialTexture.hpp */; };
@@ -6219,6 +6220,7 @@
 		F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3D.ipp; sourceTree = "<group>"; };
 		F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DBuilder.hpp; sourceTree = "<group>"; };
 		F9A3D51230A3000000C0DE01 /* Mesh3DBuilder.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DBuilder.ipp; sourceTree = "<group>"; };
+		F9A3D60130A4000000C0DE01 /* BoxFace.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BoxFace.hpp; sourceTree = "<group>"; };
 		F9A3D01930A1000000C0DE01 /* BoxUVMapping.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BoxUVMapping.hpp; sourceTree = "<group>"; };
 		F9A3D01B30A1000000C0DE01 /* MaterialAlphaMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MaterialAlphaMode.hpp; sourceTree = "<group>"; };
 		F9A3D01C30A1000000C0DE01 /* MaterialTexture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MaterialTexture.hpp; sourceTree = "<group>"; };
@@ -7750,6 +7752,7 @@
 				F9A3D01C30A1000000C0DE01 /* MaterialTexture.hpp */,
 				F9A3D01D30A1000000C0DE01 /* Material.hpp */,
 				F93BD7EB3016828C00B3542E /* Mesh2D.hpp */,
+				F9A3D60130A4000000C0DE01 /* BoxFace.hpp */,
 				F9A3D01930A1000000C0DE01 /* BoxUVMapping.hpp */,
 				F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */,
 				F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */,
@@ -16072,6 +16075,7 @@
 				F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */,
 				F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */,
 				F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */,
+				F9A3D60030A4000000C0DE01 /* BoxFace.hpp in Headers */,
 				F9A3D00830A1000000C0DE01 /* BoxUVMapping.hpp in Headers */,
 				F9A3D00A30A1000000C0DE01 /* MaterialAlphaMode.hpp in Headers */,
 				F9A3D00B30A1000000C0DE01 /* MaterialTexture.hpp in Headers */,

@@ -19,8 +19,8 @@ namespace
 
 	static_assert(requires
 	{
-		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Box);
-		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Box);
+		static_cast<Mesh3D (*)(Vec3, BoxFace)>(&Mesh3D::Box);
+		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&, BoxFace)>(&Mesh3D::Box);
 		static_cast<Mesh3D (*)(Vec3, double, uint32)>(&Mesh3D::RoundedBox);
 		static_cast<Mesh3D (*)(Vec3, double, uint32, const BoxUVMapping&)>(&Mesh3D::RoundedBox);
 		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Wedge);
@@ -122,6 +122,68 @@ TEST_CASE("Mesh3D::Box")
 	CHECK(Mesh3D::Box(Vec3{ 1.0, -1.0, 1.0 }).isEmpty());
 	CHECK(Mesh3D::Box(Vec3{ 1.0, 1.0, std::numeric_limits<double>::infinity() }).isEmpty());
 	CHECK(Mesh3D::Box(Vec3{ 1.0, 1.0, std::numeric_limits<double>::max() }).isEmpty());
+}
+
+TEST_CASE("Mesh3D::Box face mask")
+{
+	struct FaceCase
+	{
+		BoxFace face;
+		Float3 normal;
+	};
+
+	constexpr std::array<FaceCase, 6> FaceCases
+	{{
+		{ BoxFace::NegativeX, Float3{ -1.0f, 0.0f, 0.0f } },
+		{ BoxFace::PositiveX, Float3{ 1.0f, 0.0f, 0.0f } },
+		{ BoxFace::NegativeY, Float3{ 0.0f, -1.0f, 0.0f } },
+		{ BoxFace::PositiveY, Float3{ 0.0f, 1.0f, 0.0f } },
+		{ BoxFace::NegativeZ, Float3{ 0.0f, 0.0f, -1.0f } },
+		{ BoxFace::PositiveZ, Float3{ 0.0f, 0.0f, 1.0f } },
+	}};
+
+	for (const auto& [face, normal] : FaceCases)
+	{
+		const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, face);
+		REQUIRE_EQ(mesh.vertexCount(), size_t{ 4 });
+		REQUIRE_EQ(mesh.triangleCount(), size_t{ 2 });
+		CheckMeshGeometry(mesh);
+
+		for (const auto& vertex : mesh.vertices)
+		{
+			CHECK_EQ(vertex.normal, normal);
+		}
+	}
+
+	SUBCASE("Multiple faces")
+	{
+		const BoxFace faces = (BoxFace::NegativeX | BoxFace::PositiveY | BoxFace::PositiveZ);
+		const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, faces);
+		CHECK_EQ(mesh.vertexCount(), size_t{ 12 });
+		CHECK_EQ(mesh.triangleCount(), size_t{ 6 });
+		CheckMeshGeometry(mesh);
+	}
+
+	SUBCASE("No faces")
+	{
+		CHECK(Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, BoxFace::None_).isEmpty());
+		CHECK(Mesh3D::Box(Vec3{ 0.0, 4.0, 6.0 }, BoxFace::None_).isEmpty());
+	}
+
+	SUBCASE("Only selected UV rectangles are validated")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.negativeX.left = std::numeric_limits<float>::quiet_NaN();
+
+		const Mesh3D mesh = Mesh3D::Box(
+			Vec3{ 2.0, 4.0, 6.0 }, uvMapping, BoxFace::PositiveX);
+		CHECK_EQ(mesh.vertexCount(), size_t{ 4 });
+		CHECK_EQ(mesh.triangleCount(), size_t{ 2 });
+		CHECK(Mesh3D::Box(
+			Vec3{ 2.0, 4.0, 6.0 }, uvMapping, BoxFace::NegativeX).isEmpty());
+		CHECK(Mesh3D::Box(
+			Vec3{ 2.0, 4.0, 6.0 }, uvMapping, BoxFace::None_).isEmpty());
+	}
 }
 
 TEST_CASE("Mesh3D::Box with UV mapping")

@@ -1828,6 +1828,7 @@
 # include <Siv3D/Material.hpp>
 # include <Siv3D/VertexNormalWeighting.hpp>
 # include <Siv3D/Vertex3D.hpp>
+# include <Siv3D/BoxFace.hpp>
 # include <Siv3D/BoxUVMapping.hpp>
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Mesh3DBuilder.hpp>

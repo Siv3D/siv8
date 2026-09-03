@@ -27,7 +27,7 @@ namespace s3d
 		using Mesh3DDetail::TransformVertexRange;
 		using CircleSample = Mesh3DDetail::CircleSample<float>;
 
-		struct BoxFace
+		struct BoxFaceData
 		{
 			Float3 center;
 			Float3 u;
@@ -311,27 +311,34 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addBox(const Vec3 size)
+	bool Mesh3DBuilder::addBox(const Vec3 size, const BoxFace faces)
 	{
-		return addBox(size, BoxUVMapping{});
+		return addBox(size, BoxUVMapping{}, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(const Vec3 size, const Vec3 offset)
+	bool Mesh3DBuilder::addBox(const Vec3 size, const Vec3 offset, const BoxFace faces)
 	{
-		return addBox(size, BoxUVMapping{}, offset);
+		return addBox(size, BoxUVMapping{}, offset, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(const Vec3 size, const Vec3 offset, const Quaternion& rotation)
+	bool Mesh3DBuilder::addBox(
+		const Vec3 size,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const BoxFace faces)
 	{
-		return addBox(size, BoxUVMapping{}, offset, rotation);
+		return addBox(size, BoxUVMapping{}, offset, rotation, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(const Vec3 size, const Mat4x4& transform)
+	bool Mesh3DBuilder::addBox(const Vec3 size, const Mat4x4& transform, const BoxFace faces)
 	{
-		return addBox(size, BoxUVMapping{}, transform);
+		return addBox(size, BoxUVMapping{}, transform, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(const Vec3 _size, const BoxUVMapping& uvMapping)
+	bool Mesh3DBuilder::addBox(
+		const Vec3 _size,
+		const BoxUVMapping& uvMapping,
+		const BoxFace selectedFaces)
 	{
 		if (not IsFloatRepresentable(_size))
 		{
@@ -346,8 +353,15 @@ namespace s3d
 			return GenerationFailed<bool>("Mesh3D::Box(): Every size component must be positive after conversion to float");
 		}
 
+		constexpr uint8 ValidFaceBits = static_cast<uint8>(BoxFace::All);
+		const uint8 selectedFaceBits = static_cast<uint8>(selectedFaces);
+		if (selectedFaceBits & ~ValidFaceBits)
+		{
+			return GenerationFailed<bool>("Mesh3D::Box(): faces contains unsupported bits");
+		}
+
 		const Float3 halfSize = (size * 0.5f);
-		const std::array<BoxFace, 6> faces =
+		const std::array<BoxFaceData, 6> faces =
 		{{
 			{ { 0.0f, 0.0f, -halfSize.z }, { size.x, 0.0f, 0.0f }, { 0.0f, -size.y, 0.0f }, { 0.0f, 0.0f, -1.0f } },
 			{ { 0.0f, 0.0f,  halfSize.z }, { -size.x, 0.0f, 0.0f }, { 0.0f, -size.y, 0.0f }, { 0.0f, 0.0f, 1.0f } },
@@ -365,24 +379,41 @@ namespace s3d
 			uvMapping.positiveY,
 			uvMapping.negativeY,
 		}};
+		constexpr std::array<BoxFace, 6> faceMasks =
+		{{
+			BoxFace::NegativeZ,
+			BoxFace::PositiveZ,
+			BoxFace::PositiveX,
+			BoxFace::NegativeX,
+			BoxFace::PositiveY,
+			BoxFace::NegativeY,
+		}};
 
-		for (const auto& uvRect : uvRects)
+		size_t selectedFaceCount = 0;
+		for (size_t faceIndex = 0; faceIndex < faceMasks.size(); ++faceIndex)
 		{
-			if (not IsFinite(uvRect))
+			if (not static_cast<bool>(selectedFaces & faceMasks[faceIndex]))
 			{
-				return GenerationFailed<bool>("Mesh3D::Box(): Every UV rectangle must be finite");
+				continue;
 			}
+
+			if (not IsFinite(uvRects[faceIndex]))
+			{
+				return GenerationFailed<bool>("Mesh3D::Box(): Every selected UV rectangle must be finite");
+			}
+
+			++selectedFaceCount;
 		}
 
-		constexpr size_t AddedVertexCount = 24;
-		constexpr size_t AddedTriangleCount = 12;
+		const size_t addedVertexCount = (selectedFaceCount * 4);
+		const size_t addedTriangleCount = (selectedFaceCount * 2);
 		const size_t vertexBase = m_mesh.vertices.size();
 		const size_t triangleBase = m_mesh.indices.size();
 		size_t newVertexCount;
 		size_t newTriangleCount;
-		if ((not CheckedAdd(vertexBase, AddedVertexCount, newVertexCount))
+		if ((not CheckedAdd(vertexBase, addedVertexCount, newVertexCount))
 			|| (Mesh3D::MaxVertexCount < newVertexCount)
-			|| (not CheckedAdd(triangleBase, AddedTriangleCount, newTriangleCount)))
+			|| (not CheckedAdd(triangleBase, addedTriangleCount, newTriangleCount)))
 		{
 			return GenerationFailed<bool>("Mesh3D::Box(): The generated mesh exceeds the supported size");
 		}
@@ -390,9 +421,15 @@ namespace s3d
 		m_mesh.vertices.resize(newVertexCount);
 		m_mesh.indices.resize(newTriangleCount);
 
+		size_t outputFaceIndex = 0;
 		for (size_t faceIndex = 0; faceIndex < faces.size(); ++faceIndex)
 		{
-			const BoxFace& face = faces[faceIndex];
+			if (not static_cast<bool>(selectedFaces & faceMasks[faceIndex]))
+			{
+				continue;
+			}
+
+			const BoxFaceData& face = faces[faceIndex];
 			const Float3 halfU = (face.u * 0.5f);
 			const Float3 halfV = (face.v * 0.5f);
 			const FloatRect uvRect = uvRects[faceIndex];
@@ -400,7 +437,7 @@ namespace s3d
 			const float vSign = ((uvRect.bottom < uvRect.top) ? -1.0f : 1.0f);
 			const Float3 tangent = (face.u.normalized() * uSign);
 			const Float4 tangentFrame{ tangent, (uSign * vSign) };
-			const size_t vertexOffset = (vertexBase + faceIndex * 4);
+			const size_t vertexOffset = (vertexBase + outputFaceIndex * 4);
 
 			m_mesh.vertices[vertexOffset + 0] = Vertex3D{
 				.pos = (face.center - halfU - halfV),
@@ -428,41 +465,51 @@ namespace s3d
 			};
 
 			const uint32 i0 = static_cast<uint32>(vertexOffset);
-			const size_t triangleOffset = (triangleBase + faceIndex * 2);
+			const size_t triangleOffset = (triangleBase + outputFaceIndex * 2);
 			m_mesh.indices[triangleOffset + 0] = TriangleIndex32{ i0, (i0 + 1), (i0 + 2) };
 			m_mesh.indices[triangleOffset + 1] = TriangleIndex32{ (i0 + 2), (i0 + 1), (i0 + 3) };
+			++outputFaceIndex;
 		}
 
 		return true;
-	}
-
-	bool Mesh3DBuilder::addBox(const Vec3 size, const BoxUVMapping& uvMapping, const Vec3 offset)
-	{
-		return addBox(size, uvMapping, Mat4x4::Translate(Float3{ offset }));
 	}
 
 	bool Mesh3DBuilder::addBox(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const BoxFace faces)
 	{
-		return addBox(size, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		return addBox(size, uvMapping, Mat4x4::Translate(Float3{ offset }), faces);
 	}
 
 	bool Mesh3DBuilder::addBox(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const BoxFace faces)
+	{
+		return addBox(size, uvMapping,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), faces);
+	}
+
+	bool Mesh3DBuilder::addBox(
+		const Vec3 size,
+		const BoxUVMapping& uvMapping,
+		const Mat4x4& transform,
+		const BoxFace faces)
 	{
 		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addBox(size, uvMapping))
+		if (not addBox(size, uvMapping, faces))
 		{
 			return false;
 		}
 
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		if (vertexOffset < m_mesh.vertices.size())
+		{
+			TransformAddedVertices(m_mesh, vertexOffset, transform);
+		}
 		return true;
 	}
 

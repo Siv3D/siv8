@@ -71,6 +71,64 @@ TEST_CASE("Mesh3DBuilder::addBox")
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
+	SUBCASE("Face masks and transforms")
+	{
+		const BoxFace faces = (BoxFace::NegativeX | BoxFace::PositiveY | BoxFace::PositiveZ);
+		const Vec3 size{ 2.0, 4.0, 6.0 };
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox(size, offset, faces));
+		REQUIRE(builder.addBox(size, offset, rotation, faces));
+		REQUIRE(builder.addBox(size, transform, faces));
+
+		Mesh3D expected = Mesh3D::Box(size, faces).translated(offset);
+		REQUIRE(expected.append(
+			Mesh3D::Box(size, faces),
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(Mesh3D::Box(size, faces), transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Custom UV mapping and face mask")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.positiveY = FloatRect{ 0.1f, 0.2f, 0.8f, 0.7f };
+		uvMapping.negativeX.left = std::numeric_limits<float>::quiet_NaN();
+		const BoxFace faces = (BoxFace::PositiveX | BoxFace::PositiveY);
+		const Vec3 size{ 2.0, 4.0, 6.0 };
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::Translate(Float3{ offset });
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox(size, uvMapping, offset, faces));
+		REQUIRE(builder.addBox(size, uvMapping, offset, rotation, faces));
+		REQUIRE(builder.addBox(size, uvMapping, transform, faces));
+
+		Mesh3D expected = Mesh3D::Box(size, uvMapping, faces).translated(offset);
+		REQUIRE(expected.append(
+			Mesh3D::Box(size, uvMapping, faces),
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(Mesh3D::Box(size, uvMapping, faces), transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("No faces is a successful no-op")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK(builder.addBox(Vec3{ 2.0, 4.0, 6.0 }, BoxFace::None_));
+		CHECK(builder.addBox(
+			Vec3{ 2.0, 4.0, 6.0 }, Mat4x4::Identity(), BoxFace::None_));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
 	SUBCASE("Failure leaves existing content unchanged")
 	{
 		Mesh3DBuilder builder;
@@ -78,6 +136,14 @@ TEST_CASE("Mesh3DBuilder::addBox")
 		const Mesh3D expected = builder.getMesh();
 
 		CHECK_FALSE(builder.addBox(Vec3{ 0.0, 1.0, 1.0 }));
+		CHECK_FALSE(builder.addBox(
+			Vec3{ 1.0, 1.0, 1.0 }, static_cast<BoxFace>(0x80)));
+		CHECK_FALSE(builder.addBox(Vec3{ 0.0, 1.0, 1.0 }, BoxFace::None_));
+
+		BoxUVMapping invalidMapping;
+		invalidMapping.negativeX.left = std::numeric_limits<float>::quiet_NaN();
+		CHECK_FALSE(builder.addBox(
+			Vec3{ 1.0, 1.0, 1.0 }, invalidMapping, BoxFace::NegativeX));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 }
