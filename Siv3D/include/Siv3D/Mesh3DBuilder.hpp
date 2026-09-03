@@ -795,6 +795,143 @@ namespace s3d
 			double smoothingAngle,
 			const Mat4x4& transform);
 
+		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた形状を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）。0 は `+X` 方向です。
+		/// @param sweepAngle `+Z` 方向へ回転する角度（ラジアン）。0 より大きく 2π 以下である必要があります。
+		/// @param segments 回転方向の分割数。部分回転では 1 以上、完全な一周では 3 以上である必要があります。
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 角度、端面、UV 座標、および法線の規約は角度を指定する `Mesh3D::Revolve()` と同じです。
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 平行移動した部分回転体を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param offset 平行移動量
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			Vec3 offset,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 回転および平行移動した部分回転体を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			Vec3 offset,
+			const Quaternion& rotation,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief アフィン変換を適用した部分回転体を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			const Mat4x4& transform,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief プロファイル方向の法線を補間した部分回転体を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			double smoothingAngle,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 平行移動し、プロファイル方向の法線を補間した部分回転体を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
+		/// @param offset 平行移動量
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			double smoothingAngle,
+			Vec3 offset,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 回転および平行移動し、プロファイル方向の法線を補間した部分回転体を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			double smoothingAngle,
+			Vec3 offset,
+			const Quaternion& rotation,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief アフィン変換を適用し、プロファイル方向の法線を補間した部分回転体を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
+		/// @param transform 適用するアフィン変換行列
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			double smoothingAngle,
+			const Mat4x4& transform,
+			CloseEnds closeEnds = CloseEnds::No);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addTetrahedron

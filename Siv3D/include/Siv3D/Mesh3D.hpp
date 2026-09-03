@@ -385,6 +385,76 @@ namespace s3d
 		[[nodiscard]]
 		static Mesh3D Revolve(std::initializer_list<Vec2> profile, uint32 segments, double smoothingAngle);
 
+		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
+		/// @param startAngle 回転を開始する角度（ラジアン）。0 は `+X` 方向です。
+		/// @param sweepAngle `+Z` 方向へ回転する角度（ラジアン）。0 より大きく 2π 以下である必要があります。
+		/// @param segments 回転方向の分割数。部分回転では 1 以上、完全な一周では 3 以上である必要があります。
+		/// @param closeEnds 回転方向の始端と終端を閉じる場合は `CloseEnds::Yes`、端面を作成しない場合は `CloseEnds::No`
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `CloseEnds::Yes` の場合、プロファイルを直線で閉じた単純多角形として解釈し、回転方向の始端と終端に平面の端面を作成します。端面を作成できないプロファイルの場合は生成に失敗します。
+		/// @remark `sweepAngle == 2π` の場合は回転方向の端面を作成せず、継ぎ目を接続します。`startAngle == 0` なら 2 引数版の `Revolve()` と同じ形状になります。
+		/// @remark プロファイル、開口、UV 座標、および法線の規約は 2 引数版の `Revolve()` と同じです。側面の U 座標は指定した回転範囲を `[0, 1]` に正規化します。
+		[[nodiscard]]
+		static Mesh3D Revolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark プロファイル、角度、端面、および UV 座標の規約は `std::span` を受け取る角度指定オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Revolve(
+			std::initializer_list<Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 法線の補間規約は 3 引数版の `Revolve()`、角度、端面、および UV 座標の規約は角度指定オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Revolve(
+			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			double smoothingAngle,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark プロファイル、法線、角度、端面、および UV 座標の規約は `std::span` を受け取る角度指定オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Revolve(
+			std::initializer_list<Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			double smoothingAngle,
+			CloseEnds closeEnds = CloseEnds::No);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Tube

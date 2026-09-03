@@ -1453,6 +1453,154 @@ namespace s3d
 		return true;
 	}
 
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const CloseEnds closeEnds)
+	{
+		return Mesh3DDetail::AppendRevolve(
+			m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const Vec3 offset,
+		const CloseEnds closeEnds)
+	{
+		return addRevolve(
+			profile,
+			startAngle,
+			sweepAngle,
+			segments,
+			Mat4x4::Translate(Float3{ offset }),
+			closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseEnds closeEnds)
+	{
+		return addRevolve(
+			profile,
+			startAngle,
+			sweepAngle,
+			segments,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
+			closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const Mat4x4& transform,
+		const CloseEnds closeEnds)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not Mesh3DDetail::AppendRevolve(
+			m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const CloseEnds closeEnds)
+	{
+		return Mesh3DDetail::AppendRevolve(
+			m_mesh,
+			profile,
+			startAngle,
+			sweepAngle,
+			segments,
+			smoothingAngle,
+			closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const Vec3 offset,
+		const CloseEnds closeEnds)
+	{
+		return addRevolve(
+			profile,
+			startAngle,
+			sweepAngle,
+			segments,
+			smoothingAngle,
+			Mat4x4::Translate(Float3{ offset }),
+			closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseEnds closeEnds)
+	{
+		return addRevolve(
+			profile,
+			startAngle,
+			sweepAngle,
+			segments,
+			smoothingAngle,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
+			closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const Mat4x4& transform,
+		const CloseEnds closeEnds)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not Mesh3DDetail::AppendRevolve(
+			m_mesh,
+			profile,
+			startAngle,
+			sweepAngle,
+			segments,
+			smoothingAngle,
+			closeEnds))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addTriangularPrism

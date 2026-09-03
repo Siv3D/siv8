@@ -22,6 +22,10 @@ namespace
 		static_cast<Mesh3D (*)(std::span<const Vec2>, uint32, double)>(&Mesh3D::Revolve);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, uint32)>(&Mesh3D::Revolve);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, uint32, double)>(&Mesh3D::Revolve);
+		static_cast<Mesh3D (*)(std::span<const Vec2>, double, double, uint32, CloseEnds)>(&Mesh3D::Revolve);
+		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, double, double, uint32, CloseEnds)>(&Mesh3D::Revolve);
+		static_cast<Mesh3D (*)(std::span<const Vec2>, double, double, uint32, double, CloseEnds)>(&Mesh3D::Revolve);
+		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, double, double, uint32, double, CloseEnds)>(&Mesh3D::Revolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, Vec3)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, Vec3, const Quaternion&)>(&Mesh3DBuilder::addRevolve);
@@ -30,6 +34,14 @@ namespace
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, Vec3)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, const Mat4x4&)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, Vec3, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, Vec3, const Quaternion&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, const Mat4x4&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, Vec3, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, Vec3, const Quaternion&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, const Mat4x4&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 	});
 
 }
@@ -180,6 +192,100 @@ TEST_CASE("Mesh3D::Revolve interior axis point")
 	CheckMeshGeometry(mesh);
 }
 
+TEST_CASE("Mesh3D::Revolve partial angle")
+{
+	constexpr uint32 Segments = 4;
+	const Array<Vec2> profile{ { 1.0, -2.0 }, { 1.0, 3.0 } };
+	const Mesh3D mesh = Mesh3D::Revolve(
+		profile, 0.0, Math::HalfPi, Segments, CloseEnds::No);
+	const size_t ringStride = (Segments + 1);
+
+	CHECK_EQ(mesh.vertexCount(), (ringStride * 2));
+	CHECK_EQ(mesh.triangleCount(), (Segments * 2));
+	CheckMeshGeometry(mesh);
+	CHECK_EQ(mesh.vertices[0].pos, Float3{ 1.0f, -2.0f, 0.0f });
+	CHECK(mesh.vertices[Segments].pos.x == doctest::Approx(0.0f).scale(1.0));
+	CHECK_EQ(mesh.vertices[Segments].pos.y, -2.0f);
+	CHECK(mesh.vertices[Segments].pos.z == doctest::Approx(1.0f));
+	CHECK_EQ(mesh.vertices[Segments].tex, Float2{ 1.0f, 0.0f });
+
+	const Mesh3D oneSegment = Mesh3D::Revolve(
+		profile, Math::QuarterPi, Math::HalfPi, 1, CloseEnds::No);
+	CHECK_EQ(oneSegment.vertexCount(), size_t{ 4 });
+	CHECK_EQ(oneSegment.triangleCount(), size_t{ 2 });
+	CheckMeshGeometry(oneSegment);
+
+	CheckMeshDataEqual(
+		Mesh3D::Revolve(
+			{ { 1.0, -2.0 }, { 1.0, 3.0 } },
+			0.0,
+			Math::HalfPi,
+			Segments,
+			CloseEnds::No),
+		mesh);
+}
+
+TEST_CASE("Mesh3D::Revolve partial end caps")
+{
+	constexpr uint32 Segments = 4;
+	const Array<Vec2> profile{
+		{ 0.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 1.0 }, { 0.0, 1.0 }
+	};
+	const Mesh3D mesh = Mesh3D::Revolve(
+		profile, 0.0, Math::HalfPi, Segments, CloseEnds::Yes);
+	const size_t sideVertexCount = ((6 * Segments) + 4);
+	const size_t capVertexCount = 4;
+
+	CHECK_EQ(mesh.vertexCount(), (sideVertexCount + (capVertexCount * 2)));
+	CHECK_EQ(mesh.triangleCount(), size_t{ (4 * Segments) + 4 });
+	CheckMeshGeometry(mesh);
+
+	for (size_t i = 0; i < capVertexCount; ++i)
+	{
+		const Vertex3D& start = mesh.vertices[sideVertexCount + i];
+		const Vertex3D& end = mesh.vertices[sideVertexCount + capVertexCount + i];
+		CHECK_EQ(start.normal, -Float3::UnitZ());
+		CHECK(end.normal.x == doctest::Approx(-1.0f));
+		CHECK(end.normal.y == doctest::Approx(0.0f).scale(1.0));
+		CHECK(end.normal.z == doctest::Approx(0.0f).scale(1.0));
+		CHECK((0.0f <= start.tex.x && start.tex.x <= 1.0f));
+		CHECK((0.0f <= start.tex.y && start.tex.y <= 1.0f));
+	}
+
+	const Array<Vec2> reversed{
+		{ 0.0, 1.0 }, { 2.0, 1.0 }, { 2.0, -1.0 }, { 0.0, -1.0 }
+	};
+	CheckMeshGeometry(Mesh3D::Revolve(
+		reversed, 0.0, Math::HalfPi, Segments, CloseEnds::Yes));
+
+	const Array<Vec2> hollow{
+		{ 2.0, -1.0 }, { 2.0, 1.0 }, { 1.0, 1.0 }, { 1.0, -1.0 }, { 2.0, -1.0 }
+	};
+	CheckMeshGeometry(Mesh3D::Revolve(
+		hollow, -Math::QuarterPi, Math::Pi, Segments, CloseEnds::Yes));
+}
+
+TEST_CASE("Mesh3D::Revolve full-angle compatibility")
+{
+	constexpr uint32 Segments = 8;
+	const Array<Vec2> profile{
+		{ 0.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 1.0 }, { 0.0, 1.0 }
+	};
+
+	CheckMeshDataEqual(
+		Mesh3D::Revolve(profile, Segments),
+		Mesh3D::Revolve(profile, 0.0, Math::TwoPi, Segments, CloseEnds::Yes));
+	CheckMeshDataEqual(
+		Mesh3D::Revolve(profile, Segments, Math::HalfPi),
+		Mesh3D::Revolve(
+			profile,
+			0.0,
+			Math::TwoPi,
+			Segments,
+			Math::HalfPi,
+			CloseEnds::Yes));
+}
+
 TEST_CASE("Mesh3D::Revolve invalid arguments")
 {
 	constexpr uint32 Segments = 8;
@@ -210,6 +316,19 @@ TEST_CASE("Mesh3D::Revolve invalid arguments")
 	CHECK(Mesh3D::Revolve(valid, Segments, (Math::Pi + 0.001)).isEmpty());
 	CHECK(Mesh3D::Revolve(valid, Segments, std::numeric_limits<double>::quiet_NaN()).isEmpty());
 	CHECK(Mesh3D::Revolve(valid, Segments, std::numeric_limits<double>::infinity()).isEmpty());
+	CHECK(Mesh3D::Revolve(valid, 0.0, 0.0, Segments).isEmpty());
+	CHECK(Mesh3D::Revolve(valid, 0.0, -Math::QuarterPi, Segments).isEmpty());
+	CHECK(Mesh3D::Revolve(valid, 0.0, (Math::TwoPi + 0.001), Segments).isEmpty());
+	CHECK(Mesh3D::Revolve(
+		valid,
+		std::numeric_limits<double>::quiet_NaN(),
+		Math::HalfPi,
+		Segments).isEmpty());
+	CHECK(Mesh3D::Revolve(valid, 0.0, Math::HalfPi, 0).isEmpty());
+	CHECK(Mesh3D::Revolve(valid, 0.0, Math::TwoPi, 2).isEmpty());
+	CHECK(Mesh3D::Revolve(
+		valid, 0.0, Math::HalfPi, Segments, CloseEnds::Yes).isEmpty());
+	CheckMeshGeometry(Mesh3D::Revolve(valid, 0.0, Math::HalfPi, 1));
 }
 
 TEST_CASE("Mesh3DBuilder::addRevolve")
@@ -270,6 +389,80 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
+	SUBCASE("Partial-angle transform overloads")
+	{
+		constexpr double StartAngle = -Math::QuarterPi;
+		constexpr double SweepAngle = Math::Pi;
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+		const Mesh3D hard = Mesh3D::Revolve(
+			profile, StartAngle, SweepAngle, Segments, CloseEnds::Yes);
+		const Mesh3D smooth = Mesh3D::Revolve(
+			profile,
+			StartAngle,
+			SweepAngle,
+			Segments,
+			SmoothingAngle,
+			CloseEnds::Yes);
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRevolve(
+			profile, StartAngle, SweepAngle, Segments, CloseEnds::Yes));
+		REQUIRE(builder.addRevolve(
+			profile, StartAngle, SweepAngle, Segments, offset, CloseEnds::Yes));
+		REQUIRE(builder.addRevolve(
+			profile, StartAngle, SweepAngle, Segments, offset, rotation, CloseEnds::Yes));
+		REQUIRE(builder.addRevolve(
+			profile, StartAngle, SweepAngle, Segments, transform, CloseEnds::Yes));
+		REQUIRE(builder.addRevolve(
+			profile,
+			StartAngle,
+			SweepAngle,
+			Segments,
+			SmoothingAngle,
+			CloseEnds::Yes));
+		REQUIRE(builder.addRevolve(
+			profile,
+			StartAngle,
+			SweepAngle,
+			Segments,
+			SmoothingAngle,
+			offset,
+			CloseEnds::Yes));
+		REQUIRE(builder.addRevolve(
+			profile,
+			StartAngle,
+			SweepAngle,
+			Segments,
+			SmoothingAngle,
+			offset,
+			rotation,
+			CloseEnds::Yes));
+		REQUIRE(builder.addRevolve(
+			profile,
+			StartAngle,
+			SweepAngle,
+			Segments,
+			SmoothingAngle,
+			transform,
+			CloseEnds::Yes));
+
+		Mesh3D expected;
+		REQUIRE(expected.append(hard));
+		REQUIRE(expected.append(hard, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			hard, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(hard, transform));
+		REQUIRE(expected.append(smooth));
+		REQUIRE(expected.append(smooth, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			smooth, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(smooth, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
 	SUBCASE("Failure leaves existing content unchanged")
 	{
 		Mesh3DBuilder builder;
@@ -284,6 +477,16 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 			Segments,
 			std::numeric_limits<double>::quiet_NaN(),
 			Vec3{ 1.0, 2.0, 3.0 }));
+		CHECK_FALSE(builder.addRevolve(profile, 0.0, 0.0, Segments));
+		CHECK_FALSE(builder.addRevolve(profile, 0.0, Math::TwoPi, 2));
+		const Array<Vec2> openProfile{ { 1.0, -1.0 }, { 1.0, 1.0 } };
+		CHECK_FALSE(builder.addRevolve(
+			openProfile,
+			0.0,
+			Math::HalfPi,
+			Segments,
+			Mat4x4::Identity(),
+			CloseEnds::Yes));
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 }

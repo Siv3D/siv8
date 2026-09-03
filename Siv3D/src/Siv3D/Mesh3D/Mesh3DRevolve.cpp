@@ -12,8 +12,11 @@
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/MathConstants.hpp>
+# include <Siv3D/Polygon.hpp>
 # include "Mesh3DCommon.hpp"
+# include <algorithm>
 # include <cmath>
+# include <optional>
 
 namespace s3d
 {
@@ -98,13 +101,38 @@ namespace s3d::Mesh3DDetail
 		const uint32 segments,
 		const double smoothingAngle)
 	{
+		return AppendRevolve(
+			mesh,
+			profile,
+			0.0,
+			Math::TwoPi,
+			segments,
+			smoothingAngle,
+			CloseEnds::No);
+	}
+
+	bool AppendRevolve(
+		Mesh3D& mesh,
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const CloseEnds closeEnds)
+	{
+		const bool fullRevolution = (sweepAngle == Math::TwoPi);
+		const bool generateEndCaps = ((closeEnds == CloseEnds::Yes) && (not fullRevolution));
 		if ((profile.size() < 2)
-			|| (segments < 3)
+			|| (not std::isfinite(startAngle))
+			|| (not std::isfinite(sweepAngle))
+			|| (sweepAngle <= 0.0)
+			|| (Math::TwoPi < sweepAngle)
+			|| (segments < (fullRevolution ? 3 : 1))
 			|| (not std::isfinite(smoothingAngle))
 			|| (smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{
-			return GenerationFailed<bool>("Mesh3D::Revolve(): The profile, segment count, or smoothing angle is invalid");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): The profile, angles, segment count, or smoothing angle is invalid");
 		}
 
 		const bool closedProfile = (profile.front() == profile.back());
@@ -193,7 +221,7 @@ namespace s3d::Mesh3DDetail
 				.endDistance = endDistance
 			});
 
-			if (closedProfile)
+			if (closedProfile || generateEndCaps)
 			{
 				twiceArea += ((static_cast<double>(current.x) * next.y)
 					- (static_cast<double>(next.x) * current.y));
@@ -205,6 +233,11 @@ namespace s3d::Mesh3DDetail
 		if ((not closedProfile) && (current == firstPoint))
 		{
 			return GenerationFailed<bool>("Mesh3D::Revolve(): An open profile cannot end at its first point");
+		}
+		else if (generateEndCaps)
+		{
+			twiceArea += ((static_cast<double>(current.x) * firstPoint.y)
+				- (static_cast<double>(firstPoint.x) * current.y));
 		}
 
 		if (closedProfile
@@ -219,17 +252,99 @@ namespace s3d::Mesh3DDetail
 			return GenerationFailed<bool>("Mesh3D::Revolve(): The generated triangle count exceeds the supported range");
 		}
 
+		const bool positiveProfileOrientation = (0.0 < twiceArea);
+		std::optional<Polygon> capPolygon;
+		if (generateEndCaps)
+		{
+			if ((not std::isfinite(twiceArea)) || (twiceArea == 0.0))
+			{
+				return GenerationFailed<bool>("Mesh3D::Revolve(): The profile must enclose a non-zero finite area to generate end caps");
+			}
+
+			Array<Vec2> capOutline;
+			capOutline.reserve(profileSegments.size() + 1);
+			capOutline.push_back(profileSegments.front().start);
+			for (const ProfileSegment& segment : profileSegments)
+			{
+				capOutline.push_back(segment.end);
+			}
+			if (closedProfile)
+			{
+				capOutline.pop_back();
+			}
+			if (not positiveProfileOrientation)
+			{
+				std::reverse(capOutline.begin(), capOutline.end());
+			}
+
+			capPolygon.emplace(std::span<const Vec2>{ capOutline });
+			if (capPolygon->isEmpty()
+				|| (not ValidateCapTriangles<true>(
+					capPolygon->vertices(), capPolygon->indices())))
+			{
+				return GenerationFailed<bool>("Mesh3D::Revolve(): The profile cannot be triangulated for end caps");
+			}
+
+			const RectF bounds = capPolygon->boundingRect();
+			if ((bounds.w <= 0.0) || (bounds.h <= 0.0))
+			{
+				return GenerationFailed<bool>("Mesh3D::Revolve(): The end-cap bounds must have positive width and height");
+			}
+
+			size_t addedCapVertexCount;
+			size_t addedCapTriangleCount;
+			if ((not CheckedMultiply(capPolygon->vertices().size(), 2, addedCapVertexCount))
+				|| (not CheckedAdd(vertexCount, addedCapVertexCount, vertexCount))
+				|| (Mesh3D::MaxVertexCount < vertexCount)
+				|| (not CheckedMultiply(capPolygon->indices().size(), 2, addedCapTriangleCount))
+				|| (not CheckedAdd(triangleCount, addedCapTriangleCount, triangleCount)))
+			{
+				return GenerationFailed<bool>("Mesh3D::Revolve(): The generated mesh exceeds the supported size");
+			}
+		}
+
 		Array<RevolveCircleSample> circle(ringStride);
 		Array<RevolveCircleSample> middleCircle(segments);
-		const float angleStep = (Math::TwoPiF / static_cast<float>(segments));
-		for (uint32 i = 0; i < segments; ++i)
+		const bool legacyFullRevolution = (fullRevolution && (startAngle == 0.0));
+		if (legacyFullRevolution)
 		{
-			const float angle = (angleStep * i);
-			const float middleAngle = (angleStep * (i + 0.5f));
-			circle[i] = RevolveCircleSample{ std::sin(angle), std::cos(angle) };
-			middleCircle[i] = RevolveCircleSample{ std::sin(middleAngle), std::cos(middleAngle) };
+			const float angleStep = (Math::TwoPiF / static_cast<float>(segments));
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const float angle = (angleStep * i);
+				const float middleAngle = (angleStep * (i + 0.5f));
+				circle[i] = RevolveCircleSample{ std::sin(angle), std::cos(angle) };
+				middleCircle[i] = RevolveCircleSample{ std::sin(middleAngle), std::cos(middleAngle) };
+			}
 		}
-		circle[segments] = circle[0];
+		else
+		{
+			const double normalizedStartAngle = std::remainder(startAngle, Math::TwoPi);
+			const double angleStep = (sweepAngle / segments);
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const double angle = (normalizedStartAngle + (angleStep * i));
+				const double middleAngle = (normalizedStartAngle + (angleStep * (i + 0.5)));
+				circle[i] = RevolveCircleSample{
+					static_cast<float>(std::sin(angle)), static_cast<float>(std::cos(angle))
+				};
+				middleCircle[i] = RevolveCircleSample{
+					static_cast<float>(std::sin(middleAngle)), static_cast<float>(std::cos(middleAngle))
+				};
+			}
+
+			if (not fullRevolution)
+			{
+				const double endAngle = (normalizedStartAngle + sweepAngle);
+				circle[segments] = RevolveCircleSample{
+					static_cast<float>(std::sin(endAngle)), static_cast<float>(std::cos(endAngle))
+				};
+			}
+		}
+		if (fullRevolution)
+		{
+			circle[segments] = circle[0];
+		}
 
 		const size_t vertexBase = mesh.vertices.size();
 		const size_t triangleBase = mesh.indices.size();
@@ -371,6 +486,62 @@ namespace s3d::Mesh3DDetail
 			vertexOffset += (fullSegmentVertexCount - ((startOnAxis || endOnAxis) ? 1 : 0));
 		}
 
+		if (generateEndCaps)
+		{
+			const auto& capVertices = capPolygon->vertices();
+			const auto& capIndices = capPolygon->indices();
+			const RectF bounds = capPolygon->boundingRect();
+			const double inverseWidth = (1.0 / bounds.w);
+			const double inverseHeight = (1.0 / bounds.h);
+			const float orientationSign = (positiveProfileOrientation ? 1.0f : -1.0f);
+
+			for (size_t capIndex = 0; capIndex < 2; ++capIndex)
+			{
+				const bool startCap = (capIndex == 0);
+				const RevolveCircleSample sample = (startCap ? circle.front() : circle.back());
+				const Float3 radial{ sample.cos, 0.0f, sample.sin };
+				const Float3 angular{ -sample.sin, 0.0f, sample.cos };
+				const Float3 normal = (angular
+					* (startCap ? -orientationSign : orientationSign));
+				const Float4 tangent{
+					radial.x,
+					radial.y,
+					radial.z,
+					(startCap ? orientationSign : -orientationSign)
+				};
+				const size_t capVertexBase = vertexOffset;
+
+				for (size_t i = 0; i < capVertices.size(); ++i)
+				{
+					const Float2 source = capVertices[i];
+					mesh.vertices[capVertexBase + i] = Vertex3D{
+						.pos = Float3{
+							(source.x * sample.cos), source.y, (source.x * sample.sin)
+						},
+						.normal = normal,
+						.tex = Float2{
+							static_cast<float>((source.x - bounds.x) * inverseWidth),
+							static_cast<float>((source.y - bounds.y) * inverseHeight)
+						},
+						.tangent = tangent
+					};
+				}
+
+				const bool reverseWinding = (startCap == positiveProfileOrientation);
+				for (const TriangleIndex& source : capIndices)
+				{
+					const uint32 i0 = static_cast<uint32>(capVertexBase + source.i0);
+					const uint32 i1 = static_cast<uint32>(capVertexBase + source.i1);
+					const uint32 i2 = static_cast<uint32>(capVertexBase + source.i2);
+					*pTriangle++ = (reverseWinding
+						? TriangleIndex32{ i0, i2, i1 }
+						: TriangleIndex32{ i0, i1, i2 });
+				}
+
+				vertexOffset += capVertices.size();
+			}
+		}
+
 		return true;
 	}
 }
@@ -414,5 +585,63 @@ namespace s3d
 			std::span<const Vec2>{ profile.begin(), profile.size() },
 			segments,
 			smoothingAngle);
+	}
+
+	Mesh3D Mesh3D::Revolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const CloseEnds closeEnds)
+	{
+		Mesh3DBuilder builder;
+		builder.addRevolve(profile, startAngle, sweepAngle, segments, closeEnds);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Revolve(
+		const std::initializer_list<Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const CloseEnds closeEnds)
+	{
+		return Revolve(
+			std::span<const Vec2>{ profile.begin(), profile.size() },
+			startAngle,
+			sweepAngle,
+			segments,
+			closeEnds);
+	}
+
+	Mesh3D Mesh3D::Revolve(
+		const std::span<const Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const CloseEnds closeEnds)
+	{
+		Mesh3DBuilder builder;
+		builder.addRevolve(
+			profile, startAngle, sweepAngle, segments, smoothingAngle, closeEnds);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Revolve(
+		const std::initializer_list<Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const CloseEnds closeEnds)
+	{
+		return Revolve(
+			std::span<const Vec2>{ profile.begin(), profile.size() },
+			startAngle,
+			sweepAngle,
+			segments,
+			smoothingAngle,
+			closeEnds);
 	}
 }
