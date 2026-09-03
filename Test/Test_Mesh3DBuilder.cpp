@@ -82,6 +82,80 @@ TEST_CASE("Mesh3DBuilder::addBox")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addRoundedBox")
+{
+	constexpr Vec3 Size{ 2.0, 4.0, 6.0 };
+	constexpr double Radius = 0.5;
+	constexpr uint32 Subdivisions = 2;
+
+	SUBCASE("Single rounded box matches Mesh3D::RoundedBox")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRoundedBox(Size, Radius, Subdivisions));
+		Mesh3DTest::CheckMeshDataEqual(
+			builder.getMesh(),
+			Mesh3D::RoundedBox(Size, Radius, Subdivisions));
+	}
+
+	SUBCASE("Appends indices with an offset")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addRoundedBox(Size, Radius, Subdivisions, offset));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(
+			Mesh3D::RoundedBox(Size, Radius, Subdivisions),
+			Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRoundedBox(Size, Radius, Subdivisions, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::RoundedBox(Size, Radius, Subdivisions).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix and custom UV mapping")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.positiveY = FloatRect{ 0.1f, 0.2f, 0.8f, 0.7f };
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRoundedBox(Size, Radius, Subdivisions, uvMapping, transform));
+
+		const Mesh3D expected = Mesh3D::RoundedBox(Size, Radius, Subdivisions, uvMapping).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Zero radius delegates to addBox")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRoundedBox(Size, 0.0, Subdivisions));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), Mesh3D::Box(Size));
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addRoundedBox(Size, -0.1, Subdivisions));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder storage")
 {
 	Mesh3DBuilder builder;

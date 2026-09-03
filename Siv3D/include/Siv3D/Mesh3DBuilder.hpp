@@ -141,6 +141,83 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addRoundedBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
+		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double radius = 0.1,
+			uint32 subdivisions = 4);
+
+		/// @brief 平行移動した角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径
+		/// @param subdivisions 各面の丸み部分の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, Vec3 offset);
+
+		/// @brief 回転および平行移動した角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径
+		/// @param subdivisions 各面の丸み部分の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径
+		/// @param subdivisions 各面の丸み部分の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const Mat4x4& transform);
+
+		/// @brief 指定した UV マッピングを持つ、原点を中心とする角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
+		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
+		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動した角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径
+		/// @param subdivisions 各面の丸み部分の分割数
+		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, Vec3 offset);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動した角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径
+		/// @param subdivisions 各面の丸み部分の分割数
+		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した角丸直方体を追加します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径
+		/// @param subdivisions 各面の丸み部分の分割数
+		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+
 	private:
 
 		Mesh3D m_mesh;
