@@ -617,6 +617,149 @@ TEST_CASE("Mesh3DBuilder::addAnnulus")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addHollowCylinder")
+{
+	constexpr double InnerRadius = 1.0;
+	constexpr double OuterRadius = 2.0;
+	constexpr double Height = 4.0;
+	constexpr uint32 Segments = 8;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addHollowCylinder(
+			InnerRadius, OuterRadius, Height, Segments));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::HollowCylinder(
+			InnerRadius, OuterRadius, Height, Segments)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addHollowCylinder(
+			InnerRadius, OuterRadius, Height, Segments, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::HollowCylinder(
+			InnerRadius, OuterRadius, Height, Segments).transformed(
+				Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addHollowCylinder(0.0, OuterRadius, Height, Segments));
+		CHECK_FALSE(builder.addHollowCylinder(
+			OuterRadius, InnerRadius, Height, Segments));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addConicalFrustum")
+{
+	constexpr double BottomRadius = 2.0;
+	constexpr double TopRadius = 1.0;
+	constexpr double Height = 4.0;
+	constexpr uint32 Segments = 8;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addConicalFrustum(
+			BottomRadius, TopRadius, Height, Segments, offset));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(
+			Mesh3D::ConicalFrustum(BottomRadius, TopRadius, Height, Segments),
+			Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix transform")
+	{
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateX(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addConicalFrustum(
+			BottomRadius, TopRadius, Height, Segments, transform));
+
+		const Mesh3D expected = Mesh3D::ConicalFrustum(
+			BottomRadius, TopRadius, Height, Segments).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addConicalFrustum(
+			BottomRadius, -1.0, Height, Segments));
+		CHECK_FALSE(builder.addConicalFrustum(
+			BottomRadius, TopRadius, 0.0, Segments));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addCylinder and addCone")
+{
+	constexpr double Radius = 2.0;
+	constexpr double Height = 4.0;
+	constexpr uint32 Segments = 8;
+
+	SUBCASE("Delegate to conical frustum generation")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addCylinder(Radius, Height, Segments));
+		REQUIRE(builder.addCone(Radius, Height, Segments));
+
+		Mesh3D expected = Mesh3D::Cylinder(Radius, Height, Segments);
+		REQUIRE(expected.append(Mesh3D::Cone(Radius, Height, Segments)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Transform overloads")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addCylinder(Radius, Height, Segments, offset, rotation));
+		REQUIRE(builder.addCone(Radius, Height, Segments, transform));
+
+		Mesh3D expected = Mesh3D::Cylinder(Radius, Height, Segments).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		REQUIRE(expected.append(Mesh3D::Cone(Radius, Height, Segments), transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addCylinder(0.0, Height, Segments));
+		CHECK_FALSE(builder.addCone(Radius, -1.0, Segments));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder storage")
 {
 	Mesh3DBuilder builder;

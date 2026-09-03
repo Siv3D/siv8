@@ -864,6 +864,166 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments, const Mat4x4& transform);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addHollowCylinder
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、両端が閉じた中空円柱を追加します。
+		/// @param innerRadius 内半径
+		/// @param outerRadius 外半径。`innerRadius` より大きい必要があります。
+		/// @param height 高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments = 32);
+
+		/// @brief 平行移動した中空円柱を追加します。
+		/// @param innerRadius 内半径
+		/// @param outerRadius 外半径
+		/// @param height 高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, Vec3 offset);
+
+		/// @brief 回転および平行移動した中空円柱を追加します。
+		/// @param innerRadius 内半径
+		/// @param outerRadius 外半径
+		/// @param height 高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した中空円柱を追加します。
+		/// @param innerRadius 内半径
+		/// @param outerRadius 外半径
+		/// @param height 高さ
+		/// @param segments 円周の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addConicalFrustum
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、両端が閉じた円錐台を追加します。
+		/// @param bottomRadius 底面の半径
+		/// @param topRadius 上面の半径。0 の場合は円錐を生成します。
+		/// @param height 高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
+
+		/// @brief 平行移動した円錐台を追加します。
+		/// @param bottomRadius 底面の半径
+		/// @param topRadius 上面の半径
+		/// @param height 高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, Vec3 offset);
+
+		/// @brief 回転および平行移動した円錐台を追加します。
+		/// @param bottomRadius 底面の半径
+		/// @param topRadius 上面の半径
+		/// @param height 高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した円錐台を追加します。
+		/// @param bottomRadius 底面の半径
+		/// @param topRadius 上面の半径
+		/// @param height 高さ
+		/// @param segments 円周の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCylinder
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、両端が閉じた円柱を追加します。
+		/// @param radius 円柱の半径
+		/// @param height 円柱の高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCylinder(double radius, double height, uint32 segments = 32);
+
+		/// @brief 平行移動した円柱を追加します。
+		/// @param radius 円柱の半径
+		/// @param height 円柱の高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCylinder(double radius, double height, uint32 segments, Vec3 offset);
+
+		/// @brief 回転および平行移動した円柱を追加します。
+		/// @param radius 円柱の半径
+		/// @param height 円柱の高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCylinder(double radius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した円柱を追加します。
+		/// @param radius 円柱の半径
+		/// @param height 円柱の高さ
+		/// @param segments 円周の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCylinder(double radius, double height, uint32 segments, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addCone
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、底面が閉じた円錐を追加します。
+		/// @param radius 底面の半径
+		/// @param height 円錐の高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCone(double radius, double height, uint32 segments = 32);
+
+		/// @brief 平行移動した円錐を追加します。
+		/// @param radius 底面の半径
+		/// @param height 円錐の高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCone(double radius, double height, uint32 segments, Vec3 offset);
+
+		/// @brief 回転および平行移動した円錐を追加します。
+		/// @param radius 底面の半径
+		/// @param height 円錐の高さ
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCone(double radius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した円錐を追加します。
+		/// @param radius 底面の半径
+		/// @param height 円錐の高さ
+		/// @param segments 円周の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addCone(double radius, double height, uint32 segments, const Mat4x4& transform);
+
 	private:
 
 		Mesh3D m_mesh;

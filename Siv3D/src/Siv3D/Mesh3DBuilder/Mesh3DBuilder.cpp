@@ -2415,4 +2415,587 @@ namespace s3d
 		TransformAddedVertices(m_mesh, vertexOffset, transform);
 		return true;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addHollowCylinder
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addHollowCylinder(
+		const double _innerRadius,
+		const double _outerRadius,
+		const double _height,
+		const uint32 segments)
+	{
+		if ((not IsFloatRepresentable(_innerRadius))
+			|| (not IsFloatRepresentable(_outerRadius))
+			|| (not IsFloatRepresentable(_height)))
+		{
+			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The radii and height must be finite and float-representable");
+		}
+
+		const float innerRadius = static_cast<float>(_innerRadius);
+		const float outerRadius = static_cast<float>(_outerRadius);
+		const float height = static_cast<float>(_height);
+		if ((innerRadius <= 0.0f)
+			|| (outerRadius <= innerRadius)
+			|| (height <= 0.0f)
+			|| (segments < 3))
+		{
+			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The radii, height, or segment count is invalid");
+		}
+
+		size_t ringStride;
+		size_t vertexCount;
+		size_t triangleCount;
+		if ((not CheckedAdd(static_cast<size_t>(segments), 1, ringStride))
+			|| (not CheckedMultiply(static_cast<size_t>(segments), 8, vertexCount))
+			|| (not CheckedAdd(vertexCount, 4, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(segments), 8, triangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The generated mesh exceeds the supported size");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(
+			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
+		{
+			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The generated mesh exceeds the supported size");
+		}
+
+		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
+		const float halfHeight = (height * 0.5f);
+		const float inverseSegments = (1.0f / static_cast<float>(segments));
+		const float innerUVScale = (0.5f * innerRadius / outerRadius);
+		const size_t outerTopBase = vertexOffset;
+		const size_t outerBottomBase = (outerTopBase + ringStride);
+		const size_t innerTopBase = (outerTopBase + (ringStride * 2));
+		const size_t innerBottomBase = (outerTopBase + (ringStride * 3));
+		const size_t topOuterBase = (outerTopBase + (ringStride * 4));
+		const size_t topInnerBase = (topOuterBase + segments);
+		const size_t bottomOuterBase = (topInnerBase + segments);
+		const size_t bottomInnerBase = (bottomOuterBase + segments);
+
+		for (uint32 i = 0; i <= segments; ++i)
+		{
+			const float u = (i * inverseSegments);
+			const CircleSample outerSample = circle[i];
+			const Float3 outerNormal{ outerSample.cos, 0.0f, outerSample.sin };
+			const Float4 outerTangent{ -outerSample.sin, 0.0f, outerSample.cos, 1.0f };
+			m_mesh.vertices[outerTopBase + i] = Vertex3D{
+				.pos = Float3{ (outerRadius * outerSample.cos), halfHeight, (outerRadius * outerSample.sin) },
+				.normal = outerNormal,
+				.tex = Float2{ u, 0.0f },
+				.tangent = outerTangent
+			};
+			m_mesh.vertices[outerBottomBase + i] = Vertex3D{
+				.pos = Float3{ (outerRadius * outerSample.cos), -halfHeight, (outerRadius * outerSample.sin) },
+				.normal = outerNormal,
+				.tex = Float2{ u, 1.0f },
+				.tangent = outerTangent
+			};
+
+			const CircleSample innerSample = circle[segments - i];
+			const Float3 innerNormal{ -innerSample.cos, 0.0f, -innerSample.sin };
+			const Float4 innerTangent{ innerSample.sin, 0.0f, -innerSample.cos, 1.0f };
+			m_mesh.vertices[innerTopBase + i] = Vertex3D{
+				.pos = Float3{ (innerRadius * innerSample.cos), halfHeight, (innerRadius * innerSample.sin) },
+				.normal = innerNormal,
+				.tex = Float2{ u, 0.0f },
+				.tangent = innerTangent
+			};
+			m_mesh.vertices[innerBottomBase + i] = Vertex3D{
+				.pos = Float3{ (innerRadius * innerSample.cos), -halfHeight, (innerRadius * innerSample.sin) },
+				.normal = innerNormal,
+				.tex = Float2{ u, 1.0f },
+				.tangent = innerTangent
+			};
+		}
+
+		for (uint32 i = 0; i < segments; ++i)
+		{
+			const CircleSample sample = circle[i];
+			const Float3 outerPosition{ (outerRadius * sample.cos), 0.0f, (outerRadius * sample.sin) };
+			const Float3 innerPosition{ (innerRadius * sample.cos), 0.0f, (innerRadius * sample.sin) };
+			const Float2 topOuterUV{ (0.5f + (0.5f * sample.cos)), (0.5f - (0.5f * sample.sin)) };
+			const Float2 topInnerUV{ (0.5f + (innerUVScale * sample.cos)), (0.5f - (innerUVScale * sample.sin)) };
+			const Float2 bottomOuterUV{ (0.5f + (0.5f * sample.cos)), (0.5f + (0.5f * sample.sin)) };
+			const Float2 bottomInnerUV{ (0.5f + (innerUVScale * sample.cos)), (0.5f + (innerUVScale * sample.sin)) };
+
+			m_mesh.vertices[topOuterBase + i] = Vertex3D{
+				.pos = Float3{ outerPosition.x, halfHeight, outerPosition.z },
+				.normal = Float3::UnitY(),
+				.tex = topOuterUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+			m_mesh.vertices[topInnerBase + i] = Vertex3D{
+				.pos = Float3{ innerPosition.x, halfHeight, innerPosition.z },
+				.normal = Float3::UnitY(),
+				.tex = topInnerUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+			m_mesh.vertices[bottomOuterBase + i] = Vertex3D{
+				.pos = Float3{ outerPosition.x, -halfHeight, outerPosition.z },
+				.normal = -Float3::UnitY(),
+				.tex = bottomOuterUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+			m_mesh.vertices[bottomInnerBase + i] = Vertex3D{
+				.pos = Float3{ innerPosition.x, -halfHeight, innerPosition.z },
+				.normal = -Float3::UnitY(),
+				.tex = bottomInnerUV,
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+		}
+
+		TriangleIndex32* pTriangle = (m_mesh.indices.data() + triangleOffset);
+		for (uint32 i = 0; i < segments; ++i)
+		{
+			const uint32 outerTopLeft = static_cast<uint32>(outerTopBase + i);
+			const uint32 outerTopRight = (outerTopLeft + 1);
+			const uint32 outerBottomLeft = static_cast<uint32>(outerBottomBase + i);
+			const uint32 outerBottomRight = (outerBottomLeft + 1);
+			*pTriangle++ = TriangleIndex32{ outerTopLeft, outerTopRight, outerBottomLeft };
+			*pTriangle++ = TriangleIndex32{ outerBottomLeft, outerTopRight, outerBottomRight };
+
+			const uint32 innerTopLeft = static_cast<uint32>(innerTopBase + i);
+			const uint32 innerTopRight = (innerTopLeft + 1);
+			const uint32 innerBottomLeft = static_cast<uint32>(innerBottomBase + i);
+			const uint32 innerBottomRight = (innerBottomLeft + 1);
+			*pTriangle++ = TriangleIndex32{ innerTopLeft, innerTopRight, innerBottomLeft };
+			*pTriangle++ = TriangleIndex32{ innerBottomLeft, innerTopRight, innerBottomRight };
+
+			const uint32 next = ((i + 1) % segments);
+			const uint32 topOuterCurrent = static_cast<uint32>(topOuterBase + i);
+			const uint32 topOuterNext = static_cast<uint32>(topOuterBase + next);
+			const uint32 topInnerCurrent = static_cast<uint32>(topInnerBase + i);
+			const uint32 topInnerNext = static_cast<uint32>(topInnerBase + next);
+			*pTriangle++ = TriangleIndex32{ topOuterCurrent, topInnerCurrent, topOuterNext };
+			*pTriangle++ = TriangleIndex32{ topInnerCurrent, topInnerNext, topOuterNext };
+
+			const uint32 bottomOuterCurrent = static_cast<uint32>(bottomOuterBase + i);
+			const uint32 bottomOuterNext = static_cast<uint32>(bottomOuterBase + next);
+			const uint32 bottomInnerCurrent = static_cast<uint32>(bottomInnerBase + i);
+			const uint32 bottomInnerNext = static_cast<uint32>(bottomInnerBase + next);
+			*pTriangle++ = TriangleIndex32{ bottomOuterCurrent, bottomOuterNext, bottomInnerCurrent };
+			*pTriangle++ = TriangleIndex32{ bottomInnerCurrent, bottomOuterNext, bottomInnerNext };
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addHollowCylinder(
+		const double innerRadius,
+		const double outerRadius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset)
+	{
+		return addHollowCylinder(innerRadius, outerRadius, height, segments,
+			Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addHollowCylinder(
+		const double innerRadius,
+		const double outerRadius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addHollowCylinder(innerRadius, outerRadius, height, segments,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addHollowCylinder(
+		const double innerRadius,
+		const double outerRadius,
+		const double height,
+		const uint32 segments,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addHollowCylinder(innerRadius, outerRadius, height, segments))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addConicalFrustum
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addConicalFrustum(
+		const double _bottomRadius,
+		const double _topRadius,
+		const double _height,
+		const uint32 segments)
+	{
+		if ((not IsFloatRepresentable(_bottomRadius))
+			|| (not IsFloatRepresentable(_topRadius))
+			|| (not IsFloatRepresentable(_height)))
+		{
+			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii and height must be finite and float-representable");
+		}
+
+		const float bottomRadius = static_cast<float>(_bottomRadius);
+		const float topRadius = static_cast<float>(_topRadius);
+		const float height = static_cast<float>(_height);
+		if ((bottomRadius <= 0.0f)
+			|| (topRadius < 0.0f)
+			|| (height <= 0.0f)
+			|| (segments < 3))
+		{
+			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii, height, or segment count is invalid");
+		}
+
+		const bool isCone = (topRadius == 0.0f);
+		size_t ringStride;
+		size_t vertexCount;
+		size_t triangleCount;
+
+		if (not CheckedAdd(static_cast<size_t>(segments), 1, ringStride))
+		{
+			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): segments exceed the supported range");
+		}
+
+		if (isCone)
+		{
+			size_t scaledSegments;
+			if ((not CheckedMultiply(static_cast<size_t>(segments), 3, scaledSegments))
+				|| (not CheckedAdd(scaledSegments, 2, vertexCount))
+				|| (not CheckedMultiply(static_cast<size_t>(segments), 2, triangleCount)))
+			{
+				return GenerationFailed<bool>("Mesh3D::Cone(): The generated mesh exceeds the supported size");
+			}
+		}
+		else
+		{
+			if ((not CheckedMultiply(ringStride, 4, vertexCount))
+				|| (not CheckedMultiply(static_cast<size_t>(segments), 4, triangleCount)))
+			{
+				return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder(): The generated mesh exceeds the supported size");
+			}
+		}
+
+		if (Mesh3D::MaxVertexCount < vertexCount)
+		{
+			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The generated vertex count exceeds the supported range");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(
+			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
+		{
+			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The generated mesh exceeds the supported size");
+		}
+
+		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
+		const float halfHeight = (height * 0.5f);
+		const float radiusDelta = (bottomRadius - topRadius);
+		const float inverseSideLength = (1.0f / std::sqrt((height * height) + (radiusDelta * radiusDelta)));
+		const float angleStep = (Math::TwoPiF / static_cast<float>(segments));
+		TriangleIndex32* pTriangle = (m_mesh.indices.data() + triangleOffset);
+
+		if (isCone)
+		{
+			const size_t apexBase = vertexOffset;
+			const size_t bottomSideBase = (apexBase + segments);
+			const size_t bottomCapCenter = (bottomSideBase + ringStride);
+			const size_t bottomCapRingBase = (bottomCapCenter + 1);
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const float middleAngle = ((i + 0.5f) * angleStep);
+				const float middleSin = std::sin(middleAngle);
+				const float middleCos = std::cos(middleAngle);
+				const Float3 sideNormal = Float3{
+					(height * middleCos),
+					radiusDelta,
+					(height * middleSin)
+				} * inverseSideLength;
+
+				m_mesh.vertices[apexBase + i] = Vertex3D{
+					.pos = Float3{ 0.0f, halfHeight, 0.0f },
+					.normal = sideNormal,
+					.tex = Float2{ ((i + 0.5f) / static_cast<float>(segments)), 0.0f },
+					.tangent = Float4{ -middleSin, 0.0f, middleCos, 1.0f }
+				};
+			}
+
+			for (uint32 i = 0; i <= segments; ++i)
+			{
+				const CircleSample sample = circle[i];
+				const Float3 sideNormal = Float3{
+					(height * sample.cos),
+					radiusDelta,
+					(height * sample.sin)
+				} * inverseSideLength;
+
+				m_mesh.vertices[bottomSideBase + i] = Vertex3D{
+					.pos = Float3{ (bottomRadius * sample.cos), -halfHeight, (bottomRadius * sample.sin) },
+					.normal = sideNormal,
+					.tex = Float2{ (static_cast<float>(i) / static_cast<float>(segments)), 1.0f },
+					.tangent = Float4{ -sample.sin, 0.0f, sample.cos, 1.0f }
+				};
+			}
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const uint32 apex = static_cast<uint32>(apexBase + i);
+				const uint32 bottomLeft = static_cast<uint32>(bottomSideBase + i);
+				const uint32 bottomRight = (bottomLeft + 1);
+				*pTriangle++ = TriangleIndex32{ apex, bottomRight, bottomLeft };
+			}
+
+			m_mesh.vertices[bottomCapCenter] = Vertex3D{
+				.pos = Float3{ 0.0f, -halfHeight, 0.0f },
+				.normal = -Float3::UnitY(),
+				.tex = Float2{ 0.5f, 0.5f },
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const CircleSample sample = circle[i];
+				m_mesh.vertices[bottomCapRingBase + i] = Vertex3D{
+					.pos = Float3{ (bottomRadius * sample.cos), -halfHeight, (bottomRadius * sample.sin) },
+					.normal = -Float3::UnitY(),
+					.tex = Float2{ (0.5f + (0.5f * sample.cos)), (0.5f + (0.5f * sample.sin)) },
+					.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+				};
+			}
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const uint32 current = static_cast<uint32>(bottomCapRingBase + i);
+				const uint32 next = static_cast<uint32>(bottomCapRingBase + ((i + 1) % segments));
+				*pTriangle++ = TriangleIndex32{
+					static_cast<uint32>(bottomCapCenter), current, next };
+			}
+		}
+		else
+		{
+			const size_t topSideBase = vertexOffset;
+			const size_t bottomSideBase = (topSideBase + ringStride);
+			const size_t bottomCapCenter = (topSideBase + (ringStride * 2));
+			const size_t bottomCapRingBase = (bottomCapCenter + 1);
+			const size_t topCapCenter = (bottomCapRingBase + segments);
+			const size_t topCapRingBase = (topCapCenter + 1);
+
+			for (uint32 i = 0; i <= segments; ++i)
+			{
+				const CircleSample sample = circle[i];
+				const Float3 sideNormal = Float3{
+					(height * sample.cos),
+					radiusDelta,
+					(height * sample.sin)
+				} * inverseSideLength;
+				const Float4 sideTangent{ -sample.sin, 0.0f, sample.cos, 1.0f };
+				const float u = (static_cast<float>(i) / static_cast<float>(segments));
+
+				m_mesh.vertices[topSideBase + i] = Vertex3D{
+					.pos = Float3{ (topRadius * sample.cos), halfHeight, (topRadius * sample.sin) },
+					.normal = sideNormal,
+					.tex = Float2{ u, 0.0f },
+					.tangent = sideTangent
+				};
+				m_mesh.vertices[bottomSideBase + i] = Vertex3D{
+					.pos = Float3{ (bottomRadius * sample.cos), -halfHeight, (bottomRadius * sample.sin) },
+					.normal = sideNormal,
+					.tex = Float2{ u, 1.0f },
+					.tangent = sideTangent
+				};
+			}
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const uint32 topLeft = static_cast<uint32>(topSideBase + i);
+				const uint32 topRight = (topLeft + 1);
+				const uint32 bottomLeft = static_cast<uint32>(bottomSideBase + i);
+				const uint32 bottomRight = (bottomLeft + 1);
+
+				*pTriangle++ = TriangleIndex32{ topLeft, topRight, bottomLeft };
+				*pTriangle++ = TriangleIndex32{ bottomLeft, topRight, bottomRight };
+			}
+
+			m_mesh.vertices[bottomCapCenter] = Vertex3D{
+				.pos = Float3{ 0.0f, -halfHeight, 0.0f },
+				.normal = -Float3::UnitY(),
+				.tex = Float2{ 0.5f, 0.5f },
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+			m_mesh.vertices[topCapCenter] = Vertex3D{
+				.pos = Float3{ 0.0f, halfHeight, 0.0f },
+				.normal = Float3::UnitY(),
+				.tex = Float2{ 0.5f, 0.5f },
+				.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+			};
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const CircleSample sample = circle[i];
+				m_mesh.vertices[bottomCapRingBase + i] = Vertex3D{
+					.pos = Float3{ (bottomRadius * sample.cos), -halfHeight, (bottomRadius * sample.sin) },
+					.normal = -Float3::UnitY(),
+					.tex = Float2{ (0.5f + (0.5f * sample.cos)), (0.5f + (0.5f * sample.sin)) },
+					.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+				};
+				m_mesh.vertices[topCapRingBase + i] = Vertex3D{
+					.pos = Float3{ (topRadius * sample.cos), halfHeight, (topRadius * sample.sin) },
+					.normal = Float3::UnitY(),
+					.tex = Float2{ (0.5f + (0.5f * sample.cos)), (0.5f - (0.5f * sample.sin)) },
+					.tangent = Float4{ 1.0f, 0.0f, 0.0f, 1.0f }
+				};
+			}
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const uint32 bottomCurrent = static_cast<uint32>(bottomCapRingBase + i);
+				const uint32 bottomNext = static_cast<uint32>(bottomCapRingBase + ((i + 1) % segments));
+				const uint32 topCurrent = static_cast<uint32>(topCapRingBase + i);
+				const uint32 topNext = static_cast<uint32>(topCapRingBase + ((i + 1) % segments));
+
+				*pTriangle++ = TriangleIndex32{
+					static_cast<uint32>(bottomCapCenter), bottomCurrent, bottomNext };
+				*pTriangle++ = TriangleIndex32{
+					static_cast<uint32>(topCapCenter), topNext, topCurrent };
+			}
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addConicalFrustum(
+		const double bottomRadius,
+		const double topRadius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset)
+	{
+		return addConicalFrustum(bottomRadius, topRadius, height, segments,
+			Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addConicalFrustum(
+		const double bottomRadius,
+		const double topRadius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addConicalFrustum(bottomRadius, topRadius, height, segments,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addConicalFrustum(
+		const double bottomRadius,
+		const double topRadius,
+		const double height,
+		const uint32 segments,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addConicalFrustum(bottomRadius, topRadius, height, segments))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCylinder
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addCylinder(
+		const double radius,
+		const double height,
+		const uint32 segments)
+	{
+		return addConicalFrustum(radius, radius, height, segments);
+	}
+
+	bool Mesh3DBuilder::addCylinder(
+		const double radius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset)
+	{
+		return addConicalFrustum(radius, radius, height, segments, offset);
+	}
+
+	bool Mesh3DBuilder::addCylinder(
+		const double radius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addConicalFrustum(radius, radius, height, segments, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addCylinder(
+		const double radius,
+		const double height,
+		const uint32 segments,
+		const Mat4x4& transform)
+	{
+		return addConicalFrustum(radius, radius, height, segments, transform);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addCone
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addCone(
+		const double radius,
+		const double height,
+		const uint32 segments)
+	{
+		return addConicalFrustum(radius, 0.0, height, segments);
+	}
+
+	bool Mesh3DBuilder::addCone(
+		const double radius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset)
+	{
+		return addConicalFrustum(radius, 0.0, height, segments, offset);
+	}
+
+	bool Mesh3DBuilder::addCone(
+		const double radius,
+		const double height,
+		const uint32 segments,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addConicalFrustum(radius, 0.0, height, segments, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addCone(
+		const double radius,
+		const double height,
+		const uint32 segments,
+		const Mat4x4& transform)
+	{
+		return addConicalFrustum(radius, 0.0, height, segments, transform);
+	}
 }
