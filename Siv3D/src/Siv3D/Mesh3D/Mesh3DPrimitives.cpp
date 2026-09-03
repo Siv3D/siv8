@@ -404,7 +404,9 @@ namespace s3d
 
 	Mesh3D Mesh3D::Plane(const SizeF sizeXZ, const Vec2 uvScale, const Vec2 uvOffset)
 	{
-		return Grid(sizeXZ, 1, 1, uvScale, uvOffset);
+		Mesh3DBuilder builder;
+		builder.addPlane(sizeXZ, uvScale, uvOffset);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -414,90 +416,15 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	Mesh3D Mesh3D::Grid(
-		const SizeF _sizeXZ,
+		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
-		const Vec2 _uvScale,
-		const Vec2 _uvOffset)
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
 	{
-		if ((not IsFloatRepresentable(_sizeXZ))
-			|| (not IsFloatRepresentable(_uvScale))
-			|| (not IsFloatRepresentable(_uvOffset)))
-		{
-			return GenerationFailed("Mesh3D::Grid()/Plane(): sizeXZ and the UV transform must be finite and float-representable");
-		}
-
-		const Float2 sizeXZ = _sizeXZ;
-		const Float2 uvScale = _uvScale;
-		const Float2 uvOffset = _uvOffset;
-		if ((sizeXZ.x <= 0.0f)
-			|| (sizeXZ.y <= 0.0f)
-			|| (segmentsX == 0)
-			|| (segmentsZ == 0))
-		{
-			return GenerationFailed("Mesh3D::Grid()/Plane(): Every size component and segment count must be positive");
-		}
-
-		size_t columnCount;
-		size_t rowCount;
-		size_t vertexCount;
-		size_t cellCount;
-		size_t triangleCount;
-
-		if ((not CheckedAdd(static_cast<size_t>(segmentsX), 1, columnCount))
-			|| (not CheckedAdd(static_cast<size_t>(segmentsZ), 1, rowCount))
-			|| (not CheckedMultiply(columnCount, rowCount, vertexCount))
-			|| (Mesh3D::MaxVertexCount < vertexCount)
-			|| (not CheckedMultiply(static_cast<size_t>(segmentsX), static_cast<size_t>(segmentsZ), cellCount))
-			|| (not CheckedMultiply(cellCount, 2, triangleCount)))
-		{
-			return GenerationFailed("Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
-		}
-
-		Mesh3D mesh{ vertexCount, triangleCount };
-		const Float2 halfSize = (sizeXZ * 0.5f);
-		const float invSegmentsX = (1.0f / static_cast<float>(segmentsX));
-		const float invSegmentsZ = (1.0f / static_cast<float>(segmentsZ));
-		const Float3 normal = Float3::UnitY();
-		const Float4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
-
-		for (uint32 z = 0; z <= segmentsZ; ++z)
-		{
-			const float v = (z * invSegmentsZ);
-			const float positionZ = (halfSize.y - (sizeXZ.y * v));
-
-			for (uint32 x = 0; x <= segmentsX; ++x)
-			{
-				const float u = (x * invSegmentsX);
-				const size_t vertexIndex = (static_cast<size_t>(z) * columnCount + x);
-
-				mesh.vertices[vertexIndex] = Vertex3D{
-					.pos = Float3{ (-halfSize.x + (sizeXZ.x * u)), 0.0f, positionZ },
-					.normal = normal,
-					.tex = Float2{ (uvOffset.x + (uvScale.x * u)), (uvOffset.y + (uvScale.y * v)) },
-					.tangent = tangent
-				};
-			}
-		}
-
-		TriangleIndex32* pTriangle = mesh.indices.data();
-		for (uint32 z = 0; z < segmentsZ; ++z)
-		{
-			const size_t rowOffset = (static_cast<size_t>(z) * columnCount);
-
-			for (uint32 x = 0; x < segmentsX; ++x)
-			{
-				const uint32 i0 = static_cast<uint32>(rowOffset + x);
-				const uint32 i1 = (i0 + 1);
-				const uint32 i2 = static_cast<uint32>(rowOffset + columnCount + x);
-				const uint32 i3 = (i2 + 1);
-
-				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
-				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
-			}
-		}
-
-		return mesh;
+		Mesh3DBuilder builder;
+		builder.addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////

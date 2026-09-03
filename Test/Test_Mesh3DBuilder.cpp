@@ -430,6 +430,98 @@ TEST_CASE("Mesh3DBuilder regular polyhedra")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addPlane")
+{
+	const SizeF sizeXZ{ 4.0, 6.0 };
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addPlane(sizeXZ));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::Plane(sizeXZ)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("UV transform, offset, and rotation")
+	{
+		const Vec2 uvScale{ 2.0, 3.0 };
+		const Vec2 uvOffset{ -0.25, 0.5 };
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addPlane(sizeXZ, uvScale, uvOffset, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Plane(sizeXZ, uvScale, uvOffset).transformed(
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addPlane(SizeF{ 0.0, 1.0 }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addGrid")
+{
+	const SizeF sizeXZ{ 4.0, 6.0 };
+	constexpr uint32 SegmentsX = 3;
+	constexpr uint32 SegmentsZ = 2;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addGrid(sizeXZ, SegmentsX, SegmentsZ, offset));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(
+			Mesh3D::Grid(sizeXZ, SegmentsX, SegmentsZ),
+			Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("UV transform and matrix")
+	{
+		const Vec2 uvScale{ 2.0, 3.0 };
+		const Vec2 uvOffset{ 0.25, -0.5 };
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addGrid(
+			sizeXZ, SegmentsX, SegmentsZ, uvScale, uvOffset, transform));
+
+		const Mesh3D expected = Mesh3D::Grid(
+			sizeXZ, SegmentsX, SegmentsZ, uvScale, uvOffset).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addGrid(sizeXZ, 0, SegmentsZ));
+		CHECK_FALSE(builder.addGrid(
+			sizeXZ,
+			std::numeric_limits<uint32>::max(),
+			std::numeric_limits<uint32>::max()));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder storage")
 {
 	Mesh3DBuilder builder;

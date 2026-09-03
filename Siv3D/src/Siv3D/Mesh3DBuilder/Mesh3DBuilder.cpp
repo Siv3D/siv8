@@ -1973,4 +1973,241 @@ namespace s3d
 		TransformAddedVertices(m_mesh, vertexOffset, transform);
 		return true;
 	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addPlane
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addPlane(
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return addGrid(sizeXZ, 1, 1, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Vec3 offset)
+	{
+		return addPlane(sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset);
+	}
+
+	bool Mesh3DBuilder::addPlane(
+		const SizeF sizeXZ,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addPlane(
+			sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Mat4x4& transform)
+	{
+		return addPlane(sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+	}
+
+	bool Mesh3DBuilder::addPlane(
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addPlane(sizeXZ, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addPlane(
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addPlane(sizeXZ, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addPlane(
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		return addGrid(sizeXZ, 1, 1, uvScale, uvOffset, transform);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addGrid
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addGrid(
+		const SizeF _sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Vec2 _uvScale,
+		const Vec2 _uvOffset)
+	{
+		if ((not IsFloatRepresentable(_sizeXZ))
+			|| (not IsFloatRepresentable(_uvScale))
+			|| (not IsFloatRepresentable(_uvOffset)))
+		{
+			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): sizeXZ and the UV transform must be finite and float-representable");
+		}
+
+		const Float2 sizeXZ = _sizeXZ;
+		const Float2 uvScale = _uvScale;
+		const Float2 uvOffset = _uvOffset;
+		if ((sizeXZ.x <= 0.0f)
+			|| (sizeXZ.y <= 0.0f)
+			|| (segmentsX == 0)
+			|| (segmentsZ == 0))
+		{
+			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): Every size component and segment count must be positive");
+		}
+
+		size_t columnCount;
+		size_t rowCount;
+		size_t vertexCount;
+		size_t cellCount;
+		size_t triangleCount;
+
+		if ((not CheckedAdd(static_cast<size_t>(segmentsX), 1, columnCount))
+			|| (not CheckedAdd(static_cast<size_t>(segmentsZ), 1, rowCount))
+			|| (not CheckedMultiply(columnCount, rowCount, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(segmentsX), static_cast<size_t>(segmentsZ), cellCount))
+			|| (not CheckedMultiply(cellCount, 2, triangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(
+			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
+		{
+			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
+		}
+
+		const Float2 halfSize = (sizeXZ * 0.5f);
+		const float invSegmentsX = (1.0f / static_cast<float>(segmentsX));
+		const float invSegmentsZ = (1.0f / static_cast<float>(segmentsZ));
+		const Float3 normal = Float3::UnitY();
+		const Float4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
+
+		for (uint32 z = 0; z <= segmentsZ; ++z)
+		{
+			const float v = (z * invSegmentsZ);
+			const float positionZ = (halfSize.y - (sizeXZ.y * v));
+
+			for (uint32 x = 0; x <= segmentsX; ++x)
+			{
+				const float u = (x * invSegmentsX);
+				const size_t vertexIndex = (vertexOffset
+					+ (static_cast<size_t>(z) * columnCount) + x);
+
+				m_mesh.vertices[vertexIndex] = Vertex3D{
+					.pos = Float3{ (-halfSize.x + (sizeXZ.x * u)), 0.0f, positionZ },
+					.normal = normal,
+					.tex = Float2{ (uvOffset.x + (uvScale.x * u)), (uvOffset.y + (uvScale.y * v)) },
+					.tangent = tangent
+				};
+			}
+		}
+
+		TriangleIndex32* pTriangle = (m_mesh.indices.data() + triangleOffset);
+		for (uint32 z = 0; z < segmentsZ; ++z)
+		{
+			const size_t rowOffset = (vertexOffset + (static_cast<size_t>(z) * columnCount));
+
+			for (uint32 x = 0; x < segmentsX; ++x)
+			{
+				const uint32 i0 = static_cast<uint32>(rowOffset + x);
+				const uint32 i1 = (i0 + 1);
+				const uint32 i2 = static_cast<uint32>(rowOffset + columnCount + x);
+				const uint32 i3 = (i2 + 1);
+
+				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
+			}
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addGrid(
+		const SizeF sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Vec3 offset)
+	{
+		return addGrid(sizeXZ, segmentsX, segmentsZ,
+			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset);
+	}
+
+	bool Mesh3DBuilder::addGrid(
+		const SizeF sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addGrid(sizeXZ, segmentsX, segmentsZ,
+			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addGrid(
+		const SizeF sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Mat4x4& transform)
+	{
+		return addGrid(sizeXZ, segmentsX, segmentsZ,
+			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+	}
+
+	bool Mesh3DBuilder::addGrid(
+		const SizeF sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addGrid(sizeXZ, segmentsX, segmentsZ,
+			uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addGrid(
+		const SizeF sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addGrid(
+		const SizeF sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
 }

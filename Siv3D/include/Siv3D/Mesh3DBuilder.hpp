@@ -656,6 +656,142 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addDodecahedron(double radius, const Mat4x4& transform);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addPlane
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く長方形を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPlane(
+			SizeF sizeXZ = SizeF{ 1.0, 1.0 },
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 平行移動した長方形を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPlane(SizeF sizeXZ, Vec3 offset);
+
+		/// @brief 回転および平行移動した長方形を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPlane(SizeF sizeXZ, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した長方形を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPlane(SizeF sizeXZ, const Mat4x4& transform);
+
+		/// @brief UV 変換と平行移動を適用した長方形を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset);
+
+		/// @brief UV 変換、回転、および平行移動を適用した長方形を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief UV 変換とアフィン変換を適用した長方形を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addGrid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く格子を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addGrid(
+			SizeF sizeXZ,
+			uint32 segmentsX,
+			uint32 segmentsZ,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 平行移動した格子を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec3 offset);
+
+		/// @brief 回転および平行移動した格子を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した格子を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, const Mat4x4& transform);
+
+		/// @brief UV 変換と平行移動を適用した格子を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset);
+
+		/// @brief UV 変換、回転、および平行移動を適用した格子を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief UV 変換とアフィン変換を適用した格子を追加します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
+
 	private:
 
 		Mesh3D m_mesh;
