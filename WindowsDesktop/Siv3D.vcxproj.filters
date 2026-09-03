@@ -1444,6 +1444,9 @@
     <Filter Include="src\Siv3D\Mesh3D">
       <UniqueIdentifier>{7a5296ba-b353-413a-a5c5-ea24657f9dc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Mesh3DBuilder">
+      <UniqueIdentifier>{9a711191-2a3a-4fdb-9df8-659a47826e77}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\VertexNormalWeighting">
       <UniqueIdentifier>{5f95438e-2709-433c-9195-43b82672ccfb}</UniqueIdentifier>
     </Filter>
@@ -5970,10 +5973,16 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3DBuilder.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\BoxUVMapping.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh3D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh3DBuilder.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\CircularDashStyle.hpp">
@@ -9214,6 +9223,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DPrimitives.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3DBuilder\Mesh3DBuilder.cpp">
+      <Filter>src\Siv3D\Mesh3DBuilder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

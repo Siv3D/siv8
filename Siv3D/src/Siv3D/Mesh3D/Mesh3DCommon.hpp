@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
+# include <Siv3D/Mat4x4.hpp>
 # include <Siv3D/Mesh3D.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <cmath>
@@ -21,11 +22,68 @@
 
 namespace s3d::Mesh3DDetail
 {
+	template <class Result = Mesh3D>
 	[[nodiscard]]
-	inline Mesh3D GenerationFailed(const char* const message)
+	inline Result GenerationFailed(const char* const message)
 	{
 		LOG_FAIL(message);
 		return{};
+	}
+
+	inline void TransformVertexRange(
+		const std::span<Vertex3D> vertexRange,
+		const Mat4x4& matrix) noexcept
+	{
+		if (vertexRange.empty())
+		{
+			return;
+		}
+
+		DirectX::XMVECTOR determinantVector;
+		const DirectX::XMMATRIX inverseMatrix = DirectX::XMMatrixInverse(&determinantVector, matrix.value);
+		const float determinant = DirectX::XMVectorGetX(determinantVector);
+
+		if (determinant == 0.0f)
+		{
+			for (auto& vertex : vertexRange)
+			{
+				const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(
+					static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.pos)));
+				DirectX::XMStoreFloat3(
+					static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.pos)),
+					DirectX::XMVector3Transform(position, matrix.value));
+			}
+
+			return;
+		}
+
+		const DirectX::XMMATRIX normalMatrix = DirectX::XMMatrixTranspose(inverseMatrix);
+		const bool flipHandedness = (determinant < 0.0f);
+
+		for (auto& vertex : vertexRange)
+		{
+			const DirectX::XMVECTOR position = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.pos)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.pos)),
+				DirectX::XMVector3Transform(position, matrix.value));
+
+			const DirectX::XMVECTOR normal = DirectX::XMLoadFloat3(
+				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertex.normal)));
+			DirectX::XMStoreFloat3(
+				static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&vertex.normal)),
+				DirectX::XMVector3Normalize(DirectX::XMVector3TransformNormal(normal, normalMatrix)));
+
+			const DirectX::XMVECTOR tangent = DirectX::XMVector3Normalize(
+				DirectX::XMVector3TransformNormal(
+					DirectX::XMLoadFloat4(
+						static_cast<const DirectX::XMFLOAT4*>(static_cast<const void*>(&vertex.tangent))),
+					matrix.value));
+			const float tangentW = (flipHandedness ? -vertex.tangent.w : vertex.tangent.w);
+			DirectX::XMStoreFloat4(
+				static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&vertex.tangent)),
+				DirectX::XMVectorSetW(tangent, tangentW));
+		}
 	}
 
 	[[nodiscard]]

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include "Mesh3DCommon.hpp"
 # include <algorithm>
@@ -35,14 +36,6 @@ namespace s3d
 				&& std::isfinite(rect.right)
 				&& std::isfinite(rect.bottom));
 		}
-
-		struct BoxFace
-		{
-			Float3 center;
-			Float3 u;
-			Float3 v;
-			Float3 normal;
-		};
 
 		[[nodiscard]]
 		static bool IsFinite(const BoxUVMapping& uvMapping) noexcept
@@ -273,98 +266,16 @@ namespace s3d
 
 	Mesh3D Mesh3D::Box(const Vec3 size)
 	{
-		return Box(size, BoxUVMapping{});
+		Mesh3DBuilder builder;
+		builder.addBox(size);
+		return std::move(builder).build();
 	}
 
-	Mesh3D Mesh3D::Box(const Vec3 _size, const BoxUVMapping& uvMapping)
+	Mesh3D Mesh3D::Box(const Vec3 size, const BoxUVMapping& uvMapping)
 	{
-		if (not IsFloatRepresentable(_size))
-		{
-			return GenerationFailed("Mesh3D::Box(): size must be finite and float-representable");
-		}
-
-		const Float3 size = _size;
-		if ((size.x <= 0.0f)
-			|| (size.y <= 0.0f)
-			|| (size.z <= 0.0f))
-		{
-			return GenerationFailed("Mesh3D::Box(): Every size component must be positive after conversion to float");
-		}
-
-		const Float3 halfSize = (size * 0.5f);
-		const std::array<BoxFace, 6> faces =
-		{{
-			{ { 0.0f, 0.0f, -halfSize.z }, { size.x, 0.0f, 0.0f }, { 0.0f, -size.y, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-			{ { 0.0f, 0.0f,  halfSize.z }, { -size.x, 0.0f, 0.0f }, { 0.0f, -size.y, 0.0f }, { 0.0f, 0.0f, 1.0f } },
-			{ {  halfSize.x, 0.0f, 0.0f }, { 0.0f, 0.0f, size.z }, { 0.0f, -size.y, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-			{ { -halfSize.x, 0.0f, 0.0f }, { 0.0f, 0.0f, -size.z }, { 0.0f, -size.y, 0.0f }, { -1.0f, 0.0f, 0.0f } },
-			{ { 0.0f,  halfSize.y, 0.0f }, { size.x, 0.0f, 0.0f }, { 0.0f, 0.0f, -size.z }, { 0.0f, 1.0f, 0.0f } },
-			{ { 0.0f, -halfSize.y, 0.0f }, { size.x, 0.0f, 0.0f }, { 0.0f, 0.0f, size.z }, { 0.0f, -1.0f, 0.0f } },
-		}};
-		const std::array<FloatRect, 6> uvRects =
-		{{
-			uvMapping.negativeZ,
-			uvMapping.positiveZ,
-			uvMapping.positiveX,
-			uvMapping.negativeX,
-			uvMapping.positiveY,
-			uvMapping.negativeY,
-		}};
-
-		for (const auto& uvRect : uvRects)
-		{
-			if (not IsFinite(uvRect))
-			{
-				return GenerationFailed("Mesh3D::Box(): Every UV rectangle must be finite");
-			}
-		}
-
-		Mesh3D mesh{ 24, 12 };
-
-		for (size_t faceIndex = 0; faceIndex < faces.size(); ++faceIndex)
-		{
-			const BoxFace& face = faces[faceIndex];
-			const Float3 halfU = (face.u * 0.5f);
-			const Float3 halfV = (face.v * 0.5f);
-			const FloatRect uvRect = uvRects[faceIndex];
-			const float uSign = ((uvRect.right < uvRect.left) ? -1.0f : 1.0f);
-			const float vSign = ((uvRect.bottom < uvRect.top) ? -1.0f : 1.0f);
-			const Float3 tangent = (face.u.normalized() * uSign);
-			const Float4 tangentFrame{ tangent, (uSign * vSign) };
-			const size_t vertexOffset = (faceIndex * 4);
-
-			mesh.vertices[vertexOffset + 0] = Vertex3D{
-				.pos = (face.center - halfU - halfV),
-				.normal = face.normal,
-				.tex = Float2{ uvRect.left, uvRect.top },
-				.tangent = tangentFrame
-			};
-			mesh.vertices[vertexOffset + 1] = Vertex3D{
-				.pos = (face.center + halfU - halfV),
-				.normal = face.normal,
-				.tex = Float2{ uvRect.right, uvRect.top },
-				.tangent = tangentFrame
-			};
-			mesh.vertices[vertexOffset + 2] = Vertex3D{
-				.pos = (face.center - halfU + halfV),
-				.normal = face.normal,
-				.tex = Float2{ uvRect.left, uvRect.bottom },
-				.tangent = tangentFrame
-			};
-			mesh.vertices[vertexOffset + 3] = Vertex3D{
-				.pos = (face.center + halfU + halfV),
-				.normal = face.normal,
-				.tex = Float2{ uvRect.right, uvRect.bottom },
-				.tangent = tangentFrame
-			};
-
-			const uint32 i0 = static_cast<uint32>(vertexOffset);
-			const size_t triangleOffset = (faceIndex * 2);
-			mesh.indices[triangleOffset + 0] = TriangleIndex32{ i0, (i0 + 1), (i0 + 2) };
-			mesh.indices[triangleOffset + 1] = TriangleIndex32{ (i0 + 2), (i0 + 1), (i0 + 3) };
-		}
-
-		return mesh;
+		Mesh3DBuilder builder;
+		builder.addBox(size, uvMapping);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////

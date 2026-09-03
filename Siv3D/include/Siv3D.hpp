@@ -1830,6 +1830,7 @@
 # include <Siv3D/Vertex3D.hpp>
 # include <Siv3D/BoxUVMapping.hpp>
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DBuilder.hpp>
 
 
 

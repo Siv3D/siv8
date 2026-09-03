@@ -140,6 +140,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mat4x4.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh2D.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh3D.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Mesh3DBuilder.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MinMax.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\MultiPolygon.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\OffsetCircular.ipp" />
@@ -267,6 +268,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh2D.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\BoxUVMapping.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3D.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3DBuilder.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MicrophoneInfo.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MP3Quality.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\MSDFGlyph.hpp" />
@@ -1851,6 +1853,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DOBJ.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DPrimitives.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3DBuilder\Mesh3DBuilder.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBox\SivMessageBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MessageBoxResult\SivMessageBoxResult.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\MicrophoneInfo\SivMicrophoneInfo.cpp" />
