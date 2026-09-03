@@ -222,6 +222,92 @@ TEST_CASE("Mesh3DBuilder::addRoundedBox")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addChamferedBox")
+{
+	constexpr Vec3 Size{ 2.0, 4.0, 6.0 };
+	constexpr double Chamfer = 0.5;
+
+	SUBCASE("Single chamfered box matches Mesh3D::ChamferedBox")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addChamferedBox(Size, Chamfer));
+		Mesh3DTest::CheckMeshDataEqual(
+			builder.getMesh(),
+			Mesh3D::ChamferedBox(Size, Chamfer));
+	}
+
+	SUBCASE("Multiple shapes reuse reserved storage")
+	{
+		Mesh3DBuilder builder;
+		builder.reserve(192, 88);
+		REQUIRE(builder.addChamferedBox(Size, Chamfer));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, offset));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = Mesh3D::ChamferedBox(Size, Chamfer);
+		REQUIRE(expected.append(
+			Mesh3D::ChamferedBox(Size, Chamfer),
+			Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset, rotation, matrix, and custom UV mapping")
+	{
+		BoxUVMapping uvMapping;
+		uvMapping.positiveY = FloatRect{ 0.1f, 0.2f, 0.8f, 0.7f };
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, offset, rotation));
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, transform));
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, uvMapping, offset));
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, uvMapping, offset, rotation));
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, uvMapping, transform));
+
+		const Mesh3D plain = Mesh3D::ChamferedBox(Size, Chamfer);
+		const Mesh3D mapped = Mesh3D::ChamferedBox(Size, Chamfer, uvMapping);
+		Mesh3D expected;
+		REQUIRE(expected.append(
+			plain, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(plain, transform));
+		REQUIRE(expected.append(mapped, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			mapped, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(mapped, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Zero chamfer delegates to addBox")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addChamferedBox(Size, 0.0));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), Mesh3D::Box(Size));
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addChamferedBox(Size, -0.1));
+		CHECK_FALSE(builder.addChamferedBox(Size, 1.0));
+		BoxUVMapping invalidMapping;
+		invalidMapping.positiveY.left = std::numeric_limits<float>::quiet_NaN();
+		CHECK_FALSE(builder.addChamferedBox(Size, Chamfer, invalidMapping));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder::addWedge")
 {
 	const Vec3 size{ 4.0, 2.0, 6.0 };

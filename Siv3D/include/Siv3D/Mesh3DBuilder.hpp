@@ -233,6 +233,84 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addChamferedBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅。0 以上、`size` の最小成分の半分未満である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addChamferedBox(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double chamfer = 0.1);
+
+		/// @brief 平行移動した面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addChamferedBox(Vec3 size, double chamfer, Vec3 offset);
+
+		/// @brief 回転および平行移動した面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addChamferedBox(Vec3 size, double chamfer, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addChamferedBox(Vec3 size, double chamfer, const Mat4x4& transform);
+
+		/// @brief 指定した UV マッピングを持つ、原点を中心とする面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅
+		/// @param uvMapping 各投影面に割り当てる UV 矩形
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 辺面と角面の投影軸が複数同率になる場合は、X 軸、Y 軸、Z 軸の順に優先します。
+		bool addChamferedBox(Vec3 size, double chamfer, const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、平行移動した面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅
+		/// @param uvMapping 各投影面に割り当てる UV 矩形
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addChamferedBox(Vec3 size, double chamfer, const BoxUVMapping& uvMapping, Vec3 offset);
+
+		/// @brief 指定した UV マッピングを持つ、回転および平行移動した面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅
+		/// @param uvMapping 各投影面に割り当てる UV 矩形
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addChamferedBox(
+			Vec3 size,
+			double chamfer,
+			const BoxUVMapping& uvMapping,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した面取り直方体を追加します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅
+		/// @param uvMapping 各投影面に割り当てる UV 矩形
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addChamferedBox(
+			Vec3 size,
+			double chamfer,
+			const BoxUVMapping& uvMapping,
+			const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addWedge
 		//
 		////////////////////////////////////////////////////////////////

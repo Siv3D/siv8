@@ -23,6 +23,8 @@ namespace
 		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&, BoxFace)>(&Mesh3D::Box);
 		static_cast<Mesh3D (*)(Vec3, double, uint32)>(&Mesh3D::RoundedBox);
 		static_cast<Mesh3D (*)(Vec3, double, uint32, const BoxUVMapping&)>(&Mesh3D::RoundedBox);
+		static_cast<Mesh3D (*)(Vec3, double)>(&Mesh3D::ChamferedBox);
+		static_cast<Mesh3D (*)(Vec3, double, const BoxUVMapping&)>(&Mesh3D::ChamferedBox);
 		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::Wedge);
 		static_cast<Mesh3D (*)(Vec3, const BoxUVMapping&)>(&Mesh3D::Wedge);
 		static_cast<Mesh3D (*)(Vec3)>(&Mesh3D::TriangularPrism);
@@ -439,6 +441,122 @@ TEST_CASE("Mesh3D::RoundedBox")
 		BoxUVMapping invalidMapping;
 		invalidMapping.positiveY.left = std::numeric_limits<float>::quiet_NaN();
 		CHECK(Mesh3D::RoundedBox(Size, Radius, 1, invalidMapping).isEmpty());
+	}
+}
+
+TEST_CASE("Mesh3D::ChamferedBox")
+{
+	constexpr Vec3 Size{ 2.0, 4.0, 6.0 };
+	constexpr double Chamfer = 0.5;
+	const Mesh3D mesh = Mesh3D::ChamferedBox(Size, Chamfer);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 96 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 44 });
+	CheckMeshGeometry(mesh);
+
+	size_t mainVertexCount = 0;
+	size_t edgeVertexCount = 0;
+	size_t cornerVertexCount = 0;
+	for (const Vertex3D& vertex : mesh.vertices)
+	{
+		CHECK(std::abs(vertex.pos.x) <= 1.0f);
+		CHECK(std::abs(vertex.pos.y) <= 2.0f);
+		CHECK(std::abs(vertex.pos.z) <= 3.0f);
+		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
+		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
+
+		const size_t nonZeroNormalComponents =
+			(static_cast<size_t>(vertex.normal.x != 0.0f)
+				+ static_cast<size_t>(vertex.normal.y != 0.0f)
+				+ static_cast<size_t>(vertex.normal.z != 0.0f));
+		if (nonZeroNormalComponents == 1)
+		{
+			++mainVertexCount;
+		}
+		else if (nonZeroNormalComponents == 2)
+		{
+			++edgeVertexCount;
+		}
+		else
+		{
+			++cornerVertexCount;
+		}
+	}
+
+	CHECK_EQ(mainVertexCount, size_t{ 24 });
+	CHECK_EQ(edgeVertexCount, size_t{ 48 });
+	CHECK_EQ(cornerVertexCount, size_t{ 24 });
+
+	SUBCASE("Zero chamfer equals Box")
+	{
+		Mesh3DTest::CheckMeshDataEqual(
+			Mesh3D::ChamferedBox(Size, 0.0),
+			Mesh3D::Box(Size));
+	}
+
+	SUBCASE("Projection-axis priority")
+	{
+		const BoxUVMapping uvMapping{
+			.negativeZ = FloatRect{ 10.0f, 0.0f, 10.0f, 1.0f },
+			.positiveZ = FloatRect{ 20.0f, 0.0f, 20.0f, 1.0f },
+			.positiveX = FloatRect{ 30.0f, 0.0f, 30.0f, 1.0f },
+			.negativeX = FloatRect{ 40.0f, 0.0f, 40.0f, 1.0f },
+			.positiveY = FloatRect{ 50.0f, 0.0f, 50.0f, 1.0f },
+			.negativeY = FloatRect{ 60.0f, 0.0f, 60.0f, 1.0f },
+		};
+		const Mesh3D mappedMesh = Mesh3D::ChamferedBox(Size, Chamfer, uvMapping);
+		CheckMeshGeometry(mappedMesh);
+
+		std::array<size_t, 6> projectionCounts{};
+		for (const Vertex3D& vertex : mappedMesh.vertices)
+		{
+			if (vertex.tex.x == 10.0f)
+			{
+				++projectionCounts[0];
+			}
+			else if (vertex.tex.x == 20.0f)
+			{
+				++projectionCounts[1];
+			}
+			else if (vertex.tex.x == 30.0f)
+			{
+				++projectionCounts[2];
+			}
+			else if (vertex.tex.x == 40.0f)
+			{
+				++projectionCounts[3];
+			}
+			else if (vertex.tex.x == 50.0f)
+			{
+				++projectionCounts[4];
+			}
+			else if (vertex.tex.x == 60.0f)
+			{
+				++projectionCounts[5];
+			}
+		}
+
+		constexpr std::array<size_t, 6> ExpectedCounts{ 4, 4, 32, 32, 12, 12 };
+		CHECK_EQ(projectionCounts, ExpectedCounts);
+	}
+
+	SUBCASE("Boundary and invalid arguments")
+	{
+		CheckMeshGeometry(Mesh3D::ChamferedBox(Size, 0.99));
+		CHECK(Mesh3D::ChamferedBox(Size, 1.0).isEmpty());
+		CHECK(Mesh3D::ChamferedBox(Size, 1.01).isEmpty());
+		CHECK(Mesh3D::ChamferedBox(Size, -0.1).isEmpty());
+		CHECK(Mesh3D::ChamferedBox(
+			Size, std::numeric_limits<double>::quiet_NaN()).isEmpty());
+		CHECK(Mesh3D::ChamferedBox(
+			Size, std::numeric_limits<double>::infinity()).isEmpty());
+		CHECK(Mesh3D::ChamferedBox(Vec3{ 0.0, 1.0, 1.0 }, 0.1).isEmpty());
+		CHECK(Mesh3D::ChamferedBox(
+			Vec3{ std::numeric_limits<double>::max(), 1.0, 1.0 }, 0.1).isEmpty());
+
+		BoxUVMapping invalidMapping;
+		invalidMapping.positiveY.left = std::numeric_limits<float>::quiet_NaN();
+		CHECK(Mesh3D::ChamferedBox(Size, Chamfer, invalidMapping).isEmpty());
 	}
 }
 

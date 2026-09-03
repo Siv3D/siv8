@@ -822,6 +822,312 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addChamferedBox
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addChamferedBox(const Vec3 size, const double chamfer)
+	{
+		return addChamferedBox(size, chamfer, BoxUVMapping{});
+	}
+
+	bool Mesh3DBuilder::addChamferedBox(
+		const Vec3 size,
+		const double chamfer,
+		const Vec3 offset)
+	{
+		return addChamferedBox(size, chamfer, BoxUVMapping{}, offset);
+	}
+
+	bool Mesh3DBuilder::addChamferedBox(
+		const Vec3 size,
+		const double chamfer,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addChamferedBox(size, chamfer, BoxUVMapping{}, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addChamferedBox(
+		const Vec3 size,
+		const double chamfer,
+		const Mat4x4& transform)
+	{
+		return addChamferedBox(size, chamfer, BoxUVMapping{}, transform);
+	}
+
+	bool Mesh3DBuilder::addChamferedBox(
+		const Vec3 _size,
+		const double _chamfer,
+		const BoxUVMapping& uvMapping)
+	{
+		if ((not IsFloatRepresentable(_size))
+			|| (not IsFloatRepresentable(_chamfer))
+			|| (not IsFinite(uvMapping))
+			|| (_chamfer < 0.0))
+		{
+			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): The size, chamfer, or UV mapping is invalid");
+		}
+
+		const Float3 size = _size;
+		const float chamfer = static_cast<float>(_chamfer);
+		if ((size.x <= 0.0f)
+			|| (size.y <= 0.0f)
+			|| (size.z <= 0.0f))
+		{
+			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): Every size component must be positive after conversion to float");
+		}
+
+		if (chamfer == 0.0f)
+		{
+			return addBox(size, uvMapping);
+		}
+
+		const float maxChamfer = (std::min({ size.x, size.y, size.z }) * 0.5f);
+		if (maxChamfer <= chamfer)
+		{
+			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): chamfer must be smaller than half of the smallest size component after conversion to float");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(m_mesh, 96, 44, vertexOffset, triangleOffset))
+		{
+			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): The generated mesh exceeds the supported size");
+		}
+
+		const Float3 halfSize = (size * 0.5f);
+		const Float3 innerHalfSize{
+			(halfSize.x - chamfer),
+			(halfSize.y - chamfer),
+			(halfSize.z - chamfer)
+		};
+		constexpr float InvSqrt2 = Math::InvSqrt2_v<float>;
+		constexpr float InvSqrt3 = Math::InvSqrt3_v<float>;
+
+		const auto getUVRect = [&uvMapping](const BoxFace projection) -> const FloatRect&
+		{
+			switch (projection)
+			{
+			case BoxFace::NegativeX:
+				return uvMapping.negativeX;
+			case BoxFace::PositiveX:
+				return uvMapping.positiveX;
+			case BoxFace::NegativeY:
+				return uvMapping.negativeY;
+			case BoxFace::PositiveY:
+				return uvMapping.positiveY;
+			case BoxFace::PositiveZ:
+				return uvMapping.positiveZ;
+			default:
+				return uvMapping.negativeZ;
+			}
+		};
+
+		const auto projectUV = [size](const Float3 position, const BoxFace projection) noexcept
+		{
+			switch (projection)
+			{
+			case BoxFace::NegativeX:
+				return Float2{ (0.5f - (position.z / size.z)), (0.5f - (position.y / size.y)) };
+			case BoxFace::PositiveX:
+				return Float2{ (0.5f + (position.z / size.z)), (0.5f - (position.y / size.y)) };
+			case BoxFace::NegativeY:
+				return Float2{ (0.5f + (position.x / size.x)), (0.5f + (position.z / size.z)) };
+			case BoxFace::PositiveY:
+				return Float2{ (0.5f + (position.x / size.x)), (0.5f - (position.z / size.z)) };
+			case BoxFace::PositiveZ:
+				return Float2{ (0.5f - (position.x / size.x)), (0.5f - (position.y / size.y)) };
+			default:
+				return Float2{ (0.5f + (position.x / size.x)), (0.5f - (position.y / size.y)) };
+			}
+		};
+
+		const auto getBaseTangent = [](const BoxFace projection) noexcept
+		{
+			switch (projection)
+			{
+			case BoxFace::NegativeX:
+				return -Float3::UnitZ();
+			case BoxFace::PositiveX:
+				return Float3::UnitZ();
+			case BoxFace::PositiveZ:
+				return -Float3::UnitX();
+			default:
+				return Float3::UnitX();
+			}
+		};
+
+		const auto makeTangent = [&getBaseTangent](const Float3 normal, const BoxFace projection) noexcept
+		{
+			const Float3 baseTangent = getBaseTangent(projection);
+			return (baseTangent - (normal * baseTangent.dot(normal))).normalized();
+		};
+
+		const auto writeQuad = [&](std::array<Float3, 4> positions, const Float3 normal, const BoxFace projection)
+		{
+			if ((positions[1] - positions[0]).cross(positions[2] - positions[0]).dot(normal) < 0.0f)
+			{
+				std::swap(positions[0], positions[1]);
+				std::swap(positions[2], positions[3]);
+			}
+
+			std::array<Float2, 4> projectedUVs;
+			for (size_t i = 0; i < positions.size(); ++i)
+			{
+				projectedUVs[i] = projectUV(positions[i], projection);
+			}
+
+			WriteProjectedQuad(
+				m_mesh, vertexOffset, triangleOffset,
+				positions, projectedUVs, normal, makeTangent(normal, projection), getUVRect(projection));
+		};
+
+		const auto writeTriangle = [&](std::array<Float3, 3> positions, const Float3 normal, const BoxFace projection)
+		{
+			if ((positions[1] - positions[0]).cross(positions[2] - positions[0]).dot(normal) < 0.0f)
+			{
+				std::swap(positions[1], positions[2]);
+			}
+
+			std::array<Float2, 3> projectedUVs;
+			for (size_t i = 0; i < positions.size(); ++i)
+			{
+				projectedUVs[i] = projectUV(positions[i], projection);
+			}
+
+			WriteProjectedTriangle(
+				m_mesh, vertexOffset, triangleOffset,
+				positions, projectedUVs, normal, makeTangent(normal, projection), getUVRect(projection));
+		};
+
+		const float hx = halfSize.x;
+		const float hy = halfSize.y;
+		const float hz = halfSize.z;
+		const float ix = innerHalfSize.x;
+		const float iy = innerHalfSize.y;
+		const float iz = innerHalfSize.z;
+
+		writeQuad({{
+			{ -ix, iy, -hz }, { ix, iy, -hz }, { -ix, -iy, -hz }, { ix, -iy, -hz }
+		}}, -Float3::UnitZ(), BoxFace::NegativeZ);
+		writeQuad({{
+			{ ix, iy, hz }, { -ix, iy, hz }, { ix, -iy, hz }, { -ix, -iy, hz }
+		}}, Float3::UnitZ(), BoxFace::PositiveZ);
+		writeQuad({{
+			{ hx, iy, -iz }, { hx, iy, iz }, { hx, -iy, -iz }, { hx, -iy, iz }
+		}}, Float3::UnitX(), BoxFace::PositiveX);
+		writeQuad({{
+			{ -hx, iy, iz }, { -hx, iy, -iz }, { -hx, -iy, iz }, { -hx, -iy, -iz }
+		}}, -Float3::UnitX(), BoxFace::NegativeX);
+		writeQuad({{
+			{ -ix, hy, iz }, { ix, hy, iz }, { -ix, hy, -iz }, { ix, hy, -iz }
+		}}, Float3::UnitY(), BoxFace::PositiveY);
+		writeQuad({{
+			{ -ix, -hy, -iz }, { ix, -hy, -iz }, { -ix, -hy, iz }, { ix, -hy, iz }
+		}}, -Float3::UnitY(), BoxFace::NegativeY);
+
+		constexpr std::array<float, 2> Signs{ -1.0f, 1.0f };
+		for (const float sy : Signs)
+		{
+			for (const float sz : Signs)
+			{
+				const Float3 normal{ 0.0f, (sy * InvSqrt2), (sz * InvSqrt2) };
+				const BoxFace projection = ((0.0f < sy) ? BoxFace::PositiveY : BoxFace::NegativeY);
+				writeQuad({{
+					{ -ix, (sy * hy), (sz * iz) }, { ix, (sy * hy), (sz * iz) },
+					{ -ix, (sy * iy), (sz * hz) }, { ix, (sy * iy), (sz * hz) }
+				}}, normal, projection);
+			}
+		}
+
+		for (const float sx : Signs)
+		{
+			for (const float sz : Signs)
+			{
+				const Float3 normal{ (sx * InvSqrt2), 0.0f, (sz * InvSqrt2) };
+				const BoxFace projection = ((0.0f < sx) ? BoxFace::PositiveX : BoxFace::NegativeX);
+				writeQuad({{
+					{ (sx * hx), -iy, (sz * iz) }, { (sx * hx), iy, (sz * iz) },
+					{ (sx * ix), -iy, (sz * hz) }, { (sx * ix), iy, (sz * hz) }
+				}}, normal, projection);
+			}
+		}
+
+		for (const float sx : Signs)
+		{
+			for (const float sy : Signs)
+			{
+				const Float3 normal{ (sx * InvSqrt2), (sy * InvSqrt2), 0.0f };
+				const BoxFace projection = ((0.0f < sx) ? BoxFace::PositiveX : BoxFace::NegativeX);
+				writeQuad({{
+					{ (sx * hx), (sy * iy), -iz }, { (sx * hx), (sy * iy), iz },
+					{ (sx * ix), (sy * hy), -iz }, { (sx * ix), (sy * hy), iz }
+				}}, normal, projection);
+			}
+		}
+
+		for (const float sx : Signs)
+		{
+			for (const float sy : Signs)
+			{
+				for (const float sz : Signs)
+				{
+					const Float3 normal{
+						(sx * InvSqrt3), (sy * InvSqrt3), (sz * InvSqrt3)
+					};
+					const BoxFace projection = ((0.0f < sx) ? BoxFace::PositiveX : BoxFace::NegativeX);
+					writeTriangle({{
+						{ (sx * hx), (sy * iy), (sz * iz) },
+						{ (sx * ix), (sy * hy), (sz * iz) },
+						{ (sx * ix), (sy * iy), (sz * hz) }
+					}}, normal, projection);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addChamferedBox(
+		const Vec3 size,
+		const double chamfer,
+		const BoxUVMapping& uvMapping,
+		const Vec3 offset)
+	{
+		return addChamferedBox(
+			size, chamfer, uvMapping, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addChamferedBox(
+		const Vec3 size,
+		const double chamfer,
+		const BoxUVMapping& uvMapping,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addChamferedBox(size, chamfer, uvMapping,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addChamferedBox(
+		const Vec3 size,
+		const double chamfer,
+		const BoxUVMapping& uvMapping,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addChamferedBox(size, chamfer, uvMapping))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addWedge
 	//
 	////////////////////////////////////////////////////////////////

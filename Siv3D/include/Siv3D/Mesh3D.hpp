@@ -156,6 +156,37 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	ChamferedBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする面取り直方体の 3D メッシュを作成します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅。0 以上、`size` の最小成分の半分未満である必要があります。
+		/// @return 面取り直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark `chamfer == 0` の場合は `Box(size)` と同じ 3D メッシュを返します。
+		/// @remark すべての面は平面で、面ごとに独立した頂点とハードエッジを持ちます。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D ChamferedBox(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double chamfer = 0.1);
+
+		/// @brief 原点を中心とする面取り直方体の 3D メッシュを作成します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅。0 以上、`size` の最小成分の半分未満である必要があります。
+		/// @param uvMapping 各投影面に割り当てる UV 矩形
+		/// @return 面取り直方体の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark `chamfer == 0` の場合は `Box(size, uvMapping)` と同じ 3D メッシュを返します。
+		/// @remark 辺面と角面の投影軸が複数同率になる場合は、X 軸、Y 軸、Z 軸の順に優先します。
+		[[nodiscard]]
+		static Mesh3D ChamferedBox(
+			Vec3 size,
+			double chamfer,
+			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	Wedge
 		//
 		////////////////////////////////////////////////////////////////

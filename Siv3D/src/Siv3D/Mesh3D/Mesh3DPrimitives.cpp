@@ -63,6 +63,29 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	ChamferedBox
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::ChamferedBox(const Vec3 size, const double chamfer)
+	{
+		Mesh3DBuilder builder;
+		builder.addChamferedBox(size, chamfer);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::ChamferedBox(
+		const Vec3 size,
+		const double chamfer,
+		const BoxUVMapping& uvMapping)
+	{
+		Mesh3DBuilder builder;
+		builder.addChamferedBox(size, chamfer, uvMapping);
+		return std::move(builder).build();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	Wedge
 	//
 	////////////////////////////////////////////////////////////////
