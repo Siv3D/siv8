@@ -41,7 +41,7 @@ namespace
 		static_cast<Mesh3D (*)(SizeF, uint32, uint32, Vec2, Vec2)>(&Mesh3D::Grid);
 		static_cast<Mesh3D (*)(double, double, uint32, uint32)>(&Mesh3D::Torus);
 		static_cast<Mesh3D (*)(double, double, uint32, uint32)>(&Mesh3D::Capsule);
-		static_cast<Mesh3D (*)(double, uint32, uint32)>(&Mesh3D::UVSphere);
+		static_cast<Mesh3D (*)(double, uint32, uint32)>(&Mesh3D::Sphere);
 		static_cast<Mesh3D (*)(double, uint32, uint32)>(&Mesh3D::Hemisphere);
 		static_cast<Mesh3D (*)(double, CloseBottom, uint32, uint32)>(&Mesh3D::Hemisphere);
 		static_cast<Mesh3D (*)(double, uint32)>(&Mesh3D::Disc);
@@ -906,11 +906,11 @@ TEST_CASE("Mesh3D::Grid")
 	CHECK(Mesh3D::Grid(SizeF{ 1.0, 1.0 }, 1, 1, Vec2{ std::numeric_limits<double>::max(), 1.0 }).isEmpty());
 }
 
-TEST_CASE("Mesh3D::UVSphere")
+TEST_CASE("Mesh3D::Sphere")
 {
 	constexpr uint32 Slices = 8;
 	constexpr uint32 Stacks = 4;
-	const Mesh3D mesh = Mesh3D::UVSphere(2.0, Slices, Stacks);
+	const Mesh3D mesh = Mesh3D::Sphere(2.0, Slices, Stacks);
 	const size_t expectedVertexCount = ((Stacks - 1) * (Slices + 1) + (2 * Slices));
 	const size_t expectedTriangleCount = (2 * Slices * (Stacks - 1));
 
@@ -957,10 +957,10 @@ TEST_CASE("Mesh3D::UVSphere")
 	CHECK_EQ(mesh.vertices[firstRingBase].tex.x, 0.0f);
 	CHECK_EQ(mesh.vertices[firstRingBase + Slices].tex.x, 1.0f);
 
-	CHECK(Mesh3D::UVSphere(0.0, Slices, Stacks).isEmpty());
-	CHECK(Mesh3D::UVSphere(1.0, 2, Stacks).isEmpty());
-	CHECK(Mesh3D::UVSphere(1.0, Slices, 1).isEmpty());
-	CHECK(Mesh3D::UVSphere(1.0, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::Sphere(0.0, Slices, Stacks).isEmpty());
+	CHECK(Mesh3D::Sphere(1.0, 2, Stacks).isEmpty());
+	CHECK(Mesh3D::Sphere(1.0, Slices, 1).isEmpty());
+	CHECK(Mesh3D::Sphere(1.0, std::numeric_limits<uint32>::max(), std::numeric_limits<uint32>::max()).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Hemisphere")
@@ -1244,7 +1244,7 @@ TEST_CASE("Mesh3D::Capsule")
 	SUBCASE("Zero cylinder height")
 	{
 		const Mesh3D capsule = Mesh3D::Capsule(Radius, 0.0, Slices, HemisphereStacks);
-		const Mesh3D sphere = Mesh3D::UVSphere(Radius, Slices, (HemisphereStacks * 2));
+		const Mesh3D sphere = Mesh3D::Sphere(Radius, Slices, (HemisphereStacks * 2));
 		REQUIRE_EQ(capsule.vertexCount(), sphere.vertexCount());
 		REQUIRE_EQ(capsule.triangleCount(), sphere.triangleCount());
 

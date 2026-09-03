@@ -3145,18 +3145,18 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addUVSphere
+	//	addSphere
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addUVSphere(
+	bool Mesh3DBuilder::addSphere(
 		const double _radius,
 		const uint32 slices,
 		const uint32 stacks)
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addUVSphere(): radius must be finite and float-representable");
+			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
@@ -3164,7 +3164,7 @@ namespace s3d
 			|| (slices < 3)
 			|| (stacks < 2))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addUVSphere(): The radius, slice count, or stack count is invalid");
+			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): The radius, slice count, or stack count is invalid");
 		}
 
 		const size_t interiorRingCount = (static_cast<size_t>(stacks) - 1);
@@ -3182,7 +3182,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
 			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addUVSphere(): The generated mesh exceeds the supported size");
+			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
@@ -3190,7 +3190,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addUVSphere(): The generated mesh exceeds the supported size");
+			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): The generated mesh exceeds the supported size");
 		}
 
 		const size_t firstRingBase = (vertexOffset + slices);
@@ -3287,35 +3287,35 @@ namespace s3d
 		return true;
 	}
 
-	bool Mesh3DBuilder::addUVSphere(
+	bool Mesh3DBuilder::addSphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
 		const Vec3 offset)
 	{
-		return addUVSphere(radius, slices, stacks,
+		return addSphere(radius, slices, stacks,
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addUVSphere(
+	bool Mesh3DBuilder::addSphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
 		const Vec3 offset,
 		const Quaternion& rotation)
 	{
-		return addUVSphere(radius, slices, stacks,
+		return addSphere(radius, slices, stacks,
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addUVSphere(
+	bool Mesh3DBuilder::addSphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
 		const Mat4x4& transform)
 	{
 		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addUVSphere(radius, slices, stacks))
+		if (not addSphere(radius, slices, stacks))
 		{
 			return false;
 		}
@@ -3618,7 +3618,7 @@ namespace s3d
 				return GenerationFailed<bool>("Mesh3DBuilder::addCapsule(): hemisphereStacks exceed the supported range for a zero-length cylinder");
 			}
 
-			return addUVSphere(radius, slices, (hemisphereStacks * 2));
+			return addSphere(radius, slices, (hemisphereStacks * 2));
 		}
 
 		size_t interiorRingCount;

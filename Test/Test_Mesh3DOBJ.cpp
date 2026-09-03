@@ -110,7 +110,7 @@ TEST_CASE("Mesh3D::encodeOBJ")
 
 TEST_CASE("Mesh3D::encodeOBJ converts Siv3D V coordinates to OBJ V coordinates")
 {
-	const Mesh3D sphere = Mesh3D::UVSphere(1.0, 4, 2);
+	const Mesh3D sphere = Mesh3D::Sphere(1.0, 4, 2);
 	const std::string obj = BlobToString(sphere.encodeOBJ());
 
 	CHECK_NE(obj.find("vt 0.125 1\n"), std::string::npos); // North pole: Siv3D V = 0, OBJ V = 1

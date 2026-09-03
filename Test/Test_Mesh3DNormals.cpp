@@ -273,11 +273,11 @@ TEST_CASE("Mesh3D::computeTangents generated mesh conventions")
 		CheckComputedTangents("Grid", Mesh3D::Grid(SizeF{ 2.0, 2.0 }, 2, 2));
 	}
 
-	SUBCASE("UVSphere")
+	SUBCASE("Sphere")
 	{
 		CheckComputedTangents(
-			"UVSphere",
-			Mesh3D::UVSphere(1.0, 16, 8),
+			"Sphere",
+			Mesh3D::Sphere(1.0, 16, 8),
 			TangentComparison::Orientation);
 	}
 

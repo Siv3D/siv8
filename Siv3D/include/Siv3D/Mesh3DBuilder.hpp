@@ -1068,7 +1068,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	addUVSphere
+		//	addSphere
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -1077,7 +1077,7 @@ namespace s3d
 		/// @param slices 経度方向の分割数。3 以上である必要があります。
 		/// @param stacks 緯度方向の分割数。2 以上である必要があります。
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addUVSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
+		bool addSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
 
 		/// @brief 平行移動した UV 球を追加します。
 		/// @param radius 球の半径
@@ -1085,7 +1085,7 @@ namespace s3d
 		/// @param stacks 緯度方向の分割数
 		/// @param offset 平行移動量
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addUVSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
+		bool addSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
 
 		/// @brief 回転および平行移動した UV 球を追加します。
 		/// @param radius 球の半径
@@ -1094,7 +1094,7 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addUVSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
+		bool addSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した UV 球を追加します。
 		/// @param radius 球の半径
@@ -1102,7 +1102,7 @@ namespace s3d
 		/// @param stacks 緯度方向の分割数
 		/// @param transform 適用するアフィン変換行列
 		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addUVSphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
+		bool addSphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//

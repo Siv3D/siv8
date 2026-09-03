@@ -266,14 +266,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	UVSphere
+	//	Sphere
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::UVSphere(const double radius, const uint32 slices, const uint32 stacks)
+	Mesh3D Mesh3D::Sphere(const double radius, const uint32 slices, const uint32 stacks)
 	{
 		Mesh3DBuilder builder;
-		builder.addUVSphere(radius, slices, stacks);
+		builder.addSphere(radius, slices, stacks);
 		return std::move(builder).build();
 	}
 

@@ -826,7 +826,7 @@ TEST_CASE("Mesh3DBuilder::addTorus")
 	}
 }
 
-TEST_CASE("Mesh3DBuilder::addUVSphere")
+TEST_CASE("Mesh3DBuilder::addSphere")
 {
 	constexpr double Radius = 2.0;
 	constexpr uint32 Slices = 8;
@@ -836,10 +836,10 @@ TEST_CASE("Mesh3DBuilder::addUVSphere")
 	{
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addBox());
-		REQUIRE(builder.addUVSphere(Radius, Slices, Stacks));
+		REQUIRE(builder.addSphere(Radius, Slices, Stacks));
 
 		Mesh3D expected = Mesh3D::Box();
-		REQUIRE(expected.append(Mesh3D::UVSphere(Radius, Slices, Stacks)));
+		REQUIRE(expected.append(Mesh3D::Sphere(Radius, Slices, Stacks)));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
@@ -848,9 +848,9 @@ TEST_CASE("Mesh3DBuilder::addUVSphere")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addUVSphere(Radius, Slices, Stacks, offset, rotation));
+		REQUIRE(builder.addSphere(Radius, Slices, Stacks, offset, rotation));
 
-		const Mesh3D expected = Mesh3D::UVSphere(Radius, Slices, Stacks).transformed(
+		const Mesh3D expected = Mesh3D::Sphere(Radius, Slices, Stacks).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
@@ -862,9 +862,9 @@ TEST_CASE("Mesh3DBuilder::addUVSphere")
 			Quaternion::RotateX(Math::QuarterPiF),
 			Float3{ 5.0f, 6.0f, 7.0f });
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addUVSphere(Radius, Slices, Stacks, transform));
+		REQUIRE(builder.addSphere(Radius, Slices, Stacks, transform));
 
-		const Mesh3D expected = Mesh3D::UVSphere(Radius, Slices, Stacks).transformed(transform);
+		const Mesh3D expected = Mesh3D::Sphere(Radius, Slices, Stacks).transformed(transform);
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
@@ -874,9 +874,9 @@ TEST_CASE("Mesh3DBuilder::addUVSphere")
 		REQUIRE(builder.addBox());
 		const Mesh3D expected = builder.getMesh();
 
-		CHECK_FALSE(builder.addUVSphere(0.0, Slices, Stacks));
-		CHECK_FALSE(builder.addUVSphere(Radius, 2, Stacks));
-		CHECK_FALSE(builder.addUVSphere(
+		CHECK_FALSE(builder.addSphere(0.0, Slices, Stacks));
+		CHECK_FALSE(builder.addSphere(Radius, 2, Stacks));
+		CHECK_FALSE(builder.addSphere(
 			Radius,
 			std::numeric_limits<uint32>::max(),
 			std::numeric_limits<uint32>::max()));
@@ -1007,7 +1007,7 @@ TEST_CASE("Mesh3DBuilder::addCapsule")
 		REQUIRE(builder.addCapsule(Radius, 0.0, Slices, HemisphereStacks));
 		Mesh3DTest::CheckMeshDataEqual(
 			builder.getMesh(),
-			Mesh3D::UVSphere(Radius, Slices, (HemisphereStacks * 2)));
+			Mesh3D::Sphere(Radius, Slices, (HemisphereStacks * 2)));
 	}
 
 	SUBCASE("Failure leaves existing content unchanged")

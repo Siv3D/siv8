@@ -662,7 +662,7 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	UVSphere
+		//	Sphere
 		//
 		////////////////////////////////////////////////////////////////
 
@@ -675,7 +675,7 @@ namespace s3d
 		/// @remark UV 座標は、北極を V = 0、南極を V = 1 とし、U は +X 方向を 0 として東向き（+Z 方向）へ増加します。
 		/// @remark UV 座標および接線空間の不連続を表現するため、同じ位置に複数の頂点が作成されます。
 		[[nodiscard]]
-		static Mesh3D UVSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
+		static Mesh3D Sphere(double radius, uint32 slices = 32, uint32 stacks = 16);
 
 		////////////////////////////////////////////////////////////////
 		//
