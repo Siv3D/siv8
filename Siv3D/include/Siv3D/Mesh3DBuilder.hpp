@@ -792,6 +792,78 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	addDisc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く円盤を追加します。
+		/// @param radius 円盤の半径
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDisc(double radius, uint32 segments = 32);
+
+		/// @brief 平行移動した円盤を追加します。
+		/// @param radius 円盤の半径
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDisc(double radius, uint32 segments, Vec3 offset);
+
+		/// @brief 回転および平行移動した円盤を追加します。
+		/// @param radius 円盤の半径
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDisc(double radius, uint32 segments, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した円盤を追加します。
+		/// @param radius 円盤の半径
+		/// @param segments 円周の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addDisc(double radius, uint32 segments, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addAnnulus
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く円環を追加します。
+		/// @param innerRadius 円環の内半径。0 以上である必要があります。
+		/// @param outerRadius 円環の外半径。`innerRadius` より大きい必要があります。
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments = 32);
+
+		/// @brief 平行移動した円環を追加します。
+		/// @param innerRadius 円環の内半径
+		/// @param outerRadius 円環の外半径
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments, Vec3 offset);
+
+		/// @brief 回転および平行移動した円環を追加します。
+		/// @param innerRadius 円環の内半径
+		/// @param outerRadius 円環の外半径
+		/// @param segments 円周の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した円環を追加します。
+		/// @param innerRadius 円環の内半径
+		/// @param outerRadius 円環の外半径
+		/// @param segments 円周の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments, const Mat4x4& transform);
+
 	private:
 
 		Mesh3D m_mesh;

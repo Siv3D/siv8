@@ -522,6 +522,101 @@ TEST_CASE("Mesh3DBuilder::addGrid")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addDisc")
+{
+	constexpr double Radius = 2.0;
+	constexpr uint32 Segments = 8;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addDisc(Radius, Segments));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(Mesh3D::Disc(Radius, Segments)));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Matrix transform")
+	{
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f },
+			Quaternion::RotateZ(Math::QuarterPiF),
+			Float3{ 5.0f, 6.0f, 7.0f });
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addDisc(Radius, Segments, transform));
+
+		const Mesh3D expected = Mesh3D::Disc(Radius, Segments).transformed(transform);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addDisc(0.0, Segments));
+		CHECK_FALSE(builder.addDisc(Radius, 2));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addAnnulus")
+{
+	constexpr double InnerRadius = 1.0;
+	constexpr double OuterRadius = 2.0;
+	constexpr uint32 Segments = 8;
+
+	SUBCASE("Appends indices with an offset")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		REQUIRE(builder.addAnnulus(InnerRadius, OuterRadius, Segments, offset));
+
+		Mesh3D expected = Mesh3D::Box();
+		REQUIRE(expected.append(
+			Mesh3D::Annulus(InnerRadius, OuterRadius, Segments),
+			Mat4x4::Translate(Float3{ offset })));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Offset and rotation")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addAnnulus(
+			InnerRadius, OuterRadius, Segments, offset, rotation));
+
+		const Mesh3D expected = Mesh3D::Annulus(
+			InnerRadius, OuterRadius, Segments).transformed(
+				Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Zero inner radius delegates to disc generation")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addAnnulus(0.0, OuterRadius, Segments));
+		Mesh3DTest::CheckMeshDataEqual(
+			builder.getMesh(), Mesh3D::Disc(OuterRadius, Segments));
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addAnnulus(-1.0, OuterRadius, Segments));
+		CHECK_FALSE(builder.addAnnulus(OuterRadius, InnerRadius, Segments));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder storage")
 {
 	Mesh3DBuilder builder;

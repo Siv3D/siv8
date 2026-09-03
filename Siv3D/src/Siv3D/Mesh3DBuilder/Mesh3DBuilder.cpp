@@ -24,6 +24,7 @@ namespace s3d
 		using Mesh3DDetail::GenerationFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
 		using Mesh3DDetail::TransformVertexRange;
+		using CircleSample = Mesh3DDetail::CircleSample<float>;
 
 		struct BoxFace
 		{
@@ -2203,6 +2204,210 @@ namespace s3d
 	{
 		const size_t vertexOffset = m_mesh.vertices.size();
 		if (not addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addDisc
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addDisc(const double radius, const uint32 segments)
+	{
+		return addAnnulus(0.0, radius, segments);
+	}
+
+	bool Mesh3DBuilder::addDisc(
+		const double radius,
+		const uint32 segments,
+		const Vec3 offset)
+	{
+		return addAnnulus(0.0, radius, segments, offset);
+	}
+
+	bool Mesh3DBuilder::addDisc(
+		const double radius,
+		const uint32 segments,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addAnnulus(0.0, radius, segments, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addDisc(
+		const double radius,
+		const uint32 segments,
+		const Mat4x4& transform)
+	{
+		return addAnnulus(0.0, radius, segments, transform);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addAnnulus
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addAnnulus(
+		const double _innerRadius,
+		const double _outerRadius,
+		const uint32 segments)
+	{
+		if ((not IsFloatRepresentable(_innerRadius))
+			|| (not IsFloatRepresentable(_outerRadius)))
+		{
+			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The radii must be finite and float-representable");
+		}
+
+		const float innerRadius = static_cast<float>(_innerRadius);
+		const float outerRadius = static_cast<float>(_outerRadius);
+		if ((innerRadius < 0.0f)
+			|| (outerRadius <= innerRadius)
+			|| (segments < 3))
+		{
+			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The radii or segment count is invalid");
+		}
+
+		const bool isDisc = (innerRadius == 0.0f);
+		size_t vertexCount;
+		size_t triangleCount;
+
+		if (isDisc)
+		{
+			if (not CheckedAdd(static_cast<size_t>(segments), 1, vertexCount))
+			{
+				return GenerationFailed<bool>("Mesh3D::Disc(): The generated vertex count exceeds the supported range");
+			}
+
+			triangleCount = segments;
+		}
+		else
+		{
+			if ((not CheckedMultiply(static_cast<size_t>(segments), 2, vertexCount))
+				|| (not CheckedMultiply(static_cast<size_t>(segments), 2, triangleCount)))
+			{
+				return GenerationFailed<bool>("Mesh3D::Annulus(): The generated mesh exceeds the supported size");
+			}
+		}
+
+		if (Mesh3D::MaxVertexCount < vertexCount)
+		{
+			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The generated vertex count exceeds the supported range");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(
+			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
+		{
+			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The generated mesh exceeds the supported size");
+		}
+
+		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
+		const Float3 normal = Float3::UnitY();
+		const Float4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
+
+		if (isDisc)
+		{
+			m_mesh.vertices[vertexOffset] = Vertex3D{
+				.pos = Float3::Zero(),
+				.normal = normal,
+				.tex = Float2{ 0.5f, 0.5f },
+				.tangent = tangent
+			};
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const CircleSample sample = circle[i];
+				m_mesh.vertices[vertexOffset + static_cast<size_t>(i) + 1] = Vertex3D{
+					.pos = Float3{ (outerRadius * sample.cos), 0.0f, (outerRadius * sample.sin) },
+					.normal = normal,
+					.tex = Float2{ (0.5f + (0.5f * sample.cos)), (0.5f - (0.5f * sample.sin)) },
+					.tangent = tangent
+				};
+
+				const uint32 center = static_cast<uint32>(vertexOffset);
+				const uint32 current = static_cast<uint32>(vertexOffset + i + 1);
+				const uint32 next = static_cast<uint32>(
+					vertexOffset + ((i + 1) % segments) + 1);
+				m_mesh.indices[triangleOffset + i] = TriangleIndex32{ center, next, current };
+			}
+		}
+		else
+		{
+			const size_t outerRingBase = vertexOffset;
+			const size_t innerRingBase = (vertexOffset + segments);
+			const float innerUVScale = (0.5f * innerRadius / outerRadius);
+
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const CircleSample sample = circle[i];
+				m_mesh.vertices[outerRingBase + i] = Vertex3D{
+					.pos = Float3{ (outerRadius * sample.cos), 0.0f, (outerRadius * sample.sin) },
+					.normal = normal,
+					.tex = Float2{ (0.5f + (0.5f * sample.cos)), (0.5f - (0.5f * sample.sin)) },
+					.tangent = tangent
+				};
+				m_mesh.vertices[innerRingBase + i] = Vertex3D{
+					.pos = Float3{ (innerRadius * sample.cos), 0.0f, (innerRadius * sample.sin) },
+					.normal = normal,
+					.tex = Float2{ (0.5f + (innerUVScale * sample.cos)), (0.5f - (innerUVScale * sample.sin)) },
+					.tangent = tangent
+				};
+			}
+
+			TriangleIndex32* pTriangle = (m_mesh.indices.data() + triangleOffset);
+			for (uint32 i = 0; i < segments; ++i)
+			{
+				const uint32 next = ((i + 1) % segments);
+				const uint32 outerCurrent = static_cast<uint32>(outerRingBase + i);
+				const uint32 outerNext = static_cast<uint32>(outerRingBase + next);
+				const uint32 innerCurrent = static_cast<uint32>(innerRingBase + i);
+				const uint32 innerNext = static_cast<uint32>(innerRingBase + next);
+
+				*pTriangle++ = TriangleIndex32{ outerCurrent, innerCurrent, outerNext };
+				*pTriangle++ = TriangleIndex32{ innerCurrent, innerNext, outerNext };
+			}
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addAnnulus(
+		const double innerRadius,
+		const double outerRadius,
+		const uint32 segments,
+		const Vec3 offset)
+	{
+		return addAnnulus(
+			innerRadius, outerRadius, segments, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addAnnulus(
+		const double innerRadius,
+		const double outerRadius,
+		const uint32 segments,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addAnnulus(innerRadius, outerRadius, segments,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addAnnulus(
+		const double innerRadius,
+		const double outerRadius,
+		const uint32 segments,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addAnnulus(innerRadius, outerRadius, segments))
 		{
 			return false;
 		}

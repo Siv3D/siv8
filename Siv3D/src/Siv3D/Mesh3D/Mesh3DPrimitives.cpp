@@ -844,7 +844,9 @@ namespace s3d
 
 	Mesh3D Mesh3D::Disc(const double radius, const uint32 segments)
 	{
-		return Annulus(0.0f, radius, segments);
+		Mesh3DBuilder builder;
+		builder.addDisc(radius, segments);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -853,116 +855,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Annulus(const double _innerRadius, const double _outerRadius, const uint32 segments)
+	Mesh3D Mesh3D::Annulus(
+		const double innerRadius,
+		const double outerRadius,
+		const uint32 segments)
 	{
-		if ((not IsFloatRepresentable(_innerRadius))
-			|| (not IsFloatRepresentable(_outerRadius)))
-		{
-			return GenerationFailed("Mesh3D::Annulus()/Disc(): The radii must be finite and float-representable");
-		}
-
-		const float innerRadius = static_cast<float>(_innerRadius);
-		const float outerRadius = static_cast<float>(_outerRadius);
-		if ((innerRadius < 0.0f)
-			|| (outerRadius <= innerRadius)
-			|| (segments < 3))
-		{
-			return GenerationFailed("Mesh3D::Annulus()/Disc(): The radii or segment count is invalid");
-		}
-
-		const bool isDisc = (innerRadius == 0.0f);
-		size_t vertexCount;
-		size_t triangleCount;
-
-		if (isDisc)
-		{
-			if (not CheckedAdd(static_cast<size_t>(segments), 1, vertexCount))
-			{
-				return GenerationFailed("Mesh3D::Disc(): The generated vertex count exceeds the supported range");
-			}
-
-			triangleCount = segments;
-		}
-		else
-		{
-			if ((not CheckedMultiply(static_cast<size_t>(segments), 2, vertexCount))
-				|| (not CheckedMultiply(static_cast<size_t>(segments), 2, triangleCount)))
-			{
-				return GenerationFailed("Mesh3D::Annulus(): The generated mesh exceeds the supported size");
-			}
-		}
-
-		if (Mesh3D::MaxVertexCount < vertexCount)
-		{
-			return GenerationFailed("Mesh3D::Annulus()/Disc(): The generated vertex count exceeds the supported range");
-		}
-
-		Mesh3D mesh{ vertexCount, triangleCount };
-		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
-		const Float3 normal = Float3::UnitY();
-		const Float4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
-
-		if (isDisc)
-		{
-			mesh.vertices[0] = Vertex3D{
-				.pos = Float3::Zero(),
-				.normal = normal,
-				.tex = Float2{ 0.5f, 0.5f },
-				.tangent = tangent
-			};
-
-			for (uint32 i = 0; i < segments; ++i)
-			{
-				const CircleSample sample = circle[i];
-				mesh.vertices[static_cast<size_t>(i) + 1] = Vertex3D{
-					.pos = Float3{ (outerRadius * sample.cos), 0.0f, (outerRadius * sample.sin) },
-					.normal = normal,
-					.tex = Float2{ (0.5f + (0.5f * sample.cos)), (0.5f - (0.5f * sample.sin)) },
-					.tangent = tangent
-				};
-
-				const uint32 current = (i + 1);
-				const uint32 next = (((i + 1) % segments) + 1);
-				mesh.indices[i] = TriangleIndex32{ 0, next, current };
-			}
-		}
-		else
-		{
-			const size_t innerRingBase = segments;
-			const float innerUVScale = (0.5f * innerRadius / outerRadius);
-
-			for (uint32 i = 0; i < segments; ++i)
-			{
-				const CircleSample sample = circle[i];
-				mesh.vertices[i] = Vertex3D{
-					.pos = Float3{ (outerRadius * sample.cos), 0.0f, (outerRadius * sample.sin) },
-					.normal = normal,
-					.tex = Float2{ (0.5f + (0.5f * sample.cos)), (0.5f - (0.5f * sample.sin)) },
-					.tangent = tangent
-				};
-				mesh.vertices[innerRingBase + i] = Vertex3D{
-					.pos = Float3{ (innerRadius * sample.cos), 0.0f, (innerRadius * sample.sin) },
-					.normal = normal,
-					.tex = Float2{ (0.5f + (innerUVScale * sample.cos)), (0.5f - (innerUVScale * sample.sin)) },
-					.tangent = tangent
-				};
-			}
-
-			TriangleIndex32* pTriangle = mesh.indices.data();
-			for (uint32 i = 0; i < segments; ++i)
-			{
-				const uint32 next = ((i + 1) % segments);
-				const uint32 outerCurrent = i;
-				const uint32 outerNext = next;
-				const uint32 innerCurrent = static_cast<uint32>(innerRingBase + i);
-				const uint32 innerNext = static_cast<uint32>(innerRingBase + next);
-
-				*pTriangle++ = TriangleIndex32{ outerCurrent, innerCurrent, outerNext };
-				*pTriangle++ = TriangleIndex32{ innerCurrent, innerNext, outerNext };
-			}
-		}
-
-		return mesh;
+		Mesh3DBuilder builder;
+		builder.addAnnulus(innerRadius, outerRadius, segments);
+		return std::move(builder).build();
 	}
 
 	////////////////////////////////////////////////////////////////
