@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include "Mesh3DCommon.hpp"
 # include <cmath>
@@ -22,7 +23,7 @@ namespace s3d
 		using Mesh3DDetail::CheckedMultiply;
 		using Mesh3DDetail::GenerationFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
-		using CircleSample = Mesh3DDetail::CircleSample<float>;
+		using RevolveCircleSample = Mesh3DDetail::CircleSample<float>;
 
 		[[nodiscard]]
 		static bool ToProfilePoint(const Vec2 source, Float2& result) noexcept
@@ -73,7 +74,7 @@ namespace s3d
 		static Vertex3D MakeVertex(
 			const Float2 point,
 			const Float2 profileNormal,
-			const CircleSample sample,
+			const RevolveCircleSample sample,
 			const float u,
 			const float v) noexcept
 		{
@@ -87,24 +88,12 @@ namespace s3d
 			};
 		}
 	}
+}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	Revolve
-	//
-	////////////////////////////////////////////////////////////////
-
-	Mesh3D Mesh3D::Revolve(const std::span<const Vec2> profile, const uint32 segments)
-	{
-		return Revolve(profile, segments, 0.0);
-	}
-
-	Mesh3D Mesh3D::Revolve(const std::initializer_list<Vec2> profile, const uint32 segments)
-	{
-		return Revolve(std::span<const Vec2>{ profile.begin(), profile.size() }, segments);
-	}
-
-	Mesh3D Mesh3D::Revolve(
+namespace s3d::Mesh3DDetail
+{
+	bool AppendRevolve(
+		Mesh3D& mesh,
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const double smoothingAngle)
@@ -115,13 +104,13 @@ namespace s3d
 			|| (smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): The profile, segment count, or smoothing angle is invalid");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): The profile, segment count, or smoothing angle is invalid");
 		}
 
 		const bool closedProfile = (profile.front() == profile.back());
 		if (closedProfile && (profile.size() < 4))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): A closed profile must contain at least three distinct points");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): A closed profile must contain at least three distinct points");
 		}
 
 		size_t ringStride;
@@ -129,7 +118,7 @@ namespace s3d
 		if ((not CheckedAdd(static_cast<size_t>(segments), 1, ringStride))
 			|| (not CheckedMultiply(ringStride, 2, fullSegmentVertexCount)))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): The segment count exceeds the supported range");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): The segment count exceeds the supported range");
 		}
 
 		const size_t profileSegmentCount = (profile.size() - 1);
@@ -137,7 +126,7 @@ namespace s3d
 		if ((not CheckedMultiply(profileSegmentCount, (fullSegmentVertexCount - 1), minimumVertexCount))
 			|| (Mesh3D::MaxVertexCount < minimumVertexCount))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): The generated vertex count exceeds the supported range");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): The generated vertex count exceeds the supported range");
 		}
 
 		Array<ProfileSegment> profileSegments;
@@ -146,7 +135,7 @@ namespace s3d
 		Float2 firstPoint;
 		if (not ToProfilePoint(profile.front(), firstPoint))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): Every profile point must be finite, float-representable, and have a non-negative radius");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): Every profile point must be finite, float-representable, and have a non-negative radius");
 		}
 
 		Float2 current = firstPoint;
@@ -160,14 +149,14 @@ namespace s3d
 			Float2 next;
 			if (not ToProfilePoint(profile[i + 1], next))
 			{
-				return GenerationFailed("Mesh3D::Revolve(): Every profile point must be finite, float-representable, and have a non-negative radius");
+				return GenerationFailed<bool>("Mesh3D::Revolve(): Every profile point must be finite, float-representable, and have a non-negative radius");
 			}
 
 			const bool startOnAxis = (current.x == 0.0f);
 			const bool endOnAxis = (next.x == 0.0f);
 			if (startOnAxis && endOnAxis)
 			{
-				return GenerationFailed("Mesh3D::Revolve(): A profile segment cannot lie entirely on the rotation axis");
+				return GenerationFailed<bool>("Mesh3D::Revolve(): A profile segment cannot lie entirely on the rotation axis");
 			}
 
 			const double dr = (static_cast<double>(next.x) - current.x);
@@ -176,13 +165,13 @@ namespace s3d
 			if ((not std::isfinite(length))
 				|| (length == 0.0))
 			{
-				return GenerationFailed("Mesh3D::Revolve(): Profile segments must have positive finite length");
+				return GenerationFailed<bool>("Mesh3D::Revolve(): Profile segments must have positive finite length");
 			}
 
 			const double endDistance = (totalDistance + length);
 			if (not std::isfinite(endDistance))
 			{
-				return GenerationFailed("Mesh3D::Revolve(): The profile length exceeds the supported range");
+				return GenerationFailed<bool>("Mesh3D::Revolve(): The profile length exceeds the supported range");
 			}
 
 			const bool touchesAxis = (startOnAxis || endOnAxis);
@@ -191,7 +180,7 @@ namespace s3d
 				|| (Mesh3D::MaxVertexCount < vertexCount)
 				|| (not CheckedAdd(trianglesPerSlice, (touchesAxis ? 1 : 2), trianglesPerSlice)))
 			{
-				return GenerationFailed("Mesh3D::Revolve(): The generated mesh exceeds the supported size");
+				return GenerationFailed<bool>("Mesh3D::Revolve(): The generated mesh exceeds the supported size");
 			}
 
 			profileSegments.push_back(ProfileSegment{
@@ -215,33 +204,46 @@ namespace s3d
 
 		if ((not closedProfile) && (current == firstPoint))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): An open profile cannot end at its first point");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): An open profile cannot end at its first point");
 		}
 
 		if (closedProfile
 			&& ((not std::isfinite(twiceArea)) || (twiceArea == 0.0)))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): A closed profile must have non-zero finite area");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): A closed profile must have non-zero finite area");
 		}
 
 		size_t triangleCount;
 		if (not CheckedMultiply(trianglesPerSlice, static_cast<size_t>(segments), triangleCount))
 		{
-			return GenerationFailed("Mesh3D::Revolve(): The generated triangle count exceeds the supported range");
+			return GenerationFailed<bool>("Mesh3D::Revolve(): The generated triangle count exceeds the supported range");
 		}
 
-		Mesh3D mesh{ vertexCount, triangleCount };
-		Array<CircleSample> circle(ringStride);
-		Array<CircleSample> middleCircle(segments);
+		Array<RevolveCircleSample> circle(ringStride);
+		Array<RevolveCircleSample> middleCircle(segments);
 		const float angleStep = (Math::TwoPiF / static_cast<float>(segments));
 		for (uint32 i = 0; i < segments; ++i)
 		{
 			const float angle = (angleStep * i);
 			const float middleAngle = (angleStep * (i + 0.5f));
-			circle[i] = CircleSample{ std::sin(angle), std::cos(angle) };
-			middleCircle[i] = CircleSample{ std::sin(middleAngle), std::cos(middleAngle) };
+			circle[i] = RevolveCircleSample{ std::sin(angle), std::cos(angle) };
+			middleCircle[i] = RevolveCircleSample{ std::sin(middleAngle), std::cos(middleAngle) };
 		}
 		circle[segments] = circle[0];
+
+		const size_t vertexBase = mesh.vertices.size();
+		const size_t triangleBase = mesh.indices.size();
+		size_t newVertexCount;
+		size_t newTriangleCount;
+		if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
+			|| (Mesh3D::MaxVertexCount < newVertexCount)
+			|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3D::Revolve(): The generated mesh exceeds the supported size");
+		}
+
+		mesh.vertices.resize(newVertexCount);
+		mesh.indices.resize(newTriangleCount);
 
 		const bool smoothProfile = (0.0 < smoothingAngle);
 		const float minNormalDot = (smoothProfile
@@ -249,8 +251,8 @@ namespace s3d
 			: 1.0f);
 		const float inverseSegments = (1.0f / static_cast<float>(segments));
 		const double inverseTotalDistance = (1.0 / totalDistance);
-		TriangleIndex32* pTriangle = mesh.indices.data();
-		size_t vertexOffset = 0;
+		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
+		size_t vertexOffset = vertexBase;
 
 		for (size_t profileIndex = 0; profileIndex < profileSegmentCount; ++profileIndex)
 		{
@@ -369,7 +371,38 @@ namespace s3d
 			vertexOffset += (fullSegmentVertexCount - ((startOnAxis || endOnAxis) ? 1 : 0));
 		}
 
-		return mesh;
+		return true;
+	}
+}
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	Revolve
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::Revolve(const std::span<const Vec2> profile, const uint32 segments)
+	{
+		Mesh3DBuilder builder;
+		builder.addRevolve(profile, segments);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Revolve(const std::initializer_list<Vec2> profile, const uint32 segments)
+	{
+		return Revolve(std::span<const Vec2>{ profile.begin(), profile.size() }, segments);
+	}
+
+	Mesh3D Mesh3D::Revolve(
+		const std::span<const Vec2> profile,
+		const uint32 segments,
+		const double smoothingAngle)
+	{
+		Mesh3DBuilder builder;
+		builder.addRevolve(profile, segments, smoothingAngle);
+		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Revolve(

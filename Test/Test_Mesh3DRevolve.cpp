@@ -22,6 +22,14 @@ namespace
 		static_cast<Mesh3D (*)(std::span<const Vec2>, uint32, double)>(&Mesh3D::Revolve);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, uint32)>(&Mesh3D::Revolve);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, uint32, double)>(&Mesh3D::Revolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, Vec3)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, Vec3, const Quaternion&)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, const Mat4x4&)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, Vec3)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, const Mat4x4&)>(&Mesh3DBuilder::addRevolve);
 	});
 
 }
@@ -202,4 +210,80 @@ TEST_CASE("Mesh3D::Revolve invalid arguments")
 	CHECK(Mesh3D::Revolve(valid, Segments, (Math::Pi + 0.001)).isEmpty());
 	CHECK(Mesh3D::Revolve(valid, Segments, std::numeric_limits<double>::quiet_NaN()).isEmpty());
 	CHECK(Mesh3D::Revolve(valid, Segments, std::numeric_limits<double>::infinity()).isEmpty());
+}
+
+TEST_CASE("Mesh3DBuilder::addRevolve")
+{
+	constexpr uint32 Segments = 8;
+	constexpr double SmoothingAngle = Math::HalfPi;
+	const Array<Vec2> profile{
+		{ 0.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 1.0 }, { 0.0, 1.0 }
+	};
+
+	SUBCASE("Direct append reuses reserved storage")
+	{
+		const Mesh3D source = Mesh3D::Revolve(profile, Segments);
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 2), (source.triangleCount() * 2));
+		REQUIRE(builder.addRevolve(profile, Segments));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+
+		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
+		REQUIRE(builder.addRevolve(profile, Segments, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(source, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Smoothing and transform overloads")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+		const Mesh3D hard = Mesh3D::Revolve(profile, Segments);
+		const Mesh3D smooth = Mesh3D::Revolve(profile, Segments, SmoothingAngle);
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addRevolve(profile, Segments, offset));
+		REQUIRE(builder.addRevolve(profile, Segments, offset, rotation));
+		REQUIRE(builder.addRevolve(profile, Segments, transform));
+		REQUIRE(builder.addRevolve(profile, Segments, SmoothingAngle));
+		REQUIRE(builder.addRevolve(profile, Segments, SmoothingAngle, offset));
+		REQUIRE(builder.addRevolve(profile, Segments, SmoothingAngle, offset, rotation));
+		REQUIRE(builder.addRevolve(profile, Segments, SmoothingAngle, transform));
+
+		Mesh3D expected;
+		REQUIRE(expected.append(hard, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			hard, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(hard, transform));
+		REQUIRE(expected.append(smooth));
+		REQUIRE(expected.append(smooth, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			smooth, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(smooth, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addRevolve(std::span<const Vec2>{}, Segments));
+		CHECK_FALSE(builder.addRevolve(profile, 2));
+		CHECK_FALSE(builder.addRevolve(profile, Segments, -0.001));
+		CHECK_FALSE(builder.addRevolve(
+			profile,
+			Segments,
+			std::numeric_limits<double>::quiet_NaN(),
+			Vec3{ 1.0, 2.0, 3.0 }));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
 }

@@ -288,4 +288,11 @@ namespace s3d::Mesh3DDetail
 		const Polygon& polygon,
 		double height,
 		double smoothingAngle);
+
+	[[nodiscard]]
+	bool AppendRevolve(
+		Mesh3D& mesh,
+		std::span<const Vec2> profile,
+		uint32 segments,
+		double smoothingAngle);
 }
