@@ -2401,9 +2401,22 @@ namespace s3d
 		const double radius,
 		const uint32 sides,
 		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return Mesh3DDetail::AppendTube(
+			m_mesh, path, radius, sides, uvScale, uvOffset, closeRing);
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const CloseRing closeRing,
+		const uint32 sides,
+		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
-		return Mesh3DDetail::AppendTube(m_mesh, path, radius, sides, uvScale, uvOffset);
+		return addTube(path, radius, sides, uvScale, uvOffset, closeRing);
 	}
 
 	bool Mesh3DBuilder::addTube(
@@ -2411,20 +2424,25 @@ namespace s3d
 		const double radius,
 		const uint32 sides,
 		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return addTube(
+			std::span<const Vec3>{ path.begin(), path.size() },
+			radius, sides, uvScale, uvOffset, closeRing);
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::initializer_list<Vec3> path,
+		const double radius,
+		const CloseRing closeRing,
+		const uint32 sides,
+		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
 		return addTube(
 			std::span<const Vec3>{ path.begin(), path.size() },
-			radius, sides, uvScale, uvOffset);
-	}
-
-	bool Mesh3DBuilder::addTube(
-		const std::span<const Vec3> path,
-		const double radius,
-		const uint32 sides,
-		const Vec3 offset)
-	{
-		return addTube(path, radius, sides, Mat4x4::Translate(Float3{ offset }));
+			radius, sides, uvScale, uvOffset, closeRing);
 	}
 
 	bool Mesh3DBuilder::addTube(
@@ -2432,32 +2450,32 @@ namespace s3d
 		const double radius,
 		const uint32 sides,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const CloseRing closeRing)
+	{
+		return addTube(path, radius, sides, Mat4x4::Translate(Float3{ offset }), closeRing);
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseRing closeRing)
 	{
 		return addTube(path, radius, sides,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
 	bool Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
-		const Mat4x4& transform)
+		const Mat4x4& transform,
+		const CloseRing closeRing)
 	{
 		return addTube(
-			path, radius, sides, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
-	}
-
-	bool Mesh3DBuilder::addTube(
-		const std::span<const Vec3> path,
-		const double radius,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset)
-	{
-		return addTube(
-			path, radius, sides, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+			path, radius, sides, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform, closeRing);
 	}
 
 	bool Mesh3DBuilder::addTube(
@@ -2467,10 +2485,11 @@ namespace s3d
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const CloseRing closeRing)
 	{
-		return addTube(path, radius, sides, uvScale, uvOffset,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		return addTube(
+			path, radius, sides, uvScale, uvOffset,
+			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
 	bool Mesh3DBuilder::addTube(
@@ -2479,10 +2498,26 @@ namespace s3d
 		const uint32 sides,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
-		const Mat4x4& transform)
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseRing closeRing)
+	{
+		return addTube(path, radius, sides, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform,
+		const CloseRing closeRing)
 	{
 		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendTube(m_mesh, path, radius, sides, uvScale, uvOffset))
+		if (not Mesh3DDetail::AppendTube(
+			m_mesh, path, radius, sides, uvScale, uvOffset, closeRing))
 		{
 			return false;
 		}
@@ -2501,58 +2536,75 @@ namespace s3d
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec2 uvScale,
-		const Vec2 uvOffset)
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
 	{
 		return Mesh3DDetail::AppendSweep(
-			m_mesh, crossSection, path, nullptr, uvScale, uvOffset);
+			m_mesh, crossSection, path, nullptr, uvScale, uvOffset, closeRing);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const CloseRing closeRing,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return addSweep(crossSection, path, uvScale, uvOffset, closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::initializer_list<Vec3> path,
 		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return addSweep(
+			crossSection, std::span<const Vec3>{ path.begin(), path.size() },
+			uvScale, uvOffset, closeRing);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const CloseRing closeRing,
+		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
 		return addSweep(
-			crossSection, std::span<const Vec3>{ path.begin(), path.size() }, uvScale, uvOffset);
-	}
-
-	bool Mesh3DBuilder::addSweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const Vec3 offset)
-	{
-		return addSweep(crossSection, path, Mat4x4::Translate(Float3{ offset }));
+			crossSection, std::span<const Vec3>{ path.begin(), path.size() },
+			uvScale, uvOffset, closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const CloseRing closeRing)
+	{
+		return addSweep(crossSection, path, Mat4x4::Translate(Float3{ offset }), closeRing);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseRing closeRing)
 	{
 		return addSweep(crossSection, path,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
-		const Mat4x4& transform)
+		const Mat4x4& transform,
+		const CloseRing closeRing)
 	{
 		return addSweep(
-			crossSection, path, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
-	}
-
-	bool Mesh3DBuilder::addSweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset)
-	{
-		return addSweep(
-			crossSection, path, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+			crossSection, path, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform, closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
@@ -2561,10 +2613,11 @@ namespace s3d
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const CloseRing closeRing)
 	{
-		return addSweep(crossSection, path, uvScale, uvOffset,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		return addSweep(
+			crossSection, path, uvScale, uvOffset,
+			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
@@ -2572,11 +2625,25 @@ namespace s3d
 		const std::span<const Vec3> path,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
-		const Mat4x4& transform)
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseRing closeRing)
+	{
+		return addSweep(crossSection, path, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform,
+		const CloseRing closeRing)
 	{
 		const size_t vertexOffset = m_mesh.vertices.size();
 		if (not Mesh3DDetail::AppendSweep(
-			m_mesh, crossSection, path, nullptr, uvScale, uvOffset))
+			m_mesh, crossSection, path, nullptr, uvScale, uvOffset, closeRing))
 		{
 			return false;
 		}
@@ -2590,10 +2657,23 @@ namespace s3d
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
 		const Vec2 uvScale,
-		const Vec2 uvOffset)
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
 	{
 		return Mesh3DDetail::AppendSweep(
-			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset);
+			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset, closeRing);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const CloseRing closeRing,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return addSweep(
+			crossSection, path, initialXAxis, uvScale, uvOffset, closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
@@ -2601,21 +2681,37 @@ namespace s3d
 		const std::initializer_list<Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
 		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return addSweep(
+			crossSection, std::span<const Vec3>{ path.begin(), path.size() },
+			initialXAxis, uvScale, uvOffset, closeRing);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const CloseRing closeRing,
+		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
 		return addSweep(
 			crossSection, std::span<const Vec3>{ path.begin(), path.size() },
-			initialXAxis, uvScale, uvOffset);
+			initialXAxis, uvScale, uvOffset, closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
-		const Vec3 offset)
+		const Vec3 offset,
+		const CloseRing closeRing)
 	{
 		return addSweep(
-			crossSection, path, initialXAxis, Mat4x4::Translate(Float3{ offset }));
+			crossSection, path, initialXAxis,
+			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
@@ -2623,32 +2719,22 @@ namespace s3d
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const Quaternion& rotation,
+		const CloseRing closeRing)
 	{
 		return addSweep(crossSection, path, initialXAxis,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
-		const Mat4x4& transform)
+		const Mat4x4& transform,
+		const CloseRing closeRing)
 	{
 		return addSweep(crossSection, path, initialXAxis,
-			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
-	}
-
-	bool Mesh3DBuilder::addSweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const Arg::initialXAxis_<Vec3> initialXAxis,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset)
-	{
-		return addSweep(crossSection, path, initialXAxis, uvScale, uvOffset,
-			Mat4x4::Translate(Float3{ offset }));
+			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform, closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
@@ -2658,10 +2744,10 @@ namespace s3d
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const CloseRing closeRing)
 	{
 		return addSweep(crossSection, path, initialXAxis, uvScale, uvOffset,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
 	bool Mesh3DBuilder::addSweep(
@@ -2670,11 +2756,26 @@ namespace s3d
 		const Arg::initialXAxis_<Vec3> initialXAxis,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
-		const Mat4x4& transform)
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseRing closeRing)
+	{
+		return addSweep(crossSection, path, initialXAxis, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform,
+		const CloseRing closeRing)
 	{
 		const size_t vertexOffset = m_mesh.vertices.size();
 		if (not Mesh3DDetail::AppendSweep(
-			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset))
+			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset, closeRing))
 		{
 			return false;
 		}

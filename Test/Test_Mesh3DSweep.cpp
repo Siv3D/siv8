@@ -19,26 +19,34 @@ namespace
 
 	static_assert(requires
 	{
-		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
-		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
-		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
-		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec3)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, Vec3, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec3, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addSweep);
 	});
 
 }
@@ -59,6 +67,9 @@ TEST_CASE("Mesh3D::Sweep initializer list")
 			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
 		}, uvScale, uvOffset),
 		Mesh3D::Sweep(crossSection, path, uvScale, uvOffset));
+	CheckMeshDataEqual(
+		Mesh3D::Sweep(crossSection, path, uvScale, uvOffset),
+		Mesh3D::Sweep(crossSection, path, uvScale, uvOffset, CloseRing::No));
 	CheckMeshDataEqual(
 		Mesh3D::Sweep(crossSection, {
 			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
@@ -261,6 +272,90 @@ TEST_CASE("Mesh3D::Sweep bent non-planar path")
 		mesh.vertices[sideVertexBase + verticesPerEdge].normal);
 }
 
+TEST_CASE("Mesh3D::Sweep closed non-planar path")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -0.5, -0.25 }, { 0.5, -0.25 }, { 0.5, 0.25 }, { -0.5, 0.25 }
+	} };
+	const Array<Vec3> path{
+		{ 0.0, 0.0, 0.0 },
+		{ 2.0, 0.0, 0.0 },
+		{ 2.0, 1.0, 2.0 },
+		{ 0.0, 2.0, 2.0 }
+	};
+	const Vec2 uvScale{ 2.0, 0.25 };
+	const Vec2 uvOffset{ 0.1, 0.2 };
+	const Mesh3D mesh = Mesh3D::Sweep(
+		crossSection, path, Arg::initialXAxis = Vec3::UnitY(),
+		CloseRing::Yes, uvScale, uvOffset);
+	const size_t edgeCount = crossSection.outer().size();
+	const size_t stationCount = (path.size() + 1);
+	const size_t verticesPerEdge = (stationCount * 2);
+
+	CHECK_EQ(mesh.vertexCount(), (edgeCount * verticesPerEdge));
+	CHECK_EQ(mesh.triangleCount(), (2 * edgeCount * path.size()));
+	CheckMeshGeometry(mesh);
+
+	for (size_t edgeIndex = 0; edgeIndex < edgeCount; ++edgeIndex)
+	{
+		const size_t edgeBase = (edgeIndex * verticesPerEdge);
+		const size_t seamBase = (edgeBase + path.size() * 2);
+		for (size_t endpoint = 0; endpoint < 2; ++endpoint)
+		{
+			const Vertex3D& first = mesh.vertices[edgeBase + endpoint];
+			const Vertex3D& seam = mesh.vertices[seamBase + endpoint];
+			CHECK_EQ(seam.pos, first.pos);
+			CHECK_EQ(seam.normal, first.normal);
+			CHECK_EQ(seam.tangent, first.tangent);
+			CHECK_EQ(seam.tex.x, first.tex.x);
+		}
+	}
+
+	const double totalLength = (2.0 + std::sqrt(5.0) + std::sqrt(5.0) + std::sqrt(8.0));
+	CHECK(mesh.vertices[path.size() * 2].tex.y
+		== doctest::Approx(uvOffset.y + uvScale.y * totalLength).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[(path.size() - 1) * 2].normal.dot(
+		mesh.vertices[path.size() * 2].normal) > 0.0f);
+
+	CheckMeshDataEqual(
+		Mesh3D::Sweep(crossSection, {
+			{ 0.0, 0.0, 0.0 }, { 2.0, 0.0, 0.0 },
+			{ 2.0, 1.0, 2.0 }, { 0.0, 2.0, 2.0 }
+		}, Arg::initialXAxis = Vec3::UnitY(), CloseRing::Yes, uvScale, uvOffset),
+		mesh);
+}
+
+TEST_CASE("Mesh3DBuilder::addSweep closed path")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -0.5, -0.25 }, { 0.5, -0.25 }, { 0.5, 0.25 }, { -0.5, 0.25 }
+	} };
+	const Array<Vec3> path{
+		{ 0.0, 0.0, 0.0 }, { 2.0, 0.0, 0.0 },
+		{ 2.0, 1.0, 2.0 }, { 0.0, 2.0, 2.0 }
+	};
+	const auto initialXAxis = (Arg::initialXAxis = Vec3::UnitY());
+	const Vec2 uvScale{ 2.0, 0.25 };
+	const Vec2 uvOffset{ 0.1, 0.2 };
+	const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
+	const Mesh3D source = Mesh3D::Sweep(
+		crossSection, path, initialXAxis, CloseRing::Yes, uvScale, uvOffset);
+
+	Mesh3DBuilder builder;
+	REQUIRE(builder.addSweep(
+		crossSection, path, initialXAxis, uvScale, uvOffset, transform, CloseRing::Yes));
+	Mesh3D expected;
+	REQUIRE(expected.append(source, transform));
+	CheckMeshDataEqual(builder.getMesh(), expected);
+
+	Mesh3DBuilder initializerListBuilder;
+	REQUIRE(initializerListBuilder.addSweep(crossSection, {
+		{ 0.0, 0.0, 0.0 }, { 2.0, 0.0, 0.0 },
+		{ 2.0, 1.0, 2.0 }, { 0.0, 2.0, 2.0 }
+	}, initialXAxis, CloseRing::Yes, uvScale, uvOffset));
+	CheckMeshDataEqual(initializerListBuilder.getMesh(), source);
+}
+
 TEST_CASE("Mesh3D::Sweep polygon with a hole")
 {
 	const Polygon crossSection{
@@ -318,6 +413,22 @@ TEST_CASE("Mesh3D::Sweep invalid arguments")
 		Array<Vec3>{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } }).isEmpty());
 	CHECK(Mesh3D::Sweep(crossSection,
 		Array<Vec3>{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 0.0, 0.0, 0.0 } }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection,
+		Array<Vec3>{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 } },
+		CloseRing::Yes).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection,
+		Array<Vec3>{
+			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 },
+			{ 2.0, 2.0, 0.0 }, { 0.0, 0.0, 0.0 }
+		}, CloseRing::Yes).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection,
+		Array<Vec3>{
+			{ 0.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 }, { 2.0, 0.0, 0.0 }
+		}, CloseRing::Yes).isEmpty());
+	CHECK_FALSE(Mesh3D::Sweep(crossSection,
+		Array<Vec3>{
+			{ 0.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }
+		}, CloseRing::Yes).isEmpty());
 	CHECK(Mesh3D::Sweep(
 		crossSection, validPath, Arg::initialXAxis = Vec3::Zero()).isEmpty());
 	CHECK(Mesh3D::Sweep(

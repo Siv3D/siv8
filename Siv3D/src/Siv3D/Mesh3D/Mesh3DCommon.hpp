@@ -350,7 +350,8 @@ namespace s3d::Mesh3DDetail
 		double radius,
 		uint32 sides,
 		Vec2 uvScale,
-		Vec2 uvOffset);
+		Vec2 uvOffset,
+		CloseRing closeRing);
 
 	[[nodiscard]]
 	bool AppendSweep(
@@ -359,7 +360,8 @@ namespace s3d::Mesh3DDetail
 		std::span<const Vec3> path,
 		const Vec3* initialXAxis,
 		Vec2 uvScale,
-		Vec2 uvOffset);
+		Vec2 uvOffset,
+		CloseRing closeRing);
 
 	[[nodiscard]]
 	bool AppendHeightField(
