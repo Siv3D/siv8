@@ -49,6 +49,9 @@ namespace s3d
 	/// - 基本プリミティブ、`Extrude()`、`Plane()`、`Grid()` は、各関数で明記された軸について原点を中心に生成します。
 	/// - `Revolve()` のプロファイルの Y 座標、`Loft()` の `heights`、`HeightField()` の各高さ、および `Tube()` / `Sweep()` の経路座標は、平行移動せず生成後の座標として使用します。
 	/// - `Mesh3DBuilder` の offset と rotation を受け取る overload は、原点を中心に回転してから offset を加えます。
+	/// @par UV 座標と頂点属性
+	/// - UV 座標は画像の上端を V = 0、下端を V = 1 とします。
+	/// - 生成関数は位置、UV 座標、法線、および接線を設定します。法線と接線は単位長で互いに直交し、`tangent.w` は `bitangent() = Math::Cross(normal, tangent.xyz()) * tangent.w` の向きを表します。
 	/// @par 断面とフレーム
 	/// - 手動で指定する `Loft()` の断面は時計回りとします。`Polygon` の外周は Siv3D の Y-down 2D 座標で時計回り、穴は反時計回りです。
 	/// - `Sweep()` の各断面点 `(x, y)` は、経路上の位置を P、フレームの第 1 軸を N、経路の接線を T として、`P + N * x + (N.cross(T)) * y` に配置されます。

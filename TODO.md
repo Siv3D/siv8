@@ -48,28 +48,35 @@
 
 ## `Siv3D/include/Siv3D/Mesh3D.hpp`
 
-### 次に検討する生成 API
+### 優先する生成 API
 
-1. `Image` の画素値から地形を作る `HeightField()` オーバーロードを設計する。
-   - 使用する画素チャネル、または RGB からの輝度変換を決める。
-   - 画素値の正規化範囲と Y scale / offset の引数構成を決める。
-   - Image の上から下への行順を、既存 `HeightField(Grid<float>)` の `+Z` から `-Z` への行順と一致させるか確認する。
-   - alpha、16-bit、HDR 相当の入力を初期 API に含めるか決める。
-2. icosahedron の再帰分割と球面投影による `Mesh3D::IcoSphere()` を追加する。
-   - `subdivisions` の上限、頂点・三角形数の overflow、`MaxVertexCount` 超過を事前検出する。
-   - 均一な三角形を優先して UV を持たせない構成と、球面 UV seam のために頂点を複製する構成を比較する。
-3. 建築用途向けに、平面で面取りした `Mesh3D::ChamferedBox()` を検討する。
-   - bevel の有効範囲と最大値を決める。
-   - corner topology と hard / smooth normal の境界を決める。
-   - `BoxUVMapping` を面取り面へどう拡張するか決める。
+1. 経路点ごとに半径を指定する Variable Tube を追加する。
+   - `radii.size() == path.size()` を基本契約とし、開路・閉路の両方を扱う。
+   - 既存 Tube の parallel-transport frame、UV、端面、失敗時の非変更保証を維持する。
+   - `Mesh3DBuilder` の offset、offset + rotation、`Mat4x4` overload も同時に設計する。
+2. Sweep の断面 scale と回転を経路点ごとに指定する Variable Sweep を設計する。
+   - `Vec2 scale` と twist 角を持つ設定型、および閉路の twist seam の契約を決める。
+   - Variable Tube と内部生成処理を共有し、一定断面版を二重実装しない。
 
-`Image` 版 HeightField の仕様決定を保留する場合は、依存が少なく仕様を固めやすい `IcoSphere()` を先に進める。
+### 入力形式と追加候補
 
-### 低優先度の形状候補
+- `HeightField()` は `Image` 専用 overload より先に、グリッド座標から高さを返す callable overload を評価する。
+- `Image` overload を追加する場合は、チャネルまたは輝度変換、正規化範囲、Y scale / offset、行方向、HDR 入力の範囲を決める。
+- `IcoSphere()` は subdivision 上限、overflow、UV seam を持つ構成と UV を持たない構成のどちらを公開するか決める。
+- double-sided plane、torus arc、torus knot、superellipsoid は利用例が明確になった時点で評価する。
+- `RegularPrism` は `Extrude()`、rounded cylinder は `Revolve()` での代替を優先する。
 
-- double-sided plane が必要か評価する。
-- torus arc、torus knot、superellipsoid を評価する。
-- `RegularPrism` は `Extrude()`、rounded cylinder は `Revolve()` での代替を先に評価する。
+### レンダリング層と境界体積への依存
+
+- 3D レンダリング側の設計が固まるまで、`Mesh3D::draw()` は追加しない。
+- レンダリング統合時に `Vertex3D` の GPU レイアウト、頂点カラー、index の上限と primitive-restart 値、CPU メッシュと GPU リソースの責務を再確認する。
+- bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に設計する。
+
+### 低優先度のレビュー残件
+
+- `append()` が入力ごとに O(triangle count) の `validate()` を行うコストを、信頼済みメッシュを大量合成する実例が出た時に再評価する。
+- Loft の端面生成で作る一時 `Polygon` と、DirectXMesh 由来の normals 実装の配置を、関連コードを変更する機会に整理する。
+- default 引数と scalar overload、`Shape2D` からの Extrude / Sweep は、実利用上の不足が確認された場合に API 全体として設計する。
 
 ### OBJ 入力
 
@@ -79,5 +86,5 @@
 
 ### 変形・編集
 
-- taper、twist、bend など、トポロジを維持する非線形変形 API と法線・接線の扱いを検討する。
-- 頂点溶接、フラット・スムーズ境界の分割、細分割、UV 変換などの編集機能を検討する。
+- Variable Sweep の設計後に、汎用 taper、twist、bend と重複しない責務を再評価する。
+- 頂点溶接、フラット・スムーズ境界の分割、細分割などの編集機能を検討する。
