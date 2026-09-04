@@ -838,11 +838,11 @@
 // オフセット付き円座標 | Polar coordinates system with offset (2D)
 # include <Siv3D/OffsetCircular.hpp>
 
-//// 円柱座標 | Cylindrical coordinate system
-//# include <Siv3D/Cylindrical.hpp>
-//
-//// 球面座標 | Spherical coordinate system
-//# include <Siv3D/Spherical.hpp>
+// 円柱座標 | Cylindrical coordinate system
+# include <Siv3D/Cylindrical.hpp>
+
+// 球面座標 | Spherical coordinate system
+# include <Siv3D/Spherical.hpp>
 
 // 3x2 行列 | 3x2 matrix
 # include <Siv3D/Mat3x2.hpp>

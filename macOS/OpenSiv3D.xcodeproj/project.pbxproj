@@ -17,6 +17,12 @@
 		A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F41030A5000000000002 /* Test_Quaternion.cpp */; };
 		A5D4F42030A5000000000001 /* Test_Mat4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F42030A5000000000002 /* Test_Mat4x4.cpp */; };
 		A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */; };
+		A5D4F46030A5000000000001 /* Cylindrical.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F46030A5000000000002 /* Cylindrical.hpp */; };
+		A5D4F47030A5000000000001 /* Cylindrical.ipp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F47030A5000000000002 /* Cylindrical.ipp */; };
+		A5D4F48030A5000000000001 /* Spherical.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F48030A5000000000002 /* Spherical.hpp */; };
+		A5D4F49030A5000000000001 /* Spherical.ipp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F49030A5000000000002 /* Spherical.ipp */; };
+		A5D4F4A030A5000000000001 /* Test_Cylindrical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F4A030A5000000000002 /* Test_Cylindrical.cpp */; };
+		A5D4F4B030A5000000000001 /* Test_Spherical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F4B030A5000000000002 /* Test_Spherical.cpp */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
 		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
@@ -3279,6 +3285,12 @@
 		A5D4F41030A5000000000002 /* Test_Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Quaternion.cpp; sourceTree = "<group>"; };
 		A5D4F42030A5000000000002 /* Test_Mat4x4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mat4x4.cpp; sourceTree = "<group>"; };
 		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
+		A5D4F46030A5000000000002 /* Cylindrical.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Cylindrical.hpp; sourceTree = "<group>"; };
+		A5D4F47030A5000000000002 /* Cylindrical.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Cylindrical.ipp; sourceTree = "<group>"; };
+		A5D4F48030A5000000000002 /* Spherical.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Spherical.hpp; sourceTree = "<group>"; };
+		A5D4F49030A5000000000002 /* Spherical.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Spherical.ipp; sourceTree = "<group>"; };
+		A5D4F4A030A5000000000002 /* Test_Cylindrical.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Cylindrical.cpp; sourceTree = "<group>"; };
+		A5D4F4B030A5000000000002 /* Test_Spherical.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Spherical.cpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.hpp; sourceTree = "<group>"; };
 		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
@@ -6910,6 +6922,8 @@
 				F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */,
 				F9A000042FC0000000000001 /* Test_Smooth.cpp */,
 				A5D4F41030A5000000000002 /* Test_Quaternion.cpp */,
+				A5D4F4A030A5000000000002 /* Test_Cylindrical.cpp */,
+				A5D4F4B030A5000000000002 /* Test_Spherical.cpp */,
 				A5D4F42030A5000000000002 /* Test_Mat4x4.cpp */,
 				A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */,
 				F90702C62B9DAEB900383E4D /* Test_Step.cpp */,
@@ -7295,6 +7309,7 @@
 				F9D41CE42C9972EC00290998 /* Choice.ipp */,
 				F98606102BEB760C006A4C0F /* Circle.ipp */,
 				F9E794402C158BA1002615BA /* Circular.ipp */,
+				A5D4F47030A5000000000002 /* Cylindrical.ipp */,
 				F9070B6E2B9F175000383E4D /* Color.ipp */,
 				F9070B6F2B9F175000383E4D /* ColorF.ipp */,
 				F9070B702B9F175000383E4D /* Console.ipp */,
@@ -7395,6 +7410,7 @@
 				F9070B912B9F175000383E4D /* NonNull.ipp */,
 				F9070B922B9F175000383E4D /* Number.ipp */,
 				F9D41CFA2C9FD81F00290998 /* OffsetCircular.ipp */,
+				A5D4F49030A5000000000002 /* Spherical.ipp */,
 				F9070B932B9F175000383E4D /* Optional.ipp */,
 				F99881EA2F5808E300C8991D /* OSCArgument.ipp */,
 				F9070B942B9F175000383E4D /* Parse.ipp */,
@@ -7569,6 +7585,7 @@
 				F9D41CE62C99730500290998 /* Choice.hpp */,
 				F98605272BD10459006A4C0F /* Circle.hpp */,
 				F9E7943E2C158B8F002615BA /* Circular.hpp */,
+				A5D4F46030A5000000000002 /* Cylindrical.hpp */,
 				F99BC3662FE6B7AB00D4ECDE /* CircularDashStyle.hpp */,
 				F99881712F45A20600C8991D /* Clipboard.hpp */,
 				F9070BC72B9F175000383E4D /* Color.hpp */,
@@ -7793,6 +7810,7 @@
 				F9070C062B9F175000383E4D /* Number.hpp */,
 				F9070C072B9F175000383E4D /* Obfuscation.hpp */,
 				F9D41CF82C9FD7F200290998 /* OffsetCircular.hpp */,
+				A5D4F48030A5000000000002 /* Spherical.hpp */,
 				F91D41392F5DA80500E7FEEF /* OpenFileDialogOptions.hpp */,
 				F9070C092B9F175000383E4D /* Optional.hpp */,
 				F99881DC2F5808C500C8991D /* OSCArgument.hpp */,
@@ -15702,6 +15720,10 @@
 				F90706BB2B9DAEC900383E4D /* phmap_base.h in Headers */,
 				F98606002BE615B4006A4C0F /* FormatLiteralObject.ipp in Headers */,
 				F9E7943F2C158B8F002615BA /* Circular.hpp in Headers */,
+				A5D4F46030A5000000000001 /* Cylindrical.hpp in Headers */,
+				A5D4F47030A5000000000001 /* Cylindrical.ipp in Headers */,
+				A5D4F48030A5000000000001 /* Spherical.hpp in Headers */,
+				A5D4F49030A5000000000001 /* Spherical.ipp in Headers */,
 				F9797E842F667E9900518D26 /* CDSPHBDownsampler.h in Headers */,
 				F9797E852F667E9900518D26 /* pf_avx_double.h in Headers */,
 				F9797E862F667E9900518D26 /* pf_neon_double.h in Headers */,
@@ -16399,6 +16421,8 @@
 				F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */,
 				F9A000032FC0000000000001 /* Test_Smooth.cpp in Sources */,
 				A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */,
+				A5D4F4A030A5000000000001 /* Test_Cylindrical.cpp in Sources */,
+				A5D4F4B030A5000000000001 /* Test_Spherical.cpp in Sources */,
 				A5D4F42030A5000000000001 /* Test_Mat4x4.cpp in Sources */,
 				A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */,
 				F9A000052FC0000000000001 /* Test_Interpolation.cpp in Sources */,

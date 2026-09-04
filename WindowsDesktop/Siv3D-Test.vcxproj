@@ -79,6 +79,8 @@
     <ClCompile Include="..\Test\Test_Mesh3DTube.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DOBJ.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DPrimitives.cpp" />
+    <ClCompile Include="..\Test\Test_Cylindrical.cpp" />
+    <ClCompile Include="..\Test\Test_Spherical.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
