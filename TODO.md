@@ -65,9 +65,19 @@
   - 用途は部品単位の検査、選択、材質割り当て、OBJ 等への group / object 情報の引き渡し。
   - 現状は add 前後の `getMesh().vertexCount()` / `triangleCount()` の差分で取得できるが、利用者ごとに同じラッパが必要になる。
   - 各 add の戻り値変更、stateful な `lastAdded*()`、checkpoint / scope、builder と別のモデル層のいずれが適切かは未決定とする。
+- 複数部品を傾いたローカル座標系へ配置する際の、手動の基底ベクトル計算を減らす方法を評価する。
+  - scoped transform、明示的な placement、builder の外側の補助型などを候補とし、transform の合成順序と明示的な `Mat4x4` overload との関係を先に決める。
+  - `Anchor` や Y 区間指定を各 primitive へ個別追加して overload を増やす前に、直交性のある配置機能で吸収できるか検討する。
+
+### 端面制御
+
+- `Cylinder`、`Cone`、`ConicalFrustum`、`Extrude`、`Loft`、開路の `Tube` / `Sweep` で、始端・終端を選択的に生成しない用途を評価する。
+- `BoxShell::openFaces`、部分 `Revolve` の `CloseEnds`、`CloseRing`、`CloseBottom` はそれぞれ異なる位相操作である。名前だけを統一せず、各操作の意味と組み合わせを整理してから型を設計する。
+- 追加する場合は cap の winding、法線、UV、hard edge、頂点・三角形数、および Builder の失敗時非変更保証を既存規約に合わせる。
 
 ### 利用例
 
+- 2 点間を結ぶ柱・梁には `Tube({ from, to }, radius, sides)` を使えることを示し、専用 `Cylinder(from, to)` overload の必要性はその後に再評価する。
 - 2D 立面図を world XY、押し出し方向を world Z として使う、`Extrude()` + `Quaternion::RotateX(90_deg)` の例を追加する。
 - `HeightField()` の `[y][x]` ループ、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
 - `Cylindrical` / `Spherical` の配置例、および接合部には `Box`、露出部には `ChamferedBox` / `RoundedBox` を使う指針は、サンプル拡充時の候補とする。
@@ -87,6 +97,7 @@
 - `HeightField()` は `Image` 専用 overload より先に、グリッド座標から高さを返す callable overload を評価する。
 - `Image` overload を追加する場合は、チャネルまたは輝度変換、正規化範囲、Y scale / offset、行方向、HDR 入力の範囲を決める。
 - `IcoSphere()` は subdivision 上限、overflow、UV seam を持つ構成と UV を持たない構成のどちらを公開するか決める。
+- `Extrude` / `Loft` の断面として使う扇形・扇形環を、手書きの三角関数ループなしで `Polygon` または `Shape2D` として生成する API を評価する。配置先は Mesh3D ではなく 2D geometry API を優先する。
 - double-sided plane、torus arc、torus knot、superellipsoid は利用例が明確になった時点で評価する。
 - `RegularPrism` は `Extrude()`、rounded cylinder は `Revolve()` での代替を優先する。
 
@@ -94,6 +105,7 @@
 
 - 3D レンダリング側の設計が固まるまで、`Mesh3D::draw()` は追加しない。
 - レンダリング統合時に `Vertex3D` の GPU レイアウト、頂点カラー、index の上限と primitive-restart 値、CPU メッシュと GPU リソースの責務を再確認する。
+  - 1 モデル内の複数色・材質という実利用要求を、頂点カラー、submesh / material range、別のモデル層のどこで表現するか決める。`Vertex3D` への color 追加を前提にしない。
 - bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に設計する。
 
 ### 低優先度のレビュー残件
