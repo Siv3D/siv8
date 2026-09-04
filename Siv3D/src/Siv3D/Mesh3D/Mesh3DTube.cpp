@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include "Mesh3DCommon.hpp"
@@ -23,12 +24,12 @@ namespace s3d
 	{
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::ForEachValidCapTriangle;
 		using Mesh3DDetail::GenerationFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
 		using Mesh3DDetail::RingValidationResult;
 		using Mesh3DDetail::ValidateCapTriangles;
 		using Mesh3DDetail::ValidateRing;
-		using CircleSample = Mesh3DDetail::CircleSample<double>;
 
 		struct PathFrame
 		{
@@ -263,7 +264,8 @@ namespace s3d
 			uvOffset);
 	}
 
-	Mesh3D Mesh3D::Tube(
+	bool Mesh3DDetail::AppendTube(
+		Mesh3D& mesh,
 		const std::span<const Vec3> path,
 		const double _radius,
 		const uint32 sides,
@@ -276,13 +278,13 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvScale))
 			|| (not IsFloatRepresentable(_uvOffset)))
 		{
-			return GenerationFailed("Mesh3D::Tube(): The path, radius, side count, or UV transform is invalid");
+			return GenerationFailed<bool>("Mesh3D::Tube(): The path, radius, side count, or UV transform is invalid");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return GenerationFailed("Mesh3D::Tube(): radius must be positive after conversion to float");
+			return GenerationFailed<bool>("Mesh3D::Tube(): radius must be positive after conversion to float");
 		}
 
 		size_t ringStride;
@@ -297,13 +299,13 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(sides), 2, twiceSides))
 			|| (not CheckedMultiply(path.size(), twiceSides, triangleCount)))
 		{
-			return GenerationFailed("Mesh3D::Tube(): The generated mesh exceeds the supported size");
+			return GenerationFailed<bool>("Mesh3D::Tube(): The generated mesh exceeds the supported size");
 		}
 
 		PathData pathData;
 		if (not MakePathData(path, radius, nullptr, pathData))
 		{
-			return GenerationFailed("Mesh3D::Tube(): The path is invalid or cannot produce stable frames");
+			return GenerationFailed<bool>("Mesh3D::Tube(): The path is invalid or cannot produce stable frames");
 		}
 
 		const auto& points = pathData.points;
@@ -322,15 +324,33 @@ namespace s3d
 			|| (not IsFloatRepresentable(sideV1))
 			|| (not IsFloatRepresentable(capV1)))
 		{
-			return GenerationFailed("Mesh3D::Tube(): The generated UV coordinates exceed the float range");
+			return GenerationFailed<bool>("Mesh3D::Tube(): The generated UV coordinates exceed the float range");
 		}
 
-		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<double>(sides);
+		const Array<CircleSample<double>> circle = MakeCircleSamples<double>(sides);
 
 		const Float2 uvScale = _uvScale;
 		const Float2 uvOffset = _uvOffset;
 		const float inverseSides = (1.0f / sides);
-		Mesh3D mesh{ vertexCount, triangleCount };
+		const size_t vertexBase = mesh.vertices.size();
+		const size_t triangleBase = mesh.indices.size();
+		size_t newVertexCount;
+		size_t newTriangleCount;
+		if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
+			|| (Mesh3D::MaxVertexCount < newVertexCount)
+			|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3D::Tube(): The generated mesh exceeds the supported size");
+		}
+
+		mesh.vertices.resize(newVertexCount);
+		mesh.indices.resize(newTriangleCount);
+		const auto generationFailed = [&](const char* const message)
+		{
+			mesh.vertices.resize(vertexBase);
+			mesh.indices.resize(triangleBase);
+			return GenerationFailed<bool>(message);
+		};
 
 		for (size_t pathIndex = 0; pathIndex < path.size(); ++pathIndex)
 		{
@@ -338,11 +358,11 @@ namespace s3d
 			const Vec3 center = points[pathIndex];
 			const float v = static_cast<float>(
 				(_uvOffset.y + (_uvScale.y * distances[pathIndex])));
-			const size_t ringBase = (pathIndex * ringStride);
+			const size_t ringBase = (vertexBase + pathIndex * ringStride);
 
 			for (uint32 sideIndex = 0; sideIndex <= sides; ++sideIndex)
 			{
-				const CircleSample sample = circle[sideIndex];
+				const CircleSample<double> sample = circle[sideIndex];
 				const Vec3 normal = ((frame.normal * sample.cos)
 					+ (frame.binormal * sample.sin));
 				const Vec3 tangent = ((frame.normal * -sample.sin)
@@ -350,7 +370,7 @@ namespace s3d
 				Float3 position;
 				if (not ToFloat3((center + (normal * radius)), position))
 				{
-					return GenerationFailed("Mesh3D::Tube(): A generated side vertex exceeds the float range");
+					return generationFailed("Mesh3D::Tube(): A generated side vertex exceeds the float range");
 				}
 
 				mesh.vertices[ringBase + sideIndex] = Vertex3D{
@@ -369,10 +389,10 @@ namespace s3d
 			}
 		}
 
-		TriangleIndex32* pTriangle = mesh.indices.data();
+		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
 		for (size_t pathIndex = 0; pathIndex < pathSegmentCount; ++pathIndex)
 		{
-			const size_t ringBase = (pathIndex * ringStride);
+			const size_t ringBase = (vertexBase + pathIndex * ringStride);
 			const size_t nextRingBase = (ringBase + ringStride);
 			for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
 			{
@@ -385,7 +405,7 @@ namespace s3d
 			}
 		}
 
-		const size_t startCapBase = (path.size() * ringStride);
+		const size_t startCapBase = (vertexBase + path.size() * ringStride);
 		const size_t endCapBase = (startCapBase + ringStride);
 		const Float2 capCenterUV = (uvOffset + (uvScale * 0.5f));
 		for (size_t capIndex = 0; capIndex < 2; ++capIndex)
@@ -413,13 +433,13 @@ namespace s3d
 
 			for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
 			{
-				const CircleSample sample = circle[sideIndex];
+				const CircleSample<double> sample = circle[sideIndex];
 				const Vec3 radial = ((frame.normal * sample.cos)
 					+ (frame.binormal * sample.sin));
 				Float3 position;
 				if (not ToFloat3((Vec3{ points[pathIndex] } + (radial * radius)), position))
 				{
-					return GenerationFailed("Mesh3D::Tube(): A generated cap vertex exceeds the float range");
+					return generationFailed("Mesh3D::Tube(): A generated cap vertex exceeds the float range");
 				}
 
 				mesh.vertices[capBase + 1 + sideIndex] = Vertex3D{
@@ -448,7 +468,19 @@ namespace s3d
 			}
 		}
 
-		return mesh;
+		return true;
+	}
+
+	Mesh3D Mesh3D::Tube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		Mesh3DBuilder builder;
+		builder.addTube(path, radius, sides, uvScale, uvOffset);
+		return std::move(builder).build();
 	}
 
 	namespace
@@ -471,7 +503,8 @@ namespace s3d
 
 			const auto& capVertices = crossSection.vertices();
 			const auto& capIndices = crossSection.indices();
-			if (not ValidateCapTriangles<true>(capVertices, capIndices))
+			size_t validCapTriangleCount;
+			if (not ValidateCapTriangles<true>(capVertices, capIndices, validCapTriangleCount))
 			{
 				return GenerationFailed("Mesh3D::Sweep(): The cross-section cap triangulation is invalid");
 			}
@@ -545,7 +578,7 @@ namespace s3d
 				|| (not CheckedMultiply(edgeCount, verticesPerEdge, sideVertexCount))
 				|| (not CheckedAdd(capVertexCount, sideVertexCount, vertexCount))
 				|| (Mesh3D::MaxVertexCount < vertexCount)
-				|| (not CheckedMultiply(capIndices.size(), 2, capTriangleCount))
+				|| (not CheckedMultiply(validCapTriangleCount, 2, capTriangleCount))
 				|| (not CheckedMultiply(edgeCount, pathSegmentCount, sideQuadCount))
 				|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
 				|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
@@ -625,7 +658,8 @@ namespace s3d
 			}
 
 			TriangleIndex32* pTriangle = mesh.indices.data();
-			for (const TriangleIndex& source : capIndices)
+			ForEachValidCapTriangle(capVertices, capIndices, validCapTriangleCount,
+				[&](const TriangleIndex& source)
 			{
 				const uint32 i0 = source.i0;
 				const uint32 i1 = source.i1;
@@ -636,7 +670,7 @@ namespace s3d
 					static_cast<uint32>(endCapBase + i2),
 					static_cast<uint32>(endCapBase + i1)
 				};
-			}
+			});
 
 			size_t sideVertexOffset = capVertexCount;
 			const auto writeRing = [&](const std::span<const Vec2> ring, const double perimeter)

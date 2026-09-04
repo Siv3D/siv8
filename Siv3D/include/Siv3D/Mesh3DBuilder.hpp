@@ -1205,6 +1205,111 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addTube
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D 経路に沿う一定半径のチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路。2 点以上である必要があります。
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数。3 以上である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 経路、端面、UV 座標、および法線の規約は `Mesh3D::Tube()` と同じです。
+		bool addTube(
+			std::span<const Vec3> path,
+			double radius,
+			uint32 sides = 12,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 平行移動したチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTube(std::span<const Vec3> path, double radius, uint32 sides, Vec3 offset);
+
+		/// @brief 回転および平行移動したチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTube(
+			std::span<const Vec3> path,
+			double radius,
+			uint32 sides,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用したチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTube(
+			std::span<const Vec3> path,
+			double radius,
+			uint32 sides,
+			const Mat4x4& transform);
+
+		/// @brief UV 変換と平行移動を適用したチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTube(
+			std::span<const Vec3> path,
+			double radius,
+			uint32 sides,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset);
+
+		/// @brief UV 変換、回転、および平行移動を適用したチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTube(
+			std::span<const Vec3> path,
+			double radius,
+			uint32 sides,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief UV 変換とアフィン変換を適用したチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTube(
+			std::span<const Vec3> path,
+			double radius,
+			uint32 sides,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addTetrahedron
 		//
 		////////////////////////////////////////////////////////////////

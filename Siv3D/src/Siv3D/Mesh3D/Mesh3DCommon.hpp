@@ -237,8 +237,11 @@ namespace s3d::Mesh3DDetail
 	[[nodiscard]]
 	bool ValidateCapTriangles(
 		const std::span<const Float2> vertices,
-		const std::span<const TriangleIndex> indices) noexcept
+		const std::span<const TriangleIndex> indices,
+		size_t& validTriangleCount) noexcept
 	{
+		validTriangleCount = 0;
+
 		if ((vertices.size() < 3)
 			|| indices.empty())
 		{
@@ -273,13 +276,47 @@ namespace s3d::Mesh3DDetail
 				((static_cast<double>(p1.x) - p0.x) * (static_cast<double>(p2.y) - p0.y))
 				- ((static_cast<double>(p1.y) - p0.y) * (static_cast<double>(p2.x) - p0.x)));
 			if ((not std::isfinite(twiceArea))
-				|| (twiceArea <= 0.0))
+				|| (twiceArea < 0.0))
 			{
 				return false;
 			}
+
+			validTriangleCount += (0.0 < twiceArea);
 		}
 
-		return true;
+		return (0 < validTriangleCount);
+	}
+
+	template <class Callback>
+	void ForEachValidCapTriangle(
+		const std::span<const Float2> vertices,
+		const std::span<const TriangleIndex> indices,
+		const size_t validTriangleCount,
+		Callback&& callback)
+	{
+		if (validTriangleCount == indices.size())
+		{
+			for (const TriangleIndex& index : indices)
+			{
+				callback(index);
+			}
+
+			return;
+		}
+
+		for (const TriangleIndex& index : indices)
+		{
+			const Float2 p0 = vertices[index.i0];
+			const Float2 p1 = vertices[index.i1];
+			const Float2 p2 = vertices[index.i2];
+			const double twiceArea = (
+				((static_cast<double>(p1.x) - p0.x) * (static_cast<double>(p2.y) - p0.y))
+				- ((static_cast<double>(p1.y) - p0.y) * (static_cast<double>(p2.x) - p0.x)));
+			if (0.0 < twiceArea)
+			{
+				callback(index);
+			}
+		}
 	}
 
 	[[nodiscard]]
@@ -305,4 +342,13 @@ namespace s3d::Mesh3DDetail
 		uint32 segments,
 		double smoothingAngle,
 		CloseEnds closeEnds);
+
+	[[nodiscard]]
+	bool AppendTube(
+		Mesh3D& mesh,
+		std::span<const Vec3> path,
+		double radius,
+		uint32 sides,
+		Vec2 uvScale,
+		Vec2 uvOffset);
 }

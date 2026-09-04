@@ -23,6 +23,7 @@ namespace s3d
 	{
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::ForEachValidCapTriangle;
 		using Mesh3DDetail::GenerationFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
 		using Mesh3DDetail::RingValidationResult;
@@ -123,7 +124,8 @@ namespace s3d::Mesh3DDetail
 
 		const auto& capVertices = polygon.vertices();
 		const auto& capIndices = polygon.indices();
-		if (not ValidateCapTriangles<true>(capVertices, capIndices))
+		size_t validCapTriangleCount;
+		if (not ValidateCapTriangles<true>(capVertices, capIndices, validCapTriangleCount))
 		{
 			return GenerationFailed<bool>("Mesh3D::Extrude(): The polygon cap triangulation is invalid");
 		}
@@ -164,7 +166,7 @@ namespace s3d::Mesh3DDetail
 			|| (not CheckedMultiply(edgeCount, 4, sideVertexCount))
 			|| (not CheckedAdd(capVertexTotal, sideVertexCount, vertexCount))
 			|| (Mesh3D::MaxVertexCount < vertexCount)
-			|| (not CheckedMultiply(capIndices.size(), 2, capTriangleTotal))
+			|| (not CheckedMultiply(validCapTriangleCount, 2, capTriangleTotal))
 			|| (not CheckedMultiply(edgeCount, 2, sideTriangleCount))
 			|| (not CheckedAdd(capTriangleTotal, sideTriangleCount, triangleCount)))
 		{
@@ -232,7 +234,8 @@ namespace s3d::Mesh3DDetail
 		}
 
 		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
-		for (const TriangleIndex& source : capIndices)
+		ForEachValidCapTriangle(capVertices, capIndices, validCapTriangleCount,
+			[&](const TriangleIndex& source)
 		{
 			const uint32 i0 = source.i0;
 			const uint32 i1 = source.i1;
@@ -247,7 +250,7 @@ namespace s3d::Mesh3DDetail
 				static_cast<uint32>(bottomVertexBase + i2),
 				static_cast<uint32>(bottomVertexBase + i1)
 			};
-		}
+		});
 
 		size_t sideVertexOffset = (vertexBase + capVertexTotal);
 		const auto writeRing = [&](const std::span<const Vec2> ring, const double perimeter)

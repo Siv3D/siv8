@@ -24,6 +24,7 @@ namespace s3d
 	{
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::ForEachValidCapTriangle;
 		using Mesh3DDetail::GenerationFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
 		using RevolveCircleSample = Mesh3DDetail::CircleSample<float>;
@@ -254,6 +255,7 @@ namespace s3d::Mesh3DDetail
 
 		const bool positiveProfileOrientation = (0.0 < twiceArea);
 		std::optional<Polygon> capPolygon;
+		size_t validCapTriangleCount = 0;
 		if (generateEndCaps)
 		{
 			if ((not std::isfinite(twiceArea)) || (twiceArea == 0.0))
@@ -280,7 +282,7 @@ namespace s3d::Mesh3DDetail
 			capPolygon.emplace(std::span<const Vec2>{ capOutline });
 			if (capPolygon->isEmpty()
 				|| (not ValidateCapTriangles<true>(
-					capPolygon->vertices(), capPolygon->indices())))
+					capPolygon->vertices(), capPolygon->indices(), validCapTriangleCount)))
 			{
 				return GenerationFailed<bool>("Mesh3D::Revolve(): The profile cannot be triangulated for end caps");
 			}
@@ -296,7 +298,7 @@ namespace s3d::Mesh3DDetail
 			if ((not CheckedMultiply(capPolygon->vertices().size(), 2, addedCapVertexCount))
 				|| (not CheckedAdd(vertexCount, addedCapVertexCount, vertexCount))
 				|| (Mesh3D::MaxVertexCount < vertexCount)
-				|| (not CheckedMultiply(capPolygon->indices().size(), 2, addedCapTriangleCount))
+				|| (not CheckedMultiply(validCapTriangleCount, 2, addedCapTriangleCount))
 				|| (not CheckedAdd(triangleCount, addedCapTriangleCount, triangleCount)))
 			{
 				return GenerationFailed<bool>("Mesh3D::Revolve(): The generated mesh exceeds the supported size");
@@ -528,7 +530,8 @@ namespace s3d::Mesh3DDetail
 				}
 
 				const bool reverseWinding = (startCap == positiveProfileOrientation);
-				for (const TriangleIndex& source : capIndices)
+				ForEachValidCapTriangle(capVertices, capIndices, validCapTriangleCount,
+					[&](const TriangleIndex& source)
 				{
 					const uint32 i0 = static_cast<uint32>(capVertexBase + source.i0);
 					const uint32 i1 = static_cast<uint32>(capVertexBase + source.i1);
@@ -536,7 +539,7 @@ namespace s3d::Mesh3DDetail
 					*pTriangle++ = (reverseWinding
 						? TriangleIndex32{ i0, i2, i1 }
 						: TriangleIndex32{ i0, i1, i2 });
-				}
+				});
 
 				vertexOffset += capVertices.size();
 			}

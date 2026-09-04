@@ -212,6 +212,19 @@ TEST_CASE("Quaternion::factories")
 	CheckVector(pairRotation.rotate(Float3::UnitY()), Float3{ targetPair.second });
 }
 
+TEST_CASE("Quaternion::axis rotation directions")
+{
+	CheckVector(
+		Quaternion::RotateX(Math::HalfPiF).rotate(Float3::UnitY()),
+		Float3::UnitZ());
+	CheckVector(
+		Quaternion::RotateY(Math::HalfPiF).rotate(Float3::UnitX()),
+		-Float3::UnitZ());
+	CheckVector(
+		Quaternion::RotateZ(Math::HalfPiF).rotate(Float3::UnitX()),
+		Float3::UnitY());
+}
+
 TEST_CASE("Quaternion::format_and_stream")
 {
 	const Quaternion q{ 1.25f, 2.5f, 3.75f, 4.0f };

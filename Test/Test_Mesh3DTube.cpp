@@ -21,6 +21,13 @@ namespace
 	{
 		static_cast<Mesh3D (*)(std::span<const Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3)>(&Mesh3DBuilder::addTube);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, const Quaternion&)>(&Mesh3DBuilder::addTube);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, const Mat4x4&)>(&Mesh3DBuilder::addTube);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addTube);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3, const Quaternion&)>(&Mesh3DBuilder::addTube);
+		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, const Mat4x4&)>(&Mesh3DBuilder::addTube);
 	});
 
 }
@@ -36,6 +43,78 @@ TEST_CASE("Mesh3D::Tube initializer list")
 		}, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }),
 		Mesh3D::Tube(path, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }));
 	CHECK(Mesh3D::Tube({}, 0.5).isEmpty());
+}
+
+TEST_CASE("Mesh3DBuilder::addTube")
+{
+	const Array<Vec3> path{
+		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+	};
+	constexpr double Radius = 0.25;
+	constexpr uint32 Sides = 8;
+	const Vec2 uvScale{ 2.0, 0.25 };
+	const Vec2 uvOffset{ 0.1, 0.2 };
+	const Mesh3D source = Mesh3D::Tube(path, Radius, Sides, uvScale, uvOffset);
+
+	SUBCASE("Direct append reuses reserved storage")
+	{
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 2), (source.triangleCount() * 2));
+		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+
+		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
+		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(source, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Transform overloads")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+		const Mesh3D defaultUVSource = Mesh3D::Tube(path, Radius, Sides);
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addTube(path, Radius, Sides, offset));
+		REQUIRE(builder.addTube(path, Radius, Sides, offset, rotation));
+		REQUIRE(builder.addTube(path, Radius, Sides, transform));
+		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, offset));
+		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, offset, rotation));
+		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, transform));
+
+		Mesh3D expected;
+		REQUIRE(expected.append(defaultUVSource, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(defaultUVSource,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(defaultUVSource, transform));
+		REQUIRE(expected.append(source, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(source,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(source, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addTube({}, Radius, Sides));
+		CHECK_FALSE(builder.addTube(path, 0.0, Sides));
+		CHECK_FALSE(builder.addTube(path, Radius, 2));
+		CHECK_FALSE(builder.addTube(
+			path, 0.0, Sides, Vec2{ 1.0, 1.0 }, Vec2::Zero(), Mat4x4::Identity()));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
 }
 
 TEST_CASE("Mesh3D::Tube straight path and UV repeat")

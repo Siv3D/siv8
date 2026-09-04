@@ -611,18 +611,21 @@ namespace s3d
 		/// @brief X 軸周りの回転を表すクォータニオンを返します。
 		/// @param angle 回転角（ラジアン）
 		/// @return X 軸周りの回転を表すクォータニオン
+		/// @remark 正の 90° 回転を `Quaternion::rotate()` で適用すると、`+Y` 方向は `+Z` 方向へ移ります。
 		[[nodiscard]]
 		static Quaternion SIV3D_VECTOR_CALL RotateX(float angle) noexcept;
 
 		/// @brief Y 軸周りの回転を表すクォータニオンを返します。
 		/// @param angle 回転角（ラジアン）
 		/// @return Y 軸周りの回転を表すクォータニオン
+		/// @remark 正の 90° 回転を `Quaternion::rotate()` で適用すると、`+X` 方向は `-Z` 方向へ移ります。
 		[[nodiscard]]
 		static Quaternion SIV3D_VECTOR_CALL RotateY(float angle) noexcept;
 
 		/// @brief Z 軸周りの回転を表すクォータニオンを返します。
 		/// @param angle 回転角（ラジアン）
 		/// @return Z 軸周りの回転を表すクォータニオン
+		/// @remark 正の 90° 回転を `Quaternion::rotate()` で適用すると、`+X` 方向は `+Y` 方向へ移ります。
 		[[nodiscard]]
 		static Quaternion SIV3D_VECTOR_CALL RotateZ(float angle) noexcept;
 

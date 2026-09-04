@@ -2288,6 +2288,95 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addTube
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Mesh3DDetail::AppendTube(m_mesh, path, radius, sides, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec3 offset)
+	{
+		return addTube(path, radius, sides, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addTube(path, radius, sides,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Mat4x4& transform)
+	{
+		return addTube(
+			path, radius, sides, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addTube(
+			path, radius, sides, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addTube(path, radius, sides, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not Mesh3DDetail::AppendTube(m_mesh, path, radius, sides, uvScale, uvOffset))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addTriangularPrism
 	//
 	////////////////////////////////////////////////////////////////

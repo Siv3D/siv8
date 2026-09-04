@@ -21,6 +21,7 @@ namespace s3d
 	{
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::ForEachValidCapTriangle;
 		using Mesh3DDetail::GenerationFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
 		using Mesh3DDetail::RingValidationResult;
@@ -176,10 +177,12 @@ namespace s3d
 
 		const Polygon bottomPolygon{ sections.front() };
 		const Polygon topPolygon{ sections.back() };
+		size_t bottomCapTriangleCount;
+		size_t topCapTriangleCount;
 		if (bottomPolygon.isEmpty()
 			|| topPolygon.isEmpty()
-			|| (not ValidateCapTriangles<false>(bottomPolygon.vertices(), bottomPolygon.indices()))
-			|| (not ValidateCapTriangles<false>(topPolygon.vertices(), topPolygon.indices())))
+			|| (not ValidateCapTriangles<false>(bottomPolygon.vertices(), bottomPolygon.indices(), bottomCapTriangleCount))
+			|| (not ValidateCapTriangles<false>(topPolygon.vertices(), topPolygon.indices(), topCapTriangleCount)))
 		{
 			return GenerationFailed("Mesh3D::Loft(): The first or last section cannot form a valid cap");
 		}
@@ -203,7 +206,7 @@ namespace s3d
 			|| (not CheckedMultiply(sectionVertexCount, 2, sideVertexCount))
 			|| (not CheckedAdd(capVertexCount, sideVertexCount, vertexCount))
 			|| (Mesh3D::MaxVertexCount < vertexCount)
-			|| (not CheckedAdd(bottomPolygon.indices().size(), topPolygon.indices().size(), capTriangleCount))
+			|| (not CheckedAdd(bottomCapTriangleCount, topCapTriangleCount, capTriangleCount))
 			|| (not CheckedMultiply((sectionCount - 1), ringVertexCount, sideQuadCount))
 			|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
 			|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
@@ -243,23 +246,25 @@ namespace s3d
 		writeCap(topPolygon, topBounds, topCapBase, sectionHeights.back(), false);
 
 		TriangleIndex32* pTriangle = mesh.indices.data();
-		for (const TriangleIndex& source : bottomPolygon.indices())
+		ForEachValidCapTriangle(bottomPolygon.vertices(), bottomPolygon.indices(), bottomCapTriangleCount,
+			[&](const TriangleIndex& source)
 		{
 			*pTriangle++ = TriangleIndex32{
 				static_cast<uint32>(bottomCapBase + source.i0),
 				static_cast<uint32>(bottomCapBase + source.i2),
 				static_cast<uint32>(bottomCapBase + source.i1)
 			};
-		}
+		});
 
-		for (const TriangleIndex& source : topPolygon.indices())
+		ForEachValidCapTriangle(topPolygon.vertices(), topPolygon.indices(), topCapTriangleCount,
+			[&](const TriangleIndex& source)
 		{
 			*pTriangle++ = TriangleIndex32{
 				static_cast<uint32>(topCapBase + source.i0),
 				static_cast<uint32>(topCapBase + source.i1),
 				static_cast<uint32>(topCapBase + source.i2)
 			};
-		}
+		});
 
 		const size_t sideBase = capVertexCount;
 		double accumulatedLength = 0.0;
