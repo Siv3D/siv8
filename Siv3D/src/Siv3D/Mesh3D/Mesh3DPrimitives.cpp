@@ -87,6 +87,46 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	BoxFrame
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::BoxFrame(const Vec3 size, const double thickness)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxFrame(size, thickness);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::BoxFrame(const Vec3 size, const Vec3 beamSize)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxFrame(size, beamSize);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::BoxFrame(
+		const Vec3 size,
+		const double thickness,
+		const BoxUVMapping& uvMapping)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxFrame(size, thickness, uvMapping);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::BoxFrame(
+		const Vec3 size,
+		const Vec3 beamSize,
+		const BoxUVMapping& uvMapping)
+	{
+		Mesh3DBuilder builder;
+		builder.addBoxFrame(size, beamSize, uvMapping);
+		return std::move(builder).build();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	RoundedBox
 	//
 	////////////////////////////////////////////////////////////////

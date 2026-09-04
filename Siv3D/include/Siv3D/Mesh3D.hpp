@@ -183,6 +183,55 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	BoxFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする直方体の 12 辺を、均一な太さの角材で構成した枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param thickness 角材の太さ。正の有限値で、`size` の最小成分の半分未満である必要があります。
+		/// @return 直方体枠の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark 角材同士の接合部にある内部面や重複面は生成しません。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D BoxFrame(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double thickness = 0.1);
+
+		/// @brief 原点を中心とする直方体の 12 辺を、軸ごとの太さを持つ角材で構成した枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param beamSize 角材の軸ごとの太さ。各成分は正の有限値で、対応する `size` 成分の半分未満である必要があります。
+		/// @return 直方体枠の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark X 方向の角材は `(size.x, beamSize.y, beamSize.z)`、Y/Z 方向の角材も同様の大きさになります。
+		/// @remark 角材同士の接合部にある内部面や重複面は生成しません。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D BoxFrame(Vec3 size, Vec3 beamSize);
+
+		/// @brief 指定した UV マッピングを持つ、均一な太さの直方体枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param thickness 角材の太さ
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @return 直方体枠の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D BoxFrame(
+			Vec3 size,
+			double thickness,
+			const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、軸ごとの太さを持つ直方体枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param beamSize 角材の軸ごとの太さ
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @return 直方体枠の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D BoxFrame(
+			Vec3 size,
+			Vec3 beamSize,
+			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	RoundedBox
 		//
 		////////////////////////////////////////////////////////////////
