@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/Polygon.hpp>
 # include "Mesh3DCommon.hpp"
 # include <algorithm>
@@ -85,10 +86,13 @@ namespace s3d
 			sectionViews[i] = sections[i];
 		}
 
-		return Loft(sectionViews, heights, uvScale, uvOffset);
+		Mesh3DBuilder builder;
+		builder.addLoft(sectionViews, heights, uvScale, uvOffset);
+		return std::move(builder).build();
 	}
 
-	Mesh3D Mesh3D::Loft(
+	bool Mesh3DDetail::AppendLoft(
+		Mesh3D& mesh,
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec2 _uvScale,
@@ -104,7 +108,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvOffset.x + _uvScale.x))
 			|| (not IsFloatRepresentable(_uvOffset.y + _uvScale.y)))
 		{
-			return GenerationFailed("Mesh3D::Loft(): The section dimensions, heights, or UV transform is invalid");
+			return GenerationFailed<bool>("Mesh3D::Loft(): The section dimensions, heights, or UV transform is invalid");
 		}
 
 		const size_t sectionCount = sections.size();
@@ -113,7 +117,7 @@ namespace s3d
 		if ((not CheckedMultiply(sectionCount, ringVertexCount, sectionVertexCount))
 			|| (Mesh3D::MaxVertexCount < sectionVertexCount))
 		{
-			return GenerationFailed("Mesh3D::Loft(): The section vertex count exceeds the supported range");
+			return GenerationFailed<bool>("Mesh3D::Loft(): The section vertex count exceeds the supported range");
 		}
 
 		Array<float> sectionHeights(sectionCount);
@@ -122,21 +126,21 @@ namespace s3d
 			if ((sections[sectionIndex].size() != ringVertexCount)
 				|| (not IsFloatRepresentable(heights[sectionIndex])))
 			{
-				return GenerationFailed("Mesh3D::Loft(): Sections must have equal vertex counts and finite, float-representable heights");
+				return GenerationFailed<bool>("Mesh3D::Loft(): Sections must have equal vertex counts and finite, float-representable heights");
 			}
 
 			sectionHeights[sectionIndex] = static_cast<float>(heights[sectionIndex]);
 			if ((0 < sectionIndex)
 				&& (not (sectionHeights[sectionIndex - 1] < sectionHeights[sectionIndex])))
 			{
-				return GenerationFailed("Mesh3D::Loft(): Heights must remain strictly increasing after conversion to float");
+				return GenerationFailed<bool>("Mesh3D::Loft(): Heights must remain strictly increasing after conversion to float");
 			}
 		}
 
 		const double totalHeight = (static_cast<double>(sectionHeights.back()) - sectionHeights.front());
 		if (not IsFloatRepresentable(_uvOffset.y + (_uvScale.y * totalHeight)))
 		{
-			return GenerationFailed("Mesh3D::Loft(): The side V coordinate exceeds the float range");
+			return GenerationFailed<bool>("Mesh3D::Loft(): The side V coordinate exceeds the float range");
 		}
 
 		Array<Float2> points(sectionVertexCount);
@@ -151,7 +155,7 @@ namespace s3d
 				if ((not IsFloatRepresentable(point.x))
 					|| (not IsFloatRepresentable(point.y)))
 				{
-					return GenerationFailed("Mesh3D::Loft(): Every section vertex must be finite and float-representable");
+					return GenerationFailed<bool>("Mesh3D::Loft(): Every section vertex must be finite and float-representable");
 				}
 
 				points[sectionBase + vertexIndex] = point;
@@ -162,11 +166,11 @@ namespace s3d
 			const RingValidationResult ringValidation = ValidateRing(ring, true, perimeter);
 			if (ringValidation == RingValidationResult::InvalidEdge)
 			{
-				return GenerationFailed("Mesh3D::Loft(): Section edges must have positive finite length");
+				return GenerationFailed<bool>("Mesh3D::Loft(): Section edges must have positive finite length");
 			}
 			else if (ringValidation != RingValidationResult::Valid)
 			{
-				return GenerationFailed("Mesh3D::Loft(): Each section must have positive finite area and perimeter");
+				return GenerationFailed<bool>("Mesh3D::Loft(): Each section must be clockwise and have positive finite area and perimeter");
 			}
 
 			if (sectionIndex == 0)
@@ -184,7 +188,7 @@ namespace s3d
 			|| (not ValidateCapTriangles<false>(bottomPolygon.vertices(), bottomPolygon.indices(), bottomCapTriangleCount))
 			|| (not ValidateCapTriangles<false>(topPolygon.vertices(), topPolygon.indices(), topCapTriangleCount)))
 		{
-			return GenerationFailed("Mesh3D::Loft(): The first or last section cannot form a valid cap");
+			return GenerationFailed<bool>("Mesh3D::Loft(): The first or last section cannot form a valid cap");
 		}
 
 		Bounds2D bottomBounds;
@@ -192,7 +196,7 @@ namespace s3d
 		if ((not ComputeBounds(bottomPolygon.vertices(), bottomBounds))
 			|| (not ComputeBounds(topPolygon.vertices(), topBounds)))
 		{
-			return GenerationFailed("Mesh3D::Loft(): A cap must have positive finite bounds");
+			return GenerationFailed<bool>("Mesh3D::Loft(): A cap must have positive finite bounds");
 		}
 
 		size_t capVertexCount;
@@ -211,12 +215,24 @@ namespace s3d
 			|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
 			|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
 		{
-			return GenerationFailed("Mesh3D::Loft(): The generated mesh exceeds the supported size");
+			return GenerationFailed<bool>("Mesh3D::Loft(): The generated mesh exceeds the supported size");
 		}
 
-		Mesh3D mesh{ vertexCount, triangleCount };
-		const size_t bottomCapBase = 0;
-		const size_t topCapBase = bottomPolygon.vertices().size();
+		const size_t meshVertexBase = mesh.vertices.size();
+		const size_t triangleBase = mesh.indices.size();
+		size_t newVertexCount;
+		size_t newTriangleCount;
+		if ((not CheckedAdd(meshVertexBase, vertexCount, newVertexCount))
+			|| (Mesh3D::MaxVertexCount < newVertexCount)
+			|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+		{
+			return GenerationFailed<bool>("Mesh3D::Loft(): The generated mesh exceeds the supported size");
+		}
+
+		mesh.vertices.resize(newVertexCount);
+		mesh.indices.resize(newTriangleCount);
+		const size_t bottomCapBase = meshVertexBase;
+		const size_t topCapBase = (meshVertexBase + bottomPolygon.vertices().size());
 		const Float4 capTangent{ 1.0f, 0.0f, 0.0f, 1.0f };
 
 		const auto writeCap = [&](const Polygon& polygon, const Bounds2D& bounds,
@@ -245,7 +261,7 @@ namespace s3d
 		writeCap(bottomPolygon, bottomBounds, bottomCapBase, sectionHeights.front(), true);
 		writeCap(topPolygon, topBounds, topCapBase, sectionHeights.back(), false);
 
-		TriangleIndex32* pTriangle = mesh.indices.data();
+		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
 		ForEachValidCapTriangle(bottomPolygon.vertices(), bottomPolygon.indices(), bottomCapTriangleCount,
 			[&](const TriangleIndex& source)
 		{
@@ -266,7 +282,7 @@ namespace s3d
 			};
 		});
 
-		const size_t sideBase = capVertexCount;
+		const size_t sideBase = (meshVertexBase + capVertexCount);
 		double accumulatedLength = 0.0;
 		for (size_t edgeIndex = 0; edgeIndex < ringVertexCount; ++edgeIndex)
 		{
@@ -351,6 +367,17 @@ namespace s3d
 			}
 		}
 
-		return mesh;
+		return true;
+	}
+
+	Mesh3D Mesh3D::Loft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		Mesh3DBuilder builder;
+		builder.addLoft(sections, heights, uvScale, uvOffset);
+		return std::move(builder).build();
 	}
 }

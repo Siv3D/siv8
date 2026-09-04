@@ -20,11 +20,14 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/MemoryWriter.hpp>
 # include <Siv3D/Unicode.hpp>
+# include "Mesh3DCommon.hpp"
 
 namespace s3d
 {
 	namespace
 	{
+		using Mesh3DDetail::GenerationFailed;
+
 		constexpr size_t OBJBufferFlushThreshold = (64 * 1024);
 
 		[[nodiscard]]
@@ -503,15 +506,6 @@ namespace s3d
 			}
 		}
 
-		bool EncodeOBJ(const Mesh3D& mesh, IWriter& writer)
-		{
-			if ((not writer.isOpen()) || (not ValidateForOBJ(mesh)))
-			{
-				return false;
-			}
-
-			return EncodeValidatedOBJ(mesh, writer);
-		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -524,24 +518,34 @@ namespace s3d
 	{
 		if (not ValidateForOBJ(*this))
 		{
-			return false;
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): The mesh is empty, invalid, or contains non-finite OBJ vertex attributes");
 		}
 
 		BinaryFileWriter writer{ path };
 
 		if (not writer)
 		{
-			return false;
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): Failed to open the OBJ file");
 		}
 
-		return EncodeValidatedOBJ(*this, writer);
+		if (not EncodeValidatedOBJ(*this, writer))
+		{
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): Failed to encode or write the OBJ data");
+		}
+
+		return true;
 	}
 
 	bool Mesh3D::saveOBJ(const FilePathView path, const Material& material) const
 	{
-		if ((not ValidateForOBJ(*this)) || (not ValidateForMTL(material)))
+		if (not ValidateForOBJ(*this))
 		{
-			return false;
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): The mesh is empty, invalid, or contains non-finite OBJ vertex attributes");
+		}
+
+		if (not ValidateForMTL(material))
+		{
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): The material is invalid or cannot be represented in MTL");
 		}
 
 		const String baseName = FileSystem::BaseName(path);
@@ -549,7 +553,7 @@ namespace s3d
 		if (baseName.isEmpty()
 			|| (FileSystem::Extension(path) == U"mtl"))
 		{
-			return false;
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): The path must have a non-empty base name and must not use the .mtl extension");
 		}
 
 		FilePath objFullPath;
@@ -560,7 +564,7 @@ namespace s3d
 		if ((not IsSingleLine(mtlFileName))
 			|| (objFullPath == mtlPath))
 		{
-			return false;
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): The derived MTL path or file name is invalid");
 		}
 
 		BinaryFileWriter objWriter{ path };
@@ -568,14 +572,23 @@ namespace s3d
 
 		if ((not objWriter) || (not mtlWriter))
 		{
-			return false;
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): Failed to open the OBJ or MTL file");
 		}
 
 		const std::string mtlFileNameUTF8 = Unicode::ToUTF8(mtlFileName);
 		const std::string materialNameUTF8 = Unicode::ToUTF8(material.name);
 
-		return (EncodeValidatedMTL(material, mtlWriter)
-			&& EncodeValidatedOBJ(*this, objWriter, mtlFileNameUTF8, materialNameUTF8));
+		if (not EncodeValidatedMTL(material, mtlWriter))
+		{
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): Failed to encode or write the MTL data");
+		}
+
+		if (not EncodeValidatedOBJ(*this, objWriter, mtlFileNameUTF8, materialNameUTF8))
+		{
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): Failed to encode or write the OBJ data");
+		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -586,16 +599,36 @@ namespace s3d
 
 	bool Mesh3D::encodeOBJ(IWriter& writer) const
 	{
-		return EncodeOBJ(*this, writer);
+		if (not writer.isOpen())
+		{
+			return GenerationFailed<bool>("Mesh3D::encodeOBJ(): writer must be open");
+		}
+
+		if (not ValidateForOBJ(*this))
+		{
+			return GenerationFailed<bool>("Mesh3D::encodeOBJ(): The mesh is empty, invalid, or contains non-finite OBJ vertex attributes");
+		}
+
+		if (not EncodeValidatedOBJ(*this, writer))
+		{
+			return GenerationFailed<bool>("Mesh3D::encodeOBJ(): Failed to encode or write the OBJ data");
+		}
+
+		return true;
 	}
 
 	Blob Mesh3D::encodeOBJ() const
 	{
+		if (not ValidateForOBJ(*this))
+		{
+			return GenerationFailed<Blob>("Mesh3D::encodeOBJ(): The mesh is empty, invalid, or contains non-finite OBJ vertex attributes");
+		}
+
 		MemoryWriter writer;
 
-		if (not EncodeOBJ(*this, writer))
+		if (not EncodeValidatedOBJ(*this, writer))
 		{
-			return{};
+			return GenerationFailed<Blob>("Mesh3D::encodeOBJ(): Failed to encode the OBJ data");
 		}
 
 		return writer.extractBlob();

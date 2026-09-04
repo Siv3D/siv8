@@ -11,6 +11,218 @@
 
 # include "Mesh3DTestHelper.hpp"
 
+TEST_CASE("Mesh3DBuilder::addMesh")
+{
+	static_assert(requires
+	{
+		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&)>(&Mesh3DBuilder::addMesh);
+		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&, Vec3)>(&Mesh3DBuilder::addMesh);
+		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&, Vec3, const Quaternion&)>(&Mesh3DBuilder::addMesh);
+		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&, const Mat4x4&)>(&Mesh3DBuilder::addMesh);
+	});
+
+	const Mesh3D source = Mesh3D::Wedge(Vec3{ 2.0, 4.0, 6.0 });
+	const Vec3 offset{ 3.0, 4.0, 5.0 };
+	const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+	const Mat4x4 transform = Mat4x4::AffineTransform(
+		Float3{ -2.0f, 3.0f, 4.0f },
+		Quaternion::RotateZ(Math::QuarterPiF),
+		Float3{ 5.0f, 6.0f, 7.0f });
+
+	SUBCASE("Placement overloads append in source order and reuse reserved storage")
+	{
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 4), (source.triangleCount() * 4));
+		REQUIRE(builder.addMesh(source));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+		REQUIRE(builder.addMesh(source, offset));
+		REQUIRE(builder.addMesh(source, offset, rotation));
+		REQUIRE(builder.addMesh(source, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(source, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			source, Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(source, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("The builder can append its current mesh")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addMesh(source));
+		REQUIRE(builder.addMesh(builder.getMesh()));
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(source));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		Mesh3D invalid = source;
+		invalid.indices.front().i0 = std::numeric_limits<uint32>::max();
+		CHECK_FALSE(builder.addMesh(Mesh3D{}));
+		CHECK_FALSE(builder.addMesh(invalid));
+		CHECK_FALSE(builder.addMesh(invalid, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addHeightField")
+{
+	static_assert(requires
+	{
+		static_cast<bool (Mesh3DBuilder::*)(
+			const Grid<float>&, SizeF, Vec2, Vec2)>(&Mesh3DBuilder::addHeightField);
+		static_cast<bool (Mesh3DBuilder::*)(
+			const Grid<float>&, SizeF, Vec3)>(&Mesh3DBuilder::addHeightField);
+		static_cast<bool (Mesh3DBuilder::*)(
+			const Grid<float>&, SizeF, Vec3, const Quaternion&)>(&Mesh3DBuilder::addHeightField);
+		static_cast<bool (Mesh3DBuilder::*)(
+			const Grid<float>&, SizeF, const Mat4x4&)>(&Mesh3DBuilder::addHeightField);
+		static_cast<bool (Mesh3DBuilder::*)(
+			const Grid<float>&, SizeF, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addHeightField);
+		static_cast<bool (Mesh3DBuilder::*)(
+			const Grid<float>&, SizeF, Vec2, Vec2, Vec3,
+			const Quaternion&)>(&Mesh3DBuilder::addHeightField);
+		static_cast<bool (Mesh3DBuilder::*)(
+			const Grid<float>&, SizeF, Vec2, Vec2,
+			const Mat4x4&)>(&Mesh3DBuilder::addHeightField);
+	});
+
+	const Grid<float> heights{
+		{ 0.0f, 1.0f, 2.0f },
+		{ -1.0f, 0.5f, 3.0f }
+	};
+	const SizeF sizeXZ{ 4.0, 2.0 };
+	const Vec2 uvScale{ 2.0, 3.0 };
+	const Vec2 uvOffset{ 0.25, -0.5 };
+	const Vec3 offset{ 3.0, 4.0, 5.0 };
+	const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+	const Mat4x4 transform = Mat4x4::AffineTransform(
+		Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+	SUBCASE("Appends directly and supports placement overloads")
+	{
+		const Mesh3D source = Mesh3D::HeightField(heights, sizeXZ, uvScale, uvOffset);
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 4), (source.triangleCount() * 4));
+		REQUIRE(builder.addHeightField(heights, sizeXZ, uvScale, uvOffset));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+		REQUIRE(builder.addHeightField(heights, sizeXZ, offset));
+		REQUIRE(builder.addHeightField(heights, sizeXZ, offset, rotation));
+		REQUIRE(builder.addHeightField(heights, sizeXZ, uvScale, uvOffset, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(
+			Mesh3D::HeightField(heights, sizeXZ), Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			Mesh3D::HeightField(heights, sizeXZ),
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(source, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+		CHECK_FALSE(builder.addHeightField(Grid<float>{}, sizeXZ));
+		CHECK_FALSE(builder.addHeightField(heights, SizeF{ 0.0, 2.0 }, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addLoft")
+{
+	using SectionViews = std::span<const std::span<const Vec2>>;
+	using Heights = std::span<const double>;
+	static_assert(requires
+	{
+		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2)>(
+			&Mesh3DBuilder::addLoft);
+		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec3)>(
+			&Mesh3DBuilder::addLoft);
+		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec3, const Quaternion&)>(
+			&Mesh3DBuilder::addLoft);
+		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, const Mat4x4&)>(
+			&Mesh3DBuilder::addLoft);
+		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2, Vec3)>(
+			&Mesh3DBuilder::addLoft);
+		static_cast<bool (Mesh3DBuilder::*)(
+			SectionViews, Heights, Vec2, Vec2, Vec3, const Quaternion&)>(
+			&Mesh3DBuilder::addLoft);
+		static_cast<bool (Mesh3DBuilder::*)(
+			SectionViews, Heights, Vec2, Vec2, const Mat4x4&)>(
+			&Mesh3DBuilder::addLoft);
+	});
+
+	const Array<Array<Vec2>> sections{
+		{ Vec2{ -2.0, -1.0 }, Vec2{ 2.0, -1.0 }, Vec2{ 2.0, 1.0 }, Vec2{ -2.0, 1.0 } },
+		{ Vec2{ -1.5, -0.75 }, Vec2{ 1.5, -0.75 }, Vec2{ 1.5, 0.75 }, Vec2{ -1.5, 0.75 } },
+		{ Vec2{ -1.0, -0.5 }, Vec2{ 1.0, -0.5 }, Vec2{ 1.0, 0.5 }, Vec2{ -1.0, 0.5 } }
+	};
+	const Array<double> heights{ -1.0, 1.0, 4.0 };
+	const Vec2 uvScale{ 2.0, 0.5 };
+	const Vec2 uvOffset{ 0.25, -0.5 };
+	const Vec3 offset{ 3.0, 4.0, 5.0 };
+	const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
+	const Mat4x4 transform = Mat4x4::AffineTransform(
+		Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+	SUBCASE("Array overload appends directly and supports placement overloads")
+	{
+		const Mesh3D source = Mesh3D::Loft(sections, heights, uvScale, uvOffset);
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 4), (source.triangleCount() * 4));
+		REQUIRE(builder.addLoft(sections, heights, uvScale, uvOffset));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+		REQUIRE(builder.addLoft(sections, heights, offset));
+		REQUIRE(builder.addLoft(sections, heights, offset, rotation));
+		REQUIRE(builder.addLoft(sections, heights, uvScale, uvOffset, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(
+			Mesh3D::Loft(sections, heights), Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			Mesh3D::Loft(sections, heights),
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(source, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Span overload and transactional failure")
+	{
+		Array<std::span<const Vec2>> sectionViews(sections.size());
+		for (size_t i = 0; i < sections.size(); ++i)
+		{
+			sectionViews[i] = sections[i];
+		}
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addLoft(sectionViews, heights));
+		const Mesh3D expected = builder.getMesh();
+		CHECK_FALSE(builder.addLoft(sectionViews, std::array{ 0.0, 0.0, 1.0 }));
+		CHECK_FALSE(builder.addLoft(Array<Array<Vec2>>{}, Array<double>{}, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder::addBox")
 {
 	SUBCASE("Single box matches Mesh3D::Box")

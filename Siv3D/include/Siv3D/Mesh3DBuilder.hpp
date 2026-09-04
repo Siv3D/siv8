@@ -22,7 +22,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 複数の 3D 形状を 1 つの Mesh3D に直接生成するビルダー
-	/// @remark 各 add 関数は一時的な Mesh3D を作成せず、ビルダーが所有するメッシュへ頂点と三角形を追加します。
+	/// @remark 各形状生成関数は一時的な Mesh3D を作成せず、ビルダーが所有するメッシュへ頂点と三角形を追加します。
+	/// @remark `addMesh()` は、呼び出し側が用意した Mesh3D の内容をビルダーが所有するメッシュへコピーします。
 	/// @remark add 関数が失敗した場合、Fail レベルのエンジンログへ理由を出力し、既存のメッシュ内容は変更されません。
 	class Mesh3DBuilder
 	{
@@ -82,6 +83,39 @@ namespace s3d
 		/// @remark ビルダーが所有するストレージを再利用します。この関数を呼んだ後のビルダーの状態は規定されません。
 		[[nodiscard]]
 		Mesh3D build() && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addMesh
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 既存の 3D メッシュを追加します。
+		/// @param mesh 追加する 3D メッシュ
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 空または不正な `mesh`、もしくは追加後の頂点数が `Mesh3D::MaxVertexCount` を超える場合は失敗します。
+		/// @remark 失敗した場合、既存のメッシュ内容は変更されません。
+		bool addMesh(const Mesh3D& mesh);
+
+		/// @brief 平行移動した既存の 3D メッシュを追加します。
+		/// @param mesh 追加する 3D メッシュ
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addMesh(const Mesh3D& mesh, Vec3 offset);
+
+		/// @brief 回転および平行移動した既存の 3D メッシュを追加します。
+		/// @param mesh 追加する 3D メッシュ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addMesh(const Mesh3D& mesh, Vec3 offset, const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した既存の 3D メッシュを追加します。
+		/// @param mesh 追加する 3D メッシュ
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 変換時の法線、接線、および巻き順の規約は `Mesh3D::append(mesh, transform)` と同じです。
+		bool addMesh(const Mesh3D& mesh, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1758,6 +1792,175 @@ namespace s3d
 		/// @param transform 適用するアフィン変換行列
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addHeightField
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 格子状の高さデータから地形を追加します。
+		/// @param heights 各頂点の Y 座標を格納した高さデータ。幅と高さがそれぞれ 2 以上である必要があります。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 座標、UV 座標、法線、および接線の規約は `Mesh3D::HeightField()` と同じです。
+		bool addHeightField(
+			const Grid<float>& heights,
+			SizeF sizeXZ,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 平行移動した高さフィールドを追加します。
+		bool addHeightField(const Grid<float>& heights, SizeF sizeXZ, Vec3 offset);
+
+		/// @brief 回転および平行移動した高さフィールドを追加します。
+		bool addHeightField(
+			const Grid<float>& heights,
+			SizeF sizeXZ,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した高さフィールドを追加します。
+		bool addHeightField(const Grid<float>& heights, SizeF sizeXZ, const Mat4x4& transform);
+
+		/// @brief UV 変換と平行移動を適用した高さフィールドを追加します。
+		bool addHeightField(
+			const Grid<float>& heights,
+			SizeF sizeXZ,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset);
+
+		/// @brief UV 変換、回転、および平行移動を適用した高さフィールドを追加します。
+		bool addHeightField(
+			const Grid<float>& heights,
+			SizeF sizeXZ,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief UV 変換とアフィン変換を適用した高さフィールドを追加します。
+		bool addHeightField(
+			const Grid<float>& heights,
+			SizeF sizeXZ,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	addLoft
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 実行時に指定した複数の断面を高さ方向に接続した形状を追加します。
+		/// @param sections 各断面の頂点範囲
+		/// @param heights 各断面の Y 座標
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 断面、座標、端面、UV 座標、法線、および接線の規約は `Mesh3D::Loft()` と同じです。
+		bool addLoft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 平行移動した Loft 形状を追加します。
+		bool addLoft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec3 offset);
+
+		/// @brief 回転および平行移動した Loft 形状を追加します。
+		bool addLoft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した Loft 形状を追加します。
+		bool addLoft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			const Mat4x4& transform);
+
+		/// @brief UV 変換と平行移動を適用した Loft 形状を追加します。
+		bool addLoft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset);
+
+		/// @brief UV 変換、回転、および平行移動を適用した Loft 形状を追加します。
+		bool addLoft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief UV 変換とアフィン変換を適用した Loft 形状を追加します。
+		bool addLoft(
+			std::span<const std::span<const Vec2>> sections,
+			std::span<const double> heights,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			const Mat4x4& transform);
+
+		/// @brief 頂点配列で指定した複数の断面を高さ方向に接続した形状を追加します。
+		/// @remark 呼び出し時に各断面を参照する一時配列を内部で作成します。
+		bool addLoft(
+			const Array<Array<Vec2>>& sections,
+			std::span<const double> heights,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 平行移動した、頂点配列で指定する Loft 形状を追加します。
+		bool addLoft(const Array<Array<Vec2>>& sections, std::span<const double> heights, Vec3 offset);
+
+		/// @brief 回転および平行移動した、頂点配列で指定する Loft 形状を追加します。
+		bool addLoft(
+			const Array<Array<Vec2>>& sections,
+			std::span<const double> heights,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した、頂点配列で指定する Loft 形状を追加します。
+		bool addLoft(
+			const Array<Array<Vec2>>& sections,
+			std::span<const double> heights,
+			const Mat4x4& transform);
+
+		/// @brief UV 変換と平行移動を適用した、頂点配列で指定する Loft 形状を追加します。
+		bool addLoft(
+			const Array<Array<Vec2>>& sections,
+			std::span<const double> heights,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset);
+
+		/// @brief UV 変換、回転、および平行移動を適用した、頂点配列で指定する Loft 形状を追加します。
+		bool addLoft(
+			const Array<Array<Vec2>>& sections,
+			std::span<const double> heights,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief UV 変換とアフィン変換を適用した、頂点配列で指定する Loft 形状を追加します。
+		bool addLoft(
+			const Array<Array<Vec2>>& sections,
+			std::span<const double> heights,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//

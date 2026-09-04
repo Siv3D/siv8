@@ -83,6 +83,19 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static Array<std::span<const Vec2>> MakeSectionViews(
+			const Array<Array<Vec2>>& sections)
+		{
+			Array<std::span<const Vec2>> result(sections.size());
+			for (size_t i = 0; i < sections.size(); ++i)
+			{
+				result[i] = sections[i];
+			}
+
+			return result;
+		}
+
+		[[nodiscard]]
 		static bool ResizeForAddition(
 			Mesh3D& mesh,
 			const size_t addedVertexCount,
@@ -442,6 +455,56 @@ namespace s3d
 
 			return data;
 		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addMesh
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addMesh(const Mesh3D& mesh)
+	{
+		if (mesh.isEmpty())
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh must not be empty");
+		}
+
+		if (not m_mesh.append(mesh))
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
+		}
+
+		return true;
+	}
+
+	bool Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Vec3 offset)
+	{
+		return addMesh(mesh, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addMesh(
+		const Mesh3D& mesh,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addMesh(mesh,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Mat4x4& transform)
+	{
+		if (mesh.isEmpty())
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh must not be empty");
+		}
+
+		if (not m_mesh.append(mesh, transform))
+		{
+			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
+		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3837,6 +3900,236 @@ namespace s3d
 
 		TransformAddedVertices(m_mesh, vertexOffset, transform);
 		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addHeightField
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addHeightField(
+		const Grid<float>& heights,
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Mesh3DDetail::AppendHeightField(m_mesh, heights, sizeXZ, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addHeightField(
+		const Grid<float>& heights,
+		const SizeF sizeXZ,
+		const Vec3 offset)
+	{
+		return addHeightField(heights, sizeXZ, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addHeightField(
+		const Grid<float>& heights,
+		const SizeF sizeXZ,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addHeightField(heights, sizeXZ,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addHeightField(
+		const Grid<float>& heights,
+		const SizeF sizeXZ,
+		const Mat4x4& transform)
+	{
+		return addHeightField(
+			heights, sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+	}
+
+	bool Mesh3DBuilder::addHeightField(
+		const Grid<float>& heights,
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addHeightField(
+			heights, sizeXZ, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addHeightField(
+		const Grid<float>& heights,
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addHeightField(heights, sizeXZ, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addHeightField(
+		const Grid<float>& heights,
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addHeightField(heights, sizeXZ, uvScale, uvOffset))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addLoft
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addLoft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Mesh3DDetail::AppendLoft(m_mesh, sections, heights, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Vec3 offset)
+	{
+		return addLoft(sections, heights, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addLoft(sections, heights,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Mat4x4& transform)
+	{
+		return addLoft(
+			sections, heights, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addLoft(
+			sections, heights, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addLoft(sections, heights, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const std::span<const std::span<const Vec2>> sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not addLoft(sections, heights, uvScale, uvOffset))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Vec3 offset)
+	{
+		return addLoft(MakeSectionViews(sections), heights, offset);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addLoft(MakeSectionViews(sections), heights, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Mat4x4& transform)
+	{
+		return addLoft(MakeSectionViews(sections), heights, transform);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset, offset);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addLoft(
+			MakeSectionViews(sections), heights, uvScale, uvOffset, offset, rotation);
+	}
+
+	bool Mesh3DBuilder::addLoft(
+		const Array<Array<Vec2>>& sections,
+		const std::span<const double> heights,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset, transform);
 	}
 
 	////////////////////////////////////////////////////////////////

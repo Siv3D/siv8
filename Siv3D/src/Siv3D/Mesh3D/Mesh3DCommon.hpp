@@ -360,4 +360,20 @@ namespace s3d::Mesh3DDetail
 		const Vec3* initialXAxis,
 		Vec2 uvScale,
 		Vec2 uvOffset);
+
+	[[nodiscard]]
+	bool AppendHeightField(
+		Mesh3D& mesh,
+		const Grid<float>& heights,
+		SizeF sizeXZ,
+		Vec2 uvScale,
+		Vec2 uvOffset);
+
+	[[nodiscard]]
+	bool AppendLoft(
+		Mesh3D& mesh,
+		std::span<const std::span<const Vec2>> sections,
+		std::span<const double> heights,
+		Vec2 uvScale,
+		Vec2 uvOffset);
 }
