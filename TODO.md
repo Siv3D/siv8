@@ -48,6 +48,30 @@
 
 ## `Siv3D/include/Siv3D/Mesh3D.hpp`
 
+### 座標規約とドキュメント
+
+- `Polygon` の外周・穴、および `Loft()` の断面の winding を、画面上の「時計回り」だけでなく格納された `(x, y)` に対する符号付き面積で定義する。
+  - 現行契約は `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が外周と Loft 断面では正、穴では負。
+  - `Polygon.hpp`、Mesh3D のクラス説明、各 Loft overload に、同じ定義と有効な最小例を重複しすぎない形で配置する。
+- 部分 `Revolve()` の正の角度が `+X` から `+Z`、`Cylindrical::phi` / `Spherical::phi` / `Quaternion::RotateY()` が `+X` から `-Z` である不一致を、v0.8 の API 固定前に再検討する。
+  - どちらかへ統一するか、現状を維持して相互参照を追加するかを決める。
+  - 変更する場合は winding、端面、接線、U 座標、既存の完全回転 overload への影響をまとめて確認する。
+- `Revolve()`、`Loft()`、`Sweep()` などの点列入力について、連続する同一点が無効である契約を揃えて記述し、未検証の経路には失敗テストを追加する。
+  - 現行 `Revolve()` は float 変換後に長さ 0 となる profile segment を拒否しており、縮退三角形を生成する仕様ではない。
+
+### Builder の追加範囲と部品情報
+
+- 直前または任意区間の add で追加された頂点・三角形の範囲を取得する API が必要か評価する。
+  - 用途は部品単位の検査、選択、材質割り当て、OBJ 等への group / object 情報の引き渡し。
+  - 現状は add 前後の `getMesh().vertexCount()` / `triangleCount()` の差分で取得できるが、利用者ごとに同じラッパが必要になる。
+  - 各 add の戻り値変更、stateful な `lastAdded*()`、checkpoint / scope、builder と別のモデル層のいずれが適切かは未決定とする。
+
+### 利用例
+
+- 2D 立面図を world XY、押し出し方向を world Z として使う、`Extrude()` + `Quaternion::RotateX(90_deg)` の例を追加する。
+- `HeightField()` の `[y][x]` ループ、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
+- `Cylindrical` / `Spherical` の配置例、および接合部には `Box`、露出部には `ChamferedBox` / `RoundedBox` を使う指針は、サンプル拡充時の候補とする。
+
 ### 優先する生成 API
 
 1. 経路点ごとに半径を指定する Variable Tube を追加する。

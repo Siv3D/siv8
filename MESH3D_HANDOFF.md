@@ -34,6 +34,18 @@
 
 正確な overload、既定値、端面、巻き順、UV、異常入力の契約はヘッダを参照する。
 
+## 実利用レビューからの申し送り
+
+初見の利用者が 4 種類の構造物を作成・検査した記録が [`Claude outputs/REPORT.md`](<Claude outputs/REPORT.md>) にある。最終生成物では、生成失敗、z-fighting、部品間の隙間、縮退三角形、裏返り、意図しない孤立部品は検出されず、現在の builder とクラス冒頭の Doxygen は実用上よく機能した。
+
+次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。特に次の 3 点は、形状追加とは独立して検討できる。
+
+- `Polygon` / `Loft` の winding を「時計回り」だけでなく符号付き面積と最小例で一意に説明する。
+- 部分 `Revolve` の正角方向が `Cylindrical` / `Spherical` / `Quaternion::RotateY()` と逆である点を、統一するか明示的な差として残すか決める。
+- `Mesh3DBuilder` で追加した部品の頂点・三角形範囲を、検査や export 用に低コストで取得できる設計が必要か評価する。
+
+報告中の `Quaternion::RotateX/Y/Z` の説明不足は現行 Doxygen ですでに解消済みである。また、現行 `Revolve` は連続する同一点を縮退面として生成せず、生成失敗として拒否する。この点は実装不具合として扱わず、入力契約の説明とテストの不足として評価する。
+
 ## 次の候補と保留事項
 
 - 次の形状生成候補は Variable Tube、その次に Variable Sweep。詳細は `TODO.md` に集約する。
