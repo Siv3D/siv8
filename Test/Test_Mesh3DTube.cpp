@@ -22,6 +22,7 @@ namespace
 		static_cast<Mesh3D (*)(std::span<const Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
+		static_cast<bool (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3)>(&Mesh3DBuilder::addTube);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, const Quaternion&)>(&Mesh3DBuilder::addTube);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, const Mat4x4&)>(&Mesh3DBuilder::addTube);
@@ -43,6 +44,21 @@ TEST_CASE("Mesh3D::Tube initializer list")
 		}, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }),
 		Mesh3D::Tube(path, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }));
 	CHECK(Mesh3D::Tube({}, 0.5).isEmpty());
+}
+
+TEST_CASE("Mesh3DBuilder::addTube initializer list")
+{
+	const Array<Vec3> path{
+		{ 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 2.0, 1.0 }
+	};
+	const Vec2 uvScale{ 2.0, 0.25 };
+	const Vec2 uvOffset{ 0.1, 0.2 };
+	Mesh3DBuilder builder;
+	REQUIRE(builder.addTube({
+		{ 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 2.0, 1.0 }
+	}, 0.5, 8, uvScale, uvOffset));
+	CheckMeshDataEqual(builder.getMesh(), Mesh3D::Tube(path, 0.5, 8, uvScale, uvOffset));
+	CHECK_FALSE(builder.addTube({}, 0.5));
 }
 
 TEST_CASE("Mesh3DBuilder::addTube")

@@ -2123,6 +2123,13 @@ namespace s3d
 	}
 
 	bool Mesh3DBuilder::addRevolve(
+		const std::initializer_list<Vec2> profile,
+		const uint32 segments)
+	{
+		return addRevolve(std::span<const Vec2>{ profile.begin(), profile.size() }, segments);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const Vec3 offset)
@@ -2161,6 +2168,15 @@ namespace s3d
 		const double smoothingAngle)
 	{
 		return Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, smoothingAngle);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::initializer_list<Vec2> profile,
+		const uint32 segments,
+		const double smoothingAngle)
+	{
+		return addRevolve(
+			std::span<const Vec2>{ profile.begin(), profile.size() }, segments, smoothingAngle);
 	}
 
 	bool Mesh3DBuilder::addRevolve(
@@ -2210,6 +2226,18 @@ namespace s3d
 	{
 		return Mesh3DDetail::AppendRevolve(
 			m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::initializer_list<Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const CloseEnds closeEnds)
+	{
+		return addRevolve(
+			std::span<const Vec2>{ profile.begin(), profile.size() },
+			startAngle, sweepAngle, segments, closeEnds);
 	}
 
 	bool Mesh3DBuilder::addRevolve(
@@ -2282,6 +2310,19 @@ namespace s3d
 			segments,
 			smoothingAngle,
 			closeEnds);
+	}
+
+	bool Mesh3DBuilder::addRevolve(
+		const std::initializer_list<Vec2> profile,
+		const double startAngle,
+		const double sweepAngle,
+		const uint32 segments,
+		const double smoothingAngle,
+		const CloseEnds closeEnds)
+	{
+		return addRevolve(
+			std::span<const Vec2>{ profile.begin(), profile.size() },
+			startAngle, sweepAngle, segments, smoothingAngle, closeEnds);
 	}
 
 	bool Mesh3DBuilder::addRevolve(
@@ -2363,6 +2404,18 @@ namespace s3d
 		const Vec2 uvOffset)
 	{
 		return Mesh3DDetail::AppendTube(m_mesh, path, radius, sides, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addTube(
+		const std::initializer_list<Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return addTube(
+			std::span<const Vec3>{ path.begin(), path.size() },
+			radius, sides, uvScale, uvOffset);
 	}
 
 	bool Mesh3DBuilder::addTube(
@@ -2456,6 +2509,16 @@ namespace s3d
 
 	bool Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return addSweep(
+			crossSection, std::span<const Vec3>{ path.begin(), path.size() }, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec3 offset)
 	{
@@ -2531,6 +2594,18 @@ namespace s3d
 	{
 		return Mesh3DDetail::AppendSweep(
 			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return addSweep(
+			crossSection, std::span<const Vec3>{ path.begin(), path.size() },
+			initialXAxis, uvScale, uvOffset);
 	}
 
 	bool Mesh3DBuilder::addSweep(

@@ -1022,6 +1022,13 @@ namespace s3d
 		/// @remark 座標、開口、UV 座標、および法線の規約は `Mesh3D::Revolve()` と同じです。
 		bool addRevolve(std::span<const Vec2> profile, uint32 segments = 32);
 
+		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに一周回転させた形状を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param segments 回転方向の分割数。3 以上である必要があります。
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark プロファイル、開口、UV 座標、および法線の規約は `std::span` を受け取るオーバーロードと同じです。
+		bool addRevolve(std::initializer_list<Vec2> profile, uint32 segments = 32);
+
 		/// @brief 平行移動した回転体を追加します。
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数
@@ -1059,6 +1066,16 @@ namespace s3d
 		/// @remark 座標、開口、UV 座標、および法線の規約は `Mesh3D::Revolve()` と同じです。
 		bool addRevolve(
 			std::span<const Vec2> profile,
+			uint32 segments,
+			double smoothingAngle);
+
+		/// @brief 初期化子リストで指定した回転体を追加し、プロファイル方向の法線を角度に応じて補間します。
+		/// @param profile 回転させるプロファイル
+		/// @param segments 回転方向の分割数。3 以上である必要があります。
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::initializer_list<Vec2> profile,
 			uint32 segments,
 			double smoothingAngle);
 
@@ -1110,6 +1127,20 @@ namespace s3d
 		/// @remark 角度、端面、UV 座標、および法線の規約は角度を指定する `Mesh3D::Revolve()` と同じです。
 		bool addRevolve(
 			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた形状を追加します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::initializer_list<Vec2> profile,
 			double startAngle,
 			double sweepAngle,
 			uint32 segments,
@@ -1175,6 +1206,22 @@ namespace s3d
 		/// @return 追加に成功した場合 true, それ以外の場合は false
 		bool addRevolve(
 			std::span<const Vec2> profile,
+			double startAngle,
+			double sweepAngle,
+			uint32 segments,
+			double smoothingAngle,
+			CloseEnds closeEnds = CloseEnds::No);
+
+		/// @brief 初期化子リストで指定した部分回転体を追加し、プロファイル方向の法線を角度に応じて補間します。
+		/// @param profile 回転させるプロファイル
+		/// @param startAngle 回転を開始する角度（ラジアン）
+		/// @param sweepAngle 回転する角度（ラジアン）
+		/// @param segments 回転方向の分割数
+		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addRevolve(
+			std::initializer_list<Vec2> profile,
 			double startAngle,
 			double sweepAngle,
 			uint32 segments,
@@ -1253,6 +1300,20 @@ namespace s3d
 		/// @remark 経路、端面、UV 座標、および法線の規約は `Mesh3D::Tube()` と同じです。
 		bool addTube(
 			std::span<const Vec3> path,
+			double radius,
+			uint32 sides = 12,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 初期化子リストで指定した 3D 経路に沿う一定半径のチューブを追加します。
+		/// @param path チューブの中心を通る開いた経路。2 点以上である必要があります。
+		/// @param radius チューブの半径
+		/// @param sides チューブ断面の分割数。3 以上である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addTube(
+			std::initializer_list<Vec3> path,
 			double radius,
 			uint32 sides = 12,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
@@ -1361,6 +1422,18 @@ namespace s3d
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
+		/// @brief 初期化子リストで指定した 3D 経路に沿わせた Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
 		/// @brief 平行移動した Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面
 		/// @param path 断面の中心を通る開いた経路
@@ -1445,6 +1518,20 @@ namespace s3d
 		bool addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 初期化子リストで指定した経路へ、開始時の断面の X 軸方向を指定して Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });

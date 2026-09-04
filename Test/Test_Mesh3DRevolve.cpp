@@ -27,18 +27,22 @@ namespace
 		static_cast<Mesh3D (*)(std::span<const Vec2>, double, double, uint32, double, CloseEnds)>(&Mesh3D::Revolve);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, double, double, uint32, double, CloseEnds)>(&Mesh3D::Revolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::initializer_list<Vec2>, uint32)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, Vec3)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, Vec3, const Quaternion&)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, const Mat4x4&)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::initializer_list<Vec2>, uint32, double)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, Vec3)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, uint32, double, const Mat4x4&)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::initializer_list<Vec2>, double, double, uint32, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, Vec3, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, Vec3, const Quaternion&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, const Mat4x4&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, CloseEnds)>(&Mesh3DBuilder::addRevolve);
+		static_cast<bool (Mesh3DBuilder::*)(std::initializer_list<Vec2>, double, double, uint32, double, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, Vec3, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, Vec3, const Quaternion&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
 		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec2>, double, double, uint32, double, const Mat4x4&, CloseEnds)>(&Mesh3DBuilder::addRevolve);
@@ -56,6 +60,30 @@ TEST_CASE("Mesh3D::Revolve initializer list")
 		Mesh3D::Revolve({ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } }, 12, Math::QuarterPi),
 		Mesh3D::Revolve(profile, 12, Math::QuarterPi));
 	CHECK(Mesh3D::Revolve({}, 12).isEmpty());
+}
+
+TEST_CASE("Mesh3DBuilder::addRevolve initializer list")
+{
+	const Array<Vec2> profile{ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } };
+	Mesh3DBuilder builder;
+	REQUIRE(builder.addRevolve(
+		{ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } }, 12));
+	REQUIRE(builder.addRevolve(
+		{ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } }, 12, Math::QuarterPi));
+	REQUIRE(builder.addRevolve(
+		{ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } },
+		0.25, Math::Pi, 6, CloseEnds::Yes));
+	REQUIRE(builder.addRevolve(
+		{ { 0.0, -1.0 }, { 2.0, -1.0 }, { 1.0, 2.0 } },
+		0.25, Math::Pi, 6, Math::QuarterPi, CloseEnds::Yes));
+
+	Mesh3D expected = Mesh3D::Revolve(profile, 12);
+	REQUIRE(expected.append(Mesh3D::Revolve(profile, 12, Math::QuarterPi)));
+	REQUIRE(expected.append(Mesh3D::Revolve(profile, 0.25, Math::Pi, 6, CloseEnds::Yes)));
+	REQUIRE(expected.append(Mesh3D::Revolve(
+		profile, 0.25, Math::Pi, 6, Math::QuarterPi, CloseEnds::Yes)));
+	CheckMeshDataEqual(builder.getMesh(), expected);
+	CHECK_FALSE(builder.addRevolve({}, 12));
 }
 
 TEST_CASE("Mesh3D::Revolve open cylinder side")
