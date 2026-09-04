@@ -20,9 +20,23 @@ namespace
 	static_assert(requires
 	{
 		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
-		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Vec3, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
 		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
-		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Vec3, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec3)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3, const Quaternion&)>(&Mesh3DBuilder::addSweep);
+		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, const Mat4x4&)>(&Mesh3DBuilder::addSweep);
 	});
 
 }
@@ -46,9 +60,118 @@ TEST_CASE("Mesh3D::Sweep initializer list")
 	CheckMeshDataEqual(
 		Mesh3D::Sweep(crossSection, {
 			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
-		}, Vec3::UnitX(), uvScale, uvOffset),
-		Mesh3D::Sweep(crossSection, path, Vec3::UnitX(), uvScale, uvOffset));
+		}, Arg::initialXAxis = Vec3::UnitX(), uvScale, uvOffset),
+		Mesh3D::Sweep(crossSection, path, Arg::initialXAxis = Vec3::UnitX(), uvScale, uvOffset));
 	CHECK(Mesh3D::Sweep(crossSection, {}).isEmpty());
+}
+
+TEST_CASE("Mesh3DBuilder::addSweep")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -0.5, -0.25 }, { 0.5, -0.25 }, { 0.5, 0.25 }, { -0.5, 0.25 }
+	} };
+	const Array<Vec3> path{
+		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+	};
+	const Vec2 uvScale{ 2.0, 0.25 };
+	const Vec2 uvOffset{ 0.1, 0.2 };
+	const auto initialXAxis = (Arg::initialXAxis = Vec3::UnitX());
+	const Mesh3D automatic = Mesh3D::Sweep(crossSection, path);
+	const Mesh3D automaticUV = Mesh3D::Sweep(crossSection, path, uvScale, uvOffset);
+	const Mesh3D oriented = Mesh3D::Sweep(crossSection, path, initialXAxis);
+	const Mesh3D orientedUV = Mesh3D::Sweep(
+		crossSection, path, initialXAxis, uvScale, uvOffset);
+
+	SUBCASE("Direct append reuses reserved storage")
+	{
+		Mesh3DBuilder builder;
+		builder.reserve((automaticUV.vertexCount() * 2), (automaticUV.triangleCount() * 2));
+		REQUIRE(builder.addSweep(crossSection, path, uvScale, uvOffset));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+
+		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
+		REQUIRE(builder.addSweep(crossSection, path, uvScale, uvOffset, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = automaticUV;
+		REQUIRE(expected.append(automaticUV, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Automatic-frame transform overloads")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addSweep(crossSection, path, offset));
+		REQUIRE(builder.addSweep(crossSection, path, offset, rotation));
+		REQUIRE(builder.addSweep(crossSection, path, transform));
+		REQUIRE(builder.addSweep(crossSection, path, uvScale, uvOffset, offset));
+		REQUIRE(builder.addSweep(
+			crossSection, path, uvScale, uvOffset, offset, rotation));
+		REQUIRE(builder.addSweep(crossSection, path, uvScale, uvOffset, transform));
+
+		Mesh3D expected;
+		REQUIRE(expected.append(automatic, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(automatic,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(automatic, transform));
+		REQUIRE(expected.append(automaticUV, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(automaticUV,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(automaticUV, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Named initial-axis transform overloads")
+	{
+		const Vec3 offset{ 3.0, 4.0, 5.0 };
+		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+		const Mat4x4 transform = Mat4x4::AffineTransform(
+			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addSweep(crossSection, path, initialXAxis));
+		REQUIRE(builder.addSweep(crossSection, path, initialXAxis, offset));
+		REQUIRE(builder.addSweep(crossSection, path, initialXAxis, offset, rotation));
+		REQUIRE(builder.addSweep(crossSection, path, initialXAxis, transform));
+		REQUIRE(builder.addSweep(
+			crossSection, path, initialXAxis, uvScale, uvOffset, offset));
+		REQUIRE(builder.addSweep(
+			crossSection, path, initialXAxis, uvScale, uvOffset, offset, rotation));
+		REQUIRE(builder.addSweep(
+			crossSection, path, initialXAxis, uvScale, uvOffset, transform));
+
+		Mesh3D expected = oriented;
+		REQUIRE(expected.append(oriented, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(oriented,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(oriented, transform));
+		REQUIRE(expected.append(orientedUV, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(orientedUV,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(orientedUV, transform));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addSweep(Polygon{}, path));
+		CHECK_FALSE(builder.addSweep(
+			crossSection, {}, Arg::initialXAxis = Vec3::UnitX()));
+		CHECK_FALSE(builder.addSweep(
+			crossSection, path, Arg::initialXAxis = Vec3::UnitY()));
+		CheckMeshDataEqual(builder.getMesh(), expected);
+	}
 }
 
 TEST_CASE("Mesh3D::Sweep rectangle and UV repeat")
@@ -60,7 +183,7 @@ TEST_CASE("Mesh3D::Sweep rectangle and UV repeat")
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
 	const Mesh3D mesh = Mesh3D::Sweep(
-		crossSection, path, Vec3::UnitX(), uvScale, uvOffset);
+		crossSection, path, Arg::initialXAxis = Vec3::UnitX(), uvScale, uvOffset);
 	const size_t capVertexCount = (crossSection.vertices().size() * 2);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
@@ -96,7 +219,8 @@ TEST_CASE("Mesh3D::Sweep bent non-planar path")
 		{ 1.0, 3.0, 1.0 },
 		{ 2.0, 3.0, 2.0 }
 	};
-	const Mesh3D mesh = Mesh3D::Sweep(crossSection, path, Vec3::UnitX());
+	const Mesh3D mesh = Mesh3D::Sweep(
+		crossSection, path, Arg::initialXAxis = Vec3::UnitX());
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 40 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 28 });
@@ -120,7 +244,8 @@ TEST_CASE("Mesh3D::Sweep polygon with a hole")
 		} }
 	};
 	const Array<Vec3> path{ { 0.0, 0.0, 0.0 }, { 4.0, 0.0, 0.0 } };
-	const Mesh3D mesh = Mesh3D::Sweep(crossSection, path, Vec3::UnitY());
+	const Mesh3D mesh = Mesh3D::Sweep(
+		crossSection, path, Arg::initialXAxis = Vec3::UnitY());
 	const size_t edgeCount = (crossSection.outer().size() + crossSection.inners()[0].size());
 
 	CHECK_EQ(mesh.vertexCount(), ((crossSection.vertices().size() * 2) + (edgeCount * 4)));
@@ -138,8 +263,10 @@ TEST_CASE("Mesh3D::Sweep initial orientation")
 		{ -2.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 1.0 }, { -2.0, 1.0 }
 	} };
 	const Array<Vec3> path{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 3.0 } };
-	const Mesh3D xOriented = Mesh3D::Sweep(crossSection, path, Vec3::UnitX());
-	const Mesh3D yOriented = Mesh3D::Sweep(crossSection, path, Vec3::UnitY());
+	const Mesh3D xOriented = Mesh3D::Sweep(
+		crossSection, path, Arg::initialXAxis = Vec3::UnitX());
+	const Mesh3D yOriented = Mesh3D::Sweep(
+		crossSection, path, Arg::initialXAxis = Vec3::UnitY());
 
 	CheckMeshGeometry(xOriented);
 	CheckMeshGeometry(yOriented);
@@ -163,10 +290,13 @@ TEST_CASE("Mesh3D::Sweep invalid arguments")
 		Array<Vec3>{ { 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 } }).isEmpty());
 	CHECK(Mesh3D::Sweep(crossSection,
 		Array<Vec3>{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 0.0, 0.0, 0.0 } }).isEmpty());
-	CHECK(Mesh3D::Sweep(crossSection, validPath, Vec3::Zero()).isEmpty());
-	CHECK(Mesh3D::Sweep(crossSection, validPath, Vec3::UnitY()).isEmpty());
+	CHECK(Mesh3D::Sweep(
+		crossSection, validPath, Arg::initialXAxis = Vec3::Zero()).isEmpty());
+	CHECK(Mesh3D::Sweep(
+		crossSection, validPath, Arg::initialXAxis = Vec3::UnitY()).isEmpty());
 	CHECK(Mesh3D::Sweep(crossSection, validPath,
-		Vec3{ std::numeric_limits<double>::infinity(), 0.0, 0.0 }).isEmpty());
+		Arg::initialXAxis = Vec3{
+			std::numeric_limits<double>::infinity(), 0.0, 0.0 }).isEmpty());
 	CHECK(Mesh3D::Sweep(crossSection, validPath,
 		Vec2{ std::numeric_limits<double>::quiet_NaN(), 1.0 }).isEmpty());
 	CHECK(Mesh3D::Sweep(crossSection, validPath,

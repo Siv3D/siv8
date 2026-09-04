@@ -2377,6 +2377,176 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	addSweep
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Mesh3DDetail::AppendSweep(
+			m_mesh, crossSection, path, nullptr, uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec3 offset)
+	{
+		return addSweep(crossSection, path, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addSweep(crossSection, path,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Mat4x4& transform)
+	{
+		return addSweep(
+			crossSection, path, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addSweep(
+			crossSection, path, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addSweep(crossSection, path, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not Mesh3DDetail::AppendSweep(
+			m_mesh, crossSection, path, nullptr, uvScale, uvOffset))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return Mesh3DDetail::AppendSweep(
+			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec3 offset)
+	{
+		return addSweep(
+			crossSection, path, initialXAxis, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addSweep(crossSection, path, initialXAxis,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Mat4x4& transform)
+	{
+		return addSweep(crossSection, path, initialXAxis,
+			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset)
+	{
+		return addSweep(crossSection, path, initialXAxis, uvScale, uvOffset,
+			Mat4x4::Translate(Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addSweep(crossSection, path, initialXAxis, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	bool Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform)
+	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		if (not Mesh3DDetail::AppendSweep(
+			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset))
+		{
+			return false;
+		}
+
+		TransformAddedVertices(m_mesh, vertexOffset, transform);
+		return true;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	addTriangularPrism
 	//
 	////////////////////////////////////////////////////////////////

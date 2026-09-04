@@ -351,4 +351,13 @@ namespace s3d::Mesh3DDetail
 		uint32 sides,
 		Vec2 uvScale,
 		Vec2 uvOffset);
+
+	[[nodiscard]]
+	bool AppendSweep(
+		Mesh3D& mesh,
+		const Polygon& crossSection,
+		std::span<const Vec3> path,
+		const Vec3* initialXAxis,
+		Vec2 uvScale,
+		Vec2 uvOffset);
 }

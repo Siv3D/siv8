@@ -1310,6 +1310,201 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addSweep
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2D 断面を 3D 経路に沿わせた形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark 断面、経路、端面、UV 座標、および法線の規約は `Mesh3D::Sweep()` と同じです。
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 平行移動した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset);
+
+		/// @brief 回転および平行移動した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			const Mat4x4& transform);
+
+		/// @brief UV 変換と平行移動を適用した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset);
+
+		/// @brief UV 変換、回転、および平行移動を適用した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief UV 変換とアフィン変換を適用した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			const Mat4x4& transform);
+
+		/// @brief 開始時の断面の X 軸方向を指定して Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @remark `initialXAxis` は最初の経路方向に垂直な平面へ投影して使用します。
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 初期 X 軸方向を指定し、平行移動した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			Vec3 offset);
+
+		/// @brief 初期 X 軸方向を指定し、回転および平行移動した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief 初期 X 軸方向を指定し、アフィン変換を適用した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			const Mat4x4& transform);
+
+		/// @brief 初期 X 軸方向、UV 変換、および平行移動を指定して Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset);
+
+		/// @brief 初期 X 軸方向、UV 変換、回転、および平行移動を指定して Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief 初期 X 軸方向、UV 変換、およびアフィン変換を指定して Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る開いた経路
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param transform 適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, それ以外の場合は false
+		bool addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			Arg::initialXAxis_<Vec3> initialXAxis,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addTetrahedron
 		//
 		////////////////////////////////////////////////////////////////

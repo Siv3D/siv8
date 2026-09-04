@@ -21,6 +21,7 @@
 # include "Grid.hpp"
 # include "IWriter.hpp"
 # include "Material.hpp"
+# include "PredefinedNamedParameter.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
@@ -654,27 +655,27 @@ namespace s3d
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
-		/// @brief 開始時の断面方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
+		/// @brief 開始時の断面の X 軸方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
-		/// @param initialNormal 開始時に断面の X 軸を向ける方向。最初の経路方向に垂直な平面へ投影して使用します。
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向。最初の経路方向に垂直な平面へ投影して使用します。
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `initialNormal` がゼロベクトル、非有限値、または最初の経路方向と平行な場合は空の 3D メッシュを返します。
+		/// @remark `initialXAxis` がゼロベクトル、非有限値、または最初の経路方向と平行な場合は空の 3D メッシュを返します。
 		/// @remark 断面、経路、および UV 座標の規約は自動方向版の `Sweep()` と同じです。
 		[[nodiscard]]
 		static Mesh3D Sweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
-			Vec3 initialNormal,
+			Arg::initialXAxis_<Vec3> initialXAxis,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
-		/// @brief 開始時の断面方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
+		/// @brief 開始時の断面の X 軸方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る開いた経路。2 点以上である必要があります。
-		/// @param initialNormal 開始時に断面の X 軸を向ける方向。最初の経路方向に垂直な平面へ投影して使用します。
+		/// @param initialXAxis 開始時に断面の X 軸を向ける方向。最初の経路方向に垂直な平面へ投影して使用します。
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
@@ -683,7 +684,7 @@ namespace s3d
 		static Mesh3D Sweep(
 			const Polygon& crossSection,
 			std::initializer_list<Vec3> path,
-			Vec3 initialNormal,
+			Arg::initialXAxis_<Vec3> initialXAxis,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 

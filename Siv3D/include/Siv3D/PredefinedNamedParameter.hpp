@@ -34,6 +34,7 @@ namespace s3d::Arg
 	SIV3D_NAMED_PARAMETER(theta);
 	SIV3D_NAMED_PARAMETER(angle);
 	SIV3D_NAMED_PARAMETER(offset);
+	SIV3D_NAMED_PARAMETER(initialXAxis);
 
 	SIV3D_NAMED_PARAMETER(sampleRate);
 }

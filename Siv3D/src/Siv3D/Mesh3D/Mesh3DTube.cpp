@@ -126,7 +126,7 @@ namespace s3d
 		static bool MakePathData(
 			const std::span<const Vec3> path,
 			const double maxDistanceFromPath,
-			const Vec3* const initialNormal,
+			const Vec3* const initialXAxis,
 			PathData& result)
 		{
 			if ((path.size() < 2)
@@ -180,16 +180,16 @@ namespace s3d
 
 			result.frames.resize(path.size());
 			result.frames.front().tangent = segmentTangents.front();
-			if (initialNormal)
+			if (initialXAxis)
 			{
-				if (not IsFloatRepresentable(*initialNormal))
+				if (not IsFloatRepresentable(*initialXAxis))
 				{
 					return false;
 				}
 
-				result.frames.front().normal = (*initialNormal
+				result.frames.front().normal = (*initialXAxis
 					- (result.frames.front().tangent
-						* initialNormal->dot(result.frames.front().tangent)));
+						* initialXAxis->dot(result.frames.front().tangent)));
 				const double normalLengthSq = result.frames.front().normal.lengthSq();
 				if ((not std::isfinite(normalLengthSq))
 					|| (normalLengthSq == 0.0))
@@ -486,10 +486,11 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
-		static Mesh3D MakeSweep(
+		static bool AppendSweepImpl(
+			Mesh3D& mesh,
 			const Polygon& crossSection,
 			const std::span<const Vec3> path,
-			const Vec3* const initialNormal,
+			const Vec3* const initialXAxis,
 			const Vec2 _uvScale,
 			const Vec2 _uvOffset)
 		{
@@ -498,7 +499,7 @@ namespace s3d
 				|| (not IsFloatRepresentable(_uvScale))
 				|| (not IsFloatRepresentable(_uvOffset)))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The cross section, path, or UV transform is invalid");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The cross section, path, or UV transform is invalid");
 			}
 
 			const auto& capVertices = crossSection.vertices();
@@ -506,7 +507,7 @@ namespace s3d
 			size_t validCapTriangleCount;
 			if (not ValidateCapTriangles<true>(capVertices, capIndices, validCapTriangleCount))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The cross-section cap triangulation is invalid");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The cross-section cap triangulation is invalid");
 			}
 
 			size_t edgeCount = crossSection.outer().size();
@@ -514,21 +515,21 @@ namespace s3d
 			{
 				if (not CheckedAdd(edgeCount, inner.size(), edgeCount))
 				{
-					return GenerationFailed("Mesh3D::Sweep(): The cross-section edge count exceeds the supported range");
+					return GenerationFailed<bool>("Mesh3D::Sweep(): The cross-section edge count exceeds the supported range");
 				}
 			}
 
 			size_t ringCount;
 			if (not CheckedAdd(crossSection.inners().size(), 1, ringCount))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The cross-section ring count exceeds the supported range");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The cross-section ring count exceeds the supported range");
 			}
 
 			Array<double> ringPerimeters(ringCount);
 			if (ValidateRing(std::span<const Vec2>{ crossSection.outer() }, true, ringPerimeters[0])
 				!= RingValidationResult::Valid)
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The cross-section outer ring is invalid");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The cross-section outer ring is invalid");
 			}
 
 			for (size_t i = 0; i < crossSection.inners().size(); ++i)
@@ -536,7 +537,7 @@ namespace s3d
 				if (ValidateRing(std::span<const Vec2>{ crossSection.inners()[i] }, false, ringPerimeters[i + 1])
 					!= RingValidationResult::Valid)
 				{
-					return GenerationFailed("Mesh3D::Sweep(): A cross-section inner ring is invalid");
+					return GenerationFailed<bool>("Mesh3D::Sweep(): A cross-section inner ring is invalid");
 				}
 			}
 
@@ -561,7 +562,7 @@ namespace s3d
 				|| (height <= 0.0)
 				|| (not IsFloatRepresentable(maxDistanceFromPath)))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The cross-section bounds or distance from the path is invalid");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The cross-section bounds or distance from the path is invalid");
 			}
 
 			size_t capVertexCount;
@@ -583,13 +584,13 @@ namespace s3d
 				|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
 				|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The generated mesh exceeds the supported size");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The generated mesh exceeds the supported size");
 			}
 
 			PathData pathData;
-			if (not MakePathData(path, maxDistanceFromPath, initialNormal, pathData))
+			if (not MakePathData(path, maxDistanceFromPath, initialXAxis, pathData))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The path or initial normal is invalid, or stable frames cannot be produced");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The path or initial X axis is invalid, or stable frames cannot be produced");
 			}
 
 			const double sideU0 = _uvOffset.x;
@@ -604,14 +605,32 @@ namespace s3d
 				|| (not IsFloatRepresentable(sideV1))
 				|| (not IsFloatRepresentable(capV1)))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): The generated UV coordinates exceed the float range");
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The generated UV coordinates exceed the float range");
 			}
 
 			const Float2 uvScale = _uvScale;
 			const Float2 uvOffset = _uvOffset;
-			Mesh3D mesh{ vertexCount, triangleCount };
-			const size_t startCapBase = 0;
-			const size_t endCapBase = capVertices.size();
+			const size_t vertexBase = mesh.vertices.size();
+			const size_t triangleBase = mesh.indices.size();
+			size_t newVertexCount;
+			size_t newTriangleCount;
+			if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
+				|| (Mesh3D::MaxVertexCount < newVertexCount)
+				|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+			{
+				return GenerationFailed<bool>("Mesh3D::Sweep(): The generated mesh exceeds the supported size");
+			}
+
+			mesh.vertices.resize(newVertexCount);
+			mesh.indices.resize(newTriangleCount);
+			const auto generationFailed = [&](const char* const message)
+			{
+				mesh.vertices.resize(vertexBase);
+				mesh.indices.resize(triangleBase);
+				return GenerationFailed<bool>(message);
+			};
+			const size_t startCapBase = vertexBase;
+			const size_t endCapBase = (vertexBase + capVertices.size());
 
 			for (size_t capIndex = 0; capIndex < 2; ++capIndex)
 			{
@@ -638,7 +657,7 @@ namespace s3d
 						+ (frame.normal * source.x)
 						+ (frame.binormal * source.y)), position))
 					{
-						return GenerationFailed("Mesh3D::Sweep(): A generated cap vertex exceeds the float range");
+						return generationFailed("Mesh3D::Sweep(): A generated cap vertex exceeds the float range");
 					}
 
 					const float u = static_cast<float>(
@@ -657,22 +676,22 @@ namespace s3d
 				}
 			}
 
-			TriangleIndex32* pTriangle = mesh.indices.data();
+			TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
 			ForEachValidCapTriangle(capVertices, capIndices, validCapTriangleCount,
 				[&](const TriangleIndex& source)
 			{
-				const uint32 i0 = source.i0;
-				const uint32 i1 = source.i1;
-				const uint32 i2 = source.i2;
+				const uint32 i0 = static_cast<uint32>(startCapBase + source.i0);
+				const uint32 i1 = static_cast<uint32>(startCapBase + source.i1);
+				const uint32 i2 = static_cast<uint32>(startCapBase + source.i2);
 				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
 				*pTriangle++ = TriangleIndex32{
-					static_cast<uint32>(endCapBase + i0),
-					static_cast<uint32>(endCapBase + i2),
-					static_cast<uint32>(endCapBase + i1)
+					static_cast<uint32>(endCapBase + source.i0),
+					static_cast<uint32>(endCapBase + source.i2),
+					static_cast<uint32>(endCapBase + source.i1)
 				};
 			});
 
-			size_t sideVertexOffset = capVertexCount;
+			size_t sideVertexOffset = (vertexBase + capVertexCount);
 			const auto writeRing = [&](const std::span<const Vec2> ring, const double perimeter)
 			{
 				double accumulatedLength = 0.0;
@@ -755,19 +774,30 @@ namespace s3d
 
 			if (not writeRing(crossSection.outer(), ringPerimeters[0]))
 			{
-				return GenerationFailed("Mesh3D::Sweep(): A generated outer-ring vertex exceeds the float range");
+				return generationFailed("Mesh3D::Sweep(): A generated outer-ring vertex exceeds the float range");
 			}
 
 			for (size_t i = 0; i < crossSection.inners().size(); ++i)
 			{
 				if (not writeRing(crossSection.inners()[i], ringPerimeters[i + 1]))
 				{
-					return GenerationFailed("Mesh3D::Sweep(): A generated inner-ring vertex exceeds the float range");
+					return generationFailed("Mesh3D::Sweep(): A generated inner-ring vertex exceeds the float range");
 				}
 			}
 
-			return mesh;
+			return true;
 		}
+	}
+
+	bool Mesh3DDetail::AppendSweep(
+		Mesh3D& mesh,
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec3* const initialXAxis,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return AppendSweepImpl(mesh, crossSection, path, initialXAxis, uvScale, uvOffset);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -782,7 +812,9 @@ namespace s3d
 		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
-		return MakeSweep(crossSection, path, nullptr, uvScale, uvOffset);
+		Mesh3DBuilder builder;
+		builder.addSweep(crossSection, path, uvScale, uvOffset);
+		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Sweep(
@@ -801,24 +833,26 @@ namespace s3d
 	Mesh3D Mesh3D::Sweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
-		const Vec3 initialNormal,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
 		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
-		return MakeSweep(crossSection, path, &initialNormal, uvScale, uvOffset);
+		Mesh3DBuilder builder;
+		builder.addSweep(crossSection, path, initialXAxis, uvScale, uvOffset);
+		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Sweep(
 		const Polygon& crossSection,
 		const std::initializer_list<Vec3> path,
-		const Vec3 initialNormal,
+		const Arg::initialXAxis_<Vec3> initialXAxis,
 		const Vec2 uvScale,
 		const Vec2 uvOffset)
 	{
 		return Sweep(
 			crossSection,
 			std::span<const Vec3>{ path.begin(), path.size() },
-			initialNormal,
+			initialXAxis,
 			uvScale,
 			uvOffset);
 	}
