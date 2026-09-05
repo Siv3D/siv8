@@ -21,14 +21,14 @@ namespace
 	{
 		static_cast<Mesh3D (*)(const Polygon&, double)>(&Mesh3D::Extrude);
 		static_cast<Mesh3D (*)(const Polygon&, double, double)>(&Mesh3D::Extrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double)>(&Mesh3DBuilder::addExtrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, Vec3)>(&Mesh3DBuilder::addExtrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double)>(&Mesh3DBuilder::addExtrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3)>(&Mesh3DBuilder::addExtrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
-		static_cast<bool (Mesh3DBuilder::*)(const Polygon&, double, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, Vec3)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
 	});
 
 }

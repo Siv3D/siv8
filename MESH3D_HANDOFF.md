@@ -20,7 +20,8 @@
 - factory と builder は内部の destination-writing generator を共有し、形状生成本体を二重実装しない。
 - 汎用 generator と、頻出形状向けの効率的な specialization を組み合わせる。建築部材名を無制限に増やさない。
 - 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
-- 生成失敗は理由を `LOG_FAIL` へ出力する。factory は空メッシュ、builder は `false` を返し、builder の既存内容は変更しない。
+- 生成失敗は理由を `LOG_FAIL` へ出力する。factory は空メッシュを返し、builder の既存内容は変更しない。
+- `Mesh3DBuilder` の全 add 関数は `Mesh3DAddResult` を返す。成功時は追加した頂点・三角形の連続範囲、失敗時は `InvalidArgument`、`InvalidGeometry`、`NumericRange`、`SizeLimit` に分類されたエラーを取得できる。
 
 ## 実装済みの主要機能
 
@@ -38,11 +39,12 @@
 
 初見の利用者が 4 種類の構造物を作成・検査した記録が [`Claude outputs/REPORT.md`](<Claude outputs/REPORT.md>) にある。最終生成物では、生成失敗、z-fighting、部品間の隙間、縮退三角形、裏返り、意図しない孤立部品は検出されず、現在の builder とクラス冒頭の Doxygen は実用上よく機能した。
 
-次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。特に次の 3 点は、形状追加とは独立して検討できる。
+次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。特に次の 2 点は、形状追加とは独立して検討できる。
 
 - `Polygon` / `Loft` の winding を「時計回り」だけでなく符号付き面積と最小例で一意に説明する。
 - 部分 `Revolve` の正角方向が `Cylindrical` / `Spherical` / `Quaternion::RotateY()` と逆である点を、統一するか明示的な差として残すか決める。
-- `Mesh3DBuilder` で追加した部品の頂点・三角形範囲を、検査や export 用に低コストで取得できる設計が必要か評価する。
+
+実利用レビューを起点に検討した `Mesh3DAddResult` は全 add 関数へ展開済みである。単発の追加範囲と失敗理由は取得できるため、次は名前、材質、階層を含む永続的な部品情報の所有先を検討する。
 
 報告中の `Quaternion::RotateX/Y/Z` の説明不足は現行 Doxygen ですでに解消済みである。また、現行 `Revolve` は連続する同一点を縮退面として生成せず、生成失敗として拒否する。この点は実装不具合として扱わず、入力契約の説明とテストの不足として評価する。
 

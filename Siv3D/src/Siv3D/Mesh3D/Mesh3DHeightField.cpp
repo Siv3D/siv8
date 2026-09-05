@@ -18,8 +18,9 @@ namespace s3d
 {
 	namespace
 	{
+		using Mesh3DDetail::AddedRange;
+		using Mesh3DDetail::AdditionFailed;
 		using Mesh3DDetail::CheckedMultiply;
-		using Mesh3DDetail::GenerationFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
 	}
 
@@ -29,7 +30,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DDetail::AppendHeightField(
+	Mesh3DAddResult Mesh3DDetail::AppendHeightField(
 		Mesh3D& mesh,
 		const s3d::Grid<float>& heights,
 		const SizeF _sizeXZ,
@@ -47,21 +48,21 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvOffset.x + _uvScale.x))
 			|| (not IsFloatRepresentable(_uvOffset.y + _uvScale.y)))
 		{
-			return GenerationFailed<bool>("Mesh3D::HeightField(): The grid dimensions, size, or UV transform is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::HeightField(): The grid dimensions, size, or UV transform is invalid");
 		}
 
 		const Float2 sizeXZ = _sizeXZ;
 		if ((sizeXZ.x <= 0.0f)
 			|| (sizeXZ.y <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::HeightField(): sizeXZ must remain positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::HeightField(): sizeXZ must remain positive after conversion to float");
 		}
 
 		for (const float height : heights)
 		{
 			if (not std::isfinite(height))
 			{
-				return GenerationFailed<bool>("Mesh3D::HeightField(): Every height must be finite");
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::HeightField(): Every height must be finite");
 			}
 		}
 
@@ -77,7 +78,7 @@ namespace s3d
 			|| (not CheckedMultiply(segmentsX, segmentsZ, cellCount))
 			|| (not CheckedMultiply(cellCount, 2, triangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::HeightField(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::HeightField(): The generated mesh exceeds the supported size");
 		}
 
 		Array<float> xPositions(columnCount);
@@ -90,7 +91,7 @@ namespace s3d
 			xPositions[x] = static_cast<float>(-halfSizeX + (_sizeXZ.x * u));
 			if ((0 < x) && (not (xPositions[x - 1] < xPositions[x])))
 			{
-				return GenerationFailed<bool>("Mesh3D::HeightField(): Adjacent X coordinates collapse after conversion to float");
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::HeightField(): Adjacent X coordinates collapse after conversion to float");
 			}
 		}
 
@@ -100,7 +101,7 @@ namespace s3d
 			zPositions[z] = static_cast<float>(halfSizeZ - (_sizeXZ.y * v));
 			if ((0 < z) && (not (zPositions[z] < zPositions[z - 1])))
 			{
-				return GenerationFailed<bool>("Mesh3D::HeightField(): Adjacent Z coordinates collapse after conversion to float");
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::HeightField(): Adjacent Z coordinates collapse after conversion to float");
 			}
 		}
 
@@ -114,7 +115,7 @@ namespace s3d
 			|| (Mesh3D::MaxVertexCount < newVertexCount)
 			|| (not Mesh3DDetail::CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::HeightField(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::HeightField(): The generated mesh exceeds the supported size");
 		}
 
 		mesh.vertices.resize(newVertexCount);
@@ -176,7 +177,7 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(mesh, vertexBase, triangleBase);
 	}
 
 	Mesh3D Mesh3D::HeightField(
@@ -186,7 +187,7 @@ namespace s3d
 		const Vec2 uvOffset)
 	{
 		Mesh3DBuilder builder;
-		builder.addHeightField(heights, sizeXZ, uvScale, uvOffset);
+		(void)builder.addHeightField(heights, sizeXZ, uvScale, uvOffset);
 		return std::move(builder).build();
 	}
 }

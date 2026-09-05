@@ -23,7 +23,7 @@ namespace s3d
 	Mesh3D Mesh3D::Box(const Vec3 size, const BoxFace faces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBox(size, faces);
+		(void)builder.addBox(size, faces);
 		return std::move(builder).build();
 	}
 
@@ -33,7 +33,7 @@ namespace s3d
 		const BoxFace faces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBox(size, uvMapping, faces);
+		(void)builder.addBox(size, uvMapping, faces);
 		return std::move(builder).build();
 	}
 
@@ -49,7 +49,7 @@ namespace s3d
 		const BoxFace openFaces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxShell(outerSize, thickness, openFaces);
+		(void)builder.addBoxShell(outerSize, thickness, openFaces);
 		return std::move(builder).build();
 	}
 
@@ -59,7 +59,7 @@ namespace s3d
 		const BoxFace openFaces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxShell(outerSize, thickness, openFaces);
+		(void)builder.addBoxShell(outerSize, thickness, openFaces);
 		return std::move(builder).build();
 	}
 
@@ -70,7 +70,7 @@ namespace s3d
 		const BoxFace openFaces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxShell(outerSize, thickness, uvMapping, openFaces);
+		(void)builder.addBoxShell(outerSize, thickness, uvMapping, openFaces);
 		return std::move(builder).build();
 	}
 
@@ -81,7 +81,7 @@ namespace s3d
 		const BoxFace openFaces)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxShell(outerSize, thickness, uvMapping, openFaces);
+		(void)builder.addBoxShell(outerSize, thickness, uvMapping, openFaces);
 		return std::move(builder).build();
 	}
 
@@ -94,14 +94,14 @@ namespace s3d
 	Mesh3D Mesh3D::BoxFrame(const Vec3 size, const double thickness)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxFrame(size, thickness);
+		(void)builder.addBoxFrame(size, thickness);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::BoxFrame(const Vec3 size, const Vec3 beamSize)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxFrame(size, beamSize);
+		(void)builder.addBoxFrame(size, beamSize);
 		return std::move(builder).build();
 	}
 
@@ -111,7 +111,7 @@ namespace s3d
 		const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxFrame(size, thickness, uvMapping);
+		(void)builder.addBoxFrame(size, thickness, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -121,7 +121,7 @@ namespace s3d
 		const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addBoxFrame(size, beamSize, uvMapping);
+		(void)builder.addBoxFrame(size, beamSize, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -134,7 +134,7 @@ namespace s3d
 	Mesh3D Mesh3D::RoundedBox(const Vec3 size, const double radius, const uint32 subdivisions)
 	{
 		Mesh3DBuilder builder;
-		builder.addRoundedBox(size, radius, subdivisions);
+		(void)builder.addRoundedBox(size, radius, subdivisions);
 		return std::move(builder).build();
 	}
 
@@ -145,7 +145,7 @@ namespace s3d
 		const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addRoundedBox(size, radius, subdivisions, uvMapping);
+		(void)builder.addRoundedBox(size, radius, subdivisions, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -158,7 +158,7 @@ namespace s3d
 	Mesh3D Mesh3D::ChamferedBox(const Vec3 size, const double chamfer)
 	{
 		Mesh3DBuilder builder;
-		builder.addChamferedBox(size, chamfer);
+		(void)builder.addChamferedBox(size, chamfer);
 		return std::move(builder).build();
 	}
 
@@ -168,7 +168,7 @@ namespace s3d
 		const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addChamferedBox(size, chamfer, uvMapping);
+		(void)builder.addChamferedBox(size, chamfer, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -181,14 +181,14 @@ namespace s3d
 	Mesh3D Mesh3D::Wedge(const Vec3 size)
 	{
 		Mesh3DBuilder builder;
-		builder.addWedge(size);
+		(void)builder.addWedge(size);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Wedge(const Vec3 size, const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addWedge(size, uvMapping);
+		(void)builder.addWedge(size, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -201,14 +201,14 @@ namespace s3d
 	Mesh3D Mesh3D::TriangularPrism(const Vec3 size)
 	{
 		Mesh3DBuilder builder;
-		builder.addTriangularPrism(size);
+		(void)builder.addTriangularPrism(size);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::TriangularPrism(const Vec3 size, const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addTriangularPrism(size, uvMapping);
+		(void)builder.addTriangularPrism(size, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -221,14 +221,14 @@ namespace s3d
 	Mesh3D Mesh3D::Stairs(const Vec3 size, const uint32 steps)
 	{
 		Mesh3DBuilder builder;
-		builder.addStairs(size, steps);
+		(void)builder.addStairs(size, steps);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Stairs(const Vec3 size, const uint32 steps, const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addStairs(size, steps, uvMapping);
+		(void)builder.addStairs(size, steps, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -241,14 +241,14 @@ namespace s3d
 	Mesh3D Mesh3D::Pyramid(const double baseSize, const double height)
 	{
 		Mesh3DBuilder builder;
-		builder.addPyramid(baseSize, height);
+		(void)builder.addPyramid(baseSize, height);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Pyramid(const SizeF baseSizeXZ, const double height)
 	{
 		Mesh3DBuilder builder;
-		builder.addPyramid(baseSizeXZ, height);
+		(void)builder.addPyramid(baseSizeXZ, height);
 		return std::move(builder).build();
 	}
 
@@ -264,7 +264,7 @@ namespace s3d
 		const double height)
 	{
 		Mesh3DBuilder builder;
-		builder.addRectangularFrustum(bottomSizeXZ, topSizeXZ, height);
+		(void)builder.addRectangularFrustum(bottomSizeXZ, topSizeXZ, height);
 		return std::move(builder).build();
 	}
 
@@ -275,7 +275,7 @@ namespace s3d
 		const BoxUVMapping& uvMapping)
 	{
 		Mesh3DBuilder builder;
-		builder.addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, uvMapping);
+		(void)builder.addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, uvMapping);
 		return std::move(builder).build();
 	}
 
@@ -288,28 +288,28 @@ namespace s3d
 	Mesh3D Mesh3D::Tetrahedron(const double radius)
 	{
 		Mesh3DBuilder builder;
-		builder.addTetrahedron(radius);
+		(void)builder.addTetrahedron(radius);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Octahedron(const double radius)
 	{
 		Mesh3DBuilder builder;
-		builder.addOctahedron(radius);
+		(void)builder.addOctahedron(radius);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Icosahedron(const double radius)
 	{
 		Mesh3DBuilder builder;
-		builder.addIcosahedron(radius);
+		(void)builder.addIcosahedron(radius);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Dodecahedron(const double radius)
 	{
 		Mesh3DBuilder builder;
-		builder.addDodecahedron(radius);
+		(void)builder.addDodecahedron(radius);
 		return std::move(builder).build();
 	}
 
@@ -326,7 +326,7 @@ namespace s3d
 		const uint32 hemisphereStacks)
 	{
 		Mesh3DBuilder builder;
-		builder.addCapsule(radius, cylinderHeight, slices, hemisphereStacks);
+		(void)builder.addCapsule(radius, cylinderHeight, slices, hemisphereStacks);
 		return std::move(builder).build();
 	}
 
@@ -339,7 +339,7 @@ namespace s3d
 	Mesh3D Mesh3D::Plane(const SizeF sizeXZ, const Vec2 uvScale, const Vec2 uvOffset)
 	{
 		Mesh3DBuilder builder;
-		builder.addPlane(sizeXZ, uvScale, uvOffset);
+		(void)builder.addPlane(sizeXZ, uvScale, uvOffset);
 		return std::move(builder).build();
 	}
 
@@ -357,7 +357,7 @@ namespace s3d
 		const Vec2 uvOffset)
 	{
 		Mesh3DBuilder builder;
-		builder.addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset);
+		(void)builder.addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset);
 		return std::move(builder).build();
 	}
 
@@ -374,7 +374,7 @@ namespace s3d
 		const uint32 tubeSegments)
 	{
 		Mesh3DBuilder builder;
-		builder.addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments);
+		(void)builder.addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments);
 		return std::move(builder).build();
 	}
 
@@ -387,7 +387,7 @@ namespace s3d
 	Mesh3D Mesh3D::Sphere(const double radius, const uint32 slices, const uint32 stacks)
 	{
 		Mesh3DBuilder builder;
-		builder.addSphere(radius, slices, stacks);
+		(void)builder.addSphere(radius, slices, stacks);
 		return std::move(builder).build();
 	}
 
@@ -400,7 +400,7 @@ namespace s3d
 	Mesh3D Mesh3D::Hemisphere(const double radius, const uint32 slices, const uint32 stacks)
 	{
 		Mesh3DBuilder builder;
-		builder.addHemisphere(radius, slices, stacks);
+		(void)builder.addHemisphere(radius, slices, stacks);
 		return std::move(builder).build();
 	}
 
@@ -411,7 +411,7 @@ namespace s3d
 		const uint32 stacks)
 	{
 		Mesh3DBuilder builder;
-		builder.addHemisphere(radius, closeBottom, slices, stacks);
+		(void)builder.addHemisphere(radius, closeBottom, slices, stacks);
 		return std::move(builder).build();
 	}
 
@@ -424,7 +424,7 @@ namespace s3d
 	Mesh3D Mesh3D::Disc(const double radius, const uint32 segments)
 	{
 		Mesh3DBuilder builder;
-		builder.addDisc(radius, segments);
+		(void)builder.addDisc(radius, segments);
 		return std::move(builder).build();
 	}
 
@@ -440,7 +440,7 @@ namespace s3d
 		const uint32 segments)
 	{
 		Mesh3DBuilder builder;
-		builder.addAnnulus(innerRadius, outerRadius, segments);
+		(void)builder.addAnnulus(innerRadius, outerRadius, segments);
 		return std::move(builder).build();
 	}
 
@@ -457,7 +457,7 @@ namespace s3d
 		const uint32 segments)
 	{
 		Mesh3DBuilder builder;
-		builder.addHollowCylinder(innerRadius, outerRadius, height, segments);
+		(void)builder.addHollowCylinder(innerRadius, outerRadius, height, segments);
 		return std::move(builder).build();
 	}
 
@@ -474,7 +474,7 @@ namespace s3d
 		const uint32 segments)
 	{
 		Mesh3DBuilder builder;
-		builder.addConicalFrustum(bottomRadius, topRadius, height, segments);
+		(void)builder.addConicalFrustum(bottomRadius, topRadius, height, segments);
 		return std::move(builder).build();
 	}
 
@@ -490,7 +490,7 @@ namespace s3d
 		const uint32 segments)
 	{
 		Mesh3DBuilder builder;
-		builder.addCylinder(radius, height, segments);
+		(void)builder.addCylinder(radius, height, segments);
 		return std::move(builder).build();
 	}
 
@@ -506,7 +506,7 @@ namespace s3d
 		const uint32 segments)
 	{
 		Mesh3DBuilder builder;
-		builder.addCone(radius, height, segments);
+		(void)builder.addCone(radius, height, segments);
 		return std::move(builder).build();
 	}
 }

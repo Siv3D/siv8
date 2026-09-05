@@ -30,6 +30,29 @@ namespace s3d::Mesh3DDetail
 		return{};
 	}
 
+	[[nodiscard]]
+	inline Mesh3DAddResult AdditionFailed(
+		const Mesh3DErrorCode code,
+		const StringView message)
+	{
+		LOG_FAIL(message);
+		return Err{ Mesh3DError{ code, String{ message } } };
+	}
+
+	[[nodiscard]]
+	inline Mesh3DRange AddedRange(
+		const Mesh3D& mesh,
+		const size_t vertexOffset,
+		const size_t triangleOffset) noexcept
+	{
+		return Mesh3DRange{
+			.vertexOffset = vertexOffset,
+			.vertexCount = (mesh.vertices.size() - vertexOffset),
+			.triangleOffset = triangleOffset,
+			.triangleCount = (mesh.indices.size() - triangleOffset),
+		};
+	}
+
 	inline void TransformVertexRange(
 		const std::span<Vertex3D> vertexRange,
 		const Mat4x4& matrix) noexcept
@@ -320,21 +343,21 @@ namespace s3d::Mesh3DDetail
 	}
 
 	[[nodiscard]]
-	bool AppendExtrude(
+	Mesh3DAddResult AppendExtrude(
 		Mesh3D& mesh,
 		const Polygon& polygon,
 		double height,
 		double smoothingAngle);
 
 	[[nodiscard]]
-	bool AppendRevolve(
+	Mesh3DAddResult AppendRevolve(
 		Mesh3D& mesh,
 		std::span<const Vec2> profile,
 		uint32 segments,
 		double smoothingAngle);
 
 	[[nodiscard]]
-	bool AppendRevolve(
+	Mesh3DAddResult AppendRevolve(
 		Mesh3D& mesh,
 		std::span<const Vec2> profile,
 		double startAngle,
@@ -344,7 +367,7 @@ namespace s3d::Mesh3DDetail
 		CloseEnds closeEnds);
 
 	[[nodiscard]]
-	bool AppendTube(
+	Mesh3DAddResult AppendTube(
 		Mesh3D& mesh,
 		std::span<const Vec3> path,
 		double radius,
@@ -354,7 +377,7 @@ namespace s3d::Mesh3DDetail
 		CloseRing closeRing);
 
 	[[nodiscard]]
-	bool AppendSweep(
+	Mesh3DAddResult AppendSweep(
 		Mesh3D& mesh,
 		const Polygon& crossSection,
 		std::span<const Vec3> path,
@@ -364,7 +387,7 @@ namespace s3d::Mesh3DDetail
 		CloseRing closeRing);
 
 	[[nodiscard]]
-	bool AppendHeightField(
+	Mesh3DAddResult AppendHeightField(
 		Mesh3D& mesh,
 		const Grid<float>& heights,
 		SizeF sizeXZ,
@@ -372,7 +395,7 @@ namespace s3d::Mesh3DDetail
 		Vec2 uvOffset);
 
 	[[nodiscard]]
-	bool AppendLoft(
+	Mesh3DAddResult AppendLoft(
 		Mesh3D& mesh,
 		std::span<const std::span<const Vec2>> sections,
 		std::span<const double> heights,

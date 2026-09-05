@@ -22,7 +22,8 @@ namespace s3d
 	{
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
-		using Mesh3DDetail::GenerationFailed;
+		using Mesh3DDetail::AddedRange;
+		using Mesh3DDetail::AdditionFailed;
 		using Mesh3DDetail::IsFloatRepresentable;
 		using Mesh3DDetail::TransformVertexRange;
 		using CircleSample = Mesh3DDetail::CircleSample<float>;
@@ -72,14 +73,20 @@ namespace s3d
 			return{ (baseTangent * uSign), (uSign * vSign) };
 		}
 
-		static void TransformAddedVertices(
+		[[nodiscard]]
+		static Mesh3DAddResult TransformAddedVertices(
 			Mesh3D& mesh,
-			const size_t vertexOffset,
+			Mesh3DAddResult result,
 			const Mat4x4& transform) noexcept
 		{
-			TransformVertexRange(
-				std::span<Vertex3D>{ (mesh.vertices.data() + vertexOffset), (mesh.vertices.size() - vertexOffset) },
-				transform);
+			if (result && (not result->isEmpty()))
+			{
+				TransformVertexRange(
+					std::span<Vertex3D>{ (mesh.vertices.data() + result->vertexOffset), result->vertexCount },
+					transform);
+			}
+
+			return result;
 		}
 
 		[[nodiscard]]
@@ -463,27 +470,30 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addMesh(const Mesh3D& mesh)
+	Mesh3DAddResult Mesh3DBuilder::addMesh(const Mesh3D& mesh)
 	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		const size_t triangleOffset = m_mesh.indices.size();
+
 		if (mesh.isEmpty())
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh must not be empty");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh must not be empty");
 		}
 
 		if (not m_mesh.append(mesh))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
 		}
 
-		return true;
+		return AddedRange(m_mesh, vertexOffset, triangleOffset);
 	}
 
-	bool Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Vec3 offset)
 	{
 		return addMesh(mesh, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addMesh(
+	Mesh3DAddResult Mesh3DBuilder::addMesh(
 		const Mesh3D& mesh,
 		const Vec3 offset,
 		const Quaternion& rotation)
@@ -492,19 +502,22 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Mat4x4& transform)
 	{
+		const size_t vertexOffset = m_mesh.vertices.size();
+		const size_t triangleOffset = m_mesh.indices.size();
+
 		if (mesh.isEmpty())
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh must not be empty");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh must not be empty");
 		}
 
 		if (not m_mesh.append(mesh, transform))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
 		}
 
-		return true;
+		return AddedRange(m_mesh, vertexOffset, triangleOffset);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -513,17 +526,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addBox(const Vec3 size, const BoxFace faces)
+	Mesh3DAddResult Mesh3DBuilder::addBox(const Vec3 size, const BoxFace faces)
 	{
 		return addBox(size, BoxUVMapping{}, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(const Vec3 size, const Vec3 offset, const BoxFace faces)
+	Mesh3DAddResult Mesh3DBuilder::addBox(const Vec3 size, const Vec3 offset, const BoxFace faces)
 	{
 		return addBox(size, BoxUVMapping{}, offset, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(
+	Mesh3DAddResult Mesh3DBuilder::addBox(
 		const Vec3 size,
 		const Vec3 offset,
 		const Quaternion& rotation,
@@ -532,19 +545,20 @@ namespace s3d
 		return addBox(size, BoxUVMapping{}, offset, rotation, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(const Vec3 size, const Mat4x4& transform, const BoxFace faces)
+	Mesh3DAddResult Mesh3DBuilder::addBox(const Vec3 size, const Mat4x4& transform, const BoxFace faces)
 	{
 		return addBox(size, BoxUVMapping{}, transform, faces);
 	}
 
-	bool Mesh3DBuilder::addBox(
+	Mesh3DAddResult Mesh3DBuilder::addBox(
 		const Vec3 _size,
 		const BoxUVMapping& uvMapping,
 		const BoxFace selectedFaces)
 	{
 		if (not IsFloatRepresentable(_size))
 		{
-			return GenerationFailed<bool>("Mesh3D::Box(): size must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange,
+				U"Mesh3D::Box(): size must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -552,14 +566,16 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::Box(): Every size component must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+				U"Mesh3D::Box(): Every size component must be positive after conversion to float");
 		}
 
 		constexpr uint8 ValidFaceBits = static_cast<uint8>(BoxFace::All);
 		const uint8 selectedFaceBits = static_cast<uint8>(selectedFaces);
 		if (selectedFaceBits & ~ValidFaceBits)
 		{
-			return GenerationFailed<bool>("Mesh3D::Box(): faces contains unsupported bits");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+				U"Mesh3D::Box(): faces contains unsupported bits");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -601,7 +617,8 @@ namespace s3d
 
 			if (not IsFinite(uvRects[faceIndex]))
 			{
-				return GenerationFailed<bool>("Mesh3D::Box(): Every selected UV rectangle must be finite");
+				return AdditionFailed(Mesh3DErrorCode::NumericRange,
+					U"Mesh3D::Box(): A selected UV rectangle is non-finite");
 			}
 
 			++selectedFaceCount;
@@ -617,7 +634,8 @@ namespace s3d
 			|| (Mesh3D::MaxVertexCount < newVertexCount)
 			|| (not CheckedAdd(triangleBase, addedTriangleCount, newTriangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Box(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+				U"Mesh3D::Box(): The generated mesh exceeds the supported size");
 		}
 
 		m_mesh.vertices.resize(newVertexCount);
@@ -673,10 +691,10 @@ namespace s3d
 			++outputFaceIndex;
 		}
 
-		return true;
+		return AddedRange(m_mesh, vertexBase, triangleBase);
 	}
 
-	bool Mesh3DBuilder::addBox(
+	Mesh3DAddResult Mesh3DBuilder::addBox(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Vec3 offset,
@@ -685,7 +703,7 @@ namespace s3d
 		return addBox(size, uvMapping, Mat4x4::Translate(Float3{ offset }), faces);
 	}
 
-	bool Mesh3DBuilder::addBox(
+	Mesh3DAddResult Mesh3DBuilder::addBox(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Vec3 offset,
@@ -696,23 +714,25 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), faces);
 	}
 
-	bool Mesh3DBuilder::addBox(
+	Mesh3DAddResult Mesh3DBuilder::addBox(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform,
 		const BoxFace faces)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addBox(size, uvMapping, faces))
+		Mesh3DAddResult result = addBox(size, uvMapping, faces);
+		if (not result)
 		{
-			return false;
+			return result;
 		}
 
-		if (vertexOffset < m_mesh.vertices.size())
+		if (not result->isEmpty())
 		{
-			TransformAddedVertices(m_mesh, vertexOffset, transform);
+			TransformVertexRange(
+				std::span<Vertex3D>{ (m_mesh.vertices.data() + result->vertexOffset), result->vertexCount },
+				transform);
 		}
-		return true;
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -721,7 +741,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const BoxFace openFaces)
@@ -729,7 +749,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const Vec3 offset,
@@ -738,7 +758,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, offset, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const Vec3 offset,
@@ -748,7 +768,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, offset, rotation, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const Mat4x4& transform,
@@ -757,7 +777,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, transform, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const BoxFace openFaces)
@@ -765,7 +785,7 @@ namespace s3d
 		return addBoxShell(outerSize, thickness, BoxUVMapping{}, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const Vec3 offset,
@@ -774,7 +794,7 @@ namespace s3d
 		return addBoxShell(outerSize, thickness, BoxUVMapping{}, offset, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const Vec3 offset,
@@ -784,7 +804,7 @@ namespace s3d
 		return addBoxShell(outerSize, thickness, BoxUVMapping{}, offset, rotation, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const Mat4x4& transform,
@@ -793,7 +813,7 @@ namespace s3d
 		return addBoxShell(outerSize, thickness, BoxUVMapping{}, transform, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
@@ -802,7 +822,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
@@ -812,7 +832,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, offset, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
@@ -823,7 +843,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, offset, rotation, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
@@ -833,7 +853,7 @@ namespace s3d
 		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, transform, openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 _outerSize,
 		const Vec3 _thickness,
 		const BoxUVMapping& uvMapping,
@@ -842,14 +862,14 @@ namespace s3d
 		if ((not IsFloatRepresentable(_outerSize))
 			|| (not IsFloatRepresentable(_thickness)))
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxShell(): outerSize and thickness must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::BoxShell(): outerSize and thickness must be finite and float-representable");
 		}
 
 		constexpr uint8 ValidFaceBits = static_cast<uint8>(BoxFace::All);
 		const uint8 openFaceBits = static_cast<uint8>(openFaces);
 		if (openFaceBits & ~ValidFaceBits)
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxShell(): openFaces contains unsupported bits");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::BoxShell(): openFaces contains unsupported bits");
 		}
 
 		const Float3 outerSize = _outerSize;
@@ -859,7 +879,7 @@ namespace s3d
 			|| (thickness.x <= 0.0f) || (thickness.y <= 0.0f) || (thickness.z <= 0.0f)
 			|| (outerHalf.x <= thickness.x) || (outerHalf.y <= thickness.y) || (outerHalf.z <= thickness.z))
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxShell(): Every size and thickness component must remain positive, and thickness must be smaller than half the corresponding size after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::BoxShell(): Every size and thickness component must remain positive, and thickness must be smaller than half the corresponding size after conversion to float");
 		}
 
 		struct ShellFace
@@ -917,7 +937,7 @@ namespace s3d
 			if ((requiredUVFaceBits & static_cast<uint8>(face.mask))
 				&& (not IsFinite(GetBoxUVRect(uvMapping, face.mask))))
 			{
-				return GenerationFailed<bool>("Mesh3D::BoxShell(): Every used UV rectangle must be finite");
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::BoxShell(): Every used UV rectangle must be finite");
 			}
 		}
 
@@ -926,14 +946,14 @@ namespace s3d
 		if ((not CheckedMultiply(quadCount, 4, addedVertexCount))
 			|| (not CheckedMultiply(quadCount, 2, addedTriangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxShell(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::BoxShell(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, addedVertexCount, addedTriangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxShell(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::BoxShell(): The generated mesh exceeds the supported size");
 		}
 
 		const Float3 innerHalf = (outerHalf - thickness);
@@ -994,10 +1014,13 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - addedVertexCount),
+			(m_mesh.indices.size() - addedTriangleCount));
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const BoxUVMapping& uvMapping,
@@ -1007,7 +1030,7 @@ namespace s3d
 		return addBoxShell(outerSize, thickness, uvMapping, Mat4x4::Translate(Float3{ offset }), openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const BoxUVMapping& uvMapping,
@@ -1019,24 +1042,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), openFaces);
 	}
 
-	bool Mesh3DBuilder::addBoxShell(
+	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform,
 		const BoxFace openFaces)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addBoxShell(outerSize, thickness, uvMapping, openFaces))
-		{
-			return false;
-		}
-
-		if (vertexOffset < m_mesh.vertices.size())
-		{
-			TransformAddedVertices(m_mesh, vertexOffset, transform);
-		}
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addBoxShell(outerSize, thickness, uvMapping, openFaces),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1045,12 +1061,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addBoxFrame(const Vec3 size, const double thickness)
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(const Vec3 size, const double thickness)
 	{
 		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
 		const Vec3 offset)
@@ -1058,7 +1074,7 @@ namespace s3d
 		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
 		const Vec3 offset,
@@ -1067,7 +1083,7 @@ namespace s3d
 		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
 		const Mat4x4& transform)
@@ -1075,12 +1091,12 @@ namespace s3d
 		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(const Vec3 size, const Vec3 beamSize)
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(const Vec3 size, const Vec3 beamSize)
 	{
 		return addBoxFrame(size, beamSize, BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const Vec3 beamSize,
 		const Vec3 offset)
@@ -1088,7 +1104,7 @@ namespace s3d
 		return addBoxFrame(size, beamSize, BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const Vec3 beamSize,
 		const Vec3 offset,
@@ -1097,7 +1113,7 @@ namespace s3d
 		return addBoxFrame(size, beamSize, BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const Vec3 beamSize,
 		const Mat4x4& transform)
@@ -1105,7 +1121,7 @@ namespace s3d
 		return addBoxFrame(size, beamSize, BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
 		const BoxUVMapping& uvMapping)
@@ -1113,7 +1129,7 @@ namespace s3d
 		return addBoxFrame(size, Vec3::All(thickness), uvMapping);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
@@ -1122,7 +1138,7 @@ namespace s3d
 		return addBoxFrame(size, Vec3::All(thickness), uvMapping, offset);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
@@ -1132,7 +1148,7 @@ namespace s3d
 		return addBoxFrame(size, Vec3::All(thickness), uvMapping, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
@@ -1141,7 +1157,7 @@ namespace s3d
 		return addBoxFrame(size, Vec3::All(thickness), uvMapping, transform);
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 _size,
 		const Vec3 _beamSize,
 		const BoxUVMapping& uvMapping)
@@ -1150,7 +1166,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_beamSize))
 			|| (not IsFinite(uvMapping)))
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxFrame(): size, beamSize, and UV mapping must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::BoxFrame(): size, beamSize, and UV mapping must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -1160,7 +1176,7 @@ namespace s3d
 			|| (beamSize.x <= 0.0f) || (beamSize.y <= 0.0f) || (beamSize.z <= 0.0f)
 			|| (outerHalf.x <= beamSize.x) || (outerHalf.y <= beamSize.y) || (outerHalf.z <= beamSize.z))
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxFrame(): Every size and beamSize component must remain positive, and beamSize must be smaller than half the corresponding size after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::BoxFrame(): Every size and beamSize component must remain positive, and beamSize must be smaller than half the corresponding size after conversion to float");
 		}
 
 		constexpr size_t QuadCount = 48;
@@ -1170,7 +1186,7 @@ namespace s3d
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, VertexCount, TriangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::BoxFrame(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::BoxFrame(): The generated mesh exceeds the supported size");
 		}
 
 		struct FrameFace
@@ -1222,10 +1238,13 @@ namespace s3d
 				face.axis, innerCoordinate, pInner, pOuter, -qInner, qInner, innerNormalFace);
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - VertexCount),
+			(m_mesh.indices.size() - TriangleCount));
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const Vec3 beamSize,
 		const BoxUVMapping& uvMapping,
@@ -1234,7 +1253,7 @@ namespace s3d
 		return addBoxFrame(size, beamSize, uvMapping, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const Vec3 beamSize,
 		const BoxUVMapping& uvMapping,
@@ -1245,20 +1264,16 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addBoxFrame(
+	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const Vec3 beamSize,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addBoxFrame(size, beamSize, uvMapping))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addBoxFrame(size, beamSize, uvMapping),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1267,7 +1282,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions)
@@ -1275,7 +1290,7 @@ namespace s3d
 		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions,
@@ -1284,7 +1299,7 @@ namespace s3d
 		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions,
@@ -1294,7 +1309,7 @@ namespace s3d
 		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions,
@@ -1303,7 +1318,7 @@ namespace s3d
 		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 _size,
 		const double _radius,
 		const uint32 subdivisions,
@@ -1315,7 +1330,7 @@ namespace s3d
 			|| (_radius < 0.0)
 			|| (subdivisions == 0))
 		{
-			return GenerationFailed<bool>("Mesh3D::RoundedBox(): The size, radius, subdivisions, or UV mapping is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::RoundedBox(): The size, radius, subdivisions, or UV mapping is invalid");
 		}
 
 		const Float3 size = _size;
@@ -1324,13 +1339,13 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::RoundedBox(): Every size component must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::RoundedBox(): Every size component must be positive after conversion to float");
 		}
 
 		const double maxRadius = (std::min({ _size.x, _size.y, _size.z }) * 0.5);
 		if (maxRadius < _radius)
 		{
-			return GenerationFailed<bool>("Mesh3D::RoundedBox(): radius must not exceed half of the smallest size component");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::RoundedBox(): radius must not exceed half of the smallest size component");
 		}
 
 		if (radius == 0.0f)
@@ -1347,7 +1362,7 @@ namespace s3d
 		size_t twiceSubdivisions;
 		if (not CheckedMultiply(static_cast<size_t>(subdivisions), 2, twiceSubdivisions))
 		{
-			return GenerationFailed<bool>("Mesh3D::RoundedBox(): subdivisions exceed the supported range");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::RoundedBox(): subdivisions exceed the supported range");
 		}
 
 		const auto getAxisPointCount = [twiceSubdivisions](const float innerHalfExtent) -> size_t
@@ -1380,7 +1395,7 @@ namespace s3d
 			|| (not CheckedAdd(cellCountSum, yzCellCount, cellCountSum))
 			|| (not CheckedMultiply(cellCountSum, 4, addedTriangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::RoundedBox(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::RoundedBox(): The generated mesh exceeds the supported size");
 		}
 
 		const size_t vertexBase = m_mesh.vertices.size();
@@ -1391,7 +1406,7 @@ namespace s3d
 			|| (Mesh3D::MaxVertexCount < newVertexCount)
 			|| (not CheckedAdd(triangleBase, addedTriangleCount, newTriangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::RoundedBox(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::RoundedBox(): The generated mesh exceeds the supported size");
 		}
 
 		const size_t roundedSegmentCount = static_cast<size_t>(subdivisions);
@@ -1525,10 +1540,10 @@ namespace s3d
 			Float3::UnitX(), Float3::UnitZ(), xSamples, zSamples,
 			size.x, size.z, uvMapping.negativeY);
 
-		return true;
+		return AddedRange(m_mesh, vertexBase, triangleBase);
 	}
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions,
@@ -1539,7 +1554,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions,
@@ -1551,21 +1566,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRoundedBox(
+	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addRoundedBox(size, radius, subdivisions, uvMapping))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addRoundedBox(size, radius, subdivisions, uvMapping),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1574,12 +1585,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addChamferedBox(const Vec3 size, const double chamfer)
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(const Vec3 size, const double chamfer)
 	{
 		return addChamferedBox(size, chamfer, BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addChamferedBox(
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 size,
 		const double chamfer,
 		const Vec3 offset)
@@ -1587,7 +1598,7 @@ namespace s3d
 		return addChamferedBox(size, chamfer, BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addChamferedBox(
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 size,
 		const double chamfer,
 		const Vec3 offset,
@@ -1596,7 +1607,7 @@ namespace s3d
 		return addChamferedBox(size, chamfer, BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addChamferedBox(
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 size,
 		const double chamfer,
 		const Mat4x4& transform)
@@ -1604,7 +1615,7 @@ namespace s3d
 		return addChamferedBox(size, chamfer, BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addChamferedBox(
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 _size,
 		const double _chamfer,
 		const BoxUVMapping& uvMapping)
@@ -1614,7 +1625,7 @@ namespace s3d
 			|| (not IsFinite(uvMapping))
 			|| (_chamfer < 0.0))
 		{
-			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): The size, chamfer, or UV mapping is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::ChamferedBox(): The size, chamfer, or UV mapping is invalid");
 		}
 
 		const Float3 size = _size;
@@ -1623,7 +1634,7 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): Every size component must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::ChamferedBox(): Every size component must be positive after conversion to float");
 		}
 
 		if (chamfer == 0.0f)
@@ -1634,14 +1645,14 @@ namespace s3d
 		const float maxChamfer = (std::min({ size.x, size.y, size.z }) * 0.5f);
 		if (maxChamfer <= chamfer)
 		{
-			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): chamfer must be smaller than half of the smallest size component after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::ChamferedBox(): chamfer must be smaller than half of the smallest size component after conversion to float");
 		}
 
 		size_t vertexOffset;
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, 96, 44, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::ChamferedBox(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::ChamferedBox(): The generated mesh exceeds the supported size");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -1834,10 +1845,13 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 96),
+			(m_mesh.indices.size() - 44));
 	}
 
-	bool Mesh3DBuilder::addChamferedBox(
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 size,
 		const double chamfer,
 		const BoxUVMapping& uvMapping,
@@ -1847,7 +1861,7 @@ namespace s3d
 			size, chamfer, uvMapping, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addChamferedBox(
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 size,
 		const double chamfer,
 		const BoxUVMapping& uvMapping,
@@ -1858,20 +1872,16 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addChamferedBox(
+	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 size,
 		const double chamfer,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addChamferedBox(size, chamfer, uvMapping))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addChamferedBox(size, chamfer, uvMapping),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1880,32 +1890,32 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addWedge(const Vec3 size)
+	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size)
 	{
 		return addWedge(size, BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addWedge(const Vec3 size, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size, const Vec3 offset)
 	{
 		return addWedge(size, BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addWedge(const Vec3 size, const Vec3 offset, const Quaternion& rotation)
+	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size, const Vec3 offset, const Quaternion& rotation)
 	{
 		return addWedge(size, BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addWedge(const Vec3 size, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size, const Mat4x4& transform)
 	{
 		return addWedge(size, BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addWedge(const Vec3 _size, const BoxUVMapping& uvMapping)
+	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 _size, const BoxUVMapping& uvMapping)
 	{
 		if ((not IsFloatRepresentable(_size))
 			|| (not IsFinite(uvMapping)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Wedge(): size and UV mapping must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Wedge(): size and UV mapping must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -1913,14 +1923,14 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::Wedge(): Every size component must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Wedge(): Every size component must be positive after conversion to float");
 		}
 
 		size_t vertexOffset;
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, 18, 8, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::Wedge(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Wedge(): The generated mesh exceeds the supported size");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -1984,10 +1994,13 @@ namespace s3d
 			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
 			-Float3::UnitY(), Float3::UnitX(), uvMapping.negativeY);
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 18),
+			(m_mesh.indices.size() - 8));
 	}
 
-	bool Mesh3DBuilder::addWedge(
+	Mesh3DAddResult Mesh3DBuilder::addWedge(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Vec3 offset)
@@ -1995,7 +2008,7 @@ namespace s3d
 		return addWedge(size, uvMapping, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addWedge(
+	Mesh3DAddResult Mesh3DBuilder::addWedge(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Vec3 offset,
@@ -2005,19 +2018,15 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addWedge(
+	Mesh3DAddResult Mesh3DBuilder::addWedge(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addWedge(size, uvMapping))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addWedge(size, uvMapping),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2026,12 +2035,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addExtrude(const Polygon& polygon, const double height)
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(const Polygon& polygon, const double height)
 	{
 		return Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0);
 	}
 
-	bool Mesh3DBuilder::addExtrude(
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
 		const Vec3 offset)
@@ -2039,7 +2048,7 @@ namespace s3d
 		return addExtrude(polygon, height, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addExtrude(
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
 		const Vec3 offset,
@@ -2049,22 +2058,18 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addExtrude(
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0),
+			transform);
 	}
 
-	bool Mesh3DBuilder::addExtrude(
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
 		const double smoothingAngle)
@@ -2072,7 +2077,7 @@ namespace s3d
 		return Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle);
 	}
 
-	bool Mesh3DBuilder::addExtrude(
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
 		const double smoothingAngle,
@@ -2082,7 +2087,7 @@ namespace s3d
 			polygon, height, smoothingAngle, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addExtrude(
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
 		const double smoothingAngle,
@@ -2093,20 +2098,16 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addExtrude(
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
 		const double smoothingAngle,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2115,21 +2116,21 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments)
 	{
 		return Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, 0.0);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::initializer_list<Vec2> profile,
 		const uint32 segments)
 	{
 		return addRevolve(std::span<const Vec2>{ profile.begin(), profile.size() }, segments);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const Vec3 offset)
@@ -2137,7 +2138,7 @@ namespace s3d
 		return addRevolve(profile, segments, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const Vec3 offset,
@@ -2147,22 +2148,18 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, 0.0))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, 0.0),
+			transform);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const double smoothingAngle)
@@ -2170,7 +2167,7 @@ namespace s3d
 		return Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, smoothingAngle);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::initializer_list<Vec2> profile,
 		const uint32 segments,
 		const double smoothingAngle)
@@ -2179,7 +2176,7 @@ namespace s3d
 			std::span<const Vec2>{ profile.begin(), profile.size() }, segments, smoothingAngle);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const double smoothingAngle,
@@ -2189,7 +2186,7 @@ namespace s3d
 			profile, segments, smoothingAngle, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const double smoothingAngle,
@@ -2200,24 +2197,19 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const uint32 segments,
 		const double smoothingAngle,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendRevolve(
-			m_mesh, profile, segments, smoothingAngle))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, smoothingAngle),
+			transform);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2228,7 +2220,7 @@ namespace s3d
 			m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::initializer_list<Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2240,7 +2232,7 @@ namespace s3d
 			startAngle, sweepAngle, segments, closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2257,7 +2249,7 @@ namespace s3d
 			closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2275,7 +2267,7 @@ namespace s3d
 			closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2283,18 +2275,14 @@ namespace s3d
 		const Mat4x4& transform,
 		const CloseEnds closeEnds)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendRevolve(
-			m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendRevolve(
+				m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds),
+			transform);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2312,7 +2300,7 @@ namespace s3d
 			closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::initializer_list<Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2325,7 +2313,7 @@ namespace s3d
 			startAngle, sweepAngle, segments, smoothingAngle, closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2344,7 +2332,7 @@ namespace s3d
 			closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2364,7 +2352,7 @@ namespace s3d
 			closeEnds);
 	}
 
-	bool Mesh3DBuilder::addRevolve(
+	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
 		const double startAngle,
 		const double sweepAngle,
@@ -2373,21 +2361,17 @@ namespace s3d
 		const Mat4x4& transform,
 		const CloseEnds closeEnds)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendRevolve(
+		return TransformAddedVertices(
 			m_mesh,
-			profile,
-			startAngle,
-			sweepAngle,
-			segments,
-			smoothingAngle,
-			closeEnds))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+			Mesh3DDetail::AppendRevolve(
+				m_mesh,
+				profile,
+				startAngle,
+				sweepAngle,
+				segments,
+				smoothingAngle,
+				closeEnds),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2396,7 +2380,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2408,7 +2392,7 @@ namespace s3d
 			m_mesh, path, radius, sides, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const CloseRing closeRing,
@@ -2419,7 +2403,7 @@ namespace s3d
 		return addTube(path, radius, sides, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::initializer_list<Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2432,7 +2416,7 @@ namespace s3d
 			radius, sides, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::initializer_list<Vec3> path,
 		const double radius,
 		const CloseRing closeRing,
@@ -2445,7 +2429,7 @@ namespace s3d
 			radius, sides, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2455,7 +2439,7 @@ namespace s3d
 		return addTube(path, radius, sides, Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2467,7 +2451,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2478,7 +2462,7 @@ namespace s3d
 			path, radius, sides, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform, closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2492,7 +2476,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2506,7 +2490,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addTube(
+	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
 		const uint32 sides,
@@ -2515,15 +2499,17 @@ namespace s3d
 		const Mat4x4& transform,
 		const CloseRing closeRing)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendTube(
-			m_mesh, path, radius, sides, uvScale, uvOffset, closeRing))
+		Mesh3DAddResult result = Mesh3DDetail::AppendTube(
+			m_mesh, path, radius, sides, uvScale, uvOffset, closeRing);
+		if (not result)
 		{
-			return false;
+			return result;
 		}
 
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		TransformVertexRange(
+			std::span<Vertex3D>{ (m_mesh.vertices.data() + result->vertexOffset), result->vertexCount },
+			transform);
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2532,7 +2518,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec2 uvScale,
@@ -2543,7 +2529,7 @@ namespace s3d
 			m_mesh, crossSection, path, nullptr, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const CloseRing closeRing,
@@ -2553,7 +2539,7 @@ namespace s3d
 		return addSweep(crossSection, path, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::initializer_list<Vec3> path,
 		const Vec2 uvScale,
@@ -2565,7 +2551,7 @@ namespace s3d
 			uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::initializer_list<Vec3> path,
 		const CloseRing closeRing,
@@ -2577,7 +2563,7 @@ namespace s3d
 			uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec3 offset,
@@ -2586,7 +2572,7 @@ namespace s3d
 		return addSweep(crossSection, path, Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec3 offset,
@@ -2597,7 +2583,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Mat4x4& transform,
@@ -2607,7 +2593,7 @@ namespace s3d
 			crossSection, path, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec2 uvScale,
@@ -2620,7 +2606,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec2 uvScale,
@@ -2633,7 +2619,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Vec2 uvScale,
@@ -2641,18 +2627,14 @@ namespace s3d
 		const Mat4x4& transform,
 		const CloseRing closeRing)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendSweep(
-			m_mesh, crossSection, path, nullptr, uvScale, uvOffset, closeRing))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendSweep(
+				m_mesh, crossSection, path, nullptr, uvScale, uvOffset, closeRing),
+			transform);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2664,7 +2646,7 @@ namespace s3d
 			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2676,7 +2658,7 @@ namespace s3d
 			crossSection, path, initialXAxis, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::initializer_list<Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2689,7 +2671,7 @@ namespace s3d
 			initialXAxis, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::initializer_list<Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2702,7 +2684,7 @@ namespace s3d
 			initialXAxis, uvScale, uvOffset, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2714,7 +2696,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2726,7 +2708,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2737,7 +2719,7 @@ namespace s3d
 			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform, closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2750,7 +2732,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2764,7 +2746,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
 	}
 
-	bool Mesh3DBuilder::addSweep(
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const Arg::initialXAxis_<Vec3> initialXAxis,
@@ -2773,15 +2755,11 @@ namespace s3d
 		const Mat4x4& transform,
 		const CloseRing closeRing)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not Mesh3DDetail::AppendSweep(
-			m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset, closeRing))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendSweep(
+				m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset, closeRing),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2790,17 +2768,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addTriangularPrism(const Vec3 size)
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 size)
 	{
 		return addTriangularPrism(size, BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addTriangularPrism(const Vec3 size, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 size, const Vec3 offset)
 	{
 		return addTriangularPrism(size, BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addTriangularPrism(
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
 		const Vec3 size,
 		const Vec3 offset,
 		const Quaternion& rotation)
@@ -2808,17 +2786,17 @@ namespace s3d
 		return addTriangularPrism(size, BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addTriangularPrism(const Vec3 size, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 size, const Mat4x4& transform)
 	{
 		return addTriangularPrism(size, BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addTriangularPrism(const Vec3 _size, const BoxUVMapping& uvMapping)
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 _size, const BoxUVMapping& uvMapping)
 	{
 		if ((not IsFloatRepresentable(_size))
 			|| (not IsFinite(uvMapping)))
 		{
-			return GenerationFailed<bool>("Mesh3D::TriangularPrism(): size and UV mapping must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::TriangularPrism(): size and UV mapping must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -2826,14 +2804,14 @@ namespace s3d
 			|| (size.y <= 0.0f)
 			|| (size.z <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::TriangularPrism(): Every size component must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::TriangularPrism(): Every size component must be positive after conversion to float");
 		}
 
 		size_t vertexOffset;
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, 18, 8, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::TriangularPrism(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::TriangularPrism(): The generated mesh exceeds the supported size");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -2894,10 +2872,13 @@ namespace s3d
 			{{ { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 1.0f }, { 1.0f, 1.0f } }},
 			-Float3::UnitY(), Float3::UnitX(), uvMapping.negativeY);
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 18),
+			(m_mesh.indices.size() - 8));
 	}
 
-	bool Mesh3DBuilder::addTriangularPrism(
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Vec3 offset)
@@ -2905,7 +2886,7 @@ namespace s3d
 		return addTriangularPrism(size, uvMapping, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addTriangularPrism(
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Vec3 offset,
@@ -2915,19 +2896,15 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addTriangularPrism(
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addTriangularPrism(size, uvMapping))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addTriangularPrism(size, uvMapping),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2936,17 +2913,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps)
+	Mesh3DAddResult Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps)
 	{
 		return addStairs(size, steps, BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps, const Vec3 offset)
 	{
 		return addStairs(size, steps, BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addStairs(
+	Mesh3DAddResult Mesh3DBuilder::addStairs(
 		const Vec3 size,
 		const uint32 steps,
 		const Vec3 offset,
@@ -2955,12 +2932,12 @@ namespace s3d
 		return addStairs(size, steps, BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps, const Mat4x4& transform)
 	{
 		return addStairs(size, steps, BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addStairs(
+	Mesh3DAddResult Mesh3DBuilder::addStairs(
 		const Vec3 _size,
 		const uint32 steps,
 		const BoxUVMapping& uvMapping)
@@ -2968,7 +2945,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_size))
 			|| (not IsFinite(uvMapping)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Stairs(): size and UV mapping must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Stairs(): size and UV mapping must be finite and float-representable");
 		}
 
 		const Float3 size = _size;
@@ -2977,7 +2954,7 @@ namespace s3d
 			|| (size.z <= 0.0f)
 			|| (steps == 0))
 		{
-			return GenerationFailed<bool>("Mesh3D::Stairs(): Every size component and the step count must be positive");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Stairs(): Every size component and the step count must be positive");
 		}
 
 		size_t addedVertexCount;
@@ -2987,7 +2964,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(steps), 8, addedTriangleCount))
 			|| (not CheckedAdd(addedTriangleCount, 4, addedTriangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Stairs(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Stairs(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
@@ -2995,7 +2972,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, addedVertexCount, addedTriangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::Stairs(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Stairs(): The generated mesh exceeds the supported size");
 		}
 
 		const Float3 halfSize = (size * 0.5f);
@@ -3080,10 +3057,13 @@ namespace s3d
 				-Float3::UnitX(), -Float3::UnitZ(), uvMapping.negativeX);
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - addedVertexCount),
+			(m_mesh.indices.size() - addedTriangleCount));
 	}
 
-	bool Mesh3DBuilder::addStairs(
+	Mesh3DAddResult Mesh3DBuilder::addStairs(
 		const Vec3 size,
 		const uint32 steps,
 		const BoxUVMapping& uvMapping,
@@ -3092,7 +3072,7 @@ namespace s3d
 		return addStairs(size, steps, uvMapping, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addStairs(
+	Mesh3DAddResult Mesh3DBuilder::addStairs(
 		const Vec3 size,
 		const uint32 steps,
 		const BoxUVMapping& uvMapping,
@@ -3103,20 +3083,16 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addStairs(
+	Mesh3DAddResult Mesh3DBuilder::addStairs(
 		const Vec3 size,
 		const uint32 steps,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addStairs(size, steps, uvMapping))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addStairs(size, steps, uvMapping),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3125,12 +3101,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addPyramid(const double baseSize, const double height)
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(const double baseSize, const double height)
 	{
 		return addPyramid(SizeF{ baseSize, baseSize }, height);
 	}
 
-	bool Mesh3DBuilder::addPyramid(
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const double baseSize,
 		const double height,
 		const Vec3 offset)
@@ -3138,7 +3114,7 @@ namespace s3d
 		return addPyramid(SizeF{ baseSize, baseSize }, height, offset);
 	}
 
-	bool Mesh3DBuilder::addPyramid(
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const double baseSize,
 		const double height,
 		const Vec3 offset,
@@ -3147,7 +3123,7 @@ namespace s3d
 		return addPyramid(SizeF{ baseSize, baseSize }, height, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addPyramid(
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const double baseSize,
 		const double height,
 		const Mat4x4& transform)
@@ -3155,12 +3131,12 @@ namespace s3d
 		return addPyramid(SizeF{ baseSize, baseSize }, height, transform);
 	}
 
-	bool Mesh3DBuilder::addPyramid(const SizeF _baseSizeXZ, const double _height)
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(const SizeF _baseSizeXZ, const double _height)
 	{
 		if ((not IsFloatRepresentable(_baseSizeXZ))
 			|| (not IsFloatRepresentable(_height)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Pyramid(): baseSizeXZ and height must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Pyramid(): baseSizeXZ and height must be finite and float-representable");
 		}
 
 		const Float2 baseSizeXZ = _baseSizeXZ;
@@ -3169,14 +3145,14 @@ namespace s3d
 			|| (baseSizeXZ.y <= 0.0f)
 			|| (height <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::Pyramid(): Every base size component and height must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Pyramid(): Every base size component and height must be positive after conversion to float");
 		}
 
 		size_t vertexOffset;
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, 16, 6, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::Pyramid(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Pyramid(): The generated mesh exceeds the supported size");
 		}
 
 		const float halfX = (baseSizeXZ.x * 0.5f);
@@ -3283,10 +3259,13 @@ namespace s3d
 			bottomIndexBase, (bottomIndexBase + 1), (bottomIndexBase + 2) };
 		m_mesh.indices[triangleOffset + 5] = TriangleIndex32{
 			(bottomIndexBase + 2), (bottomIndexBase + 1), (bottomIndexBase + 3) };
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 16),
+			(m_mesh.indices.size() - 6));
 	}
 
-	bool Mesh3DBuilder::addPyramid(
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const SizeF baseSizeXZ,
 		const double height,
 		const Vec3 offset)
@@ -3294,7 +3273,7 @@ namespace s3d
 		return addPyramid(baseSizeXZ, height, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addPyramid(
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const SizeF baseSizeXZ,
 		const double height,
 		const Vec3 offset,
@@ -3304,19 +3283,15 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addPyramid(
+	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const SizeF baseSizeXZ,
 		const double height,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addPyramid(baseSizeXZ, height))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addPyramid(baseSizeXZ, height),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3325,7 +3300,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height)
@@ -3333,7 +3308,7 @@ namespace s3d
 		return addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, BoxUVMapping{});
 	}
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height,
@@ -3342,7 +3317,7 @@ namespace s3d
 		return addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, BoxUVMapping{}, offset);
 	}
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height,
@@ -3353,7 +3328,7 @@ namespace s3d
 			bottomSizeXZ, topSizeXZ, height, BoxUVMapping{}, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height,
@@ -3362,7 +3337,7 @@ namespace s3d
 		return addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, BoxUVMapping{}, transform);
 	}
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF _bottomSizeXZ,
 		const SizeF _topSizeXZ,
 		const double _height,
@@ -3373,7 +3348,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_height))
 			|| (not IsFinite(uvMapping)))
 		{
-			return GenerationFailed<bool>("Mesh3D::RectangularFrustum(): The sizes, height, and UV mapping must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::RectangularFrustum(): The sizes, height, and UV mapping must be finite and float-representable");
 		}
 
 		const Float2 bottomSizeXZ = _bottomSizeXZ;
@@ -3385,7 +3360,7 @@ namespace s3d
 			|| (topSizeXZ.y <= 0.0f)
 			|| (height <= 0.0f))
 		{
-			return GenerationFailed<bool>("Mesh3D::RectangularFrustum(): Every size component and height must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::RectangularFrustum(): Every size component and height must be positive after conversion to float");
 		}
 
 		if (bottomSizeXZ == topSizeXZ)
@@ -3397,7 +3372,7 @@ namespace s3d
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, 24, 12, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::RectangularFrustum(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::RectangularFrustum(): The generated mesh exceeds the supported size");
 		}
 
 		const Float2 bottomHalf = (bottomSizeXZ * 0.5f);
@@ -3499,10 +3474,13 @@ namespace s3d
 			}},
 			-Float3::UnitY(), Float3::UnitX(), uvMapping.negativeY);
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 24),
+			(m_mesh.indices.size() - 12));
 	}
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height,
@@ -3513,7 +3491,7 @@ namespace s3d
 			bottomSizeXZ, topSizeXZ, height, uvMapping, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height,
@@ -3525,21 +3503,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addRectangularFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height,
 		const BoxUVMapping& uvMapping,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, uvMapping))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, uvMapping),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3548,17 +3522,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addTetrahedron(const double _radius)
+	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(const double _radius)
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return GenerationFailed<bool>("Mesh3D::Tetrahedron(): radius must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Tetrahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return GenerationFailed<bool>("Mesh3D::Tetrahedron(): radius must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Tetrahedron(): radius must be positive after conversion to float");
 		}
 
 		constexpr std::array<Float3, 4> Vertices =
@@ -3576,18 +3550,21 @@ namespace s3d
 		if (not AddTriangleFacedPolyhedron(
 			m_mesh, radius, Vertices, 1.7320508075688772935f, Faces))
 		{
-			return GenerationFailed<bool>("Mesh3D::Tetrahedron(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Tetrahedron(): The generated mesh exceeds the supported size");
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 12),
+			(m_mesh.indices.size() - 4));
 	}
 
-	bool Mesh3DBuilder::addTetrahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(const double radius, const Vec3 offset)
 	{
 		return addTetrahedron(radius, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addTetrahedron(
+	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(
 		const double radius,
 		const Vec3 offset,
 		const Quaternion& rotation)
@@ -3596,16 +3573,9 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addTetrahedron(const double radius, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(const double radius, const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addTetrahedron(radius))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(m_mesh, addTetrahedron(radius), transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3614,17 +3584,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addOctahedron(const double _radius)
+	Mesh3DAddResult Mesh3DBuilder::addOctahedron(const double _radius)
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return GenerationFailed<bool>("Mesh3D::Octahedron(): radius must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Octahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return GenerationFailed<bool>("Mesh3D::Octahedron(): radius must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Octahedron(): radius must be positive after conversion to float");
 		}
 
 		constexpr std::array<Float3, 6> Vertices =
@@ -3644,18 +3614,21 @@ namespace s3d
 
 		if (not AddTriangleFacedPolyhedron(m_mesh, radius, Vertices, 1.0f, Faces))
 		{
-			return GenerationFailed<bool>("Mesh3D::Octahedron(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Octahedron(): The generated mesh exceeds the supported size");
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 24),
+			(m_mesh.indices.size() - 8));
 	}
 
-	bool Mesh3DBuilder::addOctahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addOctahedron(const double radius, const Vec3 offset)
 	{
 		return addOctahedron(radius, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addOctahedron(
+	Mesh3DAddResult Mesh3DBuilder::addOctahedron(
 		const double radius,
 		const Vec3 offset,
 		const Quaternion& rotation)
@@ -3664,16 +3637,9 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addOctahedron(const double radius, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addOctahedron(const double radius, const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addOctahedron(radius))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(m_mesh, addOctahedron(radius), transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3682,17 +3648,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addIcosahedron(const double _radius)
+	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(const double _radius)
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return GenerationFailed<bool>("Mesh3D::Icosahedron(): radius must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Icosahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return GenerationFailed<bool>("Mesh3D::Icosahedron(): radius must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Icosahedron(): radius must be positive after conversion to float");
 		}
 
 		if (not AddTriangleFacedPolyhedron(
@@ -3702,18 +3668,21 @@ namespace s3d
 			1.9021130325903071442f,
 			IcosahedronFaces))
 		{
-			return GenerationFailed<bool>("Mesh3D::Icosahedron(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Icosahedron(): The generated mesh exceeds the supported size");
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 60),
+			(m_mesh.indices.size() - 20));
 	}
 
-	bool Mesh3DBuilder::addIcosahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(const double radius, const Vec3 offset)
 	{
 		return addIcosahedron(radius, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addIcosahedron(
+	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(
 		const double radius,
 		const Vec3 offset,
 		const Quaternion& rotation)
@@ -3722,16 +3691,9 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addIcosahedron(const double radius, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(const double radius, const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addIcosahedron(radius))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(m_mesh, addIcosahedron(radius), transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3740,24 +3702,24 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addDodecahedron(const double _radius)
+	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(const double _radius)
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return GenerationFailed<bool>("Mesh3D::Dodecahedron(): radius must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Dodecahedron(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
 		if (radius <= 0.0f)
 		{
-			return GenerationFailed<bool>("Mesh3D::Dodecahedron(): radius must be positive after conversion to float");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Dodecahedron(): radius must be positive after conversion to float");
 		}
 
 		size_t vertexOffset;
 		size_t triangleOffset;
 		if (not ResizeForAddition(m_mesh, 60, 36, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::Dodecahedron(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Dodecahedron(): The generated mesh exceeds the supported size");
 		}
 
 		const DodecahedronData& data = GetDodecahedronData();
@@ -3812,15 +3774,18 @@ namespace s3d
 			*pTriangle++ = TriangleIndex32{ i0, (i0 + 3), (i0 + 4) };
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - 60),
+			(m_mesh.indices.size() - 36));
 	}
 
-	bool Mesh3DBuilder::addDodecahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(const double radius, const Vec3 offset)
 	{
 		return addDodecahedron(radius, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addDodecahedron(
+	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(
 		const double radius,
 		const Vec3 offset,
 		const Quaternion& rotation)
@@ -3829,16 +3794,9 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addDodecahedron(const double radius, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(const double radius, const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addDodecahedron(radius))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(m_mesh, addDodecahedron(radius), transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3847,7 +3805,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addPlane(
+	Mesh3DAddResult Mesh3DBuilder::addPlane(
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
 		const Vec2 uvOffset)
@@ -3855,12 +3813,12 @@ namespace s3d
 		return addGrid(sizeXZ, 1, 1, uvScale, uvOffset);
 	}
 
-	bool Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Vec3 offset)
 	{
 		return addPlane(sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset);
 	}
 
-	bool Mesh3DBuilder::addPlane(
+	Mesh3DAddResult Mesh3DBuilder::addPlane(
 		const SizeF sizeXZ,
 		const Vec3 offset,
 		const Quaternion& rotation)
@@ -3869,12 +3827,12 @@ namespace s3d
 			sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Mat4x4& transform)
+	Mesh3DAddResult Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Mat4x4& transform)
 	{
 		return addPlane(sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
 	}
 
-	bool Mesh3DBuilder::addPlane(
+	Mesh3DAddResult Mesh3DBuilder::addPlane(
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
@@ -3883,7 +3841,7 @@ namespace s3d
 		return addPlane(sizeXZ, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addPlane(
+	Mesh3DAddResult Mesh3DBuilder::addPlane(
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
@@ -3894,7 +3852,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addPlane(
+	Mesh3DAddResult Mesh3DBuilder::addPlane(
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
@@ -3909,7 +3867,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addGrid(
+	Mesh3DAddResult Mesh3DBuilder::addGrid(
 		const SizeF _sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
@@ -3920,7 +3878,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvScale))
 			|| (not IsFloatRepresentable(_uvOffset)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): sizeXZ and the UV transform must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Grid()/Plane(): sizeXZ and the UV transform must be finite and float-representable");
 		}
 
 		const Float2 sizeXZ = _sizeXZ;
@@ -3931,7 +3889,7 @@ namespace s3d
 			|| (segmentsX == 0)
 			|| (segmentsZ == 0))
 		{
-			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): Every size component and segment count must be positive");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Grid()/Plane(): Every size component and segment count must be positive");
 		}
 
 		size_t columnCount;
@@ -3947,7 +3905,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(segmentsX), static_cast<size_t>(segmentsZ), cellCount))
 			|| (not CheckedMultiply(cellCount, 2, triangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
@@ -3955,7 +3913,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
 		}
 
 		const Float2 halfSize = (sizeXZ * 0.5f);
@@ -4001,10 +3959,13 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addGrid(
+	Mesh3DAddResult Mesh3DBuilder::addGrid(
 		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
@@ -4014,7 +3975,7 @@ namespace s3d
 			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset);
 	}
 
-	bool Mesh3DBuilder::addGrid(
+	Mesh3DAddResult Mesh3DBuilder::addGrid(
 		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
@@ -4025,7 +3986,7 @@ namespace s3d
 			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addGrid(
+	Mesh3DAddResult Mesh3DBuilder::addGrid(
 		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
@@ -4035,7 +3996,7 @@ namespace s3d
 			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
 	}
 
-	bool Mesh3DBuilder::addGrid(
+	Mesh3DAddResult Mesh3DBuilder::addGrid(
 		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
@@ -4047,7 +4008,7 @@ namespace s3d
 			uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addGrid(
+	Mesh3DAddResult Mesh3DBuilder::addGrid(
 		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
@@ -4060,7 +4021,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addGrid(
+	Mesh3DAddResult Mesh3DBuilder::addGrid(
 		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
@@ -4068,14 +4029,10 @@ namespace s3d
 		const Vec2 uvOffset,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4084,7 +4041,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addHeightField(
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
@@ -4093,7 +4050,7 @@ namespace s3d
 		return Mesh3DDetail::AppendHeightField(m_mesh, heights, sizeXZ, uvScale, uvOffset);
 	}
 
-	bool Mesh3DBuilder::addHeightField(
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Vec3 offset)
@@ -4101,7 +4058,7 @@ namespace s3d
 		return addHeightField(heights, sizeXZ, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHeightField(
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Vec3 offset,
@@ -4111,7 +4068,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHeightField(
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Mat4x4& transform)
@@ -4120,7 +4077,7 @@ namespace s3d
 			heights, sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
 	}
 
-	bool Mesh3DBuilder::addHeightField(
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
@@ -4131,7 +4088,7 @@ namespace s3d
 			heights, sizeXZ, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHeightField(
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
@@ -4143,21 +4100,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHeightField(
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addHeightField(heights, sizeXZ, uvScale, uvOffset))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addHeightField(heights, sizeXZ, uvScale, uvOffset),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4166,7 +4119,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
@@ -4175,7 +4128,7 @@ namespace s3d
 		return Mesh3DDetail::AppendLoft(m_mesh, sections, heights, uvScale, uvOffset);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec3 offset)
@@ -4183,7 +4136,7 @@ namespace s3d
 		return addLoft(sections, heights, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec3 offset,
@@ -4193,7 +4146,7 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Mat4x4& transform)
@@ -4202,7 +4155,7 @@ namespace s3d
 			sections, heights, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
@@ -4213,7 +4166,7 @@ namespace s3d
 			sections, heights, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
@@ -4225,24 +4178,20 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addLoft(sections, heights, uvScale, uvOffset))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addLoft(sections, heights, uvScale, uvOffset),
+			transform);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
@@ -4251,7 +4200,7 @@ namespace s3d
 		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
 		const Vec3 offset)
@@ -4259,7 +4208,7 @@ namespace s3d
 		return addLoft(MakeSectionViews(sections), heights, offset);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
 		const Vec3 offset,
@@ -4268,7 +4217,7 @@ namespace s3d
 		return addLoft(MakeSectionViews(sections), heights, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
 		const Mat4x4& transform)
@@ -4276,7 +4225,7 @@ namespace s3d
 		return addLoft(MakeSectionViews(sections), heights, transform);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
@@ -4286,7 +4235,7 @@ namespace s3d
 		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset, offset);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
@@ -4298,7 +4247,7 @@ namespace s3d
 			MakeSectionViews(sections), heights, uvScale, uvOffset, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addLoft(
+	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
 		const Vec2 uvScale,
@@ -4314,12 +4263,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addDisc(const double radius, const uint32 segments)
+	Mesh3DAddResult Mesh3DBuilder::addDisc(const double radius, const uint32 segments)
 	{
 		return addAnnulus(0.0, radius, segments);
 	}
 
-	bool Mesh3DBuilder::addDisc(
+	Mesh3DAddResult Mesh3DBuilder::addDisc(
 		const double radius,
 		const uint32 segments,
 		const Vec3 offset)
@@ -4327,7 +4276,7 @@ namespace s3d
 		return addAnnulus(0.0, radius, segments, offset);
 	}
 
-	bool Mesh3DBuilder::addDisc(
+	Mesh3DAddResult Mesh3DBuilder::addDisc(
 		const double radius,
 		const uint32 segments,
 		const Vec3 offset,
@@ -4336,7 +4285,7 @@ namespace s3d
 		return addAnnulus(0.0, radius, segments, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addDisc(
+	Mesh3DAddResult Mesh3DBuilder::addDisc(
 		const double radius,
 		const uint32 segments,
 		const Mat4x4& transform)
@@ -4350,7 +4299,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addAnnulus(
+	Mesh3DAddResult Mesh3DBuilder::addAnnulus(
 		const double _innerRadius,
 		const double _outerRadius,
 		const uint32 segments)
@@ -4358,7 +4307,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_innerRadius))
 			|| (not IsFloatRepresentable(_outerRadius)))
 		{
-			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The radii must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Annulus()/Disc(): The radii must be finite and float-representable");
 		}
 
 		const float innerRadius = static_cast<float>(_innerRadius);
@@ -4367,7 +4316,7 @@ namespace s3d
 			|| (outerRadius <= innerRadius)
 			|| (segments < 3))
 		{
-			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The radii or segment count is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Annulus()/Disc(): The radii or segment count is invalid");
 		}
 
 		const bool isDisc = (innerRadius == 0.0f);
@@ -4378,7 +4327,7 @@ namespace s3d
 		{
 			if (not CheckedAdd(static_cast<size_t>(segments), 1, vertexCount))
 			{
-				return GenerationFailed<bool>("Mesh3D::Disc(): The generated vertex count exceeds the supported range");
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Disc(): The generated vertex count exceeds the supported range");
 			}
 
 			triangleCount = segments;
@@ -4388,13 +4337,13 @@ namespace s3d
 			if ((not CheckedMultiply(static_cast<size_t>(segments), 2, vertexCount))
 				|| (not CheckedMultiply(static_cast<size_t>(segments), 2, triangleCount)))
 			{
-				return GenerationFailed<bool>("Mesh3D::Annulus(): The generated mesh exceeds the supported size");
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Annulus(): The generated mesh exceeds the supported size");
 			}
 		}
 
 		if (Mesh3D::MaxVertexCount < vertexCount)
 		{
-			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The generated vertex count exceeds the supported range");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Annulus()/Disc(): The generated vertex count exceeds the supported range");
 		}
 
 		size_t vertexOffset;
@@ -4402,7 +4351,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::Annulus()/Disc(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Annulus()/Disc(): The generated mesh exceeds the supported size");
 		}
 
 		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
@@ -4472,10 +4421,13 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addAnnulus(
+	Mesh3DAddResult Mesh3DBuilder::addAnnulus(
 		const double innerRadius,
 		const double outerRadius,
 		const uint32 segments,
@@ -4485,7 +4437,7 @@ namespace s3d
 			innerRadius, outerRadius, segments, Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addAnnulus(
+	Mesh3DAddResult Mesh3DBuilder::addAnnulus(
 		const double innerRadius,
 		const double outerRadius,
 		const uint32 segments,
@@ -4496,20 +4448,16 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addAnnulus(
+	Mesh3DAddResult Mesh3DBuilder::addAnnulus(
 		const double innerRadius,
 		const double outerRadius,
 		const uint32 segments,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addAnnulus(innerRadius, outerRadius, segments))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addAnnulus(innerRadius, outerRadius, segments),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4518,7 +4466,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addHollowCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addHollowCylinder(
 		const double _innerRadius,
 		const double _outerRadius,
 		const double _height,
@@ -4528,7 +4476,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_outerRadius))
 			|| (not IsFloatRepresentable(_height)))
 		{
-			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The radii and height must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::HollowCylinder(): The radii and height must be finite and float-representable");
 		}
 
 		const float innerRadius = static_cast<float>(_innerRadius);
@@ -4539,7 +4487,7 @@ namespace s3d
 			|| (height <= 0.0f)
 			|| (segments < 3))
 		{
-			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The radii, height, or segment count is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::HollowCylinder(): The radii, height, or segment count is invalid");
 		}
 
 		size_t ringStride;
@@ -4551,7 +4499,7 @@ namespace s3d
 			|| (Mesh3D::MaxVertexCount < vertexCount)
 			|| (not CheckedMultiply(static_cast<size_t>(segments), 8, triangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::HollowCylinder(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
@@ -4559,7 +4507,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::HollowCylinder(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::HollowCylinder(): The generated mesh exceeds the supported size");
 		}
 
 		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
@@ -4680,10 +4628,13 @@ namespace s3d
 			*pTriangle++ = TriangleIndex32{ bottomInnerCurrent, bottomOuterNext, bottomInnerNext };
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addHollowCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addHollowCylinder(
 		const double innerRadius,
 		const double outerRadius,
 		const double height,
@@ -4694,7 +4645,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHollowCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addHollowCylinder(
 		const double innerRadius,
 		const double outerRadius,
 		const double height,
@@ -4706,21 +4657,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHollowCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addHollowCylinder(
 		const double innerRadius,
 		const double outerRadius,
 		const double height,
 		const uint32 segments,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addHollowCylinder(innerRadius, outerRadius, height, segments))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addHollowCylinder(innerRadius, outerRadius, height, segments),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4729,7 +4676,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addConicalFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addConicalFrustum(
 		const double _bottomRadius,
 		const double _topRadius,
 		const double _height,
@@ -4739,7 +4686,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_topRadius))
 			|| (not IsFloatRepresentable(_height)))
 		{
-			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii and height must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii and height must be finite and float-representable");
 		}
 
 		const float bottomRadius = static_cast<float>(_bottomRadius);
@@ -4750,7 +4697,7 @@ namespace s3d
 			|| (height <= 0.0f)
 			|| (segments < 3))
 		{
-			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii, height, or segment count is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The radii, height, or segment count is invalid");
 		}
 
 		const bool isCone = (topRadius == 0.0f);
@@ -4760,7 +4707,7 @@ namespace s3d
 
 		if (not CheckedAdd(static_cast<size_t>(segments), 1, ringStride))
 		{
-			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): segments exceed the supported range");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::ConicalFrustum()/Cylinder()/Cone(): segments exceed the supported range");
 		}
 
 		if (isCone)
@@ -4770,7 +4717,7 @@ namespace s3d
 				|| (not CheckedAdd(scaledSegments, 2, vertexCount))
 				|| (not CheckedMultiply(static_cast<size_t>(segments), 2, triangleCount)))
 			{
-				return GenerationFailed<bool>("Mesh3D::Cone(): The generated mesh exceeds the supported size");
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Cone(): The generated mesh exceeds the supported size");
 			}
 		}
 		else
@@ -4778,13 +4725,13 @@ namespace s3d
 			if ((not CheckedMultiply(ringStride, 4, vertexCount))
 				|| (not CheckedMultiply(static_cast<size_t>(segments), 4, triangleCount)))
 			{
-				return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder(): The generated mesh exceeds the supported size");
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::ConicalFrustum()/Cylinder(): The generated mesh exceeds the supported size");
 			}
 		}
 
 		if (Mesh3D::MaxVertexCount < vertexCount)
 		{
-			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The generated vertex count exceeds the supported range");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The generated vertex count exceeds the supported range");
 		}
 
 		size_t vertexOffset;
@@ -4792,7 +4739,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::ConicalFrustum()/Cylinder()/Cone(): The generated mesh exceeds the supported size");
 		}
 
 		const Array<CircleSample> circle = Mesh3DDetail::MakeCircleSamples<float>(segments);
@@ -4968,10 +4915,13 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addConicalFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addConicalFrustum(
 		const double bottomRadius,
 		const double topRadius,
 		const double height,
@@ -4982,7 +4932,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addConicalFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addConicalFrustum(
 		const double bottomRadius,
 		const double topRadius,
 		const double height,
@@ -4994,21 +4944,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addConicalFrustum(
+	Mesh3DAddResult Mesh3DBuilder::addConicalFrustum(
 		const double bottomRadius,
 		const double topRadius,
 		const double height,
 		const uint32 segments,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addConicalFrustum(bottomRadius, topRadius, height, segments))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addConicalFrustum(bottomRadius, topRadius, height, segments),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -5017,7 +4963,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addCylinder(
 		const double radius,
 		const double height,
 		const uint32 segments)
@@ -5025,7 +4971,7 @@ namespace s3d
 		return addConicalFrustum(radius, radius, height, segments);
 	}
 
-	bool Mesh3DBuilder::addCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addCylinder(
 		const double radius,
 		const double height,
 		const uint32 segments,
@@ -5034,7 +4980,7 @@ namespace s3d
 		return addConicalFrustum(radius, radius, height, segments, offset);
 	}
 
-	bool Mesh3DBuilder::addCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addCylinder(
 		const double radius,
 		const double height,
 		const uint32 segments,
@@ -5044,7 +4990,7 @@ namespace s3d
 		return addConicalFrustum(radius, radius, height, segments, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addCylinder(
+	Mesh3DAddResult Mesh3DBuilder::addCylinder(
 		const double radius,
 		const double height,
 		const uint32 segments,
@@ -5059,7 +5005,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addCone(
+	Mesh3DAddResult Mesh3DBuilder::addCone(
 		const double radius,
 		const double height,
 		const uint32 segments)
@@ -5067,7 +5013,7 @@ namespace s3d
 		return addConicalFrustum(radius, 0.0, height, segments);
 	}
 
-	bool Mesh3DBuilder::addCone(
+	Mesh3DAddResult Mesh3DBuilder::addCone(
 		const double radius,
 		const double height,
 		const uint32 segments,
@@ -5076,7 +5022,7 @@ namespace s3d
 		return addConicalFrustum(radius, 0.0, height, segments, offset);
 	}
 
-	bool Mesh3DBuilder::addCone(
+	Mesh3DAddResult Mesh3DBuilder::addCone(
 		const double radius,
 		const double height,
 		const uint32 segments,
@@ -5086,7 +5032,7 @@ namespace s3d
 		return addConicalFrustum(radius, 0.0, height, segments, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addCone(
+	Mesh3DAddResult Mesh3DBuilder::addCone(
 		const double radius,
 		const double height,
 		const uint32 segments,
@@ -5101,7 +5047,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addTorus(
+	Mesh3DAddResult Mesh3DBuilder::addTorus(
 		const double _majorRadius,
 		const double _tubeRadius,
 		const uint32 ringSegments,
@@ -5110,7 +5056,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_majorRadius))
 			|| (not IsFloatRepresentable(_tubeRadius)))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): majorRadius and tubeRadius must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3DBuilder::addTorus(): majorRadius and tubeRadius must be finite and float-representable");
 		}
 
 		const float majorRadius = static_cast<float>(_majorRadius);
@@ -5121,7 +5067,7 @@ namespace s3d
 			|| (ringSegments < 3)
 			|| (tubeSegments < 3))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): The radii or segment counts are invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addTorus(): The radii or segment counts are invalid");
 		}
 
 		size_t ringStride;
@@ -5137,7 +5083,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(ringSegments), static_cast<size_t>(tubeSegments), quadCount))
 			|| (not CheckedMultiply(quadCount, 2, triangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addTorus(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
@@ -5145,7 +5091,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addTorus(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addTorus(): The generated mesh exceeds the supported size");
 		}
 
 		const Array<CircleSample> ringSinCos = Mesh3DDetail::MakeCircleSamples<float>(ringSegments);
@@ -5195,10 +5141,13 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addTorus(
+	Mesh3DAddResult Mesh3DBuilder::addTorus(
 		const double majorRadius,
 		const double tubeRadius,
 		const uint32 ringSegments,
@@ -5209,7 +5158,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addTorus(
+	Mesh3DAddResult Mesh3DBuilder::addTorus(
 		const double majorRadius,
 		const double tubeRadius,
 		const uint32 ringSegments,
@@ -5221,21 +5170,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addTorus(
+	Mesh3DAddResult Mesh3DBuilder::addTorus(
 		const double majorRadius,
 		const double tubeRadius,
 		const uint32 ringSegments,
 		const uint32 tubeSegments,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -5244,14 +5189,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addSphere(
+	Mesh3DAddResult Mesh3DBuilder::addSphere(
 		const double _radius,
 		const uint32 slices,
 		const uint32 stacks)
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): radius must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3DBuilder::addSphere(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
@@ -5259,7 +5204,7 @@ namespace s3d
 			|| (slices < 3)
 			|| (stacks < 2))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): The radius, slice count, or stack count is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addSphere(): The radius, slice count, or stack count is invalid");
 		}
 
 		const size_t interiorRingCount = (static_cast<size_t>(stacks) - 1);
@@ -5277,7 +5222,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
 			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addSphere(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
@@ -5285,7 +5230,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addSphere(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addSphere(): The generated mesh exceeds the supported size");
 		}
 
 		const size_t firstRingBase = (vertexOffset + slices);
@@ -5379,10 +5324,13 @@ namespace s3d
 			*pTriangle++ = TriangleIndex32{ ringLeft, ringRight, pole };
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addSphere(
+	Mesh3DAddResult Mesh3DBuilder::addSphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
@@ -5392,7 +5340,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addSphere(
+	Mesh3DAddResult Mesh3DBuilder::addSphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
@@ -5403,20 +5351,13 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addSphere(
+	Mesh3DAddResult Mesh3DBuilder::addSphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addSphere(radius, slices, stacks))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(m_mesh, addSphere(radius, slices, stacks), transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -5425,7 +5366,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks)
@@ -5433,7 +5374,7 @@ namespace s3d
 		return addHemisphere(radius, CloseBottom::No, slices, stacks);
 	}
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
@@ -5442,7 +5383,7 @@ namespace s3d
 		return addHemisphere(radius, CloseBottom::No, slices, stacks, offset);
 	}
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
@@ -5452,7 +5393,7 @@ namespace s3d
 		return addHemisphere(radius, CloseBottom::No, slices, stacks, offset, rotation);
 	}
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
@@ -5461,7 +5402,7 @@ namespace s3d
 		return addHemisphere(radius, CloseBottom::No, slices, stacks, transform);
 	}
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double _radius,
 		const CloseBottom closeBottom,
 		const uint32 slices,
@@ -5469,7 +5410,7 @@ namespace s3d
 	{
 		if (not IsFloatRepresentable(_radius))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addHemisphere(): radius must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3DBuilder::addHemisphere(): radius must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
@@ -5477,7 +5418,7 @@ namespace s3d
 			|| (slices < 3)
 			|| (stacks < 1))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addHemisphere(): The radius, slice count, or stack count is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addHemisphere(): The radius, slice count, or stack count is invalid");
 		}
 
 		size_t ringStride;
@@ -5494,13 +5435,13 @@ namespace s3d
 			|| (not CheckedAdd(static_cast<size_t>(slices), ringVertexCount, surfaceVertexCount))
 			|| (not CheckedMultiply(static_cast<size_t>(stacks), 2, twiceStackCount)))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addHemisphere(): The surface dimensions exceed the supported range");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addHemisphere(): The surface dimensions exceed the supported range");
 		}
 
 		triangleFactor = (twiceStackCount - 1);
 		if (not CheckedMultiply(static_cast<size_t>(slices), triangleFactor, surfaceTriangleCount))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addHemisphere(): The surface triangle count exceeds the supported range");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addHemisphere(): The surface triangle count exceeds the supported range");
 		}
 
 		vertexCount = surfaceVertexCount;
@@ -5512,13 +5453,13 @@ namespace s3d
 				|| (not CheckedAdd(vertexCount, bottomVertexCount, vertexCount))
 				|| (not CheckedAdd(triangleCount, static_cast<size_t>(slices), triangleCount)))
 			{
-				return GenerationFailed<bool>("Mesh3DBuilder::addHemisphere(): The closed-bottom mesh exceeds the supported size");
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addHemisphere(): The closed-bottom mesh exceeds the supported size");
 			}
 		}
 
 		if (Mesh3D::MaxVertexCount < vertexCount)
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addHemisphere(): The generated vertex count exceeds the supported range");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addHemisphere(): The generated vertex count exceeds the supported range");
 		}
 
 		size_t vertexOffset;
@@ -5526,7 +5467,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addHemisphere(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addHemisphere(): The generated mesh exceeds the supported size");
 		}
 
 		const size_t firstRingBase = (vertexOffset + slices);
@@ -5635,10 +5576,13 @@ namespace s3d
 			}
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double radius,
 		const CloseBottom closeBottom,
 		const uint32 slices,
@@ -5649,7 +5593,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double radius,
 		const CloseBottom closeBottom,
 		const uint32 slices,
@@ -5661,21 +5605,17 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addHemisphere(
+	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
 		const double radius,
 		const CloseBottom closeBottom,
 		const uint32 slices,
 		const uint32 stacks,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addHemisphere(radius, closeBottom, slices, stacks))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addHemisphere(radius, closeBottom, slices, stacks),
+			transform);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -5684,7 +5624,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool Mesh3DBuilder::addCapsule(
+	Mesh3DAddResult Mesh3DBuilder::addCapsule(
 		const double _radius,
 		const double _cylinderHeight,
 		const uint32 slices,
@@ -5693,7 +5633,7 @@ namespace s3d
 		if ((not IsFloatRepresentable(_radius))
 			|| (not IsFloatRepresentable(_cylinderHeight)))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addCapsule(): radius and cylinderHeight must be finite and float-representable");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3DBuilder::addCapsule(): radius and cylinderHeight must be finite and float-representable");
 		}
 
 		const float radius = static_cast<float>(_radius);
@@ -5703,14 +5643,14 @@ namespace s3d
 			|| (slices < 3)
 			|| (hemisphereStacks < 1))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addCapsule(): The radius, cylinder height, slice count, or hemisphere stack count is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addCapsule(): The radius, cylinder height, slice count, or hemisphere stack count is invalid");
 		}
 
 		if (cylinderHeight == 0.0f)
 		{
 			if ((std::numeric_limits<uint32>::max() / 2) < hemisphereStacks)
 			{
-				return GenerationFailed<bool>("Mesh3DBuilder::addCapsule(): hemisphereStacks exceed the supported range for a zero-length cylinder");
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addCapsule(): hemisphereStacks exceed the supported range for a zero-length cylinder");
 			}
 
 			return addSphere(radius, slices, (hemisphereStacks * 2));
@@ -5732,7 +5672,7 @@ namespace s3d
 			|| (not CheckedMultiply(static_cast<size_t>(slices), interiorRingCount, triangleCount))
 			|| (not CheckedMultiply(triangleCount, 2, triangleCount)))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addCapsule(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addCapsule(): The generated mesh exceeds the supported size");
 		}
 
 		size_t vertexOffset;
@@ -5740,7 +5680,7 @@ namespace s3d
 		if (not ResizeForAddition(
 			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
 		{
-			return GenerationFailed<bool>("Mesh3DBuilder::addCapsule(): The generated mesh exceeds the supported size");
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DBuilder::addCapsule(): The generated mesh exceeds the supported size");
 		}
 
 		const size_t firstRingBase = (vertexOffset + slices);
@@ -5865,10 +5805,13 @@ namespace s3d
 			*pTriangle++ = TriangleIndex32{ ringLeft, ringRight, pole };
 		}
 
-		return true;
+		return AddedRange(
+			m_mesh,
+			(m_mesh.vertices.size() - vertexCount),
+			(m_mesh.indices.size() - triangleCount));
 	}
 
-	bool Mesh3DBuilder::addCapsule(
+	Mesh3DAddResult Mesh3DBuilder::addCapsule(
 		const double radius,
 		const double cylinderHeight,
 		const uint32 slices,
@@ -5879,7 +5822,7 @@ namespace s3d
 			Mat4x4::Translate(Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addCapsule(
+	Mesh3DAddResult Mesh3DBuilder::addCapsule(
 		const double radius,
 		const double cylinderHeight,
 		const uint32 slices,
@@ -5891,20 +5834,16 @@ namespace s3d
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
 	}
 
-	bool Mesh3DBuilder::addCapsule(
+	Mesh3DAddResult Mesh3DBuilder::addCapsule(
 		const double radius,
 		const double cylinderHeight,
 		const uint32 slices,
 		const uint32 hemisphereStacks,
 		const Mat4x4& transform)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		if (not addCapsule(radius, cylinderHeight, slices, hemisphereStacks))
-		{
-			return false;
-		}
-
-		TransformAddedVertices(m_mesh, vertexOffset, transform);
-		return true;
+		return TransformAddedVertices(
+			m_mesh,
+			addCapsule(radius, cylinderHeight, slices, hemisphereStacks),
+			transform);
 	}
 }

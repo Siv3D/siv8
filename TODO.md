@@ -59,12 +59,11 @@
 - `Revolve()`、`Loft()`、`Sweep()` などの点列入力について、連続する同一点が無効である契約を揃えて記述し、未検証の経路には失敗テストを追加する。
   - 現行 `Revolve()` は float 変換後に長さ 0 となる profile segment を拒否しており、縮退三角形を生成する仕様ではない。
 
-### Builder の追加範囲と部品情報
+### 部品範囲と部品情報
 
-- 直前または任意区間の add で追加された頂点・三角形の範囲を取得する API が必要か評価する。
+- 部品範囲の長期的な所有先を決める。
   - 用途は部品単位の検査、選択、材質割り当て、OBJ 等への group / object 情報の引き渡し。
-  - 現状は add 前後の `getMesh().vertexCount()` / `triangleCount()` の差分で取得できるが、利用者ごとに同じラッパが必要になる。
-  - 各 add の戻り値変更、stateful な `lastAdded*()`、checkpoint / scope、builder と別のモデル層のいずれが適切かは未決定とする。
+  - 単発の範囲は `Mesh3DAddResult` で扱えるが、名前、材質、階層を含む永続的な部品情報は builder と別のモデル層も候補とする。
 - 複数部品を傾いたローカル座標系へ配置する際の、手動の基底ベクトル計算を減らす方法を評価する。
   - scoped transform、明示的な placement、builder の外側の補助型などを候補とし、transform の合成順序と明示的な `Mat4x4` overload との関係を先に決める。
   - `Anchor` や Y 区間指定を各 primitive へ個別追加して overload を増やす前に、直交性のある配置機能で吸収できるか検討する。

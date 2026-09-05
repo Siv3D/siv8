@@ -23,6 +23,8 @@
 # include "Material.hpp"
 # include "PredefinedNamedParameter.hpp"
 # include "PredefinedYesNo.hpp"
+# include "Result.hpp"
+# include "String.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
 # include "VertexNormalWeighting.hpp"
@@ -33,6 +35,80 @@ namespace s3d
 	struct Mat3x2;
 	struct Mat4x4;
 	struct Quaternion;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3DRange
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 3D メッシュ内の連続した頂点範囲と三角形範囲
+	/// @remark 三角形範囲内のインデックスは Mesh3D 全体の頂点インデックスであり、vertexOffset を基準とする相対値ではありません。
+	struct Mesh3DRange
+	{
+		/// @brief 頂点範囲の先頭オフセット
+		size_t vertexOffset = 0;
+
+		/// @brief 頂点数
+		size_t vertexCount = 0;
+
+		/// @brief 三角形範囲の先頭オフセット
+		size_t triangleOffset = 0;
+
+		/// @brief 三角形数
+		size_t triangleCount = 0;
+
+		/// @brief 頂点と三角形を持たない範囲であるかを返します。
+		/// @return 頂点数と三角形数がともに 0 の場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isEmpty() const noexcept
+		{
+			return ((vertexCount == 0) && (triangleCount == 0));
+		}
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3DErrorCode
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 3D メッシュ生成エラーの分類
+	enum class Mesh3DErrorCode : uint8
+	{
+		/// @brief 引数が不正
+		InvalidArgument,
+
+		/// @brief 入力された幾何形状から安定したメッシュを生成できない
+		InvalidGeometry,
+
+		/// @brief 入力値が非有限、または入力値・生成値を float で表現できない
+		NumericRange,
+
+		/// @brief 生成後のメッシュがサポートされるサイズを超える
+		SizeLimit,
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3DError
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 3D メッシュ生成エラー
+	struct Mesh3DError
+	{
+		/// @brief エラーの分類
+		Mesh3DErrorCode code = Mesh3DErrorCode::InvalidArgument;
+
+		/// @brief 診断用のエラー詳細。エラーの判定には code を使用します。
+		String message;
+	};
+
+	/// @brief Mesh3DBuilder の add 関数による追加結果
+	/// @remark 成功時は追加された範囲、失敗時はエラーを保持します。
+	/// @remark `has_value()` または bool への変換で、追加に成功したかを確認できます。
+	using Mesh3DAddResult = Result<Mesh3DRange, Mesh3DError>;
 
 	////////////////////////////////////////////////////////////////
 	//

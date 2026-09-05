@@ -23,16 +23,16 @@ namespace
 		static_cast<Mesh3D (*)(std::span<const Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<bool (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
 	});
 
 }

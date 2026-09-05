@@ -22,22 +22,22 @@ namespace
 		static_cast<Mesh3D (*)(Vec3, Vec3, BoxFace)>(&Mesh3D::BoxShell);
 		static_cast<Mesh3D (*)(Vec3, double, const BoxUVMapping&, BoxFace)>(&Mesh3D::BoxShell);
 		static_cast<Mesh3D (*)(Vec3, Vec3, const BoxUVMapping&, BoxFace)>(&Mesh3D::BoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<bool (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
 	});
 }
 

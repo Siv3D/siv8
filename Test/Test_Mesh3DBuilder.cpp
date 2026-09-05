@@ -15,10 +15,10 @@ TEST_CASE("Mesh3DBuilder::addMesh")
 {
 	static_assert(requires
 	{
-		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&)>(&Mesh3DBuilder::addMesh);
-		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&, Vec3)>(&Mesh3DBuilder::addMesh);
-		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&, Vec3, const Quaternion&)>(&Mesh3DBuilder::addMesh);
-		static_cast<bool (Mesh3DBuilder::*)(const Mesh3D&, const Mat4x4&)>(&Mesh3DBuilder::addMesh);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&)>(&Mesh3DBuilder::addMesh);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&, Vec3)>(&Mesh3DBuilder::addMesh);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&, Vec3, const Quaternion&)>(&Mesh3DBuilder::addMesh);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&, const Mat4x4&)>(&Mesh3DBuilder::addMesh);
 	});
 
 	const Mesh3D source = Mesh3D::Wedge(Vec3{ 2.0, 4.0, 6.0 });
@@ -80,20 +80,20 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 {
 	static_assert(requires
 	{
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, Vec2, Vec2)>(&Mesh3DBuilder::addHeightField);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, Vec3)>(&Mesh3DBuilder::addHeightField);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, Vec3, const Quaternion&)>(&Mesh3DBuilder::addHeightField);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, const Mat4x4&)>(&Mesh3DBuilder::addHeightField);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addHeightField);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, Vec2, Vec2, Vec3,
 			const Quaternion&)>(&Mesh3DBuilder::addHeightField);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, Vec2, Vec2,
 			const Mat4x4&)>(&Mesh3DBuilder::addHeightField);
 	});
@@ -151,20 +151,20 @@ TEST_CASE("Mesh3DBuilder::addLoft")
 	using Heights = std::span<const double>;
 	static_assert(requires
 	{
-		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2)>(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2)>(
 			&Mesh3DBuilder::addLoft);
-		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec3)>(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec3)>(
 			&Mesh3DBuilder::addLoft);
-		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec3, const Quaternion&)>(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec3, const Quaternion&)>(
 			&Mesh3DBuilder::addLoft);
-		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, const Mat4x4&)>(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, const Mat4x4&)>(
 			&Mesh3DBuilder::addLoft);
-		static_cast<bool (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2, Vec3)>(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2, Vec3)>(
 			&Mesh3DBuilder::addLoft);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			SectionViews, Heights, Vec2, Vec2, Vec3, const Quaternion&)>(
 			&Mesh3DBuilder::addLoft);
-		static_cast<bool (Mesh3DBuilder::*)(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			SectionViews, Heights, Vec2, Vec2, const Mat4x4&)>(
 			&Mesh3DBuilder::addLoft);
 	});

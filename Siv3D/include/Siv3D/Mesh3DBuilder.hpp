@@ -24,7 +24,18 @@ namespace s3d
 	/// @brief 複数の 3D 形状を 1 つの Mesh3D に直接生成するビルダー
 	/// @remark 各形状生成関数は一時的な Mesh3D を作成せず、ビルダーが所有するメッシュへ頂点と三角形を追加します。
 	/// @remark `addMesh()` は、呼び出し側が用意した Mesh3D の内容をビルダーが所有するメッシュへコピーします。
-	/// @remark add 関数が失敗した場合、Fail レベルのエンジンログへ理由を出力し、既存のメッシュ内容は変更されません。
+	/// @remark 各 add 関数は Mesh3DAddResult を返します。成功時は追加された範囲、失敗時は分類済みのエラーを取得できます。
+	/// @remark add 関数が失敗した場合、Fail レベルのエンジンログへ理由を出力し、既存のメッシュ内容は変更されません。何も追加しない有効な操作は空範囲として成功します。
+	/// @code
+	/// if (const auto result = builder.addTube(path, 0.25))
+	/// {
+	///     const Mesh3DRange added = *result;
+	/// }
+	/// else
+	/// {
+	///     const Mesh3DError& error = result.error();
+	/// }
+	/// @endcode
 	class Mesh3DBuilder
 	{
 	public:
@@ -92,30 +103,34 @@ namespace s3d
 
 		/// @brief 既存の 3D メッシュを追加します。
 		/// @param mesh 追加する 3D メッシュ
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 空または不正な `mesh`、もしくは追加後の頂点数が `Mesh3D::MaxVertexCount` を超える場合は失敗します。
 		/// @remark 失敗した場合、既存のメッシュ内容は変更されません。
-		bool addMesh(const Mesh3D& mesh);
+		[[nodiscard]]
+		Mesh3DAddResult addMesh(const Mesh3D& mesh);
 
 		/// @brief 平行移動した既存の 3D メッシュを追加します。
 		/// @param mesh 追加する 3D メッシュ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addMesh(const Mesh3D& mesh, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addMesh(const Mesh3D& mesh, Vec3 offset);
 
 		/// @brief 回転および平行移動した既存の 3D メッシュを追加します。
 		/// @param mesh 追加する 3D メッシュ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addMesh(const Mesh3D& mesh, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addMesh(const Mesh3D& mesh, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した既存の 3D メッシュを追加します。
 		/// @param mesh 追加する 3D メッシュ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 変換時の法線、接線、および巻き順の規約は `Mesh3D::append(mesh, transform)` と同じです。
-		bool addMesh(const Mesh3D& mesh, const Mat4x4& transform);
+		[[nodiscard]]
+		Mesh3DAddResult addMesh(const Mesh3D& mesh, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -126,9 +141,10 @@ namespace s3d
 		/// @brief 原点を中心とする直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		/// @remark `faces == BoxFace::None_` の場合、メッシュを変更せず true を返します。
-		bool addBox(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark `faces == BoxFace::None_` の場合、メッシュを変更せず空の範囲を返します。
+		[[nodiscard]]
+		Mesh3DAddResult addBox(
 			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
 			BoxFace faces = BoxFace::All);
 
@@ -136,40 +152,45 @@ namespace s3d
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param offset 平行移動量
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, Vec3 offset, BoxFace faces = BoxFace::All);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBox(Vec3 size, Vec3 offset, BoxFace faces = BoxFace::All);
 
 		/// @brief 回転および平行移動した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, Vec3 offset, const Quaternion& rotation, BoxFace faces = BoxFace::All);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBox(Vec3 size, Vec3 offset, const Quaternion& rotation, BoxFace faces = BoxFace::All);
 
 		/// @brief アフィン変換を適用した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param transform 適用するアフィン変換行列
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const Mat4x4& transform, BoxFace faces = BoxFace::All);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBox(Vec3 size, const Mat4x4& transform, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とする直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark `uvMapping` は `faces` で選択した面に対応する矩形のみ検証されます。
-		/// @remark `faces == BoxFace::None_` の場合、メッシュを変更せず true を返します。
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, BoxFace faces = BoxFace::All);
+		/// @remark `faces == BoxFace::None_` の場合、メッシュを変更せず空の範囲を返します。
+		[[nodiscard]]
+		Mesh3DAddResult addBox(Vec3 size, const BoxUVMapping& uvMapping, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
 		/// @param offset 平行移動量
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace faces = BoxFace::All);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
@@ -177,16 +198,18 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace faces = BoxFace::All);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBox(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace faces = BoxFace::All);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した直方体を追加します。
 		/// @param size 直方体の各軸方向の大きさ
 		/// @param uvMapping 各面に割り当てる UV 矩形
 		/// @param transform 適用するアフィン変換行列
 		/// @param faces 生成する面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBox(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace faces = BoxFace::All);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBox(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace faces = BoxFace::All);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -198,17 +221,19 @@ namespace s3d
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 壁の厚み。正の有限値で、`outerSize` の最小成分の半分未満である必要があります。
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		/// @remark `openFaces == BoxFace::All` の場合、メッシュを変更せず true を返します。
-		bool addBoxShell(Vec3 outerSize = Vec3{ 1.0, 1.0, 1.0 }, double thickness = 0.1, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark `openFaces == BoxFace::All` の場合、メッシュを変更せず空の範囲を返します。
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize = Vec3{ 1.0, 1.0, 1.0 }, double thickness = 0.1, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 平行移動した、均一な厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 壁の厚み
 		/// @param offset 平行移動量
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, double thickness, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, double thickness, Vec3 offset, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 回転および平行移動した、均一な厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -216,32 +241,36 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, double thickness, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, double thickness, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief アフィン変換を適用した、均一な厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 壁の厚み
 		/// @param transform 適用するアフィン変換行列
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, double thickness, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, double thickness, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 原点を中心とする、軸ごとの厚みを持つ中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 各軸に垂直な壁の厚み。各成分は正の有限値で、対応する `outerSize` 成分の半分未満である必要があります。
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		/// @remark `openFaces == BoxFace::All` の場合、メッシュを変更せず true を返します。
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark `openFaces == BoxFace::All` の場合、メッシュを変更せず空の範囲を返します。
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 平行移動した、軸ごとの厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 各軸に垂直な壁の厚み
 		/// @param offset 平行移動量
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, Vec3 offset, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 回転および平行移動した、軸ごとの厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -249,24 +278,27 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief アフィン変換を適用した、軸ごとの厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 各軸に垂直な壁の厚み
 		/// @param transform 適用するアフィン変換行列
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、均一な厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 壁の厚み
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した均一な厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -274,8 +306,9 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した均一な厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -284,8 +317,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した均一な厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -293,16 +327,18 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param transform 適用するアフィン変換行列
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, double thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、軸ごとの厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
 		/// @param thickness 各軸に垂直な壁の厚み
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した軸ごとの厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -310,8 +346,9 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, Vec3 offset, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した軸ごとの厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -320,8 +357,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation, BoxFace openFaces = BoxFace::None_);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した軸ごとの厚みの中空直方体を追加します。
 		/// @param outerSize 外側の直方体の各軸方向の大きさ
@@ -329,8 +367,9 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param transform 適用するアフィン変換行列
 		/// @param openFaces 壁を生成しない開口面
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxShell(Vec3 outerSize, Vec3 thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform, BoxFace openFaces = BoxFace::None_);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -341,74 +380,84 @@ namespace s3d
 		/// @brief 原点を中心とする、均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param thickness 角材の太さ。正の有限値で、`size` の最小成分の半分未満である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size = Vec3{ 1.0, 1.0, 1.0 }, double thickness = 0.1);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size = Vec3{ 1.0, 1.0, 1.0 }, double thickness = 0.1);
 
 		/// @brief 平行移動した、均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param thickness 角材の太さ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, double thickness, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, double thickness, Vec3 offset);
 
 		/// @brief 回転および平行移動した、均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param thickness 角材の太さ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, double thickness, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, double thickness, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した、均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param thickness 角材の太さ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, double thickness, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, double thickness, const Mat4x4& transform);
 
 		/// @brief 原点を中心とする、軸ごとの太さを持つ直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param beamSize 角材の軸ごとの太さ。各成分は正の有限値で、対応する `size` 成分の半分未満である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark X 方向の角材は `(size.x, beamSize.y, beamSize.z)`、Y/Z 方向の角材も同様の大きさになります。
-		bool addBoxFrame(Vec3 size, Vec3 beamSize);
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize);
 
 		/// @brief 平行移動した、軸ごとの太さを持つ直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param beamSize 角材の軸ごとの太さ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, Vec3 beamSize, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize, Vec3 offset);
 
 		/// @brief 回転および平行移動した、軸ごとの太さを持つ直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param beamSize 角材の軸ごとの太さ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, Vec3 beamSize, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した、軸ごとの太さを持つ直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param beamSize 角材の軸ごとの太さ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, Vec3 beamSize, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param thickness 角材の太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param thickness 角材の太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
@@ -416,31 +465,35 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した均一な太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param thickness 角材の太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, double thickness, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、軸ごとの太さを持つ直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param beamSize 角材の軸ごとの太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した軸ごとの太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param beamSize 角材の軸ごとの太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した軸ごとの太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
@@ -448,16 +501,18 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した軸ごとの太さの直方体枠を追加します。
 		/// @param size 枠の外側の各軸方向の大きさ
 		/// @param beamSize 角材の軸ごとの太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addBoxFrame(Vec3 size, Vec3 beamSize, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -469,8 +524,9 @@ namespace s3d
 		/// @param size 角丸直方体の各軸方向の大きさ
 		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
 		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(
 			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
 			double radius = 0.1,
 			uint32 subdivisions = 4);
@@ -480,8 +536,9 @@ namespace s3d
 		/// @param radius 角の丸みの半径
 		/// @param subdivisions 各面の丸み部分の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(Vec3 size, double radius, uint32 subdivisions, Vec3 offset);
 
 		/// @brief 回転および平行移動した角丸直方体を追加します。
 		/// @param size 角丸直方体の各軸方向の大きさ
@@ -489,24 +546,27 @@ namespace s3d
 		/// @param subdivisions 各面の丸み部分の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(Vec3 size, double radius, uint32 subdivisions, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した角丸直方体を追加します。
 		/// @param size 角丸直方体の各軸方向の大きさ
 		/// @param radius 角の丸みの半径
 		/// @param subdivisions 各面の丸み部分の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とする角丸直方体を追加します。
 		/// @param size 角丸直方体の各軸方向の大きさ
 		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
 		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
 		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した角丸直方体を追加します。
 		/// @param size 角丸直方体の各軸方向の大きさ
@@ -514,8 +574,9 @@ namespace s3d
 		/// @param subdivisions 各面の丸み部分の分割数
 		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した角丸直方体を追加します。
 		/// @param size 角丸直方体の各軸方向の大きさ
@@ -524,8 +585,9 @@ namespace s3d
 		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した角丸直方体を追加します。
 		/// @param size 角丸直方体の各軸方向の大きさ
@@ -533,8 +595,9 @@ namespace s3d
 		/// @param subdivisions 各面の丸み部分の分割数
 		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRoundedBox(Vec3 size, double radius, uint32 subdivisions, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -545,8 +608,9 @@ namespace s3d
 		/// @brief 原点を中心とする面取り直方体を追加します。
 		/// @param size 面取り直方体の各軸方向の大きさ
 		/// @param chamfer 面取り幅。0 以上、`size` の最小成分の半分未満である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addChamferedBox(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(
 			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
 			double chamfer = 0.1);
 
@@ -554,39 +618,44 @@ namespace s3d
 		/// @param size 面取り直方体の各軸方向の大きさ
 		/// @param chamfer 面取り幅
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addChamferedBox(Vec3 size, double chamfer, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(Vec3 size, double chamfer, Vec3 offset);
 
 		/// @brief 回転および平行移動した面取り直方体を追加します。
 		/// @param size 面取り直方体の各軸方向の大きさ
 		/// @param chamfer 面取り幅
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addChamferedBox(Vec3 size, double chamfer, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(Vec3 size, double chamfer, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した面取り直方体を追加します。
 		/// @param size 面取り直方体の各軸方向の大きさ
 		/// @param chamfer 面取り幅
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addChamferedBox(Vec3 size, double chamfer, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(Vec3 size, double chamfer, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とする面取り直方体を追加します。
 		/// @param size 面取り直方体の各軸方向の大きさ
 		/// @param chamfer 面取り幅
 		/// @param uvMapping 各投影面に割り当てる UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 辺面と角面の投影軸が複数同率になる場合は、X 軸、Y 軸、Z 軸の順に優先します。
-		bool addChamferedBox(Vec3 size, double chamfer, const BoxUVMapping& uvMapping);
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(Vec3 size, double chamfer, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した面取り直方体を追加します。
 		/// @param size 面取り直方体の各軸方向の大きさ
 		/// @param chamfer 面取り幅
 		/// @param uvMapping 各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addChamferedBox(Vec3 size, double chamfer, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(Vec3 size, double chamfer, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した面取り直方体を追加します。
 		/// @param size 面取り直方体の各軸方向の大きさ
@@ -594,8 +663,9 @@ namespace s3d
 		/// @param uvMapping 各投影面に割り当てる UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addChamferedBox(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(
 			Vec3 size,
 			double chamfer,
 			const BoxUVMapping& uvMapping,
@@ -607,8 +677,9 @@ namespace s3d
 		/// @param chamfer 面取り幅
 		/// @param uvMapping 各投影面に割り当てる UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addChamferedBox(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addChamferedBox(
 			Vec3 size,
 			double chamfer,
 			const BoxUVMapping& uvMapping,
@@ -622,55 +693,63 @@ namespace s3d
 
 		/// @brief 原点を中心とし、Z 軸の正方向へ上るくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
 
 		/// @brief 平行移動したくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size, Vec3 offset);
 
 		/// @brief 回転および平行移動したくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用したくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とするくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動したくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動したくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用したくさび形を追加します。
 		/// @param size くさび形の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addWedge(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addWedge(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -680,55 +759,63 @@ namespace s3d
 
 		/// @brief 原点を中心とする三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
 
 		/// @brief 平行移動した三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size, Vec3 offset);
 
 		/// @brief 回転および平行移動した三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とする三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した三角柱を追加します。
 		/// @param size 三角柱の各軸方向の大きさ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTriangularPrism(Vec3 size, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -739,45 +826,51 @@ namespace s3d
 		/// @brief 原点を中心とし、Z 軸の正方向へ上る階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
 		/// @param steps 段数。1 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps);
 
 		/// @brief 平行移動した階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
 		/// @param steps 段数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps, Vec3 offset);
 
 		/// @brief 回転および平行移動した階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
 		/// @param steps 段数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
 		/// @param steps 段数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とする階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
 		/// @param steps 段数。1 以上である必要があります。
 		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
 		/// @param steps 段数
 		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
@@ -785,16 +878,18 @@ namespace s3d
 		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した階段を追加します。
 		/// @param size 階段全体の各軸方向の大きさ
 		/// @param steps 段数
 		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addStairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -805,58 +900,66 @@ namespace s3d
 		/// @brief 原点を中心とする正方形底面の四角錐を追加します。
 		/// @param baseSize 底面の一辺の長さ
 		/// @param height 四角錐の高さ
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(double baseSize, double height);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(double baseSize, double height);
 
 		/// @brief 平行移動した正方形底面の四角錐を追加します。
 		/// @param baseSize 底面の一辺の長さ
 		/// @param height 四角錐の高さ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(double baseSize, double height, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(double baseSize, double height, Vec3 offset);
 
 		/// @brief 回転および平行移動した正方形底面の四角錐を追加します。
 		/// @param baseSize 底面の一辺の長さ
 		/// @param height 四角錐の高さ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(double baseSize, double height, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(double baseSize, double height, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した正方形底面の四角錐を追加します。
 		/// @param baseSize 底面の一辺の長さ
 		/// @param height 四角錐の高さ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(double baseSize, double height, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(double baseSize, double height, const Mat4x4& transform);
 
 		/// @brief 原点を中心とする長方形底面の四角錐を追加します。
 		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 四角錐の高さ
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(SizeF baseSizeXZ = SizeF{ 1.0, 1.0 }, double height = 1.0);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(SizeF baseSizeXZ = SizeF{ 1.0, 1.0 }, double height = 1.0);
 
 		/// @brief 平行移動した長方形底面の四角錐を追加します。
 		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 四角錐の高さ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(SizeF baseSizeXZ, double height, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(SizeF baseSizeXZ, double height, Vec3 offset);
 
 		/// @brief 回転および平行移動した長方形底面の四角錐を追加します。
 		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 四角錐の高さ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(SizeF baseSizeXZ, double height, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(SizeF baseSizeXZ, double height, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した長方形底面の四角錐を追加します。
 		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 四角錐の高さ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPyramid(SizeF baseSizeXZ, double height, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPyramid(SizeF baseSizeXZ, double height, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -868,16 +971,18 @@ namespace s3d
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 角錐台の高さ
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height);
 
 		/// @brief 平行移動した角錐台を追加します。
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 角錐台の高さ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, Vec3 offset);
 
 		/// @brief 回転および平行移動した角錐台を追加します。
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
@@ -885,24 +990,27 @@ namespace s3d
 		/// @param height 角錐台の高さ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した角錐台を追加します。
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 角錐台の高さ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const Mat4x4& transform);
 
 		/// @brief 指定した UV マッピングを持つ、原点を中心とする角錐台を追加します。
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
 		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
 		/// @param height 角錐台の高さ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping);
 
 		/// @brief 指定した UV マッピングを持つ、平行移動した角錐台を追加します。
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
@@ -910,8 +1018,9 @@ namespace s3d
 		/// @param height 角錐台の高さ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, Vec3 offset);
 
 		/// @brief 指定した UV マッピングを持つ、回転および平行移動した角錐台を追加します。
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
@@ -920,8 +1029,9 @@ namespace s3d
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief 指定した UV マッピングを持つ、アフィン変換を適用した角錐台を追加します。
 		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
@@ -929,8 +1039,9 @@ namespace s3d
 		/// @param height 角錐台の高さ
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRectangularFrustum(SizeF bottomSizeXZ, SizeF topSizeXZ, double height, const BoxUVMapping& uvMapping, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -941,47 +1052,53 @@ namespace s3d
 		/// @brief 2D の多角形を Y 軸方向に押し出した形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 座標、UV 座標、および法線の規約は `Mesh3D::Extrude()` と同じです。
-		bool addExtrude(const Polygon& polygon, double height);
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(const Polygon& polygon, double height);
 
 		/// @brief 平行移動した押し出し形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addExtrude(const Polygon& polygon, double height, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, Vec3 offset);
 
 		/// @brief 回転および平行移動した押し出し形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addExtrude(const Polygon& polygon, double height, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した押し出し形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addExtrude(const Polygon& polygon, double height, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, const Mat4x4& transform);
 
 		/// @brief 2D の多角形を Y 軸方向に押し出し、側面の法線を角度に応じて補間した形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
 		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 座標、UV 座標、および法線の規約は `Mesh3D::Extrude()` と同じです。
-		bool addExtrude(const Polygon& polygon, double height, double smoothingAngle);
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, double smoothingAngle);
 
 		/// @brief 平行移動し、側面の法線を角度に応じて補間した押し出し形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
 		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addExtrude(const Polygon& polygon, double height, double smoothingAngle, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, double smoothingAngle, Vec3 offset);
 
 		/// @brief 回転および平行移動し、側面の法線を角度に応じて補間した押し出し形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
@@ -989,8 +1106,9 @@ namespace s3d
 		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addExtrude(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(
 			const Polygon& polygon,
 			double height,
 			double smoothingAngle,
@@ -1002,8 +1120,9 @@ namespace s3d
 		/// @param height 押し出す高さ
 		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addExtrude(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addExtrude(
 			const Polygon& polygon,
 			double height,
 			double smoothingAngle,
@@ -1018,31 +1137,35 @@ namespace s3d
 		/// @brief 2D プロファイルを Y 軸の周りに一周回転させた形状を追加します。
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 座標、開口、UV 座標、および法線の規約は `Mesh3D::Revolve()` と同じです。
-		bool addRevolve(std::span<const Vec2> profile, uint32 segments = 32);
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(std::span<const Vec2> profile, uint32 segments = 32);
 
 		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに一周回転させた形状を追加します。
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark プロファイル、開口、UV 座標、および法線の規約は `std::span` を受け取るオーバーロードと同じです。
-		bool addRevolve(std::initializer_list<Vec2> profile, uint32 segments = 32);
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(std::initializer_list<Vec2> profile, uint32 segments = 32);
 
 		/// @brief 平行移動した回転体を追加します。
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(std::span<const Vec2> profile, uint32 segments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(std::span<const Vec2> profile, uint32 segments, Vec3 offset);
 
 		/// @brief 回転および平行移動した回転体を追加します。
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			uint32 segments,
 			Vec3 offset,
@@ -1052,8 +1175,9 @@ namespace s3d
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			uint32 segments,
 			const Mat4x4& transform);
@@ -1062,9 +1186,10 @@ namespace s3d
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数。3 以上である必要があります。
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 座標、開口、UV 座標、および法線の規約は `Mesh3D::Revolve()` と同じです。
-		bool addRevolve(
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			uint32 segments,
 			double smoothingAngle);
@@ -1073,8 +1198,9 @@ namespace s3d
 		/// @param profile 回転させるプロファイル
 		/// @param segments 回転方向の分割数。3 以上である必要があります。
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::initializer_list<Vec2> profile,
 			uint32 segments,
 			double smoothingAngle);
@@ -1084,8 +1210,9 @@ namespace s3d
 		/// @param segments 回転方向の分割数
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			uint32 segments,
 			double smoothingAngle,
@@ -1097,8 +1224,9 @@ namespace s3d
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			uint32 segments,
 			double smoothingAngle,
@@ -1110,8 +1238,9 @@ namespace s3d
 		/// @param segments 回転方向の分割数
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			uint32 segments,
 			double smoothingAngle,
@@ -1123,9 +1252,10 @@ namespace s3d
 		/// @param sweepAngle `+Z` 方向へ回転する角度（ラジアン）。0 より大きく 2π 以下である必要があります。
 		/// @param segments 回転方向の分割数。部分回転では 1 以上、完全な一周では 3 以上である必要があります。
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 角度、端面、UV 座標、および法線の規約は角度を指定する `Mesh3D::Revolve()` と同じです。
-		bool addRevolve(
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1138,8 +1268,9 @@ namespace s3d
 		/// @param sweepAngle 回転する角度（ラジアン）
 		/// @param segments 回転方向の分割数
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::initializer_list<Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1153,8 +1284,9 @@ namespace s3d
 		/// @param segments 回転方向の分割数
 		/// @param offset 平行移動量
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1170,8 +1302,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1187,8 +1320,9 @@ namespace s3d
 		/// @param segments 回転方向の分割数
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1203,8 +1337,9 @@ namespace s3d
 		/// @param segments 回転方向の分割数
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1219,8 +1354,9 @@ namespace s3d
 		/// @param segments 回転方向の分割数
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::initializer_list<Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1236,8 +1372,9 @@ namespace s3d
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
 		/// @param offset 平行移動量
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1255,8 +1392,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1274,8 +1412,9 @@ namespace s3d
 		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addRevolve(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
 			double startAngle,
 			double sweepAngle,
@@ -1297,9 +1436,10 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 経路、端面、UV 座標、および法線の規約は `Mesh3D::Tube()` と同じです。
-		bool addTube(
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::span<const Vec3> path,
 			double radius,
 			uint32 sides = 12,
@@ -1314,8 +1454,9 @@ namespace s3d
 		/// @param sides チューブ断面の分割数
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::span<const Vec3> path,
 			double radius,
 			CloseRing closeRing,
@@ -1330,8 +1471,9 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::initializer_list<Vec3> path,
 			double radius,
 			uint32 sides = 12,
@@ -1346,8 +1488,9 @@ namespace s3d
 		/// @param sides チューブ断面の分割数
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::initializer_list<Vec3> path,
 			double radius,
 			CloseRing closeRing,
@@ -1361,8 +1504,9 @@ namespace s3d
 		/// @param sides チューブ断面の分割数
 		/// @param offset 平行移動量
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(std::span<const Vec3> path, double radius, uint32 sides, Vec3 offset,
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, uint32 sides, Vec3 offset,
 			CloseRing closeRing = CloseRing::No);
 
 		/// @brief 回転および平行移動したチューブを追加します。
@@ -1372,8 +1516,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::span<const Vec3> path,
 			double radius,
 			uint32 sides,
@@ -1387,8 +1532,9 @@ namespace s3d
 		/// @param sides チューブ断面の分割数
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::span<const Vec3> path,
 			double radius,
 			uint32 sides,
@@ -1403,8 +1549,9 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param offset 平行移動量
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::span<const Vec3> path,
 			double radius,
 			uint32 sides,
@@ -1422,8 +1569,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::span<const Vec3> path,
 			double radius,
 			uint32 sides,
@@ -1441,8 +1589,9 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTube(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
 			std::span<const Vec3> path,
 			double radius,
 			uint32 sides,
@@ -1463,9 +1612,10 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 断面、経路、端面、UV 座標、および法線の規約は `Mesh3D::Sweep()` と同じです。
-		bool addSweep(
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
@@ -1478,8 +1628,9 @@ namespace s3d
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			CloseRing closeRing,
@@ -1492,8 +1643,9 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::initializer_list<Vec3> path,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
@@ -1506,8 +1658,9 @@ namespace s3d
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::initializer_list<Vec3> path,
 			CloseRing closeRing,
@@ -1519,8 +1672,9 @@ namespace s3d
 		/// @param path 断面の中心を通る経路の頂点
 		/// @param offset 平行移動量
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset,
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset,
 			CloseRing closeRing = CloseRing::No);
 
 		/// @brief 回転および平行移動した Sweep 形状を追加します。
@@ -1529,8 +1683,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Vec3 offset,
@@ -1542,8 +1697,9 @@ namespace s3d
 		/// @param path 断面の中心を通る経路の頂点
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			const Mat4x4& transform,
@@ -1556,8 +1712,9 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param offset 平行移動量
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Vec2 uvScale,
@@ -1573,8 +1730,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Vec2 uvScale,
@@ -1590,8 +1748,9 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Vec2 uvScale,
@@ -1606,9 +1765,10 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark `initialXAxis` は最初の経路方向に垂直な平面へ投影して使用します。
-		bool addSweep(
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1623,8 +1783,9 @@ namespace s3d
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1639,8 +1800,9 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::initializer_list<Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1655,8 +1817,9 @@ namespace s3d
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::initializer_list<Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1670,8 +1833,9 @@ namespace s3d
 		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
 		/// @param offset 平行移動量
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1685,8 +1849,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1700,8 +1865,9 @@ namespace s3d
 		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1716,8 +1882,9 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param offset 平行移動量
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1735,8 +1902,9 @@ namespace s3d
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1754,8 +1922,9 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param transform 適用するアフィン変換行列
 		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSweep(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
 			Arg::initialXAxis_<Vec3> initialXAxis,
@@ -1772,27 +1941,31 @@ namespace s3d
 
 		/// @brief 原点を中心とする正四面体を追加します。
 		/// @param radius 外接球の半径
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTetrahedron(double radius = 1.0);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTetrahedron(double radius = 1.0);
 
 		/// @brief 平行移動した正四面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTetrahedron(double radius, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTetrahedron(double radius, Vec3 offset);
 
 		/// @brief 回転および平行移動した正四面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTetrahedron(double radius, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTetrahedron(double radius, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した正四面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTetrahedron(double radius, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTetrahedron(double radius, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1802,27 +1975,31 @@ namespace s3d
 
 		/// @brief 原点を中心とする正八面体を追加します。
 		/// @param radius 外接球の半径
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addOctahedron(double radius = 1.0);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addOctahedron(double radius = 1.0);
 
 		/// @brief 平行移動した正八面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addOctahedron(double radius, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addOctahedron(double radius, Vec3 offset);
 
 		/// @brief 回転および平行移動した正八面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addOctahedron(double radius, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addOctahedron(double radius, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した正八面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addOctahedron(double radius, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addOctahedron(double radius, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1832,27 +2009,31 @@ namespace s3d
 
 		/// @brief 原点を中心とする正二十面体を追加します。
 		/// @param radius 外接球の半径
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addIcosahedron(double radius = 1.0);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addIcosahedron(double radius = 1.0);
 
 		/// @brief 平行移動した正二十面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addIcosahedron(double radius, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addIcosahedron(double radius, Vec3 offset);
 
 		/// @brief 回転および平行移動した正二十面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addIcosahedron(double radius, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addIcosahedron(double radius, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した正二十面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addIcosahedron(double radius, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addIcosahedron(double radius, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1862,27 +2043,31 @@ namespace s3d
 
 		/// @brief 原点を中心とする正十二面体を追加します。
 		/// @param radius 外接球の半径
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDodecahedron(double radius = 1.0);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDodecahedron(double radius = 1.0);
 
 		/// @brief 平行移動した正十二面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDodecahedron(double radius, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDodecahedron(double radius, Vec3 offset);
 
 		/// @brief 回転および平行移動した正十二面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDodecahedron(double radius, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDodecahedron(double radius, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した正十二面体を追加します。
 		/// @param radius 外接球の半径
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDodecahedron(double radius, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDodecahedron(double radius, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1894,8 +2079,9 @@ namespace s3d
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPlane(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPlane(
 			SizeF sizeXZ = SizeF{ 1.0, 1.0 },
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
@@ -1903,29 +2089,33 @@ namespace s3d
 		/// @brief 平行移動した長方形を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPlane(SizeF sizeXZ, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPlane(SizeF sizeXZ, Vec3 offset);
 
 		/// @brief 回転および平行移動した長方形を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPlane(SizeF sizeXZ, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPlane(SizeF sizeXZ, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した長方形を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPlane(SizeF sizeXZ, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPlane(SizeF sizeXZ, const Mat4x4& transform);
 
 		/// @brief UV 変換と平行移動を適用した長方形を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset);
 
 		/// @brief UV 変換、回転、および平行移動を適用した長方形を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
@@ -1933,16 +2123,18 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief UV 変換とアフィン変換を適用した長方形を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addPlane(SizeF sizeXZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1956,8 +2148,9 @@ namespace s3d
 		/// @param segmentsZ Z 軸方向の分割数
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addGrid(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addGrid(
 			SizeF sizeXZ,
 			uint32 segmentsX,
 			uint32 segmentsZ,
@@ -1969,8 +2162,9 @@ namespace s3d
 		/// @param segmentsX X 軸方向の分割数
 		/// @param segmentsZ Z 軸方向の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec3 offset);
 
 		/// @brief 回転および平行移動した格子を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
@@ -1978,16 +2172,18 @@ namespace s3d
 		/// @param segmentsZ Z 軸方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した格子を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param segmentsX X 軸方向の分割数
 		/// @param segmentsZ Z 軸方向の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, const Mat4x4& transform);
 
 		/// @brief UV 変換と平行移動を適用した格子を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
@@ -1996,8 +2192,9 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset);
 
 		/// @brief UV 変換、回転、および平行移動を適用した格子を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
@@ -2007,8 +2204,9 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief UV 変換とアフィン変換を適用した格子を追加します。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
@@ -2017,8 +2215,9 @@ namespace s3d
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addGrid(SizeF sizeXZ, uint32 segmentsX, uint32 segmentsZ, Vec2 uvScale, Vec2 uvOffset, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2031,29 +2230,38 @@ namespace s3d
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 座標、UV 座標、法線、および接線の規約は `Mesh3D::HeightField()` と同じです。
-		bool addHeightField(
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
 		/// @brief 平行移動した高さフィールドを追加します。
-		bool addHeightField(const Grid<float>& heights, SizeF sizeXZ, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(const Grid<float>& heights, SizeF sizeXZ, Vec3 offset);
 
 		/// @brief 回転および平行移動した高さフィールドを追加します。
-		bool addHeightField(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
 			Vec3 offset,
 			const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した高さフィールドを追加します。
-		bool addHeightField(const Grid<float>& heights, SizeF sizeXZ, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(const Grid<float>& heights, SizeF sizeXZ, const Mat4x4& transform);
 
 		/// @brief UV 変換と平行移動を適用した高さフィールドを追加します。
-		bool addHeightField(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
 			Vec2 uvScale,
@@ -2061,7 +2269,9 @@ namespace s3d
 			Vec3 offset);
 
 		/// @brief UV 変換、回転、および平行移動を適用した高さフィールドを追加します。
-		bool addHeightField(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
 			Vec2 uvScale,
@@ -2070,7 +2280,9 @@ namespace s3d
 			const Quaternion& rotation);
 
 		/// @brief UV 変換とアフィン変換を適用した高さフィールドを追加します。
-		bool addHeightField(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
 			Vec2 uvScale,
@@ -2088,35 +2300,44 @@ namespace s3d
 		/// @param heights 各断面の Y 座標
 		/// @param uvScale UV 座標の拡大率
 		/// @param uvOffset UV 座標のオフセット
-		/// @return 追加に成功した場合 true, それ以外の場合は false
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 断面、座標、端面、UV 座標、法線、および接線の規約は `Mesh3D::Loft()` と同じです。
-		bool addLoft(
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			std::span<const std::span<const Vec2>> sections,
 			std::span<const double> heights,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
 		/// @brief 平行移動した Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			std::span<const std::span<const Vec2>> sections,
 			std::span<const double> heights,
 			Vec3 offset);
 
 		/// @brief 回転および平行移動した Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			std::span<const std::span<const Vec2>> sections,
 			std::span<const double> heights,
 			Vec3 offset,
 			const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			std::span<const std::span<const Vec2>> sections,
 			std::span<const double> heights,
 			const Mat4x4& transform);
 
 		/// @brief UV 変換と平行移動を適用した Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			std::span<const std::span<const Vec2>> sections,
 			std::span<const double> heights,
 			Vec2 uvScale,
@@ -2124,7 +2345,9 @@ namespace s3d
 			Vec3 offset);
 
 		/// @brief UV 変換、回転、および平行移動を適用した Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			std::span<const std::span<const Vec2>> sections,
 			std::span<const double> heights,
 			Vec2 uvScale,
@@ -2133,7 +2356,9 @@ namespace s3d
 			const Quaternion& rotation);
 
 		/// @brief UV 変換とアフィン変換を適用した Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			std::span<const std::span<const Vec2>> sections,
 			std::span<const double> heights,
 			Vec2 uvScale,
@@ -2141,31 +2366,41 @@ namespace s3d
 			const Mat4x4& transform);
 
 		/// @brief 頂点配列で指定した複数の断面を高さ方向に接続した形状を追加します。
+		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 呼び出し時に各断面を参照する一時配列を内部で作成します。
-		bool addLoft(
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			const Array<Array<Vec2>>& sections,
 			std::span<const double> heights,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
 		/// @brief 平行移動した、頂点配列で指定する Loft 形状を追加します。
-		bool addLoft(const Array<Array<Vec2>>& sections, std::span<const double> heights, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(const Array<Array<Vec2>>& sections, std::span<const double> heights, Vec3 offset);
 
 		/// @brief 回転および平行移動した、頂点配列で指定する Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			const Array<Array<Vec2>>& sections,
 			std::span<const double> heights,
 			Vec3 offset,
 			const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した、頂点配列で指定する Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			const Array<Array<Vec2>>& sections,
 			std::span<const double> heights,
 			const Mat4x4& transform);
 
 		/// @brief UV 変換と平行移動を適用した、頂点配列で指定する Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			const Array<Array<Vec2>>& sections,
 			std::span<const double> heights,
 			Vec2 uvScale,
@@ -2173,7 +2408,9 @@ namespace s3d
 			Vec3 offset);
 
 		/// @brief UV 変換、回転、および平行移動を適用した、頂点配列で指定する Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			const Array<Array<Vec2>>& sections,
 			std::span<const double> heights,
 			Vec2 uvScale,
@@ -2182,7 +2419,9 @@ namespace s3d
 			const Quaternion& rotation);
 
 		/// @brief UV 変換とアフィン変換を適用した、頂点配列で指定する Loft 形状を追加します。
-		bool addLoft(
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addLoft(
 			const Array<Array<Vec2>>& sections,
 			std::span<const double> heights,
 			Vec2 uvScale,
@@ -2198,30 +2437,34 @@ namespace s3d
 		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く円盤を追加します。
 		/// @param radius 円盤の半径
 		/// @param segments 円周の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDisc(double radius, uint32 segments = 32);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDisc(double radius, uint32 segments = 32);
 
 		/// @brief 平行移動した円盤を追加します。
 		/// @param radius 円盤の半径
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDisc(double radius, uint32 segments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDisc(double radius, uint32 segments, Vec3 offset);
 
 		/// @brief 回転および平行移動した円盤を追加します。
 		/// @param radius 円盤の半径
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDisc(double radius, uint32 segments, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDisc(double radius, uint32 segments, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した円盤を追加します。
 		/// @param radius 円盤の半径
 		/// @param segments 円周の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addDisc(double radius, uint32 segments, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addDisc(double radius, uint32 segments, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2233,16 +2476,18 @@ namespace s3d
 		/// @param innerRadius 円環の内半径。0 以上である必要があります。
 		/// @param outerRadius 円環の外半径。`innerRadius` より大きい必要があります。
 		/// @param segments 円周の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments = 32);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addAnnulus(double innerRadius, double outerRadius, uint32 segments = 32);
 
 		/// @brief 平行移動した円環を追加します。
 		/// @param innerRadius 円環の内半径
 		/// @param outerRadius 円環の外半径
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addAnnulus(double innerRadius, double outerRadius, uint32 segments, Vec3 offset);
 
 		/// @brief 回転および平行移動した円環を追加します。
 		/// @param innerRadius 円環の内半径
@@ -2250,16 +2495,18 @@ namespace s3d
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addAnnulus(double innerRadius, double outerRadius, uint32 segments, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した円環を追加します。
 		/// @param innerRadius 円環の内半径
 		/// @param outerRadius 円環の外半径
 		/// @param segments 円周の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addAnnulus(double innerRadius, double outerRadius, uint32 segments, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addAnnulus(double innerRadius, double outerRadius, uint32 segments, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2272,8 +2519,9 @@ namespace s3d
 		/// @param outerRadius 外半径。`innerRadius` より大きい必要があります。
 		/// @param height 高さ
 		/// @param segments 円周の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments = 32);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments = 32);
 
 		/// @brief 平行移動した中空円柱を追加します。
 		/// @param innerRadius 内半径
@@ -2281,8 +2529,9 @@ namespace s3d
 		/// @param height 高さ
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, Vec3 offset);
 
 		/// @brief 回転および平行移動した中空円柱を追加します。
 		/// @param innerRadius 内半径
@@ -2291,8 +2540,9 @@ namespace s3d
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した中空円柱を追加します。
 		/// @param innerRadius 内半径
@@ -2300,8 +2550,9 @@ namespace s3d
 		/// @param height 高さ
 		/// @param segments 円周の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHollowCylinder(double innerRadius, double outerRadius, double height, uint32 segments, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2314,8 +2565,9 @@ namespace s3d
 		/// @param topRadius 上面の半径。0 の場合は円錐を生成します。
 		/// @param height 高さ
 		/// @param segments 円周の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
 
 		/// @brief 平行移動した円錐台を追加します。
 		/// @param bottomRadius 底面の半径
@@ -2323,8 +2575,9 @@ namespace s3d
 		/// @param height 高さ
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, Vec3 offset);
 
 		/// @brief 回転および平行移動した円錐台を追加します。
 		/// @param bottomRadius 底面の半径
@@ -2333,8 +2586,9 @@ namespace s3d
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した円錐台を追加します。
 		/// @param bottomRadius 底面の半径
@@ -2342,8 +2596,9 @@ namespace s3d
 		/// @param height 高さ
 		/// @param segments 円周の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2355,16 +2610,18 @@ namespace s3d
 		/// @param radius 円柱の半径
 		/// @param height 円柱の高さ
 		/// @param segments 円周の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCylinder(double radius, double height, uint32 segments = 32);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCylinder(double radius, double height, uint32 segments = 32);
 
 		/// @brief 平行移動した円柱を追加します。
 		/// @param radius 円柱の半径
 		/// @param height 円柱の高さ
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCylinder(double radius, double height, uint32 segments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCylinder(double radius, double height, uint32 segments, Vec3 offset);
 
 		/// @brief 回転および平行移動した円柱を追加します。
 		/// @param radius 円柱の半径
@@ -2372,16 +2629,18 @@ namespace s3d
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCylinder(double radius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCylinder(double radius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した円柱を追加します。
 		/// @param radius 円柱の半径
 		/// @param height 円柱の高さ
 		/// @param segments 円周の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCylinder(double radius, double height, uint32 segments, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCylinder(double radius, double height, uint32 segments, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2393,16 +2652,18 @@ namespace s3d
 		/// @param radius 底面の半径
 		/// @param height 円錐の高さ
 		/// @param segments 円周の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCone(double radius, double height, uint32 segments = 32);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCone(double radius, double height, uint32 segments = 32);
 
 		/// @brief 平行移動した円錐を追加します。
 		/// @param radius 底面の半径
 		/// @param height 円錐の高さ
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCone(double radius, double height, uint32 segments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCone(double radius, double height, uint32 segments, Vec3 offset);
 
 		/// @brief 回転および平行移動した円錐を追加します。
 		/// @param radius 底面の半径
@@ -2410,16 +2671,18 @@ namespace s3d
 		/// @param segments 円周の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCone(double radius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCone(double radius, double height, uint32 segments, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した円錐を追加します。
 		/// @param radius 底面の半径
 		/// @param height 円錐の高さ
 		/// @param segments 円周の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCone(double radius, double height, uint32 segments, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCone(double radius, double height, uint32 segments, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2432,8 +2695,9 @@ namespace s3d
 		/// @param tubeRadius チューブ断面の半径。`majorRadius` より小さい必要があります。
 		/// @param ringSegments リング方向の分割数。3 以上である必要があります。
 		/// @param tubeSegments チューブ断面方向の分割数。3 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments = 32, uint32 tubeSegments = 16);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTorus(double majorRadius, double tubeRadius, uint32 ringSegments = 32, uint32 tubeSegments = 16);
 
 		/// @brief 平行移動したトーラスを追加します。
 		/// @param majorRadius 原点からチューブ断面の中心までの半径
@@ -2441,8 +2705,9 @@ namespace s3d
 		/// @param ringSegments リング方向の分割数
 		/// @param tubeSegments チューブ断面方向の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, Vec3 offset);
 
 		/// @brief 回転および平行移動したトーラスを追加します。
 		/// @param majorRadius 原点からチューブ断面の中心までの半径
@@ -2451,8 +2716,9 @@ namespace s3d
 		/// @param tubeSegments チューブ断面方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用したトーラスを追加します。
 		/// @param majorRadius 原点からチューブ断面の中心までの半径
@@ -2460,8 +2726,9 @@ namespace s3d
 		/// @param ringSegments リング方向の分割数
 		/// @param tubeSegments チューブ断面方向の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTorus(double majorRadius, double tubeRadius, uint32 ringSegments, uint32 tubeSegments, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2473,16 +2740,18 @@ namespace s3d
 		/// @param radius 球の半径
 		/// @param slices 経度方向の分割数。3 以上である必要があります。
 		/// @param stacks 緯度方向の分割数。2 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSphere(double radius, uint32 slices = 32, uint32 stacks = 16);
 
 		/// @brief 平行移動した UV 球を追加します。
 		/// @param radius 球の半径
 		/// @param slices 経度方向の分割数
 		/// @param stacks 緯度方向の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
 
 		/// @brief 回転および平行移動した UV 球を追加します。
 		/// @param radius 球の半径
@@ -2490,16 +2759,18 @@ namespace s3d
 		/// @param stacks 緯度方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した UV 球を追加します。
 		/// @param radius 球の半径
 		/// @param slices 経度方向の分割数
 		/// @param stacks 緯度方向の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addSphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2511,16 +2782,18 @@ namespace s3d
 		/// @param radius 半球の半径
 		/// @param slices 経度方向の分割数。3 以上である必要があります。
 		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, uint32 slices = 32, uint32 stacks = 8);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, uint32 slices = 32, uint32 stacks = 8);
 
 		/// @brief 平行移動した、底面のない半球を追加します。
 		/// @param radius 半球の半径
 		/// @param slices 経度方向の分割数
 		/// @param stacks 緯度方向の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, uint32 slices, uint32 stacks, Vec3 offset);
 
 		/// @brief 回転および平行移動した、底面のない半球を追加します。
 		/// @param radius 半球の半径
@@ -2528,24 +2801,27 @@ namespace s3d
 		/// @param stacks 緯度方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した、底面のない半球を追加します。
 		/// @param radius 半球の半径
 		/// @param slices 経度方向の分割数
 		/// @param stacks 緯度方向の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, uint32 slices, uint32 stacks, const Mat4x4& transform);
 
 		/// @brief Y 軸の正方向を向く半球を追加します。
 		/// @param radius 半球の半径
 		/// @param closeBottom 底面を閉じる場合は `CloseBottom::Yes`、底面を作成しない場合は `CloseBottom::No`
 		/// @param slices 経度方向の分割数。3 以上である必要があります。
 		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
 
 		/// @brief 平行移動した半球を追加します。
 		/// @param radius 半球の半径
@@ -2553,8 +2829,9 @@ namespace s3d
 		/// @param slices 経度方向の分割数
 		/// @param stacks 緯度方向の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, Vec3 offset);
 
 		/// @brief 回転および平行移動した半球を追加します。
 		/// @param radius 半球の半径
@@ -2563,8 +2840,9 @@ namespace s3d
 		/// @param stacks 緯度方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用した半球を追加します。
 		/// @param radius 半球の半径
@@ -2572,8 +2850,9 @@ namespace s3d
 		/// @param slices 経度方向の分割数
 		/// @param stacks 緯度方向の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHemisphere(double radius, CloseBottom closeBottom, uint32 slices, uint32 stacks, const Mat4x4& transform);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2586,8 +2865,9 @@ namespace s3d
 		/// @param cylinderHeight 2 つの半球の間にある円柱部分の高さ。0 以上である必要があります。
 		/// @param slices 円周方向の分割数。3 以上である必要があります。
 		/// @param hemisphereStacks 各半球の緯度方向の分割数。1 以上である必要があります。
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCapsule(double radius, double cylinderHeight, uint32 slices = 32, uint32 hemisphereStacks = 8);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCapsule(double radius, double cylinderHeight, uint32 slices = 32, uint32 hemisphereStacks = 8);
 
 		/// @brief 平行移動したカプセルを追加します。
 		/// @param radius カプセルの半径
@@ -2595,8 +2875,9 @@ namespace s3d
 		/// @param slices 円周方向の分割数
 		/// @param hemisphereStacks 各半球の緯度方向の分割数
 		/// @param offset 平行移動量
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, Vec3 offset);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, Vec3 offset);
 
 		/// @brief 回転および平行移動したカプセルを追加します。
 		/// @param radius カプセルの半径
@@ -2605,8 +2886,9 @@ namespace s3d
 		/// @param hemisphereStacks 各半球の緯度方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, Vec3 offset, const Quaternion& rotation);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, Vec3 offset, const Quaternion& rotation);
 
 		/// @brief アフィン変換を適用したカプセルを追加します。
 		/// @param radius カプセルの半径
@@ -2614,8 +2896,9 @@ namespace s3d
 		/// @param slices 円周方向の分割数
 		/// @param hemisphereStacks 各半球の緯度方向の分割数
 		/// @param transform 適用するアフィン変換行列
-		/// @return 追加に成功した場合 true, それ以外の場合は false
-		bool addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, const Mat4x4& transform);
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addCapsule(double radius, double cylinderHeight, uint32 slices, uint32 hemisphereStacks, const Mat4x4& transform);
 
 	private:
 

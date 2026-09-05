@@ -262,6 +262,9 @@
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DAddResult.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Mesh3DCapTriangulation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
