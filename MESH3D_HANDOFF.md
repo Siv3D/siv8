@@ -25,7 +25,8 @@
 - Y 軸周りの正角は `Quaternion::RotateY()`、`Cylindrical`、`Spherical` と共通で、`+X` から `-Z` へ進む。完全・部分 `Revolve` の頂点順、接線、U 座標もこの規約に従う。
 - `Polygon` の外周と `Loft` の断面は、格納された `(x, y)` に対する符号付き面積が正、`Polygon` の穴は負とする。閉じた輪郭の先頭点を末尾へ重複させない。
 - 点列は float 変換後の幾何を基準に検証する。`Revolve` の閉じた profile だけは先頭・末尾の一致を閉鎖表現として使い、`Tube` / `Sweep` の閉路と `Loft` の断面では始点を末尾に重複させない。
-- `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は現在、両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
+- `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` の基本 overload は両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
+- options 版の `Tube` / `Sweep` は `Mesh3DEndCaps` で始端、終端、両端、端面なしを選択できる。未指定時は開路で両端、閉路で端面なしとなり、閉路に端面を明示する矛盾は `InvalidArgument` とする。
 
 ## 実装済みの主要機能
 
@@ -60,8 +61,8 @@ Gemini によるヘッダと簡略化済みモデリングコードのレビュ�
 
 ## 次の候補と保留事項
 
-- 次は新しい形状 generator より先に、開路の Tube / Sweep を起点として端面制御と options 型の共通契約を固める。詳細は `TODO.md` に集約する。
-- その後の形状生成候補は callable を受け取る `HeightField()` とし、`Image` 固有 overload より先に評価する。
+- 次は `TubeOptions` / `SweepOptions` を canonical な入口として、経路 generator の positional overload をどこまで縮約するか決める。詳細は `TODO.md` に集約する。
+- overload 整理後の形状生成候補は callable を受け取る `HeightField()` とし、`Image` 固有 overload より先に評価する。
 - bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に扱う。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
 - `Test/Manual/` の既存 Mesh3D レビュー資料は API の正本にしない。現行の Mesh3D 改修が一段落した後、必要な manual test をゼロベースで作り直す。

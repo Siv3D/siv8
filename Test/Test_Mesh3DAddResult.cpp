@@ -161,6 +161,10 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		{ 0.0, 0.0 }, { 2.0, 0.0 }, { 2.0, 2.0 }, { 0.0, 2.0 }
 	} };
 	const Array<Vec3> path{ Vec3::Zero(), Vec3::UnitY() };
+	const Array<Vec3> closedPath{
+		{ -1.0, 0.0, -1.0 }, { 1.0, 0.0, -1.0 },
+		{ 1.0, 0.0, 1.0 }, { -1.0, 0.0, 1.0 }
+	};
 	const Array<SweepSectionTransform> sweepTransforms{
 		{}, { .scale = Vec2{ 1.5, 0.5 }, .twist = 0.1 }
 	};
@@ -235,6 +239,10 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addTube({ Vec3::Zero(), Vec3::Zero() }, { 0.25, 0.5 }),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
+		builder.addTube(closedPath, 0.25,
+			TubeOptions{ .closeRing = CloseRing::Yes, .endCaps = Mesh3DEndCaps::Both }),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
 		builder.addTube(
 			{ Vec3::Zero(), Vec3::UnitY() }, 0.25,
 			std::numeric_limits<uint32>::max()),
@@ -307,6 +315,10 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addSweep(rectangle, path, sweepTransforms,
 			SweepOptions{ .initialXAxis = Vec3::UnitY() }),
 		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addSweep(rectangle, closedPath,
+			SweepOptions{ .closeRing = CloseRing::Yes, .endCaps = Mesh3DEndCaps::Start }),
+		Mesh3DErrorCode::InvalidArgument);
 	checkFailure(
 		builder.addHeightField(invalidHeightField, SizeF{ 1.0, 1.0 }),
 		Mesh3DErrorCode::NumericRange);

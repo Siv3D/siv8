@@ -2615,6 +2615,106 @@ namespace s3d
 			transform);
 	}
 
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const TubeOptions& options)
+	{
+		return Mesh3DDetail::AppendTube(m_mesh, path, radius, options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::initializer_list<Vec3> path,
+		const double radius,
+		const TubeOptions& options)
+	{
+		return addTube(
+			std::span<const Vec3>{ path.begin(), path.size() }, radius, options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const TubeOptions& options)
+	{
+		return Mesh3DDetail::AppendTube(m_mesh, path, radii, options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::initializer_list<Vec3> path,
+		const std::initializer_list<double> radii,
+		const TubeOptions& options)
+	{
+		return addTube(
+			std::span<const Vec3>{ path.begin(), path.size() },
+			std::span<const double>{ radii.begin(), radii.size() },
+			options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const Vec3 offset,
+		const TubeOptions& options)
+	{
+		return addTube(path, radius, Mat4x4::Translate(Float3{ offset }), options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const TubeOptions& options)
+	{
+		return addTube(
+			path, radius,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
+			options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const Mat4x4& transform,
+		const TubeOptions& options)
+	{
+		return TransformAddedVertices(
+			m_mesh, Mesh3DDetail::AppendTube(m_mesh, path, radius, options), transform);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const Vec3 offset,
+		const TubeOptions& options)
+	{
+		return addTube(path, radii, Mat4x4::Translate(Float3{ offset }), options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const TubeOptions& options)
+	{
+		return addTube(
+			path, radii,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
+			options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const Mat4x4& transform,
+		const TubeOptions& options)
+	{
+		return TransformAddedVertices(
+			m_mesh, Mesh3DDetail::AppendTube(m_mesh, path, radii, options), transform);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addSweep
@@ -2863,6 +2963,56 @@ namespace s3d
 			Mesh3DDetail::AppendSweep(
 				m_mesh, crossSection, path, &initialXAxis.value(), uvScale, uvOffset, closeRing),
 			transform);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const SweepOptions& options)
+	{
+		return Mesh3DDetail::AppendSweep(m_mesh, crossSection, path, options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const SweepOptions& options)
+	{
+		return addSweep(
+			crossSection, std::span<const Vec3>{ path.begin(), path.size() }, options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec3 offset,
+		const SweepOptions& options)
+	{
+		return addSweep(
+			crossSection, path, Mat4x4::Translate(Float3{ offset }), options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const SweepOptions& options)
+	{
+		return addSweep(
+			crossSection, path,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
+			options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const Mat4x4& transform,
+		const SweepOptions& options)
+	{
+		return TransformAddedVertices(
+			m_mesh, Mesh3DDetail::AppendSweep(m_mesh, crossSection, path, options), transform);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addSweep(

@@ -1741,6 +1741,95 @@ namespace s3d
 			const Mat4x4& transform,
 			CloseRing closeRing = CloseRing::No);
 
+		/// @brief 生成設定を指定し、一定半径のチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radius チューブの半径
+		/// @param options 断面分割数、UV 変換、経路の閉鎖方法、および端面設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark 端面設定の規約は `TubeOptions` を受け取る `Mesh3D::Tube()` と同じです。
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, const TubeOptions& options);
+
+		/// @brief 初期化子リストと生成設定を指定し、一定半径のチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radius チューブの半径
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::initializer_list<Vec3> path, double radius, const TubeOptions& options);
+
+		/// @brief 生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, const TubeOptions& options);
+
+		/// @brief 初期化子リストと生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::initializer_list<Vec3> path, std::initializer_list<double> radii, const TubeOptions& options);
+
+		/// @brief 平行移動と生成設定を指定し、一定半径のチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radius チューブの半径
+		/// @param offset 平行移動量
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, Vec3 offset, const TubeOptions& options);
+
+		/// @brief 回転、平行移動、および生成設定を指定し、一定半径のチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radius チューブの半径
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, Vec3 offset, const Quaternion& rotation, const TubeOptions& options);
+
+		/// @brief アフィン変換と生成設定を指定し、一定半径のチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radius チューブの半径
+		/// @param transform 適用するアフィン変換行列
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, const Mat4x4& transform, const TubeOptions& options);
+
+		/// @brief 平行移動と生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param offset 平行移動量
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, Vec3 offset, const TubeOptions& options);
+
+		/// @brief 回転、平行移動、および生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, Vec3 offset, const Quaternion& rotation, const TubeOptions& options);
+
+		/// @brief アフィン変換と生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param transform 適用するアフィン変換行列
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, const Mat4x4& transform, const TubeOptions& options);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addSweep
@@ -2074,11 +2163,56 @@ namespace s3d
 			const Mat4x4& transform,
 			CloseRing closeRing = CloseRing::No);
 
+		/// @brief 生成設定を指定し、一定断面の Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark 端面設定の規約は `SweepOptions` を受け取る `Mesh3D::Sweep()` と同じです。
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, const SweepOptions& options);
+
+		/// @brief 初期化子リストと生成設定を指定し、一定断面の Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::initializer_list<Vec3> path, const SweepOptions& options);
+
+		/// @brief 平行移動と生成設定を指定し、一定断面の Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param offset 平行移動量
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset, const SweepOptions& options);
+
+		/// @brief 回転、平行移動、および生成設定を指定し、一定断面の Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset, const Quaternion& rotation, const SweepOptions& options);
+
+		/// @brief アフィン変換と生成設定を指定し、一定断面の Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param transform 適用するアフィン変換行列
+		/// @param options 生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, const Mat4x4& transform, const SweepOptions& options);
+
 		/// @brief 経路点ごとに断面の拡大率と twist を指定した Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る経路の頂点
 		/// @param sectionTransforms 各経路点における断面変換。要素数は `path.size()` と等しい必要があります。
-		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 断面変換、経路、端面、UV 座標、および頂点属性の規約は、経路点別変換を受け取る `Mesh3D::Sweep()` と同じです。
 		[[nodiscard]]
@@ -2092,7 +2226,7 @@ namespace s3d
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る経路の頂点
 		/// @param sectionTransforms 各経路点における断面変換
-		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
 		Mesh3DAddResult addSweep(

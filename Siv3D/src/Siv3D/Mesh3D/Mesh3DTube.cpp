@@ -399,6 +399,25 @@ namespace s3d
 			closeRing);
 	}
 
+	Mesh3D Mesh3D::Tube(
+		const std::initializer_list<Vec3> path,
+		const double radius,
+		const TubeOptions& options)
+	{
+		return Tube(std::span<const Vec3>{ path.begin(), path.size() }, radius, options);
+	}
+
+	Mesh3D Mesh3D::Tube(
+		const std::initializer_list<Vec3> path,
+		const std::initializer_list<double> radii,
+		const TubeOptions& options)
+	{
+		return Tube(
+			std::span<const Vec3>{ path.begin(), path.size() },
+			std::span<const double>{ radii.begin(), radii.size() },
+			options);
+	}
+
 	namespace
 	{
 		struct ConstantTubeRadii
@@ -434,7 +453,8 @@ namespace s3d
 			const uint32 sides,
 			const Vec2 _uvScale,
 			const Vec2 _uvOffset,
-			const CloseRing closeRing)
+			const CloseRing closeRing,
+			const Optional<Mesh3DEndCaps> requestedEndCaps)
 		{
 			if constexpr (Radii::PerPoint)
 			{
@@ -446,6 +466,19 @@ namespace s3d
 			}
 
 			const bool isClosed = (closeRing == CloseRing::Yes);
+			const Mesh3DEndCaps endCaps = requestedEndCaps.value_or(
+				isClosed ? Mesh3DEndCaps::None : Mesh3DEndCaps::Both);
+			if (isClosed && (endCaps != Mesh3DEndCaps::None))
+			{
+				return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+					U"Mesh3D::Tube(): A closed path cannot have end caps");
+			}
+			const bool generateStartCap = ((endCaps == Mesh3DEndCaps::Start)
+				|| (endCaps == Mesh3DEndCaps::Both));
+			const bool generateEndCap = ((endCaps == Mesh3DEndCaps::End)
+				|| (endCaps == Mesh3DEndCaps::Both));
+			const size_t capCount = (static_cast<size_t>(generateStartCap)
+				+ static_cast<size_t>(generateEndCap));
 			if ((path.size() < (isClosed ? 3 : 2))
 				|| (sides < 3))
 			{
@@ -501,13 +534,20 @@ namespace s3d
 			size_t pathAndCapsCount;
 			size_t vertexCount;
 			size_t twiceSides;
+			size_t sideTriangleCount;
+			size_t capTriangleCount;
 			size_t triangleCount;
-			if ((not CheckedAdd(static_cast<size_t>(sides), 1, ringStride))
-				|| (not CheckedAdd(path.size(), (isClosed ? 1 : 2), pathAndCapsCount))
+			size_t stationCount;
+			const size_t pathSegmentCount = (isClosed ? path.size() : (path.size() - 1));
+			if ((not CheckedAdd(path.size(), (isClosed ? 1 : 0), stationCount))
+				|| (not CheckedAdd(static_cast<size_t>(sides), 1, ringStride))
+				|| (not CheckedAdd(stationCount, capCount, pathAndCapsCount))
 				|| (not CheckedMultiply(pathAndCapsCount, ringStride, vertexCount))
 				|| (Mesh3D::MaxVertexCount < vertexCount)
 				|| (not CheckedMultiply(static_cast<size_t>(sides), 2, twiceSides))
-				|| (not CheckedMultiply(path.size(), twiceSides, triangleCount)))
+				|| (not CheckedMultiply(pathSegmentCount, twiceSides, sideTriangleCount))
+				|| (not CheckedMultiply(capCount, static_cast<size_t>(sides), capTriangleCount))
+				|| (not CheckedAdd(sideTriangleCount, capTriangleCount, triangleCount)))
 			{
 				return AdditionFailed(Mesh3DErrorCode::SizeLimit,
 					U"Mesh3D::Tube(): The generated mesh exceeds the supported size");
@@ -525,8 +565,6 @@ namespace s3d
 			const auto& points = pathData.points;
 			const auto& distances = pathData.distances;
 			const auto& frames = pathData.frames;
-			const size_t stationCount = points.size();
-			const size_t pathSegmentCount = (isClosed ? path.size() : (path.size() - 1));
 
 			const double sideU0 = _uvOffset.x;
 			const double sideU1 = (_uvOffset.x + _uvScale.x);
@@ -537,7 +575,7 @@ namespace s3d
 				|| (not IsFloatRepresentable(sideU1))
 				|| (not IsFloatRepresentable(sideV0))
 				|| (not IsFloatRepresentable(sideV1))
-				|| ((not isClosed) && (not IsFloatRepresentable(capV1))))
+				|| ((0 < capCount) && (not IsFloatRepresentable(capV1))))
 			{
 				return AdditionFailed(Mesh3DErrorCode::NumericRange,
 					U"Mesh3D::Tube(): The generated UV coordinates exceed the float range");
@@ -673,17 +711,22 @@ namespace s3d
 				}
 			}
 
-			if (not isClosed)
+			if (0 < capCount)
 			{
-				const size_t startCapBase = (vertexBase + stationCount * ringStride);
-				const size_t endCapBase = (startCapBase + ringStride);
+				const size_t firstCapBase = (vertexBase + stationCount * ringStride);
 				const Float2 capCenterUV = (uvOffset + (uvScale * 0.5f));
+				size_t writtenCapCount = 0;
 				for (size_t capIndex = 0; capIndex < 2; ++capIndex)
 				{
 					const bool startCap = (capIndex == 0);
+					if ((startCap && (not generateStartCap))
+						|| ((not startCap) && (not generateEndCap)))
+					{
+						continue;
+					}
 					const size_t pathIndex = (startCap ? 0 : (path.size() - 1));
 					const float radius = static_cast<float>(radii[pathIndex]);
-					const size_t capBase = (startCap ? startCapBase : endCapBase);
+					const size_t capBase = (firstCapBase + (writtenCapCount++ * ringStride));
 					const PathFrame& frame = frames[pathIndex];
 					const Float3 capNormal = (startCap
 						? Float3{ -frame.tangent }
@@ -754,7 +797,7 @@ namespace s3d
 		const CloseRing closeRing)
 	{
 		return AppendTubeImpl(
-			mesh, path, ConstantTubeRadii{ radius }, sides, uvScale, uvOffset, closeRing);
+			mesh, path, ConstantTubeRadii{ radius }, sides, uvScale, uvOffset, closeRing, {});
 	}
 
 	Mesh3DAddResult Mesh3DDetail::AppendTube(
@@ -767,7 +810,29 @@ namespace s3d
 		const CloseRing closeRing)
 	{
 		return AppendTubeImpl(
-			mesh, path, PerPointTubeRadii{ radii }, sides, uvScale, uvOffset, closeRing);
+			mesh, path, PerPointTubeRadii{ radii }, sides, uvScale, uvOffset, closeRing, {});
+	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendTube(
+		Mesh3D& mesh,
+		const std::span<const Vec3> path,
+		const double radius,
+		const TubeOptions& options)
+	{
+		return AppendTubeImpl(
+			mesh, path, ConstantTubeRadii{ radius }, options.sides,
+			options.uvScale, options.uvOffset, options.closeRing, options.endCaps);
+	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendTube(
+		Mesh3D& mesh,
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const TubeOptions& options)
+	{
+		return AppendTubeImpl(
+			mesh, path, PerPointTubeRadii{ radii }, options.sides,
+			options.uvScale, options.uvOffset, options.closeRing, options.endCaps);
 	}
 
 	Mesh3D Mesh3D::Tube(
@@ -807,6 +872,26 @@ namespace s3d
 		return Tube(path, radius, sides, uvScale, uvOffset, closeRing);
 	}
 
+	Mesh3D Mesh3D::Tube(
+		const std::span<const Vec3> path,
+		const double radius,
+		const TubeOptions& options)
+	{
+		Mesh3DBuilder builder;
+		(void)builder.addTube(path, radius, options);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Tube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const TubeOptions& options)
+	{
+		Mesh3DBuilder builder;
+		(void)builder.addTube(path, radii, options);
+		return std::move(builder).build();
+	}
+
 	namespace
 	{
 		struct ConstantSweepSectionTransforms
@@ -836,7 +921,8 @@ namespace s3d
 			const Vec3* const initialXAxis,
 			const Vec2 _uvScale,
 			const Vec2 _uvOffset,
-			const CloseRing closeRing)
+			const CloseRing closeRing,
+			const Optional<Mesh3DEndCaps> requestedEndCaps)
 		{
 			if constexpr (SectionTransforms::PerPoint)
 			{
@@ -872,11 +958,24 @@ namespace s3d
 				{
 					return AppendSweepImpl(
 						mesh, crossSection, path, ConstantSweepSectionTransforms{},
-						initialXAxis, _uvScale, _uvOffset, closeRing);
+						initialXAxis, _uvScale, _uvOffset, closeRing, requestedEndCaps);
 				}
 			}
 
 			const bool isClosed = (closeRing == CloseRing::Yes);
+			const Mesh3DEndCaps endCaps = requestedEndCaps.value_or(
+				isClosed ? Mesh3DEndCaps::None : Mesh3DEndCaps::Both);
+			if (isClosed && (endCaps != Mesh3DEndCaps::None))
+			{
+				return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+					U"Mesh3D::Sweep(): A closed path cannot have end caps");
+			}
+			const bool generateStartCap = ((endCaps == Mesh3DEndCaps::Start)
+				|| (endCaps == Mesh3DEndCaps::Both));
+			const bool generateEndCap = ((endCaps == Mesh3DEndCaps::End)
+				|| (endCaps == Mesh3DEndCaps::Both));
+			const size_t capCount = (static_cast<size_t>(generateStartCap)
+				+ static_cast<size_t>(generateEndCap));
 			if ((crossSection.isEmpty())
 				|| (path.size() < (isClosed ? 3 : 2)))
 			{
@@ -991,12 +1090,12 @@ namespace s3d
 			size_t triangleCount;
 			size_t stationCount;
 			if ((not CheckedAdd(path.size(), (isClosed ? 1 : 0), stationCount))
-				|| ((not isClosed) && (not CheckedMultiply(capVertices.size(), 2, capVertexCount)))
+				|| (not CheckedMultiply(capVertices.size(), capCount, capVertexCount))
 				|| (not CheckedMultiply(stationCount, 2, verticesPerEdge))
 				|| (not CheckedMultiply(edgeCount, verticesPerEdge, sideVertexCount))
 				|| (not CheckedAdd(capVertexCount, sideVertexCount, vertexCount))
 				|| (Mesh3D::MaxVertexCount < vertexCount)
-				|| ((not isClosed) && (not CheckedMultiply(validCapTriangleCount, 2, capTriangleCount)))
+				|| (not CheckedMultiply(validCapTriangleCount, capCount, capTriangleCount))
 				|| (not CheckedMultiply(edgeCount, pathSegmentCount, sideQuadCount))
 				|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
 				|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
@@ -1042,7 +1141,7 @@ namespace s3d
 				|| (not IsFloatRepresentable(sideU1))
 				|| (not IsFloatRepresentable(sideV0))
 				|| (not IsFloatRepresentable(sideV1))
-				|| ((not isClosed) && (not IsFloatRepresentable(capV1))))
+				|| ((0 < capCount) && (not IsFloatRepresentable(capV1))))
 			{
 				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The generated UV coordinates exceed the float range");
 			}
@@ -1082,16 +1181,19 @@ namespace s3d
 					return (center + (frame.normal * source.x) + (frame.binormal * source.y));
 				}
 			};
-			if (not isClosed)
+			if (0 < capCount)
 			{
-				const size_t startCapBase = vertexBase;
-				const size_t endCapBase = (vertexBase + capVertices.size());
-
+				size_t writtenCapCount = 0;
 				for (size_t capIndex = 0; capIndex < 2; ++capIndex)
 				{
 					const bool startCap = (capIndex == 0);
+					if ((startCap && (not generateStartCap))
+						|| ((not startCap) && (not generateEndCap)))
+					{
+						continue;
+					}
 					const size_t pathIndex = (startCap ? 0 : (path.size() - 1));
-					const size_t capBase = (startCap ? startCapBase : endCapBase);
+					const size_t capBase = (vertexBase + (writtenCapCount++ * capVertices.size()));
 					const PathFrame& frame = pathData.frames[pathIndex];
 					const Float3 capNormal = (startCap
 						? Float3{ -frame.tangent }
@@ -1136,22 +1238,28 @@ namespace s3d
 			}
 
 			TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
-			if (not isClosed)
+			if (0 < capCount)
 			{
-				const size_t startCapBase = vertexBase;
-				const size_t endCapBase = (vertexBase + capVertices.size());
 				ForEachValidCapTriangle(capVertices, capIndices, validCapTriangleCount,
 					[&](const TriangleIndex& source)
 				{
-					const uint32 i0 = static_cast<uint32>(startCapBase + source.i0);
-					const uint32 i1 = static_cast<uint32>(startCapBase + source.i1);
-					const uint32 i2 = static_cast<uint32>(startCapBase + source.i2);
-					*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
-					*pTriangle++ = TriangleIndex32{
-						static_cast<uint32>(endCapBase + source.i0),
-						static_cast<uint32>(endCapBase + source.i2),
-						static_cast<uint32>(endCapBase + source.i1)
-					};
+					size_t capBase = vertexBase;
+					if (generateStartCap)
+					{
+						const uint32 i0 = static_cast<uint32>(capBase + source.i0);
+						const uint32 i1 = static_cast<uint32>(capBase + source.i1);
+						const uint32 i2 = static_cast<uint32>(capBase + source.i2);
+						*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+						capBase += capVertices.size();
+					}
+					if (generateEndCap)
+					{
+						*pTriangle++ = TriangleIndex32{
+							static_cast<uint32>(capBase + source.i0),
+							static_cast<uint32>(capBase + source.i2),
+							static_cast<uint32>(capBase + source.i1)
+						};
+					}
 				});
 			}
 
@@ -1351,7 +1459,22 @@ namespace s3d
 	{
 		return AppendSweepImpl(
 			mesh, crossSection, path, ConstantSweepSectionTransforms{},
-			initialXAxis, uvScale, uvOffset, closeRing);
+			initialXAxis, uvScale, uvOffset, closeRing, {});
+	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendSweep(
+		Mesh3D& mesh,
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const SweepOptions& options)
+	{
+		const Vec3* const initialXAxis = (options.initialXAxis
+			? &options.initialXAxis.value()
+			: nullptr);
+		return AppendSweepImpl(
+			mesh, crossSection, path, ConstantSweepSectionTransforms{},
+			initialXAxis, options.uvScale, options.uvOffset,
+			options.closeRing, options.endCaps);
 	}
 
 	Mesh3DAddResult Mesh3DDetail::AppendSweep(
@@ -1366,7 +1489,8 @@ namespace s3d
 			: nullptr);
 		return AppendSweepImpl(
 			mesh, crossSection, path, PerPointSweepSectionTransforms{ sectionTransforms },
-			initialXAxis, options.uvScale, options.uvOffset, options.closeRing);
+			initialXAxis, options.uvScale, options.uvOffset,
+			options.closeRing, options.endCaps);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1466,6 +1590,27 @@ namespace s3d
 			uvScale,
 			uvOffset,
 			closeRing);
+	}
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const SweepOptions& options)
+	{
+		Mesh3DBuilder builder;
+		(void)builder.addSweep(crossSection, path, options);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const SweepOptions& options)
+	{
+		return Sweep(
+			crossSection,
+			std::span<const Vec3>{ path.begin(), path.size() },
+			options);
 	}
 
 	Mesh3D Mesh3D::Sweep(
