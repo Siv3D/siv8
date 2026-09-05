@@ -26,6 +26,7 @@
 - `Polygon` の外周と `Loft` の断面は、格納された `(x, y)` に対する符号付き面積が正、`Polygon` の穴は負とする。閉じた輪郭の先頭点を末尾へ重複させない。
 - 点列は float 変換後の幾何を基準に検証する。`Revolve` の閉じた profile だけは先頭・末尾の一致を閉鎖表現として使い、`Tube` / `Sweep` の閉路と `Loft` の断面では始点を末尾に重複させない。
 - `Tube` / `Sweep` の生成設定は `TubeOptions` / `SweepOptions` に集約する。factory は `std::span` / initializer-list と一定値 / 経路点別値の組み合わせだけを overload とし、builder の配置 overload では options を末尾に置く。
+- `HeightField` の UV 設定は `HeightFieldOptions` に集約する。高さの入力は `Grid<float>`、または頂点数と格子点 `Point` から高さを返す callable の 2 系統とし、callable は行優先で評価する。
 - `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は既定で両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
 - `Tube` / `Sweep` は `Mesh3DEndCaps` で始端、終端、両端、端面なしを選択できる。未指定時は開路で両端、閉路で端面なしとなり、閉路に端面を明示する矛盾は `InvalidArgument` とする。
 
@@ -62,7 +63,7 @@ Gemini によるヘッダと簡略化済みモデリングコードのレビュ�
 
 ## 次の候補と保留事項
 
-- 次の形状生成候補は callable を受け取る `HeightField()` とし、`Image` 固有 overload より先に評価する。
+- 次の形状生成候補は `IcoSphere()` とし、subdivision 上限と UV seam の契約を先に設計する。`HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。
 - bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に扱う。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
 - `Test/Manual/` の既存 Mesh3D レビュー資料は API の正本にしない。現行の Mesh3D 改修が一段落した後、必要な manual test をゼロベースで作り直す。

@@ -18,7 +18,8 @@ namespace
 
 	static_assert(requires
 	{
-		static_cast<Mesh3D (*)(const Grid<float>&, SizeF, Vec2, Vec2)>(&Mesh3D::HeightField);
+		static_cast<Mesh3D (*)(const Grid<float>&, SizeF, const HeightFieldOptions&)>(&Mesh3D::HeightField);
+		static_cast<Mesh3D (*)(Size, SizeF, FunctionRef<double(Point)>, const HeightFieldOptions&)>(&Mesh3D::HeightField);
 	});
 
 }
@@ -29,7 +30,8 @@ TEST_CASE("Mesh3D::HeightField flat grid")
 	const SizeF sizeXZ{ 4.0, 2.0 };
 	const Vec2 uvScale{ 2.0, 3.0 };
 	const Vec2 uvOffset{ 0.25, -0.5 };
-	const Mesh3D mesh = Mesh3D::HeightField(heights, sizeXZ, uvScale, uvOffset);
+	const Mesh3D mesh = Mesh3D::HeightField(
+		heights, sizeXZ, HeightFieldOptions{ .uvScale = uvScale, .uvOffset = uvOffset });
 	const Mesh3D grid = Mesh3D::Grid(sizeXZ, 2, 1, uvScale, uvOffset);
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 6 });
@@ -87,7 +89,9 @@ TEST_CASE("Mesh3D::HeightField irregular heights")
 		{ 0.0f, 0.3f, 0.1f, -0.2f }
 	};
 	const Mesh3D mesh = Mesh3D::HeightField(
-		heights, SizeF{ 6.0, 4.0 }, Vec2{ 3.0, 2.0 }, Vec2{ -0.5, 0.25 });
+		heights, SizeF{ 6.0, 4.0 },
+		HeightFieldOptions{ .uvScale = Vec2{ 3.0, 2.0 },
+			.uvOffset = Vec2{ -0.5, 0.25 } });
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 12 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
@@ -144,8 +148,69 @@ TEST_CASE("Mesh3D::HeightField invalid arguments")
 	CHECK(Mesh3D::HeightField(nonFinite, SizeF{ 1.0, 1.0 }).isEmpty());
 
 	CHECK(Mesh3D::HeightField(valid, SizeF{ 1.0, 1.0 },
-		Vec2{ std::numeric_limits<double>::quiet_NaN(), 1.0 }).isEmpty());
+		HeightFieldOptions{ .uvScale = Vec2{
+			std::numeric_limits<double>::quiet_NaN(), 1.0 } }).isEmpty());
 	CHECK(Mesh3D::HeightField(valid, SizeF{ 1.0, 1.0 },
-		Vec2{ std::numeric_limits<float>::max(), 1.0 },
-		Vec2{ std::numeric_limits<float>::max(), 0.0 }).isEmpty());
+		HeightFieldOptions{
+			.uvScale = Vec2{ std::numeric_limits<float>::max(), 1.0 },
+			.uvOffset = Vec2{ std::numeric_limits<float>::max(), 0.0 }
+		}).isEmpty());
+}
+
+TEST_CASE("Mesh3D::HeightField callable")
+{
+	const Size gridSize{ 3, 2 };
+	const SizeF sizeXZ{ 4.0, 2.0 };
+	Array<Point> calls;
+	const auto heightFunction = [&](const Point point)
+	{
+		calls.push_back(point);
+		return (point.x + point.y * 10.0);
+	};
+	const HeightFieldOptions options{
+		.uvScale = Vec2{ 2.0, 3.0 },
+		.uvOffset = Vec2{ 0.25, -0.5 },
+	};
+	const Mesh3D generated = Mesh3D::HeightField(
+		gridSize, sizeXZ, heightFunction, options);
+	const Grid<float> heights{
+		{ 0.0f, 1.0f, 2.0f },
+		{ 10.0f, 11.0f, 12.0f }
+	};
+	const Mesh3D expected = Mesh3D::HeightField(heights, sizeXZ, options);
+
+	Mesh3DTest::CheckMeshDataEqual(generated, expected);
+	CHECK_EQ(calls, Array<Point>{
+		{ 0, 0 }, { 1, 0 }, { 2, 0 }, { 0, 1 }, { 1, 1 }, { 2, 1 }
+	});
+}
+
+TEST_CASE("Mesh3D::HeightField callable invalid arguments")
+{
+	size_t callCount = 0;
+	const auto finiteHeight = [&](const Point)
+	{
+		++callCount;
+		return 0.0;
+	};
+
+	CHECK(Mesh3D::HeightField(Size{ 1, 2 }, SizeF{ 1.0, 1.0 }, finiteHeight).isEmpty());
+	CHECK_EQ(callCount, size_t{ 0 });
+	CHECK(Mesh3D::HeightField(Size{ 2, 2 }, SizeF{ 0.0, 1.0 }, finiteHeight).isEmpty());
+	CHECK_EQ(callCount, size_t{ 0 });
+	Array<Point> invalidCalls;
+	CHECK(Mesh3D::HeightField(Size{ 2, 2 }, SizeF{ 1.0, 1.0 },
+		[&](const Point point)
+		{
+			invalidCalls.push_back(point);
+			return (point == Point{ 1, 0 }
+				? std::numeric_limits<double>::infinity()
+				: 0.0);
+		}).isEmpty());
+	CHECK_EQ(invalidCalls, Array<Point>{ { 0, 0 }, { 1, 0 } });
+	CHECK(Mesh3D::HeightField(Size{ 2, 2 }, SizeF{ 1.0, 1.0 },
+		[](const Point)
+		{
+			return std::numeric_limits<double>::max();
+		}).isEmpty());
 }

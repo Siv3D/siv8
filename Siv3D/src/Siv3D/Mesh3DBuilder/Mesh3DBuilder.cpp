@@ -3881,72 +3881,93 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
+		const HeightFieldOptions& options)
 	{
-		return Mesh3DDetail::AppendHeightField(m_mesh, heights, sizeXZ, uvScale, uvOffset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHeightField(
-		const Grid<float>& heights,
-		const SizeF sizeXZ,
-		const Vec3 offset)
-	{
-		return addHeightField(heights, sizeXZ, Mat4x4::Translate(Float3{ offset }));
+		return Mesh3DDetail::AppendHeightField(m_mesh, heights, sizeXZ, options);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
 		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addHeightField(heights, sizeXZ,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHeightField(
-		const Grid<float>& heights,
-		const SizeF sizeXZ,
-		const Mat4x4& transform)
+		const HeightFieldOptions& options)
 	{
 		return addHeightField(
-			heights, sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+			heights, sizeXZ, Mat4x4::Translate(Float3{ offset }), options);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset)
-	{
-		return addHeightField(
-			heights, sizeXZ, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHeightField(
-		const Grid<float>& heights,
-		const SizeF sizeXZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const Quaternion& rotation,
+		const HeightFieldOptions& options)
 	{
-		return addHeightField(heights, sizeXZ, uvScale, uvOffset,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		return addHeightField(
+			heights, sizeXZ,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
+			options);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Mat4x4& transform)
+		const Mat4x4& transform,
+		const HeightFieldOptions& options)
 	{
 		return TransformAddedVertices(
 			m_mesh,
-			addHeightField(heights, sizeXZ, uvScale, uvOffset),
+			Mesh3DDetail::AppendHeightField(m_mesh, heights, sizeXZ, options),
+			transform);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
+		const Size gridSize,
+		const SizeF sizeXZ,
+		const FunctionRef<double(Point)> heightFunction,
+		const HeightFieldOptions& options)
+	{
+		return Mesh3DDetail::AppendHeightField(
+			m_mesh, gridSize, sizeXZ, heightFunction, options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
+		const Size gridSize,
+		const SizeF sizeXZ,
+		const FunctionRef<double(Point)> heightFunction,
+		const Vec3 offset,
+		const HeightFieldOptions& options)
+	{
+		return addHeightField(
+			gridSize, sizeXZ, heightFunction,
+			Mat4x4::Translate(Float3{ offset }), options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
+		const Size gridSize,
+		const SizeF sizeXZ,
+		const FunctionRef<double(Point)> heightFunction,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const HeightFieldOptions& options)
+	{
+		return addHeightField(
+			gridSize, sizeXZ, heightFunction,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
+			options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addHeightField(
+		const Size gridSize,
+		const SizeF sizeXZ,
+		const FunctionRef<double(Point)> heightFunction,
+		const Mat4x4& transform,
+		const HeightFieldOptions& options)
+	{
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendHeightField(
+				m_mesh, gridSize, sizeXZ, heightFunction, options),
 			transform);
 	}
 

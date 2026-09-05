@@ -1938,66 +1938,116 @@ namespace s3d
 		/// @brief 格子状の高さデータから地形を追加します。
 		/// @param heights 各頂点の Y 座標を格納した高さデータ。幅と高さがそれぞれ 2 以上である必要があります。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
+		/// @param options UV 座標の生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 座標、UV 座標、法線、および接線の規約は `Mesh3D::HeightField()` と同じです。
 		[[nodiscard]]
 		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+			const HeightFieldOptions& options = {});
 
 		/// @brief 平行移動した高さフィールドを追加します。
+		/// @param heights 各頂点の Y 座標を格納した高さデータ
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @param options UV 座標の生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addHeightField(const Grid<float>& heights, SizeF sizeXZ, Vec3 offset);
+		Mesh3DAddResult addHeightField(
+			const Grid<float>& heights,
+			SizeF sizeXZ,
+			Vec3 offset,
+			const HeightFieldOptions& options = {});
 
 		/// @brief 回転および平行移動した高さフィールドを追加します。
+		/// @param heights 各頂点の Y 座標を格納した高さデータ
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param options UV 座標の生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
 		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
 			Vec3 offset,
-			const Quaternion& rotation);
+			const Quaternion& rotation,
+			const HeightFieldOptions& options = {});
 
 		/// @brief アフィン変換を適用した高さフィールドを追加します。
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addHeightField(const Grid<float>& heights, SizeF sizeXZ, const Mat4x4& transform);
-
-		/// @brief UV 変換と平行移動を適用した高さフィールドを追加します。
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addHeightField(
-			const Grid<float>& heights,
-			SizeF sizeXZ,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset);
-
-		/// @brief UV 変換、回転、および平行移動を適用した高さフィールドを追加します。
+		/// @param heights 各頂点の Y 座標を格納した高さデータ
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param transform 適用するアフィン変換行列
+		/// @param options UV 座標の生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
 		Mesh3DAddResult addHeightField(
 			const Grid<float>& heights,
 			SizeF sizeXZ,
-			Vec2 uvScale,
-			Vec2 uvOffset,
+			const Mat4x4& transform,
+			const HeightFieldOptions& options = {});
+
+		/// @brief callable で生成した格子状の高さから地形を追加します。
+		/// @param gridSize X 方向および Z 方向の頂点数
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param heightFunction 格子点の列と行を表す `Point` を受け取り、その頂点の Y 座標を返す callable
+		/// @param options UV 座標の生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark callable の呼び出し、および生成される頂点属性の規約は `Mesh3D::HeightField()` と同じです。
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
+			Size gridSize,
+			SizeF sizeXZ,
+			FunctionRef<double(Point)> heightFunction,
+			const HeightFieldOptions& options = {});
+
+		/// @brief callable で生成し、平行移動した高さフィールドを追加します。
+		/// @param gridSize X 方向および Z 方向の頂点数
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param heightFunction 各格子点の Y 座標を返す callable
+		/// @param offset 平行移動量
+		/// @param options UV 座標の生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
+			Size gridSize,
+			SizeF sizeXZ,
+			FunctionRef<double(Point)> heightFunction,
 			Vec3 offset,
-			const Quaternion& rotation);
+			const HeightFieldOptions& options = {});
 
-		/// @brief UV 変換とアフィン変換を適用した高さフィールドを追加します。
+		/// @brief callable で生成し、回転および平行移動した高さフィールドを追加します。
+		/// @param gridSize X 方向および Z 方向の頂点数
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param heightFunction 各格子点の Y 座標を返す callable
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param options UV 座標の生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
 		Mesh3DAddResult addHeightField(
-			const Grid<float>& heights,
+			Size gridSize,
 			SizeF sizeXZ,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			const Mat4x4& transform);
+			FunctionRef<double(Point)> heightFunction,
+			Vec3 offset,
+			const Quaternion& rotation,
+			const HeightFieldOptions& options = {});
+
+		/// @brief callable で生成し、アフィン変換を適用した高さフィールドを追加します。
+		/// @param gridSize X 方向および Z 方向の頂点数
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param heightFunction 各格子点の Y 座標を返す callable
+		/// @param transform 適用するアフィン変換行列
+		/// @param options UV 座標の生成設定
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addHeightField(
+			Size gridSize,
+			SizeF sizeXZ,
+			FunctionRef<double(Point)> heightFunction,
+			const Mat4x4& transform,
+			const HeightFieldOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//

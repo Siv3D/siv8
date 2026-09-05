@@ -18,6 +18,7 @@
 # include "Blob.hpp"
 # include "BoxFace.hpp"
 # include "BoxUVMapping.hpp"
+# include "FunctionRef.hpp"
 # include "Grid.hpp"
 # include "IWriter.hpp"
 # include "Material.hpp"
@@ -197,6 +198,22 @@ namespace s3d
 
 		/// @brief 生成する端面。未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。
 		Optional<Mesh3DEndCaps> endCaps;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	HeightFieldOptions
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief HeightField の生成設定
+	struct HeightFieldOptions
+	{
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale = Vec2{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset = Vec2{ 0.0, 0.0 };
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -965,19 +982,33 @@ namespace s3d
 		/// @brief 格子状の高さデータから地形の 3D メッシュを作成します。
 		/// @param heights 各頂点の Y 座標を格納した高さデータ。幅と高さがそれぞれ 2 以上である必要があります。
 		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
+		/// @param options UV 座標の生成設定
 		/// @return 高さデータから作成した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark `heights[y][x]` を対応する頂点の Y 座標としてそのまま使用します。Y 方向の平行移動やスケーリングは行いません。
 		/// @remark 列 0 を `X = -sizeXZ.x / 2`、最終列を `X = sizeXZ.x / 2`、行 0 を `Z = sizeXZ.y / 2`、最終行を `Z = -sizeXZ.y / 2` に配置します。
-		/// @remark UV 座標は左上を `(0, 0)`、右下を `(1, 1)` とし、`uvScale` と `uvOffset` を適用します。
+		/// @remark UV 座標は左上を `(0, 0)`、右下を `(1, 1)` とし、`options.uvScale` と `options.uvOffset` を適用します。
 		/// @remark 隣接する高さの差分から、滑らかに接続する頂点法線と接線を計算します。
 		[[nodiscard]]
 		static Mesh3D HeightField(
 			const s3d::Grid<float>& heights,
 			SizeF sizeXZ,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+			const HeightFieldOptions& options = {});
+
+		/// @brief callable で生成した格子状の高さから地形の 3D メッシュを作成します。
+		/// @param gridSize X 方向および Z 方向の頂点数。幅と高さがそれぞれ 2 以上である必要があります。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param heightFunction 格子点の列と行を表す `Point` を受け取り、その頂点の Y 座標を返す callable
+		/// @param options UV 座標の生成設定
+		/// @return callable で生成した高さデータから作成した 3D メッシュ。引数または callable の戻り値が不正な場合、もしくは頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 正常な入力では、`heightFunction` は `(0, 0)` から行優先で、各格子点に対して 1 回ずつ呼び出されます。不正な戻り値が得られた場合は、その時点で呼び出しを終了します。
+		/// @remark callable の戻り値は float に変換され、変換後の値を対応する頂点の Y 座標としてそのまま使用します。
+		/// @remark 座標、UV 座標、法線、および接線の規約は `Grid<float>` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D HeightField(
+			Size gridSize,
+			SizeF sizeXZ,
+			FunctionRef<double(Point)> heightFunction,
+			const HeightFieldOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//

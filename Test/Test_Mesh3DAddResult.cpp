@@ -330,6 +330,18 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addHeightField(validHeightField, SizeF{ infinity, 1.0 }),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
+		builder.addHeightField(
+			Size{ -1, 2 }, SizeF{ 1.0, 1.0 }, [](const Point) { return 0.0; }),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addHeightField(
+			Size{ 2, 2 }, SizeF{ 1.0, 1.0 },
+			[&](const Point point)
+			{
+				return (point == Point{ 1, 1 } ? infinity : 0.0);
+			}),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
 		builder.addLoft(sections, Array<double>{ 0.0, 0.0 }),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(

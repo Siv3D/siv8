@@ -409,8 +409,15 @@ namespace s3d::Mesh3DDetail
 		Mesh3D& mesh,
 		const Grid<float>& heights,
 		SizeF sizeXZ,
-		Vec2 uvScale,
-		Vec2 uvOffset);
+		const HeightFieldOptions& options);
+
+	[[nodiscard]]
+	Mesh3DAddResult AppendHeightField(
+		Mesh3D& mesh,
+		Size gridSize,
+		SizeF sizeXZ,
+		FunctionRef<double(Point)> heightFunction,
+		const HeightFieldOptions& options);
 
 	[[nodiscard]]
 	Mesh3DAddResult AppendLoft(

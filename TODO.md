@@ -68,12 +68,11 @@
 
 - 2 点間を結ぶ柱・梁には `Tube({ from, to }, radius)` を使えることを示し、専用 `Cylinder(from, to)` overload の必要性はその後に再評価する。
 - 2D 立面図を world XY、押し出し方向を world Z として使う、`Extrude()` + `Quaternion::RotateX(90_deg)` の例を追加する。
-- `HeightField()` の `[y][x]` ループ、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
+- `HeightField()` の `Grid<float>` 入力と callable 入力の使い分け、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
 - `Cylindrical` / `Spherical` の配置例、および接合部には `Box`、露出部には `ChamferedBox` / `RoundedBox` を使う指針は、サンプル拡充時の候補とする。
 
 ### 入力形式と追加候補
 
-- 次の生成 API 候補として、`HeightField()` は `Image` 専用 overload より先に、グリッド座標から高さを返す callable overload を評価する。
 - `Image` overload を追加する場合は、チャネルまたは輝度変換、正規化範囲、Y scale / offset、行方向、HDR 入力の範囲を決める。
 - `IcoSphere()` は subdivision 上限、overflow、UV seam を持つ構成と UV を持たない構成のどちらを公開するか決める。
 - `Extrude` / `Loft` の断面として使う扇形・扇形環を、手書きの三角関数ループなしで `Polygon` または `Shape2D` として生成する API を評価する。配置先は Mesh3D ではなく 2D geometry API を優先する。

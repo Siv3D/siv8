@@ -81,21 +81,27 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 	static_assert(requires
 	{
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec2, Vec2)>(&Mesh3DBuilder::addHeightField);
+			const Grid<float>&, SizeF, const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec3)>(&Mesh3DBuilder::addHeightField);
+			const Grid<float>&, SizeF, Vec3, const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec3, const Quaternion&)>(&Mesh3DBuilder::addHeightField);
+			const Grid<float>&, SizeF, Vec3, const Quaternion&,
+			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, const Mat4x4&)>(&Mesh3DBuilder::addHeightField);
+			const Grid<float>&, SizeF, const Mat4x4&,
+			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec2, Vec2, Vec3)>(&Mesh3DBuilder::addHeightField);
+			Size, SizeF, FunctionRef<double(Point)>,
+			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec2, Vec2, Vec3,
-			const Quaternion&)>(&Mesh3DBuilder::addHeightField);
+			Size, SizeF, FunctionRef<double(Point)>, Vec3,
+			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec2, Vec2,
-			const Mat4x4&)>(&Mesh3DBuilder::addHeightField);
+			Size, SizeF, FunctionRef<double(Point)>, Vec3, const Quaternion&,
+			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
+			Size, SizeF, FunctionRef<double(Point)>, const Mat4x4&,
+			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 	});
 
 	const Grid<float> heights{
@@ -105,6 +111,7 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 	const SizeF sizeXZ{ 4.0, 2.0 };
 	const Vec2 uvScale{ 2.0, 3.0 };
 	const Vec2 uvOffset{ 0.25, -0.5 };
+	const HeightFieldOptions options{ .uvScale = uvScale, .uvOffset = uvOffset };
 	const Vec3 offset{ 3.0, 4.0, 5.0 };
 	const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
 	const Mat4x4 transform = Mat4x4::AffineTransform(
@@ -112,15 +119,15 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 
 	SUBCASE("Appends directly and supports placement overloads")
 	{
-		const Mesh3D source = Mesh3D::HeightField(heights, sizeXZ, uvScale, uvOffset);
+		const Mesh3D source = Mesh3D::HeightField(heights, sizeXZ, options);
 		Mesh3DBuilder builder;
 		builder.reserve((source.vertexCount() * 4), (source.triangleCount() * 4));
-		REQUIRE(builder.addHeightField(heights, sizeXZ, uvScale, uvOffset));
+		REQUIRE(builder.addHeightField(heights, sizeXZ, options));
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 		REQUIRE(builder.addHeightField(heights, sizeXZ, offset));
 		REQUIRE(builder.addHeightField(heights, sizeXZ, offset, rotation));
-		REQUIRE(builder.addHeightField(heights, sizeXZ, uvScale, uvOffset, transform));
+		REQUIRE(builder.addHeightField(heights, sizeXZ, transform, options));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
 
@@ -129,6 +136,41 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 			Mesh3D::HeightField(heights, sizeXZ), Mat4x4::Translate(Float3{ offset })));
 		REQUIRE(expected.append(
 			Mesh3D::HeightField(heights, sizeXZ),
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(source, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Callable supports direct append and placement overloads")
+	{
+		const Size gridSize{ heights.width(), heights.height() };
+		const auto heightFunction = [&](const Point point)
+		{
+			return static_cast<double>(heights[point]);
+		};
+		const Mesh3D source = Mesh3D::HeightField(
+			gridSize, sizeXZ, heightFunction, options);
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 4), (source.triangleCount() * 4));
+		REQUIRE(builder.addHeightField(
+			gridSize, sizeXZ, heightFunction, options));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+		REQUIRE(builder.addHeightField(
+			gridSize, sizeXZ, heightFunction, offset));
+		REQUIRE(builder.addHeightField(
+			gridSize, sizeXZ, heightFunction, offset, rotation));
+		REQUIRE(builder.addHeightField(
+			gridSize, sizeXZ, heightFunction, transform, options));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(
+			Mesh3D::HeightField(gridSize, sizeXZ, heightFunction),
+			Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(
+			Mesh3D::HeightField(gridSize, sizeXZ, heightFunction),
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
 		REQUIRE(expected.append(source, transform));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
