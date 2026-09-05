@@ -15,6 +15,7 @@
 # include <array>
 # include <cmath>
 # include <limits>
+# include <unordered_map>
 
 namespace s3d
 {
@@ -347,6 +348,16 @@ namespace s3d
 			{ 3, 9, 4 }, { 3, 4, 2 }, { 3, 2, 6 }, { 3, 6, 8 }, { 3, 8, 9 },
 			{ 4, 9, 5 }, { 2, 4, 11 }, { 6, 2, 10 }, { 8, 6, 7 }, { 9, 8, 1 },
 		}};
+
+		constexpr uint32 IcoSphereMaxSubdivisions = 8;
+
+		[[nodiscard]]
+		static constexpr uint64 MakeEdgeKey(const uint32 a, const uint32 b) noexcept
+		{
+			const uint32 low = std::min(a, b);
+			const uint32 high = std::max(a, b);
+			return ((static_cast<uint64>(low) << 32) | high);
+		}
 
 		template <size_t VertexCount, size_t FaceCount>
 		[[nodiscard]]
@@ -3531,6 +3542,175 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(const double radius, const Mat4x4& transform)
 	{
 		return TransformAddedVertices(m_mesh, addIcosahedron(radius), transform);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	addIcoSphere
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3DAddResult Mesh3DBuilder::addIcoSphere(
+		const double _radius,
+		const uint32 subdivisions)
+	{
+		if (not IsFloatRepresentable(_radius))
+		{
+			return AdditionFailed(Mesh3DErrorCode::NumericRange,
+				U"Mesh3D::IcoSphere(): radius must be finite and float-representable");
+		}
+
+		const float radius = static_cast<float>(_radius);
+		if (radius <= 0.0f)
+		{
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+				U"Mesh3D::IcoSphere(): radius must be positive after conversion to float");
+		}
+
+		if (IcoSphereMaxSubdivisions < subdivisions)
+		{
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+				U"Mesh3D::IcoSphere(): subdivisions must not exceed 8");
+		}
+
+		size_t subdivisionScale = 1;
+		for (uint32 i = 0; i < subdivisions; ++i)
+		{
+			size_t nextScale;
+			if (not CheckedMultiply(subdivisionScale, size_t{ 4 }, nextScale))
+			{
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+					U"Mesh3D::IcoSphere(): The generated mesh exceeds the supported size");
+			}
+			subdivisionScale = nextScale;
+		}
+
+		size_t vertexCount;
+		size_t triangleCount;
+		size_t scaledVertexCount;
+		if ((not CheckedMultiply(size_t{ 10 }, subdivisionScale, scaledVertexCount))
+			|| (not CheckedAdd(scaledVertexCount, size_t{ 2 }, vertexCount))
+			|| (not CheckedMultiply(size_t{ 20 }, subdivisionScale, triangleCount)))
+		{
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+				U"Mesh3D::IcoSphere(): The generated mesh exceeds the supported size");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(
+			m_mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
+		{
+			return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+				U"Mesh3D::IcoSphere(): The generated mesh exceeds the supported size");
+		}
+
+		for (size_t i = 0; i < IcosahedronBaseVertices.size(); ++i)
+		{
+			m_mesh.vertices[vertexOffset + i].pos = IcosahedronBaseVertices[i].normalized();
+		}
+
+		for (size_t i = 0; i < IcosahedronFaces.size(); ++i)
+		{
+			const auto& face = IcosahedronFaces[i];
+			m_mesh.indices[triangleOffset + i] = TriangleIndex32{
+				face[0], face[1], face[2]
+			};
+		}
+
+		uint32 nextVertexIndex = static_cast<uint32>(IcosahedronBaseVertices.size());
+		size_t currentTriangleCount = IcosahedronFaces.size();
+		std::unordered_map<uint64, uint32> midpointIndices;
+		for (uint32 level = 0; level < subdivisions; ++level)
+		{
+			midpointIndices.clear();
+			midpointIndices.reserve((currentTriangleCount * 3) / 2);
+
+			const auto getMidpointIndex = [&](const uint32 a, const uint32 b)
+			{
+				const uint64 key = MakeEdgeKey(a, b);
+				if (const auto it = midpointIndices.find(key); it != midpointIndices.end())
+				{
+					return it->second;
+				}
+
+				const uint32 midpointIndex = nextVertexIndex++;
+				m_mesh.vertices[vertexOffset + midpointIndex].pos =
+					(m_mesh.vertices[vertexOffset + a].pos
+						+ m_mesh.vertices[vertexOffset + b].pos).normalized();
+				midpointIndices.emplace(key, midpointIndex);
+				return midpointIndex;
+			};
+
+			for (size_t faceIndex = currentTriangleCount; faceIndex-- > 0;)
+			{
+				const TriangleIndex32 face = m_mesh.indices[triangleOffset + faceIndex];
+				const uint32 ab = getMidpointIndex(face.i0, face.i1);
+				const uint32 bc = getMidpointIndex(face.i1, face.i2);
+				const uint32 ca = getMidpointIndex(face.i2, face.i0);
+				const size_t childBase = (triangleOffset + faceIndex * 4);
+				m_mesh.indices[childBase + 0] = TriangleIndex32{ face.i0, ab, ca };
+				m_mesh.indices[childBase + 1] = TriangleIndex32{ face.i1, bc, ab };
+				m_mesh.indices[childBase + 2] = TriangleIndex32{ face.i2, ca, bc };
+				m_mesh.indices[childBase + 3] = TriangleIndex32{ ab, bc, ca };
+			}
+
+			currentTriangleCount *= 4;
+		}
+
+		for (size_t i = 0; i < vertexCount; ++i)
+		{
+			Vertex3D& vertex = m_mesh.vertices[vertexOffset + i];
+			const Float3 normal = vertex.pos;
+			const Float3 helper = ((std::abs(normal.y) < 0.9f)
+				? Float3::UnitY() : Float3::UnitX());
+			const Float3 tangent = helper.cross(normal).normalized();
+			vertex = Vertex3D{
+				.pos = (normal * radius),
+				.normal = normal,
+				.tex = Float2{ 0.0f, 0.0f },
+				.tangent = Float4{ tangent, 1.0f }
+			};
+		}
+
+		for (size_t i = 0; i < triangleCount; ++i)
+		{
+			TriangleIndex32& face = m_mesh.indices[triangleOffset + i];
+			face.i0 = static_cast<uint32>(vertexOffset + face.i0);
+			face.i1 = static_cast<uint32>(vertexOffset + face.i1);
+			face.i2 = static_cast<uint32>(vertexOffset + face.i2);
+		}
+
+		return AddedRange(m_mesh, vertexOffset, triangleOffset);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addIcoSphere(
+		const double radius,
+		const uint32 subdivisions,
+		const Vec3 offset)
+	{
+		return addIcoSphere(
+			radius, subdivisions, Mat4x4::Translate(Float3{ offset }));
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addIcoSphere(
+		const double radius,
+		const uint32 subdivisions,
+		const Vec3 offset,
+		const Quaternion& rotation)
+	{
+		return addIcoSphere(
+			radius, subdivisions,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addIcoSphere(
+		const double radius,
+		const uint32 subdivisions,
+		const Mat4x4& transform)
+	{
+		return TransformAddedVertices(
+			m_mesh, addIcoSphere(radius, subdivisions), transform);
 	}
 
 	////////////////////////////////////////////////////////////////

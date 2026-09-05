@@ -124,6 +124,7 @@ TEST_CASE("Mesh3DAddResult covers every builder shape family")
 	checkAddition([&] { return builder.addTetrahedron(); });
 	checkAddition([&] { return builder.addOctahedron(); });
 	checkAddition([&] { return builder.addIcosahedron(); });
+	checkAddition([&] { return builder.addIcoSphere(); });
 	checkAddition([&] { return builder.addDodecahedron(); });
 	checkAddition([&] { return builder.addPlane(); });
 	checkAddition([&] { return builder.addGrid(SizeF{ 1.0, 1.0 }, 2, 2); });
@@ -201,6 +202,15 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 	checkFailure(
 		builder.addBox(Vec3{ 0.0, 1.0, 1.0 }),
 		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addIcoSphere(infinity, 2),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addIcoSphere(0.0, 2),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addIcoSphere(1.0, 9),
+		Mesh3DErrorCode::SizeLimit);
 	checkFailure(
 		builder.addTube({}, 0.25),
 		Mesh3DErrorCode::InvalidArgument);

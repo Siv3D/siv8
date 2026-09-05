@@ -38,6 +38,7 @@ namespace
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Tetrahedron);
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Octahedron);
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Icosahedron);
+		static_cast<Mesh3D (*)(double, uint32)>(&Mesh3D::IcoSphere);
 		static_cast<Mesh3D (*)(double)>(&Mesh3D::Dodecahedron);
 		static_cast<Mesh3D (*)(SizeF, Vec2, Vec2)>(&Mesh3D::Plane);
 		static_cast<Mesh3D (*)(SizeF, uint32, uint32, Vec2, Vec2)>(&Mesh3D::Grid);
@@ -1035,6 +1036,52 @@ TEST_CASE("Mesh3D::Icosahedron")
 	CheckRegularPolyhedron(Mesh3D::Icosahedron(), 1.0, 20, 3);
 	CHECK(Mesh3D::Icosahedron(0.0).isEmpty());
 	CHECK(Mesh3D::Icosahedron(std::numeric_limits<double>::max()).isEmpty());
+}
+
+TEST_CASE("Mesh3D::IcoSphere")
+{
+	constexpr std::array<size_t, 4> ExpectedVertexCounts{ 12, 42, 162, 642 };
+	constexpr std::array<size_t, 4> ExpectedTriangleCounts{ 20, 80, 320, 1280 };
+
+	for (uint32 subdivisions = 0; subdivisions < ExpectedVertexCounts.size(); ++subdivisions)
+	{
+		const Mesh3D mesh = Mesh3D::IcoSphere(2.0, subdivisions);
+		REQUIRE_EQ(mesh.vertexCount(), ExpectedVertexCounts[subdivisions]);
+		REQUIRE_EQ(mesh.triangleCount(), ExpectedTriangleCounts[subdivisions]);
+		CheckMeshGeometry(mesh, Mesh3DTest::TangentHandedness::Positive);
+
+		Array<bool> usedVertices(mesh.vertexCount(), false);
+		for (const TriangleIndex32& triangle : mesh.indices)
+		{
+			usedVertices[triangle.i0] = true;
+			usedVertices[triangle.i1] = true;
+			usedVertices[triangle.i2] = true;
+		}
+
+		for (size_t i = 0; i < mesh.vertexCount(); ++i)
+		{
+			const Vertex3D& vertex = mesh.vertices[i];
+			CHECK(vertex.pos.length() == doctest::Approx(2.0f).epsilon(FrameEpsilon));
+			CHECK_EQ(vertex.normal, (vertex.pos / 2.0f));
+			CHECK_EQ(vertex.tex, Float2{ 0.0f, 0.0f });
+			CHECK(usedVertices[i]);
+		}
+	}
+
+	const Mesh3D defaultMesh = Mesh3D::IcoSphere();
+	CHECK_EQ(defaultMesh.vertexCount(), size_t{ 162 });
+	CHECK_EQ(defaultMesh.triangleCount(), size_t{ 320 });
+
+	const Mesh3D maximumMesh = Mesh3D::IcoSphere(1.0, 8);
+	CHECK_EQ(maximumMesh.vertexCount(), size_t{ 655362 });
+	CHECK_EQ(maximumMesh.triangleCount(), size_t{ 1310720 });
+	CHECK(maximumMesh.validate());
+
+	CHECK(Mesh3D::IcoSphere(0.0, 0).isEmpty());
+	CHECK(Mesh3D::IcoSphere(-1.0, 1).isEmpty());
+	CHECK(Mesh3D::IcoSphere(std::numeric_limits<double>::infinity(), 2).isEmpty());
+	CHECK(Mesh3D::IcoSphere(std::numeric_limits<double>::max(), 2).isEmpty());
+	CHECK(Mesh3D::IcoSphere(1.0, 9).isEmpty());
 }
 
 TEST_CASE("Mesh3D::Dodecahedron")

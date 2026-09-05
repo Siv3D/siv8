@@ -926,6 +926,24 @@ namespace s3d
 		[[nodiscard]]
 		static Mesh3D Icosahedron(double radius = 1.0);
 
+		////////////////////////////////////////////////////////////////
+		//
+		//	IcoSphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 正二十面体を細分化した、原点を中心とする球の 3D メッシュを作成します。
+		/// @param radius 球の半径
+		/// @param subdivisions 細分化回数。0 以上 8 以下である必要があります。
+		/// @return 正二十面体を細分化した球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 頂点数は `10 * 4^subdivisions + 2`、三角形数は `20 * 4^subdivisions` です。
+		/// @remark 隣接する三角形は頂点を共有し、各頂点の法線は球の中心から外側へ向きます。`subdivisions == 0` では `Icosahedron()` と同じ外形を 12 個の共有頂点で表現します。
+		/// @remark UV 座標は提供せず、すべて `(0, 0)` です。接線は法線に直交する単位ベクトルですが、UV に基づく接線空間を表しません。テクスチャマッピングには `Sphere()` を使用してください。
+		[[nodiscard]]
+		static Mesh3D IcoSphere(
+			double radius = 1.0,
+			uint32 subdivisions = 2);
+
 		/// @brief 原点を中心とする正十二面体の 3D メッシュを作成します。
 		/// @param radius 外接球の半径
 		/// @return 正十二面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ

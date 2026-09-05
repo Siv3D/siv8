@@ -1747,6 +1747,54 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	addIcoSphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 正二十面体を細分化した、原点を中心とする球を追加します。
+		/// @param radius 球の半径
+		/// @param subdivisions 細分化回数。0 以上 8 以下である必要があります。
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark 頂点の共有、法線、UV 座標、および接線の規約は `Mesh3D::IcoSphere()` と同じです。
+		[[nodiscard]]
+		Mesh3DAddResult addIcoSphere(
+			double radius = 1.0,
+			uint32 subdivisions = 2);
+
+		/// @brief 平行移動した IcoSphere を追加します。
+		/// @param radius 球の半径
+		/// @param subdivisions 細分化回数
+		/// @param offset 平行移動量
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addIcoSphere(double radius, uint32 subdivisions, Vec3 offset);
+
+		/// @brief 回転および平行移動した IcoSphere を追加します。
+		/// @param radius 球の半径
+		/// @param subdivisions 細分化回数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addIcoSphere(
+			double radius,
+			uint32 subdivisions,
+			Vec3 offset,
+			const Quaternion& rotation);
+
+		/// @brief アフィン変換を適用した IcoSphere を追加します。
+		/// @param radius 球の半径
+		/// @param subdivisions 細分化回数
+		/// @param transform 適用するアフィン変換行列
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addIcoSphere(
+			double radius,
+			uint32 subdivisions,
+			const Mat4x4& transform);
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	addDodecahedron
 		//
 		////////////////////////////////////////////////////////////////

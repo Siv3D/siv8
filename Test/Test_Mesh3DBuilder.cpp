@@ -836,6 +836,61 @@ TEST_CASE("Mesh3DBuilder regular polyhedra")
 	}
 }
 
+TEST_CASE("Mesh3DBuilder::addIcoSphere")
+{
+	static_assert(requires
+	{
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(double, uint32)>(
+			&Mesh3DBuilder::addIcoSphere);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(double, uint32, Vec3)>(
+			&Mesh3DBuilder::addIcoSphere);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
+			double, uint32, Vec3, const Quaternion&)>(&Mesh3DBuilder::addIcoSphere);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
+			double, uint32, const Mat4x4&)>(&Mesh3DBuilder::addIcoSphere);
+	});
+
+	constexpr double Radius = 2.0;
+	constexpr uint32 Subdivisions = 2;
+	const Mesh3D source = Mesh3D::IcoSphere(Radius, Subdivisions);
+	const Vec3 offset{ 3.0, 4.0, 5.0 };
+	const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+	const Mat4x4 transform = Mat4x4::AffineTransform(
+		Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+	SUBCASE("Placement overloads append in source order and reuse reserved storage")
+	{
+		Mesh3DBuilder builder;
+		builder.reserve((source.vertexCount() * 4), (source.triangleCount() * 4));
+		REQUIRE(builder.addIcoSphere(Radius, Subdivisions));
+		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+		REQUIRE(builder.addIcoSphere(Radius, Subdivisions, offset));
+		REQUIRE(builder.addIcoSphere(Radius, Subdivisions, offset, rotation));
+		REQUIRE(builder.addIcoSphere(Radius, Subdivisions, transform));
+		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+		Mesh3D expected = source;
+		REQUIRE(expected.append(source, Mat4x4::Translate(Float3{ offset })));
+		REQUIRE(expected.append(source,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+		REQUIRE(expected.append(source, transform));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+
+	SUBCASE("Failure leaves existing content unchanged")
+	{
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox());
+		const Mesh3D expected = builder.getMesh();
+
+		CHECK_FALSE(builder.addIcoSphere(0.0, Subdivisions));
+		CHECK_FALSE(builder.addIcoSphere(Radius, 9));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}
+
 TEST_CASE("Mesh3DBuilder::addPlane")
 {
 	const SizeF sizeXZ{ 4.0, 6.0 };

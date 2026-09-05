@@ -74,7 +74,6 @@
 ### 入力形式と追加候補
 
 - `Image` overload を追加する場合は、チャネルまたは輝度変換、正規化範囲、Y scale / offset、行方向、HDR 入力の範囲を決める。
-- `IcoSphere()` は subdivision 上限、overflow、UV seam を持つ構成と UV を持たない構成のどちらを公開するか決める。
 - `Extrude` / `Loft` の断面として使う扇形・扇形環を、手書きの三角関数ループなしで `Polygon` または `Shape2D` として生成する API を評価する。配置先は Mesh3D ではなく 2D geometry API を優先する。
 - double-sided plane、torus arc、torus knot、superellipsoid は利用例が明確になった時点で評価する。
 - `RegularPrism` は `Extrude()`、rounded cylinder は `Revolve()` での代替を優先する。

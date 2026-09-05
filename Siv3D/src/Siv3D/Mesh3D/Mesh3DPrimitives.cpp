@@ -306,6 +306,19 @@ namespace s3d
 		return std::move(builder).build();
 	}
 
+	////////////////////////////////////////////////////////////////
+	//
+	//	IcoSphere
+	//
+	////////////////////////////////////////////////////////////////
+
+	Mesh3D Mesh3D::IcoSphere(const double radius, const uint32 subdivisions)
+	{
+		Mesh3DBuilder builder;
+		(void)builder.addIcoSphere(radius, subdivisions);
+		return std::move(builder).build();
+	}
+
 	Mesh3D Mesh3D::Dodecahedron(const double radius)
 	{
 		Mesh3DBuilder builder;
