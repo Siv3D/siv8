@@ -70,7 +70,7 @@ TEST_CASE("Mesh3D generators omit zero-area cap triangles")
 	const Mesh3D sweep = Mesh3D::Sweep(
 		polygon,
 		{ Vec3{ 0.0, 0.0, 0.0 }, Vec3{ 0.0, 2.0, 0.0 } },
-		Arg::initialXAxis = Vec3::UnitX());
+		SweepOptions{ .initialXAxis = Vec3::UnitX() });
 	CHECK_EQ(sweep.triangleCount(),
 		((positiveCapTriangleCount * 2) + (outline.size() * 2)));
 	CheckMeshGeometry(sweep);

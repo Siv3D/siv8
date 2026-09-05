@@ -19,34 +19,10 @@ namespace
 
 	static_assert(requires
 	{
-		static_cast<Mesh3D (*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3D::Tube);
-		static_cast<Mesh3D (*)(std::span<const Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
-		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3D::Tube);
-		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3D::Tube);
-		static_cast<Mesh3D (*)(std::span<const Vec3>, std::span<const double>, uint32, Vec2, Vec2, CloseRing)>(&Mesh3D::Tube);
-		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, std::initializer_list<double>, uint32, Vec2, Vec2, CloseRing)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::span<const Vec3>, double, const TubeOptions&)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, double, const TubeOptions&)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::span<const Vec3>, std::span<const double>, const TubeOptions&)>(&Mesh3D::Tube);
 		static_cast<Mesh3D (*)(std::initializer_list<Vec3>, std::initializer_list<double>, const TubeOptions&)>(&Mesh3D::Tube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, CloseRing, uint32, Vec2, Vec2)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, uint32, Vec2, Vec2, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, std::initializer_list<double>, uint32, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, uint32, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, uint32, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, uint32, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, uint32, Vec2, Vec2, Vec3, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, uint32, Vec2, Vec2, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, uint32, Vec2, Vec2, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addTube);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, const TubeOptions&)>(&Mesh3DBuilder::addTube);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, const TubeOptions&)>(&Mesh3DBuilder::addTube);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, const TubeOptions&)>(&Mesh3DBuilder::addTube);
@@ -66,15 +42,16 @@ TEST_CASE("Mesh3D::Tube initializer list")
 	const Array<Vec3> path{
 		{ 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 2.0, 1.0 }
 	};
+	const TubeOptions options{
+		.sides = 8,
+		.uvScale = Vec2{ 2.0, 0.25 },
+		.uvOffset = Vec2{ 0.1, 0.2 },
+	};
 	CheckMeshDataEqual(
 		Mesh3D::Tube({
 			{ 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 2.0, 1.0 }
-		}, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }),
-		Mesh3D::Tube(path, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }));
-	CheckMeshDataEqual(
-		Mesh3D::Tube(path, 0.5, 8, Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }),
-		Mesh3D::Tube(path, 0.5, 8,
-			Vec2{ 2.0, 0.25 }, Vec2{ 0.1, 0.2 }, CloseRing::No));
+		}, 0.5, options),
+		Mesh3D::Tube(path, 0.5, options));
 	CHECK(Mesh3D::Tube({}, 0.5).isEmpty());
 }
 
@@ -85,11 +62,12 @@ TEST_CASE("Mesh3DBuilder::addTube initializer list")
 	};
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
+	const TubeOptions options{ .sides = 8, .uvScale = uvScale, .uvOffset = uvOffset };
 	Mesh3DBuilder builder;
 	REQUIRE(builder.addTube({
 		{ 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 2.0, 1.0 }
-	}, 0.5, 8, uvScale, uvOffset));
-	CheckMeshDataEqual(builder.getMesh(), Mesh3D::Tube(path, 0.5, 8, uvScale, uvOffset));
+	}, 0.5, options));
+	CheckMeshDataEqual(builder.getMesh(), Mesh3D::Tube(path, 0.5, options));
 	CHECK_FALSE(builder.addTube({}, 0.5));
 }
 
@@ -102,18 +80,20 @@ TEST_CASE("Mesh3DBuilder::addTube")
 	constexpr uint32 Sides = 8;
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
-	const Mesh3D source = Mesh3D::Tube(path, Radius, Sides, uvScale, uvOffset);
+	const TubeOptions options{ .sides = Sides, .uvScale = uvScale, .uvOffset = uvOffset };
+	const TubeOptions defaultUVOptions{ .sides = Sides };
+	const Mesh3D source = Mesh3D::Tube(path, Radius, options);
 
 	SUBCASE("Direct append reuses reserved storage")
 	{
 		Mesh3DBuilder builder;
 		builder.reserve((source.vertexCount() * 2), (source.triangleCount() * 2));
-		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset));
+		REQUIRE(builder.addTube(path, Radius, options));
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 
 		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
-		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, transform));
+		REQUIRE(builder.addTube(path, Radius, transform, options));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
 
@@ -128,15 +108,15 @@ TEST_CASE("Mesh3DBuilder::addTube")
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
 		const Mat4x4 transform = Mat4x4::AffineTransform(
 			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
-		const Mesh3D defaultUVSource = Mesh3D::Tube(path, Radius, Sides);
+		const Mesh3D defaultUVSource = Mesh3D::Tube(path, Radius, defaultUVOptions);
 
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addTube(path, Radius, Sides, offset));
-		REQUIRE(builder.addTube(path, Radius, Sides, offset, rotation));
-		REQUIRE(builder.addTube(path, Radius, Sides, transform));
-		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, offset));
-		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, offset, rotation));
-		REQUIRE(builder.addTube(path, Radius, Sides, uvScale, uvOffset, transform));
+		REQUIRE(builder.addTube(path, Radius, offset, defaultUVOptions));
+		REQUIRE(builder.addTube(path, Radius, offset, rotation, defaultUVOptions));
+		REQUIRE(builder.addTube(path, Radius, transform, defaultUVOptions));
+		REQUIRE(builder.addTube(path, Radius, offset, options));
+		REQUIRE(builder.addTube(path, Radius, offset, rotation, options));
+		REQUIRE(builder.addTube(path, Radius, transform, options));
 
 		Mesh3D expected;
 		REQUIRE(expected.append(defaultUVSource, Mat4x4::Translate(Float3{ offset })));
@@ -156,11 +136,11 @@ TEST_CASE("Mesh3DBuilder::addTube")
 		REQUIRE(builder.addBox());
 		const Mesh3D expected = builder.getMesh();
 
-		CHECK_FALSE(builder.addTube({}, Radius, Sides));
-		CHECK_FALSE(builder.addTube(path, 0.0, Sides));
-		CHECK_FALSE(builder.addTube(path, Radius, 2));
+		CHECK_FALSE(builder.addTube({}, Radius, defaultUVOptions));
+		CHECK_FALSE(builder.addTube(path, 0.0, defaultUVOptions));
+		CHECK_FALSE(builder.addTube(path, Radius, TubeOptions{ .sides = 2 }));
 		CHECK_FALSE(builder.addTube(
-			path, 0.0, Sides, Vec2{ 1.0, 1.0 }, Vec2::Zero(), Mat4x4::Identity()));
+			path, 0.0, Mat4x4::Identity(), defaultUVOptions));
 		CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 }
@@ -171,7 +151,8 @@ TEST_CASE("Mesh3D::Tube straight path and UV repeat")
 	const Array<Vec3> path{ { 0.0, -1.0, 0.0 }, { 0.0, 2.0, 0.0 } };
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
-	const Mesh3D mesh = Mesh3D::Tube(path, 2.0, Sides, uvScale, uvOffset);
+	const Mesh3D mesh = Mesh3D::Tube(path, 2.0,
+		TubeOptions{ .sides = Sides, .uvScale = uvScale, .uvOffset = uvOffset });
 	const size_t ringStride = (Sides + 1);
 	const size_t startCapBase = (path.size() * ringStride);
 	const size_t endCapBase = (startCapBase + ringStride);
@@ -206,12 +187,10 @@ TEST_CASE("Mesh3D::Tube end-cap options")
 		.uvOffset = Vec2{ 0.1, 0.2 },
 	};
 
-	const Mesh3D legacy = Mesh3D::Tube(
-		path, 0.5, Sides, common.uvScale, common.uvOffset);
-	CheckMeshDataEqual(Mesh3D::Tube(path, 0.5, common), legacy);
+	const Mesh3D defaultCaps = Mesh3D::Tube(path, 0.5, common);
 	CheckMeshDataEqual(Mesh3D::Tube(path, 0.5,
 		TubeOptions{ .sides = Sides, .uvScale = common.uvScale,
-			.uvOffset = common.uvOffset, .endCaps = Mesh3DEndCaps::Both }), legacy);
+			.uvOffset = common.uvOffset, .endCaps = Mesh3DEndCaps::Both }), defaultCaps);
 
 	const Mesh3D noCaps = Mesh3D::Tube(path, 0.5,
 		TubeOptions{ .sides = Sides, .endCaps = Mesh3DEndCaps::None });
@@ -245,7 +224,9 @@ TEST_CASE("Mesh3D::Tube end-cap options")
 	const TubeOptions closedOptions{ .sides = Sides, .closeRing = CloseRing::Yes };
 	CheckMeshDataEqual(
 		Mesh3D::Tube(closedPath, 0.5, closedOptions),
-		Mesh3D::Tube(closedPath, 0.5, CloseRing::Yes, Sides));
+		Mesh3D::Tube(closedPath, 0.5,
+			TubeOptions{ .sides = Sides, .closeRing = CloseRing::Yes,
+				.endCaps = Mesh3DEndCaps::None }));
 	CHECK_FALSE(Mesh3D::Tube(closedPath, 0.5,
 		TubeOptions{ .sides = Sides, .closeRing = CloseRing::Yes,
 			.endCaps = Mesh3DEndCaps::None }).isEmpty());
@@ -304,7 +285,7 @@ TEST_CASE("Mesh3D::Tube per-point radii on a straight path")
 	constexpr uint32 Sides = 8;
 	const Array<Vec3> path{ { 0.0, -1.0, 0.0 }, { 0.0, 1.0, 0.0 } };
 	const Array<double> radii{ 1.0, 2.0 };
-	const Mesh3D mesh = Mesh3D::Tube(path, radii, Sides);
+	const Mesh3D mesh = Mesh3D::Tube(path, radii, TubeOptions{ .sides = Sides });
 	const size_t ringStride = (Sides + 1);
 	const size_t startCapBase = (path.size() * ringStride);
 	const size_t endCapBase = (startCapBase + ringStride);
@@ -334,13 +315,14 @@ TEST_CASE("Mesh3D::Tube per-point equal radii preserve constant Tube data")
 	const Array<double> radii(path.size(), 0.25);
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
+	const TubeOptions options{ .sides = 8, .uvScale = uvScale, .uvOffset = uvOffset };
 
 	CheckMeshDataEqual(
-		Mesh3D::Tube(path, radii, 8, uvScale, uvOffset),
-		Mesh3D::Tube(path, 0.25, 8, uvScale, uvOffset));
+		Mesh3D::Tube(path, radii, options),
+		Mesh3D::Tube(path, 0.25, options));
 	CheckMeshDataEqual(
-		Mesh3D::Tube(path, radii, 8, uvScale, uvOffset, CloseRing::No),
-		Mesh3D::Tube(path, 0.25, 8, uvScale, uvOffset, CloseRing::No));
+		Mesh3D::Tube(path, radii, TubeOptions{ .sides = 8 }),
+		Mesh3D::Tube(path, 0.25, TubeOptions{ .sides = 8 }));
 }
 
 TEST_CASE("Mesh3D::Tube per-point radii on bent and closed paths")
@@ -350,7 +332,7 @@ TEST_CASE("Mesh3D::Tube per-point radii on bent and closed paths")
 		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 2.0, 3.0, 1.0 }
 	};
 	const Array<double> bentRadii{ 0.2, 0.4, 0.3 };
-	const Mesh3D bent = Mesh3D::Tube(bentPath, bentRadii, Sides);
+	const Mesh3D bent = Mesh3D::Tube(bentPath, bentRadii, TubeOptions{ .sides = Sides });
 	const size_t ringStride = (Sides + 1);
 	CheckMeshGeometry(bent);
 	for (size_t pathIndex = 0; pathIndex < bentPath.size(); ++pathIndex)
@@ -369,7 +351,8 @@ TEST_CASE("Mesh3D::Tube per-point radii on bent and closed paths")
 	};
 	const Array<double> closedRadii{ 0.2, 0.3, 0.4, 0.25 };
 	const Mesh3D closed = Mesh3D::Tube(
-		closedPath, closedRadii, Sides, Vec2::One(), Vec2::Zero(), CloseRing::Yes);
+		closedPath, closedRadii,
+		TubeOptions{ .sides = Sides, .closeRing = CloseRing::Yes });
 	const size_t seamRingBase = (closedPath.size() * ringStride);
 
 	CHECK_EQ(closed.vertexCount(), ((closedPath.size() + 1) * ringStride));
@@ -395,7 +378,9 @@ TEST_CASE("Mesh3DBuilder::addTube per-point radii")
 	constexpr uint32 Sides = 8;
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
-	const Mesh3D source = Mesh3D::Tube(path, radii, Sides, uvScale, uvOffset);
+	const TubeOptions options{ .sides = Sides, .uvScale = uvScale, .uvOffset = uvOffset };
+	const TubeOptions defaultUVOptions{ .sides = Sides };
+	const Mesh3D source = Mesh3D::Tube(path, radii, options);
 
 	SUBCASE("Initializer list and reserved storage")
 	{
@@ -403,12 +388,12 @@ TEST_CASE("Mesh3DBuilder::addTube per-point radii")
 		builder.reserve((source.vertexCount() * 2), (source.triangleCount() * 2));
 		REQUIRE(builder.addTube({
 			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
-		}, { 0.2, 0.4, 0.3 }, Sides, uvScale, uvOffset));
+		}, { 0.2, 0.4, 0.3 }, options));
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 
 		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
-		REQUIRE(builder.addTube(path, radii, Sides, uvScale, uvOffset, transform));
+		REQUIRE(builder.addTube(path, radii, transform, options));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
 
@@ -423,15 +408,15 @@ TEST_CASE("Mesh3DBuilder::addTube per-point radii")
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
 		const Mat4x4 transform = Mat4x4::AffineTransform(
 			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
-		const Mesh3D defaultUVSource = Mesh3D::Tube(path, radii, Sides);
+		const Mesh3D defaultUVSource = Mesh3D::Tube(path, radii, defaultUVOptions);
 
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addTube(path, radii, Sides, offset));
-		REQUIRE(builder.addTube(path, radii, Sides, offset, rotation));
-		REQUIRE(builder.addTube(path, radii, Sides, transform));
-		REQUIRE(builder.addTube(path, radii, Sides, uvScale, uvOffset, offset));
-		REQUIRE(builder.addTube(path, radii, Sides, uvScale, uvOffset, offset, rotation));
-		REQUIRE(builder.addTube(path, radii, Sides, uvScale, uvOffset, transform));
+		REQUIRE(builder.addTube(path, radii, offset, defaultUVOptions));
+		REQUIRE(builder.addTube(path, radii, offset, rotation, defaultUVOptions));
+		REQUIRE(builder.addTube(path, radii, transform, defaultUVOptions));
+		REQUIRE(builder.addTube(path, radii, offset, options));
+		REQUIRE(builder.addTube(path, radii, offset, rotation, options));
+		REQUIRE(builder.addTube(path, radii, transform, options));
 
 		Mesh3D expected;
 		REQUIRE(expected.append(defaultUVSource, Mat4x4::Translate(Float3{ offset })));
@@ -456,7 +441,7 @@ TEST_CASE("Mesh3D::Tube bent non-planar path")
 		{ 1.0, 3.0, 1.0 },
 		{ 2.0, 3.0, 2.0 }
 	};
-	const Mesh3D mesh = Mesh3D::Tube(path, Radius, Sides);
+	const Mesh3D mesh = Mesh3D::Tube(path, Radius, TubeOptions{ .sides = Sides });
 	const size_t ringStride = (Sides + 1);
 
 	CHECK_EQ(mesh.vertexCount(), ((path.size() + 2) * ringStride));
@@ -491,9 +476,16 @@ TEST_CASE("Mesh3D::Tube closed non-planar path")
 	};
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
+	const TubeOptions options{
+		.sides = Sides,
+		.uvScale = uvScale,
+		.uvOffset = uvOffset,
+		.closeRing = CloseRing::Yes,
+	};
 	const Mesh3D mesh = Mesh3D::Tube(
-		path, Radius, CloseRing::Yes, Sides, uvScale, uvOffset);
-	const Mesh3D defaultSides = Mesh3D::Tube(path, Radius, CloseRing::Yes);
+		path, Radius, options);
+	const Mesh3D defaultSides = Mesh3D::Tube(
+		path, Radius, TubeOptions{ .closeRing = CloseRing::Yes });
 	const size_t ringStride = (Sides + 1);
 	const size_t stationCount = (path.size() + 1);
 
@@ -523,7 +515,7 @@ TEST_CASE("Mesh3D::Tube closed non-planar path")
 		Mesh3D::Tube({
 			{ 0.0, 0.0, 0.0 }, { 2.0, 0.0, 0.0 },
 			{ 2.0, 1.0, 2.0 }, { 0.0, 2.0, 2.0 }
-		}, Radius, CloseRing::Yes, Sides, uvScale, uvOffset),
+		}, Radius, options),
 		mesh);
 }
 
@@ -536,12 +528,17 @@ TEST_CASE("Mesh3DBuilder::addTube closed path")
 	const Vec2 uvScale{ 2.0, 0.25 };
 	const Vec2 uvOffset{ 0.1, 0.2 };
 	const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
+	const TubeOptions options{
+		.sides = 10,
+		.uvScale = uvScale,
+		.uvOffset = uvOffset,
+		.closeRing = CloseRing::Yes,
+	};
 	const Mesh3D source = Mesh3D::Tube(
-		path, 0.15, CloseRing::Yes, 10, uvScale, uvOffset);
+		path, 0.15, options);
 
 	Mesh3DBuilder builder;
-	REQUIRE(builder.addTube(
-		path, 0.15, 10, uvScale, uvOffset, transform, CloseRing::Yes));
+	REQUIRE(builder.addTube(path, 0.15, transform, options));
 	Mesh3D expected;
 	REQUIRE(expected.append(source, transform));
 	CheckMeshDataEqual(builder.getMesh(), expected);
@@ -550,7 +547,7 @@ TEST_CASE("Mesh3DBuilder::addTube closed path")
 	REQUIRE(initializerListBuilder.addTube({
 		{ 0.0, 0.0, 0.0 }, { 2.0, 0.0, 0.0 },
 		{ 2.0, 1.0, 2.0 }, { 0.0, 2.0, 2.0 }
-	}, 0.15, CloseRing::Yes, 10, uvScale, uvOffset));
+	}, 0.15, options));
 	CheckMeshDataEqual(initializerListBuilder.getMesh(), source);
 }
 
@@ -561,7 +558,7 @@ TEST_CASE("Mesh3D::Tube minimum sides and nearly straight path")
 		{ 1.0, 0.0, 0.0 },
 		{ 2.0, 1e-8, 0.0 }
 	};
-	const Mesh3D mesh = Mesh3D::Tube(path, 0.5, 3);
+	const Mesh3D mesh = Mesh3D::Tube(path, 0.5, TubeOptions{ .sides = 3 });
 
 	CHECK_EQ(mesh.vertexCount(), size_t{ 5 * 4 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * 3 * 3 });
@@ -573,74 +570,80 @@ TEST_CASE("Mesh3D::Tube invalid arguments")
 	constexpr uint32 Sides = 8;
 	const Array<Vec3> valid{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 } };
 	const Array<double> validRadii{ 0.5, 1.0 };
+	const TubeOptions options{ .sides = Sides };
+	const TubeOptions closedOptions{ .sides = Sides, .closeRing = CloseRing::Yes };
 
-	CHECK(Mesh3D::Tube(std::span<const Vec3>{}, 1.0, Sides).isEmpty());
-	CHECK(Mesh3D::Tube(Array<Vec3>{ { 0.0, 0.0, 0.0 } }, 1.0, Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, 0.0, Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, -1.0, Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, std::numeric_limits<double>::infinity(), Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, std::numeric_limits<double>::max(), Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, 1.0, 2).isEmpty());
-	CHECK(Mesh3D::Tube(valid, 1.0, std::numeric_limits<uint32>::max()).isEmpty());
+	CHECK(Mesh3D::Tube(std::span<const Vec3>{}, 1.0, options).isEmpty());
+	CHECK(Mesh3D::Tube(Array<Vec3>{ { 0.0, 0.0, 0.0 } }, 1.0, options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, 0.0, options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, -1.0, options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, std::numeric_limits<double>::infinity(), options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, std::numeric_limits<double>::max(), options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, 1.0, TubeOptions{ .sides = 2 }).isEmpty());
+	CHECK(Mesh3D::Tube(valid, 1.0,
+		TubeOptions{ .sides = std::numeric_limits<uint32>::max() }).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }
-	}, 1.0, Sides).isEmpty());
+	}, 1.0, options).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 1.0, 0.0, 0.0 }, { (1.0 + 1e-10), 0.0, 0.0 }
-	}, 1.0, Sides).isEmpty());
+	}, 1.0, options).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }
-	}, 1.0, Sides).isEmpty());
+	}, 1.0, options).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 }
-	}, 1.0, CloseRing::Yes, Sides).isEmpty());
+	}, 1.0, closedOptions).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 },
 		{ 1.0, 1.0, 0.0 }, { 0.0, 0.0, 0.0 }
-	}, 1.0, CloseRing::Yes, Sides).isEmpty());
+	}, 1.0, closedOptions).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 }, { 2.0, 0.0, 0.0 }
-	}, 1.0, CloseRing::Yes, Sides).isEmpty());
+	}, 1.0, closedOptions).isEmpty());
 	CHECK_FALSE(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }
-	}, 0.1, CloseRing::Yes, 3).isEmpty());
+	}, 0.1, TubeOptions{ .sides = 3, .closeRing = CloseRing::Yes }).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 },
 		{ 1.0, 0.0, 0.0 },
 		{ 0.0, 0.0, 0.0 },
 		{ 0.0, 1.0, 0.0 }
-	}, 1.0, Sides).isEmpty());
+	}, 1.0, options).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { std::numeric_limits<double>::infinity(), 0.0, 0.0 }
-	}, 1.0, Sides).isEmpty());
+	}, 1.0, options).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { std::numeric_limits<double>::max(), 0.0, 0.0 }
-	}, 1.0, Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, 1.0, Sides,
-		Vec2{ std::numeric_limits<double>::quiet_NaN(), 1.0 }).isEmpty());
-	CHECK(Mesh3D::Tube(valid, 1.0, Sides,
-		Vec2{ 1.0, std::numeric_limits<float>::max() }).isEmpty());
-	CHECK(Mesh3D::Tube(valid, 1.0, Sides,
-		Vec2{ 1.0, 1.0 }, Vec2{ 0.0, std::numeric_limits<double>::infinity() }).isEmpty());
-	CHECK(Mesh3D::Tube(valid, Array<double>{ 0.5 }, Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, Array<double>{ 0.0, 1.0 }, Sides).isEmpty());
-	CHECK(Mesh3D::Tube(valid, Array<double>{ -0.5, 1.0 }, Sides).isEmpty());
+	}, 1.0, options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, 1.0,
+		TubeOptions{ .sides = Sides,
+			.uvScale = Vec2{ std::numeric_limits<double>::quiet_NaN(), 1.0 } }).isEmpty());
+	CHECK(Mesh3D::Tube(valid, 1.0,
+		TubeOptions{ .sides = Sides,
+			.uvScale = Vec2{ 1.0, std::numeric_limits<float>::max() } }).isEmpty());
+	CHECK(Mesh3D::Tube(valid, 1.0,
+		TubeOptions{ .sides = Sides, .uvScale = Vec2{ 1.0, 1.0 },
+			.uvOffset = Vec2{ 0.0, std::numeric_limits<double>::infinity() } }).isEmpty());
+	CHECK(Mesh3D::Tube(valid, Array<double>{ 0.5 }, options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, Array<double>{ 0.0, 1.0 }, options).isEmpty());
+	CHECK(Mesh3D::Tube(valid, Array<double>{ -0.5, 1.0 }, options).isEmpty());
 	CHECK(Mesh3D::Tube(valid, Array<double>{
 		std::numeric_limits<double>::denorm_min(), 1.0
-	}, Sides).isEmpty());
+	}, options).isEmpty());
 	CHECK(Mesh3D::Tube(valid, Array<double>{
 		std::numeric_limits<double>::quiet_NaN(), 1.0
-	}, Sides).isEmpty());
+	}, options).isEmpty());
 	CHECK(Mesh3D::Tube(valid, Array<double>{
 		std::numeric_limits<double>::infinity(), 1.0
-	}, Sides).isEmpty());
+	}, options).isEmpty());
 	CHECK(Mesh3D::Tube(valid, Array<double>{
 		std::numeric_limits<double>::max(), 1.0
-	}, Sides).isEmpty());
+	}, options).isEmpty());
 	CHECK(Mesh3D::Tube(Array<Vec3>{
 		{ 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0 }
-	}, validRadii, Sides).isEmpty());
+	}, validRadii, options).isEmpty());
 	CHECK(Mesh3D::Tube({
 		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }
-	}, { 0.5 }, Sides).isEmpty());
+	}, { 0.5 }, options).isEmpty());
 }

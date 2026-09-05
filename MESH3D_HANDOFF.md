@@ -25,8 +25,9 @@
 - Y 軸周りの正角は `Quaternion::RotateY()`、`Cylindrical`、`Spherical` と共通で、`+X` から `-Z` へ進む。完全・部分 `Revolve` の頂点順、接線、U 座標もこの規約に従う。
 - `Polygon` の外周と `Loft` の断面は、格納された `(x, y)` に対する符号付き面積が正、`Polygon` の穴は負とする。閉じた輪郭の先頭点を末尾へ重複させない。
 - 点列は float 変換後の幾何を基準に検証する。`Revolve` の閉じた profile だけは先頭・末尾の一致を閉鎖表現として使い、`Tube` / `Sweep` の閉路と `Loft` の断面では始点を末尾に重複させない。
-- `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` の基本 overload は両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
-- options 版の `Tube` / `Sweep` は `Mesh3DEndCaps` で始端、終端、両端、端面なしを選択できる。未指定時は開路で両端、閉路で端面なしとなり、閉路に端面を明示する矛盾は `InvalidArgument` とする。
+- `Tube` / `Sweep` の生成設定は `TubeOptions` / `SweepOptions` に集約する。factory は `std::span` / initializer-list と一定値 / 経路点別値の組み合わせだけを overload とし、builder の配置 overload では options を末尾に置く。
+- `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は既定で両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
+- `Tube` / `Sweep` は `Mesh3DEndCaps` で始端、終端、両端、端面なしを選択できる。未指定時は開路で両端、閉路で端面なしとなり、閉路に端面を明示する矛盾は `InvalidArgument` とする。
 
 ## 実装済みの主要機能
 
@@ -36,7 +37,7 @@
 - 汎用生成: `Extrude`、完全・部分 `Revolve`、一定半径・経路点別半径の開路・閉路 `Tube`、一定断面および経路点別 scale / twist の開路・閉路 `Sweep`、`HeightField`、runtime / compile-time `Loft`
 - その他の基本プリミティブ一式。UV 球の API 名は `Sphere` とする。
 - `Mesh3DBuilder` は既存メッシュと上記 generator を直接追加でき、通常形状には base、offset、offset + rotation、`Mat4x4` の配置体系を持つ。
-- 一定断面 `Sweep` の初期断面方向は `Arg::initialXAxis`、経路点別変換版では `SweepOptions::initialXAxis` で指定する。
+- `Sweep` の初期断面方向は一定断面・経路点別変換のどちらも `SweepOptions::initialXAxis` で指定する。
 
 正確な overload、既定値、端面、巻き順、UV、異常入力の契約はヘッダを参照する。
 
@@ -54,15 +55,14 @@ Gemini によるヘッダと簡略化済みモデリングコードのレビュ�
 
 次の提案は既存 API との重複または前提の不一致があるため、そのまま実装しない。
 
-- 2 点間の円柱は `Tube({ from, to }, radius, sides)` で表現できる。専用 overload より、まずこの用法の発見性を改善する。
+- 2 点間の円柱は `Tube({ from, to }, radius)` で表現でき、断面分割数が必要なら `TubeOptions::sides` で指定できる。専用 overload より、まずこの用法の発見性を改善する。
 - 方向付き `Extrude` は offset + rotation overload で表現できる。まず立面図を押し出す具体例を追加する。
 - `addMesh(Mesh3D&&)` は、連続した頂点・index 配列を持つ非空 builder へ一般にゼロコピーで吸収できない。性能上の根拠なしに direct generator の代替としない。
 - 3D CSG は topology、coplanar face、UV、tangent、数値的頑健性を伴う別規模の課題であり、今回の Mesh3D 拡張候補には戻さない。
 
 ## 次の候補と保留事項
 
-- 次は `TubeOptions` / `SweepOptions` を canonical な入口として、経路 generator の positional overload をどこまで縮約するか決める。詳細は `TODO.md` に集約する。
-- overload 整理後の形状生成候補は callable を受け取る `HeightField()` とし、`Image` 固有 overload より先に評価する。
+- 次の形状生成候補は callable を受け取る `HeightField()` とし、`Image` 固有 overload より先に評価する。
 - bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に扱う。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
 - `Test/Manual/` の既存 Mesh3D レビュー資料は API の正本にしない。現行の Mesh3D 改修が一段落した後、必要な manual test をゼロベースで作り直す。

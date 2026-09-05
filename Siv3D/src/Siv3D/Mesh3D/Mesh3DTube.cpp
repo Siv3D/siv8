@@ -351,57 +351,6 @@ namespace s3d
 	Mesh3D Mesh3D::Tube(
 		const std::initializer_list<Vec3> path,
 		const double radius,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		return Tube(
-			std::span<const Vec3>{ path.begin(), path.size() },
-			radius,
-			sides,
-			uvScale,
-			uvOffset,
-			closeRing);
-	}
-
-	Mesh3D Mesh3D::Tube(
-		const std::initializer_list<Vec3> path,
-		const std::initializer_list<double> radii,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		return Tube(
-			std::span<const Vec3>{ path.begin(), path.size() },
-			std::span<const double>{ radii.begin(), radii.size() },
-			sides,
-			uvScale,
-			uvOffset,
-			closeRing);
-	}
-
-	Mesh3D Mesh3D::Tube(
-		const std::initializer_list<Vec3> path,
-		const double radius,
-		const CloseRing closeRing,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
-	{
-		return Tube(
-			std::span<const Vec3>{ path.begin(), path.size() },
-			radius,
-			sides,
-			uvScale,
-			uvOffset,
-			closeRing);
-	}
-
-	Mesh3D Mesh3D::Tube(
-		const std::initializer_list<Vec3> path,
-		const double radius,
 		const TubeOptions& options)
 	{
 		return Tube(std::span<const Vec3>{ path.begin(), path.size() }, radius, options);
@@ -791,32 +740,6 @@ namespace s3d
 		Mesh3D& mesh,
 		const std::span<const Vec3> path,
 		const double radius,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		return AppendTubeImpl(
-			mesh, path, ConstantTubeRadii{ radius }, sides, uvScale, uvOffset, closeRing, {});
-	}
-
-	Mesh3DAddResult Mesh3DDetail::AppendTube(
-		Mesh3D& mesh,
-		const std::span<const Vec3> path,
-		const std::span<const double> radii,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		return AppendTubeImpl(
-			mesh, path, PerPointTubeRadii{ radii }, sides, uvScale, uvOffset, closeRing, {});
-	}
-
-	Mesh3DAddResult Mesh3DDetail::AppendTube(
-		Mesh3D& mesh,
-		const std::span<const Vec3> path,
-		const double radius,
 		const TubeOptions& options)
 	{
 		return AppendTubeImpl(
@@ -833,43 +756,6 @@ namespace s3d
 		return AppendTubeImpl(
 			mesh, path, PerPointTubeRadii{ radii }, options.sides,
 			options.uvScale, options.uvOffset, options.closeRing, options.endCaps);
-	}
-
-	Mesh3D Mesh3D::Tube(
-		const std::span<const Vec3> path,
-		const double radius,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		Mesh3DBuilder builder;
-		(void)builder.addTube(path, radius, sides, uvScale, uvOffset, closeRing);
-		return std::move(builder).build();
-	}
-
-	Mesh3D Mesh3D::Tube(
-		const std::span<const Vec3> path,
-		const std::span<const double> radii,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		Mesh3DBuilder builder;
-		(void)builder.addTube(path, radii, sides, uvScale, uvOffset, closeRing);
-		return std::move(builder).build();
-	}
-
-	Mesh3D Mesh3D::Tube(
-		const std::span<const Vec3> path,
-		const double radius,
-		const CloseRing closeRing,
-		const uint32 sides,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
-	{
-		return Tube(path, radius, sides, uvScale, uvOffset, closeRing);
 	}
 
 	Mesh3D Mesh3D::Tube(
@@ -1452,20 +1338,6 @@ namespace s3d
 		Mesh3D& mesh,
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
-		const Vec3* const initialXAxis,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		return AppendSweepImpl(
-			mesh, crossSection, path, ConstantSweepSectionTransforms{},
-			initialXAxis, uvScale, uvOffset, closeRing, {});
-	}
-
-	Mesh3DAddResult Mesh3DDetail::AppendSweep(
-		Mesh3D& mesh,
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
 		const SweepOptions& options)
 	{
 		const Vec3* const initialXAxis = (options.initialXAxis
@@ -1502,99 +1374,6 @@ namespace s3d
 	Mesh3D Mesh3D::Sweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		Mesh3DBuilder builder;
-		(void)builder.addSweep(crossSection, path, uvScale, uvOffset, closeRing);
-		return std::move(builder).build();
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const CloseRing closeRing,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
-	{
-		return Sweep(crossSection, path, uvScale, uvOffset, closeRing);
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::initializer_list<Vec3> path,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		return Sweep(
-			crossSection,
-			std::span<const Vec3>{ path.begin(), path.size() },
-			uvScale,
-			uvOffset,
-			closeRing);
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::initializer_list<Vec3> path,
-		const CloseRing closeRing,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
-	{
-		return Sweep(
-			crossSection,
-			std::span<const Vec3>{ path.begin(), path.size() },
-			uvScale,
-			uvOffset,
-			closeRing);
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const Arg::initialXAxis_<Vec3> initialXAxis,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		Mesh3DBuilder builder;
-		(void)builder.addSweep(crossSection, path, initialXAxis, uvScale, uvOffset, closeRing);
-		return std::move(builder).build();
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const Arg::initialXAxis_<Vec3> initialXAxis,
-		const CloseRing closeRing,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
-	{
-		return Sweep(crossSection, path, initialXAxis, uvScale, uvOffset, closeRing);
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::initializer_list<Vec3> path,
-		const Arg::initialXAxis_<Vec3> initialXAxis,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const CloseRing closeRing)
-	{
-		return Sweep(
-			crossSection,
-			std::span<const Vec3>{ path.begin(), path.size() },
-			initialXAxis,
-			uvScale,
-			uvOffset,
-			closeRing);
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
 		const SweepOptions& options)
 	{
 		Mesh3DBuilder builder;
@@ -1611,23 +1390,6 @@ namespace s3d
 			crossSection,
 			std::span<const Vec3>{ path.begin(), path.size() },
 			options);
-	}
-
-	Mesh3D Mesh3D::Sweep(
-		const Polygon& crossSection,
-		const std::initializer_list<Vec3> path,
-		const Arg::initialXAxis_<Vec3> initialXAxis,
-		const CloseRing closeRing,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
-	{
-		return Sweep(
-			crossSection,
-			std::span<const Vec3>{ path.begin(), path.size() },
-			initialXAxis,
-			uvScale,
-			uvOffset,
-			closeRing);
 	}
 
 	Mesh3D Mesh3D::Sweep(

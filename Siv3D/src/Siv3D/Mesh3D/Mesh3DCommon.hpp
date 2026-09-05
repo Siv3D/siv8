@@ -380,26 +380,6 @@ namespace s3d::Mesh3DDetail
 		Mesh3D& mesh,
 		std::span<const Vec3> path,
 		double radius,
-		uint32 sides,
-		Vec2 uvScale,
-		Vec2 uvOffset,
-		CloseRing closeRing);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendTube(
-		Mesh3D& mesh,
-		std::span<const Vec3> path,
-		std::span<const double> radii,
-		uint32 sides,
-		Vec2 uvScale,
-		Vec2 uvOffset,
-		CloseRing closeRing);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendTube(
-		Mesh3D& mesh,
-		std::span<const Vec3> path,
-		double radius,
 		const TubeOptions& options);
 
 	[[nodiscard]]
@@ -408,16 +388,6 @@ namespace s3d::Mesh3DDetail
 		std::span<const Vec3> path,
 		std::span<const double> radii,
 		const TubeOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendSweep(
-		Mesh3D& mesh,
-		const Polygon& crossSection,
-		std::span<const Vec3> path,
-		const Vec3* initialXAxis,
-		Vec2 uvScale,
-		Vec2 uvOffset,
-		CloseRing closeRing);
 
 	[[nodiscard]]
 	Mesh3DAddResult AppendSweep(

@@ -1429,318 +1429,6 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 3D 経路に沿う一定半径のチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数。3 以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 経路、端面、UV 座標、および法線の規約は `Mesh3D::Tube()` と同じです。
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			double radius,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 3D 閉路に沿う一定半径のチューブを追加します。
-		/// @param path チューブの中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param radius チューブの半径
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			double radius,
-			CloseRing closeRing,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 初期化子リストで指定した 3D 経路に沿う一定半径のチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数。3 以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::initializer_list<Vec3> path,
-			double radius,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期化子リストで指定した 3D 閉路に沿う一定半径のチューブを追加します。
-		/// @param path チューブの中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param radius チューブの半径
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::initializer_list<Vec3> path,
-			double radius,
-			CloseRing closeRing,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 平行移動したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, uint32 sides, Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 回転および平行移動したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			double radius,
-			uint32 sides,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief アフィン変換を適用したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			double radius,
-			uint32 sides,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換と平行移動を適用したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			double radius,
-			uint32 sides,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換、回転、および平行移動を適用したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			double radius,
-			uint32 sides,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換とアフィン変換を適用したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			double radius,
-			uint32 sides,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 経路点ごとに半径を指定したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径。要素数は `path.size()` と等しい必要があります。
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 半径、経路、端面、UV 座標、および法線の規約は、経路点ごとの半径を受け取る `Mesh3D::Tube()` と同じです。
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期化子リストで経路点ごとの半径を指定したチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::initializer_list<Vec3> path,
-			std::initializer_list<double> radii,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 平行移動した、経路点ごとの半径を持つチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			uint32 sides,
-			Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 回転および平行移動した、経路点ごとの半径を持つチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			uint32 sides,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief アフィン変換を適用した、経路点ごとの半径を持つチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			uint32 sides,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換と平行移動を適用した、経路点ごとの半径を持つチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			uint32 sides,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換、回転、および平行移動を適用した、経路点ごとの半径を持つチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			uint32 sides,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換とアフィン変換を適用した、経路点ごとの半径を持つチューブを追加します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addTube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			uint32 sides,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
-
 		/// @brief 生成設定を指定し、一定半径のチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
 		/// @param radius チューブの半径
@@ -1748,7 +1436,7 @@ namespace s3d
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 端面設定の規約は `TubeOptions` を受け取る `Mesh3D::Tube()` と同じです。
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, const TubeOptions& options = {});
 
 		/// @brief 初期化子リストと生成設定を指定し、一定半径のチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1756,7 +1444,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::initializer_list<Vec3> path, double radius, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::initializer_list<Vec3> path, double radius, const TubeOptions& options = {});
 
 		/// @brief 生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1764,7 +1452,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, const TubeOptions& options = {});
 
 		/// @brief 初期化子リストと生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1772,7 +1460,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::initializer_list<Vec3> path, std::initializer_list<double> radii, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::initializer_list<Vec3> path, std::initializer_list<double> radii, const TubeOptions& options = {});
 
 		/// @brief 平行移動と生成設定を指定し、一定半径のチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1781,7 +1469,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, Vec3 offset, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, Vec3 offset, const TubeOptions& options = {});
 
 		/// @brief 回転、平行移動、および生成設定を指定し、一定半径のチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1791,7 +1479,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, Vec3 offset, const Quaternion& rotation, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, Vec3 offset, const Quaternion& rotation, const TubeOptions& options = {});
 
 		/// @brief アフィン変換と生成設定を指定し、一定半径のチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1800,7 +1488,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, const Mat4x4& transform, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, const Mat4x4& transform, const TubeOptions& options = {});
 
 		/// @brief 平行移動と生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1809,7 +1497,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, Vec3 offset, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, Vec3 offset, const TubeOptions& options = {});
 
 		/// @brief 回転、平行移動、および生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1819,7 +1507,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, Vec3 offset, const Quaternion& rotation, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, Vec3 offset, const Quaternion& rotation, const TubeOptions& options = {});
 
 		/// @brief アフィン変換と生成設定を指定し、経路点ごとに半径が異なるチューブを追加します。
 		/// @param path チューブの中心を通る経路の頂点
@@ -1828,340 +1516,13 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, const Mat4x4& transform, const TubeOptions& options);
+		Mesh3DAddResult addTube(std::span<const Vec3> path, std::span<const double> radii, const Mat4x4& transform, const TubeOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//
 		//	addSweep
 		//
 		////////////////////////////////////////////////////////////////
-
-		/// @brief 2D 断面を 3D 経路に沿わせた形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 断面、経路、端面、UV 座標、および法線の規約は `Mesh3D::Sweep()` と同じです。
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 2D 断面を 3D 閉路に沿わせた形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 初期化子リストで指定した 3D 経路に沿わせた Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期化子リストで指定した 3D 閉路に 2D 断面を沿わせた形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 平行移動した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 回転および平行移動した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief アフィン変換を適用した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換と平行移動を適用した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換、回転、および平行移動を適用した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief UV 変換とアフィン変換を適用した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 開始時の断面の X 軸方向を指定して Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark `initialXAxis` は最初の経路方向に垂直な平面へ投影して使用します。
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向を指定し、2D 断面を 3D 閉路に沿わせた形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 初期化子リストで指定した経路へ、開始時の断面の X 軸方向を指定して Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向を指定し、初期化子リストの 3D 閉路に 2D 断面を沿わせた形状を追加します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 初期 X 軸方向を指定し、平行移動した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向を指定し、回転および平行移動した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向を指定し、アフィン変換を適用した Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向、UV 変換、および平行移動を指定して Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向、UV 変換、回転、および平行移動を指定して Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向、UV 変換、およびアフィン変換を指定して Sweep 形状を追加します。
-		/// @param crossSection 経路に沿わせる断面
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addSweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			const Mat4x4& transform,
-			CloseRing closeRing = CloseRing::No);
 
 		/// @brief 生成設定を指定し、一定断面の Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
@@ -2170,7 +1531,7 @@ namespace s3d
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 端面設定の規約は `SweepOptions` を受け取る `Mesh3D::Sweep()` と同じです。
 		[[nodiscard]]
-		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, const SweepOptions& options);
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, const SweepOptions& options = {});
 
 		/// @brief 初期化子リストと生成設定を指定し、一定断面の Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
@@ -2178,7 +1539,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addSweep(const Polygon& crossSection, std::initializer_list<Vec3> path, const SweepOptions& options);
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::initializer_list<Vec3> path, const SweepOptions& options = {});
 
 		/// @brief 平行移動と生成設定を指定し、一定断面の Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面
@@ -2187,7 +1548,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset, const SweepOptions& options);
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset, const SweepOptions& options = {});
 
 		/// @brief 回転、平行移動、および生成設定を指定し、一定断面の Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面
@@ -2197,7 +1558,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset, const Quaternion& rotation, const SweepOptions& options);
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, Vec3 offset, const Quaternion& rotation, const SweepOptions& options = {});
 
 		/// @brief アフィン変換と生成設定を指定し、一定断面の Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面
@@ -2206,7 +1567,7 @@ namespace s3d
 		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, const Mat4x4& transform, const SweepOptions& options);
+		Mesh3DAddResult addSweep(const Polygon& crossSection, std::span<const Vec3> path, const Mat4x4& transform, const SweepOptions& options = {});
 
 		/// @brief 経路点ごとに断面の拡大率と twist を指定した Sweep 形状を追加します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。

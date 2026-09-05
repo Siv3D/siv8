@@ -756,16 +756,14 @@ namespace s3d
 
 		/// @brief 3D 経路に沿う一定半径のチューブを作成します。
 		/// @param path チューブの中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数。3 以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
+		/// @param radius チューブの半径。float 変換後も正である必要があります。
+		/// @param options 断面分割数、UV 変換、経路の閉鎖方法、および端面設定
 		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark parallel-transport frame を使って断面を経路に沿って運びます。折れ点の断面は前後の線分方向を平均した平面上に配置されます。
-		/// @remark `CloseRing::No` の場合、始端と終端は閉じられ、側面との境界はハードエッジになります。`CloseRing::Yes` の場合は端面を作らず、末尾から先頭へ接続します。
-		/// @remark 側面の U 座標は円周を `[0, 1]` とし、V 座標は経路の始端からの累積距離です。その後に `uvScale` と `uvOffset` が適用されます。
-		/// @remark 端面の UV 座標は各円を `[0, 1]` 四方に収める平面投影とし、同じ `uvScale` と `uvOffset` が適用されます。
+		/// @remark `options.endCaps` が未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。端面と側面の境界はハードエッジになります。
+		/// @remark 閉路に `Mesh3DEndCaps::Start`、`End`、または `Both` を明示した場合は生成に失敗します。`Mesh3DEndCaps::None` は指定できます。
+		/// @remark 側面の U 座標は円周を `[0, 1]` とし、V 座標は経路の始端からの累積距離です。その後に `options.uvScale` と `options.uvOffset` が適用されます。
+		/// @remark 端面の UV 座標は各円を `[0, 1]` 四方に収める平面投影とし、同じ UV 変換を適用します。
 		/// @remark 折れ点では断面が前後の経路方向の二等分面に置かれるため、断面の頂点は各線分に垂直な平面上の公称位置からずれることがあります。
 		/// @remark 始点と終点が float 変換後に一致する経路は無効です。閉路では始点を末尾に重複させず、3 点以上を指定します。float 変換後に連続する 2 点が同じになる経路、および 180° 折り返す経路には対応しません。鋭い折れ点における自己交差は検査しません。
 		/// @remark 閉路では経路方向の UV 継ぎ目に断面を複製し、parallel-transport frame の残留回転を経路長に比例して分散します。
@@ -773,150 +771,44 @@ namespace s3d
 		static Mesh3D Tube(
 			std::span<const Vec3> path,
 			double radius,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
+			const TubeOptions& options = {});
 
-		/// @brief 3D 閉路に沿う一定半径のチューブを作成します。
-		/// @param path チューブの中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
+		/// @brief 初期化子リストで指定した 3D 経路に沿う一定半径のチューブを作成します。
+		/// @param path チューブの中心を通る経路の頂点
 		/// @param radius チューブの半径
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param sides チューブ断面の分割数。3 以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
+		/// @param options 生成設定
 		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `CloseRing::Yes` の場合は端面を生成しません。経路方向の UV 継ぎ目に断面を複製し、parallel-transport frame の残留回転を経路長に比例して分散します。
-		[[nodiscard]]
-		static Mesh3D Tube(
-			std::span<const Vec3> path,
-			double radius,
-			CloseRing closeRing,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 3D 経路に沿う一定半径のチューブを作成します。
-		/// @param path チューブの中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param radius チューブの半径
-		/// @param sides チューブ断面の分割数。3 以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
-		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 経路、端面、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
+		/// @remark 経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る一定半径オーバーロードと同じです。
 		[[nodiscard]]
 		static Mesh3D Tube(
 			std::initializer_list<Vec3> path,
 			double radius,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期化子リストで指定した 3D 閉路に沿う一定半径のチューブを作成します。
-		/// @param path チューブの中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param radius チューブの半径
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 閉路、UV 座標、およびフレームの規約は `std::span` を受け取る閉路オーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Tube(
-			std::initializer_list<Vec3> path,
-			double radius,
-			CloseRing closeRing,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+			const TubeOptions& options = {});
 
 		/// @brief 経路点ごとに半径を指定したチューブを作成します。
-		/// @param path チューブの中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
+		/// @param path チューブの中心を通る経路の頂点
 		/// @param radii 各経路点における半径。要素数は `path.size()` と等しく、各要素は float 変換後も正である必要があります。
-		/// @param sides チューブ断面の分割数。3 以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
+		/// @param options 生成設定
 		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark 隣接する経路点の間では半径を線形に変化させます。側面法線には経路方向の半径変化を反映します。
-		/// @remark 経路、端面、および UV 座標の規約は一定半径の `Tube()` と同じです。開路の各端面には対応する端点の半径を使用します。
-		/// @remark `CloseRing::Yes` の場合、最後の経路点の半径から最初の経路点の半径へ接続し、端面を生成しません。
+		/// @remark 経路、端面、頂点属性、および UV 座標の規約は一定半径のオーバーロードと同じです。各端面には対応する端点の半径を使用します。
 		[[nodiscard]]
 		static Mesh3D Tube(
 			std::span<const Vec3> path,
 			std::span<const double> radii,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
+			const TubeOptions& options = {});
 
 		/// @brief 初期化子リストで経路点ごとの半径を指定したチューブを作成します。
 		/// @param path チューブの中心を通る経路の頂点
 		/// @param radii 各経路点における半径
-		/// @param sides チューブ断面の分割数
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @param options 生成設定
 		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 半径、経路、端面、および UV 座標の規約は `std::span` を受け取る経路点別半径オーバーロードと同じです。
+		/// @remark 半径、経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る経路点別半径オーバーロードと同じです。
 		[[nodiscard]]
 		static Mesh3D Tube(
 			std::initializer_list<Vec3> path,
 			std::initializer_list<double> radii,
-			uint32 sides = 12,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 生成設定を指定し、3D 経路に沿う一定半径のチューブを作成します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param options 断面分割数、UV 変換、経路の閉鎖方法、および端面設定
-		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `options.endCaps` が未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。
-		/// @remark 閉路に `Mesh3DEndCaps::Start`、`End`、または `Both` を明示した場合は生成に失敗します。`Mesh3DEndCaps::None` は指定できます。
-		/// @remark 経路、頂点属性、および自己交差に関する規約は引数形式のオーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Tube(
-			std::span<const Vec3> path,
-			double radius,
-			const TubeOptions& options);
-
-		/// @brief 初期化子リストと生成設定を指定し、一定半径のチューブを作成します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radius チューブの半径
-		/// @param options 生成設定
-		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		[[nodiscard]]
-		static Mesh3D Tube(
-			std::initializer_list<Vec3> path,
-			double radius,
-			const TubeOptions& options);
-
-		/// @brief 経路点ごとの半径と生成設定を指定したチューブを作成します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param options 生成設定
-		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 端面設定の規約は一定半径と `TubeOptions` を受け取るオーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Tube(
-			std::span<const Vec3> path,
-			std::span<const double> radii,
-			const TubeOptions& options);
-
-		/// @brief 初期化子リストで経路点ごとの半径と生成設定を指定したチューブを作成します。
-		/// @param path チューブの中心を通る経路の頂点
-		/// @param radii 各経路点における半径
-		/// @param options 生成設定
-		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		[[nodiscard]]
-		static Mesh3D Tube(
-			std::initializer_list<Vec3> path,
-			std::initializer_list<double> radii,
-			const TubeOptions& options);
+			const TubeOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -927,15 +819,14 @@ namespace s3d
 		/// @brief 2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
+		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
 		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark parallel-transport frame を使って断面を経路に沿って運びます。開始時の断面の向きは、最初の経路方向と最も平行でない座標軸から自動的に決定します。
+		/// @remark parallel-transport frame を使って断面を経路に沿って運びます。`options.initialXAxis` が未指定の場合、開始時の断面方向は最初の経路方向と最も平行でない座標軸から自動的に決定します。
 		/// @remark 断面の X 座標はフレームの第 1 軸 N、Y 座標は第 2 軸 `N.cross(T)` に対応します。T は経路の接線です。断面点 `(x, y)` は経路上の位置 P に対して `P + N * x + (N.cross(T)) * y` に配置されます。
-		/// @remark `CloseRing::No` の場合、始端と終端は閉じられ、端面と側面、および断面の各頂点はハードエッジになります。`CloseRing::Yes` の場合は端面を作らず、末尾から先頭へ接続します。
-		/// @remark 側面の U 座標は外周と各穴の周長をそれぞれ `[0, 1]` とし、V 座標は経路の始端からの累積距離です。その後に `uvScale` と `uvOffset` が適用されます。
-		/// @remark 端面の UV 座標は断面全体のバウンディングボックスを `[0, 1]` 四方に正規化し、同じ `uvScale` と `uvOffset` を適用します。
+		/// @remark `options.endCaps` が未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。端面と側面、および断面の各頂点はハードエッジになります。
+		/// @remark 閉路に `Mesh3DEndCaps::Start`、`End`、または `Both` を明示した場合は生成に失敗します。`Mesh3DEndCaps::None` は指定できます。
+		/// @remark 側面の U 座標は外周と各穴の周長をそれぞれ `[0, 1]` とし、V 座標は経路の始端からの累積距離です。その後に `options.uvScale` と `options.uvOffset` が適用されます。
+		/// @remark 端面の UV 座標は断面全体のバウンディングボックスを `[0, 1]` 四方に正規化し、同じ UV 変換を適用します。
 		/// @remark 折れ点では断面が前後の経路方向の二等分面に置かれます。このため、断面のオフセット面は隣接する線分に対して厳密に平行にならず、その影響は隣の断面までの側面全体に及びます。
 		/// @remark 始点と終点が float 変換後に一致する経路は無効です。閉路では始点を末尾に重複させず、3 点以上を指定します。float 変換後に連続する 2 点が同じになる経路、および 180° 折り返す経路には対応しません。鋭い折れ点における自己交差は検査しません。
 		/// @remark 閉路では経路方向の UV 継ぎ目に断面を複製し、parallel-transport frame の残留回転を経路長に比例して分散します。
@@ -943,171 +834,33 @@ namespace s3d
 		static Mesh3D Sweep(
 			const Polygon& crossSection,
 			std::span<const Vec3> path,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
+			const SweepOptions& options = {});
 
-		/// @brief 2D 断面を 3D 閉路に沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `CloseRing::Yes` の場合は端面を生成しません。経路方向の UV 継ぎ目に断面を複製し、parallel-transport frame の残留回転を経路長に比例して分散します。
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 断面、経路、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期化子リストで指定した 3D 閉路に 2D 断面を沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 開始時の断面の X 軸方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向。最初の経路方向に垂直な平面へ投影して使用します。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `initialXAxis` がゼロベクトル、非有限値、または最初の経路方向と平行な場合は空の 3D メッシュを返します。
-		/// @remark 断面、経路、および UV 座標の規約は自動方向版の `Sweep()` と同じです。
-		/// @code
-		/// Mesh3D mesh = Mesh3D::Sweep(crossSection, path, Arg::initialXAxis = Vec3::UnitX());
-		/// @endcode
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 開始時の断面の X 軸方向を指定し、2D 断面を 3D 閉路に沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `initialXAxis` は UV 継ぎ目における断面の向きを固定します。残留回転の補正はこの向きを保ったまま経路全体へ分散されます。
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 開始時の断面の X 軸方向を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向。最初の経路方向に垂直な平面へ投影して使用します。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 断面、経路、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
-			CloseRing closeRing = CloseRing::No);
-
-		/// @brief 初期 X 軸方向を指定し、初期化子リストの 3D 閉路に 2D 断面を沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る閉路の頂点。始点を末尾に重複させず、3 点以上を指定します。
-		/// @param initialXAxis 開始時に断面の X 軸を向ける方向
-		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::initializer_list<Vec3> path,
-			Arg::initialXAxis_<Vec3> initialXAxis,
-			CloseRing closeRing,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 生成設定を指定し、2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
-		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点
-		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
-		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `options.endCaps` が未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。
-		/// @remark 閉路に `Mesh3DEndCaps::Start`、`End`、または `Both` を明示した場合は生成に失敗します。`Mesh3DEndCaps::None` は指定できます。
-		/// @remark 断面、経路、頂点属性、および自己交差に関する規約は引数形式のオーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Sweep(
-			const Polygon& crossSection,
-			std::span<const Vec3> path,
-			const SweepOptions& options);
-
-		/// @brief 初期化子リストと生成設定を指定した Sweep 形状を作成します。
+		/// @brief 初期化子リストで指定した 3D 経路に 2D 断面を沿わせた 3D メッシュを作成します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る経路の頂点
 		/// @param options 生成設定
 		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 断面、経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る一定断面オーバーロードと同じです。
 		[[nodiscard]]
 		static Mesh3D Sweep(
 			const Polygon& crossSection,
 			std::initializer_list<Vec3> path,
-			const SweepOptions& options);
+			const SweepOptions& options = {});
 
 		/// @brief 経路点ごとに断面の拡大率と twist を指定した Sweep 形状を作成します。
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
-		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
+		/// @param path 断面の中心を通る経路の頂点
 		/// @param sectionTransforms 各経路点における断面変換。要素数は `path.size()` と等しい必要があります。
-		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
+		/// @param options 生成設定
 		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark `sectionTransforms` の各 `scale` 成分は float 変換後も正である必要があります。断面の拡大後に `twist` を適用します。
 		/// @remark 正の `twist` は経路の接線 T を軸として、断面の +X 軸 N を `-N.cross(T)` 方向へ回転させます。経路が world +Y、断面の +X が world +X の場合、world +X から world -Z へ回転します。
 		/// @remark 各経路点で変換した断面を隣接する断面と三角形で接続します。側面の法線と接線は、断面変換による傾きとねじれを反映します。
 		/// @remark 隣接する断面間で側面の三角形が縮退または反転する変換は無効です。大きな twist は経路点を追加して分割してください。
 		/// @remark 端面の UV 座標と側面の U 座標は変換前の断面を基準にします。V 座標は経路の始端からの累積距離です。
-		/// @remark `CloseRing::Yes` の場合、最後の経路点の断面変換から最初の経路点の断面変換へ接続し、UV 継ぎ目では最初の断面を複製します。
-		/// @remark `options.endCaps` の既定値と閉路に対する制約は、一定断面と `SweepOptions` を受け取るオーバーロードと同じです。
-		/// @remark 経路、断面の頂点順序、端面、および自己交差に関する規約は一定断面の `Sweep()` と同じです。
+		/// @remark 閉路では最後の経路点の断面変換から最初の経路点の断面変換へ接続し、UV 継ぎ目で最初の断面を複製します。
+		/// @remark 経路、端面、頂点属性、および UV 座標の規約は一定断面のオーバーロードと同じです。
 		[[nodiscard]]
 		static Mesh3D Sweep(
 			const Polygon& crossSection,
@@ -1119,9 +872,9 @@ namespace s3d
 		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
 		/// @param path 断面の中心を通る経路の頂点
 		/// @param sectionTransforms 各経路点における断面変換
-		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
+		/// @param options 生成設定
 		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 断面変換、経路、端面、および UV 座標の規約は `std::span` を受け取る経路点別変換オーバーロードと同じです。
+		/// @remark 断面変換、経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る経路点別変換オーバーロードと同じです。
 		[[nodiscard]]
 		static Mesh3D Sweep(
 			const Polygon& crossSection,

@@ -49,7 +49,8 @@ TEST_CASE("Mesh3DAddResult ranges")
 
 	const Array<Vec3> path{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 } };
 	const Mesh3DAddResult tubeResult = builder.addTube(
-		path, 0.25, 8, Vec3{ 1.0, 2.0, 3.0 }, Quaternion::RotateX(30_degF));
+		path, 0.25, Vec3{ 1.0, 2.0, 3.0 }, Quaternion::RotateX(30_degF),
+		TubeOptions{ .sides = 8 });
 	REQUIRE(tubeResult);
 	CHECK_EQ(tubeResult->vertexOffset, boxResult->vertexCount);
 	CHECK_EQ(tubeResult->vertexCount, size_t{ 36 });
@@ -118,7 +119,7 @@ TEST_CASE("Mesh3DAddResult covers every builder shape family")
 	checkAddition([&] {
 		return builder.addRevolve({ { 0.0, -0.5 }, { 0.5, -0.5 }, { 0.5, 0.5 }, { 0.0, 0.5 } }, 8);
 	});
-	checkAddition([&] { return builder.addTube(path, 0.1, 8); });
+	checkAddition([&] { return builder.addTube(path, 0.1, TubeOptions{ .sides = 8 }); });
 	checkAddition([&] { return builder.addSweep(rectangle, path); });
 	checkAddition([&] { return builder.addTetrahedron(); });
 	checkAddition([&] { return builder.addOctahedron(); });
@@ -219,12 +220,12 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 	checkFailure(
 		builder.addTube(
 			{ Vec3::Zero(), Vec3::UnitX(), Vec3::UnitY(), Vec3::Zero() },
-			0.25, CloseRing::Yes),
+			0.25, TubeOptions{ .closeRing = CloseRing::Yes }),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
 		builder.addTube(
-			{ Vec3::Zero(), Vec3{ 0.0, 100.0, 0.0 } }, 0.25, 8,
-			Vec2{ 1.0, 1.0e38 }, Vec2::Zero()),
+			{ Vec3::Zero(), Vec3{ 0.0, 100.0, 0.0 } }, 0.25,
+			TubeOptions{ .sides = 8, .uvScale = Vec2{ 1.0, 1.0e38 } }),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addTube(path, Array<double>{ 0.25 }),
@@ -245,7 +246,7 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 	checkFailure(
 		builder.addTube(
 			{ Vec3::Zero(), Vec3::UnitY() }, 0.25,
-			std::numeric_limits<uint32>::max()),
+			TubeOptions{ .sides = std::numeric_limits<uint32>::max() }),
 		Mesh3DErrorCode::SizeLimit);
 	checkFailure(
 		builder.addMesh(Mesh3D{}),
@@ -280,13 +281,16 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addSweep(rectangle, { Vec3::Zero(), Vec3{ infinity, 0.0, 0.0 } }),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
-		builder.addSweep(rectangle, path, Arg::initialXAxis = Vec3{ infinity, 0.0, 0.0 }),
+		builder.addSweep(rectangle, path,
+			SweepOptions{ .initialXAxis = Vec3{ infinity, 0.0, 0.0 } }),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
-		builder.addSweep(rectangle, path, Arg::initialXAxis = Vec3::UnitY()),
+		builder.addSweep(rectangle, path,
+			SweepOptions{ .initialXAxis = Vec3::UnitY() }),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
-		builder.addSweep(rectangle, path, Vec2{ infinity, 1.0 }),
+		builder.addSweep(rectangle, path,
+			SweepOptions{ .uvScale = Vec2{ infinity, 1.0 } }),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addSweep(nonFinitePolygon, path),

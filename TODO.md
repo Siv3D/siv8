@@ -64,22 +64,16 @@
 - `Mesh3DEndCaps` を他の generator へ流用する場合、経路の始端・終端という意味が底面・上面などの固有名より明確かを確認する。名前だけを統一するためには使わない。
 - 追加する場合は cap の winding、法線、UV、hard edge、頂点・三角形数、および Builder の失敗時非変更保証を既存規約に合わせる。
 
-### 経路 generator の overload 整理
-
-- Tube / Sweep の positional overload と options overload が併存している。`TubeOptions` / `SweepOptions` を canonical な入口として利用例と内部呼び出しを移行したうえで、引数順を入れ替えただけの overload を削除する範囲を決める。
-- `CloseRing`、UV、初期 X 軸を個別引数で受け取る形式を残す場合も、既定形状を短く書く基本 overload に限定し、配置 overload は options 末尾の体系へ揃える。
-- initializer-list 版と `std::span` 版、一定値版と経路点別版で機能差が生じないことを signature test で固定する。
-
 ### 利用例
 
-- 2 点間を結ぶ柱・梁には `Tube({ from, to }, radius, sides)` を使えることを示し、専用 `Cylinder(from, to)` overload の必要性はその後に再評価する。
+- 2 点間を結ぶ柱・梁には `Tube({ from, to }, radius)` を使えることを示し、専用 `Cylinder(from, to)` overload の必要性はその後に再評価する。
 - 2D 立面図を world XY、押し出し方向を world Z として使う、`Extrude()` + `Quaternion::RotateX(90_deg)` の例を追加する。
 - `HeightField()` の `[y][x]` ループ、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
 - `Cylindrical` / `Spherical` の配置例、および接合部には `Box`、露出部には `ChamferedBox` / `RoundedBox` を使う指針は、サンプル拡充時の候補とする。
 
 ### 入力形式と追加候補
 
-- 経路 generator の overload 整理後の生成 API 候補として、`HeightField()` は `Image` 専用 overload より先に、グリッド座標から高さを返す callable overload を評価する。
+- 次の生成 API 候補として、`HeightField()` は `Image` 専用 overload より先に、グリッド座標から高さを返す callable overload を評価する。
 - `Image` overload を追加する場合は、チャネルまたは輝度変換、正規化範囲、Y scale / offset、行方向、HDR 入力の範囲を決める。
 - `IcoSphere()` は subdivision 上限、overflow、UV seam を持つ構成と UV を持たない構成のどちらを公開するか決める。
 - `Extrude` / `Loft` の断面として使う扇形・扇形環を、手書きの三角関数ループなしで `Polygon` または `Shape2D` として生成する API を評価する。配置先は Mesh3D ではなく 2D geometry API を優先する。
