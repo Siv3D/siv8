@@ -199,6 +199,13 @@ namespace s3d::Mesh3DDetail
 		InvalidArea,
 	};
 
+	enum class CapValidationResult
+	{
+		Valid,
+		InvalidGeometry,
+		NumericRange,
+	};
+
 	template <class Point>
 	[[nodiscard]]
 	RingValidationResult ValidateRing(
@@ -258,7 +265,7 @@ namespace s3d::Mesh3DDetail
 
 	template <bool CheckFiniteVertices>
 	[[nodiscard]]
-	bool ValidateCapTriangles(
+	CapValidationResult ValidateCapTriangles(
 		const std::span<const Float2> vertices,
 		const std::span<const TriangleIndex> indices,
 		size_t& validTriangleCount) noexcept
@@ -268,7 +275,7 @@ namespace s3d::Mesh3DDetail
 		if ((vertices.size() < 3)
 			|| indices.empty())
 		{
-			return false;
+			return CapValidationResult::InvalidGeometry;
 		}
 
 		if constexpr (CheckFiniteVertices)
@@ -278,7 +285,7 @@ namespace s3d::Mesh3DDetail
 				if ((not std::isfinite(vertex.x))
 					|| (not std::isfinite(vertex.y)))
 				{
-					return false;
+					return CapValidationResult::NumericRange;
 				}
 			}
 		}
@@ -289,7 +296,7 @@ namespace s3d::Mesh3DDetail
 				|| (vertices.size() <= index.i1)
 				|| (vertices.size() <= index.i2))
 			{
-				return false;
+				return CapValidationResult::InvalidGeometry;
 			}
 
 			const Float2 p0 = vertices[index.i0];
@@ -301,13 +308,15 @@ namespace s3d::Mesh3DDetail
 			if ((not std::isfinite(twiceArea))
 				|| (twiceArea < 0.0))
 			{
-				return false;
+				return CapValidationResult::InvalidGeometry;
 			}
 
 			validTriangleCount += (0.0 < twiceArea);
 		}
 
-		return (0 < validTriangleCount);
+		return (0 < validTriangleCount
+			? CapValidationResult::Valid
+			: CapValidationResult::InvalidGeometry);
 	}
 
 	template <class Callback>

@@ -38,8 +38,12 @@ namespace s3d
 		const Vec2 _uvOffset)
 	{
 		if ((heights.width() < 2)
-			|| (heights.height() < 2)
-			|| (not IsFloatRepresentable(_sizeXZ.x))
+			|| (heights.height() < 2))
+		{
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::HeightField(): The grid dimensions are invalid");
+		}
+
+		if ((not IsFloatRepresentable(_sizeXZ.x))
 			|| (not IsFloatRepresentable(_sizeXZ.y))
 			|| (not IsFloatRepresentable(_uvScale.x))
 			|| (not IsFloatRepresentable(_uvScale.y))
@@ -48,7 +52,7 @@ namespace s3d
 			|| (not IsFloatRepresentable(_uvOffset.x + _uvScale.x))
 			|| (not IsFloatRepresentable(_uvOffset.y + _uvScale.y)))
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::HeightField(): The grid dimensions, size, or UV transform is invalid");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::HeightField(): The size or UV transform is non-finite or outside the float range");
 		}
 
 		const Float2 sizeXZ = _sizeXZ;

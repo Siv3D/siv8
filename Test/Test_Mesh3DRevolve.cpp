@@ -99,7 +99,7 @@ TEST_CASE("Mesh3D::Revolve open cylinder side")
 	CHECK_EQ(mesh.vertices[0].pos, Float3{ 1.0f, -2.0f, 0.0f });
 	CHECK_EQ(mesh.vertices[0].normal, Float3::UnitX());
 	CHECK_EQ(mesh.vertices[0].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[0].tangent, Float4{ 0.0f, 0.0f, 1.0f, -1.0f });
+	CHECK_EQ(mesh.vertices[0].tangent, Float4{ 0.0f, 0.0f, -1.0f, 1.0f });
 	CHECK_EQ(mesh.vertices[0].bitangent(), Float3::UnitY());
 	CHECK_EQ(mesh.vertices[Segments].pos, mesh.vertices[0].pos);
 	CHECK_EQ(mesh.vertices[Segments].normal, mesh.vertices[0].normal);
@@ -234,7 +234,7 @@ TEST_CASE("Mesh3D::Revolve partial angle")
 	CHECK_EQ(mesh.vertices[0].pos, Float3{ 1.0f, -2.0f, 0.0f });
 	CHECK(mesh.vertices[Segments].pos.x == doctest::Approx(0.0f).scale(1.0));
 	CHECK_EQ(mesh.vertices[Segments].pos.y, -2.0f);
-	CHECK(mesh.vertices[Segments].pos.z == doctest::Approx(1.0f));
+	CHECK(mesh.vertices[Segments].pos.z == doctest::Approx(-1.0f));
 	CHECK_EQ(mesh.vertices[Segments].tex, Float2{ 1.0f, 0.0f });
 
 	const Mesh3D oneSegment = Mesh3D::Revolve(
@@ -251,6 +251,27 @@ TEST_CASE("Mesh3D::Revolve partial angle")
 			Segments,
 			CloseEnds::No),
 		mesh);
+}
+
+TEST_CASE("Mesh3D::Revolve follows the Y-axis rotation convention")
+{
+	const Array<Vec2> profile{ { 1.0, -2.0 }, { 1.0, 3.0 } };
+	constexpr double StartAngle = Math::QuarterPi;
+	constexpr double SweepAngle = Math::HalfPi;
+	const Mesh3D mesh = Mesh3D::Revolve(
+		profile, StartAngle, SweepAngle, 1, CloseEnds::No);
+	const Float3 basePosition{ 1.0f, -2.0f, 0.0f };
+
+	REQUIRE_EQ(mesh.vertexCount(), size_t{ 4 });
+	CHECK(mesh.vertices[0].pos.epsilonEquals(
+		Quaternion::RotateY(static_cast<float>(StartAngle)).rotate(basePosition), 1e-5f));
+	CHECK(mesh.vertices[1].pos.epsilonEquals(
+		Quaternion::RotateY(static_cast<float>(StartAngle + SweepAngle)).rotate(basePosition), 1e-5f));
+	CHECK(mesh.vertices[0].tangent.xyz().epsilonEquals(
+		Quaternion::RotateY(static_cast<float>(StartAngle)).rotate(-Float3::UnitZ()), 1e-5f));
+	CHECK_EQ(mesh.vertices[0].tex.x, 0.0f);
+	CHECK_EQ(mesh.vertices[1].tex.x, 1.0f);
+	CheckMeshGeometry(mesh);
 }
 
 TEST_CASE("Mesh3D::Revolve partial end caps")
@@ -272,7 +293,7 @@ TEST_CASE("Mesh3D::Revolve partial end caps")
 	{
 		const Vertex3D& start = mesh.vertices[sideVertexCount + i];
 		const Vertex3D& end = mesh.vertices[sideVertexCount + capVertexCount + i];
-		CHECK_EQ(start.normal, -Float3::UnitZ());
+		CHECK_EQ(start.normal, Float3::UnitZ());
 		CHECK(end.normal.x == doctest::Approx(-1.0f));
 		CHECK(end.normal.y == doctest::Approx(0.0f).scale(1.0));
 		CHECK(end.normal.z == doctest::Approx(0.0f).scale(1.0));

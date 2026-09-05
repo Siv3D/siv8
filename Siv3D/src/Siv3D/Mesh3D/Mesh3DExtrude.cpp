@@ -23,6 +23,7 @@ namespace s3d
 	{
 		using Mesh3DDetail::AddedRange;
 		using Mesh3DDetail::AdditionFailed;
+		using Mesh3DDetail::CapValidationResult;
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
 		using Mesh3DDetail::ForEachValidCapTriangle;
@@ -103,13 +104,21 @@ namespace s3d::Mesh3DDetail
 		const double _height,
 		const double smoothingAngle)
 	{
-		if ((polygon.isEmpty())
-			|| (not IsFloatRepresentable(_height))
-			|| (not std::isfinite(smoothingAngle))
-			|| (smoothingAngle < 0.0)
+		if (polygon.isEmpty())
+		{
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): The polygon is empty");
+		}
+
+		if ((not IsFloatRepresentable(_height))
+			|| (not std::isfinite(smoothingAngle)))
+		{
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Extrude(): A numeric parameter is non-finite or outside the float range");
+		}
+
+		if ((smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): The polygon, height, or smoothing angle is invalid");
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): smoothingAngle must be in the range [0, Pi]");
 		}
 
 		const float height = static_cast<float>(_height);
@@ -126,9 +135,15 @@ namespace s3d::Mesh3DDetail
 		const auto& capVertices = polygon.vertices();
 		const auto& capIndices = polygon.indices();
 		size_t validCapTriangleCount;
-		if (not ValidateCapTriangles<true>(capVertices, capIndices, validCapTriangleCount))
+		const CapValidationResult capValidation = ValidateCapTriangles<true>(
+			capVertices, capIndices, validCapTriangleCount);
+		if (capValidation != CapValidationResult::Valid)
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Extrude(): The polygon cap triangulation is invalid");
+			return AdditionFailed(
+				(capValidation == CapValidationResult::NumericRange
+					? Mesh3DErrorCode::NumericRange
+					: Mesh3DErrorCode::InvalidGeometry),
+				U"Mesh3D::Extrude(): The polygon cap triangulation is invalid");
 		}
 
 		size_t edgeCount = polygon.outer().size();

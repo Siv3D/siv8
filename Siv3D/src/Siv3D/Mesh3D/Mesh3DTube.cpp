@@ -26,6 +26,7 @@ namespace s3d
 		using Mesh3DDetail::CheckedMultiply;
 		using Mesh3DDetail::AddedRange;
 		using Mesh3DDetail::AdditionFailed;
+		using Mesh3DDetail::CapValidationResult;
 		using Mesh3DDetail::ForEachValidCapTriangle;
 		using Mesh3DDetail::IsFloatRepresentable;
 		using Mesh3DDetail::RingValidationResult;
@@ -45,6 +46,33 @@ namespace s3d
 			Array<double> distances;
 			Array<PathFrame> frames;
 		};
+
+		enum class PathDataStatus
+		{
+			Success,
+			InvalidArgument,
+			InvalidGeometry,
+			NumericRange,
+			SizeLimit,
+		};
+
+		[[nodiscard]]
+		static constexpr Mesh3DErrorCode ToErrorCode(const PathDataStatus status) noexcept
+		{
+			switch (status)
+			{
+			case PathDataStatus::InvalidArgument:
+				return Mesh3DErrorCode::InvalidArgument;
+			case PathDataStatus::InvalidGeometry:
+				return Mesh3DErrorCode::InvalidGeometry;
+			case PathDataStatus::NumericRange:
+				return Mesh3DErrorCode::NumericRange;
+			case PathDataStatus::SizeLimit:
+				return Mesh3DErrorCode::SizeLimit;
+			default:
+				return Mesh3DErrorCode::InvalidGeometry;
+			}
+		}
 
 		[[nodiscard]]
 		static Vec3 MakeInitialNormal(const Vec3 tangent) noexcept
@@ -124,7 +152,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static bool MakePathData(
+		static PathDataStatus MakePathData(
 			const std::span<const Vec3> path,
 			const double maxDistanceFromPath,
 			const Vec3* const initialXAxis,
@@ -135,11 +163,19 @@ namespace s3d
 			const size_t minimumPointCount = (isClosed ? 3 : 2);
 			size_t stationCount;
 			if ((path.size() < minimumPointCount)
-				|| (not IsFloatRepresentable(maxDistanceFromPath))
-				|| (maxDistanceFromPath < 0.0)
-				|| (not CheckedAdd(path.size(), (isClosed ? 1 : 0), stationCount)))
+				|| (maxDistanceFromPath < 0.0))
 			{
-				return false;
+				return PathDataStatus::InvalidArgument;
+			}
+
+			if (not IsFloatRepresentable(maxDistanceFromPath))
+			{
+				return PathDataStatus::NumericRange;
+			}
+
+			if (not CheckedAdd(path.size(), (isClosed ? 1 : 0), stationCount))
+			{
+				return PathDataStatus::SizeLimit;
 			}
 
 			result.points.reserve(stationCount);
@@ -152,18 +188,18 @@ namespace s3d
 					|| ((MaxFloat - std::abs(path[i].y)) < maxDistanceFromPath)
 					|| ((MaxFloat - std::abs(path[i].z)) < maxDistanceFromPath))
 				{
-					return false;
+					return PathDataStatus::NumericRange;
 				}
 
 				if ((0 < i) && (result.points[i] == result.points[i - 1]))
 				{
-					return false;
+					return PathDataStatus::InvalidGeometry;
 				}
 			}
 
 			if (result.points.front() == result.points.back())
 			{
-				return false;
+				return PathDataStatus::InvalidGeometry;
 			}
 
 			const size_t pathSegmentCount = (isClosed ? path.size() : (path.size() - 1));
@@ -176,10 +212,14 @@ namespace s3d
 				const double length = delta.length();
 				const double nextDistance = (result.distances[i] + length);
 				if ((not std::isfinite(length))
-					|| (length == 0.0)
 					|| (not std::isfinite(nextDistance)))
 				{
-					return false;
+					return PathDataStatus::NumericRange;
+				}
+
+				if (length == 0.0)
+				{
+					return PathDataStatus::InvalidGeometry;
 				}
 
 				segmentTangents[i] = (delta / length);
@@ -194,7 +234,7 @@ namespace s3d
 				if ((not std::isfinite(tangentLengthSq))
 					|| (tangentLengthSq == 0.0))
 				{
-					return false;
+					return PathDataStatus::InvalidGeometry;
 				}
 
 				result.frames.front().tangent = (tangentSum / std::sqrt(tangentLengthSq));
@@ -208,7 +248,7 @@ namespace s3d
 			{
 				if (not IsFloatRepresentable(*initialXAxis))
 				{
-					return false;
+					return PathDataStatus::NumericRange;
 				}
 
 				result.frames.front().normal = (*initialXAxis
@@ -218,7 +258,7 @@ namespace s3d
 				if ((not std::isfinite(normalLengthSq))
 					|| (normalLengthSq == 0.0))
 				{
-					return false;
+					return PathDataStatus::InvalidGeometry;
 				}
 
 				result.frames.front().normal /= std::sqrt(normalLengthSq);
@@ -243,7 +283,7 @@ namespace s3d
 					if ((not std::isfinite(tangentLengthSq))
 						|| (tangentLengthSq == 0.0))
 					{
-						return false;
+						return PathDataStatus::InvalidGeometry;
 					}
 
 					result.frames[i].tangent = (tangentSum / std::sqrt(tangentLengthSq));
@@ -255,7 +295,7 @@ namespace s3d
 					result.frames[i - 1].normal,
 					result.frames[i].normal))
 				{
-					return false;
+					return PathDataStatus::InvalidGeometry;
 				}
 
 				result.frames[i].binormal = (
@@ -272,7 +312,7 @@ namespace s3d
 					result.frames[path.size() - 1].normal,
 					closureNormal))
 				{
-					return false;
+					return PathDataStatus::InvalidGeometry;
 				}
 
 				const Vec3& initialNormal = result.frames.front().normal;
@@ -297,7 +337,7 @@ namespace s3d
 				result.frames.back() = result.frames.front();
 			}
 
-			return true;
+			return PathDataStatus::Success;
 		}
 
 	}
@@ -391,9 +431,11 @@ namespace s3d
 		}
 
 		PathData pathData;
-		if (not MakePathData(path, radius, nullptr, closeRing, pathData))
+		const PathDataStatus pathDataStatus = MakePathData(
+			path, radius, nullptr, closeRing, pathData);
+		if (pathDataStatus != PathDataStatus::Success)
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidGeometry,
+			return AdditionFailed(ToErrorCode(pathDataStatus),
 				U"Mesh3D::Tube(): The path is invalid or cannot produce stable frames");
 		}
 
@@ -604,19 +646,29 @@ namespace s3d
 		{
 			const bool isClosed = (closeRing == CloseRing::Yes);
 			if ((crossSection.isEmpty())
-				|| (path.size() < (isClosed ? 3 : 2))
-				|| (not IsFloatRepresentable(_uvScale))
+				|| (path.size() < (isClosed ? 3 : 2)))
+			{
+				return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Sweep(): The cross section or path is invalid");
+			}
+
+			if ((not IsFloatRepresentable(_uvScale))
 				|| (not IsFloatRepresentable(_uvOffset)))
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Sweep(): The cross section, path, or UV transform is invalid");
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The UV transform is non-finite or outside the float range");
 			}
 
 			const auto& capVertices = crossSection.vertices();
 			const auto& capIndices = crossSection.indices();
 			size_t validCapTriangleCount;
-			if (not ValidateCapTriangles<true>(capVertices, capIndices, validCapTriangleCount))
+			const CapValidationResult capValidation = ValidateCapTriangles<true>(
+				capVertices, capIndices, validCapTriangleCount);
+			if (capValidation != CapValidationResult::Valid)
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): The cross-section cap triangulation is invalid");
+				return AdditionFailed(
+					(capValidation == CapValidationResult::NumericRange
+						? Mesh3DErrorCode::NumericRange
+						: Mesh3DErrorCode::InvalidGeometry),
+					U"Mesh3D::Sweep(): The cross-section cap triangulation is invalid");
 			}
 
 			size_t edgeCount = crossSection.outer().size();
@@ -668,10 +720,14 @@ namespace s3d
 			const double width = (static_cast<double>(maxX) - minX);
 			const double height = (static_cast<double>(maxY) - minY);
 			if ((width <= 0.0)
-				|| (height <= 0.0)
-				|| (not IsFloatRepresentable(maxDistanceFromPath)))
+				|| (height <= 0.0))
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Sweep(): The cross-section bounds or distance from the path is invalid");
+				return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): The cross-section bounds must have positive width and height");
+			}
+
+			if (not IsFloatRepresentable(maxDistanceFromPath))
+			{
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The cross-section distance from the path exceeds the float range");
 			}
 
 			size_t capVertexCount = 0;
@@ -699,9 +755,11 @@ namespace s3d
 			}
 
 			PathData pathData;
-			if (not MakePathData(path, maxDistanceFromPath, initialXAxis, closeRing, pathData))
+			const PathDataStatus pathDataStatus = MakePathData(
+				path, maxDistanceFromPath, initialXAxis, closeRing, pathData);
+			if (pathDataStatus != PathDataStatus::Success)
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): The path or initial X axis is invalid, or stable frames cannot be produced");
+				return AdditionFailed(ToErrorCode(pathDataStatus), U"Mesh3D::Sweep(): The path or initial X axis is invalid, or stable frames cannot be produced");
 			}
 
 			const double sideU0 = _uvOffset.x;

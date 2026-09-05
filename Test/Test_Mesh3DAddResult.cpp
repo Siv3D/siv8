@@ -163,6 +163,18 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 	};
 	Grid<float> invalidHeightField(2, 2, 0.0f);
 	invalidHeightField[0][0] = std::numeric_limits<float>::quiet_NaN();
+	const Grid<float> validHeightField(2, 2, 0.0f);
+	const double infinity = std::numeric_limits<double>::infinity();
+	const double nan = std::numeric_limits<double>::quiet_NaN();
+	const double floatCollapse = (1.0 + std::numeric_limits<double>::epsilon());
+	const Polygon nonFinitePolygon{
+		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { nan, 1.0 } },
+		Array<TriangleIndex>{ { 0, 1, 2 } }, RectF{ 0.0, 0.0, 1.0, 1.0 }, SkipValidation::Yes
+	};
+	const Array<Vec2> repeatedRing{
+		{ 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 }, { 0.0, 0.0 }
+	};
+	const Array<Array<Vec2>> repeatedSections{ repeatedRing, repeatedRing };
 
 	const auto checkFailure = [&](const Mesh3DAddResult& result, const Mesh3DErrorCode code)
 	{
@@ -182,10 +194,22 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addTube({}, 0.25),
 		Mesh3DErrorCode::InvalidArgument);
 	checkFailure(
-		builder.addTube({ Vec3::Zero(), Vec3::UnitY() }, std::numeric_limits<double>::infinity()),
+		builder.addTube({ Vec3::Zero(), Vec3::UnitY() }, infinity),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addTube({ Vec3::Zero(), Vec3{ infinity, 0.0, 0.0 } }, 0.25),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addTube({ Vec3::Zero(), Vec3::Zero() }, 0.25),
+		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addTube(
+			{ Vec3::Zero(), Vec3::UnitX(), Vec3{ floatCollapse, 0.0, 0.0 } }, 0.25),
+		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addTube(
+			{ Vec3::Zero(), Vec3::UnitX(), Vec3::UnitY(), Vec3::Zero() },
+			0.25, CloseRing::Yes),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
 		builder.addTube(
@@ -204,17 +228,61 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addExtrude(Polygon{}, 1.0),
 		Mesh3DErrorCode::InvalidArgument);
 	checkFailure(
+		builder.addExtrude(rectangle, infinity),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addExtrude(nonFinitePolygon, 1.0),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
 		builder.addRevolve({ Vec2::Zero(), Vec2::UnitY() }, 8),
 		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addRevolve({ { 0.0, -1.0 }, { 1.0, -1.0 }, { 1.0, -1.0 }, { 0.0, 1.0 } }, 8),
+		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addRevolve({ { -1.0, -1.0 }, { 1.0, 1.0 } }, 8),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addRevolve(
+			{ { 0.0, -1.0 }, { 1.0, -1.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } },
+			infinity, Math::HalfPi, 4),
+		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addSweep(Polygon{}, path),
 		Mesh3DErrorCode::InvalidArgument);
 	checkFailure(
+		builder.addSweep(rectangle, { Vec3::Zero(), Vec3{ infinity, 0.0, 0.0 } }),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addSweep(rectangle, path, Arg::initialXAxis = Vec3{ infinity, 0.0, 0.0 }),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addSweep(rectangle, path, Arg::initialXAxis = Vec3::UnitY()),
+		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addSweep(rectangle, path, Vec2{ infinity, 1.0 }),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addSweep(nonFinitePolygon, path),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
 		builder.addHeightField(invalidHeightField, SizeF{ 1.0, 1.0 }),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addHeightField(validHeightField, SizeF{ infinity, 1.0 }),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addLoft(sections, Array<double>{ 0.0, 0.0 }),
 		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addLoft(sections, Array<double>{ 0.0, infinity }),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addLoft(repeatedSections, Array<double>{ 0.0, 1.0 }),
+		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addLoft(sections, Array<double>{ 0.0, 1.0 }, Vec2{ infinity, 1.0 }),
+		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addConicalFrustum(
 			1.0, 0.5, 1.0, std::numeric_limits<uint32>::max()),

@@ -48,17 +48,6 @@
 
 ## `Siv3D/include/Siv3D/Mesh3D.hpp`
 
-### 座標規約とドキュメント
-
-- `Polygon` の外周・穴、および `Loft()` の断面の winding を、画面上の「時計回り」だけでなく格納された `(x, y)` に対する符号付き面積で定義する。
-  - 現行契約は `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が外周と Loft 断面では正、穴では負。
-  - `Polygon.hpp`、Mesh3D のクラス説明、各 Loft overload に、同じ定義と有効な最小例を重複しすぎない形で配置する。
-- 部分 `Revolve()` の正の角度が `+X` から `+Z`、`Cylindrical::phi` / `Spherical::phi` / `Quaternion::RotateY()` が `+X` から `-Z` である不一致を、v0.8 の API 固定前に再検討する。
-  - どちらかへ統一するか、現状を維持して相互参照を追加するかを決める。
-  - 変更する場合は winding、端面、接線、U 座標、既存の完全回転 overload への影響をまとめて確認する。
-- `Revolve()`、`Loft()`、`Sweep()` などの点列入力について、連続する同一点が無効である契約を揃えて記述し、未検証の経路には失敗テストを追加する。
-  - 現行 `Revolve()` は float 変換後に長さ 0 となる profile segment を拒否しており、縮退三角形を生成する仕様ではない。
-
 ### 部品範囲と部品情報
 
 - 部品範囲の長期的な所有先を決める。
@@ -72,6 +61,8 @@
 
 - `Cylinder`、`Cone`、`ConicalFrustum`、`Extrude`、`Loft`、開路の `Tube` / `Sweep` で、始端・終端を選択的に生成しない用途を評価する。
 - `BoxShell::openFaces`、部分 `Revolve` の `CloseEnds`、`CloseRing`、`CloseBottom` はそれぞれ異なる位相操作である。名前だけを統一せず、各操作の意味と組み合わせを整理してから型を設計する。
+- `CloseRing` は経路の閉鎖だけを表す既存の意味を維持する。開路の片端だけを閉じる機能を追加する場合は別の端面指定型を使い、`CloseRing` の意味を拡張しない。
+- 独立した端面・断面変形オプションが増える generator では、引数順を変えただけの overload を増殖させず、options 型にまとめる基準を先に決める。Variable Tube はこの判断が済むまで新しい端面指定を持たせない。
 - 追加する場合は cap の winding、法線、UV、hard edge、頂点・三角形数、および Builder の失敗時非変更保証を既存規約に合わせる。
 
 ### 利用例

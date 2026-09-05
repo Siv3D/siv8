@@ -22,6 +22,10 @@
 - 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
 - 生成失敗は理由を `LOG_FAIL` へ出力する。factory は空メッシュを返し、builder の既存内容は変更しない。
 - `Mesh3DBuilder` の全 add 関数は `Mesh3DAddResult` を返す。成功時は追加した頂点・三角形の連続範囲、失敗時は `InvalidArgument`、`InvalidGeometry`、`NumericRange`、`SizeLimit` に分類されたエラーを取得できる。
+- Y 軸周りの正角は `Quaternion::RotateY()`、`Cylindrical`、`Spherical` と共通で、`+X` から `-Z` へ進む。完全・部分 `Revolve` の頂点順、接線、U 座標もこの規約に従う。
+- `Polygon` の外周と `Loft` の断面は、格納された `(x, y)` に対する符号付き面積が正、`Polygon` の穴は負とする。閉じた輪郭の先頭点を末尾へ重複させない。
+- 点列は float 変換後の幾何を基準に検証する。`Revolve` の閉じた profile だけは先頭・末尾の一致を閉鎖表現として使い、`Tube` / `Sweep` の閉路と `Loft` の断面では始点を末尾に重複させない。
+- `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は現在、両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
 
 ## 実装済みの主要機能
 
@@ -39,10 +43,7 @@
 
 初見の利用者が 4 種類の構造物を作成・検査した記録が [`Claude outputs/REPORT.md`](<Claude outputs/REPORT.md>) にある。最終生成物では、生成失敗、z-fighting、部品間の隙間、縮退三角形、裏返り、意図しない孤立部品は検出されず、現在の builder とクラス冒頭の Doxygen は実用上よく機能した。
 
-次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。特に次の 2 点は、形状追加とは独立して検討できる。
-
-- `Polygon` / `Loft` の winding を「時計回り」だけでなく符号付き面積と最小例で一意に説明する。
-- 部分 `Revolve` の正角方向が `Cylindrical` / `Spherical` / `Quaternion::RotateY()` と逆である点を、統一するか明示的な差として残すか決める。
+次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。新しい経路系 generator へ進む前提となる、角度、winding、点列の閉鎖表現、および失敗分類は公開ヘッダとテストで固定している。
 
 実利用レビューを起点に検討した `Mesh3DAddResult` は全 add 関数へ展開済みである。単発の追加範囲と失敗理由は取得できるため、次は名前、材質、階層を含む永続的な部品情報の所有先を検討する。
 

@@ -22,6 +22,7 @@ namespace s3d
 	{
 		using Mesh3DDetail::AddedRange;
 		using Mesh3DDetail::AdditionFailed;
+		using Mesh3DDetail::CapValidationResult;
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
 		using Mesh3DDetail::ForEachValidCapTriangle;
@@ -101,15 +102,19 @@ namespace s3d
 	{
 		if ((sections.size() < 2)
 			|| (sections.size() != heights.size())
-			|| (sections.front().size() < 3)
-			|| (not IsFloatRepresentable(_uvScale.x))
+			|| (sections.front().size() < 3))
+		{
+			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): The section dimensions or height count is invalid");
+		}
+
+		if ((not IsFloatRepresentable(_uvScale.x))
 			|| (not IsFloatRepresentable(_uvScale.y))
 			|| (not IsFloatRepresentable(_uvOffset.x))
 			|| (not IsFloatRepresentable(_uvOffset.y))
 			|| (not IsFloatRepresentable(_uvOffset.x + _uvScale.x))
 			|| (not IsFloatRepresentable(_uvOffset.y + _uvScale.y)))
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): The section dimensions, heights, or UV transform is invalid");
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): The UV transform is non-finite or outside the float range");
 		}
 
 		const size_t sectionCount = sections.size();
@@ -124,10 +129,14 @@ namespace s3d
 		Array<float> sectionHeights(sectionCount);
 		for (size_t sectionIndex = 0; sectionIndex < sectionCount; ++sectionIndex)
 		{
-			if ((sections[sectionIndex].size() != ringVertexCount)
-				|| (not IsFloatRepresentable(heights[sectionIndex])))
+			if (sections[sectionIndex].size() != ringVertexCount)
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Sections must have equal vertex counts and finite, float-representable heights");
+				return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Sections must have equal vertex counts");
+			}
+
+			if (not IsFloatRepresentable(heights[sectionIndex]))
+			{
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Every height must be finite and float-representable");
 			}
 
 			sectionHeights[sectionIndex] = static_cast<float>(heights[sectionIndex]);
@@ -186,8 +195,8 @@ namespace s3d
 		size_t topCapTriangleCount;
 		if (bottomPolygon.isEmpty()
 			|| topPolygon.isEmpty()
-			|| (not ValidateCapTriangles<false>(bottomPolygon.vertices(), bottomPolygon.indices(), bottomCapTriangleCount))
-			|| (not ValidateCapTriangles<false>(topPolygon.vertices(), topPolygon.indices(), topCapTriangleCount)))
+			|| (ValidateCapTriangles<false>(bottomPolygon.vertices(), bottomPolygon.indices(), bottomCapTriangleCount) != CapValidationResult::Valid)
+			|| (ValidateCapTriangles<false>(topPolygon.vertices(), topPolygon.indices(), topCapTriangleCount) != CapValidationResult::Valid))
 		{
 			return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): The first or last section cannot form a valid cap");
 		}
