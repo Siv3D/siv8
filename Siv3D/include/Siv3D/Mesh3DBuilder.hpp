@@ -2074,6 +2074,80 @@ namespace s3d
 			const Mat4x4& transform,
 			CloseRing closeRing = CloseRing::No);
 
+		/// @brief 経路点ごとに断面の拡大率と twist を指定した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換。要素数は `path.size()` と等しい必要があります。
+		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark 断面変換、経路、端面、UV 座標、および頂点属性の規約は、経路点別変換を受け取る `Mesh3D::Sweep()` と同じです。
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			std::span<const SweepSectionTransform> sectionTransforms,
+			const SweepOptions& options = {});
+
+		/// @brief 初期化子リストで経路点ごとの断面変換を指定した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換
+		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
+			std::initializer_list<SweepSectionTransform> sectionTransforms,
+			const SweepOptions& options = {});
+
+		/// @brief 平行移動を適用し、経路点ごとに断面変換を指定した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換
+		/// @param offset 平行移動量
+		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			std::span<const SweepSectionTransform> sectionTransforms,
+			Vec3 offset,
+			const SweepOptions& options = {});
+
+		/// @brief 回転と平行移動を適用し、経路点ごとに断面変換を指定した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			std::span<const SweepSectionTransform> sectionTransforms,
+			Vec3 offset,
+			const Quaternion& rotation,
+			const SweepOptions& options = {});
+
+		/// @brief アフィン変換を適用し、経路点ごとに断面変換を指定した Sweep 形状を追加します。
+		/// @param crossSection 経路に沿わせる断面
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換
+		/// @param transform 適用するアフィン変換行列
+		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addSweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			std::span<const SweepSectionTransform> sectionTransforms,
+			const Mat4x4& transform,
+			const SweepOptions& options = {});
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addTetrahedron

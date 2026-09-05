@@ -27,6 +27,8 @@ namespace
 		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3D::Sweep);
 		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3D::Sweep);
 		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, Arg::initialXAxis_<Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, const SweepOptions&)>(&Mesh3D::Sweep);
+		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, std::initializer_list<SweepSectionTransform>, const SweepOptions&)>(&Mesh3D::Sweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addSweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, CloseRing, Vec2, Vec2)>(&Mesh3DBuilder::addSweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, Vec2, Vec2, CloseRing)>(&Mesh3DBuilder::addSweep);
@@ -47,6 +49,11 @@ namespace
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3, CloseRing)>(&Mesh3DBuilder::addSweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, Vec3, const Quaternion&, CloseRing)>(&Mesh3DBuilder::addSweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Arg::initialXAxis_<Vec3>, Vec2, Vec2, const Mat4x4&, CloseRing)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, std::initializer_list<SweepSectionTransform>, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, Vec3, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, Vec3, const Quaternion&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, const Mat4x4&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
 	});
 
 }
@@ -247,6 +254,182 @@ TEST_CASE("Mesh3D::Sweep rectangle and UV repeat")
 	CHECK_EQ(automatic.vertices[0].pos, mesh.vertices[0].pos);
 }
 
+TEST_CASE("Mesh3D::Sweep per-point identity transforms preserve constant Sweep data")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -0.5, -0.25 }, { 0.5, -0.25 }, { 0.5, 0.25 }, { -0.5, 0.25 }
+	} };
+	const Array<Vec3> path{
+		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+	};
+	const Array<SweepSectionTransform> transforms(path.size());
+	const SweepOptions options{
+		.initialXAxis = Vec3::UnitX(),
+		.uvScale = Vec2{ 2.0, 0.25 },
+		.uvOffset = Vec2{ 0.1, 0.2 },
+	};
+
+	CheckMeshDataEqual(
+		Mesh3D::Sweep(crossSection, path, transforms, options),
+		Mesh3D::Sweep(
+			crossSection, path, Arg::initialXAxis = Vec3::UnitX(),
+			options.uvScale, options.uvOffset));
+	CheckMeshDataEqual(
+		Mesh3D::Sweep(crossSection, {
+			{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+		}, { {}, {}, {} }, options),
+		Mesh3D::Sweep(crossSection, path, transforms, options));
+}
+
+TEST_CASE("Mesh3D::Sweep per-point positive twist direction")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -2.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 1.0 }, { -2.0, 1.0 }
+	} };
+	const Array<Vec3> path{ Vec3::Zero(), Vec3{ 0.0, 3.0, 0.0 } };
+	const Array<SweepSectionTransform> transforms{
+		{ .twist = Math::HalfPi }, { .twist = Math::HalfPi }
+	};
+	const SweepOptions options{ .initialXAxis = Vec3::UnitX() };
+	const Mesh3D mesh = Mesh3D::Sweep(crossSection, path, transforms, options);
+	const size_t sideVertexBase = (crossSection.vertices().size() * 2);
+
+	CheckMeshGeometry(mesh);
+	CHECK_EQ(mesh.vertices[0].pos, Float3{ -1.0f, 0.0f, 2.0f });
+	CHECK(mesh.vertices[0].tangent.xyz().dot(-Float3::UnitZ())
+		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
+	CHECK_EQ(mesh.vertices[0].tangent.w, 1.0f);
+	CHECK_EQ(mesh.vertices[sideVertexBase].pos, Float3{ -1.0f, 0.0f, 2.0f });
+	CHECK(mesh.vertices[sideVertexBase].normal.dot(-Float3::UnitX())
+		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[sideVertexBase].tangent.xyz().dot(-Float3::UnitZ())
+		== doctest::Approx(1.0f).epsilon(FrameEpsilon));
+	CHECK_EQ(mesh.vertices[sideVertexBase].tangent.w, -1.0f);
+}
+
+TEST_CASE("Mesh3D::Sweep per-point varying scale and twist")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -1.0, -1.0 }, { 1.0, -1.0 }, { 1.0, 1.0 }, { -1.0, 1.0 }
+	} };
+	const Array<Vec3> path{
+		Vec3::Zero(), Vec3{ 0.0, 4.0, 0.0 }, Vec3{ 0.0, 8.0, 0.0 }
+	};
+	const Array<SweepSectionTransform> transforms{
+		{ .scale = Vec2{ 1.0, 1.0 }, .twist = 0.0 },
+		{ .scale = Vec2{ 2.0, 0.5 }, .twist = 0.1 },
+		{ .scale = Vec2{ 1.5, 1.25 }, .twist = 0.2 },
+	};
+	const SweepOptions options{
+		.initialXAxis = Vec3::UnitX(),
+		.uvScale = Vec2{ 2.0, 0.25 },
+		.uvOffset = Vec2{ 0.1, 0.2 },
+	};
+	const Mesh3D mesh = Mesh3D::Sweep(crossSection, path, transforms, options);
+	const size_t capVertexCount = (crossSection.vertices().size() * 2);
+	const size_t verticesPerEdge = (path.size() * 2);
+
+	CHECK_EQ(mesh.vertexCount(), size_t{ 32 });
+	CHECK_EQ(mesh.triangleCount(), size_t{ 20 });
+	CheckMeshGeometry(mesh);
+	CHECK_EQ(mesh.vertices[capVertexCount].pos, Float3{ -1.0f, 0.0f, -1.0f });
+	CHECK_NE(mesh.vertices[capVertexCount + 2].normal,
+		mesh.vertices[capVertexCount].normal);
+	CHECK_NE(mesh.vertices[capVertexCount + verticesPerEdge].tangent,
+		mesh.vertices[capVertexCount].tangent);
+	CHECK_EQ(mesh.vertices[capVertexCount].tex, Float2{ 0.1f, 0.2f });
+	CHECK(mesh.vertices[capVertexCount + 4].tex.y
+		== doctest::Approx(2.2f).epsilon(FrameEpsilon));
+}
+
+TEST_CASE("Mesh3D::Sweep per-point closed seam")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -0.5, -0.25 }, { 0.5, -0.25 }, { 0.5, 0.25 }, { -0.5, 0.25 }
+	} };
+	const Array<Vec3> path{
+		{ -2.0, 0.0, -2.0 }, { 2.0, 0.0, -2.0 },
+		{ 2.0, 0.0, 2.0 }, { -2.0, 0.0, 2.0 }
+	};
+	const Array<SweepSectionTransform> transforms{
+		{ .scale = Vec2{ 1.0, 1.0 }, .twist = 0.0 },
+		{ .scale = Vec2{ 1.1, 0.9 }, .twist = 0.1 },
+		{ .scale = Vec2{ 1.2, 1.0 }, .twist = 0.2 },
+		{ .scale = Vec2{ 0.9, 1.1 }, .twist = 0.1 },
+	};
+	const SweepOptions options{
+		.initialXAxis = Vec3::UnitY(),
+		.closeRing = CloseRing::Yes,
+	};
+	const Mesh3D mesh = Mesh3D::Sweep(crossSection, path, transforms, options);
+	const size_t stationCount = (path.size() + 1);
+	const size_t verticesPerEdge = (stationCount * 2);
+
+	CHECK_EQ(mesh.vertexCount(), (crossSection.outer().size() * verticesPerEdge));
+	CHECK_EQ(mesh.triangleCount(), (2 * crossSection.outer().size() * path.size()));
+	CheckMeshGeometry(mesh);
+	for (size_t edgeIndex = 0; edgeIndex < crossSection.outer().size(); ++edgeIndex)
+	{
+		const size_t edgeBase = (edgeIndex * verticesPerEdge);
+		const size_t seamBase = (edgeBase + path.size() * 2);
+		for (size_t endpoint = 0; endpoint < 2; ++endpoint)
+		{
+			const Vertex3D& first = mesh.vertices[edgeBase + endpoint];
+			const Vertex3D& seam = mesh.vertices[seamBase + endpoint];
+			CHECK_EQ(seam.pos, first.pos);
+			CHECK_EQ(seam.normal, first.normal);
+			CHECK_EQ(seam.tangent, first.tangent);
+			CHECK_EQ(seam.tex.x, first.tex.x);
+		}
+	}
+}
+
+TEST_CASE("Mesh3DBuilder::addSweep per-point transforms")
+{
+	const Polygon crossSection{ Array<Vec2>{
+		{ -0.5, -0.25 }, { 0.5, -0.25 }, { 0.5, 0.25 }, { -0.5, 0.25 }
+	} };
+	const Array<Vec3> path{
+		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+	};
+	const Array<SweepSectionTransform> transforms{
+		{}, { .scale = Vec2{ 1.2, 0.8 }, .twist = 0.1 },
+		{ .scale = Vec2{ 0.9, 1.1 }, .twist = 0.2 }
+	};
+	const SweepOptions options{
+		.initialXAxis = Vec3::UnitX(),
+		.uvScale = Vec2{ 2.0, 0.25 },
+		.uvOffset = Vec2{ 0.1, 0.2 },
+	};
+	const Mesh3D source = Mesh3D::Sweep(crossSection, path, transforms, options);
+	const Vec3 offset{ 3.0, 4.0, 5.0 };
+	const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
+	const Mat4x4 transform = Mat4x4::AffineTransform(
+		Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
+
+	Mesh3DBuilder builder;
+	builder.reserve((source.vertexCount() * 5), (source.triangleCount() * 5));
+	REQUIRE(builder.addSweep(crossSection, path, transforms, options));
+	const Vertex3D* const vertexData = builder.getMesh().vertices.data();
+	const TriangleIndex32* const indexData = builder.getMesh().indices.data();
+	REQUIRE(builder.addSweep(crossSection, {
+		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
+	}, { {}, { Vec2{ 1.2, 0.8 }, 0.1 }, { Vec2{ 0.9, 1.1 }, 0.2 } }, options));
+	REQUIRE(builder.addSweep(crossSection, path, transforms, offset, options));
+	REQUIRE(builder.addSweep(crossSection, path, transforms, offset, rotation, options));
+	REQUIRE(builder.addSweep(crossSection, path, transforms, transform, options));
+	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
+	CHECK_EQ(builder.getMesh().indices.data(), indexData);
+
+	Mesh3D expected = source;
+	REQUIRE(expected.append(source));
+	REQUIRE(expected.append(source, Mat4x4::Translate(Float3{ offset })));
+	REQUIRE(expected.append(source,
+		Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
+	REQUIRE(expected.append(source, transform));
+	CheckMeshDataEqual(builder.getMesh(), expected);
+}
+
 TEST_CASE("Mesh3D::Sweep bent non-planar path")
 {
 	const Polygon crossSection{ Array<Vec2>{
@@ -378,6 +561,17 @@ TEST_CASE("Mesh3D::Sweep polygon with a hole")
 	const size_t innerSideBase = ((crossSection.vertices().size() * 2)
 		+ (crossSection.outer().size() * 4));
 	CHECK_EQ(mesh.vertices[innerSideBase].normal, Float3::UnitY());
+
+	const Array<SweepSectionTransform> transforms{
+		{ .scale = Vec2{ 1.0, 1.0 }, .twist = 0.1 },
+		{ .scale = Vec2{ 1.2, 0.8 }, .twist = 0.2 }
+	};
+	const Mesh3D transformed = Mesh3D::Sweep(
+		crossSection, path, transforms,
+		SweepOptions{ .initialXAxis = Vec3::UnitY() });
+	CHECK_EQ(transformed.vertexCount(), mesh.vertexCount());
+	CHECK_EQ(transformed.triangleCount(), mesh.triangleCount());
+	CheckMeshGeometry(transformed);
 }
 
 TEST_CASE("Mesh3D::Sweep initial orientation")
@@ -404,6 +598,9 @@ TEST_CASE("Mesh3D::Sweep invalid arguments")
 	};
 	const Polygon crossSection{ outer };
 	const Array<Vec3> validPath{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 } };
+	const Array<SweepSectionTransform> validTransforms{
+		{}, { .scale = Vec2{ 1.5, 0.5 }, .twist = 0.1 }
+	};
 
 	CHECK(Mesh3D::Sweep(Polygon{}, validPath).isEmpty());
 	CHECK(Mesh3D::Sweep(crossSection, std::span<const Vec3>{}).isEmpty());
@@ -440,6 +637,33 @@ TEST_CASE("Mesh3D::Sweep invalid arguments")
 		Vec2{ std::numeric_limits<double>::quiet_NaN(), 1.0 }).isEmpty());
 	CHECK(Mesh3D::Sweep(crossSection, validPath,
 		Vec2{ 1.0, std::numeric_limits<float>::max() }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath,
+		Array<SweepSectionTransform>{ {} }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath,
+		Array<SweepSectionTransform>{ {}, { .scale = Vec2{ 0.0, 1.0 } } }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath,
+		Array<SweepSectionTransform>{ {}, { .scale = Vec2{ -1.0, 1.0 } } }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath,
+		Array<SweepSectionTransform>{ {}, {
+			.scale = Vec2{ std::numeric_limits<double>::denorm_min(), 1.0 }
+		} }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath,
+		Array<SweepSectionTransform>{ {}, {
+			.scale = Vec2{ std::numeric_limits<double>::infinity(), 1.0 }
+		} }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath,
+		Array<SweepSectionTransform>{ {}, {
+			.twist = std::numeric_limits<double>::quiet_NaN()
+		} }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath, validTransforms,
+		SweepOptions{ .initialXAxis = Vec3::UnitY() }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection, validPath, validTransforms,
+		SweepOptions{ .uvScale = Vec2{ std::numeric_limits<double>::infinity(), 1.0 } }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection,
+		Array<Vec3>{ Vec3::Zero(), Vec3{ 0.0, 0.01, 0.0 } },
+		Array<SweepSectionTransform>{ {}, { .twist = Math::QuarterPi } }).isEmpty());
+	CHECK(Mesh3D::Sweep(crossSection,
+		Array<Vec3>{ Vec3::Zero(), Vec3::Zero() }, validTransforms).isEmpty());
 
 	const Polygon invalidIndices{
 		outer,

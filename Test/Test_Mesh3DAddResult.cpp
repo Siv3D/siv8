@@ -157,7 +157,13 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 	const Polygon rectangle{ Array<Vec2>{
 		{ -0.5, -0.5 }, { 0.5, -0.5 }, { 0.5, 0.5 }, { -0.5, 0.5 }
 	} };
+	const Polygon offsetRectangle{ Array<Vec2>{
+		{ 0.0, 0.0 }, { 2.0, 0.0 }, { 2.0, 2.0 }, { 0.0, 2.0 }
+	} };
 	const Array<Vec3> path{ Vec3::Zero(), Vec3::UnitY() };
+	const Array<SweepSectionTransform> sweepTransforms{
+		{}, { .scale = Vec2{ 1.5, 0.5 }, .twist = 0.1 }
+	};
 	const Array<Array<Vec2>> sections{
 		rectangle.outer(), rectangle.outer()
 	};
@@ -277,6 +283,30 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 	checkFailure(
 		builder.addSweep(nonFinitePolygon, path),
 		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addSweep(rectangle, path, Array<SweepSectionTransform>{ {} }),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addSweep(rectangle, path, Array<SweepSectionTransform>{
+			{}, { .scale = Vec2{ 0.0, 1.0 } }
+		}),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addSweep(rectangle, path, Array<SweepSectionTransform>{
+			{}, { .twist = nan }
+		}),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addSweep(offsetRectangle,
+			Array<Vec3>{ Vec3::Zero(), Vec3{ 0.0, 0.01, 0.0 } },
+			Array<SweepSectionTransform>{
+				{}, { .twist = Math::QuarterPi }
+		}),
+		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
+		builder.addSweep(rectangle, path, sweepTransforms,
+			SweepOptions{ .initialXAxis = Vec3::UnitY() }),
+		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
 		builder.addHeightField(invalidHeightField, SizeF{ 1.0, 1.0 }),
 		Mesh3DErrorCode::NumericRange);

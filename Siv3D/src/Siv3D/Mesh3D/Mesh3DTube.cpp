@@ -809,16 +809,73 @@ namespace s3d
 
 	namespace
 	{
+		struct ConstantSweepSectionTransforms
+		{
+			static constexpr bool PerPoint = false;
+		};
+
+		struct PerPointSweepSectionTransforms
+		{
+			static constexpr bool PerPoint = true;
+			std::span<const SweepSectionTransform> values;
+		};
+
+		struct TransformedSweepFrame
+		{
+			Vec3 xAxis;
+			Vec3 yAxis;
+		};
+
+		template <class SectionTransforms>
 		[[nodiscard]]
 		static Mesh3DAddResult AppendSweepImpl(
 			Mesh3D& mesh,
 			const Polygon& crossSection,
 			const std::span<const Vec3> path,
+			const SectionTransforms& sectionTransforms,
 			const Vec3* const initialXAxis,
 			const Vec2 _uvScale,
 			const Vec2 _uvOffset,
 			const CloseRing closeRing)
 		{
+			if constexpr (SectionTransforms::PerPoint)
+			{
+				if (sectionTransforms.values.size() != path.size())
+				{
+					return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+						U"Mesh3D::Sweep(): The section-transform count must match the path point count");
+				}
+
+				bool allIdentity = true;
+				for (const SweepSectionTransform& transform : sectionTransforms.values)
+				{
+					if ((not IsFloatRepresentable(transform.scale))
+						|| (not std::isfinite(transform.twist)))
+					{
+						return AdditionFailed(Mesh3DErrorCode::NumericRange,
+							U"Mesh3D::Sweep(): A section transform is non-finite or outside the float range");
+					}
+
+					const Float2 scale = transform.scale;
+					if ((scale.x <= 0.0f) || (scale.y <= 0.0f))
+					{
+						return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+							U"Mesh3D::Sweep(): Every section scale component must be positive after conversion to float");
+					}
+
+					allIdentity = (allIdentity
+						&& (scale == Float2::One())
+						&& (transform.twist == 0.0));
+				}
+
+				if (allIdentity)
+				{
+					return AppendSweepImpl(
+						mesh, crossSection, path, ConstantSweepSectionTransforms{},
+						initialXAxis, _uvScale, _uvOffset, closeRing);
+				}
+			}
+
 			const bool isClosed = (closeRing == CloseRing::Yes);
 			if ((crossSection.isEmpty())
 				|| (path.size() < (isClosed ? 3 : 2)))
@@ -888,8 +945,26 @@ namespace s3d
 				maxX = std::max(maxX, vertex.x);
 				minY = std::min(minY, vertex.y);
 				maxY = std::max(maxY, vertex.y);
-				maxDistanceFromPath = std::max(maxDistanceFromPath,
-					std::hypot(static_cast<double>(vertex.x), static_cast<double>(vertex.y)));
+				if constexpr (not SectionTransforms::PerPoint)
+				{
+					maxDistanceFromPath = std::max(maxDistanceFromPath,
+						std::hypot(static_cast<double>(vertex.x), static_cast<double>(vertex.y)));
+				}
+			}
+
+			if constexpr (SectionTransforms::PerPoint)
+			{
+				for (const SweepSectionTransform& transform : sectionTransforms.values)
+				{
+					const Float2 scale = transform.scale;
+					for (const Float2 vertex : capVertices)
+					{
+						maxDistanceFromPath = std::max(maxDistanceFromPath,
+							std::hypot(
+								(static_cast<double>(vertex.x) * scale.x),
+								(static_cast<double>(vertex.y) * scale.y)));
+					}
+				}
 			}
 
 			const double width = (static_cast<double>(maxX) - minX);
@@ -937,6 +1012,26 @@ namespace s3d
 				return AdditionFailed(ToErrorCode(pathDataStatus), U"Mesh3D::Sweep(): The path or initial X axis is invalid, or stable frames cannot be produced");
 			}
 
+			Array<TransformedSweepFrame> transformedFrames;
+			if constexpr (SectionTransforms::PerPoint)
+			{
+				transformedFrames.resize(stationCount);
+				for (size_t pathIndex = 0; pathIndex < stationCount; ++pathIndex)
+				{
+					const PathFrame& frame = pathData.frames[pathIndex];
+					const SweepSectionTransform& transform =
+						sectionTransforms.values[pathIndex % path.size()];
+					const Float2 scale = transform.scale;
+					const double twist = std::remainder(transform.twist, Math::TwoPi);
+					const double cosine = std::cos(twist);
+					const double sine = std::sin(twist);
+					transformedFrames[pathIndex] = TransformedSweepFrame{
+						.xAxis = ((frame.normal * cosine) - (frame.binormal * sine)) * scale.x,
+						.yAxis = ((frame.normal * sine) + (frame.binormal * cosine)) * scale.y,
+					};
+				}
+			}
+
 			const double sideU0 = _uvOffset.x;
 			const double sideU1 = (_uvOffset.x + _uvScale.x);
 			const double sideV0 = _uvOffset.y;
@@ -967,11 +1062,25 @@ namespace s3d
 
 			mesh.vertices.resize(newVertexCount);
 			mesh.indices.resize(newTriangleCount);
-			const auto generationFailed = [&](const StringView message)
+			const auto generationFailed = [&](const Mesh3DErrorCode code, const StringView message)
 			{
 				mesh.vertices.resize(vertexBase);
 				mesh.indices.resize(triangleBase);
-				return AdditionFailed(Mesh3DErrorCode::NumericRange, message);
+				return AdditionFailed(code, message);
+			};
+			const auto getPosition = [&](const size_t pathIndex, const Float2 source)
+			{
+				const Vec3 center = pathData.points[pathIndex];
+				if constexpr (SectionTransforms::PerPoint)
+				{
+					const TransformedSweepFrame& frame = transformedFrames[pathIndex];
+					return (center + (frame.xAxis * source.x) + (frame.yAxis * source.y));
+				}
+				else
+				{
+					const PathFrame& frame = pathData.frames[pathIndex];
+					return (center + (frame.normal * source.x) + (frame.binormal * source.y));
+				}
 			};
 			if (not isClosed)
 			{
@@ -984,14 +1093,18 @@ namespace s3d
 					const size_t pathIndex = (startCap ? 0 : (path.size() - 1));
 					const size_t capBase = (startCap ? startCapBase : endCapBase);
 					const PathFrame& frame = pathData.frames[pathIndex];
-					const Vec3 center = pathData.points[pathIndex];
 					const Float3 capNormal = (startCap
 						? Float3{ -frame.tangent }
 						: Float3{ frame.tangent });
+					Vec3 capTangentDirection = frame.normal;
+					if constexpr (SectionTransforms::PerPoint)
+					{
+						capTangentDirection = transformedFrames[pathIndex].xAxis.normalized();
+					}
 					const Float4 capTangent{
-						static_cast<float>(frame.normal.x),
-						static_cast<float>(frame.normal.y),
-						static_cast<float>(frame.normal.z),
+						static_cast<float>(capTangentDirection.x),
+						static_cast<float>(capTangentDirection.y),
+						static_cast<float>(capTangentDirection.z),
 						(startCap ? 1.0f : -1.0f)
 					};
 
@@ -999,11 +1112,10 @@ namespace s3d
 					{
 						const Float2 source = capVertices[vertexIndex];
 						Float3 position;
-						if (not ToFloat3((center
-							+ (frame.normal * source.x)
-							+ (frame.binormal * source.y)), position))
+						if (not ToFloat3(getPosition(pathIndex, source), position))
 						{
-							return generationFailed(U"Mesh3D::Sweep(): A generated cap vertex exceeds the float range");
+							return generationFailed(Mesh3DErrorCode::NumericRange,
+								U"Mesh3D::Sweep(): A generated cap vertex exceeds the float range");
 						}
 
 						const float u = static_cast<float>(
@@ -1043,6 +1155,14 @@ namespace s3d
 				});
 			}
 
+			Array<Float3> currentPositions;
+			Array<Float3> nextPositions;
+			if constexpr (SectionTransforms::PerPoint)
+			{
+				currentPositions.resize(stationCount);
+				nextPositions.resize(stationCount);
+			}
+			Mesh3DErrorCode writeRingError = Mesh3DErrorCode::NumericRange;
 			size_t sideVertexOffset = (vertexBase + capVertexCount);
 			const auto writeRing = [&](const std::span<const Vec2> ring, const double perimeter)
 			{
@@ -1065,44 +1185,100 @@ namespace s3d
 							: (accumulatedLength / perimeter)))));
 					const size_t edgeVertexBase = sideVertexOffset;
 
+					if constexpr (SectionTransforms::PerPoint)
+					{
+						for (size_t pathIndex = 0; pathIndex < stationCount; ++pathIndex)
+						{
+							if ((not ToFloat3(getPosition(pathIndex, current), currentPositions[pathIndex]))
+								|| (not ToFloat3(getPosition(pathIndex, next), nextPositions[pathIndex])))
+							{
+								writeRingError = Mesh3DErrorCode::NumericRange;
+								return false;
+							}
+						}
+					}
+
 					for (size_t pathIndex = 0; pathIndex < stationCount; ++pathIndex)
 					{
-						const PathFrame& frame = pathData.frames[pathIndex];
-						const Vec3 center = pathData.points[pathIndex];
-						const Vec3 normal = ((frame.normal * tangentY)
-							- (frame.binormal * tangentX));
-						const Vec3 tangent = ((frame.normal * tangentX)
-							+ (frame.binormal * tangentY));
+						const float v = static_cast<float>(_uvOffset.y
+							+ (_uvScale.y * pathData.distances[pathIndex]));
+						Float3 currentPosition;
+						Float3 nextPosition;
+						Vec3 currentNormal;
+						Vec3 nextNormal;
+						Vec3 tangent;
+						if constexpr (SectionTransforms::PerPoint)
+						{
+							currentPosition = currentPositions[pathIndex];
+							nextPosition = nextPositions[pathIndex];
+							const size_t sourceIndex = (isClosed
+								? (pathIndex % path.size())
+								: pathIndex);
+							const size_t previousIndex = (isClosed
+								? ((sourceIndex + path.size() - 1) % path.size())
+								: ((sourceIndex == 0) ? 0 : (sourceIndex - 1)));
+							const size_t followingIndex = (isClosed
+								? ((sourceIndex + 1) % path.size())
+								: std::min((sourceIndex + 1), (path.size() - 1)));
+							const Vec3 edge = (Vec3{ nextPosition } - Vec3{ currentPosition });
+							const Vec3 currentLongitudinal =
+								(Vec3{ currentPositions[followingIndex] }
+									- Vec3{ currentPositions[previousIndex] });
+							const Vec3 nextLongitudinal =
+								(Vec3{ nextPositions[followingIndex] }
+									- Vec3{ nextPositions[previousIndex] });
+							currentNormal = currentLongitudinal.cross(edge);
+							nextNormal = nextLongitudinal.cross(edge);
+							const double edgeLengthSq = edge.lengthSq();
+							const double currentNormalLengthSq = currentNormal.lengthSq();
+							const double nextNormalLengthSq = nextNormal.lengthSq();
+							if ((not std::isfinite(edgeLengthSq))
+								|| (not std::isfinite(currentNormalLengthSq))
+								|| (not std::isfinite(nextNormalLengthSq))
+								|| (edgeLengthSq == 0.0)
+								|| (currentNormalLengthSq == 0.0)
+								|| (nextNormalLengthSq == 0.0))
+							{
+								writeRingError = Mesh3DErrorCode::InvalidGeometry;
+								return false;
+							}
+
+							tangent = (edge / std::sqrt(edgeLengthSq));
+							currentNormal /= std::sqrt(currentNormalLengthSq);
+							nextNormal /= std::sqrt(nextNormalLengthSq);
+						}
+						else
+						{
+							const PathFrame& frame = pathData.frames[pathIndex];
+							currentNormal = ((frame.normal * tangentY)
+								- (frame.binormal * tangentX));
+							nextNormal = currentNormal;
+							tangent = ((frame.normal * tangentX)
+								+ (frame.binormal * tangentY));
+							if ((not ToFloat3(getPosition(pathIndex, current), currentPosition))
+								|| (not ToFloat3(getPosition(pathIndex, next), nextPosition)))
+							{
+								writeRingError = Mesh3DErrorCode::NumericRange;
+								return false;
+							}
+						}
 						const Float4 vertexTangent{
 							static_cast<float>(tangent.x),
 							static_cast<float>(tangent.y),
 							static_cast<float>(tangent.z),
 							-1.0f
 						};
-						const float v = static_cast<float>(_uvOffset.y
-							+ (_uvScale.y * pathData.distances[pathIndex]));
-						Float3 currentPosition;
-						Float3 nextPosition;
-						if ((not ToFloat3((center
-							+ (frame.normal * current.x)
-							+ (frame.binormal * current.y)), currentPosition))
-							|| (not ToFloat3((center
-								+ (frame.normal * next.x)
-								+ (frame.binormal * next.y)), nextPosition)))
-						{
-							return false;
-						}
 
 						const size_t vertexBase = (edgeVertexBase + (pathIndex * 2));
 						mesh.vertices[vertexBase + 0] = Vertex3D{
 							.pos = currentPosition,
-							.normal = normal,
+							.normal = currentNormal,
 							.tex = Float2{ u0, v },
 							.tangent = vertexTangent
 						};
 						mesh.vertices[vertexBase + 1] = Vertex3D{
 							.pos = nextPosition,
-							.normal = normal,
+							.normal = nextNormal,
 							.tex = Float2{ u1, v },
 							.tangent = vertexTangent
 						};
@@ -1114,6 +1290,27 @@ namespace s3d
 						const uint32 i1 = (i0 + 1);
 						const uint32 i2 = (i0 + 2);
 						const uint32 i3 = (i0 + 3);
+						if constexpr (SectionTransforms::PerPoint)
+						{
+							const auto triangleIsOutward = [&](const uint32 a, const uint32 b, const uint32 c)
+							{
+								const Vertex3D& v0 = mesh.vertices[a];
+								const Vertex3D& v1 = mesh.vertices[b];
+								const Vertex3D& v2 = mesh.vertices[c];
+								const Vec3 faceNormal = (Vec3{ v1.pos } - Vec3{ v0.pos }).cross(
+									Vec3{ v2.pos } - Vec3{ v0.pos });
+								const Vec3 vertexNormal = (Vec3{ v0.normal }
+									+ Vec3{ v1.normal } + Vec3{ v2.normal });
+								return ((0.0 < faceNormal.lengthSq())
+									&& (0.0 < faceNormal.dot(vertexNormal)));
+							};
+							if ((not triangleIsOutward(i0, i2, i1))
+								|| (not triangleIsOutward(i1, i2, i3)))
+							{
+								writeRingError = Mesh3DErrorCode::InvalidGeometry;
+								return false;
+							}
+						}
 						*pTriangle++ = TriangleIndex32{ i0, i2, i1 };
 						*pTriangle++ = TriangleIndex32{ i1, i2, i3 };
 					}
@@ -1126,14 +1323,16 @@ namespace s3d
 
 			if (not writeRing(crossSection.outer(), ringPerimeters[0]))
 			{
-					return generationFailed(U"Mesh3D::Sweep(): A generated outer-ring vertex exceeds the float range");
+				return generationFailed(writeRingError,
+					U"Mesh3D::Sweep(): A transformed outer ring is non-finite, degenerate, or inverted");
 			}
 
 			for (size_t i = 0; i < crossSection.inners().size(); ++i)
 			{
 				if (not writeRing(crossSection.inners()[i], ringPerimeters[i + 1]))
 				{
-					return generationFailed(U"Mesh3D::Sweep(): A generated inner-ring vertex exceeds the float range");
+					return generationFailed(writeRingError,
+						U"Mesh3D::Sweep(): A transformed inner ring is non-finite, degenerate, or inverted");
 				}
 			}
 
@@ -1151,7 +1350,23 @@ namespace s3d
 		const CloseRing closeRing)
 	{
 		return AppendSweepImpl(
-			mesh, crossSection, path, initialXAxis, uvScale, uvOffset, closeRing);
+			mesh, crossSection, path, ConstantSweepSectionTransforms{},
+			initialXAxis, uvScale, uvOffset, closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendSweep(
+		Mesh3D& mesh,
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const std::span<const SweepSectionTransform> sectionTransforms,
+		const SweepOptions& options)
+	{
+		const Vec3* const initialXAxis = (options.initialXAxis
+			? &options.initialXAxis.value()
+			: nullptr);
+		return AppendSweepImpl(
+			mesh, crossSection, path, PerPointSweepSectionTransforms{ sectionTransforms },
+			initialXAxis, options.uvScale, options.uvOffset, options.closeRing);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1268,5 +1483,30 @@ namespace s3d
 			uvScale,
 			uvOffset,
 			closeRing);
+	}
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const std::span<const SweepSectionTransform> sectionTransforms,
+		const SweepOptions& options)
+	{
+		Mesh3DBuilder builder;
+		(void)builder.addSweep(crossSection, path, sectionTransforms, options);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Sweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const std::initializer_list<SweepSectionTransform> sectionTransforms,
+		const SweepOptions& options)
+	{
+		return Sweep(
+			crossSection,
+			std::span<const Vec3>{ path.begin(), path.size() },
+			std::span<const SweepSectionTransform>{
+				sectionTransforms.begin(), sectionTransforms.size() },
+			options);
 	}
 }

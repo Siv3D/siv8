@@ -406,6 +406,14 @@ namespace s3d::Mesh3DDetail
 		CloseRing closeRing);
 
 	[[nodiscard]]
+	Mesh3DAddResult AppendSweep(
+		Mesh3D& mesh,
+		const Polygon& crossSection,
+		std::span<const Vec3> path,
+		std::span<const SweepSectionTransform> sectionTransforms,
+		const SweepOptions& options);
+
+	[[nodiscard]]
 	Mesh3DAddResult AppendHeightField(
 		Mesh3D& mesh,
 		const Grid<float>& heights,

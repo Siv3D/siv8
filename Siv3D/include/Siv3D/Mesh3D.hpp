@@ -21,6 +21,7 @@
 # include "Grid.hpp"
 # include "IWriter.hpp"
 # include "Material.hpp"
+# include "Optional.hpp"
 # include "PredefinedNamedParameter.hpp"
 # include "PredefinedYesNo.hpp"
 # include "Result.hpp"
@@ -109,6 +110,44 @@ namespace s3d
 	/// @remark 成功時は追加された範囲、失敗時はエラーを保持します。
 	/// @remark `has_value()` または bool への変換で、追加に成功したかを確認できます。
 	using Mesh3DAddResult = Result<Mesh3DRange, Mesh3DError>;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	SweepSectionTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief Sweep の経路点における断面変換
+	struct SweepSectionTransform
+	{
+		/// @brief 断面の X 軸方向および Y 軸方向の拡大率
+		Vec2 scale = Vec2{ 1.0, 1.0 };
+
+		/// @brief 経路の接線を軸とする断面の回転角（ラジアン）
+		double twist = 0.0;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	SweepOptions
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 経路点ごとの断面変換を使う Sweep の設定
+	struct SweepOptions
+	{
+		/// @brief 開始時に断面の X 軸を向ける方向。未指定の場合は経路から自動的に決定します。
+		Optional<Vec3> initialXAxis;
+
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale = Vec2{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset = Vec2{ 0.0, 0.0 };
+
+		/// @brief 経路の末尾と先頭を接続するか
+		CloseRing closeRing = CloseRing::No;
+	};
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -931,6 +970,40 @@ namespace s3d
 			CloseRing closeRing,
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		/// @brief 経路点ごとに断面の拡大率と twist を指定した Sweep 形状を作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
+		/// @param sectionTransforms 各経路点における断面変換。要素数は `path.size()` と等しい必要があります。
+		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `sectionTransforms` の各 `scale` 成分は float 変換後も正である必要があります。断面の拡大後に `twist` を適用します。
+		/// @remark 正の `twist` は経路の接線 T を軸として、断面の +X 軸 N を `-N.cross(T)` 方向へ回転させます。経路が world +Y、断面の +X が world +X の場合、world +X から world -Z へ回転します。
+		/// @remark 各経路点で変換した断面を隣接する断面と三角形で接続します。側面の法線と接線は、断面変換による傾きとねじれを反映します。
+		/// @remark 隣接する断面間で側面の三角形が縮退または反転する変換は無効です。大きな twist は経路点を追加して分割してください。
+		/// @remark 端面の UV 座標と側面の U 座標は変換前の断面を基準にします。V 座標は経路の始端からの累積距離です。
+		/// @remark `CloseRing::Yes` の場合、最後の経路点の断面変換から最初の経路点の断面変換へ接続し、UV 継ぎ目では最初の断面を複製します。
+		/// @remark 経路、断面の頂点順序、端面、および自己交差に関する規約は一定断面の `Sweep()` と同じです。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			std::span<const SweepSectionTransform> sectionTransforms,
+			const SweepOptions& options = {});
+
+		/// @brief 初期化子リストで経路点ごとの断面変換を指定した Sweep 形状を作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換
+		/// @param options 初期断面方向、UV 変換、および経路の閉鎖方法
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 断面変換、経路、端面、および UV 座標の規約は `std::span` を受け取る経路点別変換オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
+			std::initializer_list<SweepSectionTransform> sectionTransforms,
+			const SweepOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//

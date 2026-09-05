@@ -62,7 +62,8 @@
 - `Cylinder`、`Cone`、`ConicalFrustum`、`Extrude`、`Loft`、開路の `Tube` / `Sweep` で、始端・終端を選択的に生成しない用途を評価する。
 - `BoxShell::openFaces`、部分 `Revolve` の `CloseEnds`、`CloseRing`、`CloseBottom` はそれぞれ異なる位相操作である。名前だけを統一せず、各操作の意味と組み合わせを整理してから型を設計する。
 - `CloseRing` は経路の閉鎖だけを表す既存の意味を維持する。開路の片端だけを閉じる機能を追加する場合は別の端面指定型を使い、`CloseRing` の意味を拡張しない。
-- 独立した端面・断面変形オプションが増える generator では、引数順を変えただけの overload を増殖させず、options 型にまとめる基準を先に決める。Variable Tube はこの判断が済むまで新しい端面指定を持たせない。
+- 独立した端面・断面変形オプションが増える generator では、引数順を変えただけの overload を増殖させず、options 型にまとめる。既存の `SweepOptions` に端面指定を加えるか、Tube / Sweep / Loft で共有する端面指定型を導入するかを決める。
+- 最初の対象は開路の Tube / Sweep とし、両端、始端のみ、終端のみ、端面なしを表す型と既定値を設計する。閉路で端面指定を受け付けるか、無効な組み合わせとして拒否するかも統一する。
 - 追加する場合は cap の winding、法線、UV、hard edge、頂点・三角形数、および Builder の失敗時非変更保証を既存規約に合わせる。
 
 ### 利用例
@@ -72,15 +73,9 @@
 - `HeightField()` の `[y][x]` ループ、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
 - `Cylindrical` / `Spherical` の配置例、および接合部には `Box`、露出部には `ChamferedBox` / `RoundedBox` を使う指針は、サンプル拡充時の候補とする。
 
-### 優先する生成 API
-
-1. Sweep の断面 scale と回転を経路点ごとに指定する Variable Sweep を設計する。
-   - `Vec2 scale` と twist 角を持つ設定型、および閉路の twist seam の契約を決める。
-   - Variable Tube と内部生成処理を共有し、一定断面版を二重実装しない。
-
 ### 入力形式と追加候補
 
-- `HeightField()` は `Image` 専用 overload より先に、グリッド座標から高さを返す callable overload を評価する。
+- 端面制御の契約を固めた後の生成 API 候補として、`HeightField()` は `Image` 専用 overload より先に、グリッド座標から高さを返す callable overload を評価する。
 - `Image` overload を追加する場合は、チャネルまたは輝度変換、正規化範囲、Y scale / offset、行方向、HDR 入力の範囲を決める。
 - `IcoSphere()` は subdivision 上限、overflow、UV seam を持つ構成と UV を持たない構成のどちらを公開するか決める。
 - `Extrude` / `Loft` の断面として使う扇形・扇形環を、手書きの三角関数ループなしで `Polygon` または `Shape2D` として生成する API を評価する。配置先は Mesh3D ではなく 2D geometry API を優先する。
@@ -108,5 +103,5 @@
 
 ### 変形・編集
 
-- Variable Sweep の設計後に、汎用 taper、twist、bend と重複しない責務を再評価する。
+- Tube の経路点別 radius と Sweep の経路点別 scale / twist で表現できない、生成後メッシュに対する汎用変形の責務を再評価する。法線・接線の再計算、部品範囲との関係、および bend 用経路生成との役割分担を先に決める。
 - 頂点溶接、フラット・スムーズ境界の分割、細分割などの編集機能を検討する。

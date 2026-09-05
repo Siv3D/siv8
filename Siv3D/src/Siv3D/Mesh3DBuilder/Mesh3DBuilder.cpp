@@ -2865,6 +2865,69 @@ namespace s3d
 			transform);
 	}
 
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const std::span<const SweepSectionTransform> sectionTransforms,
+		const SweepOptions& options)
+	{
+		return Mesh3DDetail::AppendSweep(
+			m_mesh, crossSection, path, sectionTransforms, options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::initializer_list<Vec3> path,
+		const std::initializer_list<SweepSectionTransform> sectionTransforms,
+		const SweepOptions& options)
+	{
+		return addSweep(
+			crossSection,
+			std::span<const Vec3>{ path.begin(), path.size() },
+			std::span<const SweepSectionTransform>{
+				sectionTransforms.begin(), sectionTransforms.size() },
+			options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const std::span<const SweepSectionTransform> sectionTransforms,
+		const Vec3 offset,
+		const SweepOptions& options)
+	{
+		return addSweep(
+			crossSection, path, sectionTransforms,
+			Mat4x4::Translate(Float3{ offset }), options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const std::span<const SweepSectionTransform> sectionTransforms,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const SweepOptions& options)
+	{
+		return addSweep(
+			crossSection, path, sectionTransforms,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), options);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addSweep(
+		const Polygon& crossSection,
+		const std::span<const Vec3> path,
+		const std::span<const SweepSectionTransform> sectionTransforms,
+		const Mat4x4& transform,
+		const SweepOptions& options)
+	{
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendSweep(
+				m_mesh, crossSection, path, sectionTransforms, options),
+			transform);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addTriangularPrism
