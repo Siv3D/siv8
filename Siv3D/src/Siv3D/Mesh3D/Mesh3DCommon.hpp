@@ -386,6 +386,16 @@ namespace s3d::Mesh3DDetail
 		CloseRing closeRing);
 
 	[[nodiscard]]
+	Mesh3DAddResult AppendTube(
+		Mesh3D& mesh,
+		std::span<const Vec3> path,
+		std::span<const double> radii,
+		uint32 sides,
+		Vec2 uvScale,
+		Vec2 uvOffset,
+		CloseRing closeRing);
+
+	[[nodiscard]]
 	Mesh3DAddResult AppendSweep(
 		Mesh3D& mesh,
 		const Polygon& crossSection,

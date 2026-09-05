@@ -743,6 +743,44 @@ namespace s3d
 			Vec2 uvScale = Vec2{ 1.0, 1.0 },
 			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
 
+		/// @brief 経路点ごとに半径を指定したチューブを作成します。
+		/// @param path チューブの中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
+		/// @param radii 各経路点における半径。要素数は `path.size()` と等しく、各要素は float 変換後も正である必要があります。
+		/// @param sides チューブ断面の分割数。3 以上である必要があります。
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`、開いた経路として扱う場合は `CloseRing::No`
+		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 隣接する経路点の間では半径を線形に変化させます。側面法線には経路方向の半径変化を反映します。
+		/// @remark 経路、端面、および UV 座標の規約は一定半径の `Tube()` と同じです。開路の各端面には対応する端点の半径を使用します。
+		/// @remark `CloseRing::Yes` の場合、最後の経路点の半径から最初の経路点の半径へ接続し、端面を生成しません。
+		[[nodiscard]]
+		static Mesh3D Tube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides = 12,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief 初期化子リストで経路点ごとの半径を指定したチューブを作成します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 半径、経路、端面、および UV 座標の規約は `std::span` を受け取る経路点別半径オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Tube(
+			std::initializer_list<Vec3> path,
+			std::initializer_list<double> radii,
+			uint32 sides = 12,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
+			CloseRing closeRing = CloseRing::No);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Sweep

@@ -367,6 +367,23 @@ namespace s3d
 
 	Mesh3D Mesh3D::Tube(
 		const std::initializer_list<Vec3> path,
+		const std::initializer_list<double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return Tube(
+			std::span<const Vec3>{ path.begin(), path.size() },
+			std::span<const double>{ radii.begin(), radii.size() },
+			sides,
+			uvScale,
+			uvOffset,
+			closeRing);
+	}
+
+	Mesh3D Mesh3D::Tube(
+		const std::initializer_list<Vec3> path,
 		const double radius,
 		const CloseRing closeRing,
 		const uint32 sides,
@@ -382,230 +399,375 @@ namespace s3d
 			closeRing);
 	}
 
-	Mesh3DAddResult Mesh3DDetail::AppendTube(
-		Mesh3D& mesh,
-		const std::span<const Vec3> path,
-		const double _radius,
-		const uint32 sides,
-		const Vec2 _uvScale,
-		const Vec2 _uvOffset,
-		const CloseRing closeRing)
+	namespace
 	{
-		const bool isClosed = (closeRing == CloseRing::Yes);
-		if ((path.size() < (isClosed ? 3 : 2))
-			|| (sides < 3))
+		struct ConstantTubeRadii
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
-				U"Mesh3D::Tube(): The path or side count is invalid");
-		}
+			static constexpr bool PerPoint = false;
+			double value;
 
-		if ((not IsFloatRepresentable(_radius))
-			|| (not IsFloatRepresentable(_uvScale))
-			|| (not IsFloatRepresentable(_uvOffset)))
-		{
-			return AdditionFailed(Mesh3DErrorCode::NumericRange,
-				U"Mesh3D::Tube(): A numeric parameter is non-finite or outside the float range");
-		}
-
-		const float radius = static_cast<float>(_radius);
-		if (radius <= 0.0f)
-		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
-				U"Mesh3D::Tube(): radius must be positive after conversion to float");
-		}
-
-		size_t ringStride;
-		size_t pathAndCapsCount;
-		size_t vertexCount;
-		size_t twiceSides;
-		size_t triangleCount;
-		if ((not CheckedAdd(static_cast<size_t>(sides), 1, ringStride))
-			|| (not CheckedAdd(path.size(), (isClosed ? 1 : 2), pathAndCapsCount))
-			|| (not CheckedMultiply(pathAndCapsCount, ringStride, vertexCount))
-			|| (Mesh3D::MaxVertexCount < vertexCount)
-			|| (not CheckedMultiply(static_cast<size_t>(sides), 2, twiceSides))
-			|| (not CheckedMultiply(path.size(), twiceSides, triangleCount)))
-		{
-			return AdditionFailed(Mesh3DErrorCode::SizeLimit,
-				U"Mesh3D::Tube(): The generated mesh exceeds the supported size");
-		}
-
-		PathData pathData;
-		const PathDataStatus pathDataStatus = MakePathData(
-			path, radius, nullptr, closeRing, pathData);
-		if (pathDataStatus != PathDataStatus::Success)
-		{
-			return AdditionFailed(ToErrorCode(pathDataStatus),
-				U"Mesh3D::Tube(): The path is invalid or cannot produce stable frames");
-		}
-
-		const auto& points = pathData.points;
-		const auto& distances = pathData.distances;
-		const auto& frames = pathData.frames;
-		const size_t stationCount = points.size();
-		const size_t pathSegmentCount = (isClosed ? path.size() : (path.size() - 1));
-
-		const double sideU0 = _uvOffset.x;
-		const double sideU1 = (_uvOffset.x + _uvScale.x);
-		const double sideV0 = _uvOffset.y;
-		const double sideV1 = (_uvOffset.y + (_uvScale.y * distances.back()));
-		const double capV1 = (_uvOffset.y + _uvScale.y);
-		if ((not IsFloatRepresentable(sideU0))
-			|| (not IsFloatRepresentable(sideU1))
-			|| (not IsFloatRepresentable(sideV0))
-			|| (not IsFloatRepresentable(sideV1))
-			|| ((not isClosed) && (not IsFloatRepresentable(capV1))))
-		{
-			return AdditionFailed(Mesh3DErrorCode::NumericRange,
-				U"Mesh3D::Tube(): The generated UV coordinates exceed the float range");
-		}
-
-		const Array<CircleSample<double>> circle = MakeCircleSamples<double>(sides);
-
-		const Float2 uvScale = _uvScale;
-		const Float2 uvOffset = _uvOffset;
-		const float inverseSides = (1.0f / sides);
-		const size_t vertexBase = mesh.vertices.size();
-		const size_t triangleBase = mesh.indices.size();
-		size_t newVertexCount;
-		size_t newTriangleCount;
-		if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
-			|| (Mesh3D::MaxVertexCount < newVertexCount)
-			|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
-		{
-			return AdditionFailed(Mesh3DErrorCode::SizeLimit,
-				U"Mesh3D::Tube(): The generated mesh exceeds the supported size");
-		}
-
-		mesh.vertices.resize(newVertexCount);
-		mesh.indices.resize(newTriangleCount);
-		const auto generationFailed = [&](const StringView message)
-		{
-			mesh.vertices.resize(vertexBase);
-			mesh.indices.resize(triangleBase);
-			return AdditionFailed(Mesh3DErrorCode::NumericRange, message);
+			[[nodiscard]]
+			double operator [](const size_t) const noexcept
+			{
+				return value;
+			}
 		};
 
-		for (size_t pathIndex = 0; pathIndex < stationCount; ++pathIndex)
+		struct PerPointTubeRadii
 		{
-			const PathFrame& frame = frames[pathIndex];
-			const Vec3 center = points[pathIndex];
-			const float v = static_cast<float>(
-				(_uvOffset.y + (_uvScale.y * distances[pathIndex])));
-			const size_t ringBase = (vertexBase + pathIndex * ringStride);
+			static constexpr bool PerPoint = true;
+			std::span<const double> values;
 
-			for (uint32 sideIndex = 0; sideIndex <= sides; ++sideIndex)
+			[[nodiscard]]
+			double operator [](const size_t index) const noexcept
 			{
-				const CircleSample<double> sample = circle[sideIndex];
-				const Vec3 normal = ((frame.normal * sample.cos)
-					+ (frame.binormal * sample.sin));
-				const Vec3 tangent = ((frame.normal * -sample.sin)
-					+ (frame.binormal * sample.cos));
-				Float3 position;
-				if (not ToFloat3((center + (normal * radius)), position))
+				return values[index];
+			}
+		};
+
+		template <class Radii>
+		[[nodiscard]]
+		static Mesh3DAddResult AppendTubeImpl(
+			Mesh3D& mesh,
+			const std::span<const Vec3> path,
+			const Radii& radii,
+			const uint32 sides,
+			const Vec2 _uvScale,
+			const Vec2 _uvOffset,
+			const CloseRing closeRing)
+		{
+			if constexpr (Radii::PerPoint)
+			{
+				if (radii.values.size() != path.size())
 				{
-					return generationFailed(U"Mesh3D::Tube(): A generated side vertex exceeds the float range");
+					return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+						U"Mesh3D::Tube(): The radius count must match the path point count");
+				}
+			}
+
+			const bool isClosed = (closeRing == CloseRing::Yes);
+			if ((path.size() < (isClosed ? 3 : 2))
+				|| (sides < 3))
+			{
+				return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+					U"Mesh3D::Tube(): The path or side count is invalid");
+			}
+
+			if ((not IsFloatRepresentable(_uvScale))
+				|| (not IsFloatRepresentable(_uvOffset)))
+			{
+				return AdditionFailed(Mesh3DErrorCode::NumericRange,
+					U"Mesh3D::Tube(): A numeric parameter is non-finite or outside the float range");
+			}
+
+			float maxRadius = 0.0f;
+			if constexpr (Radii::PerPoint)
+			{
+				for (const double sourceRadius : radii.values)
+				{
+					if (not IsFloatRepresentable(sourceRadius))
+					{
+						return AdditionFailed(Mesh3DErrorCode::NumericRange,
+							U"Mesh3D::Tube(): A radius is non-finite or outside the float range");
+					}
+
+					const float radius = static_cast<float>(sourceRadius);
+					if (radius <= 0.0f)
+					{
+						return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+							U"Mesh3D::Tube(): Every radius must be positive after conversion to float");
+					}
+
+					maxRadius = std::max(maxRadius, radius);
+				}
+			}
+			else
+			{
+				if (not IsFloatRepresentable(radii.value))
+				{
+					return AdditionFailed(Mesh3DErrorCode::NumericRange,
+						U"Mesh3D::Tube(): A radius is non-finite or outside the float range");
 				}
 
-				mesh.vertices[ringBase + sideIndex] = Vertex3D{
-					.pos = position,
-					.normal = normal,
-					.tex = Float2{
-						(uvOffset.x + (uvScale.x * (sideIndex * inverseSides))), v
-					},
-					.tangent = Float4{
-						static_cast<float>(tangent.x),
-						static_cast<float>(tangent.y),
-						static_cast<float>(tangent.z),
-						-1.0f
-					}
-				};
+				maxRadius = static_cast<float>(radii.value);
+				if (maxRadius <= 0.0f)
+				{
+					return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+						U"Mesh3D::Tube(): radius must be positive after conversion to float");
+				}
 			}
-		}
 
-		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
-		for (size_t pathIndex = 0; pathIndex < pathSegmentCount; ++pathIndex)
-		{
-			const size_t ringBase = (vertexBase + pathIndex * ringStride);
-			const size_t nextRingBase = (ringBase + ringStride);
-			for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
+			size_t ringStride;
+			size_t pathAndCapsCount;
+			size_t vertexCount;
+			size_t twiceSides;
+			size_t triangleCount;
+			if ((not CheckedAdd(static_cast<size_t>(sides), 1, ringStride))
+				|| (not CheckedAdd(path.size(), (isClosed ? 1 : 2), pathAndCapsCount))
+				|| (not CheckedMultiply(pathAndCapsCount, ringStride, vertexCount))
+				|| (Mesh3D::MaxVertexCount < vertexCount)
+				|| (not CheckedMultiply(static_cast<size_t>(sides), 2, twiceSides))
+				|| (not CheckedMultiply(path.size(), twiceSides, triangleCount)))
 			{
-				const uint32 i0 = static_cast<uint32>(ringBase + sideIndex);
-				const uint32 i1 = (i0 + 1);
-				const uint32 i2 = static_cast<uint32>(nextRingBase + sideIndex);
-				const uint32 i3 = (i2 + 1);
-				*pTriangle++ = TriangleIndex32{ i0, i2, i1 };
-				*pTriangle++ = TriangleIndex32{ i1, i2, i3 };
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+					U"Mesh3D::Tube(): The generated mesh exceeds the supported size");
 			}
-		}
 
-		if (not isClosed)
-		{
-			const size_t startCapBase = (vertexBase + stationCount * ringStride);
-			const size_t endCapBase = (startCapBase + ringStride);
-			const Float2 capCenterUV = (uvOffset + (uvScale * 0.5f));
-			for (size_t capIndex = 0; capIndex < 2; ++capIndex)
+			PathData pathData;
+			const PathDataStatus pathDataStatus = MakePathData(
+				path, maxRadius, nullptr, closeRing, pathData);
+			if (pathDataStatus != PathDataStatus::Success)
 			{
-				const bool startCap = (capIndex == 0);
-				const size_t pathIndex = (startCap ? 0 : (path.size() - 1));
-				const size_t capBase = (startCap ? startCapBase : endCapBase);
+				return AdditionFailed(ToErrorCode(pathDataStatus),
+					U"Mesh3D::Tube(): The path is invalid or cannot produce stable frames");
+			}
+
+			const auto& points = pathData.points;
+			const auto& distances = pathData.distances;
+			const auto& frames = pathData.frames;
+			const size_t stationCount = points.size();
+			const size_t pathSegmentCount = (isClosed ? path.size() : (path.size() - 1));
+
+			const double sideU0 = _uvOffset.x;
+			const double sideU1 = (_uvOffset.x + _uvScale.x);
+			const double sideV0 = _uvOffset.y;
+			const double sideV1 = (_uvOffset.y + (_uvScale.y * distances.back()));
+			const double capV1 = (_uvOffset.y + _uvScale.y);
+			if ((not IsFloatRepresentable(sideU0))
+				|| (not IsFloatRepresentable(sideU1))
+				|| (not IsFloatRepresentable(sideV0))
+				|| (not IsFloatRepresentable(sideV1))
+				|| ((not isClosed) && (not IsFloatRepresentable(capV1))))
+			{
+				return AdditionFailed(Mesh3DErrorCode::NumericRange,
+					U"Mesh3D::Tube(): The generated UV coordinates exceed the float range");
+			}
+
+			const Array<Mesh3DDetail::CircleSample<double>> circle =
+				Mesh3DDetail::MakeCircleSamples<double>(sides);
+
+			const Float2 uvScale = _uvScale;
+			const Float2 uvOffset = _uvOffset;
+			const float inverseSides = (1.0f / sides);
+			const size_t vertexBase = mesh.vertices.size();
+			const size_t triangleBase = mesh.indices.size();
+			size_t newVertexCount;
+			size_t newTriangleCount;
+			if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
+				|| (Mesh3D::MaxVertexCount < newVertexCount)
+				|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+			{
+				return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+					U"Mesh3D::Tube(): The generated mesh exceeds the supported size");
+			}
+
+			mesh.vertices.resize(newVertexCount);
+			mesh.indices.resize(newTriangleCount);
+			const auto generationFailed = [&](const StringView message)
+			{
+				mesh.vertices.resize(vertexBase);
+				mesh.indices.resize(triangleBase);
+				return AdditionFailed(Mesh3DErrorCode::NumericRange, message);
+			};
+
+			for (size_t pathIndex = 0; pathIndex < stationCount; ++pathIndex)
+			{
 				const PathFrame& frame = frames[pathIndex];
-				const Float3 capNormal = (startCap
-					? Float3{ -frame.tangent }
-					: Float3{ frame.tangent });
-				const Float4 capTangent{
-					static_cast<float>(frame.normal.x),
-					static_cast<float>(frame.normal.y),
-					static_cast<float>(frame.normal.z),
-					(startCap ? 1.0f : -1.0f)
-				};
-
-				mesh.vertices[capBase] = Vertex3D{
-					.pos = points[pathIndex],
-					.normal = capNormal,
-					.tex = capCenterUV,
-					.tangent = capTangent
-				};
-
-				for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
+				const Vec3 center = points[pathIndex];
+				float radius;
+				double radiusSlope = 0.0;
+				double sideNormalScale = 1.0;
+				if constexpr (Radii::PerPoint)
 				{
-					const CircleSample<double> sample = circle[sideIndex];
-					const Vec3 radial = ((frame.normal * sample.cos)
-						+ (frame.binormal * sample.sin));
-					Float3 position;
-					if (not ToFloat3((Vec3{ points[pathIndex] } + (radial * radius)), position))
+					const size_t sourceIndex = (pathIndex % path.size());
+					radius = static_cast<float>(radii[sourceIndex]);
+					if (isClosed)
 					{
-						return generationFailed(U"Mesh3D::Tube(): A generated cap vertex exceeds the float range");
+						const size_t previousIndex = ((sourceIndex + path.size() - 1) % path.size());
+						const size_t nextIndex = ((sourceIndex + 1) % path.size());
+						const size_t previousSegmentIndex = previousIndex;
+						const size_t nextSegmentIndex = sourceIndex;
+						const double adjacentLength = (
+							(distances[previousSegmentIndex + 1] - distances[previousSegmentIndex])
+							+ (distances[nextSegmentIndex + 1] - distances[nextSegmentIndex]));
+						radiusSlope = (
+							(static_cast<float>(radii[nextIndex]) - static_cast<float>(radii[previousIndex]))
+							/ adjacentLength);
 					}
-
-					mesh.vertices[capBase + 1 + sideIndex] = Vertex3D{
-						.pos = position,
-						.normal = capNormal,
-						.tex = Float2{
-							(uvOffset.x + (uvScale.x * static_cast<float>(0.5 + (0.5 * sample.cos)))),
-							(uvOffset.y + (uvScale.y * static_cast<float>(0.5 + (0.5 * sample.sin))))
-						},
-						.tangent = capTangent
-					};
-				}
-
-				for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
-				{
-					const uint32 current = static_cast<uint32>(capBase + 1 + sideIndex);
-					const uint32 next = static_cast<uint32>(capBase + 1 + ((sideIndex + 1) % sides));
-					if (startCap)
+					else if (sourceIndex == 0)
 					{
-						*pTriangle++ = TriangleIndex32{ static_cast<uint32>(capBase), current, next };
+						radiusSlope = (
+							(static_cast<float>(radii[1]) - static_cast<float>(radii[0]))
+							/ (distances[1] - distances[0]));
+					}
+					else if ((sourceIndex + 1) == path.size())
+					{
+						radiusSlope = (
+							(static_cast<float>(radii[sourceIndex]) - static_cast<float>(radii[sourceIndex - 1]))
+							/ (distances[sourceIndex] - distances[sourceIndex - 1]));
 					}
 					else
 					{
-						*pTriangle++ = TriangleIndex32{ static_cast<uint32>(capBase), next, current };
+						radiusSlope = (
+							(static_cast<float>(radii[sourceIndex + 1]) - static_cast<float>(radii[sourceIndex - 1]))
+							/ (distances[sourceIndex + 1] - distances[sourceIndex - 1]));
+					}
+
+					sideNormalScale = (1.0 / std::sqrt(1.0 + (radiusSlope * radiusSlope)));
+				}
+				else
+				{
+					radius = static_cast<float>(radii[pathIndex]);
+				}
+				const float v = static_cast<float>(
+					(_uvOffset.y + (_uvScale.y * distances[pathIndex])));
+				const size_t ringBase = (vertexBase + pathIndex * ringStride);
+
+				for (uint32 sideIndex = 0; sideIndex <= sides; ++sideIndex)
+				{
+					const Mesh3DDetail::CircleSample<double> sample = circle[sideIndex];
+					const Vec3 radial = ((frame.normal * sample.cos)
+						+ (frame.binormal * sample.sin));
+					Vec3 normal = radial;
+					if constexpr (Radii::PerPoint)
+					{
+						normal = ((radial - (frame.tangent * radiusSlope)) * sideNormalScale);
+					}
+					const Vec3 tangent = ((frame.normal * -sample.sin)
+						+ (frame.binormal * sample.cos));
+					Float3 position;
+					if (not ToFloat3((center + (radial * radius)), position))
+					{
+						return generationFailed(U"Mesh3D::Tube(): A generated side vertex exceeds the float range");
+					}
+
+					mesh.vertices[ringBase + sideIndex] = Vertex3D{
+						.pos = position,
+						.normal = normal,
+						.tex = Float2{
+							(uvOffset.x + (uvScale.x * (sideIndex * inverseSides))), v
+						},
+						.tangent = Float4{
+							static_cast<float>(tangent.x),
+							static_cast<float>(tangent.y),
+							static_cast<float>(tangent.z),
+							-1.0f
+						}
+					};
+				}
+			}
+
+			TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
+			for (size_t pathIndex = 0; pathIndex < pathSegmentCount; ++pathIndex)
+			{
+				const size_t ringBase = (vertexBase + pathIndex * ringStride);
+				const size_t nextRingBase = (ringBase + ringStride);
+				for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
+				{
+					const uint32 i0 = static_cast<uint32>(ringBase + sideIndex);
+					const uint32 i1 = (i0 + 1);
+					const uint32 i2 = static_cast<uint32>(nextRingBase + sideIndex);
+					const uint32 i3 = (i2 + 1);
+					*pTriangle++ = TriangleIndex32{ i0, i2, i1 };
+					*pTriangle++ = TriangleIndex32{ i1, i2, i3 };
+				}
+			}
+
+			if (not isClosed)
+			{
+				const size_t startCapBase = (vertexBase + stationCount * ringStride);
+				const size_t endCapBase = (startCapBase + ringStride);
+				const Float2 capCenterUV = (uvOffset + (uvScale * 0.5f));
+				for (size_t capIndex = 0; capIndex < 2; ++capIndex)
+				{
+					const bool startCap = (capIndex == 0);
+					const size_t pathIndex = (startCap ? 0 : (path.size() - 1));
+					const float radius = static_cast<float>(radii[pathIndex]);
+					const size_t capBase = (startCap ? startCapBase : endCapBase);
+					const PathFrame& frame = frames[pathIndex];
+					const Float3 capNormal = (startCap
+						? Float3{ -frame.tangent }
+						: Float3{ frame.tangent });
+					const Float4 capTangent{
+						static_cast<float>(frame.normal.x),
+						static_cast<float>(frame.normal.y),
+						static_cast<float>(frame.normal.z),
+						(startCap ? 1.0f : -1.0f)
+					};
+
+					mesh.vertices[capBase] = Vertex3D{
+						.pos = points[pathIndex],
+						.normal = capNormal,
+						.tex = capCenterUV,
+						.tangent = capTangent
+					};
+
+					for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
+					{
+						const Mesh3DDetail::CircleSample<double> sample = circle[sideIndex];
+						const Vec3 radial = ((frame.normal * sample.cos)
+							+ (frame.binormal * sample.sin));
+						Float3 position;
+						if (not ToFloat3((Vec3{ points[pathIndex] } + (radial * radius)), position))
+						{
+							return generationFailed(U"Mesh3D::Tube(): A generated cap vertex exceeds the float range");
+						}
+
+						mesh.vertices[capBase + 1 + sideIndex] = Vertex3D{
+							.pos = position,
+							.normal = capNormal,
+							.tex = Float2{
+								(uvOffset.x + (uvScale.x * static_cast<float>(0.5 + (0.5 * sample.cos)))),
+								(uvOffset.y + (uvScale.y * static_cast<float>(0.5 + (0.5 * sample.sin))))
+							},
+							.tangent = capTangent
+						};
+					}
+
+					for (uint32 sideIndex = 0; sideIndex < sides; ++sideIndex)
+					{
+						const uint32 current = static_cast<uint32>(capBase + 1 + sideIndex);
+						const uint32 next = static_cast<uint32>(capBase + 1 + ((sideIndex + 1) % sides));
+						if (startCap)
+						{
+							*pTriangle++ = TriangleIndex32{ static_cast<uint32>(capBase), current, next };
+						}
+						else
+						{
+							*pTriangle++ = TriangleIndex32{ static_cast<uint32>(capBase), next, current };
+						}
 					}
 				}
 			}
-		}
 
-		return AddedRange(mesh, vertexBase, triangleBase);
+			return AddedRange(mesh, vertexBase, triangleBase);
+		}
+	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendTube(
+		Mesh3D& mesh,
+		const std::span<const Vec3> path,
+		const double radius,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return AppendTubeImpl(
+			mesh, path, ConstantTubeRadii{ radius }, sides, uvScale, uvOffset, closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendTube(
+		Mesh3D& mesh,
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return AppendTubeImpl(
+			mesh, path, PerPointTubeRadii{ radii }, sides, uvScale, uvOffset, closeRing);
 	}
 
 	Mesh3D Mesh3D::Tube(
@@ -618,6 +780,19 @@ namespace s3d
 	{
 		Mesh3DBuilder builder;
 		(void)builder.addTube(path, radius, sides, uvScale, uvOffset, closeRing);
+		return std::move(builder).build();
+	}
+
+	Mesh3D Mesh3D::Tube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		Mesh3DBuilder builder;
+		(void)builder.addTube(path, radii, sides, uvScale, uvOffset, closeRing);
 		return std::move(builder).build();
 	}
 

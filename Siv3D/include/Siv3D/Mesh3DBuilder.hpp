@@ -1600,6 +1600,147 @@ namespace s3d
 			const Mat4x4& transform,
 			CloseRing closeRing = CloseRing::No);
 
+		/// @brief 経路点ごとに半径を指定したチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径。要素数は `path.size()` と等しい必要があります。
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark 半径、経路、端面、UV 座標、および法線の規約は、経路点ごとの半径を受け取る `Mesh3D::Tube()` と同じです。
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides = 12,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief 初期化子リストで経路点ごとの半径を指定したチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::initializer_list<Vec3> path,
+			std::initializer_list<double> radii,
+			uint32 sides = 12,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 },
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief 平行移動した、経路点ごとの半径を持つチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param offset 平行移動量
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides,
+			Vec3 offset,
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief 回転および平行移動した、経路点ごとの半径を持つチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides,
+			Vec3 offset,
+			const Quaternion& rotation,
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief アフィン変換を適用した、経路点ごとの半径を持つチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param transform 適用するアフィン変換行列
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides,
+			const Mat4x4& transform,
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief UV 変換と平行移動を適用した、経路点ごとの半径を持つチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief UV 変換、回転、および平行移動を適用した、経路点ごとの半径を持つチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param offset 平行移動量
+		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			Vec3 offset,
+			const Quaternion& rotation,
+			CloseRing closeRing = CloseRing::No);
+
+		/// @brief UV 変換とアフィン変換を適用した、経路点ごとの半径を持つチューブを追加します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param sides チューブ断面の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @param transform 適用するアフィン変換行列
+		/// @param closeRing 経路を閉じる場合は `CloseRing::Yes`
+		/// @return 成功時は追加された範囲、失敗時はエラー
+		[[nodiscard]]
+		Mesh3DAddResult addTube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			uint32 sides,
+			Vec2 uvScale,
+			Vec2 uvOffset,
+			const Mat4x4& transform,
+			CloseRing closeRing = CloseRing::No);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	addSweep

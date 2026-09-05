@@ -217,6 +217,18 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 			Vec2{ 1.0, 1.0e38 }, Vec2::Zero()),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
+		builder.addTube(path, Array<double>{ 0.25 }),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addTube(path, Array<double>{ 0.0, 0.25 }),
+		Mesh3DErrorCode::InvalidArgument);
+	checkFailure(
+		builder.addTube(path, Array<double>{ nan, 0.25 }),
+		Mesh3DErrorCode::NumericRange);
+	checkFailure(
+		builder.addTube({ Vec3::Zero(), Vec3::Zero() }, { 0.25, 0.5 }),
+		Mesh3DErrorCode::InvalidGeometry);
+	checkFailure(
 		builder.addTube(
 			{ Vec3::Zero(), Vec3::UnitY() }, 0.25,
 			std::numeric_limits<uint32>::max()),

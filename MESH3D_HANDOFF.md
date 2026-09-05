@@ -32,7 +32,7 @@
 - 合成・編集: `append()`、`reserve()`、`clear()`、各種 transform、`transformUV()`、法線・接線の再計算
 - 出力: OBJ、および `Material` を伴う OBJ / MTL の保存・エンコード
 - Box 系: `BoxFace` による面選択、`BoxShell`、`BoxFrame`、`RoundedBox`、`ChamferedBox` など
-- 汎用生成: `Extrude`、完全・部分 `Revolve`、開路・閉路 `Tube` / `Sweep`、`HeightField`、runtime / compile-time `Loft`
+- 汎用生成: `Extrude`、完全・部分 `Revolve`、一定半径・経路点別半径の開路・閉路 `Tube`、開路・閉路 `Sweep`、`HeightField`、runtime / compile-time `Loft`
 - その他の基本プリミティブ一式。UV 球の API 名は `Sphere` とする。
 - `Mesh3DBuilder` は既存メッシュと上記 generator を直接追加でき、通常形状には base、offset、offset + rotation、`Mat4x4` の配置体系を持つ。
 - `Sweep` の初期断面方向は `Arg::initialXAxis` で指定する。
@@ -60,7 +60,7 @@ Gemini によるヘッダと簡略化済みモデリングコードのレビュ�
 
 ## 次の候補と保留事項
 
-- 次の形状生成候補は Variable Tube、その次に Variable Sweep。詳細は `TODO.md` に集約する。
+- 次の形状生成候補は Variable Sweep。詳細は `TODO.md` に集約する。
 - bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に扱う。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
 - `Test/Manual/` の既存 Mesh3D レビュー資料は API の正本にしない。現行の Mesh3D 改修が一段落した後、必要な manual test をゼロベースで作り直す。

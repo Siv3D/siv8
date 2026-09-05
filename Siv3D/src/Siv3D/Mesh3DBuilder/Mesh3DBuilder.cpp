@@ -2512,6 +2512,109 @@ namespace s3d
 		return result;
 	}
 
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return Mesh3DDetail::AppendTube(
+			m_mesh, path, radii, sides, uvScale, uvOffset, closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::initializer_list<Vec3> path,
+		const std::initializer_list<double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const CloseRing closeRing)
+	{
+		return addTube(
+			std::span<const Vec3>{ path.begin(), path.size() },
+			std::span<const double>{ radii.begin(), radii.size() },
+			sides, uvScale, uvOffset, closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec3 offset,
+		const CloseRing closeRing)
+	{
+		return addTube(path, radii, sides, Mat4x4::Translate(Float3{ offset }), closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseRing closeRing)
+	{
+		return addTube(path, radii, sides,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Mat4x4& transform,
+		const CloseRing closeRing)
+	{
+		return addTube(
+			path, radii, sides, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform, closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const CloseRing closeRing)
+	{
+		return addTube(
+			path, radii, sides, uvScale, uvOffset,
+			Mat4x4::Translate(Float3{ offset }), closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Vec3 offset,
+		const Quaternion& rotation,
+		const CloseRing closeRing)
+	{
+		return addTube(path, radii, sides, uvScale, uvOffset,
+			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), closeRing);
+	}
+
+	Mesh3DAddResult Mesh3DBuilder::addTube(
+		const std::span<const Vec3> path,
+		const std::span<const double> radii,
+		const uint32 sides,
+		const Vec2 uvScale,
+		const Vec2 uvOffset,
+		const Mat4x4& transform,
+		const CloseRing closeRing)
+	{
+		return TransformAddedVertices(
+			m_mesh,
+			Mesh3DDetail::AppendTube(
+				m_mesh, path, radii, sides, uvScale, uvOffset, closeRing),
+			transform);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	addSweep

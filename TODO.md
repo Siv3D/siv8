@@ -74,11 +74,7 @@
 
 ### 優先する生成 API
 
-1. 経路点ごとに半径を指定する Variable Tube を追加する。
-   - `radii.size() == path.size()` を基本契約とし、開路・閉路の両方を扱う。
-   - 既存 Tube の parallel-transport frame、UV、端面、失敗時の非変更保証を維持する。
-   - `Mesh3DBuilder` の offset、offset + rotation、`Mat4x4` overload も同時に設計する。
-2. Sweep の断面 scale と回転を経路点ごとに指定する Variable Sweep を設計する。
+1. Sweep の断面 scale と回転を経路点ごとに指定する Variable Sweep を設計する。
    - `Vec2 scale` と twist 角を持つ設定型、および閉路の twist seam の契約を決める。
    - Variable Tube と内部生成処理を共有し、一定断面版を二重実装しない。
 
