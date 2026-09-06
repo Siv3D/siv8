@@ -2883,6 +2883,7 @@
 		F9A3D10430A1000000C0DE01 /* Test_Mesh3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */; };
 		F9A3D50330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D51330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp */; };
 		A5D4F61130A6000000000001 /* Test_Mesh3DAssembly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F61130A6000000000002 /* Test_Mesh3DAssembly.cpp */; };
+		A5D4F62130A6000000000001 /* Test_Mesh3DAssemblyOBJ.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F62130A6000000000002 /* Test_Mesh3DAssemblyOBJ.cpp */; };
 		F9A3D50A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9A3D51A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp */; };
 		A5D4F45030A5000000000001 /* Test_Mesh3DCapTriangulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F45030A5000000000002 /* Test_Mesh3DCapTriangulation.cpp */; };
 		A5D4F43030A5000000000001 /* Test_Mesh3DBoxShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F43030A5000000000002 /* Test_Mesh3DBoxShell.cpp */; };
@@ -6266,6 +6267,7 @@
 		A5D4F52030A5000000000002 /* Test_Mesh3DBounds.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DBounds.cpp; sourceTree = "<group>"; };
 		F9A3D51330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DBuilder.cpp; sourceTree = "<group>"; };
 		A5D4F61130A6000000000002 /* Test_Mesh3DAssembly.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DAssembly.cpp; sourceTree = "<group>"; };
+		A5D4F62130A6000000000002 /* Test_Mesh3DAssemblyOBJ.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DAssemblyOBJ.cpp; sourceTree = "<group>"; };
 		F9A3D51A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DAddResult.cpp; sourceTree = "<group>"; };
 		A5D4F45030A5000000000002 /* Test_Mesh3DCapTriangulation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DCapTriangulation.cpp; sourceTree = "<group>"; };
 		A5D4F43030A5000000000002 /* Test_Mesh3DBoxShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DBoxShell.cpp; sourceTree = "<group>"; };
@@ -6956,6 +6958,7 @@
 				A5D4F52030A5000000000002 /* Test_Mesh3DBounds.cpp */,
 				F9A3D51330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp */,
 				A5D4F61130A6000000000002 /* Test_Mesh3DAssembly.cpp */,
+				A5D4F62130A6000000000002 /* Test_Mesh3DAssemblyOBJ.cpp */,
 				F9A3D51A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp */,
 				A5D4F45030A5000000000002 /* Test_Mesh3DCapTriangulation.cpp */,
 				A5D4F43030A5000000000002 /* Test_Mesh3DBoxShell.cpp */,
@@ -16478,6 +16481,7 @@
 				A5D4F52030A5000000000001 /* Test_Mesh3DBounds.cpp in Sources */,
 				F9A3D50330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp in Sources */,
 				A5D4F61130A6000000000001 /* Test_Mesh3DAssembly.cpp in Sources */,
+				A5D4F62130A6000000000001 /* Test_Mesh3DAssemblyOBJ.cpp in Sources */,
 				F9A3D50A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp in Sources */,
 				A5D4F45030A5000000000001 /* Test_Mesh3DCapTriangulation.cpp in Sources */,
 				A5D4F43030A5000000000001 /* Test_Mesh3DBoxShell.cpp in Sources */,

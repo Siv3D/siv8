@@ -109,6 +109,28 @@ namespace s3d
 
 			/// @brief 未使用の材質も含む全登録材質。配列の位置は MaterialID の整数値と一致します。
 			Array<Material> materials;
+
+			/// @brief 部品と材質をまとめて 1 組の OBJ / MTL ファイルへ保存します。
+			/// @param path OBJ の保存先。空のベース名と .mtl 拡張子は使用できません。
+			/// @return 保存に成功した場合 true。入力不正または書き込み失敗の場合 false
+			/// @remark MTL は同じディレクトリへ保存します。ベース名の UTF-8 バイトのうち英数字・`_`・`-`・`.` 以外を `%HH` に変換し、`.mtl` を付けた名前を使います。
+			/// @remark 部品・材質・座標の出力規約と入力の検証規約は encodeOBJ() と同じです。入力不正の場合はファイルを開きません。I/O 失敗の場合は途中までのファイルが残ることがあります。
+			/// @remark 相対テクスチャパスは MTL のディレクトリを基準にそのまま出力し、テクスチャファイル自体はコピーしません。
+			bool saveOBJ(FilePathView path) const;
+
+			/// @brief 部品と材質を OBJ / MTL 形式で 2 つの Writer に書き出します。
+			/// @param objWriter OBJ の書き出し先
+			/// @param mtlWriter MTL の書き出し先。objWriter とは別の出力先である必要があります。
+			/// @param mtlFileName OBJ に記載する MTL ファイル名。空文字列、`.`、`..` は使用できず、ASCII の英数字・`_`・`-`・`.`・`%` のみ使用できます。
+			/// @return 書き出しに成功した場合 true。入力不正、Writer が閉じている、同一 Writer、または書き込み失敗の場合 false
+			/// @remark 非空の有効な mesh が必要です。parts は頂点・三角形を登録順で隙間なく分割し、各 part.id は配列位置と一致する必要があります。各三角形はその部品の頂点範囲のみを参照します。
+			/// @remark 三角形を持つ部品だけを `g part_<ID>_<名前>` として出力します。材質名は `material_<ID>_<名前>` です。名前は UTF-8 バイトを saveOBJ() と同じ `%HH` 規約で変換し、空の名前では末尾の `_` と名前を省略します。
+			/// @remark 使用する材質だけを ID 順に MTL へ出力します。材質未指定の部品には `material_default`（Material の既定値）を明示的に割り当てます。
+			/// @remark 色・金属度・粗さ・テクスチャなどは Mesh3D::saveOBJ(path, material) と同じ変換規約です。金属度が 0 の場合、baseColor.rgb は MTL の Kd にそのまま出力され、テクスチャなしで色分けできます。
+			/// @remark 参照する材質と OBJ の頂点属性を検証します。材質名は上記の変換を行うため、空文字列や制御文字を含む名前も使用できます。未使用の材質は検証しません。
+			/// @remark 座標・法線の Z と三角形の巻き順を反転し、UV の V を `1 - V` にして UTF-8（BOM なし）・LF で出力します。部品の worldTransform を再適用しません。階層、共有形状、接線は保存しません。
+			/// @remark 入力不正の場合は Writer に書き込みません。書き込み中に失敗した場合は部分的な出力が残ります。失敗理由は Fail レベルのログに出力します。
+			bool encodeOBJ(IWriter& objWriter, IWriter& mtlWriter, StringView mtlFileName) const;
 		};
 
 		/// @brief 空の組立データを作成します。
@@ -223,6 +245,13 @@ namespace s3d
 		/// @remark 出力先を受け取る bake() を使用する便利関数です。
 		[[nodiscard]]
 		Result<BakedMesh, Mesh3DError> bake(const Mesh3DBakeOptions& options = {}) const;
+
+		/// @brief 全部品を焼き込み、部品と材質をまとめて 1 組の OBJ / MTL ファイルへ保存します。
+		/// @param path OBJ の保存先
+		/// @param options 焼き込みの出力サイズ上限
+		/// @return 焼き込みと保存に成功した場合 true、それ以外の場合 false
+		/// @remark bake() と BakedMesh::saveOBJ() を使用する便利関数です。出力規約は BakedMesh::saveOBJ() と同じです。
+		bool saveOBJ(FilePathView path, const Mesh3DBakeOptions& options = {}) const;
 
 	private:
 

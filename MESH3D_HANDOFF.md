@@ -19,6 +19,7 @@
 - 単体生成には `Mesh3D` の static factory、複数形状の直接合成には `Mesh3DBuilder` を使う。
 - `Mesh3DAssembly` は共有形状、材質、名前と親子配置を持つ部品を所有する CPU 側の組立データとする。形状なしの部品はヒンジなどの座標系に使える。形状の差し替えや焼き込みで部品 ID は変化しない。
 - Assembly の親は子より先に登録し、`local * parentWorld` で配置を合成する。`bake(destination)` は出力配列を再利用し、部品ごとの範囲と材質の独立したスナップショットを返す。頂点・三角形の予算超過では出力を変更しない。鏡映では法線・接線に加えて巻き順を反転し、表裏を維持する。
+- Assembly と BakedMesh の `saveOBJ()` は、部品の group と材質割り当てを 1 組の OBJ / MTL に保存する。BakedMesh は writer への `encodeOBJ()` も持つ。出力名は ID と UTF-8 バイトの可逆な percent encoding を組み合わせ、重複名・空白・日本語を扱う。材質未指定の面には既定材質を明示する。OBJ に階層や形状共有は保存しない。
 - factory と builder は内部の destination-writing generator を共有し、形状生成本体を二重実装しない。
 - 汎用 generator と、頻出形状向けの効率的な specialization を組み合わせる。建築部材名を無制限に増やさない。
 - 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
@@ -56,7 +57,7 @@
 
 次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。新しい経路系 generator へ進む前提となる、角度、winding、点列の閉鎖表現、および失敗分類は公開ヘッダとテストで固定している。
 
-単発の追加範囲と失敗理由は `Mesh3DAddResult`、永続的な名前・材質・階層と共有形状は `Mesh3DAssembly` が扱う。宝箱のヒンジ、材質変更、台車の車輪共有と分割数の差し替えを `Test/Test_Mesh3DAssembly.cpp` で検証する。実行可能な一式は `Test/Manual/Mesh3DAssemblyExamples.md` にある。
+単発の追加範囲と失敗理由は `Mesh3DAddResult`、永続的な名前・材質・階層と共有形状は `Mesh3DAssembly` が扱う。宝箱のヒンジ、材質変更、台車の車輪共有と分割数の差し替えを `Test/Test_Mesh3DAssembly.cpp` で検証する。一括出力、名前、部品範囲の検証、面ごとの材質対応は `Test/Test_Mesh3DAssemblyOBJ.cpp` で検証する。実行可能な一式は `Test/Manual/Mesh3DAssemblyExamples.md` にあり、8 色の base color と共有形状・鏡映配置を使うテクスチャなしの作業ロボットも含む。ロボットの材質は metallic = 0 として、従来の MTL の diffuse color に base color がそのまま伝わるようにしている。
 
 報告中の `Quaternion::RotateX/Y/Z` の説明不足は現行 Doxygen ですでに解消済みである。また、現行 `Revolve` は連続する同一点を縮退面として生成せず、生成失敗として拒否する。この点は実装不具合として扱わず、入力契約の説明とテストの不足として評価する。
 

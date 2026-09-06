@@ -372,7 +372,8 @@ TEST_CASE("Mesh3DAssembly::consume baked ranges and export examples")
 		// Optional review artifacts; the normal test suite does not write files.
 		if (const char* path = std::getenv("SIV3D_ASSEMBLY_EXAMPLE_DIR"))
 		{
-			REQUIRE(SaveParts(baked, (Unicode::FromUTF8(path) + U"/" + names[i])));
+			REQUIRE(FileSystem::CreateDirectories(Unicode::FromUTF8(path)));
+			REQUIRE(baked.saveOBJ(Unicode::FromUTF8(path) + U"/" + names[i] + U".obj"));
 		}
 	}
 }

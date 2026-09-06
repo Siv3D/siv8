@@ -1,68 +1,67 @@
-# Mesh3DAssembly: a hinged chest and a cart
+# Mesh3DAssembly: texture-free color, a hinged chest, and shared wheels
 
-This is a CPU modeling and export exercise. It demonstrates reusable geometry,
-part IDs, local coordinate systems, hierarchical pivots, material edits, and
-baking a complete model without losing the relationship between parts and mesh ranges.
+This CPU modeling exercise exports a complete model as one OBJ and one MTL.
+Each part has a group and a material assignment. The service robot uses eight
+base-color materials and no textures: orange or blue enamel, ivory housings,
+dark rubber, gray joints, a dark visor, cyan eyes, yellow markings, and red signals.
+The material palette is applied to actual mesh parts; no image assets are required.
 
 ## Execution
 
 1. Use a separate Siv3D v0.8 application built with this revision. Paste the complete
    code below into its `Main.cpp` and run it. Keep this repository's test entry point intact.
-2. Open an exported subdirectory under `assembly_examples/` in the application's working
-   directory. Import **all** of its `part_*.obj` files together into an OBJ viewer that
-   supports multiple objects and MTL base colors. Each OBJ has a matching MTL; keep them together.
-3. Compare `chest_closed`, `chest_open`, and `chest_gold` from the same viewpoint.
-4. Compare `cart`, `cart_refined`, and `cart_wide` from the same viewpoint.
+2. Open any exported `.obj` under `assembly_examples/` in the application's working
+   directory with a viewer that supports OBJ groups and MTL materials. Keep the matching
+   `.mtl` beside it. One OBJ now loads the complete model.
+3. Compare the two robot palettes from the front and rear, then inspect the chest and cart variants.
 
-The recipes and the range extraction used here are compiled in
-`Test/Mesh3DAssemblyExamples.hpp` and exercised by `Test/Test_Mesh3DAssembly.cpp`.
-The full code below is self-contained; it does not require those test files.
-On macOS, the automated tests can additionally export five review variants:
+The recipes are compiled in `Test/Mesh3DAssemblyExamples.hpp`. The Assembly tests
+verify editing and baked ranges; `Test/Test_Mesh3DAssemblyOBJ.cpp` verifies output
+coordinates, grouping, and the diffuse color assigned to each robot face.
+The code below is self-contained. On macOS, the tests can also export review models:
 
 ```sh
-SIV3D_ASSEMBLY_EXAMPLE_DIR=/tmp/siv8-assembly-review ./macOS/run-tests.sh '--test-case=Mesh3DAssembly::*'
+SIV3D_ASSEMBLY_EXAMPLE_DIR=/tmp/siv8-assembly-color-review ./macOS/run-tests.sh '--test-case=*Mesh3D*'
 ```
-
-Use an empty export directory for each run if you change the number of parts;
-this sample only writes current parts and does not delete files from previous runs.
 
 ## Expected results
 
-- The closed chest has an open-top shell covered by its lid. The lid's two metal
-  straps and front lock are children of the lid. At 60 degrees, the lid and its
-  fittings rotate together around the rear upper edge. The body stays fixed.
-- The gold variant changes only the metal material. Geometry and wood are unchanged.
-- The default cart has four wheels. All four reference one registered wheel mesh.
-  The deck touches the axles and the axles enter the wheels; the wheel faces stay clear of the deck.
-- `cart_refined` replaces that one wheel mesh with a 32-sided version. All wheels
-  become smoother without changing their IDs, placement, or material assignment.
-- The wider cart has six larger wheels, a wider deck, and longer axles.
-  Wheel centers rise with their radius, keeping the bottoms at ground level.
-- Parts may intentionally overlap at connections. These examples do not perform
-  Boolean unions and do not claim a single manifold surface for the whole assembly.
+- Each model produces one OBJ and one MTL. Its groups retain part IDs, including
+  duplicate names such as eyes, vents, and fingers. Geometry-free frames have no output group.
+- The robot has contrasting housings, a visor with cyan eyes, three colored status
+  lights, chest vents, a striped rear battery, two arms with claws, and feet with soles.
+  Its left arm uses a mirrored placement and should have the same outward-facing surfaces
+  as the right. The orange and blue variants differ only in the enamel material.
+- All robot materials use metallic = 0: baseColor.rgb maps directly to MTL Kd.
+  Inspecting the MTL should reveal eight `newmtl` entries and no texture references.
+- The chest lid, straps, and lock rotate together about the rear upper edge; the body stays fixed.
+  Its gold variant changes only the fittings. Unlike the robot palette, the chest fittings
+  use metallic materials; their appearance depends on the viewer's specular/environment lighting.
+- The four cart wheels share one registered mesh. Replacing that mesh with the 32-sided
+  version changes all four wheels without changing their IDs or placements. The wider cart
+  has six larger wheels, with centers raised to keep their bottoms at ground level.
+- Parts intentionally overlap at joints. These are assembled models, not Boolean unions
+  or a claim that the complete assembly is a single manifold surface.
 
-## API choices illustrated
+## Output and editing contracts
 
-A part without a mesh provides a coordinate frame, such as the chest hinge.
-A part with a mesh may also have children, such as the lid and its fittings.
-Parents must be registered before children. The local-to-world composition is
-`local * parentWorld`; local origins are pivots. Names may repeat; IDs identify parts.
+Use `assembly.saveOBJ(path)` for a one-off export. For repeated baking, keep a
+`Mesh3DAssembly::BakedMesh`, call `assembly.bake(destination)`, and save it with
+`destination.saveOBJ(path)`. Its `encodeOBJ(objWriter, mtlWriter, mtlFileName)`
+provides the same data to two separate Writers without intermediate part meshes.
 
-The assembly owns shared geometry; copying an assembly makes an independent copy.
-`setMesh()` keeps its mesh ID, so existing instances reference the replacement.
-`bake(destination)` reuses output arrays, while `bake()` returns a new snapshot.
-Baked ranges refer to each part's own geometry, excluding children. An unassigned
-material stays unassigned and is not inherited from a parent. This sample gives
-unassigned parts a default material during export.
+OBJ groups are `part_<ID>_<name>` and material identifiers are `material_<ID>_<name>`.
+Names use reversible UTF-8 percent encoding outside ASCII letters, digits, `_`, `-`, and `.`;
+empty names omit the final underscore and name. This is the exporter naming convention,
+not an OBJ decoding feature. The ID prefix remains directly readable in external viewers.
+The MTL filename is escaped by the same rule to avoid whitespace in `mtllib`.
+Unassigned parts explicitly use the default material; unused registered materials are omitted.
+OBJ stores baked geometry and materials; editing hierarchy and shared meshes remain in Assembly.
 
-The sample calls `Result::value()` to stop immediately on a modeling error.
-Applications that need recovery should inspect each Result and its Mesh3DError.
-Placement has the same finite-affine numeric preconditions documented on
-`Mesh3DAssembly`; this prototype does not add per-edit numeric validation.
-
-Exporting individual parts here uses the existing Mesh3D OBJ/MTL API.
-It preserves their baked positions and per-part materials, but does not export
-hierarchy or shared geometry. The original Assembly retains that information.
+Parents precede children; transforms compose as `local * parentWorld`. Names may repeat;
+IDs identify parts. Numeric placement preconditions are documented in Mesh3DAssembly.
+The sample uses `Result::value()` to stop on a modeling error; applications needing recovery
+should inspect the Result and its Mesh3DError. Save failures are returned as bool and logged.
 
 ## Complete code
 
@@ -180,51 +179,114 @@ namespace Mesh3DAssemblyExamples
 		return result;
 	}
 
-	// Export each part at its baked world position. Import all OBJ files in the
-	// directory together to inspect the complete model with per-part materials.
-	inline bool SaveParts(const Assembly::BakedMesh& baked, const s3d::FilePath& directory)
+	// A texture-free stylized service robot. Every visible accent is geometry
+	// with a base-color material; repeated fittings reuse registered meshes.
+	inline Assembly MakeRobot(const s3d::ColorF bodyColor = s3d::ColorF{ 0.95, 0.38, 0.08 })
 	{
-		if (not s3d::FileSystem::CreateDirectories(directory))
+		using namespace s3d;
+		Assembly a;
+		const auto paint = a.addMaterial(Material{ .name = U"enamel", .baseColor = bodyColor, .roughness = 0.5 });
+		const auto ivory = a.addMaterial(Material{ .name = U"ivory", .baseColor = ColorF{ 0.88, 0.90, 0.82 } });
+		const auto dark = a.addMaterial(Material{ .name = U"rubber", .baseColor = ColorF{ 0.055, 0.075, 0.10 } });
+		const auto grey = a.addMaterial(Material{ .name = U"joints", .baseColor = ColorF{ 0.24, 0.31, 0.35 } });
+		const auto glass = a.addMaterial(Material{ .name = U"visor", .baseColor = ColorF{ 0.02, 0.13, 0.20 }, .roughness = 0.25 });
+		const auto cyan = a.addMaterial(Material{ .name = U"status cyan", .baseColor = ColorF{ 0.16, 0.86, 0.96 } });
+		const auto yellow = a.addMaterial(Material{ .name = U"warning yellow", .baseColor = ColorF{ 1.0, 0.76, 0.10 } });
+		const auto red = a.addMaterial(Material{ .name = U"signal red", .baseColor = ColorF{ 0.86, 0.12, 0.09 } });
+		const auto body = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 1.1, 1.05, 0.7 }, 0.10)).value();
+		const auto head = a.addMesh(Mesh3D::RoundedBox(Vec3{ 1.16, 0.68, 0.76 }, 0.14, 4)).value();
+		const auto visor = a.addMesh(Mesh3D::RoundedBox(Vec3{ 0.98, 0.39, 0.12 }, 0.055, 3)).value();
+		const auto eye = a.addMesh(Mesh3D::RoundedBox(Vec3{ 0.12, 0.19, 0.045 }, 0.02, 3)).value();
+		const auto joint = a.addMesh(Mesh3D::Cylinder(0.20, 0.18, 16)).value();
+		const auto upperArm = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.28, 0.38, 0.30 }, 0.045)).value();
+		const auto forearm = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.34, 0.42, 0.36 }, 0.05)).value();
+		const auto finger = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.095, 0.21, 0.18 }, 0.02)).value();
+		const auto shin = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.32, 0.38, 0.36 }, 0.04)).value();
+		const auto foot = a.addMesh(Mesh3D::RoundedBox(Vec3{ 0.48, 0.24, 0.72 }, 0.07, 3)).value();
+		const auto sole = a.addMesh(Mesh3D::Box(Vec3{ 0.49, 0.07, 0.73 })).value();
+		const auto vent = a.addMesh(Mesh3D::Box(Vec3{ 0.48, 0.055, 0.045 })).value();
+		const auto panel = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.78, 0.40, 0.10 }, 0.04)).value();
+		const auto button = a.addMesh(Mesh3D::Cylinder(0.042, 0.045, 12)).value();
+		const auto backpack = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.74, 0.75, 0.36 }, 0.08)).value();
+		const auto rim = a.addMesh(Mesh3D::Box(Vec3{ 0.62, 0.065, 0.025 })).value();
+		const auto belt = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.86, 0.18, 0.59 }, 0.045)).value();
+		const auto antenna = a.addMesh(Mesh3D::Cylinder(0.028, 0.32, 10)).value();
+		const auto tip = a.addMesh(Mesh3D::Sphere(0.075, 12, 8)).value();
+
+		const auto add = [&](String name, Assembly::MeshID mesh, Assembly::MaterialID material,
+			Vec3 offset, Optional<Assembly::PartID> parent = none, Quaternion rotation = Quaternion{})
 		{
-			return false;
-		}
-		for (const auto& part : baked.parts)
+			return a.addPart({ .name = std::move(name), .mesh = mesh, .material = material, .parent = parent,
+				.placement = Mesh3DPlacement{ offset, rotation } }).value();
+		};
+		const auto torso = add(U"torso", body, paint, Vec3{ 0, 1.25, 0 });
+		add(U"waist", belt, grey, Vec3{ 0, 0.69, 0 });
+		const auto face = add(U"head", head, ivory, Vec3{ 0, 2.15, 0 });
+		// The neck connects the head to the torso; cylinders start along +Y.
+		add(U"neck", joint, grey, Vec3{ 0, 1.80, 0 });
+		add(U"visor", visor, glass, Vec3{ 0, 0.025, -0.385 }, face);
+		for (const double side : { -1.0, 1.0 })
 		{
-			if (part.range.isEmpty())
-			{
-				continue;
-			}
-			const s3d::Mesh3D mesh = ExtractPart(baked, part);
-			const s3d::Material material = (part.material
-				? baked.materials[static_cast<size_t>(*part.material)] : s3d::Material{});
-			// IDs make filenames independent of duplicate or filesystem-unsafe names.
-			const auto path = (directory + U"/part_" + s3d::Format(static_cast<size_t>(part.id)) + U".obj");
-			if (not mesh.saveOBJ(path, material))
-			{
-				return false;
-			}
+			add(U"eye", eye, cyan, Vec3{ (side * 0.24), 0.025, -0.455 }, face);
 		}
-		return true;
+		add(U"antenna", antenna, grey, Vec3{ 0.35, 0.47, 0.12 }, face);
+		add(U"antenna tip", tip, red, Vec3{ 0.35, 0.66, 0.12 }, face);
+		const auto chest = add(U"chest panel", panel, dark, Vec3{ 0, 0.21, -0.35 }, torso);
+		for (uint32 i = 0; i < 3; ++i)
+		{
+			add(U"status light", button, (i == 0 ? red : (i == 1 ? yellow : cyan)),
+				Vec3{ (-0.23 + i * 0.23), 0.02, -0.055 }, chest, Quaternion::RotateX(Math::HalfPi));
+			add(U"vent", vent, grey, Vec3{ 0, (-0.10 - i * 0.12), -0.35 }, torso);
+		}
+		const auto pack = add(U"battery pack", backpack, grey, Vec3{ 0, 0.03, 0.47 }, torso);
+		for (uint32 i = 0; i < 3; ++i)
+		{
+			add(U"battery stripe", rim, yellow, Vec3{ 0, (0.20 - i * 0.20), 0.18 }, pack);
+		}
+		for (const double side : { -1.0, 1.0 })
+		{
+			// One local arm arrangement is mirrored for the other side.
+			const Mat4x4 place = Mat4x4::AffineTransform(Float3{ static_cast<float>(side), 1, 1 },
+				Quaternion::RotateZ(side * 0.10), Float3{ static_cast<float>(side * 0.62), 1.62f, 0 });
+			const auto arm = a.addPart({ .name = U"arm frame", .placement = place }).value();
+			add(U"shoulder", joint, grey, Vec3::Zero(), arm, Quaternion::RotateZ(Math::HalfPi));
+			add(U"upper arm", upperArm, paint, Vec3{ 0.12, -0.23, 0 }, arm);
+			add(U"elbow", joint, dark, Vec3{ 0.12, -0.45, 0 }, arm, Quaternion::RotateZ(Math::HalfPi));
+			add(U"forearm", forearm, ivory, Vec3{ 0.12, -0.68, 0 }, arm);
+			add(U"claw", finger, grey, Vec3{ 0.02, -0.94, -0.04 }, arm);
+			add(U"claw", finger, grey, Vec3{ 0.22, -0.94, -0.04 }, arm);
+			const auto leg = a.addPart({ .name = U"leg frame", .placement = Vec3{ (side * 0.27), 0, 0 } }).value();
+			add(U"knee", joint, dark, Vec3{ 0, 0.56, 0 }, leg, Quaternion::RotateZ(Math::HalfPi));
+			add(U"shin", shin, paint, Vec3{ 0, 0.40, 0 }, leg);
+			add(U"foot", foot, ivory, Vec3{ 0, 0.17, -0.13 }, leg);
+			add(U"sole", sole, dark, Vec3{ 0, 0.035, -0.13 }, leg);
+		}
+		return a;
 	}
 }
 
 void Main()
 {
     using namespace Mesh3DAssemblyExamples;
-    const FilePath directory = U"assembly_examples";
+    const FilePath directory = U"assembly_examples/";
+    if (not FileSystem::CreateDirectories(directory))
+    {
+        return;
+    }
     auto chest = MakeChest();
-    auto cart = MakeCart();
-    bool success = SaveParts(chest.assembly.bake().value(), directory + U"/chest_closed");
+    bool success = chest.assembly.saveOBJ(directory + U"chest_closed.obj");
     OpenChest(chest, 60_deg);
-    success &= SaveParts(chest.assembly.bake().value(), directory + U"/chest_open");
+    success &= chest.assembly.saveOBJ(directory + U"chest_open.obj");
     chest.assembly.setMaterial(chest.metal, Material{
         .name = U"gold", .baseColor = ColorF{ 0.85, 0.6, 0.1 }, .metallic = 1.0 }).value();
-    success &= SaveParts(chest.assembly.bake().value(), directory + U"/chest_gold");
-    success &= SaveParts(cart.assembly.bake().value(), directory + U"/cart");
+    success &= chest.assembly.saveOBJ(directory + U"chest_gold.obj");
+    auto cart = MakeCart();
+    success &= cart.assembly.saveOBJ(directory + U"cart.obj");
     cart.assembly.setMesh(cart.wheelMesh, Mesh3D::Cylinder(cart.radius, 0.22, 32)).value();
-    success &= SaveParts(cart.assembly.bake().value(), directory + U"/cart_refined");
-    auto wide = MakeCart(2.4, 0.55, 3);
-    success &= SaveParts(wide.assembly.bake().value(), directory + U"/cart_wide");
+    success &= cart.assembly.saveOBJ(directory + U"cart_refined.obj");
+    success &= MakeCart(2.4, 0.55, 3).assembly.saveOBJ(directory + U"cart_wide.obj");
+    success &= MakeRobot().saveOBJ(directory + U"robot_orange.obj");
+    success &= MakeRobot(ColorF{ 0.16, 0.48, 0.72 }).saveOBJ(directory + U"robot_blue.obj");
     Print << (success ? U"Exported to assembly_examples/" : U"Export failed; inspect the engine log.");
     while (System::Update()) {}
 }

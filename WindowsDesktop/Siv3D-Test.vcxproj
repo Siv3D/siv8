@@ -69,6 +69,7 @@
 	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DAssembly.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DAssemblyOBJ.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DAddResult.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DCapTriangulation.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DBoxShell.cpp" />

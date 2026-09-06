@@ -16,6 +16,7 @@
 # include <limits>
 # include <string>
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DAssembly.hpp>
 # include <Siv3D/BinaryFileWriter.hpp>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/MemoryWriter.hpp>
@@ -78,9 +79,9 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool ValidateForMTL(const Material& material) noexcept
+		bool ValidateForMTL(const Material& material, const bool validateName = true) noexcept
 		{
-			if (material.name.isEmpty() || (not IsSingleLine(material.name))
+			if ((validateName && (material.name.isEmpty() || (not IsSingleLine(material.name))))
 				|| (not IsFinite(material.baseColor))
 				|| (not std::isfinite(material.metallic))
 				|| (not std::isfinite(material.roughness))
@@ -162,6 +163,13 @@ namespace s3d
 			{
 				m_buffer.append("usemtl ");
 				m_buffer.append(materialName);
+				return finishLine();
+			}
+
+			bool writeGroup(const std::string_view name)
+			{
+				m_buffer.append("g ");
+				m_buffer.append(name);
 				return finishLine();
 			}
 
@@ -311,6 +319,34 @@ namespace s3d
 			}
 		};
 
+		bool WriteOBJVertices(const Mesh3D& mesh, OBJTextWriter& objWriter)
+		{
+			for (const auto& vertex : mesh.vertices)
+			{
+				if (not objWriter.writePosition(vertex.pos))
+				{
+					return false;
+				}
+			}
+
+			for (const auto& vertex : mesh.vertices)
+			{
+				if (not objWriter.writeTexCoord(vertex.tex))
+				{
+					return false;
+				}
+			}
+
+			for (const auto& vertex : mesh.vertices)
+			{
+				if (not objWriter.writeNormal(vertex.normal))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		bool EncodeValidatedOBJ(
 			const Mesh3D& mesh,
 			IWriter& writer,
@@ -327,28 +363,9 @@ namespace s3d
 					return false;
 				}
 
-				for (const auto& vertex : mesh.vertices)
+				if (not WriteOBJVertices(mesh, objWriter))
 				{
-					if (not objWriter.writePosition(vertex.pos))
-					{
-						return false;
-					}
-				}
-
-				for (const auto& vertex : mesh.vertices)
-				{
-					if (not objWriter.writeTexCoord(vertex.tex))
-					{
-						return false;
-					}
-				}
-
-				for (const auto& vertex : mesh.vertices)
-				{
-					if (not objWriter.writeNormal(vertex.normal))
-					{
-						return false;
-					}
+					return false;
 				}
 
 				if ((not materialName.empty())
@@ -454,7 +471,7 @@ namespace s3d
 			output.push_back('\n');
 		}
 
-		bool EncodeValidatedMTL(const Material& material, IWriter& writer)
+		bool EncodeValidatedMTL(const Material& material, IWriter& writer, const std::string_view exportedName = {})
 		{
 			try
 			{
@@ -475,7 +492,7 @@ namespace s3d
 				std::string output;
 				output.reserve(512);
 				output.append("newmtl ");
-				output.append(Unicode::ToUTF8(material.name));
+				output.append(exportedName.empty() ? Unicode::ToUTF8(material.name) : exportedName);
 				output.push_back('\n');
 
 				if ((not AppendColorLine(output, "Kd",
@@ -504,6 +521,178 @@ namespace s3d
 			{
 				return false;
 			}
+		}
+
+		// Identifiers use ASCII tokens; percent escaping is our reversible naming
+		// convention, not an OBJ escape syntax. ID prefixes prevent collisions.
+		bool IsNameByte(const unsigned char ch) noexcept
+		{
+			return (('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z')
+				|| ('0' <= ch && ch <= '9') || ch == '_' || ch == '-' || ch == '.');
+		}
+
+		std::string EscapeOBJName(const StringView name)
+		{
+			const std::string utf8 = Unicode::ToUTF8(name);
+			constexpr char Hex[] = "0123456789ABCDEF";
+			std::string result;
+			result.reserve(utf8.size());
+			for (const unsigned char ch : utf8)
+			{
+				if (IsNameByte(ch))
+				{
+					result.push_back(static_cast<char>(ch));
+				}
+				else
+				{
+					result.push_back('%');
+					result.push_back(Hex[ch >> 4]);
+					result.push_back(Hex[ch & 15]);
+				}
+			}
+			return result;
+		}
+
+		std::string ExportedName(const char* prefix, const size_t id, const StringView name)
+		{
+			std::string result = (prefix + std::to_string(id));
+			if (not name.isEmpty())
+			{
+				result += '_';
+				result += EscapeOBJName(name);
+			}
+			return result;
+		}
+
+		bool IsMTLFileName(const StringView name) noexcept
+		{
+			if (name.isEmpty() || name == U"." || name == U"..")
+			{
+				return false;
+			}
+			for (const char32 ch : name)
+			{
+				if ((127 < ch) || ((ch != U'%') && (not IsNameByte(static_cast<unsigned char>(ch)))))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		struct AssemblyOBJNames
+		{
+			Array<std::string> parts;
+			Array<std::string> materials;
+			bool defaultMaterial = false;
+		};
+
+		bool PrepareAssemblyOBJ(const Mesh3DAssembly::BakedMesh& baked, AssemblyOBJNames& names)
+		{
+			if (not ValidateForOBJ(baked.mesh))
+			{
+				return false;
+			}
+			names.parts.resize(baked.parts.size());
+			names.materials.resize(baked.materials.size());
+			size_t vertices = 0;
+			size_t triangles = 0;
+			for (size_t i = 0; i < baked.parts.size(); ++i)
+			{
+				const auto& part = baked.parts[i];
+				const auto& range = part.range;
+				if ((static_cast<size_t>(part.id) != i)
+					|| (range.vertexOffset != vertices) || (range.triangleOffset != triangles)
+					|| ((baked.mesh.vertexCount() - vertices) < range.vertexCount)
+					|| ((baked.mesh.triangleCount() - triangles) < range.triangleCount))
+				{
+					return false;
+				}
+				vertices += range.vertexCount;
+				triangles += range.triangleCount;
+				for (size_t t = range.triangleOffset; t < triangles; ++t)
+				{
+					const auto& tri = baked.mesh.indices[t];
+					if ((tri.i0 < range.vertexOffset) || (vertices <= tri.i0)
+						|| (tri.i1 < range.vertexOffset) || (vertices <= tri.i1)
+						|| (tri.i2 < range.vertexOffset) || (vertices <= tri.i2))
+					{
+						return false;
+					}
+				}
+				if (range.triangleCount == 0)
+				{
+					continue;
+				}
+				names.parts[i] = ExportedName("part_", i, part.name);
+				if (part.material)
+				{
+					const size_t id = static_cast<size_t>(*part.material);
+					if (baked.materials.size() <= id)
+					{
+						return false;
+					}
+					if (names.materials[id].empty())
+					{
+						const auto& material = baked.materials[id];
+						if (not ValidateForMTL(material, false))
+						{
+							return false;
+						}
+						names.materials[id] = ExportedName("material_", id, material.name);
+					}
+				}
+				else
+				{
+					names.defaultMaterial = true;
+				}
+			}
+			return ((vertices == baked.mesh.vertexCount()) && (triangles == baked.mesh.triangleCount()));
+		}
+
+		bool EncodeAssemblyOBJ(const Mesh3DAssembly::BakedMesh& baked, const AssemblyOBJNames& names,
+			IWriter& objOutput, IWriter& mtlOutput, const std::string_view mtlFileName)
+		{
+			for (size_t i = 0; i < baked.materials.size(); ++i)
+			{
+				if ((not names.materials[i].empty())
+					&& (not EncodeValidatedMTL(baked.materials[i], mtlOutput, names.materials[i])))
+				{
+					return false;
+				}
+			}
+			if (names.defaultMaterial && (not EncodeValidatedMTL(Material{}, mtlOutput, "material_default")))
+			{
+				return false;
+			}
+			OBJTextWriter writer{ objOutput };
+			if ((not writer.writeMTLLibrary(mtlFileName)) || (not WriteOBJVertices(baked.mesh, writer)))
+			{
+				return false;
+			}
+			for (size_t i = 0; i < baked.parts.size(); ++i)
+			{
+				const auto& part = baked.parts[i];
+				if (part.range.triangleCount == 0)
+				{
+					continue;
+				}
+				const std::string_view material = (part.material
+					? std::string_view{ names.materials[static_cast<size_t>(*part.material)] } : "material_default");
+				if ((not writer.writeGroup(names.parts[i])) || (not writer.writeUseMaterial(material)))
+				{
+					return false;
+				}
+				const size_t end = (part.range.triangleOffset + part.range.triangleCount);
+				for (size_t t = part.range.triangleOffset; t < end; ++t)
+				{
+					if (not writer.writeFace(baked.mesh.indices[t]))
+					{
+						return false;
+					}
+				}
+			}
+			return writer.flush();
 		}
 
 	}
@@ -632,5 +821,69 @@ namespace s3d
 		}
 
 		return writer.extractBlob();
+	}
+	bool Mesh3DAssembly::BakedMesh::encodeOBJ(IWriter& objWriter, IWriter& mtlWriter, const StringView mtlFileName) const
+	{
+		try
+		{
+			AssemblyOBJNames names;
+			if ((&objWriter == &mtlWriter) || (not objWriter.isOpen()) || (not mtlWriter.isOpen())
+				|| (not IsMTLFileName(mtlFileName)) || (not PrepareAssemblyOBJ(*this, names)))
+			{
+				return GenerationFailed<bool>("Mesh3DAssembly::encodeOBJ(): Invalid writers, MTL filename, mesh, part ranges, or material");
+			}
+			if (not EncodeAssemblyOBJ(*this, names, objWriter, mtlWriter, Unicode::ToUTF8(mtlFileName)))
+			{
+				return GenerationFailed<bool>("Mesh3DAssembly::encodeOBJ(): Failed to write OBJ or MTL data");
+			}
+			return true;
+		}
+		catch (const std::bad_alloc&)
+		{
+			return GenerationFailed<bool>("Mesh3DAssembly::encodeOBJ(): Allocation failed");
+		}
+	}
+
+	bool Mesh3DAssembly::BakedMesh::saveOBJ(const FilePathView path) const
+	{
+		try
+		{
+			AssemblyOBJNames names;
+			const String baseName = FileSystem::BaseName(path);
+			if (baseName.isEmpty() || (FileSystem::Extension(path) == U"mtl") || (not PrepareAssemblyOBJ(*this, names)))
+			{
+				return GenerationFailed<bool>("Mesh3DAssembly::saveOBJ(): Invalid path, mesh, part ranges, or material");
+			}
+			const std::string mtlFileName = (EscapeOBJName(baseName) + ".mtl");
+			FilePath objFullPath;
+			const FilePath parent = FileSystem::ParentPath(path, 0, objFullPath);
+			const FilePath mtlPath = FileSystem::PathAppend(parent, Unicode::FromUTF8(mtlFileName));
+			if (objFullPath == mtlPath)
+			{
+				return GenerationFailed<bool>("Mesh3DAssembly::saveOBJ(): OBJ and MTL paths must differ");
+			}
+			BinaryFileWriter objWriter{ path };
+			if (not objWriter)
+			{
+				return GenerationFailed<bool>("Mesh3DAssembly::saveOBJ(): Failed to open OBJ file");
+			}
+			BinaryFileWriter mtlWriter{ mtlPath };
+			if ((not mtlWriter)
+				|| (not EncodeAssemblyOBJ(*this, names, objWriter, mtlWriter, mtlFileName)))
+			{
+				return GenerationFailed<bool>("Mesh3DAssembly::saveOBJ(): Failed to open or write OBJ / MTL files");
+			}
+			return true;
+		}
+		catch (const std::bad_alloc&)
+		{
+			return GenerationFailed<bool>("Mesh3DAssembly::saveOBJ(): Allocation failed");
+		}
+	}
+
+	bool Mesh3DAssembly::saveOBJ(const FilePathView path, const Mesh3DBakeOptions& options) const
+	{
+		const auto baked = bake(options);
+		return (baked && baked->saveOBJ(path));
 	}
 }
