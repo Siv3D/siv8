@@ -23,6 +23,9 @@
 		A5D4F49030A5000000000001 /* Spherical.ipp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F49030A5000000000002 /* Spherical.ipp */; };
 		A5D4F4A030A5000000000001 /* Test_Cylindrical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F4A030A5000000000002 /* Test_Cylindrical.cpp */; };
 		A5D4F4B030A5000000000001 /* Test_Spherical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F4B030A5000000000002 /* Test_Spherical.cpp */; };
+		A5D4F50030A5000000000001 /* Box.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F50030A5000000000002 /* Box.hpp */; };
+		A5D4F51030A5000000000001 /* Sphere.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F51030A5000000000002 /* Sphere.hpp */; };
+		A5D4F52030A5000000000001 /* Test_Mesh3DBounds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F52030A5000000000002 /* Test_Mesh3DBounds.cpp */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
 		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
@@ -6254,6 +6257,9 @@
 		F9A3D11230A1000000C0DE01 /* SivVertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivVertexNormalWeighting.cpp; sourceTree = "<group>"; };
 		F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_VertexNormalWeighting.cpp; sourceTree = "<group>"; };
 		F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3D.cpp; sourceTree = "<group>"; };
+		A5D4F50030A5000000000002 /* Box.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Box.hpp; sourceTree = "<group>"; };
+		A5D4F51030A5000000000002 /* Sphere.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Sphere.hpp; sourceTree = "<group>"; };
+		A5D4F52030A5000000000002 /* Test_Mesh3DBounds.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DBounds.cpp; sourceTree = "<group>"; };
 		F9A3D51330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DBuilder.cpp; sourceTree = "<group>"; };
 		F9A3D51A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DAddResult.cpp; sourceTree = "<group>"; };
 		A5D4F45030A5000000000002 /* Test_Mesh3DCapTriangulation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DCapTriangulation.cpp; sourceTree = "<group>"; };
@@ -6940,6 +6946,7 @@
 				F90702CC2B9DAEB900383E4D /* Test_Utility.cpp */,
 				F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */,
 				F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */,
+				A5D4F52030A5000000000002 /* Test_Mesh3DBounds.cpp */,
 				F9A3D51330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp */,
 				F9A3D51A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp */,
 				A5D4F45030A5000000000002 /* Test_Mesh3DCapTriangulation.cpp */,
@@ -7781,10 +7788,12 @@
 				F9A3D01C30A1000000C0DE01 /* MaterialTexture.hpp */,
 				F9A3D01D30A1000000C0DE01 /* Material.hpp */,
 				F93BD7EB3016828C00B3542E /* Mesh2D.hpp */,
+				A5D4F50030A5000000000002 /* Box.hpp */,
 				F9A3D60130A4000000C0DE01 /* BoxFace.hpp */,
 				F9A3D01930A1000000C0DE01 /* BoxUVMapping.hpp */,
 				F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */,
 				F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */,
+				A5D4F51030A5000000000002 /* Sphere.hpp */,
 				F9807D882BF6677600D9B590 /* MessageBox.hpp */,
 				F9807D892BF6677600D9B590 /* MessageBoxResult.hpp */,
 				F9807D872BF6677600D9B590 /* MessageBoxStyle.hpp */,
@@ -16109,6 +16118,7 @@
 				F9FD0D182D215DB300A584CE /* TexturedCircle.hpp in Headers */,
 				F9FD0D192D215DB300A584CE /* TexturedQuad.hpp in Headers */,
 				F93BD7EC3016828C00B3542E /* Mesh2D.hpp in Headers */,
+				A5D4F50030A5000000000001 /* Box.hpp in Headers */,
 				F9A3D60030A4000000C0DE01 /* BoxFace.hpp in Headers */,
 				F9A3D00830A1000000C0DE01 /* BoxUVMapping.hpp in Headers */,
 				F9A3D00A30A1000000C0DE01 /* MaterialAlphaMode.hpp in Headers */,
@@ -16116,6 +16126,7 @@
 				F9A3D00C30A1000000C0DE01 /* Material.hpp in Headers */,
 				F9A3D00330A1000000C0DE01 /* Mesh3D.hpp in Headers */,
 				F9A3D50130A3000000C0DE01 /* Mesh3DBuilder.hpp in Headers */,
+				A5D4F51030A5000000000001 /* Sphere.hpp in Headers */,
 				F9FD0D1A2D215DB300A584CE /* TexturedRoundRect.hpp in Headers */,
 				F98600872BCFBB53006A4C0F /* SkTFitsIn.h in Headers */,
 				F9070ED32B9F1C8900383E4D /* cocoa_joystick.h in Headers */,
@@ -16444,6 +16455,7 @@
 				F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */,
 				F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */,
 				F9A3D10430A1000000C0DE01 /* Test_Mesh3D.cpp in Sources */,
+				A5D4F52030A5000000000001 /* Test_Mesh3DBounds.cpp in Sources */,
 				F9A3D50330A3000000C0DE01 /* Test_Mesh3DBuilder.cpp in Sources */,
 				F9A3D50A30A3000000C0DE01 /* Test_Mesh3DAddResult.cpp in Sources */,
 				A5D4F45030A5000000000001 /* Test_Mesh3DCapTriangulation.cpp in Sources */,

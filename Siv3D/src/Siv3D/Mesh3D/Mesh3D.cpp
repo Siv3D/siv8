@@ -14,6 +14,7 @@
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Mat4x4.hpp>
 # include <Siv3D/Quaternion.hpp>
+# include <ThirdParty/DirectXMath/DirectXCollision.h>
 # include "Mesh3DCommon.hpp"
 # include "Mesh3DNormals.hpp"
 # include "Mesh3DMikkTSpace.hpp"
@@ -48,6 +49,61 @@ namespace s3d
 			return ToEnum<CNORM_FLAGS>(flags);
 		}
 
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeBoundingBox
+	//
+	////////////////////////////////////////////////////////////////
+
+	s3d::Box Mesh3D::computeBoundingBox() const noexcept
+	{
+		if (vertices.empty())
+		{
+			return s3d::Box{ 0.0 };
+		}
+
+		DirectX::BoundingBox boundingBox;
+		DirectX::BoundingBox::CreateFromPoints(
+			boundingBox,
+			vertices.size(),
+			static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertices.front().pos)),
+			sizeof(Vertex3D));
+
+		return s3d::Box{
+			Vec3{ boundingBox.Center.x, boundingBox.Center.y, boundingBox.Center.z },
+			Vec3{
+				(boundingBox.Extents.x * 2.0),
+				(boundingBox.Extents.y * 2.0),
+				(boundingBox.Extents.z * 2.0) }
+		};
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeBoundingSphere
+	//
+	////////////////////////////////////////////////////////////////
+
+	s3d::Sphere Mesh3D::computeBoundingSphere() const noexcept
+	{
+		if (vertices.empty())
+		{
+			return s3d::Sphere{ 0.0 };
+		}
+
+		DirectX::BoundingSphere boundingSphere;
+		DirectX::BoundingSphere::CreateFromPoints(
+			boundingSphere,
+			vertices.size(),
+			static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&vertices.front().pos)),
+			sizeof(Vertex3D));
+
+		return s3d::Sphere{
+			Vec3{ boundingSphere.Center.x, boundingSphere.Center.y, boundingSphere.Center.z },
+			boundingSphere.Radius
+		};
 	}
 
 	////////////////////////////////////////////////////////////////

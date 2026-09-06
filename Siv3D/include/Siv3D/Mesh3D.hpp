@@ -16,6 +16,7 @@
 # include "Common.hpp"
 # include "Array.hpp"
 # include "Blob.hpp"
+# include "Box.hpp"
 # include "BoxFace.hpp"
 # include "BoxUVMapping.hpp"
 # include "FunctionRef.hpp"
@@ -28,6 +29,7 @@
 # include "PredefinedYesNo.hpp"
 # include "Result.hpp"
 # include "String.hpp"
+# include "Sphere.hpp"
 # include "Vertex3D.hpp"
 # include "TriangleIndex32.hpp"
 # include "VertexNormalWeighting.hpp"
@@ -1252,6 +1254,35 @@ namespace s3d
 		/// @return 頂点または三角形が空の場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool isEmpty() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeBoundingBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点を包含する軸平行境界ボックスを計算します。
+		/// @return 軸平行境界ボックス。頂点がない場合は原点を中心とする大きさ 0 の Box
+		/// @remark 三角形インデックスから参照されていない頂点も計算に含まれます。
+		/// @remark 頂点座標に非有限値が含まれる場合、結果は未規定です。
+		/// @remark 計算量は頂点数を n として O(n) です。動的メモリ確保は行いません。
+		[[nodiscard]]
+		s3d::Box computeBoundingBox() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeBoundingSphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点を包含する境界球を計算します。
+		/// @return 境界球。頂点がない場合は原点を中心とする半径 0 の Sphere
+		/// @remark 計算される境界球は近似解です。
+		/// @remark 三角形インデックスから参照されていない頂点も計算に含まれます。
+		/// @remark 頂点座標に非有限値が含まれる場合、結果は未規定です。
+		/// @remark 計算量は頂点数を n として O(n) です。動的メモリ確保は行いません。
+		[[nodiscard]]
+		s3d::Sphere computeBoundingSphere() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

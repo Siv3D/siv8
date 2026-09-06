@@ -101,13 +101,11 @@
 - double-sided plane、torus arc、torus knot、superellipsoid は利用例が明確になった時点で評価する。
 - `RegularPrism` は `Extrude()`、rounded cylinder は `Revolve()` での代替を優先する。
 
-### レンダリング層と境界体積への依存
+### レンダリング層への依存
 
 - 3D レンダリング側の設計が固まるまで、`Mesh3D::draw()` は追加しない。
 - レンダリング統合時に `Vertex3D` の GPU レイアウト、頂点カラー、index の上限と primitive-restart 値、CPU メッシュと GPU リソースの責務を再確認する。
   - 1 モデル内の複数色・材質という実利用要求を、頂点カラー、submesh / material range、別のモデル層のどこで表現するか決める。`Vertex3D` への color 追加を前提にしない。
-- bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に設計する。
-
 ### 低優先度のレビュー残件
 
 - `append()` が入力ごとに O(triangle count) の `validate()` を行うコストを、信頼済みメッシュを大量合成する実例が出た時に再評価する。

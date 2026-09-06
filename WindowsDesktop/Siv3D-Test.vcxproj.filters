@@ -259,6 +259,9 @@
     <ClCompile Include="..\Test\Test_Mesh3D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp">
       <Filter>Test</Filter>
     </ClCompile>

@@ -1,6 +1,6 @@
 # Mesh3D 開発引き継ぎ
 
-更新日: 2026-09-05
+更新日: 2026-09-07
 
 この文書は、Mesh3D 開発を再開するための短い索引である。実装済み API の仕様書や完了履歴は兼ねない。
 
@@ -30,6 +30,7 @@
 - builder のすべての配置 overload は `Mesh3DPlacement` に集約する。配置なしを独立させ、配置ありの offset、offset + rotation、`Mat4x4` を 1 overload にした。`Vec3` と `Mat4x4` は従来と同じ記述、回転と平行移動は `{ offset, rotation }` で指定できるため、API 宣言数を減らしても利用コードを肥大化させない。add 宣言数は 233 から 117 になった。
 - `HeightField` の UV 設定は `HeightFieldOptions` に集約する。高さの入力は `Grid<float>`、または頂点数と格子点 `Point` から高さを返す callable の 2 系統とし、callable は行優先で評価する。
 - `IcoSphere` は UV seam を作らず頂点を共有する軽量な球とする。細分化回数は 0～8、既定値は 2 で、法線は球面方向、UV は常に `(0, 0)` とする。テクスチャマッピング用途には `Sphere` を使う。
+- `Mesh3D::computeBoundingBox()` / `computeBoundingSphere()` は、インデックス参照の有無によらず格納された全頂点を対象とする。DirectXCollision に `Vertex3D::pos` を stride 付きで直接渡し、中間配列と動的メモリ確保を避ける。空メッシュは原点・大きさ 0 の境界体積を返し、境界球は近似解とする。
 - `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は既定で両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
 - `Tube` / `Sweep` は `Mesh3DEndCaps` で始端、終端、両端、端面なしを選択できる。未指定時は開路で両端、閉路で端面なしとなり、閉路に端面を明示する矛盾は `InvalidArgument` とする。
 
@@ -40,7 +41,7 @@
 - Box 系: `BoxFace` による面選択、`BoxShell`、`BoxFrame`、`RoundedBox`、`ChamferedBox` など
 - 汎用生成: `Extrude`、UV 変換に対応する完全・部分 `Revolve`、一定半径・経路点別半径の開路・閉路 `Tube`、一定断面および経路点別 scale / twist の開路・閉路 `Sweep`、`HeightField`、`IcoSphere`、runtime / compile-time `Loft`
 - その他の基本プリミティブ一式。UV 球の API 名は `Sphere` とする。
-- `Mesh3DBuilder` は既存メッシュと上記 generator を直接追加でき、通常形状には base、offset、offset + rotation、`Mat4x4` の配置体系を持つ。
+- `Mesh3DBuilder` は既存メッシュと上記 generator を直接追加でき、配置なしと `Mesh3DPlacement` 付きの体系を持つ。
 - `Sweep` の初期断面方向は一定断面・経路点別変換のどちらも `SweepOptions::initialXAxis` で指定する。
 
 正確な overload、既定値、端面、巻き順、UV、異常入力の契約はヘッダを参照する。
@@ -69,7 +70,6 @@ Gemini によるヘッダと簡略化済みモデリングコードのレビュ�
 ## 次の候補と保留事項
 
 - `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は `TODO.md` の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
-- bounding box / bounding sphere は `s3d::Box` / `s3d::Sphere` の実装後に扱う。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
 - `Test/Manual/` の既存 Mesh3D レビュー資料は API の正本にしない。現行の Mesh3D 改修が一段落した後、必要な manual test をゼロベースで作り直す。
 
