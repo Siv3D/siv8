@@ -362,18 +362,7 @@ namespace s3d::Mesh3DDetail
 	Mesh3DAddResult AppendRevolve(
 		Mesh3D& mesh,
 		std::span<const Vec2> profile,
-		uint32 segments,
-		double smoothingAngle);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendRevolve(
-		Mesh3D& mesh,
-		std::span<const Vec2> profile,
-		double startAngle,
-		double sweepAngle,
-		uint32 segments,
-		double smoothingAngle,
-		CloseEnds closeEnds);
+		const RevolveOptions& options);
 
 	[[nodiscard]]
 	Mesh3DAddResult AppendTube(

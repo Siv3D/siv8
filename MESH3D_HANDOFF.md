@@ -26,6 +26,7 @@
 - `Polygon` の外周と `Loft` の断面は、格納された `(x, y)` に対する符号付き面積が正、`Polygon` の穴は負とする。閉じた輪郭の先頭点を末尾へ重複させない。
 - 点列は float 変換後の幾何を基準に検証する。`Revolve` の閉じた profile だけは先頭・末尾の一致を閉鎖表現として使い、`Tube` / `Sweep` の閉路と `Loft` の断面では始点を末尾に重複させない。
 - `Tube` / `Sweep` の生成設定は `TubeOptions` / `SweepOptions` に集約する。factory は `std::span` / initializer-list と一定値 / 経路点別値の組み合わせだけを overload とし、builder の配置 overload では options を末尾に置く。
+- `Revolve` の回転範囲、分割数、法線補間、UV 変換、回転方向の端面設定は `RevolveOptions` に集約する。factory は `std::span` / initializer-list の 2 overload、builder はこれに base / offset / offset + rotation / `Mat4x4` の配置を組み合わせた 5 overload とする。
 - `HeightField` の UV 設定は `HeightFieldOptions` に集約する。高さの入力は `Grid<float>`、または頂点数と格子点 `Point` から高さを返す callable の 2 系統とし、callable は行優先で評価する。
 - `IcoSphere` は UV seam を作らず頂点を共有する軽量な球とする。細分化回数は 0～8、既定値は 2 で、法線は球面方向、UV は常に `(0, 0)` とする。テクスチャマッピング用途には `Sphere` を使う。
 - `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は既定で両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
@@ -36,7 +37,7 @@
 - 合成・編集: `append()`、`reserve()`、`clear()`、各種 transform、`transformUV()`、法線・接線の再計算
 - 出力: OBJ、および `Material` を伴う OBJ / MTL の保存・エンコード
 - Box 系: `BoxFace` による面選択、`BoxShell`、`BoxFrame`、`RoundedBox`、`ChamferedBox` など
-- 汎用生成: `Extrude`、完全・部分 `Revolve`、一定半径・経路点別半径の開路・閉路 `Tube`、一定断面および経路点別 scale / twist の開路・閉路 `Sweep`、`HeightField`、`IcoSphere`、runtime / compile-time `Loft`
+- 汎用生成: `Extrude`、UV 変換に対応する完全・部分 `Revolve`、一定半径・経路点別半径の開路・閉路 `Tube`、一定断面および経路点別 scale / twist の開路・閉路 `Sweep`、`HeightField`、`IcoSphere`、runtime / compile-time `Loft`
 - その他の基本プリミティブ一式。UV 球の API 名は `Sphere` とする。
 - `Mesh3DBuilder` は既存メッシュと上記 generator を直接追加でき、通常形状には base、offset、offset + rotation、`Mat4x4` の配置体系を持つ。
 - `Sweep` の初期断面方向は一定断面・経路点別変換のどちらも `SweepOptions::initialXAxis` で指定する。
@@ -45,7 +46,9 @@
 
 ## 実利用レビューからの申し送り
 
-初見の利用者が 4 種類の構造物を作成・検査した記録が [`Claude outputs/REPORT.md`](<Claude outputs/REPORT.md>) にある。最終生成物では、生成失敗、z-fighting、部品間の隙間、縮退三角形、裏返り、意図しない孤立部品は検出されず、現在の builder とクラス冒頭の Doxygen は実用上よく機能した。
+初見の利用者が 6 種類、184 部品の構造物を作成・検査した記録が [`Claude outputs/REPORT.md`](<Claude outputs/REPORT.md>) にある。最終生成物では、生成失敗、z-fighting、部品間の隙間、縮退三角形、裏返り、意図しない孤立部品は検出されず、現在の builder とクラス冒頭の Doxygen は実用上よく機能した。
+
+実地評価で誤読が起きた `Sweep` の断面軸、`Extrude` の配置後の軸、quaternion の合成順、部分 `Revolve` の端面範囲、`BoxShell` / `BoxFrame` / `Stairs` の T 字接合は Doxygen へ具体例または注意を追加した。`Revolve` で V を反転するために一時メッシュを経由した事例を受け、UV 変換を `RevolveOptions` に追加した。
 
 次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。新しい経路系 generator へ進む前提となる、角度、winding、点列の閉鎖表現、および失敗分類は公開ヘッダとテストで固定している。
 

@@ -2129,259 +2129,46 @@ namespace s3d
 
 	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
-		const uint32 segments)
+		const RevolveOptions& options)
 	{
-		return Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, 0.0);
+		return Mesh3DDetail::AppendRevolve(m_mesh, profile, options);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::initializer_list<Vec2> profile,
-		const uint32 segments)
+		const RevolveOptions& options)
 	{
-		return addRevolve(std::span<const Vec2>{ profile.begin(), profile.size() }, segments);
+		return addRevolve(std::span<const Vec2>{ profile.begin(), profile.size() }, options);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const Vec3 offset)
-	{
-		return addRevolve(profile, segments, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const uint32 segments,
 		const Vec3 offset,
-		const Quaternion& rotation)
+		const RevolveOptions& options)
 	{
-		return addRevolve(profile, segments,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
+		return addRevolve(profile, Mat4x4::Translate(Float3{ offset }), options);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const Mat4x4& transform)
-	{
-		return TransformAddedVertices(
-			m_mesh,
-			Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, 0.0),
-			transform);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle)
-	{
-		return Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, smoothingAngle);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::initializer_list<Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle)
-	{
-		return addRevolve(
-			std::span<const Vec2>{ profile.begin(), profile.size() }, segments, smoothingAngle);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle,
-		const Vec3 offset)
-	{
-		return addRevolve(
-			profile, segments, smoothingAngle, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addRevolve(profile, segments, smoothingAngle,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle,
-		const Mat4x4& transform)
-	{
-		return TransformAddedVertices(
-			m_mesh,
-			Mesh3DDetail::AppendRevolve(m_mesh, profile, segments, smoothingAngle),
-			transform);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const CloseEnds closeEnds)
-	{
-		return Mesh3DDetail::AppendRevolve(
-			m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::initializer_list<Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const CloseEnds closeEnds)
-	{
-		return addRevolve(
-			std::span<const Vec2>{ profile.begin(), profile.size() },
-			startAngle, sweepAngle, segments, closeEnds);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const Vec3 offset,
-		const CloseEnds closeEnds)
-	{
-		return addRevolve(
-			profile,
-			startAngle,
-			sweepAngle,
-			segments,
-			Mat4x4::Translate(Float3{ offset }),
-			closeEnds);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
 		const Vec3 offset,
 		const Quaternion& rotation,
-		const CloseEnds closeEnds)
+		const RevolveOptions& options)
 	{
 		return addRevolve(
 			profile,
-			startAngle,
-			sweepAngle,
-			segments,
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			closeEnds);
+			options);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
 		const Mat4x4& transform,
-		const CloseEnds closeEnds)
+		const RevolveOptions& options)
 	{
 		return TransformAddedVertices(
 			m_mesh,
-			Mesh3DDetail::AppendRevolve(
-				m_mesh, profile, startAngle, sweepAngle, segments, 0.0, closeEnds),
-			transform);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const CloseEnds closeEnds)
-	{
-		return Mesh3DDetail::AppendRevolve(
-			m_mesh,
-			profile,
-			startAngle,
-			sweepAngle,
-			segments,
-			smoothingAngle,
-			closeEnds);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::initializer_list<Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const CloseEnds closeEnds)
-	{
-		return addRevolve(
-			std::span<const Vec2>{ profile.begin(), profile.size() },
-			startAngle, sweepAngle, segments, smoothingAngle, closeEnds);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const Vec3 offset,
-		const CloseEnds closeEnds)
-	{
-		return addRevolve(
-			profile,
-			startAngle,
-			sweepAngle,
-			segments,
-			smoothingAngle,
-			Mat4x4::Translate(Float3{ offset }),
-			closeEnds);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const CloseEnds closeEnds)
-	{
-		return addRevolve(
-			profile,
-			startAngle,
-			sweepAngle,
-			segments,
-			smoothingAngle,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			closeEnds);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const Mat4x4& transform,
-		const CloseEnds closeEnds)
-	{
-		return TransformAddedVertices(
-			m_mesh,
-			Mesh3DDetail::AppendRevolve(
-				m_mesh,
-				profile,
-				startAngle,
-				sweepAngle,
-				segments,
-				smoothingAngle,
-				closeEnds),
+			Mesh3DDetail::AppendRevolve(m_mesh, profile, options),
 			transform);
 	}
 

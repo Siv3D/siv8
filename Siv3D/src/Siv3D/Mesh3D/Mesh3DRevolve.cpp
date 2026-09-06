@@ -95,14 +95,16 @@ namespace s3d
 			const Float2 profileNormal,
 			const RevolveCircleSample sample,
 			const float u,
-			const float v) noexcept
+			const float v,
+			const Float2 uvScale,
+			const Float2 uvOffset) noexcept
 		{
 			return Vertex3D{
 				.pos = Float3{ (point.x * sample.cos), point.y, (point.x * sample.sin) },
 				.normal = Float3{
 					(profileNormal.x * sample.cos), profileNormal.y, (profileNormal.x * sample.sin)
 				},
-				.tex = Float2{ u, v },
+				.tex = (Float2{ u, v } * uvScale + uvOffset),
 				.tangent = Float4{ sample.sin, 0.0f, -sample.cos, 1.0f }
 			};
 		}
@@ -114,28 +116,14 @@ namespace s3d::Mesh3DDetail
 	Mesh3DAddResult AppendRevolve(
 		Mesh3D& mesh,
 		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle)
+		const RevolveOptions& options)
 	{
-		return AppendRevolve(
-			mesh,
-			profile,
-			0.0,
-			Math::TwoPi,
-			segments,
-			smoothingAngle,
-			CloseEnds::No);
-	}
+		const uint32 segments = options.segments;
+		const double startAngle = options.startAngle;
+		const double sweepAngle = options.sweepAngle;
+		const double smoothingAngle = options.smoothingAngle;
+		const CloseEnds closeSweepEnds = options.closeSweepEnds;
 
-	Mesh3DAddResult AppendRevolve(
-		Mesh3D& mesh,
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const CloseEnds closeEnds)
-	{
 		if (profile.size() < 2)
 		{
 			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Revolve(): The profile must contain at least two points");
@@ -149,7 +137,7 @@ namespace s3d::Mesh3DDetail
 		}
 
 		const bool fullRevolution = (sweepAngle == Math::TwoPi);
-		const bool generateEndCaps = ((closeEnds == CloseEnds::Yes) && (not fullRevolution));
+		const bool generateEndCaps = ((closeSweepEnds == CloseEnds::Yes) && (not fullRevolution));
 		if ((sweepAngle <= 0.0)
 			|| (Math::TwoPi < sweepAngle)
 			|| (segments < (fullRevolution ? 3 : 1))
@@ -157,6 +145,14 @@ namespace s3d::Mesh3DDetail
 			|| (Math::Pi < smoothingAngle))
 		{
 			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Revolve(): The sweep angle, segment count, or smoothing angle is outside its supported range");
+		}
+
+		if ((not IsFloatRepresentable(options.uvScale))
+			|| (not IsFloatRepresentable(options.uvOffset))
+			|| (not IsFloatRepresentable(options.uvOffset.x + options.uvScale.x))
+			|| (not IsFloatRepresentable(options.uvOffset.y + options.uvScale.y)))
+		{
+			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Revolve(): The UV transform is non-finite or outside the supported range");
 		}
 
 		const bool closedProfile = (profile.front() == profile.back());
@@ -387,6 +383,8 @@ namespace s3d::Mesh3DDetail
 			: 1.0f);
 		const float inverseSegments = (1.0f / static_cast<float>(segments));
 		const double inverseTotalDistance = (1.0 / totalDistance);
+		const Float2 uvScale = options.uvScale;
+		const Float2 uvOffset = options.uvOffset;
 		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
 		size_t vertexOffset = vertexBase;
 
@@ -437,13 +435,15 @@ namespace s3d::Mesh3DDetail
 				for (uint32 i = 0; i < segments; ++i)
 				{
 					mesh.vertices[axisBase + i] = MakeVertex(
-						segment.start, startNormal, middleCircle[i], ((i + 0.5f) * inverseSegments), v0);
+						segment.start, startNormal, middleCircle[i], ((i + 0.5f) * inverseSegments), v0,
+						uvScale, uvOffset);
 				}
 
 				for (uint32 i = 0; i <= segments; ++i)
 				{
 					mesh.vertices[ringBase + i] = MakeVertex(
-						segment.end, endNormal, circle[i], (i * inverseSegments), v1);
+						segment.end, endNormal, circle[i], (i * inverseSegments), v1,
+						uvScale, uvOffset);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
@@ -462,13 +462,15 @@ namespace s3d::Mesh3DDetail
 				for (uint32 i = 0; i <= segments; ++i)
 				{
 					mesh.vertices[ringBase + i] = MakeVertex(
-						segment.start, startNormal, circle[i], (i * inverseSegments), v0);
+						segment.start, startNormal, circle[i], (i * inverseSegments), v0,
+						uvScale, uvOffset);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
 				{
 					mesh.vertices[axisBase + i] = MakeVertex(
-						segment.end, endNormal, middleCircle[i], ((i + 0.5f) * inverseSegments), v1);
+						segment.end, endNormal, middleCircle[i], ((i + 0.5f) * inverseSegments), v1,
+						uvScale, uvOffset);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
@@ -488,9 +490,9 @@ namespace s3d::Mesh3DDetail
 				{
 					const float u = (i * inverseSegments);
 					mesh.vertices[startRingBase + i] = MakeVertex(
-						segment.start, startNormal, circle[i], u, v0);
+						segment.start, startNormal, circle[i], u, v0, uvScale, uvOffset);
 					mesh.vertices[endRingBase + i] = MakeVertex(
-						segment.end, endNormal, circle[i], u, v1);
+						segment.end, endNormal, circle[i], u, v1, uvScale, uvOffset);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
@@ -540,10 +542,10 @@ namespace s3d::Mesh3DDetail
 							(source.x * sample.cos), source.y, (source.x * sample.sin)
 						},
 						.normal = normal,
-						.tex = Float2{
+						.tex = (Float2{
 							static_cast<float>((source.x - bounds.x) * inverseWidth),
 							static_cast<float>((source.y - bounds.y) * inverseHeight)
-						},
+						} * uvScale + uvOffset),
 						.tangent = tangent
 					};
 				}
@@ -576,94 +578,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Revolve(const std::span<const Vec2> profile, const uint32 segments)
-	{
-		Mesh3DBuilder builder;
-		(void)builder.addRevolve(profile, segments);
-		return std::move(builder).build();
-	}
-
-	Mesh3D Mesh3D::Revolve(const std::initializer_list<Vec2> profile, const uint32 segments)
-	{
-		return Revolve(std::span<const Vec2>{ profile.begin(), profile.size() }, segments);
-	}
-
 	Mesh3D Mesh3D::Revolve(
 		const std::span<const Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle)
+		const RevolveOptions& options)
 	{
 		Mesh3DBuilder builder;
-		(void)builder.addRevolve(profile, segments, smoothingAngle);
+		(void)builder.addRevolve(profile, options);
 		return std::move(builder).build();
 	}
 
 	Mesh3D Mesh3D::Revolve(
 		const std::initializer_list<Vec2> profile,
-		const uint32 segments,
-		const double smoothingAngle)
+		const RevolveOptions& options)
 	{
-		return Revolve(
-			std::span<const Vec2>{ profile.begin(), profile.size() },
-			segments,
-			smoothingAngle);
-	}
-
-	Mesh3D Mesh3D::Revolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const CloseEnds closeEnds)
-	{
-		Mesh3DBuilder builder;
-		(void)builder.addRevolve(profile, startAngle, sweepAngle, segments, closeEnds);
-		return std::move(builder).build();
-	}
-
-	Mesh3D Mesh3D::Revolve(
-		const std::initializer_list<Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const CloseEnds closeEnds)
-	{
-		return Revolve(
-			std::span<const Vec2>{ profile.begin(), profile.size() },
-			startAngle,
-			sweepAngle,
-			segments,
-			closeEnds);
-	}
-
-	Mesh3D Mesh3D::Revolve(
-		const std::span<const Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const CloseEnds closeEnds)
-	{
-		Mesh3DBuilder builder;
-		(void)builder.addRevolve(
-			profile, startAngle, sweepAngle, segments, smoothingAngle, closeEnds);
-		return std::move(builder).build();
-	}
-
-	Mesh3D Mesh3D::Revolve(
-		const std::initializer_list<Vec2> profile,
-		const double startAngle,
-		const double sweepAngle,
-		const uint32 segments,
-		const double smoothingAngle,
-		const CloseEnds closeEnds)
-	{
-		return Revolve(
-			std::span<const Vec2>{ profile.begin(), profile.size() },
-			startAngle,
-			sweepAngle,
-			segments,
-			smoothingAngle,
-			closeEnds);
+		return Revolve(std::span<const Vec2>{ profile.begin(), profile.size() }, options);
 	}
 }

@@ -22,6 +22,7 @@
 # include "Grid.hpp"
 # include "IWriter.hpp"
 # include "Material.hpp"
+# include "MathConstants.hpp"
 # include "Optional.hpp"
 # include "PredefinedNamedParameter.hpp"
 # include "PredefinedYesNo.hpp"
@@ -136,6 +137,37 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	RevolveOptions
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief Revolve の生成設定
+	struct RevolveOptions
+	{
+		/// @brief 回転を開始する角度（ラジアン）。0 は `+X` 方向です。
+		double startAngle = 0.0;
+
+		/// @brief Y 軸周りの正の回転方向（`+X` から `-Z`）へ進む角度（ラジアン）。0 より大きく 2π 以下である必要があります。
+		double sweepAngle = Math::TwoPi;
+
+		/// @brief 回転方向の分割数。部分回転では 1 以上、完全な一周では 3 以上である必要があります。
+		uint32 segments = 32;
+
+		/// @brief プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		double smoothingAngle = 0.0;
+
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale = Vec2{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset = Vec2{ 0.0, 0.0 };
+
+		/// @brief 部分回転の回転方向の始端と終端を閉じるか
+		CloseEnds closeSweepEnds = CloseEnds::No;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	TubeOptions
 	//
 	////////////////////////////////////////////////////////////////
@@ -232,6 +264,8 @@ namespace s3d
 	/// - 基本プリミティブ、`Extrude()`、`Plane()`、`Grid()` は、各関数で明記された軸について原点を中心に生成します。
 	/// - `Revolve()` のプロファイルの Y 座標、`Loft()` の `heights`、`HeightField()` の各高さ、および `Tube()` / `Sweep()` の経路座標は、平行移動せず生成後の座標として使用します。
 	/// - `Mesh3DBuilder` の offset と rotation を受け取る overload は、原点を中心に回転してから offset を加えます。
+	/// - 複数の回転を合成する場合、`a * b` は a、b の順に適用されます。形状のローカルな向き合わせを先に、配置用の回転を後に置きます。
+	/// - `Extrude()` を `Quaternion::RotateX(90_deg)` で配置すると、多角形の `(x, y)` は world の `(X, Y)`、押し出し方向は world の `+Z` になります。`Quaternion::RotateZ(90_deg)` では、多角形の `(x, y)` は world の `(Y, -Z)`、押し出し方向は world の `-X` になります。
 	/// @par 2D 輪郭の頂点順序
 	/// - `Polygon` の外周、および `Loft()` の各断面は、末尾から先頭へ戻る辺を含む `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。画面座標では時計回りに見える順序です。
 	/// - `Polygon` の穴は同じ式の値が負になる順序で指定します。画面座標では反時計回りに見える順序です。各輪郭では先頭頂点を末尾に重複させません。
@@ -333,6 +367,7 @@ namespace s3d
 		/// @param openFaces 壁を生成しない開口面
 		/// @return 中空直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
 		/// @remark 閉じた面には外面と内面を生成し、開口部には残る壁の厚みが見える縁面を生成します。内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
 		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
 		/// @remark `openFaces == BoxFace::All` の場合は空の 3D メッシュを返します。
 		[[nodiscard]]
@@ -347,6 +382,7 @@ namespace s3d
 		/// @param openFaces 壁を生成しない開口面
 		/// @return 中空直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
 		/// @remark 閉じた面には外面と内面を生成し、開口部には残る壁の厚みが見える縁面を生成します。内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
 		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
 		/// @remark `openFaces == BoxFace::All` の場合は空の 3D メッシュを返します。
 		[[nodiscard]]
@@ -361,6 +397,7 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param openFaces 壁を生成しない開口面
 		/// @return 中空直方体の 3D メッシュ。引数または使用する UV 矩形が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
 		[[nodiscard]]
 		static Mesh3D BoxShell(
 			Vec3 outerSize,
@@ -374,6 +411,7 @@ namespace s3d
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @param openFaces 壁を生成しない開口面
 		/// @return 中空直方体の 3D メッシュ。引数または使用する UV 矩形が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
 		[[nodiscard]]
 		static Mesh3D BoxShell(
 			Vec3 outerSize,
@@ -392,6 +430,7 @@ namespace s3d
 		/// @param thickness 角材の太さ。正の有限値で、`size` の最小成分の半分未満である必要があります。
 		/// @return 直方体枠の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
 		/// @remark 角材同士の接合部にある内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
 		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
 		[[nodiscard]]
 		static Mesh3D BoxFrame(
@@ -404,6 +443,7 @@ namespace s3d
 		/// @return 直方体枠の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
 		/// @remark X 方向の角材は `(size.x, beamSize.y, beamSize.z)`、Y/Z 方向の角材も同様の大きさになります。
 		/// @remark 角材同士の接合部にある内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
 		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
 		[[nodiscard]]
 		static Mesh3D BoxFrame(Vec3 size, Vec3 beamSize);
@@ -413,6 +453,7 @@ namespace s3d
 		/// @param thickness 角材の太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @return 直方体枠の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
 		[[nodiscard]]
 		static Mesh3D BoxFrame(
 			Vec3 size,
@@ -424,6 +465,7 @@ namespace s3d
 		/// @param beamSize 角材の軸ごとの太さ
 		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
 		/// @return 直方体枠の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
 		[[nodiscard]]
 		static Mesh3D BoxFrame(
 			Vec3 size,
@@ -552,6 +594,7 @@ namespace s3d
 		/// @param steps 段数。1 以上である必要があります。
 		/// @return 階段の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark X 軸方向を幅、Y 軸方向を全体の高さ、Z 軸方向を全体の奥行きとします。
+		/// @remark 踏み面、蹴上げ面、および側面は座標として密着しますが、頂点を共有しない T 字接合になります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
 		/// @remark UV 座標は、階段全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。
 		[[nodiscard]]
 		static Mesh3D Stairs(Vec3 size, uint32 steps);
@@ -561,6 +604,7 @@ namespace s3d
 		/// @param steps 段数。1 以上である必要があります。
 		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @return 階段の 3D メッシュ。引数または `uvMapping` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 踏み面、蹴上げ面、および側面は座標として密着しますが、頂点を共有しない T 字接合になります。
 		/// @remark 踏み面には `BoxUVMapping::positiveY`、蹴上げ面には `negativeZ`、背面には `positiveZ`、底面には `negativeY`、左右の側面には `positiveX` と `negativeX` が使用されます。
 		/// @remark 各 UV 矩形は個々の段へ引き伸ばされず、階段全体のバウンディングボックスを基準に投影されます。
 		[[nodiscard]]
@@ -654,116 +698,34 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 2D プロファイルを Y 軸の周りに一周回転させた 3D メッシュを作成します。
+		/// @brief 2D プロファイルを Y 軸の周りに回転させた 3D メッシュを作成します。
 		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
+		/// @param options 回転範囲、分割数、法線補間、UV 変換、および回転方向の端面設定
 		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark プロファイルの各線分を個別のハードエッジとして生成します。回転方向の法線は滑らかに接続されます。
-		/// @remark 半径 0 の端点は軸上の頂点として閉じられます。半径が正の端点には開口リングが残ります。端面は暗黙には追加されません。
+		/// @remark `options.smoothingAngle == 0` の場合、プロファイルの各線分を個別のハードエッジとして生成します。0 より大きい場合、その角度以下で接続する線分間の法線を補間します。回転方向の法線は常に滑らかに接続されます。
+		/// @remark float 変換後の半径が厳密に 0 の端点だけを軸上の頂点として閉じます。半径が正の端点には開口リングが残り、端面は暗黙には追加されません。軸上で閉じる端点は `Vec2{ 0.0, y }` のように半径 0 を明示してください。
 		/// @remark 先頭要素と末尾要素が完全に一致する場合は閉じたプロファイルとして扱います。閉じ目には UV seam のための重複頂点が作成されます。
 		/// @remark 閉じたプロファイルを表す先頭・末尾の一致を除き、float 変換後に連続する 2 点が同じになるプロファイルは無効です。
 		/// @remark 外側輪郭を Y 座標の小さい側から大きい側へ並べると外向きの面になります。プロファイルの順序を反転すると面と法線の向きも反転します。
-		/// @remark UV 座標の U は `+X` 方向を 0 として Y 軸周りの正の回転方向（`-Z` 方向）へ増加し、V はプロファイルの累積距離を `[0, 1]` に正規化した値です。
+		/// @remark UV 座標の U は `+X` 方向を 0 として指定した回転範囲を `[0, 1]` に正規化し、V はプロファイルの先頭からの累積距離を `[0, 1]` に正規化します。その後に `options.uvScale` と `options.uvOffset` を適用します。
+		/// @remark 外向き法線を得るためにプロファイルを Y 座標の小さい側から並べた場合、V は下側で 0、上側へ向かって増加します。画像の上端を上側に合わせるには `options.uvScale.y = -1`、`options.uvOffset.y = 1` を指定します。
+		/// @remark `options.closeSweepEnds == CloseEnds::Yes` の場合、部分回転の回転方向の始端と終端だけに平面の端面を作成します。プロファイルの半径が正の両端にある開口リングは閉じません。水密な部分回転体には、先頭と末尾が一致する閉じたプロファイルを指定します。
+		/// @remark `options.sweepAngle == 2π` の場合は回転方向の端面を作成せず、継ぎ目を接続します。
 		/// @remark プロファイルの自己交差および回転後の自己交差は検査しません。
 		[[nodiscard]]
-		static Mesh3D Revolve(std::span<const Vec2> profile, uint32 segments = 32);
-
-		/// @brief 2D プロファイルを Y 軸の周りに一周回転させた 3D メッシュを作成します。
-		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
-		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark プロファイル、開口、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Revolve(std::initializer_list<Vec2> profile, uint32 segments = 32);
-
-		/// @brief 2D プロファイルを Y 軸の周りに一周回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
-		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `smoothingAngle` 以下の角度で接続するプロファイル線分間では、共有するプロファイル頂点の法線を補間します。回転方向の法線は常に滑らかに接続されます。
-		/// @remark 座標、開口、および UV 座標の規約は 2 引数版の `Revolve()` と同じです。
-		[[nodiscard]]
-		static Mesh3D Revolve(std::span<const Vec2> profile, uint32 segments, double smoothingAngle);
-
-		/// @brief 2D プロファイルを Y 軸の周りに一周回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
-		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark プロファイル、開口、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Revolve(std::initializer_list<Vec2> profile, uint32 segments, double smoothingAngle);
-
-		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた 3D メッシュを作成します。
-		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
-		/// @param startAngle 回転を開始する角度（ラジアン）。0 は `+X` 方向です。
-		/// @param sweepAngle Y 軸周りの正の回転方向（`+X` から `-Z`）へ進む角度（ラジアン）。0 より大きく 2π 以下である必要があります。
-		/// @param segments 回転方向の分割数。部分回転では 1 以上、完全な一周では 3 以上である必要があります。
-		/// @param closeEnds 回転方向の始端と終端を閉じる場合は `CloseEnds::Yes`、端面を作成しない場合は `CloseEnds::No`
-		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `CloseEnds::Yes` の場合、プロファイルを直線で閉じた単純多角形として解釈し、回転方向の始端と終端に平面の端面を作成します。端面を作成できないプロファイルの場合は生成に失敗します。
-		/// @remark `sweepAngle == 2π` の場合は回転方向の端面を作成せず、継ぎ目を接続します。`startAngle == 0` なら 2 引数版の `Revolve()` と同じ形状になります。
-		/// @remark プロファイル、開口、UV 座標、および法線の規約は 2 引数版の `Revolve()` と同じです。側面の U 座標は指定した回転範囲を `[0, 1]` に正規化します。
-		[[nodiscard]]
 		static Mesh3D Revolve(
 			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			CloseEnds closeEnds = CloseEnds::No);
+			const RevolveOptions& options = {});
 
-		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた 3D メッシュを作成します。
+		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに回転させた 3D メッシュを作成します。
 		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
+		/// @param options 生成設定
 		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark プロファイル、角度、端面、および UV 座標の規約は `std::span` を受け取る角度指定オーバーロードと同じです。
+		/// @remark プロファイル、法線、角度、端面、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
 		[[nodiscard]]
 		static Mesh3D Revolve(
 			std::initializer_list<Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 法線の補間規約は 3 引数版の `Revolve()`、角度、端面、および UV 座標の規約は角度指定オーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Revolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			double smoothingAngle,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させ、プロファイル方向の法線を角度に応じて補間した 3D メッシュを作成します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark プロファイル、法線、角度、端面、および UV 座標の規約は `std::span` を受け取る角度指定オーバーロードと同じです。
-		[[nodiscard]]
-		static Mesh3D Revolve(
-			std::initializer_list<Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			double smoothingAngle,
-			CloseEnds closeEnds = CloseEnds::No);
+			const RevolveOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -840,6 +802,7 @@ namespace s3d
 		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark parallel-transport frame を使って断面を経路に沿って運びます。`options.initialXAxis` が未指定の場合、開始時の断面方向は最初の経路方向と最も平行でない座標軸から自動的に決定します。
 		/// @remark 断面の X 座標はフレームの第 1 軸 N、Y 座標は第 2 軸 `N.cross(T)` に対応します。T は経路の接線です。断面点 `(x, y)` は経路上の位置 P に対して `P + N * x + (N.cross(T)) * y` に配置されます。
+		/// @remark 例えば経路が world `+Y`、`options.initialXAxis` が world `+X` の場合、断面の `(x, y)` は world の `(X, Z)` に対応します。経路が world `+X`、`options.initialXAxis` が world `+Y` の場合、断面の X 軸は world `+Y`、Y 軸は world `-Z` に対応します。
 		/// @remark `options.endCaps` が未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。端面と側面、および断面の各頂点はハードエッジになります。
 		/// @remark 閉路に `Mesh3DEndCaps::Start`、`End`、または `Both` を明示した場合は生成に失敗します。`Mesh3DEndCaps::None` は指定できます。
 		/// @remark 側面の U 座標は外周と各穴の周長をそれぞれ `[0, 1]` とし、V 座標は経路の始端からの累積距離です。その後に `options.uvScale` と `options.uvOffset` が適用されます。

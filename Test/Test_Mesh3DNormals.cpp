@@ -284,7 +284,7 @@ TEST_CASE("Mesh3D::computeTangents generated mesh conventions")
 	SUBCASE("Revolve")
 	{
 		const Array<Vec2> profile{ { 1.0, -1.0 }, { 1.0, 1.0 } };
-		CheckComputedTangents("Revolve", Mesh3D::Revolve(profile, 16));
+		CheckComputedTangents("Revolve", Mesh3D::Revolve(profile, RevolveOptions{ .segments = 16 }));
 	}
 }
 

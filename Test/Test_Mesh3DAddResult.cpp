@@ -117,7 +117,9 @@ TEST_CASE("Mesh3DAddResult covers every builder shape family")
 	});
 	checkAddition([&] { return builder.addExtrude(rectangle, 1.0); });
 	checkAddition([&] {
-		return builder.addRevolve({ { 0.0, -0.5 }, { 0.5, -0.5 }, { 0.5, 0.5 }, { 0.0, 0.5 } }, 8);
+		return builder.addRevolve(
+			{ { 0.0, -0.5 }, { 0.5, -0.5 }, { 0.5, 0.5 }, { 0.0, 0.5 } },
+			RevolveOptions{ .segments = 8 });
 	});
 	checkAddition([&] { return builder.addTube(path, 0.1, TubeOptions{ .sides = 8 }); });
 	checkAddition([&] { return builder.addSweep(rectangle, path); });
@@ -271,18 +273,26 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addExtrude(nonFinitePolygon, 1.0),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
-		builder.addRevolve({ Vec2::Zero(), Vec2::UnitY() }, 8),
+		builder.addRevolve(
+			{ Vec2::Zero(), Vec2::UnitY() }, RevolveOptions{ .segments = 8 }),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
-		builder.addRevolve({ { 0.0, -1.0 }, { 1.0, -1.0 }, { 1.0, -1.0 }, { 0.0, 1.0 } }, 8),
+		builder.addRevolve(
+			{ { 0.0, -1.0 }, { 1.0, -1.0 }, { 1.0, -1.0 }, { 0.0, 1.0 } },
+			RevolveOptions{ .segments = 8 }),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
-		builder.addRevolve({ { -1.0, -1.0 }, { 1.0, 1.0 } }, 8),
+		builder.addRevolve(
+			{ { -1.0, -1.0 }, { 1.0, 1.0 } }, RevolveOptions{ .segments = 8 }),
 		Mesh3DErrorCode::InvalidArgument);
 	checkFailure(
 		builder.addRevolve(
 			{ { 0.0, -1.0 }, { 1.0, -1.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } },
-			infinity, Math::HalfPi, 4),
+			RevolveOptions{
+				.startAngle = infinity,
+				.sweepAngle = Math::HalfPi,
+				.segments = 4,
+			}),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addSweep(Polygon{}, path),

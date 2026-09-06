@@ -26,6 +26,7 @@ namespace s3d
 	/// @remark `addMesh()` は、呼び出し側が用意した Mesh3D の内容をビルダーが所有するメッシュへコピーします。
 	/// @remark 各 add 関数は Mesh3DAddResult を返します。成功時は追加された範囲、失敗時は分類済みのエラーを取得できます。
 	/// @remark add 関数が失敗した場合、Fail レベルのエンジンログへ理由を出力し、既存のメッシュ内容は変更されません。何も追加しない有効な操作は空範囲として成功します。
+	/// @remark 各 add 関数が生成する形状の座標、位相、UV 座標、法線、および接線の規約は、対応する `Mesh3D` の生成関数と同じです。
 	/// @code
 	/// if (const auto result = builder.addTube(path, 0.25))
 	/// {
@@ -1134,294 +1135,60 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 2D プロファイルを Y 軸の周りに一周回転させた形状を追加します。
+		/// @brief 2D プロファイルを Y 軸の周りに回転させた形状を追加します。
 		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
+		/// @param options 回転範囲、分割数、法線補間、UV 変換、および回転方向の端面設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 座標、開口、UV 座標、および法線の規約は `Mesh3D::Revolve()` と同じです。
+		/// @remark プロファイル、法線、角度、端面、および UV 座標の規約は `Mesh3D::Revolve()` と同じです。
 		[[nodiscard]]
-		Mesh3DAddResult addRevolve(std::span<const Vec2> profile, uint32 segments = 32);
+		Mesh3DAddResult addRevolve(
+			std::span<const Vec2> profile,
+			const RevolveOptions& options = {});
 
-		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに一周回転させた形状を追加します。
+		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに回転させた形状を追加します。
 		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
+		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark プロファイル、開口、UV 座標、および法線の規約は `std::span` を受け取るオーバーロードと同じです。
+		/// @remark プロファイル、法線、角度、端面、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
 		[[nodiscard]]
-		Mesh3DAddResult addRevolve(std::initializer_list<Vec2> profile, uint32 segments = 32);
+		Mesh3DAddResult addRevolve(
+			std::initializer_list<Vec2> profile,
+			const RevolveOptions& options = {});
 
 		/// @brief 平行移動した回転体を追加します。
 		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数
 		/// @param offset 平行移動量
+		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
-		Mesh3DAddResult addRevolve(std::span<const Vec2> profile, uint32 segments, Vec3 offset);
+		Mesh3DAddResult addRevolve(
+			std::span<const Vec2> profile,
+			Vec3 offset,
+			const RevolveOptions& options = {});
 
 		/// @brief 回転および平行移動した回転体を追加します。
 		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数
 		/// @param offset 平行移動量
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
+		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
 		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
-			uint32 segments,
 			Vec3 offset,
-			const Quaternion& rotation);
+			const Quaternion& rotation,
+			const RevolveOptions& options = {});
 
 		/// @brief アフィン変換を適用した回転体を追加します。
 		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数
 		/// @param transform 適用するアフィン変換行列
+		/// @param options 生成設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		[[nodiscard]]
 		Mesh3DAddResult addRevolve(
 			std::span<const Vec2> profile,
-			uint32 segments,
-			const Mat4x4& transform);
-
-		/// @brief 2D プロファイルを Y 軸の周りに一周回転させ、プロファイル方向の法線を角度に応じて補間した形状を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 座標、開口、UV 座標、および法線の規約は `Mesh3D::Revolve()` と同じです。
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			uint32 segments,
-			double smoothingAngle);
-
-		/// @brief 初期化子リストで指定した回転体を追加し、プロファイル方向の法線を角度に応じて補間します。
-		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数。3 以上である必要があります。
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::initializer_list<Vec2> profile,
-			uint32 segments,
-			double smoothingAngle);
-
-		/// @brief 平行移動し、プロファイル方向の法線を角度に応じて補間した回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param offset 平行移動量
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			uint32 segments,
-			double smoothingAngle,
-			Vec3 offset);
-
-		/// @brief 回転および平行移動し、プロファイル方向の法線を角度に応じて補間した回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			uint32 segments,
-			double smoothingAngle,
-			Vec3 offset,
-			const Quaternion& rotation);
-
-		/// @brief アフィン変換を適用し、プロファイル方向の法線を角度に応じて補間した回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param transform 適用するアフィン変換行列
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			uint32 segments,
-			double smoothingAngle,
-			const Mat4x4& transform);
-
-		/// @brief 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた形状を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）。0 は `+X` 方向です。
-		/// @param sweepAngle Y 軸周りの正の回転方向（`+X` から `-Z`）へ進む角度（ラジアン）。0 より大きく 2π 以下である必要があります。
-		/// @param segments 回転方向の分割数。部分回転では 1 以上、完全な一周では 3 以上である必要があります。
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 角度、端面、UV 座標、および法線の規約は角度を指定する `Mesh3D::Revolve()` と同じです。
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに指定した角度だけ回転させた形状を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::initializer_list<Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 平行移動した部分回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param offset 平行移動量
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			Vec3 offset,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 回転および平行移動した部分回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief アフィン変換を適用した部分回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
 			const Mat4x4& transform,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief プロファイル方向の法線を補間した部分回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			double smoothingAngle,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 初期化子リストで指定した部分回転体を追加し、プロファイル方向の法線を角度に応じて補間します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::initializer_list<Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			double smoothingAngle,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 平行移動し、プロファイル方向の法線を補間した部分回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
-		/// @param offset 平行移動量
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			double smoothingAngle,
-			Vec3 offset,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief 回転および平行移動し、プロファイル方向の法線を補間した部分回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			double smoothingAngle,
-			Vec3 offset,
-			const Quaternion& rotation,
-			CloseEnds closeEnds = CloseEnds::No);
-
-		/// @brief アフィン変換を適用し、プロファイル方向の法線を補間した部分回転体を追加します。
-		/// @param profile 回転させるプロファイル
-		/// @param startAngle 回転を開始する角度（ラジアン）
-		/// @param sweepAngle 回転する角度（ラジアン）
-		/// @param segments 回転方向の分割数
-		/// @param smoothingAngle プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）
-		/// @param transform 適用するアフィン変換行列
-		/// @param closeEnds 回転方向の始端と終端を閉じるかどうか
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addRevolve(
-			std::span<const Vec2> profile,
-			double startAngle,
-			double sweepAngle,
-			uint32 segments,
-			double smoothingAngle,
-			const Mat4x4& transform,
-			CloseEnds closeEnds = CloseEnds::No);
+			const RevolveOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//

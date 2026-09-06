@@ -9,6 +9,11 @@
 
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 
+### `Vec3` の回転
+
+- 3D モデリングコードでは形状・配置計算を `Vec3` で行う一方、`Quaternion::rotate()` が `Float3` だけを受け取るため、`Vec3 -> Float3 -> Vec3` の変換が繰り返された。
+- `Vec3 rotate(Vec3)` overload を追加する場合の精度、内部で float quaternion を使うことの契約、および既存 `Float3` overload との名前の一貫性を確認する。
+
 ### Squad 補間
 
 - `squad()` と制御点生成 API の引数構成を設計する。
@@ -48,6 +53,28 @@
 
 ## `Siv3D/include/Siv3D/Mesh3D.hpp`
 
+### API 表面の整理
+
+- `Mesh3DBuilder` の多くの generator は、base、offset、offset + rotation、`Mat4x4` という同じ配置 overload を個別に持つ。形状パラメータの種類との直積で宣言数が増えるため、明示的な `Mesh3DPlacement` のような値型へ集約できるか検討する。
+  - stateful な transform stack は、復元忘れや合成順序の誤りを生みやすいため第一候補にしない。
+  - `Vec3`、`Vec3 + Quaternion`、`Mat4x4` の簡潔さ、変換の検証、options を末尾に置く規則を同時に満たす必要がある。
+- `Extrude` の smoothing、`Loft` / `Plane` / `Grid` の UV、Box 系の scalar / vector と UV mapping の組み合わせを options へ集約するか、実利用コードと宣言数を比較して決める。単に型数を増やすだけの options 化は行わない。
+- `Mesh3DRange::isEmpty()` は「頂点数と三角形数がともに 0」、`Mesh3D::isEmpty()` は「描画可能な三角形を持たない」という異なる意味を持つ。range 側を `isNoOp()` などへ改名するか検討する。
+- `Mesh3D::validate()` は index と頂点数だけを検査し、非有限値、縮退、位相は検査しない。契約を狭く表す名前へ改めるか、現状の簡潔さを優先するか決める。
+
+### Builder の配置入力と失敗
+
+- offset、rotation、`Mat4x4` を受け取る add 関数は、生成後に変換を適用している。非有限 offset、非単位 quaternion、非アフィンまたは非有限 matrix を、既存内容を変更する前に拒否する契約を検討する。
+  - `NumericRange` は非有限値や float 範囲外、`InvalidArgument` は非単位 quaternion や非アフィン matrix に使用できる。新しい error code は、呼び出し側が既存分類と区別して処理する必要が確認された場合だけ追加する。
+  - 全 transformed add に検証を加える実行時コストを測り、頻繁な追加処理へ例外入力対策の分岐を追加してよいか判断する。
+- 大量の add 結果を逐次検査する用途向けに、最初の失敗を収集する外部ヘルパ、builder の診断 sink、現状の `Mesh3DAddResult` のどれが最小かを実利用コードで比較する。builder が暗黙に失敗状態を持つ設計は、再利用時の状態を増やすため慎重に扱う。
+
+### 点列入力の準備と厳密性
+
+- 計算上 0 を意図した `Revolve` の微小な正の端点半径は開口リングになり、float 演算で縮退三角形を生む場合がある。生成三角形の追加検証を行うか、厳密な 0 を要求する現契約と警告だけに留めるか、実行時コストを含めて決める。
+- `Polygon` / `Loft` 断面の winding 正規化、サンプリングした曲線の連続重複点除去、円形断面生成は複数モデルで繰り返された。Mesh3D 固有 API ではなく 2D geometry / 点列 utility として提供できるかを先に調べる。
+- `Extrude`、`Loft`、`Sweep` で連続重複点を一律に自動除去する案は、入力ミスを隠すこと、属性対応をずらすこと、追加コストを伴うため採用しない。必要なら明示的な前処理 API とする。
+
 ### 部品範囲と部品情報
 
 - 部品範囲の長期的な所有先を決める。
@@ -67,7 +94,6 @@
 ### 利用例
 
 - 2 点間を結ぶ柱・梁には `Tube({ from, to }, radius)` を使えることを示し、専用 `Cylinder(from, to)` overload の必要性はその後に再評価する。
-- 2D 立面図を world XY、押し出し方向を world Z として使う、`Extrude()` + `Quaternion::RotateX(90_deg)` の例を追加する。
 - `HeightField()` の `Grid<float>` 入力と callable 入力の使い分け、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
 - `Cylindrical` / `Spherical` の配置例、および接合部には `Box`、露出部には `ChamferedBox` / `RoundedBox` を使う指針は、サンプル拡充時の候補とする。
 
