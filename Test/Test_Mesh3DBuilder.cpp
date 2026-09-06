@@ -16,9 +16,7 @@ TEST_CASE("Mesh3DBuilder::addMesh")
 	static_assert(requires
 	{
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&)>(&Mesh3DBuilder::addMesh);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&, Vec3)>(&Mesh3DBuilder::addMesh);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&, Vec3, const Quaternion&)>(&Mesh3DBuilder::addMesh);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&, const Mat4x4&)>(&Mesh3DBuilder::addMesh);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Mesh3D&, const Mesh3DPlacement&)>(&Mesh3DBuilder::addMesh);
 	});
 
 	const Mesh3D source = Mesh3D::Wedge(Vec3{ 2.0, 4.0, 6.0 });
@@ -37,7 +35,7 @@ TEST_CASE("Mesh3DBuilder::addMesh")
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 		REQUIRE(builder.addMesh(source, offset));
-		REQUIRE(builder.addMesh(source, offset, rotation));
+		REQUIRE(builder.addMesh(source, { offset, rotation }));
 		REQUIRE(builder.addMesh(source, transform));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
@@ -83,24 +81,13 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			const Grid<float>&, SizeF, const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec3, const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, Vec3, const Quaternion&,
-			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			const Grid<float>&, SizeF, const Mat4x4&,
+			const Grid<float>&, SizeF, const Mesh3DPlacement&,
 			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
 			Size, SizeF, FunctionRef<double(Point)>,
 			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			Size, SizeF, FunctionRef<double(Point)>, Vec3,
-			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			Size, SizeF, FunctionRef<double(Point)>, Vec3, const Quaternion&,
-			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			Size, SizeF, FunctionRef<double(Point)>, const Mat4x4&,
+			Size, SizeF, FunctionRef<double(Point)>, const Mesh3DPlacement&,
 			const HeightFieldOptions&)>(&Mesh3DBuilder::addHeightField);
 	});
 
@@ -126,7 +113,7 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 		REQUIRE(builder.addHeightField(heights, sizeXZ, offset));
-		REQUIRE(builder.addHeightField(heights, sizeXZ, offset, rotation));
+		REQUIRE(builder.addHeightField(heights, sizeXZ, { offset, rotation }));
 		REQUIRE(builder.addHeightField(heights, sizeXZ, transform, options));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
@@ -159,7 +146,7 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 		REQUIRE(builder.addHeightField(
 			gridSize, sizeXZ, heightFunction, offset));
 		REQUIRE(builder.addHeightField(
-			gridSize, sizeXZ, heightFunction, offset, rotation));
+			gridSize, sizeXZ, heightFunction, { offset, rotation }));
 		REQUIRE(builder.addHeightField(
 			gridSize, sizeXZ, heightFunction, transform, options));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
@@ -195,19 +182,10 @@ TEST_CASE("Mesh3DBuilder::addLoft")
 	{
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2)>(
 			&Mesh3DBuilder::addLoft);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec3)>(
-			&Mesh3DBuilder::addLoft);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec3, const Quaternion&)>(
-			&Mesh3DBuilder::addLoft);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, const Mat4x4&)>(
-			&Mesh3DBuilder::addLoft);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2, Vec3)>(
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, const Mesh3DPlacement&)>(
 			&Mesh3DBuilder::addLoft);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			SectionViews, Heights, Vec2, Vec2, Vec3, const Quaternion&)>(
-			&Mesh3DBuilder::addLoft);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			SectionViews, Heights, Vec2, Vec2, const Mat4x4&)>(
+			SectionViews, Heights, Vec2, Vec2, const Mesh3DPlacement&)>(
 			&Mesh3DBuilder::addLoft);
 	});
 
@@ -233,7 +211,7 @@ TEST_CASE("Mesh3DBuilder::addLoft")
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 		REQUIRE(builder.addLoft(sections, heights, offset));
-		REQUIRE(builder.addLoft(sections, heights, offset, rotation));
+		REQUIRE(builder.addLoft(sections, heights, { offset, rotation }));
 		REQUIRE(builder.addLoft(sections, heights, uvScale, uvOffset, transform));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
@@ -303,7 +281,7 @@ TEST_CASE("Mesh3DBuilder::addBox")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addBox(size, offset, rotation));
+		REQUIRE(builder.addBox(size, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Box(size).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -336,7 +314,7 @@ TEST_CASE("Mesh3DBuilder::addBox")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addBox(size, offset, faces));
-		REQUIRE(builder.addBox(size, offset, rotation, faces));
+		REQUIRE(builder.addBox(size, { offset, rotation }, faces));
 		REQUIRE(builder.addBox(size, transform, faces));
 
 		Mesh3D expected = Mesh3D::Box(size, faces).translated(offset);
@@ -360,7 +338,7 @@ TEST_CASE("Mesh3DBuilder::addBox")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addBox(size, uvMapping, offset, faces));
-		REQUIRE(builder.addBox(size, uvMapping, offset, rotation, faces));
+		REQUIRE(builder.addBox(size, uvMapping, { offset, rotation }, faces));
 		REQUIRE(builder.addBox(size, uvMapping, transform, faces));
 
 		Mesh3D expected = Mesh3D::Box(size, uvMapping, faces).translated(offset);
@@ -436,7 +414,7 @@ TEST_CASE("Mesh3DBuilder::addRoundedBox")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addRoundedBox(Size, Radius, Subdivisions, offset, rotation));
+		REQUIRE(builder.addRoundedBox(Size, Radius, Subdivisions, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::RoundedBox(Size, Radius, Subdivisions).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -521,10 +499,10 @@ TEST_CASE("Mesh3DBuilder::addChamferedBox")
 			Float3{ 5.0f, 6.0f, 7.0f });
 
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addChamferedBox(Size, Chamfer, offset, rotation));
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, { offset, rotation }));
 		REQUIRE(builder.addChamferedBox(Size, Chamfer, transform));
 		REQUIRE(builder.addChamferedBox(Size, Chamfer, uvMapping, offset));
-		REQUIRE(builder.addChamferedBox(Size, Chamfer, uvMapping, offset, rotation));
+		REQUIRE(builder.addChamferedBox(Size, Chamfer, uvMapping, { offset, rotation }));
 		REQUIRE(builder.addChamferedBox(Size, Chamfer, uvMapping, transform));
 
 		const Mesh3D plain = Mesh3D::ChamferedBox(Size, Chamfer);
@@ -585,7 +563,7 @@ TEST_CASE("Mesh3DBuilder::addWedge")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addWedge(size, uvMapping, offset, rotation));
+		REQUIRE(builder.addWedge(size, uvMapping, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Wedge(size, uvMapping).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -670,7 +648,7 @@ TEST_CASE("Mesh3DBuilder::addStairs")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addStairs(size, Steps, uvMapping, offset, rotation));
+		REQUIRE(builder.addStairs(size, Steps, uvMapping, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Stairs(size, Steps, uvMapping).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -762,7 +740,7 @@ TEST_CASE("Mesh3DBuilder::addPyramid")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addPyramid(4.0, Height, offset, rotation));
+		REQUIRE(builder.addPyramid(4.0, Height, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Pyramid(4.0, Height).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -808,7 +786,7 @@ TEST_CASE("Mesh3DBuilder regular polyhedra")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addTetrahedron(1.0, offset));
-		REQUIRE(builder.addOctahedron(1.5, offset, rotation));
+		REQUIRE(builder.addOctahedron(1.5, { offset, rotation }));
 		REQUIRE(builder.addIcosahedron(2.0, transform));
 		REQUIRE(builder.addDodecahedron(2.5, transform));
 
@@ -842,12 +820,8 @@ TEST_CASE("Mesh3DBuilder::addIcoSphere")
 	{
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(double, uint32)>(
 			&Mesh3DBuilder::addIcoSphere);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(double, uint32, Vec3)>(
-			&Mesh3DBuilder::addIcoSphere);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			double, uint32, Vec3, const Quaternion&)>(&Mesh3DBuilder::addIcoSphere);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			double, uint32, const Mat4x4&)>(&Mesh3DBuilder::addIcoSphere);
+			double, uint32, const Mesh3DPlacement&)>(&Mesh3DBuilder::addIcoSphere);
 	});
 
 	constexpr double Radius = 2.0;
@@ -866,7 +840,7 @@ TEST_CASE("Mesh3DBuilder::addIcoSphere")
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 		REQUIRE(builder.addIcoSphere(Radius, Subdivisions, offset));
-		REQUIRE(builder.addIcoSphere(Radius, Subdivisions, offset, rotation));
+		REQUIRE(builder.addIcoSphere(Radius, Subdivisions, { offset, rotation }));
 		REQUIRE(builder.addIcoSphere(Radius, Subdivisions, transform));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
@@ -913,7 +887,7 @@ TEST_CASE("Mesh3DBuilder::addPlane")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addPlane(sizeXZ, uvScale, uvOffset, offset, rotation));
+		REQUIRE(builder.addPlane(sizeXZ, uvScale, uvOffset, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Plane(sizeXZ, uvScale, uvOffset).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -1050,7 +1024,7 @@ TEST_CASE("Mesh3DBuilder::addAnnulus")
 		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addAnnulus(
-			InnerRadius, OuterRadius, Segments, offset, rotation));
+			InnerRadius, OuterRadius, Segments, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Annulus(
 			InnerRadius, OuterRadius, Segments).transformed(
@@ -1104,7 +1078,7 @@ TEST_CASE("Mesh3DBuilder::addHollowCylinder")
 		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addHollowCylinder(
-			InnerRadius, OuterRadius, Height, Segments, offset, rotation));
+			InnerRadius, OuterRadius, Height, Segments, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::HollowCylinder(
 			InnerRadius, OuterRadius, Height, Segments).transformed(
@@ -1200,7 +1174,7 @@ TEST_CASE("Mesh3DBuilder::addCylinder and addCone")
 		const Mat4x4 transform = Mat4x4::AffineTransform(
 			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addCylinder(Radius, Height, Segments, offset, rotation));
+		REQUIRE(builder.addCylinder(Radius, Height, Segments, { offset, rotation }));
 		REQUIRE(builder.addCone(Radius, Height, Segments, transform));
 
 		Mesh3D expected = Mesh3D::Cylinder(Radius, Height, Segments).transformed(
@@ -1247,7 +1221,7 @@ TEST_CASE("Mesh3DBuilder::addTorus")
 		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addTorus(
-			MajorRadius, TubeRadius, RingSegments, TubeSegments, offset, rotation));
+			MajorRadius, TubeRadius, RingSegments, TubeSegments, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Torus(
 			MajorRadius, TubeRadius, RingSegments, TubeSegments).transformed(
@@ -1309,7 +1283,7 @@ TEST_CASE("Mesh3DBuilder::addSphere")
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addSphere(Radius, Slices, Stacks, offset, rotation));
+		REQUIRE(builder.addSphere(Radius, Slices, Stacks, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Sphere(Radius, Slices, Stacks).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -1372,7 +1346,7 @@ TEST_CASE("Mesh3DBuilder::addHemisphere")
 		const Quaternion rotation = Quaternion::RotateX(Math::QuarterPiF);
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addHemisphere(
-			Radius, Slices, Stacks, offset, rotation));
+			Radius, Slices, Stacks, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Hemisphere(Radius, Slices, Stacks).transformed(
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
@@ -1439,7 +1413,7 @@ TEST_CASE("Mesh3DBuilder::addCapsule")
 		const Quaternion rotation = Quaternion::RotateZ(Math::QuarterPiF);
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addCapsule(
-			Radius, CylinderHeight, Slices, HemisphereStacks, offset, rotation));
+			Radius, CylinderHeight, Slices, HemisphereStacks, { offset, rotation }));
 
 		const Mesh3D expected = Mesh3D::Capsule(
 			Radius, CylinderHeight, Slices, HemisphereStacks).transformed(

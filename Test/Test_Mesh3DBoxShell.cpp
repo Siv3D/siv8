@@ -23,21 +23,13 @@ namespace
 		static_cast<Mesh3D (*)(Vec3, double, const BoxUVMapping&, BoxFace)>(&Mesh3D::BoxShell);
 		static_cast<Mesh3D (*)(Vec3, Vec3, const BoxUVMapping&, BoxFace)>(&Mesh3D::BoxShell);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const Mesh3DPlacement&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const Mesh3DPlacement&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, double, const BoxUVMapping&, const Mesh3DPlacement&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, Vec3, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, Vec3, const Quaternion&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, const Mat4x4&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(Vec3, Vec3, const BoxUVMapping&, const Mesh3DPlacement&, BoxFace)>(&Mesh3DBuilder::addBoxShell);
 	});
 }
 
@@ -165,7 +157,7 @@ TEST_CASE("Mesh3DBuilder::addBoxShell transforms and storage")
 	REQUIRE(builder.addBoxShell(OuterSize, Thickness, openFaces));
 	const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 	const TriangleIndex32* const indexData = builder.getMesh().indices.data();
-	REQUIRE(builder.addBoxShell(OuterSize, Thickness, offset, rotation, openFaces));
+	REQUIRE(builder.addBoxShell(OuterSize, Thickness, { offset, rotation }, openFaces));
 	REQUIRE(builder.addBoxShell(OuterSize, Thickness, BoxUVMapping{}, transform, openFaces));
 	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 	CHECK_EQ(builder.getMesh().indices.data(), indexData);

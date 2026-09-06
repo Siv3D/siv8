@@ -50,9 +50,7 @@ namespace
 		static_cast<Mesh3D (*)(std::initializer_list<Vec2>, const RevolveOptions&)>(&Mesh3D::Revolve);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec2>, const RevolveOptions&)>(&Mesh3DBuilder::addRevolve);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec2>, const RevolveOptions&)>(&Mesh3DBuilder::addRevolve);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec2>, Vec3, const RevolveOptions&)>(&Mesh3DBuilder::addRevolve);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec2>, Vec3, const Quaternion&, const RevolveOptions&)>(&Mesh3DBuilder::addRevolve);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec2>, const Mat4x4&, const RevolveOptions&)>(&Mesh3DBuilder::addRevolve);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec2>, const Mesh3DPlacement&, const RevolveOptions&)>(&Mesh3DBuilder::addRevolve);
 	});
 
 }
@@ -462,11 +460,11 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addRevolve(profile, offset, hardOptions));
-		REQUIRE(builder.addRevolve(profile, offset, rotation, hardOptions));
+		REQUIRE(builder.addRevolve(profile, { offset, rotation }, hardOptions));
 		REQUIRE(builder.addRevolve(profile, transform, hardOptions));
 		REQUIRE(builder.addRevolve(profile, smoothOptions));
 		REQUIRE(builder.addRevolve(profile, offset, smoothOptions));
-		REQUIRE(builder.addRevolve(profile, offset, rotation, smoothOptions));
+		REQUIRE(builder.addRevolve(profile, { offset, rotation }, smoothOptions));
 		REQUIRE(builder.addRevolve(profile, transform, smoothOptions));
 
 		Mesh3D expected;
@@ -500,11 +498,11 @@ TEST_CASE("Mesh3DBuilder::addRevolve")
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addRevolve(profile, hardOptions));
 		REQUIRE(builder.addRevolve(profile, offset, hardOptions));
-		REQUIRE(builder.addRevolve(profile, offset, rotation, hardOptions));
+		REQUIRE(builder.addRevolve(profile, { offset, rotation }, hardOptions));
 		REQUIRE(builder.addRevolve(profile, transform, hardOptions));
 		REQUIRE(builder.addRevolve(profile, smoothOptions));
 		REQUIRE(builder.addRevolve(profile, offset, smoothOptions));
-		REQUIRE(builder.addRevolve(profile, offset, rotation, smoothOptions));
+		REQUIRE(builder.addRevolve(profile, { offset, rotation }, smoothOptions));
 		REQUIRE(builder.addRevolve(profile, transform, smoothOptions));
 
 		Mesh3D expected;

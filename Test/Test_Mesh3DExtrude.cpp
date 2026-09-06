@@ -22,13 +22,9 @@ namespace
 		static_cast<Mesh3D (*)(const Polygon&, double)>(&Mesh3D::Extrude);
 		static_cast<Mesh3D (*)(const Polygon&, double, double)>(&Mesh3D::Extrude);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, Vec3)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, const Mesh3DPlacement&)>(&Mesh3DBuilder::addExtrude);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, Vec3, const Quaternion&)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, const Mat4x4&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, const Mesh3DPlacement&)>(&Mesh3DBuilder::addExtrude);
 	});
 
 }
@@ -282,11 +278,11 @@ TEST_CASE("Mesh3DBuilder::addExtrude")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addExtrude(polygon, Height, offset));
-		REQUIRE(builder.addExtrude(polygon, Height, offset, rotation));
+		REQUIRE(builder.addExtrude(polygon, Height, { offset, rotation }));
 		REQUIRE(builder.addExtrude(polygon, Height, transform));
 		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle));
 		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, offset));
-		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, offset, rotation));
+		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, { offset, rotation }));
 		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, transform));
 
 		Mesh3D expected;

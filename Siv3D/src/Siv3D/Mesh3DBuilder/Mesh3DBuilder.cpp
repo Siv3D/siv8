@@ -499,21 +499,9 @@ namespace s3d
 		return AddedRange(m_mesh, vertexOffset, triangleOffset);
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Vec3 offset)
-	{
-		return addMesh(mesh, Mat4x4::Translate(Float3{ offset }));
-	}
-
 	Mesh3DAddResult Mesh3DBuilder::addMesh(
 		const Mesh3D& mesh,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addMesh(mesh,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addMesh(const Mesh3D& mesh, const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		const size_t vertexOffset = m_mesh.vertices.size();
 		const size_t triangleOffset = m_mesh.indices.size();
@@ -523,7 +511,7 @@ namespace s3d
 			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh must not be empty");
 		}
 
-		if (not m_mesh.append(mesh, transform))
+		if (not m_mesh.append(mesh, placement.getTransform()))
 		{
 			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
 		}
@@ -542,23 +530,9 @@ namespace s3d
 		return addBox(size, BoxUVMapping{}, faces);
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addBox(const Vec3 size, const Vec3 offset, const BoxFace faces)
+	Mesh3DAddResult Mesh3DBuilder::addBox(const Vec3 size, const Mesh3DPlacement& placement, const BoxFace faces)
 	{
-		return addBox(size, BoxUVMapping{}, offset, faces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBox(
-		const Vec3 size,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const BoxFace faces)
-	{
-		return addBox(size, BoxUVMapping{}, offset, rotation, faces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBox(const Vec3 size, const Mat4x4& transform, const BoxFace faces)
-	{
-		return addBox(size, BoxUVMapping{}, transform, faces);
+		return addBox(size, BoxUVMapping{}, placement, faces);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addBox(
@@ -708,27 +682,7 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addBox(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const BoxFace faces)
-	{
-		return addBox(size, uvMapping, Mat4x4::Translate(Float3{ offset }), faces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBox(
-		const Vec3 size,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const BoxFace faces)
-	{
-		return addBox(size, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), faces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBox(
-		const Vec3 size,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const BoxFace faces)
 	{
 		Mesh3DAddResult result = addBox(size, uvMapping, faces);
@@ -741,7 +695,7 @@ namespace s3d
 		{
 			TransformVertexRange(
 				std::span<Vertex3D>{ (m_mesh.vertices.data() + result->vertexOffset), result->vertexCount },
-				transform);
+				placement.getTransform());
 		}
 		return result;
 	}
@@ -763,29 +717,10 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const double thickness,
-		const Vec3 offset,
+		const Mesh3DPlacement& placement,
 		const BoxFace openFaces)
 	{
-		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, offset, openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const double thickness,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, offset, rotation, openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const double thickness,
-		const Mat4x4& transform,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, transform, openFaces);
+		return addBoxShell(outerSize, Vec3::All(thickness), BoxUVMapping{}, placement, openFaces);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
@@ -799,29 +734,10 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
 		const Vec3 outerSize,
 		const Vec3 thickness,
-		const Vec3 offset,
+		const Mesh3DPlacement& placement,
 		const BoxFace openFaces)
 	{
-		return addBoxShell(outerSize, thickness, BoxUVMapping{}, offset, openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const Vec3 thickness,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, thickness, BoxUVMapping{}, offset, rotation, openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const Vec3 thickness,
-		const Mat4x4& transform,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, thickness, BoxUVMapping{}, transform, openFaces);
+		return addBoxShell(outerSize, thickness, BoxUVMapping{}, placement, openFaces);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
@@ -837,31 +753,10 @@ namespace s3d
 		const Vec3 outerSize,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
+		const Mesh3DPlacement& placement,
 		const BoxFace openFaces)
 	{
-		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, offset, openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const double thickness,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, offset, rotation, openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const double thickness,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, transform, openFaces);
+		return addBoxShell(outerSize, Vec3::All(thickness), uvMapping, placement, openFaces);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
@@ -1035,35 +930,13 @@ namespace s3d
 		const Vec3 outerSize,
 		const Vec3 thickness,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, thickness, uvMapping, Mat4x4::Translate(Float3{ offset }), openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const Vec3 thickness,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const BoxFace openFaces)
-	{
-		return addBoxShell(outerSize, thickness, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), openFaces);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxShell(
-		const Vec3 outerSize,
-		const Vec3 thickness,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const BoxFace openFaces)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addBoxShell(outerSize, thickness, uvMapping, openFaces),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1080,26 +953,9 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const double thickness,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const double thickness,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const double thickness,
-		const Mat4x4& transform)
-	{
-		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{}, transform);
+		return addBoxFrame(size, Vec3::All(thickness), BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(const Vec3 size, const Vec3 beamSize)
@@ -1110,26 +966,9 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
 		const Vec3 size,
 		const Vec3 beamSize,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addBoxFrame(size, beamSize, BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const Vec3 beamSize,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addBoxFrame(size, beamSize, BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const Vec3 beamSize,
-		const Mat4x4& transform)
-	{
-		return addBoxFrame(size, beamSize, BoxUVMapping{}, transform);
+		return addBoxFrame(size, beamSize, BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
@@ -1144,28 +983,9 @@ namespace s3d
 		const Vec3 size,
 		const double thickness,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addBoxFrame(size, Vec3::All(thickness), uvMapping, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const double thickness,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addBoxFrame(size, Vec3::All(thickness), uvMapping, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const double thickness,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
-	{
-		return addBoxFrame(size, Vec3::All(thickness), uvMapping, transform);
+		return addBoxFrame(size, Vec3::All(thickness), uvMapping, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
@@ -1259,32 +1079,12 @@ namespace s3d
 		const Vec3 size,
 		const Vec3 beamSize,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
-	{
-		return addBoxFrame(size, beamSize, uvMapping, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const Vec3 beamSize,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addBoxFrame(size, beamSize, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addBoxFrame(
-		const Vec3 size,
-		const Vec3 beamSize,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addBoxFrame(size, beamSize, uvMapping),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1305,28 +1105,9 @@ namespace s3d
 		const Vec3 size,
 		const double radius,
 		const uint32 subdivisions,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
-		const Vec3 size,
-		const double radius,
-		const uint32 subdivisions,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
-		const Vec3 size,
-		const double radius,
-		const uint32 subdivisions,
-		const Mat4x4& transform)
-	{
-		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{}, transform);
+		return addRoundedBox(size, radius, subdivisions, BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
@@ -1559,35 +1340,12 @@ namespace s3d
 		const double radius,
 		const uint32 subdivisions,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
-	{
-		return addRoundedBox(size, radius, subdivisions, uvMapping,
-			Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
-		const Vec3 size,
-		const double radius,
-		const uint32 subdivisions,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addRoundedBox(size, radius, subdivisions, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRoundedBox(
-		const Vec3 size,
-		const double radius,
-		const uint32 subdivisions,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addRoundedBox(size, radius, subdivisions, uvMapping),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1604,26 +1362,9 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
 		const Vec3 size,
 		const double chamfer,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addChamferedBox(size, chamfer, BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
-		const Vec3 size,
-		const double chamfer,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addChamferedBox(size, chamfer, BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
-		const Vec3 size,
-		const double chamfer,
-		const Mat4x4& transform)
-	{
-		return addChamferedBox(size, chamfer, BoxUVMapping{}, transform);
+		return addChamferedBox(size, chamfer, BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
@@ -1866,33 +1607,12 @@ namespace s3d
 		const Vec3 size,
 		const double chamfer,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
-	{
-		return addChamferedBox(
-			size, chamfer, uvMapping, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
-		const Vec3 size,
-		const double chamfer,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addChamferedBox(size, chamfer, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addChamferedBox(
-		const Vec3 size,
-		const double chamfer,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addChamferedBox(size, chamfer, uvMapping),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1906,19 +1626,9 @@ namespace s3d
 		return addWedge(size, BoxUVMapping{});
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size, const Mesh3DPlacement& placement)
 	{
-		return addWedge(size, BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size, const Vec3 offset, const Quaternion& rotation)
-	{
-		return addWedge(size, BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 size, const Mat4x4& transform)
-	{
-		return addWedge(size, BoxUVMapping{}, transform);
+		return addWedge(size, BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addWedge(const Vec3 _size, const BoxUVMapping& uvMapping)
@@ -2014,30 +1724,12 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addWedge(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
-	{
-		return addWedge(size, uvMapping, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addWedge(
-		const Vec3 size,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addWedge(size, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addWedge(
-		const Vec3 size,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addWedge(size, uvMapping),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2054,30 +1746,12 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
-		const Vec3 offset)
-	{
-		return addExtrude(polygon, height, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addExtrude(
-		const Polygon& polygon,
-		const double height,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addExtrude(polygon, height,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addExtrude(
-		const Polygon& polygon,
-		const double height,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0),
-			transform);
+			placement.getTransform());
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addExtrude(
@@ -2092,33 +1766,12 @@ namespace s3d
 		const Polygon& polygon,
 		const double height,
 		const double smoothingAngle,
-		const Vec3 offset)
-	{
-		return addExtrude(
-			polygon, height, smoothingAngle, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addExtrude(
-		const Polygon& polygon,
-		const double height,
-		const double smoothingAngle,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addExtrude(polygon, height, smoothingAngle,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addExtrude(
-		const Polygon& polygon,
-		const double height,
-		const double smoothingAngle,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2143,33 +1796,13 @@ namespace s3d
 
 	Mesh3DAddResult Mesh3DBuilder::addRevolve(
 		const std::span<const Vec2> profile,
-		const Vec3 offset,
-		const RevolveOptions& options)
-	{
-		return addRevolve(profile, Mat4x4::Translate(Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const RevolveOptions& options)
-	{
-		return addRevolve(
-			profile,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRevolve(
-		const std::span<const Vec2> profile,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const RevolveOptions& options)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			Mesh3DDetail::AppendRevolve(m_mesh, profile, options),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2217,65 +1850,25 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const double radius,
-		const Vec3 offset,
-		const TubeOptions& options)
-	{
-		return addTube(path, radius, Mat4x4::Translate(Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTube(
-		const std::span<const Vec3> path,
-		const double radius,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const TubeOptions& options)
-	{
-		return addTube(
-			path, radius,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTube(
-		const std::span<const Vec3> path,
-		const double radius,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const TubeOptions& options)
 	{
 		return TransformAddedVertices(
-			m_mesh, Mesh3DDetail::AppendTube(m_mesh, path, radius, options), transform);
+			m_mesh,
+			Mesh3DDetail::AppendTube(m_mesh, path, radius, options),
+			placement.getTransform());
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addTube(
 		const std::span<const Vec3> path,
 		const std::span<const double> radii,
-		const Vec3 offset,
-		const TubeOptions& options)
-	{
-		return addTube(path, radii, Mat4x4::Translate(Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTube(
-		const std::span<const Vec3> path,
-		const std::span<const double> radii,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const TubeOptions& options)
-	{
-		return addTube(
-			path, radii,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTube(
-		const std::span<const Vec3> path,
-		const std::span<const double> radii,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const TubeOptions& options)
 	{
 		return TransformAddedVertices(
-			m_mesh, Mesh3DDetail::AppendTube(m_mesh, path, radii, options), transform);
+			m_mesh,
+			Mesh3DDetail::AppendTube(m_mesh, path, radii, options),
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2304,34 +1897,13 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addSweep(
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
-		const Vec3 offset,
-		const SweepOptions& options)
-	{
-		return addSweep(
-			crossSection, path, Mat4x4::Translate(Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addSweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const SweepOptions& options)
-	{
-		return addSweep(
-			crossSection, path,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addSweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const SweepOptions& options)
 	{
 		return TransformAddedVertices(
-			m_mesh, Mesh3DDetail::AppendSweep(m_mesh, crossSection, path, options), transform);
+			m_mesh,
+			Mesh3DDetail::AppendSweep(m_mesh, crossSection, path, options),
+			placement.getTransform());
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addSweep(
@@ -2362,39 +1934,14 @@ namespace s3d
 		const Polygon& crossSection,
 		const std::span<const Vec3> path,
 		const std::span<const SweepSectionTransform> sectionTransforms,
-		const Vec3 offset,
-		const SweepOptions& options)
-	{
-		return addSweep(
-			crossSection, path, sectionTransforms,
-			Mat4x4::Translate(Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addSweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const std::span<const SweepSectionTransform> sectionTransforms,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const SweepOptions& options)
-	{
-		return addSweep(
-			crossSection, path, sectionTransforms,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addSweep(
-		const Polygon& crossSection,
-		const std::span<const Vec3> path,
-		const std::span<const SweepSectionTransform> sectionTransforms,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const SweepOptions& options)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			Mesh3DDetail::AppendSweep(
 				m_mesh, crossSection, path, sectionTransforms, options),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2408,22 +1955,9 @@ namespace s3d
 		return addTriangularPrism(size, BoxUVMapping{});
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 size, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 size, const Mesh3DPlacement& placement)
 	{
-		return addTriangularPrism(size, BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
-		const Vec3 size,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addTriangularPrism(size, BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 size, const Mat4x4& transform)
-	{
-		return addTriangularPrism(size, BoxUVMapping{}, transform);
+		return addTriangularPrism(size, BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(const Vec3 _size, const BoxUVMapping& uvMapping)
@@ -2516,30 +2050,12 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
 		const Vec3 size,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
-	{
-		return addTriangularPrism(size, uvMapping, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
-		const Vec3 size,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addTriangularPrism(size, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTriangularPrism(
-		const Vec3 size,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addTriangularPrism(size, uvMapping),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2553,23 +2069,9 @@ namespace s3d
 		return addStairs(size, steps, BoxUVMapping{});
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps, const Mesh3DPlacement& placement)
 	{
-		return addStairs(size, steps, BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addStairs(
-		const Vec3 size,
-		const uint32 steps,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addStairs(size, steps, BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addStairs(const Vec3 size, const uint32 steps, const Mat4x4& transform)
-	{
-		return addStairs(size, steps, BoxUVMapping{}, transform);
+		return addStairs(size, steps, BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addStairs(
@@ -2702,32 +2204,12 @@ namespace s3d
 		const Vec3 size,
 		const uint32 steps,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
-	{
-		return addStairs(size, steps, uvMapping, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addStairs(
-		const Vec3 size,
-		const uint32 steps,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addStairs(size, steps, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addStairs(
-		const Vec3 size,
-		const uint32 steps,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addStairs(size, steps, uvMapping),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2744,26 +2226,9 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const double baseSize,
 		const double height,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addPyramid(SizeF{ baseSize, baseSize }, height, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPyramid(
-		const double baseSize,
-		const double height,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addPyramid(SizeF{ baseSize, baseSize }, height, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPyramid(
-		const double baseSize,
-		const double height,
-		const Mat4x4& transform)
-	{
-		return addPyramid(SizeF{ baseSize, baseSize }, height, transform);
+		return addPyramid(SizeF{ baseSize, baseSize }, height, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addPyramid(const SizeF _baseSizeXZ, const double _height)
@@ -2903,30 +2368,12 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addPyramid(
 		const SizeF baseSizeXZ,
 		const double height,
-		const Vec3 offset)
-	{
-		return addPyramid(baseSizeXZ, height, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPyramid(
-		const SizeF baseSizeXZ,
-		const double height,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addPyramid(baseSizeXZ, height,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPyramid(
-		const SizeF baseSizeXZ,
-		const double height,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addPyramid(baseSizeXZ, height),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2947,29 +2394,9 @@ namespace s3d
 		const SizeF bottomSizeXZ,
 		const SizeF topSizeXZ,
 		const double height,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, BoxUVMapping{}, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
-		const SizeF bottomSizeXZ,
-		const SizeF topSizeXZ,
-		const double height,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addRectangularFrustum(
-			bottomSizeXZ, topSizeXZ, height, BoxUVMapping{}, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
-		const SizeF bottomSizeXZ,
-		const SizeF topSizeXZ,
-		const double height,
-		const Mat4x4& transform)
-	{
-		return addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, BoxUVMapping{}, transform);
+		return addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, BoxUVMapping{}, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
@@ -3120,35 +2547,12 @@ namespace s3d
 		const SizeF topSizeXZ,
 		const double height,
 		const BoxUVMapping& uvMapping,
-		const Vec3 offset)
-	{
-		return addRectangularFrustum(
-			bottomSizeXZ, topSizeXZ, height, uvMapping, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
-		const SizeF bottomSizeXZ,
-		const SizeF topSizeXZ,
-		const double height,
-		const BoxUVMapping& uvMapping,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, uvMapping,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addRectangularFrustum(
-		const SizeF bottomSizeXZ,
-		const SizeF topSizeXZ,
-		const double height,
-		const BoxUVMapping& uvMapping,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addRectangularFrustum(bottomSizeXZ, topSizeXZ, height, uvMapping),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3194,23 +2598,9 @@ namespace s3d
 			(m_mesh.indices.size() - 4));
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(const double radius, const Mesh3DPlacement& placement)
 	{
-		return addTetrahedron(radius, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(
-		const double radius,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addTetrahedron(radius,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTetrahedron(const double radius, const Mat4x4& transform)
-	{
-		return TransformAddedVertices(m_mesh, addTetrahedron(radius), transform);
+		return TransformAddedVertices(m_mesh, addTetrahedron(radius), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3258,23 +2648,9 @@ namespace s3d
 			(m_mesh.indices.size() - 8));
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addOctahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addOctahedron(const double radius, const Mesh3DPlacement& placement)
 	{
-		return addOctahedron(radius, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addOctahedron(
-		const double radius,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addOctahedron(radius,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addOctahedron(const double radius, const Mat4x4& transform)
-	{
-		return TransformAddedVertices(m_mesh, addOctahedron(radius), transform);
+		return TransformAddedVertices(m_mesh, addOctahedron(radius), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3312,23 +2688,9 @@ namespace s3d
 			(m_mesh.indices.size() - 20));
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(const double radius, const Mesh3DPlacement& placement)
 	{
-		return addIcosahedron(radius, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(
-		const double radius,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addIcosahedron(radius,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addIcosahedron(const double radius, const Mat4x4& transform)
-	{
-		return TransformAddedVertices(m_mesh, addIcosahedron(radius), transform);
+		return TransformAddedVertices(m_mesh, addIcosahedron(radius), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3474,30 +2836,10 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addIcoSphere(
 		const double radius,
 		const uint32 subdivisions,
-		const Vec3 offset)
-	{
-		return addIcoSphere(
-			radius, subdivisions, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addIcoSphere(
-		const double radius,
-		const uint32 subdivisions,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addIcoSphere(
-			radius, subdivisions,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addIcoSphere(
-		const double radius,
-		const uint32 subdivisions,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
-			m_mesh, addIcoSphere(radius, subdivisions), transform);
+			m_mesh, addIcoSphere(radius, subdivisions), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3584,23 +2926,9 @@ namespace s3d
 			(m_mesh.indices.size() - 36));
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(const double radius, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(const double radius, const Mesh3DPlacement& placement)
 	{
-		return addDodecahedron(radius, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(
-		const double radius,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addDodecahedron(radius,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addDodecahedron(const double radius, const Mat4x4& transform)
-	{
-		return TransformAddedVertices(m_mesh, addDodecahedron(radius), transform);
+		return TransformAddedVertices(m_mesh, addDodecahedron(radius), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3617,52 +2945,18 @@ namespace s3d
 		return addGrid(sizeXZ, 1, 1, uvScale, uvOffset);
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Vec3 offset)
+	Mesh3DAddResult Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Mesh3DPlacement& placement)
 	{
-		return addPlane(sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPlane(
-		const SizeF sizeXZ,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addPlane(
-			sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPlane(const SizeF sizeXZ, const Mat4x4& transform)
-	{
-		return addPlane(sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+		return addPlane(sizeXZ, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addPlane(
 		const SizeF sizeXZ,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addPlane(sizeXZ, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPlane(
-		const SizeF sizeXZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addPlane(sizeXZ, uvScale, uvOffset,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addPlane(
-		const SizeF sizeXZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Mat4x4& transform)
-	{
-		return addGrid(sizeXZ, 1, 1, uvScale, uvOffset, transform);
+		return addGrid(sizeXZ, 1, 1, uvScale, uvOffset, placement);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3773,31 +3067,10 @@ namespace s3d
 		const SizeF sizeXZ,
 		const uint32 segmentsX,
 		const uint32 segmentsZ,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
 		return addGrid(sizeXZ, segmentsX, segmentsZ,
-			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addGrid(
-		const SizeF sizeXZ,
-		const uint32 segmentsX,
-		const uint32 segmentsZ,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addGrid(sizeXZ, segmentsX, segmentsZ,
-			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addGrid(
-		const SizeF sizeXZ,
-		const uint32 segmentsX,
-		const uint32 segmentsZ,
-		const Mat4x4& transform)
-	{
-		return addGrid(sizeXZ, segmentsX, segmentsZ,
-			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+			Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addGrid(
@@ -3806,37 +3079,12 @@ namespace s3d
 		const uint32 segmentsZ,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
-		const Vec3 offset)
-	{
-		return addGrid(sizeXZ, segmentsX, segmentsZ,
-			uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addGrid(
-		const SizeF sizeXZ,
-		const uint32 segmentsX,
-		const uint32 segmentsZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addGrid(
-		const SizeF sizeXZ,
-		const uint32 segmentsX,
-		const uint32 segmentsZ,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addGrid(sizeXZ, segmentsX, segmentsZ, uvScale, uvOffset),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3856,36 +3104,13 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addHeightField(
 		const Grid<float>& heights,
 		const SizeF sizeXZ,
-		const Vec3 offset,
-		const HeightFieldOptions& options)
-	{
-		return addHeightField(
-			heights, sizeXZ, Mat4x4::Translate(Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHeightField(
-		const Grid<float>& heights,
-		const SizeF sizeXZ,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const HeightFieldOptions& options)
-	{
-		return addHeightField(
-			heights, sizeXZ,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHeightField(
-		const Grid<float>& heights,
-		const SizeF sizeXZ,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const HeightFieldOptions& options)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			Mesh3DDetail::AppendHeightField(m_mesh, heights, sizeXZ, options),
-			transform);
+			placement.getTransform());
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addHeightField(
@@ -3902,40 +3127,14 @@ namespace s3d
 		const Size gridSize,
 		const SizeF sizeXZ,
 		const FunctionRef<double(Point)> heightFunction,
-		const Vec3 offset,
-		const HeightFieldOptions& options)
-	{
-		return addHeightField(
-			gridSize, sizeXZ, heightFunction,
-			Mat4x4::Translate(Float3{ offset }), options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHeightField(
-		const Size gridSize,
-		const SizeF sizeXZ,
-		const FunctionRef<double(Point)> heightFunction,
-		const Vec3 offset,
-		const Quaternion& rotation,
-		const HeightFieldOptions& options)
-	{
-		return addHeightField(
-			gridSize, sizeXZ, heightFunction,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }),
-			options);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHeightField(
-		const Size gridSize,
-		const SizeF sizeXZ,
-		const FunctionRef<double(Point)> heightFunction,
-		const Mat4x4& transform,
+		const Mesh3DPlacement& placement,
 		const HeightFieldOptions& options)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			Mesh3DDetail::AppendHeightField(
 				m_mesh, gridSize, sizeXZ, heightFunction, options),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -3956,28 +3155,10 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const std::span<const std::span<const Vec2>> sections,
 		const std::span<const double> heights,
-		const Vec3 offset)
-	{
-		return addLoft(sections, heights, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const std::span<const std::span<const Vec2>> sections,
-		const std::span<const double> heights,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addLoft(sections, heights,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const std::span<const std::span<const Vec2>> sections,
-		const std::span<const double> heights,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return addLoft(
-			sections, heights, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, transform);
+			sections, heights, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addLoft(
@@ -3985,35 +3166,12 @@ namespace s3d
 		const std::span<const double> heights,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
-		const Vec3 offset)
-	{
-		return addLoft(
-			sections, heights, uvScale, uvOffset, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const std::span<const std::span<const Vec2>> sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addLoft(sections, heights, uvScale, uvOffset,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const std::span<const std::span<const Vec2>> sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addLoft(sections, heights, uvScale, uvOffset),
-			transform);
+			placement.getTransform());
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addLoft(
@@ -4028,26 +3186,9 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addLoft(
 		const Array<Array<Vec2>>& sections,
 		const std::span<const double> heights,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addLoft(MakeSectionViews(sections), heights, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const Array<Array<Vec2>>& sections,
-		const std::span<const double> heights,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addLoft(MakeSectionViews(sections), heights, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const Array<Array<Vec2>>& sections,
-		const std::span<const double> heights,
-		const Mat4x4& transform)
-	{
-		return addLoft(MakeSectionViews(sections), heights, transform);
+		return addLoft(MakeSectionViews(sections), heights, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addLoft(
@@ -4055,31 +3196,9 @@ namespace s3d
 		const std::span<const double> heights,
 		const Vec2 uvScale,
 		const Vec2 uvOffset,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const Array<Array<Vec2>>& sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addLoft(
-			MakeSectionViews(sections), heights, uvScale, uvOffset, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const Array<Array<Vec2>>& sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Mat4x4& transform)
-	{
-		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset, transform);
+		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset, placement);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4096,26 +3215,9 @@ namespace s3d
 	Mesh3DAddResult Mesh3DBuilder::addDisc(
 		const double radius,
 		const uint32 segments,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addAnnulus(0.0, radius, segments, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addDisc(
-		const double radius,
-		const uint32 segments,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addAnnulus(0.0, radius, segments, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addDisc(
-		const double radius,
-		const uint32 segments,
-		const Mat4x4& transform)
-	{
-		return addAnnulus(0.0, radius, segments, transform);
+		return addAnnulus(0.0, radius, segments, placement);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4256,33 +3358,12 @@ namespace s3d
 		const double innerRadius,
 		const double outerRadius,
 		const uint32 segments,
-		const Vec3 offset)
-	{
-		return addAnnulus(
-			innerRadius, outerRadius, segments, Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addAnnulus(
-		const double innerRadius,
-		const double outerRadius,
-		const uint32 segments,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addAnnulus(innerRadius, outerRadius, segments,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addAnnulus(
-		const double innerRadius,
-		const double outerRadius,
-		const uint32 segments,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addAnnulus(innerRadius, outerRadius, segments),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4464,35 +3545,12 @@ namespace s3d
 		const double outerRadius,
 		const double height,
 		const uint32 segments,
-		const Vec3 offset)
-	{
-		return addHollowCylinder(innerRadius, outerRadius, height, segments,
-			Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHollowCylinder(
-		const double innerRadius,
-		const double outerRadius,
-		const double height,
-		const uint32 segments,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addHollowCylinder(innerRadius, outerRadius, height, segments,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHollowCylinder(
-		const double innerRadius,
-		const double outerRadius,
-		const double height,
-		const uint32 segments,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addHollowCylinder(innerRadius, outerRadius, height, segments),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4751,35 +3809,12 @@ namespace s3d
 		const double topRadius,
 		const double height,
 		const uint32 segments,
-		const Vec3 offset)
-	{
-		return addConicalFrustum(bottomRadius, topRadius, height, segments,
-			Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addConicalFrustum(
-		const double bottomRadius,
-		const double topRadius,
-		const double height,
-		const uint32 segments,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addConicalFrustum(bottomRadius, topRadius, height, segments,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addConicalFrustum(
-		const double bottomRadius,
-		const double topRadius,
-		const double height,
-		const uint32 segments,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addConicalFrustum(bottomRadius, topRadius, height, segments),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4800,28 +3835,9 @@ namespace s3d
 		const double radius,
 		const double height,
 		const uint32 segments,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addConicalFrustum(radius, radius, height, segments, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addCylinder(
-		const double radius,
-		const double height,
-		const uint32 segments,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addConicalFrustum(radius, radius, height, segments, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addCylinder(
-		const double radius,
-		const double height,
-		const uint32 segments,
-		const Mat4x4& transform)
-	{
-		return addConicalFrustum(radius, radius, height, segments, transform);
+		return addConicalFrustum(radius, radius, height, segments, placement);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4842,28 +3858,9 @@ namespace s3d
 		const double radius,
 		const double height,
 		const uint32 segments,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addConicalFrustum(radius, 0.0, height, segments, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addCone(
-		const double radius,
-		const double height,
-		const uint32 segments,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addConicalFrustum(radius, 0.0, height, segments, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addCone(
-		const double radius,
-		const double height,
-		const uint32 segments,
-		const Mat4x4& transform)
-	{
-		return addConicalFrustum(radius, 0.0, height, segments, transform);
+		return addConicalFrustum(radius, 0.0, height, segments, placement);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -4977,35 +3974,12 @@ namespace s3d
 		const double tubeRadius,
 		const uint32 ringSegments,
 		const uint32 tubeSegments,
-		const Vec3 offset)
-	{
-		return addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments,
-			Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTorus(
-		const double majorRadius,
-		const double tubeRadius,
-		const uint32 ringSegments,
-		const uint32 tubeSegments,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addTorus(
-		const double majorRadius,
-		const double tubeRadius,
-		const uint32 ringSegments,
-		const uint32 tubeSegments,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addTorus(majorRadius, tubeRadius, ringSegments, tubeSegments),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -5159,30 +4133,9 @@ namespace s3d
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addSphere(radius, slices, stacks,
-			Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addSphere(
-		const double radius,
-		const uint32 slices,
-		const uint32 stacks,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addSphere(radius, slices, stacks,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addSphere(
-		const double radius,
-		const uint32 slices,
-		const uint32 stacks,
-		const Mat4x4& transform)
-	{
-		return TransformAddedVertices(m_mesh, addSphere(radius, slices, stacks), transform);
+		return TransformAddedVertices(m_mesh, addSphere(radius, slices, stacks), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -5203,28 +4156,9 @@ namespace s3d
 		const double radius,
 		const uint32 slices,
 		const uint32 stacks,
-		const Vec3 offset)
+		const Mesh3DPlacement& placement)
 	{
-		return addHemisphere(radius, CloseBottom::No, slices, stacks, offset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
-		const double radius,
-		const uint32 slices,
-		const uint32 stacks,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addHemisphere(radius, CloseBottom::No, slices, stacks, offset, rotation);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
-		const double radius,
-		const uint32 slices,
-		const uint32 stacks,
-		const Mat4x4& transform)
-	{
-		return addHemisphere(radius, CloseBottom::No, slices, stacks, transform);
+		return addHemisphere(radius, CloseBottom::No, slices, stacks, placement);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
@@ -5412,35 +4346,12 @@ namespace s3d
 		const CloseBottom closeBottom,
 		const uint32 slices,
 		const uint32 stacks,
-		const Vec3 offset)
-	{
-		return addHemisphere(radius, closeBottom, slices, stacks,
-			Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
-		const double radius,
-		const CloseBottom closeBottom,
-		const uint32 slices,
-		const uint32 stacks,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addHemisphere(radius, closeBottom, slices, stacks,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addHemisphere(
-		const double radius,
-		const CloseBottom closeBottom,
-		const uint32 slices,
-		const uint32 stacks,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addHemisphere(radius, closeBottom, slices, stacks),
-			transform);
+			placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -5641,34 +4552,11 @@ namespace s3d
 		const double cylinderHeight,
 		const uint32 slices,
 		const uint32 hemisphereStacks,
-		const Vec3 offset)
-	{
-		return addCapsule(radius, cylinderHeight, slices, hemisphereStacks,
-			Mat4x4::Translate(Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addCapsule(
-		const double radius,
-		const double cylinderHeight,
-		const uint32 slices,
-		const uint32 hemisphereStacks,
-		const Vec3 offset,
-		const Quaternion& rotation)
-	{
-		return addCapsule(radius, cylinderHeight, slices, hemisphereStacks,
-			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }));
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addCapsule(
-		const double radius,
-		const double cylinderHeight,
-		const uint32 slices,
-		const uint32 hemisphereStacks,
-		const Mat4x4& transform)
+		const Mesh3DPlacement& placement)
 	{
 		return TransformAddedVertices(
 			m_mesh,
 			addCapsule(radius, cylinderHeight, slices, hemisphereStacks),
-			transform);
+			placement.getTransform());
 	}
 }

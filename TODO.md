@@ -55,16 +55,13 @@
 
 ### API 表面の整理
 
-- `Mesh3DBuilder` の多くの generator は、base、offset、offset + rotation、`Mat4x4` という同じ配置 overload を個別に持つ。形状パラメータの種類との直積で宣言数が増えるため、明示的な `Mesh3DPlacement` のような値型へ集約できるか検討する。
-  - stateful な transform stack は、復元忘れや合成順序の誤りを生みやすいため第一候補にしない。
-  - `Vec3`、`Vec3 + Quaternion`、`Mat4x4` の簡潔さ、変換の検証、options を末尾に置く規則を同時に満たす必要がある。
 - `Extrude` の smoothing、`Loft` / `Plane` / `Grid` の UV、Box 系の scalar / vector と UV mapping の組み合わせを options へ集約するか、実利用コードと宣言数を比較して決める。単に型数を増やすだけの options 化は行わない。
 - `Mesh3DRange::isEmpty()` は「頂点数と三角形数がともに 0」、`Mesh3D::isEmpty()` は「描画可能な三角形を持たない」という異なる意味を持つ。range 側を `isNoOp()` などへ改名するか検討する。
 - `Mesh3D::validate()` は index と頂点数だけを検査し、非有限値、縮退、位相は検査しない。契約を狭く表す名前へ改めるか、現状の簡潔さを優先するか決める。
 
 ### Builder の配置入力と失敗
 
-- offset、rotation、`Mat4x4` を受け取る add 関数は、生成後に変換を適用している。非有限 offset、非単位 quaternion、非アフィンまたは非有限 matrix を、既存内容を変更する前に拒否する契約を検討する。
+- `Mesh3DPlacement` 付き add 関数は、形状生成後に配置変換を適用している。`Vec3`、offset + quaternion、`Mat4x4` から作られた placement について、非有限 offset、非単位 quaternion、非アフィンまたは非有限 matrix を、既存内容を変更する前に拒否する契約を検討する。
   - `NumericRange` は非有限値や float 範囲外、`InvalidArgument` は非単位 quaternion や非アフィン matrix に使用できる。新しい error code は、呼び出し側が既存分類と区別して処理する必要が確認された場合だけ追加する。
   - 全 transformed add に検証を加える実行時コストを測り、頻繁な追加処理へ例外入力対策の分岐を追加してよいか判断する。
 - 大量の add 結果を逐次検査する用途向けに、最初の失敗を収集する外部ヘルパ、builder の診断 sink、現状の `Mesh3DAddResult` のどれが最小かを実利用コードで比較する。builder が暗黙に失敗状態を持つ設計は、再利用時の状態を増やすため慎重に扱う。

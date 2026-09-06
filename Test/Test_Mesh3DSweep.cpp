@@ -25,14 +25,10 @@ namespace
 		static_cast<Mesh3D (*)(const Polygon&, std::initializer_list<Vec3>, std::initializer_list<SweepSectionTransform>, const SweepOptions&)>(&Mesh3D::Sweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, Vec3, const Quaternion&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, const Mat4x4&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, const Mesh3DPlacement&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::initializer_list<Vec3>, std::initializer_list<SweepSectionTransform>, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, Vec3, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, Vec3, const Quaternion&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, const Mat4x4&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, std::span<const Vec3>, std::span<const SweepSectionTransform>, const Mesh3DPlacement&, const SweepOptions&)>(&Mesh3DBuilder::addSweep);
 	});
 
 }
@@ -140,10 +136,10 @@ TEST_CASE("Mesh3DBuilder::addSweep")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addSweep(crossSection, path, offset));
-		REQUIRE(builder.addSweep(crossSection, path, offset, rotation));
+		REQUIRE(builder.addSweep(crossSection, path, { offset, rotation }));
 		REQUIRE(builder.addSweep(crossSection, path, transform));
 		REQUIRE(builder.addSweep(crossSection, path, offset, uvOptions));
-		REQUIRE(builder.addSweep(crossSection, path, offset, rotation, uvOptions));
+		REQUIRE(builder.addSweep(crossSection, path, { offset, rotation }, uvOptions));
 		REQUIRE(builder.addSweep(crossSection, path, transform, uvOptions));
 
 		Mesh3D expected;
@@ -168,10 +164,10 @@ TEST_CASE("Mesh3DBuilder::addSweep")
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addSweep(crossSection, path, orientedOptions));
 		REQUIRE(builder.addSweep(crossSection, path, offset, orientedOptions));
-		REQUIRE(builder.addSweep(crossSection, path, offset, rotation, orientedOptions));
+		REQUIRE(builder.addSweep(crossSection, path, { offset, rotation }, orientedOptions));
 		REQUIRE(builder.addSweep(crossSection, path, transform, orientedOptions));
 		REQUIRE(builder.addSweep(crossSection, path, offset, orientedUVOptions));
-		REQUIRE(builder.addSweep(crossSection, path, offset, rotation, orientedUVOptions));
+		REQUIRE(builder.addSweep(crossSection, path, { offset, rotation }, orientedUVOptions));
 		REQUIRE(builder.addSweep(crossSection, path, transform, orientedUVOptions));
 
 		Mesh3D expected = oriented;
@@ -334,7 +330,7 @@ TEST_CASE("Mesh3DBuilder::addSweep options placement overloads")
 	REQUIRE(builder.addSweep(crossSection,
 		{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 } }, options));
 	REQUIRE(builder.addSweep(crossSection, path, offset, options));
-	REQUIRE(builder.addSweep(crossSection, path, offset, rotation, options));
+	REQUIRE(builder.addSweep(crossSection, path, { offset, rotation }, options));
 	REQUIRE(builder.addSweep(crossSection, path, transform, options));
 	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 	CHECK_EQ(builder.getMesh().indices.data(), indexData);
@@ -508,7 +504,7 @@ TEST_CASE("Mesh3DBuilder::addSweep per-point transforms")
 		{ 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 }, { 1.0, 3.0, 1.0 }
 	}, { {}, { Vec2{ 1.2, 0.8 }, 0.1 }, { Vec2{ 0.9, 1.1 }, 0.2 } }, options));
 	REQUIRE(builder.addSweep(crossSection, path, transforms, offset, options));
-	REQUIRE(builder.addSweep(crossSection, path, transforms, offset, rotation, options));
+	REQUIRE(builder.addSweep(crossSection, path, transforms, { offset, rotation }, options));
 	REQUIRE(builder.addSweep(crossSection, path, transforms, transform, options));
 	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 	CHECK_EQ(builder.getMesh().indices.data(), indexData);

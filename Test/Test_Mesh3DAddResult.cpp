@@ -49,7 +49,7 @@ TEST_CASE("Mesh3DAddResult ranges")
 
 	const Array<Vec3> path{ { 0.0, 0.0, 0.0 }, { 0.0, 2.0, 0.0 } };
 	const Mesh3DAddResult tubeResult = builder.addTube(
-		path, 0.25, Vec3{ 1.0, 2.0, 3.0 }, Quaternion::RotateX(30_degF),
+		path, 0.25, { Vec3{ 1.0, 2.0, 3.0 }, Quaternion::RotateX(30_degF) },
 		TubeOptions{ .sides = 8 });
 	REQUIRE(tubeResult);
 	CHECK_EQ(tubeResult->vertexOffset, boxResult->vertexCount);

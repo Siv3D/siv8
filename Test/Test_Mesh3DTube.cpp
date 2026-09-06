@@ -27,12 +27,8 @@ namespace
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, double, const TubeOptions&)>(&Mesh3DBuilder::addTube);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, const TubeOptions&)>(&Mesh3DBuilder::addTube);
 		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::initializer_list<Vec3>, std::initializer_list<double>, const TubeOptions&)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, Vec3, const TubeOptions&)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, Vec3, const Quaternion&, const TubeOptions&)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, const Mat4x4&, const TubeOptions&)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, Vec3, const TubeOptions&)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, Vec3, const Quaternion&, const TubeOptions&)>(&Mesh3DBuilder::addTube);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, const Mat4x4&, const TubeOptions&)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, double, const Mesh3DPlacement&, const TubeOptions&)>(&Mesh3DBuilder::addTube);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const Vec3>, std::span<const double>, const Mesh3DPlacement&, const TubeOptions&)>(&Mesh3DBuilder::addTube);
 	});
 
 }
@@ -112,10 +108,10 @@ TEST_CASE("Mesh3DBuilder::addTube")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addTube(path, Radius, offset, defaultUVOptions));
-		REQUIRE(builder.addTube(path, Radius, offset, rotation, defaultUVOptions));
+		REQUIRE(builder.addTube(path, Radius, { offset, rotation }, defaultUVOptions));
 		REQUIRE(builder.addTube(path, Radius, transform, defaultUVOptions));
 		REQUIRE(builder.addTube(path, Radius, offset, options));
-		REQUIRE(builder.addTube(path, Radius, offset, rotation, options));
+		REQUIRE(builder.addTube(path, Radius, { offset, rotation }, options));
 		REQUIRE(builder.addTube(path, Radius, transform, options));
 
 		Mesh3D expected;
@@ -255,12 +251,12 @@ TEST_CASE("Mesh3DBuilder::addTube options placement overloads")
 	const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 	REQUIRE(builder.addTube({ Vec3::Zero(), Vec3{ 0.0, 2.0, 0.0 } }, 0.5, options));
 	REQUIRE(builder.addTube(path, 0.5, offset, options));
-	REQUIRE(builder.addTube(path, 0.5, offset, rotation, options));
+	REQUIRE(builder.addTube(path, 0.5, { offset, rotation }, options));
 	REQUIRE(builder.addTube(path, 0.5, transform, options));
 	REQUIRE(builder.addTube(path, radii, options));
 	REQUIRE(builder.addTube({ Vec3::Zero(), Vec3{ 0.0, 2.0, 0.0 } }, { 0.5, 1.0 }, options));
 	REQUIRE(builder.addTube(path, radii, offset, options));
-	REQUIRE(builder.addTube(path, radii, offset, rotation, options));
+	REQUIRE(builder.addTube(path, radii, { offset, rotation }, options));
 	REQUIRE(builder.addTube(path, radii, transform, options));
 	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 	CHECK_EQ(builder.getMesh().indices.data(), indexData);
@@ -412,10 +408,10 @@ TEST_CASE("Mesh3DBuilder::addTube per-point radii")
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addTube(path, radii, offset, defaultUVOptions));
-		REQUIRE(builder.addTube(path, radii, offset, rotation, defaultUVOptions));
+		REQUIRE(builder.addTube(path, radii, { offset, rotation }, defaultUVOptions));
 		REQUIRE(builder.addTube(path, radii, transform, defaultUVOptions));
 		REQUIRE(builder.addTube(path, radii, offset, options));
-		REQUIRE(builder.addTube(path, radii, offset, rotation, options));
+		REQUIRE(builder.addTube(path, radii, { offset, rotation }, options));
 		REQUIRE(builder.addTube(path, radii, transform, options));
 
 		Mesh3D expected;

@@ -26,7 +26,8 @@
 - `Polygon` の外周と `Loft` の断面は、格納された `(x, y)` に対する符号付き面積が正、`Polygon` の穴は負とする。閉じた輪郭の先頭点を末尾へ重複させない。
 - 点列は float 変換後の幾何を基準に検証する。`Revolve` の閉じた profile だけは先頭・末尾の一致を閉鎖表現として使い、`Tube` / `Sweep` の閉路と `Loft` の断面では始点を末尾に重複させない。
 - `Tube` / `Sweep` の生成設定は `TubeOptions` / `SweepOptions` に集約する。factory は `std::span` / initializer-list と一定値 / 経路点別値の組み合わせだけを overload とし、builder の配置 overload では options を末尾に置く。
-- `Revolve` の回転範囲、分割数、法線補間、UV 変換、回転方向の端面設定は `RevolveOptions` に集約する。factory は `std::span` / initializer-list の 2 overload、builder はこれに base / offset / offset + rotation / `Mat4x4` の配置を組み合わせた 5 overload とする。
+- `Revolve` の回転範囲、分割数、法線補間、UV 変換、回転方向の端面設定は `RevolveOptions` に集約する。factory は `std::span` / initializer-list の 2 overload、builder は initializer-list、配置なし、`Mesh3DPlacement` 付きの 3 overload とする。
+- builder のすべての配置 overload は `Mesh3DPlacement` に集約する。配置なしを独立させ、配置ありの offset、offset + rotation、`Mat4x4` を 1 overload にした。`Vec3` と `Mat4x4` は従来と同じ記述、回転と平行移動は `{ offset, rotation }` で指定できるため、API 宣言数を減らしても利用コードを肥大化させない。add 宣言数は 233 から 117 になった。
 - `HeightField` の UV 設定は `HeightFieldOptions` に集約する。高さの入力は `Grid<float>`、または頂点数と格子点 `Point` から高さを返す callable の 2 系統とし、callable は行優先で評価する。
 - `IcoSphere` は UV seam を作らず頂点を共有する軽量な球とする。細分化回数は 0～8、既定値は 2 で、法線は球面方向、UV は常に `(0, 0)` とする。テクスチャマッピング用途には `Sphere` を使う。
 - `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は既定で両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
