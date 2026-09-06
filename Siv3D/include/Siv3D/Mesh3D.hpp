@@ -748,6 +748,12 @@ namespace s3d
 		/// @remark 折れ点では断面が前後の経路方向の二等分面に置かれるため、断面の頂点は各線分に垂直な平面上の公称位置からずれることがあります。
 		/// @remark 始点と終点が float 変換後に一致する経路は無効です。閉路では始点を末尾に重複させず、3 点以上を指定します。float 変換後に連続する 2 点が同じになる経路、および 180° 折り返す経路には対応しません。鋭い折れ点における自己交差は検査しません。
 		/// @remark 閉路では経路方向の UV 継ぎ目に断面を複製し、parallel-transport frame の残留回転を経路長に比例して分散します。
+		/// @remark 2 点だけの経路は、その 2 点を端面の中心とする円柱になります。任意の方向の柱・梁を、長さや配置用の回転を計算せずに作成できます。
+		/// @code
+		/// const Vec3 from{ 0.0, 1.0, 0.0 };
+		/// const Vec3 to{ 3.0, 4.0, 2.0 };
+		/// const Mesh3D beam = Mesh3D::Tube({ from, to }, 0.1, TubeOptions{ .sides = 12 });
+		/// @endcode
 		[[nodiscard]]
 		static Mesh3D Tube(
 			std::span<const Vec3> path,

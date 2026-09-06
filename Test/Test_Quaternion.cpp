@@ -154,6 +154,63 @@ TEST_CASE("Quaternion::composition_and_rotation")
 	CheckVector(composed.inverseRotate(composed.rotate(vector)), vector);
 }
 
+TEST_CASE("Quaternion::Vec3 rotation precision")
+{
+	static_assert(std::is_same_v<decltype(Quaternion{}.rotate(Vec3{})), Vec3>);
+	static_assert(std::is_same_v<decltype(Quaternion{}.inverseRotate(Vec3{})), Vec3>);
+	static_assert(std::is_same_v<decltype(Quaternion{}.rotate(Float3{})), Float3>);
+	static_assert(std::is_same_v<decltype(Quaternion{}.inverseRotate(Float3{})), Float3>);
+	static_assert(noexcept(Quaternion{}.rotate(Vec3{})));
+	static_assert(noexcept(Quaternion{}.inverseRotate(Vec3{})));
+
+	// These coordinates lose information when converted to Float3.
+	const Vec3 precise{ 1.0 + 0x1p-30, -2.0 - 0x1p-29, 3.0 + 0x1p-28 };
+	CHECK_NE(Vec3{ Float3{ precise } }, precise);
+	CHECK_EQ(Quaternion{}.rotate(precise), precise);
+	CHECK_EQ(Quaternion{}.inverseRotate(precise), precise);
+
+	// An exactly representable unit quaternion rotates X -> Y -> Z -> X.
+	const Quaternion cyclic{ 0.5f, 0.5f, 0.5f, 0.5f };
+	CHECK_EQ(cyclic.rotate(precise), (Vec3{ precise.z, precise.x, precise.y }));
+	CHECK_EQ(cyclic.inverseRotate(precise), (Vec3{ precise.y, precise.z, precise.x }));
+	CHECK_EQ(cyclic.inverseRotate(cyclic.rotate(precise)), precise);
+
+	// Both magnitudes are outside the float range, but need no special handling.
+	for (const double scale : { 1e-100, 1e100 })
+	{
+		const Vec3 v{ scale, (-2.0 * scale), (4.0 * scale) };
+		CHECK(cyclic.rotate(v).epsilonEquals(Vec3{ v.z, v.x, v.y }, (scale * 1e-14)));
+		CHECK(cyclic.inverseRotate(v).epsilonEquals(Vec3{ v.y, v.z, v.x }, (scale * 1e-14)));
+	}
+	CHECK_EQ(cyclic.rotate(Vec3::Zero()), Vec3::Zero());
+	CHECK_EQ(cyclic.inverseRotate(Vec3::Zero()), Vec3::Zero());
+}
+
+TEST_CASE("Quaternion::Vec3 rotation directions and composition")
+{
+	CHECK(Quaternion::RotateX(Math::HalfPiF).rotate(Vec3::UnitY()).epsilonEquals(Vec3::UnitZ(), 1e-6));
+	CHECK(Quaternion::RotateY(Math::HalfPiF).rotate(Vec3::UnitX()).epsilonEquals(-Vec3::UnitZ(), 1e-6));
+	CHECK(Quaternion::RotateZ(Math::HalfPiF).rotate(Vec3::UnitX()).epsilonEquals(Vec3::UnitY(), 1e-6));
+
+	const Quaternion first = Quaternion::RotateX(0.4f);
+	const Quaternion second = Quaternion::RotateZ(-0.7f);
+	const Quaternion composed = (first * second);
+	const Vec3 v{ 0.25, -0.5, 1.0 };
+	CHECK(composed.rotate(v).epsilonEquals(second.rotate(first.rotate(v)), 1e-6));
+	CHECK(composed.inverseRotate(composed.rotate(v)).epsilonEquals(v, 1e-6));
+	CHECK(composed.rotate(composed.inverseRotate(v)).epsilonEquals(v, 1e-6));
+
+	for (const Quaternion q : { first, second, composed, Quaternion::RollPitchYaw(0.8f, -1.2f, 2.3f) })
+	{
+		CHECK(q.rotate(v).epsilonEquals(Vec3{ q.rotate(Float3{ v }) }, 1e-6));
+		CHECK(q.inverseRotate(v).epsilonEquals(Vec3{ q.inverseRotate(Float3{ v }) }, 1e-6));
+		const Float4 c = q.toFloat4();
+		const Quaternion negative{ -c.x, -c.y, -c.z, -c.w };
+		CHECK_EQ(q.rotate(v), negative.rotate(v));
+		CHECK_EQ(q.inverseRotate(v), negative.inverseRotate(v));
+	}
+}
+
 TEST_CASE("Quaternion::interpolation_and_transcendentals")
 {
 	const Quaternion from;

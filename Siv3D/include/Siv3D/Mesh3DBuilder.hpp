@@ -734,6 +734,7 @@ namespace s3d
 		/// @param options 断面分割数、UV 変換、経路の閉鎖方法、および端面設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
 		/// @remark 端面設定の規約は `TubeOptions` を受け取る `Mesh3D::Tube()` と同じです。
+		/// @remark 2 点間を結ぶ円柱状の柱・梁は `builder.addTube({ from, to }, radius)` で追加できます。両端面を既定で生成し、断面分割数は `TubeOptions::sides` で指定できます。
 		[[nodiscard]]
 		Mesh3DAddResult addTube(std::span<const Vec3> path, double radius, const TubeOptions& options = {});
 

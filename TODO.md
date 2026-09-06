@@ -9,11 +9,6 @@
 
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 
-### `Vec3` の回転
-
-- 3D モデリングコードでは形状・配置計算を `Vec3` で行う一方、`Quaternion::rotate()` が `Float3` だけを受け取るため、`Vec3 -> Float3 -> Vec3` の変換が繰り返された。
-- `Vec3 rotate(Vec3)` overload を追加する場合の精度、内部で float quaternion を使うことの契約、および既存 `Float3` overload との名前の一貫性を確認する。
-
 ### Squad 補間
 
 - `squad()` と制御点生成 API の引数構成を設計する。
@@ -90,7 +85,6 @@
 
 ### 利用例
 
-- 2 点間を結ぶ柱・梁には `Tube({ from, to }, radius)` を使えることを示し、専用 `Cylinder(from, to)` overload の必要性はその後に再評価する。
 - `HeightField()` の `Grid<float>` 入力と callable 入力の使い分け、OBJ / MTL で相対テクスチャパスを使う例は、Doxygen と将来の manual test のどちらに置くか決める。
 - `Cylindrical` / `Spherical` の配置例、および接合部には `Box`、露出部には `ChamferedBox` / `RoundedBox` を使う指針は、サンプル拡充時の候補とする。
 

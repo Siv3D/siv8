@@ -413,6 +413,15 @@ namespace s3d
 		[[nodiscard]]
 		Float3 SIV3D_VECTOR_CALL rotate(Float3 v) const noexcept;
 
+		/// @brief このクォータニオンが表す回転を倍精度ベクトルに適用します。
+		/// @param v 回転させるベクトル
+		/// @return 回転後のベクトル
+		/// @remark `*this` は正規化されている必要があります。関数内では正規化しません。
+		/// @remark ベクトルを float に変換せず、クォータニオンの成分を double に拡張して計算します。回転自体の精度は float で保持された成分に制限されます。
+		/// @remark 初期化子リストを渡す場合は `rotate(Vec3{ x, y, z })` または `rotate(Float3{ x, y, z })` と型を明示してください。
+		[[nodiscard]]
+		Vec3 SIV3D_VECTOR_CALL rotate(Vec3 v) const noexcept;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	inverseRotate
@@ -425,6 +434,15 @@ namespace s3d
 		/// @remark `*this` は正規化されている必要があります。
 		[[nodiscard]]
 		Float3 SIV3D_VECTOR_CALL inverseRotate(Float3 v) const noexcept;
+
+		/// @brief このクォータニオンが表す回転の逆回転を倍精度ベクトルに適用します。
+		/// @param v 回転させるベクトル
+		/// @return 逆回転後のベクトル
+		/// @remark `*this` は正規化されている必要があります。関数内では正規化しません。
+		/// @remark ベクトルを float に変換せず、クォータニオンの成分を double に拡張して計算します。回転自体の精度は float で保持された成分に制限されます。
+		/// @remark 初期化子リストを渡す場合は `inverseRotate(Vec3{ x, y, z })` または `inverseRotate(Float3{ x, y, z })` と型を明示してください。
+		[[nodiscard]]
+		Vec3 SIV3D_VECTOR_CALL inverseRotate(Vec3 v) const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

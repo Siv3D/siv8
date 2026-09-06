@@ -334,6 +334,14 @@ namespace s3d
 		return result;
 	}
 
+	inline Vec3 SIV3D_VECTOR_CALL Quaternion::rotate(const Vec3 v) const noexcept
+	{
+		const Float4 components = toFloat4();
+		const Vec3 axis{ components.x, components.y, components.z };
+		const Vec3 t = (2.0 * axis.cross(v));
+		return (v + (static_cast<double>(components.w) * t) + axis.cross(t));
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	inverseRotate
@@ -349,6 +357,11 @@ namespace s3d
 		DirectX::XMStoreFloat3(
 			static_cast<DirectX::XMFLOAT3*>(static_cast<void*>(&result)), resultVector);
 		return result;
+	}
+
+	inline Vec3 SIV3D_VECTOR_CALL Quaternion::inverseRotate(const Vec3 v) const noexcept
+	{
+		return conjugated().rotate(v);
 	}
 
 	////////////////////////////////////////////////////////////////

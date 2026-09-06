@@ -58,11 +58,13 @@
 
 報告中の `Quaternion::RotateX/Y/Z` の説明不足は現行 Doxygen ですでに解消済みである。また、現行 `Revolve` は連続する同一点を縮退面として生成せず、生成失敗として拒否する。この点は実装不具合として扱わず、入力契約の説明とテストの不足として評価する。
 
+配置計算では `Quaternion::rotate(Vec3)` / `inverseRotate(Vec3)` を使用できる。ベクトルを float へ変換せず double で計算するが、クォータニオン自体の保持精度は float のままである。型を省いた `rotate({ ... })` / `inverseRotate({ ... })` は overload が曖昧になるため、`Vec3{ ... }` または `Float3{ ... }` を明示する。
+
 Gemini によるヘッダと簡略化済みモデリングコードのレビューからは、Builder のローカル座標系、開路や柱状形状の端面制御、複数色・材質と部品範囲の関係、扇形環などの 2D 断面生成を検討候補として採用した。リポジトリ全体を参照していないレビューなので、提案された API 外観は確定案として扱わない。
 
 次の提案は既存 API との重複または前提の不一致があるため、そのまま実装しない。
 
-- 2 点間の円柱は `Tube({ from, to }, radius)` で表現でき、断面分割数が必要なら `TubeOptions::sides` で指定できる。専用 overload より、まずこの用法の発見性を改善する。
+- 2 点間の円柱は `Tube({ from, to }, radius)` で表現でき、断面分割数が必要なら `TubeOptions::sides` で指定できる。この用法は `Tube` / `addTube` の Doxygen を参照する。
 - 方向付き `Extrude` は offset + rotation overload で表現できる。まず立面図を押し出す具体例を追加する。
 - `addMesh(Mesh3D&&)` は、連続した頂点・index 配列を持つ非空 builder へ一般にゼロコピーで吸収できない。性能上の根拠なしに direct generator の代替としない。
 - 3D CSG は topology、coplanar face、UV、tangent、数値的頑健性を伴う別規模の課題であり、今回の Mesh3D 拡張候補には戻さない。
