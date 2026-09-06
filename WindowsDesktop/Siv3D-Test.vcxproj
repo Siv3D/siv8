@@ -68,6 +68,7 @@
     <ClCompile Include="..\Test\Test_Mesh3D.cpp" />
 	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DAssembly.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DAddResult.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DCapTriangulation.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DBoxShell.cpp" />
@@ -117,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
+    <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

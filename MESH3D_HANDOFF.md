@@ -6,7 +6,7 @@
 
 ## 正本
 
-- 公開 API と座標・UV・頂点属性・失敗時動作の契約: `Siv3D/include/Siv3D/Mesh3D.hpp` と `Mesh3DBuilder.hpp` の Doxygen
+- 公開 API と座標・UV・頂点属性・失敗時動作の契約: `Siv3D/include/Siv3D/Mesh3D.hpp`、`Mesh3DBuilder.hpp`、`Mesh3DAssembly.hpp` の Doxygen
 - 未実装項目と設計判断: `TODO.md`
 - リポジトリの作業・検証規則: `AGENTS.md`
 - 実装の振る舞い: `Test/Test_Mesh3D*.cpp` と `Test/Mesh3DTestHelper.hpp`
@@ -17,6 +17,8 @@
 
 - `Mesh3D` は CPU 側のメッシュデータ、編集、生成、OBJ 出力を担当する。3D レンダリング側が未設計の間は `.draw()` を追加しない。
 - 単体生成には `Mesh3D` の static factory、複数形状の直接合成には `Mesh3DBuilder` を使う。
+- `Mesh3DAssembly` は共有形状、材質、名前と親子配置を持つ部品を所有する CPU 側の組立データとする。形状なしの部品はヒンジなどの座標系に使える。形状の差し替えや焼き込みで部品 ID は変化しない。
+- Assembly の親は子より先に登録し、`local * parentWorld` で配置を合成する。`bake(destination)` は出力配列を再利用し、部品ごとの範囲と材質の独立したスナップショットを返す。頂点・三角形の予算超過では出力を変更しない。鏡映では法線・接線に加えて巻き順を反転し、表裏を維持する。
 - factory と builder は内部の destination-writing generator を共有し、形状生成本体を二重実装しない。
 - 汎用 generator と、頻出形状向けの効率的な specialization を組み合わせる。建築部材名を無制限に増やさない。
 - 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
@@ -54,7 +56,7 @@
 
 次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。新しい経路系 generator へ進む前提となる、角度、winding、点列の閉鎖表現、および失敗分類は公開ヘッダとテストで固定している。
 
-実利用レビューを起点に検討した `Mesh3DAddResult` は全 add 関数へ展開済みである。単発の追加範囲と失敗理由は取得できるため、次は名前、材質、階層を含む永続的な部品情報の所有先を検討する。
+単発の追加範囲と失敗理由は `Mesh3DAddResult`、永続的な名前・材質・階層と共有形状は `Mesh3DAssembly` が扱う。宝箱のヒンジ、材質変更、台車の車輪共有と分割数の差し替えを `Test/Test_Mesh3DAssembly.cpp` で検証する。実行可能な一式は `Test/Manual/Mesh3DAssemblyExamples.md` にある。
 
 報告中の `Quaternion::RotateX/Y/Z` の説明不足は現行 Doxygen ですでに解消済みである。また、現行 `Revolve` は連続する同一点を縮退面として生成せず、生成失敗として拒否する。この点は実装不具合として扱わず、入力契約の説明とテストの不足として評価する。
 
@@ -73,7 +75,7 @@ Gemini によるヘッダと簡略化済みモデリングコードのレビュ�
 
 - `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は `TODO.md` の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
-- `Test/Manual/` の既存 Mesh3D レビュー資料は API の正本にしない。現行の Mesh3D 改修が一段落した後、必要な manual test をゼロベースで作り直す。
+- manual test は利用例であり、API の正本は公開ヘッダとする。新しい生成・編集 API は、宝箱・台車に加えて曲面主体の題材でも評価する。
 
 ## 実装時の共通条件
 

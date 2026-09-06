@@ -1447,6 +1447,9 @@
     <Filter Include="src\Siv3D\Mesh3DBuilder">
       <UniqueIdentifier>{9a711191-2a3a-4fdb-9df8-659a47826e77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\Mesh3DAssembly">
+      <UniqueIdentifier>{8da6dcaf-b9a0-4b55-b115-72a1bd96ceef}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\VertexNormalWeighting">
       <UniqueIdentifier>{5f95438e-2709-433c-9195-43b82672ccfb}</UniqueIdentifier>
     </Filter>
@@ -5994,6 +5997,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3DBuilder.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3DAssembly.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\BoxFace.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -9247,6 +9253,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3DBuilder\Mesh3DBuilder.cpp">
       <Filter>src\Siv3D\Mesh3DBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3DAssembly\Mesh3DAssembly.cpp">
+      <Filter>src\Siv3D\Mesh3DAssembly</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
