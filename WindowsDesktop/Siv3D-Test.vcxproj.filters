@@ -271,6 +271,12 @@
     <ClCompile Include="..\Test\Test_Mesh3DAssemblyOBJ.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DPlacement.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DAssemblyClone.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Mesh3DAddResult.cpp">
       <Filter>Test</Filter>
     </ClCompile>

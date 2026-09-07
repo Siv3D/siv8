@@ -30,8 +30,8 @@ SIV3D_ASSEMBLY_EXAMPLE_DIR=/tmp/siv8-assembly-color-review ./macOS/run-tests.sh 
   duplicate names such as eyes, vents, and fingers. Geometry-free frames have no output group.
 - The robot has contrasting housings, a visor with cyan eyes, three colored status
   lights, chest vents, a striped rear battery, two arms with claws, and feet with soles.
-  Its left arm uses a mirrored placement and should have the same outward-facing surfaces
-  as the right. The orange and blue variants differ only in the enamel material.
+  Its left arm is a linked copy of the right arm hierarchy with a mirrored placement;
+  both should have outward-facing surfaces. The orange and blue variants differ only in the enamel material.
 - All robot materials use metallic = 0: baseColor.rgb maps directly to MTL Kd.
   Inspecting the MTL should reveal eight `newmtl` entries and no texture references.
 - The chest lid, straps, and lock rotate together about the rear upper edge; the body stays fixed.
@@ -62,6 +62,31 @@ Parents precede children; transforms compose as `local * parentWorld`. Names may
 IDs identify parts. Numeric placement preconditions are documented in Mesh3DAssembly.
 The sample uses `Result::value()` to stop on a modeling error; applications needing recovery
 should inspect the Result and its Mesh3DError. Save failures are returned as bool and logged.
+
+## Frame alignment and linked hierarchy copies
+
+`Mesh3DPlacement::Align(sourceFrame, targetFrame)` computes a placement that maps
+an attachment frame in the part's local coordinates to a frame in the parent's
+coordinates. It includes position, orientation, scale, and shear. Both frames
+must be finite affine transforms, the source must be invertible, and its inverse
+and the result must be finite and representable as float values. It is a one-time calculation; changing recipe dimensions
+requires rebuilding the frames. In this recipe, the foot housing's bottom is
+derived from `footSize.y`, keeping its mounting height fixed when the size changes.
+The mounting plane intentionally lies slightly inside the sole.
+
+`cloneSubtree(root, placement, parent)` copies the root and its descendants and
+replaces the root's placement and parent. Omitting the parent places the new root
+directly in Assembly coordinates. Mesh and material IDs stay shared; names and
+local transforms are copied. The returned `ClonedSubtree::find(originalPartID)`
+finds the new ID for editing a particular copied joint. Shared resource edits
+propagate, while placement and later hierarchy edits remain independent.
+The robot builds one arm hierarchy and uses this operation for the other arm.
+
+The shared-resource behavior follows the familiar distinction described in
+Blender's [Duplicate Linked](https://docs.blender.org/manual/en/4.1/scene_layout/object/editing/duplicate_linked.html).
+Frame alignment is related to [Align to Transform Orientation](https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/transform/align_transform_orientation.html),
+but this API maps complete affine frames, including their origins, rather than
+replicating Blender's rotation-only operator.
 
 ## Complete code
 
@@ -202,7 +227,8 @@ namespace Mesh3DAssemblyExamples
 		const auto forearm = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.34, 0.42, 0.36 }, 0.05)).value();
 		const auto finger = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.095, 0.21, 0.18 }, 0.02)).value();
 		const auto shin = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.32, 0.38, 0.36 }, 0.04)).value();
-		const auto foot = a.addMesh(Mesh3D::RoundedBox(Vec3{ 0.48, 0.24, 0.72 }, 0.07, 3)).value();
+		const Vec3 footSize{ 0.48, 0.24, 0.72 };
+		const auto foot = a.addMesh(Mesh3D::RoundedBox(footSize, 0.07, 3)).value();
 		const auto sole = a.addMesh(Mesh3D::Box(Vec3{ 0.49, 0.07, 0.73 })).value();
 		const auto vent = a.addMesh(Mesh3D::Box(Vec3{ 0.48, 0.055, 0.045 })).value();
 		const auto panel = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.78, 0.40, 0.10 }, 0.04)).value();
@@ -243,22 +269,25 @@ namespace Mesh3DAssemblyExamples
 		{
 			add(U"battery stripe", rim, yellow, Vec3{ 0, (0.20 - i * 0.20), 0.18 }, pack);
 		}
+		// Build one arm, then copy its hierarchy with shared mesh/material IDs.
+		const auto arm = a.addPart({ .name = U"arm frame",
+			.placement = Mesh3DPlacement{ Vec3{ 0.62, 1.62, 0 }, Quaternion::RotateZ(0.10) } }).value();
+		add(U"shoulder", joint, grey, Vec3::Zero(), arm, Quaternion::RotateZ(Math::HalfPi));
+		add(U"upper arm", upperArm, paint, Vec3{ 0.12, -0.23, 0 }, arm);
+		add(U"elbow", joint, dark, Vec3{ 0.12, -0.45, 0 }, arm, Quaternion::RotateZ(Math::HalfPi));
+		add(U"forearm", forearm, ivory, Vec3{ 0.12, -0.68, 0 }, arm);
+		add(U"claw", finger, grey, Vec3{ 0.02, -0.94, -0.04 }, arm);
+		add(U"claw", finger, grey, Vec3{ 0.22, -0.94, -0.04 }, arm);
+		(void)a.cloneSubtree(arm, Mat4x4::AffineTransform(Float3{ -1, 1, 1 },
+			Quaternion::RotateZ(-0.10), Float3{ -0.62f, 1.62f, 0 })).value();
 		for (const double side : { -1.0, 1.0 })
 		{
-			// One local arm arrangement is mirrored for the other side.
-			const Mat4x4 place = Mat4x4::AffineTransform(Float3{ static_cast<float>(side), 1, 1 },
-				Quaternion::RotateZ(side * 0.10), Float3{ static_cast<float>(side * 0.62), 1.62f, 0 });
-			const auto arm = a.addPart({ .name = U"arm frame", .placement = place }).value();
-			add(U"shoulder", joint, grey, Vec3::Zero(), arm, Quaternion::RotateZ(Math::HalfPi));
-			add(U"upper arm", upperArm, paint, Vec3{ 0.12, -0.23, 0 }, arm);
-			add(U"elbow", joint, dark, Vec3{ 0.12, -0.45, 0 }, arm, Quaternion::RotateZ(Math::HalfPi));
-			add(U"forearm", forearm, ivory, Vec3{ 0.12, -0.68, 0 }, arm);
-			add(U"claw", finger, grey, Vec3{ 0.02, -0.94, -0.04 }, arm);
-			add(U"claw", finger, grey, Vec3{ 0.22, -0.94, -0.04 }, arm);
 			const auto leg = a.addPart({ .name = U"leg frame", .placement = Vec3{ (side * 0.27), 0, 0 } }).value();
 			add(U"knee", joint, dark, Vec3{ 0, 0.56, 0 }, leg, Quaternion::RotateZ(Math::HalfPi));
 			add(U"shin", shin, paint, Vec3{ 0, 0.40, 0 }, leg);
-			add(U"foot", foot, ivory, Vec3{ 0, 0.17, -0.13 }, leg);
+			// Align the housing's bottom to a mounting plane inside the sole.
+			(void)a.addPart({ .name = U"foot", .mesh = foot, .material = ivory, .parent = leg,
+				.placement = Mesh3DPlacement::Align(Vec3{ 0, (-footSize.y * 0.5), 0 }, Vec3{ 0, 0.05, -0.13 }) }).value();
 			add(U"sole", sole, dark, Vec3{ 0, 0.035, -0.13 }, leg);
 		}
 		return a;

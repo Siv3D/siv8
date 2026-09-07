@@ -32,6 +32,13 @@ namespace s3d
 		}
 	}
 
+	Optional<Mesh3DAssembly::PartID> Mesh3DAssembly::ClonedSubtree::find(const PartID source) const noexcept
+	{
+		const auto it = std::lower_bound(parts.begin(), parts.end(), source,
+			[](const auto& pair, const PartID id) { return (pair.first < id); });
+		return ((it != parts.end() && it->first == source) ? Optional<PartID>{ it->second } : none);
+	}
+
 	void Mesh3DAssembly::reserve(const size_t meshCapacity, const size_t materialCapacity, const size_t partCapacity)
 	{
 		m_meshes.reserve(meshCapacity);
@@ -138,6 +145,57 @@ namespace s3d
 		}
 		m_parts[Index(id)].placement = placement;
 		return{};
+	}
+
+	Result<Mesh3DAssembly::ClonedSubtree, Mesh3DError> Mesh3DAssembly::cloneSubtree(
+		const PartID root, const Mesh3DPlacement& placement, const Optional<PartID> parent)
+	{
+		const size_t originalSize = m_parts.size();
+		if ((originalSize <= Index(root)) || (parent && (originalSize <= Index(*parent))))
+		{
+			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::cloneSubtree(): unknown root or parent ID");
+		}
+
+		ClonedSubtree result{ .root = PartID{ originalSize } };
+		const size_t available = (m_parts.max_size() - originalSize);
+		for (size_t i = Index(root); i < originalSize; ++i)
+		{
+			const auto sourceParent = m_parts[i].parent;
+			if ((i != Index(root)) && ((not sourceParent) || (not result.find(*sourceParent))))
+			{
+				continue;
+			}
+			if (result.parts.size() == available)
+			{
+				return AssemblyFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DAssembly::cloneSubtree(): part count exceeds storage limit");
+			}
+			result.parts.emplace_back(PartID{ i }, PartID{ originalSize + result.parts.size() });
+		}
+
+		// Stage strings and transforms before mutating m_parts. placement may
+		// alias an existing Part, and the final append may invalidate that reference.
+		Array<Part> copies;
+		copies.reserve(result.parts.size());
+		for (const auto& [source, destination] : result.parts)
+		{
+			Part copy = m_parts[Index(source)];
+			if (source == root)
+			{
+				copy.parent = parent;
+				copy.placement = placement;
+			}
+			else
+			{
+				copy.parent = result.find(*copy.parent);
+			}
+			copies.push_back(std::move(copy));
+		}
+		static_assert(std::is_nothrow_move_constructible_v<Part>);
+		static_assert(std::is_nothrow_move_assignable_v<Part>);
+		// Let the destination retain its normal geometric capacity growth when
+		// repeatedly cloning, rather than reserving an exact size on each call.
+		m_parts.append(std::move(copies));
+		return result;
 	}
 
 	const Mesh3D* Mesh3DAssembly::getMesh(const MeshID id) const noexcept

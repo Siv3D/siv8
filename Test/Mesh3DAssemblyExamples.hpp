@@ -147,7 +147,8 @@ namespace Mesh3DAssemblyExamples
 		const auto forearm = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.34, 0.42, 0.36 }, 0.05)).value();
 		const auto finger = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.095, 0.21, 0.18 }, 0.02)).value();
 		const auto shin = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.32, 0.38, 0.36 }, 0.04)).value();
-		const auto foot = a.addMesh(Mesh3D::RoundedBox(Vec3{ 0.48, 0.24, 0.72 }, 0.07, 3)).value();
+		const Vec3 footSize{ 0.48, 0.24, 0.72 };
+		const auto foot = a.addMesh(Mesh3D::RoundedBox(footSize, 0.07, 3)).value();
 		const auto sole = a.addMesh(Mesh3D::Box(Vec3{ 0.49, 0.07, 0.73 })).value();
 		const auto vent = a.addMesh(Mesh3D::Box(Vec3{ 0.48, 0.055, 0.045 })).value();
 		const auto panel = a.addMesh(Mesh3D::ChamferedBox(Vec3{ 0.78, 0.40, 0.10 }, 0.04)).value();
@@ -188,22 +189,25 @@ namespace Mesh3DAssemblyExamples
 		{
 			add(U"battery stripe", rim, yellow, Vec3{ 0, (0.20 - i * 0.20), 0.18 }, pack);
 		}
+		// Build one arm, then copy its hierarchy with shared mesh/material IDs.
+		const auto arm = a.addPart({ .name = U"arm frame",
+			.placement = Mesh3DPlacement{ Vec3{ 0.62, 1.62, 0 }, Quaternion::RotateZ(0.10) } }).value();
+		add(U"shoulder", joint, grey, Vec3::Zero(), arm, Quaternion::RotateZ(Math::HalfPi));
+		add(U"upper arm", upperArm, paint, Vec3{ 0.12, -0.23, 0 }, arm);
+		add(U"elbow", joint, dark, Vec3{ 0.12, -0.45, 0 }, arm, Quaternion::RotateZ(Math::HalfPi));
+		add(U"forearm", forearm, ivory, Vec3{ 0.12, -0.68, 0 }, arm);
+		add(U"claw", finger, grey, Vec3{ 0.02, -0.94, -0.04 }, arm);
+		add(U"claw", finger, grey, Vec3{ 0.22, -0.94, -0.04 }, arm);
+		(void)a.cloneSubtree(arm, Mat4x4::AffineTransform(Float3{ -1, 1, 1 },
+			Quaternion::RotateZ(-0.10), Float3{ -0.62f, 1.62f, 0 })).value();
 		for (const double side : { -1.0, 1.0 })
 		{
-			// One local arm arrangement is mirrored for the other side.
-			const Mat4x4 place = Mat4x4::AffineTransform(Float3{ static_cast<float>(side), 1, 1 },
-				Quaternion::RotateZ(side * 0.10), Float3{ static_cast<float>(side * 0.62), 1.62f, 0 });
-			const auto arm = a.addPart({ .name = U"arm frame", .placement = place }).value();
-			add(U"shoulder", joint, grey, Vec3::Zero(), arm, Quaternion::RotateZ(Math::HalfPi));
-			add(U"upper arm", upperArm, paint, Vec3{ 0.12, -0.23, 0 }, arm);
-			add(U"elbow", joint, dark, Vec3{ 0.12, -0.45, 0 }, arm, Quaternion::RotateZ(Math::HalfPi));
-			add(U"forearm", forearm, ivory, Vec3{ 0.12, -0.68, 0 }, arm);
-			add(U"claw", finger, grey, Vec3{ 0.02, -0.94, -0.04 }, arm);
-			add(U"claw", finger, grey, Vec3{ 0.22, -0.94, -0.04 }, arm);
 			const auto leg = a.addPart({ .name = U"leg frame", .placement = Vec3{ (side * 0.27), 0, 0 } }).value();
 			add(U"knee", joint, dark, Vec3{ 0, 0.56, 0 }, leg, Quaternion::RotateZ(Math::HalfPi));
 			add(U"shin", shin, paint, Vec3{ 0, 0.40, 0 }, leg);
-			add(U"foot", foot, ivory, Vec3{ 0, 0.17, -0.13 }, leg);
+			// Align the housing's bottom to a mounting plane inside the sole.
+			(void)a.addPart({ .name = U"foot", .mesh = foot, .material = ivory, .parent = leg,
+				.placement = Mesh3DPlacement::Align(Vec3{ 0, (-footSize.y * 0.5), 0 }, Vec3{ 0, 0.05, -0.13 }) }).value();
 			add(U"sole", sole, dark, Vec3{ 0, 0.035, -0.13 }, leg);
 		}
 		return a;

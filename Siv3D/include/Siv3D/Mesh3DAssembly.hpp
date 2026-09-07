@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <utility>
 # include "Mesh3DBuilder.hpp"
 
 namespace s3d
@@ -54,6 +55,24 @@ namespace s3d
 
 		/// @brief 登録した部品の ID。頂点・三角形のオフセットとは独立しています。
 		enum class PartID : size_t {};
+
+		/// @brief 部分階層の複製結果。形状と材質の ID は複製元と共有します。
+		struct ClonedSubtree
+		{
+			/// @brief 新しい根の部品 ID
+			PartID root{};
+
+			/// @brief 複製元・複製先の PartID の組。複製元 ID の昇順で、根を含む複製した部品だけを格納します。
+			/// @remark find() を使用する場合は昇順と複製元 ID の一意性を保ってください。Assembly の clear() などによる ID の無効化は検出しません。
+			Array<std::pair<PartID, PartID>> parts;
+
+			/// @brief 元の部品 ID に対応する複製先の部品 ID を取得します。
+			/// @param source 複製元の部品 ID
+			/// @return 対応する ID。複製対象外の場合 none
+			/// @remark 複製部品数に対して対数時間で検索し、動的メモリを確保しません。
+			[[nodiscard]]
+			Optional<PartID> find(PartID source) const noexcept;
+		};
 
 		/// @brief 部品の形状参照、材質参照、および親に対するローカル配置
 		struct Part
@@ -191,6 +210,18 @@ namespace s3d
 		/// @return 成功。存在しない ID は InvalidArgument
 		[[nodiscard]]
 		Result<void, Mesh3DError> setPlacement(PartID id, const Mesh3DPlacement& placement);
+
+		/// @brief 根とその全子孫を、形状・材質を共有する独立した部品階層として複製します。
+		/// @param root 複製元の根の部品 ID
+		/// @param placement 新しい根の親に対する配置。元の根の配置を置き換えます。
+		/// @param parent 新しい根の親。未指定の場合は Assembly の座標系に直接配置します。
+		/// @return 新しい根と部品 ID の対応。存在しない root / parent は InvalidArgument、部品数の上限超過は SizeLimit
+		/// @remark 名前、MeshID、MaterialID、子孫のローカル配置をコピーし、内部の親参照を複製先へ付け替えます。形状・材質の登録や頂点のコピーは行いません。配置の変更は独立し、setMesh() / setMaterial() による共有データの変更は両方へ反映されます。
+		/// @remark 呼び出し開始時点の子孫だけを複製します。登録順で他の階層が間にあっても対象を選別します。parent は複製元の根や子孫も指定でき、元の部品の子として複製します。
+		/// @remark 新しい部品は元の登録順で末尾へ追加され、既存 ID は変わりません。getPart() で取得したポインタは追加による再確保で無効になる場合があります。world 配置を維持する reparent 操作や、後からの階層編集の同期は行いません。
+		/// @remark 複製元の根以降の既存部品数を N、複製する部品数を K とすると、名前のコピーと追加先配列の再確保を除く時間は O(N log(K + 1))、補助ストレージは O(K) です。複製を準備してから一括追加し、失敗時は既存の組立データを変更しません。
+		[[nodiscard]]
+		Result<ClonedSubtree, Mesh3DError> cloneSubtree(PartID root, const Mesh3DPlacement& placement, Optional<PartID> parent = none);
 
 		/// @brief 共有形状を参照します。
 		/// @param id 形状 ID

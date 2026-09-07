@@ -21,7 +21,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief Mesh3DBuilder で追加する形状に適用する配置変換
+	/// @brief Mesh3DBuilder の形状や Mesh3DAssembly の部品に適用する配置変換
 	/// @remark `Vec3` から暗黙に変換できるため、平行移動だけを指定する add 関数の呼び出しは `addShape(..., offset)` と書けます。
 	/// @remark 回転と平行移動を指定する場合は `addShape(..., { offset, rotation })` と書けます。
 	/// @remark `Mat4x4` から暗黙に変換できるため、任意のアフィン変換を指定する呼び出しは `addShape(..., transform)` と書けます。
@@ -63,6 +63,23 @@ namespace s3d
 		const Mat4x4& getTransform() const noexcept
 		{
 			return m_transform;
+		}
+
+		/// @brief 元の座標系を配置先の座標系へ一致させる配置変換を作成します。
+		/// @param sourceFrame 取り付け座標系から形状・部品のローカル座標系への変換
+		/// @param targetFrame 取り付け座標系から配置先（親）のローカル座標系への変換
+		/// @return 行列として `sourceFrame.inverse() * targetFrame`。浮動小数点の誤差を除き `sourceFrame * 戻り値 == targetFrame` となる変換
+		/// @remark 両入力は有限のアフィン変換で、sourceFrame は逆変換可能、その逆行列と結果も float で表現可能な有限値である必要があります。数値的な事前条件は検査しません。
+		/// @remark 平行移動と回転だけでなく、スケール、せん断、鏡映も含めて座標系を合わせます。面を向かい合わせる回転や隙間は targetFrame に明示してください。
+		/// @remark 一度だけ配置を計算します。入力の変更への自動追従や、親の world 変換の適用は行いません。寸法変更時は形状と取り付け座標系をレシピで再生成してください。
+		/// @code
+		/// // 高さ 2 の箱の底面中央を、親の原点へ合わせる
+		/// const auto placement = Mesh3DPlacement::Align(Vec3{ 0, -1, 0 }, Vec3::Zero());
+		/// @endcode
+		[[nodiscard]]
+		static Mesh3DPlacement Align(const Mesh3DPlacement& sourceFrame, const Mesh3DPlacement& targetFrame) noexcept
+		{
+			return (sourceFrame.m_transform.inverse() * targetFrame.m_transform);
 		}
 
 	private:
