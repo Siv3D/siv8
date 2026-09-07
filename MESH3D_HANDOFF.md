@@ -8,6 +8,7 @@
 
 - 公開 API と座標・UV・頂点属性・失敗時動作の契約: `Siv3D/include/Siv3D/Mesh3D.hpp`、`Mesh3DBuilder.hpp`、`Mesh3DAssembly.hpp` の Doxygen
 - 未実装項目と設計判断: `TODO.md`
+- 任意フレームの Loft の設計検討（未実装・暫定）: `MESH3D_LOFT_DESIGN.md`
 - リポジトリの作業・検証規則: `AGENTS.md`
 - 実装の振る舞い: `Test/Test_Mesh3D*.cpp` と `Test/Mesh3DTestHelper.hpp`
 
