@@ -3261,6 +3261,10 @@
 		FA0000053000000000000005 /* GridConnectivity.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000063000000000000006 /* GridConnectivity.hpp */; };
 		FEFEB7EF231D4AD7A8CC5188 /* Mat4x4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 16BB937774E643DBA6B83738 /* Mat4x4.hpp */; };
 		1F13900D16FF4E439715F589 /* Test_Finite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D38289ABC948A9810E2D02 /* Test_Finite.cpp */; };
+		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
+		66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */; };
+		3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */; };
+		BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F317E375B37CAD38878B805B /* Test_Wave.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -6666,6 +6670,10 @@
 		FA0000043000000000000004 /* GridRect.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridRect.ipp; sourceTree = "<group>"; };
 		FA0000063000000000000006 /* GridConnectivity.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GridConnectivity.hpp; sourceTree = "<group>"; };
 		36D38289ABC948A9810E2D02 /* Test_Finite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Finite.cpp; sourceTree = "<group>"; };
+		37B19946552E772146018900 /* Test_ArrayLike.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayLike.cpp; sourceTree = "<group>"; };
+		B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MultiPolygon.cpp; sourceTree = "<group>"; };
+		F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Blob.cpp; sourceTree = "<group>"; };
+		F317E375B37CAD38878B805B /* Test_Wave.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Wave.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -6949,6 +6957,10 @@
 				F9A000062FC0000000000001 /* Test_Interpolation.cpp */,
 				F9E5FCE02BC59E610081A4F7 /* Test_JSON.cpp */,
 				F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */,
+				37B19946552E772146018900 /* Test_ArrayLike.cpp */,
+				B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */,
+				F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */,
+				F317E375B37CAD38878B805B /* Test_Wave.cpp */,
 				F90F79E42FA7C2F10077F398 /* Test_LineString.cpp */,
 				F90702C12B9DAEB900383E4D /* Test_Memory.cpp */,
 				F9528C512BC029E800222F45 /* Test_MemoryMappedFile.cpp */,
@@ -16537,6 +16549,10 @@
 				F9A3D10730A1000000C0DE01 /* Test_Material.cpp in Sources */,
 				F90703032B9DAEB900383E4D /* Test_Platform.cpp in Sources */,
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
+				DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */,
+				66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */,
+				3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */,
+				BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */,
 				F90F79E52FA7C2F10077F398 /* Test_LineString.cpp in Sources */,
 				F90F7A1A2FA9DB730077F398 /* Test_INI.cpp in Sources */,
 				F90703082B9DAEB900383E4D /* Test_TextFileReader.cpp in Sources */,

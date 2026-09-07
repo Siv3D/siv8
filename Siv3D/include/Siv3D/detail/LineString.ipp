@@ -39,9 +39,11 @@ namespace s3d
 		: m_vertices(vertices.begin(), vertices.end()) {}
 
 	constexpr LineString::LineString(const HasAsArray auto& a)
+		requires detail::AsArrayOf<decltype(a), container_type>
 		: m_vertices{ a.asArray() } {}
 
 	constexpr LineString::LineString(HasAsArray auto&& a)
+		requires detail::AsArrayOf<decltype(a), container_type>
 		: m_vertices{ std::forward<decltype(a)>(a).asArray() } {}
 
 	constexpr LineString::LineString(std::initializer_list<value_type> list)
@@ -83,12 +85,14 @@ namespace s3d
 	}
 
 	constexpr LineString& LineString::operator =(const HasAsArray auto& a)
+		requires detail::AsArrayOf<decltype(a), container_type>
 	{
 		m_vertices = a.asArray();
 		return *this;
 	}
 
 	constexpr LineString& LineString::operator =(HasAsArray auto&& a)
+		requires detail::AsArrayOf<decltype(a), container_type>
 	{
 		m_vertices = std::forward<decltype(a)>(a).asArray();
 		return *this;
@@ -106,23 +110,42 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::assign(const size_type count, const value_type& value)
+	constexpr LineString& LineString::assign(const size_type count, const value_type& value) &
 	{
 		m_vertices.assign(count, value);
 		return *this;
 	}
 
 	template <std::input_iterator Iterator>
-	constexpr LineString& LineString::assign(Iterator first, Iterator last)
+	constexpr LineString& LineString::assign(Iterator first, Iterator last) &
 	{
 		m_vertices.assign(first, last);
 		return *this;
 	}
 
-	constexpr LineString& LineString::assign(std::initializer_list<value_type> list)
+	constexpr LineString& LineString::assign(std::initializer_list<value_type> list) &
 	{
 		m_vertices.assign(list);
 		return *this;
+	}
+
+	constexpr LineString LineString::assign(size_type count, const value_type& value) &&
+	{
+		assign(count, value);
+		return std::move(*this);
+	}
+
+	template <std::input_iterator Iterator>
+	constexpr LineString LineString::assign(Iterator first, Iterator last) &&
+	{
+		assign(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last));
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::assign(std::initializer_list<value_type> list) &&
+	{
+		assign(list);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -132,17 +155,31 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
-	constexpr LineString& LineString::assign_range(Range&& range)
+	constexpr LineString& LineString::assign_range(Range&& range) &
 	{
 		m_vertices.assign_range(std::forward<Range>(range));
 		return *this;
 	}
 
 	template <Concept::ContainerCompatibleRange<Point> Range>
-	constexpr LineString& LineString::assign_range(Range&& range)
+	constexpr LineString& LineString::assign_range(Range&& range) &
 	{
 		m_vertices.assign_range(std::forward<Range>(range));
 		return *this;
+	}
+
+	template <Concept::ContainerCompatibleRange<Vec2> Range>
+	constexpr LineString LineString::assign_range(Range&& range) &&
+	{
+		assign_range(std::forward<decltype(range)>(range));
+		return std::move(*this);
+	}
+
+	template <Concept::ContainerCompatibleRange<Point> Range>
+	constexpr LineString LineString::assign_range(Range&& range) &&
+	{
+		assign_range(std::forward<decltype(range)>(range));
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -181,7 +218,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::operator container_type() const& noexcept
+	constexpr LineString::operator container_type() const&
 	{
 		return m_vertices;
 	}
@@ -281,12 +318,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::value_type* LineString::data() noexcept
+	constexpr LineString::value_type* LineString::data() & noexcept
 	{
 		return m_vertices.data();
 	}
 
-	constexpr const LineString::value_type* LineString::data() const noexcept
+	constexpr const LineString::value_type* LineString::data() const& noexcept
 	{
 		return m_vertices.data();
 	}
@@ -297,22 +334,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::iterator LineString::begin() noexcept
+	constexpr LineString::iterator LineString::begin() & noexcept
 	{
 		return m_vertices.begin();
 	}
 
-	constexpr LineString::iterator LineString::end() noexcept
+	constexpr LineString::iterator LineString::end() & noexcept
 	{
 		return m_vertices.end();
 	}
 
-	constexpr LineString::const_iterator LineString::begin() const noexcept
+	constexpr LineString::const_iterator LineString::begin() const& noexcept
 	{
 		return m_vertices.begin();
 	}
 
-	constexpr LineString::const_iterator LineString::end() const noexcept
+	constexpr LineString::const_iterator LineString::end() const& noexcept
 	{
 		return m_vertices.end();
 	}
@@ -323,12 +360,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::const_iterator LineString::cbegin() const noexcept
+	constexpr LineString::const_iterator LineString::cbegin() const& noexcept
 	{
 		return m_vertices.cbegin();
 	}
 
-	constexpr LineString::const_iterator LineString::cend() const noexcept
+	constexpr LineString::const_iterator LineString::cend() const& noexcept
 	{
 		return m_vertices.cend();
 	}
@@ -339,22 +376,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::reverse_iterator LineString::rbegin() noexcept
+	constexpr LineString::reverse_iterator LineString::rbegin() & noexcept
 	{
 		return m_vertices.rbegin();
 	}
 
-	constexpr LineString::reverse_iterator LineString::rend() noexcept
+	constexpr LineString::reverse_iterator LineString::rend() & noexcept
 	{
 		return m_vertices.rend();
 	}
 
-	constexpr LineString::const_reverse_iterator LineString::rbegin() const noexcept
+	constexpr LineString::const_reverse_iterator LineString::rbegin() const& noexcept
 	{
 		return m_vertices.rbegin();
 	}
 
-	constexpr LineString::const_reverse_iterator LineString::rend() const noexcept
+	constexpr LineString::const_reverse_iterator LineString::rend() const& noexcept
 	{
 		return m_vertices.rend();
 	}
@@ -365,12 +402,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::const_reverse_iterator LineString::crbegin() const noexcept
+	constexpr LineString::const_reverse_iterator LineString::crbegin() const& noexcept
 	{
 		return m_vertices.crbegin();
 	}
 
-	constexpr LineString::const_reverse_iterator LineString::crend() const noexcept
+	constexpr LineString::const_reverse_iterator LineString::crend() const& noexcept
 	{
 		return m_vertices.crend();
 	}
@@ -524,23 +561,23 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::iterator LineString::insert(const_iterator pos, const value_type& value)
+	constexpr LineString::iterator LineString::insert(const_iterator pos, const value_type& value) &
 	{
 		return m_vertices.insert(pos, value);
 	}
 
-	constexpr LineString::iterator LineString::insert(const_iterator pos, const size_type count, const value_type& value)
+	constexpr LineString::iterator LineString::insert(const_iterator pos, const size_type count, const value_type& value) &
 	{
 		return m_vertices.insert(pos, count, value);
 	}
 
 	template <std::input_iterator Iterator>
-	constexpr LineString::iterator LineString::insert(const_iterator pos, Iterator first, Iterator last)
+	constexpr LineString::iterator LineString::insert(const_iterator pos, Iterator first, Iterator last) &
 	{
 		return m_vertices.insert(pos, first, last);
 	}
 
-	constexpr LineString::iterator LineString::insert(const_iterator pos, std::initializer_list<value_type> list)
+	constexpr LineString::iterator LineString::insert(const_iterator pos, std::initializer_list<value_type> list) &
 	{
 		return m_vertices.insert(pos, list);
 	}
@@ -552,7 +589,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <Concept::ContainerCompatibleRange<Vec2> Range>
-	constexpr LineString::iterator LineString::insert_range(const_iterator pos, Range&& range)
+	constexpr LineString::iterator LineString::insert_range(const_iterator pos, Range&& range) &
 	{
 		return m_vertices.insert_range(pos, std::forward<Range>(range));
 	}
@@ -564,7 +601,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class... Args>
-	constexpr LineString::iterator LineString::emplace(const_iterator pos, Args&&... args)
+	constexpr LineString::iterator LineString::emplace(const_iterator pos, Args&&... args) &
 	{
 		return m_vertices.emplace(pos, std::forward<Args>(args)...);
 	}
@@ -593,12 +630,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString::iterator LineString::erase(const_iterator pos)
+	constexpr LineString::iterator LineString::erase(const_iterator pos) &
 	{
 		return m_vertices.erase(pos);
 	}
 
-	constexpr LineString::iterator LineString::erase(const_iterator first, const_iterator last)
+	constexpr LineString::iterator LineString::erase(const_iterator first, const_iterator last) &
 	{
 		return m_vertices.erase(first, last);
 	}
@@ -687,7 +724,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class... Args>
-	constexpr LineString::reference LineString::emplace_back(Args&&... args)
+	constexpr LineString::reference LineString::emplace_back(Args&&... args) &
 	{
 		return m_vertices.emplace_back(std::forward<Args>(args)...);
 	}
@@ -748,7 +785,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class... Args>
-	constexpr LineString::reference LineString::emplace_front(Args&&... args)
+	constexpr LineString::reference LineString::emplace_front(Args&&... args) &
 	{
 		return m_vertices.emplace_front(std::forward<Args>(args)...);
 	}
@@ -792,10 +829,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::operator <<(const value_type& value)
+	constexpr LineString& LineString::operator <<(const value_type& value) &
 	{
 		m_vertices << value;
 		return *this;
+	}
+
+	constexpr LineString LineString::operator <<(const value_type& value) &&
+	{
+		operator <<(value);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -804,12 +847,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::span<LineString::value_type> LineString::subspan(const size_type pos, const size_type count) noexcept
+	constexpr std::span<LineString::value_type> LineString::subspan(const size_type pos, const size_type count) & noexcept
 	{
 		return m_vertices.subspan(pos, count);
 	}
 
-	constexpr std::span<const LineString::value_type> LineString::subspan(const size_type pos, const size_type count) const noexcept
+	constexpr std::span<const LineString::value_type> LineString::subspan(const size_type pos, const size_type count) const& noexcept
 	{
 		return m_vertices.subspan(pos, count);
 	}
@@ -857,35 +900,90 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::append(const LineString& other)
+	constexpr LineString& LineString::append(const LineString& other) &
 	{
 		m_vertices.append(other.m_vertices);
 		return *this;
 	}
 
-	constexpr LineString& LineString::append(const container_type& other)
+	constexpr LineString& LineString::append(const container_type& other) &
 	{
 		m_vertices.append(other);
 		return *this;
 	}
 
 	template <std::input_iterator Iterator>
-	constexpr LineString& LineString::append(Iterator first, Iterator last)
+	constexpr LineString& LineString::append(Iterator first, Iterator last) &
 	{
 		m_vertices.append(first, last);
 		return *this;
 	}
 
-	constexpr LineString& LineString::append(std::initializer_list<value_type> list)
+	constexpr LineString& LineString::append(std::initializer_list<value_type> list) &
 	{
 		m_vertices.append(list);
 		return *this;
 	}
 
-	constexpr LineString& LineString::append(const size_type count, const value_type& value)
+	constexpr LineString& LineString::append(const size_type count, const value_type& value) &
 	{
 		m_vertices.append(count, value);
 		return *this;
+	}
+
+	constexpr LineString& LineString::append(LineString&& other) &
+	{
+		m_vertices.append(std::move(other.m_vertices));
+		return *this;
+	}
+
+	constexpr LineString LineString::append(LineString&& other) &&
+	{
+		append(std::move(other));
+		return std::move(*this);
+	}
+
+	constexpr LineString& LineString::append(container_type&& other) &
+	{
+		m_vertices.append(std::move(other));
+		return *this;
+	}
+
+	constexpr LineString LineString::append(container_type&& other) &&
+	{
+		append(std::move(other));
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::append(const LineString& other) &&
+	{
+		append(other);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::append(const container_type& other) &&
+	{
+		append(other);
+		return std::move(*this);
+	}
+
+	template <std::input_iterator Iterator>
+	constexpr LineString LineString::append(Iterator first, Iterator last) &&
+	{
+		append(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last));
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::append(std::initializer_list<value_type> list) &&
+	{
+		append(list);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::append(size_type count, const value_type& value) &&
+	{
+		append(count, value);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -894,22 +992,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline LineString::value_type& LineString::choice()
+	inline LineString::value_type& LineString::choice() &
 	{
 		return m_vertices.choice();
 	}
 
-	inline const LineString::value_type& LineString::choice() const
+	inline const LineString::value_type& LineString::choice() const&
 	{
 		return m_vertices.choice();
 	}
 
-	inline LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& urbg)
+	inline LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& urbg) &
 	{
 		return m_vertices.choice(urbg);
 	}
 
-	inline const LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& urbg) const
+	inline const LineString::value_type& LineString::choice(Concept::UniformRandomBitGenerator auto&& urbg) const&
 	{
 		return m_vertices.choice(urbg);
 	}
@@ -1003,6 +1101,42 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drop
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString LineString::drop(size_type n) const&
+	{
+		return LineString{ m_vertices.drop(n) };
+	}
+
+	constexpr LineString LineString::drop(size_type n) &&
+	{
+		return LineString{ std::move(m_vertices).drop(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drop_while
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString LineString::drop_while(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ m_vertices.drop_while(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::drop_while(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_vertices).drop_while(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	each
 	//
 	////////////////////////////////////////////////////////////////
@@ -1081,10 +1215,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::fill(const value_type& value)
+	constexpr LineString& LineString::fill(const value_type& value) &
 	{
 		m_vertices.fill(value);
 		return *this;
+	}
+
+	constexpr LineString LineString::fill(const value_type& value) &&
+	{
+		fill(value);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1094,10 +1234,53 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Fty>
-	constexpr LineString LineString::filter(Fty f) const
+	constexpr LineString LineString::filter(Fty f) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
 		return LineString{ m_vertices.filter(std::forward<Fty>(f)) };
+	}
+
+	template <class Fty>
+	constexpr LineString LineString::filter(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return LineString{ std::move(m_vertices).filter(std::forward<Fty>(f)) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	find_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr LineString::value_type* LineString::find_if(Fty f) &
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_vertices.find_if(std::forward<Fty>(f));
+	}
+
+	template <class Fty>
+	constexpr const LineString::value_type* LineString::find_if(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_vertices.find_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	get_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr LineString::value_type* LineString::get_if(size_type index) & noexcept
+	{
+		return m_vertices.get_if(index);
+	}
+
+	constexpr const LineString::value_type* LineString::get_if(size_type index) const& noexcept
+	{
+		return m_vertices.get_if(index);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1161,6 +1344,19 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	indexOf_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Fty>
+	constexpr Optional<LineString::size_type> LineString::indexOf_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		return m_vertices.indexOf_if(std::forward<Fty>(f));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	join
 	//
 	////////////////////////////////////////////////////////////////
@@ -1183,7 +1379,7 @@ namespace s3d
 
 	template <class Fty>
 	constexpr auto LineString::map(Fty f) const
-		requires std::invocable<Fty&, const value_type&>
+		requires detail::ArrayMapFunction<Fty, value_type>
 	{
 		return m_vertices.map(std::forward<Fty>(f));
 	}
@@ -1217,20 +1413,14 @@ namespace s3d
 		return LineString{ std::move(m_vertices).slice(index, length) };
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	head
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr LineString LineString::head(const size_type n) const&
+	constexpr LineString LineString::slice(size_type index) const&
 	{
-		return LineString{ m_vertices.take(n) };
+		return LineString{ m_vertices.slice(index) };
 	}
 
-	constexpr LineString LineString::head(const size_type n) &&
+	constexpr LineString LineString::slice(size_type index) &&
 	{
-		return LineString{ std::move(m_vertices).take(n) };
+		return LineString{ std::move(m_vertices).slice(index) };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1784,7 +1974,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::moveBy(const double x, const double y) noexcept
+	constexpr LineString& LineString::moveBy(const double x, const double y) & noexcept
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -1794,7 +1984,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr LineString& LineString::moveBy(const Vec2 v) noexcept
+	constexpr LineString& LineString::moveBy(const Vec2 v) & noexcept
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -1802,6 +1992,18 @@ namespace s3d
 		}
 	
 		return *this;
+	}
+
+	constexpr LineString LineString::moveBy(double x, double y) && noexcept
+	{
+		moveBy(x, y);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::moveBy(Vec2 v) && noexcept
+	{
+		moveBy(v);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1963,7 +2165,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::scaleFromOrigin(const double s)
+	constexpr LineString& LineString::scaleFromOrigin(const double s) &
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -1973,7 +2175,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr LineString& LineString::scaleFromOrigin(const double sx, const double sy)
+	constexpr LineString& LineString::scaleFromOrigin(const double sx, const double sy) &
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -1984,7 +2186,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr LineString& LineString::scaleFromOrigin(const Vec2 s)
+	constexpr LineString& LineString::scaleFromOrigin(const Vec2 s) &
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -1992,6 +2194,24 @@ namespace s3d
 		}
 
 		return *this;
+	}
+
+	constexpr LineString LineString::scaleFromOrigin(double s) &&
+	{
+		scaleFromOrigin(s);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaleFromOrigin(double sx, double sy) &&
+	{
+		scaleFromOrigin(sx, sy);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaleFromOrigin(Vec2 s) &&
+	{
+		scaleFromOrigin(s);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2062,7 +2282,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double s)
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double s) &
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -2072,7 +2292,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double sx, const double sy)
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const double sx, const double sy) &
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -2083,7 +2303,7 @@ namespace s3d
 		return *this;
 	}
 
-	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const Vec2 s)
+	constexpr LineString& LineString::scaleFrom(const Vec2 pos, const Vec2 s) &
 	{
 		for (auto& vertex : m_vertices)
 		{
@@ -2092,6 +2312,24 @@ namespace s3d
 		}
 	
 		return *this;
+	}
+
+	constexpr LineString LineString::scaleFrom(Vec2 pos, double s) &&
+	{
+		scaleFrom(pos, s);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaleFrom(Vec2 pos, double sx, double sy) &&
+	{
+		scaleFrom(pos, sx, sy);
+		return std::move(*this);
+	}
+
+	constexpr LineString LineString::scaleFrom(Vec2 pos, Vec2 s) &&
+	{
+		scaleFrom(pos, s);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////

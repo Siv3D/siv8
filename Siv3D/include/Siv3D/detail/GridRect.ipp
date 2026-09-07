@@ -35,7 +35,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::fill(const Rect rect, const value_type& value)
+	constexpr Grid<Type, Allocator>& Grid<Type, Allocator>::fill(const Rect rect, const value_type& value) & SIV3D_LIFETIMEBOUND
 	{
 		return fill(rect.pos, rect.size, value);
 	}
@@ -50,5 +50,12 @@ namespace s3d
 	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::subgrid(const Rect rect) const
 	{
 		return subgrid(rect.pos, rect.size);
+	}
+
+	template <class Type, class Allocator>
+	constexpr Grid<Type, Allocator> Grid<Type, Allocator>::fill(Rect rect, const value_type& value) &&
+	{
+		fill(rect, value);
+		return std::move(*this);
 	}
 }

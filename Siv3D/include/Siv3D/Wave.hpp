@@ -29,6 +29,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @remark 要素を所有します。ポインタ・イテレータ・span の取得は左辺値に限定され、元の要素の寿命と無効化規則に従います。
+	/// @remark 右辺値の要素アクセスは値を返し、const 右辺値からの借用はできません。
 	class Wave
 	{
 	public:
@@ -201,6 +203,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr const value_type& operator [](size_type index) const& noexcept;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void operator [](size_type index) const&& = delete;
+
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
 		/// @return 要素への参照
@@ -229,6 +234,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr const_reference front() const& noexcept;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void front() const&& = delete;
+
 		/// @brief 先頭の要素を返します。
 		/// @return 先頭の要素
 		[[nodiscard]]
@@ -250,6 +258,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr const_reference back() const& noexcept;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void back() const&& = delete;
+
 		/// @brief 末尾の要素を返します。
 		/// @return 末尾の要素
 		[[nodiscard]]
@@ -264,12 +275,15 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr value_type* data() noexcept;
+		constexpr value_type* data() & noexcept;
 
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr const value_type* data() const noexcept;
+		constexpr const value_type* data() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void data() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -280,24 +294,30 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator begin() noexcept;
+		constexpr iterator begin() & noexcept;
 
 		/// @brief 配列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator end() noexcept;
+		constexpr iterator end() & noexcept;
 
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator begin() const noexcept;
+		constexpr const_iterator begin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void begin() const&& = delete;
 
 		/// @brief 配列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator end() const noexcept;
+		constexpr const_iterator end() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void end() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -308,13 +328,19 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cbegin() const noexcept;
+		constexpr const_iterator cbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cbegin() const&& = delete;
 
 		/// @brief 配列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cend() const noexcept;
+		constexpr const_iterator cend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -325,24 +351,30 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rbegin() noexcept;
+		constexpr reverse_iterator rbegin() & noexcept;
 
 		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rend() noexcept;
+		constexpr reverse_iterator rend() & noexcept;
 
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rbegin() const noexcept;
+		constexpr const_reverse_iterator rbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rbegin() const&& = delete;
 
 		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rend() const noexcept;
+		constexpr const_reverse_iterator rend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -353,13 +385,19 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crbegin() const noexcept;
+		constexpr const_reverse_iterator crbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crbegin() const&& = delete;
 
 		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crend() const noexcept;
+		constexpr const_reverse_iterator crend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -705,6 +743,23 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭の Min(n, size()) 個を除いた列を返します。
+		/// @remark 個数と位置の単位はステレオフレームです。サンプルレートを引き継ぎ、右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Wave drop(size_type n) const&;
+
+		/// @brief 先頭の Min(n, size()) 個を除いた列を返します。
+		/// @remark 元の記憶領域を再利用します。
+		/// @remark サンプルレートを引き継ぎます。位置と個数の単位はステレオフレームです。
+		[[nodiscard]]
+		constexpr Wave drop(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	encode
 		//
 		////////////////////////////////////////////////////////////////
@@ -757,9 +812,19 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	head
+		//	get_if
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定位置のステレオフレームへのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		constexpr value_type* get_if(size_type index) & noexcept;
+
+		/// @brief 指定位置の要素へのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		constexpr const value_type* get_if(size_type index) const& noexcept;
+
+		void get_if(size_type) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -793,6 +858,34 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief index から末尾までを返します。範囲外の位置では std::out_of_range を送出します。
+		/// @remark 個数と位置の単位はステレオフレームです。サンプルレートを引き継ぎ、右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Wave slice(size_type index) const&;
+
+		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
+		/// @remark 元の記憶領域を再利用します。
+		/// @remark サンプルレートを引き継ぎます。位置と個数の単位はステレオフレームです。
+		[[nodiscard]]
+		constexpr Wave slice(size_type index) &&;
+
+		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
+		/// @remark 個数と位置の単位はステレオフレームです。サンプルレートを引き継ぎ、右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Wave slice(size_type index, size_type length) const&;
+
+		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
+		/// @remark 元の記憶領域を再利用します。
+		/// @remark サンプルレートを引き継ぎます。位置と個数の単位はステレオフレームです。
+		[[nodiscard]]
+		constexpr Wave slice(size_type index, size_type length) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	tail
 		//
 		////////////////////////////////////////////////////////////////
@@ -814,6 +907,17 @@ namespace s3d
 		//	take
 		//
 		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭の Min(n, size()) 個を返します。
+		/// @remark 個数と位置の単位はステレオフレームです。サンプルレートを引き継ぎ、右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Wave take(size_type n) const&;
+
+		/// @brief 先頭の Min(n, size()) 個を返します。
+		/// @remark 元の記憶領域を再利用します。
+		/// @remark サンプルレートを引き継ぎます。位置と個数の単位はステレオフレームです。
+		[[nodiscard]]
+		constexpr Wave take(size_type n) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -846,6 +950,7 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
+
 
 	private:
 

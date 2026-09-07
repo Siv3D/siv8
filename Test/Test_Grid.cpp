@@ -1927,3 +1927,123 @@ TEST_CASE("Grid.non-mutating geometric transformations")
 	const Grid<ThrowingSwappable> vertical(1, 2);
 	CHECK_THROWS(static_cast<void>(vertical.flipped()));
 }
+
+namespace
+{
+	template <class T>
+	struct GridStateAllocator
+	{
+		using value_type = T;
+		int id = 0;
+		GridStateAllocator() = default;
+		explicit GridStateAllocator(int value) : id(value) {}
+		template <class U> GridStateAllocator(const GridStateAllocator<U>& other) : id(other.id) {}
+		T* allocate(size_t n) { return std::allocator<T>{}.allocate(n); }
+		void deallocate(T* p, size_t n) { std::allocator<T>{}.deallocate(p, n); }
+		GridStateAllocator select_on_container_copy_construction() const { return {}; }
+		template <class U> bool operator ==(const GridStateAllocator<U>& other) const { return id == other.id; }
+	};
+	struct GridConstructOnlyResult
+	{
+		int value;
+		explicit GridConstructOnlyResult(int v) : value(v) {}
+		GridConstructOnlyResult(GridConstructOnlyResult&&) = default;
+		GridConstructOnlyResult& operator =(GridConstructOnlyResult&&) = delete;
+	};
+}
+
+TEST_CASE("Grid.array_like_contract")
+{
+	static_assert(std::same_as<decltype(Grid<int32>{}.fill(1)), Grid<int32>>);
+	Grid<int32> grid{ { 1, 2, 3 }, { 4, 5, 6 } };
+	CHECK_EQ(grid.get_if(Point{ 1, 1 }), &grid[1, 1]);
+	CHECK_EQ(std::as_const(grid).get_if(1, 2), &grid[1, 2]);
+	CHECK_EQ(grid.get_if(Point{ -1, 0 }), nullptr);
+	CHECK_EQ(grid.get_if(Point{ 0, -1 }), nullptr);
+	CHECK_EQ(grid.get_if(2, 0), nullptr);
+	CHECK_EQ(grid.get_if(0, 3), nullptr);
+	CHECK_EQ(grid.get_if(std::numeric_limits<size_t>::max(), 0), nullptr);
+	CHECK_EQ(Grid<int32>{}.getContainer().size(), size_t{ 0 });
+	const auto storage = grid.data();
+	auto result = std::move(grid).fill(Rect{ 1, 0, 2, 2 }, 9);
+	CHECK_EQ(result.size(), Size{ 3, 2 });
+	CHECK_EQ(result.data(), storage);
+	CHECK_EQ(result, Grid<int32>{ { 1, 9, 9 }, { 4, 9, 9 } });
+	result.release();
+	CHECK_EQ(result.size(), Size{ 0, 0 });
+	CHECK_EQ(result.capacity(), size_t{ 0 });
+	CHECK_EQ(result.get_if(Point{}), nullptr);
+}
+
+TEST_CASE("Grid.parallel_map_result_type")
+{
+	const Grid<int32> source{ { 1, 2, 3 }, { 4, 5, 6 } };
+	const auto doubles = source.parallel_map([](int32 v) { return v + 0.5; });
+	static_assert(std::same_as<std::remove_cvref_t<decltype(doubles)>, Grid<double>>);
+	CHECK_EQ(doubles.size(), source.size());
+	CHECK_EQ(doubles[1, 2], 6.5);
+	const auto flags = source.parallel_map([](int32 v) { return (v % 2) == 0; });
+	static_assert(std::same_as<std::remove_cvref_t<decltype(flags)>, Grid<bool>>);
+	CHECK_EQ(flags, Grid<bool>{ { false, true, false }, { true, false, true } });
+	const auto constructed = source.parallel_map([](int32 v) { return GridConstructOnlyResult{ v * 10 }; });
+	CHECK_EQ(constructed.size(), source.size());
+	CHECK_EQ(constructed[1, 2].value, 60);
+	CHECK_THROWS_AS((void) source.parallel_map([](int32) -> int32 { throw std::runtime_error("worker"); }), std::runtime_error);
+	const Grid<int32> empty{ 0, 3 };
+	const auto emptyResult = empty.parallel_map([](int32 v) { return double(v); });
+	CHECK_EQ(emptyResult.size(), empty.size());
+	CHECK_EQ(emptyResult.elementCount(), size_t{ 0 });
+}
+
+TEST_CASE("Grid.derived_allocator")
+{
+	using A = GridStateAllocator<int32>;
+	using G = Grid<int32, A>;
+	Array<int32, A> data({ 1, 2, 3, 4, 5, 6 }, A{ 42 });
+	G grid{ Size{ 3, 2 }, std::move(data) };
+	CHECK_EQ(grid.get_allocator().id, 42);
+	CHECK_EQ(G{ grid }.get_allocator().id, 0);
+	CHECK_EQ(grid.reversed().get_allocator().id, 42);
+	CHECK_EQ(grid.transposed().get_allocator().id, 42);
+	CHECK_EQ(grid.rotated90().get_allocator().id, 42);
+	CHECK_EQ(grid.rotated180().get_allocator().id, 42);
+	CHECK_EQ(grid.rotated270().get_allocator().id, 42);
+	CHECK_EQ(grid.rotated_columns(1).get_allocator().id, 42);
+	CHECK_EQ(grid.rotated_rows(1).get_allocator().id, 42);
+	CHECK_EQ(grid.subgrid(Point{ 1, 0 }, Size{ 2, 2 }).get_allocator().id, 42);
+	CHECK_EQ(grid.subgrid(Point{ 0, 0 }, Size{ 0, 0 }).get_allocator().id, 42);
+	CHECK_EQ(grid.scaled(1).get_allocator().id, 42);
+	CHECK_EQ(grid.scaled(2).get_allocator().id, 42);
+	CHECK_EQ(grid.shifted(1, 0, 0).get_allocator().id, 42);
+	CHECK_EQ(grid.map([](int32 v) { return double(v); })[1, 2], 6.0);
+	const auto mapped = grid.parallel_map([](int32 v) { return double(v); });
+	static_assert(std::same_as<std::remove_cvref_t<decltype(mapped)>, Grid<double>>);
+	CHECK_EQ(mapped[1, 2], 6.0);
+	grid.transpose();
+	CHECK_EQ(grid.get_allocator().id, 42);
+	CHECK_EQ(grid.size(), Size{ 2, 3 });
+	grid.release();
+	CHECK_EQ(grid.get_allocator().id, 42);
+	CHECK_EQ(grid.capacity(), size_t{ 0 });
+}
+
+TEST_CASE("Grid.moved_from_dimensions")
+{
+	Grid<int32> original{ { 1, 2 }, { 3, 4 } };
+	const auto storage = original.data();
+	Grid<int32> moved{ std::move(original) };
+	CHECK_EQ(moved.data(), storage);
+	CHECK_EQ(original.size(), Size{ 0, 0 });
+	CHECK_EQ(original.get_if(Point{}), nullptr);
+	original = std::move(moved);
+	CHECK_EQ(original.data(), storage);
+	CHECK_EQ(moved.size(), Size{ 0, 0 });
+	CHECK_EQ(moved.get_if(Point{}), nullptr);
+	auto& alias = original;
+	original = std::move(alias);
+	CHECK_EQ(original.size(), Size{ 2, 2 });
+	CHECK_EQ(original.data(), storage);
+	const auto array = std::move(original).getContainer();
+	CHECK_EQ(array.size(), size_t{ 4 });
+	CHECK_EQ(original.size(), Size{ 0, 0 });
+}

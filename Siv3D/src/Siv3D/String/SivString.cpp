@@ -367,7 +367,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String& String::replaceFirst(const RegExp& regexp, const StringView replacement)
+	String& String::replaceFirst(const RegExp& regexp, const StringView replacement) & SIV3D_LIFETIMEBOUND
 	{
 		return (*this = regexp.replaceFirst(*this, replacement));
 	}
@@ -383,12 +383,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String& String::replaceAll(const RegExp& regexp, const StringView replacement)
+	String& String::replaceAll(const RegExp& regexp, const StringView replacement) & SIV3D_LIFETIMEBOUND
 	{
 		return (*this = regexp.replaceAll(*this, replacement));
 	}
 
-	String& String::replaceAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc)
+	String& String::replaceAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc) & SIV3D_LIFETIMEBOUND
 	{
 		return (*this = regexp.replaceAll(*this, replacementFunc));
 	}
@@ -996,7 +996,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	String& String::xml_escape()
+	String& String::xml_escape() & SIV3D_LIFETIMEBOUND
 	{
 		return (*this = xml_escaped());
 	}

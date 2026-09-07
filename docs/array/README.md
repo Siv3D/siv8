@@ -4,6 +4,9 @@
 [Array.hpp](../../Siv3D/include/Siv3D/Array.hpp); the bool specialization is in
 [BoolArray.ipp](../../Siv3D/include/Siv3D/detail/BoolArray.ipp).
 
+The [Array-like guide](array-like.md) applies these rules to geometry, grids,
+images, strings, bytes, and audio, and describes their class-specific units.
+
 ## Choosing an operation
 
 Use `take(n)` to copy a prefix and `drop(n)` to copy the remainder. Both clamp

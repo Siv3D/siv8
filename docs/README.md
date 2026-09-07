@@ -5,7 +5,7 @@ live in the public headers; executable tests and their expected results live in
 Test. Unfinished work is tracked in [TODO](../TODO.md).
 
 - [Development](development/README.md): repository workflow, documentation ownership, and validation.
-- [Array](array/README.md): sequence operations, ownership, allocators, and migration.
+- [Array](array/README.md): sequence operations, Array-like owners and views, allocators, and migration.
 - [Mesh3D](mesh3d/README.md): CPU modeling, assembly, export, and implementation guidance.
 
 For documentation changes, follow the [documentation rules](AGENTS.md) and run

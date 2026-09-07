@@ -110,3 +110,22 @@ TEST_CASE("Image.bgraToRGBA.Benchmark")
 }
 
 # endif
+
+TEST_CASE("Image.array_like_contract")
+{
+	Image image{ 3, 2, Color{ 10, 20, 30 } };
+	CHECK_EQ(image.get_if(Point{ 1, 1 }), &image[1, 1]);
+	CHECK_EQ(std::as_const(image).get_if(1, 2), &image[1, 2]);
+	CHECK_EQ(image.get_if(Point{ -1, 0 }), nullptr);
+	CHECK_EQ(image.get_if(Point{ 0, -1 }), nullptr);
+	CHECK_EQ(image.get_if(2, 0), nullptr);
+	CHECK_EQ(image.get_if(0, 3), nullptr);
+	CHECK_EQ(image.get_if(std::numeric_limits<size_t>::max(), 0), nullptr);
+	CHECK_EQ(reinterpret_cast<uintptr_t>(image.data()) % Image::DataAlignment, uintptr_t{ 0 });
+	image.row(1)[2] = Color{ 40, 50, 60 };
+	CHECK_EQ(image[Point{ 2, 1 }], Color{ 40, 50, 60 });
+	image.release();
+	CHECK_EQ(image.size(), Size{ 0, 0 });
+	CHECK_EQ(image.get_if(Point{}), nullptr);
+	CHECK(image.isEmpty());
+}

@@ -392,3 +392,73 @@ TEST_CASE("String.operator ==.Benchmark")
 
 
 # endif
+
+namespace
+{
+	template <class T>
+	constexpr void CheckStringBorrowing()
+	{
+		static_assert(not requires(const T&& v) { std::move(v).str(); });
+		static_assert(not requires(T&& v) { std::move(v).c_str(); });
+		static_assert(not requires(const T&& v) { std::move(v).c_str(); });
+		static_assert(not requires(T&& v) { std::move(v).subview(); });
+		static_assert(not requires(const T&& v) { std::move(v).subview(); });
+		static_assert(not requires(T&& v) { std::move(v).splitView(U','); });
+		static_assert(not requires(const T&& v) { std::move(v).splitView(U','); });
+		static_assert(not requires(T&& v) { std::move(v).splitLines(); });
+		static_assert(not requires(const T&& v) { std::move(v).splitLines(); });
+		static_assert(not requires(const T& v) { v.map([](char32) {}); });
+	}
+}
+
+TEST_CASE("String.array_like_contract")
+{
+	CheckStringBorrowing<String>();
+	static_assert(std::same_as<decltype(String{}.str()), std::u32string>);
+	static_assert(std::same_as<decltype(String{}.append(U'a')), String>);
+	static_assert(std::same_as<decltype(String{} += U'a'), String>);
+	static_assert(std::same_as<decltype(String{} << U'a'), String>);
+	String s = U"a\U0001F600bc";
+	CHECK_EQ(s.size(), size_t{ 4 });
+	CHECK_EQ(s.get_if(1), &s[1]);
+	CHECK_EQ(std::as_const(s).get_if(1), &s[1]);
+	CHECK_EQ(s.get_if(4), nullptr);
+	CHECK_EQ(s.find_if([](char32 ch) { return ch == U'b'; }), &s[2]);
+	CHECK_EQ(s.find_if([](char32 ch) { return ch == U'z'; }), nullptr);
+	CHECK_EQ(s.indexOf_if([](char32 ch) { return ch == U'b'; }), Optional<size_t>{ 2 });
+	CHECK_EQ(s.indexOf_if([](char32 ch) { return ch == U'z'; }), none);
+	CHECK_EQ(s.drop(1), U"\U0001F600bc");
+	CHECK(s.drop(100).isEmpty());
+	CHECK_EQ(s.drop_while([](char32 ch) { return ch != U'b'; }), U"bc");
+	CHECK_EQ(s.drop_while([](char32) { return false; }), s);
+	CHECK(s.drop_while([](char32) { return true; }).isEmpty());
+	CHECK_EQ(s.filter([](char32 ch) { return ch <= U'z'; }), U"abc");
+	s.reserve(128);
+	const auto storage = s.data();
+	auto result = std::move(s).drop(1).filter([](char32 ch) { return ch <= U'z'; }).append(U'd');
+	CHECK_EQ(result, U"bcd");
+	CHECK_EQ(result.data(), storage);
+	CHECK_EQ(String{ U"abc" }.append(StringView{ U"def" }), U"abcdef");
+	CHECK_EQ(String{ U"abc" }.assign(2, U'z').append(2, U'x'), U"zzxx");
+	CHECK_EQ(String{ U"abc" }.insert(1, U"XY").erase(0, 1), U"XYbc");
+	CHECK_EQ((String{ U"ab" } += U"cd"), U"abcd");
+	CHECK_EQ(String{ U"ab" }.keep_if([](char32 ch) { return ch == U'b'; }), U"b");
+	CHECK_THROWS_AS((void) result.filter([](char32) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
+	CHECK_THROWS_AS((void) result.erase_all_if([](char32) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
+	CHECK_THROWS_AS((void) result.replace_if([](char32) -> bool { throw std::runtime_error("predicate"); }, U'x'), std::runtime_error);
+	CHECK_THROWS_AS((void) String{ U"abc" }.take_while([](char32) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
+	CHECK_THROWS_AS((void) result.sort_by([](char32, char32) -> bool { throw std::runtime_error("comparison"); }), std::runtime_error);
+}
+
+TEST_CASE("String.owning_storage_transfer")
+{
+	String s(64, U'x');
+	const auto storage = s.data();
+	auto underlying = std::move(s).str();
+	CHECK_EQ(underlying.data(), storage);
+	CHECK_EQ(underlying.size(), size_t{ 64 });
+	s.assign(128, U'y');
+	s.release();
+	CHECK(s.isEmpty());
+	CHECK_EQ(s.capacity(), String{}.capacity());
+}

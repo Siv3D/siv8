@@ -120,12 +120,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Wave::value_type* Wave::data() noexcept
+	constexpr Wave::value_type* Wave::data() & noexcept
 	{
 		return m_container.data();
 	}
 
-	constexpr const Wave::value_type* Wave::data() const noexcept
+	constexpr const Wave::value_type* Wave::data() const& noexcept
 	{
 		return m_container.data();
 	}
@@ -136,22 +136,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Wave::iterator Wave::begin() noexcept
+	constexpr Wave::iterator Wave::begin() & noexcept
 	{
 		return m_container.begin();
 	}
 
-	constexpr Wave::iterator Wave::end() noexcept
+	constexpr Wave::iterator Wave::end() & noexcept
 	{
 		return m_container.end();
 	}
 
-	constexpr Wave::const_iterator Wave::begin() const noexcept
+	constexpr Wave::const_iterator Wave::begin() const& noexcept
 	{
 		return m_container.begin();
 	}
 
-	constexpr Wave::const_iterator Wave::end() const noexcept
+	constexpr Wave::const_iterator Wave::end() const& noexcept
 	{
 		return m_container.end();
 	}
@@ -162,12 +162,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Wave::const_iterator Wave::cbegin() const noexcept
+	constexpr Wave::const_iterator Wave::cbegin() const& noexcept
 	{
 		return m_container.cbegin();
 	}
 
-	constexpr Wave::const_iterator Wave::cend() const noexcept
+	constexpr Wave::const_iterator Wave::cend() const& noexcept
 	{
 		return m_container.cend();
 	}
@@ -178,22 +178,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Wave::reverse_iterator Wave::rbegin() noexcept
+	constexpr Wave::reverse_iterator Wave::rbegin() & noexcept
 	{
 		return m_container.rbegin();
 	}
 
-	constexpr Wave::reverse_iterator Wave::rend() noexcept
+	constexpr Wave::reverse_iterator Wave::rend() & noexcept
 	{
 		return m_container.rend();
 	}
 
-	constexpr Wave::const_reverse_iterator Wave::rbegin() const noexcept
+	constexpr Wave::const_reverse_iterator Wave::rbegin() const& noexcept
 	{
 		return m_container.rbegin();
 	}
 
-	constexpr Wave::const_reverse_iterator Wave::rend() const noexcept
+	constexpr Wave::const_reverse_iterator Wave::rend() const& noexcept
 	{
 		return m_container.rend();
 	}
@@ -204,12 +204,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Wave::const_reverse_iterator Wave::crbegin() const noexcept
+	constexpr Wave::const_reverse_iterator Wave::crbegin() const& noexcept
 	{
 		return m_container.crbegin();
 	}
 
-	constexpr Wave::const_reverse_iterator Wave::crend() const noexcept
+	constexpr Wave::const_reverse_iterator Wave::crend() const& noexcept
 	{
 		return m_container.crend();
 	}
@@ -341,8 +341,6 @@ namespace s3d
 	}
 
 
-
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	clear
@@ -355,7 +353,6 @@ namespace s3d
 	}
 
 
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	resize
@@ -365,6 +362,80 @@ namespace s3d
 	constexpr void Wave::resize(const size_type count)
 	{
 		m_container.resize(count, value_type::Zero());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drop
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Wave Wave::drop(size_type n) const&
+	{
+		return Wave{ m_container.drop(n), Arg::sampleRate = m_sampleRate };
+	}
+
+	constexpr Wave Wave::drop(size_type n) &&
+	{
+		return Wave{ std::move(m_container).drop(n), Arg::sampleRate = m_sampleRate };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	get_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Wave::value_type* Wave::get_if(size_type index) & noexcept
+	{
+		return m_container.get_if(index);
+	}
+
+	constexpr const Wave::value_type* Wave::get_if(size_type index) const& noexcept
+	{
+		return m_container.get_if(index);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	slice
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Wave Wave::slice(size_type index) const&
+	{
+		return Wave{ m_container.slice(index), Arg::sampleRate = m_sampleRate };
+	}
+
+	constexpr Wave Wave::slice(size_type index) &&
+	{
+		return Wave{ std::move(m_container).slice(index), Arg::sampleRate = m_sampleRate };
+	}
+
+	constexpr Wave Wave::slice(size_type index, size_type length) const&
+	{
+		return Wave{ m_container.slice(index, length), Arg::sampleRate = m_sampleRate };
+	}
+
+	constexpr Wave Wave::slice(size_type index, size_type length) &&
+	{
+		return Wave{ std::move(m_container).slice(index, length), Arg::sampleRate = m_sampleRate };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Wave Wave::take(size_type n) const&
+	{
+		return Wave{ m_container.take(n), Arg::sampleRate = m_sampleRate };
+	}
+
+	constexpr Wave Wave::take(size_type n) &&
+	{
+		return Wave{ std::move(m_container).take(n), Arg::sampleRate = m_sampleRate };
 	}
 
 	////////////////////////////////////////////////////////////////

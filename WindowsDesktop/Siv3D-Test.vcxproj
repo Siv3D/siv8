@@ -61,6 +61,10 @@
     <ClCompile Include="..\Test\Test_Interpolation.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp" />
+    <ClCompile Include="..\Test\Test_ArrayLike.cpp" />
+    <ClCompile Include="..\Test\Test_MultiPolygon.cpp" />
+    <ClCompile Include="..\Test\Test_Blob.cpp" />
+    <ClCompile Include="..\Test\Test_Wave.cpp" />
     <ClCompile Include="..\Test\Test_LineString.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />
