@@ -112,3 +112,73 @@ TEST_CASE("Mesh3DPlacement::Align keeps the mounting point under a transformed p
 		CHECK(bounds.size.y > 0);
 	}
 }
+
+TEST_CASE("Mesh3DPlacement scale rotation translation order and round trips")
+{
+	const Vec3 offset{ 5, -2, 7 };
+	const auto rotation = Quaternion::RotateZ(90_deg);
+	static_assert(noexcept(Mesh3DPlacement{ offset, rotation, Vec3::One() }));
+	for (const Vec3 scale : { Vec3::One(), Vec3{ 2, 3, 4 }, Vec3{ -2, 3, 4 },
+		Vec3{ -2, -3, 4 }, Vec3{ 0, 3, 4 } })
+	{
+		const Mat4x4 actual = Mesh3DPlacement{ offset, rotation, scale }.getTransform();
+		const Mat4x4 expected = Mat4x4::AffineTransform(Float3{ scale }, rotation, Float3{ offset });
+		CHECK(actual.epsilonEquals(expected, 0.0f));
+		CHECK(actual.transformPoint(Float3::Zero()).epsilonEquals(Float3{ offset }, 1e-6f));
+		const Float3 point{ 1, 2, -3 };
+		const Float3 transformed = actual.transformPoint(point);
+		CHECK(transformed.epsilonEquals(rotation.rotate(point * Float3{ scale }) + Float3{ offset }, 2e-5f));
+		if (scale.x != 0)
+		{
+			CHECK(actual.inverse().transformPoint(transformed).epsilonEquals(point, 2e-5f));
+		}
+	}
+	CHECK(Mesh3DPlacement{ offset, rotation }.getTransform().epsilonEquals(
+		Mesh3DPlacement{ offset, rotation, Vec3::One() }.getTransform(), 0.0f));
+}
+
+TEST_CASE("Mesh3DPlacement nonuniform scale and reflection agree across Builder and Assembly")
+{
+	const Vec3 size{ 2, 4, 6 };
+	const Vec3 offset{ 3, 5, -2 };
+	const auto rotation = Quaternion::RotateY(0.4) * Quaternion::RotateZ(0.7);
+	for (const Vec3 scale : { Vec3{ 2, 0.5, 3 }, Vec3{ -2, 0.5, 3 } })
+	{
+		const Mesh3DPlacement placement{ offset, rotation, scale };
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addBox(size, placement));
+		Mesh3DAssembly assembly;
+		const auto shape = assembly.addMesh(Mesh3D::Box(size)).value();
+		REQUIRE(assembly.addPart({ .mesh = shape, .placement = placement }));
+		const auto baked = assembly.bake().value();
+		const Mesh3D expected = Mesh3D::Box(size).transformed(
+			Mat4x4::AffineTransform(Float3{ scale }, rotation, Float3{ offset }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+		Mesh3DTest::CheckMeshDataEqual(baked.mesh, expected);
+		Mesh3DTest::CheckMeshGeometry(builder.getMesh());
+		Mesh3DTest::CheckMeshGeometry(baked.mesh);
+	}
+}
+
+TEST_CASE("Mesh3DPlacement scale preserves Loft frame restrictions")
+{
+	const Array<Vec2> contour{ Vec2{ -1, -1 }, Vec2{ 1, -1 }, Vec2{ 1, 1 }, Vec2{ -1, 1 } };
+	const auto rotation = Quaternion::RotateY(0.3);
+	const Mesh3DPlacement bottom{ Vec3::Zero(), rotation, Vec3{ 2, 1, 3 } };
+	const Mesh3DPlacement top{ Vec3{ 0, 4, 0 }, rotation, Vec3{ 1, 1, 2 } };
+	const Mesh3D expected = Mesh3D::Loft({
+		{ contour, Mat4x4::AffineTransform(Float3{ 2, 1, 3 }, rotation, Float3::Zero()) },
+		{ contour, Mat4x4::AffineTransform(Float3{ 1, 1, 2 }, rotation, Float3{ 0, 4, 0 }) } });
+	Mesh3DTest::CheckMeshDataEqual(Mesh3D::Loft({ { contour, bottom }, { contour, top } }), expected);
+	Mesh3DTest::CheckMeshGeometry(expected);
+	Mesh3DBuilder builder;
+	REQUIRE(builder.addLoft({ { contour, bottom }, { contour, top } }));
+	Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	for (const Vec3 scale : { Vec3{ 0, 1, 1 }, Vec3{ -1, 1, 1 } })
+	{
+		const Mesh3DPlacement invalid{ Vec3{ 0, 4, 0 }, rotation, scale };
+		CHECK(Mesh3D::Loft({ { contour, bottom }, { contour, invalid } }).isEmpty());
+		CHECK_FALSE(builder.addLoft({ { contour, bottom }, { contour, invalid } }));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
+}

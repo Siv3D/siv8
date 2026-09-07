@@ -27,11 +27,13 @@ namespace s3d
 	/// @remark `Quaternion` から暗黙に変換できるため、原点を中心とする回転だけなら `addShape(..., rotation)` と書けます。
 	/// @remark 回転と平行移動を指定する場合は `addShape(..., { offset, rotation })` と書けます。
 	/// @remark `{ offset, rotation }` は原点を中心に回転してから平行移動します。Assembly で両者を独立した関節として操作しない場合は、1 つの部品の配置にまとめられます。
+	/// @remark `{ offset, rotation, scale }` はローカル軸に沿って拡大・縮小し、原点を中心に回転してから平行移動します。scale は Vec3 で指定します。
 	/// @remark `Mat4x4` から暗黙に変換できるため、任意のアフィン変換を指定する呼び出しは `addShape(..., transform)` と書けます。
 	/// @code
 	/// builder.addTube(path, 0.25, offset);
 	/// builder.addTube(path, 0.25, rotation);
 	/// builder.addTube(path, 0.25, { offset, rotation });
+	/// builder.addTube(path, 0.25, { offset, rotation, Vec3{ 2, 1, 0.5 } });
 	/// builder.addTube(path, 0.25, transform);
 	///
 	/// const Mesh3DPlacement placement{ offset, rotation };
@@ -59,7 +61,17 @@ namespace s3d
 		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
 		[[nodiscard]]
 		Mesh3DPlacement(Vec3 offset, const Quaternion& rotation) noexcept
-			: m_transform{ Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }) } {}
+			: Mesh3DPlacement{ offset, rotation, Vec3::One() } {}
+
+		/// @brief 拡大・縮小、回転、および平行移動を表す配置変換を作成します。
+		/// @param offset 回転後に適用する平行移動量
+		/// @param rotation 拡大・縮小後に適用する、原点を中心とする単位クォータニオン
+		/// @param scale 回転前のローカル軸に沿った各軸の拡大率
+		/// @remark Mat4x4::AffineTransform(Float3{ scale }, rotation, Float3{ offset }) と同じ変換です。値は内部で float に変換されます。
+		/// @remark 入力の検査・正規化は行いません。0 や負の scale も行列として保持しますが、使用先の事前条件に従う必要があります。Loft は特異な断面フレームや determinant が負の断面フレームを受け付けません。
+		[[nodiscard]]
+		Mesh3DPlacement(Vec3 offset, const Quaternion& rotation, Vec3 scale) noexcept
+			: m_transform{ Mat4x4::AffineTransform(Float3{ scale }, rotation, Float3{ offset }) } {}
 
 		/// @brief アフィン変換行列から配置変換を作成します。
 		/// @param transform 適用するアフィン変換行列
