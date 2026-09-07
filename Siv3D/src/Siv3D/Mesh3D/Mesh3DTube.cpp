@@ -145,9 +145,7 @@ namespace s3d
 			}
 
 			result = value;
-			return (std::isfinite(result.x)
-				&& std::isfinite(result.y)
-				&& std::isfinite(result.z));
+			return result.isFinite();
 		}
 
 		[[nodiscard]]

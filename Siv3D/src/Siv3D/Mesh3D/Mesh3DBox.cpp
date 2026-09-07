@@ -28,23 +28,14 @@ namespace s3d::Mesh3DDetail
 		};
 
 		[[nodiscard]]
-		static bool IsFinite(const FloatRect& rect) noexcept
-		{
-			return (std::isfinite(rect.left)
-				&& std::isfinite(rect.top)
-				&& std::isfinite(rect.right)
-				&& std::isfinite(rect.bottom));
-		}
-
-		[[nodiscard]]
 		static bool IsFinite(const BoxUVMapping& uvMapping) noexcept
 		{
-			return (IsFinite(uvMapping.negativeZ)
-				&& IsFinite(uvMapping.positiveZ)
-				&& IsFinite(uvMapping.positiveX)
-				&& IsFinite(uvMapping.negativeX)
-				&& IsFinite(uvMapping.positiveY)
-				&& IsFinite(uvMapping.negativeY));
+			return (uvMapping.negativeZ.isFinite()
+				&& uvMapping.positiveZ.isFinite()
+				&& uvMapping.positiveX.isFinite()
+				&& uvMapping.negativeX.isFinite()
+				&& uvMapping.positiveY.isFinite()
+				&& uvMapping.negativeY.isFinite());
 		}
 
 		[[nodiscard]]
@@ -336,7 +327,7 @@ namespace s3d::Mesh3DDetail
 				continue;
 			}
 
-			if (not IsFinite(uvRects[faceIndex]))
+			if (not uvRects[faceIndex].isFinite())
 			{
 				return OperationFailed(Mesh3DErrorCode::NumericRange,
 					U"Mesh3D::Box(): A selected UV rectangle is non-finite");
@@ -524,7 +515,7 @@ namespace s3d::Mesh3DDetail
 		for (const ShellFace& face : Faces)
 		{
 			if ((requiredUVFaceBits & static_cast<uint8>(face.mask))
-				&& (not IsFinite(GetBoxUVRect(uvMapping, face.mask))))
+				&& (not GetBoxUVRect(uvMapping, face.mask).isFinite()))
 			{
 				return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::BoxShell(): Every used UV rectangle must be finite");
 			}
@@ -756,7 +747,7 @@ namespace s3d::Mesh3DDetail
 			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::RoundedBox(): Every size component must be positive after conversion to float");
 		}
 
-		const double maxRadius = (std::min({ _size.x, _size.y, _size.z }) * 0.5);
+		const double maxRadius = (_size.minComponent() * 0.5);
 		if (maxRadius < _radius)
 		{
 			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::RoundedBox(): radius must not exceed half of the smallest size component");
@@ -992,7 +983,7 @@ namespace s3d::Mesh3DDetail
 			return AppendBox(mesh, size, uvMapping, BoxFace::All);
 		}
 
-		const float maxChamfer = (std::min({ size.x, size.y, size.z }) * 0.5f);
+		const float maxChamfer = (size.minComponent() * 0.5f);
 		if (maxChamfer <= chamfer)
 		{
 			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::ChamferedBox(): chamfer must be smaller than half of the smallest size component after conversion to float");

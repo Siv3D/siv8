@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <cmath>
 
 namespace s3d
 {
@@ -36,4 +37,18 @@ namespace s3d
 		, top{ static_cast<float>(rect.y) }
 		, right{ static_cast<float>(rect.x + rect.w) }
 		, bottom{ static_cast<float>(rect.y + rect.h) } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isFinite
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline bool FloatRect::isFinite() const noexcept
+	{
+		return (std::isfinite(left)
+			&& std::isfinite(top)
+			&& std::isfinite(right)
+			&& std::isfinite(bottom));
+	}
 }

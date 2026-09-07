@@ -45,8 +45,7 @@ namespace s3d
 				return ProfilePointStatus::InvalidArgument;
 			}
 
-			if ((not IsFloatRepresentable(source.x))
-				|| (not IsFloatRepresentable(source.y)))
+			if (not IsFloatRepresentable(source))
 			{
 				return ProfilePointStatus::NumericRange;
 			}

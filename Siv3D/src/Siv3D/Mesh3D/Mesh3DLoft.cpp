@@ -100,8 +100,8 @@ namespace s3d
 				return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Invalid section dimensions or options");
 			}
 			if (not (std::isfinite(options.smoothingAngle)
-				&& IsFloatRepresentable(options.uvScale.x) && IsFloatRepresentable(options.uvScale.y)
-				&& IsFloatRepresentable(options.uvOffset.x) && IsFloatRepresentable(options.uvOffset.y)
+				&& IsFloatRepresentable(options.uvScale)
+				&& IsFloatRepresentable(options.uvOffset)
 				&& IsFloatRepresentable(options.uvOffset.x + options.uvScale.x)
 				&& IsFloatRepresentable(options.uvOffset.y + options.uvScale.y)))
 			{

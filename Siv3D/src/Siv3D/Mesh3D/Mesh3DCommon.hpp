@@ -306,10 +306,8 @@ namespace s3d::Mesh3DDetail
 
 			if constexpr (std::is_same_v<Point, Vec2>)
 			{
-				if ((not IsFloatRepresentable(current.x))
-					|| (not IsFloatRepresentable(current.y))
-					|| (not IsFloatRepresentable(next.x))
-					|| (not IsFloatRepresentable(next.y)))
+				if ((not IsFloatRepresentable(current))
+					|| (not IsFloatRepresentable(next)))
 				{
 					return RingValidationResult::InvalidVertex;
 				}
@@ -360,8 +358,7 @@ namespace s3d::Mesh3DDetail
 		{
 			for (const Float2 vertex : vertices)
 			{
-				if ((not std::isfinite(vertex.x))
-					|| (not std::isfinite(vertex.y)))
+				if (not vertex.isFinite())
 				{
 					return CapValidationResult::NumericRange;
 				}

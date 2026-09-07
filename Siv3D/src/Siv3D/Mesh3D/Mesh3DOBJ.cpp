@@ -32,30 +32,6 @@ namespace s3d
 		constexpr size_t OBJBufferFlushThreshold = (64 * 1024);
 
 		[[nodiscard]]
-		bool IsFinite(const Float3& value) noexcept
-		{
-			return (std::isfinite(value.x)
-				&& std::isfinite(value.y)
-				&& std::isfinite(value.z));
-		}
-
-		[[nodiscard]]
-		bool IsFinite(const Float2& value) noexcept
-		{
-			return (std::isfinite(value.x)
-				&& std::isfinite(value.y));
-		}
-
-		[[nodiscard]]
-		bool IsFinite(const ColorF& value) noexcept
-		{
-			return (std::isfinite(value.r)
-				&& std::isfinite(value.g)
-				&& std::isfinite(value.b)
-				&& std::isfinite(value.a));
-		}
-
-		[[nodiscard]]
 		bool IsSingleLine(const StringView value) noexcept
 		{
 			for (const char32 ch : value)
@@ -82,10 +58,10 @@ namespace s3d
 		bool ValidateForMTL(const Material& material, const bool validateName = true) noexcept
 		{
 			if ((validateName && (material.name.isEmpty() || (not IsSingleLine(material.name))))
-				|| (not IsFinite(material.baseColor))
+				|| (not material.baseColor.isFinite())
 				|| (not std::isfinite(material.metallic))
 				|| (not std::isfinite(material.roughness))
-				|| (not IsFinite(material.emissive))
+				|| (not material.emissive.isFinite())
 				|| (not std::isfinite(material.alphaCutoff))
 				|| (not std::isfinite(material.normalScale))
 				|| (not std::isfinite(material.occlusionStrength)))
@@ -120,9 +96,9 @@ namespace s3d
 
 			for (const auto& vertex : mesh.vertices)
 			{
-				if ((not IsFinite(vertex.pos))
-					|| (not IsFinite(vertex.tex))
-					|| (not IsFinite(vertex.normal)))
+				if ((not vertex.pos.isFinite())
+					|| (not vertex.tex.isFinite())
+					|| (not vertex.normal.isFinite()))
 				{
 					return false;
 				}

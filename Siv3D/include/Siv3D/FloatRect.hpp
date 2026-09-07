@@ -52,6 +52,18 @@ namespace s3d
 
 		[[nodiscard]]
 		explicit constexpr FloatRect(const RectF& rect) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isFinite
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief left, top, right, bottom のすべてが有限値であるかを返します。
+		/// @return NaN または無限大の成分を含まない場合 true, それ以外の場合は false
+		/// @remark 辺の大小関係や長方形の面積は検査しません。
+		[[nodiscard]]
+		bool isFinite() const noexcept;
 	};
 }
 

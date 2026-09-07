@@ -54,12 +54,9 @@ namespace s3d
 				};
 			}
 
-			if ((not IsFloatRepresentable(sizeXZ.x))
-				|| (not IsFloatRepresentable(sizeXZ.y))
-				|| (not IsFloatRepresentable(options.uvScale.x))
-				|| (not IsFloatRepresentable(options.uvScale.y))
-				|| (not IsFloatRepresentable(options.uvOffset.x))
-				|| (not IsFloatRepresentable(options.uvOffset.y))
+			if ((not IsFloatRepresentable(sizeXZ))
+				|| (not IsFloatRepresentable(options.uvScale))
+				|| (not IsFloatRepresentable(options.uvOffset))
 				|| (not IsFloatRepresentable(options.uvOffset.x + options.uvScale.x))
 				|| (not IsFloatRepresentable(options.uvOffset.y + options.uvScale.y)))
 			{

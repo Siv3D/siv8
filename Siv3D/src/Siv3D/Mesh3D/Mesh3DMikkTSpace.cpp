@@ -84,52 +84,6 @@ namespace s3d::Mesh3DDetail
 		}
 
 		[[nodiscard]]
-		bool IsFinite(const Float2& value) noexcept
-		{
-			return (std::isfinite(value.x)
-				&& std::isfinite(value.y));
-		}
-
-		[[nodiscard]]
-		bool IsFinite(const Float3& value) noexcept
-		{
-			return (std::isfinite(value.x)
-				&& std::isfinite(value.y)
-				&& std::isfinite(value.z));
-		}
-
-		[[nodiscard]]
-		bool IsFinite(const Float4& value) noexcept
-		{
-			return (std::isfinite(value.x)
-				&& std::isfinite(value.y)
-				&& std::isfinite(value.z)
-				&& std::isfinite(value.w));
-		}
-
-		[[nodiscard]]
-		bool IsZeroVector(const Float3& value) noexcept
-		{
-			return ((value.x == 0.0f)
-				&& (value.y == 0.0f)
-				&& (value.z == 0.0f));
-		}
-
-		[[nodiscard]]
-		bool EqualTangent(
-			const Float4& a,
-			const Float4& b) noexcept
-		{
-			// MikkTSpace が同一の接空間として返した値は完全一致する。
-			// epsilon 比較で異なる接空間を統合すると、ノーマルマップの
-			// シームを破壊する可能性があるため、完全一致で比較する。
-			return ((a.x == b.x)
-				&& (a.y == b.y)
-				&& (a.z == b.z)
-				&& (a.w == b.w));
-		}
-
-		[[nodiscard]]
 		int MikkGetNumFaces(const SMikkTSpaceContext* context)
 		{
 			const auto& data
@@ -244,10 +198,10 @@ namespace s3d::Mesh3DDetail
 
 					const Vertex3D& vertex = vertices[vertexIndex];
 
-					if ((not IsFinite(vertex.pos))
-						|| (not IsFinite(vertex.normal))
-						|| (not IsFinite(vertex.tex))
-						|| IsZeroVector(vertex.normal))
+					if ((not vertex.pos.isFinite())
+						|| (not vertex.normal.isFinite())
+						|| (not vertex.tex.isFinite())
+						|| vertex.normal.isZero())
 					{
 						return false;
 					}
@@ -295,7 +249,7 @@ namespace s3d::Mesh3DDetail
 
 			for (const Float4& tangent : result)
 			{
-				if (not IsFinite(tangent))
+				if (not tangent.isFinite())
 				{
 					return false;
 				}
@@ -344,7 +298,8 @@ namespace s3d::Mesh3DDetail
 					{
 						const TangentVariant& variant = variants[variantIndex];
 
-						if (EqualTangent(variant.tangent, tangent))
+						// Use exact equality: merging distinct tangent frames can destroy normal-map seams.
+						if (variant.tangent == tangent)
 						{
 							destinationVertexIndex = variant.destinationVertexIndex;
 							found = true;

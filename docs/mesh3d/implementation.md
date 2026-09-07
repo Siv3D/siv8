@@ -77,6 +77,23 @@ CPU 側の形状生成・組み立て・出力を開発するときの設計方�
 - 新しい public API には Doxygen と、正常・境界・失敗ケースの専用テストを追加する。
 - shared file を追加・削除・改名した場合は macOS / Windows のプロジェクトファイルを同時に更新する。
 
+### 値型への委譲と共通化の境界
+
+部品生成の都合によらず意味が定まる処理は、基礎となる値型へ委譲する。
+
+| 処理 | 使用する API / 配置先 |
+| --- | --- |
+| 各成分の有限性 | `Vector2D` / `Vector3D` / `Vector4D`、`ColorF`、`FloatRect` の `isFinite()`。行列・回転は既存の `Mat4x4` / `Quaternion::isFinite()` |
+| ゼロベクトル・成分の完全一致・最小成分 | 既存の `isZero()`、`operator ==`、`minComponent()`。接線の共有判定に epsilon 比較を持ち込まない |
+| float 格納範囲 | `Mesh3DCommon.hpp` の `IsFloatRepresentable()`。有限な double でも float の範囲を超え得るため、`isFinite()` とは別の検査 |
+| 生成個数の overflow・追加先の確保 | `Mesh3DCommon.hpp` の `CheckedAdd()` / `CheckedMultiply()` / `ResizeForAddition()` |
+
+有限性は各成分だけを検査する。長さ・成分の和による代用は、大きな有限値で overflow するため使わない。判定の移譲に伴って、呼び出し元へ新しい検査を追加しない。
+
+正規化の失敗条件は Loft / Tube などで異なり、断面・接線の退化判定にも関係する。既存の `normalized()` / `normalized_or()` と契約を比較し、見た目の類似だけで統合しない。輪郭の境界計算も、float の三角形分割結果を使うか double の元輪郭を使うか、別の処理と同じ走査で求めるかを維持する。
+
+値型の有限性は [Test_Finite.cpp](../../Test/Test_Finite.cpp) で独立に検証する。Mesh3D のテスト側の成分別検査は、実装と同じ判定に依存しない確認として残す。
+
 ## macOS での検証
 
 ```sh
