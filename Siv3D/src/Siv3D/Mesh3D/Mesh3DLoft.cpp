@@ -19,68 +19,85 @@ namespace s3d
 {
 	namespace
 	{
-		using namespace Mesh3DDetail;
+		using Mesh3DDetail::AddedRange;
+		using Mesh3DDetail::OperationFailed;
+		using Mesh3DDetail::CapValidationResult;
+		using Mesh3DDetail::CheckedAdd;
+		using Mesh3DDetail::CheckedMultiply;
+		using Mesh3DDetail::ForEachValidCapTriangle;
+		using Mesh3DDetail::IsFloatRepresentable;
+		using Mesh3DDetail::ResizeForAddition;
+		using Mesh3DDetail::RingValidationResult;
+		using Mesh3DDetail::ValidateCapTriangles;
+		using Mesh3DDetail::ValidateRing;
 
-		Err<Mesh3DError> Fail(const Mesh3DErrorCode code, const StringView message)
+		struct LoftFrame
 		{
-			LOG_FAIL(message);
-			return Err{ Mesh3DError{ code, String{ message } } };
-		}
+			Vec3 origin;
+			Vec3 xAxis;
+			Vec3 zAxis;
+			Vec3 normal;
 
-		struct Frame
-		{
-			Vec3 origin, x, z, normal;
-
-			bool position(const Float2 p, Float3& output) const noexcept
+			[[nodiscard]]
+			bool transformPoint(const Float2 point, Float3& output) const noexcept
 			{
-				const Vec3 v = (origin + x * p.x - z * p.y);
-				if (not (IsFloatRepresentable(v.x) && IsFloatRepresentable(v.y) && IsFloatRepresentable(v.z)))
+				const Vec3 position = (origin + xAxis * point.x - zAxis * point.y);
+				if (not IsFloatRepresentable(position))
 				{
 					return false;
 				}
-				output = v;
+				output = position;
 				return true;
 			}
 		};
 
-		struct Cap
+		struct LoftCap
 		{
 			Polygon polygon;
-			Array<Float3> points;
-			Float2 min{}, max{};
-			Frame frame;
-			size_t triangles = 0;
+			Array<Float3> positions;
+			Float2 minPoint{};
+			Float2 maxPoint{};
+			LoftFrame frame;
+			size_t triangleCount = 0;
 		};
 
 		struct PreparedLoft
 		{
-			size_t rings = 0, width = 0, vertices = 0, triangles = 0;
-			Array<Float3> points;
-			Array<Float3> normals; // Two sides of each contour edge at each section.
-			Array<Float3> tangents; // Only allocated when contour smoothing is enabled.
-			Array<double> distances, u;
-			std::array<Cap, 2> caps;
+			size_t sectionCount = 0;
+			size_t contourVertexCount = 0;
+			size_t vertexCount = 0;
+			size_t triangleCount = 0;
+			Array<Float3> positions;
+			Array<Float3> sideNormals; // Two sides of each contour edge at each section.
+			Array<Float3> sideTangents; // Only allocated when contour smoothing is enabled.
+			Array<double> sectionDistances;
+			Array<double> contourU;
+			std::array<LoftCap, 2> caps;
 		};
 
-		bool Unit(const Vec3 v, Vec3& result) noexcept
+		[[nodiscard]]
+		static bool NormalizeDirection(const Vec3 direction, Vec3& result) noexcept
 		{
-			const double lengthSq = v.lengthSq();
+			const double lengthSq = direction.lengthSq();
 			if (not (lengthSq > 0.0))
 			{
 				return false;
 			}
-			result = (v / std::sqrt(lengthSq));
+			result = (direction / std::sqrt(lengthSq));
 			return true;
 		}
 
-		Result<void, Mesh3DError> Prepare(const std::span<const LoftSection> sections,
-			const LoftOptions& options, PreparedLoft& data)
+		[[nodiscard]]
+		static Result<void, Mesh3DError> PrepareLoftSections(
+			const std::span<const LoftSection> sections,
+			const LoftOptions& options,
+			PreparedLoft& data)
 		{
 			if ((sections.size() < 2) || (sections.front().points.size() < 3)
 				|| (options.smoothingAngle < 0) || (Math::Pi < options.smoothingAngle)
 				|| (static_cast<uint8>(options.endCaps) > static_cast<uint8>(Mesh3DEndCaps::Both)))
 			{
-				return Fail(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Invalid section dimensions or options");
+				return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Invalid section dimensions or options");
 			}
 			if (not (std::isfinite(options.smoothingAngle)
 				&& IsFloatRepresentable(options.uvScale.x) && IsFloatRepresentable(options.uvScale.y)
@@ -88,171 +105,196 @@ namespace s3d
 				&& IsFloatRepresentable(options.uvOffset.x + options.uvScale.x)
 				&& IsFloatRepresentable(options.uvOffset.y + options.uvScale.y)))
 			{
-				return Fail(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Non-finite options or unrepresentable UV coordinates");
+				return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Non-finite options or unrepresentable UV coordinates");
 			}
-			data.rings = sections.size();
-			data.width = sections.front().points.size();
-			size_t pointCount, quadCount;
-			if (not (CheckedMultiply(data.rings, data.width, pointCount)
-				&& CheckedMultiply(pointCount, 2, data.vertices) && (data.vertices <= Mesh3D::MaxVertexCount)
-				&& CheckedMultiply(data.rings - 1, data.width, quadCount)
-				&& CheckedMultiply(quadCount, 2, data.triangles)))
+			data.sectionCount = sections.size();
+			data.contourVertexCount = sections.front().points.size();
+			size_t pointCount;
+			size_t quadCount;
+			if (not (CheckedMultiply(data.sectionCount, data.contourVertexCount, pointCount)
+				&& CheckedMultiply(pointCount, 2, data.vertexCount)
+				&& (data.vertexCount <= Mesh3D::MaxVertexCount)
+				&& CheckedMultiply(data.sectionCount - 1, data.contourVertexCount, quadCount)
+				&& CheckedMultiply(quadCount, 2, data.triangleCount)))
 			{
-				return Fail(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Loft(): Section count exceeds mesh limits");
+				return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Loft(): Section count exceeds mesh limits");
 			}
-			data.points.resize(pointCount);
-			data.normals.resize(data.vertices);
-			data.distances.resize(data.rings);
-			data.u.resize(data.width + 1);
-			Array<Float2> local(data.width);
-			Frame previous;
-			for (size_t i = 0; i < data.rings; ++i)
+			data.positions.resize(pointCount);
+			data.sideNormals.resize(data.vertexCount);
+			data.sectionDistances.resize(data.sectionCount);
+			data.contourU.resize(data.contourVertexCount + 1);
+			Array<Float2> local(data.contourVertexCount);
+			LoftFrame previous;
+			for (size_t i = 0; i < data.sectionCount; ++i)
 			{
-				if (sections[i].points.size() != data.width)
+				if (sections[i].points.size() != data.contourVertexCount)
 				{
-					return Fail(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Sections must have equal vertex counts");
+					return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Sections must have equal vertex counts");
 				}
 				const Mat4x4& m = sections[i].frame.getTransform();
 				if (not m.isFinite())
 				{
-					return Fail(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Non-finite section frame");
+					return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Non-finite section frame");
 				}
 				if (not m.isAffine(0))
 				{
-					return Fail(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Section frame must be affine");
+					return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Loft(): Section frame must be affine");
 				}
-				Frame frame{ .origin = Vec3{ m.transformPoint(Float3::Zero()) },
-					.x = Vec3{ m.transformVector(Float3::UnitX()) }, .z = Vec3{ m.transformVector(Float3::UnitZ()) } };
+				LoftFrame frame{
+					.origin = Vec3{ m.transformPoint(Float3::Zero()) },
+					.xAxis = Vec3{ m.transformVector(Float3::UnitX()) },
+					.zAxis = Vec3{ m.transformVector(Float3::UnitZ()) }
+				};
 				const Vec3 y{ m.transformVector(Float3::UnitY()) };
-				if (not (frame.x.dot(y.cross(frame.z)) > 0))
+				if (not (frame.xAxis.dot(y.cross(frame.zAxis)) > 0))
 				{
-					return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Section frame must preserve orientation and be nonsingular");
+					return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Section frame must preserve orientation and be nonsingular");
 				}
-				(void)Unit(frame.z.cross(frame.x), frame.normal);
+				(void)NormalizeDirection(frame.zAxis.cross(frame.xAxis), frame.normal);
 				if (i > 0)
 				{
 					const Vec3 delta = (frame.origin - previous.origin);
 					if (not ((delta.dot(previous.normal) > 0) && (delta.dot(frame.normal) > 0)))
 					{
-						return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Section origins must advance along both section normals");
+						return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Section origins must advance along both section normals");
 					}
-					data.distances[i] = (data.distances[i - 1] + delta.length());
+					data.sectionDistances[i] = (data.sectionDistances[i - 1] + delta.length());
 				}
-				for (size_t j = 0; j < data.width; ++j)
+				for (size_t j = 0; j < data.contourVertexCount; ++j)
 				{
 					const Vec2 p = sections[i].points[j];
-					if (not (IsFloatRepresentable(p.x) && IsFloatRepresentable(p.y)))
+					if (not IsFloatRepresentable(p))
 					{
-						return Fail(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Unrepresentable contour point");
+						return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Unrepresentable contour point");
 					}
 					local[j] = p;
-					if (not frame.position(local[j], data.points[i * data.width + j]))
+					if (not frame.transformPoint(local[j], data.positions[i * data.contourVertexCount + j]))
 					{
-						return Fail(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Unrepresentable transformed point");
+						return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Unrepresentable transformed point");
 					}
 				}
 				double perimeter;
 				if (ValidateRing(std::span<const Float2>{ local }, true, perimeter) != RingValidationResult::Valid)
 				{
-					return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Contour must have positive area and nonzero edges");
+					return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Contour must have positive area and nonzero edges");
 				}
-				for (size_t j = 0; j < data.width; ++j)
+				for (size_t j = 0; j < data.contourVertexCount; ++j)
 				{
-					const auto a = data.points[i * data.width + j];
-					const auto b = data.points[i * data.width + (j + 1) % data.width];
+					const auto a = data.positions[i * data.contourVertexCount + j];
+					const auto b = data.positions[i * data.contourVertexCount + (j + 1) % data.contourVertexCount];
 					if (a == b)
 					{
-						return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Section edge collapsed after placement");
+						return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Section edge collapsed after placement");
 					}
 					if (i == 0)
 					{
-						data.u[j + 1] = (data.u[j] + (Vec3{ b } - Vec3{ a }).length());
+						data.contourU[j + 1] = (data.contourU[j] + (Vec3{ b } - Vec3{ a }).length());
 					}
 				}
-				const bool start = (i == 0 && (options.endCaps == Mesh3DEndCaps::Start || options.endCaps == Mesh3DEndCaps::Both));
-				const bool end = (i + 1 == data.rings && (options.endCaps == Mesh3DEndCaps::End || options.endCaps == Mesh3DEndCaps::Both));
+				const bool start = ((i == 0)
+					&& ((options.endCaps == Mesh3DEndCaps::Start) || (options.endCaps == Mesh3DEndCaps::Both)));
+				const bool end = ((i + 1 == data.sectionCount)
+					&& ((options.endCaps == Mesh3DEndCaps::End) || (options.endCaps == Mesh3DEndCaps::Both)));
 				if (start || end)
 				{
-					Cap& cap = data.caps[start ? 0 : 1];
+					LoftCap& cap = data.caps[start ? 0 : 1];
 					cap.frame = frame;
 					cap.polygon = Polygon{ sections[i].points };
-					if (cap.polygon.isEmpty() || ValidateCapTriangles<false>(cap.polygon.vertices(), cap.polygon.indices(), cap.triangles) != CapValidationResult::Valid)
+					if (cap.polygon.isEmpty()
+						|| (ValidateCapTriangles<false>(cap.polygon.vertices(), cap.polygon.indices(), cap.triangleCount) != CapValidationResult::Valid))
 					{
-						return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Cannot triangulate requested cap");
+						return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Cannot triangulate requested cap");
 					}
-					cap.min = cap.max = cap.polygon.vertices().front();
-					cap.points.resize(cap.polygon.vertices().size());
-					for (size_t j = 0; j < cap.points.size(); ++j)
+					cap.minPoint = cap.maxPoint = cap.polygon.vertices().front();
+					cap.positions.resize(cap.polygon.vertices().size());
+					for (size_t j = 0; j < cap.positions.size(); ++j)
 					{
 						const Float2 p = cap.polygon.vertices()[j];
-						cap.min.x = std::min(cap.min.x, p.x); cap.max.x = std::max(cap.max.x, p.x);
-						cap.min.y = std::min(cap.min.y, p.y); cap.max.y = std::max(cap.max.y, p.y);
-						if (not frame.position(p, cap.points[j]))
+						cap.minPoint.x = std::min(cap.minPoint.x, p.x);
+						cap.maxPoint.x = std::max(cap.maxPoint.x, p.x);
+						cap.minPoint.y = std::min(cap.minPoint.y, p.y);
+						cap.maxPoint.y = std::max(cap.maxPoint.y, p.y);
+						if (not frame.transformPoint(p, cap.positions[j]))
 						{
-							return Fail(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Unrepresentable cap point");
+							return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Unrepresentable cap point");
 						}
 					}
 					bool valid = true;
-					ForEachValidCapTriangle(cap.polygon.vertices(), cap.polygon.indices(), cap.triangles, [&](const TriangleIndex& t)
+					ForEachValidCapTriangle(cap.polygon.vertices(), cap.polygon.indices(), cap.triangleCount, [&](const TriangleIndex& t)
 					{
-						const Vec3 a{ cap.points[t.i0] }, b{ cap.points[t.i1] }, c{ cap.points[t.i2] };
+						const Vec3 a{ cap.positions[t.i0] };
+						const Vec3 b{ cap.positions[t.i1] };
+						const Vec3 c{ cap.positions[t.i2] };
 						valid &= ((b - a).cross(c - a).dot(frame.normal) > 0);
 					});
 					if (not valid)
 					{
-						return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Cap collapsed after placement");
+						return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Cap collapsed after placement");
 					}
-					if (not (CheckedAdd(data.vertices, cap.points.size(), data.vertices) && data.vertices <= Mesh3D::MaxVertexCount
-						&& CheckedAdd(data.triangles, cap.triangles, data.triangles)))
+					if (not (CheckedAdd(data.vertexCount, cap.positions.size(), data.vertexCount)
+						&& (data.vertexCount <= Mesh3D::MaxVertexCount)
+						&& CheckedAdd(data.triangleCount, cap.triangleCount, data.triangleCount)))
 					{
-						return Fail(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Loft(): Cap count exceeds mesh limits");
+						return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Loft(): Cap count exceeds mesh limits");
 					}
 				}
 				previous = frame;
 			}
-			const double perimeter = data.u.back();
-			for (double& u : data.u) { u /= perimeter; }
-			if (not IsFloatRepresentable(options.uvOffset.y + options.uvScale.y * data.distances.back()))
+			const double perimeter = data.contourU.back();
+			for (double& u : data.contourU)
 			{
-				return Fail(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Side V exceeds float range");
+				u /= perimeter;
+			}
+			if (not IsFloatRepresentable(options.uvOffset.y + options.uvScale.y * data.sectionDistances.back()))
+			{
+				return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Loft(): Side V exceeds float range");
 			}
 
-			// Preserve the existing edge-major layout, even for smoothed contours.
-			for (size_t e = 0; e < data.width; ++e)
+			return{};
+		}
+
+		[[nodiscard]]
+		static Result<void, Mesh3DError> PrepareLoftSideFrames(
+			const LoftOptions& options,
+			PreparedLoft& data)
+		{
+			// Each edge owns two vertices at each section, including smoothed corners.
+			for (size_t edgeIndex = 0; edgeIndex < data.contourVertexCount; ++edgeIndex)
 			{
-				const size_t next = (e + 1) % data.width;
-				for (size_t i = 0; i < data.rings; ++i)
+				const size_t next = (edgeIndex + 1) % data.contourVertexCount;
+				for (size_t sectionIndex = 0; sectionIndex < data.sectionCount; ++sectionIndex)
 				{
-					const size_t before = (i == 0 ? i : i - 1), after = std::min(i + 1, data.rings - 1);
-					const Vec3 edge = Vec3{ data.points[i * data.width + next] } - Vec3{ data.points[i * data.width + e] };
+					const size_t before = (sectionIndex == 0 ? sectionIndex : sectionIndex - 1);
+					const size_t after = std::min(sectionIndex + 1, data.sectionCount - 1);
+					const Vec3 edge = Vec3{ data.positions[sectionIndex * data.contourVertexCount + next] } - Vec3{ data.positions[sectionIndex * data.contourVertexCount + edgeIndex] };
 					for (size_t side = 0; side < 2; ++side)
 					{
-						const size_t j = side ? next : e;
-						const Vec3 direction = Vec3{ data.points[after * data.width + j] } - Vec3{ data.points[before * data.width + j] };
+						const size_t j = side ? next : edgeIndex;
+						const Vec3 direction = Vec3{ data.positions[after * data.contourVertexCount + j] } - Vec3{ data.positions[before * data.contourVertexCount + j] };
 						Vec3 normal;
-						if (not Unit(edge.cross(direction), normal))
+						if (not NormalizeDirection(edge.cross(direction), normal))
 						{
-							return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Undefined side normal");
+							return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Undefined side normal");
 						}
-						data.normals[(e * data.rings + i) * 2 + side] = normal;
+						data.sideNormals[(edgeIndex * data.sectionCount + sectionIndex) * 2 + side] = normal;
 					}
 				}
 			}
 			if (options.smoothingAngle > 0)
 			{
 				const double threshold = std::cos(options.smoothingAngle) - 1e-6;
-				for (size_t e = 0; e < data.width; ++e)
+				for (size_t edgeIndex = 0; edgeIndex < data.contourVertexCount; ++edgeIndex)
 				{
-					for (size_t i = 0; i < data.rings; ++i)
+					for (size_t sectionIndex = 0; sectionIndex < data.sectionCount; ++sectionIndex)
 					{
-						auto& a = data.normals[(((e + data.width - 1) % data.width) * data.rings + i) * 2 + 1];
-						auto& b = data.normals[(e * data.rings + i) * 2];
+						auto& a = data.sideNormals[(((edgeIndex + data.contourVertexCount - 1) % data.contourVertexCount) * data.sectionCount + sectionIndex) * 2 + 1];
+						auto& b = data.sideNormals[(edgeIndex * data.sectionCount + sectionIndex) * 2];
 						if (a.dot(b) >= threshold)
 						{
 							Vec3 average;
-							if (not Unit(Vec3{ a } + Vec3{ b }, average))
+							if (not NormalizeDirection(Vec3{ a } + Vec3{ b }, average))
 							{
-								return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Opposing smoothing normals");
+								return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Opposing smoothing normals");
 							}
 							a = b = average;
 						}
@@ -261,89 +303,124 @@ namespace s3d
 			}
 			if (options.smoothingAngle > 0)
 			{
-				data.tangents.resize(data.normals.size());
-				for (size_t e = 0; e < data.width; ++e)
+				data.sideTangents.resize(data.sideNormals.size());
+				for (size_t edgeIndex = 0; edgeIndex < data.contourVertexCount; ++edgeIndex)
 				{
-					for (size_t i = 0; i < data.rings; ++i)
+					for (size_t sectionIndex = 0; sectionIndex < data.sectionCount; ++sectionIndex)
 					{
-						const Vec3 edge = Vec3{ data.points[i * data.width + (e + 1) % data.width] } - Vec3{ data.points[i * data.width + e] };
+						const Vec3 edge = Vec3{ data.positions[sectionIndex * data.contourVertexCount + (edgeIndex + 1) % data.contourVertexCount] } - Vec3{ data.positions[sectionIndex * data.contourVertexCount + edgeIndex] };
 						for (size_t side = 0; side < 2; ++side)
 						{
-							const size_t n = (e * data.rings + i) * 2 + side;
-							const Vec3 normal{ data.normals[n] };
+							const size_t normalIndex = (edgeIndex * data.sectionCount + sectionIndex) * 2 + side;
+							const Vec3 normal{ data.sideNormals[normalIndex] };
 							Vec3 tangent;
-							if (not Unit(edge - normal * (edge.dot(normal) / normal.lengthSq()), tangent))
+							if (not NormalizeDirection(edge - normal * (edge.dot(normal) / normal.lengthSq()), tangent))
 							{
-								return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Undefined smoothed tangent");
+								return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Undefined smoothed tangent");
 							}
-							data.tangents[n] = tangent;
+							data.sideTangents[normalIndex] = tangent;
 						}
-					}
-				}
-			}
-			for (size_t e = 0; e < data.width; ++e)
-			{
-				for (size_t i = 0; i + 1 < data.rings; ++i)
-				{
-					const size_t j = (e + 1) % data.width;
-					const Vec3 a{ data.points[i * data.width + e] }, b{ data.points[i * data.width + j] };
-					const Vec3 c{ data.points[(i + 1) * data.width + e] }, d{ data.points[(i + 1) * data.width + j] };
-					const size_t n = (e * data.rings + i) * 2;
-					const Vec3 n0 = Vec3{ data.normals[n] } + Vec3{ data.normals[n + 1] } + Vec3{ data.normals[n + 2] };
-					const Vec3 n1 = Vec3{ data.normals[n + 2] } + Vec3{ data.normals[n + 1] } + Vec3{ data.normals[n + 3] };
-					if (not (((b - a).cross(c - a).dot(n0) > 0) && ((b - c).cross(d - c).dot(n1) > 0)))
-					{
-						return Fail(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Collapsed or locally folded side triangle");
 					}
 				}
 			}
 			return{};
 		}
 
-		void Write(const PreparedLoft& data, const LoftOptions& options, Mesh3D& mesh, const size_t vertexBase, const size_t triangleBase)
+		[[nodiscard]]
+		static Result<void, Mesh3DError> ValidateLoftSideTriangles(const PreparedLoft& data)
 		{
-			const float uSign = (options.uvScale.x < 0 ? -1.0f : 1.0f), vSign = (options.uvScale.y < 0 ? -1.0f : 1.0f);
-			const auto uv = [&](const double u, const double v) { return Float2{ static_cast<float>(options.uvOffset.x + options.uvScale.x * u), static_cast<float>(options.uvOffset.y + options.uvScale.y * v) }; };
+			for (size_t edgeIndex = 0; edgeIndex < data.contourVertexCount; ++edgeIndex)
+			{
+				for (size_t sectionIndex = 0; sectionIndex + 1 < data.sectionCount; ++sectionIndex)
+				{
+					const size_t j = (edgeIndex + 1) % data.contourVertexCount;
+					const Vec3 a{ data.positions[sectionIndex * data.contourVertexCount + edgeIndex] };
+					const Vec3 b{ data.positions[sectionIndex * data.contourVertexCount + j] };
+					const Vec3 c{ data.positions[(sectionIndex + 1) * data.contourVertexCount + edgeIndex] };
+					const Vec3 d{ data.positions[(sectionIndex + 1) * data.contourVertexCount + j] };
+					const size_t normalIndex = (edgeIndex * data.sectionCount + sectionIndex) * 2;
+					const Vec3 n0 = Vec3{ data.sideNormals[normalIndex] } + Vec3{ data.sideNormals[normalIndex + 1] } + Vec3{ data.sideNormals[normalIndex + 2] };
+					const Vec3 n1 = Vec3{ data.sideNormals[normalIndex + 2] } + Vec3{ data.sideNormals[normalIndex + 1] } + Vec3{ data.sideNormals[normalIndex + 3] };
+					if (not (((b - a).cross(c - a).dot(n0) > 0) && ((b - c).cross(d - c).dot(n1) > 0)))
+					{
+						return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Loft(): Collapsed or locally folded side triangle");
+					}
+				}
+			}
+			return{};
+		}
+
+		static void WriteLoft(
+			const PreparedLoft& data,
+			const LoftOptions& options,
+			Mesh3D& mesh,
+			const size_t vertexBase,
+			const size_t triangleBase)
+		{
+			const float uSign = (options.uvScale.x < 0 ? -1.0f : 1.0f);
+			const float vSign = (options.uvScale.y < 0 ? -1.0f : 1.0f);
+			const auto transformUV = [&](const double u, const double v)
+			{
+				return Float2{
+					static_cast<float>(options.uvOffset.x + options.uvScale.x * u),
+					static_cast<float>(options.uvOffset.y + options.uvScale.y * v)
+				};
+			};
 			size_t base = vertexBase;
 			auto* triangle = mesh.indices.data() + triangleBase;
 			for (size_t k = 0; k < 2; ++k)
 			{
 				const auto& cap = data.caps[k];
-				if (cap.points.isEmpty()) { continue; }
+				if (cap.positions.isEmpty())
+				{
+					continue;
+				}
 				const Float3 normal = cap.frame.normal * (k == 0 ? -1 : 1);
-				const Float3 tangent = cap.frame.x.normalized() * uSign;
-				for (size_t j = 0; j < cap.points.size(); ++j)
+				const Float3 tangent = cap.frame.xAxis.normalized() * uSign;
+				for (size_t j = 0; j < cap.positions.size(); ++j)
 				{
 					const Float2 p = cap.polygon.vertices()[j];
-					const double u = (static_cast<double>(p.x) - cap.min.x) / (static_cast<double>(cap.max.x) - cap.min.x);
-					const double v = (static_cast<double>(p.y) - cap.min.y) / (static_cast<double>(cap.max.y) - cap.min.y);
-					mesh.vertices[base + j] = Vertex3D{ .pos = cap.points[j], .normal = normal,
-						.tex = uv(u, k == 0 ? 1 - v : v), .tangent = Float4{ tangent, uSign * vSign } };
+					const double u = (static_cast<double>(p.x) - cap.minPoint.x) / (static_cast<double>(cap.maxPoint.x) - cap.minPoint.x);
+					const double v = (static_cast<double>(p.y) - cap.minPoint.y) / (static_cast<double>(cap.maxPoint.y) - cap.minPoint.y);
+					mesh.vertices[base + j] = Vertex3D{
+						.pos = cap.positions[j],
+						.normal = normal,
+						.tex = transformUV(u, k == 0 ? 1 - v : v),
+						.tangent = Float4{ tangent, uSign * vSign }
+					};
 				}
-				ForEachValidCapTriangle(cap.polygon.vertices(), cap.polygon.indices(), cap.triangles, [&](const TriangleIndex& t)
+				ForEachValidCapTriangle(cap.polygon.vertices(), cap.polygon.indices(), cap.triangleCount, [&](const TriangleIndex& t)
 				{
-					*triangle++ = TriangleIndex32{ static_cast<uint32>(base + t.i0), static_cast<uint32>(base + (k == 0 ? t.i2 : t.i1)), static_cast<uint32>(base + (k == 0 ? t.i1 : t.i2)) };
+					*triangle++ = TriangleIndex32{
+						static_cast<uint32>(base + t.i0),
+						static_cast<uint32>(base + (k == 0 ? t.i2 : t.i1)),
+						static_cast<uint32>(base + (k == 0 ? t.i1 : t.i2))
+					};
 				});
-				base += cap.points.size();
+				base += cap.positions.size();
 			}
-			for (size_t e = 0; e < data.width; ++e)
+			for (size_t edgeIndex = 0; edgeIndex < data.contourVertexCount; ++edgeIndex)
 			{
-				const size_t next = (e + 1) % data.width;
-				for (size_t i = 0; i < data.rings; ++i)
+				const size_t next = (edgeIndex + 1) % data.contourVertexCount;
+				for (size_t sectionIndex = 0; sectionIndex < data.sectionCount; ++sectionIndex)
 				{
 					const Float3 edge = (options.smoothingAngle == 0
-						? Float3{ (Vec3{ data.points[i * data.width + next] } - Vec3{ data.points[i * data.width + e] }).normalized() }
+						? Float3{ (Vec3{ data.positions[sectionIndex * data.contourVertexCount + next] } - Vec3{ data.positions[sectionIndex * data.contourVertexCount + edgeIndex] }).normalized() }
 						: Float3::Zero());
 					for (size_t side = 0; side < 2; ++side)
 					{
-						const size_t n = (e * data.rings + i) * 2 + side;
-						const Float3 tangent = (options.smoothingAngle == 0 ? edge : data.tangents[n]) * uSign;
-						mesh.vertices[base + n] = Vertex3D{ .pos = data.points[i * data.width + (side ? next : e)],
-							.normal = data.normals[n], .tex = uv(data.u[e + side], data.distances[i]), .tangent = Float4{ tangent, uSign * vSign } };
+						const size_t normalIndex = (edgeIndex * data.sectionCount + sectionIndex) * 2 + side;
+						const Float3 tangent = (options.smoothingAngle == 0 ? edge : data.sideTangents[normalIndex]) * uSign;
+						mesh.vertices[base + normalIndex] = Vertex3D{
+							.pos = data.positions[sectionIndex * data.contourVertexCount + (side ? next : edgeIndex)],
+							.normal = data.sideNormals[normalIndex],
+							.tex = transformUV(data.contourU[edgeIndex + side], data.sectionDistances[sectionIndex]),
+							.tangent = Float4{ tangent, uSign * vSign }
+						};
 					}
-					if (i + 1 < data.rings)
+					if (sectionIndex + 1 < data.sectionCount)
 					{
-						const uint32 v = static_cast<uint32>(base + (e * data.rings + i) * 2);
+						const uint32 v = static_cast<uint32>(base + (edgeIndex * data.sectionCount + sectionIndex) * 2);
 						*triangle++ = TriangleIndex32{ v, v + 1, v + 2 };
 						*triangle++ = TriangleIndex32{ v + 2, v + 1, v + 3 };
 					}
@@ -352,20 +429,32 @@ namespace s3d
 		}
 	}
 
-	Mesh3DAddResult Mesh3DDetail::AppendLoft(Mesh3D& mesh, const std::span<const LoftSection> sections, const LoftOptions& options)
+	Mesh3DAddResult Mesh3DDetail::AppendLoft(
+		Mesh3D& mesh,
+		const std::span<const LoftSection> sections,
+		const LoftOptions& options)
 	{
 		PreparedLoft data;
-		if (auto result = Prepare(sections, options, data); not result) { return Err{ std::move(result.error()) }; }
-		const size_t vertexBase = mesh.vertexCount(), triangleBase = mesh.triangleCount();
-		size_t vertices, triangles;
-		if (not (CheckedAdd(vertexBase, data.vertices, vertices) && vertices <= Mesh3D::MaxVertexCount
-			&& CheckedAdd(triangleBase, data.triangles, triangles)))
+		if (auto result = PrepareLoftSections(sections, options, data); not result)
 		{
-			return Fail(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Loft(): Output exceeds mesh limits");
+			return Err{ std::move(result.error()) };
 		}
-		mesh.vertices.resize(vertices);
-		mesh.indices.resize(triangles);
-		Write(data, options, mesh, vertexBase, triangleBase);
+		if (auto result = PrepareLoftSideFrames(options, data); not result)
+		{
+			return Err{ std::move(result.error()) };
+		}
+		if (auto result = ValidateLoftSideTriangles(data); not result)
+		{
+			return Err{ std::move(result.error()) };
+		}
+
+		size_t vertexBase;
+		size_t triangleBase;
+		if (not ResizeForAddition(mesh, data.vertexCount, data.triangleCount, vertexBase, triangleBase))
+		{
+			return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Loft(): Output exceeds mesh limits");
+		}
+		WriteLoft(data, options, mesh, vertexBase, triangleBase);
 		return AddedRange(mesh, vertexBase, triangleBase);
 	}
 

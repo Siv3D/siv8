@@ -20,7 +20,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief Mesh3DBuilder の形状や Mesh3DAssembly の部品に適用する配置変換
+	/// @brief Mesh3DBuilder の形状、Mesh3DAssembly の部品、および Loft の断面の配置変換
+	/// @remark Builder と Assembly は鏡映時も形状の表裏を維持します。Loft の断面フレームには Loft 固有の向き・進行方向の条件があります。
+	/// @remark この型の構築時には入力を検査しません。数値的な事前条件は使用先の API に従います。
 	/// @remark `Vec3` から暗黙に変換できるため、平行移動だけを指定する add 関数の呼び出しは `addShape(..., offset)` と書けます。
 	/// @remark 回転と平行移動を指定する場合は `addShape(..., { offset, rotation })` と書けます。
 	/// @remark `Mat4x4` から暗黙に変換できるため、任意のアフィン変換を指定する呼び出しは `addShape(..., transform)` と書けます。

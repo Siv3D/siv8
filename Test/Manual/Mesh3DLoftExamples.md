@@ -50,6 +50,11 @@ Frames must be finite affine transforms with positive determinants. Between adja
 sections, the origin displacement must have positive projection on both section
 plane normals. Add intermediate sections to follow a bend.
 
+Whole-mesh reflection preserves facing through Mesh3D transforms, placed Builder
+additions, and Assembly baking. Do not apply reverseWinding() as a correction
+after a reflection; use invert() when intentionally turning a surface inside out.
+The per-section frame orientation requirements above still apply.
+
 The generator connects matching vertex indices without automatic resampling,
 reversal or correspondence search. It rejects local degeneracy and locally folded
 triangles but does not detect every contour or surface self-intersection. Requested

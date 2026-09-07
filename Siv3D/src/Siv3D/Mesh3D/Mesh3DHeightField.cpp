@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/Mesh3DBuilder.hpp>
 # include "Mesh3DCommon.hpp"
 # include <cmath>
 
@@ -19,7 +18,7 @@ namespace s3d
 	namespace
 	{
 		using Mesh3DDetail::AddedRange;
-		using Mesh3DDetail::AdditionFailed;
+		using Mesh3DDetail::OperationFailed;
 		using Mesh3DDetail::CheckedMultiply;
 		using Mesh3DDetail::IsFloatRepresentable;
 
@@ -136,20 +135,14 @@ namespace s3d
 			const Grid<float>& heights,
 			const HeightFieldLayout& layout)
 		{
-			const size_t vertexBase = mesh.vertices.size();
-			const size_t triangleBase = mesh.indices.size();
-			size_t newVertexCount;
-			size_t newTriangleCount;
-			if ((not Mesh3DDetail::CheckedAdd(vertexBase, layout.vertexCount, newVertexCount))
-				|| (Mesh3D::MaxVertexCount < newVertexCount)
-				|| (not Mesh3DDetail::CheckedAdd(triangleBase, layout.triangleCount, newTriangleCount)))
+			size_t vertexBase;
+			size_t triangleBase;
+			if (not Mesh3DDetail::ResizeForAddition(
+				mesh, layout.vertexCount, layout.triangleCount, vertexBase, triangleBase))
 			{
-				return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+				return OperationFailed(Mesh3DErrorCode::SizeLimit,
 					U"Mesh3D::HeightField(): The generated mesh exceeds the supported size");
 			}
-
-			mesh.vertices.resize(newVertexCount);
-			mesh.indices.resize(newTriangleCount);
 			for (size_t z = 0; z < layout.rowCount; ++z)
 			{
 				const size_t upperZ = ((z == 0) ? 0 : (z - 1));
@@ -227,14 +220,14 @@ namespace s3d
 		if (const auto error = PrepareHeightFieldLayout(
 			heights.width(), heights.height(), sizeXZ, options, layout))
 		{
-			return AdditionFailed(error->code, error->message);
+			return OperationFailed(error->code, error->message);
 		}
 
 		for (const float height : heights)
 		{
 			if (not std::isfinite(height))
 			{
-				return AdditionFailed(Mesh3DErrorCode::NumericRange,
+				return OperationFailed(Mesh3DErrorCode::NumericRange,
 					U"Mesh3D::HeightField(): Every height must be finite");
 			}
 		}
@@ -252,7 +245,7 @@ namespace s3d
 		if ((gridSize.x < 2)
 			|| (gridSize.y < 2))
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 				U"Mesh3D::HeightField(): The grid dimensions are invalid");
 		}
 
@@ -261,7 +254,7 @@ namespace s3d
 			static_cast<size_t>(gridSize.x), static_cast<size_t>(gridSize.y),
 			sizeXZ, options, layout))
 		{
-			return AdditionFailed(error->code, error->message);
+			return OperationFailed(error->code, error->message);
 		}
 
 		Grid<float> heights{ gridSize };
@@ -273,7 +266,7 @@ namespace s3d
 				const double height = heightFunction(point);
 				if (not IsFloatRepresentable(height))
 				{
-					return AdditionFailed(Mesh3DErrorCode::NumericRange,
+					return OperationFailed(Mesh3DErrorCode::NumericRange,
 						U"Mesh3D::HeightField(): Every generated height must be finite and representable as float");
 				}
 
@@ -289,9 +282,9 @@ namespace s3d
 		const SizeF sizeXZ,
 		const HeightFieldOptions& options)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addHeightField(heights, sizeXZ, options);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendHeightField(mesh, heights, sizeXZ, options);
+		return mesh;
 	}
 
 	Mesh3D Mesh3D::HeightField(
@@ -300,8 +293,117 @@ namespace s3d
 		const FunctionRef<double(Point)> heightFunction,
 		const HeightFieldOptions& options)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addHeightField(gridSize, sizeXZ, heightFunction, options);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendHeightField(mesh, gridSize, sizeXZ, heightFunction, options);
+		return mesh;
 	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendPlane(
+		Mesh3D& mesh,
+		const SizeF sizeXZ,
+		const Vec2 uvScale,
+		const Vec2 uvOffset)
+	{
+		return AppendGrid(mesh, sizeXZ, 1, 1, uvScale, uvOffset);
+	}
+
+	Mesh3DAddResult Mesh3DDetail::AppendGrid(
+		Mesh3D& mesh,
+		const SizeF _sizeXZ,
+		const uint32 segmentsX,
+		const uint32 segmentsZ,
+		const Vec2 _uvScale,
+		const Vec2 _uvOffset)
+	{
+		if ((not IsFloatRepresentable(_sizeXZ))
+			|| (not IsFloatRepresentable(_uvScale))
+			|| (not IsFloatRepresentable(_uvOffset)))
+		{
+			return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Grid()/Plane(): sizeXZ and the UV transform must be finite and float-representable");
+		}
+
+		const Float2 sizeXZ = _sizeXZ;
+		const Float2 uvScale = _uvScale;
+		const Float2 uvOffset = _uvOffset;
+		if ((sizeXZ.x <= 0.0f)
+			|| (sizeXZ.y <= 0.0f)
+			|| (segmentsX == 0)
+			|| (segmentsZ == 0))
+		{
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Grid()/Plane(): Every size component and segment count must be positive");
+		}
+
+		size_t columnCount;
+		size_t rowCount;
+		size_t vertexCount;
+		size_t cellCount;
+		size_t triangleCount;
+
+		if ((not CheckedAdd(static_cast<size_t>(segmentsX), 1, columnCount))
+			|| (not CheckedAdd(static_cast<size_t>(segmentsZ), 1, rowCount))
+			|| (not CheckedMultiply(columnCount, rowCount, vertexCount))
+			|| (Mesh3D::MaxVertexCount < vertexCount)
+			|| (not CheckedMultiply(static_cast<size_t>(segmentsX), static_cast<size_t>(segmentsZ), cellCount))
+			|| (not CheckedMultiply(cellCount, 2, triangleCount)))
+		{
+			return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
+		}
+
+		size_t vertexOffset;
+		size_t triangleOffset;
+		if (not ResizeForAddition(
+			mesh, vertexCount, triangleCount, vertexOffset, triangleOffset))
+		{
+			return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Grid()/Plane(): The generated mesh exceeds the supported size");
+		}
+
+		const Float2 halfSize = (sizeXZ * 0.5f);
+		const float invSegmentsX = (1.0f / static_cast<float>(segmentsX));
+		const float invSegmentsZ = (1.0f / static_cast<float>(segmentsZ));
+		const Float3 normal = Float3::UnitY();
+		const Float4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
+
+		for (uint32 z = 0; z <= segmentsZ; ++z)
+		{
+			const float v = (z * invSegmentsZ);
+			const float positionZ = (halfSize.y - (sizeXZ.y * v));
+
+			for (uint32 x = 0; x <= segmentsX; ++x)
+			{
+				const float u = (x * invSegmentsX);
+				const size_t vertexIndex = (vertexOffset
+					+ (static_cast<size_t>(z) * columnCount) + x);
+
+				mesh.vertices[vertexIndex] = Vertex3D{
+					.pos = Float3{ (-halfSize.x + (sizeXZ.x * u)), 0.0f, positionZ },
+					.normal = normal,
+					.tex = Float2{ (uvOffset.x + (uvScale.x * u)), (uvOffset.y + (uvScale.y * v)) },
+					.tangent = tangent
+				};
+			}
+		}
+
+		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleOffset);
+		for (uint32 z = 0; z < segmentsZ; ++z)
+		{
+			const size_t rowOffset = (vertexOffset + (static_cast<size_t>(z) * columnCount));
+
+			for (uint32 x = 0; x < segmentsX; ++x)
+			{
+				const uint32 i0 = static_cast<uint32>(rowOffset + x);
+				const uint32 i1 = (i0 + 1);
+				const uint32 i2 = static_cast<uint32>(rowOffset + columnCount + x);
+				const uint32 i3 = (i2 + 1);
+
+				*pTriangle++ = TriangleIndex32{ i0, i1, i2 };
+				*pTriangle++ = TriangleIndex32{ i2, i1, i3 };
+			}
+		}
+
+		return AddedRange(
+			mesh,
+			(mesh.vertices.size() - vertexCount),
+			(mesh.indices.size() - triangleCount));
+	}
+
 }

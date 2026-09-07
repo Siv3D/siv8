@@ -17,14 +17,16 @@
 
 - `Mesh3D` は CPU 側のメッシュデータ、編集、生成、OBJ 出力を担当する。3D レンダリング側が未設計の間は `.draw()` を追加しない。
 - 単体生成には `Mesh3D` の static factory、複数形状の直接合成には `Mesh3DBuilder` を使う。
+- 全体へのアフィン変換と負のスケールは表裏を維持する。Mesh3D の transform / scale / append、Builder の配置、Assembly の bake は鏡映時に接線の w と三角形の巻き順を反転する。意図的な表裏反転には invert() を使う。旧仕様に合わせた鏡映後の reverseWinding() は取り除く。API 横断の回帰テストは `Test/Test_Mesh3DTransform.cpp`。Loft の断面ごとの向き・進行方向の条件は別に維持する。
 - `Mesh3DAssembly` は共有形状、材質、名前と親子配置を持つ部品を所有する CPU 側の組立データとする。形状なしの部品はヒンジなどの座標系に使える。形状の差し替えや焼き込みで部品 ID は変化しない。
 - Assembly の親は子より先に登録し、`local * parentWorld` で配置を合成する。`bake(destination)` は出力配列を再利用し、部品ごとの範囲と材質の独立したスナップショットを返す。頂点・三角形の予算超過では出力を変更しない。鏡映では法線・接線に加えて巻き順を反転し、表裏を維持する。
 - `Mesh3DPlacement::Align(sourceFrame, targetFrame)` は取り付け座標系を一致させる `source.inverse() * target` を返す。配置先は親のローカル座標とし、形状と取り付け座標系は同じ寸法入力からレシピで生成する。逆変換可能性などの事前条件は検査せず、自動追従の状態は持たない。
 - `cloneSubtree(root, placement, parent)` は呼び出し時点の根と子孫の部品だけをコピーし、形状・材質 ID を共有する。新しい根の配置と親を明示し、内部の親参照を付け替える。返される `ClonedSubtree::find()` で元の部品 ID から複製先を取得できる。Blender の Linked Duplicate と同様に、配置は独立し、共有データの編集は両方に反映する。専用テストは `Test/Test_Mesh3DPlacement.cpp` と `Test/Test_Mesh3DAssemblyClone.cpp`、利用例と参考資料は Assembly の manual test を参照する。
 - Assembly と BakedMesh の `saveOBJ()` は、部品の group と材質割り当てを 1 組の OBJ / MTL に保存する。BakedMesh は writer への `encodeOBJ()` も持つ。出力名は ID と UTF-8 バイトの可逆な percent encoding を組み合わせ、重複名・空白・日本語を扱う。材質未指定の面には既定材質を明示する。OBJ に階層や形状共有は保存しない。
-- factory と builder は内部の destination-writing generator を共有し、形状生成本体を二重実装しない。
+- factory と builder は `Mesh3DGenerators.hpp` に宣言する内部の destination-writing generator を共有する。プリミティブの生成本体は Mesh3D 側の形状群別ファイルに置き、Builder は入力の転送と配置を担当する。サイズ検査・追加先の拡張・Result 用エラー生成は `Mesh3DCommon.hpp` に集約する。
 - 汎用 generator と、頻出形状向けの効率的な specialization を組み合わせる。建築部材名を無制限に増やさない。
 - 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
+- 生成の入力検証は出力の拡張前に終え、書き込み段階では入力エラーを返さない。Loft は断面、側面の法線・接線、三角形の検証、書き込みに処理を分ける。
 - 生成失敗は理由を `LOG_FAIL` へ出力する。factory は空メッシュを返し、builder の既存内容は変更しない。
 - `Mesh3DBuilder` の全 add 関数は `Mesh3DAddResult` を返す。成功時は追加した頂点・三角形の連続範囲、失敗時は `InvalidArgument`、`InvalidGeometry`、`NumericRange`、`SizeLimit` に分類されたエラーを取得できる。
 - Y 軸周りの正角は `Quaternion::RotateY()`、`Cylindrical`、`Spherical` と共通で、`+X` から `-Z` へ進む。完全・部分 `Revolve` の頂点順、接線、U 座標もこの規約に従う。

@@ -17,12 +17,7 @@ namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		Err<Mesh3DError> AssemblyFailed(const Mesh3DErrorCode code, const StringView message)
-		{
-			LOG_FAIL(message);
-			return Err{ Mesh3DError{ code, String{ message } } };
-		}
+		using Mesh3DDetail::OperationFailed;
 
 		template <class ID>
 		[[nodiscard]]
@@ -57,7 +52,7 @@ namespace s3d
 	{
 		if (mesh.isEmpty() || (not mesh.validate()))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3DAssembly::addMesh(): mesh is empty or has invalid indices");
+			return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3DAssembly::addMesh(): mesh is empty or has invalid indices");
 		}
 		const MeshID id{ m_meshes.size() };
 		m_meshes.push_back(std::move(mesh));
@@ -68,11 +63,11 @@ namespace s3d
 	{
 		if (m_meshes.size() <= Index(id))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setMesh(): unknown mesh ID");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setMesh(): unknown mesh ID");
 		}
 		if (mesh.isEmpty() || (not mesh.validate()))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3DAssembly::setMesh(): mesh is empty or has invalid indices");
+			return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3DAssembly::setMesh(): mesh is empty or has invalid indices");
 		}
 		m_meshes[Index(id)] = std::move(mesh);
 		return{};
@@ -89,7 +84,7 @@ namespace s3d
 	{
 		if (m_materials.size() <= Index(id))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setMaterial(): unknown material ID");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setMaterial(): unknown material ID");
 		}
 		m_materials[Index(id)] = std::move(material);
 		return{};
@@ -99,15 +94,15 @@ namespace s3d
 	{
 		if (part.mesh && (m_meshes.size() <= Index(*part.mesh)))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly: unknown mesh ID in part");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly: unknown mesh ID in part");
 		}
 		if (part.material && (m_materials.size() <= Index(*part.material)))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly: unknown material ID in part");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly: unknown material ID in part");
 		}
 		if (part.parent && (parentLimit <= Index(*part.parent)))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly: parent must precede child");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly: parent must precede child");
 		}
 		return{};
 	}
@@ -127,7 +122,7 @@ namespace s3d
 	{
 		if (m_parts.size() <= Index(id))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setPart(): unknown part ID");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setPart(): unknown part ID");
 		}
 		if (const auto result = checkPart(part, Index(id)); not result)
 		{
@@ -141,7 +136,7 @@ namespace s3d
 	{
 		if (m_parts.size() <= Index(id))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setPlacement(): unknown part ID");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::setPlacement(): unknown part ID");
 		}
 		m_parts[Index(id)].placement = placement;
 		return{};
@@ -153,7 +148,7 @@ namespace s3d
 		const size_t originalSize = m_parts.size();
 		if ((originalSize <= Index(root)) || (parent && (originalSize <= Index(*parent))))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::cloneSubtree(): unknown root or parent ID");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::cloneSubtree(): unknown root or parent ID");
 		}
 
 		ClonedSubtree result{ .root = PartID{ originalSize } };
@@ -167,7 +162,7 @@ namespace s3d
 			}
 			if (result.parts.size() == available)
 			{
-				return AssemblyFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DAssembly::cloneSubtree(): part count exceeds storage limit");
+				return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DAssembly::cloneSubtree(): part count exceeds storage limit");
 			}
 			result.parts.emplace_back(PartID{ i }, PartID{ originalSize + result.parts.size() });
 		}
@@ -232,7 +227,7 @@ namespace s3d
 	{
 		if (m_parts.size() <= Index(id))
 		{
-			return AssemblyFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::computeWorldTransform(): unknown part ID");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DAssembly::computeWorldTransform(): unknown part ID");
 		}
 		Mat4x4 result = m_parts[Index(id)].placement.getTransform();
 		Optional<PartID> parent = m_parts[Index(id)].parent;
@@ -261,7 +256,7 @@ namespace s3d
 				|| (not Mesh3DDetail::CheckedAdd(triangleCount, mesh.triangleCount(), triangleCount))
 				|| (vertexLimit < vertexCount) || (options.maxTriangleCount < triangleCount))
 			{
-				return AssemblyFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DAssembly::bake(): output exceeds mesh size budget");
+				return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3DAssembly::bake(): output exceeds mesh size budget");
 			}
 		}
 
@@ -297,9 +292,8 @@ namespace s3d
 			baked.range.triangleCount = mesh.triangleCount();
 			Vertex3D* const vertices = (destination.mesh.vertices.data() + vertexOffset);
 			std::copy(mesh.vertices.begin(), mesh.vertices.end(), vertices);
-			Mesh3DDetail::TransformVertexRange(std::span<Vertex3D>{ vertices, mesh.vertexCount() }, baked.worldTransform);
-
-			const bool mirrored = (baked.worldTransform.determinant() < 0.0f);
+			const bool mirrored = Mesh3DDetail::TransformVertexRange(
+				std::span<Vertex3D>{ vertices, mesh.vertexCount() }, baked.worldTransform);
 			const uint32 base = static_cast<uint32>(vertexOffset);
 			for (const TriangleIndex32& triangle : mesh.indices)
 			{

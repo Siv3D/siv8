@@ -156,7 +156,6 @@ TEST_CASE("Mesh3DAssembly::hierarchy transforms and mirrored geometry")
 	CHECK(baked.parts[1].worldTransform == world);
 	CHECK(baked.parts[2].worldTransform.epsilonEquals(a.computeWorldTransform(doubleMirror).value(), 1e-5f));
 	Mesh3D expected = mesh.transformed(world);
-	expected.reverseWinding();
 	REQUIRE(expected.append(mesh, (Mat4x4::Scale(Float3{ -1, 1, 1 }) * world)));
 	CheckMeshDataEqual(baked.mesh, expected);
 	CheckMeshGeometry(baked.mesh);

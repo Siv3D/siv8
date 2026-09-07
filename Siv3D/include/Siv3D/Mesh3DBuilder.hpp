@@ -26,6 +26,7 @@ namespace s3d
 	/// @remark `addMesh()` は、呼び出し側が用意した Mesh3D の内容をビルダーが所有するメッシュへコピーします。
 	/// @remark 各 add 関数は Mesh3DAddResult を返します。成功時は追加された範囲、失敗時は分類済みのエラーを取得できます。
 	/// @remark add 関数が失敗した場合、Fail レベルのエンジンログへ理由を出力し、既存のメッシュ内容は変更されません。何も追加しない有効な操作は空範囲として成功します。
+	/// @remark 配置付き add 関数は Mesh3D::transform() と同じ規約で変換し、鏡映時は追加範囲の三角形の巻き順も反転して表裏を維持します。
 	/// @remark 各 add 関数が生成する形状の座標、位相、UV 座標、法線、および接線の規約は、対応する `Mesh3D` の生成関数と同じです。
 	/// @code
 	/// if (const auto result = builder.addTube(path, 0.25))

@@ -13,12 +13,13 @@
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Mat4x4.hpp>
-# include <Siv3D/Mesh3D.hpp>
+# include "Mesh3DGenerators.hpp"
 # include <Siv3D/Polygon.hpp>
 # include <cmath>
 # include <limits>
 # include <span>
 # include <type_traits>
+# include <utility>
 
 namespace s3d::Mesh3DDetail
 {
@@ -31,7 +32,7 @@ namespace s3d::Mesh3DDetail
 	}
 
 	[[nodiscard]]
-	inline Mesh3DAddResult AdditionFailed(
+	inline Err<Mesh3DError> OperationFailed(
 		const Mesh3DErrorCode code,
 		const StringView message)
 	{
@@ -53,13 +54,16 @@ namespace s3d::Mesh3DDetail
 		};
 	}
 
-	inline void TransformVertexRange(
+	// Returns whether the transform reverses orientation, using the determinant
+	// already computed for the normal matrix. Callers also update triangle winding.
+	[[nodiscard]]
+	inline bool TransformVertexRange(
 		const std::span<Vertex3D> vertexRange,
 		const Mat4x4& matrix) noexcept
 	{
 		if (vertexRange.empty())
 		{
-			return;
+			return false;
 		}
 
 		DirectX::XMVECTOR determinantVector;
@@ -77,7 +81,7 @@ namespace s3d::Mesh3DDetail
 					DirectX::XMVector3Transform(position, matrix.value));
 			}
 
-			return;
+			return false;
 		}
 
 		const DirectX::XMMATRIX normalMatrix = DirectX::XMMatrixTranspose(inverseMatrix);
@@ -106,6 +110,24 @@ namespace s3d::Mesh3DDetail
 			DirectX::XMStoreFloat4(
 				static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&vertex.tangent)),
 				DirectX::XMVectorSetW(tangent, tangentW));
+		}
+
+		return flipHandedness;
+	}
+
+	inline void TransformMeshRange(
+		Mesh3D& mesh,
+		const Mesh3DRange& range,
+		const Mat4x4& matrix) noexcept
+	{
+		const bool mirrored = TransformVertexRange(
+			std::span<Vertex3D>{ mesh.vertices }.subspan(range.vertexOffset, range.vertexCount), matrix);
+		if (mirrored)
+		{
+			for (auto& triangle : std::span<TriangleIndex32>{ mesh.indices }.subspan(range.triangleOffset, range.triangleCount))
+			{
+				std::swap(triangle.i1, triangle.i2);
+			}
 		}
 	}
 
@@ -155,6 +177,43 @@ namespace s3d::Mesh3DDetail
 		}
 
 		result = (a * b);
+		return true;
+	}
+
+	[[nodiscard]]
+	inline bool CheckAdditionSize(
+		const Mesh3D& mesh,
+		const size_t addedVertexCount,
+		const size_t addedTriangleCount,
+		size_t& newVertexCount,
+		size_t& newTriangleCount) noexcept
+	{
+		return (CheckedAdd(mesh.vertices.size(), addedVertexCount, newVertexCount)
+			&& (newVertexCount <= Mesh3D::MaxVertexCount)
+			&& CheckedAdd(mesh.indices.size(), addedTriangleCount, newTriangleCount));
+	}
+
+	// Check the destination size before changing either array. Shape validation
+	// must finish before this point; subsequent writes cannot report input errors.
+	[[nodiscard]]
+	inline bool ResizeForAddition(
+		Mesh3D& mesh,
+		const size_t addedVertexCount,
+		const size_t addedTriangleCount,
+		size_t& vertexOffset,
+		size_t& triangleOffset)
+	{
+		vertexOffset = mesh.vertices.size();
+		triangleOffset = mesh.indices.size();
+		size_t newVertexCount;
+		size_t newTriangleCount;
+		if (not CheckAdditionSize(mesh, addedVertexCount, addedTriangleCount, newVertexCount, newTriangleCount))
+		{
+			return false;
+		}
+
+		mesh.vertices.resize(newVertexCount);
+		mesh.indices.resize(newTriangleCount);
 		return true;
 	}
 
@@ -351,66 +410,4 @@ namespace s3d::Mesh3DDetail
 		}
 	}
 
-	[[nodiscard]]
-	Mesh3DAddResult AppendExtrude(
-		Mesh3D& mesh,
-		const Polygon& polygon,
-		double height,
-		double smoothingAngle);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendRevolve(
-		Mesh3D& mesh,
-		std::span<const Vec2> profile,
-		const RevolveOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendTube(
-		Mesh3D& mesh,
-		std::span<const Vec3> path,
-		double radius,
-		const TubeOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendTube(
-		Mesh3D& mesh,
-		std::span<const Vec3> path,
-		std::span<const double> radii,
-		const TubeOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendSweep(
-		Mesh3D& mesh,
-		const Polygon& crossSection,
-		std::span<const Vec3> path,
-		const SweepOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendSweep(
-		Mesh3D& mesh,
-		const Polygon& crossSection,
-		std::span<const Vec3> path,
-		std::span<const SweepSectionTransform> sectionTransforms,
-		const SweepOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendHeightField(
-		Mesh3D& mesh,
-		const Grid<float>& heights,
-		SizeF sizeXZ,
-		const HeightFieldOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendHeightField(
-		Mesh3D& mesh,
-		Size gridSize,
-		SizeF sizeXZ,
-		FunctionRef<double(Point)> heightFunction,
-		const HeightFieldOptions& options);
-
-	[[nodiscard]]
-	Mesh3DAddResult AppendLoft(
-		Mesh3D& mesh,
-		std::span<const LoftSection> sections,
-		const LoftOptions& options);
 }

@@ -6060,6 +6060,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DCommon.hpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DGenerators.hpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.hpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClInclude>
@@ -9228,6 +9231,15 @@
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DLoft.cpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DRound.cpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DPolyhedron.cpp">
+      <Filter>src\Siv3D\Mesh3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DBox.cpp">
       <Filter>src\Siv3D\Mesh3D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DRevolve.cpp">

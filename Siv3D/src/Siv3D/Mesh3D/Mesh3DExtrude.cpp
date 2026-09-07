@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include "Mesh3DCommon.hpp"
@@ -22,7 +21,7 @@ namespace s3d
 	namespace
 	{
 		using Mesh3DDetail::AddedRange;
-		using Mesh3DDetail::AdditionFailed;
+		using Mesh3DDetail::OperationFailed;
 		using Mesh3DDetail::CapValidationResult;
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
@@ -106,25 +105,25 @@ namespace s3d::Mesh3DDetail
 	{
 		if (polygon.isEmpty())
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): The polygon is empty");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): The polygon is empty");
 		}
 
 		if ((not IsFloatRepresentable(_height))
 			|| (not std::isfinite(smoothingAngle)))
 		{
-			return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Extrude(): A numeric parameter is non-finite or outside the float range");
+			return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Extrude(): A numeric parameter is non-finite or outside the float range");
 		}
 
 		if ((smoothingAngle < 0.0)
 			|| (Math::Pi < smoothingAngle))
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): smoothingAngle must be in the range [0, Pi]");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): smoothingAngle must be in the range [0, Pi]");
 		}
 
 		const float height = static_cast<float>(_height);
 		if (height <= 0.0f)
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): height must be positive after conversion to float");
+			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Extrude(): height must be positive after conversion to float");
 		}
 
 		const bool smoothSide = (0.0 < smoothingAngle);
@@ -139,7 +138,7 @@ namespace s3d::Mesh3DDetail
 			capVertices, capIndices, validCapTriangleCount);
 		if (capValidation != CapValidationResult::Valid)
 		{
-			return AdditionFailed(
+			return OperationFailed(
 				(capValidation == CapValidationResult::NumericRange
 					? Mesh3DErrorCode::NumericRange
 					: Mesh3DErrorCode::InvalidGeometry),
@@ -151,7 +150,7 @@ namespace s3d::Mesh3DDetail
 		{
 			if (not CheckedAdd(edgeCount, inner.size(), edgeCount))
 			{
-				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Extrude(): The polygon edge count exceeds the supported range");
+				return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Extrude(): The polygon edge count exceeds the supported range");
 			}
 		}
 
@@ -159,7 +158,7 @@ namespace s3d::Mesh3DDetail
 		if (ValidateRing(std::span<const Vec2>{ polygon.outer() }, true, outerPerimeter)
 			!= RingValidationResult::Valid)
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Extrude(): The polygon outer ring is invalid");
+			return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Extrude(): The polygon outer ring is invalid");
 		}
 
 		for (const auto& inner : polygon.inners())
@@ -168,7 +167,7 @@ namespace s3d::Mesh3DDetail
 			if (ValidateRing(std::span<const Vec2>{ inner }, false, perimeter)
 				!= RingValidationResult::Valid)
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Extrude(): A polygon inner ring is invalid");
+				return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Extrude(): A polygon inner ring is invalid");
 			}
 		}
 
@@ -186,7 +185,7 @@ namespace s3d::Mesh3DDetail
 			|| (not CheckedMultiply(edgeCount, 2, sideTriangleCount))
 			|| (not CheckedAdd(capTriangleTotal, sideTriangleCount, triangleCount)))
 		{
-			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Extrude(): The generated mesh exceeds the supported size");
+			return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Extrude(): The generated mesh exceeds the supported size");
 		}
 
 		float minX = capVertices.front().x;
@@ -206,22 +205,16 @@ namespace s3d::Mesh3DDetail
 		if ((width <= 0.0)
 			|| (depth <= 0.0))
 		{
-			return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Extrude(): The polygon bounds must have positive width and depth");
+			return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Extrude(): The polygon bounds must have positive width and depth");
 		}
 
-		const size_t vertexBase = mesh.vertices.size();
-		const size_t triangleBase = mesh.indices.size();
-		size_t newVertexCount;
-		size_t newTriangleCount;
-		if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
-			|| (Mesh3D::MaxVertexCount < newVertexCount)
-			|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+		size_t vertexBase;
+		size_t triangleBase;
+		if (not Mesh3DDetail::ResizeForAddition(
+			mesh, vertexCount, triangleCount, vertexBase, triangleBase))
 		{
-			return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Extrude(): The generated mesh exceeds the supported size");
+			return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Extrude(): The generated mesh exceeds the supported size");
 		}
-
-		mesh.vertices.resize(newVertexCount);
-		mesh.indices.resize(newTriangleCount);
 		const float halfHeight = (height * 0.5f);
 		const size_t topVertexBase = vertexBase;
 		const size_t bottomVertexBase = (topVertexBase + capVertices.size());
@@ -351,9 +344,9 @@ namespace s3d
 
 	Mesh3D Mesh3D::Extrude(const Polygon& polygon, const double height)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addExtrude(polygon, height);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendExtrude(mesh, polygon, height, 0.0);
+		return mesh;
 	}
 
 	Mesh3D Mesh3D::Extrude(
@@ -361,8 +354,8 @@ namespace s3d
 		const double height,
 		const double smoothingAngle)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addExtrude(polygon, height, smoothingAngle);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendExtrude(mesh, polygon, height, smoothingAngle);
+		return mesh;
 	}
 }

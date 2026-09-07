@@ -265,7 +265,7 @@ namespace s3d
 		/// @param options 出力サイズの上限。未使用の共有形状は出力サイズに含めません。
 		/// @return 成功。サイズ上限を超える場合は SizeLimit で失敗し、destination は変更しません。
 		/// @remark 形状の index は登録時に検査済みのため、部品ごとの再検査を行いません。計算量は全部品数と出力の頂点・三角形数に比例します。
-		/// @remark 法線・接線の変換は Mesh3D::append(mesh, matrix) と同じです。鏡映を含む部品では追加で三角形の巻き順を反転し、表裏を維持します。
+		/// @remark 法線・接線・巻き順の変換は Mesh3D::append(mesh, matrix) と同じです。鏡映を含む部品も表裏を維持します。
 		/// @remark 特異な変換では法線・接線を変更しません。空の Assembly、または形状なしの部品だけの場合も成功します。
 		[[nodiscard]]
 		Result<void, Mesh3DError> bake(BakedMesh& destination, const Mesh3DBakeOptions& options = {}) const;

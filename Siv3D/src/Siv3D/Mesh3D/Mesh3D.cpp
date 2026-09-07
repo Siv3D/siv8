@@ -23,7 +23,7 @@ namespace s3d
 {
 	namespace
 	{
-		using Mesh3DDetail::TransformVertexRange;
+		using Mesh3DDetail::TransformMeshRange;
 
 		[[nodiscard]]
 		static constexpr CNORM_FLAGS ToCNORMFlags(const VertexNormalWeighting weighting) noexcept
@@ -138,6 +138,8 @@ namespace s3d
 	{
 		const size_t vertexOffset = vertices.size();
 		const size_t sourceVertexCount = mesh.vertices.size();
+		const size_t triangleOffset = indices.size();
+		const size_t sourceTriangleCount = mesh.indices.size();
 
 		if (not append(mesh))
 		{
@@ -146,9 +148,8 @@ namespace s3d
 
 		if (sourceVertexCount != 0)
 		{
-			TransformVertexRange(
-				std::span<Vertex3D>{ (vertices.data() + vertexOffset), sourceVertexCount },
-				matrix);
+			TransformMeshRange(*this,
+				Mesh3DRange{ vertexOffset, sourceVertexCount, triangleOffset, sourceTriangleCount }, matrix);
 		}
 
 		return true;
@@ -359,7 +360,7 @@ namespace s3d
 
 	Mesh3D& Mesh3D::transform(const Mat4x4& matrix) noexcept
 	{
-		TransformVertexRange(vertices, matrix);
+		TransformMeshRange(*this, Mesh3DRange{ 0, vertices.size(), 0, indices.size() }, matrix);
 		return *this;
 	}
 
@@ -502,6 +503,7 @@ namespace s3d
 				vertex.normal = -vertex.normal;
 				vertex.tangent = -vertex.tangent;
 			}
+			reverseWinding();
 		}
 		else
 		{
@@ -562,6 +564,11 @@ namespace s3d
 			DirectX::XMStoreFloat4(
 				static_cast<DirectX::XMFLOAT4*>(static_cast<void*>(&vertex.tangent)),
 				DirectX::XMVectorSetW(tangent, tangentW));
+		}
+
+		if (flipHandedness)
+		{
+			reverseWinding();
 		}
 
 		return *this;

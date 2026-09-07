@@ -1050,6 +1050,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\MathParser\MathParserDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\MediaTranscoder\IMediaTranscoder.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DCommon.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DGenerators.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DNormals.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Mouse\IMouse.hpp" />
@@ -1856,6 +1857,9 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DExtrude.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DHeightField.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DLoft.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DRound.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DPolyhedron.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DBox.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DRevolve.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DTube.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Mesh3D\Mesh3DMikkTSpace.cpp" />

@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include <Siv3D/Mesh3D.hpp>
-# include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/MathConstants.hpp>
 # include <Siv3D/Polygon.hpp>
 # include "Mesh3DCommon.hpp"
@@ -25,7 +24,7 @@ namespace s3d
 		using Mesh3DDetail::CheckedAdd;
 		using Mesh3DDetail::CheckedMultiply;
 		using Mesh3DDetail::AddedRange;
-		using Mesh3DDetail::AdditionFailed;
+		using Mesh3DDetail::OperationFailed;
 		using Mesh3DDetail::CapValidationResult;
 		using Mesh3DDetail::ForEachValidCapTriangle;
 		using Mesh3DDetail::IsFloatRepresentable;
@@ -409,7 +408,7 @@ namespace s3d
 			{
 				if (radii.values.size() != path.size())
 				{
-					return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+					return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 						U"Mesh3D::Tube(): The radius count must match the path point count");
 				}
 			}
@@ -419,7 +418,7 @@ namespace s3d
 				isClosed ? Mesh3DEndCaps::None : Mesh3DEndCaps::Both);
 			if (isClosed && (endCaps != Mesh3DEndCaps::None))
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+				return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 					U"Mesh3D::Tube(): A closed path cannot have end caps");
 			}
 			const bool generateStartCap = ((endCaps == Mesh3DEndCaps::Start)
@@ -431,14 +430,14 @@ namespace s3d
 			if ((path.size() < (isClosed ? 3 : 2))
 				|| (sides < 3))
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+				return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 					U"Mesh3D::Tube(): The path or side count is invalid");
 			}
 
 			if ((not IsFloatRepresentable(_uvScale))
 				|| (not IsFloatRepresentable(_uvOffset)))
 			{
-				return AdditionFailed(Mesh3DErrorCode::NumericRange,
+				return OperationFailed(Mesh3DErrorCode::NumericRange,
 					U"Mesh3D::Tube(): A numeric parameter is non-finite or outside the float range");
 			}
 
@@ -449,14 +448,14 @@ namespace s3d
 				{
 					if (not IsFloatRepresentable(sourceRadius))
 					{
-						return AdditionFailed(Mesh3DErrorCode::NumericRange,
+						return OperationFailed(Mesh3DErrorCode::NumericRange,
 							U"Mesh3D::Tube(): A radius is non-finite or outside the float range");
 					}
 
 					const float radius = static_cast<float>(sourceRadius);
 					if (radius <= 0.0f)
 					{
-						return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+						return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 							U"Mesh3D::Tube(): Every radius must be positive after conversion to float");
 					}
 
@@ -467,14 +466,14 @@ namespace s3d
 			{
 				if (not IsFloatRepresentable(radii.value))
 				{
-					return AdditionFailed(Mesh3DErrorCode::NumericRange,
+					return OperationFailed(Mesh3DErrorCode::NumericRange,
 						U"Mesh3D::Tube(): A radius is non-finite or outside the float range");
 				}
 
 				maxRadius = static_cast<float>(radii.value);
 				if (maxRadius <= 0.0f)
 				{
-					return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+					return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 						U"Mesh3D::Tube(): radius must be positive after conversion to float");
 				}
 			}
@@ -498,7 +497,7 @@ namespace s3d
 				|| (not CheckedMultiply(capCount, static_cast<size_t>(sides), capTriangleCount))
 				|| (not CheckedAdd(sideTriangleCount, capTriangleCount, triangleCount)))
 			{
-				return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+				return OperationFailed(Mesh3DErrorCode::SizeLimit,
 					U"Mesh3D::Tube(): The generated mesh exceeds the supported size");
 			}
 
@@ -507,7 +506,7 @@ namespace s3d
 				path, maxRadius, nullptr, closeRing, pathData);
 			if (pathDataStatus != PathDataStatus::Success)
 			{
-				return AdditionFailed(ToErrorCode(pathDataStatus),
+				return OperationFailed(ToErrorCode(pathDataStatus),
 					U"Mesh3D::Tube(): The path is invalid or cannot produce stable frames");
 			}
 
@@ -526,7 +525,7 @@ namespace s3d
 				|| (not IsFloatRepresentable(sideV1))
 				|| ((0 < capCount) && (not IsFloatRepresentable(capV1))))
 			{
-				return AdditionFailed(Mesh3DErrorCode::NumericRange,
+				return OperationFailed(Mesh3DErrorCode::NumericRange,
 					U"Mesh3D::Tube(): The generated UV coordinates exceed the float range");
 			}
 
@@ -536,25 +535,19 @@ namespace s3d
 			const Float2 uvScale = _uvScale;
 			const Float2 uvOffset = _uvOffset;
 			const float inverseSides = (1.0f / sides);
-			const size_t vertexBase = mesh.vertices.size();
-			const size_t triangleBase = mesh.indices.size();
-			size_t newVertexCount;
-			size_t newTriangleCount;
-			if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
-				|| (Mesh3D::MaxVertexCount < newVertexCount)
-				|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+			size_t vertexBase;
+			size_t triangleBase;
+			if (not Mesh3DDetail::ResizeForAddition(
+				mesh, vertexCount, triangleCount, vertexBase, triangleBase))
 			{
-				return AdditionFailed(Mesh3DErrorCode::SizeLimit,
+				return OperationFailed(Mesh3DErrorCode::SizeLimit,
 					U"Mesh3D::Tube(): The generated mesh exceeds the supported size");
 			}
-
-			mesh.vertices.resize(newVertexCount);
-			mesh.indices.resize(newTriangleCount);
 			const auto generationFailed = [&](const StringView message)
 			{
 				mesh.vertices.resize(vertexBase);
 				mesh.indices.resize(triangleBase);
-				return AdditionFailed(Mesh3DErrorCode::NumericRange, message);
+				return OperationFailed(Mesh3DErrorCode::NumericRange, message);
 			};
 
 			for (size_t pathIndex = 0; pathIndex < stationCount; ++pathIndex)
@@ -763,9 +756,9 @@ namespace s3d
 		const double radius,
 		const TubeOptions& options)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addTube(path, radius, options);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendTube(mesh, path, radius, options);
+		return mesh;
 	}
 
 	Mesh3D Mesh3D::Tube(
@@ -773,9 +766,9 @@ namespace s3d
 		const std::span<const double> radii,
 		const TubeOptions& options)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addTube(path, radii, options);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendTube(mesh, path, radii, options);
+		return mesh;
 	}
 
 	namespace
@@ -814,7 +807,7 @@ namespace s3d
 			{
 				if (sectionTransforms.values.size() != path.size())
 				{
-					return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+					return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 						U"Mesh3D::Sweep(): The section-transform count must match the path point count");
 				}
 
@@ -824,14 +817,14 @@ namespace s3d
 					if ((not IsFloatRepresentable(transform.scale))
 						|| (not std::isfinite(transform.twist)))
 					{
-						return AdditionFailed(Mesh3DErrorCode::NumericRange,
+						return OperationFailed(Mesh3DErrorCode::NumericRange,
 							U"Mesh3D::Sweep(): A section transform is non-finite or outside the float range");
 					}
 
 					const Float2 scale = transform.scale;
 					if ((scale.x <= 0.0f) || (scale.y <= 0.0f))
 					{
-						return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+						return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 							U"Mesh3D::Sweep(): Every section scale component must be positive after conversion to float");
 					}
 
@@ -853,7 +846,7 @@ namespace s3d
 				isClosed ? Mesh3DEndCaps::None : Mesh3DEndCaps::Both);
 			if (isClosed && (endCaps != Mesh3DEndCaps::None))
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidArgument,
+				return OperationFailed(Mesh3DErrorCode::InvalidArgument,
 					U"Mesh3D::Sweep(): A closed path cannot have end caps");
 			}
 			const bool generateStartCap = ((endCaps == Mesh3DEndCaps::Start)
@@ -865,13 +858,13 @@ namespace s3d
 			if ((crossSection.isEmpty())
 				|| (path.size() < (isClosed ? 3 : 2)))
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Sweep(): The cross section or path is invalid");
+				return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3D::Sweep(): The cross section or path is invalid");
 			}
 
 			if ((not IsFloatRepresentable(_uvScale))
 				|| (not IsFloatRepresentable(_uvOffset)))
 			{
-				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The UV transform is non-finite or outside the float range");
+				return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The UV transform is non-finite or outside the float range");
 			}
 
 			const auto& capVertices = crossSection.vertices();
@@ -881,7 +874,7 @@ namespace s3d
 				capVertices, capIndices, validCapTriangleCount);
 			if (capValidation != CapValidationResult::Valid)
 			{
-				return AdditionFailed(
+				return OperationFailed(
 					(capValidation == CapValidationResult::NumericRange
 						? Mesh3DErrorCode::NumericRange
 						: Mesh3DErrorCode::InvalidGeometry),
@@ -893,21 +886,21 @@ namespace s3d
 			{
 				if (not CheckedAdd(edgeCount, inner.size(), edgeCount))
 				{
-					return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The cross-section edge count exceeds the supported range");
+					return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The cross-section edge count exceeds the supported range");
 				}
 			}
 
 			size_t ringCount;
 			if (not CheckedAdd(crossSection.inners().size(), 1, ringCount))
 			{
-				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The cross-section ring count exceeds the supported range");
+				return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The cross-section ring count exceeds the supported range");
 			}
 
 			Array<double> ringPerimeters(ringCount);
 			if (ValidateRing(std::span<const Vec2>{ crossSection.outer() }, true, ringPerimeters[0])
 				!= RingValidationResult::Valid)
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): The cross-section outer ring is invalid");
+				return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): The cross-section outer ring is invalid");
 			}
 
 			for (size_t i = 0; i < crossSection.inners().size(); ++i)
@@ -915,7 +908,7 @@ namespace s3d
 				if (ValidateRing(std::span<const Vec2>{ crossSection.inners()[i] }, false, ringPerimeters[i + 1])
 					!= RingValidationResult::Valid)
 				{
-					return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): A cross-section inner ring is invalid");
+					return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): A cross-section inner ring is invalid");
 				}
 			}
 
@@ -957,12 +950,12 @@ namespace s3d
 			if ((width <= 0.0)
 				|| (height <= 0.0))
 			{
-				return AdditionFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): The cross-section bounds must have positive width and height");
+				return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3D::Sweep(): The cross-section bounds must have positive width and height");
 			}
 
 			if (not IsFloatRepresentable(maxDistanceFromPath))
 			{
-				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The cross-section distance from the path exceeds the float range");
+				return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The cross-section distance from the path exceeds the float range");
 			}
 
 			size_t capVertexCount = 0;
@@ -986,7 +979,7 @@ namespace s3d
 				|| (not CheckedMultiply(sideQuadCount, 2, sideTriangleCount))
 				|| (not CheckedAdd(capTriangleCount, sideTriangleCount, triangleCount)))
 			{
-				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The generated mesh exceeds the supported size");
+				return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The generated mesh exceeds the supported size");
 			}
 
 			PathData pathData;
@@ -994,7 +987,7 @@ namespace s3d
 				path, maxDistanceFromPath, initialXAxis, closeRing, pathData);
 			if (pathDataStatus != PathDataStatus::Success)
 			{
-				return AdditionFailed(ToErrorCode(pathDataStatus), U"Mesh3D::Sweep(): The path or initial X axis is invalid, or stable frames cannot be produced");
+				return OperationFailed(ToErrorCode(pathDataStatus), U"Mesh3D::Sweep(): The path or initial X axis is invalid, or stable frames cannot be produced");
 			}
 
 			Array<TransformedSweepFrame> transformedFrames;
@@ -1029,29 +1022,23 @@ namespace s3d
 				|| (not IsFloatRepresentable(sideV1))
 				|| ((0 < capCount) && (not IsFloatRepresentable(capV1))))
 			{
-				return AdditionFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The generated UV coordinates exceed the float range");
+				return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The generated UV coordinates exceed the float range");
 			}
 
 			const Float2 uvScale = _uvScale;
 			const Float2 uvOffset = _uvOffset;
-			const size_t vertexBase = mesh.vertices.size();
-			const size_t triangleBase = mesh.indices.size();
-			size_t newVertexCount;
-			size_t newTriangleCount;
-			if ((not CheckedAdd(vertexBase, vertexCount, newVertexCount))
-				|| (Mesh3D::MaxVertexCount < newVertexCount)
-				|| (not CheckedAdd(triangleBase, triangleCount, newTriangleCount)))
+			size_t vertexBase;
+			size_t triangleBase;
+			if (not Mesh3DDetail::ResizeForAddition(
+				mesh, vertexCount, triangleCount, vertexBase, triangleBase))
 			{
-				return AdditionFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The generated mesh exceeds the supported size");
+				return OperationFailed(Mesh3DErrorCode::SizeLimit, U"Mesh3D::Sweep(): The generated mesh exceeds the supported size");
 			}
-
-			mesh.vertices.resize(newVertexCount);
-			mesh.indices.resize(newTriangleCount);
 			const auto generationFailed = [&](const Mesh3DErrorCode code, const StringView message)
 			{
 				mesh.vertices.resize(vertexBase);
 				mesh.indices.resize(triangleBase);
-				return AdditionFailed(code, message);
+				return OperationFailed(code, message);
 			};
 			const auto getPosition = [&](const size_t pathIndex, const Float2 source)
 			{
@@ -1376,9 +1363,9 @@ namespace s3d
 		const std::span<const Vec3> path,
 		const SweepOptions& options)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addSweep(crossSection, path, options);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendSweep(mesh, crossSection, path, options);
+		return mesh;
 	}
 
 	Mesh3D Mesh3D::Sweep(
@@ -1398,9 +1385,9 @@ namespace s3d
 		const std::span<const SweepSectionTransform> sectionTransforms,
 		const SweepOptions& options)
 	{
-		Mesh3DBuilder builder;
-		(void)builder.addSweep(crossSection, path, sectionTransforms, options);
-		return std::move(builder).build();
+		Mesh3D mesh;
+		(void)Mesh3DDetail::AppendSweep(mesh, crossSection, path, sectionTransforms, options);
+		return mesh;
 	}
 
 	Mesh3D Mesh3D::Sweep(
