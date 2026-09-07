@@ -1593,18 +1593,20 @@ namespace s3d
 
 		/// @brief 平行移動した 3D メッシュを返します。
 		/// @param offset 平行移動量
+		/// @remark offset を Float3 に変換し、頂点ごとの加算は float で行います。入力の数値検査は行いません。
 		/// @return 平行移動した 3D メッシュ
 		/// @remark 頂点座標のみが変更されます。法線、接線、UV 座標、および三角形インデックスは変更されません。
 		[[nodiscard]]
-		Mesh3D translated(Float3 offset) const&;
+		Mesh3D translated(Vec3 offset) const&;
 
 		/// @brief 平行移動した 3D メッシュを返します。
 		/// @param offset 平行移動量
+		/// @remark offset を Float3 に変換し、頂点ごとの加算は float で行います。入力の数値検査は行いません。
 		/// @return 平行移動した 3D メッシュ
 		/// @remark このオーバーロードは自身のストレージを再利用します。
 		/// @remark 頂点座標のみが変更されます。法線、接線、UV 座標、および三角形インデックスは変更されません。
 		[[nodiscard]]
-		Mesh3D translated(Float3 offset) && noexcept;
+		Mesh3D translated(Vec3 offset) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1614,9 +1616,10 @@ namespace s3d
 
 		/// @brief 3D メッシュを平行移動します。
 		/// @param offset 平行移動量
+		/// @remark offset を Float3 に変換し、頂点ごとの加算は float で行います。入力の数値検査は行いません。
 		/// @return *this
 		/// @remark 頂点座標のみが変更されます。法線、接線、UV 座標、および三角形インデックスは変更されません。
-		Mesh3D& translate(Float3 offset) noexcept;
+		Mesh3D& translate(Vec3 offset) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1662,6 +1665,7 @@ namespace s3d
 
 		/// @brief 原点を中心に一様に拡大・縮小した 3D メッシュを返します。
 		/// @param scale 拡大率
+		/// @remark scale を float に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
 		/// @return 拡大・縮小した 3D メッシュ
 		/// @remark `scale` が正の場合、法線および接線は変更されません。
 		/// @remark `scale` が負の場合、法線、接線ベクトル、および接線の `w` 成分が反転します。
@@ -1669,10 +1673,11 @@ namespace s3d
 		/// @remark UV 座標は変更されません。
 		/// @remark `scale` が負の場合、三角形の巻き順も反転し、表裏を維持します。
 		[[nodiscard]]
-		Mesh3D scaled(float scale) const&;
+		Mesh3D scaled(double scale) const&;
 
 		/// @brief 原点を中心に一様に拡大・縮小した 3D メッシュを返します。
 		/// @param scale 拡大率
+		/// @remark scale を float に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
 		/// @return 拡大・縮小した 3D メッシュ
 		/// @remark このオーバーロードは自身のストレージを再利用します。
 		/// @remark `scale` が正の場合、法線および接線は変更されません。
@@ -1681,20 +1686,22 @@ namespace s3d
 		/// @remark UV 座標は変更されません。
 		/// @remark `scale` が負の場合、三角形の巻き順も反転し、表裏を維持します。
 		[[nodiscard]]
-		Mesh3D scaled(float scale) && noexcept;
+		Mesh3D scaled(double scale) && noexcept;
 
 		/// @brief 原点を中心に各軸方向へ拡大・縮小した 3D メッシュを返します。
 		/// @param scale 各軸方向の拡大率
+		/// @remark scale を Float3 に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
 		/// @return 拡大・縮小した 3D メッシュ
 		/// @remark `scale` のすべての成分が非ゼロの場合、法線および接線ベクトルは変換後に正規化されます。
 		/// @remark `scale` のいずれかの成分が 0 の場合、法線および接線は変更されません。
 		/// @remark UV 座標は変更されません。
 		/// @remark 拡大率の積が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
 		[[nodiscard]]
-		Mesh3D scaled(Float3 scale) const&;
+		Mesh3D scaled(Vec3 scale) const&;
 
 		/// @brief 原点を中心に各軸方向へ拡大・縮小した 3D メッシュを返します。
 		/// @param scale 各軸方向の拡大率
+		/// @remark scale を Float3 に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
 		/// @return 拡大・縮小した 3D メッシュ
 		/// @remark このオーバーロードは自身のストレージを再利用します。
 		/// @remark `scale` のすべての成分が非ゼロの場合、法線および接線ベクトルは変換後に正規化されます。
@@ -1702,7 +1709,7 @@ namespace s3d
 		/// @remark UV 座標は変更されません。
 		/// @remark 拡大率の積が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
 		[[nodiscard]]
-		Mesh3D scaled(Float3 scale) && noexcept;
+		Mesh3D scaled(Vec3 scale) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1712,22 +1719,24 @@ namespace s3d
 
 		/// @brief 3D メッシュを原点を中心に一様に拡大・縮小します。
 		/// @param scale 拡大率
+		/// @remark scale を float に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
 		/// @return *this
 		/// @remark `scale` が正の場合、法線および接線は変更されません。
 		/// @remark `scale` が負の場合、法線、接線ベクトル、および接線の `w` 成分が反転します。
 		/// @remark `scale` が 0 の場合、法線および接線は変更されません。
 		/// @remark UV 座標は変更されません。
 		/// @remark `scale` が負の場合、三角形の巻き順も反転し、表裏を維持します。
-		Mesh3D& scale(float scale) noexcept;
+		Mesh3D& scale(double scale) noexcept;
 
 		/// @brief 3D メッシュを原点を中心に各軸方向へ拡大・縮小します。
 		/// @param scale 各軸方向の拡大率
+		/// @remark scale を Float3 に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
 		/// @return *this
 		/// @remark `scale` のすべての成分が非ゼロの場合、法線および接線ベクトルは変換後に正規化されます。
 		/// @remark `scale` のいずれかの成分が 0 の場合、法線および接線は変更されません。
 		/// @remark UV 座標は変更されません。
 		/// @remark 拡大率の積が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
-		Mesh3D& scale(Float3 scale) noexcept;
+		Mesh3D& scale(Vec3 scale) noexcept;
 
 	};
 }

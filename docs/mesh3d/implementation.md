@@ -27,7 +27,7 @@ CPU 側の形状生成・組み立て・出力を開発するときの設計方�
 - Assembly と BakedMesh の `saveOBJ()` は、部品の group と材質割り当てを 1 組の OBJ / MTL に保存する。BakedMesh は writer への `encodeOBJ()` も持つ。出力名は ID と UTF-8 バイトの可逆な percent encoding を組み合わせ、重複名・空白・日本語を扱う。材質未指定の面には既定材質を明示する。OBJ に階層や形状共有は保存しない。
 - factory と builder は `Mesh3DGenerators.hpp` に宣言する内部の destination-writing generator を共有する。プリミティブの生成本体は Mesh3D 側の形状群別ファイルに置き、Builder は入力の転送と配置を担当する。サイズ検査・追加先の拡張・Result 用エラー生成は `Mesh3DCommon.hpp` に集約する。
 - 汎用 generator と、頻出形状向けの効率的な specialization を組み合わせる。建築部材名を無制限に増やさない。
-- 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
+- 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。Mesh3D の translate / scale も double / Vec3 で受け、変更用の実装の入口で float / Float3 に一度変換する。頂点ごとの計算・格納と符号判定は従来の float のままとし、値返し版は変更用の実装へ委譲する。
 - 生成失敗時は既存の頂点・三角形の内容を保持する。Loft などは出力の拡張前に検証を終える。Tube / Sweep は書き込み中の生成値検証も行い、失敗時に追加前の配列サイズへ戻す。容量・data ポインタの保持やメモリ確保例外に対する非変更は保証しない。
 - UV の負の拡大率には接線方向と handedness も追従する。0 の UV 軸は正方向として扱う。Plane / Grid、HeightField、Tube / Sweep、Revolve、Loft の横断テストは [Test/Test_Mesh3DUV.cpp](../../Test/Test_Mesh3DUV.cpp)。生成後の transformUV() は UV だけを編集し、必要な接線再計算は computeTangents() で明示する。
 - Mesh3DRange::isEmpty() は両 count が 0、Mesh3D::isEmpty() はいずれかの配列が空、validate() は頂点数と index 範囲だけの検査とする。意味は Doxygen と境界テストで固定し、別名の同義 API は増やさない。

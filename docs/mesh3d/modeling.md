@@ -10,6 +10,21 @@ Assembly and OBJ usage is described in [assembly and export](assembly.md).
 Changing sections is described in [Loft](loft.md). Use the [preview tool](preview.md)
 for geometric inspection; it is not a final renderer.
 
+## Transform argument types
+
+Translation takes Vec3; uniform scale takes double and per-axis scale takes Vec3,
+matching shape dimensions and Mesh3DPlacement. Arguments are converted once to
+float/Float3 in the mutating implementation. Vertex storage and calculations
+remain float; accepting Vec3 does not increase geometric precision. Zero/sign
+behavior for scale is determined after conversion. Quaternion and Mat4x4 inputs
+remain unchanged. See the public header for the transform contracts.
+
+```cpp
+const Vec3 offset{ 1.5, 0.25, -2.0 };
+Mesh3D mesh = Mesh3D::Box().scaled(1.25).translated(offset);
+mesh.scale(Vec3{ 2.0, 1.0, 0.5 }).translate(Vec3{ 0.0, 0.1, 0.0 });
+```
+
 ## Existing API inventory
 
 - `Circle::outer()` already produces a circular point array.

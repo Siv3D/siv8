@@ -212,3 +212,121 @@ TEST_CASE("Mesh3D mirrored addition handles aliasing no-op failure and singular 
 		CHECK_EQ(singular.vertices[i].tangent, source.vertices[i].tangent);
 	}
 }
+
+TEST_CASE("Mesh3D transform parameters use double and Vec3")
+{
+	static_assert(requires
+	{
+		static_cast<Mesh3D& (Mesh3D::*)(Vec3) noexcept>(&Mesh3D::translate);
+		static_cast<Mesh3D (Mesh3D::*)(Vec3) const&>(&Mesh3D::translated);
+		static_cast<Mesh3D (Mesh3D::*)(Vec3) && noexcept>(&Mesh3D::translated);
+		static_cast<Mesh3D& (Mesh3D::*)(double) noexcept>(&Mesh3D::scale);
+		static_cast<Mesh3D& (Mesh3D::*)(Vec3) noexcept>(&Mesh3D::scale);
+		static_cast<Mesh3D (Mesh3D::*)(double) const&>(&Mesh3D::scaled);
+		static_cast<Mesh3D (Mesh3D::*)(Vec3) const&>(&Mesh3D::scaled);
+		static_cast<Mesh3D (Mesh3D::*)(double) && noexcept>(&Mesh3D::scaled);
+		static_cast<Mesh3D (Mesh3D::*)(Vec3) && noexcept>(&Mesh3D::scaled);
+	});
+	static_assert(std::is_convertible_v<Float3, Vec3>);
+
+	const Mesh3D source = Mesh3D::Wedge(Vec3{ 2, 3, 4 });
+	const Vec3 offset{ 0.1, -2.3, 4.7 };
+	Mesh3D expected = source;
+	for (auto& vertex : expected.vertices)
+	{
+		vertex.pos += Float3{ offset };
+	}
+	Mesh3DTest::CheckMeshDataEqual(source.translated(offset), expected);
+	Mesh3D moved = source;
+	const auto* vertices = moved.vertices.data();
+	const auto* indices = moved.indices.data();
+	CHECK_EQ(&moved.translate(offset), &moved);
+	CHECK_EQ(moved.vertices.data(), vertices);
+	CHECK_EQ(moved.indices.data(), indices);
+	Mesh3DTest::CheckMeshDataEqual(moved, expected);
+	Mesh3D extracted = std::move(moved).translated(-offset);
+	CHECK_EQ(extracted.vertices.data(), vertices);
+	CHECK_EQ(extracted.indices.data(), indices);
+	CheckAttributesNear(extracted, source);
+	Mesh3DTest::CheckMeshDataEqual(source, Mesh3D::Wedge(Vec3{ 2, 3, 4 }));
+
+	// Existing float arguments still work through widening conversions.
+	Mesh3DTest::CheckMeshDataEqual(source.translated(Float3{ 1, 2, 3 }), source.translated(Vec3{ 1, 2, 3 }));
+	Mesh3DTest::CheckMeshDataEqual(source.scaled(2.0f), source.scaled(2.0));
+	Mesh3DTest::CheckMeshDataEqual(source.scaled(Float3{ 2, 3, 4 }), source.scaled(Vec3{ 2, 3, 4 }));
+}
+
+TEST_CASE("Mesh3D converts double transform parameters before vertex arithmetic")
+{
+	// A position-only fixture distinguishes float arithmetic from double arithmetic
+	// followed by rounding the result back to float.
+	Mesh3D source(1, 0);
+	source.vertices[0].pos = Float3{ 1, -1, 1 };
+	const Vec3 offset{ -1.0 + std::ldexp(1.0, -26), 1.0 - std::ldexp(1.0, -26), 0 };
+	CHECK_EQ(source.translated(offset).vertices[0].pos, Float3(0, 0, 1));
+
+	const float position = std::nextafter(1.0f, 2.0f);
+	source.vertices[0].pos = Float3{ position, position, position };
+	const double factor = 1.0 + std::ldexp(1.0, -24);
+	REQUIRE_EQ(static_cast<float>(factor), 1.0f);
+	REQUIRE_NE(static_cast<float>(static_cast<double>(position) * factor), position);
+	CHECK_EQ(source.scaled(factor).vertices[0].pos, source.vertices[0].pos);
+	CHECK_EQ(source.scaled(Vec3{ factor, factor, factor }).vertices[0].pos, source.vertices[0].pos);
+}
+
+TEST_CASE("Mesh3D double scaling preserves reflection zero and storage contracts")
+{
+	const Mesh3D source = Mesh3D::Wedge(Vec3{ 2, 3, 4 });
+	const double tiny = static_cast<double>(std::numeric_limits<float>::denorm_min()) * 0.25;
+	REQUIRE_EQ(static_cast<float>(tiny), 0.0f);
+	for (const double factor : { 1.0, 1.7, -2.3, 0.0, -0.0, tiny, -tiny })
+	{
+		Mesh3D expected = source;
+		const float rounded = static_cast<float>(factor);
+		for (auto& vertex : expected.vertices)
+		{
+			vertex.pos *= rounded;
+			if (rounded < 0)
+			{
+				vertex.normal = -vertex.normal;
+				vertex.tangent = -vertex.tangent;
+			}
+		}
+		if (rounded < 0)
+		{
+			expected.reverseWinding();
+		}
+		Mesh3DTest::CheckMeshDataEqual(source.scaled(factor), expected);
+		Mesh3D moved = source;
+		const auto* vertices = moved.vertices.data();
+		const auto* indices = moved.indices.data();
+		CHECK_EQ(&moved.scale(factor), &moved);
+		Mesh3D result = std::move(moved).scaled(1.0);
+		CHECK_EQ(result.vertices.data(), vertices);
+		CHECK_EQ(result.indices.data(), indices);
+		Mesh3DTest::CheckMeshDataEqual(result, expected);
+	}
+	for (const Vec3 factor : { Vec3{ 0.7, 1.3, 2.1 }, Vec3{ -0.7, 1.3, 2.1 },
+		Vec3{ -tiny, 1.3, 2.1 }, Vec3{ 0, 1.3, 2.1 } })
+	{
+		const Mesh3D expected = source.transformed(Mat4x4::Scale(Float3{ factor }));
+		const Mesh3D scaled = source.scaled(factor);
+		CheckAttributesNear(scaled, expected);
+		for (size_t i = 0; i < scaled.indices.size(); ++i)
+		{
+			CHECK_EQ(scaled.indices[i].i0, expected.indices[i].i0);
+			CHECK_EQ(scaled.indices[i].i1, expected.indices[i].i1);
+			CHECK_EQ(scaled.indices[i].i2, expected.indices[i].i2);
+		}
+		Mesh3D moved = source;
+		const auto* vertices = moved.vertices.data();
+		const auto* indices = moved.indices.data();
+		CHECK_EQ(&moved.scale(factor), &moved);
+		Mesh3D result = std::move(moved).scaled(Vec3::One());
+		CHECK_EQ(result.vertices.data(), vertices);
+		CHECK_EQ(result.indices.data(), indices);
+		CheckAttributesNear(result, scaled);
+	}
+	Mesh3D empty;
+	CHECK(empty.translate(Vec3{ 1, 2, 3 }).scale(-2.5).scale(Vec3{ 0, 2, 3 }).isEmpty());
+}

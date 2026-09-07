@@ -351,14 +351,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::translated(const Float3 offset) const&
+	Mesh3D Mesh3D::translated(const Vec3 offset) const&
 	{
 		Mesh3D result{ *this };
 		result.translate(offset);
 		return result;
 	}
 
-	Mesh3D Mesh3D::translated(const Float3 offset) && noexcept
+	Mesh3D Mesh3D::translated(const Vec3 offset) && noexcept
 	{
 		translate(offset);
 		return std::move(*this);
@@ -370,8 +370,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D& Mesh3D::translate(const Float3 offset) noexcept
+	Mesh3D& Mesh3D::translate(const Vec3 _offset) noexcept
 	{
+		const Float3 offset{ _offset };
+
 		for (auto& vertex : vertices)
 		{
 			vertex.pos += offset;
@@ -442,27 +444,27 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::scaled(const float scale) const&
+	Mesh3D Mesh3D::scaled(const double scale) const&
 	{
 		Mesh3D result{ *this };
 		result.scale(scale);
 		return result;
 	}
 
-	Mesh3D Mesh3D::scaled(const float scale) && noexcept
+	Mesh3D Mesh3D::scaled(const double scale) && noexcept
 	{
 		this->scale(scale);
 		return std::move(*this);
 	}
 
-	Mesh3D Mesh3D::scaled(const Float3 scale) const&
+	Mesh3D Mesh3D::scaled(const Vec3 scale) const&
 	{
 		Mesh3D result{ *this };
 		result.scale(scale);
 		return result;
 	}
 
-	Mesh3D Mesh3D::scaled(const Float3 scale) && noexcept
+	Mesh3D Mesh3D::scaled(const Vec3 scale) && noexcept
 	{
 		this->scale(scale);
 		return std::move(*this);
@@ -474,8 +476,10 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D& Mesh3D::scale(const float scale) noexcept
+	Mesh3D& Mesh3D::scale(const double _scale) noexcept
 	{
+		const float scale = static_cast<float>(_scale);
+
 		if (scale < 0.0f)
 		{
 			for (auto& vertex : vertices)
@@ -497,8 +501,10 @@ namespace s3d
 		return *this;
 	}
 
-	Mesh3D& Mesh3D::scale(const Float3 scale) noexcept
+	Mesh3D& Mesh3D::scale(const Vec3 _scale) noexcept
 	{
+		const Float3 scale{ _scale };
+
 		const DirectX::XMVECTOR scaleVector = DirectX::XMVectorSetW(
 			DirectX::XMLoadFloat3(
 				static_cast<const DirectX::XMFLOAT3*>(static_cast<const void*>(&scale))), 1.0f);
