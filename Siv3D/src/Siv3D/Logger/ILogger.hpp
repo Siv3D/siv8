@@ -15,7 +15,7 @@
 
 namespace s3d
 {
-	enum class LogType : uint8;
+	enum class LogLevel : uint8;
 
 	class SIV3D_NOVTABLE ISiv3DLogger
 	{
@@ -30,12 +30,12 @@ namespace s3d
 
 		virtual void writeln(StringView s) = 0;
 
-		virtual void writeln(LogType type, std::string_view s) = 0;
+		virtual void writeln(LogLevel logLevel, std::string_view s) = 0;
 
-		virtual void writeln(LogType type, StringView s) = 0;
+		virtual void writeln(LogLevel logLevel, StringView s) = 0;
 
-		virtual void setOutputLevel(LogType logType) noexcept = 0;
+		virtual void setOutputLevel(LogLevel logLevel) noexcept = 0;
 
-		virtual LogType getOutputLevel() const noexcept = 0;
+		virtual LogLevel getOutputLevel() const noexcept = 0;
 	};
 }

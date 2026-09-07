@@ -214,7 +214,7 @@ namespace s3d
 		: Image{ grid.size()}
 	{
 		const Color* pSrc = grid.data();
-		const Color* const pSrcEnd = (pSrc + num_pixels());
+		const Color* const pSrcEnd = (pSrc + pixelCount());
 		Color* pDst = m_pixels.data();
 
 		while (pSrc != pSrcEnd)
@@ -227,7 +227,7 @@ namespace s3d
 		: Image{ grid.size() }
 	{
 		const ColorF* pSrc = grid.data();
-		const ColorF* const pSrcEnd = (pSrc + num_pixels());
+		const ColorF* const pSrcEnd = (pSrc + pixelCount());
 		Color* pDst = m_pixels.data();
 
 		while (pSrc != pSrcEnd)

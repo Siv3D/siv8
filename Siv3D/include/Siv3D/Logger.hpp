@@ -18,7 +18,7 @@
 
 namespace s3d
 {
-	enum class LogType : uint8;
+	enum class LogLevel : uint8;
 
 	namespace detail
 	{
@@ -91,8 +91,8 @@ namespace s3d
 			////////////////////////////////////////////////////////////////
 
 			/// @brief エンジンが出力するログのレベルを設定します。
-			/// @param logType ログのレベル
-			void setOutputLevel(LogType logType) const noexcept;
+			/// @param logLevel ログのレベル
+			void setOutputLevel(LogLevel logLevel) const noexcept;
 
 			////////////////////////////////////////////////////////////////
 			//
@@ -103,7 +103,7 @@ namespace s3d
 			/// @brief エンジンが出力するログのレベルの設定を返します。
 			/// @return ログのレベル
 			[[nodiscard]]
-			LogType getOutputLevel() const noexcept;
+			LogLevel getOutputLevel() const noexcept;
 		};
 	}
 

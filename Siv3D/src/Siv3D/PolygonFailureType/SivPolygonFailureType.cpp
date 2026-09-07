@@ -20,7 +20,7 @@ namespace s3d
 	{
 		static constexpr std::array PolygonFailureTypeStrings =
 		{
-			U"OK"_sv,
+			U"Ok"_sv,
 			U"FewPoints"_sv,
 			U"WrongTopologicalDimension"_sv,
 			U"Spikes"_sv,

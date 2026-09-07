@@ -20,7 +20,7 @@ namespace s3d
 {
 	struct RectF;
 	struct PatternParameters;
-	enum class LineType : uint8;
+	enum class LinePattern : uint8;
 	class Texture;
 	struct TextureRegion;
 	struct TexturedQuad;
@@ -2089,18 +2089,18 @@ namespace s3d
 
 		/// @brief 長方形の枠を描きます。
 		/// @param thickness 枠の太さ（ピクセル）
-		/// @param lineType 線の種類
+		/// @param linePattern 線のパターン
 		/// @param color 色
 		/// @return *this
-		const Rect& drawFrame(double thickness, LineType lineType, const ColorF& color = Palette::White) const;
+		const Rect& drawFrame(double thickness, LinePattern linePattern, const ColorF& color = Palette::White) const;
 
 		/// @brief 長方形の枠を描きます。
 		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
 		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
-		/// @param lineType 線の種類
+		/// @param linePattern 線のパターン
 		/// @param color 色
 		/// @return *this
-		const Rect& drawFrame(double innerThickness, double outerThickness, LineType lineType, const ColorF& color = Palette::White) const;
+		const Rect& drawFrame(double innerThickness, double outerThickness, LinePattern linePattern, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

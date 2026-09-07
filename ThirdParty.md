@@ -9,6 +9,7 @@ Name | Version
 [CoreRT](https://github.com/dotnet/corert) | 
 [cpu_features](https://github.com/google/cpu_features) | v0.11.0
 [DirectXMath](https://github.com/microsoft/DirectXMath) | June 2026
+[DirectXMesh](https://github.com/microsoft/directxmesh) | May 7, 2026
 [doctest](https://github.com/doctest/doctest) | v2.5.2
 [double-conversion](https://github.com/google/double-conversion) | v3.4.0
 [dr_mp3](https://github.com/mackron/dr_libs) | v0.7.4
@@ -31,6 +32,7 @@ Name | Version
 [lunasvg](https://github.com/sammycage/lunasvg) | v3.5.0
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
+[MikkTSpace](https://github.com/mmikk/MikkTSpace) | 
 [mimalloc](https://github.com/microsoft/mimalloc) | v3.3.2
 [miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
 [miniutf](https://github.com/dropbox/miniutf) | 

@@ -119,11 +119,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	num_pixels
+	//	pixelCount
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline size_t Image::num_pixels() const noexcept
+	inline size_t Image::pixelCount() const noexcept
 	{
 		return (m_size.x * m_size.y);
 	}

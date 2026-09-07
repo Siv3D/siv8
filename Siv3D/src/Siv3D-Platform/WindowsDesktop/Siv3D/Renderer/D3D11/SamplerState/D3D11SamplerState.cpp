@@ -145,11 +145,11 @@ namespace s3d
 			.MaxLOD			= D3D11_FLOAT32_MAX,
 		};
 
-		if (state.borderColor == SampleBorderColor::OpaqueBlack)
+		if (state.borderColor == SamplerBorderColor::OpaqueBlack)
 		{
 			desc.BorderColor[3] = 1.0f;
 		}
-		else if (state.borderColor == SampleBorderColor::OpaqueWhite)
+		else if (state.borderColor == SamplerBorderColor::OpaqueWhite)
 		{
 			desc.BorderColor[0] = 1.0f;
 			desc.BorderColor[1] = 1.0f;

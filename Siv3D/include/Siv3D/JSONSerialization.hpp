@@ -23,6 +23,8 @@
 # include "PointVector.hpp"
 # include "Circular.hpp"
 # include "OffsetCircular.hpp"
+# include "Cylindrical.hpp"
+# include "Spherical.hpp"
 # include "2DShapesFwd.hpp"
 # include "ColorHSV.hpp"
 # include "LineString.hpp"
@@ -400,6 +402,50 @@ struct JSONSerializer<s3d::OffsetCircularBase<Float, Oclock>>
 		j.at("center").get_to(value.center);
 		j.at("r").get_to(value.r);
 		j.at("theta").get_to(value.theta);
+	}
+};
+
+////////////////////////////////////////////////////////////////
+//
+//	CylindricalBase
+//
+////////////////////////////////////////////////////////////////
+
+template <s3d::Concept::FloatingPoint Float>
+struct JSONSerializer<s3d::CylindricalBase<Float>>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::CylindricalBase<Float>& value)
+	{
+		j = { { "r", value.r }, { "phi", value.phi }, { "y", value.y } };
+	}
+
+	static void from_json(const s3d::JSON::json_base& j, s3d::CylindricalBase<Float>& value)
+	{
+		j.at("r").get_to(value.r);
+		j.at("phi").get_to(value.phi);
+		j.at("y").get_to(value.y);
+	}
+};
+
+////////////////////////////////////////////////////////////////
+//
+//	SphericalBase
+//
+////////////////////////////////////////////////////////////////
+
+template <s3d::Concept::FloatingPoint Float>
+struct JSONSerializer<s3d::SphericalBase<Float>>
+{
+	static void to_json(s3d::JSON::json_base& j, const s3d::SphericalBase<Float>& value)
+	{
+		j = { { "r", value.r }, { "theta", value.theta }, { "phi", value.phi } };
+	}
+
+	static void from_json(const s3d::JSON::json_base& j, s3d::SphericalBase<Float>& value)
+	{
+		j.at("r").get_to(value.r);
+		j.at("theta").get_to(value.theta);
+		j.at("phi").get_to(value.phi);
 	}
 };
 

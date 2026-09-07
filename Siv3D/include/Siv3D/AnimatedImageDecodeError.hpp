@@ -14,6 +14,8 @@
 
 namespace s3d
 {
+	struct FormatData;
+
 	/// @brief アニメーション画像のデコードエラー
 	enum class AnimatedImageDecodeError : uint8
 	{
@@ -50,4 +52,16 @@ namespace s3d
 		/// @brief メモリ確保に失敗
 		OutOfMemory,
 	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Formatter
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief アニメーション画像のデコードエラーを文字列に変換します。
+	/// @param formatData 文字列バッファ
+	/// @param value アニメーション画像のデコードエラー
+	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
+	void Formatter(FormatData& formatData, AnimatedImageDecodeError value);
 }

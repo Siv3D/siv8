@@ -198,6 +198,12 @@ MIT_LICENSE
 },
 
 {
+R"-(DirectXMesh)-",
+R"-(Copyright (c) Microsoft Corporation.)-",
+MIT_LICENSE
+},
+
+{
 R"-(doctest)-",
 R"-(Copyright (c) 2016-2023 Viktor Kirilov)-",
 MIT_LICENSE
@@ -659,6 +665,12 @@ R"-(M+ FONTS are licensed under the SIL Open Font License, Version 1.1.)-",
 R"-(Metal-cpp)-",
 R"-(Copyright (c) 2024 Apple Inc.)-",
 APACHE_2_LICENSE
+},
+
+{
+R"-(MikkTSpace)-",
+R"-(Copyright (C) 2011 by Morten S. Mikkelsen)-",
+ZLIB_LICENSE
 },
 
 {

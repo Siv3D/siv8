@@ -1,0 +1,7 @@
+# Store text files with LF in the repository and check them out with LF on
+# every platform, regardless of each contributor's `core.autocrlf` setting.
+# Byte-exact test fixtures opt out by declaring `binary` in their own
+# .gitattributes (see Test/data/).
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf

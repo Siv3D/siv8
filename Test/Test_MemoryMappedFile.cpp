@@ -42,7 +42,7 @@ TEST_CASE("MemoryMappedFile")
 
 	{
 		{
-			MemoryMappedFile mmf{ U"../../Test/output/mmf/text.txt", MemoryMappedFile::OpenMode_if_Exists::JustOpen };
+			MemoryMappedFile mmf{ U"../../Test/output/mmf/text.txt", MemoryMappedFile::ExistingFilePolicy::JustOpen };
 			CHECK(mmf.isOpen());
 			CHECK(mmf.path() == FileSystem::FullPath(U"../../Test/output/mmf/text.txt"));
 			CHECK(mmf.size() == testData.size());
@@ -109,7 +109,7 @@ TEST_CASE("MemoryMappedFile")
 	{
 		const FilePath path = U"../../Test/output/mmf/create_1.txt";
 		{
-			MemoryMappedFile mmf{ path, MemoryMappedFile::OpenMode_if_Exists::JustOpen };
+			MemoryMappedFile mmf{ path, MemoryMappedFile::ExistingFilePolicy::JustOpen };
 			auto mapped = mmf.mapAll();
 			CHECK(not mapped);
 		}
@@ -121,7 +121,7 @@ TEST_CASE("MemoryMappedFile")
 	{
 		const FilePath path = U"../../Test/output/mmf/create_2.txt";
 		{
-			MemoryMappedFile mmf{ path, MemoryMappedFile::OpenMode_if_Exists::Fail, MemoryMappedFile::OpenMode_if_NotFound::Fail };
+			MemoryMappedFile mmf{ path, MemoryMappedFile::ExistingFilePolicy::Fail, MemoryMappedFile::MissingFilePolicy::Fail };
 			auto mapped = mmf.mapAll();
 			CHECK(not mapped);
 		}
@@ -133,7 +133,7 @@ TEST_CASE("MemoryMappedFile")
 	{
 		const FilePath path = U"../../Test/output/mmf/create_3.txt";
 		{
-			MemoryMappedFile mmf{ path, MemoryMappedFile::OpenMode_if_Exists::JustOpen };
+			MemoryMappedFile mmf{ path, MemoryMappedFile::ExistingFilePolicy::JustOpen };
 			auto mapped = mmf.map(0, (1024 * 1024));
 			CHECK(mapped);
 

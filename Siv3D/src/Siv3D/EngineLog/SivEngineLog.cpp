@@ -18,7 +18,7 @@ namespace s3d
 {
 	namespace Internal
 	{
-		void OutputEngineLog(const LogType type, const std::string_view s)
+		void OutputEngineLog(const LogLevel logLevel, const std::string_view s)
 		{
 			if (Siv3DEngine::isNull())
 			{
@@ -27,11 +27,11 @@ namespace s3d
 
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->writeln(type, s);
+				pLogger->writeln(logLevel, s);
 			}
 		}
 
-		void OutputEngineLog(const LogType type, const StringView s)
+		void OutputEngineLog(const LogLevel logLevel, const StringView s)
 		{
 			if (Siv3DEngine::isNull())
 			{
@@ -40,17 +40,17 @@ namespace s3d
 
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->writeln(type, s);
+				pLogger->writeln(logLevel, s);
 			}
 		}
 
-		ScopedEngineLog::ScopedEngineLog(const LogType type, std::string message)
+		ScopedEngineLog::ScopedEngineLog(const LogLevel logLevel, std::string message)
 			: m_message{ std::move(message) }
-			, m_type{ type }
+			, m_logLevel{ logLevel }
 		{
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->writeln(m_type, (m_message + " ---"));
+				pLogger->writeln(m_logLevel, (m_message + " ---"));
 			}
 		}
 
@@ -58,7 +58,7 @@ namespace s3d
 		{
 			if (const auto pLogger = SIV3D_ENGINE(Logger))
 			{
-				pLogger->writeln(m_type, ("--- " + m_message));
+				pLogger->writeln(m_logLevel, ("--- " + m_message));
 			}
 		}
 	}

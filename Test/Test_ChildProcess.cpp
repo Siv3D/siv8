@@ -30,7 +30,7 @@ TEST_CASE("ChildProcess")
 		ChildProcess child{
 			U"/usr/bin/printf",
 			Array<String>{ U"%s:%s", U"hello world", U"こんにちは" },
-			Pipe::StdIn
+			ChildProcessPipe::StdIn
 		};
 
 		REQUIRE(child.isValid());
@@ -46,7 +46,7 @@ TEST_CASE("ChildProcess")
 
 	SUBCASE("standard input and output")
 	{
-		ChildProcess child{ U"/bin/cat", Pipe::StdInOut };
+		ChildProcess child{ U"/bin/cat", ChildProcessPipe::StdInOut };
 		REQUIRE(child.isValid());
 
 		child.ostream() << "Siv3D ChildProcess" << std::endl;
@@ -77,7 +77,7 @@ TEST_CASE("ChildProcess")
 
 	SUBCASE("closed standard input pipe")
 	{
-		ChildProcess child{ U"/usr/bin/true", Pipe::StdOut };
+		ChildProcess child{ U"/usr/bin/true", ChildProcessPipe::StdOut };
 		REQUIRE(child.isValid());
 
 		child.wait();

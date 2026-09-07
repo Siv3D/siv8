@@ -1,0 +1,1744 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2026 Ryo Suzuki
+//	Copyright (c) 2016-2026 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+# include <array>
+# include <initializer_list>
+# include <span>
+# include "Common.hpp"
+# include "Array.hpp"
+# include "Blob.hpp"
+# include "Box.hpp"
+# include "BoxFace.hpp"
+# include "BoxUVMapping.hpp"
+# include "FunctionRef.hpp"
+# include "Grid.hpp"
+# include "IWriter.hpp"
+# include "Material.hpp"
+# include "Mesh3DPlacement.hpp"
+# include "MathConstants.hpp"
+# include "Optional.hpp"
+# include "PredefinedNamedParameter.hpp"
+# include "PredefinedYesNo.hpp"
+# include "Result.hpp"
+# include "String.hpp"
+# include "Sphere.hpp"
+# include "Vertex3D.hpp"
+# include "TriangleIndex32.hpp"
+# include "VertexNormalWeighting.hpp"
+
+namespace s3d
+{
+	class Polygon;
+	struct Mat3x2;
+	struct Mat4x4;
+	struct Quaternion;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3DRange
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 3D メッシュ内の連続した頂点範囲と三角形範囲
+	/// @remark 三角形範囲内のインデックスは Mesh3D 全体の頂点インデックスであり、vertexOffset を基準とする相対値ではありません。
+	struct Mesh3DRange
+	{
+		/// @brief 頂点範囲の先頭オフセット
+		size_t vertexOffset = 0;
+
+		/// @brief 頂点数
+		size_t vertexCount = 0;
+
+		/// @brief 三角形範囲の先頭オフセット
+		size_t triangleOffset = 0;
+
+		/// @brief 三角形数
+		size_t triangleCount = 0;
+
+		/// @brief 頂点と三角形を持たない範囲であるかを返します。
+		/// @remark vertexOffset と triangleOffset は判定に影響しません。頂点だけ、または三角形だけの範囲は空ではありません。
+		/// @return 頂点数と三角形数がともに 0 の場合 true, それ以外の場合は false
+		[[nodiscard]]
+		constexpr bool isEmpty() const noexcept
+		{
+			return ((vertexCount == 0) && (triangleCount == 0));
+		}
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3DErrorCode
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 3D メッシュ生成エラーの分類
+	enum class Mesh3DErrorCode : uint8
+	{
+		/// @brief 引数が不正
+		InvalidArgument,
+
+		/// @brief 入力された幾何形状から安定したメッシュを生成できない
+		InvalidGeometry,
+
+		/// @brief 入力値が非有限、または入力値・生成値を float で表現できない
+		NumericRange,
+
+		/// @brief 生成後のメッシュがサポートされるサイズを超える
+		SizeLimit,
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3DError
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 3D メッシュ生成エラー
+	struct Mesh3DError
+	{
+		/// @brief エラーの分類
+		Mesh3DErrorCode code = Mesh3DErrorCode::InvalidArgument;
+
+		/// @brief 診断用のエラー詳細。エラーの判定には code を使用します。
+		String message;
+	};
+
+	/// @brief Mesh3DBuilder の add 関数による追加結果
+	/// @remark 成功時は追加された範囲、失敗時はエラーを保持します。
+	/// @remark `has_value()` または bool への変換で、追加に成功したかを確認できます。
+	using Mesh3DAddResult = Result<Mesh3DRange, Mesh3DError>;
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3DEndCaps
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 経路に沿う 3D 形状で生成する端面
+	enum class Mesh3DEndCaps : uint8
+	{
+		/// @brief 端面を生成しない
+		None,
+
+		/// @brief 経路の始端だけに端面を生成する
+		Start,
+
+		/// @brief 経路の終端だけに端面を生成する
+		End,
+
+		/// @brief 経路の始端と終端に端面を生成する
+		Both,
+	};
+
+	/// @brief Loft の平面輪郭と、そのローカル配置
+	struct LoftSection
+	{
+		/// @brief 同じ添字同士を接続する閉じた輪郭。先頭点を末尾に重複させません。
+		/// @remark 非所有の参照です。参照先は Loft 呼び出し終了まで有効である必要があります。
+		std::span<const Vec2> points;
+
+		/// @brief Vec2(x, y) を Vec3(x, 0, -y) として配置するフレーム
+		/// @remark 有限のアフィン変換で、線形部分の determinant は正である必要があります。原点は側面 V の距離基準です。
+		Mesh3DPlacement frame{ Mat4x4::Identity() };
+	};
+
+	/// @brief Loft の生成設定
+	struct LoftOptions
+	{
+		/// @brief 生成する端面。断面列は閉路にしません。
+		Mesh3DEndCaps endCaps = Mesh3DEndCaps::Both;
+
+		/// @brief 輪郭方向の隣接側面の法線を補間する最大角度（ラジアン）。0～π
+		/// @remark 0 はハードエッジです。各断面の各輪郭頂点で判定し、単位法線を等重みで平均します。端面は常に分離します。
+		double smoothingAngle = 0.0;
+
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset{ 0.0, 0.0 };
+	};
+
+	/// @brief Extrude の生成設定
+	struct ExtrudeOptions
+	{
+		/// @brief 隣接側面の法線を補間する最大角度（ラジアン）。有限の 0～π
+		/// @remark 0 はハードエッジです。上下面と側面の境界は常に分離します。
+		double smoothingAngle = 0.0;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	RevolveOptions
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief Revolve の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
+	struct RevolveOptions
+	{
+		/// @brief 回転を開始する角度（ラジアン）。0 は `+X` 方向です。
+		double startAngle = 0.0;
+
+		/// @brief Y 軸周りの正の回転方向（`+X` から `-Z`）へ進む角度（ラジアン）。0 より大きく 2π 以下である必要があります。
+		double sweepAngle = Math::TwoPi;
+
+		/// @brief 回転方向の分割数。部分回転では 1 以上、完全な一周では 3 以上である必要があります。
+		uint32 segments = 32;
+
+		/// @brief プロファイル方向の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
+		double smoothingAngle = 0.0;
+
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale = Vec2{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset = Vec2{ 0.0, 0.0 };
+
+		/// @brief 部分回転の回転方向の始端と終端を閉じるか
+		CloseEnds closeSweepEnds = CloseEnds::No;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	TubeOptions
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief Tube の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
+	struct TubeOptions
+	{
+		/// @brief チューブ断面の分割数
+		uint32 sides = 12;
+
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale = Vec2{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset = Vec2{ 0.0, 0.0 };
+
+		/// @brief 経路の末尾と先頭を接続するか
+		CloseRing closeRing = CloseRing::No;
+
+		/// @brief 生成する端面。未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。
+		Optional<Mesh3DEndCaps> endCaps;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	SweepSectionTransform
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief Sweep の経路点における断面変換
+	struct SweepSectionTransform
+	{
+		/// @brief 断面の X 軸方向および Y 軸方向の拡大率
+		Vec2 scale = Vec2{ 1.0, 1.0 };
+
+		/// @brief 経路の接線を軸とする断面の回転角（ラジアン）
+		double twist = 0.0;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	SweepOptions
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief Sweep の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
+	struct SweepOptions
+	{
+		/// @brief 開始時に断面の X 軸を向ける方向。未指定の場合は経路から自動的に決定します。
+		Optional<Vec3> initialXAxis;
+
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale = Vec2{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset = Vec2{ 0.0, 0.0 };
+
+		/// @brief 経路の末尾と先頭を接続するか
+		CloseRing closeRing = CloseRing::No;
+
+		/// @brief 生成する端面。未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。
+		Optional<Mesh3DEndCaps> endCaps;
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	HeightFieldOptions
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief HeightField の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
+	struct HeightFieldOptions
+	{
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale = Vec2{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset = Vec2{ 0.0, 0.0 };
+	};
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	Mesh3D
+	//
+	////////////////////////////////////////////////////////////////
+
+	/// @brief 3D メッシュデータ
+	/// @remark 生成関数の `uvScale` と `uvOffset` は、各生成関数が定める基礎 UV 座標に対して、成分ごとに `uv = (baseUV * uvScale) + uvOffset` として適用されます。
+	/// @remark 基礎 UV 座標の範囲は形状ごとに異なります。通常は `[0, 1]` に正規化されますが、`Tube()`、`Sweep()`、`Loft()` の経路方向または高さ方向には実距離が使われます。
+	/// @remark 生成関数が不正な引数やサイズ上限などにより生成できない場合、理由を Fail レベルのエンジンログへ出力し、空の 3D メッシュを返します。
+	/// @par 座標と配置
+	/// - 3D 座標は左手系の Y-up です。`Polygon` や断面の 2D 座標 `(x, y)` は、水平面では原則として `(X, -Z)` に対応します。
+	/// - Y 軸周りの角度は `Quaternion::RotateY()` と同じ規約を使い、0 は `+X` 方向、正の角度は `+X` から `-Z` へ進みます。
+	/// - 半径 r、角度 angle、高さ y の円周上の点は `Cylindrical{ r, angle, y }.toVec3()` で取得できます。向きの変換には `rotation.rotate(Vec3{ ... })` を使います。
+	/// - 基本プリミティブ、`Extrude()`、`Plane()`、`Grid()` は、各関数で明記された軸について原点を中心に生成します。
+	/// - `Revolve()` のプロファイルの Y 座標、`Loft()` の各 frame の原点、`HeightField()` の各高さ、および `Tube()` / `Sweep()` の経路座標は、平行移動せず生成後の座標として使用します。
+	/// - `Mesh3DBuilder` の offset と rotation を受け取る overload は、原点を中心に回転してから offset を加えます。
+	/// - 複数の回転を合成する場合、`a * b` は a、b の順に適用されます。形状のローカルな向き合わせを先に、配置用の回転を後に置きます。
+	/// - `Extrude()` を `Quaternion::RotateX(90_deg)` で配置すると、多角形の `(x, y)` は world の `(X, Y)`、押し出し方向は world の `+Z` になります。`Quaternion::RotateZ(90_deg)` では、多角形の `(x, y)` は world の `(Y, -Z)`、押し出し方向は world の `-X` になります。
+	/// @par 2D 輪郭の頂点順序
+	/// - `Polygon` の外周、および `Loft()` の各断面は、末尾から先頭へ戻る辺を含む `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。画面座標では時計回りに見える順序です。
+	/// - `Polygon` の穴は同じ式の値が負になる順序で指定します。画面座標では反時計回りに見える順序です。各輪郭では先頭頂点を末尾に重複させません。
+	/// - 向きの判定には Geometry2D::IsClockwise()、入力の診断には Polygon::Validate() を使えます。向きの反転と形状の修復は異なります。使い分けは Polygon の説明を参照してください。
+	/// @par UV 座標と頂点属性
+	/// - UV 座標は画像の上端を V = 0、下端を V = 1 とします。
+	/// - 生成関数は位置、UV 座標、法線、および接線を設定します。法線と接線は単位長で互いに直交し、`tangent.w` は `bitangent() = Math::Cross(normal, tangent.xyz()) * tangent.w` の向きを表します。
+	/// @par 断面とフレーム
+	/// - `Sweep()` の各断面点 `(x, y)` は、経路上の位置を P、フレームの第 1 軸を N、経路の接線を T として、`P + N * x + (N.cross(T)) * y` に配置されます。
+	/// - UV seam、ハードエッジ、および端面との境界では、位置が同じ頂点を属性ごとに複製することがあります。
+	/// @par 複数形状の合成
+	/// - 独立して生成した閉じた形状の同じ向きの面を同一平面上で重ねると、z-fighting が発生することがあります。不要な面を生成しないか、一方をわずかに交差させて配置してください。
+	struct Mesh3D
+	{
+		/// @brief 頂点配列
+		Array<Vertex3D> vertices;
+
+		/// @brief 三角形インデックス配列
+		Array<TriangleIndex32> indices;
+
+		/// @brief 使用可能な最大の頂点インデックス
+		/// @remark 32-bit index の最大値 0xFFFFFFFF は、一部のグラフィックス API で
+		/// primitive restart / strip cut の特殊値として予約されているため使用しません。
+		static constexpr size_t MaxVertexIndex = 4294967294;
+
+		/// @brief Mesh3D が保持できる最大の頂点数
+		static constexpr size_t MaxVertexCount = (MaxVertexIndex + 1);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	(constructor)
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 空の 3D メッシュを作成します。
+		[[nodiscard]]
+		Mesh3D() = default;
+
+		/// @brief 指定した数の頂点と三角形を持つ 3D メッシュを作成します。
+		/// @param vertexCount 頂点数
+		/// @param triangleCount 三角形数
+		/// @remark `vertexCount` が `MaxVertexCount` を超える場合は空の 3D メッシュを作成します。
+		[[nodiscard]]
+		Mesh3D(size_t vertexCount, size_t triangleCount);
+
+		/// @brief 頂点配列と三角形インデックス配列から 3D メッシュを作成します。
+		/// @param _vertices 頂点配列
+		/// @param _indices 三角形インデックス配列
+		/// @remark `_vertices` の要素数が `MaxVertexCount` を超える場合は空の 3D メッシュを作成します。
+		[[nodiscard]]
+		Mesh3D(Array<Vertex3D> _vertices, Array<TriangleIndex32> _indices);
+		
+		/// @brief 頂点と三角形インデックスの範囲から 3D メッシュを作成します。
+		/// @param _vertices コピーする頂点の範囲
+		/// @param _indices コピーする三角形インデックスの範囲
+		/// @remark `_vertices` の要素数が `MaxVertexCount` を超える場合は空の 3D メッシュを作成します。
+		[[nodiscard]]
+		Mesh3D(std::span<const Vertex3D> _vertices, std::span<const TriangleIndex32> _indices);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Box
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする直方体の 3D メッシュを作成します。
+		/// @param size 直方体の各軸方向の大きさ
+		/// @param faces 生成する面
+		/// @return 直方体の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark 各面は独立した頂点を持ち、面ごとに `[0, 1]` の UV 座標が割り当てられます。
+		/// @remark `faces == BoxFace::None_` の場合は空の 3D メッシュを返します。
+		[[nodiscard]]
+		static Mesh3D Box(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			BoxFace faces = BoxFace::All);
+
+		/// @brief 原点を中心とする直方体の 3D メッシュを作成します。
+		/// @param size 直方体の各軸方向の大きさ
+		/// @param uvMapping 各面に割り当てる UV 矩形
+		/// @param faces 生成する面
+		/// @return 直方体の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark 各面は独立した頂点を持ち、`uvMapping` の対応する矩形が割り当てられます。
+		/// @remark `uvMapping` は `faces` で選択した面に対応する矩形のみ検証されます。
+		/// @remark `faces == BoxFace::None_` の場合は空の 3D メッシュを返します。
+		[[nodiscard]]
+		static Mesh3D Box(
+			Vec3 size,
+			const BoxUVMapping& uvMapping,
+			BoxFace faces = BoxFace::All);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BoxShell
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする、均一な厚みを持つ中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み。正の有限値で、`outerSize` の最小成分の半分未満である必要があります。
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark 閉じた面には外面と内面を生成し、開口部には残る壁の厚みが見える縁面を生成します。内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		/// @remark `openFaces == BoxFace::All` の場合は空の 3D メッシュを返します。
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize = Vec3{ 1.0, 1.0, 1.0 },
+			double thickness = 0.1,
+			BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 原点を中心とする、軸ごとの厚みを持つ中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み。各成分は正の有限値で、対応する `outerSize` 成分の半分未満である必要があります。
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark 閉じた面には外面と内面を生成し、開口部には残る壁の厚みが見える縁面を生成します。内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		/// @remark `openFaces == BoxFace::All` の場合は空の 3D メッシュを返します。
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize,
+			Vec3 thickness,
+			BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、均一な厚みの中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数または使用する UV 矩形が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize,
+			double thickness,
+			const BoxUVMapping& uvMapping,
+			BoxFace openFaces = BoxFace::None_);
+
+		/// @brief 指定した UV マッピングを持つ、軸ごとの厚みの中空直方体の 3D メッシュを作成します。
+		/// @param outerSize 外側の直方体の各軸方向の大きさ
+		/// @param thickness 各軸に垂直な壁の厚み
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @param openFaces 壁を生成しない開口面
+		/// @return 中空直方体の 3D メッシュ。引数または使用する UV 矩形が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
+		[[nodiscard]]
+		static Mesh3D BoxShell(
+			Vec3 outerSize,
+			Vec3 thickness,
+			const BoxUVMapping& uvMapping,
+			BoxFace openFaces = BoxFace::None_);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	BoxFrame
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする直方体の 12 辺を、均一な太さの角材で構成した枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param thickness 角材の太さ。正の有限値で、`size` の最小成分の半分未満である必要があります。
+		/// @return 直方体枠の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark 角材同士の接合部にある内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D BoxFrame(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double thickness = 0.1);
+
+		/// @brief 原点を中心とする直方体の 12 辺を、軸ごとの太さを持つ角材で構成した枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param beamSize 角材の軸ごとの太さ。各成分は正の有限値で、対応する `size` 成分の半分未満である必要があります。
+		/// @return 直方体枠の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark X 方向の角材は `(size.x, beamSize.y, beamSize.z)`、Y/Z 方向の角材も同様の大きさになります。
+		/// @remark 角材同士の接合部にある内部面や重複面は生成しません。
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D BoxFrame(Vec3 size, Vec3 beamSize);
+
+		/// @brief 指定した UV マッピングを持つ、均一な太さの直方体枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param thickness 角材の太さ
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @return 直方体枠の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
+		[[nodiscard]]
+		static Mesh3D BoxFrame(
+			Vec3 size,
+			double thickness,
+			const BoxUVMapping& uvMapping);
+
+		/// @brief 指定した UV マッピングを持つ、軸ごとの太さを持つ直方体枠の 3D メッシュを作成します。
+		/// @param size 枠の外側の各軸方向の大きさ
+		/// @param beamSize 角材の軸ごとの太さ
+		/// @param uvMapping 外接 Box の各投影面に割り当てる UV 矩形
+		/// @return 直方体枠の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark 隣接する面は座標として密着しますが、頂点を共有しない T 字接合になることがあります。
+		[[nodiscard]]
+		static Mesh3D BoxFrame(
+			Vec3 size,
+			Vec3 beamSize,
+			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	RoundedBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする角丸直方体の 3D メッシュを作成します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
+		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
+		/// @return 角丸直方体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `radius == 0` の場合は `Box(size)` と同じ 3D メッシュを返します。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D RoundedBox(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double radius = 0.1,
+			uint32 subdivisions = 4);
+
+		/// @brief 原点を中心とする角丸直方体の 3D メッシュを作成します。
+		/// @param size 角丸直方体の各軸方向の大きさ
+		/// @param radius 角の丸みの半径。0 以上、`size` の最小成分の半分以下である必要があります。
+		/// @param subdivisions 各面の丸み部分の分割数。1 以上である必要があります。
+		/// @param uvMapping 各面から形状全体のバウンディングボックスへ投影する UV 矩形
+		/// @return 角丸直方体の 3D メッシュ。引数または `uvMapping` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 丸い辺と角を含め、各面は `BoxUVMapping` の対応する矩形へ投影されます。面の境界は UV の継ぎ目になります。
+		[[nodiscard]]
+		static Mesh3D RoundedBox(
+			Vec3 size,
+			double radius,
+			uint32 subdivisions,
+			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ChamferedBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする面取り直方体の 3D メッシュを作成します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅。0 以上、`size` の最小成分の半分未満である必要があります。
+		/// @return 面取り直方体の 3D メッシュ。引数が不正な場合は空の 3D メッシュ
+		/// @remark `chamfer == 0` の場合は `Box(size)` と同じ 3D メッシュを返します。
+		/// @remark すべての面は平面で、面ごとに独立した頂点とハードエッジを持ちます。
+		/// @remark UV 座標は、形状全体の外接 Box に対する平面投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D ChamferedBox(
+			Vec3 size = Vec3{ 1.0, 1.0, 1.0 },
+			double chamfer = 0.1);
+
+		/// @brief 原点を中心とする面取り直方体の 3D メッシュを作成します。
+		/// @param size 面取り直方体の各軸方向の大きさ
+		/// @param chamfer 面取り幅。0 以上、`size` の最小成分の半分未満である必要があります。
+		/// @param uvMapping 各投影面に割り当てる UV 矩形
+		/// @return 面取り直方体の 3D メッシュ。引数または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark `chamfer == 0` の場合は `Box(size, uvMapping)` と同じ 3D メッシュを返します。
+		/// @remark 辺面と角面の投影軸が複数同率になる場合は、X 軸、Y 軸、Z 軸の順に優先します。
+		[[nodiscard]]
+		static Mesh3D ChamferedBox(
+			Vec3 size,
+			double chamfer,
+			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Wedge
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上るくさび形の 3D メッシュを作成します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @return くさび形の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark X 軸方向を幅、Y 軸方向を高さ、Z 軸方向を奥行きとし、斜面は `-Z` 側の下端から `+Z` 側の上端へ伸びます。
+		/// @remark X 軸方向の幅は全域で一定です。Y-Z 断面は直角三角形で、頂点の (y, z) は `(-size.y / 2, -size.z / 2)`、`(-size.y / 2, size.z / 2)`、`(size.y / 2, size.z / 2)` です。スロープに使う場合、高い端はローカルの +Z 側です。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。斜面には `BoxUVMapping::positiveY` が使用されます。
+		[[nodiscard]]
+		static Mesh3D Wedge(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上るくさび形の 3D メッシュを作成します。
+		/// @param size くさび形の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return くさび形の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark X 軸方向を幅、Y 軸方向を高さ、Z 軸方向を奥行きとし、斜面は `-Z` 側の下端から `+Z` 側の上端へ伸びます。
+		/// @remark 断面の頂点と一定幅の規約は Wedge(Vec3) と同じです。
+		/// @remark 斜面には `BoxUVMapping::positiveY`、垂直な背面には `positiveZ`、底面には `negativeY`、左右の側面には `positiveX` と `negativeX` が使用されます。
+		[[nodiscard]]
+		static Mesh3D Wedge(Vec3 size, const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	TriangularPrism
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Y-Z 平面に平行な二等辺三角形の断面を持つ三角柱の 3D メッシュを作成します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @return 三角柱の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark X 軸方向を長さ、Y 軸方向を全高、Z 軸方向を底面幅とします。
+		/// @remark Y-Z 断面の頂点は `(0, size.y / 2, 0)`、底辺は `y = -size.y / 2` に配置されます。
+		/// @remark 切妻屋根の本体などに使えます。棟は X 軸に平行です。屋根の下端を高さ h に合わせる場合、中心の Y 座標を `h + size.y / 2` に配置します。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。2 枚の斜面には `BoxUVMapping::positiveY` が使用されます。
+		[[nodiscard]]
+		static Mesh3D TriangularPrism(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
+
+		/// @brief 原点を中心とし、Y-Z 平面に平行な二等辺三角形の断面を持つ三角柱の 3D メッシュを作成します。
+		/// @param size 三角柱の各軸方向の大きさ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 三角柱の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
+		/// @remark X 軸方向を長さ、Y 軸方向を全高、Z 軸方向を底面幅とします。
+		/// @remark 2 枚の斜面には `BoxUVMapping::positiveY`、両端には `positiveX` と `negativeX`、底面には `negativeY` が使用されます。
+		[[nodiscard]]
+		static Mesh3D TriangularPrism(Vec3 size, const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Stairs
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上る階段の 3D メッシュを作成します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数。1 以上である必要があります。
+		/// @return 階段の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark X 軸方向を幅、Y 軸方向を全体の高さ、Z 軸方向を全体の奥行きとします。
+		/// @remark 踏み面、蹴上げ面、および側面は座標として密着しますが、頂点を共有しない T 字接合になります。境界辺の本数だけで水密性を判定するツールでは、開いた形状として報告されることがあります。
+		/// @remark UV 座標は、階段全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Stairs(Vec3 size, uint32 steps);
+
+		/// @brief 原点を中心とし、Z 軸の正方向へ上る階段の 3D メッシュを作成します。
+		/// @param size 階段全体の各軸方向の大きさ
+		/// @param steps 段数。1 以上である必要があります。
+		/// @param uvMapping 階段全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 階段の 3D メッシュ。引数または `uvMapping` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 踏み面、蹴上げ面、および側面は座標として密着しますが、頂点を共有しない T 字接合になります。
+		/// @remark 踏み面には `BoxUVMapping::positiveY`、蹴上げ面には `negativeZ`、背面には `positiveZ`、底面には `negativeY`、左右の側面には `positiveX` と `negativeX` が使用されます。
+		/// @remark 各 UV 矩形は個々の段へ引き伸ばされず、階段全体のバウンディングボックスを基準に投影されます。
+		[[nodiscard]]
+		static Mesh3D Stairs(Vec3 size, uint32 steps, const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Pyramid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、XZ 平面に平行な正方形の底面を持つ四角錐の 3D メッシュを作成します。
+		/// @param baseSize 底面の一辺の長さ
+		/// @param height 四角錐の高さ
+		/// @return 四角錐の 3D メッシュ。`baseSize` または `height` が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D Pyramid(double baseSize, double height);
+
+		/// @brief 原点を中心とし、XZ 平面に平行な長方形の底面を持つ四角錐の 3D メッシュを作成します。
+		/// @param baseSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 四角錐の高さ
+		/// @return 四角錐の 3D メッシュ。`baseSizeXZ` または `height` が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark 底面は `y = -height / 2`、頂点は `(0, height / 2, 0)` に配置されます。
+		/// @remark 各側面と底面は独立した頂点を持ち、それぞれに `[0, 1]` の UV 座標が割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Pyramid(
+			SizeF baseSizeXZ = SizeF{ 1.0, 1.0 },
+			double height = 1.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	RectangularFrustum
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とし、XZ 平面に平行な長方形の上下端を持つ角錐台の 3D メッシュを作成します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @return 角錐台の 3D メッシュ。いずれかの大きさが正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
+		/// @remark 底面は `y = -height / 2`、上面は `y = height / 2` に配置されます。
+		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。
+		[[nodiscard]]
+		static Mesh3D RectangularFrustum(
+			SizeF bottomSizeXZ,
+			SizeF topSizeXZ,
+			double height);
+
+		/// @brief 原点を中心とし、XZ 平面に平行な長方形の上下端を持つ角錐台の 3D メッシュを作成します。
+		/// @param bottomSizeXZ 底面の X 軸方向および Z 軸方向の大きさ
+		/// @param topSizeXZ 上面の X 軸方向および Z 軸方向の大きさ
+		/// @param height 角錐台の高さ
+		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
+		/// @return 角錐台の 3D メッシュ。大きさまたは `uvMapping` が不正な場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D RectangularFrustum(
+			SizeF bottomSizeXZ,
+			SizeF topSizeXZ,
+			double height,
+			const BoxUVMapping& uvMapping);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Extrude
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2D の多角形を Y 軸方向に押し出した 3D メッシュを作成します。
+		/// @param polygon 押し出す多角形。穴を含むことができます。
+		/// @param height 押し出す高さ
+		/// @param options 側面の法線補間の設定
+		/// @return 押し出し形状の 3D メッシュ。`polygon`、`height` または `options` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `polygon` の X 座標を X 軸、Y 座標を Z 軸の負方向へ対応させます。多角形の位置は平行移動せず、高さ方向のみ原点を中心として、下面を `y = -height / 2`、上面を `y = height / 2` に配置します。
+		/// @remark 上下面は閉じられます。上面の UV 座標は多角形のバウンディングボックスを `[0, 1]` に正規化し、下面は表側から同じ向きに見えるよう V 座標を反転します。
+		/// @remark 側面の U 座標は外周および各穴の周長をそれぞれ `[0, 1]` に正規化し、V 座標は上端を 0、下端を 1 とします。既定では多角形の各頂点はハードエッジになります。
+		/// @remark `options.smoothingAngle` 以下の角度で接続する側面間では法線と接線を補間します。上下面と側面の境界は補間しません。
+		[[nodiscard]]
+		static Mesh3D Extrude(const Polygon& polygon, double height, const ExtrudeOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Revolve
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2D プロファイルを Y 軸の周りに回転させた 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル。各要素の X 座標を半径、Y 座標を生成後の Y 座標として使用します。
+		/// @param options 回転範囲、分割数、法線補間、UV 変換、および回転方向の端面設定
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `options.smoothingAngle == 0` の場合、プロファイルの各線分を個別のハードエッジとして生成します。0 より大きい場合、その角度以下で接続する線分間の法線を補間します。回転方向の法線は常に滑らかに接続されます。
+		/// @remark float 変換後の半径が厳密に 0 の端点だけを軸上の頂点として閉じます。半径が正の端点には開口リングが残り、端面は暗黙には追加されません。軸上で閉じる端点は `Vec2{ 0.0, y }` のように半径 0 を明示してください。
+		/// @remark 先頭要素と末尾要素が完全に一致する場合は閉じたプロファイルとして扱います。閉じ目には UV seam のための重複頂点が作成されます。
+		/// @remark 閉じたプロファイルを表す先頭・末尾の一致を除き、float 変換後に連続する 2 点が同じになるプロファイルは無効です。
+		/// @remark 外側輪郭を Y 座標の小さい側から大きい側へ並べると外向きの面になります。プロファイルの順序を反転すると面と法線の向きも反転します。
+		/// @remark UV 座標の U は `+X` 方向を 0 として指定した回転範囲を `[0, 1]` に正規化し、V はプロファイルの先頭からの累積距離を `[0, 1]` に正規化します。その後に `options.uvScale` と `options.uvOffset` を適用します。
+		/// @remark 外向き法線を得るためにプロファイルを Y 座標の小さい側から並べた場合、V は下側で 0、上側へ向かって増加します。画像の上端を上側に合わせるには `options.uvScale.y = -1`、`options.uvOffset.y = 1` を指定します。
+		/// @remark `options.closeSweepEnds == CloseEnds::Yes` の場合、部分回転の回転方向の始端と終端だけに平面の端面を作成します。プロファイルの半径が正の両端にある開口リングは閉じません。水密な部分回転体には、先頭と末尾が一致する閉じたプロファイルを指定します。
+		/// @remark `options.sweepAngle == 2π` の場合は回転方向の端面を作成せず、継ぎ目を接続します。
+		/// @remark プロファイルの自己交差および回転後の自己交差は検査しません。
+		[[nodiscard]]
+		static Mesh3D Revolve(
+			std::span<const Vec2> profile,
+			const RevolveOptions& options = {});
+
+		/// @brief 初期化子リストで指定した 2D プロファイルを Y 軸の周りに回転させた 3D メッシュを作成します。
+		/// @param profile 回転させるプロファイル
+		/// @param options 生成設定
+		/// @return 回転体の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark プロファイル、法線、角度、端面、および UV 座標の規約は `std::span` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Revolve(
+			std::initializer_list<Vec2> profile,
+			const RevolveOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Tube
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D 経路に沿う一定半径のチューブを作成します。
+		/// @param path チューブの中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
+		/// @param radius チューブの半径。float 変換後も正である必要があります。
+		/// @param options 断面分割数、UV 変換、経路の閉鎖方法、および端面設定
+		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark parallel-transport frame を使って断面を経路に沿って運びます。折れ点の断面は前後の線分方向を平均した平面上に配置されます。
+		/// @remark `options.endCaps` が未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。端面と側面の境界はハードエッジになります。
+		/// @remark 閉路に `Mesh3DEndCaps::Start`、`End`、または `Both` を明示した場合は生成に失敗します。`Mesh3DEndCaps::None` は指定できます。
+		/// @remark 側面の U 座標は円周を `[0, 1]` とし、V 座標は経路の始端からの累積距離です。その後に `options.uvScale` と `options.uvOffset` が適用されます。
+		/// @remark 端面の UV 座標は各円を `[0, 1]` 四方に収める平面投影とし、同じ UV 変換を適用します。
+		/// @remark 折れ点では断面が前後の経路方向の二等分面に置かれるため、断面の頂点は各線分に垂直な平面上の公称位置からずれることがあります。
+		/// @remark 始点と終点が float 変換後に一致する経路は無効です。閉路では始点を末尾に重複させず、3 点以上を指定します。float 変換後に連続する 2 点が同じになる経路、および 180° 折り返す経路には対応しません。鋭い折れ点における自己交差は検査しません。
+		/// @remark 閉路では経路方向の UV 継ぎ目に断面を複製し、parallel-transport frame の残留回転を経路長に比例して分散します。
+		/// @remark 2 点だけの経路は、その 2 点を端面の中心とする円柱になります。任意の方向の柱・梁を、長さや配置用の回転を計算せずに作成できます。
+		/// @code
+		/// const Vec3 from{ 0.0, 1.0, 0.0 };
+		/// const Vec3 to{ 3.0, 4.0, 2.0 };
+		/// const Mesh3D beam = Mesh3D::Tube({ from, to }, 0.1, TubeOptions{ .sides = 12 });
+		/// @endcode
+		[[nodiscard]]
+		static Mesh3D Tube(
+			std::span<const Vec3> path,
+			double radius,
+			const TubeOptions& options = {});
+
+		/// @brief 初期化子リストで指定した 3D 経路に沿う一定半径のチューブを作成します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radius チューブの半径
+		/// @param options 生成設定
+		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る一定半径オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Tube(
+			std::initializer_list<Vec3> path,
+			double radius,
+			const TubeOptions& options = {});
+
+		/// @brief 経路点ごとに半径を指定したチューブを作成します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径。要素数は `path.size()` と等しく、各要素は float 変換後も正である必要があります。
+		/// @param options 生成設定
+		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 隣接する経路点の間では半径を線形に変化させます。側面法線には経路方向の半径変化を反映します。
+		/// @remark 経路、端面、頂点属性、および UV 座標の規約は一定半径のオーバーロードと同じです。各端面には対応する端点の半径を使用します。
+		[[nodiscard]]
+		static Mesh3D Tube(
+			std::span<const Vec3> path,
+			std::span<const double> radii,
+			const TubeOptions& options = {});
+
+		/// @brief 初期化子リストで経路点ごとの半径を指定したチューブを作成します。
+		/// @param path チューブの中心を通る経路の頂点
+		/// @param radii 各経路点における半径
+		/// @param options 生成設定
+		/// @return 経路に沿うチューブの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 半径、経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る経路点別半径オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Tube(
+			std::initializer_list<Vec3> path,
+			std::initializer_list<double> radii,
+			const TubeOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Sweep
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 2D 断面を 3D 経路に沿わせた 3D メッシュを作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点。開路は 2 点以上、閉路は 3 点以上である必要があります。
+		/// @param options 初期断面方向、UV 変換、経路の閉鎖方法、および端面設定
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark parallel-transport frame を使って断面を経路に沿って運びます。`options.initialXAxis` が未指定の場合、開始時の断面方向は最初の経路方向と最も平行でない座標軸から自動的に決定します。
+		/// @remark 断面の X 座標はフレームの第 1 軸 N、Y 座標は第 2 軸 `N.cross(T)` に対応します。T は経路の接線です。断面点 `(x, y)` は経路上の位置 P に対して `P + N * x + (N.cross(T)) * y` に配置されます。
+		/// @remark 例えば経路が world `+Y`、`options.initialXAxis` が world `+X` の場合、断面の `(x, y)` は world の `(X, Z)` に対応します。経路が world `+X`、`options.initialXAxis` が world `+Y` の場合、断面の X 軸は world `+Y`、Y 軸は world `-Z` に対応します。
+		/// @remark `options.endCaps` が未指定の場合、開路では両端面を生成し、閉路では端面を生成しません。端面と側面、および断面の各頂点はハードエッジになります。
+		/// @remark 閉路に `Mesh3DEndCaps::Start`、`End`、または `Both` を明示した場合は生成に失敗します。`Mesh3DEndCaps::None` は指定できます。
+		/// @remark 側面の U 座標は外周と各穴の周長をそれぞれ `[0, 1]` とし、V 座標は経路の始端からの累積距離です。その後に `options.uvScale` と `options.uvOffset` が適用されます。
+		/// @remark 端面の UV 座標は断面全体のバウンディングボックスを `[0, 1]` 四方に正規化し、同じ UV 変換を適用します。
+		/// @remark 折れ点では断面が前後の経路方向の二等分面に置かれます。このため、断面のオフセット面は隣接する線分に対して厳密に平行にならず、その影響は隣の断面までの側面全体に及びます。
+		/// @remark 始点と終点が float 変換後に一致する経路は無効です。閉路では始点を末尾に重複させず、3 点以上を指定します。float 変換後に連続する 2 点が同じになる経路、および 180° 折り返す経路には対応しません。鋭い折れ点における自己交差は検査しません。
+		/// @remark 閉路では経路方向の UV 継ぎ目に断面を複製し、parallel-transport frame の残留回転を経路長に比例して分散します。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			const SweepOptions& options = {});
+
+		/// @brief 初期化子リストで指定した 3D 経路に 2D 断面を沿わせた 3D メッシュを作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param options 生成設定
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 断面、経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る一定断面オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
+			const SweepOptions& options = {});
+
+		/// @brief 経路点ごとに断面の拡大率と twist を指定した Sweep 形状を作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換。要素数は `path.size()` と等しい必要があります。
+		/// @param options 生成設定
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `sectionTransforms` の各 `scale` 成分は float 変換後も正である必要があります。断面の拡大後に `twist` を適用します。
+		/// @remark 正の `twist` は経路の接線 T を軸として、断面の +X 軸 N を `-N.cross(T)` 方向へ回転させます。経路が world +Y、断面の +X が world +X の場合、world +X から world -Z へ回転します。
+		/// @remark 各経路点で変換した断面を隣接する断面と三角形で接続します。側面の法線と接線は、断面変換による傾きとねじれを反映します。
+		/// @remark 隣接する断面間で側面の三角形が縮退または反転する変換は無効です。大きな twist は経路点を追加して分割してください。
+		/// @remark 端面の UV 座標と側面の U 座標は変換前の断面を基準にします。V 座標は経路の始端からの累積距離です。
+		/// @remark 閉路では最後の経路点の断面変換から最初の経路点の断面変換へ接続し、UV 継ぎ目で最初の断面を複製します。
+		/// @remark 経路、端面、頂点属性、および UV 座標の規約は一定断面のオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::span<const Vec3> path,
+			std::span<const SweepSectionTransform> sectionTransforms,
+			const SweepOptions& options = {});
+
+		/// @brief 初期化子リストで経路点ごとの断面変換を指定した Sweep 形状を作成します。
+		/// @param crossSection 経路に沿わせる断面。穴を含むことができます。
+		/// @param path 断面の中心を通る経路の頂点
+		/// @param sectionTransforms 各経路点における断面変換
+		/// @param options 生成設定
+		/// @return 断面を経路に沿わせた 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 断面変換、経路、端面、頂点属性、および UV 座標の規約は `std::span` を受け取る経路点別変換オーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D Sweep(
+			const Polygon& crossSection,
+			std::initializer_list<Vec3> path,
+			std::initializer_list<SweepSectionTransform> sectionTransforms,
+			const SweepOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Regular polyhedra
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする正四面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @return 正四面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には独立した `[0, 1]` の UV 座標が割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Tetrahedron(double radius = 1.0);
+
+		/// @brief 原点を中心とする正八面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @return 正八面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には独立した `[0, 1]` の UV 座標が割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Octahedron(double radius = 1.0);
+
+		/// @brief 原点を中心とする正二十面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @return 正二十面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には独立した `[0, 1]` の UV 座標が割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Icosahedron(double radius = 1.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	IcoSphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 正二十面体を細分化した、原点を中心とする球の 3D メッシュを作成します。
+		/// @param radius 球の半径
+		/// @param subdivisions 細分化回数。0 以上 8 以下である必要があります。
+		/// @return 正二十面体を細分化した球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 頂点数は `10 * 4^subdivisions + 2`、三角形数は `20 * 4^subdivisions` です。
+		/// @remark 隣接する三角形は頂点を共有し、各頂点の法線は球の中心から外側へ向きます。`subdivisions == 0` では `Icosahedron()` と同じ外形を 12 個の共有頂点で表現します。
+		/// @remark UV 座標は提供せず、すべて `(0, 0)` です。接線は法線に直交する単位ベクトルですが、UV に基づく接線空間を表しません。テクスチャマッピングには `Sphere()` を使用してください。
+		[[nodiscard]]
+		static Mesh3D IcoSphere(
+			double radius = 1.0,
+			uint32 subdivisions = 2);
+
+		/// @brief 原点を中心とする正十二面体の 3D メッシュを作成します。
+		/// @param radius 外接球の半径
+		/// @return 正十二面体の 3D メッシュ。`radius` が不正な場合は空の 3D メッシュ
+		/// @remark 各面には正五角形を含む独立した `[0, 1]` の UV 座標が割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Dodecahedron(double radius = 1.0);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Plane
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く長方形の 3D メッシュを作成します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 長方形の 3D メッシュ。大きさまたは UV パラメータが不正な場合は空の 3D メッシュ
+		/// @remark UV 座標の V 成分は Z 軸の正方向から負方向へ向かって増加します。
+		/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
+		[[nodiscard]]
+		static Mesh3D Plane(
+			SizeF sizeXZ = SizeF{ 1.0, 1.0 },
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Grid
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く格子状の 3D メッシュを作成します。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param segmentsX X 軸方向の分割数
+		/// @param segmentsZ Z 軸方向の分割数
+		/// @param uvScale UV 座標の拡大率
+		/// @param uvOffset UV 座標のオフセット
+		/// @return 格子状の 3D メッシュ。大きさ、分割数、UV パラメータが不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark UV 座標の V 成分は Z 軸の正方向から負方向へ向かって増加します。
+		/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
+		[[nodiscard]]
+		static Mesh3D Grid(
+			SizeF sizeXZ,
+			uint32 segmentsX,
+			uint32 segmentsZ,
+			Vec2 uvScale = Vec2{ 1.0, 1.0 },
+			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	HeightField
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 格子状の高さデータから地形の 3D メッシュを作成します。
+		/// @param heights 各頂点の Y 座標を格納した高さデータ。幅と高さがそれぞれ 2 以上である必要があります。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param options UV 座標の生成設定
+		/// @return 高さデータから作成した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `heights[y][x]` を対応する頂点の Y 座標としてそのまま使用します。Y 方向の平行移動やスケーリングは行いません。
+		/// @remark 列 0 を `X = -sizeXZ.x / 2`、最終列を `X = sizeXZ.x / 2`、行 0 を `Z = sizeXZ.y / 2`、最終行を `Z = -sizeXZ.y / 2` に配置します。
+		/// @remark UV 座標は左上を `(0, 0)`、右下を `(1, 1)` とし、`options.uvScale` と `options.uvOffset` を適用します。
+		/// @remark 隣接する高さの差分から、滑らかに接続する頂点法線と接線を計算します。
+		[[nodiscard]]
+		static Mesh3D HeightField(
+			const s3d::Grid<float>& heights,
+			SizeF sizeXZ,
+			const HeightFieldOptions& options = {});
+
+		/// @brief callable で生成した格子状の高さから地形の 3D メッシュを作成します。
+		/// @param gridSize X 方向および Z 方向の頂点数。幅と高さがそれぞれ 2 以上である必要があります。
+		/// @param sizeXZ X 軸方向および Z 軸方向の大きさ
+		/// @param heightFunction 格子点の列と行を表す `Point` を受け取り、その頂点の Y 座標を返す callable
+		/// @param options UV 座標の生成設定
+		/// @return callable で生成した高さデータから作成した 3D メッシュ。引数または callable の戻り値が不正な場合、もしくは頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 正常な入力では、`heightFunction` は `(0, 0)` から行優先で、各格子点に対して 1 回ずつ呼び出されます。不正な戻り値が得られた場合は、その時点で呼び出しを終了します。
+		/// @remark callable の戻り値は float に変換され、変換後の値を対応する頂点の Y 座標としてそのまま使用します。
+		/// @remark 座標、UV 座標、法線、および接線の規約は `Grid<float>` を受け取るオーバーロードと同じです。
+		[[nodiscard]]
+		static Mesh3D HeightField(
+			Size gridSize,
+			SizeF sizeXZ,
+			FunctionRef<double(Point)> heightFunction,
+			const HeightFieldOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Loft
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 配置と輪郭が異なる複数の断面を順に接続します。
+		/// @param sections 2 個以上の断面。各輪郭は同じ 3 個以上の頂点数を持つ必要があります。
+		/// @param options 端面、輪郭方向の平滑化、および UV 変換
+		/// @return 生成したメッシュ。不正入力やサイズ上限超過では空メッシュを返し、失敗理由をログへ出力します。
+		/// @remark 各 points の Vec2 を (X, -Z) に対応させて frame を適用します。正の符号付き面積になる輪郭順を使用し、先頭点を末尾に重複させません。輪郭の参照先は呼び出し終了まで有効である必要があります。
+		/// @remark frame は有限のアフィン変換で、線形部分の determinant は正とします。隣接フレーム原点の変位は、両端の輪郭平面の正方向に正の投影を持つ必要があります。進行方向が変わる場合は中間断面を追加してください。全体の鏡映には生成後の変換、Builder または Assembly の配置を使用できます。
+		/// @remark 同じ頂点添字同士を接続し、側面の四角形を固定の対角線で三角形化します。自動対応、自動補間、穴、点への収束、断面列の閉路化は行いません。
+		/// @remark 側面 U は配置後の最初の輪郭の周長を [0, 1] に正規化し、V はフレーム原点の折れ線に沿う累積距離です。原点の取り方で V は変わり得ます。端面 UV は配置前の輪郭の境界から生成します。
+		/// @remark 輪郭方向の平滑化は smoothingAngle、断面列方向は前後の対応点を結ぶ方向を使用します。頂点は平滑化後も輪郭の辺ごとに複製し、UV seam を保持します。負の UV scale は接線の方向と handedness に反映します。0 の UV scale ではその軸の正方向を接線計算に使います。
+		/// @remark float への変換・配置で消える辺、縮退面、定義できない法線・接線、頂点法線の和と面の向きが一致しない三角形を拒否します。中間輪郭や側面全体の自己交差を検査せず、非自己交差の立体は保証しません。端面なしでは内壁や肉厚は生成しません。
+		/// @code
+		/// const std::array ring{ Vec2{-1,-1}, Vec2{1,-1}, Vec2{1,1}, Vec2{-1,1} };
+		/// const auto mesh = Mesh3D::Loft({ { ring, Vec3{0,0,0} }, { ring, Vec3{0,2,0} } });
+		///
+		/// // 断面の横を -Z、縦を +Y に向け、+X 方向へ接続する。
+		/// // 輪郭の横軸はローカル +X、縦軸はローカル -Z。
+		/// const auto rotation = Quaternion::FromUnitVectorPairs(
+		///     { Vec3{ 1, 0, 0 }, Vec3{ 0, 0, -1 } },
+		///     { Vec3{ 0, 0, -1 }, Vec3{ 0, 1, 0 } });
+		/// // この回転では断面の正方向（ローカル +Y）は +X に向く。
+		/// const auto alongX = Mesh3D::Loft({
+		///     { ring, rotation }, { ring, { Vec3{ 2, 0, 0 }, rotation } } });
+		/// @endcode
+		[[nodiscard]]
+		static Mesh3D Loft(std::span<const LoftSection> sections, const LoftOptions& options = {});
+
+		/// @brief 初期化子リストで指定した断面列を接続します。
+		/// @param sections 呼び出し終了まで有効な輪郭を参照する断面列
+		/// @param options 生成設定
+		/// @return 生成したメッシュ。規約は span を受け取る Loft() と同じです。
+		[[nodiscard]]
+		static Mesh3D Loft(std::initializer_list<LoftSection> sections, const LoftOptions& options = {});
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Torus
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸を回転軸とするトーラスの 3D メッシュを作成します。
+		/// @param majorRadius 原点からチューブ断面の中心までの半径
+		/// @param tubeRadius チューブ断面の半径。`majorRadius` より小さい必要があります。
+		/// @param ringSegments リング方向の分割数。3 以上である必要があります。
+		/// @param tubeSegments チューブ断面方向の分割数。3 以上である必要があります。
+		/// @return トーラスの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark UV 座標および接線空間の不連続を表現するため、リング方向とチューブ断面方向の継ぎ目に頂点が複製されます。
+		[[nodiscard]]
+		static Mesh3D Torus(
+			double majorRadius,
+			double tubeRadius,
+			uint32 ringSegments = 32,
+			uint32 tubeSegments = 16);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Capsule
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びるカプセルの 3D メッシュを作成します。
+		/// @param radius カプセルの半径
+		/// @param cylinderHeight 2 つの半球の間にある円柱部分の高さ。0 以上である必要があります。
+		/// @param slices 円周方向の分割数。3 以上である必要があります。
+		/// @param hemisphereStacks 各半球の緯度方向の分割数。1 以上である必要があります。
+		/// @return カプセルの 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark カプセルは原点を中心とし、全体の高さは `cylinderHeight + 2 * radius` です。
+		/// @remark `cylinderHeight` が 0 の場合は UV 球を作成します。
+		/// @remark U 座標は +X 方向を 0 とし、東向き（+Z 方向）へ増加します。
+		/// @remark UV 座標および接線空間の不連続を表現するため、経度方向の継ぎ目と極に頂点が複製されます。
+		[[nodiscard]]
+		static Mesh3D Capsule(
+			double radius,
+			double cylinderHeight,
+			uint32 slices = 32,
+			uint32 hemisphereStacks = 8);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Sphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心とする UV 球の 3D メッシュを作成します。
+		/// @param radius 球の半径
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。2 以上である必要があります。
+		/// @return UV 球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 球の極は Y 軸上に配置されます。
+		/// @remark UV 座標は、北極を V = 0、南極を V = 1 とし、U は +X 方向を 0 として東向き（+Z 方向）へ増加します。
+		/// @remark UV 座標および接線空間の不連続を表現するため、同じ位置に複数の頂点が作成されます。
+		[[nodiscard]]
+		static Mesh3D Sphere(double radius, uint32 slices = 32, uint32 stacks = 16);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Hemisphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸の正方向を向く、底面のない半球の 3D メッシュを作成します。
+		/// @param radius 半球の半径
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
+		/// @return 半球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 半球の中心は原点、赤道は XZ 平面上、極は `(0, radius, 0)` に配置されます。
+		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
+		/// @remark 曲面の U 座標は +X 方向を 0 とし、東向き（+Z 方向）へ増加します。
+		[[nodiscard]]
+		static Mesh3D Hemisphere(double radius, uint32 slices = 32, uint32 stacks = 8);
+
+		/// @brief Y 軸の正方向を向く半球の 3D メッシュを作成します。
+		/// @param radius 半球の半径
+		/// @param closeBottom 底面を閉じる場合は `CloseBottom::Yes`、底面を作成しない場合は `CloseBottom::No`
+		/// @param slices 経度方向の分割数。3 以上である必要があります。
+		/// @param stacks 緯度方向の分割数。1 以上である必要があります。
+		/// @return 半球の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 半球の中心は原点、赤道は XZ 平面上、極は `(0, radius, 0)` に配置されます。
+		/// @remark 曲面の UV 座標は、極から赤道までを V 座標の 0 から 1 に割り当てます。
+		/// @remark 曲面の U 座標は +X 方向を 0 とし、東向き（+Z 方向）へ増加します。
+		/// @remark 底面を閉じる場合、底面には曲面とは独立した頂点を作成し、円全体を UV 座標の 0 から 1 に割り当てます。
+		[[nodiscard]]
+		static Mesh3D Hemisphere(double radius, CloseBottom closeBottom, uint32 slices = 32, uint32 stacks = 8);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Disc
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く円盤の 3D メッシュを作成します。
+		/// @param radius 円盤の半径
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 円盤の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D Disc(double radius, uint32 segments = 32);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Annulus
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief XZ 平面上に、法線が Y 軸の正方向を向く円環の 3D メッシュを作成します。
+		/// @param innerRadius 円環の内半径。0 以上である必要があります。
+		/// @param outerRadius 円環の外半径。`innerRadius` より大きい必要があります。
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 円環の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark `innerRadius` が 0 の場合は、中心頂点を共有する円盤を作成します。
+		[[nodiscard]]
+		static Mesh3D Annulus(double innerRadius, double outerRadius, uint32 segments = 32);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	HollowCylinder
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、厚みと円環状の端面を持つ中空円柱の 3D メッシュを作成します。
+		/// @param innerRadius 内半径。正の有限値である必要があります。
+		/// @param outerRadius 外半径。`innerRadius` より大きい必要があります。
+		/// @param height 高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 中空円柱の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 中央の穴は上下に貫通し、肉厚は `outerRadius - innerRadius` です。
+		/// @remark 外側面の U 座標は +X 方向を 0 として +Z 方向へ増加し、内側面の U 座標は +X 方向を 0 として -Z 方向へ増加します。これにより、テクスチャは外側と内側のそれぞれを表側から見たときに同じ向きで表示されます。
+		/// @remark 側面の V 座標は上端を 0、下端を 1 とします。上下の端面は、外径全体を UV 座標の 0 から 1 に割り当てます。
+		[[nodiscard]]
+		static Mesh3D HollowCylinder(
+			double innerRadius,
+			double outerRadius,
+			double height,
+			uint32 segments = 32);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	ConicalFrustum
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、両端が閉じた円錐台の 3D メッシュを作成します。
+		/// @param bottomRadius 底面の半径。正の有限値である必要があります。
+		/// @param topRadius 上面の半径。0 以上の有限値である必要があります。0 の場合は円錐を作成します。
+		/// @param height 高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 円錐台の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 底面の中心は `(0, -height / 2, 0)`、上面の中心は `(0, height / 2, 0)` に配置されます。
+		/// @remark `topRadius` が 0 の場合、側面の U 座標は円周方向を 0 から 1、V 座標は頂点を 0、底面側を 1 とする矩形領域に割り当てられます。
+		[[nodiscard]]
+		static Mesh3D ConicalFrustum(double bottomRadius, double topRadius, double height, uint32 segments = 32);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Cylinder
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、両端が閉じた円柱の 3D メッシュを作成します。
+		/// @param radius 円柱の半径
+		/// @param height 円柱の高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 円柱の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		[[nodiscard]]
+		static Mesh3D Cylinder(double radius, double height, uint32 segments = 32);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Cone
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief Y 軸方向に伸びる、底面が閉じた円錐の 3D メッシュを作成します。
+		/// @param radius 円錐の底面の半径
+		/// @param height 円錐の高さ
+		/// @param segments 円周の分割数。3 以上である必要があります。
+		/// @return 円錐の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @remark 側面の U 座標は円周方向を 0 から 1、V 座標は頂点を 0、底面側を 1 とする矩形領域に割り当てられます。
+		[[nodiscard]]
+		static Mesh3D Cone(double radius, double height, uint32 segments = 32);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	isEmpty
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 描画可能な三角形を持たないかを返します。
+		/// @return 頂点または三角形が空の場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool isEmpty() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeBoundingBox
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点を包含する軸平行境界ボックスを計算します。
+		/// @return 軸平行境界ボックス。頂点がない場合は原点を中心とする大きさ 0 の Box
+		/// @remark 三角形インデックスから参照されていない頂点も計算に含まれます。
+		/// @remark 頂点座標に非有限値が含まれる場合、結果は未規定です。
+		/// @remark 計算量は頂点数を n として O(n) です。動的メモリ確保は行いません。
+		[[nodiscard]]
+		s3d::Box computeBoundingBox() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeBoundingSphere
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点を包含する境界球を計算します。
+		/// @return 境界球。頂点がない場合は原点を中心とする半径 0 の Sphere
+		/// @remark 計算される境界球は近似解です。
+		/// @remark 三角形インデックスから参照されていない頂点も計算に含まれます。
+		/// @remark 頂点座標に非有限値が含まれる場合、結果は未規定です。
+		/// @remark 計算量は頂点数を n として O(n) です。動的メモリ確保は行いません。
+		[[nodiscard]]
+		s3d::Sphere computeBoundingSphere() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	validate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュの頂点数とインデックスの範囲を検証します。
+		/// @remark 格納された頂点数とインデックスの参照範囲だけを検査します。空のメッシュも有効です。
+		/// @return 頂点数が `MaxVertexCount` 以下で、すべてのインデックスが頂点配列の範囲内にある場合 true, それ以外の場合は false
+		/// @remark 三角形の面積、頂点の並び順、頂点座標や UV 座標の値など、幾何学的な妥当性は検証しません。
+		/// @remark 計算量は三角形の個数を n として O(n) です。
+		[[nodiscard]]
+		bool validate() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	vertexCount
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 頂点の個数を返します。
+		/// @return 頂点の個数
+		[[nodiscard]]
+		size_t vertexCount() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	triangleCount
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 三角形の個数を返します。
+		/// @return 三角形の個数
+		[[nodiscard]]
+		size_t triangleCount() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reserve
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定した要素数まで再確保なしで格納できるよう、頂点配列と三角形インデックス配列の容量を確保します。
+		/// @param vertexCapacity 確保する頂点容量
+		/// @param triangleCapacity 確保する三角形容量
+		/// @remark `vertexCapacity` が `MaxVertexCount` を超える場合、容量は変更されません。
+		void reserve(size_t vertexCapacity, size_t triangleCapacity);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	clear
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点と三角形を削除し、空の 3D メッシュにします。
+		/// @remark 頂点配列と三角形インデックス配列の容量は変更されません。
+		void clear() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	saveOBJ
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュを Wavefront OBJ 形式でファイルに保存します。
+		/// @param path 保存するファイルのパス
+		/// @return 保存に成功した場合 true, それ以外の場合は false
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転して保存されます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` として保存されます。U 成分は変更されません。
+		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
+		/// @remark 接線、材質、オブジェクト名、およびグループは保存されません。
+		/// @remark UTF-8（BOM なし）、LF 改行で保存されます。
+		/// @remark 空のメッシュ、インデックスが不正なメッシュ、または出力対象の頂点属性に非有限値が含まれるメッシュは保存できません。
+		/// @remark 保存に失敗した場合、理由を Fail レベルのエンジンログへ出力します。
+		bool saveOBJ(FilePathView path) const;
+
+		/// @brief 3D メッシュとマテリアルを Wavefront OBJ / MTL 形式でファイルに保存します。
+		/// @param path 保存する OBJ ファイルのパス
+		/// @param material 保存するマテリアル
+		/// @return OBJ と MTL の保存に成功した場合 true, それ以外の場合は false
+		/// @remark MTL ファイルは OBJ ファイルと同じディレクトリに、同じベース名と `.mtl` 拡張子で保存されます。
+		/// @remark OBJ ファイルには `mtllib` と `usemtl` が書き込まれます。
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転して保存されます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` として保存されます。U 成分は変更されません。
+		/// @remark ベースカラー、金属度、粗さ、エミッシブカラー、アルファ値、および対応するテクスチャは、MTL で表現可能な値へ変換されます。
+		/// @remark `m = clamp(metallic, 0, 1)` として、RGB は `Kd = baseColor.rgb * (1 - m)`、`Ks = baseColor.rgb * m + 0.04 * (1 - m)` に変換します。Kd だけを表示するビューアでは金属が暗くなります。base color の色分けを diffuse のみで確認する用途には metallic = 0 を使えます。
+		/// @remark `r = clamp(roughness, 0, 1)` として、`Ns = clamp(2 / (r * r) - 2, 0, 1000)` に変換します。r = 0 の場合は Ns = 1000 です。これらは従来の MTL による近似であり、PBR と同じ見え方を保証しません。
+		/// @remark 金属度と粗さは、従来の MTL パラメータへの変換に加えて `Pm` と `Pr` でも保存されます。
+		/// @remark MTL で直接表現できないアルファマスクのしきい値、両面描画、metallic-roughness テクスチャ、およびアンビエントオクルージョンは保存されません。
+		/// @remark テクスチャファイル自体はコピーされません。
+		/// @remark 空のマテリアル名、制御文字を含む名前やテクスチャパス、非有限値、または UV セット 0 以外を参照するマテリアルは保存できません。
+		/// @remark 保存に失敗した場合、理由を Fail レベルのエンジンログへ出力します。
+		/// @remark OBJ ファイルを開けなかった場合、MTL ファイルは開かず、既存の MTL を保持します。
+		bool saveOBJ(FilePathView path, const Material& material) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	encodeOBJ
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュを Wavefront OBJ 形式で Writer に書き出します。
+		/// @param writer 書き出し先の Writer
+		/// @return 書き出しに成功した場合 true, それ以外の場合は false
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転して書き出されます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` として書き出されます。U 成分は変更されません。
+		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
+		/// @remark 接線、材質、オブジェクト名、およびグループは書き出されません。
+		/// @remark UTF-8（BOM なし）、LF 改行で書き出されます。
+		/// @remark 空のメッシュ、インデックスが不正なメッシュ、または出力対象の頂点属性に非有限値が含まれるメッシュは書き出せません。
+		/// @remark 書き出し中に失敗した場合、Writer に途中までのデータが残ることがあります。
+		/// @remark 書き出しに失敗した場合、理由を Fail レベルのエンジンログへ出力します。
+		bool encodeOBJ(IWriter& writer) const;
+
+		/// @brief 3D メッシュを Wavefront OBJ 形式でエンコードします。
+		/// @return エンコードされたデータ。エンコードに失敗した場合は空の Blob
+		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転してエンコードされます。
+		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` としてエンコードされます。U 成分は変更されません。
+		/// @remark 各 `Vertex3D` には、位置、UV、法線で共通の 1 始まりの OBJ インデックスが割り当てられます。
+		/// @remark 接線、材質、オブジェクト名、およびグループはエンコードされません。
+		/// @remark UTF-8（BOM なし）、LF 改行でエンコードされます。
+		/// @remark 空のメッシュ、インデックスが不正なメッシュ、または出力対象の頂点属性に非有限値が含まれるメッシュはエンコードできません。
+		/// @remark エンコードに失敗した場合、理由を Fail レベルのエンジンログへ出力します。
+		[[nodiscard]]
+		Blob encodeOBJ() const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	append
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 別の 3D メッシュの頂点と三角形を末尾に追加します。
+		/// @param mesh 追加する 3D メッシュ
+		/// @return 追加に成功した場合 true, 追加できない場合は false
+		/// @remark 追加される三角形のインデックスは、追加先の既存の頂点数に合わせて自動的に調整されます。
+		/// @remark `mesh` が不正な 3D メッシュである場合、または追加後の頂点数が `MaxVertexCount` を超える場合は追加に失敗します。
+		/// @remark この関数が false を返した場合、この 3D メッシュの内容は変更されません。
+		[[nodiscard]]
+		bool append(const Mesh3D& mesh);
+
+		/// @brief アフィン変換を適用した別の 3D メッシュの頂点と三角形を末尾に追加します。
+		/// @param mesh 追加する Mesh3D
+		/// @param matrix 追加する頂点に適用するアフィン変換行列
+		/// @return 追加に成功した場合 true, 追加できない場合は false
+		/// @remark `matrix` はアフィン変換行列である必要があります。
+		/// @remark `append(mesh.transformed(matrix))` と同じ結果を、一時 Mesh3D を作成せずに生成します。
+		/// @remark `mesh` が不正な Mesh3D である場合、または追加後の頂点数が `MaxVertexCount` を超える場合は追加に失敗します。
+		/// @remark この関数が false を返した場合、この Mesh3D の内容は変更されません。
+		/// @remark 変換の線形部分が特異である場合、追加する頂点の法線および接線は変更されません。
+		/// @remark 変換の線形部分の行列式が負の場合、追加する頂点の接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
+		[[nodiscard]]
+		bool append(const Mesh3D& mesh, const Mat4x4& matrix);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transformUV
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点の UV 座標を変換します。
+		/// @param transform UV 座標に適用する変換行列
+		/// @return *this
+		/// @remark 各頂点の現在の UV 座標に `transform` が適用されます。その他の頂点属性と三角形インデックスは変更されません。
+		/// @remark UV の回転・反転などに接線空間を追従させる場合は、この操作の後に computeTangents() を呼びます。接線の再計算は頂点を分割する場合があるため、自動では行いません。
+		Mesh3D& transformUV(const Mat3x2& transform) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeNormals
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 頂点法線を計算します。
+		/// @param weighting 各三角形の法線を合成するときの重み付け方式
+		/// @remark 同じ頂点インデックスを共有する三角形の法線が合成されます。
+		/// @remark ハードエッジを保持するには、その境界で頂点が分割されている必要があります。
+		/// @remark 三角形がない場合、頂点法線は変更されません。接線は再計算しません。必要に応じて続けて computeTangents() を呼びます。
+		/// @return *this
+		/// @throw Error 法線の計算に失敗した場合
+		Mesh3D& computeNormals(VertexNormalWeighting weighting = VertexNormalWeighting::Angle);
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeTangents
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief MikkTSpace を使用して頂点の接線を計算します。
+		/// @remark 頂点法線および UV 座標が設定済みである必要があります。
+		/// @remark 接線空間が不連続になる箇所では頂点が複製されるため、頂点数およびインデックス配列が変更されることがあります。
+		/// @remark 三角形がない場合、頂点の接線は変更されません。
+		/// @return *this
+		/// @throw Error 接線の計算に失敗した場合
+		Mesh3D& computeTangents();
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	reverseWinding
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての三角形の頂点の巻き順を反転させます。
+		/// @return *this
+		/// @remark 各三角形のインデックスが `{ i0, i1, i2 }` から `{ i0, i2, i1 }` に変換されます。
+		/// @remark 頂点の法線と接線は変更されません。表裏をまとめて反転させるには `invert()` を使用します。
+		Mesh3D& reverseWinding() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	invertNormals
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief すべての頂点の法線を反転させます。
+		/// @return *this
+		/// @remark 各頂点の法線ベクトルの符号が反転し、あわせて接線の `w` 成分（従接線の向きを表す符号）も反転します。
+		/// @remark これにより従接線 `Vertex3D::bitangent()` は反転前と同じ向きに保たれ、法線マッピングとの整合性が維持されます。
+		/// @remark 三角形の巻き順は変更されません。表裏をまとめて反転させるには `invert()` を使用します。
+		Mesh3D& invertNormals() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	invert
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュの表裏を反転させます。
+		/// @return *this
+		/// @remark `reverseWinding()` と `invertNormals()` を同時に適用するのと同じ結果になります。
+		/// @remark 三角形の巻き順、頂点の法線、および接線の `w` 成分が反転します。
+		/// @remark 頂点座標、UV 座標、接線ベクトルの `xyz` 成分は変更されません。
+		Mesh3D& invert() noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transformed
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief アフィン変換を適用した 3D メッシュを返します。
+		/// @param matrix 適用するアフィン変換行列
+		/// @return アフィン変換を適用した 3D メッシュ
+		/// @remark `matrix` はアフィン変換行列である必要があります。
+		/// @remark 変換の線形部分が非特異である場合、法線および接線ベクトルは変換後に正規化されます。
+		/// @remark 変換の線形部分が特異である場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark 変換の線形部分の行列式が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
+		[[nodiscard]]
+		Mesh3D transformed(const Mat4x4& matrix) const&;
+
+		/// @brief アフィン変換を適用した 3D メッシュを返します。
+		/// @param matrix 適用するアフィン変換行列
+		/// @return アフィン変換を適用した 3D メッシュ
+		/// @remark このオーバーロードは自身のストレージを再利用します。
+		/// @remark `matrix` はアフィン変換行列である必要があります。
+		/// @remark 変換の線形部分が非特異である場合、法線および接線ベクトルは変換後に正規化されます。
+		/// @remark 変換の線形部分が特異である場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark 変換の線形部分の行列式が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
+		[[nodiscard]]
+		Mesh3D transformed(const Mat4x4& matrix) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	transform
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュにアフィン変換を適用します。
+		/// @param matrix 適用するアフィン変換行列
+		/// @return *this
+		/// @remark `matrix` はアフィン変換行列である必要があります。
+		/// @remark 変換の線形部分が非特異である場合、法線および接線ベクトルは変換後に正規化されます。
+		/// @remark 変換の線形部分が特異である場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark 変換の線形部分の行列式が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
+		Mesh3D& transform(const Mat4x4& matrix) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	translated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 平行移動した 3D メッシュを返します。
+		/// @param offset 平行移動量
+		/// @remark offset を Float3 に変換し、頂点ごとの加算は float で行います。入力の数値検査は行いません。
+		/// @return 平行移動した 3D メッシュ
+		/// @remark 頂点座標のみが変更されます。法線、接線、UV 座標、および三角形インデックスは変更されません。
+		[[nodiscard]]
+		Mesh3D translated(Vec3 offset) const&;
+
+		/// @brief 平行移動した 3D メッシュを返します。
+		/// @param offset 平行移動量
+		/// @remark offset を Float3 に変換し、頂点ごとの加算は float で行います。入力の数値検査は行いません。
+		/// @return 平行移動した 3D メッシュ
+		/// @remark このオーバーロードは自身のストレージを再利用します。
+		/// @remark 頂点座標のみが変更されます。法線、接線、UV 座標、および三角形インデックスは変更されません。
+		[[nodiscard]]
+		Mesh3D translated(Vec3 offset) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	translate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュを平行移動します。
+		/// @param offset 平行移動量
+		/// @remark offset を Float3 に変換し、頂点ごとの加算は float で行います。入力の数値検査は行いません。
+		/// @return *this
+		/// @remark 頂点座標のみが変更されます。法線、接線、UV 座標、および三角形インデックスは変更されません。
+		Mesh3D& translate(Vec3 offset) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotated
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心に回転させた 3D メッシュを返します。
+		/// @param rotation 適用する回転を表す単位クォータニオン
+		/// @return 回転させた 3D メッシュ
+		/// @remark `rotation` は正規化されている必要があります。
+		/// @remark 頂点座標、法線、および接線ベクトルが回転します。接線の `w` 成分、UV 座標、および三角形インデックスは変更されません。
+		[[nodiscard]]
+		Mesh3D rotated(const Quaternion& rotation) const&;
+
+		/// @brief 原点を中心に回転させた 3D メッシュを返します。
+		/// @param rotation 適用する回転を表す単位クォータニオン
+		/// @return 回転させた 3D メッシュ
+		/// @remark このオーバーロードは自身のストレージを再利用します。
+		/// @remark `rotation` は正規化されている必要があります。
+		/// @remark 頂点座標、法線、および接線ベクトルが回転します。接線の `w` 成分、UV 座標、および三角形インデックスは変更されません。
+		[[nodiscard]]
+		Mesh3D rotated(const Quaternion& rotation) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	rotate
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュを原点を中心に回転させます。
+		/// @param rotation 適用する回転を表す単位クォータニオン
+		/// @return *this
+		/// @remark `rotation` は正規化されている必要があります。
+		/// @remark 頂点座標、法線、および接線ベクトルが回転します。接線の `w` 成分、UV 座標、および三角形インデックスは変更されません。
+		Mesh3D& rotate(const Quaternion& rotation) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scaled
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 原点を中心に一様に拡大・縮小した 3D メッシュを返します。
+		/// @param scale 拡大率
+		/// @remark scale を float に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
+		/// @return 拡大・縮小した 3D メッシュ
+		/// @remark `scale` が正の場合、法線および接線は変更されません。
+		/// @remark `scale` が負の場合、法線、接線ベクトル、および接線の `w` 成分が反転します。
+		/// @remark `scale` が 0 の場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark `scale` が負の場合、三角形の巻き順も反転し、表裏を維持します。
+		[[nodiscard]]
+		Mesh3D scaled(double scale) const&;
+
+		/// @brief 原点を中心に一様に拡大・縮小した 3D メッシュを返します。
+		/// @param scale 拡大率
+		/// @remark scale を float に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
+		/// @return 拡大・縮小した 3D メッシュ
+		/// @remark このオーバーロードは自身のストレージを再利用します。
+		/// @remark `scale` が正の場合、法線および接線は変更されません。
+		/// @remark `scale` が負の場合、法線、接線ベクトル、および接線の `w` 成分が反転します。
+		/// @remark `scale` が 0 の場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark `scale` が負の場合、三角形の巻き順も反転し、表裏を維持します。
+		[[nodiscard]]
+		Mesh3D scaled(double scale) && noexcept;
+
+		/// @brief 原点を中心に各軸方向へ拡大・縮小した 3D メッシュを返します。
+		/// @param scale 各軸方向の拡大率
+		/// @remark scale を Float3 に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
+		/// @return 拡大・縮小した 3D メッシュ
+		/// @remark `scale` のすべての成分が非ゼロの場合、法線および接線ベクトルは変換後に正規化されます。
+		/// @remark `scale` のいずれかの成分が 0 の場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark 拡大率の積が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
+		[[nodiscard]]
+		Mesh3D scaled(Vec3 scale) const&;
+
+		/// @brief 原点を中心に各軸方向へ拡大・縮小した 3D メッシュを返します。
+		/// @param scale 各軸方向の拡大率
+		/// @remark scale を Float3 に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
+		/// @return 拡大・縮小した 3D メッシュ
+		/// @remark このオーバーロードは自身のストレージを再利用します。
+		/// @remark `scale` のすべての成分が非ゼロの場合、法線および接線ベクトルは変換後に正規化されます。
+		/// @remark `scale` のいずれかの成分が 0 の場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark 拡大率の積が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
+		[[nodiscard]]
+		Mesh3D scaled(Vec3 scale) && noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	scale
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 3D メッシュを原点を中心に一様に拡大・縮小します。
+		/// @param scale 拡大率
+		/// @remark scale を float に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
+		/// @return *this
+		/// @remark `scale` が正の場合、法線および接線は変更されません。
+		/// @remark `scale` が負の場合、法線、接線ベクトル、および接線の `w` 成分が反転します。
+		/// @remark `scale` が 0 の場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark `scale` が負の場合、三角形の巻き順も反転し、表裏を維持します。
+		Mesh3D& scale(double scale) noexcept;
+
+		/// @brief 3D メッシュを原点を中心に各軸方向へ拡大・縮小します。
+		/// @param scale 各軸方向の拡大率
+		/// @remark scale を Float3 に変換してから、頂点計算と 0・符号の判定を行います。入力の数値検査は行いません。
+		/// @return *this
+		/// @remark `scale` のすべての成分が非ゼロの場合、法線および接線ベクトルは変換後に正規化されます。
+		/// @remark `scale` のいずれかの成分が 0 の場合、法線および接線は変更されません。
+		/// @remark UV 座標は変更されません。
+		/// @remark 拡大率の積が負の場合、接線の `w` 成分と三角形の巻き順を反転し、表裏を維持します。
+		Mesh3D& scale(Vec3 scale) noexcept;
+
+	};
+}
+
+# include "detail/Mesh3D.ipp"

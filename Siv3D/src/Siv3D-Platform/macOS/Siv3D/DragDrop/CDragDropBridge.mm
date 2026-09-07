@@ -124,15 +124,15 @@ extern "C"
 			return;
 		}
 
-		DragItemType type;
+		DragDropItemType type;
 
 		if (itemType == GLFW_SIV3D_DRAG_ITEM_FILE_PATHS)
 		{
-			type = DragItemType::FilePaths;
+			type = DragDropItemType::FilePaths;
 		}
 		else if (itemType == GLFW_SIV3D_DRAG_ITEM_TEXT)
 		{
-			type = DragItemType::Text;
+			type = DragDropItemType::Text;
 		}
 		else
 		{

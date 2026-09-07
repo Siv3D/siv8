@@ -15,7 +15,7 @@
 # include "String.hpp"
 # include "Array.hpp"
 # include "Optional.hpp"
-# include "Pipe.hpp"
+# include "ChildProcessPipe.hpp"
 
 namespace s3d
 {
@@ -45,21 +45,21 @@ namespace s3d
 		/// @param path 実行するプログラムのパス
 		/// @param pipe パイプ通信の設定
 		[[nodiscard]]
-		ChildProcess(FilePathView path, Pipe pipe);
+		ChildProcess(FilePathView path, ChildProcessPipe pipe);
 
 		/// @brief 子プロセスを作成します。
 		/// @param path 実行するプログラムのパス
 		/// @param command コマンド引数
 		/// @param pipe パイプ通信の設定
 		[[nodiscard]]
-		ChildProcess(FilePathView path, StringView command = U"", Pipe pipe = Pipe::None);
+		ChildProcess(FilePathView path, StringView command = U"", ChildProcessPipe pipe = ChildProcessPipe::None);
 
 		/// @brief 子プロセスを作成します。
 		/// @param path 実行するプログラムのパス
 		/// @param commands コマンド引数
 		/// @param pipe パイプ通信の設定
 		[[nodiscard]]
-		ChildProcess(FilePathView path, const Array<String>& commands, Pipe pipe = Pipe::None);
+		ChildProcess(FilePathView path, const Array<String>& commands, ChildProcessPipe pipe = ChildProcessPipe::None);
 
 		ChildProcess(const ChildProcess& other) = delete;
 

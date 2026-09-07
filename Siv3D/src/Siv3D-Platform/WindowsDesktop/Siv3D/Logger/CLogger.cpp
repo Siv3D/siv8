@@ -19,7 +19,7 @@ namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array LogTypeStrings =
+		static constexpr std::array LogLevelStrings =
 		{
 			L": [error] ",
 			L": [fail] ",
@@ -38,7 +38,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	CLogger::CLogger()
-		: m_outputLevel{ SIV3D_BUILD(DEBUG) ? LogType::Trace : LogType::Info } {}
+		: m_outputLevel{ SIV3D_BUILD(DEBUG) ? LogLevel::Trace : LogLevel::Info } {}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -56,30 +56,30 @@ namespace s3d
 		writeImpl((s.toWstr() + L'\n').c_str());
 	}
 
-	void CLogger::writeln(const LogType type, const std::string_view s)
+	void CLogger::writeln(const LogLevel logLevel, const std::string_view s)
 	{
-		if (m_outputLevel < type)
+		if (m_outputLevel < logLevel)
 		{
 			return;
 		}
 
 		std::wstring output = std::to_wstring(Time::GetMillisec());
-		output.append(LogTypeStrings[FromEnum(type)]);
+		output.append(LogLevelStrings[FromEnum(logLevel)]);
 		output.append(Unicode::ToWstring(s));
 		output.push_back(L'\n');
 
 		writeImpl(output.c_str());
 	}
 
-	void CLogger::writeln(const LogType type, const StringView s)
+	void CLogger::writeln(const LogLevel logLevel, const StringView s)
 	{
-		if (m_outputLevel < type)
+		if (m_outputLevel < logLevel)
 		{
 			return;
 		}
 
 		std::wstring output = std::to_wstring(Time::GetMillisec());
-		output.append(LogTypeStrings[FromEnum(type)]);
+		output.append(LogLevelStrings[FromEnum(logLevel)]);
 		output.append(Unicode::ToWstring(s));
 		output.push_back(L'\n');
 
@@ -92,9 +92,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CLogger::setOutputLevel(const LogType logType) noexcept
+	void CLogger::setOutputLevel(const LogLevel logLevel) noexcept
 	{
-		m_outputLevel.store(logType);
+		m_outputLevel.store(logLevel);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -103,7 +103,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	LogType CLogger::getOutputLevel() const noexcept
+	LogLevel CLogger::getOutputLevel() const noexcept
 	{
 		return m_outputLevel.load();
 	}

@@ -14,7 +14,7 @@
 # include "Common.hpp"
 # include "String.hpp"
 # include "TextEncoding.hpp"
-# include "OpenMode.hpp"
+# include "FileWriteMode.hpp"
 # include "Format.hpp"
 
 namespace s3d
@@ -78,10 +78,10 @@ namespace s3d
 
 		/// @brief テキストファイルをオープンします。
 		/// @param path ファイルパス
-		/// @param openMode ファイルのオープンモード
+		/// @param writeMode ファイルの書き込みモード
 		/// @param encoding テキストのエンコーディング形式
 		[[nodiscard]]
-		explicit TextFileWriter(FilePathView path, OpenMode openMode = OpenMode::Trunc, TextEncoding encoding = TextEncoding::UTF8_WITH_BOM);
+		explicit TextFileWriter(FilePathView path, FileWriteMode writeMode = FileWriteMode::Trunc, TextEncoding encoding = TextEncoding::UTF8_WITH_BOM);
 
 		TextFileWriter(const TextFileWriter& other) = delete;
 
@@ -125,10 +125,10 @@ namespace s3d
 
 		/// @brief テキストファイルをオープンします。
 		/// @param path ファイルパス
-		/// @param openMode ファイルのオープンモード
+		/// @param writeMode ファイルの書き込みモード
 		/// @param encoding テキストのエンコーディング形式
 		/// @return ファイルのオープンに成功した場合 true, それ以外の場合は false
-		bool open(FilePathView path, OpenMode openMode = OpenMode::Trunc, TextEncoding encoding = TextEncoding::UTF8_WITH_BOM);
+		bool open(FilePathView path, FileWriteMode writeMode = FileWriteMode::Trunc, TextEncoding encoding = TextEncoding::UTF8_WITH_BOM);
 
 		////////////////////////////////////////////////////////////////
 		//

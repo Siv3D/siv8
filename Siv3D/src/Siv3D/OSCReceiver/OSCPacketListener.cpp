@@ -21,7 +21,7 @@ namespace s3d
 		return (not m_messages.empty());
 	}
 
-	size_t OSCPacketListener::num_messages()
+	size_t OSCPacketListener::messageCount()
 	{
 		std::lock_guard lock{ m_mutex };
 

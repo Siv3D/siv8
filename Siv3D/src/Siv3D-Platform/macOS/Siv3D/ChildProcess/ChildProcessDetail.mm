@@ -17,7 +17,7 @@ namespace s3d
 	ChildProcess::ChildProcessDetail::ChildProcessDetail()
 		: m_handle{ std::make_unique<ChildProcessHandle>() } {}
 
-	ChildProcess::ChildProcessDetail::ChildProcessDetail(const FilePathView path, const Array<String>& commands, const Pipe pipe)
+	ChildProcess::ChildProcessDetail::ChildProcessDetail(const FilePathView path, const Array<String>& commands, const ChildProcessPipe pipe)
 		: m_handle{ std::make_unique<ChildProcessHandle>(path.toUTF8(), commands, pipe) } {}
 
 	ChildProcess::ChildProcessDetail::~ChildProcessDetail() = default;

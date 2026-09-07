@@ -28,7 +28,7 @@ namespace s3d
 		const TextureFilter _mipFilter,
 		const uint8 _maxAnisotropy,
 		const CompareFunction _compareFunction,
-		const SampleBorderColor _borderColor,
+		const SamplerBorderColor _borderColor,
 		const float _minLOD
 	) noexcept
 		: m_uAddressMode{ _uAddressMode }
@@ -192,14 +192,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr SamplerStateBuilder SamplerStateBuilder::borderColor(const SampleBorderColor _borderColor) const noexcept
+	constexpr SamplerStateBuilder SamplerStateBuilder::borderColor(const SamplerBorderColor _borderColor) const noexcept
 	{
 		SamplerStateBuilder result{ *this };
 		result.m_borderColor = _borderColor;
 		return result;
 	}
 
-	constexpr SampleBorderColor SamplerStateBuilder::borderColor() const noexcept
+	constexpr SamplerBorderColor SamplerStateBuilder::borderColor() const noexcept
 	{
 		return m_borderColor;
 	}

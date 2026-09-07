@@ -2922,14 +2922,14 @@ namespace s3d
 		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
 		/// @param index インデックス
 		/// @return 新しい文字列
-		/// @throws std::out_of_range index が文字列の長さ以上の場合
+		/// @throw std::out_of_range index が文字列の長さ以上の場合
 		[[nodiscard]]
 		String without_at(size_type index) const&;
 
 		/// @brief 指定したインデックスにある要素を文字列から削除した新しい文字列を返します。
 		/// @param index インデックス
 		/// @return 新しい文字列
-		/// @throws std::out_of_range index が文字列の長さ以上の場合
+		/// @throw std::out_of_range index が文字列の長さ以上の場合
 		[[nodiscard]]
 		String without_at(size_type index) &&;
 

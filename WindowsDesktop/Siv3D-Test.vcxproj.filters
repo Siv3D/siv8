@@ -124,6 +124,21 @@
     <ClCompile Include="..\Test\Test_Smooth.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+	<ClCompile Include="..\Test\Test_Quaternion.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
+	<ClCompile Include="..\Test\Test_Cylindrical.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
+	<ClCompile Include="..\Test\Test_Spherical.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
+	<ClCompile Include="..\Test\Test_Mat4x4.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
+	<ClCompile Include="..\Test\Test_SimdFloat4.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
     <ClCompile Include="..\Test\Test_Compression.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -134,6 +149,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Grid.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_VertexNormalWeighting.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_BinaryFileReader.cpp">
@@ -155,6 +173,9 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_CSV.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_EnumFormatter.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_INI.cpp">
@@ -232,6 +253,78 @@
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Material.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp">
+	  <Filter>Test</Filter>
+	</ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DAssembly.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DAssemblyOBJ.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DPlacement.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DTransform.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Finite.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DUV.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DAssemblyClone.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DAddResult.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DCapTriangulation.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DBoxShell.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DBoxFrame.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DExtrude.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DHeightField.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DLoft.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DNormals.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DRevolve.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DSweep.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DTube.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DOBJ.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DPrimitives.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -244,10 +337,21 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DTestHelper.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Precompiled Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\Siv3DTest.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DLoftExamples.hpp">
       <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1715,18 +1715,18 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr size_t LineString::num_vertices() const noexcept
+	constexpr size_t LineString::vertexCount() const noexcept
 	{
 		return m_vertices.size();
 	}
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	num_segments
+	//	segmentCount
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr size_t LineString::num_segments(const CloseRing closeRing) const noexcept
+	constexpr size_t LineString::segmentCount(const CloseRing closeRing) const noexcept
 	{
 		if (m_vertices.size() < 2)
 		{

@@ -23,13 +23,13 @@ namespace s3d
 	ChildProcess::ChildProcess()
 		: pImpl{ std::make_unique<ChildProcessDetail>() } {}
 
-	ChildProcess::ChildProcess(const FilePathView path, const Pipe pipe)
+	ChildProcess::ChildProcess(const FilePathView path, const ChildProcessPipe pipe)
 		: ChildProcess{ path, Array<String>{}, pipe } {}
 
-	ChildProcess::ChildProcess(const FilePathView path, const StringView command, const Pipe pipe)
+	ChildProcess::ChildProcess(const FilePathView path, const StringView command, const ChildProcessPipe pipe)
 		: ChildProcess{ path, Array<String>{ String{ command } }, pipe } {}
 
-	ChildProcess::ChildProcess(const FilePathView path, const Array<String>& commands, const Pipe pipe)
+	ChildProcess::ChildProcess(const FilePathView path, const Array<String>& commands, const ChildProcessPipe pipe)
 		: pImpl{ std::make_unique<ChildProcessDetail>(path, commands, pipe) } {}
 
 	ChildProcess::ChildProcess(ChildProcess&& other) noexcept = default;

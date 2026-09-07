@@ -62,7 +62,7 @@ namespace s3d
 		///         線分に退化している場合は点がその支持直線上にあることが確定するため、AABB 包含が
 		///         縮退図形上の判定と厳密に等価です。点に退化している場合は任意の点で全 cross == 0
 		///         になりますが、AABB 包含がその一点との一致判定になります。
-		template <BoundaryPolicy Boundary, bool IsClockwise>
+		template <PointContainmentBoundaryPolicy Boundary, bool IsClockwise>
 		[[nodiscard]]
 		constexpr bool ContainsPointHalfPlane3(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& point) noexcept
 		{
@@ -84,7 +84,7 @@ namespace s3d
 
 			const unsigned hasPositive = ((c0 > 0.0) | (c1 > 0.0) | (c2 > 0.0));
 
-			if constexpr (Boundary == BoundaryPolicy::Excluded)
+			if constexpr (Boundary == PointContainmentBoundaryPolicy::Excluded)
 			{
 				// 境界上 ⇔ 実辺(ゼロ長でない辺)の支持直線上
 				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
@@ -109,7 +109,7 @@ namespace s3d
 
 		/// @brief 半平面判定による点包含(4 頂点・縮退許容)
 		/// @remark 3 頂点版 `ContainsPointHalfPlane3` と同じ方式です。そちらの説明を参照。
-		template <BoundaryPolicy Boundary, bool IsClockwise>
+		template <PointContainmentBoundaryPolicy Boundary, bool IsClockwise>
 		[[nodiscard]]
 		constexpr bool ContainsPointHalfPlane4(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec2& point) noexcept
 		{
@@ -127,7 +127,7 @@ namespace s3d
 
 			const unsigned hasPositive = ((c0 > 0.0) | (c1 > 0.0) | (c2 > 0.0) | (c3 > 0.0));
 
-			if constexpr (Boundary == BoundaryPolicy::Excluded)
+			if constexpr (Boundary == PointContainmentBoundaryPolicy::Excluded)
 			{
 				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
 					| static_cast<unsigned>((c1 == 0.0) & IsDistinct(p1, p2))
@@ -153,7 +153,7 @@ namespace s3d
 		///         両符号が現れれば厳密に外部です。全 cross == 0 となるのは、入力が線分または
 		///         点に退化している場合に限られ、AABB 包含で縮退図形上かを判定します(線分に
 		///         退化している場合、支持直線上にない外部の点は両符号を生じて先に除外されます)。
-		template <BoundaryPolicy Boundary>
+		template <PointContainmentBoundaryPolicy Boundary>
 		[[nodiscard]]
 		constexpr bool ContainsPointSignConsistency3(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& point) noexcept
 		{
@@ -170,7 +170,7 @@ namespace s3d
 				return false;
 			}
 
-			if constexpr (Boundary == BoundaryPolicy::Excluded)
+			if constexpr (Boundary == PointContainmentBoundaryPolicy::Excluded)
 			{
 				// 境界上 ⇔ 実辺(ゼロ長でない辺)の支持直線上
 				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
@@ -195,7 +195,7 @@ namespace s3d
 
 		/// @brief 外積符号の一貫性判定による点包含(4 頂点・巻き方向不問・縮退許容)
 		/// @remark 3 頂点版 `ContainsPointSignConsistency3` と同じ方式です。そちらの説明を参照。
-		template <BoundaryPolicy Boundary>
+		template <PointContainmentBoundaryPolicy Boundary>
 		[[nodiscard]]
 		constexpr bool ContainsPointSignConsistency4(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec2& point) noexcept
 		{
@@ -212,7 +212,7 @@ namespace s3d
 				return false;
 			}
 
-			if constexpr (Boundary == BoundaryPolicy::Excluded)
+			if constexpr (Boundary == PointContainmentBoundaryPolicy::Excluded)
 			{
 				const bool onBoundary = (static_cast<unsigned>((c0 == 0.0) & IsDistinct(p0, p1))
 					| static_cast<unsigned>((c1 == 0.0) & IsDistinct(p1, p2))
@@ -241,7 +241,7 @@ namespace s3d
 		///         します。交差は y の半開区間で数え、頂点通過の二重カウントを防ぎます。
 		///         `Boundary` が `Unspecified` 以外の場合、点が辺上にあれば `onBoundary` を
 		///         立てます(辺上 ⇔ 支持直線上(cross == 0)かつ辺の AABB 内)。
-		template <BoundaryPolicy Boundary>
+		template <PointContainmentBoundaryPolicy Boundary>
 		constexpr void RayCastEdge(const Vec2& a, const Vec2& b, const bool aAbove, const bool bAbove, const Vec2& point, bool& inside, bool& onBoundary) noexcept
 		{
 			const bool crossesRay = (aAbove != bAbove);
@@ -249,7 +249,7 @@ namespace s3d
 
 			inside ^= (crossesRay & ((cross > 0.0) == bAbove));
 
-			if constexpr (Boundary != BoundaryPolicy::Unspecified)
+			if constexpr (Boundary != PointContainmentBoundaryPolicy::Unspecified)
 			{
 				const unsigned inYRange = (crossesRay | (a.y == point.y) | (b.y == point.y));
 				const unsigned inXRange = (((a.x <= point.x) & (point.x <= b.x)) | ((b.x <= point.x) & (point.x <= a.x)));
@@ -263,7 +263,7 @@ namespace s3d
 		/// @remark レイ交差の偶奇は巻き数の偶奇に等しく、縮退した(面積ゼロの)閉路の巻き数は
 		///         任意の図形外の点で 0 になるため、縮退した入力でも「図形外 → false」が
 		///         保証されます。境界上の点は `RayCastEdge` の境界検出で処理します。
-		template <BoundaryPolicy Boundary>
+		template <PointContainmentBoundaryPolicy Boundary>
 		[[nodiscard]]
 		constexpr bool ContainsPointRayCasting3(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& point) noexcept
 		{
@@ -278,7 +278,7 @@ namespace s3d
 			RayCastEdge<Boundary>(p1, p2, above1, above2, point, inside, onBoundary);
 			RayCastEdge<Boundary>(p2, p0, above2, above0, point, inside, onBoundary);
 
-			if constexpr (Boundary == BoundaryPolicy::Unspecified)
+			if constexpr (Boundary == PointContainmentBoundaryPolicy::Unspecified)
 			{
 				return inside;
 			}
@@ -286,7 +286,7 @@ namespace s3d
 			{
 				if (onBoundary)
 				{
-					return (Boundary == BoundaryPolicy::Included);
+					return (Boundary == PointContainmentBoundaryPolicy::Included);
 				}
 
 				return inside;
@@ -295,7 +295,7 @@ namespace s3d
 
 		/// @brief ray casting(偶奇則)による点包含(4 頂点・凹可・巻き方向不問・縮退許容)
 		/// @remark 3 頂点版 `ContainsPointRayCasting3` と同じ方式です。そちらの説明を参照。
-		template <BoundaryPolicy Boundary>
+		template <PointContainmentBoundaryPolicy Boundary>
 		[[nodiscard]]
 		constexpr bool ContainsPointRayCasting4(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec2& point) noexcept
 		{
@@ -312,7 +312,7 @@ namespace s3d
 			RayCastEdge<Boundary>(p2, p3, above2, above3, point, inside, onBoundary);
 			RayCastEdge<Boundary>(p3, p0, above3, above0, point, inside, onBoundary);
 
-			if constexpr (Boundary == BoundaryPolicy::Unspecified)
+			if constexpr (Boundary == PointContainmentBoundaryPolicy::Unspecified)
 			{
 				return inside;
 			}
@@ -320,7 +320,7 @@ namespace s3d
 			{
 				if (onBoundary)
 				{
-					return (Boundary == BoundaryPolicy::Included);
+					return (Boundary == PointContainmentBoundaryPolicy::Included);
 				}
 
 				return inside;
@@ -347,8 +347,8 @@ namespace s3d
 			double ax = v[n - 1].x;
 			double ay = v[n - 1].y;
 
-			if constexpr ((Options.shape == PolygonShape::ConvexClockwise)
-				|| (Options.shape == PolygonShape::ConvexCounterClockwise))
+			if constexpr ((Options.shape == PointContainmentShape::ConvexClockwise)
+				|| (Options.shape == PointContainmentShape::ConvexCounterClockwise))
 			{
 				// 半平面判定:
 				// Siv3D 座標系(x 右, y 下)の凸多角形は、
@@ -360,7 +360,7 @@ namespace s3d
 				// 数学的には `x < 0` / `x <= 0` と同値だが、NaN が混入した場合に
 				// 前者は false 側(= 早期 return で全体 false)に落ちるため、
 				// 誤って true を返すことがない。コストは同一。
-				constexpr bool IsClockwise = (Options.shape == PolygonShape::ConvexClockwise);
+				constexpr bool IsClockwise = (Options.shape == PointContainmentShape::ConvexClockwise);
 
 				for (size_t i = 0; i < n; ++i)
 				{
@@ -370,7 +370,7 @@ namespace s3d
 					const double cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax);
 					const double oriented = (IsClockwise ? cross : -cross);
 
-					if constexpr (Options.boundary == BoundaryPolicy::Excluded)
+					if constexpr (Options.boundary == PointContainmentBoundaryPolicy::Excluded)
 					{
 						if (not (oriented > 0.0))
 						{
@@ -391,7 +391,7 @@ namespace s3d
 
 				return true;
 			}
-			else if constexpr (Options.shape == PolygonShape::Convex)
+			else if constexpr (Options.shape == PointContainmentShape::Convex)
 			{
 				// 凸だが巻き方向不明:
 				// 全辺の cross の符号が一貫していれば内部または境界上。
@@ -407,7 +407,7 @@ namespace s3d
 
 					const double cross = (bx - ax) * (py - ay) - (by - ay) * (px - ax);
 
-					if constexpr (Options.boundary == BoundaryPolicy::Excluded)
+					if constexpr (Options.boundary == PointContainmentBoundaryPolicy::Excluded)
 					{
 						// 凸多角形の厳密な内部点は、どの辺の支持直線上にも乗らない。
 						if (cross == 0.0)
@@ -443,7 +443,7 @@ namespace s3d
 					const double by = v[i].y;
 					const bool bAbove = (by > py);
 
-					if constexpr (Options.boundary == BoundaryPolicy::Unspecified)
+					if constexpr (Options.boundary == PointContainmentBoundaryPolicy::Unspecified)
 					{
 						if (aAbove != bAbove)
 						{
@@ -466,7 +466,7 @@ namespace s3d
 							if ((cross == 0.0)
 								&& (((ax <= px) && (px <= bx)) || ((bx <= px) && (px <= ax))))
 							{
-								return (Options.boundary == BoundaryPolicy::Included);
+								return (Options.boundary == PointContainmentBoundaryPolicy::Included);
 							}
 
 							// 交差判定(半開区間ルールにより頂点通過の二重カウントを防ぐ)
@@ -494,14 +494,14 @@ namespace s3d
 		/// @param point 判定する点
 		/// @return 点が三角形の内部にある場合 true, それ以外の場合は false
 		///
-		/// @remark `BoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
+		/// @remark `PointContainmentBoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
 		///         Excluded: 境界上 false / Unspecified: 境界上の結果は未規定)。
 		/// @remark 多頂点版と異なり、縮退した入力(頂点が同一直線上・重複・一致)に全設定で対応します。
 		///         縮退した三角形は内部が空集合の図形として扱われます。すなわち `Included` では
 		///         点が縮退図形(線分または点)上にある場合に true、`Excluded` では常に false、
 		///         `Unspecified` では図形上の点の結果は未規定です。縮退・非縮退を問わず、厳密に
 		///         外部の点(支持直線の延長上を含む)には false を返します。
-		/// @remark 3 頂点は常に凸であるため、`PolygonShape` はどれを指定しても正しく動作します。
+		/// @remark 3 頂点は常に凸であるため、`PointContainmentShape` はどれを指定しても正しく動作します。
 		///         既定値は `Convex` です(4 頂点版・多頂点版の既定 `General` とは異なります)。
 		///         巻き方向が既知なら `ConvexClockwise` / `ConvexCounterClockwise` の指定で
 		///         さらに高速になります。
@@ -514,15 +514,15 @@ namespace s3d
 		template <PointContainmentOptions Options>
 		constexpr bool ContainsPoint(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& point) noexcept
 		{
-			if constexpr (Options.shape == PolygonShape::ConvexClockwise)
+			if constexpr (Options.shape == PointContainmentShape::ConvexClockwise)
 			{
 				return detail::ContainsPointHalfPlane3<Options.boundary, true>(p0, p1, p2, point);
 			}
-			else if constexpr (Options.shape == PolygonShape::ConvexCounterClockwise)
+			else if constexpr (Options.shape == PointContainmentShape::ConvexCounterClockwise)
 			{
 				return detail::ContainsPointHalfPlane3<Options.boundary, false>(p0, p1, p2, point);
 			}
-			else if constexpr (Options.shape == PolygonShape::Convex)
+			else if constexpr (Options.shape == PointContainmentShape::Convex)
 			{
 				return detail::ContainsPointSignConsistency3<Options.boundary>(p0, p1, p2, point);
 			}
@@ -541,9 +541,9 @@ namespace s3d
 		/// @param point 判定する点
 		/// @return 点が四角形の内部にある場合 true, それ以外の場合は false
 		///
-		/// @remark `BoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
+		/// @remark `PointContainmentBoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
 		///         Excluded: 境界上 false / Unspecified: 境界上の結果は未規定)。
-		/// @remark `PolygonShape::General` は凹四角形にも対応します。
+		/// @remark `PointContainmentShape::General` は凹四角形にも対応します。
 		/// @remark 多頂点版と異なり、外周順を保つ縮退(隣接する頂点の重複によるゼロ長辺、平坦な頂点、
 		///         全頂点の同一直線上・同一点への退化)に全設定で対応します。内部が空になる縮退図形は
 		///         `Included` では図形(線分または点)上の点に true、`Excluded` では常に false を返し、
@@ -564,15 +564,15 @@ namespace s3d
 		template <PointContainmentOptions Options>
 		constexpr bool ContainsPoint(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& p3, const Vec2& point) noexcept
 		{
-			if constexpr (Options.shape == PolygonShape::ConvexClockwise)
+			if constexpr (Options.shape == PointContainmentShape::ConvexClockwise)
 			{
 				return detail::ContainsPointHalfPlane4<Options.boundary, true>(p0, p1, p2, p3, point);
 			}
-			else if constexpr (Options.shape == PolygonShape::ConvexCounterClockwise)
+			else if constexpr (Options.shape == PointContainmentShape::ConvexCounterClockwise)
 			{
 				return detail::ContainsPointHalfPlane4<Options.boundary, false>(p0, p1, p2, p3, point);
 			}
-			else if constexpr (Options.shape == PolygonShape::Convex)
+			else if constexpr (Options.shape == PointContainmentShape::Convex)
 			{
 				return detail::ContainsPointSignConsistency4<Options.boundary>(p0, p1, p2, p3, point);
 			}

@@ -33,10 +33,10 @@ namespace s3d
 	BinaryFileWriter::BinaryFileWriter()
 		: pImpl{ std::make_unique<BinaryFileWriterDetail>() } {}
 
-	BinaryFileWriter::BinaryFileWriter(const FilePathView path, const OpenMode openMode)
+	BinaryFileWriter::BinaryFileWriter(const FilePathView path, const FileWriteMode writeMode)
 		: BinaryFileWriter{}
 	{
-		open(path, openMode);
+		open(path, writeMode);
 	}
 
 	BinaryFileWriter::BinaryFileWriter(BinaryFileWriter&& other) noexcept = default;
@@ -63,9 +63,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	bool BinaryFileWriter::open(const FilePathView path, const OpenMode openMode)
+	bool BinaryFileWriter::open(const FilePathView path, const FileWriteMode writeMode)
 	{
-		return pImpl->open(path, openMode);
+		return pImpl->open(path, writeMode);
 	}
 
 	////////////////////////////////////////////////////////////////

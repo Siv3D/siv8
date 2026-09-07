@@ -193,3 +193,41 @@ TEST_CASE("Array.all")
 		static_assert(Array<int32>{ 2, 4, 6 }.all(IsOdd) == false);
 	}
 }
+
+TEST_CASE("Array<bool>.sort_by")
+{
+	const Array<bool> source = { true, false, true, false };
+	const Array<bool> ascending = { false, false, true, true };
+	const Array<bool> descending = { true, true, false, false };
+
+	Array<bool> values = source;
+	CHECK_EQ(&(values.sort_by(std::greater<>{})), &values);
+	CHECK_EQ(values, descending);
+
+	CHECK_EQ(Array<bool>{ source }.sort_by(std::less<>{}), ascending);
+	CHECK_EQ(source.sorted_by(std::greater<>{}), descending);
+	CHECK_EQ(Array<bool>{ source }.sorted_by(std::less<>{}), ascending);
+	CHECK_EQ(source, Array<bool>{ true, false, true, false });
+	CHECK(Array<bool>{}.sort_by(std::less<>{}).isEmpty());
+	CHECK_EQ(Array<bool>{ true }.sorted_by(std::greater<>{}), Array<bool>{ true });
+}
+
+TEST_CASE("Array<bool>.stable_sort_by")
+{
+	const Array<bool> source = { true, false, true, false };
+	const Array<bool> ascending = { false, false, true, true };
+	const Array<bool> descending = { true, true, false, false };
+
+	Array<bool> values = source;
+	CHECK_EQ(&(values.stable_sort_by(std::greater<>{})), &values);
+	CHECK_EQ(values, descending);
+
+	CHECK_EQ(Array<bool>{ source }.stable_sort_by(std::less<>{}), ascending);
+	CHECK_EQ(source.stable_sorted_by(std::greater<>{}), descending);
+	CHECK_EQ(Array<bool>{ source }.stable_sorted_by(std::less<>{}), ascending);
+
+	const auto equivalent = [](const bool, const bool) { return false; };
+	CHECK_EQ(source.stable_sorted_by(equivalent), source);
+	CHECK(Array<bool>{}.stable_sort_by(std::less<>{}).isEmpty());
+	CHECK_EQ(Array<bool>{ false }.stable_sorted_by(std::greater<>{}), Array<bool>{ false });
+}

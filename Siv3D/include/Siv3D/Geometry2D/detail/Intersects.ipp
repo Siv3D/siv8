@@ -20,7 +20,7 @@ namespace s3d
 {
 	namespace detail
 	{
-		inline constexpr PointContainmentOptions ConvexClockwise{ .boundary = BoundaryPolicy::Included, .shape = PolygonShape::ConvexClockwise };
+		inline constexpr PointContainmentOptions ConvexClockwise{ .boundary = PointContainmentBoundaryPolicy::Included, .shape = PointContainmentShape::ConvexClockwise };
 
 		[[nodiscard]]
 		constexpr bool BetweenClosed(const double a, const double x, const double b) noexcept

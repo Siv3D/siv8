@@ -352,7 +352,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CDragDrop::setDragOverFromNative(const Point& rawClientPos, const DragItemType itemType)
+	void CDragDrop::setDragOverFromNative(const Point& rawClientPos, const DragDropItemType itemType)
 	{
 		std::lock_guard lock{ m_stateMutex };
 

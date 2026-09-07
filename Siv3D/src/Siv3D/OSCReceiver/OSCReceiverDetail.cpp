@@ -37,9 +37,9 @@ namespace s3d
 		return m_listner.hasMessages();
 	}
 
-	size_t OSCReceiver::OSCReceiverDetail::num_messages()
+	size_t OSCReceiver::OSCReceiverDetail::messageCount()
 	{
-		return m_listner.num_messages();
+		return m_listner.messageCount();
 	}
 
 	OSCReceivedMessage OSCReceiver::OSCReceiverDetail::pop()

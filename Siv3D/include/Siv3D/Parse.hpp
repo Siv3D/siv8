@@ -30,7 +30,7 @@ namespace s3d
 	/// @tparam Type パースする値の型 | Type of the value to parse
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
-	/// @throws ParseError パースに失敗した場合 | If parsing fails
+	/// @throw ParseError パースに失敗した場合 | If parsing fails
 	/// @return パースによって得られた値 | The value obtained by parsing
 	template <class Type>
 	[[nodiscard]]
@@ -40,7 +40,7 @@ namespace s3d
 	/// @tparam Type パースする値の型 | Type of the value to parse
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
-	/// @throws ParseError パースに失敗した場合 | If parsing fails
+	/// @throw ParseError パースに失敗した場合 | If parsing fails
 	/// @return パースによって得られた値 | The value obtained by parsing
 	template <class Type>
 	[[nodiscard]]

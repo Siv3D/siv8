@@ -644,14 +644,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 扇形の Polygon を作成します。
+		/// @remark 開始角度 0 は円の上端で、正角は画面上の時計回りです。負の angle は逆方向の領域を指定しますが、戻り値の外周は時計回りです。
 		/// @param startAngle 開始角度（ラジアン）
 		/// @param angle 角度（ラジアン）
-		/// @param pointsPerCircle 頂点数（完全な円のときの頂点数）
+		/// @param pointsPerCircle 完全な円の分割数。指定した円弧そのものの分割数ではありません。
 		/// @return Polygon
 		[[nodiscard]]
 		Polygon pieAsPolygon(double startAngle, double angle, const PointsPerCircle& pointsPerCircle) const;
 
 		/// @brief 扇形の Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @remark 開始角度 0 は円の上端で、正角は画面上の時計回りです。負の angle は逆方向の領域を指定しますが、戻り値の外周は時計回りです。
 		/// @param startAngle 開始角度（ラジアン）
 		/// @param angle 角度（ラジアン）
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
@@ -666,16 +668,18 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 円弧の Polygon を作成します。
+		/// @remark 開始角度 0 は円の上端で、正角は画面上の時計回りです。負の angle は逆方向の領域を指定しますが、戻り値の外周は時計回りです。
 		/// @param startAngle 開始角度（ラジアン）
 		/// @param angle 角度（ラジアン）
 		/// @param innerThickness 内側方向への枠の太さ（ピクセル）
 		/// @param outerThickness 外側方向への枠の太さ（ピクセル）
-		/// @param pointsPerCircle 頂点数（完全な円のときの頂点数）
+		/// @param pointsPerCircle 完全な円の分割数。指定した円弧そのものの分割数ではありません。
 		/// @return Polygon
 		[[nodiscard]]
 		Polygon arcAsPolygon(double startAngle, double angle, double innerThickness, double outerThickness, const PointsPerCircle& pointsPerCircle) const;
 
 		/// @brief 円弧の Polygon を作成します。分割数は半径に応じて自動的に決定されます。
+		/// @remark 開始角度 0 は円の上端で、正角は画面上の時計回りです。負の angle は逆方向の領域を指定しますが、戻り値の外周は時計回りです。
 		/// @param startAngle 開始角度（ラジアン）
 		/// @param angle 角度（ラジアン）
 		/// @param innerThickness 内側方向への枠の太さ（ピクセル）

@@ -16,7 +16,7 @@
 namespace s3d
 {
 	/// @brief 境界上の点の扱い
-	enum class BoundaryPolicy
+	enum class PointContainmentBoundaryPolicy
 	{
 		/// @brief 境界上の点の結果を規定しない
 		/// @remark 境界判定を省略できるため、最速の設定です。
@@ -34,7 +34,7 @@ namespace s3d
 
 	/// @brief 多角形の形状に関する前提
 	/// @remark 凸性・巻き方向は最適化のための前提条件であり、実行時には検証されません。
-	enum class PolygonShape
+	enum class PointContainmentShape
 	{
 		/// @brief 一般の単純多角形
 		/// @remark 凹多角形を含みます。巻き方向は判定結果に影響しません。
@@ -55,10 +55,10 @@ namespace s3d
 	struct PointContainmentOptions
 	{
 		/// @brief 境界上の点の扱い
-		BoundaryPolicy boundary = BoundaryPolicy::Unspecified;
+		PointContainmentBoundaryPolicy boundary = PointContainmentBoundaryPolicy::Unspecified;
 
 		/// @brief 多角形の形状に関する前提
-		PolygonShape shape = PolygonShape::General;
+		PointContainmentShape shape = PointContainmentShape::General;
 	};
 
 	namespace Geometry2D
@@ -70,14 +70,14 @@ namespace s3d
 		/// @param point 判定する点
 		/// @return 点が多角形の内部にある場合 true, それ以外の場合は false
 		///
-		/// @remark `BoundaryPolicy::Included` の場合、境界上の点を true として扱います。
-		/// @remark `BoundaryPolicy::Excluded` の場合、境界上の点を false として扱います。
-		/// @remark `BoundaryPolicy::Unspecified` の場合、境界上の点の結果は保証されません。
-		/// @remark `PolygonShape::ConvexClockwise` / `ConvexCounterClockwise` は最速の半平面判定を使用します。
+		/// @remark `PointContainmentBoundaryPolicy::Included` の場合、境界上の点を true として扱います。
+		/// @remark `PointContainmentBoundaryPolicy::Excluded` の場合、境界上の点を false として扱います。
+		/// @remark `PointContainmentBoundaryPolicy::Unspecified` の場合、境界上の点の結果は保証されません。
+		/// @remark `PointContainmentShape::ConvexClockwise` / `ConvexCounterClockwise` は最速の半平面判定を使用します。
 		///         このパスでは `Unspecified` / `Included` は同一のコードになり、境界上の点は
 		///         (厳密な `double` 比較が成立する範囲で)内部として扱われます。
-		/// @remark `PolygonShape::Convex`(巻き方向不明)は外積符号の一貫性判定を使用します。
-		/// @remark `PolygonShape::General` は非凸多角形にも対応する ray casting 判定を使用します。
+		/// @remark `PointContainmentShape::Convex`(巻き方向不明)は外積符号の一貫性判定を使用します。
+		/// @remark `PointContainmentShape::General` は非凸多角形にも対応する ray casting 判定を使用します。
 		/// @remark `vertices.size() < 3` の場合は false を返します。
 		/// @remark 座標比較は厳密な `double` 比較に基づきます。浮動小数点誤差を含む境界上判定は保証されません。
 		///
@@ -91,7 +91,7 @@ namespace s3d
 		/// @pre `Options.shape` が `ConvexClockwise` / `ConvexCounterClockwise` の場合、
 		///      頂点列は Siv3D 座標系(x 右, y 下)でそれぞれ時計回り / 反時計回りである必要があります。
 		/// @pre `Options.shape` が `Convex` / `ConvexClockwise` / `ConvexCounterClockwise`、かつ
-		///      `Options.boundary == BoundaryPolicy::Excluded` の場合、隣接する同一頂点、すなわち
+		///      `Options.boundary == PointContainmentBoundaryPolicy::Excluded` の場合、隣接する同一頂点、すなわち
 		///      ゼロ長辺を含んではいけません。それ以外の設定ではゼロ長辺は判定結果に影響しません。
 		/// @pre `point` および `vertices` の各座標は有限値である必要があります。NaN / Inf はサポートされません。
 		template <PointContainmentOptions Options = PointContainmentOptions{}, class PointType = Vec2>
@@ -106,14 +106,14 @@ namespace s3d
 		/// @param point 判定する点
 		/// @return 点が三角形の内部にある場合 true, それ以外の場合は false
 		///
-		/// @remark `BoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
+		/// @remark `PointContainmentBoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
 		///         Excluded: 境界上 false / Unspecified: 境界上の結果は未規定)。
 		/// @remark 多頂点版と異なり、縮退した入力(頂点が同一直線上・重複・一致)に全設定で対応します。
 		///         縮退した三角形は内部が空集合の図形として扱われます。すなわち `Included` では
 		///         点が縮退図形(線分または点)上にある場合に true、`Excluded` では常に false、
 		///         `Unspecified` では図形上の点の結果は未規定です。縮退・非縮退を問わず、厳密に
 		///         外部の点(支持直線の延長上を含む)には false を返します。
-		/// @remark 3 頂点は常に凸であるため、`PolygonShape` はどれを指定しても正しく動作します。
+		/// @remark 3 頂点は常に凸であるため、`PointContainmentShape` はどれを指定しても正しく動作します。
 		///         既定値は `Convex` です(4 頂点版・多頂点版の既定 `General` とは異なります)。
 		///         巻き方向が既知なら `ConvexClockwise` / `ConvexCounterClockwise` の指定で
 		///         さらに高速になります。
@@ -123,7 +123,7 @@ namespace s3d
 		///      Siv3D 座標系(x 右, y 下)でそれぞれ時計回り / 反時計回りである必要があります
 		///      (縮退した入力に巻き方向の要件はありません)。
 		/// @pre `point` および各頂点の座標は有限値である必要があります。NaN / Inf はサポートされません。
-		template <PointContainmentOptions Options = PointContainmentOptions{ .boundary = BoundaryPolicy::Unspecified, .shape = PolygonShape::Convex }>
+		template <PointContainmentOptions Options = PointContainmentOptions{ .boundary = PointContainmentBoundaryPolicy::Unspecified, .shape = PointContainmentShape::Convex }>
 		[[nodiscard]]
 		constexpr bool ContainsPoint(const Vec2& p0, const Vec2& p1, const Vec2& p2, const Vec2& point) noexcept;
 
@@ -136,9 +136,9 @@ namespace s3d
 		/// @param point 判定する点
 		/// @return 点が四角形の内部にある場合 true, それ以外の場合は false
 		///
-		/// @remark `BoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
+		/// @remark `PointContainmentBoundaryPolicy` の意味は多頂点版と同じです(Included: 境界上 true /
 		///         Excluded: 境界上 false / Unspecified: 境界上の結果は未規定)。
-		/// @remark `PolygonShape::General` は凹四角形にも対応します。
+		/// @remark `PointContainmentShape::General` は凹四角形にも対応します。
 		/// @remark 多頂点版と異なり、外周順を保つ縮退(隣接する頂点の重複によるゼロ長辺、平坦な頂点、
 		///         全頂点の同一直線上・同一点への退化)に全設定で対応します。内部が空になる縮退図形は
 		///         `Included` では図形(線分または点)上の点に true、`Excluded` では常に false を返し、

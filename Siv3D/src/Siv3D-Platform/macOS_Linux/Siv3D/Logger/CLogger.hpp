@@ -13,7 +13,7 @@
 # include <atomic>
 # include <mutex>
 # include <Siv3D/Logger/ILogger.hpp>
-# include <Siv3D/LogType.hpp>
+# include <Siv3D/LogLevel.hpp>
 
 namespace s3d
 {
@@ -27,17 +27,17 @@ namespace s3d
 
 		void writeln(StringView s) override;
 
-		void writeln(LogType type, std::string_view s) override;
+		void writeln(LogLevel logLevel, std::string_view s) override;
 
-		void writeln(LogType type, StringView s) override;
+		void writeln(LogLevel logLevel, StringView s) override;
 
-		void setOutputLevel(LogType logType) noexcept override;
+		void setOutputLevel(LogLevel logLevel) noexcept override;
 
-		LogType getOutputLevel() const noexcept override;
+		LogLevel getOutputLevel() const noexcept override;
 
 	private:
 
-		std::atomic<LogType> m_outputLevel = LogType::Info;
+		std::atomic<LogLevel> m_outputLevel = LogLevel::Info;
 
 		std::mutex m_mutex;
 

@@ -117,7 +117,7 @@ namespace s3d
 
 	Line LineString::segment(const size_t index, const CloseRing closeRing) const
 	{
-		if (num_segments(closeRing) <= index)
+		if (segmentCount(closeRing) <= index)
 		{
 			throw std::out_of_range{ "LineString::segment() index out of range" };
 		}
@@ -420,11 +420,11 @@ namespace s3d
 			return front();
 		}
 
-		const size_t segmentCount = num_segments(closeRing);
+		const size_t numSegments = segmentCount(closeRing);
 		const Vec2* pSrc = m_vertices.data();
 		double accumulatedLength = 0.0;
 
-		for (size_t i = 0; i < segmentCount; ++i)
+		for (size_t i = 0; i < numSegments; ++i)
 		{
 			const Vec2 from = pSrc[i];
 			const Vec2 to = pSrc[((i + 1) == n) ? 0 : (i + 1)];
@@ -519,12 +519,12 @@ namespace s3d
 		}
 
 		const size_t n = m_vertices.size();
-		const size_t segmentCount = num_segments(closeRing);
+		const size_t numSegments = segmentCount(closeRing);
 		const Vec2* pSrc = m_vertices.data();
-		Array<double> segmentLengths(segmentCount);
+		Array<double> segmentLengths(numSegments);
 		double lineStringLength = 0.0;
 
-		for (size_t i = 0; i < segmentCount; ++i)
+		for (size_t i = 0; i < numSegments; ++i)
 		{
 			const double segmentLength = pSrc[i].distanceFrom(pSrc[((i + 1) == n) ? 0 : (i + 1)]);
 			segmentLengths[i] = segmentLength;
@@ -532,7 +532,7 @@ namespace s3d
 		}
 
 		LineString result;
-		result.reserve(segmentCount + 2);
+		result.reserve(numSegments + 2);
 
 		if (closeRing)
 		{
@@ -545,9 +545,9 @@ namespace s3d
 			const double distanceEnd = (distanceBegin + lineStringLength);
 			double accumulatedLength = 0.0;
 
-			for (size_t k = 0; k < (segmentCount * 2); ++k)
+			for (size_t k = 0; k < (numSegments * 2); ++k)
 			{
-				const size_t i = (k % segmentCount);
+				const size_t i = (k % numSegments);
 				const Vec2 from = pSrc[i];
 				const Vec2 to = pSrc[((i + 1) == n) ? 0 : (i + 1)];
 				const double segmentLength = segmentLengths[i];
@@ -592,7 +592,7 @@ namespace s3d
 			const double distanceBegin = Clamp(distanceFromStart, 0.0, lineStringLength);
 			double accumulatedLength = 0.0;
 
-			for (size_t i = 0; i < segmentCount; ++i)
+			for (size_t i = 0; i < numSegments; ++i)
 			{
 				const Vec2 from = pSrc[i];
 				const Vec2 to = pSrc[i + 1];
@@ -631,12 +631,12 @@ namespace s3d
 		}
 
 		const size_t n = m_vertices.size();
-		const size_t segmentCount = num_segments(closeRing);
+		const size_t numSegments = segmentCount(closeRing);
 		const Vec2* pSrc = m_vertices.data();
-		Array<double> segmentLengths(segmentCount);
+		Array<double> segmentLengths(numSegments);
 		double lineStringLength = 0.0;
 
-		for (size_t i = 0; i < segmentCount; ++i)
+		for (size_t i = 0; i < numSegments; ++i)
 		{
 			const double segmentLength = pSrc[i].distanceFrom(pSrc[((i + 1) == n) ? 0 : (i + 1)]);
 			segmentLengths[i] = segmentLength;
@@ -657,7 +657,7 @@ namespace s3d
 		}
 
 		LineString result;
-		result.reserve(segmentCount + 2);
+		result.reserve(numSegments + 2);
 
 		if (closeRing)
 		{
@@ -676,9 +676,9 @@ namespace s3d
 
 			double accumulatedLength = 0.0;
 
-			for (size_t k = 0; k < (segmentCount * 2); ++k)
+			for (size_t k = 0; k < (numSegments * 2); ++k)
 			{
-				const size_t i = (k % segmentCount);
+				const size_t i = (k % numSegments);
 				const Vec2 pFrom = pSrc[i];
 				const Vec2 pTo = pSrc[((i + 1) == n) ? 0 : (i + 1)];
 				const double segmentLength = segmentLengths[i];
@@ -724,7 +724,7 @@ namespace s3d
 			const double distanceEnd = Clamp(to, 0.0, lineStringLength);
 			double accumulatedLength = 0.0;
 
-			for (size_t i = 0; i < segmentCount; ++i)
+			for (size_t i = 0; i < numSegments; ++i)
 			{
 				const Vec2 pFrom = pSrc[i];
 				const Vec2 pTo = pSrc[i + 1];

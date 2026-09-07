@@ -50,13 +50,13 @@ namespace s3d
 	TextFileWriter::TextFileWriter(const FilePathView path, const TextEncoding encoding)
 		: TextFileWriter{}
 	{
-		open(path, OpenMode::Trunc, encoding);
+		open(path, FileWriteMode::Trunc, encoding);
 	}
 
-	TextFileWriter::TextFileWriter(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
+	TextFileWriter::TextFileWriter(const FilePathView path, const FileWriteMode writeMode, const TextEncoding encoding)
 		: TextFileWriter{}
 	{
-		open(path, openMode, encoding);
+		open(path, writeMode, encoding);
 	}
 
 	TextFileWriter::TextFileWriter(TextFileWriter&& other) noexcept = default;
@@ -85,12 +85,12 @@ namespace s3d
 
 	bool TextFileWriter::open(const FilePathView path, const TextEncoding encoding)
 	{
-		return open(path, OpenMode::Trunc, encoding);
+		return open(path, FileWriteMode::Trunc, encoding);
 	}
 
-	bool TextFileWriter::open(const FilePathView path, const OpenMode openMode, const TextEncoding encoding)
+	bool TextFileWriter::open(const FilePathView path, const FileWriteMode writeMode, const TextEncoding encoding)
 	{
-		return pImpl->open(path, openMode, encoding);
+		return pImpl->open(path, writeMode, encoding);
 	}
 
 	////////////////////////////////////////////////////////////////

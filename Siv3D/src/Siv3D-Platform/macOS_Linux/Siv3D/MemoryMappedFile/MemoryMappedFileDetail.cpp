@@ -30,7 +30,7 @@ namespace s3d
 		close();
 	}
 
-	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path, const OpenMode_if_Exists ifExists, const OpenMode_if_NotFound ifNotFound)
+	bool MemoryMappedFile::MemoryMappedFileDetail::open(const FilePathView path, const ExistingFilePolicy ifExists, const MissingFilePolicy ifNotFound)
 	{
 		LOG_DEBUG(fmt::format("MemoryMappedFile::MemoryMappedFileDetail::open(\"{0}\")", path.toUTF8()));
 
@@ -47,19 +47,19 @@ namespace s3d
 
 			switch (ifExists)
 			{
-			case OpenMode_if_Exists::JustOpen:
+			case ExistingFilePolicy::JustOpen:
 				{
-					openMode |= ((ifNotFound == OpenMode_if_NotFound::Create) ? O_CREAT : 0);
+					openMode |= ((ifNotFound == MissingFilePolicy::Create) ? O_CREAT : 0);
 					break;
 				}
-			case OpenMode_if_Exists::Truncate:
+			case ExistingFilePolicy::Truncate:
 				{
-					openMode |= ((ifNotFound == OpenMode_if_NotFound::Create) ? (O_TRUNC | O_CREAT) : O_TRUNC);
+					openMode |= ((ifNotFound == MissingFilePolicy::Create) ? (O_TRUNC | O_CREAT) : O_TRUNC);
 					break;
 				}
 			default:
 				{
-					if (ifNotFound == OpenMode_if_NotFound::Create)
+					if (ifNotFound == MissingFilePolicy::Create)
 					{
 						openMode |= (O_EXCL | O_CREAT);
 					}

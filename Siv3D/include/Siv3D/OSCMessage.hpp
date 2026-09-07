@@ -53,12 +53,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief バンドルを開始します。
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& beginBundle();
 
 		/// @brief バンドルを終了します。
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& endBundle();
 
@@ -70,12 +70,12 @@ namespace s3d
 
 		/// @brief メッセージを開始します。
 		/// @param addressPattern アドレスパターン
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& beginMessage(StringView addressPattern);
 
 		/// @brief メッセージを終了します。
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& endMessage();
 
@@ -87,7 +87,7 @@ namespace s3d
 
 		/// @brief bool 型の値を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addBool(bool value);
 
@@ -99,7 +99,7 @@ namespace s3d
 
 		/// @brief ASCII 文字を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addChar(char value);
 
@@ -111,7 +111,7 @@ namespace s3d
 
 		/// @brief int32 型の値を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addInt32(int32 value);
 
@@ -123,7 +123,7 @@ namespace s3d
 
 		/// @brief int64 型の値を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addInt64(int64 value);
 
@@ -135,7 +135,7 @@ namespace s3d
 
 		/// @brief float 型の値を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addFloat(float value);
 
@@ -147,7 +147,7 @@ namespace s3d
 
 		/// @brief double 型の値を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addDouble(double value);
 
@@ -159,7 +159,7 @@ namespace s3d
 
 		/// @brief MIDI メッセージを引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addMIDIMessage(uint32 value);
 
@@ -171,7 +171,7 @@ namespace s3d
 
 		/// @brief 時刻タグを引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addTimeTag(uint64 value);
 
@@ -183,7 +183,7 @@ namespace s3d
 
 		/// @brief RGBA カラーを引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addRGBA(const Color& value);
 
@@ -195,7 +195,7 @@ namespace s3d
 
 		/// @brief 文字列を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addString(StringView value);
 
@@ -207,7 +207,7 @@ namespace s3d
 
 		/// @brief シンボル文字列を引数として追加します。
 		/// @param value 追加する値
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addSymbol(StringView value);
 
@@ -219,20 +219,20 @@ namespace s3d
 
 		/// @brief blob を引数として追加します。
 		/// @param blob 追加するデータ
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addBlob(const Blob& blob);
 
 		/// @brief blob を引数として追加します。
 		/// @param data 追加するデータの先頭ポインタ
 		/// @param size 追加するデータのサイズ（バイト）
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addBlob(const void* data, size_t size);
 
 		/// @brief blob を引数として追加します。
 		/// @param data 追加するデータ
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addBlob(std::span<const Byte> data);
 
@@ -243,7 +243,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief Nil 値を引数として追加します。
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addNil();
 
@@ -254,7 +254,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 無限を表す値を引数として追加します。
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& addInf();
 
@@ -265,12 +265,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 配列を開始します。
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& beginArray();
 
 		/// @brief 配列を終了します。
-		/// @throws Error バッファが不足している場合
+		/// @throw Error バッファが不足している場合
 		/// @return *this
 		OSCMessage& endArray();
 

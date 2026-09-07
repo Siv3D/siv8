@@ -16,7 +16,7 @@
 # include "TextureAddressMode.hpp"
 # include "TextureFilter.hpp"
 # include "CompareFunction.hpp"
-# include "SampleBorderColor.hpp"
+# include "SamplerBorderColor.hpp"
 # include "SamplerStateBuilder.hpp"
 # include "String.hpp"
 
@@ -47,7 +47,7 @@ namespace s3d
 
 		CompareFunction compareFunction	: 4 = CompareFunction::Never;
 
-		SampleBorderColor borderColor	: 4	= SampleBorderColor::TransparentBlack;
+		SamplerBorderColor borderColor	: 4	= SamplerBorderColor::TransparentBlack;
 
 		float minLOD						= 0.0f;
 
@@ -69,7 +69,7 @@ namespace s3d
 			TextureFilter _mipFilter = TextureFilter::Linear,
 			uint8 _maxAnisotropy = 1,
 			CompareFunction _compareFunction = CompareFunction::Never,
-			SampleBorderColor _borderColor = SampleBorderColor::TransparentBlack,
+			SamplerBorderColor _borderColor = SamplerBorderColor::TransparentBlack,
 			float _minLOD = 0.0f
 		) noexcept;
 

@@ -36,7 +36,7 @@ namespace s3d
 		{
 			std::string out;
 			out.reserve(rtf.size() * 2);
-			
+
 			for (wchar_t wc : rtf)
 			{
 				if (wc >= 0x20 && wc <= 0x7E)
@@ -44,22 +44,22 @@ namespace s3d
 					out.push_back(static_cast<char>(wc));
 					continue;
 				}
-				
+
 				if (wc == L'\r' || wc == L'\n' || wc == L'\t')
 				{
 					out.push_back(static_cast<char>(wc));
 					continue;
 				}
-				
+
 				const int16_t s = static_cast<int16_t>(wc);
 				char buf[32];
 				const int n = std::snprintf(buf, sizeof(buf), "\\u%d?", static_cast<int>(s));
 				out.append(buf, buf + n);
 			}
-			
+
 			return out;
 		}
-	
+
 		[[nodiscard]]
 		static std::string WrapHTMLDocumentUTF8(const std::string& fragmentUtf8)
 		{
@@ -73,7 +73,7 @@ namespace s3d
 			doc += "</body></html>";
 			return doc;
 		}
-	
+
 		static NSString* MakeCustomUTIFromMIME(const std::string& mimeUtf8)
 		{
 			std::string s = "org.siv3d.mime.";
@@ -134,7 +134,7 @@ namespace s3d
 		NSPasteboard* pasteboard = nil;
 		NSInteger sequenceNumber = 0;
 	};
-	
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -164,7 +164,7 @@ namespace s3d
 	void CClipboard::init()
 	{
 		LOG_SCOPED_DEBUG("CClipboard::init()");
-		
+
 		@autoreleasepool
 		{
 			m_pImpl->pasteboard = [NSPasteboard generalPasteboard];
@@ -226,20 +226,20 @@ namespace s3d
 	void CClipboard::setText(const StringView text)
 	{
 		const std::string utf8Text = Unicode::ToUTF8(text);
-		
+
 		@autoreleasepool
 		{
 			NSString* ns = [[NSString alloc] initWithBytes:utf8Text.data() length:utf8Text.size() encoding:NSUTF8StringEncoding];
-			
+
 			if (not ns)
 			{
 				// 変換失敗時は空文字列
 				ns = @"";
 			}
-			
+
 			[m_pImpl->pasteboard clearContents];
 			[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
-			
+
 			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
 		}
 	}
@@ -253,7 +253,7 @@ namespace s3d
 	bool CClipboard::getText(String& text)
 	{
 		text.clear();
-		
+
 		@autoreleasepool
 		{
 			NSString* ns = [m_pImpl->pasteboard stringForType:NSPasteboardTypeString];
@@ -261,7 +261,7 @@ namespace s3d
 			{
 				return false;
 			}
-			
+
 			const char* utf8Text = [ns UTF8String];
 			if (not utf8Text)
 			{
@@ -300,51 +300,51 @@ namespace s3d
 		{
 			return;
 		}
-		
+
 		Image premultiplied{ image };
 		premultiplied.premultiplyAlpha();
-		
+
 		@autoreleasepool
 		{
 			const int32 w = premultiplied.width();
 			const int32 h = premultiplied.height();
-			
+
 			void* pSrc = premultiplied.data();
 			const size_t bytesPerRow = premultiplied.bytesPerRow();
 			const CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 			const CGBitmapInfo bitmapInfo = (static_cast<CGBitmapInfo>(kCGBitmapByteOrder32Big) | static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast));
 			const CGContextRef context = CGBitmapContextCreate(pSrc, w, h, 8, bytesPerRow, colorSpace, bitmapInfo);
 			CGColorSpaceRelease(colorSpace);
-			
+
 			if (not context)
 			{
 				return;
 			}
-			
+
 			CGImageRef cg = CGBitmapContextCreateImage(context);
 			CGContextRelease(context);
-			
+
 			if (not cg)
 			{
 				return;
 			}
-			
+
 			NSImage* nsImage = [[NSImage alloc] initWithCGImage:cg size:NSMakeSize(w, h)];
 			CGImageRelease(cg);
-			
+
 			if (not nsImage)
 			{
 				return;
 			}
-			
+
 			[m_pImpl->pasteboard clearContents];
-			
+
 			// TIFF 形式でペーストボードに画像をセット
 			NSData* tiff = [nsImage TIFFRepresentation];
 			if (tiff)
 			{
 				[m_pImpl->pasteboard setData:tiff forType:NSPasteboardTypeTIFF];
-				
+
 				m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
 			}
 		}
@@ -359,39 +359,39 @@ namespace s3d
 	bool CClipboard::getImage(Image& image, const PremultiplyAlpha premultiplyAlpha)
 	{
 		image.clear();
-		
+
 		@autoreleasepool
 		{
 			NSData* data = [m_pImpl->pasteboard dataForType:NSPasteboardTypeTIFF];
 			if (not data)
 			{
 				data = [m_pImpl->pasteboard dataForType:NSPasteboardTypePNG];
-				
+
 				if (not data)
 				{
 					return false;
 				}
 			}
-			
+
 			NSImage* nsImage = [[NSImage alloc] initWithData:data];
 			if (not nsImage)
 			{
 				return false;
 			}
-			
+
 			CGImageRef cg = [nsImage CGImageForProposedRect:nil context:nil hints:nil];
 			if (not cg)
 			{
 				return false;
 			}
-			
+
 			const size_t w = CGImageGetWidth(cg);
 			const size_t h = CGImageGetHeight(cg);
 			if ((w == 0) || (h == 0))
 			{
 				return false;
 			}
-			
+
 			Image dst{ Size{ w, h } };
 			const size_t bytesPerRow = dst.bytesPerRow();
 			void* pDst = dst.data();
@@ -399,7 +399,7 @@ namespace s3d
 			const CGBitmapInfo bitmapInfo = (static_cast<CGBitmapInfo>(kCGBitmapByteOrder32Big) | static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedLast));
 			const CGContextRef context = CGBitmapContextCreate(pDst, w, h, 8, bytesPerRow, colorSpace, bitmapInfo);
 			CGColorSpaceRelease(colorSpace);
-			
+
 			if (not context)
 			{
 				return false;
@@ -407,12 +407,12 @@ namespace s3d
 
 			CGContextDrawImage(context, CGRectMake(0, 0, (CGFloat)w, (CGFloat)h), cg);
 			CGContextRelease(context);
-			
+
 			if (premultiplyAlpha == PremultiplyAlpha::No)
 			{
 				dst.unpremultiplyAlpha();
 			}
-			
+
 			image = std::move(dst);
 			return true;
 		}
@@ -449,41 +449,41 @@ namespace s3d
 		@autoreleasepool
 		{
 			NSMutableArray<NSURL*>* urls = [NSMutableArray array];
-			
+
 			for (const auto& path : paths)
 			{
 				if (path.isEmpty())
 				{
 					continue;
 				}
-				
+
 				const std::string utf8Path = FileSystem::NativePath(path);
 				if (utf8Path.empty())
 				{
 					continue;
 				}
-				
+
 				NSString* nsPath = [[NSString alloc] initWithBytes:utf8Path.data() length:utf8Path.size() encoding:NSUTF8StringEncoding];
 				if (not nsPath)
 				{
 					continue;
 				}
-				
+
 				if (NSURL* url = [NSURL fileURLWithPath:nsPath])
 				{
 					[urls addObject:url];
 				}
 			}
-			
+
 			if ([urls count] == 0)
 			{
 				return;
 			}
-			
+
 			[m_pImpl->pasteboard clearContents];
-			
+
 			[m_pImpl->pasteboard writeObjects:urls];
-			
+
 			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
 		}
 	}
@@ -497,11 +497,11 @@ namespace s3d
 	bool CClipboard::getFilePaths(Array<FilePath>& paths)
 	{
 		paths.clear();
-		
+
 		@autoreleasepool
 		{
 			NSDictionary* options = @{ NSPasteboardURLReadingFileURLsOnlyKey: @YES };
-			
+
 			NSArray* objects = [m_pImpl->pasteboard readObjectsForClasses:@[[NSURL class]] options:options];
 			if (objects && (0 < [objects count]))
 			{
@@ -511,31 +511,31 @@ namespace s3d
 					{
 						continue;
 					}
-					
+
 					NSURL* url = (NSURL*)obj;
 					if (not [url isFileURL])
 					{
 						continue;
 					}
-					
+
 					NSString* nsPath = [url path];
 					if (not nsPath)
 					{
 						continue;
 					}
-					
+
 					const char* utf8Path = [nsPath UTF8String];
 					if (not utf8Path)
 					{
 						continue;
 					}
-					
+
 					if (FilePath path = FileSystem::FullPath(Unicode::FromUTF8(utf8Path)))
 					{
 						paths.push_back(std::move(path));
 					}
 				}
-				
+
 				return (not paths.empty());
 			}
 		}
@@ -692,13 +692,13 @@ namespace s3d
 				NSString* ns = [[NSString alloc] initWithBytes:utf8.data()
 														length:utf8.size()
 													  encoding:NSUTF8StringEncoding];
-				
+
 				if (ns)
 				{
 					[m_pImpl->pasteboard setString:ns forType:NSPasteboardTypeString];
 				}
 			}
-			
+
 			m_pImpl->sequenceNumber = [m_pImpl->pasteboard changeCount];
 		}
 	}

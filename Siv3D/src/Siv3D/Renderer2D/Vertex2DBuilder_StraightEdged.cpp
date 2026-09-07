@@ -281,7 +281,7 @@ namespace s3d
 
 		Vertex2D::IndexType BuildLine(const BufferCreatorFunc& bufferCreator, const LineStyle& style, const Float2& start, const Float2& end, const float thickness, const Float4(&colors)[2], const float scale)
 		{
-			if (style.type == LineType::Solid)
+			if (style.type == LinePattern::Solid)
 			{
 				return BuildLine(bufferCreator, style.cap, style.cap, start, end, thickness, colors, scale);
 			}
@@ -315,7 +315,7 @@ namespace s3d
 				const Float2 start2 = (start - lineHalf);
 				const Float2 end2 = (end + lineHalf);
 
-				if (style.type == LineType::RoundDot)
+				if (style.type == LinePattern::RoundDot)
 				{
 					uMax = std::ceil(uMax / 2.0f) * 2.0f;
 				}

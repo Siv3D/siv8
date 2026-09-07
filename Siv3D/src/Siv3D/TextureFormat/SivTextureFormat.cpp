@@ -252,7 +252,7 @@ namespace s3d
 			uint8 pixelSize = 0;
 
 			// チャンネル数
-			uint8 num_channels = 0;
+			uint8 channelCount = 0;
 
 			bool isSRGB = false;
 		};
@@ -374,13 +374,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	num_channels
+	//	channelCount
 	//
 	////////////////////////////////////////////////////////////////
 
-	uint32 TextureFormat::num_channels() const noexcept
+	uint32 TextureFormat::channelCount() const noexcept
 	{
-		return TextureFormatPropertyTable[FromEnum(m_value)].num_channels;
+		return TextureFormatPropertyTable[FromEnum(m_value)].channelCount;
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -18,7 +18,7 @@ namespace s3d
 {
 	namespace detail
 	{
-		static constexpr std::array LogTypeStrings =
+		static constexpr std::array LogLevelStrings =
 		{
 			": [error] ",
 			": [fail] ",
@@ -31,7 +31,7 @@ namespace s3d
 	}
 
 	CLogger::CLogger()
-		: m_outputLevel{ SIV3D_BUILD(DEBUG) ? LogType::Trace : LogType::Info } {}
+		: m_outputLevel{ SIV3D_BUILD(DEBUG) ? LogLevel::Trace : LogLevel::Info } {}
 
 	void CLogger::writeln(const std::string_view s)
 	{
@@ -47,42 +47,42 @@ namespace s3d
 		writeImpl(Unicode::ToUTF8(s));
 	}
 
-	void CLogger::writeln(const LogType type, const std::string_view s)
+	void CLogger::writeln(const LogLevel logLevel, const std::string_view s)
 	{
-		if (m_outputLevel < type)
+		if (m_outputLevel < logLevel)
 		{
 			return;
 		}
 
 		std::string output;
 		output.append(std::to_string(Time::GetMillisec()));
-		output.append(detail::LogTypeStrings[FromEnum(type)]);
+		output.append(detail::LogLevelStrings[FromEnum(logLevel)]);
 		output.append(s);
 
 		writeImpl(output);
 	}
 
-	void CLogger::writeln(const LogType type, const StringView s)
+	void CLogger::writeln(const LogLevel logLevel, const StringView s)
 	{
-		if (m_outputLevel < type)
+		if (m_outputLevel < logLevel)
 		{
 			return;
 		}
 			
 		std::string output;
 		output.append(std::to_string(Time::GetMillisec()));
-		output.append(detail::LogTypeStrings[FromEnum(type)]);
+		output.append(detail::LogLevelStrings[FromEnum(logLevel)]);
 		output.append(Unicode::ToUTF8(s));
 
 		writeImpl(output);
 	}
 
-	void CLogger::setOutputLevel(const LogType logType) noexcept
+	void CLogger::setOutputLevel(const LogLevel logLevel) noexcept
 	{
-		m_outputLevel.store(logType);
+		m_outputLevel.store(logLevel);
 	}
 
-	LogType CLogger::getOutputLevel() const noexcept
+	LogLevel CLogger::getOutputLevel() const noexcept
 	{
 		return m_outputLevel.load();
 	}

@@ -54,11 +54,11 @@ namespace s3d
 			
 			if (type == 0) // [OK]
 			{
-				return MessageBoxResult::OK;
+				return MessageBoxResult::Ok;
 			}
 			else if (type == 1) // [OK][Cancel]
 			{
-				return (resultIndex == NSAlertFirstButtonReturn ? MessageBoxResult::OK : MessageBoxResult::Cancel);
+				return (resultIndex == NSAlertFirstButtonReturn ? MessageBoxResult::Ok : MessageBoxResult::Cancel);
 			}
 			else // [Yes][No]
 			{

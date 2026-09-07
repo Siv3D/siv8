@@ -36,7 +36,7 @@ namespace s3d
 
 	ChildProcess::ChildProcessDetail::ChildProcessDetail() {}
 
-	ChildProcess::ChildProcessDetail::ChildProcessDetail(const FilePathView path, const Array<String>& commands, const Pipe pipe)
+	ChildProcess::ChildProcessDetail::ChildProcessDetail(const FilePathView path, const Array<String>& commands, const ChildProcessPipe pipe)
 	{
 		const std::wstring pathW = GetPath(path);
 		
@@ -49,16 +49,16 @@ namespace s3d
 
 		switch (pipe)
 		{
-		case Pipe::None:
+		case ChildProcessPipe::None:
 			m_child = boost::process::v1::child(args);
 			break;
-		case Pipe::StdIn:
+		case ChildProcessPipe::StdIn:
 			m_child = boost::process::v1::child(args, boost::process::v1::std_out > m_iPipeStream);
 			break;
-		case Pipe::StdOut:
+		case ChildProcessPipe::StdOut:
 			m_child = boost::process::v1::child(args, boost::process::v1::std_in < m_oPipeStream);
 			break;
-		case Pipe::StdInOut:
+		case ChildProcessPipe::StdInOut:
 			m_child = boost::process::v1::child(args, boost::process::v1::std_out > m_iPipeStream, boost::process::v1::std_in < m_oPipeStream);
 			break;
 		}

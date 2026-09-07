@@ -145,11 +145,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	num_holes
+	//	holeCount
 	//
 	////////////////////////////////////////////////////////////////
 
-	size_t Polygon::num_holes() const noexcept
+	size_t Polygon::holeCount() const noexcept
 	{
 		return pImpl->inners().size();
 	}
@@ -211,11 +211,11 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	num_triangles
+	//	triangleCount
 	//
 	////////////////////////////////////////////////////////////////
 
-	size_t Polygon::num_triangles() const noexcept
+	size_t Polygon::triangleCount() const noexcept
 	{
 		return pImpl->indices().size();
 	}

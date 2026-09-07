@@ -1,0 +1,117 @@
+﻿//-----------------------------------------------
+//
+//	This file is part of the Siv3D Engine.
+//
+//	Copyright (c) 2008-2026 Ryo Suzuki
+//	Copyright (c) 2016-2026 OpenSiv3D Project
+//
+//	Licensed under the MIT License.
+//
+//-----------------------------------------------
+
+# pragma once
+
+namespace s3d
+{
+	////////////////////////////////////////////////////////////////
+	//
+	//	(constructor)
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline Mesh3D::Mesh3D(const size_t vertexCount, const size_t triangleCount)
+	{
+		if (MaxVertexCount < vertexCount)
+		{
+			return;
+		}
+
+		vertices.resize(vertexCount);
+		indices.resize(triangleCount);
+	}
+
+	inline Mesh3D::Mesh3D(Array<Vertex3D> _vertices, Array<TriangleIndex32> _indices)
+	{
+		if (MaxVertexCount < _vertices.size())
+		{
+			return;
+		}
+
+		vertices = std::move(_vertices);
+		indices = std::move(_indices);
+	}
+
+	inline Mesh3D::Mesh3D(const std::span<const Vertex3D> _vertices, const std::span<const TriangleIndex32> _indices)
+	{
+		if (MaxVertexCount < _vertices.size())
+		{
+			return;
+		}
+
+		vertices.assign(_vertices.begin(), _vertices.end());
+		indices.assign(_indices.begin(), _indices.end());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isEmpty
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline bool Mesh3D::isEmpty() const noexcept
+	{
+		return (vertices.empty() || indices.empty());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	vertexCount
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline size_t Mesh3D::vertexCount() const noexcept
+	{
+		return vertices.size();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	triangleCount
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline size_t Mesh3D::triangleCount() const noexcept
+	{
+		return indices.size();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	reserve
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void Mesh3D::reserve(const size_t vertexCapacity, const size_t triangleCapacity)
+	{
+		if (MaxVertexCount < vertexCapacity)
+		{
+			return;
+		}
+
+		vertices.reserve(vertexCapacity);
+		indices.reserve(triangleCapacity);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	clear
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline void Mesh3D::clear() noexcept
+	{
+		vertices.clear();
+		indices.clear();
+	}
+
+}

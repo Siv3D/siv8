@@ -20,6 +20,16 @@ namespace s3d
 			throw std::out_of_range{ "Grid::at(): index out of range" };
 		}
 
+		void ThrowGridWrappedAtOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::wrappedAt(): Grid width or height is 0" };
+		}
+
+		void ThrowGridClampedAtOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::clampedAt(): Grid width or height is 0" };
+		}
+
 		void ThrowGridPopBackRowOutOfRange()
 		{
 			// 高さが 0 であるため、行を削除できません。
@@ -92,10 +102,45 @@ namespace s3d
 			throw std::out_of_range{ "Grid::swap_rows(): index out of range" };
 		}
 
+		void ThrowGridRotateColumnsMiddleOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::rotate_columns(): middle out of range" };
+		}
+
+		void ThrowGridRotateRowsMiddleOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::rotate_rows(): middle out of range" };
+		}
+
+		void ThrowGridSizeLimitExceeded()
+		{
+			throw std::length_error{ "Grid size exceeds the supported dimension limit" };
+		}
+
 		void ThrowGridValuesAtOutOfRange()
 		{
 			// 指定したインデックスが範囲外のため、要素にアクセスできません。
 			throw std::out_of_range{ "Grid::values_at(): index out of range" };
+		}
+
+		void ThrowGridRegionInvalidSize()
+		{
+			throw std::invalid_argument{ "Grid region width and height must not be negative" };
+		}
+
+		void ThrowGridSubgridOutOfRange()
+		{
+			throw std::out_of_range{ "Grid::subgrid(): region out of range" };
+		}
+
+		void ThrowGridScaleInvalid()
+		{
+			throw std::invalid_argument{ "Grid::scaled(): scale must be greater than 0" };
+		}
+
+		void ThrowGridScaleLengthError()
+		{
+			throw std::length_error{ "Grid::scaled(): result too large" };
 		}
 	}
 }

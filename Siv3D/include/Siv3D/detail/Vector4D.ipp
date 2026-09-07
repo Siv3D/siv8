@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
+# include <cmath>
 
 namespace s3d
 {
@@ -358,6 +359,21 @@ namespace s3d
 			||  std::isnan(y)
 			||  std::isnan(z)
 			||  std::isnan(w));
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	isFinite
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::FloatingPoint Float>
+	bool Vector4D<Float>::isFinite() const noexcept
+	{
+		return (std::isfinite(x)
+			&&  std::isfinite(y)
+			&&  std::isfinite(z)
+			&&  std::isfinite(w));
 	}
 
 	////////////////////////////////////////////////////////////////

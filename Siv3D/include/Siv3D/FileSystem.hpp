@@ -14,7 +14,7 @@
 # include "String.hpp"
 # include "Array.hpp"
 # include "PredefinedYesNo.hpp"
-# include "CopyOption.hpp"
+# include "FileCopyOption.hpp"
 # include "Optional.hpp"
 # include "DateTime.hpp"
 
@@ -450,7 +450,7 @@ namespace s3d
 		/// @param to コピー先のパス
 		/// @param copyOption オプション
 		/// @return コピーに成功した場合 true, それ以外の場合は false
-		bool Copy(FilePathView from, FilePathView to, CopyOption copyOption = CopyOption::Default);
+		bool Copy(FilePathView from, FilePathView to, FileCopyOption copyOption = FileCopyOption::Default);
 
 		////////////////////////////////////////////////////////////////
 		//

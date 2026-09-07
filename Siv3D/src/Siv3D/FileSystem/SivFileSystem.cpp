@@ -25,15 +25,15 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		inline static constexpr std::filesystem::copy_options ToCopyOptions(const CopyOption copyOption) noexcept
+		inline static constexpr std::filesystem::copy_options ToCopyOptions(const FileCopyOption copyOption) noexcept
 		{
 			switch (copyOption)
 			{
-			case CopyOption::SkipExisting:
+			case FileCopyOption::SkipExisting:
 				return std::filesystem::copy_options::skip_existing;
-			case CopyOption::OverwriteExisting:
+			case FileCopyOption::OverwriteExisting:
 				return std::filesystem::copy_options::overwrite_existing;
-			case CopyOption::UpdateExisting:
+			case FileCopyOption::UpdateExisting:
 				return std::filesystem::copy_options::update_existing;
 			default:
 				return std::filesystem::copy_options::none;
@@ -384,7 +384,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		bool Copy(const FilePathView from, const FilePathView to, const CopyOption copyOption)
+		bool Copy(const FilePathView from, const FilePathView to, const FileCopyOption copyOption)
 		{
 			if ((from.isEmpty()) || (to.isEmpty()))
 			{

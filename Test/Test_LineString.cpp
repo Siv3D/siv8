@@ -753,13 +753,13 @@ TEST_CASE("LineString.sum")
 	CHECK_EQ(LineString{}.sum(), Vec2{ 0, 0 });
 }
 
-TEST_CASE("LineString.num_vertices_segments")
+TEST_CASE("LineString.vertexCount_segmentCount")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 3, 0 }, Vec2{ 3, 4 } };
-	CHECK_EQ(line.num_vertices(), 3u);
-	CHECK_EQ(line.num_segments(), 2u);
-	CHECK_EQ(line.num_segments(CloseRing::Yes), 3u);
-	CHECK_EQ(LineString{ Vec2{ 0, 0 } }.num_segments(CloseRing::Yes), 0u);
+	CHECK_EQ(line.vertexCount(), 3u);
+	CHECK_EQ(line.segmentCount(), 2u);
+	CHECK_EQ(line.segmentCount(CloseRing::Yes), 3u);
+	CHECK_EQ(LineString{ Vec2{ 0, 0 } }.segmentCount(CloseRing::Yes), 0u);
 }
 
 TEST_CASE("LineString.segment")

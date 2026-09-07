@@ -26,7 +26,7 @@ namespace s3d
 	enum class PolygonFailureType : uint8
 	{
 		/// @brief 問題なし
-		OK,
+		Ok,
 
 		/// @brief 頂点の数が少ない
 		FewPoints,

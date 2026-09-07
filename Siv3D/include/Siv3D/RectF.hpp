@@ -18,7 +18,7 @@
 namespace s3d
 {
 	struct PatternParameters;
-	enum class LineType : uint8;
+	enum class LinePattern : uint8;
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -1840,18 +1840,18 @@ namespace s3d
 
 		/// @brief 長方形の枠を描きます。
 		/// @param thickness 枠の太さ（ピクセル）
-		/// @param lineType 線の種類
+		/// @param linePattern 線のパターン
 		/// @param color 色
 		/// @return *this
-		const RectF& drawFrame(double thickness, LineType lineType, const ColorF& color = Palette::White) const;
+		const RectF& drawFrame(double thickness, LinePattern linePattern, const ColorF& color = Palette::White) const;
 
 		/// @brief 長方形の枠を描きます。
 		/// @param innerThickness 基準の長方形から内側方向への枠の太さ（ピクセル）
 		/// @param outerThickness 基準の長方形から外側方向への枠の太さ（ピクセル）
-		/// @param lineType 線の種類
+		/// @param linePattern 線のパターン
 		/// @param color 色
 		/// @return *this
-		const RectF& drawFrame(double innerThickness, double outerThickness, LineType lineType, const ColorF& color = Palette::White) const;
+		const RectF& drawFrame(double innerThickness, double outerThickness, LinePattern linePattern, const ColorF& color = Palette::White) const;
 
 		////////////////////////////////////////////////////////////////
 		//

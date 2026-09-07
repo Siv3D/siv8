@@ -29,6 +29,7 @@
     <ClCompile Include="..\Test\Test_Compression.cpp" />
     <ClCompile Include="..\Test\Test_Concepts.cpp" />
     <ClCompile Include="..\Test\Test_CSV.cpp" />
+    <ClCompile Include="..\Test\Test_EnumFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FileSystem.cpp" />
     <ClCompile Include="..\Test\Test_FmtExtension.cpp" />
     <ClCompile Include="..\Test\Test_Format_2DShapes.cpp" />
@@ -53,6 +54,7 @@
     <ClCompile Include="..\Test\Test_Geometry2D_SignedDistance.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_SignedDistance_Availability.cpp" />
     <ClCompile Include="..\Test\Test_Grid.cpp" />
+    <ClCompile Include="..\Test\Test_VertexNormalWeighting.cpp" />
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
@@ -62,11 +64,40 @@
     <ClCompile Include="..\Test\Test_LineString.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />
+    <ClCompile Include="..\Test\Test_Material.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3D.cpp" />
+	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DAssembly.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DAssemblyOBJ.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DPlacement.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DTransform.cpp" />
+    <ClCompile Include="..\Test\Test_Finite.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DUV.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DAssemblyClone.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DAddResult.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DCapTriangulation.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DBoxShell.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DBoxFrame.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DExtrude.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DHeightField.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DLoft.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DNormals.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DRevolve.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DSweep.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DTube.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DOBJ.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DPrimitives.cpp" />
+    <ClCompile Include="..\Test\Test_Cylindrical.cpp" />
+    <ClCompile Include="..\Test\Test_Spherical.cpp" />
     <ClCompile Include="..\Test\Test_Platform.cpp" />
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp" />
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
     <ClCompile Include="..\Test\Test_Smooth.cpp" />
+	<ClCompile Include="..\Test\Test_Quaternion.cpp" />
+	<ClCompile Include="..\Test\Test_Mat4x4.cpp" />
+	<ClCompile Include="..\Test\Test_SimdFloat4.cpp" />
     <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />
@@ -92,6 +123,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
+    <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -213,4 +246,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DLoftExamples.hpp" />
+  </ItemGroup>
 </Project>

@@ -29,7 +29,7 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::FloatingPoint Float>
 	[[nodiscard]]
 	Float ParseFloat(std::string_view s, const std::source_location& location = std::source_location::current());
@@ -38,7 +38,7 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
 	float ParseFloat<float>(std::string_view s, const std::source_location& location);
@@ -47,7 +47,7 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
 	double ParseFloat<double>(std::string_view s, const std::source_location& location);
@@ -56,7 +56,7 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <Concept::FloatingPoint Float>
 	[[nodiscard]]
 	Float ParseFloat(StringView s, const std::source_location& location = std::source_location::current());
@@ -65,7 +65,7 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
 	float ParseFloat<float>(StringView s, const std::source_location& location);
@@ -74,7 +74,7 @@ namespace s3d
 	/// @param s パースする文字列 | String to parse
 	/// @param location 呼び出し元のソースコードの位置 | Source location of the caller
 	/// @return パースした結果の浮動小数点数 | Parsed floating-point number
-	/// @throws ParseError パースに失敗した場合 | Throws if parsing fails
+	/// @throw ParseError パースに失敗した場合 | Throws if parsing fails
 	template <>
 	[[nodiscard]]
 	double ParseFloat<double>(StringView s, const std::source_location& location);

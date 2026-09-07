@@ -214,22 +214,22 @@ namespace s3d
 			{
 				switch (style.type)
 				{
-				case LineType::Solid:
+				case LinePattern::Solid:
 					m_commandManager.pushEnginePS(m_engineShader.psShape);
 					break;
-				case LineType::Dotted:
+				case LinePattern::Dotted:
 					m_commandManager.pushEnginePS(m_engineShader.psLineDot);
 					break;
-				case LineType::Dashed:
+				case LinePattern::Dashed:
 					m_commandManager.pushEnginePS(m_engineShader.psLineDash);
 					break;
-				case LineType::LongDash:
+				case LinePattern::LongDash:
 					m_commandManager.pushEnginePS(m_engineShader.psLineLongDash);
 					break;
-				case LineType::DashDot:
+				case LinePattern::DashDot:
 					m_commandManager.pushEnginePS(m_engineShader.psLineDashDot);
 					break;
-				case LineType::RoundDot:
+				case LinePattern::RoundDot:
 					m_commandManager.pushEnginePS(m_engineShader.psLineRoundDot);
 					break;
 				}
