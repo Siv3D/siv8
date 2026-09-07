@@ -23,6 +23,7 @@
 # include "Grid.hpp"
 # include "IWriter.hpp"
 # include "Material.hpp"
+# include "Mesh3DPlacement.hpp"
 # include "MathConstants.hpp"
 # include "Optional.hpp"
 # include "PredefinedNamedParameter.hpp"
@@ -135,6 +136,35 @@ namespace s3d
 
 		/// @brief 経路の始端と終端に端面を生成する
 		Both,
+	};
+
+	/// @brief Loft の平面輪郭と、そのローカル配置
+	struct LoftSection
+	{
+		/// @brief 同じ添字同士を接続する閉じた輪郭。先頭点を末尾に重複させません。
+		/// @remark 非所有の参照です。参照先は Loft 呼び出し終了まで有効である必要があります。
+		std::span<const Vec2> points;
+
+		/// @brief Vec2(x, y) を Vec3(x, 0, -y) として配置するフレーム
+		/// @remark 有限のアフィン変換で、線形部分の determinant は正である必要があります。原点は側面 V の距離基準です。
+		Mesh3DPlacement frame{ Mat4x4::Identity() };
+	};
+
+	/// @brief Loft の生成設定
+	struct LoftOptions
+	{
+		/// @brief 生成する端面。断面列は閉路にしません。
+		Mesh3DEndCaps endCaps = Mesh3DEndCaps::Both;
+
+		/// @brief 輪郭方向の隣接側面の法線を補間する最大角度（ラジアン）。0～π
+		/// @remark 0 はハードエッジです。各断面の各輪郭頂点で判定し、単位法線を等重みで平均します。端面は常に分離します。
+		double smoothingAngle = 0.0;
+
+		/// @brief UV 座標の拡大率
+		Vec2 uvScale{ 1.0, 1.0 };
+
+		/// @brief UV 座標のオフセット
+		Vec2 uvOffset{ 0.0, 0.0 };
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -264,7 +294,7 @@ namespace s3d
 	/// - 3D 座標は左手系の Y-up です。`Polygon` や断面の 2D 座標 `(x, y)` は、水平面では原則として `(X, -Z)` に対応します。
 	/// - Y 軸周りの角度は `Quaternion::RotateY()` と同じ規約を使い、0 は `+X` 方向、正の角度は `+X` から `-Z` へ進みます。
 	/// - 基本プリミティブ、`Extrude()`、`Plane()`、`Grid()` は、各関数で明記された軸について原点を中心に生成します。
-	/// - `Revolve()` のプロファイルの Y 座標、`Loft()` の `heights`、`HeightField()` の各高さ、および `Tube()` / `Sweep()` の経路座標は、平行移動せず生成後の座標として使用します。
+	/// - `Revolve()` のプロファイルの Y 座標、`Loft()` の各 frame の原点、`HeightField()` の各高さ、および `Tube()` / `Sweep()` の経路座標は、平行移動せず生成後の座標として使用します。
 	/// - `Mesh3DBuilder` の offset と rotation を受け取る overload は、原点を中心に回転してから offset を加えます。
 	/// - 複数の回転を合成する場合、`a * b` は a、b の順に適用されます。形状のローカルな向き合わせを先に、配置用の回転を後に置きます。
 	/// - `Extrude()` を `Quaternion::RotateX(90_deg)` で配置すると、多角形の `(x, y)` は world の `(X, Y)`、押し出し方向は world の `+Z` になります。`Quaternion::RotateZ(90_deg)` では、多角形の `(x, y)` は world の `(Y, -Z)`、押し出し方向は world の `-X` になります。
@@ -1005,64 +1035,29 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 実行時に指定した複数の断面を高さ方向に接続した 3D メッシュを作成します。
-		/// @param sections 各断面の頂点範囲。断面数は 2 以上で、各断面は同じ 3 個以上の頂点を持つ必要があります。
-		/// @param heights 各断面の Y 座標。断面数と同じ要素数で、厳密な昇順である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 断面を接続した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 各断面の `Vec2` を `(X, -Z)` に対応させます。各断面は先頭頂点を末尾に重複させず、符号付き面積の 2 倍 `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。例えば `{ { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 } }` は有効です。
-		/// @remark 各断面では、末尾から先頭へ戻る辺を含め、float 変換後に連続する 2 頂点が同じになってはいけません。
-		/// @remark `sections[i][j]` と `sections[i + 1][j]` を対応する頂点として接続します。始端と終端は閉じます。
-		/// @remark 側面の U 座標は最初の断面の周長に沿って `[0, 1]`、V 座標は `heights[0]` からの実距離です。
-		/// @remark 輪郭の各頂点はハードエッジとし、断面間では法線と接線を滑らかに接続します。
-		/// @remark 中間断面の自己交差、および異なる断面間での側面の自己交差は検査しません。
-		/// @remark `uvScale.y` を単位高さあたりの反復数として使用すると、Repeat sampler で高さ方向に一定密度のタイリングができます。
+		/// @brief 配置と輪郭が異なる複数の断面を順に接続します。
+		/// @param sections 2 個以上の断面。各輪郭は同じ 3 個以上の頂点数を持つ必要があります。
+		/// @param options 端面、輪郭方向の平滑化、および UV 変換
+		/// @return 生成したメッシュ。不正入力やサイズ上限超過では空メッシュを返し、失敗理由をログへ出力します。
+		/// @remark 各 points の Vec2 を (X, -Z) に対応させて frame を適用します。正の符号付き面積になる輪郭順を使用し、先頭点を末尾に重複させません。輪郭の参照先は呼び出し終了まで有効である必要があります。
+		/// @remark frame は有限のアフィン変換で、線形部分の determinant は正とします。隣接フレーム原点の変位は、両端の輪郭平面の正方向に正の投影を持つ必要があります。進行方向が変わる場合は中間断面を追加してください。全体の鏡映には Assembly の配置を使用できます。
+		/// @remark 同じ頂点添字同士を接続し、側面の四角形を固定の対角線で三角形化します。自動対応、自動補間、穴、点への収束、断面列の閉路化は行いません。
+		/// @remark 側面 U は配置後の最初の輪郭の周長を [0, 1] に正規化し、V はフレーム原点の折れ線に沿う累積距離です。原点の取り方で V は変わり得ます。端面 UV は配置前の輪郭の境界から生成します。
+		/// @remark 輪郭方向の平滑化は smoothingAngle、断面列方向は前後の対応点を結ぶ方向を使用します。頂点は平滑化後も輪郭の辺ごとに複製し、UV seam を保持します。負の UV scale は接線の方向と handedness に反映します。0 の UV scale ではその軸の正方向を接線計算に使います。
+		/// @remark float への変換・配置で消える辺、縮退面、定義できない法線・接線、頂点法線の和と面の向きが一致しない三角形を拒否します。中間輪郭や側面全体の自己交差を検査せず、非自己交差の立体は保証しません。端面なしでは内壁や肉厚は生成しません。
+		/// @code
+		/// const std::array ring{ Vec2{-1,-1}, Vec2{1,-1}, Vec2{1,1}, Vec2{-1,1} };
+		/// const auto mesh = Mesh3D::Loft({ { ring, Vec3{0,0,0} }, { ring, Vec3{0,2,0} } });
+		/// @endcode
 		[[nodiscard]]
-		static Mesh3D Loft(
-			std::span<const std::span<const Vec2>> sections,
-			std::span<const double> heights,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+		static Mesh3D Loft(std::span<const LoftSection> sections, const LoftOptions& options = {});
 
-		/// @brief 実行時に指定した複数の断面を高さ方向に接続した 3D メッシュを作成します。
-		/// @param sections 各断面の頂点配列。断面数は 2 以上で、各断面は同じ 3 個以上の頂点を持つ必要があります。
-		/// @param heights 各断面の Y 座標。断面数と同じ要素数で、厳密な昇順である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 断面を接続した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 座標、接続、端面、および UV 座標の規約は、断面を `std::span<const std::span<const Vec2>>` で受け取るオーバーロードと同じです。
-		/// @remark 呼び出し時に各断面を参照する一時配列を内部で作成します。繰り返し生成する場合は、断面を `std::span<const std::span<const Vec2>>` で受け取るオーバーロードを使用すると、この一時配列を呼び出し側で再利用できます。
+		/// @brief 初期化子リストで指定した断面列を接続します。
+		/// @param sections 呼び出し終了まで有効な輪郭を参照する断面列
+		/// @param options 生成設定
+		/// @return 生成したメッシュ。規約は span を受け取る Loft() と同じです。
 		[[nodiscard]]
-		static Mesh3D Loft(
-			const Array<Array<Vec2>>& sections,
-			std::span<const double> heights,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 複数の断面を高さ方向に接続した 3D メッシュを作成します。
-		/// @tparam SectionCount 断面数。2 以上である必要があります。
-		/// @tparam VertexCount 各断面の頂点数。3 以上である必要があります。
-		/// @param sections 各断面の頂点配列
-		/// @param heights 各断面の Y 座標。厳密な昇順である必要があります。
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 断面を接続した 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark 各断面の `Vec2` を `(X, -Z)` に対応させます。各断面は先頭頂点を末尾に重複させず、符号付き面積の 2 倍 `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。例えば `{ { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 } }` は有効です。
-		/// @remark 各断面では、末尾から先頭へ戻る辺を含め、float 変換後に連続する 2 頂点が同じになってはいけません。
-		/// @remark `sections[i][j]` と `sections[i + 1][j]` を対応する頂点として接続します。始端と終端は閉じます。
-		/// @remark 側面の U 座標は最初の断面の周長に沿って `[0, 1]`、V 座標は `heights[0]` からの実距離です。
-		/// @remark 輪郭の各頂点はハードエッジとし、断面間では法線と接線を滑らかに接続します。
-		/// @remark 中間断面の自己交差、および異なる断面間での側面の自己交差は検査しません。
-		/// @remark `uvScale.y` を単位高さあたりの反復数として使用すると、Repeat sampler で高さ方向に一定密度のタイリングができます。
-		template <size_t SectionCount, size_t VertexCount>
-			requires ((2 <= SectionCount) && (3 <= VertexCount))
-		[[nodiscard]]
-		static Mesh3D Loft(
-			const std::array<std::array<Vec2, VertexCount>, SectionCount>& sections,
-			const std::array<double, SectionCount>& heights,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+		static Mesh3D Loft(std::initializer_list<LoftSection> sections, const LoftOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//

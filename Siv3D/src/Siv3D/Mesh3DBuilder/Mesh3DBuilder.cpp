@@ -91,19 +91,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Array<std::span<const Vec2>> MakeSectionViews(
-			const Array<Array<Vec2>>& sections)
-		{
-			Array<std::span<const Vec2>> result(sections.size());
-			for (size_t i = 0; i < sections.size(); ++i)
-			{
-				result[i] = sections[i];
-			}
-
-			return result;
-		}
-
-		[[nodiscard]]
 		static bool ResizeForAddition(
 			Mesh3D& mesh,
 			const size_t addedVertexCount,
@@ -3143,62 +3130,20 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const std::span<const std::span<const Vec2>> sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
+	Mesh3DAddResult Mesh3DBuilder::addLoft(const std::span<const LoftSection> sections, const LoftOptions& options)
 	{
-		return Mesh3DDetail::AppendLoft(m_mesh, sections, heights, uvScale, uvOffset);
+		return Mesh3DDetail::AppendLoft(m_mesh, sections, options);
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const std::span<const std::span<const Vec2>> sections,
-		const std::span<const double> heights,
-		const Mesh3DPlacement& placement)
+	Mesh3DAddResult Mesh3DBuilder::addLoft(const std::initializer_list<LoftSection> sections, const LoftOptions& options)
 	{
-		return addLoft(
-			sections, heights, Vec2{ 1.0, 1.0 }, Vec2{ 0.0, 0.0 }, placement);
+		return addLoft(std::span<const LoftSection>{ sections.begin(), sections.size() }, options);
 	}
 
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const std::span<const std::span<const Vec2>> sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Mesh3DPlacement& placement)
+	Mesh3DAddResult Mesh3DBuilder::addLoft(const std::span<const LoftSection> sections,
+		const Mesh3DPlacement& placement, const LoftOptions& options)
 	{
-		return TransformAddedVertices(
-			m_mesh,
-			addLoft(sections, heights, uvScale, uvOffset),
-			placement.getTransform());
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const Array<Array<Vec2>>& sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset)
-	{
-		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const Array<Array<Vec2>>& sections,
-		const std::span<const double> heights,
-		const Mesh3DPlacement& placement)
-	{
-		return addLoft(MakeSectionViews(sections), heights, placement);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addLoft(
-		const Array<Array<Vec2>>& sections,
-		const std::span<const double> heights,
-		const Vec2 uvScale,
-		const Vec2 uvOffset,
-		const Mesh3DPlacement& placement)
-	{
-		return addLoft(MakeSectionViews(sections), heights, uvScale, uvOffset, placement);
+		return TransformAddedVertices(m_mesh, addLoft(sections, options), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -1833,6 +1833,7 @@
 # include <Siv3D/BoxFace.hpp>
 # include <Siv3D/BoxUVMapping.hpp>
 # include <Siv3D/Mesh3D.hpp>
+# include <Siv3D/Mesh3DPlacement.hpp>
 # include <Siv3D/Mesh3DBuilder.hpp>
 # include <Siv3D/Mesh3DAssembly.hpp>
 

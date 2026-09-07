@@ -11,82 +11,10 @@
 
 # pragma once
 # include "Mesh3D.hpp"
-# include "Mat4x4.hpp"
+# include "Mesh3DPlacement.hpp"
 
 namespace s3d
 {
-	////////////////////////////////////////////////////////////////
-	//
-	//	Mesh3DPlacement
-	//
-	////////////////////////////////////////////////////////////////
-
-	/// @brief Mesh3DBuilder の形状や Mesh3DAssembly の部品に適用する配置変換
-	/// @remark `Vec3` から暗黙に変換できるため、平行移動だけを指定する add 関数の呼び出しは `addShape(..., offset)` と書けます。
-	/// @remark 回転と平行移動を指定する場合は `addShape(..., { offset, rotation })` と書けます。
-	/// @remark `Mat4x4` から暗黙に変換できるため、任意のアフィン変換を指定する呼び出しは `addShape(..., transform)` と書けます。
-	/// @code
-	/// builder.addTube(path, 0.25, offset);
-	/// builder.addTube(path, 0.25, { offset, rotation });
-	/// builder.addTube(path, 0.25, transform);
-	///
-	/// const Mesh3DPlacement placement{ offset, rotation };
-	/// builder.addTube(pathA, 0.25, placement);
-	/// builder.addTube(pathB, 0.15, placement);
-	/// @endcode
-	class Mesh3DPlacement
-	{
-	public:
-
-		/// @brief 平行移動を表す配置変換を作成します。
-		/// @param offset 平行移動量
-		[[nodiscard]]
-		Mesh3DPlacement(Vec3 offset) noexcept
-			: m_transform{ Mat4x4::Translate(Float3{ offset }) } {}
-
-		/// @brief 回転および平行移動を表す配置変換を作成します。
-		/// @param offset 平行移動量
-		/// @param rotation 原点を中心とする回転を表す単位クォータニオン
-		[[nodiscard]]
-		Mesh3DPlacement(Vec3 offset, const Quaternion& rotation) noexcept
-			: m_transform{ Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset }) } {}
-
-		/// @brief アフィン変換行列から配置変換を作成します。
-		/// @param transform 適用するアフィン変換行列
-		[[nodiscard]]
-		Mesh3DPlacement(const Mat4x4& transform) noexcept
-			: m_transform{ transform } {}
-
-		/// @brief 配置変換行列を返します。
-		/// @return 配置変換行列
-		[[nodiscard]]
-		const Mat4x4& getTransform() const noexcept
-		{
-			return m_transform;
-		}
-
-		/// @brief 元の座標系を配置先の座標系へ一致させる配置変換を作成します。
-		/// @param sourceFrame 取り付け座標系から形状・部品のローカル座標系への変換
-		/// @param targetFrame 取り付け座標系から配置先（親）のローカル座標系への変換
-		/// @return 行列として `sourceFrame.inverse() * targetFrame`。浮動小数点の誤差を除き `sourceFrame * 戻り値 == targetFrame` となる変換
-		/// @remark 両入力は有限のアフィン変換で、sourceFrame は逆変換可能、その逆行列と結果も float で表現可能な有限値である必要があります。数値的な事前条件は検査しません。
-		/// @remark 平行移動と回転だけでなく、スケール、せん断、鏡映も含めて座標系を合わせます。面を向かい合わせる回転や隙間は targetFrame に明示してください。
-		/// @remark 一度だけ配置を計算します。入力の変更への自動追従や、親の world 変換の適用は行いません。寸法変更時は形状と取り付け座標系をレシピで再生成してください。
-		/// @code
-		/// // 高さ 2 の箱の底面中央を、親の原点へ合わせる
-		/// const auto placement = Mesh3DPlacement::Align(Vec3{ 0, -1, 0 }, Vec3::Zero());
-		/// @endcode
-		[[nodiscard]]
-		static Mesh3DPlacement Align(const Mesh3DPlacement& sourceFrame, const Mesh3DPlacement& targetFrame) noexcept
-		{
-			return (sourceFrame.m_transform.inverse() * targetFrame.m_transform);
-		}
-
-	private:
-
-		Mat4x4 m_transform;
-	};
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	Mesh3DBuilder
@@ -1114,81 +1042,28 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 実行時に指定した複数の断面を高さ方向に接続した形状を追加します。
-		/// @param sections 各断面の頂点範囲
-		/// @param heights 各断面の Y 座標
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 断面、座標、端面、UV 座標、法線、および接線の規約は `Mesh3D::Loft()` と同じです。
+		/// @brief 輪郭と配置で指定する断面を接続し、直接追加します。
+		/// @param sections 呼び出し終了まで有効な輪郭を参照する断面列
+		/// @param options 端面、輪郭方向の平滑化、および UV 変換
+		/// @return 追加範囲、または失敗理由。失敗時は既存のメッシュを変更しません。
+		/// @remark 入力、配置、頂点対応、法線・接線、および検証の規約は Mesh3D::Loft() と同じです。
 		[[nodiscard]]
-		Mesh3DAddResult addLoft(
-			std::span<const std::span<const Vec2>> sections,
-			std::span<const double> heights,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
+		Mesh3DAddResult addLoft(std::span<const LoftSection> sections, const LoftOptions& options = {});
 
-		/// @brief 配置変換を適用した Loft 形状を追加します。
-		/// @param sections 各断面の頂点範囲
-		/// @param heights 各断面の Y 座標
-		/// @param placement 適用する配置変換。`Vec3` または `Mat4x4` も直接指定できます。
-		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @brief 初期化子リストの断面列を接続して追加します。
+		/// @param sections 断面列。各 points の参照先は呼び出し終了まで有効である必要があります。
+		/// @param options 生成設定
+		/// @return 追加範囲、または失敗理由
 		[[nodiscard]]
-		Mesh3DAddResult addLoft(
-			std::span<const std::span<const Vec2>> sections,
-			std::span<const double> heights,
-			const Mesh3DPlacement& placement);
+		Mesh3DAddResult addLoft(std::initializer_list<LoftSection> sections, const LoftOptions& options = {});
 
-		/// @brief UV 変換と配置変換を適用した Loft 形状を追加します。
-		/// @param sections 各断面の頂点範囲
-		/// @param heights 各断面の Y 座標
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param placement 適用する配置変換。`Vec3` または `Mat4x4` も直接指定できます。
-		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @brief 全体の配置を適用した Loft を追加します。
+		/// @param sections 輪郭と配置を持つ断面列
+		/// @param placement 全断面の frame 適用後に行う全体配置
+		/// @param options 生成設定
+		/// @return 追加範囲、または失敗理由
 		[[nodiscard]]
-		Mesh3DAddResult addLoft(
-			std::span<const std::span<const Vec2>> sections,
-			std::span<const double> heights,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			const Mesh3DPlacement& placement);
-
-		/// @brief 頂点配列で指定した複数の断面を高さ方向に接続した形状を追加します。
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 呼び出し時に各断面を参照する一時配列を内部で作成します。
-		[[nodiscard]]
-		Mesh3DAddResult addLoft(
-			const Array<Array<Vec2>>& sections,
-			std::span<const double> heights,
-			Vec2 uvScale = Vec2{ 1.0, 1.0 },
-			Vec2 uvOffset = Vec2{ 0.0, 0.0 });
-
-		/// @brief 配置変換を適用した、頂点配列で指定する Loft 形状を追加します。
-		/// @param sections 各断面の頂点配列
-		/// @param heights 各断面の Y 座標
-		/// @param placement 適用する配置変換。`Vec3` または `Mat4x4` も直接指定できます。
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addLoft(
-			const Array<Array<Vec2>>& sections,
-			std::span<const double> heights,
-			const Mesh3DPlacement& placement);
-
-		/// @brief UV 変換と配置変換を適用した、頂点配列で指定する Loft 形状を追加します。
-		/// @param sections 各断面の頂点配列
-		/// @param heights 各断面の Y 座標
-		/// @param uvScale UV 座標の拡大率
-		/// @param uvOffset UV 座標のオフセット
-		/// @param placement 適用する配置変換。`Vec3` または `Mat4x4` も直接指定できます。
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addLoft(
-			const Array<Array<Vec2>>& sections,
-			std::span<const double> heights,
-			Vec2 uvScale,
-			Vec2 uvOffset,
-			const Mesh3DPlacement& placement);
+		Mesh3DAddResult addLoft(std::span<const LoftSection> sections, const Mesh3DPlacement& placement, const LoftOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//

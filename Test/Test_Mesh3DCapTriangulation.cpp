@@ -76,7 +76,7 @@ TEST_CASE("Mesh3D generators omit zero-area cap triangles")
 	CheckMeshGeometry(sweep);
 
 	const Array<Array<Vec2>> sections{ outline, outline };
-	const Mesh3D loft = Mesh3D::Loft(sections, std::array{ 0.0, 2.0 });
+	const Mesh3D loft = Mesh3D::Loft(Mesh3DTest::LoftSections(sections, std::array{ 0.0, 2.0 }));
 	CHECK_EQ(loft.triangleCount(),
 		((positiveCapTriangleCount * 2) + (outline.size() * 2)));
 	CheckMeshGeometry(loft);

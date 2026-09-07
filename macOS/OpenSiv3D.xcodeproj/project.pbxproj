@@ -2861,6 +2861,7 @@
 		F9A3D00330A1000000C0DE01 /* Mesh3D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */; };
 		F9A3D00430A1000000C0DE01 /* Mesh3D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */; };
 		F9A3D50130A3000000C0DE01 /* Mesh3DBuilder.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */; };
+		A5D4F65130A6000000000001 /* Mesh3DPlacement.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F65130A6000000000002 /* Mesh3DPlacement.hpp */; };
 		A5D4F61030A6000000000001 /* Mesh3DAssembly.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A5D4F61030A6000000000002 /* Mesh3DAssembly.hpp */; };
 		F9A3D50230A3000000C0DE01 /* Mesh3DBuilder.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D51230A3000000C0DE01 /* Mesh3DBuilder.ipp */; };
 		F9A3D60030A4000000C0DE01 /* BoxFace.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9A3D60130A4000000C0DE01 /* BoxFace.hpp */; };
@@ -6244,6 +6245,8 @@
 		F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3D.hpp; sourceTree = "<group>"; };
 		F9A3D01430A1000000C0DE01 /* Mesh3D.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3D.ipp; sourceTree = "<group>"; };
 		F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DBuilder.hpp; sourceTree = "<group>"; };
+		A5D4F65130A6000000000002 /* Mesh3DPlacement.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DPlacement.hpp; sourceTree = "<group>"; };
+		A5D4F66130A6000000000002 /* Mesh3DLoftExamples.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DLoftExamples.hpp; sourceTree = "<group>"; };
 		A5D4F61030A6000000000002 /* Mesh3DAssembly.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DAssembly.hpp; sourceTree = "<group>"; };
 		F9A3D51230A3000000C0DE01 /* Mesh3DBuilder.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh3DBuilder.ipp; sourceTree = "<group>"; };
 		F9A3D60130A4000000C0DE01 /* BoxFace.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BoxFace.hpp; sourceTree = "<group>"; };
@@ -6972,6 +6975,7 @@
 				F9A3D11930A1000000C0DE01 /* Test_Mesh3DExtrude.cpp */,
 				F9A3D31730A1000000C0DE01 /* Test_Mesh3DHeightField.cpp */,
 				F9A3D31930A1000000C0DE01 /* Test_Mesh3DLoft.cpp */,
+				A5D4F66130A6000000000002 /* Mesh3DLoftExamples.hpp */,
 				F9A3D31A30A1000000C0DE01 /* Test_Mesh3DNormals.cpp */,
 				F9A3D31230A1000000C0DE01 /* Test_Mesh3DRevolve.cpp */,
 				F9A3D31430A1000000C0DE01 /* Test_Mesh3DTube.cpp */,
@@ -7811,6 +7815,7 @@
 				F9A3D01930A1000000C0DE01 /* BoxUVMapping.hpp */,
 				F9A3D01330A1000000C0DE01 /* Mesh3D.hpp */,
 				F9A3D51130A3000000C0DE01 /* Mesh3DBuilder.hpp */,
+				A5D4F65130A6000000000002 /* Mesh3DPlacement.hpp */,
 				A5D4F61030A6000000000002 /* Mesh3DAssembly.hpp */,
 				A5D4F51030A5000000000002 /* Sphere.hpp */,
 				F9807D882BF6677600D9B590 /* MessageBox.hpp */,
@@ -16154,6 +16159,7 @@
 				F9A3D00C30A1000000C0DE01 /* Material.hpp in Headers */,
 				F9A3D00330A1000000C0DE01 /* Mesh3D.hpp in Headers */,
 				F9A3D50130A3000000C0DE01 /* Mesh3DBuilder.hpp in Headers */,
+				A5D4F65130A6000000000001 /* Mesh3DPlacement.hpp in Headers */,
 				A5D4F61030A6000000000001 /* Mesh3DAssembly.hpp in Headers */,
 				A5D4F51030A5000000000001 /* Sphere.hpp in Headers */,
 				F9FD0D1A2D215DB300A584CE /* TexturedRoundRect.hpp in Headers */,

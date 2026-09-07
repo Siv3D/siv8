@@ -1,254 +1,203 @@
-﻿//-----------------------------------------------
-//
-//	This file is part of the Siv3D Engine.
-//
-//	Copyright (c) 2008-2026 Ryo Suzuki
-//	Copyright (c) 2016-2026 OpenSiv3D Project
-//
-//	Licensed under the MIT License.
-//
+//-----------------------------------------------
+// This file is part of the Siv3D Engine.
+// Copyright (c) 2008-2026 Ryo Suzuki
+// Copyright (c) 2016-2026 OpenSiv3D Project
+// Licensed under the MIT License.
 //-----------------------------------------------
 
 # include "Mesh3DTestHelper.hpp"
+# include "Mesh3DLoftExamples.hpp"
+# include <cstdlib>
 
 namespace
 {
 	using Mesh3DTest::CheckMeshDataEqual;
 	using Mesh3DTest::CheckMeshGeometry;
+	const std::array Square{ Vec2{ -1, -1 }, Vec2{ 1, -1 }, Vec2{ 1, 1 }, Vec2{ -1, 1 } };
 
-	static_assert(requires
+	Array<Vec2> Ring(const size_t count)
 	{
-		static_cast<Mesh3D (*)(
-			std::span<const std::span<const Vec2>>,
-			std::span<const double>, Vec2, Vec2)>(&Mesh3D::Loft);
-		static_cast<Mesh3D (*)(
-			const Array<Array<Vec2>>&,
-			std::span<const double>, Vec2, Vec2)>(&Mesh3D::Loft);
-	});
-
-	template <size_t SectionCount, size_t HeightCount, size_t VertexCount>
-	concept LoftCallable = requires(
-		const std::array<std::array<Vec2, VertexCount>, SectionCount>& sections,
-		const std::array<double, HeightCount>& heights)
-	{
-		Mesh3D::Loft(sections, heights);
-	};
-
-	static_assert(LoftCallable<2, 2, 3>);
-	static_assert(LoftCallable<4, 4, 8>);
-	static_assert(not LoftCallable<1, 1, 3>);
-	static_assert(not LoftCallable<2, 2, 2>);
-	static_assert(not LoftCallable<2, 3, 3>);
-
-}
-
-TEST_CASE("Mesh3D::Loft runtime sections")
-{
-	const std::array fixedSections{
-		std::array{
-			Vec2{ -2.0, -1.0 }, Vec2{ 2.0, -1.0 },
-			Vec2{ 2.0, 1.0 }, Vec2{ -2.0, 1.0 }
-		},
-		std::array{
-			Vec2{ -1.5, -0.75 }, Vec2{ 1.5, -0.75 },
-			Vec2{ 1.5, 0.75 }, Vec2{ -1.5, 0.75 }
-		},
-		std::array{
-			Vec2{ -1.0, -0.5 }, Vec2{ 1.0, -0.5 },
-			Vec2{ 1.0, 0.5 }, Vec2{ -1.0, 0.5 }
+		Array<Vec2> result;
+		for (size_t i = 0; i < count; ++i)
+		{
+			const double a = Math::TwoPi * i / count;
+			result.emplace_back(std::cos(a), std::sin(a));
 		}
-	};
-	const std::array fixedHeights{ -1.0, 1.0, 4.0 };
-	const Array<Array<Vec2>> sections{
-		Array<Vec2>(fixedSections[0].begin(), fixedSections[0].end()),
-		Array<Vec2>(fixedSections[1].begin(), fixedSections[1].end()),
-		Array<Vec2>(fixedSections[2].begin(), fixedSections[2].end()),
-	};
-	const Array<double> heights(fixedHeights.begin(), fixedHeights.end());
-	const Vec2 uvScale{ 2.0, 0.5 };
-	const Vec2 uvOffset{ 0.25, -0.5 };
-	const Mesh3D expected = Mesh3D::Loft(fixedSections, fixedHeights, uvScale, uvOffset);
-
-	const Mesh3D arrayResult = Mesh3D::Loft(sections, heights, uvScale, uvOffset);
-	CheckMeshDataEqual(arrayResult, expected);
-
-	Array<std::span<const Vec2>> sectionViews(sections.size());
-	for (size_t i = 0; i < sections.size(); ++i)
-	{
-		sectionViews[i] = sections[i];
+		return result;
 	}
-	const Mesh3D spanResult = Mesh3D::Loft(sectionViews, heights, uvScale, uvOffset);
-	CheckMeshDataEqual(spanResult, expected);
 }
 
-TEST_CASE("Mesh3D::Loft runtime invalid dimensions")
+TEST_CASE("Mesh3D::Loft borrowed sections and equivalent input forms")
 {
-	const Array<double> twoHeights{ 0.0, 1.0 };
-	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{}, Array<double>{}).isEmpty());
-	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
-		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 0.0, 1.0 } }
-	}, Array<double>{ 0.0 }).isEmpty());
-	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
-		{ { 0.0, 0.0 }, { 1.0, 0.0 } },
-		{ { 0.0, 0.0 }, { 1.0, 0.0 } }
-	}, twoHeights).isEmpty());
-	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
-		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 0.0, 1.0 } },
-		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 } }
-	}, twoHeights).isEmpty());
-	CHECK(Mesh3D::Loft(Array<Array<Vec2>>{
-		{ { 0.0, 0.0 }, { 1.0, 0.0 }, { 0.0, 1.0 } },
-		{ { 0.0, 0.0 }, { 0.5, 0.0 }, { 0.0, 0.5 } }
-	}, Array<double>{ 0.0 }).isEmpty());
-}
-
-TEST_CASE("Mesh3D::Loft rectangular sections")
-{
-	const std::array sections{
-		std::array{
-			Vec2{ -2.0, -2.0 }, Vec2{ 2.0, -2.0 },
-			Vec2{ 2.0, 2.0 }, Vec2{ -2.0, 2.0 }
-		},
-		std::array{
-			Vec2{ -1.0, -1.0 }, Vec2{ 1.0, -1.0 },
-			Vec2{ 1.0, 1.0 }, Vec2{ -1.0, 1.0 }
-		}
-	};
-	const std::array heights{ -1.0, 3.0 };
-	const Mesh3D mesh = Mesh3D::Loft(
-		sections, heights, Vec2{ 2.0, 0.5 }, Vec2{ 0.25, -0.5 });
-
+	static_assert(requires {
+		static_cast<Mesh3D (*)(std::span<const LoftSection>, const LoftOptions&)>(&Mesh3D::Loft);
+		static_cast<Mesh3D (*)(std::initializer_list<LoftSection>, const LoftOptions&)>(&Mesh3D::Loft);
+	});
+	const std::array sections{ LoftSection{ Square, Vec3{ 0, -1, 0 } }, LoftSection{ Square, Vec3{ 0, 3, 0 } } };
+	const LoftOptions options{ .uvScale = Vec2{ 2, 0.5 }, .uvOffset = Vec2{ 0.25, -0.5 } };
+	const auto mesh = Mesh3D::Loft(sections, options);
+	CheckMeshDataEqual(mesh, Mesh3D::Loft({ sections[0], sections[1] }, options));
 	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -2.0f, -1.0f, 2.0f });
-	CHECK_EQ(mesh.vertices[4].pos, Float3{ -1.0f, 3.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[8].tex, Float2{ 0.25f, -0.5f });
-	CHECK_EQ(mesh.vertices[9].tex, Float2{ 0.75f, -0.5f });
-	CHECK_EQ(mesh.vertices[10].tex, Float2{ 0.25f, 1.5f });
-	CHECK_EQ(mesh.vertices[23].tex, Float2{ 2.25f, 1.5f });
+	CHECK_EQ(mesh.vertices[0].pos, (Float3{ -1, -1, 1 }));
+	CHECK_EQ(mesh.vertices[4].pos, (Float3{ -1, 3, 1 }));
+	CHECK_EQ(mesh.vertices[8].tex, (Float2{ 0.25f, -0.5f }));
+	CHECK_EQ(mesh.vertices[10].tex, (Float2{ 0.25f, 1.5f }));
+	CHECK_EQ(mesh.vertices.back().tex, (Float2{ 2.25f, 1.5f }));
+	Mesh3DBuilder builder;
+	builder.reserve(mesh.vertexCount(), mesh.triangleCount());
+	REQUIRE(builder.addLoft(sections, options));
+	const auto* storage = builder.getMesh().vertices.data();
+	builder.clear();
+	REQUIRE(builder.addLoft({ sections[0], sections[1] }, options));
+	CHECK_EQ(storage, builder.getMesh().vertices.data());
+	CheckMeshDataEqual(builder.getMesh(), mesh);
 }
 
-TEST_CASE("Mesh3D::Loft multiple offset sections")
+TEST_CASE("Mesh3D::Loft minimum and concave contours")
 {
-	const std::array sections{
-		std::array{
-			Vec2{ -2.0, -1.0 }, Vec2{ 2.0, -1.0 },
-			Vec2{ 2.0, 1.0 }, Vec2{ -2.0, 1.0 }
-		},
-		std::array{
-			Vec2{ -1.5, -0.75 }, Vec2{ 2.0, -0.5 },
-			Vec2{ 1.75, 1.0 }, Vec2{ -1.25, 0.75 }
-		},
-		std::array{
-			Vec2{ -0.5, -0.5 }, Vec2{ 1.5, -0.5 },
-			Vec2{ 1.5, 0.5 }, Vec2{ -0.5, 0.5 }
-		}
-	};
-	const std::array heights{ 0.0, 1.0, 4.0 };
-	const Mesh3D mesh = Mesh3D::Loft(sections, heights);
-
-	CHECK_EQ(mesh.vertexCount(), size_t{ 32 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 20 });
-	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[10].pos, Float3{ -1.5f, 1.0f, 0.75f });
-	CHECK_EQ(mesh.vertices[10].tex.y, 1.0f);
-	CHECK_EQ(mesh.vertices[12].tex.y, 4.0f);
-}
-
-TEST_CASE("Mesh3D::Loft concave sections")
-{
-	const std::array sections{
-		std::array{
-			Vec2{ -2.0, -1.0 }, Vec2{ 0.0, -1.0 }, Vec2{ 0.0, 0.0 },
-			Vec2{ 2.0, 0.0 }, Vec2{ 2.0, 1.0 }, Vec2{ -2.0, 1.0 }
-		},
-		std::array{
-			Vec2{ -1.5, -0.75 }, Vec2{ 0.0, -0.75 }, Vec2{ 0.0, 0.0 },
-			Vec2{ 1.5, 0.0 }, Vec2{ 1.5, 0.75 }, Vec2{ -1.5, 0.75 }
-		}
-	};
-	const std::array heights{ -2.0, 2.0 };
-	const Mesh3D mesh = Mesh3D::Loft(sections, heights);
-
-	CHECK_EQ(mesh.vertexCount(), size_t{ 36 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 20 });
-	CheckMeshGeometry(mesh);
-}
-
-TEST_CASE("Mesh3D::Loft minimum dimensions")
-{
-	const std::array sections{
-		std::array{ Vec2{ 0.0, -1.0 }, Vec2{ 1.0, 1.0 }, Vec2{ -1.0, 1.0 } },
-		std::array{ Vec2{ 0.0, -0.5 }, Vec2{ 0.5, 0.5 }, Vec2{ -0.5, 0.5 } }
-	};
-	const std::array heights{ 0.0, 1.0 };
-	const Mesh3D mesh = Mesh3D::Loft(sections, heights);
-
+	const std::array triangle{ Vec2{ 0, -1 }, Vec2{ 1, 1 }, Vec2{ -1, 1 } };
+	const auto mesh = Mesh3D::Loft({ { triangle, Vec3::Zero() }, { triangle, Vec3{ 0, 1, 0 } } });
 	CHECK_EQ(mesh.vertexCount(), size_t{ 18 });
 	CHECK_EQ(mesh.triangleCount(), size_t{ 8 });
 	CheckMeshGeometry(mesh);
+	const std::array concave{ Vec2{ -2, -1 }, Vec2{ 0, -1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 }, Vec2{ 2, 1 }, Vec2{ -2, 1 } };
+	CheckMeshGeometry(Mesh3D::Loft({ { concave, Vec3::Zero() }, { concave, Vec3{ 0, 2, 0 } } }));
 }
 
-TEST_CASE("Mesh3D::Loft invalid geometry")
+TEST_CASE("Mesh3D::Loft independent end caps")
 {
-	std::array sections{
-		std::array{
-			Vec2{ -1.0, -1.0 }, Vec2{ 1.0, -1.0 },
-			Vec2{ 1.0, 1.0 }, Vec2{ -1.0, 1.0 }
-		},
-		std::array{
-			Vec2{ -0.5, -0.5 }, Vec2{ 0.5, -0.5 },
-			Vec2{ 0.5, 0.5 }, Vec2{ -0.5, 0.5 }
+	for (const auto caps : { Mesh3DEndCaps::None, Mesh3DEndCaps::Start, Mesh3DEndCaps::End, Mesh3DEndCaps::Both })
+	{
+		const size_t count = (caps == Mesh3DEndCaps::Both ? 2 : (caps == Mesh3DEndCaps::None ? 0 : 1));
+		const auto mesh = Mesh3D::Loft({ { Square, Vec3::Zero() }, { Square, Vec3{ 0, 2, 0 } } }, { .endCaps = caps });
+		CHECK_EQ(mesh.vertexCount(), 16 + count * 4);
+		CHECK_EQ(mesh.triangleCount(), 8 + count * 2);
+		CheckMeshGeometry(mesh);
+		if (count == 1)
+		{
+			CHECK_EQ(mesh.vertices[0].pos.y, (caps == Mesh3DEndCaps::Start ? 0.0f : 2.0f));
+			CHECK_EQ(mesh.vertices[0].normal.y, (caps == Mesh3DEndCaps::Start ? -1.0f : 1.0f));
 		}
-	};
-
-	CHECK(Mesh3D::Loft(sections, std::array{ 1.0, 1.0 }).isEmpty());
-	CHECK(Mesh3D::Loft(sections, std::array{ 2.0, 1.0 }).isEmpty());
-	CHECK(Mesh3D::Loft(sections,
-		std::array{ 0.0, std::numeric_limits<double>::infinity() }).isEmpty());
-	CHECK(Mesh3D::Loft(sections,
-		std::array{ 0.0, std::numeric_limits<double>::denorm_min() }).isEmpty());
-
-	auto invalidSections = sections;
-	invalidSections[0][0].x = std::numeric_limits<double>::quiet_NaN();
-	CHECK(Mesh3D::Loft(invalidSections, std::array{ 0.0, 1.0 }).isEmpty());
-
-	invalidSections = sections;
-	invalidSections[0][1] = invalidSections[0][0];
-	CHECK(Mesh3D::Loft(invalidSections, std::array{ 0.0, 1.0 }).isEmpty());
-
-	invalidSections = sections;
-	std::reverse(invalidSections[0].begin(), invalidSections[0].end());
-	CHECK(Mesh3D::Loft(invalidSections, std::array{ 0.0, 1.0 }).isEmpty());
-
-	invalidSections = sections;
-	invalidSections[0] = std::array{
-		Vec2{ -1.0, -1.0 }, Vec2{ 1.0, 1.0 },
-		Vec2{ 1.0, -1.0 }, Vec2{ -1.0, 1.0 }
-	};
-	CHECK(Mesh3D::Loft(invalidSections, std::array{ 0.0, 1.0 }).isEmpty());
+	}
 }
 
-TEST_CASE("Mesh3D::Loft invalid UV")
+TEST_CASE("Mesh3D::Loft tilted frames nonuniform scale and shear")
 {
-	const std::array sections{
-		std::array{
-			Vec2{ -1.0, -1.0 }, Vec2{ 1.0, -1.0 },
-			Vec2{ 1.0, 1.0 }, Vec2{ -1.0, 1.0 }
-		},
-		std::array{
-			Vec2{ -0.5, -0.5 }, Vec2{ 0.5, -0.5 },
-			Vec2{ 0.5, 0.5 }, Vec2{ -0.5, 0.5 }
-		}
-	};
-	const std::array heights{ 0.0, 2.0 };
+	const auto ring = Ring(16);
+	Array<LoftSection> sections;
+	for (size_t i = 0; i < 4; ++i)
+	{
+		const auto frame = Mat4x4::AffineTransform(Float3{ 1.0f + 0.1f * i, 1, 0.8f },
+			Quaternion::RotateX(i * 0.15), Float3{ 0, static_cast<float>(i), static_cast<float>(0.15 * i * i) });
+		sections.push_back({ ring, frame });
+	}
+	const auto mesh = Mesh3D::Loft(sections, { .smoothingAngle = Math::Pi });
+	CheckMeshGeometry(mesh);
+	// V measures the authored origin polyline, not its Y projection.
+	const double expectedV = Vec3{ 0, 1, 0.15f }.length() + Vec3{ 0, 1, 0.45f }.length() + Vec3{ 0, 1, 0.75f }.length();
+	CHECK(mesh.vertices.back().tex.y == doctest::Approx(expectedV).epsilon(1e-6));
+	const Mat4x4 shear{ 2, 0.25f, 0, 0, 0.3f, 1, 0, 0, 0, 0.2f, 1, 0, 1, 0, 2, 1 };
+	const auto sheared = Mesh3D::Loft({ { Square, shear }, { Square, shear * Mat4x4::Translate(0, 3, 0) } });
+	CheckMeshGeometry(sheared);
+	const Vec3 capN = Vec3{ shear.transformVector(Float3::UnitZ()) }.cross(Vec3{ shear.transformVector(Float3::UnitX()) }).normalized();
+	CHECK(sheared.vertices[4].normal.epsilonEquals(Float3{ capN }, 1e-6f));
+}
 
-	CHECK(Mesh3D::Loft(sections, heights,
-		Vec2{ std::numeric_limits<double>::quiet_NaN(), 1.0 }).isEmpty());
-	CHECK(Mesh3D::Loft(sections, heights,
-		Vec2{ 1.0, std::numeric_limits<float>::max() }).isEmpty());
-	CHECK(Mesh3D::Loft(sections, heights,
-		Vec2{ std::numeric_limits<float>::max(), 1.0 },
-		Vec2{ std::numeric_limits<float>::max(), 0.0 }).isEmpty());
+TEST_CASE("Mesh3D::Loft contour smoothing threshold and seam")
+{
+	const std::array sections{ LoftSection{ Square, Vec3::Zero() }, LoftSection{ Square, Vec3{ 0, 2, 0 } } };
+	const auto hard = Mesh3D::Loft(sections, { .endCaps = Mesh3DEndCaps::None });
+	const auto below = Mesh3D::Loft(sections, { .endCaps = Mesh3DEndCaps::None, .smoothingAngle = 89_deg });
+	CheckMeshDataEqual(hard, below);
+	const auto smooth = Mesh3D::Loft(sections, { .endCaps = Mesh3DEndCaps::None, .smoothingAngle = 90_deg });
+	CHECK_EQ(smooth.vertexCount(), hard.vertexCount());
+	CheckMeshGeometry(smooth);
+	CHECK(smooth.vertices[0].normal.epsilonEquals(smooth.vertices[13].normal, 1e-6f));
+	CHECK_EQ(smooth.vertices[0].tex.x, 0.0f);
+	CHECK_EQ(smooth.vertices[13].tex.x, 1.0f);
+	CHECK_FALSE(hard.vertices[0].normal.epsilonEquals(hard.vertices[13].normal, 1e-6f));
+	const auto ring = Ring(32);
+	CheckMeshGeometry(Mesh3D::Loft({ { ring, Vec3::Zero() }, { ring, Vec3{ 0, 1, 0 } } }, { .smoothingAngle = 30_deg }));
+}
+
+TEST_CASE("Mesh3D::Loft tangent frames follow UV signs")
+{
+	const std::array sections{ LoftSection{ Square, Vec3::Zero() }, LoftSection{ Square, Vec3{ 0, 2, 0 } } };
+	const auto reference = Mesh3D::Loft(sections);
+	for (const Vec2 scale : { Vec2{ -2, 3 }, Vec2{ 2, -3 }, Vec2{ -2, -3 }, Vec2{ 0, 0 } })
+	{
+		const auto mesh = Mesh3D::Loft(sections, { .uvScale = scale });
+		CheckMeshGeometry(mesh);
+		for (size_t i = 0; i < mesh.vertexCount(); ++i)
+		{
+			CHECK(mesh.vertices[i].tangent.xyz().epsilonEquals(reference.vertices[i].tangent.xyz() * (scale.x < 0 ? -1 : 1), 1e-6f));
+			CHECK_EQ(mesh.vertices[i].tangent.w, (scale.x < 0 ? -1 : 1) * (scale.y < 0 ? -1 : 1));
+		}
+	}
+}
+
+TEST_CASE("Mesh3D::Loft invalid inputs preserve destination")
+{
+	const ScopedLogSilencer silence;
+	Array<Vec2> first(Square.begin(), Square.end()), second = first;
+	Array<LoftSection> sections{ { first, Vec3::Zero() }, { second, Vec3{ 0, 2, 0 } } };
+	LoftOptions options;
+	SUBCASE("no sections") { sections.clear(); }
+	SUBCASE("one section") { sections.pop_back(); }
+	SUBCASE("mismatched vertex count") { sections[1].points = std::span<const Vec2>{ second.data(), 3 }; }
+	SUBCASE("two points") { for (auto& s : sections) { s.points = std::span<const Vec2>{ first.data(), 2 }; } }
+	SUBCASE("same origin") { sections[1].frame = Vec3::Zero(); }
+	SUBCASE("backwards origin") { sections[1].frame = Vec3{ 0, -1, 0 }; }
+	SUBCASE("wrong facing frame") { sections[1].frame = Mesh3DPlacement{ Vec3{ 0, 2, 0 }, Quaternion::RotateX(Math::Pi) }; }
+	SUBCASE("singular frame") { sections[1].frame = Mat4x4::Scale(Float3{ 0, 1, 1 }); }
+	SUBCASE("reflected frame") { sections[1].frame = Mat4x4::Scale(Float3{ -1, 1, 1 }); }
+	SUBCASE("projective frame") { sections[1].frame = Mat4x4{ 1,0,0,1, 0,1,0,0, 0,0,1,0, 0,2,0,1 }; }
+	SUBCASE("nonfinite frame") { sections[1].frame = Vec3{ 0, std::numeric_limits<double>::infinity(), 0 }; }
+	SUBCASE("nonfinite point") { first[0].x = std::numeric_limits<double>::quiet_NaN(); }
+	SUBCASE("repeated contour vertex") { first[1] = first[0]; }
+	SUBCASE("reversed contour") { std::reverse(first.begin(), first.end()); }
+	SUBCASE("collapsed transformed contour") { sections[1].frame = Vec3{ 1e10, 2, 0 }; }
+	SUBCASE("collapsed side triangle") { sections[1].frame = Mat4x4{ 1,1,0,0, -1,1,0,0, 0,0,1,0, 0,1,0,1 }; }
+	SUBCASE("invalid caps") { options.endCaps = static_cast<Mesh3DEndCaps>(255); }
+	SUBCASE("negative smoothing") { options.smoothingAngle = -0.1; }
+	SUBCASE("excessive smoothing") { options.smoothingAngle = 4; }
+	SUBCASE("nonfinite smoothing") { options.smoothingAngle = std::numeric_limits<double>::quiet_NaN(); }
+	SUBCASE("nonfinite UV") { options.uvScale.x = std::numeric_limits<double>::infinity(); }
+	SUBCASE("overflowing UV") { options.uvScale.y = std::numeric_limits<float>::max(); }
+	Mesh3DBuilder builder;
+	REQUIRE(builder.addBox());
+	const auto before = builder.getMesh();
+	CHECK_FALSE(builder.addLoft(sections, options));
+	CheckMeshDataEqual(builder.getMesh(), before);
+}
+
+
+TEST_CASE("Mesh3D::Loft curved modeling recipe and shared assembly refinement")
+{
+	for (const double smoothing : { 0.0, Math::Pi })
+	{
+		auto assembly = Mesh3DLoftExamples::MakeAssembly(16, 5, smoothing);
+		const auto before = assembly.bake().value();
+		CheckMeshGeometry(before.mesh);
+		auto refined = Mesh3DLoftExamples::MakeDuct(32, 9, smoothing);
+		REQUIRE(assembly.setMesh(Mesh3DAssembly::MeshID{ 0 }, std::move(refined.mesh)));
+		const auto after = assembly.bake().value();
+		CheckMeshGeometry(after.mesh);
+		CHECK_GT(after.mesh.vertexCount(), before.mesh.vertexCount());
+		REQUIRE_EQ(after.parts.size(), before.parts.size());
+		for (size_t i = 0; i < before.parts.size(); ++i)
+		{
+			CHECK(after.parts[i].id == before.parts[i].id);
+			CHECK(after.parts[i].material == before.parts[i].material);
+			CHECK(after.parts[i].worldTransform == before.parts[i].worldTransform);
+		}
+		if (const char* path = std::getenv("SIV3D_LOFT_EXAMPLE_DIR"))
+		{
+			const FilePath directory = Unicode::FromUTF8(path);
+			REQUIRE(FileSystem::CreateDirectories(directory));
+			REQUIRE(assembly.saveOBJ(directory + (smoothing == 0 ? U"/duct_faceted.obj" : U"/duct_smooth.obj")));
+		}
+	}
 }

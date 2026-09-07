@@ -176,17 +176,10 @@ TEST_CASE("Mesh3DBuilder::addHeightField")
 
 TEST_CASE("Mesh3DBuilder::addLoft")
 {
-	using SectionViews = std::span<const std::span<const Vec2>>;
-	using Heights = std::span<const double>;
 	static_assert(requires
 	{
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, Vec2, Vec2)>(
-			&Mesh3DBuilder::addLoft);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(SectionViews, Heights, const Mesh3DPlacement&)>(
-			&Mesh3DBuilder::addLoft);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(
-			SectionViews, Heights, Vec2, Vec2, const Mesh3DPlacement&)>(
-			&Mesh3DBuilder::addLoft);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const LoftSection>, const LoftOptions&)>(&Mesh3DBuilder::addLoft);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(std::span<const LoftSection>, const Mesh3DPlacement&, const LoftOptions&)>(&Mesh3DBuilder::addLoft);
 	});
 
 	const Array<Array<Vec2>> sections{
@@ -202,25 +195,25 @@ TEST_CASE("Mesh3DBuilder::addLoft")
 	const Mat4x4 transform = Mat4x4::AffineTransform(
 		Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
 
-	SUBCASE("Array overload appends directly and supports placement overloads")
+	SUBCASE("Section entries append directly and support placement overloads")
 	{
-		const Mesh3D source = Mesh3D::Loft(sections, heights, uvScale, uvOffset);
+		const Mesh3D source = Mesh3D::Loft(Mesh3DTest::LoftSections(sections, heights), { .uvScale = uvScale, .uvOffset = uvOffset });
 		Mesh3DBuilder builder;
 		builder.reserve((source.vertexCount() * 4), (source.triangleCount() * 4));
-		REQUIRE(builder.addLoft(sections, heights, uvScale, uvOffset));
+		REQUIRE(builder.addLoft(Mesh3DTest::LoftSections(sections, heights), { .uvScale = uvScale, .uvOffset = uvOffset }));
 		const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 		const TriangleIndex32* const indexData = builder.getMesh().indices.data();
-		REQUIRE(builder.addLoft(sections, heights, offset));
-		REQUIRE(builder.addLoft(sections, heights, { offset, rotation }));
-		REQUIRE(builder.addLoft(sections, heights, uvScale, uvOffset, transform));
+		REQUIRE(builder.addLoft(Mesh3DTest::LoftSections(sections, heights), offset));
+		REQUIRE(builder.addLoft(Mesh3DTest::LoftSections(sections, heights), { offset, rotation }));
+		REQUIRE(builder.addLoft(Mesh3DTest::LoftSections(sections, heights), transform, { .uvScale = uvScale, .uvOffset = uvOffset }));
 		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
 		CHECK_EQ(builder.getMesh().indices.data(), indexData);
 
 		Mesh3D expected = source;
 		REQUIRE(expected.append(
-			Mesh3D::Loft(sections, heights), Mat4x4::Translate(Float3{ offset })));
+			Mesh3D::Loft(Mesh3DTest::LoftSections(sections, heights)), Mat4x4::Translate(Float3{ offset })));
 		REQUIRE(expected.append(
-			Mesh3D::Loft(sections, heights),
+			Mesh3D::Loft(Mesh3DTest::LoftSections(sections, heights)),
 			Mat4x4::AffineTransform(Float3::One(), rotation, Float3{ offset })));
 		REQUIRE(expected.append(source, transform));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
@@ -235,10 +228,10 @@ TEST_CASE("Mesh3DBuilder::addLoft")
 		}
 
 		Mesh3DBuilder builder;
-		REQUIRE(builder.addLoft(sectionViews, heights));
+		REQUIRE(builder.addLoft(Mesh3DTest::LoftSections(sectionViews, heights)));
 		const Mesh3D expected = builder.getMesh();
-		CHECK_FALSE(builder.addLoft(sectionViews, std::array{ 0.0, 0.0, 1.0 }));
-		CHECK_FALSE(builder.addLoft(Array<Array<Vec2>>{}, Array<double>{}, transform));
+		CHECK_FALSE(builder.addLoft(Mesh3DTest::LoftSections(sectionViews, std::array{ 0.0, 0.0, 1.0 })));
+		CHECK_FALSE(builder.addLoft(std::span<const LoftSection>{}, transform));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 }

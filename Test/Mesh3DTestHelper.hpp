@@ -14,6 +14,20 @@
 
 namespace s3d::Mesh3DTest
 {
+	// Adapt height-based fixtures while keeping ownership in each test.
+	template <class Sections, class Heights>
+	Array<LoftSection> LoftSections(const Sections& sections, const Heights& heights)
+	{
+		REQUIRE_EQ(sections.size(), heights.size());
+		Array<LoftSection> result;
+		result.reserve(sections.size());
+		for (size_t i = 0; i < sections.size(); ++i)
+		{
+			result.push_back({ sections[i], Vec3{ 0, heights[i], 0 } });
+		}
+		return result;
+	}
+
 	constexpr float FrameEpsilon = 1e-5f;
 	constexpr float TriangleAreaEpsilon = 1e-10f;
 

@@ -411,8 +411,6 @@ namespace s3d::Mesh3DDetail
 	[[nodiscard]]
 	Mesh3DAddResult AppendLoft(
 		Mesh3D& mesh,
-		std::span<const std::span<const Vec2>> sections,
-		std::span<const double> heights,
-		Vec2 uvScale,
-		Vec2 uvOffset);
+		std::span<const LoftSection> sections,
+		const LoftOptions& options);
 }

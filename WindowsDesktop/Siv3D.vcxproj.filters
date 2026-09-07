@@ -5997,6 +5997,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3DBuilder.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3DPlacement.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\Mesh3DAssembly.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>

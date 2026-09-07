@@ -8,7 +8,6 @@
 
 - 公開 API と座標・UV・頂点属性・失敗時動作の契約: `Siv3D/include/Siv3D/Mesh3D.hpp`、`Mesh3DBuilder.hpp`、`Mesh3DAssembly.hpp` の Doxygen
 - 未実装項目と設計判断: `TODO.md`
-- 任意フレームの Loft の設計検討（未実装・暫定）: `MESH3D_LOFT_DESIGN.md`
 - リポジトリの作業・検証規則: `AGENTS.md`
 - 実装の振る舞い: `Test/Test_Mesh3D*.cpp` と `Test/Mesh3DTestHelper.hpp`
 
@@ -35,6 +34,9 @@
 - `Revolve` の回転範囲、分割数、法線補間、UV 変換、回転方向の端面設定は `RevolveOptions` に集約する。factory は `std::span` / initializer-list の 2 overload、builder は initializer-list、配置なし、`Mesh3DPlacement` 付きの 3 overload とする。
 - builder のすべての配置 overload は `Mesh3DPlacement` に集約する。配置なしを独立させ、配置ありの offset、offset + rotation、`Mat4x4` を 1 overload にした。`Vec3` と `Mat4x4` は従来と同じ記述、回転と平行移動は `{ offset, rotation }` で指定できるため、API 宣言数を減らしても利用コードを肥大化させない。add 宣言数は 233 から 117 になった。
 - `HeightField` の UV 設定は `HeightFieldOptions` に集約する。高さの入力は `Grid<float>`、または頂点数と格子点 `Point` から高さを返す callable の 2 系統とし、callable は行優先で評価する。
+- `LoftSection` は借用輪郭と既存の Mesh3DPlacement を組み合わせる。旧 sections / heights 入力は廃止し、factory は span / initializer-list、builder は配置なし span / initializer-list と配置あり span の計 5 overload にする。Mesh3DPlacement は独立ヘッダにある。
+- Loft の断面はローカル `(x, 0, -y)` に frame を適用する。frame は有限のアフィン変換・正の determinant とし、隣接原点の変位が両端の断面正方向へ正の投影を持つ必要がある。輪郭の自動対応・補間・リサンプリングは行わない。
+- `LoftOptions` は端面・輪郭方向の smoothingAngle・UV 変換を持つ。側面 V は frame 原点の累積距離、平滑化は各断面の各輪郭頂点で判定する。頂点の辺ごとの複製と UV seam は保持し、要求された端面だけを三角形化する。局所的な縮退などは検証するが、輪郭・側面全体の自己交差は保証しない。
 - `IcoSphere` は UV seam を作らず頂点を共有する軽量な球とする。細分化回数は 0～8、既定値は 2 で、法線は球面方向、UV は常に `(0, 0)` とする。テクスチャマッピング用途には `Sphere` を使う。
 - `Mesh3D::computeBoundingBox()` / `computeBoundingSphere()` は、インデックス参照の有無によらず格納された全頂点を対象とする。DirectXCollision に `Vertex3D::pos` を stride 付きで直接渡し、中間配列と動的メモリ確保を避ける。空メッシュは原点・大きさ 0 の境界体積を返し、境界球は近似解とする。
 - `CloseRing` は経路の末尾と先頭を接続する指定であり、端面の選択指定ではない。開路の `Tube` / `Sweep` は既定で両端面を生成する。部分 `Revolve` の `CloseEnds` と Hemisphere の `CloseBottom` もそれぞれ固有の面を制御する。
@@ -45,7 +47,7 @@
 - 合成・編集: `append()`、`reserve()`、`clear()`、各種 transform、`transformUV()`、法線・接線の再計算
 - 出力: OBJ、および `Material` を伴う OBJ / MTL の保存・エンコード
 - Box 系: `BoxFace` による面選択、`BoxShell`、`BoxFrame`、`RoundedBox`、`ChamferedBox` など
-- 汎用生成: `Extrude`、UV 変換に対応する完全・部分 `Revolve`、一定半径・経路点別半径の開路・閉路 `Tube`、一定断面および経路点別 scale / twist の開路・閉路 `Sweep`、`HeightField`、`IcoSphere`、runtime / compile-time `Loft`
+- 汎用生成: `Extrude`、UV 変換に対応する完全・部分 `Revolve`、一定半径・経路点別半径の開路・閉路 `Tube`、一定断面および経路点別 scale / twist の開路・閉路 `Sweep`、`HeightField`、`IcoSphere`、輪郭とフレームで指定する `Loft`
 - その他の基本プリミティブ一式。UV 球の API 名は `Sphere` とする。
 - `Mesh3DBuilder` は既存メッシュと上記 generator を直接追加でき、配置なしと `Mesh3DPlacement` 付きの体系を持つ。
 - `Sweep` の初期断面方向は一定断面・経路点別変換のどちらも `SweepOptions::initialXAxis` で指定する。
@@ -79,7 +81,7 @@ Gemini によるヘッダと簡略化済みモデリングコードのレビュ�
 
 - `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は `TODO.md` の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
-- manual test は利用例であり、API の正本は公開ヘッダとする。新しい生成・編集 API は、宝箱・台車に加えて曲面主体の題材でも評価する。
+- manual test は利用例であり、API の正本は公開ヘッダとする。曲面主体の評価例は `Test/Manual/Mesh3DLoftExamples.md`。断面形状と向きが変わるダクト、平滑化、共有形状の分割品質変更、Align と鏡映複製を含む。
 
 ## 実装時の共通条件
 

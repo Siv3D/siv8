@@ -243,4 +243,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DLoftExamples.hpp" />
+  </ItemGroup>
 </Project>

@@ -341,4 +341,9 @@
       <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Test\Mesh3DLoftExamples.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

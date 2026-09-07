@@ -131,7 +131,7 @@ TEST_CASE("Mesh3DAddResult covers every builder shape family")
 	checkAddition([&] { return builder.addPlane(); });
 	checkAddition([&] { return builder.addGrid(SizeF{ 1.0, 1.0 }, 2, 2); });
 	checkAddition([&] { return builder.addHeightField(heightField, SizeF{ 1.0, 1.0 }); });
-	checkAddition([&] { return builder.addLoft(sections, heights); });
+	checkAddition([&] { return builder.addLoft(Mesh3DTest::LoftSections(sections, heights)); });
 	checkAddition([&] { return builder.addDisc(0.5, 8); });
 	checkAddition([&] { return builder.addAnnulus(0.25, 0.5, 8); });
 	checkAddition([&] { return builder.addHollowCylinder(0.25, 0.5, 1.0, 8); });
@@ -362,16 +362,16 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 			}),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
-		builder.addLoft(sections, Array<double>{ 0.0, 0.0 }),
+		builder.addLoft(Mesh3DTest::LoftSections(sections, Array<double>{ 0.0, 0.0 })),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
-		builder.addLoft(sections, Array<double>{ 0.0, infinity }),
+		builder.addLoft(Mesh3DTest::LoftSections(sections, Array<double>{ 0.0, infinity })),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
-		builder.addLoft(repeatedSections, Array<double>{ 0.0, 1.0 }),
+		builder.addLoft(Mesh3DTest::LoftSections(repeatedSections, Array<double>{ 0.0, 1.0 })),
 		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
-		builder.addLoft(sections, Array<double>{ 0.0, 1.0 }, Vec2{ infinity, 1.0 }),
+		builder.addLoft(Mesh3DTest::LoftSections(sections, Array<double>{ 0.0, 1.0 }), { .uvScale = Vec2{ infinity, 1.0 } }),
 		Mesh3DErrorCode::NumericRange);
 	checkFailure(
 		builder.addConicalFrustum(

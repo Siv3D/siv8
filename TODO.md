@@ -50,7 +50,7 @@
 
 ### API 表面の整理
 
-- `Extrude` の smoothing、`Loft` / `Plane` / `Grid` の UV、Box 系の scalar / vector と UV mapping の組み合わせを options へ集約するか、実利用コードと宣言数を比較して決める。単に型数を増やすだけの options 化は行わない。
+- `Extrude` の smoothing、`Plane` / `Grid` の UV、Box 系の scalar / vector と UV mapping の組み合わせを options へ集約するか、実利用コードと宣言数を比較して決める。単に型数を増やすだけの options 化は行わない。
 - `Mesh3DRange::isEmpty()` は「頂点数と三角形数がともに 0」、`Mesh3D::isEmpty()` は「描画可能な三角形を持たない」という異なる意味を持つ。range 側を `isNoOp()` などへ改名するか検討する。
 - `Mesh3D::validate()` は index と頂点数だけを検査し、非有限値、縮退、位相は検査しない。契約を狭く表す名前へ改めるか、現状の簡潔さを優先するか決める。
 
@@ -69,7 +69,7 @@
 
 ### 端面制御
 
-- `Cylinder`、`Cone`、`ConicalFrustum`、`Extrude`、`Loft` で、始端・終端を選択的に生成しない用途を評価する。
+- `Cylinder`、`Cone`、`ConicalFrustum`、`Extrude` で、始端・終端を選択的に生成しない用途を評価する。
 - `BoxShell::openFaces`、部分 `Revolve` の `CloseEnds`、`CloseRing`、`CloseBottom` はそれぞれ異なる位相操作である。名前だけを統一せず、各操作の意味と組み合わせを整理してから型を設計する。
 - `Mesh3DEndCaps` を他の generator へ流用する場合、経路の始端・終端という意味が底面・上面などの固有名より明確かを確認する。名前だけを統一するためには使わない。
 - 追加する場合は cap の winding、法線、UV、hard edge、頂点・三角形数、および Builder の失敗時非変更保証を既存規約に合わせる。
@@ -94,7 +94,7 @@
 ### 低優先度のレビュー残件
 
 - `append()` が入力ごとに O(triangle count) の `validate()` を行うコストを、信頼済みメッシュを大量合成する実例が出た時に再評価する。
-- Loft の端面生成で作る一時 `Polygon` と、DirectXMesh 由来の normals 実装の配置を、関連コードを変更する機会に整理する。
+- DirectXMesh 由来の normals 実装の配置を、関連コードを変更する機会に整理する。
 - default 引数と scalar overload、`Shape2D` からの Extrude / Sweep は、実利用上の不足が確認された場合に API 全体として設計する。
 
 ### OBJ 入力
@@ -108,12 +108,6 @@
 - Tube の経路点別 radius と Sweep の経路点別 scale / twist で表現できない、生成後メッシュに対する汎用変形の責務を再評価する。法線・接線の再計算、部品範囲との関係、および bend 用経路生成との役割分担を先に決める。
 - 頂点溶接、フラット・スムーズ境界の分割、細分割などの編集機能を検討する。
 
-### 任意フレームの Loft
-
-- 設計案は [`MESH3D_LOFT_DESIGN.md`](MESH3D_LOFT_DESIGN.md)。借用輪郭と既存の Mesh3DPlacement をまとめる LoftSection、および端面・平滑化・UV の LoftOptions を中心に旧 overload を整理する。
-- 最初の試作で、断面フレームの方向条件、輪郭方向の平滑化の基準、既存の高さ指定に対する生成コストを評価する。公開契約は試作前に確定しない。
-- 輪郭の自動対応・自動リサンプリング・曲線補間を Loft 本体へ混在させず、傾いた断面と輪郭変化を持つノズル・外装で評価する。
-
 ## `Siv3D/include/Siv3D/Mesh3DAssembly.hpp`
 
 ### 組立データの利用と編集
@@ -121,7 +115,6 @@
 - 登録順に依存しない reparent や部品削除は、実利用で必要性を評価してから追加する。ID の安定性、古い ID の扱い、子の扱い、再利用ストレージと階層走査のコストを同時に設計する。
 - 形状内の側面・端面などへの材質割り当ては、分割数によらない面の役割を generator が返す方式を検討する。下記のロボット制作メモの評価題材を使う。
 - 部品 ID と入力輪郭・経路区間を関連づける明示的な診断、および接触・間隔の期待値を指定する開発時検査を設計する。
-- Loft の分割品質を変えても部品 ID・材質・配置を保てる使い方を、setMesh() と Align() を使って評価する。形状側の設計は上記「任意フレームの Loft」を参照する。
 
 ### テクスチャなしロボット制作からの機能候補
 
