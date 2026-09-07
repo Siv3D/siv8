@@ -1472,8 +1472,58 @@ TEST_CASE("Mesh3DBuilder storage")
 	REQUIRE(builder.addBox());
 	const Vertex3D* const vertexData = builder.getMesh().vertices.data();
 	const TriangleIndex32* const indexData = builder.getMesh().indices.data();
-	const Mesh3D mesh = std::move(builder).build();
+	const Mesh3D mesh = builder.obtainMesh();
 	CHECK_EQ(mesh.vertices.data(), vertexData);
 	CHECK_EQ(mesh.indices.data(), indexData);
+	CHECK_EQ(mesh.vertices.capacity(), vertexCapacity);
+	CHECK_EQ(mesh.indices.capacity(), triangleCapacity);
+	CHECK(builder.getMesh().vertices.isEmpty());
+	CHECK(builder.getMesh().indices.isEmpty());
+	CHECK_EQ(builder.getMesh().vertices.capacity(), 0);
+	CHECK_EQ(builder.getMesh().indices.capacity(), 0);
 	Mesh3DTest::CheckMeshGeometry(mesh);
+	Mesh3DTest::CheckMeshDataEqual(mesh, Mesh3D::Box());
+
+	const Mesh3D empty = builder.obtainMesh();
+	CHECK(empty.vertices.isEmpty());
+	CHECK(empty.indices.isEmpty());
+
+	const auto added = builder.addBox(Vec3{ 2.0, 3.0, 4.0 });
+	REQUIRE(added);
+	CHECK_EQ(added->vertexOffset, 0);
+	CHECK_EQ(added->triangleOffset, 0);
+	const Mesh3D next = builder.obtainMesh();
+	builder.clear();
+	Mesh3DTest::CheckMeshDataEqual(next, Mesh3D::Box(Vec3{ 2.0, 3.0, 4.0 }));
+	Mesh3DTest::CheckMeshDataEqual(mesh, Mesh3D::Box());
+}
+
+TEST_CASE("Mesh3DBuilder::obtainMesh empty storage")
+{
+	static_assert(noexcept(std::declval<Mesh3DBuilder&>().obtainMesh()));
+	static_assert(noexcept(Mesh3DBuilder{}.obtainMesh()));
+
+	Mesh3DBuilder builder;
+	SUBCASE("New builder") {}
+	SUBCASE("Reserved builder") { builder.reserve(48, 24); }
+	SUBCASE("Cleared builder")
+	{
+		REQUIRE(builder.addBox());
+		builder.clear();
+	}
+
+	const size_t vertexCapacity = builder.getMesh().vertices.capacity();
+	const size_t triangleCapacity = builder.getMesh().indices.capacity();
+	const Mesh3D mesh = builder.obtainMesh();
+	CHECK(mesh.vertices.isEmpty());
+	CHECK(mesh.indices.isEmpty());
+	CHECK_EQ(mesh.vertices.capacity(), vertexCapacity);
+	CHECK_EQ(mesh.indices.capacity(), triangleCapacity);
+	CHECK(builder.getMesh().vertices.isEmpty());
+	CHECK(builder.getMesh().indices.isEmpty());
+	CHECK_EQ(builder.getMesh().vertices.capacity(), 0);
+	CHECK_EQ(builder.getMesh().indices.capacity(), 0);
+
+	REQUIRE(builder.addBox());
+	Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), Mesh3D::Box());
 }

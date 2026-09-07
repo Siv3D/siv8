@@ -17,6 +17,7 @@
 
 - `Mesh3D` は CPU 側のメッシュデータ、編集、生成、OBJ 出力を担当する。3D レンダリング側が未設計の間は `.draw()` を追加しない。
 - 単体生成には `Mesh3D` の static factory、複数形状の直接合成には `Mesh3DBuilder` を使う。
+- Builder の完成メッシュは `builder.obtainMesh()` でストレージごと取り出す。取得後の Builder は容量も含めて初期状態に戻り、再利用できる。`getMesh()` は const 参照、`clear()` は容量を保持した消去。旧 `std::move(builder).build()` は廃止した。
 - 全体へのアフィン変換と負のスケールは表裏を維持する。Mesh3D の transform / scale / append、Builder の配置、Assembly の bake は鏡映時に接線の w と三角形の巻き順を反転する。意図的な表裏反転には invert() を使う。旧仕様に合わせた鏡映後の reverseWinding() は取り除く。API 横断の回帰テストは `Test/Test_Mesh3DTransform.cpp`。Loft の断面ごとの向き・進行方向の条件は別に維持する。
 - `Mesh3DAssembly` は共有形状、材質、名前と親子配置を持つ部品を所有する CPU 側の組立データとする。形状なしの部品はヒンジなどの座標系に使える。形状の差し替えや焼き込みで部品 ID は変化しない。
 - Assembly の親は子より先に登録し、`local * parentWorld` で配置を合成する。`bake(destination)` は出力配列を再利用し、部品ごとの範囲と材質の独立したスナップショットを返す。頂点・三角形の予算超過では出力を変更しない。鏡映では法線・接線に加えて巻き順を反転し、表裏を維持する。

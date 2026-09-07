@@ -48,12 +48,15 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	build
+	//	obtainMesh
 	//
 	////////////////////////////////////////////////////////////////
 
-	inline Mesh3D Mesh3DBuilder::build() && noexcept
+	inline Mesh3D Mesh3DBuilder::obtainMesh() noexcept
 	{
-		return std::move(m_mesh);
+		Mesh3D mesh;
+		mesh.vertices.swap(m_mesh.vertices);
+		mesh.indices.swap(m_mesh.indices);
+		return mesh;
 	}
 }
