@@ -1225,12 +1225,12 @@ namespace s3d
 
 	constexpr LineString LineString::head(const size_type n) const&
 	{
-		return LineString{ m_vertices.head(n) };
+		return LineString{ m_vertices.take(n) };
 	}
 
 	constexpr LineString LineString::head(const size_type n) &&
 	{
-		return LineString{ std::move(m_vertices).head(n) };
+		return LineString{ std::move(m_vertices).take(n) };
 	}
 
 	////////////////////////////////////////////////////////////////

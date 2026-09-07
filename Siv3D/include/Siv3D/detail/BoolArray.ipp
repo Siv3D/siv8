@@ -152,6 +152,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief アドレスを取得可能な bool 要素の動的配列。
+	/// @remark 同じ要素型の派生配列は元のアロケータを引き継ぎます。通常のコピー構築・代入は allocator_traits の規約に従います。
 	template <class Allocator>
 	class Array<bool, Allocator>
 	{
@@ -286,18 +288,20 @@ namespace s3d
 		constexpr Array(container_type&& other, const Allocator& alloc)
 			: m_container(std::move(other), alloc) {}
 
-		/// @brief メンバ関数 `.asArray()` を持つ型から配列を作成します。
+		/// @brief 同じ Array 型または container_type を返す `.asArray()` から配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
 		explicit constexpr Array(const HasAsArray auto& a)
+			requires detail::AsArrayOf<decltype(a), Array>
 			: Array{ a.asArray() } {}
 
-		/// @brief メンバ関数 `.asArray()` を持つ型から配列を作成します。
+		/// @brief 同じ Array 型または container_type を返す `.asArray()` から配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
 		explicit constexpr Array(HasAsArray auto&& a)
+			requires detail::AsArrayOf<decltype(a), Array>
 			: Array{ std::forward<decltype(a)>(a).asArray() } {}
 
 		/// @brief 初期化リストから配列を作成します。
@@ -373,20 +377,22 @@ namespace s3d
 		}
 
 		/// @brief コピー代入演算子
-		/// @param a メンバ関数 `.asArray()` を持つ型
+		/// @param a 同じ Array 型または container_type を返す `.asArray()` を持つ型
 		/// @return *this
 		constexpr Array& operator =(const HasAsArray auto& a) SIV3D_LIFETIMEBOUND
+			requires detail::AsArrayOf<decltype(a), Array>
 		{
-			m_container = a.asArray();
+			*this = a.asArray();
 			return *this;
 		}
 
 		/// @brief ムーブ代入演算子
-		/// @param a メンバ関数 `.asArray()` を持つ型
+		/// @param a 同じ Array 型または container_type を返す `.asArray()` を持つ型
 		/// @return *this
 		constexpr Array& operator =(HasAsArray auto&& a) SIV3D_LIFETIMEBOUND
+			requires detail::AsArrayOf<decltype(a), Array>
 		{
-			m_container = std::forward<decltype(a)>(a).asArray();
+			*this = std::forward<decltype(a)>(a).asArray();
 			return *this;
 		}
 
@@ -472,9 +478,19 @@ namespace s3d
 		/// @brief std::basic_string&gt;bool&lt; への const 参照を返します。
 		/// @return std::basic_string&gt;bool&lt; への const 参照
 		[[nodiscard]]
-		constexpr const container_type& getContainer() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const container_type& getContainer() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container;
+		}
+
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr container_type getContainer() const&& = delete;
+
+		/// @brief 一時配列の内部コンテナをムーブして返します。
+		[[nodiscard]]
+		constexpr container_type getContainer() && noexcept
+		{
+			return std::move(m_container);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -534,6 +550,9 @@ namespace s3d
 			return m_container.at(index);
 		}
 
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr value_type at(size_type index) const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	operator []
@@ -567,6 +586,9 @@ namespace s3d
 			return m_container[index];
 		}
 
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr value_type operator [](size_type index) const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	front
@@ -596,6 +618,9 @@ namespace s3d
 		{
 			return m_container.front();
 		}
+
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr value_type front() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -627,6 +652,9 @@ namespace s3d
 			return m_container.back();
 		}
 
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr value_type back() const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	data
@@ -636,7 +664,7 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr value_type* data() noexcept SIV3D_LIFETIMEBOUND
+		constexpr value_type* data() & noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.data();
 		}
@@ -644,10 +672,13 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr const value_type* data() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const value_type* data() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.data();
 		}
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const value_type* data() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -658,7 +689,7 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator begin() noexcept SIV3D_LIFETIMEBOUND
+		constexpr iterator begin() & noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.begin();
 		}
@@ -667,7 +698,7 @@ namespace s3d
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator end() noexcept SIV3D_LIFETIMEBOUND
+		constexpr iterator end() & noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.end();
 		}
@@ -675,7 +706,7 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator begin() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_iterator begin() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.begin();
 		}
@@ -684,10 +715,16 @@ namespace s3d
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator end() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_iterator end() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.end();
 		}
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_iterator begin() const&& = delete;
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_iterator end() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -698,7 +735,7 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cbegin() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_iterator cbegin() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.cbegin();
 		}
@@ -707,10 +744,16 @@ namespace s3d
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cend() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_iterator cend() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.cend();
 		}
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_iterator cbegin() const&& = delete;
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_iterator cend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -721,7 +764,7 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rbegin() noexcept SIV3D_LIFETIMEBOUND
+		constexpr reverse_iterator rbegin() & noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rbegin();
 		}
@@ -730,7 +773,7 @@ namespace s3d
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rend() noexcept SIV3D_LIFETIMEBOUND
+		constexpr reverse_iterator rend() & noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rend();
 		}
@@ -738,7 +781,7 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rbegin() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_reverse_iterator rbegin() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rbegin();
 		}
@@ -747,10 +790,16 @@ namespace s3d
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rend() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_reverse_iterator rend() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.rend();
 		}
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_reverse_iterator rbegin() const&& = delete;
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_reverse_iterator rend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -761,7 +810,7 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crbegin() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_reverse_iterator crbegin() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.crbegin();
 		}
@@ -770,10 +819,16 @@ namespace s3d
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crend() const noexcept SIV3D_LIFETIMEBOUND
+		constexpr const_reverse_iterator crend() const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return m_container.crend();
 		}
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_reverse_iterator crbegin() const&& = delete;
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr const_reverse_iterator crend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -951,8 +1006,8 @@ namespace s3d
 		/// @brief 配列の要素をすべて消去し、メモリも解放します。
 		constexpr void release()
 		{
-			m_container.clear();
-			m_container.shrink_to_fit();
+			container_type empty(m_container.get_allocator());
+			m_container.swap(empty);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -965,7 +1020,7 @@ namespace s3d
 		/// @param pos 挿入する位置
 		/// @param value 挿入する値
 		/// @return 挿入された要素を指すイテレータ
-		constexpr iterator insert(const_iterator pos, value_type value) SIV3D_LIFETIMEBOUND
+		constexpr iterator insert(const_iterator pos, value_type value) & SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, value);
 		}
@@ -975,7 +1030,7 @@ namespace s3d
 		/// @param count 挿入する個数
 		/// @param value 挿入する値
 		/// @return 挿入された要素の先頭を指すイテレータ
-		constexpr iterator insert(const_iterator pos, size_type count, value_type value) SIV3D_LIFETIMEBOUND
+		constexpr iterator insert(const_iterator pos, size_type count, value_type value) & SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, count, value);
 		}
@@ -987,7 +1042,7 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
 		template <std::input_iterator Iterator>
-		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
+		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) & SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, first, last);
 		}
@@ -996,7 +1051,7 @@ namespace s3d
 		/// @param pos 挿入する位置
 		/// @param list リスト
 		/// @return 挿入された要素の先頭を指すイテレータ
-		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
+		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list) & SIV3D_LIFETIMEBOUND
 		{
 			return m_container.insert(pos, list);
 		}
@@ -1012,7 +1067,7 @@ namespace s3d
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		template <Concept::ContainerCompatibleRange<bool> Range>
-		constexpr iterator insert_range(const_iterator pos, Range&& range)
+		constexpr iterator insert_range(const_iterator pos, Range&& range) &
 		{
 			return m_container.insert_range(pos, std::forward<Range>(range));
 		}
@@ -1029,7 +1084,7 @@ namespace s3d
 		/// @param ...args 構築する要素の引数
 		/// @return 挿入された要素を指すイテレータ
 		template <class... Args>
-		constexpr iterator emplace(const_iterator pos, Args&&... args) SIV3D_LIFETIMEBOUND
+		constexpr iterator emplace(const_iterator pos, Args&&... args) & SIV3D_LIFETIMEBOUND
 		{
 			const value_type value(std::forward<Args>(args)...);
 			return m_container.insert(pos, value);
@@ -1059,7 +1114,7 @@ namespace s3d
 		/// @brief 指定した位置の要素を削除します。
 		/// @param pos 削除する要素の位置
 		/// @return 削除した要素の次の要素を指すイテレータ
-		constexpr iterator erase(const_iterator pos) SIV3D_LIFETIMEBOUND
+		constexpr iterator erase(const_iterator pos) & SIV3D_LIFETIMEBOUND
 		{
 			return m_container.erase(pos);
 		}
@@ -1068,7 +1123,7 @@ namespace s3d
 		/// @param first 削除する範囲の開始位置
 		/// @param last 削除する範囲の終端位置
 		/// @return 削除された範囲の次を指すイテレータ
-		constexpr iterator erase(const_iterator first, const_iterator last) SIV3D_LIFETIMEBOUND
+		constexpr iterator erase(const_iterator first, const_iterator last) & SIV3D_LIFETIMEBOUND
 		{
 			return m_container.erase(first, last);
 		}
@@ -1386,7 +1441,7 @@ namespace s3d
 		/// @param ...args 構築する要素の引数
 		/// @return 追加された要素への参照
 		template <class... Args>
-		constexpr reference emplace_back(Args&&... args) SIV3D_LIFETIMEBOUND
+		constexpr reference emplace_back(Args&&... args) & SIV3D_LIFETIMEBOUND
 		{
 			const value_type value(std::forward<Args>(args)...);
 			push_back(value);
@@ -1464,7 +1519,7 @@ namespace s3d
 		/// @param ...args 構築する要素の引数
 		/// @return 追加された要素への参照
 		template <class... Args>
-		constexpr reference emplace_front(Args&&... args)
+		constexpr reference emplace_front(Args&&... args) &
 		{
 			const value_type value(std::forward<Args>(args)...);
 			m_container.insert(m_container.begin(), value);
@@ -1520,10 +1575,27 @@ namespace s3d
 		/// @brief 配列の末尾に要素を追加します。
 		/// @param value 追加する値
 		/// @return *this
-		constexpr Array& operator <<(value_type value) SIV3D_LIFETIMEBOUND
+		constexpr Array& operator <<(const value_type& value) & SIV3D_LIFETIMEBOUND
 		{
 			m_container.push_back(value);
 			return *this;
+		}
+
+		/// @brief 一時配列を変更し、所有権を持つ配列を返します。
+		/// @return 記憶域とアロケータを引き継いだ配列
+		[[nodiscard]]
+		constexpr Array operator <<(const value_type& value) &&
+		{
+			(*this << value);
+			return std::move(*this);
+		}
+
+		/// @brief 一時配列へ要素を追加し、所有権を持つ配列を返します。
+		[[nodiscard]]
+		constexpr Array operator <<(value_type&& value) &&
+		{
+			(*this << std::move(value));
+			return std::move(*this);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1537,7 +1609,7 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<value_type> subspan(size_type pos, size_type count) noexcept SIV3D_LIFETIMEBOUND
+		constexpr std::span<value_type> subspan(size_type pos, size_type count) & noexcept SIV3D_LIFETIMEBOUND
 		{
 			return std::span{ m_container }.subspan(pos, count);
 		}
@@ -1547,10 +1619,16 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const noexcept SIV3D_LIFETIMEBOUND
+		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const& noexcept SIV3D_LIFETIMEBOUND
 		{
 			return std::span{ m_container }.subspan(pos, count);
 		}
+
+		/// @brief 一時配列からの借用を禁止します。
+		constexpr std::span<value_type> subspan(size_type pos, size_type count) && = delete;
+
+		/// @brief const な一時配列からの借用を禁止します。
+		constexpr std::span<value_type> subspan(size_type pos, size_type count) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1596,12 +1674,13 @@ namespace s3d
 
 		/// @brief 配列の末尾に別の配列を追加します。
 		/// @param other 追加する配列
+		/// @remark 自己コピー追記は要素を複製します。自己 move 追記は何もしません。
 		/// @return *this
-		constexpr Array& append(const Array& other) SIV3D_LIFETIMEBOUND
+		constexpr Array& append(const Array& other) & SIV3D_LIFETIMEBOUND
 		{
 			if (std::addressof(other) == this)
 			{
-				Array copy{ other };
+				Array copy(other, m_container.get_allocator());
 				m_container.insert(m_container.end(), copy.m_container.begin(), copy.m_container.end());
 				return *this;
 			}
@@ -1612,13 +1691,36 @@ namespace s3d
 			}
 		}
 
+		/// @brief 配列の末尾に別の配列を追加します。
+		/// @param other 追加する配列
+		/// @return *this
+		/// @remark 自己 move 追記は何もしません。
+		constexpr Array& append(Array&& other) & SIV3D_LIFETIMEBOUND
+		{
+			if (std::addressof(other) != this)
+			{
+				m_container.append(other.m_container);
+			}
+			return *this;
+		}
+
+		/// @brief 配列の末尾に同じ値を指定した個数追加します。
+		/// @param count 追加する個数
+		/// @param value 追加する値
+		/// @return *this
+		constexpr Array& append(size_type count, const value_type& value) & SIV3D_LIFETIMEBOUND
+		{
+			m_container.append(count, value);
+			return *this;
+		}
+
 		/// @brief 配列の末尾に別の範囲の要素を追加します。
 		/// @tparam Iterator イテレータ
 		/// @param first 範囲の開始位置を指すイテレータ
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <std::input_iterator Iterator>
-		constexpr Array& append(Iterator first, Iterator last) SIV3D_LIFETIMEBOUND
+		constexpr Array& append(Iterator first, Iterator last) & SIV3D_LIFETIMEBOUND
 		{
 			m_container.insert(m_container.end(), first, last);
 			return *this;
@@ -1627,10 +1729,56 @@ namespace s3d
 		/// @brief 配列の末尾にリストの要素を追加します。
 		/// @param list リスト
 		/// @return *this
-		constexpr Array& append(std::initializer_list<value_type> list) SIV3D_LIFETIMEBOUND
+		constexpr Array& append(std::initializer_list<value_type> list) & SIV3D_LIFETIMEBOUND
 		{
 			m_container.insert(m_container.end(), list);
 			return *this;
+		}
+
+		/// @brief 一時配列を変更し、所有権を持つ配列を返します。
+		/// @return 記憶域とアロケータを引き継いだ配列
+		[[nodiscard]]
+		constexpr Array append(const Array& other) &&
+		{
+			append(other);
+			return std::move(*this);
+		}
+
+		/// @brief 一時配列を変更し、所有権を持つ配列を返します。
+		/// @return 記憶域とアロケータを引き継いだ配列
+		[[nodiscard]]
+		constexpr Array append(Array&& other) &&
+		{
+			append(std::move(other));
+			return std::move(*this);
+		}
+
+		/// @brief 一時配列を変更し、所有権を持つ配列を返します。
+		/// @return 記憶域とアロケータを引き継いだ配列
+		template <std::input_iterator Iterator>
+		[[nodiscard]]
+		constexpr Array append(Iterator first, Iterator last) &&
+		{
+			append(first, last);
+			return std::move(*this);
+		}
+
+		/// @brief 一時配列を変更し、所有権を持つ配列を返します。
+		/// @return 記憶域とアロケータを引き継いだ配列
+		[[nodiscard]]
+		constexpr Array append(std::initializer_list<value_type> list) &&
+		{
+			append(list);
+			return std::move(*this);
+		}
+
+		/// @brief 一時配列を変更し、所有権を持つ配列を返します。
+		/// @return 記憶域とアロケータを引き継いだ配列
+		[[nodiscard]]
+		constexpr Array append(size_type count, const value_type& value) &&
+		{
+			append(count, value);
+			return std::move(*this);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1641,38 +1789,56 @@ namespace s3d
 
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
+		/// @throw std::out_of_range 配列が空の場合
 		[[nodiscard]]
-		value_type& choice() SIV3D_LIFETIMEBOUND;
+		value_type& choice() & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 配列の要素を 1 つランダムに返します。
 		/// @return 配列からランダムに選ばれた要素への参照
+		/// @throw std::out_of_range 配列が空の場合
 		[[nodiscard]]
-		const value_type& choice() const SIV3D_LIFETIMEBOUND;
+		const value_type& choice() const& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param urbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
+		/// @throw std::out_of_range 配列が空の場合
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) SIV3D_LIFETIMEBOUND;
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) & SIV3D_LIFETIMEBOUND;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素を 1 つランダムに返します。
 		/// @param urbg 使用する乱数エンジン
 		/// @return 配列からランダムに選ばれた要素への参照
+		/// @throw std::out_of_range 配列が空の場合
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const SIV3D_LIFETIMEBOUND;
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const& SIV3D_LIFETIMEBOUND;
 
 		/// @brief 配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
-		/// @return ランダムに選ばれた要素の配列
+		/// @return 元の順序とアロケータを維持した、最大 min(n, size()) 個の要素の配列
 		[[nodiscard]]
 		Array choice(size_t n) const;
 
 		/// @brief 指定した乱数エンジンを用いて、配列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
 		/// @param urbg 使用する乱数エンジン
-		/// @return ランダムに選ばれた要素の配列
+		/// @return 元の順序とアロケータを維持した、最大 min(n, size()) 個の要素の配列
 		[[nodiscard]]
 		Array choice(size_t n, Concept::UniformRandomBitGenerator auto&& urbg) const;
+
+		/// @brief 一時配列からランダムに選んだ要素をムーブして返します。空の場合は std::out_of_range。
+		[[nodiscard]]
+		value_type choice() &&;
+
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		value_type choice() const&& = delete;
+
+		/// @brief 一時配列からランダムに選んだ要素をムーブして返します。空の場合は std::out_of_range。
+		[[nodiscard]]
+		value_type choice(Concept::UniformRandomBitGenerator auto&& urbg) &&;
+
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		value_type choice(Concept::UniformRandomBitGenerator auto&& urbg) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1682,11 +1848,11 @@ namespace s3d
 
 		/// @brief 指定した個数の要素を持つ配列のグループに分割します。最後のグループの要素数は n 個未満になることがあります。
 		/// @param n 1 つのグループが持つ要素数
-		/// @return 分割されたグループ
+		/// @return 元のアロケータの型と状態を各内側配列に引き継いだグループ
 		[[nodiscard]]
-		constexpr Array<Array<value_type>> chunk(const size_type n) const
+		constexpr Array<Array<value_type, Allocator>> chunk(const size_type n) const
 		{
-			Array<Array<value_type>> result;
+			Array<Array<value_type, Allocator>> result;
 
 			if (n == 0)
 			{
@@ -1778,6 +1944,66 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	drop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から最大 n 個を除いた配列を返します。
+		/// @param n 取り除く最大要素数
+		/// @return 残りの要素の配列
+		/// @remark n は size() にクランプされ、アロケータを引き継ぎます。
+		[[nodiscard]]
+		constexpr Array drop(size_type n) const&
+		{
+			return Array((m_container.begin() + Min(n, size())), m_container.end(), m_container.get_allocator());
+		}
+
+		/// @brief 先頭から最大 n 個を除いた配列を返します。
+		/// @param n 取り除く最大要素数
+		/// @return 残りの要素の配列
+		/// @remark n は size() にクランプされ、アロケータを引き継ぎます。記憶域を再利用します。
+		[[nodiscard]]
+		constexpr Array drop(size_type n) &&
+		{
+			m_container.erase(m_container.begin(), (m_container.begin() + Min(n, size())));
+			return std::move(*this);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drop_while
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から条件を満たす間の要素を除いた配列を返します。
+		/// @param f 要素を判定する述語
+		/// @return 最初に条件を満たさなくなった要素から末尾までの配列
+		/// @remark 順序とアロケータを維持します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array drop_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>
+		{
+			const auto first = std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			return Array(first, m_container.end(), m_container.get_allocator());
+		}
+
+		/// @brief 先頭から条件を満たす間の要素を除いた配列を返します。
+		/// @param f 要素を判定する述語
+		/// @return 最初に条件を満たさなくなった要素から末尾までの配列
+		/// @remark 順序とアロケータを維持します。記憶域を再利用します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array drop_while(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>
+		{
+			const auto first = std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			m_container.erase(m_container.begin(), first);
+			return std::move(*this);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	each
 		//
 		////////////////////////////////////////////////////////////////
@@ -1820,7 +2046,7 @@ namespace s3d
 		{
 			for (size_t i = 0; auto & elem : m_container)
 			{
-				f(i++, elem);
+				std::invoke(f, i++, elem);
 			}
 		}
 
@@ -1834,7 +2060,7 @@ namespace s3d
 		{
 			for (size_t i = 0; const auto & elem : m_container)
 			{
-				f(i++, elem);
+				std::invoke(f, i++, elem);
 			}
 		}
 
@@ -1854,7 +2080,7 @@ namespace s3d
 		{
 			for (isize i = 0; auto & elem : m_container)
 			{
-				f(i++, elem);
+				std::invoke(f, i++, elem);
 			}
 		}
 
@@ -1868,7 +2094,7 @@ namespace s3d
 		{
 			for (isize i = 0; const auto & elem : m_container)
 			{
-				f(i++, elem);
+				std::invoke(f, i++, elem);
 			}
 		}
 
@@ -1898,6 +2124,42 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	find_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす最初の要素へのポインタを返します。
+		/// @param f 要素を判定する述語
+		/// @return 見つかった要素へのポインタ。見つからなければ nullptr
+		/// @remark 配列の破棄・再確保・要素の移動で無効になります。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr value_type* find_if(Fty f) & SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>
+		{
+			const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			return (it == m_container.end()) ? nullptr : std::addressof(*it);
+		}
+
+		/// @brief 条件を満たす最初の要素へのポインタを返します。
+		/// @param f 要素を判定する述語
+		/// @return 見つかった要素へのポインタ。見つからなければ nullptr
+		/// @remark 配列の破棄・再確保・要素の移動で無効になります。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr const value_type* find_if(Fty f) const& SIV3D_LIFETIMEBOUND
+			requires std::predicate<Fty&, const value_type&>
+		{
+			const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			return (it == m_container.end()) ? nullptr : std::addressof(*it);
+		}
+
+		/// @brief 一時配列からの要素ポインタの取得を禁止します。
+		template <class Fty>
+		constexpr const value_type* find_if(Fty f) const&& = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	fill
 		//
 		////////////////////////////////////////////////////////////////
@@ -1905,10 +2167,19 @@ namespace s3d
 		/// @brief 指定した値をすべての要素に代入します。
 		/// @param value 代入する値
 		/// @return *this
-		constexpr Array& fill(const value_type& value) SIV3D_LIFETIMEBOUND
+		constexpr Array& fill(const value_type& value) & SIV3D_LIFETIMEBOUND
 		{
 			std::ranges::fill(m_container, value);
 			return *this;
+		}
+
+		/// @brief 一時配列を変更し、所有権を持つ配列を返します。
+		/// @return 記憶域とアロケータを引き継いだ配列
+		[[nodiscard]]
+		constexpr Array fill(const value_type& value) &&
+		{
+			fill(value);
+			return std::move(*this);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1924,20 +2195,33 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい配列
 		template <class Fty>
 		[[nodiscard]]
-		constexpr Array filter(Fty f) const
+		constexpr Array filter(Fty f) const&
 			requires std::predicate<Fty&, const value_type&>
 		{
-			Array result;
+			Array result(m_container.get_allocator());
 
 			for (const auto& value : m_container)
 			{
-				if (f(value))
+				if (std::invoke(f, value))
 				{
 					result.push_back(value);
 				}
 			}
 
 			return result;
+		}
+
+		/// @brief 条件を満たす要素を元の順序で残します。
+		/// @param f 要素を判定する述語
+		/// @return 記憶域とアロケータを再利用した配列
+		/// @remark 例外時は要素の一部が移動済みの場合があります。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Array filter(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>
+		{
+			std::erase_if(m_container, [&f](const value_type& value) { return (not std::invoke(f, value)); });
+			return std::move(*this);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -1957,32 +2241,32 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	head
+		//	get_if
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
-		/// @param n 取り出す要素数
-		/// @return 先頭から最大 n 個を含む新しい配列
-		/// @remark n が size() を超える場合は size() にクランプされます。
+		/// @brief 指定した要素へのポインタを返します。
+		/// @param index 要素のインデックス
+		/// @return 範囲内なら要素へのポインタ、範囲外なら nullptr
+		/// @remark 配列の破棄・再確保・要素の移動で無効になります。
 		[[nodiscard]]
-		constexpr Array head(size_type n) const&
+		constexpr value_type* get_if(size_type index) & noexcept SIV3D_LIFETIMEBOUND
 		{
-			return take(n);
+			return (index < size()) ? std::addressof(m_container[index]) : nullptr;
 		}
 
-		/// @brief 先頭から最大 n 個の要素を取り出した新しい配列を返します。
-		/// @param n 取り出す要素数
-		/// @return 先頭から最大 n 個を含む新しい配列
-		/// @remark n が size() を超える場合は size() にクランプされます。
+		/// @brief 指定した要素へのポインタを返します。
+		/// @param index 要素のインデックス
+		/// @return 範囲内なら要素へのポインタ、範囲外なら nullptr
+		/// @remark 配列の破棄・再確保・要素の移動で無効になります。
 		[[nodiscard]]
-		constexpr Array head(size_type n)&&
+		constexpr const value_type* get_if(size_type index) const& noexcept SIV3D_LIFETIMEBOUND
 		{
-			const auto k = Min(n, m_container.size());
-			return Array(
-				std::make_move_iterator(m_container.begin()),
-				std::make_move_iterator(m_container.begin() + k));
+			return (index < size()) ? std::addressof(m_container[index]) : nullptr;
 		}
+
+		/// @brief 一時配列からの要素ポインタの取得を禁止します。
+		constexpr const value_type* get_if(size_type index) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2024,6 +2308,9 @@ namespace s3d
 		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
 		constexpr std::span<value_type> head_span(size_type n) && = delete;
 
+		/// @brief const な一時配列からの借用を禁止します。
+		constexpr std::span<value_type> head_span(size_type n) const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	head_view
@@ -2057,6 +2344,9 @@ namespace s3d
 			return std::views::take(std::move(*this), n);
 		}
 
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr auto head_view(size_type n) const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	in_groups
@@ -2065,11 +2355,11 @@ namespace s3d
 
 		/// @brief 要素を指定したグループ数に分割します。
 		/// @param group グループ数
-		/// @return 分割したグループ
+		/// @return 元のアロケータの型と状態を各内側配列に引き継いだグループ
 		[[nodiscard]]
-		constexpr Array<Array<value_type>> in_groups(size_type group) const
+		constexpr Array<Array<value_type, Allocator>> in_groups(size_type group) const
 		{
-			Array<Array<value_type>> result;
+			Array<Array<value_type, Allocator>> result;
 
 			if (group == 0)
 			{
@@ -2097,6 +2387,28 @@ namespace s3d
 			}
 
 			return result;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	indexOf_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 条件を満たす最初の要素のインデックスを返します。
+		/// @param f 要素を判定する述語
+		/// @return 見つかった要素のインデックス。見つからなければ none
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Optional<size_t> indexOf_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>
+		{
+			const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			if (it == m_container.end())
+			{
+				return s3d::none;
+			}
+			return static_cast<size_t>(it - m_container.begin());
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2194,7 +2506,7 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		constexpr auto map(Fty f) const
-			requires std::invocable<Fty&, const value_type&>
+			requires detail::ArrayMapFunction<Fty, value_type>
 		{
 			using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
@@ -2204,7 +2516,7 @@ namespace s3d
 
 			for (const auto& value : m_container)
 			{
-				result.push_back(f(value));
+				result.push_back(std::invoke(f, value));
 			}
 
 			return result;
@@ -2237,12 +2549,13 @@ namespace s3d
 		/// @brief 条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return 区分化された境界を指すイテレータ
+		/// @return 条件を満たさない最初の要素のイテレータ。すべて満たす場合は end()
+		/// @remark 左辺値の配列でのみ呼び出せます。
 		template <class Fty>
-		constexpr auto partition(Fty f) SIV3D_LIFETIMEBOUND
+		constexpr iterator partition(Fty f) & SIV3D_LIFETIMEBOUND
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return std::ranges::partition(m_container, detail::PassFunction(std::forward<Fty>(f)));
+			return std::ranges::partition(m_container, detail::PassFunction(std::forward<Fty>(f))).begin();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2287,11 +2600,11 @@ namespace s3d
 		{
 			if (oldValue == newValue)
 			{
-				return *this;
+				return Array(*this, m_container.get_allocator());
 			}
 			else
 			{
-				return Array(m_container.size(), newValue);
+				return Array(m_container.size(), newValue, m_container.get_allocator());
 			}
 		}
 
@@ -2347,11 +2660,12 @@ namespace s3d
 		constexpr Array replaced_if(Fty f, const value_type& newValue) const&
 			requires std::predicate<Fty&, const value_type&>
 		{
-			Array result(Arg::reserve = m_container.size());
+			Array result(m_container.get_allocator());
+			result.reserve(m_container.size());
 
 			for (const auto& v : m_container)
 			{
-				result.push_back(f(v) ? newValue : v);
+				result.push_back(std::invoke(f, v) ? newValue : v);
 			}
 
 			return result;
@@ -2397,7 +2711,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array reversed() const&
 		{
-			return Array(m_container.rbegin(), m_container.rend());
+			return Array(m_container.rbegin(), m_container.rend(), m_container.get_allocator());
 		}
 
 		/// @brief 配列の要素を逆順に並び替えた新しい配列を返します。
@@ -2466,6 +2780,9 @@ namespace s3d
 			return std::views::reverse(std::move(*this));
 		}
 
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr auto reverse_view() const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	rotate, rotated
@@ -2506,7 +2823,8 @@ namespace s3d
 				detail::ThrowArrayRotateMiddleOutOfRange();
 			}
 
-			Array result(Arg::reserve = m_container.size());
+			Array result(m_container.get_allocator());
+			result.reserve(m_container.size());
 
 			result.insert(result.end(), (m_container.begin() + middle), m_container.end());
 
@@ -2557,7 +2875,7 @@ namespace s3d
 		{
 			const isize trueCount = std::ranges::count(m_container, true);
 
-			Array result(m_container.size(), false);
+			Array result(m_container.size(), false, m_container.get_allocator());
 			std::fill(result.begin(), (result.begin() + trueCount), true);
 
 			return result;
@@ -2645,7 +2963,37 @@ namespace s3d
 				detail::ThrowArraySliceIndexOutOfRange();
 			}
 
-			return Array((m_container.begin() + index), (m_container.begin() + index + length));
+			return Array((m_container.begin() + index), (m_container.begin() + index + length), m_container.get_allocator());
+		}
+
+		/// @brief index から末尾までの配列を返します。
+		/// @param index 開始位置
+		/// @return index から末尾までの配列。index == size() は空の配列
+		/// @throw std::out_of_range index > size() の場合
+		/// @remark アロケータを引き継ぎます。
+		[[nodiscard]]
+		constexpr Array slice(size_type index) const&
+		{
+			if (size() < index)
+			{
+				detail::ThrowArraySliceIndexOutOfRange();
+			}
+			return slice(index, (size() - index));
+		}
+
+		/// @brief index から末尾までの配列を返します。
+		/// @param index 開始位置
+		/// @return index から末尾までの配列。index == size() は空の配列
+		/// @throw std::out_of_range index > size() の場合
+		/// @remark アロケータを引き継ぎます。
+		[[nodiscard]]
+		constexpr Array slice(size_type index) &&
+		{
+			if (size() < index)
+			{
+				detail::ThrowArraySliceIndexOutOfRange();
+			}
+			return std::move(*this).slice(index, (size() - index));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -2741,18 +3089,18 @@ namespace s3d
 
 			if (hasTrue && hasFalse)
 			{
-				return{ false, true };
+				return Array({ false, true }, m_container.get_allocator());
 			}
 			else if (hasTrue)
 			{
-				return{ true };
+				return Array({ true }, m_container.get_allocator());
 			}
 			else if (hasFalse)
 			{
-				return{ false };
+				return Array({ false }, m_container.get_allocator());
 			}
 
-			return{};
+			return Array(m_container.get_allocator());
 		}
 
 		/// @brief 配列をソートしたあとに重複する要素を削除した新しい配列を返します。
@@ -2813,7 +3161,7 @@ namespace s3d
 		constexpr Array sorted_by(Fty f) const&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 		{
-			Array result(*this);
+			Array result(*this, m_container.get_allocator());
 			result.sort_by(std::forward<Fty>(f));
 			return result;
 		}
@@ -2905,7 +3253,7 @@ namespace s3d
 		constexpr Array stable_sorted_by(Fty f) const&
 			requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 		{
-			Array result(*this);
+			Array result(*this, m_container.get_allocator());
 			result.stable_sort_by(std::forward<Fty>(f));
 			return result;
 		}
@@ -2931,9 +3279,10 @@ namespace s3d
 		/// @brief 相対順序を保ちながら、条件を満たすすべての要素を、条件を満たさないすべての要素より前に移動させます。
 		/// @tparam Fty 条件を記述した関数の型
 		/// @param f 条件を記述した関数
-		/// @return 区分化された境界を指すイテレータ
+		/// @return 条件を満たさない最初の要素のイテレータ。すべて満たす場合は end()
+		/// @remark 左辺値の配列でのみ呼び出せます。
 		template <class Fty>
-		constexpr auto stable_partition(Fty f) SIV3D_LIFETIMEBOUND
+		constexpr iterator stable_partition(Fty f) & SIV3D_LIFETIMEBOUND
 			requires std::predicate<Fty&, const value_type&>
 		{
 			return partition(std::forward<Fty>(f));
@@ -3001,23 +3350,23 @@ namespace s3d
 			{
 				if (itFalse < itTrue)
 				{
-					return{ false, true };
+					return Array({ false, true }, m_container.get_allocator());
 				}
 				else
 				{
-					return{ true, false };
+					return Array({ true, false }, m_container.get_allocator());
 				}
 			}
 			else if (hasTrue)
 			{
-				return{ true };
+				return Array({ true }, m_container.get_allocator());
 			}
 			else if (hasFalse)
 			{
-				return{ false };
+				return Array({ false }, m_container.get_allocator());
 			}
 
-			return{};
+			return Array(m_container.get_allocator());
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3048,7 +3397,7 @@ namespace s3d
 		constexpr Array tail(size_type n) const&
 		{
 			const auto k = Min(n, m_container.size());
-			return Array(m_container.end() - k, m_container.end());
+			return Array(m_container.end() - k, m_container.end(), m_container.get_allocator());
 		}
 
 		/// @brief 末尾から最大 n 個の要素を取り出した新しい配列を返します。
@@ -3105,6 +3454,9 @@ namespace s3d
 		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。	
 		constexpr std::span<value_type> tail_span(size_type n) && = delete;
 
+		/// @brief const な一時配列からの借用を禁止します。
+		constexpr std::span<value_type> tail_span(size_type n) const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	tail_view
@@ -3141,6 +3493,9 @@ namespace s3d
 			return std::views::drop(std::move(*this), dropCount);
 		}
 
+		/// @brief const な一時配列からの呼び出しを禁止します。
+		constexpr auto tail_view(size_type n) const&& = delete;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	take
@@ -3151,22 +3506,23 @@ namespace s3d
 		/// @param n 取り出す要素数
 		/// @return 新しい配列
 		/// @remark n が配列の要素数以上の場合、配列全体を返します。
-		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		/// @remark アロケータを引き継ぎます。右辺値では記憶域を再利用します。
 		[[nodiscard]]
 		constexpr Array take(size_type n) const&
 		{
-			return Array(m_container.begin(), (m_container.begin() + Min(n, m_container.size())));
+			return Array(m_container.begin(), (m_container.begin() + Min(n, m_container.size())), m_container.get_allocator());
 		}
 
 		/// @brief 先頭から指定した個数の要素からなる新しい配列を返します。
 		/// @param n 取り出す要素数
 		/// @return 新しい配列
 		/// @remark n が配列の要素数以上の場合、配列全体を返します。
-		/// @remark `Array(begin(), (begin() + Min(n, size())))` と同じです。
+		/// @remark アロケータを引き継ぎます。右辺値では記憶域を再利用します。
 		[[nodiscard]]
 		constexpr Array take(size_type n)&&
 		{
-			return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(m_container.begin() + Min(n, m_container.size())));
+			m_container.erase(Min(n, m_container.size()));
+			return std::move(*this);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3184,7 +3540,7 @@ namespace s3d
 		constexpr Array take_while(Fty f) const&
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))));
+			return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.get_allocator());
 		}
 
 		/// @brief 先頭から、条件を満たさなくなる直前までの要素からなる新しい配列を返します。
@@ -3196,7 +3552,9 @@ namespace s3d
 		constexpr Array take_while(Fty f) &&
 			requires std::predicate<Fty&, const value_type&>
 		{
-			return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)))));
+			const auto first = std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+			m_container.erase(first, m_container.end());
+			return std::move(*this);
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -3236,7 +3594,7 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Array values_at(std::initializer_list<size_type> indices) const
 		{
-			Array result;
+			Array result(m_container.get_allocator());
 			result.reserve(indices.size());
 
 			for (auto index : indices)
@@ -3268,7 +3626,7 @@ namespace s3d
 		{
 			const isize newSize = std::ranges::count(m_container, (not value));
 
-			return Array(newSize, (not value));
+			return Array(newSize, (not value), m_container.get_allocator());
 		}
 
 		/// @brief 指定した値と等しいすべての要素を削除した新しい配列を返します。
@@ -3297,7 +3655,8 @@ namespace s3d
 				detail::ThrowArrayWithoutAtIndexOutOfRange();
 			}
 
-			Array result(Arg::reserve = m_container.size() - 1);
+			Array result(m_container.get_allocator());
+			result.reserve(m_container.size() - 1);
 			result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
 			result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
 
@@ -3328,11 +3687,11 @@ namespace s3d
 		constexpr Array without_if(Fty f) const&
 			requires std::predicate<Fty&, const value_type&>
 		{
-			Array result;
+			Array result(m_container.get_allocator());
 
 			for (const auto& v : m_container)
 			{
-				if (not f(v))
+				if (not std::invoke(f, v))
 				{
 					result.push_back(v);
 				}
@@ -3352,6 +3711,17 @@ namespace s3d
 		{
 			return std::move(without_if(detail::PassFunction(std::forward<Fty>(f))));
 		}
+
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 各要素の変換結果を元の順序で返します（並列実行）。
+		/// @param f 全 worker が共有する関数。関数自身と参照する状態への同時アクセスの同期は呼び出し側の責任です。
+		/// @return std::allocator を使う変換結果の配列。結果型は構築・ムーブ構築可能である必要があります。デフォルト構築・代入は不要です。
+		/// @remark 呼び出し順序は未規定です。例外は開始済み worker の終了を待ってから伝播します。入力を変更してはいけません。
+		template <class Fty>
+		[[nodiscard]]
+		auto parallel_map(Fty f) const
+			requires detail::ArrayMapFunction<Fty, value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -86,10 +86,12 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>::Array(const HasAsArray auto& a)
+		requires detail::AsArrayOf<decltype(a), Array>
 		: Array{ a.asArray() } {}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>::Array(HasAsArray auto&& a)
+		requires detail::AsArrayOf<decltype(a), Array>
 		: Array{ std::forward<decltype(a)>(a).asArray() } {}
 
 	template <class Type, class Allocator>
@@ -137,15 +139,17 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::operator =(const HasAsArray auto& a)
+		requires detail::AsArrayOf<decltype(a), Array>
 	{
-		m_container = a.asArray();
+		*this = a.asArray();
 		return *this;
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::operator =(HasAsArray auto&& a)
+		requires detail::AsArrayOf<decltype(a), Array>
 	{
-		m_container = std::forward<decltype(a)>(a).asArray();
+		*this = std::forward<decltype(a)>(a).asArray();
 		return *this;
 	}
 
@@ -351,13 +355,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::data() noexcept
+	constexpr typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::data() & noexcept
 	{
 		return m_container.data();
 	}
 
 	template <class Type, class Allocator>
-	constexpr const typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::data() const noexcept
+	constexpr const typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::data() const& noexcept
 	{
 		return m_container.data();
 	}
@@ -369,25 +373,25 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::begin() noexcept
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::begin() & noexcept
 	{
 		return m_container.begin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::end() noexcept
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::end() & noexcept
 	{
 		return m_container.end();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::begin() const noexcept
+	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::begin() const& noexcept
 	{
 		return m_container.begin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::end() const noexcept
+	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::end() const& noexcept
 	{
 		return m_container.end();
 	}
@@ -399,13 +403,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::cbegin() const noexcept
+	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::cbegin() const& noexcept
 	{
 		return m_container.cbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::cend() const noexcept
+	constexpr typename Array<Type, Allocator>::const_iterator Array<Type, Allocator>::cend() const& noexcept
 	{
 		return m_container.cend();
 	}
@@ -417,25 +421,25 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::reverse_iterator Array<Type, Allocator>::rbegin() noexcept
+	constexpr typename Array<Type, Allocator>::reverse_iterator Array<Type, Allocator>::rbegin() & noexcept
 	{
 		return m_container.rbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::reverse_iterator Array<Type, Allocator>::rend() noexcept
+	constexpr typename Array<Type, Allocator>::reverse_iterator Array<Type, Allocator>::rend() & noexcept
 	{
 		return m_container.rend();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::rbegin() const noexcept
+	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::rbegin() const& noexcept
 	{
 		return m_container.rbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::rend() const noexcept
+	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::rend() const& noexcept
 	{
 		return m_container.rend();
 	}
@@ -447,13 +451,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::crbegin() const noexcept
+	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::crbegin() const& noexcept
 	{
 		return m_container.crbegin();
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::crend() const noexcept
+	constexpr typename Array<Type, Allocator>::const_reverse_iterator Array<Type, Allocator>::crend() const& noexcept
 	{
 		return m_container.crend();
 	}
@@ -612,8 +616,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr void Array<Type, Allocator>::release()
 	{
-		m_container.clear();
-		m_container.shrink_to_fit();
+		container_type empty(m_container.get_allocator());
+		m_container.swap(empty);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -623,32 +627,32 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, const value_type& value)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, const value_type& value) &
 	{
 		return m_container.insert(pos, value);
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, value_type&& value)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, value_type&& value) &
 	{
 		return m_container.insert(pos, std::move(value));
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, const size_type count, const value_type& value)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, const size_type count, const value_type& value) &
 	{
 		return m_container.insert(pos, count, value);
 	}
 
 	template <class Type, class Allocator>
 	template <std::input_iterator Iterator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, Iterator first, Iterator last)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, Iterator first, Iterator last) &
 	{
 		return m_container.insert(pos, first, last);
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, const std::initializer_list<value_type> list)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert(const const_iterator pos, const std::initializer_list<value_type> list) &
 	{
 		return m_container.insert(pos, list);
 	}
@@ -661,7 +665,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <Concept::ContainerCompatibleRange<Type> Range>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert_range(const const_iterator pos, Range&& range)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::insert_range(const const_iterator pos, Range&& range) &
 	{
 		return m_container.insert_range(pos, std::forward<Range>(range));
 	}
@@ -674,7 +678,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class... Args>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::emplace(const const_iterator pos, Args&&... args)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::emplace(const const_iterator pos, Args&&... args) &
 	{
 		return m_container.emplace(pos, std::forward<Args>(args)...);
 	}
@@ -699,13 +703,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::erase(const_iterator pos)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::erase(const_iterator pos) &
 	{
 		return m_container.erase(pos);
 	}
 
 	template <class Type, class Allocator>
-	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::erase(const_iterator first, const_iterator last)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::erase(const_iterator first, const_iterator last) &
 	{
 		return m_container.erase(first, last);
 	}
@@ -888,7 +892,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class... Args>
-	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::emplace_back(Args&&... args)
+	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::emplace_back(Args&&... args) &
 	{
 		return m_container.emplace_back(std::forward<Args>(args)...);
 	}
@@ -962,7 +966,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class... Args>
-	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::emplace_front(Args&&... args)
+	constexpr typename Array<Type, Allocator>::reference Array<Type, Allocator>::emplace_front(Args&&... args) &
 	{
 		return *m_container.emplace(m_container.begin(), std::forward<Args>(args)...);
 	}
@@ -1010,17 +1014,31 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::operator <<(const value_type& value)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::operator <<(const value_type& value) &
 	{
 		m_container.push_back(value);
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::operator <<(value_type&& value)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::operator <<(value_type&& value) &
 	{
 		m_container.push_back(std::move(value));
 		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::operator <<(const value_type& value) &&
+	{
+		(*this << value);
+		return std::move(*this);
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::operator <<(value_type&& value) &&
+	{
+		(*this << std::move(value));
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1030,13 +1048,13 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr std::span<typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::subspan(const size_type pos, const size_type count) noexcept
+	constexpr std::span<typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::subspan(const size_type pos, const size_type count) & noexcept
 	{
 		return std::span{ m_container }.subspan(pos, count);
 	}
 
 	template <class Type, class Allocator>
-	constexpr std::span<const typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::subspan(const size_type pos, const size_type count) const noexcept
+	constexpr std::span<const typename Array<Type, Allocator>::value_type> Array<Type, Allocator>::subspan(const size_type pos, const size_type count) const& noexcept
 	{
 		return std::span{ m_container }.subspan(pos, count);
 	}
@@ -1076,11 +1094,11 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(const Array& other)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(const Array& other) &
 	{
 		if (std::addressof(other) == this)
 		{
-			Array tmp(other);
+			Array tmp(other, m_container.get_allocator());
 			m_container.insert(m_container.end(), tmp.begin(), tmp.end());
 		}
 		else
@@ -1092,12 +1110,11 @@ namespace s3d
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Array&& other)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Array&& other) &
 	{
 		if (std::addressof(other) == this)
 		{
-			Array tmp(other);
-			m_container.insert(m_container.end(), tmp.begin(), tmp.end());
+			return *this;
 		}
 		else
 		{
@@ -1109,24 +1126,60 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <std::input_iterator Iterator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Iterator first, Iterator last)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(Iterator first, Iterator last) &
 	{
 		m_container.insert(m_container.end(), first, last);
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(std::initializer_list<value_type> list)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(std::initializer_list<value_type> list) &
 	{
 		m_container.insert(m_container.end(), list);
 		return *this;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(const size_type count, const value_type& value)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::append(const size_type count, const value_type& value) &
 	{
 		m_container.insert(m_container.end(), count, value);
 		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::append(const Array& other) &&
+	{
+		append(other);
+		return std::move(*this);
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::append(Array&& other) &&
+	{
+		append(std::move(other));
+		return std::move(*this);
+	}
+
+	template <class Type, class Allocator>
+	template <std::input_iterator Iterator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::append(Iterator first, Iterator last) &&
+	{
+		append(first, last);
+		return std::move(*this);
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::append(std::initializer_list<value_type> list) &&
+	{
+		append(list);
+		return std::move(*this);
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::append(size_type count, const value_type& value) &&
+	{
+		append(count, value);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1136,9 +1189,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::chunk(const size_type n) const
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type, Allocator>> Array<Type, Allocator>::chunk(const size_type n) const
 	{
-		Array<Array<value_type>> result;
+		Array<Array<value_type, Allocator>> result;
 
 		if (n == 0)
 		{
@@ -1146,7 +1199,7 @@ namespace s3d
 		}
 
 		const size_type s = size();
-		const size_type chunkCount = (s + n - 1) / n;
+		const size_type chunkCount = ((s / n) + static_cast<size_type>((s % n) != 0));
 		result.reserve(chunkCount);
 
 		for (size_type i = 0; i < chunkCount; ++i)
@@ -1213,6 +1266,50 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drop
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::drop(size_type n) const&
+	{
+		return Array((m_container.begin() + Min(n, size())), m_container.end(), m_container.get_allocator());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::drop(size_type n) &&
+	{
+		m_container.erase(m_container.begin(), (m_container.begin() + Min(n, size())));
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	drop_while
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::drop_while(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		const auto first = std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		return Array(first, m_container.end(), m_container.get_allocator());
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::drop_while(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		const auto first = std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		m_container.erase(m_container.begin(), first);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	each
 	//
 	////////////////////////////////////////////////////////////////
@@ -1246,7 +1343,7 @@ namespace s3d
 	{
 		for (size_t i = 0; auto& elem : m_container)
 		{
-			f(i++, elem);
+			std::invoke(f, i++, elem);
 		}
 	}
 
@@ -1257,7 +1354,7 @@ namespace s3d
 	{
 		for (size_t i = 0; const auto& elem : m_container)
 		{
-			f(i++, elem);
+			std::invoke(f, i++, elem);
 		}
 	}
 
@@ -1274,7 +1371,7 @@ namespace s3d
 	{
 		for (isize i = 0; auto& elem : m_container)
 		{
-			f(i++, elem);
+			std::invoke(f, i++, elem);
 		}
 	}
 
@@ -1285,7 +1382,7 @@ namespace s3d
 	{
 		for (isize i = 0; const auto& elem : m_container)
 		{
-			f(i++, elem);
+			std::invoke(f, i++, elem);
 		}
 	}
 
@@ -1311,15 +1408,46 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	find_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::find_if(Fty f) &
+		requires std::predicate<Fty&, const value_type&>
+	{
+		const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		return (it == m_container.end()) ? nullptr : std::addressof(*it);
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr const typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::find_if(Fty f) const&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		return (it == m_container.end()) ? nullptr : std::addressof(*it);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	fill
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator>& Array<Type, Allocator>::fill(const value_type& value)
+	constexpr Array<Type, Allocator>& Array<Type, Allocator>::fill(const value_type& value) &
 	{
 		std::ranges::fill(m_container, value);
 		return *this;
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::fill(const value_type& value) &&
+	{
+		fill(value);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1330,20 +1458,30 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::filter(Fty f) const
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::filter(Fty f) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		Array result(Arg::reserve = m_container.size());
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size());
 
 		for (const auto& value : m_container)
 		{
-			if (f(value))
+			if (std::invoke(f, value))
 			{
 				result.push_back(value);
 			}
 		}
 
 		return result;
+	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::filter(Fty f) &&
+		requires std::predicate<Fty&, const value_type&>
+	{
+		std::erase_if(m_container, [&f](const value_type& value) { return (not std::invoke(f, value)); });
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1372,7 +1510,7 @@ namespace s3d
 
 		for (const auto& inner : m_container)
 		{
-			result.append(inner);
+			result.append(inner.begin(), inner.end());
 		}
 
 		return result;
@@ -1385,10 +1523,16 @@ namespace s3d
 		using element_type = typename value_type::value_type;
 
 		Array<element_type> result;
+		size_type total = 0;
+		for (const auto& inner : m_container)
+		{
+			total += inner.size();
+		}
+		result.reserve(total);
 
 		for (auto&& inner : m_container)
 		{
-			result.append(std::move(inner));
+			result.append(std::make_move_iterator(inner.begin()), std::make_move_iterator(inner.end()));
 		}
 
 		return result;
@@ -1396,25 +1540,20 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	head
+	//	get_if
 	//
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::head(const size_type n) const&
+	constexpr typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::get_if(size_type index) & noexcept
 	{
-		const auto k = Min(n, m_container.size());
-		return Array(m_container.begin(), (m_container.begin() + k));
+		return (index < size()) ? std::addressof(m_container[index]) : nullptr;
 	}
 
 	template <class Type, class Allocator>
-	constexpr Array<Type, Allocator> Array<Type, Allocator>::head(const size_type n) &&
+	constexpr const typename Array<Type, Allocator>::value_type* Array<Type, Allocator>::get_if(size_type index) const& noexcept
 	{
-		const auto k = Min(n, m_container.size());
-		return Array(
-			std::make_move_iterator(m_container.begin()),
-			std::make_move_iterator(m_container.begin() + k),
-			m_container.get_allocator());
+		return (index < size()) ? std::addressof(m_container[index]) : nullptr;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1468,9 +1607,9 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Type, class Allocator>
-	constexpr Array<Array<typename Array<Type, Allocator>::value_type>> Array<Type, Allocator>::in_groups(const size_type group) const
+	constexpr Array<Array<typename Array<Type, Allocator>::value_type, Allocator>> Array<Type, Allocator>::in_groups(const size_type group) const
 	{
-		Array<Array<value_type>> result;
+		Array<Array<value_type, Allocator>> result;
 
 		if (group == 0)
 		{
@@ -1523,6 +1662,25 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	indexOf_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	constexpr Optional<size_t> Array<Type, Allocator>::indexOf_if(Fty f) const
+		requires std::predicate<Fty&, const value_type&>
+	{
+		const auto it = std::ranges::find_if(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		if (it == m_container.end())
+		{
+			return s3d::none;
+		}
+		return static_cast<size_t>(it - m_container.begin());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	isSorted
 	//
 	////////////////////////////////////////////////////////////////
@@ -1531,7 +1689,7 @@ namespace s3d
 	constexpr bool Array<Type, Allocator>::isSorted() const
 		requires Concept::LessThanComparable<value_type>
 	{
-		return std::ranges::is_sorted(m_container);
+		return std::ranges::is_sorted(m_container, [](const value_type& a, const value_type& b) { return (a < b); });
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1584,7 +1742,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	template <class Fty>
 	constexpr auto Array<Type, Allocator>::map(Fty f) const
-		requires std::invocable<Fty&, const value_type&>
+		requires detail::ArrayMapFunction<Fty, value_type>
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
@@ -1592,7 +1750,7 @@ namespace s3d
 
 		for (const auto& value : m_container)
 		{
-			result.push_back(f(value));
+			result.push_back(std::invoke(f, value));
 		}
 
 		return result;
@@ -1620,10 +1778,10 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr auto Array<Type, Allocator>::partition(Fty f)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::partition(Fty f) &
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::ranges::partition(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::partition(m_container, detail::PassFunction(std::forward<Fty>(f))).begin();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1648,7 +1806,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::replaced(const value_type& oldValue, const value_type& newValue) const&
 	{
-		Array result(Arg::reserve = m_container.size());
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size());
 
 		for (const auto& v : m_container)
 		{
@@ -1692,11 +1851,12 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::replaced_if(Fty f, const value_type& newValue) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		Array result(Arg::reserve = m_container.size());
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size());
 
 		for (const auto& v : m_container)
 		{
-			result.push_back(f(v) ? newValue : v);
+			result.push_back(std::invoke(f, v) ? newValue : v);
 		}
 
 		return result;
@@ -1732,7 +1892,7 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::reversed() const&
 	{
-		return Array(m_container.rbegin(), m_container.rend());
+		return Array(m_container.rbegin(), m_container.rend(), m_container.get_allocator());
 	}
 
 	template <class Type, class Allocator>
@@ -1820,7 +1980,8 @@ namespace s3d
 			detail::ThrowArrayRotateMiddleOutOfRange();
 		}
 
-		Array result(Arg::reserve = m_container.size());
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size());
 
 		result.insert(result.end(), (m_container.begin() + middle), m_container.end());
 
@@ -1860,7 +2021,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::rsorted() const&
 		requires Concept::LessThanComparable<value_type>
 	{
-		Array result(*this);
+		Array result(*this, m_container.get_allocator());
 		result.rsort();
 		return result;
 	}
@@ -1893,7 +2054,7 @@ namespace s3d
 			detail::ThrowArraySliceIndexOutOfRange();
 		}
 
-		return Array((m_container.begin() + index), (m_container.begin() + index + length));
+		return Array((m_container.begin() + index), (m_container.begin() + index + length), m_container.get_allocator());
 	}
 
 	template <class Type, class Allocator>
@@ -1911,7 +2072,27 @@ namespace s3d
 			detail::ThrowArraySliceIndexOutOfRange();
 		}
 
-		return Array(std::make_move_iterator(m_container.begin() + index), std::make_move_iterator(m_container.begin() + index + length));
+		return Array(std::make_move_iterator(m_container.begin() + index), std::make_move_iterator(m_container.begin() + index + length), m_container.get_allocator());
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::slice(size_type index) const&
+	{
+		if (size() < index)
+		{
+			detail::ThrowArraySliceIndexOutOfRange();
+		}
+		return slice(index, (size() - index));
+	}
+
+	template <class Type, class Allocator>
+	constexpr Array<Type, Allocator> Array<Type, Allocator>::slice(size_type index) &&
+	{
+		if (size() < index)
+		{
+			detail::ThrowArraySliceIndexOutOfRange();
+		}
+		return std::move(*this).slice(index, (size() - index));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1924,7 +2105,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort()&
 		requires Concept::LessThanComparable<value_type>
 	{
-		std::ranges::sort(m_container);
+		std::ranges::sort(m_container, [](const value_type& a, const value_type& b) { return (a < b); });
 		return *this;
 	}
 
@@ -1939,7 +2120,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted() const&
 		requires Concept::LessThanComparable<value_type>
 	{
-		Array result(*this);
+		Array result(*this, m_container.get_allocator());
 		result.sort();
 		return result;
 	}
@@ -1959,9 +2140,9 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::sort_and_unique() &
-		requires Concept::LessThanComparable<value_type>
+		requires Concept::LessThanComparable<value_type> && std::equality_comparable<value_type>
 	{
-		std::ranges::sort(m_container);
+		std::ranges::sort(m_container, [](const value_type& a, const value_type& b) { return (a < b); });
 		auto result = std::ranges::unique(m_container);
 		m_container.erase(result.begin(), result.end());
 		return *this;
@@ -1969,23 +2150,23 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sort_and_unique() &&
-		requires Concept::LessThanComparable<value_type>
+		requires Concept::LessThanComparable<value_type> && std::equality_comparable<value_type>
 	{
 		return std::move(sort_and_unique());
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_and_uniqued() const&
-		requires Concept::LessThanComparable<value_type>
+		requires Concept::LessThanComparable<value_type> && std::equality_comparable<value_type>
 	{
-		Array result(*this);
+		Array result(*this, m_container.get_allocator());
 		result.sort_and_unique();
 		return result;
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_and_uniqued() &&
-		requires Concept::LessThanComparable<value_type>
+		requires Concept::LessThanComparable<value_type> && std::equality_comparable<value_type>
 	{
 		return std::move(sort_and_unique());
 	}
@@ -2018,7 +2199,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::sorted_by(Fty f) const&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		Array result(*this);
+		Array result(*this, m_container.get_allocator());
 		result.sort_by(std::forward<Fty>(f));
 		return result;
 	}
@@ -2039,10 +2220,10 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	template <class Fty>
-	constexpr auto Array<Type, Allocator>::stable_partition(Fty f)
+	constexpr typename Array<Type, Allocator>::iterator Array<Type, Allocator>::stable_partition(Fty f) &
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return std::ranges::stable_partition(m_container, detail::PassFunction(std::forward<Fty>(f)));
+		return std::ranges::stable_partition(m_container, detail::PassFunction(std::forward<Fty>(f))).begin();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2055,7 +2236,7 @@ namespace s3d
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_sort()&
 		requires Concept::LessThanComparable<value_type>
 	{
-		std::ranges::stable_sort(m_container);
+		std::ranges::stable_sort(m_container, [](const value_type& a, const value_type& b) { return (a < b); });
 		return *this;
 	}
 
@@ -2070,7 +2251,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted() const&
 		requires Concept::LessThanComparable<value_type>
 	{
-		Array result(*this);
+		Array result(*this, m_container.get_allocator());
 		result.stable_sort();
 		return result;
 	}
@@ -2110,7 +2291,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_sorted_by(Fty f) const&
 		requires std::strict_weak_order<Fty&, const value_type&, const value_type&>
 	{
-		Array result(*this);
+		Array result(*this, m_container.get_allocator());
 		result.stable_sort_by(std::forward<Fty>(f));
 		return result;
 	}
@@ -2174,7 +2355,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::tail(const size_type n) const&
 	{
 		const auto k = Min(n, m_container.size());
-		return Array((m_container.end() - k), m_container.end());
+		return Array((m_container.end() - k), m_container.end(), m_container.get_allocator());
 	}
 
 	template <class Type, class Allocator>
@@ -2244,14 +2425,14 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take(const size_type n) const&
 	{
 		const auto k = Min(n, m_container.size());
-		return Array(m_container.begin(), m_container.begin() + k);
+		return Array(m_container.begin(), m_container.begin() + k, m_container.get_allocator());
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take(const size_type n)&&
 	{
 		const auto k = Min(n, m_container.size());
-		m_container.resize(k);
+		m_container.erase((m_container.begin() + k), m_container.end());
 		return std::move(*this);
 	}
 
@@ -2266,7 +2447,7 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take_while(Fty f) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))));
+		return Array(m_container.begin(), std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f))), m_container.get_allocator());
 	}
 
 	template <class Type, class Allocator>
@@ -2274,7 +2455,9 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::take_while(Fty f) &&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		return Array(std::make_move_iterator(m_container.begin()), std::make_move_iterator(std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)))));
+		const auto first = std::find_if_not(m_container.begin(), m_container.end(), detail::PassFunction(std::forward<Fty>(f)));
+		m_container.erase(first, m_container.end());
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2286,7 +2469,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::values_at(const std::initializer_list<size_type> indices) const
 	{
-		Array result(Arg::reserve = indices.size());
+		Array result(m_container.get_allocator());
+		result.reserve(indices.size());
 
 		for (auto index : indices)
 		{
@@ -2312,7 +2496,8 @@ namespace s3d
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::without(const value_type& value) const&
 	{
-		Array result(Arg::reserve = m_container.size());
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size());
 
 		for (const auto& v : m_container)
 		{
@@ -2346,7 +2531,8 @@ namespace s3d
 			detail::ThrowArrayWithoutAtIndexOutOfRange();
 		}
 
-		Array result(Arg::reserve = m_container.size() - 1);
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size() - 1);
 		result.insert(result.end(), m_container.begin(), (m_container.begin() + index));
 		result.insert(result.end(), (m_container.begin() + index + 1), m_container.end());
 
@@ -2376,11 +2562,12 @@ namespace s3d
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::without_if(Fty f) const&
 		requires std::predicate<Fty&, const value_type&>
 	{
-		Array result(Arg::reserve = m_container.size());
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size());
 
 		for (const auto& v : m_container)
 		{
-			if (not f(v))
+			if (not std::invoke(f, v))
 			{
 				result.push_back(v);
 			}
@@ -2471,4 +2658,5 @@ namespace s3d
 	{
 		return Array<Elem>(std::from_range, std::forward<Range>(range));
 	}
+
 }

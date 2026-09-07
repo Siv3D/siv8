@@ -1068,12 +1068,12 @@ namespace s3d
 
 	inline MultiPolygon MultiPolygon::head(const size_type n) const&
 	{
-		return MultiPolygon{ m_polygons.head(n) };
+		return MultiPolygon{ m_polygons.take(n) };
 	}
 
 	inline MultiPolygon MultiPolygon::head(const size_type n) &&
 	{
-		return MultiPolygon{ std::move(m_polygons).head(n) };
+		return MultiPolygon{ std::move(m_polygons).take(n) };
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -250,86 +250,106 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	template <class Type, class Allocator>
-	template <class Fty>
-	auto Array<Type, Allocator>::parallel_map(Fty f) const
-		requires std::invocable<Fty&, const value_type&>
+	namespace detail
 	{
-		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
-
-		if (m_container.empty())
+		template <class Source, class Fty>
+		auto ArrayParallelMap(const Source& source, Fty& f)
 		{
-			return Array<result_value_type>{};
-		}
+			using Result = std::decay_t<std::invoke_result_t<Fty&, const typename Source::value_type&>>;
+			const size_t size = source.size();
+			const size_t workers = Min(size, Threading::GetConcurrency());
 
-		// The same callable object is shared by all worker threads.
-		// Concurrent access to the callable and its referenced state must be synchronized by the caller.
-		const auto function = std::ref(f);
-
-		const size_t numThreads = Threading::GetConcurrency();
-
-		if (numThreads <= 1)
-		{
-			return map(function);
-		}
-
-		const size_t containerSize = m_container.size();
-		Array<result_value_type> result(containerSize);
-
-		const size_t countPerThread = ((containerSize / numThreads)
-			+ static_cast<size_t>((containerSize % numThreads) != 0));
-
-		Array<std::future<void>> tasks;
-		tasks.reserve(numThreads - 1);
-
-		auto itDst = result.begin();
-		auto itSrc = m_container.begin();
-		size_t countLeft = containerSize;
-
-		for (size_t i = 0; i < (numThreads - 1); ++i)
-		{
-			const size_t n = Min(countPerThread, countLeft);
-
-			if (n == 0)
+			if (workers <= 1)
 			{
-				break;
+				return source.map(std::ref(f));
 			}
 
-			const auto dstBegin = itDst;
-			const auto srcBegin = itSrc;
+			// All workers share f. Futures are destroyed before any referenced local storage.
+			const auto function = std::ref(f);
+			const size_t batchSize = (size / workers);
+			const size_t extra = (size % workers);
 
-			tasks.emplace_back(std::async(std::launch::async, [dstBegin, srcBegin, n, function]() mutable
+			if constexpr (std::is_trivially_default_constructible_v<Result> && std::is_move_assignable_v<Result>)
 			{
-				auto dst = dstBegin;
-				auto src = srcBegin;
-				const auto srcEnd = (src + n);
+				// Keep the single-allocation path for scalar and other cheap result types.
+				Array<Result> result(size);
+				Array<std::future<void>> tasks;
+				tasks.reserve(workers - 1);
+				auto src = source.begin();
+				auto dst = result.begin();
 
-				while (src != srcEnd)
+				for (size_t i = 0; i < (workers - 1); ++i)
+				{
+					const size_t count = (batchSize + static_cast<size_t>(i < extra));
+					tasks.emplace_back(std::async(std::launch::async, [src, dst, count, function]() mutable
+					{
+						for (size_t j = 0; j < count; ++j)
+						{
+							*dst++ = function(*src++);
+						}
+					}));
+					src += count;
+					dst += count;
+				}
+
+				while (src != source.end())
 				{
 					*dst++ = function(*src++);
 				}
-			}));
-
-			itDst += n;
-			itSrc += n;
-			countLeft -= n;
-		}
-
-		if (countLeft)
-		{
-			const auto itSrcEnd = m_container.end();
-
-			while (itSrc != itSrcEnd)
+				for (auto& task : tasks)
+				{
+					task.get();
+				}
+				return result;
+			}
+			else
 			{
-				*itDst++ = function(*itSrc++);
+				Array<Result> result(Arg::reserve = size);
+				Array<std::future<Array<Result>>> tasks;
+				tasks.reserve(workers - 1);
+				auto src = source.begin();
+
+				const auto buildChunk = [function](auto first, const size_t count)
+				{
+					Array<Result> chunk(Arg::reserve = count);
+					for (size_t j = 0; j < count; ++j)
+					{
+						chunk.push_back(function(*first++));
+					}
+					return chunk;
+				};
+
+				for (size_t i = 0; i < (workers - 1); ++i)
+				{
+					const size_t count = (batchSize + static_cast<size_t>(i < extra));
+					tasks.emplace_back(std::async(std::launch::async, buildChunk, src, count));
+					src += count;
+				}
+
+				auto tail = buildChunk(src, static_cast<size_t>(source.end() - src));
+				for (auto& task : tasks)
+				{
+					auto chunk = task.get();
+					for (auto& value : chunk)
+					{
+						result.push_back(std::move(value));
+					}
+				}
+				for (auto& value : tail)
+				{
+					result.push_back(std::move(value));
+				}
+				return result;
 			}
 		}
-
-		for (auto& task : tasks)
-		{
-			task.get();
-		}
-
-		return result;
 	}
+
+	template <class Type, class Allocator>
+	template <class Fty>
+	auto Array<Type, Allocator>::parallel_map(Fty f) const
+		requires detail::ArrayMapFunction<Fty, value_type>
+	{
+		return detail::ArrayParallelMap(*this, f);
+	}
+
 }

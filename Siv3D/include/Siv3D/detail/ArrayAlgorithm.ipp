@@ -162,6 +162,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::stable_unique() &
+		requires detail::ArrayStableUniqueElement<value_type>
 	{
 		detail::ArrayStableUniqueHelper<value_type> pred;
 		pred.reserve(m_container.size());
@@ -173,14 +174,17 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_unique() &&
+		requires detail::ArrayStableUniqueElement<value_type>
 	{
 		return std::move(stable_unique());
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::stable_uniqued() const
+		requires detail::ArrayStableUniqueElement<value_type>
 	{
-		Array result(Arg::reserve = m_container.size());
+		Array result(m_container.get_allocator());
+		result.reserve(m_container.size());
 
 		detail::ArrayStableUniqueHelper<value_type> pred;
 		pred.reserve(m_container.size());
@@ -197,6 +201,7 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator>& Array<Type, Allocator>::unique_consecutive() &
+		requires std::equality_comparable<value_type>
 	{
 		auto result = std::ranges::unique(m_container);
 		m_container.erase(result.begin(), result.end());
@@ -205,21 +210,23 @@ namespace s3d
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::unique_consecutive() &&
+		requires std::equality_comparable<value_type>
 	{
 		return std::move(unique_consecutive());
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() const&
+		requires std::equality_comparable<value_type>
 	{
-		Array result;
+		Array result(m_container.get_allocator());
 		std::ranges::unique_copy(m_container, std::back_inserter(result));
 		return result;
 	}
 
 	template <class Type, class Allocator>
 	constexpr Array<Type, Allocator> Array<Type, Allocator>::uniqued_consecutive() &&
-		noexcept(std::is_nothrow_move_assignable_v<value_type>)
+		requires std::equality_comparable<value_type>
 	{
 		return std::move(unique_consecutive());
 	}
@@ -260,7 +267,7 @@ namespace s3d
 	template <class Allocator>
 	constexpr Array<bool, Allocator> Array<bool, Allocator>::uniqued_consecutive() const&
 	{
-		Array result;
+		Array result(m_container.get_allocator());
 		std::ranges::unique_copy(m_container, std::back_inserter(result));
 		return result;
 	}
