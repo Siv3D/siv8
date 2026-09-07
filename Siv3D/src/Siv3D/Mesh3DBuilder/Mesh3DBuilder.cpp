@@ -366,39 +366,23 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3DAddResult Mesh3DBuilder::addExtrude(const Polygon& polygon, const double height)
+	Mesh3DAddResult Mesh3DBuilder::addExtrude(
+		const Polygon& polygon,
+		const double height,
+		const ExtrudeOptions& options)
 	{
-		return Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0);
+		return Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, options.smoothingAngle);
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addExtrude(
 		const Polygon& polygon,
 		const double height,
-		const Mesh3DPlacement& placement)
+		const Mesh3DPlacement& placement,
+		const ExtrudeOptions& options)
 	{
 		return TransformAddedRange(
 			m_mesh,
-			Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, 0.0),
-			placement.getTransform());
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addExtrude(
-		const Polygon& polygon,
-		const double height,
-		const double smoothingAngle)
-	{
-		return Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle);
-	}
-
-	Mesh3DAddResult Mesh3DBuilder::addExtrude(
-		const Polygon& polygon,
-		const double height,
-		const double smoothingAngle,
-		const Mesh3DPlacement& placement)
-	{
-		return TransformAddedRange(
-			m_mesh,
-			Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, smoothingAngle),
+			Mesh3DDetail::AppendExtrude(m_mesh, polygon, height, options.smoothingAngle),
 			placement.getTransform());
 	}
 

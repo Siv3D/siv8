@@ -342,20 +342,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Mesh3D Mesh3D::Extrude(const Polygon& polygon, const double height)
-	{
-		Mesh3D mesh;
-		(void)Mesh3DDetail::AppendExtrude(mesh, polygon, height, 0.0);
-		return mesh;
-	}
-
 	Mesh3D Mesh3D::Extrude(
 		const Polygon& polygon,
 		const double height,
-		const double smoothingAngle)
+		const ExtrudeOptions& options)
 	{
 		Mesh3D mesh;
-		(void)Mesh3DDetail::AppendExtrude(mesh, polygon, height, smoothingAngle);
+		(void)Mesh3DDetail::AppendExtrude(mesh, polygon, height, options.smoothingAngle);
 		return mesh;
 	}
 }

@@ -51,6 +51,22 @@ TEST_CASE("Mesh3DPlacement accepts rotation in Builder Assembly and Loft")
 	CHECK(loft.computeBoundingBox().size.epsilonEquals(Vec3{ 2, 2, 2 }, 2e-5));
 }
 
+TEST_CASE("Mesh3DPlacement Loft frame aligns contour axes and progression")
+{
+	const auto rotation = Quaternion::FromUnitVectorPairs(
+		{ Vec3{ 1, 0, 0 }, Vec3{ 0, 0, -1 } },
+		{ Vec3{ 0, 0, -1 }, Vec3{ 0, 1, 0 } });
+	CHECK(rotation.rotate(Vec3{ 1, 0, 0 }).epsilonEquals(Vec3{ 0, 0, -1 }, 2e-5));
+	CHECK(rotation.rotate(Vec3{ 0, 0, -1 }).epsilonEquals(Vec3{ 0, 1, 0 }, 2e-5));
+	CHECK(rotation.rotate(Vec3{ 0, 1, 0 }).epsilonEquals(Vec3{ 1, 0, 0 }, 2e-5));
+	const Array<Vec2> contour{ Vec2{ -1, -2 }, Vec2{ 1, -2 }, Vec2{ 1, 2 }, Vec2{ -1, 2 } };
+	REQUIRE(Geometry2D::IsClockwise(contour));
+	const auto mesh = Mesh3D::Loft({ { contour, rotation }, { contour, { Vec3{ 3, 0, 0 }, rotation } } });
+	Mesh3DTest::CheckMeshGeometry(mesh);
+	CHECK(mesh.computeBoundingBox().center.epsilonEquals(Vec3{ 1.5, 0, 0 }, 2e-5));
+	CHECK(mesh.computeBoundingBox().size.epsilonEquals(Vec3{ 3, 4, 2 }, 2e-5));
+}
+
 TEST_CASE("Mesh3DPlacement::Align frame origins and axes")
 {
 	const Mat4x4 identity = Mat4x4::Identity();

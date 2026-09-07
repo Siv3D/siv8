@@ -29,13 +29,16 @@ namespace s3d
 	/// @remark 配置付き add 関数は Mesh3D::transform() と同じ規約で変換し、鏡映時は追加範囲の三角形の巻き順も反転して表裏を維持します。
 	/// @remark 各 add 関数が生成する形状の座標、位相、UV 座標、法線、および接線の規約は、対応する `Mesh3D` の生成関数と同じです。
 	/// @code
+	/// Mesh3DBuilder builder;
 	/// if (const auto result = builder.addTube(path, 0.25))
 	/// {
 	///     const Mesh3DRange added = *result;
+	///     Mesh3D mesh = std::move(builder).build(); // 所有ストレージを取り出す
 	/// }
 	/// else
 	/// {
 	///     const Mesh3DError& error = result.error();
+	///     Console << error.message; // 生成に失敗した理由
 	/// }
 	/// @endcode
 	class Mesh3DBuilder
@@ -94,6 +97,7 @@ namespace s3d
 		/// @brief 構築した 3D メッシュを取得します。
 		/// @return 構築した 3D メッシュ
 		/// @remark ビルダーが所有するストレージを再利用します。この関数を呼んだ後のビルダーの状態は規定されません。
+		/// @remark 所有権を渡すため、名前のある変数からは `std::move(builder).build()` と呼びます。構築中の内容を参照するだけなら getMesh() を使います。
 		[[nodiscard]]
 		Mesh3D build() && noexcept;
 
@@ -596,40 +600,25 @@ namespace s3d
 		/// @brief 2D の多角形を Y 軸方向に押し出した形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
+		/// @param options 側面の法線補間の設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 座標、UV 座標、および法線の規約は `Mesh3D::Extrude()` と同じです。
+		/// @remark 座標、UV 座標、および法線の規約は Mesh3D::Extrude() と同じです。
 		[[nodiscard]]
-		Mesh3DAddResult addExtrude(const Polygon& polygon, double height);
+		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, const ExtrudeOptions& options = {});
 
 		/// @brief 配置変換を適用した押し出し形状を追加します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
-		/// @param placement 適用する配置変換。`Vec3` または `Mat4x4` も直接指定できます。
+		/// @param placement 適用する配置変換
+		/// @param options 側面の法線補間の設定
 		/// @return 成功時は追加された範囲、失敗時はエラー
-		[[nodiscard]]
-		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, const Mesh3DPlacement& placement);
-
-		/// @brief 2D の多角形を Y 軸方向に押し出し、側面の法線を角度に応じて補間した形状を追加します。
-		/// @param polygon 押し出す多角形。穴を含むことができます。
-		/// @param height 押し出す高さ
-		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 座標、UV 座標、および法線の規約は `Mesh3D::Extrude()` と同じです。
-		[[nodiscard]]
-		Mesh3DAddResult addExtrude(const Polygon& polygon, double height, double smoothingAngle);
-
-		/// @brief 配置変換を適用し、側面の法線を角度に応じて補間した押し出し形状を追加します。
-		/// @param polygon 押し出す多角形。穴を含むことができます。
-		/// @param height 押し出す高さ
-		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @param placement 適用する配置変換。`Vec3` または `Mat4x4` も直接指定できます。
-		/// @return 成功時は追加された範囲、失敗時はエラー
+		/// @remark 座標、UV 座標、および法線の規約は Mesh3D::Extrude() と同じです。
 		[[nodiscard]]
 		Mesh3DAddResult addExtrude(
 			const Polygon& polygon,
 			double height,
-			double smoothingAngle,
-			const Mesh3DPlacement& placement);
+			const Mesh3DPlacement& placement,
+			const ExtrudeOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -36,8 +36,9 @@
 - `Polygon` の外周と `Loft` の断面は、格納された `(x, y)` に対する符号付き面積が正、`Polygon` の穴は負とする。閉じた輪郭の先頭点を末尾へ重複させない。
 - 点列は float 変換後の幾何を基準に検証する。`Revolve` の閉じた profile だけは先頭・末尾の一致を閉鎖表現として使い、`Tube` / `Sweep` の閉路と `Loft` の断面では始点を末尾に重複させない。
 - `Tube` / `Sweep` の生成設定は `TubeOptions` / `SweepOptions` に集約する。factory は `std::span` / initializer-list と一定値 / 経路点別値の組み合わせだけを overload とし、builder の配置 overload では options を末尾に置く。
+- `Extrude` の側面の平滑化は `ExtrudeOptions::smoothingAngle` で指定する。factory は `Extrude(polygon, height, options)`、Builder は `addExtrude(polygon, height, options)` と `addExtrude(polygon, height, placement, options)`。旧 scalar smoothingAngle overload は廃止した。既定のハードエッジ・端面・UV は維持する。
 - `Revolve` の回転範囲、分割数、法線補間、UV 変換、回転方向の端面設定は `RevolveOptions` に集約する。factory は `std::span` / initializer-list の 2 overload、builder は initializer-list、配置なし、`Mesh3DPlacement` 付きの 3 overload とする。
-- builder のすべての配置 overload は `Mesh3DPlacement` に集約する。配置なしを独立させ、配置ありの offset、offset + rotation、`Mat4x4` を 1 overload にした。`Vec3` と `Mat4x4` は従来と同じ記述、回転と平行移動は `{ offset, rotation }` で指定できるため、API 宣言数を減らしても利用コードを肥大化させない。add 宣言数は 233 から 117 になった。
+- builder のすべての配置 overload は `Mesh3DPlacement` に集約する。配置なしを独立させ、配置ありの offset、offset + rotation、`Mat4x4` を 1 overload にした。`Vec3` と `Mat4x4` は従来と同じ記述、回転と平行移動は `{ offset, rotation }` で指定できるため、API 宣言数を減らしても利用コードを肥大化させない。
 - `HeightField` の UV 設定は `HeightFieldOptions` に集約する。高さの入力は `Grid<float>`、または頂点数と格子点 `Point` から高さを返す callable の 2 系統とし、callable は行優先で評価する。
 - `LoftSection` は借用輪郭と既存の Mesh3DPlacement を組み合わせる。旧 sections / heights 入力は廃止し、factory は span / initializer-list、builder は配置なし span / initializer-list と配置あり span の計 5 overload にする。Mesh3DPlacement は独立ヘッダにある。
 - Loft の断面はローカル `(x, 0, -y)` に frame を適用する。frame は有限のアフィン変換・正の determinant とし、隣接原点の変位が両端の断面正方向へ正の投影を持つ必要がある。輪郭の自動対応・補間・リサンプリングは行わない。
@@ -64,7 +65,7 @@
 - `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は `TODO.md` の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
 - manual test は利用例であり、API の正本は公開ヘッダとする。曲面主体の評価例は `Test/Manual/Mesh3DLoftExamples.md`。断面形状と向きが変わるダクト、平滑化、共有形状の分割品質変更、Align と鏡映複製を含む。
-- OBJ / MTL の形状・配置・base color の確認には `Test/Manual/Mesh3DPreview.md` の汎用プレビューを使える。実行手順、独立検証、描画上の制限は同文書を参照する。
+- OBJ / MTL の形状・配置・base color の確認には `Test/Manual/Mesh3DPreview.md` の汎用プレビューを使える。PartID または領域での接写は周囲の遮蔽を保持し、単独表示・強調表示・部品色表示は独立に指定する。ID と名前・範囲・色の対応は JSON に出力する。実行手順、独立検証、描画上の制限は同文書を参照する。
 
 ## 実装時の共通条件
 

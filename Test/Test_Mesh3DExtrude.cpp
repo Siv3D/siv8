@@ -19,14 +19,28 @@ namespace
 
 	static_assert(requires
 	{
-		static_cast<Mesh3D (*)(const Polygon&, double)>(&Mesh3D::Extrude);
-		static_cast<Mesh3D (*)(const Polygon&, double, double)>(&Mesh3D::Extrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, const Mesh3DPlacement&)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double)>(&Mesh3DBuilder::addExtrude);
-		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, double, const Mesh3DPlacement&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3D (*)(const Polygon&, double, const ExtrudeOptions&)>(&Mesh3D::Extrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, const ExtrudeOptions&)>(&Mesh3DBuilder::addExtrude);
+		static_cast<Mesh3DAddResult (Mesh3DBuilder::*)(const Polygon&, double, const Mesh3DPlacement&, const ExtrudeOptions&)>(&Mesh3DBuilder::addExtrude);
 	});
 
+}
+
+TEST_CASE("Mesh3D::Extrude options can be reused across factory and placed Builder")
+{
+	const Polygon polygon{ Array<Vec2>{ { -2, -1 }, { 2, -1 }, { 2, 1 }, { -2, 1 } } };
+	for (const double angle : { 0.0, Math::HalfPi, Math::Pi })
+	{
+		const ExtrudeOptions options{ .smoothingAngle = angle };
+		const auto mesh = Mesh3D::Extrude(polygon, 3, options);
+		CheckMeshGeometry(mesh);
+		Mesh3DBuilder builder;
+		REQUIRE(builder.addExtrude(polygon, 3, options));
+		REQUIRE(builder.addExtrude(polygon, 3, Quaternion::RotateY(90_deg), options));
+		Mesh3D expected = mesh;
+		REQUIRE(expected.append(mesh, Mat4x4::Rotate(Quaternion::RotateY(90_deg))));
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
+	}
 }
 
 TEST_CASE("Mesh3D::Extrude rectangle")
@@ -108,7 +122,7 @@ TEST_CASE("Mesh3D::Extrude polygon with a hole")
 	CHECK_EQ(mesh.vertices[innerSideVertexBase + 8].normal, -Float3::UnitX());
 	CHECK_EQ(mesh.vertices[innerSideVertexBase + 12].normal, -Float3::UnitZ());
 
-	const Mesh3D smoothMesh = Mesh3D::Extrude(polygon, 4.0, Math::HalfPi);
+	const Mesh3D smoothMesh = Mesh3D::Extrude(polygon, 4.0, ExtrudeOptions{ .smoothingAngle = Math::HalfPi });
 	CheckMeshGeometry(smoothMesh);
 	CHECK(smoothMesh.vertices[innerSideVertexBase].normal.x == doctest::Approx(Math::InvSqrt2));
 	CHECK(smoothMesh.vertices[innerSideVertexBase].normal.z == doctest::Approx(-Math::InvSqrt2));
@@ -130,9 +144,9 @@ TEST_CASE("Mesh3D::Extrude side normal smoothing")
 		{ -2.0, -1.0 }, { 2.0, -1.0 }, { 2.0, 1.0 }, { -2.0, 1.0 }
 	} };
 	const Mesh3D hard = Mesh3D::Extrude(rectangle, 2.0);
-	const Mesh3D zeroAngle = Mesh3D::Extrude(rectangle, 2.0, 0.0);
-	const Mesh3D belowCornerAngle = Mesh3D::Extrude(rectangle, 2.0, Math::QuarterPi);
-	const Mesh3D smoothCorners = Mesh3D::Extrude(rectangle, 2.0, Math::HalfPi);
+	const Mesh3D zeroAngle = Mesh3D::Extrude(rectangle, 2.0, ExtrudeOptions{ .smoothingAngle = 0.0 });
+	const Mesh3D belowCornerAngle = Mesh3D::Extrude(rectangle, 2.0, ExtrudeOptions{ .smoothingAngle = Math::QuarterPi });
+	const Mesh3D smoothCorners = Mesh3D::Extrude(rectangle, 2.0, ExtrudeOptions{ .smoothingAngle = Math::HalfPi });
 	const size_t sideVertexBase = (rectangle.vertices().size() * 2);
 
 	REQUIRE_EQ(zeroAngle.vertexCount(), hard.vertexCount());
@@ -156,7 +170,7 @@ TEST_CASE("Mesh3D::Extrude side normal smoothing")
 	CHECK(endNormal.z == doctest::Approx(Math::InvSqrt2));
 
 	const Polygon circle = Circle{ 2.0 }.asPolygon(PointsPerCircle{ 12 });
-	const Mesh3D smoothCircle = Mesh3D::Extrude(circle, 2.0, Math::QuarterPi);
+	const Mesh3D smoothCircle = Mesh3D::Extrude(circle, 2.0, ExtrudeOptions{ .smoothingAngle = Math::QuarterPi });
 	const size_t circleSideVertexBase = (circle.vertices().size() * 2);
 	CheckMeshGeometry(smoothCircle);
 	for (size_t i = 0; i < circle.outer().size(); ++i)
@@ -207,10 +221,10 @@ TEST_CASE("Mesh3D::Extrude invalid arguments")
 	CHECK(Mesh3D::Extrude(polygon, -1.0).isEmpty());
 	CHECK(Mesh3D::Extrude(polygon, std::numeric_limits<double>::infinity()).isEmpty());
 	CHECK(Mesh3D::Extrude(polygon, std::numeric_limits<double>::max()).isEmpty());
-	CHECK(Mesh3D::Extrude(polygon, 1.0, -0.001).isEmpty());
-	CHECK(Mesh3D::Extrude(polygon, 1.0, (Math::Pi + 0.001)).isEmpty());
-	CHECK(Mesh3D::Extrude(polygon, 1.0, std::numeric_limits<double>::quiet_NaN()).isEmpty());
-	CHECK(Mesh3D::Extrude(polygon, 1.0, std::numeric_limits<double>::infinity()).isEmpty());
+	CHECK(Mesh3D::Extrude(polygon, 1.0, ExtrudeOptions{ .smoothingAngle = -0.001 }).isEmpty());
+	CHECK(Mesh3D::Extrude(polygon, 1.0, ExtrudeOptions{ .smoothingAngle = (Math::Pi + 0.001) }).isEmpty());
+	CHECK(Mesh3D::Extrude(polygon, 1.0, ExtrudeOptions{ .smoothingAngle = std::numeric_limits<double>::quiet_NaN() }).isEmpty());
+	CHECK(Mesh3D::Extrude(polygon, 1.0, ExtrudeOptions{ .smoothingAngle = std::numeric_limits<double>::infinity() }).isEmpty());
 
 	const Polygon invalidIndices{
 		outer,
@@ -274,16 +288,16 @@ TEST_CASE("Mesh3DBuilder::addExtrude")
 		const Mat4x4 transform = Mat4x4::AffineTransform(
 			Float3{ -2.0f, 3.0f, 4.0f }, rotation, Float3{ offset });
 		const Mesh3D hard = Mesh3D::Extrude(polygon, Height);
-		const Mesh3D smooth = Mesh3D::Extrude(polygon, Height, SmoothingAngle);
+		const Mesh3D smooth = Mesh3D::Extrude(polygon, Height, ExtrudeOptions{ .smoothingAngle = SmoothingAngle });
 
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addExtrude(polygon, Height, offset));
 		REQUIRE(builder.addExtrude(polygon, Height, { offset, rotation }));
 		REQUIRE(builder.addExtrude(polygon, Height, transform));
-		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle));
-		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, offset));
-		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, { offset, rotation }));
-		REQUIRE(builder.addExtrude(polygon, Height, SmoothingAngle, transform));
+		REQUIRE(builder.addExtrude(polygon, Height, ExtrudeOptions{ .smoothingAngle = SmoothingAngle }));
+		REQUIRE(builder.addExtrude(polygon, Height, offset, ExtrudeOptions{ .smoothingAngle = SmoothingAngle }));
+		REQUIRE(builder.addExtrude(polygon, Height, { offset, rotation }, ExtrudeOptions{ .smoothingAngle = SmoothingAngle }));
+		REQUIRE(builder.addExtrude(polygon, Height, transform, ExtrudeOptions{ .smoothingAngle = SmoothingAngle }));
 
 		Mesh3D expected;
 		REQUIRE(expected.append(hard, Mat4x4::Translate(Float3{ offset })));
@@ -306,9 +320,9 @@ TEST_CASE("Mesh3DBuilder::addExtrude")
 
 		CHECK_FALSE(builder.addExtrude(Polygon{}, Height));
 		CHECK_FALSE(builder.addExtrude(polygon, 0.0));
-		CHECK_FALSE(builder.addExtrude(polygon, Height, -0.001));
+		CHECK_FALSE(builder.addExtrude(polygon, Height, ExtrudeOptions{ .smoothingAngle = -0.001 }));
 		CHECK_FALSE(builder.addExtrude(
-			polygon, Height, std::numeric_limits<double>::quiet_NaN(), Vec3{ 1.0, 2.0, 3.0 }));
+			polygon, Height, Vec3{ 1.0, 2.0, 3.0 }, ExtrudeOptions{ .smoothingAngle = std::numeric_limits<double>::quiet_NaN() }));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 }

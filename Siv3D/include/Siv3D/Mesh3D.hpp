@@ -168,6 +168,14 @@ namespace s3d
 		Vec2 uvOffset{ 0.0, 0.0 };
 	};
 
+	/// @brief Extrude の生成設定
+	struct ExtrudeOptions
+	{
+		/// @brief 隣接側面の法線を補間する最大角度（ラジアン）。有限の 0～π
+		/// @remark 0 はハードエッジです。上下面と側面の境界は常に分離します。
+		double smoothingAngle = 0.0;
+	};
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	RevolveOptions
@@ -298,6 +306,7 @@ namespace s3d
 	/// @par 座標と配置
 	/// - 3D 座標は左手系の Y-up です。`Polygon` や断面の 2D 座標 `(x, y)` は、水平面では原則として `(X, -Z)` に対応します。
 	/// - Y 軸周りの角度は `Quaternion::RotateY()` と同じ規約を使い、0 は `+X` 方向、正の角度は `+X` から `-Z` へ進みます。
+	/// - 半径 r、角度 angle、高さ y の円周上の点は `Cylindrical{ r, angle, y }.toVec3()` で取得できます。向きの変換には `rotation.rotate(Vec3{ ... })` を使います。
 	/// - 基本プリミティブ、`Extrude()`、`Plane()`、`Grid()` は、各関数で明記された軸について原点を中心に生成します。
 	/// - `Revolve()` のプロファイルの Y 座標、`Loft()` の各 frame の原点、`HeightField()` の各高さ、および `Tube()` / `Sweep()` の経路座標は、平行移動せず生成後の座標として使用します。
 	/// - `Mesh3DBuilder` の offset と rotation を受け取る overload は、原点を中心に回転してから offset を加えます。
@@ -306,6 +315,7 @@ namespace s3d
 	/// @par 2D 輪郭の頂点順序
 	/// - `Polygon` の外周、および `Loft()` の各断面は、末尾から先頭へ戻る辺を含む `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。画面座標では時計回りに見える順序です。
 	/// - `Polygon` の穴は同じ式の値が負になる順序で指定します。画面座標では反時計回りに見える順序です。各輪郭では先頭頂点を末尾に重複させません。
+	/// - 向きの判定には Geometry2D::IsClockwise()、入力の診断には Polygon::Validate() を使えます。向きの反転と形状の修復は異なります。使い分けは Polygon の説明を参照してください。
 	/// @par UV 座標と頂点属性
 	/// - UV 座標は画像の上端を V = 0、下端を V = 1 とします。
 	/// - 生成関数は位置、UV 座標、法線、および接線を設定します。法線と接線は単位長で互いに直交し、`tangent.w` は `bitangent() = Math::Cross(normal, tangent.xyz()) * tangent.w` の向きを表します。
@@ -715,22 +725,14 @@ namespace s3d
 		/// @brief 2D の多角形を Y 軸方向に押し出した 3D メッシュを作成します。
 		/// @param polygon 押し出す多角形。穴を含むことができます。
 		/// @param height 押し出す高さ
-		/// @return 押し出し形状の 3D メッシュ。`polygon` または `height` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
+		/// @param options 側面の法線補間の設定
+		/// @return 押し出し形状の 3D メッシュ。`polygon`、`height` または `options` が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark `polygon` の X 座標を X 軸、Y 座標を Z 軸の負方向へ対応させます。多角形の位置は平行移動せず、高さ方向のみ原点を中心として、下面を `y = -height / 2`、上面を `y = height / 2` に配置します。
 		/// @remark 上下面は閉じられます。上面の UV 座標は多角形のバウンディングボックスを `[0, 1]` に正規化し、下面は表側から同じ向きに見えるよう V 座標を反転します。
-		/// @remark 側面の U 座標は外周および各穴の周長をそれぞれ `[0, 1]` に正規化し、V 座標は上端を 0、下端を 1 とします。多角形の各頂点はハードエッジになります。
+		/// @remark 側面の U 座標は外周および各穴の周長をそれぞれ `[0, 1]` に正規化し、V 座標は上端を 0、下端を 1 とします。既定では多角形の各頂点はハードエッジになります。
+		/// @remark `options.smoothingAngle` 以下の角度で接続する側面間では法線と接線を補間します。上下面と側面の境界は補間しません。
 		[[nodiscard]]
-		static Mesh3D Extrude(const Polygon& polygon, double height);
-
-		/// @brief 2D の多角形を Y 軸方向に押し出し、側面の法線を角度に応じて補間した 3D メッシュを作成します。
-		/// @param polygon 押し出す多角形。穴を含むことができます。
-		/// @param height 押し出す高さ
-		/// @param smoothingAngle 側面の法線を補間する隣接面間の最大角度（ラジアン）。0 以上 π 以下
-		/// @return 押し出し形状の 3D メッシュ。引数が不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
-		/// @remark `smoothingAngle` 以下の角度で接続する側面間では、共有する輪郭頂点の法線と接線を補間します。上下面と側面の境界は補間しません。
-		/// @remark 座標および UV 座標の規約は 2 引数版の `Extrude()` と同じです。
-		[[nodiscard]]
-		static Mesh3D Extrude(const Polygon& polygon, double height, double smoothingAngle);
+		static Mesh3D Extrude(const Polygon& polygon, double height, const ExtrudeOptions& options = {});
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1058,6 +1060,15 @@ namespace s3d
 		/// @code
 		/// const std::array ring{ Vec2{-1,-1}, Vec2{1,-1}, Vec2{1,1}, Vec2{-1,1} };
 		/// const auto mesh = Mesh3D::Loft({ { ring, Vec3{0,0,0} }, { ring, Vec3{0,2,0} } });
+		///
+		/// // 断面の横を -Z、縦を +Y に向け、+X 方向へ接続する。
+		/// // 輪郭の横軸はローカル +X、縦軸はローカル -Z。
+		/// const auto rotation = Quaternion::FromUnitVectorPairs(
+		///     { Vec3{ 1, 0, 0 }, Vec3{ 0, 0, -1 } },
+		///     { Vec3{ 0, 0, -1 }, Vec3{ 0, 1, 0 } });
+		/// // この回転では断面の正方向（ローカル +Y）は +X に向く。
+		/// const auto alongX = Mesh3D::Loft({
+		///     { ring, rotation }, { ring, { Vec3{ 2, 0, 0 }, rotation } } });
 		/// @endcode
 		[[nodiscard]]
 		static Mesh3D Loft(std::span<const LoftSection> sections, const LoftOptions& options = {});

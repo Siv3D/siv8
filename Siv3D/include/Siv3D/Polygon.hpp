@@ -37,6 +37,8 @@ namespace s3d
 	/// @brief 多角形（穴をもつことも可能）
 	/// @remark 外周は、末尾から先頭へ戻る辺を含む符号付き面積の 2 倍 `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。画面座標では時計回りに見える順序です。
 	/// @remark 各穴は、同じ式の値が負になる順序で指定します。画面座標では反時計回りに見える順序です。各輪郭では先頭頂点を末尾に重複させません。
+	/// @remark 向きは Geometry2D::IsClockwise() で判定できます。単純な非退化輪郭の向きだけを変える場合は頂点列を reverse() します。これは自己交差や重複点の修復にはなりません。
+	/// @remark 構築前に Validate() を使うと WrongOrientation、SelfIntersections などの失敗理由を調べられます。Correct() は形状を修復し、複数の多角形を返す場合があります。Loft などで頂点の対応を保ちたい場合、Correct() による修復を単なる向きの反転の代用にしないでください。
 	/// @code
 	/// const Polygon polygon{ Array<Vec2>{
 	///     { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 }
@@ -1275,6 +1277,7 @@ namespace s3d
 		/// @param outer 外周の頂点配列（時計回り）
 		/// @param holes 多角形の穴の頂点配列（反時計回り）
 		/// @return 多角形として有効であれば `PolygonFailureType::Ok`, それ以外の場合はエラーの種類
+		/// @remark WrongOrientation は輪郭の向き、SelfIntersections は自己交差を表します。複数の問題がある場合にすべてを列挙する関数ではありません。
 		[[nodiscard]]
 		static PolygonFailureType Validate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 
@@ -1288,6 +1291,7 @@ namespace s3d
 		/// @param outer 外周の頂点配列
 		/// @param holes 多角形の穴
 		/// @return 頂点配列から生成した多角形の配列
+		/// @remark 向きの修正に加え、自己交差の解消などで輪郭や頂点数が変わる場合があります。修復できなければ空配列です。入力の頂点添字との対応は保証しません。
 		[[nodiscard]]
 		static Array<Polygon> Correct(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 
@@ -1301,6 +1305,7 @@ namespace s3d
 		/// @param outer 外周の頂点配列
 		/// @param holes 多角形の穴
 		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形
+		/// @remark Correct() の結果から選択します。複数の多角形に分かれた場合、最大面積以外は返しません。
 		[[nodiscard]]
 		static Polygon CorrectOne(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 
