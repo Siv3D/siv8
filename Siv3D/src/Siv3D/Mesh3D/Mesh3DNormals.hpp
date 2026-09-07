@@ -10,30 +10,15 @@
 //-----------------------------------------------
 
 # pragma once
-# include <Siv3D/Array.hpp>
 # include <Siv3D/TriangleIndex32.hpp>
 # include <Siv3D/Vertex3D.hpp>
-# include <ThirdParty/DirectXMath/DirectXMath.h>
+# include <Siv3D/VertexNormalWeighting.hpp>
 
-namespace s3d
+namespace s3d::Mesh3DDetail
 {
-    enum CNORM_FLAGS : uint32_t
-    {
-        CNORM_DEFAULT = 0,
-        // Default is to compute normals using weight-by-angle
-
-        CNORM_WEIGHT_BY_AREA = 0x1,
-        // Computes normals using weight-by-area
-
-        CNORM_WEIGHT_EQUAL = 0x2,
-        // Compute normals with equal weights
-
-        CNORM_WIND_CW = 0x4,
-        // Vertices are clock-wise (defaults to CCW)
-    };
-
-    bool __cdecl ComputeNormals(
-        _In_reads_(nFaces) const TriangleIndex32* indices, _In_ size_t nFaces,
-        _Inout_updates_(nVerts) Vertex3D* vertices, _In_ size_t nVerts,
-        _In_ CNORM_FLAGS flags) noexcept;
+	[[nodiscard]]
+	bool ComputeVertexNormals(
+		const TriangleIndex32* indices, size_t faceCount,
+		Vertex3D* vertices, size_t vertexCount,
+		VertexNormalWeighting weighting) noexcept;
 }

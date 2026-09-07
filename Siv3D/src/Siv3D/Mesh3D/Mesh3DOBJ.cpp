@@ -757,9 +757,12 @@ namespace s3d
 		}
 
 		BinaryFileWriter objWriter{ path };
+		if (not objWriter)
+		{
+			return GenerationFailed<bool>("Mesh3D::saveOBJ(): Failed to open the OBJ file");
+		}
 		BinaryFileWriter mtlWriter{ mtlPath };
-
-		if ((not objWriter) || (not mtlWriter))
+		if (not mtlWriter)
 		{
 			return GenerationFailed<bool>("Mesh3D::saveOBJ(): Failed to open the OBJ or MTL file");
 		}
@@ -808,20 +811,14 @@ namespace s3d
 
 	Blob Mesh3D::encodeOBJ() const
 	{
-		if (not ValidateForOBJ(*this))
-		{
-			return GenerationFailed<Blob>("Mesh3D::encodeOBJ(): The mesh is empty, invalid, or contains non-finite OBJ vertex attributes");
-		}
-
 		MemoryWriter writer;
-
-		if (not EncodeValidatedOBJ(*this, writer))
+		if (not encodeOBJ(writer))
 		{
-			return GenerationFailed<Blob>("Mesh3D::encodeOBJ(): Failed to encode the OBJ data");
+			return{};
 		}
-
 		return writer.extractBlob();
 	}
+
 	bool Mesh3DAssembly::BakedMesh::encodeOBJ(IWriter& objWriter, IWriter& mtlWriter, const StringView mtlFileName) const
 	{
 		try

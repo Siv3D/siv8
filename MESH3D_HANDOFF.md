@@ -26,7 +26,10 @@
 - factory と builder は `Mesh3DGenerators.hpp` に宣言する内部の destination-writing generator を共有する。プリミティブの生成本体は Mesh3D 側の形状群別ファイルに置き、Builder は入力の転送と配置を担当する。サイズ検査・追加先の拡張・Result 用エラー生成は `Mesh3DCommon.hpp` に集約する。
 - 汎用 generator と、頻出形状向けの効率的な specialization を組み合わせる。建築部材名を無制限に増やさない。
 - 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
-- 生成の入力検証は出力の拡張前に終え、書き込み段階では入力エラーを返さない。Loft は断面、側面の法線・接線、三角形の検証、書き込みに処理を分ける。
+- 生成失敗時は既存の頂点・三角形の内容を保持する。Loft などは出力の拡張前に検証を終える。Tube / Sweep は書き込み中の生成値検証も行い、失敗時に追加前の配列サイズへ戻す。容量・data ポインタの保持やメモリ確保例外に対する非変更は保証しない。
+- UV の負の拡大率には接線方向と handedness も追従する。0 の UV 軸は正方向として扱う。Plane / Grid、HeightField、Tube / Sweep、Revolve、Loft の横断テストは `Test/Test_Mesh3DUV.cpp`。生成後の transformUV() は UV だけを編集し、必要な接線再計算は computeTangents() で明示する。
+- Mesh3DRange::isEmpty() は両 count が 0、Mesh3D::isEmpty() はいずれかの配列が空、validate() は頂点数と index 範囲だけの検査とする。意味は Doxygen と境界テストで固定し、別名の同義 API は増やさない。
+- 法線・接線の内部実装は Mesh3DDetail に閉じ込める。DirectXMesh 由来の法線計算には元の著作権表示を残し、未使用のプラットフォーム補助コードを混在させない。
 - 生成失敗は理由を `LOG_FAIL` へ出力する。factory は空メッシュを返し、builder の既存内容は変更しない。
 - `Mesh3DBuilder` の全 add 関数は `Mesh3DAddResult` を返す。成功時は追加した頂点・三角形の連続範囲、失敗時は `InvalidArgument`、`InvalidGeometry`、`NumericRange`、`SizeLimit` に分類されたエラーを取得できる。
 - Y 軸周りの正角は `Quaternion::RotateY()`、`Cylindrical`、`Spherical` と共通で、`+X` から `-Z` へ進む。完全・部分 `Revolve` の頂点順、接線、U 座標もこの規約に従う。

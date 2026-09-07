@@ -357,8 +357,7 @@ namespace s3d
 			const size_t vertexBase,
 			const size_t triangleBase)
 		{
-			const float uSign = (options.uvScale.x < 0 ? -1.0f : 1.0f);
-			const float vSign = (options.uvScale.y < 0 ? -1.0f : 1.0f);
+			const Mesh3DDetail::UVTangentTransform tangentTransform{ options.uvScale };
 			const auto transformUV = [&](const double u, const double v)
 			{
 				return Float2{
@@ -376,7 +375,7 @@ namespace s3d
 					continue;
 				}
 				const Float3 normal = cap.frame.normal * (k == 0 ? -1 : 1);
-				const Float3 tangent = cap.frame.xAxis.normalized() * uSign;
+				const Float4 tangent = tangentTransform.apply(Float4{ Float3{ cap.frame.xAxis.normalized() }, 1.0f });
 				for (size_t j = 0; j < cap.positions.size(); ++j)
 				{
 					const Float2 p = cap.polygon.vertices()[j];
@@ -386,7 +385,7 @@ namespace s3d
 						.pos = cap.positions[j],
 						.normal = normal,
 						.tex = transformUV(u, k == 0 ? 1 - v : v),
-						.tangent = Float4{ tangent, uSign * vSign }
+						.tangent = tangent
 					};
 				}
 				ForEachValidCapTriangle(cap.polygon.vertices(), cap.polygon.indices(), cap.triangleCount, [&](const TriangleIndex& t)
@@ -410,12 +409,12 @@ namespace s3d
 					for (size_t side = 0; side < 2; ++side)
 					{
 						const size_t normalIndex = (edgeIndex * data.sectionCount + sectionIndex) * 2 + side;
-						const Float3 tangent = (options.smoothingAngle == 0 ? edge : data.sideTangents[normalIndex]) * uSign;
+						const Float3 tangent = (options.smoothingAngle == 0 ? edge : data.sideTangents[normalIndex]);
 						mesh.vertices[base + normalIndex] = Vertex3D{
 							.pos = data.positions[sectionIndex * data.contourVertexCount + (side ? next : edgeIndex)],
 							.normal = data.sideNormals[normalIndex],
 							.tex = transformUV(data.contourU[edgeIndex + side], data.sectionDistances[sectionIndex]),
-							.tangent = Float4{ tangent, uSign * vSign }
+							.tangent = tangentTransform.apply(Float4{ tangent, 1.0f })
 						};
 					}
 					if (sectionIndex + 1 < data.sectionCount)

@@ -65,6 +65,7 @@ namespace s3d
 		size_t triangleCount = 0;
 
 		/// @brief 頂点と三角形を持たない範囲であるかを返します。
+		/// @remark vertexOffset と triangleOffset は判定に影響しません。頂点だけ、または三角形だけの範囲は空ではありません。
 		/// @return 頂点数と三角形数がともに 0 の場合 true, それ以外の場合は false
 		[[nodiscard]]
 		constexpr bool isEmpty() const noexcept
@@ -174,6 +175,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief Revolve の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
 	struct RevolveOptions
 	{
 		/// @brief 回転を開始する角度（ラジアン）。0 は `+X` 方向です。
@@ -205,6 +207,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief Tube の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
 	struct TubeOptions
 	{
 		/// @brief チューブ断面の分割数
@@ -246,6 +249,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief Sweep の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
 	struct SweepOptions
 	{
 		/// @brief 開始時に断面の X 軸を向ける方向。未指定の場合は経路から自動的に決定します。
@@ -271,6 +275,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief HeightField の生成設定
+	/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
 	struct HeightFieldOptions
 	{
 		/// @brief UV 座標の拡大率
@@ -964,6 +969,7 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @return 長方形の 3D メッシュ。大きさまたは UV パラメータが不正な場合は空の 3D メッシュ
 		/// @remark UV 座標の V 成分は Z 軸の正方向から負方向へ向かって増加します。
+		/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
 		[[nodiscard]]
 		static Mesh3D Plane(
 			SizeF sizeXZ = SizeF{ 1.0, 1.0 },
@@ -984,6 +990,7 @@ namespace s3d
 		/// @param uvOffset UV 座標のオフセット
 		/// @return 格子状の 3D メッシュ。大きさ、分割数、UV パラメータが不正な場合、または頂点数が上限を超える場合は空の 3D メッシュ
 		/// @remark UV 座標の V 成分は Z 軸の正方向から負方向へ向かって増加します。
+		/// @remark uvScale の符号に合わせて接線の方向と handedness を調整します。0 の成分は正方向として扱います。
 		[[nodiscard]]
 		static Mesh3D Grid(
 			SizeF sizeXZ,
@@ -1292,6 +1299,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 3D メッシュの頂点数とインデックスの範囲を検証します。
+		/// @remark 格納された頂点数とインデックスの参照範囲だけを検査します。空のメッシュも有効です。
 		/// @return 頂点数が `MaxVertexCount` 以下で、すべてのインデックスが頂点配列の範囲内にある場合 true, それ以外の場合は false
 		/// @remark 三角形の面積、頂点の並び順、頂点座標や UV 座標の値など、幾何学的な妥当性は検証しません。
 		/// @remark 計算量は三角形の個数を n として O(n) です。
@@ -1374,6 +1382,7 @@ namespace s3d
 		/// @remark テクスチャファイル自体はコピーされません。
 		/// @remark 空のマテリアル名、制御文字を含む名前やテクスチャパス、非有限値、または UV セット 0 以外を参照するマテリアルは保存できません。
 		/// @remark 保存に失敗した場合、理由を Fail レベルのエンジンログへ出力します。
+		/// @remark OBJ ファイルを開けなかった場合、MTL ファイルは開かず、既存の MTL を保持します。
 		bool saveOBJ(FilePathView path, const Material& material) const;
 
 		////////////////////////////////////////////////////////////////
@@ -1445,6 +1454,7 @@ namespace s3d
 		/// @param transform UV 座標に適用する変換行列
 		/// @return *this
 		/// @remark 各頂点の現在の UV 座標に `transform` が適用されます。その他の頂点属性と三角形インデックスは変更されません。
+		/// @remark UV の回転・反転などに接線空間を追従させる場合は、この操作の後に computeTangents() を呼びます。接線の再計算は頂点を分割する場合があるため、自動では行いません。
 		Mesh3D& transformUV(const Mat3x2& transform) noexcept;
 
 		////////////////////////////////////////////////////////////////
@@ -1457,7 +1467,7 @@ namespace s3d
 		/// @param weighting 各三角形の法線を合成するときの重み付け方式
 		/// @remark 同じ頂点インデックスを共有する三角形の法線が合成されます。
 		/// @remark ハードエッジを保持するには、その境界で頂点が分割されている必要があります。
-		/// @remark 三角形がない場合、頂点法線は変更されません。
+		/// @remark 三角形がない場合、頂点法線は変更されません。接線は再計算しません。必要に応じて続けて computeTangents() を呼びます。
 		/// @return *this
 		/// @throw Error 法線の計算に失敗した場合
 		Mesh3D& computeNormals(VertexNormalWeighting weighting = VertexNormalWeighting::Angle);

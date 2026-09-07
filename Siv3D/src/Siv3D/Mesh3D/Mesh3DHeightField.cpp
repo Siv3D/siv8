@@ -32,6 +32,7 @@ namespace s3d
 			size_t triangleCount = 0;
 			Float2 uvScale;
 			Float2 uvOffset;
+			Mesh3DDetail::UVTangentTransform tangentTransform{ Vec2::One() };
 			Array<float> xPositions;
 			Array<float> zPositions;
 		};
@@ -126,6 +127,7 @@ namespace s3d
 
 			layout.uvScale = options.uvScale;
 			layout.uvOffset = options.uvOffset;
+			layout.tangentTransform = Mesh3DDetail::UVTangentTransform{ options.uvScale };
 			return none;
 		}
 
@@ -175,12 +177,12 @@ namespace s3d
 							(layout.uvOffset.x + (layout.uvScale.x * u)),
 							(layout.uvOffset.y + (layout.uvScale.y * v))
 						},
-						.tangent = Float4{
+						.tangent = layout.tangentTransform.apply(Float4{
 							static_cast<float>(tangent.x),
 							static_cast<float>(tangent.y),
 							static_cast<float>(tangent.z),
 							1.0f
-						}
+						})
 					};
 				}
 			}
@@ -361,7 +363,7 @@ namespace s3d
 		const float invSegmentsX = (1.0f / static_cast<float>(segmentsX));
 		const float invSegmentsZ = (1.0f / static_cast<float>(segmentsZ));
 		const Float3 normal = Float3::UnitY();
-		const Float4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
+		const Float4 tangent = UVTangentTransform{ _uvScale }.apply(Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
 
 		for (uint32 z = 0; z <= segmentsZ; ++z)
 		{

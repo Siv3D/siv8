@@ -25,30 +25,6 @@ namespace s3d
 	{
 		using Mesh3DDetail::TransformMeshRange;
 
-		[[nodiscard]]
-		static constexpr CNORM_FLAGS ToCNORMFlags(const VertexNormalWeighting weighting) noexcept
-		{
-			uint32 flags = CNORM_DEFAULT;
-
-			switch (weighting)
-			{
-			case VertexNormalWeighting::Angle:
-				flags |= CNORM_DEFAULT;
-				break;
-			case VertexNormalWeighting::Area:
-				flags |= CNORM_WEIGHT_BY_AREA;
-				break;
-			case VertexNormalWeighting::Uniform:
-				flags |= CNORM_WEIGHT_EQUAL;
-				break;
-			default:
-				assert(false);
-				break;
-			}
-
-			return ToEnum<CNORM_FLAGS>(flags);
-		}
-
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -163,62 +139,67 @@ namespace s3d
 
 	bool Mesh3D::append(const Mesh3D& mesh)
 	{
+		return static_cast<bool>(Mesh3DDetail::AppendMesh(*this, mesh));
+	}
+
+	Result<Mesh3DRange, Mesh3DErrorCode> Mesh3DDetail::AppendMesh(Mesh3D& destination, const Mesh3D& mesh)
+	{
 		if (not mesh.validate())
 		{
-			return false;
+			return Err{ Mesh3DErrorCode::InvalidGeometry };
 		}
 
-		const size_t vertexOffset = vertices.size();
+		const size_t vertexOffset = destination.vertices.size();
 		const size_t sourceVertexCount = mesh.vertices.size();
 
-		if ((MaxVertexCount < vertexOffset)
-			|| ((MaxVertexCount - vertexOffset) < sourceVertexCount))
+		if ((Mesh3D::MaxVertexCount < vertexOffset)
+			|| ((Mesh3D::MaxVertexCount - vertexOffset) < sourceVertexCount))
 		{
-			return false;
+			return Err{ Mesh3DErrorCode::SizeLimit };
 		}
 
-		const size_t triangleOffset = indices.size();
+		const size_t triangleOffset = destination.indices.size();
 		const size_t sourceTriangleCount = mesh.indices.size();
 
-		if (this == &mesh)
+		if (&destination == &mesh)
 		{
-			vertices.resize(vertexOffset + sourceVertexCount);
+			destination.vertices.resize(vertexOffset + sourceVertexCount);
 
 			for (size_t i = 0; i < sourceVertexCount; ++i)
 			{
-				vertices[vertexOffset + i] = vertices[i];
+				destination.vertices[vertexOffset + i] = destination.vertices[i];
 			}
 
-			indices.resize(triangleOffset + sourceTriangleCount);
+			destination.indices.resize(triangleOffset + sourceTriangleCount);
 
 			for (size_t i = 0; i < sourceTriangleCount; ++i)
 			{
-				indices[triangleOffset + i] = indices[i];
+				destination.indices[triangleOffset + i] = destination.indices[i];
 			}
 		}
 		else
 		{
-			vertices.insert(
-				vertices.end(),
+			destination.vertices.insert(
+				destination.vertices.end(),
 				mesh.vertices.begin(),
 				mesh.vertices.end());
 
-			indices.insert(
-				indices.end(),
+			destination.indices.insert(
+				destination.indices.end(),
 				mesh.indices.begin(),
 				mesh.indices.end());
 		}
 
-		for (size_t i = triangleOffset; i < indices.size(); ++i)
+		for (size_t i = triangleOffset; i < destination.indices.size(); ++i)
 		{
-			auto& triangle = indices[i];
+			auto& triangle = destination.indices[i];
 
 			triangle.i0 = static_cast<TriangleIndex32::value_type>(vertexOffset + triangle.i0);
 			triangle.i1 = static_cast<TriangleIndex32::value_type>(vertexOffset + triangle.i1);
 			triangle.i2 = static_cast<TriangleIndex32::value_type>(vertexOffset + triangle.i2);
 		}
 
-		return true;
+		return AddedRange(destination, vertexOffset, triangleOffset);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -255,12 +236,12 @@ namespace s3d
 			return *this;
 		}
 
-		const bool result = ComputeNormals(
+		const bool result = Mesh3DDetail::ComputeVertexNormals(
 			indices.data(),
 			indices.size(),
 			vertices.data(),
 			vertices.size(),
-			ToCNORMFlags(weighting));
+			weighting);
 
 		if (not result)
 		{
@@ -278,7 +259,7 @@ namespace s3d
 
 	Mesh3D& Mesh3D::computeTangents()
 	{
-		if (not GenerateMikkTSpaceTangents(vertices, indices))
+		if (not Mesh3DDetail::GenerateMikkTSpaceTangents(vertices, indices))
 		{
 			throw Error{ "Mesh3D::computeTangents(): Failed to generate MikkTSpace tangents." };
 		}

@@ -295,6 +295,7 @@ TEST_CASE("Mesh3D::Revolve UV transform")
 		for (Vertex3D& vertex : expected.vertices)
 		{
 			vertex.tex = (vertex.tex * Float2{ UVScale } + Float2{ UVOffset });
+			vertex.tangent.w = -vertex.tangent.w; // UVScale reflects V.
 		}
 
 		RevolveOptions options = geometryOptions;

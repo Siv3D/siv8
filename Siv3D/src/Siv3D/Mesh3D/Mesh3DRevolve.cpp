@@ -96,7 +96,8 @@ namespace s3d
 			const float u,
 			const float v,
 			const Float2 uvScale,
-			const Float2 uvOffset) noexcept
+			const Float2 uvOffset,
+			const Mesh3DDetail::UVTangentTransform& tangentTransform) noexcept
 		{
 			return Vertex3D{
 				.pos = Float3{ (point.x * sample.cos), point.y, (point.x * sample.sin) },
@@ -104,7 +105,7 @@ namespace s3d
 					(profileNormal.x * sample.cos), profileNormal.y, (profileNormal.x * sample.sin)
 				},
 				.tex = (Float2{ u, v } * uvScale + uvOffset),
-				.tangent = Float4{ sample.sin, 0.0f, -sample.cos, 1.0f }
+				.tangent = tangentTransform.apply(Float4{ sample.sin, 0.0f, -sample.cos, 1.0f })
 			};
 		}
 	}
@@ -376,6 +377,7 @@ namespace s3d::Mesh3DDetail
 			: 1.0f);
 		const float inverseSegments = (1.0f / static_cast<float>(segments));
 		const double inverseTotalDistance = (1.0 / totalDistance);
+		const UVTangentTransform tangentTransform{ options.uvScale };
 		const Float2 uvScale = options.uvScale;
 		const Float2 uvOffset = options.uvOffset;
 		TriangleIndex32* pTriangle = (mesh.indices.data() + triangleBase);
@@ -429,14 +431,14 @@ namespace s3d::Mesh3DDetail
 				{
 					mesh.vertices[axisBase + i] = MakeVertex(
 						segment.start, startNormal, middleCircle[i], ((i + 0.5f) * inverseSegments), v0,
-						uvScale, uvOffset);
+						uvScale, uvOffset, tangentTransform);
 				}
 
 				for (uint32 i = 0; i <= segments; ++i)
 				{
 					mesh.vertices[ringBase + i] = MakeVertex(
 						segment.end, endNormal, circle[i], (i * inverseSegments), v1,
-						uvScale, uvOffset);
+						uvScale, uvOffset, tangentTransform);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
@@ -456,14 +458,14 @@ namespace s3d::Mesh3DDetail
 				{
 					mesh.vertices[ringBase + i] = MakeVertex(
 						segment.start, startNormal, circle[i], (i * inverseSegments), v0,
-						uvScale, uvOffset);
+						uvScale, uvOffset, tangentTransform);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
 				{
 					mesh.vertices[axisBase + i] = MakeVertex(
 						segment.end, endNormal, middleCircle[i], ((i + 0.5f) * inverseSegments), v1,
-						uvScale, uvOffset);
+						uvScale, uvOffset, tangentTransform);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
@@ -483,9 +485,9 @@ namespace s3d::Mesh3DDetail
 				{
 					const float u = (i * inverseSegments);
 					mesh.vertices[startRingBase + i] = MakeVertex(
-						segment.start, startNormal, circle[i], u, v0, uvScale, uvOffset);
+						segment.start, startNormal, circle[i], u, v0, uvScale, uvOffset, tangentTransform);
 					mesh.vertices[endRingBase + i] = MakeVertex(
-						segment.end, endNormal, circle[i], u, v1, uvScale, uvOffset);
+						segment.end, endNormal, circle[i], u, v1, uvScale, uvOffset, tangentTransform);
 				}
 
 				for (uint32 i = 0; i < segments; ++i)
@@ -519,12 +521,12 @@ namespace s3d::Mesh3DDetail
 				const Float3 angular{ sample.sin, 0.0f, -sample.cos };
 				const Float3 normal = (angular
 					* (startCap ? -orientationSign : orientationSign));
-				const Float4 tangent{
+				const Float4 tangent = tangentTransform.apply(Float4{
 					radial.x,
 					radial.y,
 					radial.z,
 					(startCap ? orientationSign : -orientationSign)
-				};
+				});
 				const size_t capVertexBase = vertexOffset;
 
 				for (size_t i = 0; i < capVertices.size(); ++i)

@@ -51,8 +51,6 @@
 ### API 表面の整理
 
 - `Extrude` の smoothing、`Plane` / `Grid` の UV、Box 系の scalar / vector と UV mapping の組み合わせを options へ集約するか、実利用コードと宣言数を比較して決める。単に型数を増やすだけの options 化は行わない。
-- `Mesh3DRange::isEmpty()` は「頂点数と三角形数がともに 0」、`Mesh3D::isEmpty()` は「描画可能な三角形を持たない」という異なる意味を持つ。range 側を `isNoOp()` などへ改名するか検討する。
-- `Mesh3D::validate()` は index と頂点数だけを検査し、非有限値、縮退、位相は検査しない。契約を狭く表す名前へ改めるか、現状の簡潔さを優先するか決める。
 
 ### Builder の配置入力と失敗
 
@@ -94,7 +92,6 @@
 ### 低優先度のレビュー残件
 
 - `append()` が入力ごとに O(triangle count) の `validate()` を行うコストを、信頼済みメッシュを大量合成する実例が出た時に再評価する。
-- DirectXMesh 由来の normals 実装の配置を、関連コードを変更する機会に整理する。
 - default 引数と scalar overload、`Shape2D` からの Extrude / Sweep は、実利用上の不足が確認された場合に API 全体として設計する。
 
 ### OBJ 入力

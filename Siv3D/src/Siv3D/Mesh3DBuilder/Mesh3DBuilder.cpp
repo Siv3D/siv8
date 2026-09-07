@@ -16,7 +16,6 @@ namespace s3d
 {
 	namespace
 	{
-		using Mesh3DDetail::AddedRange;
 		using Mesh3DDetail::OperationFailed;
 
 		[[nodiscard]]
@@ -42,40 +41,23 @@ namespace s3d
 
 	Mesh3DAddResult Mesh3DBuilder::addMesh(const Mesh3D& mesh)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		const size_t triangleOffset = m_mesh.indices.size();
-
 		if (mesh.isEmpty())
 		{
-			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh must not be empty");
+			return OperationFailed(Mesh3DErrorCode::InvalidGeometry, U"Mesh3DBuilder::addMesh(): mesh must not be empty");
 		}
-
-		if (not m_mesh.append(mesh))
+		const auto result = Mesh3DDetail::AppendMesh(m_mesh, mesh);
+		if (not result)
 		{
-			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
+			return OperationFailed(result.error(), U"Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
 		}
-
-		return AddedRange(m_mesh, vertexOffset, triangleOffset);
+		return *result;
 	}
 
 	Mesh3DAddResult Mesh3DBuilder::addMesh(
 		const Mesh3D& mesh,
 		const Mesh3DPlacement& placement)
 	{
-		const size_t vertexOffset = m_mesh.vertices.size();
-		const size_t triangleOffset = m_mesh.indices.size();
-
-		if (mesh.isEmpty())
-		{
-			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh must not be empty");
-		}
-
-		if (not m_mesh.append(mesh, placement.getTransform()))
-		{
-			return OperationFailed(Mesh3DErrorCode::InvalidArgument, U"Mesh3DBuilder::addMesh(): mesh is invalid or the combined mesh exceeds the supported size");
-		}
-
-		return AddedRange(m_mesh, vertexOffset, triangleOffset);
+		return TransformAddedRange(m_mesh, addMesh(mesh), placement.getTransform());
 	}
 
 	////////////////////////////////////////////////////////////////

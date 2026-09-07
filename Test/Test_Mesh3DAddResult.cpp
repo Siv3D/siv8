@@ -262,7 +262,7 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		Mesh3DErrorCode::SizeLimit);
 	checkFailure(
 		builder.addMesh(Mesh3D{}),
-		Mesh3DErrorCode::InvalidArgument);
+		Mesh3DErrorCode::InvalidGeometry);
 	checkFailure(
 		builder.addExtrude(Polygon{}, 1.0),
 		Mesh3DErrorCode::InvalidArgument);
@@ -377,4 +377,27 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 		builder.addConicalFrustum(
 			1.0, 0.5, 1.0, std::numeric_limits<uint32>::max()),
 		Mesh3DErrorCode::SizeLimit);
+}
+
+TEST_CASE("Mesh3DBuilder::addMesh classifies geometry errors consistently with Assembly")
+{
+	Mesh3DBuilder builder;
+	REQUIRE(builder.addBox());
+	const Mesh3D original = builder.getMesh();
+	Mesh3DAssembly assembly;
+	Mesh3D invalid = Mesh3D::Box();
+	invalid.indices[0].i0 = static_cast<uint32>(invalid.vertexCount());
+	for (const Mesh3D& source : { Mesh3D{}, invalid })
+	{
+		const auto plain = builder.addMesh(source);
+		const auto placed = builder.addMesh(source, Mat4x4::Scale(Float3{ -1, 1, 1 }));
+		const auto registered = assembly.addMesh(source);
+		REQUIRE_FALSE(plain);
+		REQUIRE_FALSE(placed);
+		REQUIRE_FALSE(registered);
+		CHECK_EQ(plain.error().code, Mesh3DErrorCode::InvalidGeometry);
+		CHECK_EQ(placed.error().code, registered.error().code);
+		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), original);
+	}
+	REQUIRE(builder.addMesh(original));
 }

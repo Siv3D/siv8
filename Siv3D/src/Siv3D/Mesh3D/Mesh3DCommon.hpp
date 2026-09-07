@@ -193,8 +193,9 @@ namespace s3d::Mesh3DDetail
 			&& CheckedAdd(mesh.indices.size(), addedTriangleCount, newTriangleCount));
 	}
 
-	// Check the destination size before changing either array. Shape validation
-	// must finish before this point; subsequent writes cannot report input errors.
+	// Check the destination size before changing either array. Callers must
+	// finish validation first, or restore both offsets on a later input error.
+	// Existing vertex/index contents must never be overwritten before success.
 	[[nodiscard]]
 	inline bool ResizeForAddition(
 		Mesh3D& mesh,
@@ -216,6 +217,24 @@ namespace s3d::Mesh3DDetail
 		mesh.indices.resize(newTriangleCount);
 		return true;
 	}
+
+	// Cache orientation once per generator. A collapsed UV axis retains its
+	// authored positive direction, so zero scales still produce a usable frame.
+	struct UVTangentTransform
+	{
+		explicit UVTangentTransform(const Vec2 scale) noexcept
+			: uSign{ (scale.x < 0.0) ? -1.0f : 1.0f }
+			, handedness{ uSign * ((scale.y < 0.0) ? -1.0f : 1.0f) } {}
+
+		[[nodiscard]]
+		Float4 apply(const Float4 tangent) const noexcept
+		{
+			return Float4{ (tangent.xyz() * uSign), (tangent.w * handedness) };
+		}
+
+		float uSign;
+		float handedness;
+	};
 
 	template <class Float>
 	struct CircleSample

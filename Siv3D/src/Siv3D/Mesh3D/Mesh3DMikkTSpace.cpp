@@ -12,7 +12,7 @@
 # include "Mesh3DMikkTSpace.hpp"
 # include <ThirdParty/MikkTSpace/mikktspace.h>
 
-namespace s3d
+namespace s3d::Mesh3DDetail
 {
 	namespace
 	{

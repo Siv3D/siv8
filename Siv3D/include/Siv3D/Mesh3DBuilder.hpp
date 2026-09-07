@@ -106,7 +106,7 @@ namespace s3d
 		/// @brief 既存の 3D メッシュを追加します。
 		/// @param mesh 追加する 3D メッシュ
 		/// @return 成功時は追加された範囲、失敗時はエラー
-		/// @remark 空または不正な `mesh`、もしくは追加後の頂点数が `Mesh3D::MaxVertexCount` を超える場合は失敗します。
+		/// @remark 空または不正なインデックスを持つ `mesh` は InvalidGeometry、追加後の頂点数が `Mesh3D::MaxVertexCount` を超える場合は SizeLimit で失敗します。
 		/// @remark 失敗した場合、既存のメッシュ内容は変更されません。
 		[[nodiscard]]
 		Mesh3DAddResult addMesh(const Mesh3D& mesh);

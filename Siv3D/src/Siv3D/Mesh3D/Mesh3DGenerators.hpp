@@ -15,6 +15,10 @@
 // Destination-writing implementations shared by factories and Mesh3DBuilder.
 namespace s3d::Mesh3DDetail
 {
+	// Validates and copies once; public callers choose logging and empty-input policy.
+	[[nodiscard]]
+	Result<Mesh3DRange, Mesh3DErrorCode> AppendMesh(Mesh3D& destination, const Mesh3D& source);
+
 	[[nodiscard]]
 	Mesh3DAddResult AppendBox(
 		Mesh3D& mesh,

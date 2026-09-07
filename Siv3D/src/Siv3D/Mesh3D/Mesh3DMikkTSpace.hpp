@@ -14,7 +14,7 @@
 # include <Siv3D/TriangleIndex32.hpp>
 # include <Siv3D/Vertex3D.hpp>
 
-namespace s3d
+namespace s3d::Mesh3DDetail
 {
 	/// @brief MikkTSpace 互換の頂点接線を生成します。
 	/// @param vertices 頂点配列

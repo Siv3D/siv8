@@ -591,3 +591,21 @@ TEST_CASE("Mesh3D::scale_non_uniform")
 		CHECK_EQ(mesh.vertices[0].tangent, source.vertices[0].tangent);
 	}
 }
+
+TEST_CASE("Mesh3D emptiness and index validation have distinct scopes")
+{
+	const Mesh3DRange empty{ 7, 0, 11, 0 };
+	CHECK(empty.isEmpty());
+	CHECK_FALSE((Mesh3DRange{ 7, 1, 11, 0 }.isEmpty()));
+	CHECK_FALSE((Mesh3DRange{ 7, 0, 11, 1 }.isEmpty()));
+	Mesh3D verticesOnly{ Array<Vertex3D>(1), {} };
+	CHECK(verticesOnly.isEmpty());
+	CHECK(verticesOnly.validate());
+	Mesh3D triangleOnly{ {}, { TriangleIndex32{ 0, 0, 0 } } };
+	CHECK(triangleOnly.isEmpty());
+	CHECK_FALSE(triangleOnly.validate());
+	verticesOnly.indices.push_back({ 0, 0, 0 });
+	verticesOnly.vertices[0].pos.x = std::numeric_limits<float>::quiet_NaN();
+	CHECK_FALSE(verticesOnly.isEmpty());
+	CHECK(verticesOnly.validate()); // Neither non-finite attributes nor degeneracy are index errors.
+}

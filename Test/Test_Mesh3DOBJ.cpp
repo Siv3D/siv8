@@ -317,3 +317,20 @@ TEST_CASE("Mesh3D::encodeOBJ reports writer failure")
 	ShortWriter shortWriter;
 	CHECK_FALSE(mesh.encodeOBJ(shortWriter));
 }
+
+TEST_CASE("Mesh3D::saveOBJ preserves MTL when OBJ cannot be opened")
+{
+	const FilePath directory = FileSystem::UniqueFilePath();
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	const FilePath objPath = (directory + U"/blocked.obj");
+	const FilePath mtlPath = (directory + U"/blocked.mtl");
+	REQUIRE(FileSystem::CreateDirectories(objPath));
+	{
+		BinaryFileWriter writer{ mtlPath };
+		REQUIRE(writer);
+		REQUIRE_EQ(writer.write("keep", 4), int64{ 4 });
+	}
+	CHECK_FALSE(MakeTriangleMesh().saveOBJ(objPath, Material{}));
+	CHECK_EQ(BlobToString(Blob{ mtlPath }), "keep");
+	FileSystem::Remove(directory);
+}

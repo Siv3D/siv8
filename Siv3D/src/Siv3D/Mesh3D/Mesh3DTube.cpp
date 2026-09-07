@@ -532,6 +532,7 @@ namespace s3d
 			const Array<Mesh3DDetail::CircleSample<double>> circle =
 				Mesh3DDetail::MakeCircleSamples<double>(sides);
 
+			const Mesh3DDetail::UVTangentTransform tangentTransform{ _uvScale };
 			const Float2 uvScale = _uvScale;
 			const Float2 uvOffset = _uvOffset;
 			const float inverseSides = (1.0f / sides);
@@ -627,12 +628,12 @@ namespace s3d
 						.tex = Float2{
 							(uvOffset.x + (uvScale.x * (sideIndex * inverseSides))), v
 						},
-						.tangent = Float4{
+						.tangent = tangentTransform.apply(Float4{
 							static_cast<float>(tangent.x),
 							static_cast<float>(tangent.y),
 							static_cast<float>(tangent.z),
 							-1.0f
-						}
+						})
 					};
 				}
 			}
@@ -673,12 +674,12 @@ namespace s3d
 					const Float3 capNormal = (startCap
 						? Float3{ -frame.tangent }
 						: Float3{ frame.tangent });
-					const Float4 capTangent{
+					const Float4 capTangent = tangentTransform.apply(Float4{
 						static_cast<float>(frame.normal.x),
 						static_cast<float>(frame.normal.y),
 						static_cast<float>(frame.normal.z),
 						(startCap ? 1.0f : -1.0f)
-					};
+					});
 
 					mesh.vertices[capBase] = Vertex3D{
 						.pos = points[pathIndex],
@@ -1025,6 +1026,7 @@ namespace s3d
 				return OperationFailed(Mesh3DErrorCode::NumericRange, U"Mesh3D::Sweep(): The generated UV coordinates exceed the float range");
 			}
 
+			const Mesh3DDetail::UVTangentTransform tangentTransform{ _uvScale };
 			const Float2 uvScale = _uvScale;
 			const Float2 uvOffset = _uvOffset;
 			size_t vertexBase;
@@ -1076,12 +1078,12 @@ namespace s3d
 					{
 						capTangentDirection = transformedFrames[pathIndex].xAxis.normalized();
 					}
-					const Float4 capTangent{
+					const Float4 capTangent = tangentTransform.apply(Float4{
 						static_cast<float>(capTangentDirection.x),
 						static_cast<float>(capTangentDirection.y),
 						static_cast<float>(capTangentDirection.z),
 						(startCap ? 1.0f : -1.0f)
-					};
+					});
 
 					for (size_t vertexIndex = 0; vertexIndex < capVertices.size(); ++vertexIndex)
 					{
@@ -1243,12 +1245,12 @@ namespace s3d
 								return false;
 							}
 						}
-						const Float4 vertexTangent{
+						const Float4 vertexTangent = tangentTransform.apply(Float4{
 							static_cast<float>(tangent.x),
 							static_cast<float>(tangent.y),
 							static_cast<float>(tangent.z),
 							-1.0f
-						};
+						});
 
 						const size_t vertexBase = (edgeVertexBase + (pathIndex * 2));
 						mesh.vertices[vertexBase + 0] = Vertex3D{

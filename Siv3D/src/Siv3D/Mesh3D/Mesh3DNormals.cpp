@@ -10,7 +10,13 @@
 //-----------------------------------------------
 
 # include "Mesh3DNormals.hpp"
-# include <Siv3D/Windows/MinWindows.hpp>
+# include <ThirdParty/DirectXMath/DirectXMath.h>
+# include <cstdlib>
+# include <memory>
+# include <cassert>
+# ifdef _WIN32
+# include <malloc.h>
+# endif
 
 //-------------------------------------------------------------------------------------
 // 
@@ -22,109 +28,39 @@
 // https://go.microsoft.com/fwlink/?LinkID=324981
 //-------------------------------------------------------------------------------------
 
-#ifndef _WIN32
-#include <cstdlib>
-
-struct aligned_deleter { void operator()(void* p) noexcept { free(p); } };
-
-using ScopedAlignedArrayFloat = std::unique_ptr<float[], aligned_deleter>;
-
-inline ScopedAlignedArrayFloat make_AlignedArrayFloat(uint64_t count)
+namespace s3d::Mesh3DDetail
 {
-    uint64_t size = sizeof(float) * count;
-    size = (size + 15u) & ~0xF;
-    if (size > static_cast<uint64_t>(UINT32_MAX))
-        return nullptr;
-
-    auto ptr = aligned_alloc(16, static_cast<size_t>(size));
-    return ScopedAlignedArrayFloat(static_cast<float*>(ptr));
-}
-
-using ScopedAlignedArrayXMVECTOR = std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>;
-
-inline ScopedAlignedArrayXMVECTOR make_AlignedArrayXMVECTOR(uint64_t count)
-{
-    uint64_t size = sizeof(DirectX::XMVECTOR) * count;
-    if (size > static_cast<uint64_t>(UINT32_MAX))
-        return nullptr;
-    auto ptr = aligned_alloc(16, static_cast<size_t>(size));
-    return ScopedAlignedArrayXMVECTOR(static_cast<DirectX::XMVECTOR*>(ptr));
-}
-
-#else // WIN32
-//---------------------------------------------------------------------------------
-#include <malloc.h>
-
-struct aligned_deleter { void operator()(void* p) noexcept { _aligned_free(p); } };
-
-using ScopedAlignedArrayFloat = std::unique_ptr<float[], aligned_deleter>;
-
-inline ScopedAlignedArrayFloat make_AlignedArrayFloat(uint64_t count)
-{
-    const uint64_t size = sizeof(float) * count;
-    if (size > static_cast<uint64_t>(UINT32_MAX))
-        return nullptr;
-    auto ptr = _aligned_malloc(static_cast<size_t>(size), 16);
-    return ScopedAlignedArrayFloat(static_cast<float*>(ptr));
-}
-
-using ScopedAlignedArrayXMVECTOR = std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>;
-
-inline ScopedAlignedArrayXMVECTOR make_AlignedArrayXMVECTOR(uint64_t count)
-{
-    const uint64_t size = sizeof(DirectX::XMVECTOR) * count;
-    if (size > static_cast<uint64_t>(UINT32_MAX))
-        return nullptr;
-    auto ptr = _aligned_malloc(static_cast<size_t>(size), 16);
-    return ScopedAlignedArrayXMVECTOR(static_cast<DirectX::XMVECTOR*>(ptr));
-}
-
-//---------------------------------------------------------------------------------
-struct handle_closer { void operator()(HANDLE h) noexcept { assert(h != INVALID_HANDLE_VALUE); if (h) CloseHandle(h); } };
-
-using ScopedHandle = std::unique_ptr<void, handle_closer>;
-
-inline HANDLE safe_handle(HANDLE h) noexcept { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
-
-//---------------------------------------------------------------------------------
-struct find_closer { void operator()(HANDLE h) noexcept { assert(h != INVALID_HANDLE_VALUE); if (h) FindClose(h); } };
-
-using ScopedFindHandle = std::unique_ptr<void, find_closer>;
-
-//---------------------------------------------------------------------------------
-class auto_delete_file
-{
-public:
-    auto_delete_file(HANDLE hFile) noexcept : m_handle(hFile) {}
-
-    auto_delete_file(const auto_delete_file&) = delete;
-    auto_delete_file& operator=(const auto_delete_file&) = delete;
-
-    ~auto_delete_file()
-    {
-        if (m_handle)
-        {
-            FILE_DISPOSITION_INFO info = {};
-            info.DeleteFile = TRUE;
-            std::ignore = SetFileInformationByHandle(m_handle, FileDispositionInfo, &info, sizeof(info));
-        }
-    }
-
-    void clear() noexcept { m_handle = nullptr; }
-
-private:
-    HANDLE m_handle;
-};
-
-#endif // WIN32
-
-using namespace DirectX;
-using s3d::Float3;
-using s3d::TriangleIndex32;
-using s3d::Vertex3D;
-
 namespace
 {
+    using namespace DirectX;
+
+    struct AlignedDeleter
+    {
+        void operator()(void* p) const noexcept
+        {
+#ifdef _WIN32
+            _aligned_free(p);
+#else
+            std::free(p);
+#endif
+        }
+    };
+
+    using ScopedAlignedArray = std::unique_ptr<XMVECTOR[], AlignedDeleter>;
+
+    ScopedAlignedArray MakeAlignedArray(const uint64_t count)
+    {
+        const uint64_t size = sizeof(XMVECTOR) * count;
+        if (size > static_cast<uint64_t>(UINT32_MAX))
+            return nullptr;
+#ifdef _WIN32
+        auto* ptr = _aligned_malloc(static_cast<size_t>(size), 16);
+#else
+        auto* ptr = std::aligned_alloc(16, static_cast<size_t>(size));
+#endif
+        return ScopedAlignedArray{ static_cast<XMVECTOR*>(ptr) };
+    }
+
     inline XMVECTOR LoadPosition(const Vertex3D* vertices, const uint32_t index) noexcept
     {
         const Float3& position = vertices[index].pos;
@@ -146,7 +82,7 @@ namespace
         _Inout_updates_(nVerts) Vertex3D* vertices, size_t nVerts,
         bool cw) noexcept
     {
-        auto temp = make_AlignedArrayXMVECTOR(nVerts);
+        auto temp = MakeAlignedArray(nVerts);
         if (!temp)
             return false;
 
@@ -215,7 +151,7 @@ namespace
         _Inout_updates_(nVerts) Vertex3D* vertices, size_t nVerts,
         bool cw) noexcept
     {
-        auto temp = make_AlignedArrayXMVECTOR(nVerts);
+        auto temp = MakeAlignedArray(nVerts);
         if (!temp)
             return false;
 
@@ -305,7 +241,7 @@ namespace
         _Inout_updates_(nVerts) Vertex3D* vertices, size_t nVerts,
         bool cw) noexcept
     {
-        auto temp = make_AlignedArrayXMVECTOR(nVerts);
+        auto temp = MakeAlignedArray(nVerts);
         if (!temp)
             return false;
 
@@ -382,15 +318,13 @@ namespace
     }
 }
 
-namespace s3d
-{
     _Use_decl_annotations_
-    bool ComputeNormals(
+    bool ComputeVertexNormals(
         const TriangleIndex32* indices,
         size_t nFaces,
         Vertex3D* vertices,
         size_t nVerts,
-        CNORM_FLAGS flags) noexcept
+        const VertexNormalWeighting weighting) noexcept
     {
         if (!indices || !vertices || !nFaces || !nVerts)
             return false;
@@ -401,19 +335,17 @@ namespace s3d
         if ((uint64_t(nFaces) * 3) >= UINT32_MAX)
             return false;
 
-        const bool cw = (flags & CNORM_WIND_CW) ? true : false;
-
-        if (flags & CNORM_WEIGHT_BY_AREA)
+        switch (weighting)
         {
-            return ComputeNormalsWeightedByArea(indices, nFaces, vertices, nVerts, cw);
-        }
-        else if (flags & CNORM_WEIGHT_EQUAL)
-        {
-            return ComputeNormalsEqualWeight(indices, nFaces, vertices, nVerts, cw);
-        }
-        else
-        {
-            return ComputeNormalsWeightedByAngle(indices, nFaces, vertices, nVerts, cw);
+        case VertexNormalWeighting::Area:
+            return ComputeNormalsWeightedByArea(indices, nFaces, vertices, nVerts, false);
+        case VertexNormalWeighting::Uniform:
+            return ComputeNormalsEqualWeight(indices, nFaces, vertices, nVerts, false);
+        default:
+            assert(false);
+            return ComputeNormalsWeightedByAngle(indices, nFaces, vertices, nVerts, false);
+        case VertexNormalWeighting::Angle:
+            return ComputeNormalsWeightedByAngle(indices, nFaces, vertices, nVerts, false);
         }
     }
 }
