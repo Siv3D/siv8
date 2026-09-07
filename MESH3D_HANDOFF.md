@@ -64,6 +64,7 @@
 - `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は `TODO.md` の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
 - manual test は利用例であり、API の正本は公開ヘッダとする。曲面主体の評価例は `Test/Manual/Mesh3DLoftExamples.md`。断面形状と向きが変わるダクト、平滑化、共有形状の分割品質変更、Align と鏡映複製を含む。
+- OBJ / MTL の形状・配置・base color の確認には `Test/Manual/Mesh3DPreview.md` の汎用プレビューを使える。実行手順、独立検証、描画上の制限は同文書を参照する。
 
 ## 実装時の共通条件
 

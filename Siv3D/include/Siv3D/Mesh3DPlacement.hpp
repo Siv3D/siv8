@@ -24,10 +24,13 @@ namespace s3d
 	/// @remark Builder と Assembly は鏡映時も形状の表裏を維持します。Loft の断面フレームには Loft 固有の向き・進行方向の条件があります。
 	/// @remark この型の構築時には入力を検査しません。数値的な事前条件は使用先の API に従います。
 	/// @remark `Vec3` から暗黙に変換できるため、平行移動だけを指定する add 関数の呼び出しは `addShape(..., offset)` と書けます。
+	/// @remark `Quaternion` から暗黙に変換できるため、原点を中心とする回転だけなら `addShape(..., rotation)` と書けます。
 	/// @remark 回転と平行移動を指定する場合は `addShape(..., { offset, rotation })` と書けます。
+	/// @remark `{ offset, rotation }` は原点を中心に回転してから平行移動します。Assembly で両者を独立した関節として操作しない場合は、1 つの部品の配置にまとめられます。
 	/// @remark `Mat4x4` から暗黙に変換できるため、任意のアフィン変換を指定する呼び出しは `addShape(..., transform)` と書けます。
 	/// @code
 	/// builder.addTube(path, 0.25, offset);
+	/// builder.addTube(path, 0.25, rotation);
 	/// builder.addTube(path, 0.25, { offset, rotation });
 	/// builder.addTube(path, 0.25, transform);
 	///
@@ -44,6 +47,12 @@ namespace s3d
 		[[nodiscard]]
 		Mesh3DPlacement(Vec3 offset) noexcept
 			: m_transform{ Mat4x4::Translate(Float3{ offset }) } {}
+
+		/// @brief 原点を中心とする回転を表す配置変換を作成します。平行移動は行いません。
+		/// @param rotation 単位クォータニオン
+		[[nodiscard]]
+		Mesh3DPlacement(const Quaternion& rotation) noexcept
+			: m_transform{ Mat4x4::Rotate(rotation) } {}
 
 		/// @brief 回転および平行移動を表す配置変換を作成します。
 		/// @param offset 平行移動量

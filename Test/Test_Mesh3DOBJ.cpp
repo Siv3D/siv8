@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include <sstream>
 
 namespace
 {
@@ -171,6 +172,50 @@ TEST_CASE("Mesh3D::saveOBJ with Material")
 
 	FileSystem::Remove(objPath);
 	FileSystem::Remove(mtlPath);
+}
+
+TEST_CASE("Mesh3D OBJ material conversion preserves base color across metallic endpoints")
+{
+	struct Case
+	{
+		double metallic, roughness;
+		Vec3 diffuse, specular;
+		double exponent;
+	};
+	for (const auto& c : {
+		Case{ 0, 0, { 0.5, 0.25, 0.75 }, { 0.04, 0.04, 0.04 }, 1000 },
+		Case{ 0.5, 0.5, { 0.25, 0.125, 0.375 }, { 0.27, 0.145, 0.395 }, 6 },
+		Case{ 1, 1, { 0, 0, 0 }, { 0.5, 0.25, 0.75 }, 0 },
+		Case{ -2, -1, { 0.5, 0.25, 0.75 }, { 0.04, 0.04, 0.04 }, 1000 },
+		Case{ 2, 2, { 0, 0, 0 }, { 0.5, 0.25, 0.75 }, 0 } })
+	{
+		Mesh3DAssembly assembly;
+		const auto mesh = assembly.addMesh(MakeTriangleMesh()).value();
+		const auto material = assembly.addMaterial(Material{ .baseColor = ColorF{ 0.5, 0.25, 0.75 },
+			.metallic = c.metallic, .roughness = c.roughness });
+		REQUIRE(assembly.addPart({ .mesh = mesh, .material = material }));
+		MemoryWriter obj, mtl;
+		REQUIRE(assembly.bake().value().encodeOBJ(obj, mtl, U"material.mtl"));
+		const auto text = BlobToString(mtl.getBlob());
+		const auto read = [&](const std::string& key, const size_t count)
+		{
+			const size_t offset = text.find("\n" + key + " ");
+			REQUIRE_NE(offset, std::string::npos);
+			std::istringstream stream{ text.substr(offset + key.size() + 2) };
+			Array<double> values(count);
+			for (auto& value : values)
+			{
+				REQUIRE(static_cast<bool>(stream >> value));
+			}
+			return values;
+		};
+		const auto kd = read("Kd", 3), ks = read("Ks", 3);
+		CHECK(Vec3{ kd[0], kd[1], kd[2] }.epsilonEquals(c.diffuse, 1e-12));
+		CHECK(Vec3{ ks[0], ks[1], ks[2] }.epsilonEquals(c.specular, 1e-12));
+		CHECK(read("Ns", 1)[0] == doctest::Approx(c.exponent));
+		CHECK(read("Pm", 1)[0] == doctest::Approx(Clamp(c.metallic, 0.0, 1.0)));
+		CHECK(read("Pr", 1)[0] == doctest::Approx(Clamp(c.roughness, 0.0, 1.0)));
+	}
 }
 
 TEST_CASE("Mesh3D::saveOBJ with Material rejects invalid input")

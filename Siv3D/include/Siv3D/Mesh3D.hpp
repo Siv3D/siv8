@@ -583,6 +583,7 @@ namespace s3d
 		/// @param size くさび形の各軸方向の大きさ
 		/// @return くさび形の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
 		/// @remark X 軸方向を幅、Y 軸方向を高さ、Z 軸方向を奥行きとし、斜面は `-Z` 側の下端から `+Z` 側の上端へ伸びます。
+		/// @remark X 軸方向の幅は全域で一定です。Y-Z 断面は直角三角形で、頂点の (y, z) は `(-size.y / 2, -size.z / 2)`、`(-size.y / 2, size.z / 2)`、`(size.y / 2, size.z / 2)` です。スロープに使う場合、高い端はローカルの +Z 側です。
 		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。斜面には `BoxUVMapping::positiveY` が使用されます。
 		[[nodiscard]]
 		static Mesh3D Wedge(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
@@ -592,6 +593,7 @@ namespace s3d
 		/// @param uvMapping 形状全体のバウンディングボックスへ投影する各面の UV 矩形
 		/// @return くさび形の 3D メッシュ。`size` または `uvMapping` が不正な場合は空の 3D メッシュ
 		/// @remark X 軸方向を幅、Y 軸方向を高さ、Z 軸方向を奥行きとし、斜面は `-Z` 側の下端から `+Z` 側の上端へ伸びます。
+		/// @remark 断面の頂点と一定幅の規約は Wedge(Vec3) と同じです。
 		/// @remark 斜面には `BoxUVMapping::positiveY`、垂直な背面には `positiveZ`、底面には `negativeY`、左右の側面には `positiveX` と `negativeX` が使用されます。
 		[[nodiscard]]
 		static Mesh3D Wedge(Vec3 size, const BoxUVMapping& uvMapping);
@@ -607,6 +609,7 @@ namespace s3d
 		/// @return 三角柱の 3D メッシュ。`size` のいずれかの成分が正の有限値でない場合、または float で表現できない場合は空の 3D メッシュ
 		/// @remark X 軸方向を長さ、Y 軸方向を全高、Z 軸方向を底面幅とします。
 		/// @remark Y-Z 断面の頂点は `(0, size.y / 2, 0)`、底辺は `y = -size.y / 2` に配置されます。
+		/// @remark 切妻屋根の本体などに使えます。棟は X 軸に平行です。屋根の下端を高さ h に合わせる場合、中心の Y 座標を `h + size.y / 2` に配置します。
 		/// @remark UV 座標は、形状全体のバウンディングボックスに対する Box と同じ投影で割り当てられます。2 枚の斜面には `BoxUVMapping::positiveY` が使用されます。
 		[[nodiscard]]
 		static Mesh3D TriangularPrism(Vec3 size = Vec3{ 1.0, 1.0, 1.0 });
@@ -1377,6 +1380,8 @@ namespace s3d
 		/// @remark Siv3D の左手座標系から OBJ の右手座標系へ変換するため、頂点座標と法線の Z 成分は符号を反転し、三角形の巻き順は反転して保存されます。
 		/// @remark Siv3D の上端を V = 0 とする UV 座標から OBJ の下端を V = 0 とする UV 座標へ変換するため、V 成分は `1 - V` として保存されます。U 成分は変更されません。
 		/// @remark ベースカラー、金属度、粗さ、エミッシブカラー、アルファ値、および対応するテクスチャは、MTL で表現可能な値へ変換されます。
+		/// @remark `m = clamp(metallic, 0, 1)` として、RGB は `Kd = baseColor.rgb * (1 - m)`、`Ks = baseColor.rgb * m + 0.04 * (1 - m)` に変換します。Kd だけを表示するビューアでは金属が暗くなります。base color の色分けを diffuse のみで確認する用途には metallic = 0 を使えます。
+		/// @remark `r = clamp(roughness, 0, 1)` として、`Ns = clamp(2 / (r * r) - 2, 0, 1000)` に変換します。r = 0 の場合は Ns = 1000 です。これらは従来の MTL による近似であり、PBR と同じ見え方を保証しません。
 		/// @remark 金属度と粗さは、従来の MTL パラメータへの変換に加えて `Pm` と `Pr` でも保存されます。
 		/// @remark MTL で直接表現できないアルファマスクのしきい値、両面描画、metallic-roughness テクスチャ、およびアンビエントオクルージョンは保存されません。
 		/// @remark テクスチャファイル自体はコピーされません。

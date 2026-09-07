@@ -11,6 +11,46 @@
 
 # include "Mesh3DTestHelper.hpp"
 
+TEST_CASE("Mesh3DPlacement rotation preserves the origin and supports inverse round trips")
+{
+	for (const auto rotation : { Quaternion::Identity(), Quaternion::RotateX(90_deg),
+		Quaternion::RotateY(180_deg), Quaternion::RotateZ(-90_deg),
+		Quaternion::RotateX(0.3) * Quaternion::RotateY(-0.7) })
+	{
+		const Mesh3DPlacement placement = rotation;
+		const Mesh3DPlacement inverse = rotation.inverse();
+		CHECK(placement.getTransform().transformPoint(Float3::Zero()).epsilonEquals(Float3::Zero(), 1e-6f));
+		for (const Float3 point : { Float3{ 1, 0, 0 }, Float3{ 0, 1, 0 }, Float3{ 0, 0, 1 }, Float3{ 2, -3, 4 } })
+		{
+			const auto transformed = placement.getTransform().transformPoint(point);
+			CHECK(transformed.epsilonEquals(rotation.rotate(point), 2e-5f));
+			CHECK(inverse.getTransform().transformPoint(transformed).epsilonEquals(point, 2e-5f));
+		}
+	}
+}
+
+TEST_CASE("Mesh3DPlacement accepts rotation in Builder Assembly and Loft")
+{
+	const auto rotation = Quaternion::RotateZ(90_deg);
+	Mesh3DBuilder builder;
+	REQUIRE(builder.addBox(Vec3{ 2, 4, 6 }, rotation));
+	CHECK(builder.getMesh().computeBoundingBox().size.epsilonEquals(Vec3{ 4, 2, 6 }, 2e-5));
+	Mesh3DTest::CheckMeshGeometry(builder.getMesh());
+
+	Mesh3DAssembly assembly;
+	const auto parent = assembly.addPart({ .placement = Vec3{ 3, 4, 5 } }).value();
+	const auto pivot = assembly.addPart({ .parent = parent, .placement = rotation }).value();
+	const auto child = assembly.addPart({ .parent = pivot, .placement = Vec3{ 2, 0, 0 } }).value();
+	CHECK(assembly.computeWorldTransform(child).value().transformPoint(Float3::Zero())
+		.epsilonEquals(Float3{ 3, 6, 5 }, 2e-5f));
+
+	const Array<Vec2> contour{ Vec2{ -1, -1 }, Vec2{ 1, -1 }, Vec2{ 1, 1 }, Vec2{ -1, 1 } };
+	const auto yaw = Quaternion::RotateY(90_deg);
+	const auto loft = Mesh3D::Loft({ { contour, yaw }, { contour, { Vec3{ 0, 2, 0 }, yaw } } });
+	Mesh3DTest::CheckMeshGeometry(loft);
+	CHECK(loft.computeBoundingBox().size.epsilonEquals(Vec3{ 2, 2, 2 }, 2e-5));
+}
+
 TEST_CASE("Mesh3DPlacement::Align frame origins and axes")
 {
 	const Mat4x4 identity = Mat4x4::Identity();

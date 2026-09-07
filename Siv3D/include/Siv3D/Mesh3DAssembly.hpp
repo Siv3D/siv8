@@ -219,6 +219,13 @@ namespace s3d
 		/// @remark 名前、MeshID、MaterialID、子孫のローカル配置をコピーし、内部の親参照を複製先へ付け替えます。形状・材質の登録や頂点のコピーは行いません。配置の変更は独立し、setMesh() / setMaterial() による共有データの変更は両方へ反映されます。
 		/// @remark 呼び出し開始時点の子孫だけを複製します。登録順で他の階層が間にあっても対象を選別します。parent は複製元の根や子孫も指定でき、元の部品の子として複製します。
 		/// @remark 新しい部品は元の登録順で末尾へ追加され、既存 ID は変わりません。getPart() で取得したポインタは追加による再確保で無効になる場合があります。world 配置を維持する reparent 操作や、後からの階層編集の同期は行いません。
+		/// @code
+		/// const auto parent = assembly.addPart({ .placement = Vec3{ 10, 0, 0 } }).value();
+		/// const auto root = assembly.addPart({ .parent = parent, .placement = Vec3{ 2, 0, 0 } }).value();
+		/// const auto copy = assembly.cloneSubtree(root, Vec3{ 5, 0, 0 }, parent).value();
+		/// // 元の根の world 位置は (12, 0, 0)、複製先は (15, 0, 0)。
+		/// // parent を省略すると複製先の world 位置は (5, 0, 0)。
+		/// @endcode
 		/// @remark 複製元の根以降の既存部品数を N、複製する部品数を K とすると、名前のコピーと追加先配列の再確保を除く時間は O(N log(K + 1))、補助ストレージは O(K) です。複製を準備してから一括追加し、失敗時は既存の組立データを変更しません。
 		[[nodiscard]]
 		Result<ClonedSubtree, Mesh3DError> cloneSubtree(PartID root, const Mesh3DPlacement& placement, Optional<PartID> parent = none);
