@@ -59,29 +59,6 @@
 
 正確な overload、既定値、端面、巻き順、UV、異常入力の契約はヘッダを参照する。
 
-## 実利用レビューからの申し送り
-
-初見の利用者が 6 種類、184 部品の構造物を作成・検査した記録が [`Claude outputs/REPORT.md`](<Claude outputs/REPORT.md>) にある。最終生成物では、生成失敗、z-fighting、部品間の隙間、縮退三角形、裏返り、意図しない孤立部品は検出されず、現在の builder とクラス冒頭の Doxygen は実用上よく機能した。
-
-実地評価で誤読が起きた `Sweep` の断面軸、`Extrude` の配置後の軸、quaternion の合成順、部分 `Revolve` の端面範囲、`BoxShell` / `BoxFrame` / `Stairs` の T 字接合は Doxygen へ具体例または注意を追加した。`Revolve` で V を反転するために一時メッシュを経由した事例を受け、UV 変換を `RevolveOptions` に追加した。
-
-次のセッションへ引き継ぐ価値がある課題は `TODO.md` に整理した。新しい経路系 generator へ進む前提となる、角度、winding、点列の閉鎖表現、および失敗分類は公開ヘッダとテストで固定している。
-
-単発の追加範囲と失敗理由は `Mesh3DAddResult`、永続的な名前・材質・階層と共有形状は `Mesh3DAssembly` が扱う。宝箱のヒンジ、材質変更、台車の車輪共有と分割数の差し替えを `Test/Test_Mesh3DAssembly.cpp` で検証する。一括出力、名前、部品範囲の検証、面ごとの材質対応は `Test/Test_Mesh3DAssemblyOBJ.cpp` で検証する。実行可能な一式は `Test/Manual/Mesh3DAssemblyExamples.md` にあり、8 色の base color と共有形状・鏡映配置を使うテクスチャなしの作業ロボットも含む。ロボットの材質は metallic = 0 として、従来の MTL の diffuse color に base color がそのまま伝わるようにしている。
-
-報告中の `Quaternion::RotateX/Y/Z` の説明不足は現行 Doxygen ですでに解消済みである。また、現行 `Revolve` は連続する同一点を縮退面として生成せず、生成失敗として拒否する。この点は実装不具合として扱わず、入力契約の説明とテストの不足として評価する。
-
-配置計算では `Quaternion::rotate(Vec3)` / `inverseRotate(Vec3)` を使用できる。ベクトルを float へ変換せず double で計算するが、クォータニオン自体の保持精度は float のままである。型を省いた `rotate({ ... })` / `inverseRotate({ ... })` は overload が曖昧になるため、`Vec3{ ... }` または `Float3{ ... }` を明示する。
-
-Gemini によるヘッダと簡略化済みモデリングコードのレビューからは、Builder のローカル座標系、開路や柱状形状の端面制御、複数色・材質と部品範囲の関係、扇形環などの 2D 断面生成を検討候補として採用した。リポジトリ全体を参照していないレビューなので、提案された API 外観は確定案として扱わない。
-
-次の提案は既存 API との重複または前提の不一致があるため、そのまま実装しない。
-
-- 2 点間の円柱は `Tube({ from, to }, radius)` で表現でき、断面分割数が必要なら `TubeOptions::sides` で指定できる。この用法は `Tube` / `addTube` の Doxygen を参照する。
-- 方向付き `Extrude` は offset + rotation overload で表現できる。まず立面図を押し出す具体例を追加する。
-- `addMesh(Mesh3D&&)` は、連続した頂点・index 配列を持つ非空 builder へ一般にゼロコピーで吸収できない。性能上の根拠なしに direct generator の代替としない。
-- 3D CSG は topology、coplanar face、UV、tangent、数値的頑健性を伴う別規模の課題であり、今回の Mesh3D 拡張候補には戻さない。
-
 ## 次の候補と保留事項
 
 - `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は `TODO.md` の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
