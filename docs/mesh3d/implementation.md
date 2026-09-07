@@ -1,15 +1,15 @@
-# Mesh3D 開発引き継ぎ
+# Mesh3D 実装方針
 
-更新日: 2026-09-07
+CPU 側の形状生成・組み立て・出力を開発するときの設計方針をまとめる。公開 API の正本はヘッダの Doxygen とし、未完了の作業は [TODO](../../TODO.md) で管理する。
 
-この文書は、Mesh3D 開発を再開するための短い索引である。実装済み API の仕様書や完了履歴は兼ねない。
+資料の入口は [Mesh3D](README.md)、共通の開発手順は [開発ガイド](../development/README.md) を参照。
 
 ## 正本
 
-- 公開 API と座標・UV・頂点属性・失敗時動作の契約: `Siv3D/include/Siv3D/Mesh3D.hpp`、`Mesh3DBuilder.hpp`、`Mesh3DAssembly.hpp` の Doxygen
-- 未実装項目と設計判断: `TODO.md`
-- リポジトリの作業・検証規則: `AGENTS.md`
-- 実装の振る舞い: `Test/Test_Mesh3D*.cpp` と `Test/Mesh3DTestHelper.hpp`
+- 公開 API と座標・UV・頂点属性・失敗時動作の契約: [Siv3D/include/Siv3D/Mesh3D.hpp](../../Siv3D/include/Siv3D/Mesh3D.hpp)、[Mesh3DBuilder.hpp](../../Siv3D/include/Siv3D/Mesh3DBuilder.hpp)、[Mesh3DAssembly.hpp](../../Siv3D/include/Siv3D/Mesh3DAssembly.hpp) の Doxygen
+- 未実装項目と設計判断: [TODO.md](../../TODO.md)
+- リポジトリの作業・検証規則: [AGENTS.md](../../AGENTS.md)
+- 実装の振る舞い: `Test/Test_Mesh3D*.cpp` と [Test/Mesh3DTestHelper.hpp](../../Test/Mesh3DTestHelper.hpp)
 
 この文書には、すぐ古くなる commit hash、worktree の状態、テスト件数、全ファイル一覧を記録しない。作業開始時に Git とプロジェクトファイルから確認する。
 
@@ -18,18 +18,18 @@
 - `Mesh3D` は CPU 側のメッシュデータ、編集、生成、OBJ 出力を担当する。3D レンダリング側が未設計の間は `.draw()` を追加しない。
 - 単体生成には `Mesh3D` の static factory、複数形状の直接合成には `Mesh3DBuilder` を使う。
 - Builder の完成メッシュは `builder.obtainMesh()` でストレージごと取り出す。取得後の Builder は容量も含めて初期状態に戻り、再利用できる。`getMesh()` は const 参照、`clear()` は容量を保持した消去。旧 `std::move(builder).build()` は廃止した。
-- 全体へのアフィン変換と負のスケールは表裏を維持する。Mesh3D の transform / scale / append、Builder の配置、Assembly の bake は鏡映時に接線の w と三角形の巻き順を反転する。意図的な表裏反転には invert() を使う。旧仕様に合わせた鏡映後の reverseWinding() は取り除く。API 横断の回帰テストは `Test/Test_Mesh3DTransform.cpp`。Loft の断面ごとの向き・進行方向の条件は別に維持する。
+- 全体へのアフィン変換と負のスケールは表裏を維持する。Mesh3D の transform / scale / append、Builder の配置、Assembly の bake は鏡映時に接線の w と三角形の巻き順を反転する。意図的な表裏反転には invert() を使う。旧仕様に合わせた鏡映後の reverseWinding() は取り除く。API 横断の回帰テストは [Test/Test_Mesh3DTransform.cpp](../../Test/Test_Mesh3DTransform.cpp)。Loft の断面ごとの向き・進行方向の条件は別に維持する。
 - `Mesh3DAssembly` は共有形状、材質、名前と親子配置を持つ部品を所有する CPU 側の組立データとする。形状なしの部品はヒンジなどの座標系に使える。形状の差し替えや焼き込みで部品 ID は変化しない。
 - Assembly の親は子より先に登録し、`local * parentWorld` で配置を合成する。`bake(destination)` は出力配列を再利用し、部品ごとの範囲と材質の独立したスナップショットを返す。頂点・三角形の予算超過では出力を変更しない。鏡映では法線・接線に加えて巻き順を反転し、表裏を維持する。
 - `Mesh3DPlacement{ offset, rotation, scale }` は Vec3 の非一様スケール → 回転 → 平行移動。2 引数版は単位スケールで同じ実装へ委譲する。構築時の追加検査はなく、負・0 スケールの使用可否は各利用先の既存契約に従う。
 - `Mesh3DPlacement::Align(sourceFrame, targetFrame)` は取り付け座標系を一致させる `source.inverse() * target` を返す。配置先は親のローカル座標とし、形状と取り付け座標系は同じ寸法入力からレシピで生成する。逆変換可能性などの事前条件は検査せず、自動追従の状態は持たない。
-- `cloneSubtree(root, placement, parent)` は呼び出し時点の根と子孫の部品だけをコピーし、形状・材質 ID を共有する。新しい根の配置と親を明示し、内部の親参照を付け替える。返される `ClonedSubtree::find()` で元の部品 ID から複製先を取得できる。Blender の Linked Duplicate と同様に、配置は独立し、共有データの編集は両方に反映する。専用テストは `Test/Test_Mesh3DPlacement.cpp` と `Test/Test_Mesh3DAssemblyClone.cpp`、利用例と参考資料は Assembly の manual test を参照する。
+- `cloneSubtree(root, placement, parent)` は呼び出し時点の根と子孫の部品だけをコピーし、形状・材質 ID を共有する。新しい根の配置と親を明示し、内部の親参照を付け替える。返される `ClonedSubtree::find()` で元の部品 ID から複製先を取得できる。Blender の Linked Duplicate と同様に、配置は独立し、共有データの編集は両方に反映する。専用テストは [Test/Test_Mesh3DPlacement.cpp](../../Test/Test_Mesh3DPlacement.cpp) と [Test/Test_Mesh3DAssemblyClone.cpp](../../Test/Test_Mesh3DAssemblyClone.cpp)、利用例と参考資料は Assembly の manual test を参照する。
 - Assembly と BakedMesh の `saveOBJ()` は、部品の group と材質割り当てを 1 組の OBJ / MTL に保存する。BakedMesh は writer への `encodeOBJ()` も持つ。出力名は ID と UTF-8 バイトの可逆な percent encoding を組み合わせ、重複名・空白・日本語を扱う。材質未指定の面には既定材質を明示する。OBJ に階層や形状共有は保存しない。
 - factory と builder は `Mesh3DGenerators.hpp` に宣言する内部の destination-writing generator を共有する。プリミティブの生成本体は Mesh3D 側の形状群別ファイルに置き、Builder は入力の転送と配置を担当する。サイズ検査・追加先の拡張・Result 用エラー生成は `Mesh3DCommon.hpp` に集約する。
 - 汎用 generator と、頻出形状向けの効率的な specialization を組み合わせる。建築部材名を無制限に増やさない。
 - 公開形状パラメータは原則 `double`、`Vec2` / `SizeF`、`Vec3` とする。
 - 生成失敗時は既存の頂点・三角形の内容を保持する。Loft などは出力の拡張前に検証を終える。Tube / Sweep は書き込み中の生成値検証も行い、失敗時に追加前の配列サイズへ戻す。容量・data ポインタの保持やメモリ確保例外に対する非変更は保証しない。
-- UV の負の拡大率には接線方向と handedness も追従する。0 の UV 軸は正方向として扱う。Plane / Grid、HeightField、Tube / Sweep、Revolve、Loft の横断テストは `Test/Test_Mesh3DUV.cpp`。生成後の transformUV() は UV だけを編集し、必要な接線再計算は computeTangents() で明示する。
+- UV の負の拡大率には接線方向と handedness も追従する。0 の UV 軸は正方向として扱う。Plane / Grid、HeightField、Tube / Sweep、Revolve、Loft の横断テストは [Test/Test_Mesh3DUV.cpp](../../Test/Test_Mesh3DUV.cpp)。生成後の transformUV() は UV だけを編集し、必要な接線再計算は computeTangents() で明示する。
 - Mesh3DRange::isEmpty() は両 count が 0、Mesh3D::isEmpty() はいずれかの配列が空、validate() は頂点数と index 範囲だけの検査とする。意味は Doxygen と境界テストで固定し、別名の同義 API は増やさない。
 - 法線・接線の内部実装は Mesh3DDetail に閉じ込める。DirectXMesh 由来の法線計算には元の著作権表示を残し、未使用のプラットフォーム補助コードを混在させない。
 - 生成失敗は理由を `LOG_FAIL` へ出力する。factory は空メッシュを返し、builder の既存内容は変更しない。
@@ -64,10 +64,10 @@
 
 ## 次の候補と保留事項
 
-- `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は `TODO.md` の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
+- `HeightField()` の `Image` 固有 overload は入力変換の契約が固まるまで保留する。次の生成候補は [TODO.md](../../TODO.md) の残件から、既存 generator で代替できない具体的用途を基準に選ぶ。
 - レンダリング統合時に、`Vertex3D` の GPU レイアウト、頂点カラー、index 上限、CPU / GPU リソースの責務を決める。
-- manual test は利用例であり、API の正本は公開ヘッダとする。曲面主体の評価例は `Test/Manual/Mesh3DLoftExamples.md`。断面形状と向きが変わるダクト、平滑化、共有形状の分割品質変更、Align と鏡映複製を含む。
-- OBJ / MTL の形状・配置・base color の確認には `Test/Manual/Mesh3DPreview.md` の汎用プレビューを使える。PartID または領域での接写は周囲の遮蔽を保持し、単独表示・強調表示・部品色表示は独立に指定する。ID と名前・範囲・色の対応は JSON に出力する。実行手順、独立検証、描画上の制限は同文書を参照する。
+- 利用方法は [Loft ガイド](loft.md)、検証の期待結果は manual test を参照する。曲面主体の検証例は [Test/Manual/Mesh3DLoftExamples.md](../../Test/Manual/Mesh3DLoftExamples.md)。断面形状と向きが変わるダクト、平滑化、共有形状の分割品質変更、Align と鏡映複製を含む。
+- OBJ / MTL の形状・配置・base color の確認には [プレビューの使い方](preview.md) の汎用プレビューを使える。PartID または領域での接写は周囲の遮蔽を保持し、単独表示・強調表示・部品色表示は独立に指定する。ID と名前・範囲・色の対応は JSON に出力する。実行手順、独立検証、描画上の制限は同文書を参照する。
 
 ## 実装時の共通条件
 
@@ -90,6 +90,12 @@ shared code を変更した場合は focused test だけで終えず、ホスト
 
 ## モデリング支援の試作
 
-- `Test/Manual/Mesh3DModelingStudies.md` に既存の 2D 扇形・円弧・品質指定 API の棚卸しと、取り付け座標系・開いた格子曲面の自己完結したレシピを置く。新たな Anchor / Surface 公開 API は追加していない。
+- [モデリングガイド](modeling.md) に既存 API と取り付け座標系の知見、[格子曲面の試作案](proposals/open-grid-surface.md) に設計上の保留事項を置く。実行コードと検査は [manual test](../../Test/Manual/Mesh3DModelingStudies.md) に置く。新たな Anchor / Surface 公開 API は追加していない。
 - 柱と梁は寸法変更後の座標系一致、平面経路の管は SweepOptions::initialXAxis と FromUnitVectorPairs による端面多角形の一致を検査する。空間曲線への一般化は未検証。
-- 面ごとの材質は `MESH3D_MATERIAL_DESIGN.md` に内部表現・差し替え・bake / OBJ の比較案を記録する。実装済みの API 契約ではない。
+- 面ごとの材質は [面ごとの材質設計案](proposals/face-materials.md) に内部表現・差し替え・bake / OBJ の比較案を記録する。実装済みの API 契約ではない。
+
+## v0.8 の区切り
+
+- Mesh3D のモデリング機能は現在の複数部品と部品ごとの材質を一区切りとし、当面は既存機能の不具合修正・検証・文書整備を中心にする。
+- 面ごとの材質割り当ての内部試作・公開 API は v0.8.1 以降の再評価候補に回す。[面ごとの材質設計案](proposals/face-materials.md) は再開時の検討材料として保持し、実装予定の確約とはしない。
+- Anchor / Surface の試作も公開 API 化を保留したまま保持する。

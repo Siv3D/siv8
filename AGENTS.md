@@ -31,3 +31,10 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 - After changing shared code, run the full automated test suite available for the current host. If no automated test workflow is documented for that host, do not substitute another platform's workflow; report the unverified items explicitly.
 - On macOS that suite is `./macOS/run-tests.sh`, run from the repository root; pass `'--test-case=<pattern>'` for focused iteration. It relies on the `--test-only` early-exit block in `macOS/Main.cpp`, so keep that block intact and keep test-only logging and configuration in `Test/`.
 - Run Xcode and Metal builds outside the sandbox. A Metal Toolchain lookup failure inside the sandbox does not mean that it is not installed.
+
+# Documentation organization
+
+- Store durable usage guides and development knowledge under `docs/<subject>/`, with a subject `README.md` linked from `docs/README.md`. Follow `docs/AGENTS.md` for documentation changes.
+- Keep `Test/` for testing: fixtures, executable checks, manual execution steps, and expected results. Move reusable explanations and design rationale into docs, preserving complete manual test programs.
+- Keep pending work in root `TODO.md`; place unadopted designs in the relevant subject's `proposals/` directory with an explicit status. Root README and AGENTS remain entry points.
+- Update affected links when moving documents and run `python3 tools/check_docs.py` after documentation changes.

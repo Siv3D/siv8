@@ -1,8 +1,9 @@
 # Mesh3D face materials: design study
 
-Status: **not a public API proposal ready for implementation**. The current
-single-material-per-Part contract remains unchanged. This study separates the
-ability to assign materials to triangles from generator-specific face roles.
+Status: **deferred for reconsideration in v0.8.1 or later**. This is not a v0.8
+implementation task or a committed release feature. v0.8 retains the current
+single-material-per-Part contract. This study preserves the distinction between
+assigning materials to triangles and generator-specific face roles.
 
 ## Problem and scope
 
@@ -93,5 +94,6 @@ Export and future rendering can consume the baked representation separately.
 6. Bake repeatedly into one destination; export and parse material runs to check
    coverage, fallback, PartID preservation, no duplicate triangles, and MTL colors.
 
-Next action is a small internal representation experiment against these cases.
-Do not add generator role outputs, Mesh3D fields, or public binding APIs yet.
+If this work is resumed for v0.8.1 or later, start with a small internal
+representation experiment against these cases. Do not add generator role outputs,
+Mesh3D fields, or public binding APIs before that evaluation.

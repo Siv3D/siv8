@@ -19,73 +19,23 @@ Mesh3D/Assembly APIs, including the new scale-aware Mesh3DPlacement constructor.
    patches. The skirt's top follows the supplied samples exactly; there is no
    implicit bottom, thickness, seam welding, or Boolean union.
 
-## Existing API inventory
+## Checks and fixture limits
 
-- `Circle::outer()` already produces a circular point array.
-- `Circle::pieAsPolygon()` and `arcAsPolygon()` already produce sectors and thick
-  arcs. Full turns produce a disk or a ring with a hole. These are Polygon
-  outputs; no new sector generator is required for Extrude.
-- Circle angle zero is screen-up; positive angles are screen-clockwise. For a
-  contour written as `(r*cos(t), r*sin(t))`, the corresponding Circle start
-  angle is `t + Pi/2`. Extrude/Loft then map `(x,y)` to local `(x,0,-y)`.
-- `PointsPerCircle` describes the full circle, not the number of segments in a
-  partial arc. `QualityFactor::toPointsPerCircle(radius)` is a radius-based
-  quality heuristic, not a maximum geometric-error guarantee.
-- The current Circle generators use FastMath::SinCos. Replacing a recipe's
-  std::sin/std::cos sampling may change point positions, ordering, or count.
-  Use them where their contract is sufficient; do not promise byte-identical
-  replacement of an independently sampled contour.
-- `Quaternion::FromUnitVectorPairs()` already expresses frame orientation;
-  `SweepOptions::initialXAxis` already controls the initial section axis.
+- Four probe points verify each attachment frame's origin and axes under changed
+  dimensions and transformed parents.
+- Pipe fixtures are planar XY sweeps with a specified +Z section axis. Both cap
+  vertex sets must coincide after placement. The matching convex contours have
+  13 sides. This checks the polygonal join, not a watertight Boolean union.
+- Open grids must have the expected vertex/triangle counts, boundary incidence,
+  opposite shared-edge directions, UV endpoints, and valid normal/tangent frames.
+- The 2x2 plane faces +Y. The 1x2 grid must be rejected. Skirt upper vertices
+  exactly match the supplied samples and face +X.
+- Fixture positions are finite and triangles are nondegenerate. These checks do
+  not cover arbitrary self-intersections, closed seams, poles, or spatial-curve frames.
 
-## What the attachment tests establish
-
-Frames are returned alongside the geometry and derived from the same inputs.
-Column/beam mating logic contains no duplicate height/depth arithmetic. A
-transformed parent exercises the local/world distinction and nonuniform scaling.
-Four probe points test each frame's origin and axes, not only its translation.
-
-The pipe recipe is deliberately a planar XY sweep. Its specified section X axis
-is +Z, which stays constant under transport along that plane. Endpoint directions
-come from the sampled endpoint segments, not the ideal arc tangents. The extension
-uses the same 13-sided contour; explicit section orientation avoids relying on
-automatically chosen Tube frames or a polygon's rotational symmetry. The test
-compares both caps' transformed vertex sets, selected by cap plane and normal.
-For these matching convex contours this checks the actual polygonal join as well
-as frame alignment. It is not a general intersection or watertight-union test.
-
-These examples support keeping attachment data in ordinary recipe structs.
-They do not justify a universal AnchorID, frame inference from bounds, automatic
-constraint evaluation, or a new axis-frame factory. Spatial curves would need
-an explicit transport policy or returned frames; do not generalize the planar
-recipe's constant +Z axis to them.
-
-## What the Surface prototype establishes
-
-The same small triangulation function supports a two-row skirt and a doubly
-curved cloth patch. Columns are u, rows are v, and the front side follows
-`cross(dP/du, dP/dv)`. Every cell uses the same diagonal (b,c); positions and
-normalized grid UVs are supplied before existing normal/tangent computation.
-
-The input precondition is a small finite grid with nondegenerate, consistently
-oriented triangles. Only the minimum dimensions are checked by the generator.
-The separate checker verifies the known fixtures' counts, boundary incidence,
-shared-edge directions, winding, and normal/tangent frames. A 2x2 plane checks
-+Y orientation and the 1x2 case must fail. No exceptional-input guarantees are
-being proposed for a public generator.
-
-The experiment demonstrates a reusable open-grid core, but not enough evidence
-to choose a public Surface contract. Reusable destination storage, diagonal
-selection, UV parameterization, hard edges, and the relationship to HeightField
-need a separate design review. Closed seams, poles, arbitrary topology, and
-self-intersection repair remain outside this prototype.
-
-## Validation record
-
-On macOS, the complete sample was compiled and executed against the current
-library. All checks passed and all eight OBJ/MTL pairs were written. The scale
-constructor is covered separately by Test/Test_Mesh3DPlacement.cpp; the full
-macOS suite passed 683 test cases. Windows execution has not been checked.
+For reusable techniques, see the [modeling guide](../../docs/mesh3d/modeling.md).
+The prototype's unresolved public contract belongs to the
+[open-grid design study](../../docs/mesh3d/proposals/open-grid-surface.md).
 
 ## Complete sample
 
