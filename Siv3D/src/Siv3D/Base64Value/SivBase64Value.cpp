@@ -273,20 +273,34 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Result<size_t, size_t> Base64Value::decodeToString(String& dst) const
+	Result<size_t, Base64Value::DecodeError> Base64Value::decodeToString(String& dst) const
 	{
 		std::string s;
 
 		const auto result = decodeToUTF8(s);
 
-		if (result)
-		{
-			dst = Unicode::FromUTF8(s);
-		}
-		else
+		if (not result)
 		{
 			dst.clear();
-			return Err{ result.error() };
+			return Err{ DecodeError{ DecodeError::Code::InvalidBase64, result.error() } };
+		}
+
+		const size_t requiredLength = simdutf::utf32_length_from_utf8(s.data(), s.size());
+		simdutf::result conversionResult;
+
+		dst.resize_and_overwrite(requiredLength, [&](char32* buf, size_t) -> size_t
+			{
+				const size_t written = simdutf::convert_utf8_to_utf32(s.data(), s.size(), buf);
+				if ((written == 0) && (not s.empty()))
+				{
+					conversionResult = simdutf::validate_utf8_with_errors(s.data(), s.size());
+				}
+				return written;
+			});
+
+		if (conversionResult.error != simdutf::SUCCESS)
+		{
+			return Err{ DecodeError{ DecodeError::Code::InvalidUTF8, conversionResult.count } };
 		}
 
 		return dst.size();

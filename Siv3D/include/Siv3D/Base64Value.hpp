@@ -31,6 +31,26 @@ namespace s3d
 	{
 	public:
 
+		/// @brief Base64 から String への変換エラー
+		struct DecodeError
+		{
+			/// @brief デコードエラーのコード
+			enum class Code : uint8
+			{
+				/// @brief Base64 の符号列が不正
+				InvalidBase64,
+
+				/// @brief Base64 のデコード結果が UTF-8 として不正
+				InvalidUTF8,
+			};
+
+			/// @brief エラーコード
+			Code code;
+
+			/// @brief 0 始まりのエラー位置。InvalidBase64 では元の Base64 文字列、InvalidUTF8 ではデコード後の UTF-8 バイト列上の位置です。入力終端を指す場合もあります。
+			size_t position;
+		};
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	(constructor)
@@ -236,15 +256,15 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief Base64 値をデコードした結果を文字列に格納します。
+		/// @brief Base64 値をデコードし、UTF-8 として解釈した結果を文字列に格納します。
 		/// @param dst 格納先の文字列
-		/// @return デコードに成功した場合は格納した文字数、それ以外の場合は Base64 上のエラーの位置を示すエラー値
-		/// @remark デコードに失敗した場合、dst は空の文字列になります。
+		/// @return 成功した場合は格納した UTF-32 コード単位数、それ以外の場合はエラーの種類と位置
+		/// @remark Base64 または UTF-8 が不正な場合、dst は空の文字列になります。空の入力は成功し、0 を返します。埋め込みの NUL は保持されます。
 		[[nodiscard]]
-		Result<size_t, size_t> decodeToString(String& dst) const;
+		Result<size_t, DecodeError> decodeToString(String& dst) const;
 
-		/// @brief Base64 値をデコードした結果を文字列で返します。
-		/// @return デコードに成功した場合は文字列、それ以外の場合は空の文字列
+		/// @brief Base64 値をデコードし、UTF-8 として解釈した結果を文字列で返します。
+		/// @return 変換に成功した場合は文字列、Base64 または UTF-8 が不正な場合は空の文字列
 		[[nodiscard]]
 		String decodeToString() const;
 
