@@ -22,6 +22,14 @@
 	# include <sys/xattr.h>
 # endif
 
+TEST_CASE("FileSystem::IsResourcePath")
+{
+	CHECK_FALSE(FileSystem::IsResourcePath(U""));
+	CHECK(FileSystem::IsResourcePath(Resource(U"")));
+	CHECK(FileSystem::IsResourcePath(Resource(U"missing-resource/file.txt")));
+	CHECK_FALSE(FileSystem::IsResourcePath(Test::OutputPath(U"filesystem/ordinary/file.txt")));
+}
+
 TEST_CASE("FileSystem::Extension")
 {
 	CHECK_EQ(FileSystem::Extension(U"aaa.png"), U"png");
@@ -381,6 +389,59 @@ TEST_CASE("FileSystem::RemoveContents")
 	CHECK_FALSE(FileSystem::RemoveContents(root + U"sibling.txt"));
 	CHECK(FileSystem::IsFile(root + U"sibling.txt"));
 }
+
+# if SIV3D_PLATFORM(MACOS)
+
+TEST_CASE("FileSystem::IsResourcePath directory links")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/isresourcepath/links/");
+	REQUIRE(FileSystem::CreateDirectories(root));
+	const FilePath resourceDirectory = Resource(U"");
+	REQUIRE(FileSystem::IsDirectory(resourceDirectory));
+	const FilePath alias = (root + U"resource-alias");
+	REQUIRE(::symlink(Unicode::ToUTF8(resourceDirectory).c_str(), Unicode::ToUTF8(alias).c_str()) == 0);
+	CHECK(FileSystem::IsResourcePath(alias));
+	CHECK(FileSystem::IsResourcePath(alias + U"/missing-resource/file.txt"));
+	CHECK(FileSystem::IsResourcePath(resourceDirectory + U"../Resources/missing-resource/file.txt"));
+	CHECK_FALSE(FileSystem::IsResourcePath(FileSystem::GetExecutablePath() + U"/Contents/Resources-other/file.txt"));
+
+	const FilePath ordinaryAlias = (root + U"ordinary-alias");
+	REQUIRE(::symlink(".", Unicode::ToUTF8(ordinaryAlias).c_str()) == 0);
+	CHECK_FALSE(FileSystem::IsResourcePath(ordinaryAlias));
+	const FilePath brokenAlias = (root + U"broken-alias");
+	REQUIRE(::symlink("missing-target", Unicode::ToUTF8(brokenAlias).c_str()) == 0);
+	CHECK_FALSE(FileSystem::IsResourcePath(brokenAlias));
+}
+
+TEST_CASE("FileSystem::IsResourcePath resolution failure")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/isresourcepath/failure/");
+	REQUIRE(FileSystem::CreateDirectories(root));
+	const FilePath loop = (root + U"loop");
+	REQUIRE(::symlink("loop", Unicode::ToUTF8(loop).c_str()) == 0);
+
+	for (const FilePath& path : { loop, loop + U"/child" })
+	{
+		CHECK_FALSE(FileSystem::IsResourcePath(path));
+	}
+}
+
+TEST_CASE("FileSystem::IsResourcePath permission failure")
+{
+	if (::geteuid() == 0)
+	{
+		MESSAGE("Permission denial requires a non-root user.");
+		return;
+	}
+	const FilePath directory = Test::OutputPath(U"filesystem/isresourcepath/locked/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	const std::string native = Unicode::ToUTF8(directory);
+	const ScopeExit restorePermissions{ [&native] { ::chmod(native.c_str(), 0700); } };
+	REQUIRE(::chmod(native.c_str(), 0000) == 0);
+	CHECK_FALSE(FileSystem::IsResourcePath(directory + U"child"));
+}
+
+# endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
 

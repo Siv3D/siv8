@@ -51,6 +51,7 @@ namespace s3d
 		/// @brief ファイルパスがリソースのパスであるかを返します。
 		/// @param path ファイルパス
 		/// @remark 実際に存在するリソースのパスである必要はありません
+		/// @remark macOS では、OS のファイルシステムエラーによりパスを解決できない場合は false を返します。
 		/// @return リソースのパスである場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool IsResourcePath(FilePathView path) noexcept;

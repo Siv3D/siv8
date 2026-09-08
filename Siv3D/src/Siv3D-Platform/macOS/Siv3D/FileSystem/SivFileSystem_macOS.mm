@@ -286,8 +286,15 @@ namespace s3d
 
 		bool IsResourcePath(const FilePathView path) noexcept
 		{
-			const FilePath resourceDirectory = (FileSystem::GetExecutablePath() + U"/Contents/Resources/");
-			return FullPath(path).starts_with(resourceDirectory);
+			try
+			{
+				const FilePath resourceDirectory = (FileSystem::GetExecutablePath() + U"/Contents/Resources/");
+				return FullPath(path).starts_with(resourceDirectory);
+			}
+			catch (const std::filesystem::filesystem_error&)
+			{
+				return false;
+			}
 		}
 		
 		////////////////////////////////////////////////////////////////
