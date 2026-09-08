@@ -15,12 +15,6 @@ For contour/frame usage and migration notes, see the [Loft guide](../../docs/mes
    Keep each matching MTL next to its OBJ. Inspect the outlet, rear and side views.
 3. Change the section count and contour sample count, then compare the results.
 
-On macOS the automated recipe test can also export the models:
-
-```sh
-SIV3D_LOFT_EXAMPLE_DIR=/tmp/siv8-loft-review ./macOS/run-tests.sh '--test-case=*Loft*'
-```
-
 ## Expected results
 
 - Both models contain two matching duct units, one mirrored. Each has a blue housing,

@@ -32,13 +32,33 @@ int32 RunTest()
 
 	Console.open();
 
+	// Test paths are relative to the repository's platform App directory.
+	// Reject an unexpected working directory before writing or removing files.
+	const FilePath currentDirectory = FileSystem::CurrentDirectory();
+	if ((not FileSystem::IsFile(U"../../Test/Siv3DTest.cpp"))
+		|| ((currentDirectory != FileSystem::FullPath(U"../../macOS/App/"))
+			&& (currentDirectory != FileSystem::FullPath(U"../../WindowsDesktop/App/"))))
+	{
+		Console << U"Tests must run from this repository's macOS/App or WindowsDesktop/App directory.";
+		return 1;
+	}
+
 	doctest::Context context;
 	context.applyCommandLine(System::GetArgc(), System::GetArgv());
 
-	FileSystem::Remove(U"../../Test/output/");
+	const FilePath outputDirectory = FileSystem::FullPath(U"../../Test/output/");
+	if (FileSystem::Exists(outputDirectory) && (not FileSystem::Remove(outputDirectory)))
+	{
+		Console << U"Could not clear test output: " << outputDirectory;
+		return 1;
+	}
 
 	const int32 exitCode = context.run();
 
-	FileSystem::Remove(U"../../Test/output/");
+	if (FileSystem::Exists(outputDirectory) && (not FileSystem::Remove(outputDirectory)))
+	{
+		Console << U"Could not clear test output: " << outputDirectory;
+		return 1;
+	}
 	return exitCode;
 }

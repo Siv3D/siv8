@@ -250,6 +250,10 @@ TEST_CASE("FileSystem::BaseName")
 TEST_CASE("FileSystem::ChangeCurrentDirectory")
 {
 	const FilePath currentDirectory = FileSystem::CurrentDirectory();
+	const ScopeExit restoreDirectory{ [&currentDirectory]
+		{
+			FileSystem::ChangeCurrentDirectory(currentDirectory);
+		} };
 
 	CHECK_EQ(FileSystem::ChangeCurrentDirectory(U"./"), true);
 	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
@@ -257,7 +261,7 @@ TEST_CASE("FileSystem::ChangeCurrentDirectory")
 	CHECK_EQ(FileSystem::ChangeCurrentDirectory(currentDirectory), true);
 	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
 
-	CHECK_EQ(FileSystem::ChangeCurrentDirectory(U"example/"), true);
+	REQUIRE(FileSystem::ChangeCurrentDirectory(U"example/"));
 	CHECK_EQ(FileSystem::CurrentDirectory(), (currentDirectory + U"example/"));
 
 	CHECK_EQ(FileSystem::ChangeCurrentDirectory(U"../"), true);

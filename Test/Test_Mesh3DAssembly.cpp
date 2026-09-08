@@ -11,7 +11,6 @@
 
 # include "Mesh3DTestHelper.hpp"
 # include "Mesh3DAssemblyExamples.hpp"
-# include <cstdlib>
 
 namespace
 {
@@ -344,7 +343,7 @@ TEST_CASE("Mesh3DAssembly::cart shared wheels and recipe parameters")
 	}
 }
 
-TEST_CASE("Mesh3DAssembly::consume baked ranges and export examples")
+TEST_CASE("Mesh3DAssembly::consume baked ranges for modeling examples")
 {
 	using namespace Mesh3DAssemblyExamples;
 	auto chest = MakeChest();
@@ -356,10 +355,8 @@ TEST_CASE("Mesh3DAssembly::consume baked ranges and export examples")
 	examples << chest.assembly.bake().value();
 	examples << MakeCart().assembly.bake().value();
 	examples << MakeCart(2.4, 0.55, 3).assembly.bake().value();
-	const Array<String> names{ U"chest_closed", U"chest_open", U"chest_gold", U"cart", U"cart_wide" };
-	for (size_t i = 0; i < examples.size(); ++i)
+	for (const auto& baked : examples)
 	{
-		const auto& baked = examples[i];
 		Mesh3D combined;
 		for (const auto& part : baked.parts)
 		{
@@ -368,11 +365,5 @@ TEST_CASE("Mesh3DAssembly::consume baked ranges and export examples")
 			REQUIRE(combined.append(mesh));
 		}
 		CheckMeshDataEqual(combined, baked.mesh);
-		// Optional review artifacts; the normal test suite does not write files.
-		if (const char* path = std::getenv("SIV3D_ASSEMBLY_EXAMPLE_DIR"))
-		{
-			REQUIRE(FileSystem::CreateDirectories(Unicode::FromUTF8(path)));
-			REQUIRE(baked.saveOBJ(Unicode::FromUTF8(path) + U"/" + names[i] + U".obj"));
-		}
 	}
 }

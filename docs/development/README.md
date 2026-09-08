@@ -39,6 +39,50 @@ payloads; an unchanged engine does not need a rebuild solely for a document move
 Project-file changes must be validated. Report unverified platforms rather than
 substituting another host's build workflow. Repository rules contain the details.
 
+## Test output and configuration
+
+The engine test suite uses `macOS/App/` or `WindowsDesktop/App/` as its working
+directory. The macOS runner sets this explicitly, and the Windows test project
+sets it for debugging. [RunTest](../../Test/Siv3DTest.cpp) checks this repository
+layout before running tests or deleting output. Launching a copied executable
+without that layout is not a supported test workflow.
+
+File-I/O tests write beneath `Test/output/`; this includes binary readers/writers,
+memory-mapped files, Mesh3D OBJ/MTL export, and the optional heavy compression
+tests. Unique Mesh3D directories also have an explicit parent under that root.
+The suite resolves its cleanup path before running tests and removes the output
+tree before and after execution, including ordinary assertion failures. Cleanup
+failure makes the run fail. A crash or forced termination can leave files there;
+the next run clears them. Do not store review artifacts there or run two engine
+test suites concurrently in one checkout. `Test/data/` contains read-only fixtures.
+
+Other output has a separate, explicit lifetime:
+
+| Workflow | Output and lifetime |
+| --- | --- |
+| [Array instrumentation](../array/testing.md#isolated-instrumentation-on-macos) | The optional directory argument selects retained build/profile/report output. Otherwise the tool creates a temporary directory and prints its path; remove it after inspection. |
+| Python tool self-tests | `TemporaryDirectory` scopes fixture files and removes them on scope exit. These do not retain review output. |
+| [Assembly](../../Test/Manual/Mesh3DAssemblyExamples.md), [Loft](../../Test/Manual/Mesh3DLoftExamples.md), and [modeling studies](../../Test/Manual/Mesh3DModelingStudies.md) | Explicit manual applications retain OBJ/MTL files in `assembly_examples/`, `loft_examples/`, and `modeling_studies/` under their working directory. Remove these directories after review. |
+| [Mesh3D preview](../mesh3d/preview.md) | The documented `--output` option selects retained previews; the default is `/tmp/mesh3d-preview`. Remove them after review. |
+
+Engine initialization happens before `RunTest` and can create engine resource
+caches in the platform's application cache location. Build products and toolchain
+caches also follow the platform build configuration. `Test/output/` governs test
+fixture writes, not every file produced by engine startup or the build tools.
+
+Test code must not use ambient environment variables to select behavior or export
+files. Use doctest arguments for test selection and documented arguments for
+development tools. Existing environment settings have narrow purposes:
+`CONFIGURATION` selects the macOS build configuration (default `Debug`), `TMPDIR`
+selects the standard temporary parent for the Array tool, and `LLVM_PROFILE_FILE`
+is set only for its coverage subprocess to keep the profile in the reported output
+directory. These are build/toolchain settings, not hidden test export switches.
+The optional nanobench benchmarks also inherit the library's `NANOBENCH_ENDLESS`
+and `NANOBENCH_SUPPRESS_WARNINGS` settings; benchmarks are disabled by default in
+`Test/Siv3DTest.hpp`, and these settings do not select file output destinations.
+Environment-handling tests should isolate their process environment or restore
+each changed value. The enforceable policy is in [AGENTS.md](../../AGENTS.md#test-output-and-configuration).
+
 ## Documentation checks
 
 ```sh

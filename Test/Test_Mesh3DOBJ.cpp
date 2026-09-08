@@ -365,7 +365,7 @@ TEST_CASE("Mesh3D::encodeOBJ reports writer failure")
 
 TEST_CASE("Mesh3D::saveOBJ preserves MTL when OBJ cannot be opened")
 {
-	const FilePath directory = FileSystem::UniqueFilePath();
+	const FilePath directory = FileSystem::UniqueFilePath(U"../../Test/output/mesh3d/");
 	REQUIRE(FileSystem::CreateDirectories(directory));
 	const FilePath objPath = (directory + U"/blocked.obj");
 	const FilePath mtlPath = (directory + U"/blocked.mtl");
