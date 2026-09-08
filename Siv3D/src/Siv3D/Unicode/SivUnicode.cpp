@@ -12,11 +12,66 @@
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/String.hpp>
 # include <ThirdParty/simdutf/simdutf.h>
+# include <type_traits>
 
 namespace s3d
 {
 	namespace Unicode
-	{			
+	{
+	# if not SIV3D_PLATFORM(WINDOWS)
+
+		namespace
+		{
+			template <class Result, class View>
+			Result CopyValidatedUTF32(const View s)
+			{
+				static_assert(sizeof(typename Result::value_type) == sizeof(char32));
+				static_assert(sizeof(typename View::value_type) == sizeof(char32));
+
+				if (s.size() < 16) // 短い文字列は検証とコピーをまとめる
+				{
+					Result result;
+					result.resize_and_overwrite(s.size(), [&](auto* buf, size_t) -> size_t
+						{
+							for (size_t i = 0; i < s.size(); ++i)
+							{
+								const uint32 cp = static_cast<uint32>(s[i]);
+								if ((0x10FFFFu < cp) || ((0xD800u <= cp) && (cp <= 0xDFFFu)))
+								{
+									return 0;
+								}
+
+								buf[i] = static_cast<typename Result::value_type>(cp);
+							}
+
+							return s.size();
+						});
+					return result;
+				}
+
+				// wchar_t の記憶領域を char32 として参照せず、String 側で SIMD 検証する
+				if constexpr (std::is_same_v<typename Result::value_type, char32>)
+				{
+					Result result(s.begin(), s.end());
+					if (not simdutf::validate_utf32(result.data(), result.size()))
+					{
+						result.clear();
+					}
+					return result;
+				}
+				else
+				{
+					if (not simdutf::validate_utf32(s.data(), s.size()))
+					{
+						return {};
+					}
+					return Result(s.begin(), s.end());
+				}
+			}
+		}
+
+	# endif
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	FromAscii
@@ -144,7 +199,7 @@ namespace s3d
 
 			static_assert(sizeof(wchar_t) == 4);
 
-			return String(s.begin(), s.end());
+			return CopyValidatedUTF32<String>(s);
 
 		# endif
 		}
@@ -298,7 +353,7 @@ namespace s3d
 
 			static_assert(sizeof(wchar_t) == sizeof(char32));
 
-			return std::wstring(s.begin(), s.end());
+			return CopyValidatedUTF32<std::wstring>(s);
 
 		# endif
 		}

@@ -108,8 +108,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief ワイド文字列を String に変換します。 | Converts a wide string to String.
+		/// @details Windows では UTF-16、それ以外では UTF-32 として解釈します。埋め込みの NUL は保持されます。 | Interprets the input as UTF-16 on Windows and UTF-32 elsewhere. Embedded NULs are preserved.
 		/// @param s 変換するワイド文字列 | The wide string to convert
-		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
+		/// @return 変換された文字列。不正な符号列を含む場合は結果全体が空の文字列 | The converted string. The entire result is empty if the input contains an invalid code unit sequence
 		[[nodiscard]]
 		String FromWstring(std::wstring_view s);
 
@@ -174,8 +175,9 @@ namespace s3d
 		std::wstring ToWstring(std::string_view s);
 
 		/// @brief String を std::wstring に変換します。 | Converts String to std::wstring.
+		/// @details Windows では UTF-16、それ以外では UTF-32 を出力します。埋め込みの NUL は保持されます。 | Produces UTF-16 on Windows and UTF-32 elsewhere. Embedded NULs are preserved.
 		/// @param s 変換する文字列 | The string to convert
-		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
+		/// @return 変換された文字列。サロゲート値 (0xD800–0xDFFF) または 0x10FFFF を超える値を含む場合は結果全体が空の文字列 | The converted string. The entire result is empty if the input contains a surrogate value (0xD800–0xDFFF) or a value above 0x10FFFF
 		[[nodiscard]]
 		std::wstring ToWstring(StringView s);
 
