@@ -384,14 +384,20 @@ namespace s3d
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
 		auto column(size_t x) & noexcept;
 
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
 		auto column(size_t x) const& noexcept;
+
+		void column(size_t) && = delete;
+
+		void column(size_t) const&& = delete;
 
 	# endif
 

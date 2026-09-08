@@ -129,3 +129,45 @@ TEST_CASE("Image.array_like_contract")
 	CHECK_EQ(image.get_if(Point{}), nullptr);
 	CHECK(image.isEmpty());
 }
+
+# if defined(__cpp_lib_ranges_stride)
+
+namespace
+{
+	template <class T>
+	concept HasImageColumn = requires(T&& image)
+	{
+		std::forward<T>(image).column(0);
+	};
+
+	static_assert(HasImageColumn<Image&>);
+	static_assert(HasImageColumn<const Image&>);
+	static_assert(not HasImageColumn<Image>);
+	static_assert(not HasImageColumn<const Image>);
+}
+
+TEST_CASE("Image.column")
+{
+	Image image{ 3, 2, Color{ 10, 20, 30 } };
+	auto firstColumn = image.column(0);
+	static_assert(std::same_as<std::ranges::range_reference_t<decltype(firstColumn)>, Color&>);
+	CHECK_EQ(std::ranges::distance(firstColumn), 2);
+	CHECK_EQ(&firstColumn[0], &image[0, 0]);
+	CHECK_EQ(&firstColumn[1], &image[1, 0]);
+	firstColumn[1] = Color{ 40, 50, 60 };
+	CHECK_EQ(image[1, 0], Color{ 40, 50, 60 });
+	CHECK_EQ(image[1, 1], Color{ 10, 20, 30 });
+
+	auto lastColumn = std::as_const(image).column(2);
+	static_assert(std::same_as<std::ranges::range_reference_t<decltype(lastColumn)>, const Color&>);
+	CHECK_EQ(std::ranges::distance(lastColumn), 2);
+	CHECK_EQ(&lastColumn[0], &image[0, 2]);
+	CHECK_EQ(&lastColumn[1], &image[1, 2]);
+
+	Image singlePixel{ 1, 1, Color{ 70, 80, 90 } };
+	auto singleColumn = singlePixel.column(0);
+	CHECK_EQ(std::ranges::distance(singleColumn), 1);
+	CHECK_EQ(&singleColumn[0], &singlePixel[0, 0]);
+}
+
+# endif
