@@ -11,7 +11,6 @@
 
 # include "Mesh3DTestHelper.hpp"
 # include "Mesh3DAssemblyExamples.hpp"
-# include <cstdlib>
 # include <map>
 # include <sstream>
 
@@ -257,7 +256,7 @@ TEST_CASE("Mesh3DAssembly::OBJ save pair and preserve files on validation failur
 {
 	const ScopedLogSilencer silence;
 	const auto a = MakeAssembly();
-	const FilePath directory = FileSystem::UniqueFilePath();
+	const FilePath directory = FileSystem::UniqueFilePath(Test::OutputPath(U"mesh3dassembly/"));
 	REQUIRE(FileSystem::CreateDirectories(directory));
 	const FilePath objPath = (directory + U"/model name.obj");
 	const FilePath mtlPath = (directory + U"/model%20name.mtl");
@@ -309,12 +308,6 @@ TEST_CASE("Mesh3DAssembly::OBJ texture-free robot and palette variants")
 		{
 			CHECK_EQ(material.metallic, 0.0);
 			CHECK_FALSE(material.baseColorTexture);
-		}
-		if (const char* path = std::getenv("SIV3D_ASSEMBLY_EXAMPLE_DIR"))
-		{
-			const FilePath directory = Unicode::FromUTF8(path);
-			REQUIRE(FileSystem::CreateDirectories(directory));
-			REQUIRE(robot.saveOBJ(directory + (color.r > 0.5 ? U"/robot_orange.obj" : U"/robot_blue.obj")));
 		}
 	}
 }

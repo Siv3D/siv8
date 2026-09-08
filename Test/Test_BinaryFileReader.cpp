@@ -14,7 +14,7 @@
 TEST_CASE("BinaryFileReader")
 {
 	constexpr int64 FileSize = (32768 * sizeof(uint32));
-	const FilePath path{ U"../../Test/output/binaryreader/test.bin" };
+	const FilePath path{ Test::OutputPath(U"binaryreader/test.bin") };
 	{
 		CHECK(not FileSystem::Exists(path));
 		{

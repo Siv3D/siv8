@@ -15,7 +15,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
+    <ClCompile Include="..\Test\Test_TestEnvironment.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
+    <ClCompile Include="..\Test\Test_ArrayException.cpp" />
+    <ClCompile Include="..\Test\Test_ArrayModel.cpp" />
     <ClCompile Include="..\Test\Test_AnimatedImage.cpp" />
     <ClCompile Include="..\Test\Test_AsyncTask.cpp" />
     <ClCompile Include="..\Test\Test_Base64Value.cpp" />
@@ -61,6 +64,10 @@
     <ClCompile Include="..\Test\Test_Interpolation.cpp" />
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp" />
+    <ClCompile Include="..\Test\Test_ArrayLike.cpp" />
+    <ClCompile Include="..\Test\Test_MultiPolygon.cpp" />
+    <ClCompile Include="..\Test\Test_Blob.cpp" />
+    <ClCompile Include="..\Test\Test_Wave.cpp" />
     <ClCompile Include="..\Test\Test_LineString.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFile.cpp" />
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />

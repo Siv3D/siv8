@@ -41,6 +41,14 @@ int32 RunTest();
 
 namespace s3d
 {
+	namespace Test
+	{
+		// Returns an absolute path beneath the output root established by RunTest().
+		// Use '/' separators; absolute paths and '.' / '..' components are rejected.
+		[[nodiscard]]
+		FilePath OutputPath(FilePathView relativePath);
+	}
+
 	class ScopedLogSilencer
 	{
 	public:

@@ -20,11 +20,7 @@ For modeling techniques and export conventions, see the [Assembly guide](../../d
 The recipes are compiled in `Test/Mesh3DAssemblyExamples.hpp`. The Assembly tests
 verify editing and baked ranges; `Test/Test_Mesh3DAssemblyOBJ.cpp` verifies output
 coordinates, grouping, and the diffuse color assigned to each robot face.
-The code below is self-contained. On macOS, the tests can also export review models:
-
-```sh
-SIV3D_ASSEMBLY_EXAMPLE_DIR=/tmp/siv8-assembly-color-review ./macOS/run-tests.sh '--test-case=*Mesh3D*'
-```
+Use the self-contained code below to export models for visual review.
 
 ## Expected results
 

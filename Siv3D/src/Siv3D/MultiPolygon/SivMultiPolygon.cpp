@@ -53,7 +53,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MultiPolygon& MultiPolygon::moveBy(const double x, const double y) noexcept
+	MultiPolygon& MultiPolygon::moveBy(const double x, const double y) & noexcept
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -63,7 +63,7 @@ namespace s3d
 		return *this;
 	}
 
-	MultiPolygon& MultiPolygon::moveBy(const Vec2 v) noexcept
+	MultiPolygon& MultiPolygon::moveBy(const Vec2 v) & noexcept
 	{
 		return moveBy(v.x, v.y);
 	}
@@ -176,7 +176,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MultiPolygon& MultiPolygon::rotate(const double angle)
+	MultiPolygon& MultiPolygon::rotate(const double angle) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -192,7 +192,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MultiPolygon& MultiPolygon::rotateAt(const Vec2 pos, const double angle)
+	MultiPolygon& MultiPolygon::rotateAt(const Vec2 pos, const double angle) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -227,7 +227,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MultiPolygon& MultiPolygon::transform(const double s, const double c, const Vec2& pos)
+	MultiPolygon& MultiPolygon::transform(const double s, const double c, const Vec2& pos) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -288,7 +288,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MultiPolygon& MultiPolygon::scaleFromOrigin(const double s)
+	MultiPolygon& MultiPolygon::scaleFromOrigin(const double s) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -298,7 +298,7 @@ namespace s3d
 		return *this;
 	}
 
-	MultiPolygon& MultiPolygon::scaleFromOrigin(const double sx, const double sy)
+	MultiPolygon& MultiPolygon::scaleFromOrigin(const double sx, const double sy) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -308,7 +308,7 @@ namespace s3d
 		return *this;
 	}
 
-	MultiPolygon& MultiPolygon::scaleFromOrigin(const Vec2 s)
+	MultiPolygon& MultiPolygon::scaleFromOrigin(const Vec2 s) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -369,7 +369,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	MultiPolygon& MultiPolygon::scaleFrom(const Vec2 pos, const double s)
+	MultiPolygon& MultiPolygon::scaleFrom(const Vec2 pos, const double s) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -379,7 +379,7 @@ namespace s3d
 		return *this;
 	}
 
-	MultiPolygon& MultiPolygon::scaleFrom(const Vec2 pos, const double sx, const double sy)
+	MultiPolygon& MultiPolygon::scaleFrom(const Vec2 pos, const double sx, const double sy) &
 	{
 		for (auto& polygon : m_polygons)
 		{
@@ -389,7 +389,7 @@ namespace s3d
 		return *this;
 	}
 
-	MultiPolygon& MultiPolygon::scaleFrom(const Vec2 pos, const Vec2 s)
+	MultiPolygon& MultiPolygon::scaleFrom(const Vec2 pos, const Vec2 s) &
 	{
 		for (auto& polygon : m_polygons)
 		{

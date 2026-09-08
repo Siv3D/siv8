@@ -101,7 +101,7 @@ namespace s3d
 	{
 		for (size_t i = 0; auto ch : m_view)
 		{
-			f(i++, ch);
+			std::invoke(f, i++, ch);
 		}
 	}
 
@@ -117,7 +117,7 @@ namespace s3d
 	{
 		for (isize i = 0; auto ch : m_view)
 		{
-			f(i++, ch);
+			std::invoke(f, i++, ch);
 		}
 	}
 
@@ -152,25 +152,13 @@ namespace s3d
 
 		for (const auto ch : m_view)
 		{
-			if (f(ch))
+			if (std::invoke(f, ch))
 			{
 				result.push_back(ch);
 			}
 		}
 
 		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	head
-	//
-	////////////////////////////////////////////////////////////////
-
-	constexpr String StringView::head(const size_type n) const
-	{
-		const auto k = Min(n, m_view.size());
-		return String(m_view.begin(), (m_view.begin() + k));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -193,6 +181,9 @@ namespace s3d
 	template <class Fty>
 	constexpr auto StringView::map(Fty f) const
 		requires std::invocable<Fty&, const value_type&>
+			&& std::is_object_v<std::decay_t<std::invoke_result_t<Fty&, const value_type&>>>
+			&& std::constructible_from<std::decay_t<std::invoke_result_t<Fty&, const value_type&>>, std::invoke_result_t<Fty&, const value_type&>>
+			&& std::move_constructible<std::decay_t<std::invoke_result_t<Fty&, const value_type&>>>
 	{
 		using result_value_type = std::decay_t<std::invoke_result_t<Fty&, const value_type&>>;
 
@@ -202,7 +193,7 @@ namespace s3d
 
 		for (const auto ch : m_view)
 		{
-			result.push_back(f(ch));
+			result.push_back(std::invoke(f, ch));
 		}
 
 		return result;
@@ -235,7 +226,7 @@ namespace s3d
 
 		for (auto& c : result)
 		{
-			if (f(c))
+			if (std::invoke(f, c))
 			{
 				c = newChar;
 			}
@@ -259,7 +250,7 @@ namespace s3d
 
 		while (it != itEnd)
 		{
-			f(*it++);
+			std::invoke(f, *it++);
 		}
 	}
 
@@ -330,7 +321,7 @@ namespace s3d
 
 		for (const auto ch : m_view)
 		{
-			if (not f(ch))
+			if (not std::invoke(f, ch))
 			{
 				result.push_back(ch);
 			}

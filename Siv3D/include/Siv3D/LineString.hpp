@@ -30,6 +30,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @remark 要素を所有します。ポインタ・イテレータ・span の取得は左辺値に限定され、元の要素の寿命と無効化規則に従います。
+	/// @remark 右辺値の要素アクセスは値を返し、const 右辺値からの借用はできません。
 	class LineString
 	{
 	public:
@@ -130,13 +132,15 @@ namespace s3d
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
-		explicit constexpr LineString(const HasAsArray auto& a);
+		explicit constexpr LineString(const HasAsArray auto& a)
+			requires detail::AsArrayOf<decltype(a), container_type>;
 
 		/// @brief メンバ関数 `.asArray()` を持つ型から頂点の配列を作成します。
 		/// @tparam ArrayIsh メンバ関数 `.asArray()` を持つ型
 		/// @param a `.asArray()` を持つ型のオブジェクト
 		[[nodiscard]]
-		explicit constexpr LineString(HasAsArray auto&& a);
+		explicit constexpr LineString(HasAsArray auto&& a)
+			requires detail::AsArrayOf<decltype(a), container_type>;
 
 		/// @brief 初期化リストから頂点の配列を作成します。
 		/// @param list 初期化リスト
@@ -199,12 +203,14 @@ namespace s3d
 		/// @brief コピー代入演算子
 		/// @param a メンバ関数 `.asArray()` を持つ型
 		/// @return *this
-		constexpr LineString& operator =(const HasAsArray auto& a);
+		constexpr LineString& operator =(const HasAsArray auto& a)
+			requires detail::AsArrayOf<decltype(a), container_type>;
 
 		/// @brief ムーブ代入演算子
 		/// @param a メンバ関数 `.asArray()` を持つ型
 		/// @return *this
-		constexpr LineString& operator =(HasAsArray auto&& a);
+		constexpr LineString& operator =(HasAsArray auto&& a)
+			requires detail::AsArrayOf<decltype(a), container_type>;
 
 		/// @brief コピー代入演算子
 		/// @param list リスト
@@ -221,7 +227,10 @@ namespace s3d
 		/// @param count 要素数
 		/// @param value 要素の値
 		/// @return *this
-		constexpr LineString& assign(size_type count, const value_type& value);
+		constexpr LineString& assign(size_type count, const value_type& value) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString assign(size_type count, const value_type& value) &&;
 
 		/// @brief イテレータが指す範囲の要素から配列を作成します。
 		/// @tparam Iterator イテレータ
@@ -229,12 +238,19 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <std::input_iterator Iterator>
-		constexpr LineString& assign(Iterator first, Iterator last);
+		constexpr LineString& assign(Iterator first, Iterator last) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		template <std::input_iterator Iterator>
+		constexpr LineString assign(Iterator first, Iterator last) &&;
 
 		/// @brief リストから配列を作成します。
 		/// @param list リスト
 		/// @return *this
-		constexpr LineString& assign(std::initializer_list<value_type> list);
+		constexpr LineString& assign(std::initializer_list<value_type> list) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString assign(std::initializer_list<value_type> list) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -247,14 +263,22 @@ namespace s3d
 		/// @param range 範囲
 		/// @return *this
 		template <Concept::ContainerCompatibleRange<Vec2> Range>
-		constexpr LineString& assign_range(Range&& range);
+		constexpr LineString& assign_range(Range&& range) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		template <Concept::ContainerCompatibleRange<Vec2> Range>
+		constexpr LineString assign_range(Range&& range) &&;
 
 		/// @brief 範囲から配列を作成します。
 		/// @tparam Range 範囲の型
 		/// @param range 範囲
 		/// @return *this
 		template <Concept::ContainerCompatibleRange<Point> Range>
-		constexpr LineString& assign_range(Range&& range);
+		constexpr LineString& assign_range(Range&& range) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		template <Concept::ContainerCompatibleRange<Point> Range>
+		constexpr LineString assign_range(Range&& range) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -278,6 +302,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr const container_type& asArray() const& noexcept;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void asArray() const&& = delete;
+
 		/// @brief Array を返します。
 		/// @return Array
 		[[nodiscard]]
@@ -292,7 +319,7 @@ namespace s3d
 		/// @brief Array への暗黙の変換を行います。
 		/// @return Array
 		[[nodiscard]]
-		constexpr operator container_type() const& noexcept;
+		constexpr operator container_type() const&;
 
 		/// @brief Array への暗黙の変換を行います。
 		/// @return Array
@@ -310,6 +337,9 @@ namespace s3d
 		/// @return 要素への参照
 		/// @throw std::out_of_range 範囲外アクセスの場合 throw
 		constexpr const value_type& at(size_type index) const&;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void at(size_type index) const&& = delete;
 
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
@@ -334,6 +364,9 @@ namespace s3d
 		/// @return 要素への参照
 		[[nodiscard]]
 		constexpr const value_type& operator [](size_type index) const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void operator [](size_type index) const&& = delete;
 
 		/// @brief 要素にアクセスします。
 		/// @param index 要素へのインデックス
@@ -363,6 +396,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr const_reference front() const& noexcept;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void front() const&& = delete;
+
 		/// @brief 先頭の要素を返します。
 		/// @return 先頭の要素
 		[[nodiscard]]
@@ -384,6 +420,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr const_reference back() const& noexcept;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void back() const&& = delete;
+
 		/// @brief 末尾の要素を返します。
 		/// @return 末尾の要素
 		[[nodiscard]]
@@ -398,12 +437,15 @@ namespace s3d
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr value_type* data() noexcept;
+		constexpr value_type* data() & noexcept;
 
 		/// @brief 先頭の要素を指すポインタを返します。
 		/// @return 先頭の要素を指すポインタ
 		[[nodiscard]]
-		constexpr const value_type* data() const noexcept;
+		constexpr const value_type* data() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void data() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -414,24 +456,30 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator begin() noexcept;
+		constexpr iterator begin() & noexcept;
 
 		/// @brief 配列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator end() noexcept;
+		constexpr iterator end() & noexcept;
 
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator begin() const noexcept;
+		constexpr const_iterator begin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void begin() const&& = delete;
 
 		/// @brief 配列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator end() const noexcept;
+		constexpr const_iterator end() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void end() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -442,13 +490,19 @@ namespace s3d
 		/// @brief 配列の先頭位置を指すイテレータを返します。
 		/// @return 配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cbegin() const noexcept;
+		constexpr const_iterator cbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cbegin() const&& = delete;
 
 		/// @brief 配列の終端位置を指すイテレータを返します。
 		/// @remark 有効な範囲は [begin, end) であるため、この位置に要素は存在しません
 		/// @return 配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cend() const noexcept;
+		constexpr const_iterator cend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -459,24 +513,30 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rbegin() noexcept;
+		constexpr reverse_iterator rbegin() & noexcept;
 
 		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rend() noexcept;
+		constexpr reverse_iterator rend() & noexcept;
 
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rbegin() const noexcept;
+		constexpr const_reverse_iterator rbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rbegin() const&& = delete;
 
 		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rend() const noexcept;
+		constexpr const_reverse_iterator rend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -487,13 +547,19 @@ namespace s3d
 		/// @brief 配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return 配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crbegin() const noexcept;
+		constexpr const_reverse_iterator crbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crbegin() const&& = delete;
 
 		/// @brief 配列の先端位置を指すリバース・イテレータを返します。
 		/// @remark 有効な範囲は [rbegin, rend) であるため、この位置に要素は存在しません
 		/// @return 配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crend() const noexcept;
+		constexpr const_reverse_iterator crend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -645,14 +711,14 @@ namespace s3d
 		/// @param pos 挿入する位置
 		/// @param value 挿入する値
 		/// @return 挿入された要素を指すイテレータ
-		constexpr iterator insert(const_iterator pos, const value_type& value);
+		constexpr iterator insert(const_iterator pos, const value_type& value) &;
 
 		/// @brief 指定した位置に count 個の value を挿入します。
 		/// @param pos 挿入する位置
 		/// @param count 挿入する個数
 		/// @param value 挿入する値
 		/// @return 挿入された要素の先頭を指すイテレータ
-		constexpr iterator insert(const_iterator pos, size_type count, const value_type& value);
+		constexpr iterator insert(const_iterator pos, size_type count, const value_type& value) &;
 
 		/// @brief 指定した位置にイテレータが指す範囲の要素を挿入します。
 		/// @tparam Iterator イテレータ
@@ -661,13 +727,13 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return 挿入された要素の先頭を指すイテレータ
 		template <std::input_iterator Iterator>
-		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
+		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) &;
 
 		/// @brief 指定した位置にリストの要素を挿入します。
 		/// @param pos 挿入する位置
 		/// @param list リスト
 		/// @return 挿入された要素の先頭を指すイテレータ
-		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list);
+		constexpr iterator insert(const_iterator pos, std::initializer_list<value_type> list) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -681,7 +747,7 @@ namespace s3d
 		/// @param range 範囲
 		/// @return 挿入された要素の先頭を指すイテレータ
 		template <Concept::ContainerCompatibleRange<Vec2> Range>
-		constexpr iterator insert_range(const_iterator pos, Range&& range);
+		constexpr iterator insert_range(const_iterator pos, Range&& range) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -695,7 +761,7 @@ namespace s3d
 		/// @param args 構築する要素の引数
 		/// @return 挿入された要素を指すイテレータ
 		template <class... Args>
-		constexpr iterator emplace(const_iterator pos, Args&&... args);
+		constexpr iterator emplace(const_iterator pos, Args&&... args) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -724,13 +790,13 @@ namespace s3d
 		/// @brief 指定した位置の要素を削除します。
 		/// @param pos 削除する要素の位置
 		/// @return 削除した要素の次の要素を指すイテレータ
-		constexpr iterator erase(const_iterator pos);
+		constexpr iterator erase(const_iterator pos) &;
 
 		/// @brief 指定した範囲の要素を削除します。
 		/// @param first 削除する範囲の開始位置
 		/// @param last 削除する範囲の終端位置
 		/// @return 削除された範囲の次を指すイテレータ
-		constexpr iterator erase(const_iterator first, const_iterator last);
+		constexpr iterator erase(const_iterator first, const_iterator last) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -820,7 +886,7 @@ namespace s3d
 		/// @param args 構築する要素の引数
 		/// @return 追加された要素への参照
 		template <class... Args>
-		constexpr reference emplace_back(Args&&... args);
+		constexpr reference emplace_back(Args&&... args) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -878,7 +944,7 @@ namespace s3d
 		/// @param args 構築する要素の引数
 		/// @return 追加された要素への参照
 		template <class... Args>
-		constexpr reference emplace_front(Args&&... args);
+		constexpr reference emplace_front(Args&&... args) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -920,7 +986,10 @@ namespace s3d
 		/// @brief 配列の末尾に要素を追加します。
 		/// @param value 追加する値
 		/// @return *this
-		constexpr LineString& operator <<(const value_type& value);
+		constexpr LineString& operator <<(const value_type& value) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString operator <<(const value_type& value) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -933,14 +1002,17 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<value_type> subspan(size_type pos, size_type count) noexcept;
+		constexpr std::span<value_type> subspan(size_type pos, size_type count) & noexcept;
 
 		/// @brief 部分配列を指す span を返します。
 		/// @param pos 部分配列の開始位置
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const noexcept;
+		constexpr std::span<const value_type> subspan(size_type pos, size_type count) const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void subspan(size_type pos, size_type count) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -992,12 +1064,18 @@ namespace s3d
 		/// @brief 配列の末尾に別の LineString を追加します。
 		/// @param other 追加する LineString
 		/// @return *this
-		constexpr LineString& append(const LineString& other);
+		constexpr LineString& append(const LineString& other) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString append(const LineString& other) &&;
 
 		/// @brief 配列の末尾に別の配列を追加します。
 		/// @param other 追加する配列
 		/// @return *this
-		constexpr LineString& append(const container_type& other);
+		constexpr LineString& append(const container_type& other) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString append(const container_type& other) &&;
 
 		/// @brief 配列の末尾に別の範囲の要素を追加します。
 		/// @tparam Iterator イテレータ
@@ -1005,18 +1083,44 @@ namespace s3d
 		/// @param last 範囲の終端位置を指すイテレータ
 		/// @return *this
 		template <std::input_iterator Iterator>
-		constexpr LineString& append(Iterator first, Iterator last);
+		constexpr LineString& append(Iterator first, Iterator last) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		template <std::input_iterator Iterator>
+		constexpr LineString append(Iterator first, Iterator last) &&;
 
 		/// @brief 配列の末尾にリストの要素を追加します。
 		/// @param list リスト
 		/// @return *this
-		constexpr LineString& append(std::initializer_list<value_type> list);
+		constexpr LineString& append(std::initializer_list<value_type> list) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString append(std::initializer_list<value_type> list) &&;
 
 		/// @brief 配列の末尾に要素を追加します。
 		/// @param count 追加する個数
 		/// @param value 追加する値
 		/// @return *this
-		constexpr LineString& append(size_type count, const value_type& value);
+		constexpr LineString& append(size_type count, const value_type& value) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString append(size_type count, const value_type& value) &&;
+
+		/// @brief 配列をムーブして末尾に追加します。自己ムーブでは変更しません。
+		/// @return *this
+		constexpr LineString& append(LineString&& other) &;
+
+		/// @brief 配列をムーブして末尾に追加します。自己ムーブでは変更しません。
+		/// @return 操作後のオブジェクト
+		constexpr LineString append(LineString&& other) &&;
+
+		/// @brief 配列をムーブして末尾に追加します。自己ムーブでは変更しません。
+		/// @return *this
+		constexpr LineString& append(container_type&& other) &;
+
+		/// @brief 配列をムーブして末尾に追加します。自己ムーブでは変更しません。
+		/// @return 操作後のオブジェクト
+		constexpr LineString append(container_type&& other) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1027,24 +1131,42 @@ namespace s3d
 		/// @brief 頂点列の要素を 1 つランダムに返します。
 		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice();
+		value_type& choice() &;
 
 		/// @brief 頂点列の要素を 1 つランダムに返します。
 		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice() const;
+		const value_type& choice() const&;
+
+		/// @brief 選択した要素をムーブして返します。空の場合は std::out_of_range を送出します。
+		[[nodiscard]]
+		value_type choice() &&
+		{
+			return std::move(m_vertices).choice();
+		}
+
+		void choice() const&& = delete;
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の要素を 1 つランダムに返します。
 		/// @param urbg 使用する乱数エンジン
 		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg);
+		value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) &;
 
 		/// @brief 指定した乱数エンジンを用いて、頂点列の要素を 1 つランダムに返します。
 		/// @param urbg 使用する乱数エンジン
 		/// @return 頂点列からランダムに選ばれた要素への参照
 		[[nodiscard]]
-		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const;
+		const value_type& choice(Concept::UniformRandomBitGenerator auto&& urbg) const&;
+
+		/// @brief 選択した要素をムーブして返します。空の場合は std::out_of_range を送出します。
+		[[nodiscard]]
+		value_type choice(Concept::UniformRandomBitGenerator auto&& urbg) &&
+		{
+			return std::move(m_vertices).choice(std::forward<decltype(urbg)>(urbg));
+		}
+
+		void choice(Concept::UniformRandomBitGenerator auto&& urbg) const&& = delete;
 
 		/// @brief 頂点列の要素から指定した個数だけ重複なくランダムに選んで返します。
 		/// @param n 選択する個数
@@ -1124,6 +1246,42 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		constexpr isize count_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭の Min(n, size()) 個を除いた列を返します。
+		/// @remark 個数と位置の単位は要素です。右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr LineString drop(size_type n) const&;
+
+		/// @brief 先頭の Min(n, size()) 個を除いた列を返します。
+		/// @remark 元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr LineString drop(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drop_while
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭から条件を満たす間の要素を除いた列を返します。
+		/// @remark 個数と位置の単位は要素です。右辺値では元の記憶領域を再利用します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString drop_while(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 先頭から条件を満たす間の要素を除いた列を返します。
+		/// @remark 元の記憶領域を再利用します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString drop_while(Fty f) &&
 			requires std::predicate<Fty&, const value_type&>;
 
 		////////////////////////////////////////////////////////////////
@@ -1212,7 +1370,10 @@ namespace s3d
 		/// @brief 指定した値をすべての要素に代入します。
 		/// @param value 代入する値
 		/// @return *this
-		constexpr LineString& fill(const value_type& value);
+		constexpr LineString& fill(const value_type& value) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString fill(const value_type& value) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1226,8 +1387,51 @@ namespace s3d
 		/// @return 指定した条件を満たす要素を集めた新しい LineString
 		template <class Fty>
 		[[nodiscard]]
-		constexpr LineString filter(Fty f) const
+		constexpr LineString filter(Fty f) const&
 			requires std::predicate<Fty&, const value_type&>;
+		/// @brief 条件を満たす要素を順序を保って残し、元の記憶領域を再利用します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr LineString filter(Fty f) &&
+			requires std::predicate<Fty&, const value_type&>;
+
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	find_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 最初に条件を満たす要素へのポインタを返します。見つからない場合は nullptr を返します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr value_type* find_if(Fty f) &
+			requires std::predicate<Fty&, const value_type&>;
+
+		/// @brief 最初に条件を満たす要素へのポインタを返します。見つからない場合は nullptr を返します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr const value_type* find_if(Fty f) const&
+			requires std::predicate<Fty&, const value_type&>;
+
+		template <class Fty>
+		void find_if(Fty) const&& = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	get_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定位置の要素へのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		constexpr value_type* get_if(size_type index) & noexcept;
+
+		/// @brief 指定位置の要素へのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		constexpr const value_type* get_if(size_type index) const& noexcept;
+
+		void get_if(size_type) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1256,6 +1460,18 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
+		//	indexOf_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 最初に条件を満たす要素の位置を返します。見つからない場合は none を返します。
+		template <class Fty>
+		[[nodiscard]]
+		constexpr Optional<size_type> indexOf_if(Fty f) const
+			requires std::predicate<Fty&, const value_type&>;
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	join
 		//
 		////////////////////////////////////////////////////////////////
@@ -1280,6 +1496,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @remark 呼び出しは std::invoke に従います。結果は所有可能な値型である必要があり、void は受け付けません。
 		/// @brief 各要素に関数を適用した戻り値からなる新しい配列を返します。
 		/// @tparam Fty 各要素に適用する関数の型
 		/// @param f 各要素に適用する関数
@@ -1287,7 +1504,7 @@ namespace s3d
 		template <class Fty>
 		[[nodiscard]]
 		constexpr auto map(Fty f) const
-			requires std::invocable<Fty&, const value_type&>;
+			requires detail::ArrayMapFunction<Fty, value_type>;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1310,6 +1527,16 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief index から末尾までを返します。index > size() は std::out_of_range を送出します。
+		/// @remark 個数と位置の単位は要素です。右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr LineString slice(size_type index) const&;
+
+		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
+		/// @remark 元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr LineString slice(size_type index) &&;
+
 		/// @brief 指定した範囲の要素からなる新しい LineString を返します。
 		/// @param index インデックス
 		/// @param length 長さ
@@ -1323,24 +1550,6 @@ namespace s3d
 		/// @return 新しい LineString
 		[[nodiscard]]
 		constexpr LineString slice(size_type index, size_type length) &&;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	head
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
-		/// @param n 取り出す最大要素数
-		/// @return 先頭から最大 n 個の要素を含む新しい LineString
-		[[nodiscard]]
-		constexpr LineString head(size_type n) const&;
-
-		/// @brief 先頭から最大 n 個の要素を取り出した新しい LineString を返します。
-		/// @param n 取り出す最大要素数
-		/// @return 先頭から最大 n 個の要素を含む新しい LineString
-		[[nodiscard]]
-		constexpr LineString head(size_type n) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -1359,6 +1568,9 @@ namespace s3d
 		/// @return 先頭から最大 n 個の要素を参照する `std::span`
 		[[nodiscard]]
 		constexpr std::span<const value_type> head_span(size_type n) const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void head_span(size_type n) const&& = delete;
 
 		/// @brief 先頭から最大 n 個の要素を参照する span を返します。
 		/// @param n 参照する最大要素数
@@ -1382,6 +1594,9 @@ namespace s3d
 		/// @return `std::views::take` による遅延評価ビュー
 		[[nodiscard]]
 		constexpr auto head_view(size_type n) const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void head_view(size_type n) const&& = delete;
 
 		/// @brief 先頭から最大 n 個の要素を取り出す Ranges ビューを返します。
 		/// @param n 取り出す最大要素数
@@ -1425,6 +1640,9 @@ namespace s3d
 		[[nodiscard]]
 		constexpr std::span<const value_type> tail_span(size_type n) const& noexcept;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void tail_span(size_type n) const&& = delete;
+
 		/// @brief 末尾の最大 n 個の要素を参照する span を返します。
 		/// @param n 参照する最大要素数
 		/// @return 末尾の最大 n 個の要素を参照する `std::span`
@@ -1447,6 +1665,9 @@ namespace s3d
 		/// @return `std::views::take` による遅延評価ビュー
 		[[nodiscard]]
 		constexpr auto tail_view(size_type n) const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void tail_view(size_type n) const&& = delete;
 
 		/// @brief 末尾の最大 n 個の要素を取り出す Ranges ビューを返します。
 		/// @param n 取り出す最大要素数
@@ -1710,6 +1931,9 @@ namespace s3d
 		/// @return 頂点列の逆順ビュー
 		[[nodiscard]]
 		constexpr auto reverse_view() const&;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void reverse_view() const&& = delete;
 
 		/// @brief 頂点列の逆順ビューを返します。
 		/// @return 頂点列の逆順ビュー
@@ -2003,12 +2227,18 @@ namespace s3d
 		/// @param x X 方向の移動量
 		/// @param y Y 方向の移動量
 		/// @return *this
-		constexpr LineString& moveBy(double x, double y) noexcept;
+		constexpr LineString& moveBy(double x, double y) & noexcept;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString moveBy(double x, double y) && noexcept;
 
 		/// @brief LineString を平行移動します。
 		/// @param v 移動量
 		/// @return *this
-		constexpr LineString& moveBy(Vec2 v) noexcept;
+		constexpr LineString& moveBy(Vec2 v) & noexcept;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString moveBy(Vec2 v) && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2125,18 +2355,27 @@ namespace s3d
 		/// @brief 原点 (0, 0) を中心に LineString を拡大・縮小します。
 		/// @param s 拡大率
 		/// @return *this
-		constexpr LineString& scaleFromOrigin(double s);
+		constexpr LineString& scaleFromOrigin(double s) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString scaleFromOrigin(double s) &&;
 
 		/// @brief 原点 (0, 0) を中心に LineString を拡大・縮小します。
 		/// @param sx X 方向の拡大率
 		/// @param sy Y 方向の拡大率
 		/// @return *this
-		constexpr LineString& scaleFromOrigin(double sx, double sy);
+		constexpr LineString& scaleFromOrigin(double sx, double sy) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString scaleFromOrigin(double sx, double sy) &&;
 
 		/// @brief 原点 (0, 0) を中心に LineString を拡大・縮小します。
 		/// @param s 拡大率
 		/// @return *this
-		constexpr LineString& scaleFromOrigin(Vec2 s);
+		constexpr LineString& scaleFromOrigin(Vec2 s) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString scaleFromOrigin(Vec2 s) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -2198,20 +2437,29 @@ namespace s3d
 		/// @param pos 拡大・縮小の中心座標
 		/// @param s 拡大率
 		/// @return *this
-		constexpr LineString& scaleFrom(Vec2 pos, double s);
+		constexpr LineString& scaleFrom(Vec2 pos, double s) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString scaleFrom(Vec2 pos, double s) &&;
 
 		/// @brief 指定した座標を中心に LineString を拡大・縮小します。
 		/// @param pos 拡大・縮小の中心座標
 		/// @param sx X 方向の拡大率
 		/// @param sy Y 方向の拡大率
 		/// @return *this
-		constexpr LineString& scaleFrom(Vec2 pos, double sx, double sy);
+		constexpr LineString& scaleFrom(Vec2 pos, double sx, double sy) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString scaleFrom(Vec2 pos, double sx, double sy) &&;
 
 		/// @brief 指定した座標を中心に LineString を拡大・縮小します。
 		/// @param pos 拡大・縮小の中心座標
 		/// @param s 拡大率
 		/// @return *this
-		constexpr LineString& scaleFrom(Vec2 pos, Vec2 s);
+		constexpr LineString& scaleFrom(Vec2 pos, Vec2 s) &;
+
+		/// @brief 操作後のオブジェクトをムーブして返します。
+		constexpr LineString scaleFrom(Vec2 pos, Vec2 s) &&;
 
 		////////////////////////////////////////////////////////////////
 		//

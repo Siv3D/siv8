@@ -530,7 +530,7 @@ TEST_CASE("LineString.slice")
 TEST_CASE("LineString.head")
 {
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 3, 3 } };
-	CHECK_EQ(line.head(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
+	CHECK_EQ(line.take(2), LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 } });
 }
 
 TEST_CASE("LineString.tail")
@@ -889,3 +889,60 @@ TEST_CASE("LineString.sorted_by")
 	CHECK_EQ(LineString{ Vec2{ 2, 0 }, Vec2{ 0, 2 }, Vec2{ 1, 1 } }.sorted_by(compareY), LineString{ Vec2{ 2, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 2 } });
 }
 
+
+namespace
+{
+	struct VertexArrayAdapter
+	{
+		Array<Vec2> values;
+		const Array<Vec2>& asArray() const& { return values; }
+		Array<Vec2> asArray() && { return std::move(values); }
+	};
+	struct InvalidVertexArrayAdapter
+	{
+		Array<int32> asArray() const { return {}; }
+	};
+}
+
+TEST_CASE("LineString.array_like_contract")
+{
+	static_assert(not std::is_constructible_v<LineString, InvalidVertexArrayAdapter>);
+	static_assert(not std::is_assignable_v<LineString&, InvalidVertexArrayAdapter>);
+	static_assert(std::same_as<decltype(LineString{}.append(LineString{})), LineString>);
+	static_assert(std::same_as<decltype(LineString{}.fill(Vec2{})), LineString>);
+	static_assert(std::same_as<decltype(LineString{}.moveBy(1, 2)), LineString>);
+	static_assert(std::same_as<decltype(LineString{}.choice()), Vec2>);
+	static_assert(std::same_as<decltype(LineString{} << Vec2{}), LineString>);
+	VertexArrayAdapter adapter{ { Vec2{ 0, 1 }, Vec2{ 2, 3 }, Vec2{ 4, 5 } } };
+	LineString line{ adapter };
+	line = VertexArrayAdapter{ adapter.values };
+	CHECK_EQ(line.asArray(), adapter.values);
+	CHECK_EQ(line.get_if(1), &line[1]);
+	CHECK_EQ(std::as_const(line).get_if(1), &line[1]);
+	CHECK_EQ(line.get_if(line.size()), nullptr);
+	CHECK_EQ(LineString{}.indexOf_if([](Vec2) { return true; }), none);
+	CHECK_EQ(line.find_if([](Vec2 p) { return p.x > 1; }), &line[1]);
+	CHECK_EQ(line.find_if([](Vec2 p) { return p.x < 0; }), nullptr);
+	CHECK_EQ(line.indexOf_if([](Vec2 p) { return p.y == 5; }), Optional<size_t>{ 2 });
+	CHECK_EQ(line.drop(1), LineString{ Vec2{ 2, 3 }, Vec2{ 4, 5 } });
+	CHECK(line.drop(100).isEmpty());
+	CHECK_EQ(line.drop_while([](Vec2 p) { return p.x < 2; }), line.drop(1));
+	CHECK_EQ(line.slice(1), line.drop(1));
+	CHECK(line.slice(3).isEmpty());
+	CHECK_THROWS_AS((void) line.slice(4), std::out_of_range);
+	CHECK_THROWS_AS((void) LineString{}.choice(), std::out_of_range);
+	CHECK_EQ(line.map(&Vec2::x), Array<double>{ 0, 2, 4 });
+
+	line.reserve(32);
+	const auto storage = line.data();
+	auto result = std::move(line).drop(1).filter([](Vec2 p) { return p.x == 4; }).moveBy(1, 2);
+	CHECK_EQ(result, LineString{ Vec2{ 5, 7 } });
+	CHECK_EQ(result.data(), storage);
+	CHECK(result.capacity() >= 32);
+	result.append(std::move(result));
+	CHECK_EQ(result.size(), size_t{ 1 });
+	result.append(result);
+	CHECK_EQ(result.size(), size_t{ 2 });
+	CHECK_EQ(result[0], result[1]);
+	CHECK_THROWS_AS((void) result.filter([](Vec2) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
+}

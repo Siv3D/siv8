@@ -30,7 +30,7 @@ TEST_CASE("MemoryMappedFile")
 	const std::string testData = CreateTestData();
 	
 	{
-		TextFileWriter writer{ U"../../Test/output/mmf/text.txt", TextEncoding::UTF8_NO_BOM };
+		TextFileWriter writer{ Test::OutputPath(U"mmf/text.txt"), TextEncoding::UTF8_NO_BOM };
 		writer.writeUTF8(testData);
 	}
 
@@ -42,9 +42,9 @@ TEST_CASE("MemoryMappedFile")
 
 	{
 		{
-			MemoryMappedFile mmf{ U"../../Test/output/mmf/text.txt", MemoryMappedFile::ExistingFilePolicy::JustOpen };
+			MemoryMappedFile mmf{ Test::OutputPath(U"mmf/text.txt"), MemoryMappedFile::ExistingFilePolicy::JustOpen };
 			CHECK(mmf.isOpen());
-			CHECK(mmf.path() == FileSystem::FullPath(U"../../Test/output/mmf/text.txt"));
+			CHECK(mmf.path() == FileSystem::FullPath(Test::OutputPath(U"mmf/text.txt")));
 			CHECK(mmf.size() == testData.size());
 
 			{
@@ -96,7 +96,7 @@ TEST_CASE("MemoryMappedFile")
 			}
 		}
 
-		BinaryFileReader reader{ U"../../Test/output/mmf/text.txt" };
+		BinaryFileReader reader{ Test::OutputPath(U"mmf/text.txt") };
 		std::string buffer(100, '\0');
 		
 		reader.read(buffer.data(), 100);
@@ -107,7 +107,7 @@ TEST_CASE("MemoryMappedFile")
 	}
 
 	{
-		const FilePath path = U"../../Test/output/mmf/create_1.txt";
+		const FilePath path = Test::OutputPath(U"mmf/create_1.txt");
 		{
 			MemoryMappedFile mmf{ path, MemoryMappedFile::ExistingFilePolicy::JustOpen };
 			auto mapped = mmf.mapAll();
@@ -119,7 +119,7 @@ TEST_CASE("MemoryMappedFile")
 	}
 
 	{
-		const FilePath path = U"../../Test/output/mmf/create_2.txt";
+		const FilePath path = Test::OutputPath(U"mmf/create_2.txt");
 		{
 			MemoryMappedFile mmf{ path, MemoryMappedFile::ExistingFilePolicy::Fail, MemoryMappedFile::MissingFilePolicy::Fail };
 			auto mapped = mmf.mapAll();
@@ -131,7 +131,7 @@ TEST_CASE("MemoryMappedFile")
 	}
 
 	{
-		const FilePath path = U"../../Test/output/mmf/create_3.txt";
+		const FilePath path = Test::OutputPath(U"mmf/create_3.txt");
 		{
 			MemoryMappedFile mmf{ path, MemoryMappedFile::ExistingFilePolicy::JustOpen };
 			auto mapped = mmf.map(0, (1024 * 1024));

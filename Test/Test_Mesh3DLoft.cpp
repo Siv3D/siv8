@@ -7,7 +7,6 @@
 
 # include "Mesh3DTestHelper.hpp"
 # include "Mesh3DLoftExamples.hpp"
-# include <cstdlib>
 
 namespace
 {
@@ -192,12 +191,6 @@ TEST_CASE("Mesh3D::Loft curved modeling recipe and shared assembly refinement")
 			CHECK(after.parts[i].id == before.parts[i].id);
 			CHECK(after.parts[i].material == before.parts[i].material);
 			CHECK(after.parts[i].worldTransform == before.parts[i].worldTransform);
-		}
-		if (const char* path = std::getenv("SIV3D_LOFT_EXAMPLE_DIR"))
-		{
-			const FilePath directory = Unicode::FromUTF8(path);
-			REQUIRE(FileSystem::CreateDirectories(directory));
-			REQUIRE(assembly.saveOBJ(directory + (smoothing == 0 ? U"/duct_faceted.obj" : U"/duct_smooth.obj")));
 		}
 	}
 }

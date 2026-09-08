@@ -27,6 +27,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief メモリ上のバイナリデータ
+	/// @remark 要素を所有します。ポインタ・イテレータ・span の取得は左辺値に限定され、元の要素の寿命と無効化規則に従います。
+	/// @remark 右辺値の要素アクセスは値を返し、const 右辺値からの借用はできません。
 	class Blob
 	{
 	public:
@@ -187,13 +189,20 @@ namespace s3d
 		/// @param index インデックス
 		/// @return 指定したインデックスにあるバイナリ値の参照
 		[[nodiscard]]
-		constexpr const Byte& operator [](size_type index) const;
+		constexpr const Byte& operator [](size_type index) const&;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void operator [](size_type index) const&& = delete;
+
+		/// @brief 右辺値からバイトの値を返します。
+		[[nodiscard]]
+		constexpr Byte operator [](size_type index) &&;
 
 		/// @brief 指定したインデックスにあるバイナリ値の参照を返します。
 		/// @param index インデックス
 		/// @return 指定したインデックスにあるバイナリ値の参照
 		[[nodiscard]]
-		constexpr Byte& operator [](size_type index);
+		constexpr Byte& operator [](size_type index) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -204,12 +213,15 @@ namespace s3d
 		/// @brief バイナリデータを格納する配列の先頭ポインタを返します。
 		/// @return バイナリデータを格納する配列の先頭ポインタ
 		[[nodiscard]]
-		constexpr const Byte* data() const noexcept;
+		constexpr const Byte* data() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void data() const&& = delete;
 
 		/// @brief バイナリデータを格納する配列の先頭ポインタを返します。
 		/// @return バイナリデータを格納する配列の先頭ポインタ
 		[[nodiscard]]
-		constexpr Byte* data() noexcept;
+		constexpr Byte* data() & noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -220,7 +232,14 @@ namespace s3d
 		/// @brief バイナリデータを格納する配列にアクセスします。
 		/// @return バイナリデータを格納する配列
 		[[nodiscard]]
-		constexpr const Array<Byte>& asArray() const noexcept;
+		constexpr const Array<Byte>& asArray() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void asArray() const&& = delete;
+
+		/// @brief 所有する配列をムーブして返します。
+		[[nodiscard]]
+		constexpr Array<Byte> asArray() && noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -358,7 +377,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief バイナリデータを空にし、メモリを解放します。
-		/// @remark `clear()` + `shrink_to_fit()` と同じです。
+		/// @remark 動的に確保した記憶領域をアロケータへ返します。OS への返却を保証するものではありません。
 		constexpr void release();
 
 		////////////////////////////////////////////////////////////////
@@ -370,22 +389,28 @@ namespace s3d
 		/// @brief バイナリデータの先頭位置を指すイテレータを返します。
 		/// @return バイナリデータの先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator begin() noexcept;
+		constexpr iterator begin() & noexcept;
 
 		/// @brief バイナリデータの終端位置を指すイテレータを返します。
 		/// @return バイナリデータの終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr iterator end() noexcept;
+		constexpr iterator end() & noexcept;
 
 		/// @brief バイナリデータの先頭位置を指すイテレータを返します。
 		/// @return バイナリデータの先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator begin() const noexcept;
+		constexpr const_iterator begin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void begin() const&& = delete;
 
 		/// @brief バイナリデータの終端位置を指すイテレータを返します。
 		/// @return バイナリデータの終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator end() const noexcept;
+		constexpr const_iterator end() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void end() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -396,12 +421,18 @@ namespace s3d
 		/// @brief バイナリデータの先頭位置を指すイテレータを返します。
 		/// @return バイナリデータの先頭位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cbegin() const noexcept;
+		constexpr const_iterator cbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cbegin() const&& = delete;
 
 		/// @brief バイナリデータの終端位置を指すイテレータを返します。
 		/// @return バイナリデータの終端位置を指すイテレータ
 		[[nodiscard]]
-		constexpr const_iterator cend() const noexcept;
+		constexpr const_iterator cend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -412,22 +443,28 @@ namespace s3d
 		/// @brief バイナリデータの末尾位置を指すリバース・イテレータを返します。
 		/// @return バイナリデータの末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rbegin() noexcept;
+		constexpr reverse_iterator rbegin() & noexcept;
 
 		/// @brief バイナリデータの先端位置を指すリバース・イテレータを返します。
 		/// @return バイナリデータの先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr reverse_iterator rend() noexcept;
+		constexpr reverse_iterator rend() & noexcept;
 
 		/// @brief バイナリデータの末尾位置を指すリバース・イテレータを返します。
 		/// @return バイナリデータの末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rbegin() const noexcept;
+		constexpr const_reverse_iterator rbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rbegin() const&& = delete;
 
 		/// @brief バイナリデータの先端位置を指すリバース・イテレータを返します。
 		/// @return バイナリデータの先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator rend() const noexcept;
+		constexpr const_reverse_iterator rend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -438,12 +475,18 @@ namespace s3d
 		/// @brief バイナリデータの末尾位置を指すリバース・イテレータを返します。
 		/// @return バイナリデータの末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crbegin() const noexcept;
+		constexpr const_reverse_iterator crbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crbegin() const&& = delete;
 
 		/// @brief バイナリデータの先端位置を指すリバース・イテレータを返します。
 		/// @return バイナリデータの先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		constexpr const_reverse_iterator crend() const noexcept;
+		constexpr const_reverse_iterator crend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -477,6 +520,7 @@ namespace s3d
 		/// @brief 末尾にバイナリデータを追加します。
 		/// @param src 追加するデータの先頭ポインタ
 		/// @param sizeBytes 追加するデータのサイズ
+		/// @remark 自身の有効なバイト範囲も指定できます。sizeBytes が 0 の場合は src を参照しません。
 		void append(const void* src, size_type sizeBytes);
 
 		////////////////////////////////////////////////////////////////
@@ -489,7 +533,7 @@ namespace s3d
 		/// @param pos 挿入位置を指すイテレータ
 		/// @param value 挿入するバイト値
 		/// @return 挿入されたバイトを指すイテレータ
-		constexpr iterator insert(const_iterator pos, Byte value);
+		constexpr iterator insert(const_iterator pos, Byte value) &;
 
 		/// @brief 指定した位置にバイナリデータを挿入します。
 		/// @tparam Iterator 挿入するデータのイテレータの型
@@ -498,7 +542,7 @@ namespace s3d
 		/// @param last 挿入するデータの終端を指すイテレータ
 		/// @return 挿入された最初のバイトを指すイテレータ
 		template <std::input_iterator Iterator>
-		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last);
+		constexpr iterator insert(const_iterator pos, Iterator first, Iterator last) &;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -511,14 +555,91 @@ namespace s3d
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<Byte> subspan(size_type pos, size_type count) noexcept;
+		constexpr std::span<Byte> subspan(size_type pos, size_type count) & noexcept;
 
 		/// @brief バイナリデータの部分配列を指す span を返します。
 		/// @param pos 部分配列の開始位置
 		/// @param count 部分配列の要素数
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<const Byte> subspan(size_type pos, size_type count) const noexcept;
+		constexpr std::span<const Byte> subspan(size_type pos, size_type count) const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void subspan(size_type pos, size_type count) const&& = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	drop
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭の Min(n, size()) 個を除いた列を返します。
+		/// @remark 個数と位置の単位はバイトです。右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob drop(size_type n) const&;
+
+		/// @brief 先頭の Min(n, size()) 個を除いた列を返します。
+		/// @remark 元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob drop(size_type n) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	get_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定位置のバイトへのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		constexpr Byte* get_if(size_type index) & noexcept;
+
+		/// @brief 指定位置の要素へのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		constexpr const Byte* get_if(size_type index) const& noexcept;
+
+		void get_if(size_type) const&& = delete;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	slice
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief index から末尾までを返します。範囲外の位置では std::out_of_range を送出します。
+		/// @remark 個数と位置の単位はバイトです。右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob slice(size_type index) const&;
+
+		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
+		/// @remark 元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob slice(size_type index) &&;
+
+		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
+		/// @remark 個数と位置の単位はバイトです。右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob slice(size_type index, size_type length) const&;
+
+		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
+		/// @remark 元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob slice(size_type index, size_type length) &&;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	take
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 先頭の Min(n, size()) 個を返します。
+		/// @remark 個数と位置の単位はバイトです。右辺値では元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob take(size_type n) const&;
+
+		/// @brief 先頭の Min(n, size()) 個を返します。
+		/// @remark 元の記憶領域を再利用します。
+		[[nodiscard]]
+		constexpr Blob take(size_type n) &&;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -583,6 +704,7 @@ namespace s3d
 		{
 			lhs.swap(rhs);
 		}
+
 
 	private:
 

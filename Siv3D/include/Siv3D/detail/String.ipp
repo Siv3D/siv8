@@ -112,83 +112,162 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String& String::assign(const size_type count, const value_type ch)
+	constexpr String& String::assign(const size_type count, const value_type ch) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(count, ch);
 		return *this;
 	}
 
-	constexpr String& String::assign(const String& s)
+	constexpr String& String::assign(const String& s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(s.m_string);
 		return *this;
 	}
 
-	constexpr String& String::assign(const string_type& s)
+	constexpr String& String::assign(const string_type& s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(s);
 		return *this;
 	}
 
-	constexpr String& String::assign(const String& s, const size_type pos, const size_type count)
+	constexpr String& String::assign(const String& s, const size_type pos, const size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(s.m_string, pos, count);
 		return *this;
 	}
 
-	constexpr String& String::assign(const string_type& s, const size_type pos, const size_type count)
+	constexpr String& String::assign(const string_type& s, const size_type pos, const size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(s, pos, count);
 		return *this;
 	}
 
-	constexpr String& String::assign(String&& s) noexcept
+	constexpr String& String::assign(String&& s) & noexcept SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(std::move(s.m_string));
 		return *this;
 	}
 
-	constexpr String& String::assign(string_type&& s) noexcept
+	constexpr String& String::assign(string_type&& s) & noexcept SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(std::move(s));
 		return *this;
 	}
 
-	constexpr String& String::assign(const value_type* s, const size_type count)
+	constexpr String& String::assign(const value_type* s, const size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(s, count);
 		return *this;
 	}
 
-	constexpr String& String::assign(const value_type* s)
+	constexpr String& String::assign(const value_type* s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(s);
 		return *this;
 	}
 
 	template <std::input_iterator Iterator>
-	constexpr String& String::assign(Iterator first, Iterator last)
+	constexpr String& String::assign(Iterator first, Iterator last) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(first, last);
 		return *this;
 	}
 
-	constexpr String& String::assign(const std::initializer_list<value_type> list)
+	constexpr String& String::assign(const std::initializer_list<value_type> list) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign(list);
 		return *this;
 	}
 
-	constexpr String& String::assign(const StringViewLike auto& s)
+	constexpr String& String::assign(const StringViewLike auto& s) &
 	{
 		m_string.assign(s);
 		return *this;
 	}
 
-	constexpr String& String::assign(const StringViewLike auto& s, const size_type pos, const size_type count)
+	constexpr String& String::assign(const StringViewLike auto& s, const size_type pos, const size_type count) &
 	{
 		m_string.assign(s, pos, count);
 		return *this;
+	}
+
+	constexpr String String::assign(size_type count, value_type ch) &&
+	{
+		assign(count, ch);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const String& s) &&
+	{
+		assign(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const string_type& s) &&
+	{
+		assign(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const String& s, size_type pos, size_type count) &&
+	{
+		assign(s, pos, count);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const string_type& s, size_type pos, size_type count) &&
+	{
+		assign(s, pos, count);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(String&& s) && noexcept
+	{
+		assign(std::move(s));
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(string_type&& s) && noexcept
+	{
+		assign(std::move(s));
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const value_type* s, size_type count) &&
+	{
+		assign(s, count);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const value_type* s) &&
+	{
+		assign(s);
+		return std::move(*this);
+	}
+
+	template <std::input_iterator Iterator>
+	constexpr String String::assign(Iterator first, Iterator last) &&
+	{
+		assign(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last));
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(std::initializer_list<value_type> list) &&
+	{
+		assign(list);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const StringViewLike auto& s) &&
+	{
+		assign(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::assign(const StringViewLike auto& s, size_type pos, size_type count) &&
+	{
+		assign(s, pos, count);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -199,10 +278,17 @@ namespace s3d
 
 	template <class Range>
 		requires Concept::ContainerCompatibleRange<String::value_type, Range>
-	constexpr String& String::assign_range(Range&& range)
+	constexpr String& String::assign_range(Range&& range) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.assign_range(std::forward<Range>(range));
 		return *this;
+	}
+
+	template <class Range>
+	constexpr String String::assign_range(Range&& range) &&
+	{
+		assign_range(std::forward<decltype(range)>(range));
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -321,12 +407,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const String::value_type* String::data() const noexcept
+	constexpr const String::value_type* String::data() const& noexcept
 	{
 		return m_string.data();
 	}
 
-	constexpr String::value_type* String::data() noexcept
+	constexpr String::value_type* String::data() & noexcept
 	{
 		return m_string.data();
 	}
@@ -337,7 +423,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const String::value_type* String::c_str() const noexcept
+	constexpr const String::value_type* String::c_str() const& noexcept
 	{
 		return m_string.c_str();
 	}
@@ -348,14 +434,19 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String::string_type& String::str() noexcept
+	constexpr String::string_type& String::str() & noexcept
 	{
 		return m_string;
 	}
 
-	constexpr const String::string_type& String::str() const noexcept
+	constexpr const String::string_type& String::str() const& noexcept
 	{
 		return m_string;
+	}
+
+	constexpr String::string_type String::str() && noexcept
+	{
+		return std::move(m_string);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -375,22 +466,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String::iterator String::begin() noexcept
+	constexpr String::iterator String::begin() & noexcept
 	{
 		return m_string.begin();
 	}
 
-	constexpr String::iterator String::end() noexcept
+	constexpr String::iterator String::end() & noexcept
 	{
 		return m_string.end();
 	}
 
-	constexpr String::const_iterator String::begin() const noexcept
+	constexpr String::const_iterator String::begin() const& noexcept
 	{
 		return m_string.begin();
 	}
 
-	constexpr String::const_iterator String::end() const noexcept
+	constexpr String::const_iterator String::end() const& noexcept
 	{
 		return m_string.end();
 	}
@@ -401,12 +492,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String::const_iterator String::cbegin() const noexcept
+	constexpr String::const_iterator String::cbegin() const& noexcept
 	{
 		return m_string.cbegin();
 	}
 
-	constexpr String::const_iterator String::cend() const noexcept
+	constexpr String::const_iterator String::cend() const& noexcept
 	{
 		return m_string.cend();
 	}
@@ -417,22 +508,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String::reverse_iterator String::rbegin() noexcept
+	constexpr String::reverse_iterator String::rbegin() & noexcept
 	{
 		return m_string.rbegin();
 	}
 
-	constexpr String::reverse_iterator String::rend() noexcept
+	constexpr String::reverse_iterator String::rend() & noexcept
 	{
 		return m_string.rend();
 	}
 
-	constexpr String::const_reverse_iterator String::rbegin() const noexcept
+	constexpr String::const_reverse_iterator String::rbegin() const& noexcept
 	{
 		return m_string.rbegin();
 	}
 
-	constexpr String::const_reverse_iterator String::rend() const noexcept
+	constexpr String::const_reverse_iterator String::rend() const& noexcept
 	{
 		return m_string.rend();
 	}
@@ -443,12 +534,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String::const_reverse_iterator String::crbegin() const noexcept
+	constexpr String::const_reverse_iterator String::crbegin() const& noexcept
 	{
 		return m_string.crbegin();
 	}
 
-	constexpr String::const_reverse_iterator String::crend() const noexcept
+	constexpr String::const_reverse_iterator String::crend() const& noexcept
 	{
 		return m_string.crend();
 	}
@@ -604,8 +695,7 @@ namespace s3d
 
 	constexpr void String::release()
 	{
-		m_string.clear();
-		m_string.shrink_to_fit();
+		string_type{}.swap(m_string);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -614,67 +704,109 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String& String::insert(const size_type offset, const size_type count, const value_type ch)
+	constexpr String& String::insert(const size_type offset, const size_type count, const value_type ch) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.insert(offset, count, ch);
 		return *this;
 	}
 
-	constexpr String& String::insert(const size_type offset, const value_type* s)
+	constexpr String& String::insert(const size_type offset, const value_type* s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.insert(offset, s);
 		return *this;
 	}
 
-	constexpr String& String::insert(const size_type offset, const value_type* s, const size_type count)
+	constexpr String& String::insert(const size_type offset, const value_type* s, const size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.insert(offset, s, count);
 		return *this;
 	}
 
-	constexpr String& String::insert(const size_type offset, const String& s)
+	constexpr String& String::insert(const size_type offset, const String& s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.insert(offset, s.m_string);
 		return *this;
 	}
 
-	constexpr String& String::insert(const size_type offset, const String& s, size_type offset2, size_type count)
+	constexpr String& String::insert(const size_type offset, const String& s, size_type offset2, size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.insert(offset, s.m_string, offset2, count);
 		return *this;
 	}
 
-	constexpr String::iterator String::insert(const_iterator pos, const value_type ch)
+	constexpr String::iterator String::insert(const_iterator pos, const value_type ch) &
 	{
 		return m_string.insert(pos, ch);
 	}
 
-	constexpr String::iterator String::insert(const_iterator pos, const size_type count, const value_type ch)
+	constexpr String::iterator String::insert(const_iterator pos, const size_type count, const value_type ch) &
 	{
 		return m_string.insert(pos, count, ch);
 	}
 
 	template <std::input_iterator Iterator>
-	constexpr String::iterator String::insert(const_iterator pos, Iterator first, Iterator last)
+	constexpr String::iterator String::insert(const_iterator pos, Iterator first, Iterator last) &
 	{
 		return m_string.insert(pos, first, last);
 	}
 
-	constexpr String::iterator String::insert(const_iterator pos, const std::initializer_list<value_type> list)
+	constexpr String::iterator String::insert(const_iterator pos, const std::initializer_list<value_type> list) &
 	{
 		return m_string.insert(pos, list);
 	}
 
-	constexpr String& String::insert(const size_type offset, const StringViewLike auto& s)
+	constexpr String& String::insert(const size_type offset, const StringViewLike auto& s) &
 	{
 		m_string.insert(offset, s);
 		return *this;
 	}
 
-	constexpr String& String::insert(const size_type offset, const StringViewLike auto& s, const size_type offset2, const size_type count)
+	constexpr String& String::insert(const size_type offset, const StringViewLike auto& s, const size_type offset2, const size_type count) &
 	{
 		m_string.insert(offset, s, offset2, count);
 		return *this;
+	}
+
+	constexpr String String::insert(size_type offset, size_type count, value_type ch) &&
+	{
+		insert(offset, count, ch);
+		return std::move(*this);
+	}
+
+	constexpr String String::insert(size_type offset, const value_type* s) &&
+	{
+		insert(offset, s);
+		return std::move(*this);
+	}
+
+	constexpr String String::insert(size_type offset, const value_type* s, size_type count) &&
+	{
+		insert(offset, s, count);
+		return std::move(*this);
+	}
+
+	constexpr String String::insert(size_type offset, const String& s) &&
+	{
+		insert(offset, s);
+		return std::move(*this);
+	}
+
+	constexpr String String::insert(size_type offset, const String& s, size_type offset2, size_type count) &&
+	{
+		insert(offset, s, offset2, count);
+		return std::move(*this);
+	}
+
+	constexpr String String::insert(size_type offset, const StringViewLike auto& s) &&
+	{
+		insert(offset, s);
+		return std::move(*this);
+	}
+
+	constexpr String String::insert(size_type offset, const StringViewLike auto& s, size_type offset2, size_type count) &&
+	{
+		insert(offset, s, offset2, count);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -685,7 +817,7 @@ namespace s3d
 
 	template <class Range>
 		requires Concept::ContainerCompatibleRange<String::value_type, Range>
-	constexpr String::iterator String::insert_range(const_iterator pos, Range&& range)
+	constexpr String::iterator String::insert_range(const_iterator pos, Range&& range) &
 	{
 		return m_string.insert_range(pos, std::forward<Range>(range));
 	}
@@ -696,20 +828,26 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String& String::erase(const size_type offset, const size_type count)
+	constexpr String& String::erase(const size_type offset, const size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.erase(offset, count);
 		return *this;
 	}
 
-	constexpr String::iterator String::erase(const_iterator pos) noexcept
+	constexpr String::iterator String::erase(const_iterator pos) & noexcept
 	{
 		return m_string.erase(pos);
 	}
 
-	constexpr String::iterator String::erase(const_iterator first, const_iterator last) noexcept
+	constexpr String::iterator String::erase(const_iterator first, const_iterator last) & noexcept
 	{
 		return m_string.erase(first, last);
+	}
+
+	constexpr String String::erase(size_type offset, size_type count) &&
+	{
+		erase(offset, count);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -807,10 +945,16 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String& String::operator <<(const value_type ch)
+	constexpr String& String::operator <<(const value_type ch) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.push_back(ch);
 		return *this;
+	}
+
+	constexpr String String::operator <<(value_type ch) &&
+	{
+		operator <<(ch);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -819,71 +963,138 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String& String::append(const value_type ch)
+	constexpr String& String::append(const value_type ch) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.push_back(ch);
 		return *this;
 	}
 
-	constexpr String& String::append(const size_type count, const value_type ch)
+	constexpr String& String::append(const size_type count, const value_type ch) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(count, ch);
 		return *this;
 	}
 
-	constexpr String& String::append(const String& s)
+	constexpr String& String::append(const String& s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(s.m_string);
 		return *this;
 	}
 
-	constexpr String& String::append(const string_type& s)
+	constexpr String& String::append(const string_type& s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(s);
 		return *this;
 	}
 
-	constexpr String& String::append(const String& s, const size_type offset, const size_type count)
+	constexpr String& String::append(const String& s, const size_type offset, const size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(s.m_string, offset, count);
 		return *this;
 	}
 
-	constexpr String& String::append(const value_type* s, const size_type count)
+	constexpr String& String::append(const value_type* s, const size_type count) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(s, count);
 		return *this;
 	}
 
-	constexpr String& String::append(const value_type* s)
+	constexpr String& String::append(const value_type* s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(s);
 		return *this;
 	}
 
 	template <std::input_iterator Iterator>
-	constexpr String& String::append(Iterator first, Iterator last)
+	constexpr String& String::append(Iterator first, Iterator last) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(first, last);
 		return *this;
 	}
 
-	constexpr String& String::append(const std::initializer_list<value_type> list)
+	constexpr String& String::append(const std::initializer_list<value_type> list) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append(list);
 		return *this;
 	}
 
-	constexpr String& String::append(const StringViewLike auto& s)
+	constexpr String& String::append(const StringViewLike auto& s) &
 	{
 		m_string.append(s);
 		return *this;
 	}
 
-	constexpr String& String::append(const StringViewLike auto& s, const size_type pos, const size_type count)
+	constexpr String& String::append(const StringViewLike auto& s, const size_type pos, const size_type count) &
 	{
 		m_string.append(s, pos, count);
 		return *this;
+	}
+
+	constexpr String String::append(value_type ch) &&
+	{
+		append(ch);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(size_type count, value_type ch) &&
+	{
+		append(count, ch);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(const String& s) &&
+	{
+		append(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(const string_type& s) &&
+	{
+		append(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(const String& s, size_type offset, size_type count) &&
+	{
+		append(s, offset, count);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(const value_type* s, size_type count) &&
+	{
+		append(s, count);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(const value_type* s) &&
+	{
+		append(s);
+		return std::move(*this);
+	}
+
+	template <std::input_iterator Iterator>
+	constexpr String String::append(Iterator first, Iterator last) &&
+	{
+		append(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last));
+		return std::move(*this);
+	}
+
+	constexpr String String::append(std::initializer_list<value_type> list) &&
+	{
+		append(list);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(const StringViewLike auto& s) &&
+	{
+		append(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::append(const StringViewLike auto& s, size_type pos, size_type count) &&
+	{
+		append(s, pos, count);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -894,10 +1105,17 @@ namespace s3d
 
 	template <class Range>
 		requires Concept::ContainerCompatibleRange<String::value_type, Range>
-	constexpr String& String::append_range(Range&& range)
+	constexpr String& String::append_range(Range&& range) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.append_range(std::forward<Range>(range));
 		return *this;
+	}
+
+	template <class Range>
+	constexpr String String::append_range(Range&& range) &&
+	{
+		append_range(std::forward<decltype(range)>(range));
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -906,40 +1124,76 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String& String::operator +=(const String& s)
+	constexpr String& String::operator +=(const String& s) &
 	{
 		m_string.append(s.m_string);
 		return *this;
 	}
 
-	constexpr String& String::operator +=(const string_type& s)
+	constexpr String& String::operator +=(const string_type& s) &
 	{
 		m_string.append(s);
 		return *this;
 	}
 
-	constexpr String& String::operator +=(const value_type ch)
+	constexpr String& String::operator +=(const value_type ch) &
 	{
 		m_string.push_back(ch);
 		return *this;
 	}
 
-	constexpr String& String::operator +=(const value_type* s)
+	constexpr String& String::operator +=(const value_type* s) &
 	{
 		m_string.append(s);
 		return *this;
 	}
 
-	constexpr String& String::operator +=(const std::initializer_list<value_type> list)
+	constexpr String& String::operator +=(const std::initializer_list<value_type> list) &
 	{
 		m_string.append(list);
 		return *this;
 	}
 
-	constexpr String& String::operator +=(const StringViewLike auto& s)
+	constexpr String& String::operator +=(const StringViewLike auto& s) &
 	{
 		m_string.append(s);
 		return *this;
+	}
+
+	constexpr String String::operator +=(const String& s) &&
+	{
+		operator +=(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::operator +=(const string_type& s) &&
+	{
+		operator +=(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::operator +=(value_type ch) &&
+	{
+		operator +=(ch);
+		return std::move(*this);
+	}
+
+	constexpr String String::operator +=(const value_type* s) &&
+	{
+		operator +=(s);
+		return std::move(*this);
+	}
+
+	constexpr String String::operator +=(std::initializer_list<value_type> list) &&
+	{
+		operator +=(list);
+		return std::move(*this);
+	}
+
+	constexpr String String::operator +=(const StringViewLike auto& s) &&
+	{
+		operator +=(s);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -948,47 +1202,90 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr String& String::replace(const size_type pos, const size_type count, const String& s)
+	constexpr String& String::replace(const size_type pos, const size_type count, const String& s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.replace(pos, count, s.m_string);
 		return *this;
 	}
 
-	constexpr String& String::replace(const_iterator first, const_iterator last, const String& s)
+	constexpr String& String::replace(const_iterator first, const_iterator last, const String& s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.replace(first, last, s.m_string);
 		return *this;
 	}
 
-	constexpr String& String::replace(const_iterator first, const_iterator last, const value_type* s)
+	constexpr String& String::replace(const_iterator first, const_iterator last, const value_type* s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.replace(first, last, s);
 		return *this;
 	}
 
-	constexpr String& String::replace(const_iterator first, const_iterator last, const StringViewLike auto& s)
+	constexpr String& String::replace(const_iterator first, const_iterator last, const StringViewLike auto& s) &
 	{
 		m_string.replace(first, last, s);
 		return *this;
 	}
 
-	constexpr String& String::replace(const size_type pos, const size_type count, const value_type* s)
+	constexpr String& String::replace(const size_type pos, const size_type count, const value_type* s) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.replace(pos, count, s);
 		return *this;
 	}
 
 	template <class Iterator>
-	constexpr String& String::replace(const_iterator first, const_iterator last, Iterator newFirst, Iterator newLast)
+	constexpr String& String::replace(const_iterator first, const_iterator last, Iterator newFirst, Iterator newLast) & SIV3D_LIFETIMEBOUND
 	{
 		m_string.replace(first, last, newFirst, newLast);
 		return *this;
 	}
 
-	constexpr String& String::replace(const size_type pos, const size_type count, const StringViewLike auto& s)
+	constexpr String& String::replace(const size_type pos, const size_type count, const StringViewLike auto& s) &
 	{
 		m_string.replace(pos, count, s);
 		return *this;
+	}
+
+	constexpr String String::replace(size_type pos, size_type count, const String& s) &&
+	{
+		replace(pos, count, s);
+		return std::move(*this);
+	}
+
+	constexpr String String::replace(const_iterator first, const_iterator last, const String& s) &&
+	{
+		replace(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last), s);
+		return std::move(*this);
+	}
+
+	constexpr String String::replace(const_iterator first, const_iterator last, const value_type* s) &&
+	{
+		replace(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last), s);
+		return std::move(*this);
+	}
+
+	constexpr String String::replace(const_iterator first, const_iterator last, const StringViewLike auto& s) &&
+	{
+		replace(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last), s);
+		return std::move(*this);
+	}
+
+	constexpr String String::replace(size_type pos, size_type count, const value_type* s) &&
+	{
+		replace(pos, count, s);
+		return std::move(*this);
+	}
+
+	template <class Iterator>
+	constexpr String String::replace(const_iterator first, const_iterator last, Iterator newFirst, Iterator newLast) &&
+	{
+		replace(std::forward<decltype(first)>(first), std::forward<decltype(last)>(last), std::forward<decltype(newFirst)>(newFirst), std::forward<decltype(newLast)>(newLast));
+		return std::move(*this);
+	}
+
+	constexpr String String::replace(size_type pos, size_type count, const StringViewLike auto& s) &&
+	{
+		replace(pos, count, s);
+		return std::move(*this);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1327,15 +1624,73 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::span<String::value_type> String::subspan(const size_type pos, const size_type count) noexcept
+	constexpr std::span<String::value_type> String::subspan(const size_type pos, const size_type count) & noexcept
 	{
 		return std::span{ m_string }.subspan(pos, count);
 	}
 
-	constexpr std::span<const String::value_type> String::subspan(const size_type pos, const size_type count) const noexcept
+	constexpr std::span<const String::value_type> String::subspan(const size_type pos, const size_type count) const& noexcept
 	{
 		return std::span{ m_string }.subspan(pos, count);
 	}
+	////////////////////////////////////////////////////////////////
+	//
+	//	get_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr String::value_type* String::get_if(size_type index) & noexcept
+	{
+		return (index < size()) ? (m_string.data() + index) : nullptr;
+	}
+
+	constexpr const String::value_type* String::get_if(size_type index) const& noexcept
+	{
+		return (index < size()) ? (m_string.data() + index) : nullptr;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replaceFirst
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline String String::replaceFirst(const RegExp& regexp, StringView replacement) &&
+	{
+		replaceFirst(regexp, replacement);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	replaceAll
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline String String::replaceAll(const RegExp& regexp, StringView replacement) &&
+	{
+		replaceAll(regexp, replacement);
+		return std::move(*this);
+	}
+
+	inline String String::replaceAll(const RegExp& regexp, FunctionRef<String(const MatchResults&)> replacementFunc) &&
+	{
+		replaceAll(regexp, replacementFunc);
+		return std::move(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	xml_escape
+	//
+	////////////////////////////////////////////////////////////////
+
+	inline String String::xml_escape() &&
+	{
+		xml_escape();
+		return std::move(*this);
+	}
+
 
 	inline namespace Literals
 	{

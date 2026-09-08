@@ -120,12 +120,17 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const Byte& Blob::operator[](const size_type index) const
+	constexpr const Byte& Blob::operator[](const size_type index) const&
 	{
 		return m_data[index];
 	}
 
-	constexpr Byte& Blob::operator[](const size_type index)
+	constexpr Byte& Blob::operator[](const size_type index) &
+	{
+		return m_data[index];
+	}
+
+	constexpr Byte Blob::operator [](size_type index) &&
 	{
 		return m_data[index];
 	}
@@ -136,12 +141,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const Byte* Blob::data() const noexcept
+	constexpr const Byte* Blob::data() const& noexcept
 	{
 		return m_data.data();
 	}
 
-	constexpr Byte* Blob::data() noexcept
+	constexpr Byte* Blob::data() & noexcept
 	{
 		return m_data.data();
 	}
@@ -152,9 +157,14 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr const Array<Byte>& Blob::asArray() const noexcept
+	constexpr const Array<Byte>& Blob::asArray() const& noexcept
 	{
 		return m_data;
+	}
+
+	constexpr Array<Byte> Blob::asArray() && noexcept
+	{
+		return std::move(m_data);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -258,6 +268,80 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	drop
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Blob Blob::drop(size_type n) const&
+	{
+		return Blob{ m_data.drop(n) };
+	}
+
+	constexpr Blob Blob::drop(size_type n) &&
+	{
+		return Blob{ std::move(m_data).drop(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	get_if
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Byte* Blob::get_if(size_type index) & noexcept
+	{
+		return m_data.get_if(index);
+	}
+
+	constexpr const Byte* Blob::get_if(size_type index) const& noexcept
+	{
+		return m_data.get_if(index);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	slice
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Blob Blob::slice(size_type index) const&
+	{
+		return Blob{ m_data.slice(index) };
+	}
+
+	constexpr Blob Blob::slice(size_type index) &&
+	{
+		return Blob{ std::move(m_data).slice(index) };
+	}
+
+	constexpr Blob Blob::slice(size_type index, size_type length) const&
+	{
+		return Blob{ m_data.slice(index, length) };
+	}
+
+	constexpr Blob Blob::slice(size_type index, size_type length) &&
+	{
+		return Blob{ std::move(m_data).slice(index, length) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	take
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr Blob Blob::take(size_type n) const&
+	{
+		return Blob{ m_data.take(n) };
+	}
+
+	constexpr Blob Blob::take(size_type n) &&
+	{
+		return Blob{ std::move(m_data).take(n) };
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	swap
 	//
 	////////////////////////////////////////////////////////////////
@@ -306,22 +390,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Blob::iterator Blob::begin() noexcept
+	constexpr Blob::iterator Blob::begin() & noexcept
 	{
 		return m_data.begin();
 	}
 
-	constexpr Blob::iterator Blob::end() noexcept
+	constexpr Blob::iterator Blob::end() & noexcept
 	{
 		return m_data.end();
 	}
 
-	constexpr Blob::const_iterator Blob::begin() const noexcept
+	constexpr Blob::const_iterator Blob::begin() const& noexcept
 	{
 		return m_data.begin();
 	}
 
-	constexpr Blob::const_iterator Blob::end() const noexcept
+	constexpr Blob::const_iterator Blob::end() const& noexcept
 	{
 		return m_data.end();
 	}
@@ -332,12 +416,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Blob::const_iterator Blob::cbegin() const noexcept
+	constexpr Blob::const_iterator Blob::cbegin() const& noexcept
 	{
 		return m_data.cbegin();
 	}
 
-	constexpr Blob::const_iterator Blob::cend() const noexcept
+	constexpr Blob::const_iterator Blob::cend() const& noexcept
 	{
 		return m_data.cend();
 	}
@@ -348,22 +432,22 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Blob::reverse_iterator Blob::rbegin() noexcept
+	constexpr Blob::reverse_iterator Blob::rbegin() & noexcept
 	{
 		return m_data.rbegin();
 	}
 
-	constexpr Blob::reverse_iterator Blob::rend() noexcept
+	constexpr Blob::reverse_iterator Blob::rend() & noexcept
 	{
 		return m_data.rend();
 	}
 
-	constexpr Blob::const_reverse_iterator Blob::rbegin() const noexcept
+	constexpr Blob::const_reverse_iterator Blob::rbegin() const& noexcept
 	{
 		return m_data.rbegin();
 	}
 
-	constexpr Blob::const_reverse_iterator Blob::rend() const noexcept
+	constexpr Blob::const_reverse_iterator Blob::rend() const& noexcept
 	{
 		return m_data.rend();
 	}
@@ -374,12 +458,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Blob::const_reverse_iterator Blob::crbegin() const noexcept
+	constexpr Blob::const_reverse_iterator Blob::crbegin() const& noexcept
 	{
 		return m_data.crbegin();
 	}
 
-	constexpr Blob::const_reverse_iterator Blob::crend() const noexcept
+	constexpr Blob::const_reverse_iterator Blob::crend() const& noexcept
 	{
 		return m_data.crend();
 	}
@@ -419,7 +503,22 @@ namespace s3d
 
 	inline void Blob::append(const void* src, const size_type sizeBytes)
 	{
-		m_data.insert(m_data.end(), static_cast<const Byte*>(src), (static_cast<const Byte*>(src) + sizeBytes));
+		if (sizeBytes == 0)
+		{
+			return;
+		}
+
+		const auto first = static_cast<const Byte*>(src);
+		const auto last = (first + sizeBytes);
+		const auto less = std::less<const Byte*>{};
+		if ((not m_data.empty()) && (not less(first, m_data.data())) && less(first, (m_data.data() + m_data.size())))
+		{
+			const Array<Byte> copy(first, last);
+			m_data.append(copy);
+			return;
+		}
+
+		m_data.append(first, last);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -428,13 +527,13 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr Blob::iterator Blob::insert(const_iterator pos, const Byte value)
+	constexpr Blob::iterator Blob::insert(const_iterator pos, const Byte value) &
 	{
 		return m_data.insert(pos, value);
 	}
 
 	template <std::input_iterator Iterator>
-	constexpr Blob::iterator Blob::insert(const_iterator pos, Iterator first, Iterator last)
+	constexpr Blob::iterator Blob::insert(const_iterator pos, Iterator first, Iterator last) &
 	{
 		return m_data.insert(pos, first, last);
 	}
@@ -445,12 +544,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	constexpr std::span<Byte> Blob::subspan(const size_type pos, const size_type count) noexcept
+	constexpr std::span<Byte> Blob::subspan(const size_type pos, const size_type count) & noexcept
 	{
 		return m_data.subspan(pos, count);
 	}
 
-	constexpr std::span<const Byte> Blob::subspan(const size_type pos, const size_type count) const noexcept
+	constexpr std::span<const Byte> Blob::subspan(const size_type pos, const size_type count) const& noexcept
 	{
 		return m_data.subspan(pos, count);
 	}

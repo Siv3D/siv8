@@ -580,7 +580,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<StringView> StringView::splitView(const value_type ch) const SIV3D_LIFETIMEBOUND
+	Array<StringView> StringView::splitView(const value_type ch) const
 	{
 		auto split_views = m_view | std::views::split(ch) | std::views::transform([](auto&& part) { return StringView{ part }; });
 
@@ -609,7 +609,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Array<StringView> StringView::splitLines() const SIV3D_LIFETIMEBOUND
+	Array<StringView> StringView::splitLines() const
 	{
 		return splitView(U'\n');
 	}

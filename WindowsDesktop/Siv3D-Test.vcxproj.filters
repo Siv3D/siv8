@@ -22,6 +22,9 @@
     <ClCompile Include="..\Test\Siv3DTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_TestEnvironment.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Version.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -62,6 +65,12 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_Array.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ArrayException.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ArrayModel.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_AnimatedImage.cpp">
@@ -161,6 +170,18 @@
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_TextFileReader.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_ArrayLike.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_MultiPolygon.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Blob.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Wave.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_LineString.cpp">

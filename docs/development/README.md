@@ -1,58 +1,55 @@
 # Development guide
 
-The operational rules are in the repository's [AGENTS.md](../../AGENTS.md).
-This guide explains where development information belongs and how to validate it.
-
-## Sources of truth
-
-| Information | Location |
-| --- | --- |
-| API signatures, defaults, preconditions, and guarantees | Public-header Doxygen |
-| Usage patterns and design rationale | Subject documentation under docs |
-| Fixtures, regression checks, execution steps, expected results | Test |
-| Unfinished work | [TODO.md](../../TODO.md) |
-| Unadopted designs | A subject's proposals directory |
-
-Do not use Test as a general knowledge base. A manual test can explain its fixture
-assumptions and expected failures; reusable modeling techniques belong in docs.
-Keep complete manual test programs with their instructions so they remain runnable.
-The [documentation rules](../AGENTS.md) cover names, links, and indexing.
+[AGENTS.md](../../AGENTS.md) defines repository-wide rules;
+[docs/AGENTS.md](../AGENTS.md) defines documentation ownership and organization.
+This page describes the existing validation workflows.
 
 ## Build and test
 
-Determine the host OS first and follow its documented workflow. On macOS, run
-these commands from the repository root:
+On macOS, run from the repository root, outside the sandbox:
 
 ```sh
-./macOS/run-tests.sh '--test-case=*Mesh3D*'
-./macOS/run-tests.sh
-./macOS/validate-projects.sh
-git diff --check
+./macOS/run-tests.sh '--test-case=*Mesh3D*'  # Focused iteration
+./macOS/run-tests.sh                       # Full suite
+./macOS/validate-projects.sh               # Project syntax and shared tests
 ```
 
-The first command is a focused iteration example. Shared engine code changes
-require the full available host suite. Xcode/Metal builds must run outside the
-sandbox, and the test-only entry point in macOS/Main.cpp must remain intact.
-For documentation-only changes, validate references and any moved executable
-payloads; an unchanged engine does not need a rebuild solely for a document move.
+The runner checks test registration, then builds and launches the application.
+`CONFIGURATION` selects the build configuration (default `Debug`); other arguments
+are passed to doctest.
+The project validator checks syntax and registration of `Test/Test_*.cpp` in
+Xcode's `Siv3D-Test` Sources, Visual Studio's test project, and its filters.
+Engine sources are excluded; platform-specific engine membership is intentional.
+The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
+it does not compile Windows code.
 
-Project-file changes must be validated. Report unverified platforms rather than
-substituting another host's build workflow. Repository rules contain the details.
+## Test output and configuration
+
+[RunTest](../../Test/Siv3DTest.cpp) verifies the platform `App/` working directory
+and clears `Test/output/` before and after the suite. Cleanup failure fails the
+run; crashes can leave output for the next run to clear. The directory is shared,
+so run only one engine test suite per checkout. `Test/data/` holds read-only
+fixtures. Engine startup and build tools manage their own platform caches.
+Use `Test::OutputPath(U"feature/file.bin")` for test output: it returns an absolute
+path beneath that root, independent of later working-directory changes.
+
+Retained output is documented with its producer:
+[Array instrumentation](../array/testing.md#isolated-instrumentation-on-macos),
+[Mesh3D preview](../mesh3d/preview.md), and the complete programs in
+[Test/Manual](../../Test/Manual/). Temporary Python self-test fixtures are removed
+on scope exit. The test configuration policy is in
+[AGENTS.md](../../AGENTS.md#test-output-and-configuration).
 
 ## Documentation checks
 
 ```sh
 python3 tools/check_docs.py
-python3 tools/check_docs.py --self-test
+python3 tools/check_docs.py --self-test  # When changing the checker
+
+git diff --check
 ```
 
-The [checker](../../tools/check_docs.py) uses only the Python standard library.
-It checks local inline links and reference-link destinations in root Markdown,
-docs, and Test/Manual, and requires every Markdown file under docs to be reachable
-from docs/README.md. Code fences and inline code are excluded. External URLs and
-heading fragments are not checked. Use ordinary relative links for source files;
-links containing spaces can use angle brackets or percent encoding.
-
-Development tools belong in tools; their usage belongs beside the relevant subject.
-For example, the [Mesh3D preview guide](../mesh3d/preview.md) documents a Python
-inspection tool and its independent self-tests.
+The [checker](../../tools/check_docs.py) validates local Markdown file links in
+root documents, docs, and Test/Manual, plus reachability from docs/README.md.
+It excludes code examples, external URLs, and heading fragments. Documentation-only
+changes do not require an engine rebuild; verify executable examples if changed.

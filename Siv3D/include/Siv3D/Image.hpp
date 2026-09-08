@@ -33,6 +33,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 画像データ
+	/// @remark 要素を所有します。ポインタ・イテレータ・span の取得は左辺値に限定され、元の要素の寿命と無効化規則に従います。
+	/// @remark 右辺値の要素アクセスは値を返し、const 右辺値からの借用はできません。
 	class Image
 	{
 	public:
@@ -337,7 +339,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 画像を消去して空の画像にし、使用するメモリ量を切り詰めます。
-		/// @remark `clear()` + `shrink_to_fit()` と同じです。
+		/// @remark 動的に確保した記憶領域をアロケータへ返します。OS への返却を保証するものではありません。
 		void release();
 
 		////////////////////////////////////////////////////////////////
@@ -360,13 +362,16 @@ namespace s3d
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
 		[[nodiscard]]
-		std::span<Color> row(size_t y) noexcept;
+		std::span<Color> row(size_t y) & noexcept;
 
 		/// @brief 指定した行の要素にアクセスするビューを返します。
 		/// @param y 行のインデックス
 		/// @return 指定した行の要素にアクセスするビュー
 		[[nodiscard]]
-		std::span<const Color> row(size_t y) const noexcept;
+		std::span<const Color> row(size_t y) const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void row(size_t y) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -379,14 +384,20 @@ namespace s3d
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
-		auto column(size_t x) noexcept;
+		auto column(size_t x) & noexcept;
 
 		/// @brief 指定した列の要素にアクセスするビューを返します。
 		/// @param x 列のインデックス
 		/// @return 指定した列の要素にアクセスするビュー
+		/// @remark ダングリング参照を防ぐため、右辺値オブジェクトからの呼び出しはコンパイルエラーになります。
 		[[nodiscard]]
-		auto column(size_t x) const noexcept;
+		auto column(size_t x) const& noexcept;
+
+		void column(size_t) && = delete;
+
+		void column(size_t) const&& = delete;
 
 	# endif
 
@@ -429,14 +440,17 @@ namespace s3d
 		/// @remark image[y][x] で指定したピクセルにアクセスします。
 		/// @return 指定した行の先頭ポインタ
 		[[nodiscard]]
-		Color* operator [](size_t y);
+		Color* operator [](size_t y) &;
 
 		/// @brief 指定した行の先頭ポインタを返します。
 		/// @param y 位置（行）
 		/// @remark image[y][x] で指定したピクセルにアクセスします。
 		/// @return 指定した行の先頭ポインタ
 		[[nodiscard]]
-		const Color* operator [](size_t y) const;
+		const Color* operator [](size_t y) const&;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void operator [](size_t y) const&& = delete;
 
 		/// @brief 指定した位置のピクセルの参照を返します。
 		/// @param pos 位置
@@ -449,6 +463,9 @@ namespace s3d
 		/// @return 指定した位置のピクセルの参照
 		[[nodiscard]]
 		const Color& operator [](Point pos) const&;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void operator [](Point pos) const&& = delete;
 
 		/// @brief 指定した位置のピクセルを返します。
 		/// @param pos 位置
@@ -472,6 +489,9 @@ namespace s3d
 		[[nodiscard]]
 		const Color& operator [](size_t y, size_t x) const&;
 
+		/// @brief const 右辺値からの借用を禁止します。
+		void operator [](size_t y, size_t x) const&& = delete;
+
 		/// @brief 指定した位置のピクセルを返します。
 		/// @param y 位置（行）
 		/// @param x 位置（列）
@@ -491,14 +511,17 @@ namespace s3d
 		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
 		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
-		Color* data();
+		Color* data() &;
 
 		/// @brief 画像データの先頭ポインタを返します。
 		/// @return 画像データの先頭ポインタ
 		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
 		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
-		const Color* data() const;
+		const Color* data() const&;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void data() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -511,14 +534,17 @@ namespace s3d
 		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
 		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
-		uint8* dataAsUint8();
+		uint8* dataAsUint8() &;
 
 		/// @brief 画像データの先頭ポインタを uint8* 型で返します。
 		/// @return 画像データの先頭ポインタ
 		/// @remark 先頭ポインタは `DataAlignment` にアラインメントされています。
 		/// @remark メモリは `DataAlignment` の倍数になるよう（必要な場合は余分に）確保されています。
 		[[nodiscard]]
-		const uint8* dataAsUint8() const;
+		const uint8* dataAsUint8() const&;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void dataAsUint8() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -529,22 +555,28 @@ namespace s3d
 		/// @brief ピクセル配列の先頭位置を指すイテレータを返します。
 		/// @return ピクセル配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		iterator begin() noexcept;
+		iterator begin() & noexcept;
 
 		/// @brief ピクセル配列の終端位置を指すイテレータを返します。
 		/// @return ピクセル配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		iterator end() noexcept;
+		iterator end() & noexcept;
 
 		/// @brief ピクセル配列の先頭位置を指すイテレータを返します。
 		/// @return ピクセル配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		const_iterator begin() const noexcept;
+		const_iterator begin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void begin() const&& = delete;
 
 		/// @brief ピクセル配列の終端位置を指すイテレータを返します。
 		/// @return ピクセル配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		const_iterator end() const noexcept;
+		const_iterator end() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void end() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -555,12 +587,18 @@ namespace s3d
 		/// @brief ピクセル配列の先頭位置を指すイテレータを返します。
 		/// @return ピクセル配列の先頭位置を指すイテレータ
 		[[nodiscard]]
-		const_iterator cbegin() const noexcept;
+		const_iterator cbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cbegin() const&& = delete;
 
 		/// @brief ピクセル配列の終端位置を指すイテレータを返します。
 		/// @return ピクセル配列の終端位置を指すイテレータ
 		[[nodiscard]]
-		const_iterator cend() const noexcept;
+		const_iterator cend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void cend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -571,22 +609,28 @@ namespace s3d
 		/// @brief ピクセル配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return ピクセル配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		reverse_iterator rbegin() noexcept;
+		reverse_iterator rbegin() & noexcept;
 
 		/// @brief ピクセル配列の先端位置を指すリバース・イテレータを返します。
 		/// @return ピクセル配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		reverse_iterator rend() noexcept;
+		reverse_iterator rend() & noexcept;
 
 		/// @brief ピクセル配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return ピクセル配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		const_reverse_iterator rbegin() const noexcept;
+		const_reverse_iterator rbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rbegin() const&& = delete;
 
 		/// @brief ピクセル配列の先端位置を指すリバース・イテレータを返します。
 		/// @return ピクセル配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		const_reverse_iterator rend() const noexcept;
+		const_reverse_iterator rend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void rend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -597,12 +641,18 @@ namespace s3d
 		/// @brief ピクセル配列の末尾位置を指すリバース・イテレータを返します。
 		/// @return ピクセル配列の末尾位置を指すリバース・イテレータ
 		[[nodiscard]]
-		const_reverse_iterator crbegin() const noexcept;
+		const_reverse_iterator crbegin() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crbegin() const&& = delete;
 
 		/// @brief ピクセル配列の先端位置を指すリバース・イテレータを返します。
 		/// @return ピクセル配列の先端位置を指すリバース・イテレータ
 		[[nodiscard]]
-		const_reverse_iterator crend() const noexcept;
+		const_reverse_iterator crend() const& noexcept;
+
+		/// @brief const 右辺値からの借用を禁止します。
+		void crend() const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -758,6 +808,31 @@ namespace s3d
 			return ((lhs.m_size == rhs.m_size)
 				&& (std::memcmp(lhs.m_pixels.data(), rhs.m_pixels.data(), lhs.size_bytes()) == 0));
 		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	get_if
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 指定座標の要素へのポインタを返します。範囲外（負の座標を含む）では nullptr を返します。
+		[[nodiscard]]
+		Color* get_if(Point pos) & noexcept;
+
+		/// @brief 指定位置の要素へのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		Color* get_if(size_t y, size_t x) & noexcept;
+
+		/// @brief 指定位置の要素へのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		const Color* get_if(Point pos) const& noexcept;
+
+		/// @brief 指定位置の要素へのポインタを返します。範囲外では nullptr を返します。
+		[[nodiscard]]
+		const Color* get_if(size_t y, size_t x) const& noexcept;
+
+		void get_if(Point) const&& = delete;
+		void get_if(size_t, size_t) const&& = delete;
 
 	private:
 
