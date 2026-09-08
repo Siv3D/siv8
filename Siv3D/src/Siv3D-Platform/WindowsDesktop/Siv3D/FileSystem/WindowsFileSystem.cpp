@@ -31,6 +31,15 @@ namespace s3d
 				((data.cFileName[1] == L'\0') || ((data.cFileName[1] == L'.') && (data.cFileName[2] == L'\0'))));
 		}
 
+		[[nodiscard]]
+		static constexpr bool IsNameSurrogate(const WIN32_FIND_DATAW& data)
+		{
+			// dwReserved0 is valid only for reparse points. Other reparse tags may
+			// represent ordinary directories (for example, cloud placeholders).
+			return ((data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+				&& IsReparseTagNameSurrogate(data.dwReserved0));
+		}
+
 		FilePathCache::FilePathCache()
 			: launchDirectory{ FileSystem::CurrentDirectory() }
 		{
@@ -189,7 +198,10 @@ namespace s3d
 
 				if (IsDirectory(data.dwFileAttributes)) // ディレクトリ
 				{
-					result += DirectorySizeRecursive((directoryPath + data.cFileName) + L'/');
+					if (not IsNameSurrogate(data))
+					{
+						result += DirectorySizeRecursive((directoryPath + data.cFileName) + L'/');
+					}
 				}
 				else // ファイル
 				{
@@ -258,7 +270,7 @@ namespace s3d
 				paths << Unicode::FromWstring(path);
 
 				// 再帰的に検索する
-				if (recursive && isDirectory)
+				if (recursive && isDirectory && (not IsNameSurrogate(data)))
 				{
 					DirectoryContentsDetail(path, paths, Recursive::Yes);
 				}

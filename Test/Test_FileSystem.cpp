@@ -11,6 +11,11 @@
 
 # include "Siv3DTest.hpp"
 
+# if SIV3D_PLATFORM(WINDOWS)
+	# include <Siv3D/Windows/Windows.hpp>
+	# include <winioctl.h>
+# endif
+
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
 	# include <filesystem>
 	# include <fcntl.h>
@@ -433,6 +438,111 @@ TEST_CASE("FileSystem::NativePath buffer boundaries")
 			CHECK_EQ(FileSystem::NativePath(path.replaced(U'\\', U'/')), expected);
 		}
 	}
+}
+
+TEST_CASE("FileSystem::Directory traversal junctions")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/junctions/");
+	const FilePath directory = (root + U"directory/");
+	const FilePath outside = (root + U"outside/");
+	REQUIRE(FileSystem::CreateDirectories(directory + U"nested/empty/"));
+	REQUIRE(FileSystem::CreateDirectories(outside));
+	for (const auto& [path, contents] : Array<std::pair<FilePath, std::string>>{
+		{ directory + U"file.bin", "abc" }, { directory + U"nested/file.bin", "12345" },
+		{ outside + U"outside.bin", "0123456789" } })
+	{
+		BinaryFileWriter writer{ path };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write(contents.data(), contents.size()) == contents.size());
+	}
+
+	const FilePath links[] = {
+		directory + U"external", directory + U"cycle", directory + U"nested/parent",
+		directory + U"broken", root + U"alias",
+	};
+	const FilePath targets[] = { outside, directory, directory, outside + U"missing", directory };
+	Array<NativeFilePath> nativeLinks;
+	for (const auto& link : links)
+	{
+		nativeLinks << FileSystem::NativePath(link);
+	}
+	// Remove the junctions themselves before the runner cleans up the fixture tree.
+	const ScopeExit removeJunctions{ [&nativeLinks]
+		{
+			for (const auto& link : nativeLinks)
+			{
+				::RemoveDirectoryW(link.c_str());
+			}
+		} };
+
+	for (size_t i = 0; i < std::size(links); ++i)
+	{
+		CAPTURE(i);
+		std::wstring target = FileSystem::NativePath(targets[i]);
+		if (target.ends_with(L'\\'))
+		{
+			target.pop_back();
+		}
+		// Junction targets use an absolute local NT path.
+		REQUIRE(target.size() >= 3);
+		REQUIRE(target[1] == L':');
+		const std::wstring substitute = (L"\\??\\" + target);
+		// MountPointReparseBuffer layout from REPARSE_DATA_BUFFER, without a WDK dependency.
+		struct MountPointBuffer
+		{
+			DWORD tag;
+			WORD dataLength;
+			WORD reserved;
+			WORD substituteOffset;
+			WORD substituteLength;
+			WORD printOffset;
+			WORD printLength;
+			wchar_t paths[8192 - 8];
+		} buffer{};
+		static_assert(offsetof(MountPointBuffer, paths) == 16);
+		static_assert(sizeof(MountPointBuffer) == MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
+		REQUIRE((substitute.size() + target.size() + 2) <= std::size(buffer.paths));
+		buffer.tag = IO_REPARSE_TAG_MOUNT_POINT;
+		buffer.substituteLength = static_cast<WORD>(substitute.size() * sizeof(wchar_t));
+		buffer.printOffset = static_cast<WORD>(buffer.substituteLength + sizeof(wchar_t));
+		buffer.printLength = static_cast<WORD>(target.size() * sizeof(wchar_t));
+		buffer.dataLength = static_cast<WORD>(8 + buffer.printOffset + buffer.printLength + sizeof(wchar_t));
+		std::copy(substitute.begin(), substitute.end(), buffer.paths);
+		std::copy(target.begin(), target.end(), (buffer.paths + substitute.size() + 1));
+
+		REQUIRE(::CreateDirectoryW(nativeLinks[i].c_str(), nullptr) != 0);
+		const HANDLE handle = ::CreateFileW(nativeLinks[i].c_str(), GENERIC_WRITE,
+			(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE), nullptr, OPEN_EXISTING,
+			(FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS), nullptr);
+		REQUIRE(handle != INVALID_HANDLE_VALUE);
+		const ScopeExit closeHandle{ [handle] { ::CloseHandle(handle); } };
+		DWORD returned = 0;
+		const BOOL created = ::DeviceIoControl(handle, FSCTL_SET_REPARSE_POINT,
+			&buffer, (8 + buffer.dataLength), nullptr, 0, &returned, nullptr);
+		const DWORD error = created ? ERROR_SUCCESS : ::GetLastError();
+		CAPTURE(error);
+		REQUIRE(created != 0);
+	}
+
+	for (const auto& base : { directory, (root + U"alias/") })
+	{
+		CAPTURE(base);
+		CHECK_EQ(FileSystem::Size(base), 8);
+		for (const Recursive recursive : { Recursive::No, Recursive::Yes })
+		{
+			Array<FilePath> expected{
+				base + U"file.bin", base + U"nested/", base + U"external/", base + U"cycle/", base + U"broken/",
+			};
+			if (recursive)
+			{
+				expected << (base + U"nested/file.bin") << (base + U"nested/empty/") << (base + U"nested/parent/");
+			}
+			CHECK_EQ(FileSystem::DirectoryContents(base, recursive).sorted(), expected.sorted());
+		}
+	}
+	CHECK_EQ(FileSystem::Size(links[0]), 10);
+	CHECK_EQ(FileSystem::DirectoryContents(links[0]), Array<FilePath>{ links[0] + U"/outside.bin" });
+	CHECK_EQ(FileSystem::Size(outside), 10);
 }
 
 # endif
