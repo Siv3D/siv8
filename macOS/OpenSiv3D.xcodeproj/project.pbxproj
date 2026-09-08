@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CB18F53A72B24D0B9103E402 /* Test_TestEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CB18F53A72B24D0B9103E401 /* Test_TestEnvironment.cpp */; };
 		2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2CA7F74E1CA7F43D00495647 /* Main.cpp */; };
 		2C8588EC1F929277000DA815 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2C8588EB1F929277000DA815 /* icon.icns */; };
 		2CA1A884240BA55100ED4230 /* libSiv3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CA7F73D1CA7F3B100495647 /* libSiv3D.a */; };
@@ -3293,6 +3294,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CB18F53A72B24D0B9103E401 /* Test_TestEnvironment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TestEnvironment.cpp; sourceTree = "<group>"; };
 		0D15A455331848599026324A /* Quaternion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Quaternion.hpp; sourceTree = "<group>"; };
 		16BB937774E643DBA6B83738 /* Mat4x4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mat4x4.hpp; sourceTree = "<group>"; };
 		2C1778B21CE0D5DB00BB8AD0 /* Siv3D-Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siv3D-Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6912,6 +6914,7 @@
 			isa = PBXGroup;
 			children = (
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
+				CB18F53A72B24D0B9103E401 /* Test_TestEnvironment.cpp */,
 				F9AB0001302000000000000B /* Test_AnimatedImage.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
 				9D3A7DCD1591C2DF005A6D60 /* Test_ArrayModel.cpp */,
@@ -16605,6 +16608,7 @@
 				F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */,
 				F9807D7B2BF10A3100D9B590 /* fullscreen_triangle.metal in Sources */,
 				F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */,
+				CB18F53A72B24D0B9103E402 /* Test_TestEnvironment.cpp in Sources */,
 				F90703012B9DAEB900383E4D /* Test_Memory.cpp in Sources */,
 				F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */,
 				F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */,

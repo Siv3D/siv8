@@ -11,13 +11,17 @@ On macOS, run from the repository root, outside the sandbox:
 ```sh
 ./macOS/run-tests.sh '--test-case=*Mesh3D*'  # Focused iteration
 ./macOS/run-tests.sh                       # Full suite
-./macOS/validate-projects.sh               # Project-file syntax
+./macOS/validate-projects.sh               # Project syntax and shared tests
 ```
 
-The runner builds and launches the test application. `CONFIGURATION` selects the
-build configuration (default `Debug`); other arguments are passed to doctest.
-The project validator checks Xcode/Visual Studio syntax, not file-registration
-completeness or Windows compilation.
+The runner checks test registration, then builds and launches the application.
+`CONFIGURATION` selects the build configuration (default `Debug`); other arguments
+are passed to doctest.
+The project validator checks syntax and registration of `Test/Test_*.cpp` in
+Xcode's `Siv3D-Test` Sources, Visual Studio's test project, and its filters.
+Engine sources are excluded; platform-specific engine membership is intentional.
+The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
+it does not compile Windows code.
 
 ## Test output and configuration
 
@@ -26,6 +30,8 @@ and clears `Test/output/` before and after the suite. Cleanup failure fails the
 run; crashes can leave output for the next run to clear. The directory is shared,
 so run only one engine test suite per checkout. `Test/data/` holds read-only
 fixtures. Engine startup and build tools manage their own platform caches.
+Use `Test::OutputPath(U"feature/file.bin")` for test output: it returns an absolute
+path beneath that root, independent of later working-directory changes.
 
 Retained output is documented with its producer:
 [Array instrumentation](../array/testing.md#isolated-instrumentation-on-macos),

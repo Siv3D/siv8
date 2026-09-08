@@ -34,7 +34,7 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 
 # Test output and configuration
 
-- Keep automated tests independent of ambient output settings. Prefer in-memory validation when file I/O is not the behavior under test. Write required test files only beneath the repository's `Test/output/`, and keep fixtures under `Test/data/` read-only.
+- Prefer in-memory validation unless file I/O is under test. Use `Test::OutputPath()` for files under `Test/output/`; keep `Test/data/` read-only.
 - Let the test runner own output setup and cleanup; restore process state changed by a test. Retained artifacts belong in manual tests or tools with documented output locations. See [the development guide](docs/development/README.md#test-output-and-configuration).
 - Configure tests through explicit arguments, not ambient environment variables. Limit environment-variable use to platform/tool requirements or environment-handling tests, with changes scoped to the relevant process or restored afterward.
 

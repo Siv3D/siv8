@@ -256,7 +256,7 @@ TEST_CASE("Mesh3DAssembly::OBJ save pair and preserve files on validation failur
 {
 	const ScopedLogSilencer silence;
 	const auto a = MakeAssembly();
-	const FilePath directory = FileSystem::UniqueFilePath(U"../../Test/output/mesh3dassembly/");
+	const FilePath directory = FileSystem::UniqueFilePath(Test::OutputPath(U"mesh3dassembly/"));
 	REQUIRE(FileSystem::CreateDirectories(directory));
 	const FilePath objPath = (directory + U"/model name.obj");
 	const FilePath mtlPath = (directory + U"/model%20name.mtl");

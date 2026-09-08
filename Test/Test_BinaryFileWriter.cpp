@@ -14,7 +14,7 @@
 TEST_CASE("BinaryFileWriter.constructor")
 {
 	{
-		const FilePath path{ U"../../Test/output/binarywriter/test.bin" };
+		const FilePath path{ Test::OutputPath(U"binarywriter/test.bin") };
 		CHECK(not FileSystem::Exists(path));
 		{
 			BinaryFileWriter writer{ path };
@@ -25,7 +25,7 @@ TEST_CASE("BinaryFileWriter.constructor")
 	}
 
 	{
-		const FilePath path{ U"../../Test/output/binarywriter/.test" };
+		const FilePath path{ Test::OutputPath(U"binarywriter/.test") };
 		CHECK(not FileSystem::Exists(path));
 		{
 			BinaryFileWriter writer{ path };
@@ -36,7 +36,7 @@ TEST_CASE("BinaryFileWriter.constructor")
 	}
 
 	{
-		const FilePath path{ U"../../Test/output/binarywriter/test/" };
+		const FilePath path{ Test::OutputPath(U"binarywriter/test/") };
 		CHECK(not FileSystem::Exists(path));
 		{
 			BinaryFileWriter writer{ path };
@@ -49,7 +49,7 @@ TEST_CASE("BinaryFileWriter.constructor")
 TEST_CASE("BinaryFileWriter.open")
 {
 	{
-		const FilePath path{ U"../../Test/output/binarywriter/test.bin" };
+		const FilePath path{ Test::OutputPath(U"binarywriter/test.bin") };
 		CHECK(not FileSystem::Exists(path));
 		{
 			BinaryFileWriter writer;
@@ -61,7 +61,7 @@ TEST_CASE("BinaryFileWriter.open")
 	}
 
 	{
-		const FilePath path{ U"../../Test/output/binarywriter/.test" };
+		const FilePath path{ Test::OutputPath(U"binarywriter/.test") };
 		CHECK(not FileSystem::Exists(path));
 		{
 			BinaryFileWriter writer;
@@ -73,7 +73,7 @@ TEST_CASE("BinaryFileWriter.open")
 	}
 
 	{
-		const FilePath path{ U"../../Test/output/binarywriter/test/" };
+		const FilePath path{ Test::OutputPath(U"binarywriter/test/") };
 		CHECK(not FileSystem::Exists(path));
 		{
 			BinaryFileWriter writer;

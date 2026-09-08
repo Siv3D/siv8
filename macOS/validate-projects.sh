@@ -1,6 +1,5 @@
 #!/bin/bash
-# Validates the syntax of the macOS Xcode project and the Windows Visual Studio
-# project files. Run this after adding, removing, or renaming files in them.
+# Validates project syntax and shared test registration in both test projects.
 set -euo pipefail
 
 readonly script_dir="$(
@@ -20,5 +19,7 @@ xmllint --noout \
 	"${repo_dir}/WindowsDesktop/Siv3D.vcxproj.filters" \
 	"${repo_dir}/WindowsDesktop/Siv3D-Test.vcxproj" \
 	"${repo_dir}/WindowsDesktop/Siv3D-Test.vcxproj.filters"
+
+python3 "${repo_dir}/tools/check_test_projects.py"
 
 echo "Project files OK."

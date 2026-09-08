@@ -121,7 +121,7 @@ TEST_CASE("Mesh3D::encodeOBJ converts Siv3D V coordinates to OBJ V coordinates")
 
 TEST_CASE("Mesh3D::saveOBJ")
 {
-	const FilePath path{ U"../../Test/output/mesh3d.obj" };
+	const FilePath path{ Test::OutputPath(U"mesh3d.obj") };
 	const Mesh3D mesh = MakeTriangleMesh();
 
 	FileSystem::Remove(path);
@@ -132,8 +132,8 @@ TEST_CASE("Mesh3D::saveOBJ")
 
 TEST_CASE("Mesh3D::saveOBJ with Material")
 {
-	const FilePath objPath{ U"../../Test/output/mesh3d_material.obj" };
-	const FilePath mtlPath{ U"../../Test/output/mesh3d_material.mtl" };
+	const FilePath objPath{ Test::OutputPath(U"mesh3d_material.obj") };
+	const FilePath mtlPath{ Test::OutputPath(U"mesh3d_material.mtl") };
 	const Mesh3D mesh = MakeTriangleMesh();
 	const Material material{
 		.name = U"Example Material",
@@ -220,8 +220,8 @@ TEST_CASE("Mesh3D OBJ material conversion preserves base color across metallic e
 
 TEST_CASE("Mesh3D::saveOBJ with Material rejects invalid input")
 {
-	const FilePath objPath{ U"../../Test/output/mesh3d_invalid_material.obj" };
-	const FilePath mtlPath{ U"../../Test/output/mesh3d_invalid_material.mtl" };
+	const FilePath objPath{ Test::OutputPath(U"mesh3d_invalid_material.obj") };
+	const FilePath mtlPath{ Test::OutputPath(U"mesh3d_invalid_material.mtl") };
 	const Mesh3D mesh = MakeTriangleMesh();
 
 	FileSystem::Remove(objPath);
@@ -250,7 +250,7 @@ TEST_CASE("Mesh3D::saveOBJ with Material rejects invalid input")
 
 	SUBCASE("OBJ path collides with MTL path")
 	{
-		const FilePath collisionPath{ U"../../Test/output/mesh3d_invalid_material.MTL" };
+		const FilePath collisionPath{ Test::OutputPath(U"mesh3d_invalid_material.MTL") };
 		FileSystem::Remove(collisionPath);
 		CHECK_FALSE(mesh.saveOBJ(collisionPath, Material{}));
 		CHECK_FALSE(FileSystem::Exists(collisionPath));
@@ -365,7 +365,7 @@ TEST_CASE("Mesh3D::encodeOBJ reports writer failure")
 
 TEST_CASE("Mesh3D::saveOBJ preserves MTL when OBJ cannot be opened")
 {
-	const FilePath directory = FileSystem::UniqueFilePath(U"../../Test/output/mesh3d/");
+	const FilePath directory = FileSystem::UniqueFilePath(Test::OutputPath(U"mesh3d/"));
 	REQUIRE(FileSystem::CreateDirectories(directory));
 	const FilePath objPath = (directory + U"/blocked.obj");
 	const FilePath mtlPath = (directory + U"/blocked.mtl");

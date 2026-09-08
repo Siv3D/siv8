@@ -22,6 +22,9 @@
     <ClCompile Include="..\Test\Siv3DTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_TestEnvironment.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Version.cpp">
       <Filter>Test</Filter>
     </ClCompile>

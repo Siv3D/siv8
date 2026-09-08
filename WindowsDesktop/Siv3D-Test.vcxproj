@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
+    <ClCompile Include="..\Test\Test_TestEnvironment.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
     <ClCompile Include="..\Test\Test_ArrayException.cpp" />
     <ClCompile Include="..\Test\Test_ArrayModel.cpp" />

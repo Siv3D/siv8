@@ -9,6 +9,8 @@ readonly configuration="${CONFIGURATION:-Debug}"
 readonly app_dir="${script_dir}/App"
 readonly executable="${app_dir}/Siv3D-Test.app/Contents/MacOS/Siv3D-Test"
 
+python3 "${script_dir}/../tools/check_test_projects.py"
+
 xcodebuild \
 	-quiet \
 	-project "${script_dir}/OpenSiv3D.xcodeproj" \
