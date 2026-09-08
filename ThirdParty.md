@@ -10,7 +10,7 @@ Name | Version
 [cpu_features](https://github.com/google/cpu_features) | v0.11.0
 [DirectXMath](https://github.com/microsoft/DirectXMath) | June 2026
 [DirectXMesh](https://github.com/microsoft/directxmesh) | May 7, 2026
-[doctest](https://github.com/doctest/doctest) | v2.5.2
+[doctest](https://github.com/doctest/doctest) | v2.5.3
 [double-conversion](https://github.com/google/double-conversion) | v3.4.0
 [dr_mp3](https://github.com/mackron/dr_libs) | v0.7.4
 [Easing Equations](http://robertpenner.com/easing/) | 
