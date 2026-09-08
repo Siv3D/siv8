@@ -762,7 +762,9 @@ TEST_CASE("Array.sequence_operations")
 	CHECK_EQ(a.sum(), 10);
 	CHECK_EQ((Array<double>{ 0.5, 1.5, 2.0 }.sumF()), 4.0);
 
-	CHECK_EQ(a.erase(a.begin() + 1), a.begin() + 1);
+	// Obtain the expected iterator after erase(), which invalidates iterators at and after the erased position.
+	const auto afterErase = a.erase(a.begin() + 1);
+	CHECK_EQ(afterErase, a.begin() + 1);
 	CHECK_EQ(a, Array{ 0, 2, 3, 4 });
 	a.erase_at(0);
 	CHECK_EQ(a, Array{ 2, 3, 4 });
