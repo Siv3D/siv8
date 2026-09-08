@@ -13,6 +13,7 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Resource.hpp>
+# include <Siv3D/ScopeExit.hpp>
 # include <Shlobj.h>
 
 namespace s3d
@@ -174,19 +175,22 @@ namespace s3d
 			return path;
 		}
 
-		uint64 DirectorySizeRecursive(const std::wstring& directoryPath)
+		bool DirectorySizeRecursive(const std::wstring& directoryPath, uint64& result)
 		{
 			assert(directoryPath.ends_with(L'/'));
 
 			WIN32_FIND_DATAW data;
-			HANDLE sh = ::FindFirstFileW((directoryPath + L'*').c_str(), &data);
-
-			if (sh == INVALID_HANDLE_VALUE)
+			HANDLE sh;
 			{
-				return 0;
+				const std::wstring pattern = (directoryPath + L'*');
+				sh = ::FindFirstFileW(pattern.c_str(), &data);
+				if (sh == INVALID_HANDLE_VALUE)
+				{
+					return (::GetLastError() == ERROR_FILE_NOT_FOUND);
+				}
 			}
 
-			uint64 result = 0;
+			const ScopeExit closeSearch{ [sh] { ::FindClose(sh); } };
 
 			do
 			{
@@ -200,7 +204,10 @@ namespace s3d
 				{
 					if (not IsNameSurrogate(data))
 					{
-						result += DirectorySizeRecursive((directoryPath + data.cFileName) + L'/');
+						if (not DirectorySizeRecursive((directoryPath + data.cFileName) + L'/', result))
+						{
+							return false;
+						}
 					}
 				}
 				else // ファイル
@@ -210,9 +217,7 @@ namespace s3d
 
 			} while (::FindNextFileW(sh, &data));
 
-			::FindClose(sh);
-
-			return result;
+			return (::GetLastError() == ERROR_NO_MORE_FILES);
 		}
 
 		Optional<WIN32_FILE_ATTRIBUTE_DATA> GetFileAttributeData(const std::wstring& path)
@@ -237,17 +242,22 @@ namespace s3d
 				systemTime.wHour, systemTime.wMinute, systemTime.wSecond, systemTime.wMilliseconds };
 		}
 
-		void DirectoryContentsDetail(const std::wstring& directoryPath, Array<FilePath>& paths, const Recursive recursive)
+		bool DirectoryContentsDetail(const std::wstring& directoryPath, Array<FilePath>& paths, const Recursive recursive)
 		{
 			assert(directoryPath.ends_with(L'/'));
 
 			WIN32_FIND_DATAW data;
-			HANDLE hFind = ::FindFirstFileW((directoryPath + L'*').c_str(), &data);
-
-			if (hFind == INVALID_HANDLE_VALUE)
+			HANDLE hFind;
 			{
-				return;
+				const std::wstring pattern = (directoryPath + L'*');
+				hFind = ::FindFirstFileW(pattern.c_str(), &data);
+				if (hFind == INVALID_HANDLE_VALUE)
+				{
+					return (::GetLastError() == ERROR_FILE_NOT_FOUND);
+				}
 			}
+
+			const ScopeExit closeSearch{ [hFind] { ::FindClose(hFind); } };
 
 			do
 			{
@@ -272,12 +282,15 @@ namespace s3d
 				// 再帰的に検索する
 				if (recursive && isDirectory && (not IsNameSurrogate(data)))
 				{
-					DirectoryContentsDetail(path, paths, Recursive::Yes);
+					if (not DirectoryContentsDetail(path, paths, Recursive::Yes))
+					{
+						return false;
+					}
 				}
 
 			} while (::FindNextFileW(hFind, &data));
 
-			::FindClose(hFind);
+			return (::GetLastError() == ERROR_NO_MORE_FILES);
 		}
 	}
 }

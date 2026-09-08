@@ -76,8 +76,9 @@ namespace s3d
 		[[nodiscard]]
 		std::wstring NormalizePath(std::wstring path, PathType pathType);
 		
+		// Returns false on enumeration failure; the caller must discard the partial result.
 		[[nodiscard]]
-		uint64 DirectorySizeRecursive(const std::wstring& directoryPath);
+		bool DirectorySizeRecursive(const std::wstring& directoryPath, uint64& result);
 
 		[[nodiscard]]
 		Optional<WIN32_FILE_ATTRIBUTE_DATA> GetFileAttributeData(const std::wstring& path);
@@ -85,7 +86,9 @@ namespace s3d
 		[[nodiscard]]
 		DateTime FileTimeToTime(FILETIME in);
 
-		void DirectoryContentsDetail(const std::wstring& directoryPath, Array<FilePath>& paths, Recursive recursive);
+		// Returns false on enumeration failure; the caller must discard the partial paths.
+		[[nodiscard]]
+		bool DirectoryContentsDetail(const std::wstring& directoryPath, Array<FilePath>& paths, Recursive recursive);
 
 		/// @brief ファイルがディレクトリであるかを返します。
 		/// @param data ファイル情報

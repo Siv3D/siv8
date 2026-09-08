@@ -440,6 +440,71 @@ TEST_CASE("FileSystem::NativePath buffer boundaries")
 	}
 }
 
+TEST_CASE("FileSystem::Directory traversal sharing failure")
+{
+	for (const bool populated : { false, true })
+	{
+		CAPTURE(populated);
+		const FilePath root = Test::OutputPath(populated
+			? U"filesystem/traversal-error/populated/" : U"filesystem/traversal-error/empty/");
+		const FilePath locked = (root + U"locked/");
+		REQUIRE(FileSystem::CreateDirectories(locked));
+		{
+			BinaryFileWriter writer{ root + U"file.bin" };
+			REQUIRE(writer.isOpen());
+			REQUIRE(writer.write("data", 4) == 4);
+		}
+		if (populated)
+		{
+			BinaryFileWriter writer{ locked + U"inside.bin" };
+			REQUIRE(writer.isOpen());
+			REQUIRE(writer.write("data", 4) == 4);
+		}
+
+		std::wstring native = FileSystem::NativePath(locked);
+		REQUIRE(native.ends_with(L'\\'));
+		native.pop_back();
+		{
+			// An exclusive directory handle denies enumeration without changing ACLs.
+			const HANDLE handle = ::CreateFileW(native.c_str(), GENERIC_READ, 0, nullptr,
+				OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
+			REQUIRE(handle != INVALID_HANDLE_VALUE);
+			const ScopeExit closeHandle{ [handle] { ::CloseHandle(handle); } };
+			WIN32_FIND_DATAW data;
+			const std::wstring pattern = (native + L"\\*");
+			const HANDLE probe = ::FindFirstFileW(pattern.c_str(), &data);
+			const DWORD error = ::GetLastError();
+			const ScopeExit closeProbe{ [probe]
+				{
+					if (probe != INVALID_HANDLE_VALUE)
+					{
+						::FindClose(probe);
+					}
+				} };
+			CAPTURE(error);
+			REQUIRE(probe == INVALID_HANDLE_VALUE);
+			REQUIRE(error == ERROR_SHARING_VIOLATION);
+
+			uint64 size = 123;
+			CHECK_NOTHROW(size = FileSystem::Size(root));
+			CHECK_EQ(size, 0);
+			Array<FilePath> paths{ U"unchanged" };
+			CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root));
+			CHECK(paths.isEmpty());
+			CHECK_EQ(FileSystem::DirectoryContents(root, Recursive::No).sorted(),
+				(Array<FilePath>{ root + U"file.bin", locked }.sorted()));
+		}
+
+		CHECK_EQ(FileSystem::Size(root), (populated ? 8 : 4));
+		Array<FilePath> expected{ root + U"file.bin", locked };
+		if (populated)
+		{
+			expected << (locked + U"inside.bin");
+		}
+		CHECK_EQ(FileSystem::DirectoryContents(root).sorted(), expected.sorted());
+	}
+}
+
 TEST_CASE("FileSystem::Directory traversal junctions")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/junctions/");

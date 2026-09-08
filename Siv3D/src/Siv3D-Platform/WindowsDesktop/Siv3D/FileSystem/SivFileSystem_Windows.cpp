@@ -218,7 +218,19 @@ namespace s3d
 			}
 			else if (type == std::filesystem::file_type::directory)
 			{
-				return detail::DirectorySizeRecursive(Unicode::ToWstring(FullPath(path)));
+				const FilePath fullPath = FullPath(path);
+				if (fullPath.isEmpty())
+				{
+					return 0;
+				}
+
+				uint64 result = 0;
+				if (not detail::DirectorySizeRecursive(Unicode::ToWstring(fullPath), result))
+				{
+					return 0;
+				}
+
+				return result;
 			}
 			else
 			{
@@ -396,9 +408,17 @@ namespace s3d
 				return{};
 			}
 
-			Array<FilePath> paths;
+			const FilePath fullPath = FullPath(path);
+			if (fullPath.isEmpty())
+			{
+				return{};
+			}
 
-			detail::DirectoryContentsDetail(Unicode::ToWstring(FullPath(path)), paths, recursive);
+			Array<FilePath> paths;
+			if (not detail::DirectoryContentsDetail(Unicode::ToWstring(fullPath), paths, recursive))
+			{
+				return{};
+			}
 
 			return paths;
 		}
