@@ -435,6 +435,36 @@ TEST_CASE("FileSystem::DirectoryContents normal paths")
 	}
 }
 
+TEST_CASE("FileSystem::Size")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/size/normal/");
+	REQUIRE(FileSystem::CreateDirectories(root + U"nested/empty/"));
+	const struct
+	{
+		FilePathView path;
+		std::string_view contents;
+	} files[] = {
+		{ U"file.bin", "abcd" },
+		{ U".hidden", "ef" },
+		{ U"nested/日本語.bin", "1234567" },
+		{ U"empty.bin", "" },
+	};
+	for (const auto& file : files)
+	{
+		{
+			BinaryFileWriter writer{ root + file.path };
+			REQUIRE(writer.isOpen());
+			REQUIRE(writer.write(file.contents.data(), file.contents.size()) == file.contents.size());
+		}
+		CHECK_EQ(FileSystem::Size(root + file.path), file.contents.size());
+	}
+	CHECK_EQ(FileSystem::Size(root), 13);
+	CHECK_EQ(FileSystem::Size(root + U"nested"), 7);
+	CHECK_EQ(FileSystem::Size(root + U"nested/empty/"), 0);
+	CHECK_EQ(FileSystem::Size(root + U"missing"), 0);
+	CHECK_EQ(FileSystem::Size(U""), 0);
+}
+
 TEST_CASE("FileSystem::IsEmptyDirectory")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/isemptydirectory/normal/");
@@ -670,6 +700,84 @@ TEST_CASE("FileSystem::IsResourcePath permission failure")
 # endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+
+TEST_CASE("FileSystem::Size attribute failure")
+{
+	FilePathView scenario;
+	SUBCASE("broken link") { scenario = U"broken"; }
+	SUBCASE("cyclic link") { scenario = U"cycle"; }
+	const FilePath root = Test::OutputPath(U"filesystem/size/attribute/" + scenario + U'/');
+	REQUIRE(FileSystem::CreateDirectories(root));
+	{
+		BinaryFileWriter writer{ root + U"file.bin" };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("data", 4) == 4);
+	}
+	REQUIRE(::symlink((scenario == U"broken") ? "missing-target" : "link",
+		Unicode::ToUTF8(root + U"link").c_str()) == 0);
+	uint64 size = 123;
+	CHECK_NOTHROW(size = FileSystem::Size(root));
+	CHECK_EQ(size, 0);
+	CHECK_EQ(FileSystem::Size(root + U"file.bin"), 4);
+	CHECK_EQ(FileSystem::Size(root + U"link"), 0);
+}
+
+TEST_CASE("FileSystem::Size permission failure")
+{
+	if (::geteuid() == 0)
+	{
+		MESSAGE("Permission denial requires a non-root user.");
+		return;
+	}
+	const FilePath root = Test::OutputPath(U"filesystem/size/permissions/");
+	const FilePath directory = (root + U"locked/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	for (const FilePath& file : { root + U"file.bin", directory + U"inside.bin" })
+	{
+		BinaryFileWriter writer{ file };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("data", 4) == 4);
+	}
+	const std::string native = Unicode::ToUTF8(directory);
+	const ScopeExit restorePermissions{ [&native] { ::chmod(native.c_str(), 0700); } };
+	REQUIRE(::chmod(native.c_str(), 0000) == 0);
+	for (const FilePath& path : { directory, root })
+	{
+		uint64 size = 123;
+		CHECK_NOTHROW(size = FileSystem::Size(path));
+		CHECK_EQ(size, 0);
+	}
+	REQUIRE(::chmod(native.c_str(), 0500) == 0);
+	CHECK_EQ(FileSystem::Size(directory), 4);
+	CHECK_EQ(FileSystem::Size(root), 8);
+}
+
+TEST_CASE("FileSystem::Size symbolic links")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/size/links/");
+	const FilePath directory = (root + U"directory/");
+	const FilePath outside = (root + U"outside/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	{
+		BinaryFileWriter writer{ directory + U"file.bin" };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("abc", 3) == 3);
+	}
+	{
+		BinaryFileWriter writer{ outside + U"file.bin" };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("abcde", 5) == 5);
+	}
+	const FilePath alias = (root + U"alias");
+	REQUIRE(::symlink(Unicode::ToUTF8(directory).c_str(), Unicode::ToUTF8(alias).c_str()) == 0);
+	REQUIRE(::symlink(Unicode::ToUTF8(outside + U"file.bin").c_str(), Unicode::ToUTF8(directory + U"file-link").c_str()) == 0);
+	REQUIRE(::symlink(Unicode::ToUTF8(outside).c_str(), Unicode::ToUTF8(directory + U"directory-link").c_str()) == 0);
+	REQUIRE(::symlink(".", Unicode::ToUTF8(directory + U"cycle").c_str()) == 0);
+	CHECK_EQ(FileSystem::Size(directory), 8);
+	CHECK_EQ(FileSystem::Size(alias), 8);
+	CHECK_EQ(FileSystem::Size(alias + U'/'), 8);
+	CHECK_EQ(FileSystem::Size(directory + U"file-link"), 5);
+}
 
 TEST_CASE("FileSystem::IsEmptyDirectory permission failure")
 {

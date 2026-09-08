@@ -250,7 +250,9 @@ namespace s3d
 
 		/// @brief 指定したファイルやディレクトリのサイズを返します。
 		/// @param path パス
-		/// @return ファイルやディレクトリのサイズ
+		/// @remark macOS / Linux では、パス解決・属性取得・列挙で OS のファイルシステムエラーが発生した場合、部分合計を返さず 0 を返します。
+		/// @remark macOS / Linux では、集計中に見つかったディレクトリへのシンボリックリンクには再帰しません。ファイルへのシンボリックリンクはリンク先のサイズを加算します。
+		/// @return ファイルやディレクトリのサイズ（バイト）
 		[[nodiscard]]
 		uint64 Size(FilePathView path);
 

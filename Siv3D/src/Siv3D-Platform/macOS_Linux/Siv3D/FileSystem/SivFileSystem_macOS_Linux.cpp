@@ -187,17 +187,31 @@ namespace s3d
 			else if (S_ISDIR(s.st_mode))
 			{
 				uint64 result = 0;
-
-				for (const auto& v : std::filesystem::recursive_directory_iterator(Unicode::ToUTF8(path)))
+				std::error_code error;
+				std::filesystem::recursive_directory_iterator it{ detail::ToPath(fullPath), error };
+				if (error)
 				{
-					struct stat s;
-					
-					if ((::stat(v.path().c_str(), &s) != 0) || S_ISDIR(s.st_mode))
+					return 0;
+				}
+
+				const std::filesystem::recursive_directory_iterator end;
+				while (it != end)
+				{
+					struct stat entryStat;
+					if (::stat(it->path().c_str(), &entryStat) != 0)
 					{
-						continue;
+						return 0;
+					}
+					if (not S_ISDIR(entryStat.st_mode))
+					{
+						result += entryStat.st_size;
 					}
 
-					result += s.st_size;
+					it.increment(error);
+					if (error)
+					{
+						return 0;
+					}
 				}
 				
 				return result;
