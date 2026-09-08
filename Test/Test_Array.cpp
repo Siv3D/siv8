@@ -643,11 +643,12 @@ TEST_CASE("Array.allocator_and_nested_arrays")
 	CHECK_EQ(copied.get_allocator().state, nullptr);
 	A allocated(ArrayTestAllocator<int>{ &state });
 	allocated.reserve(128);
-	const auto freed = state.deallocations;
+	// Debug STL implementations may also allocate and free iterator bookkeeping in release().
+	const auto outstanding = (state.allocations - state.deallocations);
 	allocated.release();
 	CHECK(allocated.empty());
 	CHECK_EQ(allocated.capacity(), size_t{ 0 });
-	CHECK_EQ(state.deallocations, freed + 1);
+	CHECK_EQ((state.allocations - state.deallocations) + 1, outstanding);
 	verify(allocated);
 
 	using B = Array<bool, ArrayTestAllocator<bool>>;
@@ -871,11 +872,12 @@ TEST_CASE("Array.bool_storage_and_allocator")
 		CHECK_EQ(filtered.size(), size_t{ 127 });
 		CHECK(filtered.all());
 		const auto* allocator = filtered.get_allocator().state;
-		const auto deallocated = state.deallocations;
+		// Count outstanding allocations, including any debug iterator bookkeeping.
+		const auto outstanding = (state.allocations - state.deallocations);
 		filtered.release();
 		CHECK(filtered.empty());
 		CHECK_EQ(filtered.get_allocator().state, allocator);
-		CHECK_EQ(state.deallocations, deallocated + 1);
+		CHECK_EQ((state.allocations - state.deallocations) + 1, outstanding);
 	}
 	CHECK_EQ(state.allocations, state.deallocations);
 	Array<bool> flags{ true, false };
