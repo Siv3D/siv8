@@ -444,6 +444,8 @@ namespace s3d
 		/// @brief 指定したパスの親ディレクトリを作成します。
 		/// @param path パス
 		/// @remark 間のディレクトリが存在しない場合は自動的に作成します。
+		/// @remark パス解決に失敗した場合は false を返します。
+		/// @remark 親ディレクトリがすでに存在する場合、書き込み可能かどうかは確認しません。
 		/// @return 作成に成功したか、すでに同名のディレクトリが存在する場合 true, それ以外の場合は false
 		bool CreateParentDirectories(FilePathView path);
 

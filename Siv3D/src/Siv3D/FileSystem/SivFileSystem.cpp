@@ -384,14 +384,15 @@ namespace s3d
 				return false;
 			}
 
-			const FilePath parentDirectory = ParentPath(path);
+			FilePath fullPath;
+			const FilePath parentDirectory = ParentPath(path, 0, fullPath);
 
-			if (not Exists(parentDirectory))
+			if (parentDirectory.isEmpty())
 			{
-				return CreateDirectories(parentDirectory);
+				return ((not fullPath.isEmpty()) && IsDirectory(fullPath));
 			}
 
-			return true;
+			return (IsDirectory(parentDirectory) || CreateDirectories(parentDirectory));
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -412,7 +413,10 @@ namespace s3d
 				return false;
 			}
 
-			CreateParentDirectories(to);
+			if (not CreateParentDirectories(to))
+			{
+				return false;
+			}
 
 			const auto options = (ToCopyOptions(copyOption) | std::filesystem::copy_options::recursive);
 			

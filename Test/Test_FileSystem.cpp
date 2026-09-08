@@ -435,6 +435,72 @@ TEST_CASE("FileSystem::DirectoryContents normal paths")
 	}
 }
 
+TEST_CASE("FileSystem::CreateParentDirectories")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/createparent/normal/");
+	const FilePath target = (root + U"nested/child/file.txt");
+	CHECK(FileSystem::CreateParentDirectories(target));
+	CHECK(FileSystem::IsDirectory(root + U"nested/child/"));
+	CHECK_FALSE(FileSystem::Exists(target));
+	CHECK(FileSystem::CreateParentDirectories(target));
+	CHECK_FALSE(FileSystem::Exists(target));
+	CHECK_FALSE(FileSystem::CreateParentDirectories(U""));
+	CHECK_FALSE(FileSystem::CreateParentDirectories(Resource(U"missing-resource/file.txt")));
+
+	const FilePath volume = FileSystem::VolumePath(root);
+	REQUIRE(not volume.isEmpty());
+	CHECK(FileSystem::CreateParentDirectories(volume));
+
+	const FilePath currentDirectory = FileSystem::CurrentDirectory();
+	const ScopeExit restoreDirectory{ [&currentDirectory]
+		{
+			FileSystem::ChangeCurrentDirectory(currentDirectory);
+		} };
+	REQUIRE(FileSystem::ChangeCurrentDirectory(root));
+	CHECK(FileSystem::CreateParentDirectories(U"plain.txt"));
+	CHECK_FALSE(FileSystem::Exists(root + U"plain.txt"));
+}
+
+TEST_CASE("FileSystem::CreateParentDirectories file collision")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/createparent/collision/");
+	const FilePath blocker = (root + U"file");
+	{
+		BinaryFileWriter writer{ blocker };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("keep", 4) == 4);
+	}
+	for (const FilePath& target : { blocker + U"/child.txt", blocker + U"/nested/child.txt" })
+	{
+		CHECK_FALSE(FileSystem::CreateParentDirectories(target));
+	}
+	BinaryFileReader reader{ blocker };
+	char contents[4]{};
+	REQUIRE(reader.read(contents, sizeof(contents)) == sizeof(contents));
+	CHECK_EQ(std::string_view(contents, sizeof(contents)), "keep");
+}
+
+TEST_CASE("FileSystem::Copy parent directories")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/copy/parents/");
+	const FilePath source = (root + U"source.bin");
+	const FilePath destination = (root + U"nested/child/copy.bin");
+	{
+		BinaryFileWriter writer{ source };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("data", 4) == 4);
+	}
+	CHECK(FileSystem::Copy(source, destination));
+	{
+		BinaryFileReader reader{ destination };
+		char contents[4]{};
+		REQUIRE(reader.read(contents, sizeof(contents)) == sizeof(contents));
+		CHECK_EQ(std::string_view(contents, sizeof(contents)), "data");
+	}
+	CHECK_FALSE(FileSystem::Copy(source, source + U"/child.bin"));
+	CHECK_EQ(FileSystem::FileSize(source), 4);
+}
+
 TEST_CASE("FileSystem::RemoveContents")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/removecontents/basic/");
@@ -575,6 +641,44 @@ TEST_CASE("FileSystem::IsResourcePath permission failure")
 # endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+
+TEST_CASE("FileSystem::CreateParentDirectories resolution failure")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/createparent/resolution/");
+	REQUIRE(FileSystem::CreateDirectories(root));
+	const FilePath loop = (root + U"loop");
+	REQUIRE(::symlink("loop", Unicode::ToUTF8(loop).c_str()) == 0);
+	const FilePath source = (root + U"source.bin");
+	{
+		BinaryFileWriter writer{ source };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("data", 4) == 4);
+	}
+	for (const FilePath& path : { loop, loop + U"/child.txt" })
+	{
+		CHECK_FALSE(FileSystem::CreateParentDirectories(path));
+		CHECK_FALSE(FileSystem::Copy(source, path));
+	}
+	CHECK_EQ(FileSystem::FileSize(source), 4);
+}
+
+TEST_CASE("FileSystem::CreateParentDirectories permission failure")
+{
+	if (::geteuid() == 0)
+	{
+		MESSAGE("Permission denial requires a non-root user.");
+		return;
+	}
+	const FilePath directory = Test::OutputPath(U"filesystem/createparent/locked/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	const std::string native = Unicode::ToUTF8(directory);
+	const ScopeExit restorePermissions{ [&native] { ::chmod(native.c_str(), 0700); } };
+	REQUIRE(::chmod(native.c_str(), 0000) == 0);
+	CHECK_FALSE(FileSystem::CreateParentDirectories(directory + U"nested/file.txt"));
+	REQUIRE(::chmod(native.c_str(), 0500) == 0);
+	CHECK_FALSE(FileSystem::CreateParentDirectories(directory + U"nested/file.txt"));
+	CHECK(FileSystem::CreateParentDirectories(directory + U"file.txt"));
+}
 
 TEST_CASE("FileSystem::FullPath resolution failures")
 {
