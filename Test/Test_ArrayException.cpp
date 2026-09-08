@@ -81,27 +81,32 @@ namespace
 		int value() const { return resource ? *resource : -1; }
 	};
 
-	template <class T, bool Propagate = false>
+	template <class T, bool Propagate = false, class Element = T>
 	struct FaultArrayAllocator
 	{
 		using value_type = T;
 		using propagate_on_container_copy_assignment = std::bool_constant<Propagate>;
 		using propagate_on_container_move_assignment = std::bool_constant<Propagate>;
 		using propagate_on_container_swap = std::bool_constant<Propagate>;
-		template <class U> struct rebind { using other = FaultArrayAllocator<U, Propagate>; };
+		template <class U> struct rebind { using other = FaultArrayAllocator<U, Propagate, Element>; };
 
 		ArrayFaultState* state = nullptr;
 		FaultArrayAllocator() = default;
 		explicit FaultArrayAllocator(ArrayFaultState& s) : state(&s) {}
 		template <class U>
-		FaultArrayAllocator(const FaultArrayAllocator<U, Propagate>& other) : state(other.state) {}
+		FaultArrayAllocator(const FaultArrayAllocator<U, Propagate, Element>& other) : state(other.state) {}
 
 		T* allocate(size_t n)
 		{
-			if (state)
+			// Inject failures only into element storage. MSVC also rebinds this allocator
+			// for debug iterator bookkeeping, including allocations in noexcept constructors.
+			if constexpr (std::same_as<T, Element>)
 			{
-				try { state->allocations.hit(); }
-				catch (const InjectedArrayFailure&) { throw std::bad_alloc{}; }
+				if (state)
+				{
+					try { state->allocations.hit(); }
+					catch (const InjectedArrayFailure&) { throw std::bad_alloc{}; }
+				}
 			}
 			T* p = std::allocator<T>{}.allocate(n);
 			if (state) { CHECK(state->blocks.emplace(p, n).second); }
@@ -124,7 +129,7 @@ namespace
 		}
 
 		template <class U>
-		bool operator ==(const FaultArrayAllocator<U, Propagate>& other) const { return state == other.state; }
+		bool operator ==(const FaultArrayAllocator<U, Propagate, Element>& other) const { return state == other.state; }
 	};
 
 	using CopyValue = TrackedArrayValue<true>;
@@ -195,6 +200,7 @@ TEST_CASE("Array.exception.reserve_relocation")
 			auto source = MakeFaultArray(state);
 			const auto storage = source.data();
 			const auto capacity = source.capacity();
+			const auto blocks = state.blocks.size();
 			state.copies.arm(failAt);
 			// A copyable type with a throwing move constructor allows reserve's strong guarantee.
 			CHECK_THROWS_AS(source.reserve(capacity + 16), InjectedArrayFailure);
@@ -202,7 +208,7 @@ TEST_CASE("Array.exception.reserve_relocation")
 			CHECK_EQ(source.data(), storage);
 			CHECK_EQ(source.capacity(), capacity);
 			CHECK_EQ(state.live.size(), source.size());
-			CHECK_EQ(state.blocks.size(), size_t{ 1 });
+			CHECK_EQ(state.blocks.size(), blocks);
 			state.copies.arm(-1);
 			source.reserve(capacity + 16);
 			CheckOriginal(source);
@@ -384,6 +390,8 @@ TEST_CASE("Array.exception.bool_storage_transition")
 	ArrayFaultState state;
 	{
 		B flags{ FaultArrayAllocator<bool>{ state } };
+		// An empty container may own debug iterator bookkeeping until destruction.
+		const auto emptyBlocks = state.blocks.size();
 		const auto smallCapacity = flags.capacity();
 		flags.resize(smallCapacity, true);
 		const auto storage = flags.data();
@@ -403,7 +411,8 @@ TEST_CASE("Array.exception.bool_storage_transition")
 		flags.shrink_to_fit(); // Shrinking is non-binding; only contents and ownership are promised.
 		CHECK_EQ(flags.size(), size_t{ 1 });
 		flags.release();
-		CHECK(state.blocks.empty());
+		CHECK(flags.empty());
+		CHECK_EQ(state.blocks.size(), emptyBlocks);
 		flags.push_back(true);
 		CHECK(flags.front());
 	}
