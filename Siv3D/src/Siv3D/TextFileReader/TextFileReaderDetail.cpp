@@ -434,7 +434,7 @@ namespace s3d
 		{
 			if (std::string s8; readAll(s8))
 			{
-				s = Unicode::FromUTF8(s8);
+				Unicode::FromUTF8(s8, s);
 				return true;
 			}
 			else

@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////
 //
 //	文字コードの変換 | Character Code Conversion
+//	変換関数には出力先を第 2 引数に取る void オーバーロードがあります。
+//	Conversion functions also have void overloads taking a destination as the second argument.
 //
 //	String FromAscii(std::string_view asciiText);
 //	String FromUTF8(std::string_view s);
@@ -65,6 +67,13 @@ namespace s3d
 		[[nodiscard]]
 		String FromAscii(std::string_view asciiText);
 
+		/// @brief ASCII 文字列を String に変換し、出力先を上書きします。 | Converts an ASCII string to String and overwrites the destination.
+		/// @param asciiText ASCII 文字で構成された文字列 | A string composed of ASCII characters
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void FromAscii(std::string_view asciiText, String& dst);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	FromUTF8
@@ -76,6 +85,13 @@ namespace s3d
 		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
 		[[nodiscard]]
 		String FromUTF8(std::string_view s);
+
+		/// @brief UTF-8 文字列を String に変換し、出力先を上書きします。 | Converts a UTF-8 string to String and overwrites the destination.
+		/// @param s 変換する UTF-8 文字列 | The UTF-8 string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void FromUTF8(std::string_view s, String& dst);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -89,6 +105,13 @@ namespace s3d
 		[[nodiscard]]
 		String FromUTF16(std::u16string_view s);
 
+		/// @brief UTF-16LE 文字列を String に変換し、出力先を上書きします。 | Converts a UTF-16LE string to String and overwrites the destination.
+		/// @param s 変換する UTF-16LE 文字列 | The UTF-16LE string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void FromUTF16(std::u16string_view s, String& dst);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	FromUTF16BE
@@ -100,6 +123,13 @@ namespace s3d
 		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
 		[[nodiscard]]
 		String FromUTF16BE(std::u16string_view s);
+
+		/// @brief UTF-16BE 文字列を String に変換し、出力先を上書きします。 | Converts a UTF-16BE string to String and overwrites the destination.
+		/// @param s 変換する UTF-16BE 文字列 | The UTF-16BE string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void FromUTF16BE(std::u16string_view s, String& dst);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -114,6 +144,14 @@ namespace s3d
 		[[nodiscard]]
 		String FromWstring(std::wstring_view s);
 
+		/// @brief ワイド文字列を String に変換し、出力先を上書きします。 | Converts a wide string to String and overwrites the destination.
+		/// @param s 変換するワイド文字列 | The wide string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		/// @remark Windows では UTF-16、それ以外では UTF-32 として解釈します。 | Interprets the input as UTF-16 on Windows and UTF-32 elsewhere.
+		void FromWstring(std::wstring_view s, String& dst);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	FromUTF32
@@ -125,6 +163,13 @@ namespace s3d
 		/// @return 変換された文字列 | The converted string
 		[[nodiscard]]
 		String FromUTF32(std::u32string_view s);
+
+		/// @brief UTF-32 文字列を String に変換し、出力先を上書きします。 | Converts a UTF-32 string to String and overwrites the destination.
+		/// @param s 変換する UTF-32 文字列 | The UTF-32 string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @remark コード単位を検証せずコピーします。入力は dst の全体または部分範囲を参照できます。 | Copies code units without validation. The input may refer to all or part of dst.
+		/// @remark 空の入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty input clears dst. Embedded NULs are preserved.
+		void FromUTF32(std::u32string_view s, String& dst);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -138,6 +183,13 @@ namespace s3d
 		[[nodiscard]]
 		std::string ToAscii(StringView asciiText);
 
+		/// @brief ASCII 文字列を std::string に変換し、出力先を上書きします。 | Converts an ASCII string to std::string and overwrites the destination.
+		/// @param asciiText ASCII 文字で構成された文字列 | A string composed of ASCII characters
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void ToAscii(StringView asciiText, std::string& dst);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	ToUTF8
@@ -149,6 +201,13 @@ namespace s3d
 		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
 		[[nodiscard]]
 		std::string ToUTF8(StringView s);
+
+		/// @brief String を UTF-8 文字列に変換し、出力先を上書きします。 | Converts String to a UTF-8 string and overwrites the destination.
+		/// @param s 変換する文字列 | The string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void ToUTF8(StringView s, std::string& dst);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -162,6 +221,13 @@ namespace s3d
 		[[nodiscard]]
 		std::u16string ToUTF16(StringView s);
 
+		/// @brief String を UTF-16 文字列に変換し、出力先を上書きします。 | Converts String to a UTF-16 string and overwrites the destination.
+		/// @param s 変換する文字列 | The string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void ToUTF16(StringView s, std::u16string& dst);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	ToWstring
@@ -174,12 +240,28 @@ namespace s3d
 		[[nodiscard]]
 		std::wstring ToWstring(std::string_view s);
 
+		/// @brief std::string を std::wstring に変換し、出力先を上書きします。 | Converts std::string to std::wstring and overwrites the destination.
+		/// @param s 変換する文字列 | The string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		/// @remark Windows では UTF-16、それ以外では UTF-32 を出力します。 | Produces UTF-16 on Windows and UTF-32 elsewhere.
+		void ToWstring(std::string_view s, std::wstring& dst);
+
 		/// @brief String を std::wstring に変換します。 | Converts String to std::wstring.
 		/// @details Windows では UTF-16、それ以外では UTF-32 を出力します。埋め込みの NUL は保持されます。 | Produces UTF-16 on Windows and UTF-32 elsewhere. Embedded NULs are preserved.
 		/// @param s 変換する文字列 | The string to convert
 		/// @return 変換された文字列。サロゲート値 (0xD800–0xDFFF) または 0x10FFFF を超える値を含む場合は結果全体が空の文字列 | The converted string. The entire result is empty if the input contains a surrogate value (0xD800–0xDFFF) or a value above 0x10FFFF
 		[[nodiscard]]
 		std::wstring ToWstring(StringView s);
+
+		/// @brief String を std::wstring に変換し、出力先を上書きします。 | Converts String to std::wstring and overwrites the destination.
+		/// @param s 変換する文字列 | The string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		/// @remark Windows では UTF-16、それ以外では UTF-32 を出力します。 | Produces UTF-16 on Windows and UTF-32 elsewhere.
+		void ToWstring(StringView s, std::wstring& dst);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -193,6 +275,13 @@ namespace s3d
 		[[nodiscard]]
 		std::u32string ToUTF32(StringView s);
 
+		/// @brief String を UTF-32 文字列に変換し、出力先を上書きします。 | Converts String to a UTF-32 string and overwrites the destination.
+		/// @param s 変換する文字列 | The string to convert
+		/// @param dst 格納先の文字列 | The destination string
+		/// @remark コード単位を検証せずコピーします。入力は dst の全体または部分範囲を参照できます。 | Copies code units without validation. The input may refer to all or part of dst.
+		/// @remark 空の入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty input clears dst. Embedded NULs are preserved.
+		void ToUTF32(StringView s, std::u32string& dst);
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	UTF8ToUTF16, UTF8ToUTF32
@@ -205,11 +294,25 @@ namespace s3d
 		[[nodiscard]]
 		std::u16string UTF8ToUTF16(std::string_view s);
 
+		/// @brief UTF-8 文字列を UTF-16 文字列に変換し、出力先を上書きします。 | Converts a UTF-8 string to a UTF-16 string and overwrites the destination.
+		/// @param s UTF-8 文字列 | A UTF-8 string
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void UTF8ToUTF16(std::string_view s, std::u16string& dst);
+
 		/// @brief UTF-8 文字列を UTF-32 文字列に変換します。 | Converts a UTF-8 string to a UTF-32 string.
 		/// @param s UTF-8 文字列 | A UTF-8 string
 		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
 		[[nodiscard]]
 		std::u32string UTF8ToUTF32(std::string_view s);
+
+		/// @brief UTF-8 文字列を UTF-32 文字列に変換し、出力先を上書きします。 | Converts a UTF-8 string to a UTF-32 string and overwrites the destination.
+		/// @param s UTF-8 文字列 | A UTF-8 string
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void UTF8ToUTF32(std::string_view s, std::u32string& dst);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -223,11 +326,25 @@ namespace s3d
 		[[nodiscard]]
 		std::string UTF16ToUTF8(std::u16string_view s);
 
+		/// @brief UTF-16 文字列を UTF-8 文字列に変換し、出力先を上書きします。 | Converts a UTF-16 string to a UTF-8 string and overwrites the destination.
+		/// @param s UTF-16 文字列 | A UTF-16 string
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void UTF16ToUTF8(std::u16string_view s, std::string& dst);
+
 		/// @brief UTF-16 文字列を UTF-32 文字列に変換します。 | Converts a UTF-16 string to a UTF-32 string.
 		/// @param s UTF-16 文字列 | A UTF-16 string
 		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
 		[[nodiscard]]
 		std::u32string UTF16ToUTF32(std::u16string_view s);
+
+		/// @brief UTF-16 文字列を UTF-32 文字列に変換し、出力先を上書きします。 | Converts a UTF-16 string to a UTF-32 string and overwrites the destination.
+		/// @param s UTF-16 文字列 | A UTF-16 string
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void UTF16ToUTF32(std::u16string_view s, std::u32string& dst);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -241,11 +358,25 @@ namespace s3d
 		[[nodiscard]]
 		std::string UTF32ToUTF8(std::u32string_view s);
 
+		/// @brief UTF-32 文字列を UTF-8 文字列に変換し、出力先を上書きします。 | Converts a UTF-32 string to a UTF-8 string and overwrites the destination.
+		/// @param s UTF-32 文字列 | A UTF-32 string
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void UTF32ToUTF8(std::u32string_view s, std::string& dst);
+
 		/// @brief UTF-32 文字列を UTF-16 文字列に変換します。 | Converts a UTF-32 string to a UTF-16 string.
 		/// @param s UTF-32 文字列 | A UTF-32 string
 		/// @return 変換された文字列。入力が不正な場合は空の文字列 | The converted string. An empty string if the input is invalid
 		[[nodiscard]]
 		std::u16string UTF32ToUTF16(std::u32string_view s);
+
+		/// @brief UTF-32 文字列を UTF-16 文字列に変換し、出力先を上書きします。 | Converts a UTF-32 string to a UTF-16 string and overwrites the destination.
+		/// @param s UTF-32 文字列 | A UTF-32 string
+		/// @param dst 格納先の文字列 | The destination string
+		/// @pre 入力と dst の記憶領域は重なってはいけません。 | The input must not overlap the storage of dst.
+		/// @remark 空または不正な入力では dst を空にします。埋め込みの NUL は保持されます。 | Empty or invalid input clears dst. Embedded NULs are preserved.
+		void UTF32ToUTF16(std::u32string_view s, std::u16string& dst);
 
 		////////////////////////////////////////////////////////////////
 		//

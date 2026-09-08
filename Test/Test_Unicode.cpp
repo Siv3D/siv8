@@ -11,6 +11,154 @@
 
 # include "Siv3DTest.hpp"
 # include <limits>
+# include <bit>
+
+namespace
+{
+	template <class View, class Destination>
+	void CheckUnicodeDestination(void (*write)(View, Destination&), Destination (*make)(View),
+		const View input, const Destination& expected)
+	{
+		Destination dst;
+		dst.reserve(expected.size() + 256);
+		dst.assign(128, static_cast<typename Destination::value_type>('X'));
+		const auto* storage = dst.data();
+
+		write(input, dst);
+		CHECK_EQ(dst, expected);
+		CHECK(dst.data() == storage);
+		CHECK_EQ(make(input), expected);
+
+		write(View{}, dst);
+		CHECK(dst.empty());
+		CHECK(dst.data() == storage);
+
+		write(input, dst);
+		CHECK_EQ(dst, expected);
+		CHECK(dst.data() == storage);
+	}
+
+	template <class View, class Destination>
+	void CheckInvalidUnicodeDestination(void (*write)(View, Destination&), const View input)
+	{
+		Destination dst(256, static_cast<typename Destination::value_type>('X'));
+		write(input, dst);
+		CHECK(dst.empty());
+	}
+}
+
+TEST_CASE("Unicode.Destination.NormalAndReuse")
+{
+	constexpr char text8[] = "A\0あ\U0001F600\0";
+	constexpr char16 text16[] = u"A\0あ\U0001F600\0";
+	constexpr char32 text32[] = U"A\0あ\U0001F600\0";
+	constexpr wchar_t textWide[] = L"A\0あ\U0001F600\0";
+	const std::string utf8{ text8, (std::size(text8) - 1) };
+	const std::u16string utf16{ text16, (std::size(text16) - 1) };
+	const std::u32string utf32{ text32, (std::size(text32) - 1) };
+	const std::wstring wide{ textWide, (std::size(textWide) - 1) };
+	const String text{ utf32 };
+	std::u16string utf16BE = utf16;
+	for (auto& ch : utf16BE)
+	{
+		ch = static_cast<char16>(std::byteswap(static_cast<uint16>(ch)));
+	}
+
+	CheckUnicodeDestination<std::string_view, String>(Unicode::FromUTF8, Unicode::FromUTF8, utf8, text);
+	CheckUnicodeDestination<std::u16string_view, String>(Unicode::FromUTF16, Unicode::FromUTF16, utf16, text);
+	CheckUnicodeDestination<std::u16string_view, String>(Unicode::FromUTF16BE, Unicode::FromUTF16BE, utf16BE, text);
+	CheckUnicodeDestination<std::wstring_view, String>(Unicode::FromWstring, Unicode::FromWstring, wide, text);
+	CheckUnicodeDestination<std::u32string_view, String>(Unicode::FromUTF32, Unicode::FromUTF32, utf32, text);
+	CheckUnicodeDestination<StringView, std::string>(Unicode::ToUTF8, Unicode::ToUTF8, text, utf8);
+	CheckUnicodeDestination<StringView, std::u16string>(Unicode::ToUTF16, Unicode::ToUTF16, text, utf16);
+	CheckUnicodeDestination<StringView, std::wstring>(Unicode::ToWstring, Unicode::ToWstring, text, wide);
+	CheckUnicodeDestination<std::string_view, std::wstring>(Unicode::ToWstring, Unicode::ToWstring, utf8, wide);
+	CheckUnicodeDestination<StringView, std::u32string>(Unicode::ToUTF32, Unicode::ToUTF32, text, utf32);
+	CheckUnicodeDestination<std::string_view, std::u16string>(Unicode::UTF8ToUTF16, Unicode::UTF8ToUTF16, utf8, utf16);
+	CheckUnicodeDestination<std::string_view, std::u32string>(Unicode::UTF8ToUTF32, Unicode::UTF8ToUTF32, utf8, utf32);
+	CheckUnicodeDestination<std::u16string_view, std::string>(Unicode::UTF16ToUTF8, Unicode::UTF16ToUTF8, utf16, utf8);
+	CheckUnicodeDestination<std::u16string_view, std::u32string>(Unicode::UTF16ToUTF32, Unicode::UTF16ToUTF32, utf16, utf32);
+	CheckUnicodeDestination<std::u32string_view, std::string>(Unicode::UTF32ToUTF8, Unicode::UTF32ToUTF8, utf32, utf8);
+	CheckUnicodeDestination<std::u32string_view, std::u16string>(Unicode::UTF32ToUTF16, Unicode::UTF32ToUTF16, utf32, utf16);
+
+	for (const size_t length : { 0, 1, 15, 16, 17, 31, 32, 33, 63, 64, 65, 127, 128, 129, 4096 })
+	{
+		CAPTURE(length);
+		const std::string ascii(length, '\x7F');
+		const String ascii32(length, U'\x7F');
+		const std::wstring asciiWide(length, L'\x7F');
+		CheckUnicodeDestination<std::string_view, String>(Unicode::FromAscii, Unicode::FromAscii, ascii, ascii32);
+		CheckUnicodeDestination<StringView, std::string>(Unicode::ToAscii, Unicode::ToAscii, ascii32, ascii);
+		CheckUnicodeDestination<std::wstring_view, String>(Unicode::FromWstring, Unicode::FromWstring, asciiWide, ascii32);
+		CheckUnicodeDestination<StringView, std::wstring>(Unicode::ToWstring, Unicode::ToWstring, ascii32, asciiWide);
+	}
+}
+
+TEST_CASE("Unicode.Destination.InvalidInput")
+{
+	for (const size_t padding : { 0, 15, 16, 31, 32, 63, 64 })
+	{
+		CAPTURE(padding);
+		const std::string invalid8 = (std::string(padding, 'A') + "\xFF");
+		const std::u16string invalid16 = (std::u16string(padding, u'A') + char16{ 0xD800 });
+		std::u16string invalid16BE = invalid16;
+		for (auto& ch : invalid16BE)
+		{
+			ch = static_cast<char16>(std::byteswap(static_cast<uint16>(ch)));
+		}
+		const std::u32string invalid32 = (std::u32string(padding, U'A') + char32{ 0x110000 });
+		const String invalidText{ invalid32 };
+		const std::wstring invalidWide = (std::wstring(padding, L'A') + wchar_t{ 0xD800 });
+
+		CheckInvalidUnicodeDestination<std::string_view, String>(Unicode::FromAscii, invalid8);
+		CheckInvalidUnicodeDestination<std::string_view, String>(Unicode::FromUTF8, invalid8);
+		CheckInvalidUnicodeDestination<std::u16string_view, String>(Unicode::FromUTF16, invalid16);
+		CheckInvalidUnicodeDestination<std::u16string_view, String>(Unicode::FromUTF16BE, invalid16BE);
+		CheckInvalidUnicodeDestination<std::wstring_view, String>(Unicode::FromWstring, invalidWide);
+		CheckInvalidUnicodeDestination<StringView, std::string>(Unicode::ToAscii, invalidText);
+		CheckInvalidUnicodeDestination<StringView, std::string>(Unicode::ToUTF8, invalidText);
+		CheckInvalidUnicodeDestination<StringView, std::u16string>(Unicode::ToUTF16, invalidText);
+		CheckInvalidUnicodeDestination<StringView, std::wstring>(Unicode::ToWstring, invalidText);
+		CheckInvalidUnicodeDestination<std::string_view, std::wstring>(Unicode::ToWstring, invalid8);
+		CheckInvalidUnicodeDestination<std::string_view, std::u16string>(Unicode::UTF8ToUTF16, invalid8);
+		CheckInvalidUnicodeDestination<std::string_view, std::u32string>(Unicode::UTF8ToUTF32, invalid8);
+		CheckInvalidUnicodeDestination<std::u16string_view, std::string>(Unicode::UTF16ToUTF8, invalid16);
+		CheckInvalidUnicodeDestination<std::u16string_view, std::u32string>(Unicode::UTF16ToUTF32, invalid16);
+		CheckInvalidUnicodeDestination<std::u32string_view, std::string>(Unicode::UTF32ToUTF8, invalid32);
+		CheckInvalidUnicodeDestination<std::u32string_view, std::u16string>(Unicode::UTF32ToUTF16, invalid32);
+
+		CheckUnicodeDestination<std::u32string_view, String>(Unicode::FromUTF32, Unicode::FromUTF32, invalid32, invalidText);
+		CheckUnicodeDestination<StringView, std::u32string>(Unicode::ToUTF32, Unicode::ToUTF32, invalidText, invalid32);
+	}
+}
+
+TEST_CASE("Unicode.Destination.UTF32SelfReference")
+{
+	for (const size_t length : { 0, 1, 4, 31, 32, 128, 4096 })
+	{
+		String original(length, U'A');
+		for (size_t i = 0; i < length; ++i)
+		{
+			original[i] = static_cast<char32>(i);
+		}
+		for (const auto [offset, count] : {
+			std::pair<size_t, size_t>{ 0, length },
+			std::pair<size_t, size_t>{ length / 2, length / 2 },
+			std::pair<size_t, size_t>{ length, 0 } })
+		{
+			CAPTURE(length);
+			CAPTURE(offset);
+			String dst = original;
+			const String expected = original.substr(offset, count);
+			Unicode::FromUTF32(std::u32string_view{ dst.data() + offset, count }, dst);
+			CHECK_EQ(dst, expected);
+
+			std::u32string dst32(original.begin(), original.end());
+			Unicode::ToUTF32(StringView{ dst32.data() + offset, count }, dst32);
+			CHECK_EQ(dst32, std::u32string(expected.begin(), expected.end()));
+		}
+	}
+}
 
 TEST_CASE("Unicode.FromAscii.RoundTrip")
 {

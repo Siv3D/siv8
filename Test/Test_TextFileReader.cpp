@@ -717,7 +717,7 @@ TEST_CASE("TextFileReader.longCRLF")
 	const Array<String> targetTextLines = targetText.split(U'\n');
 	const Array<String> targetTextLines_(targetTextLines.begin(), (targetTextLines.end() - 1));
 	const std::string targetTextUTF8 = targetText.toUTF8();
-	const Array<std::string> targetTextLinesUTF8 = targetTextLines.map(Unicode::ToUTF8);
+	const Array<std::string> targetTextLinesUTF8 = targetTextLines.map([](const String& line) { return Unicode::ToUTF8(line); });
 	const Array<std::string> targetTextLinesUTF8_(targetTextLinesUTF8.begin(), (targetTextLinesUTF8.end() - 1));
 
 	REQUIRE(targetText.starts_with(U"{{転送"));
