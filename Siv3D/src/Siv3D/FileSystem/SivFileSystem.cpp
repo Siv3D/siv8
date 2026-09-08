@@ -236,12 +236,23 @@ namespace s3d
 
 		bool IsEmptyDirectory(const FilePathView path)
 		{
-			if (not IsDirectory(path))
+			if (path.isEmpty())
 			{
 				return false;
 			}
 
-			return (std::filesystem::directory_iterator{ ToPath(path) } == std::filesystem::directory_iterator{});
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			if (IsResourcePath(path))
+			{
+				return false;
+			}
+
+		# endif
+
+			std::error_code error;
+			const std::filesystem::directory_iterator it{ ToPath(path), error };
+			return ((not error) && (it == std::filesystem::directory_iterator{}));
 		}
 			
 		////////////////////////////////////////////////////////////////

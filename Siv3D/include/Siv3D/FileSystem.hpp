@@ -237,6 +237,7 @@ namespace s3d
 
 		/// @brief 指定したパスが空のディレクトリであるかを返します。
 		/// @param path パス
+		/// @remark OS のファイルシステムエラーにより中身を列挙できない場合は false を返します。
 		/// @return 空のディレクトリである場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool IsEmptyDirectory(FilePathView path);

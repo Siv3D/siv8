@@ -435,6 +435,35 @@ TEST_CASE("FileSystem::DirectoryContents normal paths")
 	}
 }
 
+TEST_CASE("FileSystem::IsEmptyDirectory")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/isemptydirectory/normal/");
+	REQUIRE(FileSystem::CreateDirectories(root + U"empty/"));
+	REQUIRE(FileSystem::CreateDirectories(root + U"directories/child/"));
+	{
+		BinaryFileWriter writer{ root + U"hidden/.hidden" };
+		REQUIRE(writer.isOpen());
+	}
+	const struct
+	{
+		FilePath path;
+		bool expected;
+	} cases[] = {
+		{ root + U"empty/", true },
+		{ root + U"empty", true },
+		{ root + U"directories/", false },
+		{ root + U"hidden/", false },
+		{ root + U"hidden/.hidden", false },
+		{ root + U"missing/", false },
+		{ U"", false },
+		{ Resource(U"missing-resource/"), false },
+	};
+	for (const auto& test : cases)
+	{
+		CHECK_EQ(FileSystem::IsEmptyDirectory(test.path), test.expected);
+	}
+}
+
 TEST_CASE("FileSystem::CreateParentDirectories")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/createparent/normal/");
@@ -641,6 +670,55 @@ TEST_CASE("FileSystem::IsResourcePath permission failure")
 # endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+
+TEST_CASE("FileSystem::IsEmptyDirectory permission failure")
+{
+	if (::geteuid() == 0)
+	{
+		MESSAGE("Permission denial requires a non-root user.");
+		return;
+	}
+	for (const bool populated : { false, true })
+	{
+		const FilePath directory = Test::OutputPath(populated
+			? U"filesystem/isemptydirectory/locked-populated/"
+			: U"filesystem/isemptydirectory/locked-empty/");
+		REQUIRE(FileSystem::CreateDirectories(directory));
+		if (populated)
+		{
+			BinaryFileWriter writer{ directory + U"file.txt" };
+			REQUIRE(writer.isOpen());
+		}
+		const std::string native = Unicode::ToUTF8(directory);
+		const ScopeExit restorePermissions{ [&native] { ::chmod(native.c_str(), 0700); } };
+		REQUIRE(::chmod(native.c_str(), 0000) == 0);
+		bool result = true;
+		CHECK_NOTHROW(result = FileSystem::IsEmptyDirectory(directory));
+		CHECK_FALSE(result);
+		CHECK_FALSE(FileSystem::IsEmptyDirectory(directory + U"missing"));
+		REQUIRE(::chmod(native.c_str(), 0500) == 0);
+		CHECK_EQ(FileSystem::IsEmptyDirectory(directory), (not populated));
+	}
+}
+
+TEST_CASE("FileSystem::IsEmptyDirectory symbolic links")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/isemptydirectory/links/");
+	const FilePath alias = (root + U"alias");
+	REQUIRE(FileSystem::CreateDirectories(root + U"empty/"));
+	REQUIRE(::symlink("empty", Unicode::ToUTF8(alias).c_str()) == 0);
+	REQUIRE(::symlink("missing-target", Unicode::ToUTF8(root + U"broken").c_str()) == 0);
+	REQUIRE(::symlink("loop", Unicode::ToUTF8(root + U"loop").c_str()) == 0);
+	CHECK(FileSystem::IsEmptyDirectory(alias));
+	CHECK_FALSE(FileSystem::IsEmptyDirectory(root + U"broken"));
+	CHECK_FALSE(FileSystem::IsEmptyDirectory(root + U"loop"));
+	{
+		BinaryFileWriter writer{ root + U"empty/file.txt" };
+		REQUIRE(writer.isOpen());
+	}
+	CHECK_FALSE(FileSystem::IsEmptyDirectory(alias));
+	CHECK(std::filesystem::is_symlink(Unicode::ToUTF8(alias)));
+}
 
 TEST_CASE("FileSystem::CreateParentDirectories resolution failure")
 {
