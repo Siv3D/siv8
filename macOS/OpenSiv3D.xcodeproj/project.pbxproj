@@ -65,6 +65,8 @@
 		F902E1162EA8B39D002C6B92 /* SivSimpleGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F902E1142EA8B39D002C6B92 /* SivSimpleGUI.cpp */; };
 		F90702F52B9DAEB900383E4D /* Siv3DTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */; };
 		F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B62B9DAEB900383E4D /* Test_Array.cpp */; };
+		480232B9203337518A6AEE90 /* Test_ArrayModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D3A7DCD1591C2DF005A6D60 /* Test_ArrayModel.cpp */; };
+		E083A35B037003603D798AF8 /* Test_ArrayException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */; };
 		F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */; };
 		F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B82B9DAEB900383E4D /* Test_Byte.cpp */; };
 		F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B92B9DAEB900383E4D /* Test_Color.cpp */; };
@@ -3351,6 +3353,8 @@
 		F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Siv3DTest.cpp; sourceTree = "<group>"; };
 		F90702B52B9DAEB900383E4D /* Siv3DTest.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Siv3DTest.hpp; sourceTree = "<group>"; };
 		F90702B62B9DAEB900383E4D /* Test_Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Array.cpp; sourceTree = "<group>"; };
+		9D3A7DCD1591C2DF005A6D60 /* Test_ArrayModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayModel.cpp; sourceTree = "<group>"; };
+		67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayException.cpp; sourceTree = "<group>"; };
 		F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryFileWriter.cpp; sourceTree = "<group>"; };
 		F90702B82B9DAEB900383E4D /* Test_Byte.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Byte.cpp; sourceTree = "<group>"; };
 		F90702B92B9DAEB900383E4D /* Test_Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Color.cpp; sourceTree = "<group>"; };
@@ -6910,6 +6914,8 @@
 				F90702B42B9DAEB900383E4D /* Siv3DTest.cpp */,
 				F9AB0001302000000000000B /* Test_AnimatedImage.cpp */,
 				F90702B62B9DAEB900383E4D /* Test_Array.cpp */,
+				9D3A7DCD1591C2DF005A6D60 /* Test_ArrayModel.cpp */,
+				67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */,
 				F9A8A5C22FC0000000000001 /* Test_AsyncTask.cpp */,
 				F9C1000230A0000000000001 /* Test_ChildProcess.cpp */,
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
@@ -16522,6 +16528,8 @@
 				F9E5FCE12BC59E610081A4F7 /* Test_JSON.cpp in Sources */,
 				F9AB0001302000000000000A /* Test_AnimatedImage.cpp in Sources */,
 				F90702F62B9DAEB900383E4D /* Test_Array.cpp in Sources */,
+				480232B9203337518A6AEE90 /* Test_ArrayModel.cpp in Sources */,
+				E083A35B037003603D798AF8 /* Test_ArrayException.cpp in Sources */,
 				F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */,
 				F9A3D10330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp in Sources */,
 				F9A3D10430A1000000C0DE01 /* Test_Mesh3D.cpp in Sources */,

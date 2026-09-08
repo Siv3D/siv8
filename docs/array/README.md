@@ -97,3 +97,7 @@ parallel exceptions. Run the documented macOS workflow from the repository root:
 ./macOS/run-tests.sh '--test-case=Array*'
 ./macOS/run-tests.sh
 ```
+
+The [test strategy and instrumentation guide](testing.md) describes exception
+injection, deterministic model checks, bool storage boundaries, and isolated
+ASan/UBSan and coverage runs.

@@ -7,6 +7,13 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/Array.hpp`
+
+### テストのプラットフォーム・計測範囲
+
+- Windows / MSVC で `Test_Array.cpp`、`Test_ArrayException.cpp`、`Test_ArrayModel.cpp` を実行し、特に `Array<bool>` の領域切り替えとアロケータ伝播を確認する。
+- 通常の API・並列処理テストも含めたサニタイザ／カバレッジ計測を整備する。`tools/run-array-checks.sh` の対象は例外・モデルテストであり、未実体化のテンプレートメンバはカバレッジの分母に含まれない。
+
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 
 ### Squad 補間
