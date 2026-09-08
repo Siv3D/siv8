@@ -112,7 +112,7 @@ namespace s3d
 
 				result.resize_and_overwrite(requiredLength, [&](char32* buf, size_t)
 					{
-						return simdutf::convert_utf8_to_utf32(asciiText.data(), asciiText.size(), buf);
+						return simdutf::convert_latin1_to_utf32(asciiText.data(), asciiText.size(), buf);
 					});
 			}
 

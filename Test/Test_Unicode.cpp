@@ -12,6 +12,57 @@
 # include "Siv3DTest.hpp"
 # include <limits>
 
+TEST_CASE("Unicode.FromAscii.RoundTrip")
+{
+	CHECK(Unicode::FromAscii(std::string_view{}).isEmpty());
+
+	for (const size_t length : { 0, 1, 15, 31, 32, 33, 63, 64, 65, 127, 128, 129, 256, 4096 })
+	{
+		for (const size_t offset : { 1, 3 })
+		{
+			CAPTURE(length);
+			CAPTURE(offset);
+			std::string storage((offset + length + 1), '\xFF');
+			String expected;
+			for (size_t i = 0; i < length; ++i)
+			{
+				const uint32 cp = ((i * 17) % 128);
+				storage[offset + i] = static_cast<char>(cp);
+				expected.push_back(static_cast<char32>(cp));
+			}
+
+			const std::string_view input{ (storage.data() + offset), length };
+			const auto result = Unicode::FromAscii(input);
+			CHECK_EQ(result, expected);
+			CHECK_EQ(Unicode::ToAscii(result), input);
+		}
+	}
+}
+
+TEST_CASE("Unicode.FromAscii.InvalidInput")
+{
+	for (uint32 invalid = 0x80; invalid <= 0xFF; ++invalid)
+	{
+		for (const size_t length : { 1, 31, 32, 33, 63, 64, 65, 129 })
+		{
+			for (const size_t position : { size_t{ 0 }, (length / 2), (length - 1) })
+			{
+				CAPTURE(invalid);
+				CAPTURE(length);
+				CAPTURE(position);
+				std::string storage((length + 2), 'A');
+				storage[position + 1] = static_cast<char>(invalid);
+				CHECK(Unicode::FromAscii(std::string_view{ (storage.data() + 1), length }).isEmpty());
+			}
+		}
+	}
+
+	for (const size_t padding : { 0, 29, 32, 64 })
+	{
+		CHECK(Unicode::FromAscii(std::string(padding, 'A') + "あ").isEmpty());
+	}
+}
+
 TEST_CASE("Unicode.Wstring.RoundTrip")
 {
 	CHECK(Unicode::FromWstring(std::wstring_view{}).isEmpty());
