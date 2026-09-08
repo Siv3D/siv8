@@ -35,13 +35,11 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 # Test output and configuration
 
 - Keep automated tests independent of ambient output settings. Prefer in-memory validation when file I/O is not the behavior under test. Write required test files only beneath the repository's `Test/output/`, and keep fixtures under `Test/data/` read-only.
-- Establish and validate the working directory before using relative test paths or deleting output. Keep cleanup scoped to the test-owned output directory, including after assertion failures, and restore any working-directory changes on scope exit. Unique names must have an explicit test-owned parent directory.
-- Keep retained review artifacts in explicit manual tests or development tools. Document the output location and retention/cleanup behavior; tools that allocate a temporary output directory must report its path, or use a scoped temporary directory that is automatically removed. See [the development guide](docs/development/README.md#test-output-and-configuration) for existing workflows and engine-generated files.
-- Do not add environment-variable switches for test behavior, optional exports, or output destinations. Prefer explicit test-runner arguments or documented tool arguments. Use environment variables only when required by the platform/toolchain or when environment handling is itself under test; document their purpose and scope, and isolate changes to the relevant process or restore the previous value.
+- Let the test runner own output setup and cleanup; restore process state changed by a test. Retained artifacts belong in manual tests or tools with documented output locations. See [the development guide](docs/development/README.md#test-output-and-configuration).
+- Configure tests through explicit arguments, not ambient environment variables. Limit environment-variable use to platform/tool requirements or environment-handling tests, with changes scoped to the relevant process or restored afterward.
 
 # Documentation organization
 
 - Store durable usage guides and development knowledge under `docs/<subject>/`, with a subject `README.md` linked from `docs/README.md`. Follow `docs/AGENTS.md` for documentation changes.
-- Keep `Test/` for testing: fixtures, executable checks, manual execution steps, and expected results. Move reusable explanations and design rationale into docs, preserving complete manual test programs.
 - Keep pending work in root `TODO.md`; place unadopted designs in the relevant subject's `proposals/` directory with an explicit status. Root README and AGENTS remain entry points.
 - Update affected links when moving documents and run `python3 tools/check_docs.py` after documentation changes.
