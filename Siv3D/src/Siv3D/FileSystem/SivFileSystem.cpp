@@ -313,7 +313,7 @@ namespace s3d
 
 			result.replace(U'\\', U'/');
 
-			if (IsDirectory(result) && (not result.ends_with(U'/')))
+			if ((not result.ends_with(U'/')) && IsDirectory(path))
 			{
 				result.push_back(U'/');
 			}

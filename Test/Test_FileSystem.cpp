@@ -268,6 +268,40 @@ TEST_CASE("FileSystem::ChangeCurrentDirectory")
 	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
 }
 
+TEST_CASE("FileSystem::RelativePath")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/relativepath/");
+	const FilePath base = (root + U"base/");
+	const FilePath other = (root + U"other/");
+	REQUIRE(FileSystem::CreateDirectories(base + U"directory/"));
+	REQUIRE(FileSystem::CreateDirectories(other + U"file.txt/"));
+	REQUIRE(FileSystem::CreateDirectories(other + U"missing/"));
+	{
+		BinaryFileWriter writer{ base + U"file.txt" };
+		REQUIRE(writer.isOpen());
+	}
+
+	const FilePath currentDirectory = FileSystem::CurrentDirectory();
+	const ScopeExit restoreDirectory{ [&currentDirectory]
+		{
+			FileSystem::ChangeCurrentDirectory(currentDirectory);
+		} };
+
+	for (const FilePath& workingDirectory : { base, other })
+	{
+		REQUIRE(FileSystem::ChangeCurrentDirectory(workingDirectory));
+		CHECK_EQ(FileSystem::RelativePath(base + U"directory", base), U"directory/");
+		CHECK_EQ(FileSystem::RelativePath(base + U"file.txt", base), U"file.txt");
+		CHECK_EQ(FileSystem::RelativePath(base + U"missing", base), U"missing");
+		CHECK_EQ(FileSystem::RelativePath(base, base), U"./");
+		CHECK_EQ(FileSystem::FullPath(base + FileSystem::RelativePath(base + U"file.txt", base)),
+			FileSystem::FullPath(base + U"file.txt"));
+	}
+
+	CHECK_EQ(FileSystem::RelativePath(U"", base), U"");
+	CHECK_EQ(FileSystem::RelativePath(base, U""), U"");
+}
+
 TEST_CASE("FileSystem Misc")
 {
 	Console << U"FileSystem";

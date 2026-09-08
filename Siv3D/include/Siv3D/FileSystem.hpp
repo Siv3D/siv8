@@ -411,6 +411,7 @@ namespace s3d
 		/// @brief 相対パスを作成して返します。
 		/// @param path パス
 		/// @param start 相対パスの基準となるパス
+		/// @remark 相対パスの末尾の `/` は、対象の path がディレクトリであるかに基づいて付加されます。
 		/// @return start からみた path の相対パス
 		[[nodiscard]]
 		FilePath RelativePath(FilePathView path, FilePathView start = CurrentDirectory());
