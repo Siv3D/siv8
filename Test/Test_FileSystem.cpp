@@ -394,6 +394,53 @@ TEST_CASE("FileSystem::BaseName")
 	CHECK_EQ(FileSystem::BaseName(Resource(U"example.test/a.b.c/windmill.p.q")), U"windmill.p");
 }
 
+TEST_CASE("FileSystem::FileName and BaseName path views")
+{
+	const struct
+	{
+		FilePathView name;
+		FilePathView baseName;
+	} cases[] = {
+		{ U"", U"" },
+		{ U".", U"." },
+		{ U"..", U".." },
+		{ U"....", U"...." },
+		{ U"file", U"file" },
+		{ U"file.", U"file." },
+		{ U"file..", U"file.." },
+		{ U"file.txt.", U"file.txt." },
+		{ U"archive.tar.gz", U"archive.tar" },
+		{ U".gitignore", U".gitignore" },
+		{ U".config.json", U".config" },
+		{ U"日本語-😀.PNG", U"日本語-😀" },
+	};
+	const Array<FilePath> prefixes = {
+		U"", U"/", U"\\", U"parent/", U"parent\\", U"mixed/parent\\nested/",
+		String(4096, U'a') + U"/parent\\", Resource(U""), Resource(U"example/"),
+	};
+	for (const auto& prefix : prefixes)
+	{
+		CAPTURE(prefix);
+		for (const auto& test : cases)
+		{
+			CAPTURE(test.name);
+			const FilePath path = (prefix + test.name);
+			// Neither end of the view coincides with an end of the backing string.
+			const String storage = (U"ignored/" + path + U".ignored/suffix");
+			const FilePathView view{ (storage.data() + 8), path.size() };
+			CHECK_EQ(FileSystem::FileName(view), test.name);
+			CHECK_EQ(FileSystem::BaseName(view), test.baseName);
+			for (const char32 separator : { U'/', U'\\' })
+			{
+				CHECK(FileSystem::FileName(path + separator).isEmpty());
+				CHECK(FileSystem::BaseName(path + separator).isEmpty());
+			}
+		}
+	}
+	CHECK(FileSystem::FileName(FilePathView{}).isEmpty());
+	CHECK(FileSystem::BaseName(FilePathView{}).isEmpty());
+}
+
 TEST_CASE("FileSystem::ChangeCurrentDirectory")
 {
 	const FilePath currentDirectory = FileSystem::CurrentDirectory();
@@ -414,6 +461,50 @@ TEST_CASE("FileSystem::ChangeCurrentDirectory")
 	CHECK_EQ(FileSystem::ChangeCurrentDirectory(U"../"), true);
 	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
 }
+
+TEST_CASE("FileSystem::CurrentDirectory Unicode")
+{
+	const FilePath currentDirectory = FileSystem::CurrentDirectory();
+	const ScopeExit restoreDirectory{ [&currentDirectory]
+		{
+			CHECK(FileSystem::ChangeCurrentDirectory(currentDirectory));
+		} };
+	const FilePath directory = Test::OutputPath(U"filesystem/currentdirectory/日本語-😀/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	REQUIRE(FileSystem::ChangeCurrentDirectory(directory));
+	CHECK_EQ(FileSystem::CurrentDirectory(), directory);
+	CHECK_EQ(FileSystem::RelativePath(directory), U"./");
+}
+
+# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+
+TEST_CASE("FileSystem::CurrentDirectory removed directory")
+{
+	const FilePath currentDirectory = FileSystem::CurrentDirectory();
+	const FilePath directory = Test::OutputPath(U"filesystem/currentdirectory/removed/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	{
+		const ScopeExit restoreDirectory{ [&currentDirectory]
+			{
+				CHECK(FileSystem::ChangeCurrentDirectory(currentDirectory));
+			} };
+		REQUIRE(FileSystem::ChangeCurrentDirectory(directory));
+		REQUIRE(::rmdir(Unicode::ToUTF8(directory).c_str()) == 0);
+		std::error_code error;
+		(void)std::filesystem::current_path(error);
+		REQUIRE(error);
+
+		FilePath result = U"unchanged";
+		CHECK_NOTHROW(result = FileSystem::CurrentDirectory());
+		CHECK(result.isEmpty());
+		result = U"unchanged";
+		CHECK_NOTHROW(result = FileSystem::RelativePath(currentDirectory));
+		CHECK(result.isEmpty());
+	}
+	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
+}
+
+# endif
 
 TEST_CASE("FileSystem::RelativePath")
 {

@@ -19,6 +19,25 @@ namespace s3d
 	namespace
 	{
 		[[nodiscard]]
+		static FilePathView FileNameView(FilePathView path) noexcept
+		{
+		# if SIV3D_PLATFORM(WINDOWS)
+			if (FileSystem::IsResourcePath(path))
+			{
+				path.remove_prefix(1);
+			}
+		# endif
+
+			if (const size_t separatorPos = path.find_last_of(U"/\\");
+				separatorPos != String::npos)
+			{
+				path.remove_prefix(separatorPos + 1);
+			}
+
+			return path;
+		}
+
+		[[nodiscard]]
 		inline static std::filesystem::path ToPath(const FilePathView path)
 		{
 			return std::filesystem::path{ Unicode::ToWstring(path) };
@@ -106,41 +125,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		String FileName(FilePathView path_)
+		String FileName(const FilePathView path)
 		{
-			if (path_.isEmpty())
-			{
-				return{};
-			}
-
-		# if SIV3D_PLATFORM(WINDOWS)
-
-			if (IsResourcePath(path_))
-			{
-				path_.remove_prefix(1);
-			}
-
-		# endif
-
-			FilePath path = FilePath{ path_ }.replace(U'\\', U'/');
-
-			if (path.ends_with(U'/'))
-			{
-				return{};
-			}
-			else
-			{
-				const size_t sepPos = path.rfind(U'/');
-
-				if (sepPos == String::npos)
-				{
-					return String{ path };
-				}
-				else
-				{
-					return String((path.begin() + sepPos + 1), path.end());
-				}
-			}
+			return FileNameView(path).toString();
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -151,7 +138,7 @@ namespace s3d
 
 		String BaseName(const FilePathView path)
 		{
-			const String fileName = FileName(path);
+			const FilePathView fileName = FileNameView(path);
 
 			if (fileName.isEmpty())
 			{
@@ -162,15 +149,15 @@ namespace s3d
 
 			if (dotPos == String::npos)
 			{
-				return fileName;
+				return fileName.toString();
 			}
 
 			if ((dotPos == 0) || (dotPos == (fileName.size() - 1)))
 			{
-				return fileName;
+				return fileName.toString();
 			}
 
-			return String(fileName.begin(), (fileName.begin() + dotPos));
+			return fileName.substr(0, dotPos).toString();
 		}
 
 		////////////////////////////////////////////////////////////////

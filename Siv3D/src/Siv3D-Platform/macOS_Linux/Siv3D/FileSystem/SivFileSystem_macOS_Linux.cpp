@@ -149,7 +149,14 @@ namespace s3d
 	
 		FilePath CurrentDirectory()
 		{
-			FilePath currentDirectory = Unicode::FromUTF8(std::filesystem::current_path().string());
+			std::error_code error;
+			const std::filesystem::path nativeCurrentDirectory = std::filesystem::current_path(error);
+			if (error)
+			{
+				return{};
+			}
+
+			FilePath currentDirectory = Unicode::FromUTF8(nativeCurrentDirectory.native());
 			
 			if (not currentDirectory.ends_with(U'/'))
 			{
