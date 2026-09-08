@@ -58,6 +58,7 @@ namespace s3d
 			FilePathCache();
 		};
 
+		// OS errors are represented by file_status (none, not_found, or unknown), not exceptions.
 		[[nodiscard]]
 		std::filesystem::file_status GetStatus(std::wstring_view path);
 

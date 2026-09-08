@@ -54,7 +54,7 @@ namespace s3d
 				return detail::ResourceExists(path);
 			}
 
-			return (detail::GetStatus(path).type() != std::filesystem::file_type::not_found);
+			return std::filesystem::exists(detail::GetStatus(path));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -129,9 +129,13 @@ namespace s3d
 				return path.toString();
 			}
 
-			const std::wstring nativeFullPath = detail::GetNativeFullPath(path);
+			std::wstring nativeFullPath = detail::GetNativeFullPath(path);
+			if (nativeFullPath.empty())
+			{
+				return{};
+			}
 
-			return Unicode::FromWstring(detail::NormalizePath(nativeFullPath, detail::PathType::Unknown));
+			return Unicode::FromWstring(detail::NormalizePath(std::move(nativeFullPath), detail::PathType::Unknown));
 		}
 
 		////////////////////////////////////////////////////////////////

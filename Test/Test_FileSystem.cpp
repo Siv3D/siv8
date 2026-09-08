@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include <filesystem>
 
 # if SIV3D_PLATFORM(WINDOWS)
 	# include <Siv3D/Windows/Windows.hpp>
@@ -17,7 +18,6 @@
 # endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
-	# include <filesystem>
 	# include <fcntl.h>
 	# include <sys/stat.h>
 	# include <unistd.h>
@@ -26,6 +26,43 @@
 # if SIV3D_PLATFORM(MACOS)
 	# include <sys/xattr.h>
 # endif
+
+TEST_CASE("FileSystem::Path status")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/status/");
+	REQUIRE(FileSystem::CreateDirectories(root + U"directory/"));
+	{
+		BinaryFileWriter writer{ root + U"日本語.txt" };
+		REQUIRE(writer.isOpen());
+	}
+	const Array<FilePath>& resources = EnumResourceFiles();
+	REQUIRE_FALSE(resources.isEmpty());
+	const struct
+	{
+		FilePath path;
+		bool exists;
+		bool isDirectory;
+		bool isFile;
+	} cases[] = {
+		{ root, true, true, false },
+		{ root + U"directory", true, true, false },
+		{ root + U"directory/", true, true, false },
+		{ root + U"日本語.txt", true, false, true },
+		{ root + U"missing", false, false, false },
+		{ root + U"missing/child", false, false, false },
+		{ root + U"日本語.txt/child", false, false, false },
+		{ U"", false, false, false },
+		{ resources.front(), true, false, true },
+		{ Resource(U"missing-resource/file.txt"), false, false, false },
+	};
+	for (const auto& test : cases)
+	{
+		CAPTURE(test.path);
+		CHECK_EQ(FileSystem::Exists(test.path), test.exists);
+		CHECK_EQ(FileSystem::IsDirectory(test.path), test.isDirectory);
+		CHECK_EQ(FileSystem::IsFile(test.path), test.isFile);
+	}
+}
 
 TEST_CASE("FileSystem::IsResourcePath")
 {
@@ -523,9 +560,9 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 
 	const FilePath links[] = {
 		directory + U"external", directory + U"cycle", directory + U"nested/parent",
-		directory + U"broken", root + U"alias",
+		directory + U"broken", root + U"alias", root + U"self",
 	};
-	const FilePath targets[] = { outside, directory, directory, outside + U"missing", directory };
+	const FilePath targets[] = { outside, directory, directory, outside + U"missing", directory, root + U"self" };
 	Array<NativeFilePath> nativeLinks;
 	for (const auto& link : links)
 	{
@@ -587,6 +624,32 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 		const DWORD error = created ? ERROR_SUCCESS : ::GetLastError();
 		CAPTURE(error);
 		REQUIRE(created != 0);
+	}
+
+	for (const FilePath& path : { root + U"self", root + U"self/child" })
+	{
+		CAPTURE(path);
+		// Confirm that the fixture triggers an attribute error, not a missing path.
+		std::error_code error;
+		const auto status = std::filesystem::status(Unicode::ToWstring(path), error);
+		REQUIRE(error);
+		REQUIRE(status.type() == std::filesystem::file_type::none);
+		for (const auto query : { FileSystem::Exists, FileSystem::IsDirectory, FileSystem::IsFile })
+		{
+			bool result = true;
+			CHECK_NOTHROW(result = query(path));
+			CHECK_FALSE(result);
+		}
+		uint64 size = 123;
+		CHECK_NOTHROW(size = FileSystem::Size(path));
+		CHECK_EQ(size, 0);
+		Array<FilePath> paths{ U"unchanged" };
+		CHECK_NOTHROW(paths = FileSystem::DirectoryContents(path));
+		CHECK(paths.isEmpty());
+		FilePath fullPath = U"unchanged";
+		CHECK_NOTHROW(fullPath = FileSystem::FullPath(path));
+		CHECK(fullPath.isEmpty());
+		CHECK_FALSE(FileSystem::NativePath(path).empty());
 	}
 
 	for (const auto& base : { directory, (root + U"alias/") })

@@ -99,7 +99,8 @@ namespace s3d
 		[[nodiscard]]
 		std::filesystem::file_status GetStatus(const std::wstring_view path)
 		{
-			return std::filesystem::status(std::filesystem::path{ path });
+			std::error_code error;
+			return std::filesystem::status(std::filesystem::path{ path }, error);
 		}
 
 		[[nodiscard]]
@@ -162,14 +163,29 @@ namespace s3d
 			return std::wstring{ result, length };
 		}
 
-		std::wstring NormalizePath(std::wstring path, const PathType pathType)
+		std::wstring NormalizePath(std::wstring path, PathType pathType)
 		{
 			std::replace(path.begin(), path.end(), L'\\', L'/');
 
-			if ((not path.ends_with(L'/'))
-				&& ((pathType == PathType::Directory) || (GetStatus(path).type() == std::filesystem::file_type::directory)))
+			if (not path.ends_with(L'/'))
 			{
-				path.push_back(L'/');
+				if (pathType == PathType::Unknown)
+				{
+					const auto type = GetStatus(path).type();
+					if (type == std::filesystem::file_type::none)
+					{
+						return{};
+					}
+					if (type == std::filesystem::file_type::directory)
+					{
+						pathType = PathType::Directory;
+					}
+				}
+
+				if (pathType == PathType::Directory)
+				{
+					path.push_back(L'/');
+				}
 			}
 
 			return path;

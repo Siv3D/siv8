@@ -64,6 +64,7 @@ namespace s3d
 
 		/// @brief 指定されたパスのファイルまたはディレクトリが存在するかを返します。
 		/// @param path パス
+		/// @remark Windows では、OS のファイルシステムエラーにより存在を判定できない場合は false を返します。
 		/// @return 指定されたパスのファイルまたはディレクトリが存在する場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool Exists(FilePathView path);
@@ -76,6 +77,7 @@ namespace s3d
 
 		/// @brief 指定したパスのディレクトリが存在するかを返します。
 		/// @param path ディレクトリのパス
+		/// @remark Windows では、OS のファイルシステムエラーにより種類を判定できない場合は false を返します。
 		/// @return 指定したパスのディレクトリが存在する場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool IsDirectory(FilePathView path);
@@ -88,6 +90,7 @@ namespace s3d
 
 		/// @brief 指定したパスのファイルが存在するかを返します。
 		/// @param path ファイルパス
+		/// @remark Windows では、OS のファイルシステムエラーにより種類を判定できない場合は false を返します。
 		/// @return 指定したパスのファイルが存在する場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool IsFile(FilePathView path);
@@ -115,6 +118,7 @@ namespace s3d
 		/// @remark 実際に存在するファイルやディレクトリのパスである必要はありません
 		/// @remark 例: "C:/Users/Siv/Desktop/picture.png"
 		/// @remark macOS / Linux では、パス解決時の OS のファイルシステムエラーは例外として送出せず、空の文字列を返します。
+		/// @remark Windows では、絶対パスへの変換に失敗した場合や、末尾の区切り文字の補完時にパスの存在を判定できない場合、空の文字列を返します。
 		/// @return 絶対パス。失敗した場合は空の文字列
 		[[nodiscard]]
 		FilePath FullPath(FilePathView path);
@@ -251,7 +255,7 @@ namespace s3d
 		/// @brief 指定したファイルやディレクトリのサイズを返します。
 		/// @param path パス
 		/// @remark macOS / Linux では、パス解決・属性取得・列挙で OS のファイルシステムエラーが発生した場合、部分合計を返さず 0 を返します。
-		/// @remark Windows では、ディレクトリの列挙で OS のファイルシステムエラーが発生した場合、部分合計を返さず 0 を返します。
+		/// @remark Windows では、ファイルやディレクトリの種類を判定できない場合や、ディレクトリの列挙で OS のファイルシステムエラーが発生した場合、部分合計を返さず 0 を返します。
 		/// @remark macOS / Linux では、集計中に見つかったディレクトリへのシンボリックリンクには再帰しません。ファイルへのシンボリックリンクはリンク先のサイズを加算します。
 		/// @remark Windows では、集計中に見つかったディレクトリのジャンクションやシンボリックリンクなど、別の場所を指す再解析ポイントには再帰しません。
 		/// @remark path に直接指定したディレクトリへのリンクはたどって集計します。
@@ -319,7 +323,7 @@ namespace s3d
 		/// @param path ディレクトリのパス
 		/// @param recursive ディレクトリの中身にあるディレクトリの中身も取得する場合は `Recursive::Yes`, それ以外の場合は `Recursive::No`
 		/// @remark macOS では、列挙や各項目のパス解決で OS のファイルシステムエラーが発生した場合、部分結果を返さず空の一覧を返します。
-		/// @remark Windows では、ディレクトリの列挙で OS のファイルシステムエラーが発生した場合、部分結果を返さず空の一覧を返します。
+		/// @remark Windows では、ディレクトリであるかを判定できない場合や、ディレクトリの列挙で OS のファイルシステムエラーが発生した場合、部分結果を返さず空の一覧を返します。
 		/// @remark Windows では、列挙中に見つかったディレクトリのジャンクションやシンボリックリンクなど、別の場所を指す再解析ポイントは一覧に含めますが、その中には再帰しません。path に直接指定したディレクトリへのリンクはたどって列挙します。
 		/// @return 指定したディレクトリの中身（パス）の一覧
 		[[nodiscard]]
