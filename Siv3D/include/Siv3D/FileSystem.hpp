@@ -138,6 +138,7 @@ namespace s3d
 		/// @brief ファイルの拡張子（.を含まない）を小文字にして返します。
 		/// @param path ファイルパス
 		/// @remark 例: "png"
+		/// @remark ファイル名の先頭に連続する `.` は拡張子の区切りとして扱いません。例: `.gitignore` は空、`dir/.config.txt` は `txt`。
 		/// @return 小文字の拡張子。失敗した場合は空の文字列
 		[[nodiscard]]
 		String Extension(FilePathView path);
@@ -145,6 +146,7 @@ namespace s3d
 		/// @brief ファイルの拡張子（.を含まない）を返します。
 		/// @param path ファイルパス
 		/// @param preserveCase 大文字小文字を保持するか
+		/// @remark ファイル名の先頭に連続する `.` は拡張子の区切りとして扱いません。例: `.gitignore` は空、`dir/.config.txt` は `txt`。
 		/// @return 拡張子。失敗した場合は空の文字列
 		[[nodiscard]]
 		String Extension(FilePathView path, PreserveCase preserveCase);
@@ -474,7 +476,9 @@ namespace s3d
 		/// @brief 指定したディレクトリの中身を削除します。
 		/// @param path 中身を削除するディレクトリのパス
 		/// @param moveToTrash 削除したファイルやディレクトリをゴミ箱に送る場合 `MoveToTrash::Yes`, それ以外の場合は `MoveToTrash::No`
-		/// @remark この関数の実行後、指定したディレクトリは空の状態になります。
+		/// @remark ディレクトリ本体を削除・再作成せず、中身を削除します。成功した場合、指定したディレクトリは空の状態になります。
+		/// @remark macOS / Linux では、path がディレクトリへのシンボリックリンクの場合、リンクとリンク先のディレクトリ本体を残して中身を削除します。中にあるシンボリックリンクはリンク自体を削除します。
+		/// @remark 途中で失敗した場合、すでに削除した項目は元に戻しません。
 		/// @return 削除に成功した場合 true, それ以外の場合は false
 		bool RemoveContents(FilePathView path, MoveToTrash moveToTrash = MoveToTrash::No);
 

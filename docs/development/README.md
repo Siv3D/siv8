@@ -40,6 +40,10 @@ Retained output is documented with its producer:
 on scope exit. The test configuration policy is in
 [AGENTS.md](../../AGENTS.md#test-output-and-configuration).
 
+The [RemoveContents Trash check](../../Test/Manual/FileSystemRemoveContentsTrash.md)
+uses a separate macOS application to verify native Trash behavior and documents
+cleanup of its retained fixture and Trash items.
+
 ## Documentation checks
 
 ```sh

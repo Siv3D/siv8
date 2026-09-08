@@ -236,17 +236,45 @@ namespace s3d
 	
 		bool RemoveContents(const FilePathView path, const MoveToTrash moveToTrash)
 		{
-			if (not IsDirectory(path))
+			if (path.isEmpty() || IsResourcePath(path))
 			{
 				return false;
 			}
 
-			if (not Remove(path, moveToTrash))
+			std::error_code error;
+			std::filesystem::directory_iterator it{ detail::ToPath(path), error };
+			if (error)
 			{
 				return false;
 			}
 
-			return CreateDirectories(path);
+			const std::filesystem::directory_iterator end;
+			while (it != end)
+			{
+				if (moveToTrash)
+				{
+					if (not Remove(Unicode::FromUTF8(it->path().native()), MoveToTrash::Yes))
+					{
+						return false;
+					}
+				}
+				else
+				{
+					std::filesystem::remove_all(it->path(), error);
+					if (error)
+					{
+						return false;
+					}
+				}
+
+				it.increment(error);
+				if (error)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }

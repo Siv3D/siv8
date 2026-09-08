@@ -11,6 +11,17 @@
 
 # include "Siv3DTest.hpp"
 
+# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+	# include <filesystem>
+	# include <fcntl.h>
+	# include <sys/stat.h>
+	# include <unistd.h>
+# endif
+
+# if SIV3D_PLATFORM(MACOS)
+	# include <sys/xattr.h>
+# endif
+
 TEST_CASE("FileSystem::Extension")
 {
 	CHECK_EQ(FileSystem::Extension(U"aaa.png"), U"png");
@@ -121,6 +132,50 @@ TEST_CASE("FileSystem::Extension(PreserveCase::Yes)")
 	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/windmill.p"), PreserveCase::Yes), U"p");
 	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p"), PreserveCase::Yes), U"p");
 	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p.q"), PreserveCase::Yes), U"q");
+}
+
+TEST_CASE("FileSystem::Extension dot files")
+{
+	const struct
+	{
+		FilePathView name;
+		StringView extension;
+		StringView preservedExtension;
+	} cases[] = {
+		{ U".gitignore", U"", U"" },
+		{ U"..gitignore", U"", U"" },
+		{ U".test.TXT", U"txt", U"TXT" },
+		{ U"...test.TXT", U"txt", U"TXT" },
+		{ U".gitignore.", U"", U"" },
+		{ U".", U"", U"" },
+		{ U"..", U"", U"" },
+		{ U"...", U"", U"" },
+		{ U"", U"", U"" },
+		{ U"plain", U"", U"" },
+		{ U"file..TXT", U"txt", U"TXT" },
+		{ U".設定.テキスト", U"テキスト", U"テキスト" },
+		{ U".hidden/", U"", U"" },
+		{ U".hidden\\", U"", U"" },
+	};
+	const FilePathView prefixes[] = {
+		U"", U"./", U"../", U"parent/", U"parent.with.dots/", U"C:\\parent\\", U"parent\\nested/",
+	};
+
+	for (const auto& test : cases)
+	{
+		for (const FilePathView prefix : prefixes)
+		{
+			const FilePath path = (prefix + test.name);
+			CHECK_EQ(FileSystem::Extension(path), test.extension);
+			CHECK_EQ(FileSystem::Extension(path, PreserveCase::No), test.extension);
+			CHECK_EQ(FileSystem::Extension(path, PreserveCase::Yes), test.preservedExtension);
+		}
+
+		const FilePath resourcePath = Resource(test.name);
+		CHECK_EQ(FileSystem::Extension(resourcePath), test.extension);
+		CHECK_EQ(FileSystem::Extension(resourcePath, PreserveCase::No), test.extension);
+		CHECK_EQ(FileSystem::Extension(resourcePath, PreserveCase::Yes), test.preservedExtension);
+	}
 }
 
 TEST_CASE("FileSystem::FileName")
@@ -301,6 +356,168 @@ TEST_CASE("FileSystem::RelativePath")
 	CHECK_EQ(FileSystem::RelativePath(U"", base), U"");
 	CHECK_EQ(FileSystem::RelativePath(base, U""), U"");
 }
+
+TEST_CASE("FileSystem::RemoveContents")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/removecontents/basic/");
+	const FilePath directory = (root + U"directory/");
+	REQUIRE(FileSystem::CreateDirectories(directory + U"nested/empty/"));
+	for (const FilePathView name : { U"file.txt", U".hidden", U"nested/日本語.txt" })
+	{
+		BinaryFileWriter writer{ directory + name };
+		REQUIRE(writer.isOpen());
+	}
+	{
+		BinaryFileWriter writer{ root + U"sibling.txt" };
+		REQUIRE(writer.isOpen());
+	}
+
+	CHECK(FileSystem::RemoveContents(directory));
+	CHECK(FileSystem::IsDirectory(directory));
+	CHECK(FileSystem::IsEmptyDirectory(directory));
+	CHECK(FileSystem::IsFile(root + U"sibling.txt"));
+	CHECK_FALSE(FileSystem::RemoveContents(U""));
+	CHECK_FALSE(FileSystem::RemoveContents(root + U"missing"));
+	CHECK_FALSE(FileSystem::RemoveContents(root + U"sibling.txt"));
+	CHECK(FileSystem::IsFile(root + U"sibling.txt"));
+}
+
+# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+
+TEST_CASE("FileSystem::RemoveContents preserves directory")
+{
+	const FilePath directory = Test::OutputPath(U"filesystem/removecontents/metadata/");
+	const std::string native = Unicode::ToUTF8(directory);
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	REQUIRE(::chmod(native.c_str(), 0751) == 0);
+
+	// Keep the original inode alive so deletion and recreation cannot reuse it.
+	const int fd = ::open(native.c_str(), O_RDONLY | O_DIRECTORY);
+	REQUIRE(fd >= 0);
+	const ScopeExit closeDirectory{ [fd] { ::close(fd); } };
+	struct stat before{};
+	REQUIRE(::fstat(fd, &before) == 0);
+
+# if SIV3D_PLATFORM(MACOS)
+	constexpr char attribute[] = "org.siv3d.test.removecontents";
+	constexpr char value[] = "metadata";
+	REQUIRE(::setxattr(native.c_str(), attribute, value, sizeof(value), 0, 0) == 0);
+# endif
+
+	SUBCASE("empty directory") {}
+	SUBCASE("populated directory")
+	{
+		BinaryFileWriter writer{ directory + U"file.txt" };
+		REQUIRE(writer.isOpen());
+	}
+
+	CHECK(FileSystem::RemoveContents(directory));
+	CHECK(FileSystem::IsEmptyDirectory(directory));
+	struct stat after{};
+	REQUIRE(::stat(native.c_str(), &after) == 0);
+	CHECK_EQ(after.st_dev, before.st_dev);
+	CHECK_EQ(after.st_ino, before.st_ino);
+	CHECK_EQ((after.st_mode & 07777), (before.st_mode & 07777));
+# if SIV3D_PLATFORM(MACOS)
+	char actual[sizeof(value)]{};
+	CHECK_EQ(::getxattr(native.c_str(), attribute, actual, sizeof(actual), 0, 0), sizeof(value));
+	CHECK_EQ(std::string_view(actual, sizeof(actual)), std::string_view(value, sizeof(value)));
+# endif
+}
+
+TEST_CASE("FileSystem::RemoveContents symbolic links")
+{
+	FilePathView scenario;
+	SUBCASE("directory path") { scenario = U"directory"; }
+	SUBCASE("directory link") { scenario = U"link"; }
+	SUBCASE("directory link with trailing slash") { scenario = U"link-with-slash"; }
+
+	const FilePath root = Test::OutputPath(U"filesystem/removecontents/links/" + scenario + U'/');
+	const FilePath directory = (root + U"directory/");
+	const FilePath outside = (root + U"outside/");
+	REQUIRE(FileSystem::CreateDirectories(directory + U"nested/"));
+	REQUIRE(FileSystem::CreateDirectories(outside));
+	{
+		BinaryFileWriter writer{ outside + U"keep.txt" };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("keep", 4) == 4);
+	}
+	for (const FilePathView parent : { U"", U"nested/" })
+	{
+		const std::string prefix = Unicode::ToUTF8(directory + parent);
+		REQUIRE(::symlink(Unicode::ToUTF8(outside).c_str(), (prefix + "directory-link").c_str()) == 0);
+		REQUIRE(::symlink(Unicode::ToUTF8(outside + U"keep.txt").c_str(), (prefix + "file-link").c_str()) == 0);
+		REQUIRE(::symlink("missing-target", (prefix + "broken-link").c_str()) == 0);
+		REQUIRE(::symlink(".", (prefix + "cycle").c_str()) == 0);
+	}
+
+	FilePath argument = directory;
+	if (scenario != U"directory")
+	{
+		argument = (root + U"alias");
+		REQUIRE(::symlink(Unicode::ToUTF8(directory).c_str(), Unicode::ToUTF8(argument).c_str()) == 0);
+		if (scenario == U"link-with-slash")
+		{
+			argument.push_back(U'/');
+		}
+	}
+
+	CHECK(FileSystem::RemoveContents(argument));
+	CHECK(FileSystem::IsEmptyDirectory(directory));
+	CHECK(FileSystem::IsFile(outside + U"keep.txt"));
+	CHECK_EQ(FileSystem::FileSize(outside + U"keep.txt"), 4);
+	if (argument != directory)
+	{
+		if (argument.ends_with(U'/'))
+		{
+			argument.pop_back();
+		}
+		CHECK(std::filesystem::is_symlink(Unicode::ToUTF8(argument)));
+	}
+}
+
+TEST_CASE("FileSystem::RemoveContents permission failure")
+{
+	if (::geteuid() == 0)
+	{
+		MESSAGE("Permission denial requires a non-root user.");
+		return;
+	}
+	mode_t permissions = 0500;
+	SUBCASE("deletion denied") {}
+	SUBCASE("enumeration denied") { permissions = 0000; }
+
+	const FilePath directory = Test::OutputPath(U"filesystem/removecontents/locked/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	{
+		BinaryFileWriter writer{ directory + U"keep.txt" };
+		REQUIRE(writer.isOpen());
+	}
+	const std::string native = Unicode::ToUTF8(directory);
+	const ScopeExit restorePermissions{ [&native] { ::chmod(native.c_str(), 0700); } };
+	REQUIRE(::chmod(native.c_str(), permissions) == 0);
+	CHECK_FALSE(FileSystem::RemoveContents(directory));
+	REQUIRE(::chmod(native.c_str(), 0700) == 0);
+	CHECK(FileSystem::IsDirectory(directory));
+	CHECK(FileSystem::IsFile(directory + U"keep.txt"));
+}
+
+TEST_CASE("FileSystem::RemoveContents empty directory with trash")
+{
+	const FilePath directory = Test::OutputPath(U"filesystem/removecontents/empty-trash/");
+	const std::string native = Unicode::ToUTF8(directory);
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	struct stat before{};
+	REQUIRE(::stat(native.c_str(), &before) == 0);
+	CHECK(FileSystem::RemoveContents(directory, MoveToTrash::Yes));
+	CHECK(FileSystem::IsEmptyDirectory(directory));
+	struct stat after{};
+	REQUIRE(::stat(native.c_str(), &after) == 0);
+	CHECK_EQ(after.st_dev, before.st_dev);
+	CHECK_EQ(after.st_ino, before.st_ino);
+}
+
+# endif
 
 TEST_CASE("FileSystem Misc")
 {

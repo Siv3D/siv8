@@ -61,6 +61,21 @@ namespace s3d
 				return{};
 			}
 
+		# if SIV3D_PLATFORM(WINDOWS)
+
+			if (IsResourcePath(path))
+			{
+				path.remove_prefix(1);
+			}
+
+		# endif
+
+			if (const size_t lastSeparatorPos = path.find_last_of(U"/\\");
+				lastSeparatorPos != String::npos)
+			{
+				path.remove_prefix(lastSeparatorPos + 1);
+			}
+
 			while (path.starts_with(U'.'))
 			{
 				path.remove_prefix(1);
@@ -69,15 +84,6 @@ namespace s3d
 			const size_t lastDotPos = path.rfind(U'.');
 
 			if (lastDotPos == String::npos)
-			{
-				return{};
-			}
-
-			const size_t lastSeparatorPos = path.find_last_of(U"/\\");
-
-			// aaa.bbb/ccc のようなケースを弾く
-			if ((lastSeparatorPos != String::npos)
-				&& (lastDotPos < lastSeparatorPos))
 			{
 				return{};
 			}
