@@ -365,6 +365,76 @@ TEST_CASE("FileSystem::RelativePath")
 	CHECK_EQ(FileSystem::RelativePath(base, U""), U"");
 }
 
+TEST_CASE("FileSystem::FullPath normal paths")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/fullpath/normal/");
+	REQUIRE(FileSystem::CreateDirectories(root + U"nested/"));
+	{
+		BinaryFileWriter writer{ root + U"file.txt" };
+		REQUIRE(writer.isOpen());
+	}
+	const struct
+	{
+		FilePathView path;
+		FilePathView expected;
+	} cases[] = {
+		{ U"", U"" },
+		{ U"nested", U"nested/" },
+		{ U"nested/../file.txt", U"file.txt" },
+		{ U"missing/child.txt", U"missing/child.txt" },
+	};
+	for (const auto& test : cases)
+	{
+		const FilePath path = (root + test.path);
+		const FilePath expected = (root + test.expected);
+		CHECK_EQ(FileSystem::FullPath(path), expected);
+		const NativeFilePath native = FileSystem::NativePath(path);
+# if SIV3D_PLATFORM(WINDOWS)
+		CHECK_EQ(FileSystem::FullPath(Unicode::FromWstring(native)), expected);
+# else
+		CHECK_EQ(FileSystem::FullPath(Unicode::FromUTF8(native)), expected);
+# endif
+	}
+	CHECK(FileSystem::FullPath(U"").isEmpty());
+	CHECK(FileSystem::NativePath(U"").empty());
+	CHECK_EQ(FileSystem::RelativePath(root + U"file.txt", root + U"missing/"), root + U"file.txt");
+	CHECK_EQ(FileSystem::RelativePath(root + U"nested", root + U"file.txt"), root + U"nested/");
+
+	const FilePath currentDirectory = FileSystem::CurrentDirectory();
+	const ScopeExit restoreDirectory{ [&currentDirectory]
+		{
+			FileSystem::ChangeCurrentDirectory(currentDirectory);
+		} };
+	REQUIRE(FileSystem::ChangeCurrentDirectory(root));
+	CHECK_EQ(FileSystem::FullPath(U"nested/../file.txt"), root + U"file.txt");
+}
+
+TEST_CASE("FileSystem::DirectoryContents normal paths")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/directorycontents/normal/");
+	REQUIRE(FileSystem::CreateDirectories(root + U"nested/empty/"));
+	for (const FilePathView name : { U"file.txt", U".hidden", U"nested/inside.txt" })
+	{
+		BinaryFileWriter writer{ root + name };
+		REQUIRE(writer.isOpen());
+	}
+	for (const Recursive recursive : { Recursive::No, Recursive::Yes })
+	{
+		Array<FilePath> expected{ root + U"file.txt", root + U".hidden", root + U"nested/" };
+		if (recursive)
+		{
+			expected.push_back(root + U"nested/empty/");
+			expected.push_back(root + U"nested/inside.txt");
+		}
+		Array<FilePath> actual = FileSystem::DirectoryContents(root, recursive);
+		CHECK_EQ(actual.sort(), expected.sort());
+		CHECK(FileSystem::DirectoryContents(root + U"nested/empty/", recursive).isEmpty());
+		CHECK(FileSystem::DirectoryContents(root + U"file.txt", recursive).isEmpty());
+		CHECK(FileSystem::DirectoryContents(root + U"missing", recursive).isEmpty());
+		CHECK(FileSystem::DirectoryContents(U"", recursive).isEmpty());
+	}
+}
+
 TEST_CASE("FileSystem::RemoveContents")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/removecontents/basic/");
@@ -391,6 +461,67 @@ TEST_CASE("FileSystem::RemoveContents")
 }
 
 # if SIV3D_PLATFORM(MACOS)
+
+TEST_CASE("FileSystem::FullPath directory links")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/fullpath/links/");
+	const FilePath directory = (root + U"directory/");
+	const FilePath alias = (root + U"alias");
+	REQUIRE(FileSystem::CreateDirectories(directory + U"nested/"));
+	REQUIRE(::symlink(Unicode::ToUTF8(directory).c_str(), Unicode::ToUTF8(alias).c_str()) == 0);
+	CHECK_EQ(FileSystem::FullPath(alias), directory);
+	CHECK_EQ(FileSystem::FullPath(alias + U"/missing.txt"), directory + U"missing.txt");
+	CHECK_EQ(FileSystem::FullPath(Unicode::FromUTF8(FileSystem::NativePath(alias))), directory);
+	for (const Recursive recursive : { Recursive::No, Recursive::Yes })
+	{
+		CHECK_EQ(FileSystem::DirectoryContents(alias, recursive), Array<FilePath>{ directory + U"nested/" });
+	}
+}
+
+TEST_CASE("FileSystem::DirectoryContents resolution failure")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/directorycontents/failure/");
+	REQUIRE(FileSystem::CreateDirectories(root + U"nested/"));
+	{
+		BinaryFileWriter writer{ root + U"ordinary.txt" };
+		REQUIRE(writer.isOpen());
+	}
+	REQUIRE(::symlink("loop", Unicode::ToUTF8(root + U"loop").c_str()) == 0);
+	for (const Recursive recursive : { Recursive::No, Recursive::Yes })
+	{
+		Array<FilePath> paths{ U"unchanged" };
+		CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root, recursive));
+		CHECK(paths.isEmpty());
+		CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root + U"loop", recursive));
+		CHECK(paths.isEmpty());
+	}
+}
+
+TEST_CASE("FileSystem::DirectoryContents permission failure")
+{
+	if (::geteuid() == 0)
+	{
+		MESSAGE("Permission denial requires a non-root user.");
+		return;
+	}
+	const FilePath root = Test::OutputPath(U"filesystem/directorycontents/permissions/");
+	const FilePath directory = (root + U"locked/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	const std::string native = Unicode::ToUTF8(directory);
+	const ScopeExit restorePermissions{ [&native] { ::chmod(native.c_str(), 0700); } };
+	REQUIRE(::chmod(native.c_str(), 0000) == 0);
+	for (const Recursive recursive : { Recursive::No, Recursive::Yes })
+	{
+		Array<FilePath> paths{ U"unchanged" };
+		CHECK_NOTHROW(paths = FileSystem::DirectoryContents(directory, recursive));
+		CHECK(paths.isEmpty());
+	}
+	Array<FilePath> paths{ U"unchanged" };
+	CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root, Recursive::Yes));
+	CHECK(paths.isEmpty());
+	CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root, Recursive::No));
+	CHECK_EQ(paths, Array<FilePath>{ directory });
+}
 
 TEST_CASE("FileSystem::IsResourcePath directory links")
 {
@@ -444,6 +575,66 @@ TEST_CASE("FileSystem::IsResourcePath permission failure")
 # endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+
+TEST_CASE("FileSystem::FullPath resolution failures")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/fullpath/failures/");
+	REQUIRE(FileSystem::CreateDirectories(root));
+	const FilePath loop = (root + U"loop");
+	REQUIRE(::symlink("loop", Unicode::ToUTF8(loop).c_str()) == 0);
+	for (const FilePath& path : { loop, loop + U"/child" })
+	{
+		FilePath result = U"unchanged";
+		CHECK_NOTHROW(result = FileSystem::FullPath(path));
+		CHECK(result.isEmpty());
+		CHECK_NOTHROW(result = FileSystem::RelativePath(path, root));
+		CHECK(result.isEmpty());
+		CHECK_NOTHROW(result = FileSystem::RelativePath(root, path));
+		CHECK(result.isEmpty());
+		FilePath base = U"unchanged";
+		CHECK_NOTHROW(result = FileSystem::ParentPath(path, 0, base));
+		CHECK(result.isEmpty());
+		CHECK(base.isEmpty());
+# if SIV3D_PLATFORM(MACOS)
+		NativeFilePath native = "unchanged";
+		CHECK_NOTHROW(native = FileSystem::NativePath(path));
+		CHECK(native.empty());
+		CHECK_FALSE(System::OpenInBrowser(path + U"/file.html"));
+		CHECK_FALSE(System::ShowInFileManager(path));
+		CHECK_FALSE(System::LaunchFile(path));
+		CHECK_FALSE(System::LaunchFileWithTextEditor(path));
+# endif
+	}
+}
+
+TEST_CASE("FileSystem::FullPath permission failure")
+{
+	if (::geteuid() == 0)
+	{
+		MESSAGE("Permission denial requires a non-root user.");
+		return;
+	}
+	const FilePath root = Test::OutputPath(U"filesystem/fullpath/permissions/");
+	const FilePath directory = (root + U"locked/");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	const std::string native = Unicode::ToUTF8(directory);
+	const ScopeExit restorePermissions{ [&native] { ::chmod(native.c_str(), 0700); } };
+	REQUIRE(::chmod(native.c_str(), 0000) == 0);
+	const FilePath path = (directory + U"child");
+	FilePath result = U"unchanged";
+	CHECK_NOTHROW(result = FileSystem::FullPath(path));
+	CHECK(result.isEmpty());
+	CHECK_NOTHROW(result = FileSystem::RelativePath(path, root));
+	CHECK(result.isEmpty());
+	CHECK_NOTHROW(result = FileSystem::RelativePath(root, path));
+	CHECK(result.isEmpty());
+# if SIV3D_PLATFORM(MACOS)
+	NativeFilePath nativeResult = "unchanged";
+	CHECK_NOTHROW(nativeResult = FileSystem::NativePath(path));
+	CHECK(nativeResult.empty());
+	CHECK_FALSE(System::OpenInBrowser(path + U"/file.html"));
+# endif
+}
 
 TEST_CASE("FileSystem::RemoveContents preserves directory")
 {

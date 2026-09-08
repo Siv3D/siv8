@@ -114,6 +114,7 @@ namespace s3d
 		/// @param path パス
 		/// @remark 実際に存在するファイルやディレクトリのパスである必要はありません
 		/// @remark 例: "C:/Users/Siv/Desktop/picture.png"
+		/// @remark macOS / Linux では、パス解決時の OS のファイルシステムエラーは例外として送出せず、空の文字列を返します。
 		/// @return 絶対パス。失敗した場合は空の文字列
 		[[nodiscard]]
 		FilePath FullPath(FilePathView path);
@@ -311,6 +312,7 @@ namespace s3d
 		/// @brief 指定したディレクトリの中身（パス）を取得します。
 		/// @param path ディレクトリのパス
 		/// @param recursive ディレクトリの中身にあるディレクトリの中身も取得する場合は `Recursive::Yes`, それ以外の場合は `Recursive::No`
+		/// @remark macOS では、列挙や各項目のパス解決で OS のファイルシステムエラーが発生した場合、部分結果を返さず空の一覧を返します。
 		/// @return 指定したディレクトリの中身（パス）の一覧
 		[[nodiscard]]
 		Array<FilePath> DirectoryContents(FilePathView path, Recursive recursive = Recursive::Yes);
@@ -415,6 +417,8 @@ namespace s3d
 		/// @param path パス
 		/// @param start 相対パスの基準となるパス
 		/// @remark 相対パスの末尾の `/` は、対象の path がディレクトリであるかに基づいて付加されます。
+		/// @remark path または start の絶対パス取得に失敗した場合は空の文字列を返します。
+		/// @remark start の絶対パスを取得できてもディレクトリが存在しない場合は、path の絶対パスを返します。
 		/// @return start からみた path の相対パス
 		[[nodiscard]]
 		FilePath RelativePath(FilePathView path, FilePathView start = CurrentDirectory());

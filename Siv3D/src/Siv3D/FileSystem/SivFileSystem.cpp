@@ -301,6 +301,10 @@ namespace s3d
 
 			const FilePath path = FullPath(_path);
 			const FilePath start = FullPath(_start);
+			if (path.isEmpty() || start.isEmpty())
+			{
+				return{};
+			}
 
 			if (not IsDirectory(start))
 			{
@@ -315,7 +319,13 @@ namespace s3d
 			const std::filesystem::path p(path.toUTF8());
 			const std::filesystem::path	base(start.toUTF8());
 
-			FilePath result = Unicode::FromUTF8(std::filesystem::proximate(p, base).string());
+			std::error_code error;
+			const std::filesystem::path relativePath = std::filesystem::proximate(p, base, error);
+			if (error)
+			{
+				return{};
+			}
+			FilePath result = Unicode::FromUTF8(relativePath.string());
 
 			result.replace(U'\\', U'/');
 

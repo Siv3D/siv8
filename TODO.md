@@ -14,14 +14,6 @@
 - Windows / MSVC で `Test_Array.cpp`、`Test_ArrayException.cpp`、`Test_ArrayModel.cpp` を実行し、特に `Array<bool>` の領域切り替えとアロケータ伝播を確認する。
 - 通常の API・並列処理テストも含めたサニタイザ／カバレッジ計測を整備する。`tools/run-array-checks.sh` の対象は例外・モデルテストであり、未実体化のテンプレートメンバはカバレッジの分母に含まれない。
 
-## `Siv3D/include/Siv3D/FileSystem.hpp`
-
-### FullPath の失敗契約と呼び出し側
-
-- macOS / Linux の `FullPath()` は、循環リンクや権限不足で `filesystem_error` を投げる。Doxygen の「失敗時は空の文字列」と一致させる。
-- 失敗時の空文字列が、macOS の `NativePath()` でカレントディレクトリに解釈されたり、`DirectoryContents()` の結果に混入したりしないよう、呼び出し側も合わせて修正・検証する。`RelativePath()` の基準パス解決失敗時の扱いも確認する。
-- パス解決が失敗したときの列挙結果（全体を失敗とするか、部分結果を返すか）を決め、Doxygen と回帰テストへ反映する。
-
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 
 ### Squad 補間

@@ -370,6 +370,10 @@ namespace s3d
 			}
 			
 			const FilePath fullpath = FullPath(path);
+			if (fullpath.isEmpty())
+			{
+				return{};
+			}
 			
 			return detail::MacOS_FullPath(Unicode::ToUTF8(fullpath).c_str());
 		}
@@ -395,23 +399,44 @@ namespace s3d
 		{
 			Array<FilePath> paths;
 			
-			if (path.isEmpty() || !IsDirectory(path))
+			if (path.isEmpty())
 			{
 				return paths;
 			}
-			
+
+			std::error_code error;
+			const auto appendPaths = [&paths, &error](auto it)
+			{
+				const decltype(it) end;
+				while (it != end)
+				{
+					FilePath fullPath = FullPath(Unicode::FromUTF8(it->path().native()));
+					if (fullPath.isEmpty())
+					{
+						return false;
+					}
+					paths.push_back(std::move(fullPath));
+					it.increment(error);
+					if (error)
+					{
+						return false;
+					}
+				}
+				return (not error);
+			};
+
 			if (recursive)
 			{
-				for (const auto& v : std::filesystem::recursive_directory_iterator{ Unicode::ToUTF8(path) })
+				if (not appendPaths(std::filesystem::recursive_directory_iterator{ detail::ToPath(path), error }))
 				{
-					paths.push_back(FullPath(Unicode::FromUTF8(v.path().string())));
+					return{};
 				}
 			}
 			else
 			{
-				for (const auto& v : std::filesystem::directory_iterator{ Unicode::ToUTF8(path) })
+				if (not appendPaths(std::filesystem::directory_iterator{ detail::ToPath(path), error }))
 				{
-					paths.push_back(FullPath(Unicode::FromUTF8(v.path().string())));
+					return{};
 				}
 			}
 			

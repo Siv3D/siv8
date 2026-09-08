@@ -61,7 +61,14 @@ namespace s3d
 				return{};
 			}
 
-			FilePath fullpath = Unicode::FromUTF8(std::filesystem::weakly_canonical(detail::ToPath(path)).string());
+			std::error_code error;
+			const std::filesystem::path nativeFullPath = std::filesystem::weakly_canonical(detail::ToPath(path), error);
+			if (error)
+			{
+				return{};
+			}
+
+			FilePath fullpath = Unicode::FromUTF8(nativeFullPath.native());
 			
 			if (IsDirectory(fullpath) && (not fullpath.ends_with(U'/')))
 			{
