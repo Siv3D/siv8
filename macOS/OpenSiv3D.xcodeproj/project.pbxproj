@@ -88,6 +88,8 @@
 		F90703092B9DAEB900383E4D /* Test_TupleFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */; };
 		F907030A2B9DAEB900383E4D /* Test_Types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CA2B9DAEB900383E4D /* Test_Types.cpp */; };
 		F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */; };
+		A0C8D0012026090800000001 /* Test_UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0C8D0012026090800000002 /* Test_UnicodeConverter.cpp */; };
+		A0C8D0012026090800000003 /* Test_TextFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0C8D0012026090800000004 /* Test_TextFileWriter.cpp */; };
 		F907030C2B9DAEB900383E4D /* Test_Utility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CC2B9DAEB900383E4D /* Test_Utility.cpp */; };
 		F907030D2B9DAEB900383E4D /* Test_Version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CD2B9DAEB900383E4D /* Test_Version.cpp */; };
 		F907030E2B9DAEB900383E4D /* Test_YesNo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */; };
@@ -322,6 +324,7 @@
 		F9070D082B9F175100383E4D /* Types.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C2F2B9F175000383E4D /* Types.hpp */; };
 		F9070D092B9F175100383E4D /* Unicode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C302B9F175000383E4D /* Unicode.hpp */; };
 		F9070D0A2B9F175100383E4D /* UnicodeConverter.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C312B9F175000383E4D /* UnicodeConverter.hpp */; };
+		A0C8D0012026090800000005 /* UnicodeDecodeStatus.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A0C8D0012026090800000006 /* UnicodeDecodeStatus.hpp */; };
 		F9070D0B2B9F175100383E4D /* UniqueResource.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C322B9F175000383E4D /* UniqueResource.hpp */; };
 		F9070D0C2B9F175100383E4D /* UserAction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C332B9F175000383E4D /* UserAction.hpp */; };
 		F9070D0D2B9F175100383E4D /* Utility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070C342B9F175000383E4D /* Utility.hpp */; };
@@ -3377,6 +3380,8 @@
 		F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TupleFormatter.cpp; sourceTree = "<group>"; };
 		F90702CA2B9DAEB900383E4D /* Test_Types.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Types.cpp; sourceTree = "<group>"; };
 		F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Unicode.cpp; sourceTree = "<group>"; };
+		A0C8D0012026090800000002 /* Test_UnicodeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_UnicodeConverter.cpp; sourceTree = "<group>"; };
+		A0C8D0012026090800000004 /* Test_TextFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_TextFileWriter.cpp; sourceTree = "<group>"; };
 		F90702CC2B9DAEB900383E4D /* Test_Utility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Utility.cpp; sourceTree = "<group>"; };
 		F90702CD2B9DAEB900383E4D /* Test_Version.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Version.cpp; sourceTree = "<group>"; };
 		F90702CE2B9DAEB900383E4D /* Test_YesNo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_YesNo.cpp; sourceTree = "<group>"; };
@@ -3612,6 +3617,7 @@
 		F9070C2F2B9F175000383E4D /* Types.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Types.hpp; sourceTree = "<group>"; };
 		F9070C302B9F175000383E4D /* Unicode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Unicode.hpp; sourceTree = "<group>"; };
 		F9070C312B9F175000383E4D /* UnicodeConverter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UnicodeConverter.hpp; sourceTree = "<group>"; };
+		A0C8D0012026090800000006 /* UnicodeDecodeStatus.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UnicodeDecodeStatus.hpp; sourceTree = "<group>"; };
 		F9070C322B9F175000383E4D /* UniqueResource.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UniqueResource.hpp; sourceTree = "<group>"; };
 		F9070C332B9F175000383E4D /* UserAction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UserAction.hpp; sourceTree = "<group>"; };
 		F9070C342B9F175000383E4D /* Utility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Utility.hpp; sourceTree = "<group>"; };
@@ -6995,6 +7001,8 @@
 				F90702C92B9DAEB900383E4D /* Test_TupleFormatter.cpp */,
 				F90702CA2B9DAEB900383E4D /* Test_Types.cpp */,
 				F90702CB2B9DAEB900383E4D /* Test_Unicode.cpp */,
+				A0C8D0012026090800000002 /* Test_UnicodeConverter.cpp */,
+				A0C8D0012026090800000004 /* Test_TextFileWriter.cpp */,
 				F90702CC2B9DAEB900383E4D /* Test_Utility.cpp */,
 				F9A3D11330A1000000C0DE01 /* Test_VertexNormalWeighting.cpp */,
 				F9A3D11430A1000000C0DE01 /* Test_Mesh3D.cpp */,
@@ -8039,6 +8047,7 @@
 				F9070C2F2B9F175000383E4D /* Types.hpp */,
 				F9070C302B9F175000383E4D /* Unicode.hpp */,
 				F9070C312B9F175000383E4D /* UnicodeConverter.hpp */,
+				A0C8D0012026090800000006 /* UnicodeDecodeStatus.hpp */,
 				F9070C322B9F175000383E4D /* UniqueResource.hpp */,
 				F9DD96542F09662C0026DFA5 /* URL.hpp */,
 				F9070C332B9F175000383E4D /* UserAction.hpp */,
@@ -15337,6 +15346,7 @@
 				F986006E2BCFBB53006A4C0F /* SkAPI.h in Headers */,
 				F99BC36C2FF6048900D4ECDE /* LineStringBuffer.hpp in Headers */,
 				F9070D0A2B9F175100383E4D /* UnicodeConverter.hpp in Headers */,
+				A0C8D0012026090800000005 /* UnicodeDecodeStatus.hpp in Headers */,
 				F98601B52BCFBB53006A4C0F /* SkFDot6.h in Headers */,
 				F98604912BCFBB54006A4C0F /* SkSLUtil.h in Headers */,
 				F986FFEF2BCFBB53006A4C0F /* SkEncodedOrigin.h in Headers */,
@@ -16526,6 +16536,8 @@
 				F90F2BE02D91749500CC89CA /* Test_BinaryFileReader.cpp in Sources */,
 				2C1778C31CE0D62A00BB8AD0 /* Main.cpp in Sources */,
 				F907030B2B9DAEB900383E4D /* Test_Unicode.cpp in Sources */,
+				A0C8D0012026090800000001 /* Test_UnicodeConverter.cpp in Sources */,
+				A0C8D0012026090800000003 /* Test_TextFileWriter.cpp in Sources */,
 				F9528B382BB05D0600222F45 /* Test_Base64Value.cpp in Sources */,
 				F907030D2B9DAEB900383E4D /* Test_Version.cpp in Sources */,
 				F9E5FCE12BC59E610081A4F7 /* Test_JSON.cpp in Sources */,

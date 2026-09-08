@@ -12,6 +12,7 @@
 # pragma once
 # include <array>
 # include "Common.hpp"
+# include "UnicodeDecodeStatus.hpp"
 
 namespace s3d
 {
@@ -22,21 +23,49 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief UTF-8 から UTF-32 への逐次変換クラス
+	/// @details 不正なシーケンスは Unicode の maximal subpart ごとに U+FFFD に置換します。
+	/// put() が consumed == false を返した場合、その入力は保持されません。出力を取得し、同じ入力を再投入してください。
+	/// 入力の終端では finish() を呼んで未完のシーケンスを確定してください。チャンクの境界では呼びません。
 	struct UTF8toUTF32_Converter
 	{
 	public:
 
+		/// @brief 逐次 Unicode デコードの状態と入力の消費情報
+		struct DecodeResult
+		{
+			/// @brief デコードの状態。Ready または Invalid の場合、get() で出力を取得できます。
+			UnicodeDecodeStatus status;
+
+			/// @brief 今回の入力を消費したか。false は Invalid の場合だけで、出力取得後に同じ入力を再投入してください。
+			bool consumed;
+		};
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	put
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief データを追加します。
-		/// @param code 変換用の UTF-8 データ
-		/// @return `get()` で文字を取得可能になった場合 true, それ以外の場合は false
+		/// @brief UTF-8 のコード単位を 1 つ追加します。
+		/// @param code UTF-8 の 1 バイト。char の符号によらずバイト値として解釈します。
+		/// @return デコードの状態と、今回の入力を消費したか
 		[[nodiscard]]
-		bool put(char8 code) noexcept;
+		DecodeResult put(char8 code) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	finish, reset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 入力の終端を通知し、未完のシーケンスがあれば U+FFFD を出力して途中状態を解消します。
+		/// @return get() で U+FFFD を取得できる場合 true。未完のシーケンスがなければ false で、直前の出力を保持します。
+		/// @remark 繰り返し呼んでも追加出力しません。呼び出し後は次の入力を受け付けられます。
+		[[nodiscard]]
+		bool finish() noexcept;
+
+		/// @brief 途中状態と出力を破棄し、構築直後の状態に戻します。get() は U'\0' を返すようになります。
+		void reset() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -44,30 +73,48 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 作成された文字を取得します。
-		/// @return 作成された文字
+		/// @brief 直前に出力した Unicode スカラー値を取得します。
+		/// @return 直前の Ready / Invalid、または true を返した finish() の出力。構築直後と reset() 後は U'\0'
+		/// @remark NeedMore や false を返した finish() では出力は変わりません。
 		[[nodiscard]]
 		char32 get() const noexcept;
 
 	private:
 
-		char8 m_buffer[4];
-
-		uint32 m_count = 0;
-
 		char32 m_result = 0;
+
+		char32 m_codePoint = 0;
+
+		uint8 m_remaining = 0;
+
+		uint8 m_lower = 0x80;
+
+		uint8 m_upper = 0xBF;
 	};
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	UFT16toUTF32_Converter
+	//	UTF16toUTF32_Converter
 	//
 	////////////////////////////////////////////////////////////////
 
 	/// @brief UTF-16 から UTF-32 への逐次変換クラス
+	/// @details 不正なシーケンスは Unicode の maximal subpart ごとに U+FFFD に置換します。
+	/// put() が consumed == false を返した場合、その入力は保持されません。出力を取得し、同じ入力を再投入してください。
+	/// 入力の終端では finish() を呼んで未完のシーケンスを確定してください。チャンクの境界では呼びません。
 	struct UTF16toUTF32_Converter
 	{
 	public:
+
+		/// @brief 逐次 Unicode デコードの状態と入力の消費情報
+		struct DecodeResult
+		{
+			/// @brief デコードの状態。Ready または Invalid の場合、get() で出力を取得できます。
+			UnicodeDecodeStatus status;
+
+			/// @brief 今回の入力を消費したか。false は Invalid の場合だけで、出力取得後に同じ入力を再投入してください。
+			bool consumed;
+		};
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -75,11 +122,26 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief データを追加します。
-		/// @param code 変換用の UTF-16 データ
-		/// @return `get()` で文字を取得可能になった場合 true, それ以外の場合は false
+		/// @brief UTF-16 のコード単位を 1 つ追加します。
+		/// @param code UTF-16 のコード単位。バイト列ではなく、ホストのバイト順の char16 値を渡します。
+		/// @return デコードの状態と、今回の入力を消費したか
 		[[nodiscard]]
-		bool put(char16 code) noexcept;
+		DecodeResult put(char16 code) noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	finish, reset
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 入力の終端を通知し、未完のシーケンスがあれば U+FFFD を出力して途中状態を解消します。
+		/// @return get() で U+FFFD を取得できる場合 true。未完のシーケンスがなければ false で、直前の出力を保持します。
+		/// @remark 繰り返し呼んでも追加出力しません。呼び出し後は次の入力を受け付けられます。
+		[[nodiscard]]
+		bool finish() noexcept;
+
+		/// @brief 途中状態と出力を破棄し、構築直後の状態に戻します。get() は U'\0' を返すようになります。
+		void reset() noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -87,8 +149,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 作成された文字を取得します。
-		/// @return 作成された文字
+		/// @brief 直前に出力した Unicode スカラー値を取得します。
+		/// @return 直前の Ready / Invalid、または true を返した finish() の出力。構築直後と reset() 後は U'\0'
+		/// @remark NeedMore や false を返した finish() では出力は変わりません。
 		[[nodiscard]]
 		char32 get() const noexcept;
 
@@ -96,9 +159,7 @@ namespace s3d
 
 		char32 m_result = 0;
 
-		char16 m_buffer = 0;
-
-		bool m_hasHighSurrogate = false;
+		char16 m_highSurrogate = 0;
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -119,7 +180,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief データを追加します。
-		/// @param code 変換する UTF-32 コードポイント
+		/// @param code 変換する Unicode スカラー値。サロゲート値および U+10FFFF を超える値は U+FFFD に置換します。
 		/// @return 作成された UTF-8 データのサイズ（1 以上 4 以下）
 		[[nodiscard]]
 		size_t put(char32 code) noexcept;
@@ -130,10 +191,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 作成された UTF-8 文字を取得します。
-		/// @return 作成された UTF-8 文字
+		/// @brief 内部配列のコピーを取得します。
+		/// @return 先頭から直前の put() が返した長さまでが有効な UTF-8 データ。構築直後は全要素が 0
+		/// @remark 有効範囲外の要素は変換結果ではありません。終端の 0 は付加しません。
 		[[nodiscard]]
 		std::array<char8, 4> get() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	data
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 内部配列の先頭を指すポインタを返します。
+		/// @return 先頭から直前の put() が返した長さまでが有効な UTF-8 データへのポインタ
+		/// @remark 終端の 0 は付加しません。内容は次の put() で更新され、ポインタはオブジェクトの生存中有効です。
+		[[nodiscard]]
+		const char8* data() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -142,13 +216,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 作成された UTF-8 文字の配列の先頭イテレータを返します。
-		/// @return 作成された UTF-8 文字の配列の先頭イテレータ
+		/// @return data() と同じ内部配列の先頭イテレータ。有効範囲は直前の put() が返した長さで、内容は次の put() で更新されます。
 		[[nodiscard]]
 		std::array<char8, 4>::const_iterator begin() const noexcept;
 
 	private:
 
-		std::array<char8, 4> m_buffer;
+		std::array<char8, 4> m_buffer{};
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -169,7 +243,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief コードポイントを設定します。
-		/// @param code 変換する UTF-32 コードポイント
+		/// @param code 変換する Unicode スカラー値。サロゲート値および U+10FFFF を超える値は U+FFFD に置換します。
 		/// @return 作成された UTF-16 文字のサイズ（1 または 2）
 		[[nodiscard]]
 		size_t put(char32 code) noexcept;
@@ -180,10 +254,23 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 作成された UTF-16 文字を取得します。
-		/// @return 作成された UTF-16 文字
+		/// @brief 内部配列のコピーを取得します。
+		/// @return 先頭から直前の put() が返した長さまでが有効な UTF-16 データ。構築直後は全要素が 0
+		/// @remark 有効範囲外の要素は変換結果ではありません。終端の 0 は付加しません。
 		[[nodiscard]]
 		std::array<char16, 2> get() const noexcept;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	data
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 内部配列の先頭を指すポインタを返します。
+		/// @return 先頭から直前の put() が返した長さまでが有効な UTF-16 データへのポインタ
+		/// @remark 終端の 0 は付加しません。内容は次の put() で更新され、ポインタはオブジェクトの生存中有効です。
+		[[nodiscard]]
+		const char16* data() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -192,13 +279,13 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 作成された UTF-16 文字の配列の先頭イテレータを返します。
-		/// @return 作成された UTF-16 文字の配列の先頭イテレータ
+		/// @return data() と同じ内部配列の先頭イテレータ。有効範囲は直前の put() が返した長さで、内容は次の put() で更新されます。
 		[[nodiscard]]
 		std::array<char16, 2>::const_iterator begin() const noexcept;
 
 	private:
 
-		std::array<char16, 2> m_buffer;
+		std::array<char16, 2> m_buffer{};
 	};
 }
 

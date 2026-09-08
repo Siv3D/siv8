@@ -1095,3 +1095,62 @@ TEST_CASE("TextFileReader.benchmark")
 }
 
 # endif
+
+TEST_CASE("TextFileReader.UTF8.invalidCodePoints")
+{
+	struct Example
+	{
+		std::string_view input;
+		StringView expected;
+	};
+
+	const Example examples[] =
+	{
+		{ "\x80" "ABC", U"\uFFFDABC" },
+		{ "\xE2" "A", U"\uFFFDA" },
+		{ "\xE2\x82" "A", U"\uFFFDA" },
+		{ "\xE2\xC2\xA2", U"\uFFFD\u00A2" },
+		{ "\xED\xA0\x80", U"\uFFFD\uFFFD\uFFFD" },
+		{ "\xF4\x90\x80\x80", U"\uFFFD\uFFFD\uFFFD\uFFFD" },
+		{ "\xC2", U"\uFFFD" },
+		{ "\xE2\x82", U"\uFFFD" },
+		{ "\xF0\x90\x80", U"\uFFFD" },
+	};
+
+	for (size_t i = 0; i < std::size(examples); ++i)
+	{
+		CAPTURE(i);
+		const auto& example = examples[i];
+		TextFileReader reader{ MemoryReader{ example.input.data(), example.input.size() }, TextEncoding::UTF8_NO_BOM };
+		String output;
+		char32 ch;
+		while (reader.readChar(ch))
+		{
+			output.push_back(ch);
+		}
+		CHECK(output == example.expected);
+		CHECK_FALSE(reader.readChar(ch));
+	}
+}
+
+TEST_CASE("TextFileReader.UTF8.retryAcrossReadMethods")
+{
+	const std::string_view input = "\xE2" "ABC\nDEF";
+	TextFileReader reader{ MemoryReader{ input.data(), input.size() }, TextEncoding::UTF8_NO_BOM };
+	char32 ch;
+	REQUIRE(reader.readChar(ch));
+	CHECK(ch == 0xFFFD);
+	std::string line;
+	REQUIRE(reader.readLine(line));
+	CHECK(line == "ABC");
+	CHECK(reader.readAll() == U"DEF");
+
+	const std::string_view newline = "\xE2\nZ";
+	TextFileReader lines{ MemoryReader{ newline.data(), newline.size() }, TextEncoding::UTF8_NO_BOM };
+	String text;
+	REQUIRE(lines.readLine(text));
+	CHECK(text == U"\uFFFD");
+	REQUIRE(lines.readLine(text));
+	CHECK(text == U"Z");
+	CHECK_FALSE(lines.readLine(text));
+}

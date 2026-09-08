@@ -97,6 +97,12 @@
     <ClCompile Include="..\Test\Test_Unicode.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_UnicodeConverter.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TextFileWriter.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Platform.cpp">
       <Filter>Test</Filter>
     </ClCompile>

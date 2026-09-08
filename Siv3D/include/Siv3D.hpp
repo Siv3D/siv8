@@ -169,6 +169,7 @@
 # include <Siv3D/Unicode.hpp>
 
 // Unicode の逐次変換 | Unicode converter
+# include <Siv3D/UnicodeDecodeStatus.hpp>
 # include <Siv3D/UnicodeConverter.hpp>
 
 // アルファベットの大文字・小文字 | Letter case

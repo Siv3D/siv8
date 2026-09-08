@@ -785,6 +785,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Types.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Unicode.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeConverter.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeDecodeStatus.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UniqueResource.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\URL.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\UserAction.hpp" />

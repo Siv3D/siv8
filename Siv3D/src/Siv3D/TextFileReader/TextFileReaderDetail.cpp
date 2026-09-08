@@ -487,49 +487,29 @@ namespace s3d
 
 	bool TextFileReader::TextFileReaderDetail::readCodePointUTF8(char32& codePoint)
 	{
-		uint8 cx;
-
-		if (not readByte(cx))
-		{
-			return false;
-		}
-
 		UTF8toUTF32_Converter converter;
+		uint8 byte;
 
-		if (converter.put(cx)) // 1
+		while (readByte(byte))
 		{
+			const auto result = converter.put(static_cast<char8>(byte));
+
+			if (result.status == UnicodeDecodeStatus::NeedMore)
+			{
+				continue;
+			}
+
+			if (not result.consumed)
+			{
+				// Leave the next code unit available to all reader methods.
+				m_reader->setPos(m_reader->getPos() - 1);
+			}
+
 			codePoint = converter.get();
 			return true;
 		}
 
-		if (not readByte(cx))
-		{
-			return false;
-		}
-
-		if (converter.put(cx)) // 2
-		{
-			codePoint = converter.get();
-			return true;
-		}
-
-		if (not readByte(cx))
-		{
-			return false;
-		}
-
-		if (converter.put(cx)) // 3
-		{
-			codePoint = converter.get();
-			return true;
-		}
-
-		if (not readByte(cx))
-		{
-			return false;
-		}
-
-		if (converter.put(cx)) // 4
+		if (converter.finish())
 		{
 			codePoint = converter.get();
 			return true;

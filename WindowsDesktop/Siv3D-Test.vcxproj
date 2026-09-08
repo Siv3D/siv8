@@ -120,6 +120,8 @@
     <ClCompile Include="..\Test\Test_TupleFormatter.cpp" />
     <ClCompile Include="..\Test\Test_Types.cpp" />
     <ClCompile Include="..\Test\Test_Unicode.cpp" />
+    <ClCompile Include="..\Test\Test_UnicodeConverter.cpp" />
+    <ClCompile Include="..\Test\Test_TextFileWriter.cpp" />
     <ClCompile Include="..\Test\Test_Utility.cpp" />
     <ClCompile Include="..\Test\Test_Version.cpp" />
     <ClCompile Include="..\Test\Test_YesNo.cpp" />

@@ -2166,6 +2166,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeConverter.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\UnicodeDecodeStatus.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\UnicodeConverter.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
