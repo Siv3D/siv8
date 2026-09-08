@@ -129,13 +129,14 @@ namespace s3d
 				return{};
 			}
 
-			if (std::size(result) < length)
+			// Success excludes the terminating NUL, so the length must be below capacity.
+			if (std::size(result) <= length)
 			{
 				std::wstring result2((length - 1), L'\0');
 				const DWORD length2 = ::GetFullPathNameW(pathW.c_str(), length, result2.data(), &pFilePart);
 
 				if ((length2 == 0)
-					|| (length < (length2 + 1)))
+					|| (length <= length2))
 				{
 					return{};
 				}

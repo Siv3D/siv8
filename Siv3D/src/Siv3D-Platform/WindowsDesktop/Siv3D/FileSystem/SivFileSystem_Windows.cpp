@@ -451,13 +451,14 @@ namespace s3d
 			{
 				return{};
 			}
-			else if (std::size(result) < length)
+			// Success excludes the terminating NUL, so the length must be below capacity.
+			else if (std::size(result) <= length)
 			{
 				std::wstring result2((length - 1), L'\0');
 				const DWORD length2 = ::GetCurrentDirectoryW(length, result2.data());
 
 				if ((length2 == 0)
-					|| (length < (length2 + 1)))
+					|| (length <= length2))
 				{
 					return{};
 				}

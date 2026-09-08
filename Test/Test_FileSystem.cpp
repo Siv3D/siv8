@@ -409,6 +409,34 @@ TEST_CASE("FileSystem::FullPath normal paths")
 	CHECK_EQ(FileSystem::FullPath(U"nested/../file.txt"), root + U"file.txt");
 }
 
+# if SIV3D_PLATFORM(WINDOWS)
+
+TEST_CASE("FileSystem::NativePath buffer boundaries")
+{
+	// NativePath resolves these paths lexically; no files or drive C: are required.
+	const std::wstring prefixes[] = { L"C:\\", Unicode::ToWstring(U"C:\\設定\\😀\\") };
+	for (const auto& prefix : prefixes)
+	{
+		// Lengths are UTF-16 code units, excluding the terminating NUL.
+		for (const size_t length : { 318, 319, 320, 321, 322, 1023, 1024, 2048 })
+		{
+			CAPTURE(length);
+			std::wstring expected = prefix;
+			while ((expected.size() + 65) < length)
+			{
+				expected.append(64, L'a');
+				expected.push_back(L'\\');
+			}
+			expected.append((length - expected.size()), L'b');
+			const FilePath path = Unicode::FromWstring(expected);
+			CHECK_EQ(FileSystem::NativePath(path), expected);
+			CHECK_EQ(FileSystem::NativePath(path.replaced(U'\\', U'/')), expected);
+		}
+	}
+}
+
+# endif
+
 TEST_CASE("FileSystem::DirectoryContents normal paths")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/directorycontents/normal/");
