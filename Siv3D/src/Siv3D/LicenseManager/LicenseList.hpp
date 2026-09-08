@@ -686,12 +686,6 @@ MIT_LICENSE
 },
 
 {
-R"-(miniutf)-",
-R"-(Copyright (c) 2013 Dropbox, Inc.)-",
-MIT_LICENSE
-},
-
-{
 R"-(muparser)-",
 R"-(Copyright 2020 Ingo Berg
 All rights reserved.)-",

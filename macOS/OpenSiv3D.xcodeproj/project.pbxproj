@@ -133,7 +133,6 @@
 		F9070B012B9DEB5900383E4D /* format-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070A6D2B9DEB5900383E4D /* format-inl.h */; };
 		F9070B022B9DEB5900383E4D /* format.cc in Sources */ = {isa = PBXBuildFile; fileRef = F9070A6E2B9DEB5900383E4D /* format.cc */; };
 		F9070B032B9DEB5900383E4D /* levenshtein-sse.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070A702B9DEB5900383E4D /* levenshtein-sse.hpp */; };
-		F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070A722B9DEB5900383E4D /* miniutf.hpp */; };
 		F9070B052B9DEB5900383E4D /* RFC1321.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070A742B9DEB5900383E4D /* RFC1321.hpp */; };
 		F9070B062B9DEB5900383E4D /* simdutf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070A762B9DEB5900383E4D /* simdutf.cpp */; };
 		F9070B072B9DEB5900383E4D /* simdutf.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070A772B9DEB5900383E4D /* simdutf.h */; };
@@ -401,8 +400,6 @@
 		F9070DF42B9F175E00383E4D /* SivThreading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D942B9F175E00383E4D /* SivThreading.cpp */; };
 		F9070DF52B9F175E00383E4D /* SivUnicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D962B9F175E00383E4D /* SivUnicode.cpp */; };
 		F9070DF62B9F175E00383E4D /* SivUnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D982B9F175E00383E4D /* SivUnicodeConverter.cpp */; };
-		F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D992B9F175E00383E4D /* UnicodeUtility.cpp */; };
-		F9070DF82B9F175E00383E4D /* UnicodeUtility.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070D9A2B9F175E00383E4D /* UnicodeUtility.hpp */; };
 		F9070DF92B9F175E00383E4D /* CUserAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9070D9C2B9F175E00383E4D /* CUserAction.cpp */; };
 		F9070DFA2B9F175E00383E4D /* CUserAction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070D9D2B9F175E00383E4D /* CUserAction.hpp */; };
 		F9070DFB2B9F175E00383E4D /* IUserAction.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9070D9E2B9F175E00383E4D /* IUserAction.hpp */; };
@@ -3426,7 +3423,6 @@
 		F9070A6D2B9DEB5900383E4D /* format-inl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "format-inl.h"; sourceTree = "<group>"; };
 		F9070A6E2B9DEB5900383E4D /* format.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = format.cc; sourceTree = "<group>"; };
 		F9070A702B9DEB5900383E4D /* levenshtein-sse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = "levenshtein-sse.hpp"; sourceTree = "<group>"; };
-		F9070A722B9DEB5900383E4D /* miniutf.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = miniutf.hpp; sourceTree = "<group>"; };
 		F9070A742B9DEB5900383E4D /* RFC1321.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RFC1321.hpp; sourceTree = "<group>"; };
 		F9070A762B9DEB5900383E4D /* simdutf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simdutf.cpp; sourceTree = "<group>"; };
 		F9070A772B9DEB5900383E4D /* simdutf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simdutf.h; sourceTree = "<group>"; };
@@ -3695,8 +3691,6 @@
 		F9070D942B9F175E00383E4D /* SivThreading.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivThreading.cpp; sourceTree = "<group>"; };
 		F9070D962B9F175E00383E4D /* SivUnicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUnicode.cpp; sourceTree = "<group>"; };
 		F9070D982B9F175E00383E4D /* SivUnicodeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivUnicodeConverter.cpp; sourceTree = "<group>"; };
-		F9070D992B9F175E00383E4D /* UnicodeUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnicodeUtility.cpp; sourceTree = "<group>"; };
-		F9070D9A2B9F175E00383E4D /* UnicodeUtility.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UnicodeUtility.hpp; sourceTree = "<group>"; };
 		F9070D9C2B9F175E00383E4D /* CUserAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CUserAction.cpp; sourceTree = "<group>"; };
 		F9070D9D2B9F175E00383E4D /* CUserAction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CUserAction.hpp; sourceTree = "<group>"; };
 		F9070D9E2B9F175E00383E4D /* IUserAction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IUserAction.hpp; sourceTree = "<group>"; };
@@ -7220,14 +7214,6 @@
 			path = "levenshtein-sse";
 			sourceTree = "<group>";
 		};
-		F9070A732B9DEB5900383E4D /* miniutf */ = {
-			isa = PBXGroup;
-			children = (
-				F9070A722B9DEB5900383E4D /* miniutf.hpp */,
-			);
-			path = miniutf;
-			sourceTree = "<group>";
-		};
 		F9070A752B9DEB5900383E4D /* RFC1321 */ = {
 			isa = PBXGroup;
 			children = (
@@ -7290,7 +7276,6 @@
 				F9FD0B702D1D334700A584CE /* Metal */,
 				F9ECFB553021C41B00D3EB2F /* MikkTSpace */,
 				F9797F062F6EC1D000518D26 /* miniaudio */,
-				F9070A732B9DEB5900383E4D /* miniutf */,
 				F933AD752E54A375005624D7 /* msdfgen */,
 				F98605582BD203D4006A4C0F /* muparser */,
 				F986F8FC2BC8441F006A4C0F /* Oniguruma */,
@@ -8514,8 +8499,6 @@
 			isa = PBXGroup;
 			children = (
 				F9070D982B9F175E00383E4D /* SivUnicodeConverter.cpp */,
-				F9070D992B9F175E00383E4D /* UnicodeUtility.cpp */,
-				F9070D9A2B9F175E00383E4D /* UnicodeUtility.hpp */,
 			);
 			path = UnicodeConverter;
 			sourceTree = "<group>";
@@ -15038,7 +15021,6 @@
 				F9FD0B312D1D315D00A584CE /* TextureRegion.hpp in Headers */,
 				F98600A42BCFBB53006A4C0F /* SkSLVersion.h in Headers */,
 				F986FFEE2BCFBB53006A4C0F /* SkEncodedImageFormat.h in Headers */,
-				F9070DF82B9F175E00383E4D /* UnicodeUtility.hpp in Headers */,
 				F986FA9A2BCFB53B006A4C0F /* ftwinfnt.h in Headers */,
 				F9797EB12F667F3300518D26 /* CMediaTranscoder.hpp in Headers */,
 				F986031F2BCFBB54006A4C0F /* SkPathOpsCubic.h in Headers */,
@@ -15125,7 +15107,6 @@
 				F98600892BCFBB53006A4C0F /* SkThreadID.h in Headers */,
 				F98600BA2BCFBB53006A4C0F /* Transform_inl.h in Headers */,
 				F9528C932BC1204200222F45 /* PNGDecoder.hpp in Headers */,
-				F9070B042B9DEB5900383E4D /* miniutf.hpp in Headers */,
 				F9807D8C2BF6677600D9B590 /* MessageBoxResult.hpp in Headers */,
 				F98600282BCFBB53006A4C0F /* SkOverdrawCanvas.h in Headers */,
 				F99881A02F48997A00C8991D /* SerialPortInfo.ipp in Headers */,
@@ -16773,7 +16754,6 @@
 				F9797EF02F6E60C200518D26 /* SivDragDropItemType.cpp in Sources */,
 				F9528C182BBF026F00222F45 /* zstd_common.c in Sources */,
 				F980C4A22C04C91A00A86B68 /* CursorTransform.cpp in Sources */,
-				F9070DF72B9F175E00383E4D /* UnicodeUtility.cpp in Sources */,
 				F9528B362BB0567000222F45 /* MemoryMappedFileViewDetail.cpp in Sources */,
 				F9070DDC2B9F175E00383E4D /* SivMonitorInfo.cpp in Sources */,
 				F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */,

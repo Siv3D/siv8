@@ -1108,7 +1108,6 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\ITexture.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Texture\TextureUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.hpp" />
-    <ClInclude Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\UserAction\IUserAction.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Window\IWindow.hpp" />
@@ -1335,7 +1334,6 @@
     <ClInclude Include="..\Siv3D\src\ThirdParty\mapbox\variant_visitor.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\MikkTSpace\mikktspace.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\miniaudio\miniaudio.h" />
-    <ClInclude Include="..\Siv3D\src\ThirdParty\miniutf\miniutf.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\arithmetics.hpp" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\base.h" />
     <ClInclude Include="..\Siv3D\src\ThirdParty\msdfgen\core\bitmap-interpolation.hpp" />
@@ -2037,7 +2035,6 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\Troubleshooting\Troubleshooting.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Twitter\SivTwitter.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\SivUnicodeConverter.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\UnicodeConverter\UnicodeUtility.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Unicode\SivUnicode.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\CUserAction.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\UserAction\UserActionFactory.cpp" />
