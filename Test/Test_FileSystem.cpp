@@ -15,6 +15,7 @@
 # if SIV3D_PLATFORM(WINDOWS)
 	# include <Siv3D/Windows/Windows.hpp>
 	# include <winioctl.h>
+	# include <clocale>
 # endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
@@ -25,6 +26,47 @@
 
 # if SIV3D_PLATFORM(MACOS)
 	# include <sys/xattr.h>
+# endif
+
+# if SIV3D_PLATFORM(WINDOWS)
+namespace
+{
+	template <class F>
+	void WithOEMFileAPIs(F&& check)
+	{
+		const char* locale = std::setlocale(LC_CTYPE, nullptr);
+		REQUIRE(locale != nullptr);
+		const std::string savedLocale = locale;
+		const int savedMode = ::_configthreadlocale(_ENABLE_PER_THREAD_LOCALE);
+		REQUIRE(savedMode != -1);
+		const ScopeExit restoreLocale{ [&savedLocale, savedMode]
+			{
+				std::setlocale(LC_CTYPE, savedLocale.c_str());
+				::_configthreadlocale(savedMode);
+			} };
+		// A UTF-8 CRT locale takes precedence over the file API code page in MSVC.
+		REQUIRE(std::setlocale(LC_CTYPE, "C") != nullptr);
+		const BOOL wasANSI = ::AreFileApisANSI();
+		const ScopeExit restoreFileAPIs{ [wasANSI]
+			{
+				if (wasANSI)
+				{
+					::SetFileApisToANSI();
+				}
+				else
+				{
+					::SetFileApisToOEM();
+				}
+			} };
+		::SetFileApisToOEM();
+		REQUIRE_FALSE(::AreFileApisANSI());
+		if (::GetOEMCP() == CP_UTF8)
+		{
+			MESSAGE("The system OEM code page is UTF-8; a legacy code page is not exercised on this host.");
+		}
+		check();
+	}
+}
 # endif
 
 TEST_CASE("FileSystem::Path status")
@@ -407,6 +449,54 @@ TEST_CASE("FileSystem::RelativePath")
 	CHECK_EQ(FileSystem::RelativePath(base, U""), U"");
 }
 
+TEST_CASE("FileSystem::RelativePath Unicode")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/relativepath-unicode/日本語-😀/");
+	const FilePath base = (root + U"基準-😀/");
+	const FilePath other = (root + U"別-📂/");
+	REQUIRE(FileSystem::CreateDirectories(base + U"資料/"));
+	REQUIRE(FileSystem::CreateDirectories(other));
+	for (const auto& file : { base + U"資料/画像-🐈.bin", other + U"文書.bin" })
+	{
+		BinaryFileWriter writer{ file };
+		REQUIRE(writer.isOpen());
+	}
+	const struct
+	{
+		FilePath path;
+		FilePath start;
+		FilePath expected;
+	} cases[] = {
+		{ base + U"資料/画像-🐈.bin", base, U"資料/画像-🐈.bin" },
+		{ base + U"資料", base, U"資料/" },
+		{ other + U"文書.bin", base, U"../別-📂/文書.bin" },
+		{ base + U"未作成/想定-🐈.bin", base, U"未作成/想定-🐈.bin" },
+		{ base, base, U"./" },
+		{ root, base, U"../" },
+		{ other + U"文書.bin", base + U"存在しない/", other + U"文書.bin" },
+		{ other + U"文書.bin", base + U"資料/画像-🐈.bin", other + U"文書.bin" },
+	};
+	const auto check = [&cases]
+		{
+			for (const auto& test : cases)
+			{
+				CAPTURE(test.path);
+				CAPTURE(test.start);
+				FilePath relative;
+				CHECK_NOTHROW(relative = FileSystem::RelativePath(test.path, test.start));
+				CHECK_EQ(relative, test.expected);
+				if (FileSystem::IsDirectory(test.start))
+				{
+					CHECK_EQ(FileSystem::FullPath(test.start + relative), FileSystem::FullPath(test.path));
+				}
+			}
+		};
+	check();
+# if SIV3D_PLATFORM(WINDOWS)
+	WithOEMFileAPIs(check);
+# endif
+}
+
 TEST_CASE("FileSystem::FullPath normal paths")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/fullpath/normal/");
@@ -547,6 +637,7 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 	const FilePath root = Test::OutputPath(U"filesystem/junctions/");
 	const FilePath directory = (root + U"directory/");
 	const FilePath outside = (root + U"outside/");
+	const FilePath alias = (root + U"alias-日本語-😀");
 	REQUIRE(FileSystem::CreateDirectories(directory + U"nested/empty/"));
 	REQUIRE(FileSystem::CreateDirectories(outside));
 	for (const auto& [path, contents] : Array<std::pair<FilePath, std::string>>{
@@ -560,7 +651,7 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 
 	const FilePath links[] = {
 		directory + U"external", directory + U"cycle", directory + U"nested/parent",
-		directory + U"broken", root + U"alias", root + U"self",
+		directory + U"broken", alias, root + U"self",
 	};
 	const FilePath targets[] = { outside, directory, directory, outside + U"missing", directory, root + U"self" };
 	Array<NativeFilePath> nativeLinks;
@@ -670,7 +761,20 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 		CHECK_FALSE(FileSystem::NativePath(path).empty());
 	}
 
-	for (const auto& base : { directory, (root + U"alias/") })
+	// Canonicalization must find the Unicode junction, including under a legacy code page.
+	// A merely lexical round trip can hide a misdecoded path that was never resolved.
+	const auto checkRelativePath = [&]
+		{
+			FilePath relative;
+			CHECK_NOTHROW(relative = FileSystem::RelativePath(alias + U"/file.bin", root));
+			CHECK_EQ(relative, U"directory/file.bin");
+			CHECK_NOTHROW(relative = FileSystem::RelativePath(directory + U"file.bin", alias));
+			CHECK_EQ(relative, U"file.bin");
+		};
+	checkRelativePath();
+	WithOEMFileAPIs(checkRelativePath);
+
+	for (const auto& base : { directory, (alias + U'/') })
 	{
 		CAPTURE(base);
 		CHECK_EQ(FileSystem::Size(base), 8);

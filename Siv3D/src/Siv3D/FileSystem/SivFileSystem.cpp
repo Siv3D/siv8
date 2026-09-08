@@ -327,8 +327,13 @@ namespace s3d
 				return U"./";
 			}
 
+		# if SIV3D_PLATFORM(WINDOWS)
+			const std::filesystem::path p = ToPath(path);
+			const std::filesystem::path base = ToPath(start);
+		# else
 			const std::filesystem::path p(path.toUTF8());
-			const std::filesystem::path	base(start.toUTF8());
+			const std::filesystem::path base(start.toUTF8());
+		# endif
 
 			std::error_code error;
 			const std::filesystem::path relativePath = std::filesystem::proximate(p, base, error);
@@ -336,7 +341,11 @@ namespace s3d
 			{
 				return{};
 			}
-			FilePath result = Unicode::FromUTF8(relativePath.string());
+		# if SIV3D_PLATFORM(WINDOWS)
+			FilePath result = Unicode::FromWstring(relativePath.native());
+		# else
+			FilePath result = Unicode::FromUTF8(relativePath.native());
+		# endif
 
 			result.replace(U'\\', U'/');
 

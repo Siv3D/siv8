@@ -20,6 +20,14 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 - Do not force new tests into an unrelated existing test file. Add a dedicated `Test/Test_<Feature>.cpp` when appropriate.
 - Store visual or interactive test programs under `Test/Manual/` as self-contained Markdown documentation with an English description, execution steps, expected results, and complete sample code. Do not leave temporary visual tests in a platform `Main.cpp`.
 
+# Public API documentation
+
+- Document facts that affect how callers use the API: preconditions, return values, failure behavior, side effects, ownership, and non-obvious boundary cases. Omit assurances of expected behavior, such as Unicode support or an empty file having size zero.
+- Describe observable behavior, not implementation steps, bug-fix history, or verification status. A fix that restores an already documented contract does not by itself require new prose. Add platform notes only for meaningful differences in the public contract; combine identical behavior across platforms.
+- Keep each fact in the appropriate Doxygen field. Do not repeat `@param` or `@return` information in `@remark`. Retain examples that help readers understand an operation, including ordinary cases. Prefer input/output pairs, and improve incomplete examples rather than deleting them merely because the behavior can be inferred from prose.
+- State concrete conditions for empty or absent results instead of calling every such result a failure. Preserve useful guarantees, such as whether partial results are returned or completed side effects are rolled back.
+- When simplifying documentation, check the implementation and tests so that the wording does not silently strengthen guarantees or erase actual platform differences.
+
 # Project files
 
 - When adding, removing, or renaming shared source files, public headers, or tests, update the macOS Xcode project and the Windows Visual Studio project and its `.filters` file. Add new public headers to `Siv3D/include/Siv3D.hpp` when appropriate.
