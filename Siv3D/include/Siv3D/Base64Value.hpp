@@ -76,10 +76,13 @@ namespace s3d
 		/// @brief メモリ上のデータから Base64 値を作成します。
 		/// @param src データの先頭ポインタ
 		/// @param size データのサイズ（バイト）
+		/// @remark src は size バイトの読み取り可能な範囲を指す必要があります。getBase64() の内部文字列全体、部分範囲、終端の 0 を含む範囲も指定できます。
+		/// @remark src が nullptr または size が 0 の場合、空の Base64 値になります。
 		void encodeFromMemory(const void* src, size_t size);
 
 		/// @brief メモリ上のデータから Base64 値を作成します。
 		/// @param src データ
+		/// @remark getBase64() の内部文字列を参照する範囲も指定できます。空の範囲を渡すと、空の Base64 値になります。
 		void encodeFromMemory(std::span<const Byte> src);
 
 		////////////////////////////////////////////////////////////////
@@ -110,6 +113,7 @@ namespace s3d
 
 		/// @brief UTF-8 文字列から Base64 値を作成します。
 		/// @param s UTF-8 文字列
+		/// @remark getBase64() の内部文字列全体または部分文字列も指定できます。空の文字列を渡すと、空の Base64 値になります。
 		void encodeFromUTF8(std::string_view s);
 
 		////////////////////////////////////////////////////////////////
