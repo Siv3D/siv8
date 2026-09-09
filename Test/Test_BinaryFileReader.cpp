@@ -183,7 +183,8 @@ TEST_CASE("BinaryFileReader boundaries and lookahead")
 	{
 		for (const int64 length : { 1, 4, 17, 16383, 16384, 16385, 65536 })
 		{
-			CAPTURE(pos, length);
+			CAPTURE(pos);
+			CAPTURE(length);
 			REQUIRE(reader.setPos(pos) == pos);
 			const int64 count = Min<int64>(length, (bytes.size() - pos));
 			REQUIRE(reader.lookahead(actual.data(), length) == count);
@@ -248,7 +249,10 @@ TEST_CASE("BinaryFileReader mixed operation model")
 		const uint32 operation = (next() % 6);
 		const int64 at = (next() % (bytes.size() + 1));
 		const int64 size = (next() % actual.size());
-		CAPTURE(step, operation, at, size);
+		CAPTURE(step);
+		CAPTURE(operation);
+		CAPTURE(at);
+		CAPTURE(size);
 		if (operation == 0)
 		{
 			REQUIRE(reader.setPos(at) == at);
