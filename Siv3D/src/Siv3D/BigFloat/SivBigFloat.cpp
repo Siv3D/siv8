@@ -14,6 +14,7 @@
 # include <charconv>
 # include <cmath>
 # include <limits>
+# include <ThirdParty/fast_float/fast_float.h>
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/Unicode.hpp>
 # include "BigFloatDetail.hpp"
@@ -22,6 +23,17 @@ namespace s3d
 {
 	namespace
 	{
+		template <class Float>
+		[[nodiscard]]
+		static Float ToNativeFloat(const boost::multiprecision::cpp_dec_float_100& value)
+		{
+			const std::string text = value.str(0, std::ios_base::fmtflags{});
+			Float result = 0;
+			// The generated text is valid; range errors also set the result to signed infinity or zero.
+			fast_float::from_chars(text.data(), (text.data() + text.size()), result);
+			return result;
+		}
+
 		[[nodiscard]]
 		static std::string RemoveTrailingZeros(std::string&& s) noexcept
 		{
@@ -246,7 +258,7 @@ namespace s3d
 			return *this;
 		}
 
-		pImpl->value.assign(number);
+		pImpl->value = BigFloatDetail::value_type{ number };
 		return *this;
 	}
 
@@ -723,12 +735,12 @@ namespace s3d
 
 	float BigFloat::asFloat() const
 	{
-		return pImpl->value.convert_to<float>();
+		return ToNativeFloat<float>(pImpl->value);
 	}
 
 	double BigFloat::asDouble() const
 	{
-		return pImpl->value.convert_to<double>();
+		return ToNativeFloat<double>(pImpl->value);
 	}
 
 	long double BigFloat::asLongDouble() const
@@ -742,12 +754,12 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	BigFloat::operator float() const noexcept
+	BigFloat::operator float() const
 	{
 		return asFloat();
 	}
 
-	BigFloat::operator double() const noexcept
+	BigFloat::operator double() const
 	{
 		return asDouble();
 	}

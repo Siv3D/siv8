@@ -571,12 +571,14 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief float に変換します。
-		/// @return float に変換した値
+		/// @return float に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
 		float asFloat() const;
 
 		/// @brief double に変換します。
-		/// @return double に変換した値
+		/// @return double に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
 		double asDouble() const;
 
@@ -592,14 +594,16 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief float に変換します。
-		/// @return float に変換した値
+		/// @return float に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
-		explicit operator float() const noexcept;
+		explicit operator float() const;
 
 		/// @brief double に変換します。
-		/// @return double に変換した値
+		/// @return double に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
-		explicit operator double() const noexcept;
+		explicit operator double() const;
 
 		////////////////////////////////////////////////////////////////
 		//

@@ -8,6 +8,9 @@
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/BigInt.hpp>
 # include "Siv3DTestFramework.hpp"
+# include <bit>
+# include <cmath>
+# include <limits>
 # include <random>
 # include <type_traits>
 # include <utility>
@@ -15,6 +18,8 @@
 using namespace s3d;
 
 static_assert(std::is_nothrow_move_constructible_v<BigFloat>);
+static_assert(not noexcept(static_cast<float>(std::declval<BigFloat>())));
+static_assert(not noexcept(static_cast<double>(std::declval<BigFloat>())));
 static_assert(std::is_same_v<decltype(std::declval<BigFloat>() <=> 1), std::partial_ordering>);
 static_assert(std::is_same_v<decltype(std::declval<BigFloat>() <=> std::declval<BigFloat>()), std::partial_ordering>);
 static_assert(not noexcept(std::declval<BigFloat>() == std::declval<BigInt>()));
@@ -68,6 +73,49 @@ TEST_CASE("BigFloat.move and swap")
 	const BigFloat& self = a;
 	a = self;
 	CHECK(a == 1.25);
+}
+
+TEST_CASE("BigFloat.string assignment")
+{
+	for (const std::string_view initial : { "0", "-7.5", "nan", "inf", "-inf" })
+	{
+		for (const auto& [number, wideNumber] : {
+			std::pair<std::string_view, StringView>{ "0", U"0" },
+			{ "-0", U"-0" },
+			{ "1.25", U"1.25" },
+			{ "-2.5", U"-2.5" },
+			{ "1e-1000", U"1e-1000" },
+			{ "-1e1000", U"-1e1000" },
+			{ "12345678901234567890.123456789", U"12345678901234567890.123456789" },
+			{ "nan", U"nan" },
+			{ "inf", U"inf" },
+			{ "-inf", U"-inf" } })
+		{
+			CAPTURE(initial, number);
+			const BigFloat expected{ number };
+			BigFloat narrow{ initial }, wide{ initial };
+			CHECK(&(narrow = number) == &narrow);
+			CHECK(&(wide = wideNumber) == &wide);
+			if (expected.isNaN())
+			{
+				CHECK(narrow.isNaN());
+				CHECK(wide.isNaN());
+			}
+			else
+			{
+				CHECK(narrow == expected);
+				CHECK(wide == expected);
+			}
+		}
+
+		BigFloat narrow{ initial }, wide{ initial };
+		CHECK_THROWS(narrow = "invalid");
+		CHECK_THROWS(wide = U"invalid");
+		narrow = "1.25";
+		wide = U"-2.5";
+		CHECK(narrow == 1.25);
+		CHECK(wide == -2.5);
+	}
 }
 
 TEST_CASE("BigFloat.partial comparison")
@@ -236,6 +284,77 @@ TEST_CASE("BigFloat.BigInt truncation toward zero")
 	CHECK(BigFloat{ power - 1 } < BigFloat{ "1e200" });
 	CHECK(BigFloat{ -power - 1 } == BigFloat{ "-1e200" });
 	CHECK(BigFloat{ -power + 1 } > BigFloat{ "-1e200" });
+}
+
+namespace
+{
+	template <class Float>
+	void CheckNativeFloatConversion()
+	{
+		auto convert = [](const BigFloat& value)
+		{
+			const Float result = static_cast<Float>(value);
+			if constexpr (std::is_same_v<Float, float>)
+			{
+				CHECK(value.asFloat() == result);
+			}
+			else
+			{
+				CHECK(value.asDouble() == result);
+			}
+			return result;
+		};
+		const Float infinity = std::numeric_limits<Float>::infinity();
+		for (const Float value : { Float{ 0 }, Float{ 1.25 }, Float{ -2.5 },
+			std::numeric_limits<Float>::denorm_min(), std::numeric_limits<Float>::min(),
+			std::nextafter(std::numeric_limits<Float>::min(), Float{ 0 }),
+			std::numeric_limits<Float>::max() })
+		{
+			CAPTURE(value);
+			CHECK(convert(BigFloat{ value }) == value);
+			CHECK(convert(BigFloat{ -value }) == -value);
+		}
+		CHECK(convert(BigFloat{ "inf" }) == infinity);
+		CHECK(convert(BigFloat{ "-inf" }) == -infinity);
+		CHECK(convert(BigFloat{ "1e10000" }) == infinity);
+		CHECK(convert(BigFloat{ "-1e10000" }) == -infinity);
+		CHECK(convert(BigFloat{ "1e-10000" }) == 0);
+		const Float negativeUnderflow = convert(BigFloat{ "-1e-10000" });
+		CHECK(negativeUnderflow == 0);
+		CHECK(std::signbit(negativeUnderflow));
+		CHECK(std::isnan(static_cast<Float>(BigFloat{ "nan" })));
+
+		const BigFloat halfway{ std::is_same_v<Float, float>
+			? "1.000000059604644775390625"
+			: "1.00000000000000011102230246251565404236316680908203125" };
+		const BigFloat epsilon{ "1e-100" };
+		CHECK(convert(halfway) == Float{ 1 });
+		CHECK(convert(halfway - epsilon) == Float{ 1 });
+		CHECK(convert(halfway + epsilon) == std::nextafter(Float{ 1 }, infinity));
+		CHECK(convert(-halfway - epsilon) == std::nextafter(Float{ -1 }, -infinity));
+
+		using Bits = std::conditional_t<std::is_same_v<Float, float>, uint32, uint64>;
+		std::mt19937_64 random{ 0xB16F10A7 };
+		for (size_t index = 0; index < 512; ++index)
+		{
+			const Float value = std::bit_cast<Float>(static_cast<Bits>(random()));
+			if (std::isfinite(value))
+			{
+				CAPTURE(value);
+				CHECK(convert(BigFloat{ value }) == value);
+			}
+		}
+	}
+}
+
+TEST_CASE("BigFloat.native floating conversion")
+{
+	CheckNativeFloatConversion<float>();
+	CheckNativeFloatConversion<double>();
+	CHECK(BigFloat{ "1e-308" }.asDouble() == 1e-308);
+	CHECK(BigFloat{ "-1e-308" }.asDouble() == -1e-308);
+	CHECK(std::isnan(BigFloat{ "nan" }.asFloat()));
+	CHECK(std::isnan(BigFloat{ "nan" }.asDouble()));
 }
 
 TEST_CASE("BigFloat.format precision and round trip")
