@@ -893,61 +893,28 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	asInt32, asUint32
+	//	convertTo
 	//
 	////////////////////////////////////////////////////////////////
 
-	int32 BigInt::asInt32() const noexcept
+	Optional<int64> BigInt::_convertToInt64(const int64 min, const int64 max) const noexcept
 	{
-		return pImpl->value.convert_to<int32>();
-	}
+		if ((compare(min) < 0) || (compare(max) > 0))
+		{
+			return none;
+		}
 
-	uint32 BigInt::asUint32() const noexcept
-	{
-		return ToUnsigned<uint32>(pImpl->value);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	asInt64, asUint64
-	//
-	////////////////////////////////////////////////////////////////
-
-	int64 BigInt::asInt64() const noexcept
-	{
 		return pImpl->value.convert_to<int64>();
 	}
 
-	uint64 BigInt::asUint64() const noexcept
+	Optional<uint64> BigInt::_convertToUint64(const uint64 max) const noexcept
 	{
+		if ((sign() < 0) || (compare(max) > 0))
+		{
+			return none;
+		}
+
 		return ToUnsigned<uint64>(pImpl->value);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	asFloat, asDouble
-	//
-	////////////////////////////////////////////////////////////////
-
-	float BigInt::asFloat() const noexcept
-	{
-		return pImpl->value.convert_to<float>();
-	}
-
-	double BigInt::asDouble() const noexcept
-	{
-		return pImpl->value.convert_to<double>();
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	asBigFloat
-	//
-	////////////////////////////////////////////////////////////////
-
-	BigFloat BigInt::asBigFloat() const
-	{
-		return BigFloat{ *this };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -969,12 +936,12 @@ namespace s3d
 
 	BigInt::operator float() const noexcept
 	{
-		return asFloat();
+		return pImpl->value.convert_to<float>();
 	}
 
 	BigInt::operator double() const noexcept
 	{
-		return asDouble();
+		return pImpl->value.convert_to<double>();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -985,7 +952,7 @@ namespace s3d
 
 	BigInt::operator BigFloat() const
 	{
-		return asBigFloat();
+		return BigFloat{ *this };
 	}
 
 	////////////////////////////////////////////////////////////////

@@ -365,6 +365,27 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	convertTo
+	//
+	////////////////////////////////////////////////////////////////
+
+	template <Concept::Integral Int>
+	Optional<Int> BigInt::convertTo() const noexcept
+		requires ((not std::same_as<std::remove_cv_t<Int>, bool>) && (sizeof(Int) <= sizeof(uint64)))
+	{
+		if constexpr (Concept::SignedIntegral<Int>)
+		{
+			return _convertToInt64(static_cast<int64>(std::numeric_limits<Int>::min()),
+				static_cast<int64>(std::numeric_limits<Int>::max()));
+		}
+		else
+		{
+			return _convertToUint64(static_cast<uint64>(std::numeric_limits<Int>::max()));
+		}
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	swap
 	//
 	////////////////////////////////////////////////////////////////

@@ -12,6 +12,7 @@
 # pragma once
 # include <memory>
 # include <compare>
+# include <limits>
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "String.hpp"
@@ -788,52 +789,22 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	asInt32, asUint32
+		//	convertTo
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 値を正確に表現できる場合に整数型へ変換します。
+		/// @tparam Int bool を除く 64 ビット以下の組み込み整数型
+		/// @return 変換した値。Int の表現範囲外の場合は none
+		/// @code
+		/// BigInt{ 255 }.convertTo<uint8>(); // Optional<uint8>{ 255 }
+		/// BigInt{ 256 }.convertTo<uint8>(); // none
+		/// BigInt{ -1 }.convertTo<uint32>(); // none
+		/// @endcode
+		template <Concept::Integral Int>
 		[[nodiscard]]
-		int32 asInt32() const noexcept;
-
-		/// @brief uint32 に変換します。
-		/// @return 2^32 を法とする非負の剰余（例: -1 は最大値）
-		[[nodiscard]]
-		uint32 asUint32() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	asInt64, asUint64
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		int64 asInt64() const noexcept;
-
-		/// @brief uint64 に変換します。
-		/// @return 2^64 を法とする非負の剰余（例: -1 は最大値）
-		[[nodiscard]]
-		uint64 asUint64() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	asFloat, asDouble
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		float asFloat() const noexcept;
-
-		[[nodiscard]]
-		double asDouble() const noexcept;
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	asBigFloat
-		//
-		////////////////////////////////////////////////////////////////
-
-		[[nodiscard]]
-		BigFloat asBigFloat() const;
+		Optional<Int> convertTo() const noexcept
+			requires ((not std::same_as<std::remove_cv_t<Int>, bool>) && (sizeof(Int) <= sizeof(uint64)));
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -852,9 +823,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief float に変換します。
+		/// @return float の精度に応じて丸めた値
 		[[nodiscard]]
 		explicit operator float() const noexcept;
 
+		/// @brief double に変換します。
+		/// @return double の精度に応じて丸めた値
 		[[nodiscard]]
 		explicit operator double() const noexcept;
 
@@ -864,6 +839,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief BigFloat に変換します。
+		/// @return BigFloat の精度に応じて丸めた値
 		[[nodiscard]]
 		explicit operator BigFloat() const;
 
@@ -986,6 +963,9 @@ namespace s3d
 		BigInt _divI(uint64 a) const;
 		BigInt _modI(int64 a) const;
 		BigInt _modI(uint64 a) const;
+
+		Optional<int64> _convertToInt64(int64 min, int64 max) const noexcept;
+		Optional<uint64> _convertToUint64(uint64 max) const noexcept;
 
 	public:
 

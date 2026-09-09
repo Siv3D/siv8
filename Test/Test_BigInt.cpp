@@ -6,6 +6,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/BigInt.hpp>
+# include <Siv3D/BigFloat.hpp>
 # include "Siv3DTestFramework.hpp"
 # include <array>
 # include <type_traits>
@@ -63,6 +64,68 @@ TEST_CASE("BigInt.move and reassign")
 
 namespace
 {
+	template <class Int>
+	concept HasConvertTo = requires(const BigInt& value)
+	{
+		{ value.template convertTo<Int>() } -> std::same_as<Optional<Int>>;
+	};
+
+	enum class IntegerLike : int32 {};
+
+	static_assert(not HasConvertTo<bool>);
+	static_assert(not HasConvertTo<const bool>);
+	static_assert(not HasConvertTo<volatile bool>);
+	static_assert(not HasConvertTo<float>);
+	static_assert(not HasConvertTo<double>);
+	static_assert(not HasConvertTo<long double>);
+	static_assert(not HasConvertTo<IntegerLike>);
+	static_assert(not HasConvertTo<BigInt>);
+	static_assert(not HasConvertTo<void>);
+	static_assert(not HasConvertTo<int32&>);
+	static_assert(not HasConvertTo<int32*>);
+
+# if defined(__SIZEOF_INT128__)
+	static_assert(not HasConvertTo<__int128>);
+	static_assert(not HasConvertTo<unsigned __int128>);
+# endif
+
+	template <Concept::Integral Int>
+	void CheckIntegerConversion()
+	{
+		static_assert(HasConvertTo<Int>);
+		static_assert(noexcept(std::declval<const BigInt&>().convertTo<Int>()));
+		const Int min = std::numeric_limits<Int>::min();
+		const Int max = std::numeric_limits<Int>::max();
+		const BigInt lower{ min }, upper{ max };
+
+		for (const Int expected : { Int{ 0 }, Int{ 1 }, Int{ 42 }, min, max,
+			static_cast<Int>(min + 1), static_cast<Int>(max - 1) })
+		{
+			const BigInt original{ expected };
+			const auto result = original.convertTo<Int>();
+			REQUIRE(result.has_value());
+			CHECK(*result == expected);
+			CHECK(BigInt{ *result } == original);
+		}
+
+		CHECK((lower - 1).convertTo<Int>() == none);
+		CHECK((upper + 1).convertTo<Int>() == none);
+		const BigInt huge = (BigInt{ 1 } << 4096) + 7;
+		CHECK(huge.convertTo<Int>() == none);
+		CHECK((-huge).convertTo<Int>() == none);
+
+		if constexpr (Concept::SignedIntegral<Int>)
+		{
+			CHECK(BigInt{ -1 }.convertTo<Int>() == Optional<Int>{ -1 });
+			CHECK(BigInt{ -42 }.convertTo<Int>() == Optional<Int>{ -42 });
+		}
+		else
+		{
+			CHECK(BigInt{ -1 }.convertTo<Int>() == none);
+			CHECK(BigInt{ -42 }.convertTo<Int>() == none);
+		}
+	}
+
 	template <class Float>
 	void CheckFloatingComparison()
 	{
@@ -105,31 +168,82 @@ TEST_CASE("BigInt.floating comparison")
 	CHECK(boundary + 1 > f);
 }
 
-TEST_CASE("BigInt.unsigned modulo conversion")
+TEST_CASE("BigInt.convertTo integer boundaries and round trip")
+{
+	CheckIntegerConversion<int8>();
+	CheckIntegerConversion<uint8>();
+	CheckIntegerConversion<int16>();
+	CheckIntegerConversion<uint16>();
+	CheckIntegerConversion<int32>();
+	CheckIntegerConversion<uint32>();
+	CheckIntegerConversion<int64>();
+	CheckIntegerConversion<uint64>();
+	CheckIntegerConversion<size_t>();
+	CheckIntegerConversion<long>();
+	CheckIntegerConversion<unsigned long>();
+	CheckIntegerConversion<long long>();
+	CheckIntegerConversion<unsigned long long>();
+	CheckIntegerConversion<char>();
+	CheckIntegerConversion<wchar_t>();
+	CheckIntegerConversion<char8_t>();
+	CheckIntegerConversion<char16_t>();
+	CheckIntegerConversion<char32_t>();
+
+	static_assert(HasConvertTo<const int32>);
+	static_assert(HasConvertTo<volatile uint64>);
+	CHECK(BigInt{ -42 }.convertTo<const int32>().value() == -42);
+	CHECK(BigInt{ 42 }.convertTo<volatile uint64>().value() == 42);
+}
+
+TEST_CASE("BigInt.size_t modulo conversion")
 {
 	for (int64 value : { int64{ 0 }, int64{ 1 }, int64{ -1 }, int64{ -2 }, std::numeric_limits<int64>::min(), std::numeric_limits<int64>::max() })
 	{
 		const BigInt n{ value };
-		CHECK(n.asUint32() == static_cast<uint32>(value));
-		CHECK(n.asUint64() == static_cast<uint64>(value));
 		CHECK(static_cast<size_t>(n) == static_cast<size_t>(value));
 	}
-	for (const uint32 bits : { 32u, 64u, 256u, 4096u })
+	for (const uint32 bits : { uint32{ std::numeric_limits<size_t>::digits }, 256u, 4096u })
 	{
 		const BigInt n = BigInt{ 1 } << bits;
-		CHECK(n.asUint32() == 0);
-		CHECK((-n).asUint32() == 0);
-		CHECK((n + 17).asUint32() == 17);
-		CHECK((-n - 17).asUint32() == (uint32{ 0 } - 17u));
-		if (bits >= 64)
-		{
-			CHECK(n.asUint64() == 0);
-			CHECK((-n).asUint64() == 0);
-			CHECK((n + 17).asUint64() == 17);
-			CHECK((-n - 17).asUint64() == (uint64{ 0 } - 17u));
-			CHECK(static_cast<size_t>(n - 1) == std::numeric_limits<size_t>::max());
-		}
+		CHECK(static_cast<size_t>(n) == 0);
+		CHECK(static_cast<size_t>(-n) == 0);
+		CHECK(static_cast<size_t>(n + 17) == 17);
+		CHECK(static_cast<size_t>(-n - 17) == (size_t{ 0 } - 17u));
+		CHECK(static_cast<size_t>(n - 1) == std::numeric_limits<size_t>::max());
 	}
+}
+
+TEST_CASE("BigInt.explicit floating conversions")
+{
+	static_assert(noexcept(static_cast<float>(std::declval<const BigInt&>())));
+	static_assert(noexcept(static_cast<double>(std::declval<const BigInt&>())));
+	static_assert(not std::is_convertible_v<BigInt, float>);
+	static_assert(not std::is_convertible_v<BigInt, double>);
+
+	for (const int64 value : { int64{ 0 }, int64{ 42 }, int64{ -42 },
+		int64{ 16777217 }, int64{ -16777217 },
+		int64{ 9007199254740993 }, int64{ -9007199254740993 } })
+	{
+		const BigInt n{ value };
+		CHECK(static_cast<float>(n) == static_cast<float>(value));
+		CHECK(static_cast<double>(n) == static_cast<double>(value));
+		CHECK(static_cast<BigFloat>(n) == BigFloat{ value });
+		CHECK(n.operator BigFloat() == BigFloat{ value });
+	}
+
+	const BigInt huge = BigInt{ 1 } << 4096;
+	CHECK(static_cast<float>(huge) == std::numeric_limits<float>::infinity());
+	CHECK(static_cast<float>(-huge) == -std::numeric_limits<float>::infinity());
+	CHECK(static_cast<double>(huge) == std::numeric_limits<double>::infinity());
+	CHECK(static_cast<double>(-huge) == -std::numeric_limits<double>::infinity());
+
+	const BigInt power = BigInt{ 10 }.pow(200);
+	const BigFloat converted = static_cast<BigFloat>(power);
+	CHECK(converted == BigFloat{ power });
+	CHECK((converted - BigFloat{ "1e200" }).abs() < BigFloat{ "1e100" });
+	CHECK(static_cast<BigFloat>(power + 1) == converted);
+	CHECK((power + 1).operator BigFloat() == converted);
+	CHECK(static_cast<BigFloat>(-power) == -converted);
 }
 
 TEST_CASE("BigInt.divmod aliases")
