@@ -64,7 +64,14 @@ int32 RunTest()
 		Logger.setOutputLevel(LogLevel::Error);
 	}
 
+	# if SIV3D_PLATFORM(WINDOWS)
+	if (not commandLineArgs.contains(U"--test-only"))
+	{
+		Console.open();
+	}
+	# else
 	Console.open();
+	# endif
 
 	// Test paths are relative to the repository's platform App directory.
 	// Reject an unexpected working directory before writing or removing files.
