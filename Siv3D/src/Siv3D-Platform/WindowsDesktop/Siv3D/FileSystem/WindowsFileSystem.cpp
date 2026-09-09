@@ -14,6 +14,7 @@
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Resource.hpp>
 # include <Siv3D/ScopeExit.hpp>
+# include <Siv3D/SpecialFolder.hpp>
 # include <Shlobj.h>
 
 namespace s3d
@@ -61,7 +62,7 @@ namespace s3d
 
 			specialFolderPaths = []()
 			{
-				static constexpr int ids[SpecialFolderCount] = {
+				static constexpr int ids[] = {
 					CSIDL_DESKTOP,
 					CSIDL_MYDOCUMENTS,
 					CSIDL_LOCAL_APPDATA,
@@ -73,12 +74,11 @@ namespace s3d
 					CSIDL_FONTS,
 					CSIDL_PROFILE,
 					CSIDL_PROGRAM_FILES,
-					CSIDL_PROFILE, // Downloads の親フォルダ
 				};
 
 				std::array<FilePath, SpecialFolderCount> paths;
 
-				for (size_t i = 0; i < paths.size(); ++i)
+				for (size_t i = 0; i < std::size(ids); ++i)
 				{
 					wchar_t path[MAX_PATH];
 
@@ -90,7 +90,13 @@ namespace s3d
 					paths[i] = Unicode::FromWstring(NormalizePath(path, PathType::Directory));
 				}
 
-				paths[11].append(U"Downloads/");
+				PWSTR downloads = nullptr;
+				const HRESULT result = ::SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &downloads);
+				const ScopeExit freeDownloads{ [downloads] { ::CoTaskMemFree(downloads); } };
+				if (SUCCEEDED(result))
+				{
+					paths[FromEnum(SpecialFolder::Downloads)] = Unicode::FromWstring(NormalizePath(downloads, PathType::Directory));
+				}
 
 				return paths;
 			}();
@@ -248,13 +254,17 @@ namespace s3d
 			return fad;
 		}
 
-		DateTime FileTimeToTime(FILETIME in)
+		Optional<DateTime> FileTimeToTime(const FILETIME in)
 		{
+			SYSTEMTIME utc;
 			SYSTEMTIME systemTime;
-			::FileTimeToLocalFileTime(&in, &in);
-			::FileTimeToSystemTime(&in, &systemTime);
+			if ((not ::FileTimeToSystemTime(&in, &utc))
+				|| (not ::SystemTimeToTzSpecificLocalTimeEx(nullptr, &utc, &systemTime)))
+			{
+				return none;
+			}
 
-			return{ systemTime.wYear, systemTime.wMonth, systemTime.wDay,
+			return DateTime{ systemTime.wYear, systemTime.wMonth, systemTime.wDay,
 				systemTime.wHour, systemTime.wMinute, systemTime.wSecond, systemTime.wMilliseconds };
 		}
 

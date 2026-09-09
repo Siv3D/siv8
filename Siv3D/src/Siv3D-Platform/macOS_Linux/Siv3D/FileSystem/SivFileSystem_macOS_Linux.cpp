@@ -11,6 +11,7 @@
 
 # include <sys/stat.h>
 # include <filesystem>
+# include <limits>
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Unicode.hpp>
 
@@ -32,11 +33,15 @@ namespace s3d
 		}
 	
 		[[nodiscard]]
-		static DateTime ToDateTime(const ::timespec& tv)
+		static Optional<DateTime> ToDateTime(const ::timespec& tv)
 		{
 			::tm lt;
-			::localtime_r(&tv.tv_sec, &lt);
-			return{ (1900 + lt.tm_year),
+			if ((not ::localtime_r(&tv.tv_sec, &lt))
+				|| (lt.tm_year > (std::numeric_limits<int32>::max() - 1900)))
+			{
+				return none;
+			}
+			return DateTime{ (1900 + lt.tm_year),
 					(1 + lt.tm_mon),
 					(lt.tm_mday),
 					lt.tm_hour,

@@ -37,6 +37,27 @@ namespace s3d
 			return path;
 		}
 
+		static void TrimToParentPath(FilePath& path, size_t level)
+		{
+			if (path.ends_with(U'/'))
+			{
+				path.pop_back();
+			}
+
+			while (not path.isEmpty())
+			{
+				do
+				{
+					path.pop_back();
+				} while ((not path.isEmpty()) && (not path.ends_with(U'/')));
+
+				if (level-- == 0)
+				{
+					break;
+				}
+			}
+		}
+
 		[[nodiscard]]
 		inline static std::filesystem::path ToPath(const FilePathView path)
 		{
@@ -109,14 +130,12 @@ namespace s3d
 
 			String result = path.substr(lastDotPos + 1).toString();
 
-			if (preserveCase == PreserveCase::Yes)
+			if (preserveCase == PreserveCase::No)
 			{
-				return result;
+				result.lowercase();
 			}
-			else
-			{
-				return result.lowercase();
-			}
+
+			return result;
 		}
 			
 		////////////////////////////////////////////////////////////////
@@ -168,39 +187,16 @@ namespace s3d
 
 		FilePath ParentPath(const FilePathView path, const size_t level)
 		{
-			FilePath unused;
-			return ParentPath(path, level, unused);
+			FilePath result = FullPath(path);
+			TrimToParentPath(result, level);
+			return result;
 		}
 
-		FilePath ParentPath(const FilePathView path, size_t level, FilePath& baseFullPath)
+		FilePath ParentPath(const FilePathView path, const size_t level, FilePath& baseFullPath)
 		{
-			if (path.isEmpty())
-			{
-				return{};
-			}
-
 			FilePath result = FullPath(path);
-
 			baseFullPath = result;
-
-			if (result.ends_with(U'/'))
-			{
-				result.pop_back();
-			}
-
-			while (not result.isEmpty())
-			{
-				do
-				{
-					result.pop_back();
-				} while ((not result.isEmpty()) && (not result.ends_with(U'/')));
-
-				if (level-- == 0)
-				{
-					break;
-				}
-			}
-
+			TrimToParentPath(result, level);
 			return result;
 		}
 			

@@ -11,11 +11,14 @@
 
 # include "Siv3DTest.hpp"
 # include <filesystem>
+# include <ctime>
 
 # if SIV3D_PLATFORM(WINDOWS)
 	# include <Siv3D/Windows/Windows.hpp>
 	# include <winioctl.h>
 	# include <clocale>
+	# include <Shlobj.h>
+	# include "../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/FileSystem/WindowsFileSystem.hpp"
 # endif
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
@@ -440,6 +443,154 @@ TEST_CASE("FileSystem::FileName and BaseName path views")
 	CHECK(FileSystem::FileName(FilePathView{}).isEmpty());
 	CHECK(FileSystem::BaseName(FilePathView{}).isEmpty());
 }
+
+TEST_CASE("FileSystem::ParentPath")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/parentpath/");
+	REQUIRE(FileSystem::CreateDirectories(root + U"a/b/"));
+	const struct
+	{
+		FilePath path;
+		size_t level;
+		FilePath expected;
+	} cases[] = {
+		{ U"", 0, U"" },
+		{ root + U"a/b/file.txt", 0, root + U"a/b/" },
+		{ root + U"a/b/file.txt", 1, root + U"a/" },
+		{ root + U"a/b/file.txt", 2, root },
+		{ root + U"a/b", 0, root + U"a/" },
+		{ root + U"a/b/", 0, root + U"a/" },
+		{ root + U"a/b/", 1, root },
+		{ root, std::numeric_limits<size_t>::max(), U"" },
+	};
+	for (const auto& test : cases)
+	{
+		CAPTURE(test.path);
+		CAPTURE(test.level);
+		const FilePath fullPath = FileSystem::FullPath(test.path);
+		FilePath base = U"previous value";
+		CHECK_EQ(FileSystem::ParentPath(test.path, test.level), test.expected);
+		CHECK_EQ(FileSystem::ParentPath(test.path, test.level, base), test.expected);
+		CHECK_EQ(base, fullPath);
+		// The input may refer to the output string reused by the caller.
+		base = test.path;
+		CHECK_EQ(FileSystem::ParentPath(base, test.level, base), test.expected);
+		CHECK_EQ(base, fullPath);
+	}
+}
+
+TEST_CASE("FileSystem::File times missing paths")
+{
+	for (const FilePath& path : { FilePath{}, Test::OutputPath(U"filesystem/times/missing") })
+	{
+		CAPTURE(path);
+		CHECK_FALSE(FileSystem::CreationTime(path));
+		CHECK_FALSE(FileSystem::WriteTime(path));
+		CHECK_FALSE(FileSystem::AccessTime(path));
+	}
+}
+
+# if SIV3D_PLATFORM(WINDOWS)
+
+TEST_CASE("FileSystem::Downloads folder")
+{
+	PWSTR native = nullptr;
+	const HRESULT result = ::SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &native);
+	const ScopeExit freePath{ [native] { ::CoTaskMemFree(native); } };
+	const FilePath& actual = FileSystem::GetFolderPath(SpecialFolder::Downloads);
+	if (FAILED(result))
+	{
+		CHECK(actual.isEmpty());
+	}
+	else
+	{
+		FilePath expected = Unicode::FromWstring(native).replaced(U'\\', U'/');
+		if (not expected.ends_with(U'/'))
+		{
+			expected.push_back(U'/');
+		}
+		CHECK_EQ(actual, expected);
+	}
+}
+
+TEST_CASE("FileSystem::File time conversion")
+{
+	const FilePath path = Test::OutputPath(U"filesystem/times/日本語-😀.bin");
+	{
+		BinaryFileWriter writer{ path };
+		REQUIRE(writer.isOpen());
+	}
+	for (const WORD month : { WORD{ 1 }, WORD{ 7 } })
+	{
+		for (const WORD milliseconds : { WORD{ 0 }, WORD{ 123 }, WORD{ 999 } })
+		{
+			const SYSTEMTIME utc{ 2024, month, 0, 15, 12, 34, 56, milliseconds };
+			FILETIME fileTime;
+			SYSTEMTIME local;
+			REQUIRE(::SystemTimeToFileTime(&utc, &fileTime));
+			REQUIRE(::SystemTimeToTzSpecificLocalTimeEx(nullptr, &utc, &local));
+			const DateTime expected{ local.wYear, local.wMonth, local.wDay,
+				local.wHour, local.wMinute, local.wSecond, local.wMilliseconds };
+			CHECK_EQ(detail::FileTimeToTime(fileTime), expected);
+			{
+				const HANDLE handle = ::CreateFileW(Unicode::ToWstring(path).c_str(), FILE_WRITE_ATTRIBUTES,
+					(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE), nullptr, OPEN_EXISTING, 0, nullptr);
+				REQUIRE(handle != INVALID_HANDLE_VALUE);
+				const ScopeExit closeHandle{ [handle] { ::CloseHandle(handle); } };
+				REQUIRE(::SetFileTime(handle, &fileTime, &fileTime, &fileTime));
+			}
+			CHECK_EQ(FileSystem::CreationTime(path), expected);
+			CHECK_EQ(FileSystem::WriteTime(path), expected);
+			CHECK_EQ(FileSystem::AccessTime(path), expected);
+		}
+	}
+	for (const DWORD high : { DWORD{ 0xC0000000 }, DWORD{ 0xFFFFFFFF } })
+	{
+		CHECK_FALSE(detail::FileTimeToTime(FILETIME{ 0, high }));
+	}
+}
+
+# endif
+
+# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
+
+TEST_CASE("FileSystem::File time conversion")
+{
+	const FilePath path = Test::OutputPath(U"filesystem/times/日本語-😀.bin");
+	{
+		BinaryFileWriter writer{ path };
+		REQUIRE(writer.isOpen());
+	}
+	const std::string native = Unicode::ToUTF8(path);
+	for (const time_t seconds : { time_t{ 0 }, time_t{ 1705322096 }, time_t{ 1721046896 } })
+	{
+		::tm local;
+		REQUIRE(::localtime_r(&seconds, &local) != nullptr);
+		for (const long nanoseconds : { 0L, 123456789L, 999999999L })
+		{
+			const ::timespec times[] = { { seconds, nanoseconds }, { seconds, nanoseconds } };
+			REQUIRE(::utimensat(AT_FDCWD, native.c_str(), times, 0) == 0);
+			const DateTime expected{ local.tm_year + 1900, local.tm_mon + 1, local.tm_mday,
+				local.tm_hour, local.tm_min, local.tm_sec, static_cast<int32>(nanoseconds / 1'000'000) };
+			CHECK_EQ(FileSystem::WriteTime(path), expected);
+			CHECK_EQ(FileSystem::AccessTime(path), expected);
+		}
+	}
+	struct stat status;
+	REQUIRE(::stat(native.c_str(), &status) == 0);
+	# if SIV3D_PLATFORM(MACOS)
+		const ::timespec created = status.st_birthtimespec;
+	# else
+		const ::timespec created = status.st_ctim;
+	# endif
+	::tm local;
+	REQUIRE(::localtime_r(&created.tv_sec, &local) != nullptr);
+	const DateTime expected{ local.tm_year + 1900, local.tm_mon + 1, local.tm_mday,
+		local.tm_hour, local.tm_min, local.tm_sec, static_cast<int32>(created.tv_nsec / 1'000'000) };
+	CHECK_EQ(FileSystem::CreationTime(path), expected);
+}
+
+# endif
 
 TEST_CASE("FileSystem::ChangeCurrentDirectory")
 {

@@ -85,7 +85,7 @@ namespace s3d
 		Optional<WIN32_FILE_ATTRIBUTE_DATA> GetFileAttributeData(const std::wstring& path);
 
 		[[nodiscard]]
-		DateTime FileTimeToTime(FILETIME in);
+		Optional<DateTime> FileTimeToTime(FILETIME in);
 
 		// Returns false on enumeration failure; the caller must discard the partial paths.
 		[[nodiscard]]

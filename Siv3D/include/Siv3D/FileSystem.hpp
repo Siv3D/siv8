@@ -193,7 +193,7 @@ namespace s3d
 		/// @brief 指定したパスの親ディレクトリを返します。合わせて、渡したパスのフルパスを取得します。
 		/// @param path パス
 		/// @param level 親のレベル。0 は親ディレクトリ、1 はその親ディレクトリ
-		/// @param baseFullPath 渡したパスのフルパスを格納する変数への参照
+		/// @param baseFullPath 渡したパスのフルパスを格納する変数への参照。パスが空またはフルパス取得に失敗した場合は空の文字列を格納します。
 		/// @return 親ディレクトリ。失敗した場合は空の文字列
 		[[nodiscard]]
 		FilePath ParentPath(FilePathView path, size_t level, FilePath& baseFullPath);
@@ -271,7 +271,7 @@ namespace s3d
 
 		/// @brief ファイルの作成日時を取得します。
 		/// @param path ファイルパス
-		/// @return ファイルの作成日時。取得に失敗した場合 none
+		/// @return ファイルの作成日時（ローカル時刻）。取得に失敗した場合 none
 		[[nodiscard]]
 		Optional<DateTime> CreationTime(FilePathView path);
 
@@ -283,7 +283,7 @@ namespace s3d
 
 		/// @brief ファイルの最終更新日時を取得します。
 		/// @param path ファイルパス
-		/// @return ファイルの最終更新日時。取得に失敗した場合 none
+		/// @return ファイルの最終更新日時（ローカル時刻）。取得に失敗した場合 none
 		[[nodiscard]]
 		Optional<DateTime> WriteTime(FilePathView path);
 
@@ -295,7 +295,7 @@ namespace s3d
 
 		/// @brief ファイルの最終アクセス日時を取得します。
 		/// @param path ファイルパス
-		/// @return ファイルの最終アクセス日時。取得に失敗した場合 none
+		/// @return ファイルの最終アクセス日時（ローカル時刻）。取得に失敗した場合 none
 		[[nodiscard]]
 		Optional<DateTime> AccessTime(FilePathView path);
 
