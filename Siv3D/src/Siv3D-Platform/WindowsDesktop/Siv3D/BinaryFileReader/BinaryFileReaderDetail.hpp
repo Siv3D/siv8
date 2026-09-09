@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # pragma once
-# include <fstream>
+# include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/BinaryFileReader.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/Byte.hpp>
@@ -52,6 +52,9 @@ namespace s3d
 		int64 read(NonNull<void*> dst, int64 pos, int64 readSize);
 
 		[[nodiscard]]
+		bool readExact(NonNull<void*> dst, int64 pos, int64 readSize);
+
+		[[nodiscard]]
 		int64 lookahead(NonNull<void*> dst, int64 readSize);
 
 		[[nodiscard]]
@@ -76,15 +79,39 @@ namespace s3d
 
 		struct File
 		{
-			std::ifstream file;
+			static constexpr DWORD BufferSize = (16 * 1024);
+
+			HANDLE handle = INVALID_HANDLE_VALUE;
+
+			std::unique_ptr<Byte[]> buffer;
 
 			int64 readPos = 0;
+
+			int64 nativePos = 0;
+
+			int64 bufferBegin = 0;
+
+			DWORD bufferLength = 0;
+
+			~File();
+
+			void close();
+
+			int64 setPos(int64 pos);
 
 			int64 read(NonNull<void*> dst, int64 readSize, int64 fileSize, const FilePath& fullPath);
 
 			int64 lookahead(NonNull<void*> dst, int64 readSize, int64 fileSize, const FilePath& fullPath);
 
 			int64 lookaheadAt(NonNull<void*> dst, int64 pos, int64 readSize, int64 fileSize, const FilePath& fullPath);
+
+		private:
+
+			bool seekNative(int64 pos);
+
+			bool readNative(void* dst, DWORD size, DWORD& actual);
+
+			int64 readAt(NonNull<void*> dst, int64 pos, int64 readSize, int64 fileSize, const FilePath& fullPath);
 
 		} m_file;
 

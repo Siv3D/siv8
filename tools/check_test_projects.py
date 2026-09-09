@@ -91,11 +91,13 @@ def check(root, xcode, windows, filters):
     if not expected:
         return ["No Test/Test_*.cpp files found; check the repository root."]
     errors = []
-    for label, (entries, details) in (
-        ("Xcode Siv3D-Test Sources", xcode_entries(xcode, root / "macOS", root)),
+    projects = [
         ("Siv3D-Test.vcxproj", windows_entries(windows, root / "WindowsDesktop", root)),
         ("Siv3D-Test.vcxproj.filters", windows_entries(filters, root / "WindowsDesktop", root)),
-    ):
+    ]
+    if xcode is not None:
+        projects.insert(0, ("Xcode Siv3D-Test Sources", xcode_entries(xcode, root / "macOS", root)))
+    for label, (entries, details) in projects:
         errors.extend(compare(label, expected, entries))
         errors.extend(f"{label}: {detail}" for detail in details)
     return errors
@@ -125,6 +127,8 @@ def self_test():
         xml = ET.fromstring('<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">'
                             '<ItemGroup><ClCompile Include="../Test/Test_Example.cpp" /></ItemGroup></Project>')
         assert check(root, project, xml, xml) == []  # Unregistered engine file is allowed.
+        assert check(root, None, xml, xml) == []  # Windows-only mode needs no plutil/Xcode.
+        assert len(check(root, None, ET.fromstring('<Project/>'), xml)) == 1
 
         missing = deepcopy(project)
         missing["objects"]["sources"]["files"] = []
@@ -173,16 +177,20 @@ def self_test():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--self-test", action="store_true")
+    parser.add_argument("--windows-only", action="store_true", help="check Visual Studio project and filters without plutil")
     args = parser.parse_args()
     if args.self_test:
         self_test()
         return 0
     root = Path(__file__).resolve().parents[1]
     try:
-        result = subprocess.run(["plutil", "-convert", "json", "-o", "-",
-                                 str(root / "macOS/OpenSiv3D.xcodeproj/project.pbxproj")],
-                                check=True, capture_output=True, text=True)
-        errors = check(root, json.loads(result.stdout),
+        xcode = None
+        if not args.windows_only:
+            result = subprocess.run(["plutil", "-convert", "json", "-o", "-",
+                                     str(root / "macOS/OpenSiv3D.xcodeproj/project.pbxproj")],
+                                    check=True, capture_output=True, text=True)
+            xcode = json.loads(result.stdout)
+        errors = check(root, xcode,
                        ET.parse(root / "WindowsDesktop/Siv3D-Test.vcxproj").getroot(),
                        ET.parse(root / "WindowsDesktop/Siv3D-Test.vcxproj.filters").getroot())
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError, ET.ParseError) as error:
@@ -191,7 +199,8 @@ def main():
     if errors:
         print("\n".join(errors))
         return 1
-    print("Shared test registration OK (Test/Test_*.cpp only; engine sources excluded).")
+    scope = "Visual Studio only; Xcode not checked" if args.windows_only else "both platforms"
+    print(f"Shared test registration OK ({scope}; engine sources excluded).")
     return 0
 
 

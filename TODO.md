@@ -7,6 +7,12 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/BinaryFileReader.hpp`
+
+### プラットフォーム検証
+
+- macOS で共通実装の変更後のビルド・全自動テストを実行する。
+
 ## `Siv3D/include/Siv3D/FileSystem.hpp`
 
 ### プラットフォーム検証

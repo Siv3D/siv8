@@ -445,6 +445,7 @@ gmon.out
 
 ## Ignore test output
 /Test/output/
+/WindowsDesktop/Intermediate/TestReports/
 
 # example Wavefront .obj files
 !**/example/obj/

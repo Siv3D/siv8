@@ -6,6 +6,28 @@ This page describes the existing validation workflows.
 
 ## Build and test
 
+On Windows, use PowerShell 7, Python, and Visual Studio C++ tools. Run from the
+repository root:
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=*BinaryFileReader*'
+./WindowsDesktop/run-tests.ps1
+python tools/check_test_projects.py --windows-only
+```
+
+The [Windows runner](../../WindowsDesktop/run-tests.ps1) checks Visual Studio test
+registration, builds the x64 solution (default `Release`), and launches the test
+application with `--test-only`. It prints the doctest report and fails on a
+nonzero test exit code or a missing successful completion summary. Keep the
+doctest console reporter enabled. `-Configuration Debug` selects Debug; `-Jobs 4` controls
+build parallelism. `-SkipBuild` uses the existing application and library, which
+must already match the current sources and selected configuration.
+
+Reports are retained in `WindowsDesktop/Intermediate/TestReports/` and can be
+removed when no longer needed. The early-exit block in `WindowsDesktop/Main.cpp`
+is required by this workflow. Windows registration validation checks the Visual
+Studio project and its filters; it does not validate the Xcode project.
+
 On macOS, run from the repository root, outside the sandbox:
 
 ```sh
@@ -22,6 +44,12 @@ Xcode's `Siv3D-Test` Sources, Visual Studio's test project, and its filters.
 Engine sources are excluded; platform-specific engine membership is intentional.
 The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
 it does not compile Windows code.
+
+## Performance experiments
+
+The [Windows BinaryFileReader benchmark](binary-file-reader-benchmark.md) compares
+the current Win32 reader with the historical `ifstream` implementation and
+experimental buffer sizes using controlled I/O patterns and real asset workloads. It builds and runs independently of the test app.
 
 ## Test output and configuration
 

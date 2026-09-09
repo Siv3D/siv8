@@ -295,6 +295,12 @@ namespace s3d
 			return false;
 		}
 
+	# if SIV3D_PLATFORM(WINDOWS)
+
+		return pImpl->readExact(NonNull{ dst }, getPos(), size);
+
+	# else
+
 		const int64 previousPos = getPos();
 		const int64 readBytes = pImpl->read(NonNull{ dst }, size);
 
@@ -305,6 +311,8 @@ namespace s3d
 
 		setPos(previousPos);
 		return false;
+
+	# endif
 	}
 
 	bool BinaryFileReader::readExact(void* const dst, const int64 pos, const int64 size)
@@ -331,6 +339,12 @@ namespace s3d
 			return false;
 		}
 
+	# if SIV3D_PLATFORM(WINDOWS)
+
+		return pImpl->readExact(NonNull{ dst }, pos, size);
+
+	# else
+
 		const int64 previousPos = getPos();
 		const int64 readBytes = pImpl->read(NonNull{ dst }, pos, size);
 
@@ -341,6 +355,8 @@ namespace s3d
 
 		setPos(previousPos);
 		return false;
+
+	# endif
 	}
 
 	////////////////////////////////////////////////////////////////

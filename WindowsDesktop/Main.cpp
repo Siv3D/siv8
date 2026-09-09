@@ -4,7 +4,14 @@
 
 void Main()
 {
-	//RunTest();
+	// WindowsDesktop/run-tests.ps1 depends on this early-exit block.
+	const int32 exitCode = RunTest();
+	if (System::GetCommandLineArgs().contains(U"--test-only"))
+	{
+		System::Exit(exitCode);
+		return;
+	}
+
 	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
 	//Window::SetStyle(WindowStyle::Sizable);
 	//Scene::SetResizeMode(ResizeMode::Keep);

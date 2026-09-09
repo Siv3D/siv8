@@ -14,7 +14,12 @@
     <None Include=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Test\Siv3DTest.cpp" />
+    <ClCompile Include="..\Test\Siv3DTest.cpp">
+      <!-- Keep doctest's implementation out of LTCG (MSVC optimizer ICE). -->
+      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    </ClCompile>
     <ClCompile Include="..\Test\Test_TestEnvironment.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
     <ClCompile Include="..\Test\Test_ArrayException.cpp" />
