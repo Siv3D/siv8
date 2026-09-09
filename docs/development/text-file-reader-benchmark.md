@@ -30,7 +30,8 @@ For correctness checks, run the normal full suite described in the
 [development guide](README.md#build-and-test). The non-benchmark TextFileReader
 cases cover BOMs, CR removal, embedded NULs, invalid UTF-8, output reuse, mixed
 read methods, short reads, exceptions, and buffer boundaries (including split
-UTF-8 sequences, CRLF, and reopening a reader).
+UTF-8 sequences, CRLF, and reopening a reader). CR removal is checked before
+decoding, including CRs between code units and invalid input after normalization.
 
 ## Workloads and timing
 
@@ -43,6 +44,7 @@ production files. No shader compiler is invoked.
 | `shader-ascii-lf` | 1024 HLSL-style function definitions, ASCII with LF |
 | `dialogue-utf8-bom-crlf` | 1024 numbered dialogue lines with Japanese, English, an emoji, a UTF-8 BOM, and CRLF |
 | `long-lines-1mib` | Approximately 1 MiB in 32 long lines with multilingual suffixes and CRLF |
+| `blank-lines-crlf` | 32768 empty CRLF lines, exercising dense CR removal |
 
 Every workload runs through both `MemoryViewReader` and `BinaryFileReader`.
 Memory input is a non-owning view: creating a reader does not copy the fixture.
@@ -51,9 +53,12 @@ test runner owns their cleanup. Fixture generation and full-content verification
 are outside timed regions. File timings reflect **warm OS caches**, including
 open, BOM detection, reading, and close; they do not measure cold storage.
 
-Each method creates a new TextFileReader per iteration. Whole-file UTF-8 output
-is measured both as a newly returned string and with a reused destination.
-UTF-32 whole-file output and line-by-line output reuse caller storage;
+Each method creates a new TextFileReader per iteration, except
+`readAll/utf32-reader-reuse`, which reopens the same reader and reuses its input
+buffer as well as the destination. Its initial reads are verified before timing;
+reopening (including closing the previous file and detecting the BOM) is timed.
+Whole-file UTF-8 and UTF-32 output are each measured as a newly returned string
+and with a reused destination. Line-by-line output reuses caller storage;
 `readLine/utf32-value` calls the actual value-returning overload. Bulk line
 reading reuses the outer array, but its existing String elements are destroyed
 by the API. `readChar/utf32` consumes every decoded character without building an

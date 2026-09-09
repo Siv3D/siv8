@@ -15,10 +15,9 @@
 
 ## `Siv3D/include/Siv3D/TextFileReader.hpp`
 
-### UTF-8 読み込みの段階的な高速化
+### プラットフォーム検証
 
-- `readAll(String&)` の一時 UTF-8 領域と CR 除去の走査を見直す。[UTF-8 ベンチマーク](docs/development/text-file-reader-benchmark.md) で既存の simdutf 一括変換との比較を行い、変換エラー時の挙動を暗黙に変更しない。
-- macOS で共通実装のビルド・全自動テストと UTF-8 ベンチマークを実行する。
+- macOS で共通実装のビルド・全自動テストと [UTF-8 ベンチマーク](docs/development/text-file-reader-benchmark.md) を実行する。
 
 ## `Siv3D/include/Siv3D/FileSystem.hpp`
 

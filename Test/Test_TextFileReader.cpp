@@ -1047,6 +1047,115 @@ TEST_CASE("TextFileReader.UTF8.bulk.shortReadAndException")
 	CHECK(output == "abcdef");
 }
 
+
+TEST_CASE("TextFileReader.UTF8.bulk.CRBeforeDecoding")
+{
+	struct Example
+	{
+		std::string_view input;
+		std::string_view expected8;
+		StringView expected32;
+	};
+	const Example examples[] =
+	{
+		{ "\xC2\r\xA2", "\xC2\xA2", U"\u00A2" },
+		{ "\xE2\r\x82\r\xAC", "\xE2\x82\xAC", U"\u20AC" },
+		{ "\xF0\r\x9F\r\x98\r\x80", "\xF0\x9F\x98\x80", U"\U0001F600" },
+		{ "\r\x80" "A", "\x80" "A", U"" },
+		{ "\xC2\r" "A", "\xC2" "A", U"" },
+		{ "\xE2\r\r", "\xE2", U"" },
+		{ { "A\0\rB", 4 }, { "A\0B", 3 }, { U"A\0B", 3 } },
+		{ "\r\r\r", "", U"" },
+	};
+	for (const size_t prefixLength : { 0, 15, 31, 63, 4093 })
+	{
+		CAPTURE(prefixLength);
+		for (size_t i = 0; i < std::size(examples); ++i)
+		{
+			CAPTURE(i);
+			const auto& example = examples[i];
+			const std::string input = (std::string(prefixLength, 'x') + std::string(example.input));
+			const auto makeReader = [&] { return TextFileReader{ MemoryViewReader{ input.data(), input.size() }, TextEncoding::UTF8_NO_BOM }; };
+			CHECK(makeReader().readAllUTF8() == (std::string(prefixLength, 'x') + std::string(example.expected8)));
+			const bool invalid = ((i >= 3) && (i <= 5));
+			const String expected = invalid ? String{} : (String(prefixLength, U'x') + example.expected32);
+			String output = U"old content";
+			REQUIRE(makeReader().readAll(output));
+			CHECK(output == expected);
+			CHECK(makeReader().readAll() == expected);
+		}
+	}
+}
+
+
+TEST_CASE("TextFileReader.UTF8.bulk.CRCompaction")
+{
+	for (const size_t prefixLength : { 0, 255, 256, 257, 4096 })
+	{
+		for (const size_t period : { 1, 2, 15, 16, 255, 256, 257, 4096 })
+		{
+			CAPTURE(prefixLength);
+			CAPTURE(period);
+			std::string input(prefixLength, 'x');
+			std::string expected8 = input;
+			input.push_back('\r');
+			for (size_t i = 1; i <= 8193; ++i)
+			{
+				// Include NUL and non-ASCII bytes, with both sparse and dense CR runs.
+				const char ch = (i % period == 0) ? '\r' : static_cast<char>(i % 256);
+				input.push_back(ch);
+				if (ch != '\r')
+				{
+					expected8.push_back(ch);
+				}
+			}
+			const auto makeReader = [&] { return TextFileReader{ MemoryViewReader{ input.data(), input.size() }, TextEncoding::UTF8_NO_BOM }; };
+			CHECK(makeReader().readAllUTF8() == expected8);
+			CHECK(makeReader().readAll() == Unicode::FromUTF8(expected8));
+		}
+	}
+}
+
+TEST_CASE("TextFileReader.UTF8.bulk.reopenAndFailure")
+{
+	TextFileReader reader;
+	String output;
+	for (const size_t length : { 4096, 1, 65536, 0, 4095, 1048576, 4097, 3 })
+	{
+		CAPTURE(length);
+		const std::string input = (std::string(length, 'x') + "\r\n日本\U0001F600");
+		const String expected = (String(length, U'x') + U"\n日本\U0001F600");
+		REQUIRE(reader.open(MemoryViewReader{ input.data(), input.size() }));
+		REQUIRE(reader.readAll(output));
+		CHECK(output == expected);
+		CHECK_FALSE(reader.readAll(output));
+		CHECK(output.empty());
+		REQUIRE(reader.open(MemoryViewReader{ input.data(), input.size() }));
+		const Array<String> expectedLines = { String(length, U'x'), U"日本\U0001F600" };
+		CHECK(reader.readLines() == expectedLines);
+		reader.close();
+	}
+
+	const std::string_view shortInput = "ab\rcdef";
+	REQUIRE(reader.open(LimitedTextReader{ shortInput, 3 }, TextEncoding::UTF8_NO_BOM));
+	for (const StringView expected : { U"ab", U"cde", U"f" })
+	{
+		REQUIRE(reader.readAll(output));
+		CHECK(output == expected);
+	}
+	CHECK_FALSE(reader.readAll(output));
+	CHECK(output.empty());
+	REQUIRE(reader.open(LimitedTextReader{ shortInput, 0 }, TextEncoding::UTF8_NO_BOM));
+	CHECK_FALSE(reader.readAll(output));
+	CHECK(output.empty());
+	REQUIRE(reader.open(LimitedTextReader{ shortInput, 1, true }, TextEncoding::UTF8_NO_BOM));
+	CHECK_THROWS_AS(reader.readAll(output), TextReaderFailure);
+	output = U"reusable";
+	REQUIRE(reader.open(MemoryViewReader{ shortInput.data(), shortInput.size() }));
+	REQUIRE(reader.readAll(output));
+	CHECK(output == U"abcdef");
+}
+
 TEST_CASE("TextFileReader.UTF8.lines.viewsAndBoundaries")
 {
 	const String longLine(65536, U'x');
@@ -1383,6 +1492,12 @@ namespace
 			addLine(longLines, String(32768, U'x') + U"日本語\U0001F600", true);
 		}
 		workloads.push_back(std::move(longLines));
+		UTF8Workload blankLines{ .name = "blank-lines-crlf" };
+		for (size_t i = 0; i < 32768; ++i)
+		{
+			addLine(blankLines, U"", true);
+		}
+		workloads.push_back(std::move(blankLines));
 		return workloads;
 	}
 }
@@ -1493,12 +1608,39 @@ TEST_CASE("TextFileReader.benchmark.UTF8" * doctest::skip())
 				doNotOptimizeAway(reader.readAll(output8));
 				doNotOptimizeAway(output8);
 			});
+			bench.run("readAll/utf32-fresh", [&]
+			{
+				auto reader = makeReader();
+				const auto output = reader.readAll();
+				doNotOptimizeAway(output);
+			});
 			bench.run("readAll/utf32-reuse", [&]
 			{
 				auto reader = makeReader();
 				doNotOptimizeAway(reader.readAll(output32));
 				doNotOptimizeAway(output32);
 			});
+			{
+				TextFileReader reusedReader;
+				const auto reopen = [&]
+				{
+					return file ? reusedReader.open(path)
+						: reusedReader.open(MemoryViewReader{ workload.input.data(), workload.input.size() });
+				};
+				for (int i = 0; i < 2; ++i)
+				{
+					REQUIRE(reopen());
+					REQUIRE(reusedReader.readAll(output32));
+					REQUIRE(output32 == expected32);
+				}
+				bench.run("readAll/utf32-reader-reuse", [&]
+				{
+					doNotOptimizeAway(reopen());
+					doNotOptimizeAway(reusedReader.readAll(output32));
+					doNotOptimizeAway(output32);
+				});
+			}
+
 			bench.run("readLines/utf32", [&]
 			{
 				auto reader = makeReader();

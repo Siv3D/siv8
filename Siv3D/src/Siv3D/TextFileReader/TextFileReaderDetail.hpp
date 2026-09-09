@@ -64,6 +64,8 @@ namespace s3d
 
 		std::unique_ptr<uint8[]> m_utf8Buffer;
 
+		size_t m_utf8BufferCapacity = 0;
+
 		size_t m_utf8BufferPos = 0;
 
 		size_t m_utf8BufferLength = 0;
@@ -113,6 +115,13 @@ namespace s3d
 
 		[[nodiscard]]
 		bool readAllUTF8(std::string& s);
+
+		// The view remains valid until the next read or destruction of this reader.
+		[[nodiscard]]
+		bool readAllUTF8(std::string_view& s);
+
+		[[nodiscard]]
+		size_t readRemainingUTF8(char* dst, int64 readSize);
 
 		[[nodiscard]]
 		bool readAllUTF16LE(std::string& s);

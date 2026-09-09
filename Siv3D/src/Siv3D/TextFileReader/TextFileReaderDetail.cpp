@@ -21,7 +21,46 @@ namespace s3d
 {
 	namespace
 	{
-		static void SplitLines(const std::string& s, Array<std::string>& lines)
+		static size_t RemoveCR(char* const data, const size_t size)
+		{
+			char* const end = (data + size);
+			char* dst = std::find(data, end, '\r');
+			if (dst == end)
+			{
+				return size;
+			}
+
+			// Short runs favor the standard compactor over a search and move per run.
+			constexpr size_t MinRunLength = 256;
+			if (static_cast<size_t>(dst - data) < MinRunLength)
+			{
+				return (std::remove(dst, end, '\r') - data);
+			}
+
+			char* src = (dst + 1);
+			while (src < end)
+			{
+				char* const next = std::find(src, end, '\r');
+				size_t count = (next - src);
+				if ((count < MinRunLength) && (next != end))
+				{
+					count = (std::remove(src, end, '\r') - src);
+					std::memmove(dst, src, count);
+					return (dst + count - data);
+				}
+
+				std::memmove(dst, src, count);
+				dst += count;
+				if (next == end)
+				{
+					break;
+				}
+				src = (next + 1);
+			}
+			return (dst - data);
+		}
+
+		static void SplitLines(const std::string_view s, Array<std::string>& lines)
 		{
 			lines.clear();
 
@@ -32,12 +71,12 @@ namespace s3d
 
 			size_t start = 0;
 
-			for (size_t end; (end = s.find('\n', start)) != std::string::npos; start = (end + 1))
+			for (size_t end; (end = s.find('\n', start)) != std::string_view::npos; start = (end + 1))
 			{
-				lines.push_back(s.substr(start, (end - start)));
+				lines.emplace_back(s.substr(start, (end - start)));
 			}
 
-			lines.push_back(s.substr(start));
+			lines.emplace_back(s.substr(start));
 		}
 
 		static void SplitLines(const std::string_view s, Array<String>& lines)
@@ -303,9 +342,9 @@ namespace s3d
 		}
 		else
 		{
-			std::string s8;
+			std::string_view s8;
 
-			if (not readAll(s8))
+			if (not readAllUTF8(s8))
 			{
 				return false;
 			}
@@ -363,9 +402,9 @@ namespace s3d
 		}
 		else
 		{
-			std::string s8;
+			std::string_view s8;
 
-			if (not readAll(s8))
+			if (not readAllUTF8(s8))
 			{
 				return false;
 			}
@@ -441,7 +480,7 @@ namespace s3d
 		}
 		else
 		{
-			if (std::string s8; readAll(s8))
+			if (std::string_view s8; readAllUTF8(s8))
 			{
 				Unicode::FromUTF8(s8, s);
 				return true;
@@ -614,6 +653,7 @@ namespace s3d
 		if (not m_utf8Buffer)
 		{
 			m_utf8Buffer = std::make_unique_for_overwrite<uint8[]>(UTF8BufferSize);
+			m_utf8BufferCapacity = UTF8BufferSize;
 		}
 
 		m_utf8BufferLength = static_cast<size_t>(m_reader->read(m_utf8Buffer.get(), UTF8BufferSize));
@@ -880,20 +920,8 @@ namespace s3d
 			{
 				try
 				{
-					if (buffered)
-					{
-						std::memcpy(dst, (m_utf8Buffer.get() + m_utf8BufferPos), buffered);
-						m_utf8BufferPos = m_utf8BufferLength;
-					}
-
-					readBytes = buffered;
-					if (readSize)
-					{
-						// Whole-file reads go directly to the destination; only an unread
-						// prefix from an earlier readChar/readLine needs to be copied.
-						readBytes += static_cast<size_t>(m_reader->read((dst + buffered), readSize));
-					}
-					return readBytes;
+					readBytes = readRemainingUTF8(dst, readSize);
+					return RemoveCR(dst, readBytes);
 				}
 				catch (...)
 				{
@@ -909,9 +937,71 @@ namespace s3d
 			std::rethrow_exception(readException);
 		}
 
-		s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());
-
 		return (0 < readBytes);
+	}
+
+	bool TextFileReader::TextFileReaderDetail::readAllUTF8(std::string_view& s)
+	{
+		s = {};
+		if (not m_info.isOpen)
+		{
+			return false;
+		}
+
+		const int64 readSize = (m_reader->size() - m_reader->getPos());
+		const size_t size = (m_utf8BufferLength - m_utf8BufferPos + static_cast<size_t>(readSize));
+		if (size == 0)
+		{
+			return false;
+		}
+
+		if (readSize == 0)
+		{
+			// The entire remainder is already buffered; convert it without moving it.
+			char* const dst = reinterpret_cast<char*>(m_utf8Buffer.get() + m_utf8BufferPos);
+			m_utf8BufferPos = m_utf8BufferLength;
+			s = std::string_view{ dst, RemoveCR(dst, size) };
+			return true;
+		}
+
+		std::unique_ptr<uint8[]> buffer;
+		const size_t capacity = Max(size, UTF8BufferSize);
+		if (m_utf8BufferCapacity < size)
+		{
+			buffer = std::make_unique_for_overwrite<uint8[]>(capacity);
+		}
+
+		char* const dst = reinterpret_cast<char*>(buffer ? buffer.get() : m_utf8Buffer.get());
+		const size_t readBytes = readRemainingUTF8(dst, readSize);
+		if (buffer)
+		{
+			m_utf8Buffer = std::move(buffer);
+			m_utf8BufferCapacity = capacity;
+		}
+		m_utf8BufferPos = m_utf8BufferLength = 0;
+
+		// Normalize bytes before decoding: removing a CR can join UTF-8 code units.
+		s = std::string_view{ dst, RemoveCR(dst, readBytes) };
+		return (0 < readBytes);
+	}
+
+	size_t TextFileReader::TextFileReaderDetail::readRemainingUTF8(char* const dst, const int64 readSize)
+	{
+		const size_t buffered = (m_utf8BufferLength - m_utf8BufferPos);
+		if (buffered)
+		{
+			// The destination can be the input buffer itself when reusing its storage.
+			std::memmove(dst, (m_utf8Buffer.get() + m_utf8BufferPos), buffered);
+			m_utf8BufferPos = m_utf8BufferLength;
+		}
+
+		size_t readBytes = buffered;
+		if (readSize)
+		{
+			// Keep a single bulk request so a short IReader read ends this call.
+			readBytes += static_cast<size_t>(m_reader->read((dst + buffered), readSize));
+		}
+		return readBytes;
 	}
 
 	bool TextFileReader::TextFileReaderDetail::readAllUTF16LE(std::string& s)
