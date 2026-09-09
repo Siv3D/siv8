@@ -29,7 +29,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 多倍長浮動小数点数（有効桁数 100 桁）
-	/// @remark 比較演算子は NaN を比較不能として扱います。BigInt との比較では整数を BigFloat の精度に丸めます。
+	/// @remark 比較演算子は NaN を比較不能として扱います。BigInt との演算・比較は BigFloat の精度で行います。
 	/// @remark ムーブ元は、破棄、代入先としての使用、swap() が可能です。値を読む操作の前に再代入してください。
 	class BigFloat
 	{
@@ -87,6 +87,7 @@ namespace s3d
 		
 		/// @brief 多倍長整数から初期化します。
 		/// @param i 初期化に使う多倍長整数
+		/// @remark 精度を超える下位桁は、0 方向へ切り捨てます。
 		[[nodiscard]]
 		BigFloat(const BigInt& i);
 		
@@ -127,6 +128,10 @@ namespace s3d
 
 		BigFloat& operator =(Concept::FloatingPoint auto f);
 
+		/// @brief 多倍長整数の値を代入します。
+		/// @param i 代入する多倍長整数
+		/// @return *this
+		/// @remark 精度を超える下位桁は、0 方向へ切り捨てます。
 		BigFloat& operator =(const BigInt& i);
 
 		BigFloat& operator =(const BigFloat& other);
@@ -603,10 +608,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 文字列に変換します。
-		/// @param digits 0 以上の値。fixed / scientific では小数点以下の桁数、それ以外では有効桁数。非 fixed で 0 を指定すると内部精度を保持する全桁を出力
+		/// @param digits 0 以上の値。fixed / scientific では小数点以下の桁数、それ以外では有効桁数。非 fixed で 0 を指定すると元の値を復元できる桁数で出力
 		/// @param fmtFlags 書式指定。既定は固定表記。std::ios_base::fmtflags{} で値に応じて固定表記と指数表記を選択
 		/// @return 変換した文字列
-		/// @remark 既定の固定表記では 1e-101 は "0" になります。往復変換には (0, std::ios_base::fmtflags{}) を指定してください。
+		/// @remark 既定の固定表記では 1e-101 は "0" になります。
 		[[nodiscard]]
 		std::string to_string(int32 digits = 100, std::ios_base::fmtflags fmtFlags = std::ios_base::fixed) const;
 
@@ -617,10 +622,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 文字列に変換します。
-		/// @param digits 0 以上の値。fixed / scientific では小数点以下の桁数、それ以外では有効桁数。非 fixed で 0 を指定すると内部精度を保持する全桁を出力
+		/// @param digits 0 以上の値。fixed / scientific では小数点以下の桁数、それ以外では有効桁数。非 fixed で 0 を指定すると元の値を復元できる桁数で出力
 		/// @param fmtFlags 書式指定。既定は固定表記。std::ios_base::fmtflags{} で値に応じて固定表記と指数表記を選択
 		/// @return 変換した文字列
-		/// @remark 既定の固定表記では 1e-101 は "0" になります。往復変換には (0, std::ios_base::fmtflags{}) を指定してください。
+		/// @remark 既定の固定表記では 1e-101 は "0" になります。
 		[[nodiscard]]
 		String str(int32 digits = 100, std::ios_base::fmtflags fmtFlags = std::ios_base::fixed) const;
 
@@ -666,7 +671,7 @@ namespace s3d
 		[[nodiscard]]
 		std::partial_ordering compare(Concept::FloatingPoint auto f) const noexcept;
 
-		/// @brief BigInt を BigFloat の精度に丸めて比較します。
+		/// @brief BigInt を BigFloat に変換して比較します。
 		/// @param i 比較する整数
 		/// @return 大小関係。この値が NaN の場合は unordered
 		/// @remark 厳密な整数比較ではありません。例えば 10^200 と 10^200 + 1 は同じ BigFloat と等価になり得ます。

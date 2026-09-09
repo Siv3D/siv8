@@ -840,7 +840,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief BigFloat に変換します。
-		/// @return BigFloat の精度に応じて丸めた値
+		/// @return BigFloat に変換した値。精度を超える下位桁は 0 方向へ切り捨て
 		[[nodiscard]]
 		explicit operator BigFloat() const;
 

@@ -35,9 +35,21 @@ namespace s3d
 			: value{ f } {}
 
 		BigFloatDetail(const BigInt& i)
-			: value{ i._detail().value } {}
+		{
+			AssignFromBigInt(value, i);
+		}
 
 		BigFloatDetail(const std::string_view number)
 			: value{ number } {}
+
+		static void AssignFromBigInt(value_type& destination, const BigInt& i);
+
+		[[nodiscard]]
+		static value_type FromBigInt(const BigInt& i)
+		{
+			value_type result;
+			AssignFromBigInt(result, i);
+			return result;
+		}
 	};
 }

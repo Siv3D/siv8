@@ -8,6 +8,7 @@
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/BigInt.hpp>
 # include "Siv3DTestFramework.hpp"
+# include <random>
 # include <type_traits>
 # include <utility>
 
@@ -126,6 +127,115 @@ TEST_CASE("BigFloat.rounded BigInt comparison")
 	CHECK(BigFloat{ 0 } < n);
 	CHECK(BigFloat{ 0 } > -n);
 	CHECK(BigFloat{ 0 } == BigInt{ 0 });
+}
+
+namespace
+{
+	void CheckBigIntConversion(const BigInt& integer, const BigFloat& expected)
+	{
+		const BigFloat converted{ integer };
+		CHECK(converted == expected);
+		CHECK(static_cast<BigFloat>(integer) == expected);
+		CHECK(integer.operator BigFloat() == expected);
+		BigFloat assigned{ "nan" };
+		CHECK(&(assigned = integer) == &assigned);
+		CHECK(assigned == expected);
+		assigned = std::numeric_limits<double>::infinity();
+		assigned = integer;
+		CHECK(assigned == expected);
+		assigned = -std::numeric_limits<double>::infinity();
+		assigned = integer;
+		CHECK(assigned == expected);
+		CHECK(expected == integer);
+		CHECK(integer == expected);
+		CHECK(expected.compare(integer) == std::partial_ordering::equivalent);
+		CHECK((expected <=> integer) == std::partial_ordering::equivalent);
+		CHECK((BigFloat{ 0 } + integer) == expected);
+		CHECK((BigFloat{ 0 } - integer) == -expected);
+		CHECK((BigFloat{ 1 } * integer) == expected);
+		CHECK((integer + BigFloat{ 0 }) == expected);
+		CHECK((integer - BigFloat{ 0 }) == expected);
+		CHECK((integer * BigFloat{ 1 }) == expected);
+		CHECK((integer / BigFloat{ 1 }) == expected);
+		assigned = 0;
+		CHECK((assigned += integer) == expected);
+		assigned = 0;
+		CHECK((assigned -= integer) == -expected);
+		assigned = 1;
+		CHECK((assigned *= integer) == expected);
+		if (integer != 0)
+		{
+			CHECK((BigFloat{ 1 } / integer) == (BigFloat{ 1 } / expected));
+			assigned = 1;
+			CHECK((assigned /= integer) == (BigFloat{ 1 } / expected));
+		}
+		CHECK(BigFloat{ converted.to_string(0, std::ios_base::fmtflags{}) } == converted);
+	}
+}
+
+TEST_CASE("BigFloat.BigInt exact conversion")
+{
+	for (const auto text : { "0", "1", "-1", "9223372036854775807", "9223372036854775808",
+		"-9223372036854775808", "-9223372036854775809", "18446744073709551615",
+		"-18446744073709551615", "18446744073709551616", "-18446744073709551616" })
+	{
+		CheckBigIntConversion(BigInt{ text }, BigFloat{ text });
+	}
+	for (const uint32 exponent : { 38u, 100u, 120u, 128u, 200u, 201u, 207u, 208u, 1000u })
+	{
+		const BigInt integer = BigInt{ 10 }.pow(exponent);
+		const BigFloat expected{ "1e" + std::to_string(exponent) };
+		CheckBigIntConversion(integer, expected);
+		CheckBigIntConversion(-integer, -expected);
+	}
+	const std::string significant = ("1234567890" + std::string(89, '9') + "1");
+	const BigInt exact{ significant + std::string(200, '0') };
+	const BigFloat expected{ significant + "e200" };
+	CheckBigIntConversion(exact, expected);
+	CheckBigIntConversion(-exact, -expected);
+
+	BigFloat source{ 1 };
+	const BigFloat destination{ std::move(source) };
+	source = BigInt{ 10 }.pow(200);
+	CHECK(source == BigFloat{ "1e200" });
+	CHECK(destination == 1);
+}
+
+TEST_CASE("BigFloat.BigInt decimal input agreement")
+{
+	std::mt19937_64 random{ 0xB16F10A7 };
+	for (const size_t digits : { 19u, 20u, 21u, 38u, 39u, 100u, 120u, 121u, 127u, 128u, 129u,
+		150u, 151u, 152u, 153u, 159u, 160u, 161u, 199u, 200u, 201u, 999u, 1000u, 10000u })
+	{
+		std::string text(digits, '0');
+		text[0] = static_cast<char>('1' + (random() % 9));
+		for (size_t index = 1; index < digits; ++index)
+		{
+			text[index] = static_cast<char>('0' + (random() % 10));
+		}
+		const BigInt integer{ text };
+		const BigFloat expected{ text };
+		CheckBigIntConversion(integer, expected);
+		CheckBigIntConversion(-integer, -expected);
+	}
+}
+
+TEST_CASE("BigFloat.BigInt truncation toward zero")
+{
+	// At this decimal alignment the backend retains 128 digits, including its guard digits.
+	const std::string prefix(128, '9');
+	const BigFloat expected{ prefix + "e32" };
+	for (const char discardedDigit : { '0', '4', '5', '9' })
+	{
+		const BigInt integer{ prefix + std::string(32, discardedDigit) };
+		CheckBigIntConversion(integer, expected);
+		CheckBigIntConversion(-integer, -expected);
+	}
+	const BigInt power = BigInt{ 10 }.pow(200);
+	CHECK(BigFloat{ power + 1 } == BigFloat{ "1e200" });
+	CHECK(BigFloat{ power - 1 } < BigFloat{ "1e200" });
+	CHECK(BigFloat{ -power - 1 } == BigFloat{ "-1e200" });
+	CHECK(BigFloat{ -power + 1 } > BigFloat{ "-1e200" });
 }
 
 TEST_CASE("BigFloat.format precision and round trip")

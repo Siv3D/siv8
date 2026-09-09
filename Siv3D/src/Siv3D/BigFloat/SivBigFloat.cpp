@@ -9,7 +9,11 @@
 //
 //-----------------------------------------------
 
+# include <algorithm>
+# include <array>
+# include <charconv>
 # include <cmath>
+# include <limits>
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/Unicode.hpp>
 # include "BigFloatDetail.hpp"
@@ -38,6 +42,88 @@ namespace s3d
 
 			return s;
 		}
+	}
+
+	void BigFloat::BigFloatDetail::AssignFromBigInt(value_type& destination, const BigInt& i)
+	{
+		using Integer = boost::multiprecision::cpp_int;
+		using Limb = boost::multiprecision::limb_type;
+		constexpr size_t LimbBits = std::numeric_limits<Limb>::digits;
+		const auto& integer = i._detail().value;
+		const auto& backend = integer.backend();
+
+		// Native assignment is exact and needs no temporary storage for up to 64 magnitude bits.
+		if (backend.size() <= (64 / LimbBits))
+		{
+			uint64 magnitude = static_cast<uint64>(backend.limbs()[0]);
+			if constexpr (LimbBits < 64)
+			{
+				for (size_t index = 1; index < backend.size(); ++index)
+				{
+					magnitude |= (static_cast<uint64>(backend.limbs()[index]) << (index * LimbBits));
+				}
+			}
+
+			destination.assign(magnitude);
+			if (backend.sign())
+			{
+				destination.backend().negate();
+			}
+			return;
+		}
+
+		constexpr size_t BlockDigits = (LimbBits >= 64) ? 19 : 9;
+		const Integer divisor = (LimbBits >= 64) ? 10000000000000000000ULL : 1000000000ULL;
+		// The leading block can have only one digit, so retain one extra block.
+		constexpr size_t RetainedBlocks = ((std::numeric_limits<value_type>::max_digits10 + BlockDigits - 1) / BlockDigits + 1);
+		std::array<uint64, RetainedBlocks> blocks;
+		Integer remaining = integer, quotient, remainder;
+		remaining.backend().sign(false);
+		size_t count = 0;
+
+		// Keep only the leading decimal blocks and reuse all three integer buffers.
+		do
+		{
+			boost::multiprecision::divide_qr(remaining, divisor, quotient, remainder);
+			remaining.swap(quotient);
+			blocks[count % RetainedBlocks] = remainder.convert_to<uint64>();
+			++count;
+		} while (remaining != 0);
+
+		std::array<char, (RetainedBlocks * BlockDigits + std::numeric_limits<size_t>::digits10 + 4)> buffer;
+		char* output = buffer.data();
+		char* const end = (buffer.data() + buffer.size() - 1);
+		if (backend.sign())
+		{
+			*output++ = '-';
+		}
+
+		const size_t kept = std::min(count, RetainedBlocks);
+		for (size_t index = 0; index < kept; ++index)
+		{
+			const uint64 block = blocks[(count - 1 - index) % RetainedBlocks];
+			char* const after = std::to_chars(output, end, block).ptr;
+			if (index != 0)
+			{
+				const size_t length = static_cast<size_t>(after - output);
+				std::move_backward(output, after, (output + BlockDigits));
+				std::fill(output, (output + BlockDigits - length), '0');
+				output += BlockDigits;
+			}
+			else
+			{
+				output = after;
+			}
+		}
+
+		if (count > kept)
+		{
+			*output++ = 'e';
+			output = std::to_chars(output, end, ((count - kept) * BlockDigits)).ptr;
+		}
+		*output = '\0';
+		// Replace the floating-point classification and precision as well as the digits.
+		destination = value_type{ buffer.data() };
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -130,7 +216,7 @@ namespace s3d
 			return *this;
 		}
 
-		pImpl->value.assign(i._detail().value);
+		BigFloatDetail::AssignFromBigInt(pImpl->value, i);
 		return *this;
 	}
 
@@ -209,7 +295,7 @@ namespace s3d
 	BigFloat BigFloat::operator +(const BigInt& i) const
 	{
 		BigFloat tmp;
-		tmp.pImpl->value = (pImpl->value + BigFloatDetail::value_type{ i._detail().value });
+		tmp.pImpl->value = (pImpl->value + BigFloatDetail::FromBigInt(i));
 		return tmp;
 	}
 
@@ -263,7 +349,7 @@ namespace s3d
 	BigFloat BigFloat::operator -(const BigInt& i) const
 	{
 		BigFloat tmp;
-		tmp.pImpl->value = (pImpl->value - BigFloatDetail::value_type{ i._detail().value });
+		tmp.pImpl->value = (pImpl->value - BigFloatDetail::FromBigInt(i));
 		return tmp;
 	}
 
@@ -304,7 +390,7 @@ namespace s3d
 	BigFloat BigFloat::operator *(const BigInt& i) const
 	{
 		BigFloat tmp;
-		tmp.pImpl->value = (pImpl->value * BigFloatDetail::value_type{ i._detail().value });
+		tmp.pImpl->value = (pImpl->value * BigFloatDetail::FromBigInt(i));
 		return tmp;
 	}
 
@@ -345,7 +431,7 @@ namespace s3d
 	BigFloat BigFloat::operator /(const BigInt& i) const
 	{
 		BigFloat tmp;
-		tmp.pImpl->value = (pImpl->value / BigFloatDetail::value_type{ i._detail().value });
+		tmp.pImpl->value = (pImpl->value / BigFloatDetail::FromBigInt(i));
 		return tmp;
 	}
 
@@ -382,7 +468,7 @@ namespace s3d
 
 	BigFloat& BigFloat::operator +=(const BigInt& i)
 	{
-		pImpl->value += BigFloatDetail::value_type{ i._detail().value };
+		pImpl->value += BigFloatDetail::FromBigInt(i);
 		return *this;
 	}
 
@@ -418,7 +504,7 @@ namespace s3d
 
 	BigFloat& BigFloat::operator -=(const BigInt& i)
 	{
-		pImpl->value -= BigFloatDetail::value_type{ i._detail().value };
+		pImpl->value -= BigFloatDetail::FromBigInt(i);
 		return *this;
 	}
 
@@ -454,7 +540,7 @@ namespace s3d
 
 	BigFloat& BigFloat::operator *=(const BigInt& i)
 	{
-		pImpl->value *= BigFloatDetail::value_type{ i._detail().value };
+		pImpl->value *= BigFloatDetail::FromBigInt(i);
 		return *this;
 	}
 
@@ -490,7 +576,7 @@ namespace s3d
 
 	BigFloat& BigFloat::operator /=(const BigInt& i)
 	{
-		pImpl->value /= BigFloatDetail::value_type{ i._detail().value };
+		pImpl->value /= BigFloatDetail::FromBigInt(i);
 		return *this;
 	}
 
@@ -755,7 +841,7 @@ namespace s3d
 			return std::partial_ordering::greater;
 		}
 
-		return (pImpl->value.compare(BigFloatDetail::value_type{ i._detail().value }) <=> 0);
+		return (pImpl->value.compare(BigFloatDetail::FromBigInt(i)) <=> 0);
 	}
 
 	std::partial_ordering BigFloat::compare(const BigFloat& f) const noexcept

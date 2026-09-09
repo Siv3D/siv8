@@ -240,7 +240,7 @@ TEST_CASE("BigInt.explicit floating conversions")
 	const BigInt power = BigInt{ 10 }.pow(200);
 	const BigFloat converted = static_cast<BigFloat>(power);
 	CHECK(converted == BigFloat{ power });
-	CHECK((converted - BigFloat{ "1e200" }).abs() < BigFloat{ "1e100" });
+	CHECK(converted == BigFloat{ "1e200" });
 	CHECK(static_cast<BigFloat>(power + 1) == converted);
 	CHECK((power + 1).operator BigFloat() == converted);
 	CHECK(static_cast<BigFloat>(-power) == -converted);
