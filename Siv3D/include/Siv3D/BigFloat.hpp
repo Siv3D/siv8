@@ -583,7 +583,8 @@ namespace s3d
 		double asDouble() const;
 
 		/// @brief long double に変換します。
-		/// @return long double に変換した値
+		/// @return long double に変換した値。オーバーフローは符号付き無限大、0 に丸められる微小値は符号付き 0
+		/// @throws std::bad_alloc メモリの確保に失敗した場合
 		[[nodiscard]]
 		long double asLongDouble() const;
 

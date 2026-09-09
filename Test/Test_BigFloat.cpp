@@ -357,6 +357,46 @@ TEST_CASE("BigFloat.native floating conversion")
 	CHECK(std::isnan(BigFloat{ "nan" }.asDouble()));
 }
 
+TEST_CASE("BigFloat.long double conversion")
+{
+	using Limits = std::numeric_limits<long double>;
+	for (const long double value : { 0.0L, 1.25L, -2.5L, Limits::denorm_min(), Limits::min(),
+		std::nextafter(Limits::min(), 0.0L), Limits::max(), std::nextafter(1.0L, 2.0L) })
+	{
+		CAPTURE(value);
+		CHECK(BigFloat{ value }.asLongDouble() == value);
+		CHECK(BigFloat{ -value }.asLongDouble() == -value);
+	}
+	CHECK(BigFloat{ "1e-308" }.asLongDouble() == 1e-308L);
+	CHECK(BigFloat{ "-1e-308" }.asLongDouble() == -1e-308L);
+	CHECK(BigFloat{ "inf" }.asLongDouble() == Limits::infinity());
+	CHECK(BigFloat{ "-inf" }.asLongDouble() == -Limits::infinity());
+	CHECK(std::isnan(BigFloat{ "nan" }.asLongDouble()));
+	CHECK(BigFloat{ "1e10000" }.asLongDouble() == Limits::infinity());
+	CHECK(BigFloat{ "-1e10000" }.asLongDouble() == -Limits::infinity());
+	CHECK(BigFloat{ "1e-10000" }.asLongDouble() == 0);
+	const long double negativeUnderflow = BigFloat{ "-1e-10000" }.asLongDouble();
+	CHECK(negativeUnderflow == 0);
+	CHECK(std::signbit(negativeUnderflow));
+
+	const BigFloat halfway = BigFloat{ 1 } + BigFloat{ std::ldexp(1.0L, -Limits::digits) };
+	const BigFloat epsilon{ "1e-100" };
+	CHECK(halfway.asLongDouble() == 1.0L);
+	CHECK((halfway - epsilon).asLongDouble() == 1.0L);
+	CHECK((halfway + epsilon).asLongDouble() == std::nextafter(1.0L, 2.0L));
+	CHECK((-halfway - epsilon).asLongDouble() == std::nextafter(-1.0L, -2.0L));
+
+	if constexpr (Limits::max_exponent > std::numeric_limits<double>::max_exponent)
+	{
+		for (const int exponent : { -12000, 12000 })
+		{
+			const long double value = std::ldexp(1.0L, exponent);
+			CHECK(BigFloat{ value }.asLongDouble() == value);
+			CHECK(BigFloat{ -value }.asLongDouble() == -value);
+		}
+	}
+}
+
 TEST_CASE("BigFloat.format precision and round trip")
 {
 	CHECK(BigFloat{ "1e-101" }.to_string() == "0");

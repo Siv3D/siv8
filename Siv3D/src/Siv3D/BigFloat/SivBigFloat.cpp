@@ -11,13 +11,24 @@
 
 # include <algorithm>
 # include <array>
+# include <cerrno>
 # include <charconv>
 # include <cmath>
+# include <cstdlib>
 # include <limits>
+# include <memory>
+# include <new>
+# include <type_traits>
 # include <ThirdParty/fast_float/fast_float.h>
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/Unicode.hpp>
 # include "BigFloatDetail.hpp"
+
+# if SIV3D_PLATFORM(MACOS)
+	# include <xlocale.h>
+# elif not SIV3D_PLATFORM(WINDOWS)
+	# include <locale.h>
+# endif
 
 namespace s3d
 {
@@ -745,7 +756,31 @@ namespace s3d
 
 	long double BigFloat::asLongDouble() const
 	{
-		return pImpl->value.convert_to<long double>();
+	# if not SIV3D_PLATFORM(WINDOWS)
+
+		if constexpr (std::numeric_limits<long double>::digits != std::numeric_limits<double>::digits
+			|| std::numeric_limits<long double>::max_exponent != std::numeric_limits<double>::max_exponent)
+		{
+			static const auto locale = []
+			{
+				std::unique_ptr<std::remove_pointer_t<locale_t>, decltype(&freelocale)> result{
+					newlocale(LC_NUMERIC_MASK, "C", nullptr), &freelocale };
+				if (not result)
+				{
+					throw std::bad_alloc{};
+				}
+				return result;
+			}();
+			const std::string text = pImpl->value.str(0, std::ios_base::fmtflags{});
+			const int savedErrno = errno;
+			const long double result = strtold_l(text.c_str(), nullptr, locale.get());
+			errno = savedErrno;
+			return result;
+		}
+
+	# endif
+
+		return asDouble();
 	}
 
 	////////////////////////////////////////////////////////////////
