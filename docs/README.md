@@ -6,6 +6,7 @@ Test. Unfinished work is tracked in [TODO](../TODO.md).
 
 - [Development](development/README.md): repository workflow, documentation ownership, and validation.
 - [Array](array/README.md): sequence operations, Array-like owners and views, allocators, and migration.
+- [FileSystem](filesystem/README.md): filesystem behavior, diagnostics, and foundation design review.
 - [Mesh3D](mesh3d/README.md): CPU modeling, assembly, export, and implementation guidance.
 
 For documentation changes, follow the [documentation rules](AGENTS.md) and run

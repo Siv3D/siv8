@@ -61,7 +61,11 @@ namespace s3d
 		[[nodiscard]]
 		inline static std::filesystem::path ToPath(const FilePathView path)
 		{
+		# if SIV3D_PLATFORM(WINDOWS)
 			return std::filesystem::path{ Unicode::ToWstring(path) };
+		# else
+			return std::filesystem::path{ Unicode::ToUTF8(path) };
+		# endif
 		}
 
 		[[nodiscard]]

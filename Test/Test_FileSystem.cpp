@@ -1087,11 +1087,13 @@ TEST_CASE("FileSystem::Size")
 			REQUIRE(writer.write(file.contents.data(), file.contents.size()) == file.contents.size());
 		}
 		CHECK_EQ(FileSystem::Size(root + file.path), file.contents.size());
+		CHECK_EQ(FileSystem::Size(root + U"nested/../" + file.path), file.contents.size());
 	}
 	CHECK_EQ(FileSystem::Size(root), 13);
 	CHECK_EQ(FileSystem::Size(root + U"nested"), 7);
 	CHECK_EQ(FileSystem::Size(root + U"nested/empty/"), 0);
 	CHECK_EQ(FileSystem::Size(root + U"missing"), 0);
+	CHECK_EQ(FileSystem::Size(root + U"file.bin/child"), 0);
 	CHECK_EQ(FileSystem::Size(U""), 0);
 }
 
@@ -1121,6 +1123,42 @@ TEST_CASE("FileSystem::IsEmptyDirectory")
 	for (const auto& test : cases)
 	{
 		CHECK_EQ(FileSystem::IsEmptyDirectory(test.path), test.expected);
+	}
+}
+
+TEST_CASE("FileSystem::Path operations round trip")
+{
+	const FilePath root = Test::OutputPath(U"filesystem/path-round-trip/");
+	for (const FilePathView name : { U"ascii", U"日本語", U"asset-\U0001F3AE" })
+	{
+		CAPTURE(name);
+		const FilePath directory = (root + name + U'/');
+		const FilePath source = (directory + name + U".bin");
+		const FilePath copy = (directory + name + U"-copy.bin");
+		const FilePath renamed = (directory + name + U"-renamed.bin");
+		CHECK_EQ(FileSystem::PathAppend(root, name), root + name);
+		CHECK_EQ(FileSystem::PathAppend(directory, name + U".bin"), source);
+		CHECK_EQ(FileSystem::PathAppend(directory, U""), directory);
+		REQUIRE(FileSystem::CreateDirectories(directory));
+		CHECK(FileSystem::IsEmptyDirectory(directory));
+		{
+			BinaryFileWriter writer{ source };
+			REQUIRE(writer.isOpen());
+			REQUIRE(writer.write("data", 4) == 4);
+		}
+		CHECK_FALSE(FileSystem::IsEmptyDirectory(directory));
+		REQUIRE(FileSystem::Copy(source, copy));
+		REQUIRE(FileSystem::Rename(copy, renamed));
+		CHECK_FALSE(FileSystem::Exists(copy));
+		CHECK_FALSE(FileSystem::Rename(copy, renamed));
+		for (const FilePath& path : { source, renamed })
+		{
+			BinaryFileReader reader{ path };
+			REQUIRE(reader.isOpen());
+			char contents[4]{};
+			REQUIRE(reader.read(contents, sizeof(contents)) == sizeof(contents));
+			CHECK_EQ(std::string_view(contents, sizeof(contents)), "data");
+		}
 	}
 }
 

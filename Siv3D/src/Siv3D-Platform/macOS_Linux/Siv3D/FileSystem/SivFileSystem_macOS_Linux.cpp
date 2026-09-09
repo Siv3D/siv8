@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <sys/stat.h>
+# include <algorithm>
 # include <filesystem>
 # include <limits>
 # include <Siv3D/FileSystem.hpp>
@@ -26,10 +27,16 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static bool GetStat(const FilePathView _path, struct stat& s)
+		static bool GetStat(std::string path, struct stat& s)
 		{
-			const std::string path = Unicode::ToUTF8(FilePath{ _path }.replaced(U'\\', U'/'));
+			std::replace(path.begin(), path.end(), '\\', '/');
 			return (::stat(path.c_str(), &s) == 0);
+		}
+
+		[[nodiscard]]
+		static bool GetStat(const FilePathView path, struct stat& s)
+		{
+			return GetStat(Unicode::ToUTF8(path), s);
 		}
 	
 		[[nodiscard]]
@@ -184,10 +191,16 @@ namespace s3d
 				return 0;
 			}
 
-			const FilePath fullPath = FullPath(path);
+			// Keep link and .. resolution consistent with FullPath().
+			std::error_code error;
+			const std::filesystem::path fullPath = std::filesystem::weakly_canonical(detail::ToPath(path), error);
+			if (error)
+			{
+				return 0;
+			}
 			
 			struct stat s;
-			if (not detail::GetStat(fullPath, s))
+			if (not detail::GetStat(fullPath.native(), s))
 			{
 				return 0;
 			}
@@ -199,8 +212,7 @@ namespace s3d
 			else if (S_ISDIR(s.st_mode))
 			{
 				uint64 result = 0;
-				std::error_code error;
-				std::filesystem::recursive_directory_iterator it{ detail::ToPath(fullPath), error };
+				std::filesystem::recursive_directory_iterator it{ fullPath, error };
 				if (error)
 				{
 					return 0;
