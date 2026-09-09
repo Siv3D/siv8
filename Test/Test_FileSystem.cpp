@@ -67,10 +67,6 @@ namespace
 			} };
 		::SetFileApisToOEM();
 		REQUIRE_FALSE(::AreFileApisANSI());
-		if (::GetOEMCP() == CP_UTF8)
-		{
-			MESSAGE("The system OEM code page is UTF-8; a legacy code page is not exercised on this host.");
-		}
 		check();
 	}
 }
