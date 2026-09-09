@@ -1117,24 +1117,25 @@ namespace s3d
 		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::VSTexture0) + slot);
 		auto& current = m_current.vsTextures[slot];
 		auto& buffer = m_buffer.vsTextures[slot];
+		const auto id = texture.id();
+
+		if (id == current)
+		{
+			return;
+		}
+
+		m_reserved.textures.try_emplace(id, texture);
 
 		if (not m_stateTracker.has(command))
 		{
-			if (texture.id() != current)
-			{
-				current = texture.id();
-				m_stateTracker.set(command);
-			}
+			m_stateTracker.set(command);
 		}
-		else
+		else if (id == buffer.back())
 		{
-			if (texture.id() == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = texture.id();
+			m_stateTracker.clear(command);
 		}
+
+		current = id;
 	}
 	
 	const Texture::IDType& D3D11Renderer2DCommandManager::getVSTexture(const uint32 slot, const uint32 index) const
@@ -1190,24 +1191,25 @@ namespace s3d
 		const auto command = ToEnum<D3D11Renderer2DCommandType>(FromEnum(D3D11Renderer2DCommandType::PSTexture0) + slot);
 		auto& current = m_current.psTextures[slot];
 		auto& buffer = m_buffer.psTextures[slot];
+		const auto id = texture.id();
+
+		if (id == current)
+		{
+			return;
+		}
+
+		m_reserved.textures.try_emplace(id, texture);
 
 		if (not m_stateTracker.has(command))
 		{
-			if (texture.id() != current)
-			{
-				current = texture.id();
-				m_stateTracker.set(command);
-			}
+			m_stateTracker.set(command);
 		}
-		else
+		else if (id == buffer.back())
 		{
-			if (texture.id() == buffer.back())
-			{
-				m_stateTracker.clear(command);
-			}
-
-			current = texture.id();
+			m_stateTracker.clear(command);
 		}
+
+		current = id;
 	}
 
 	const Texture::IDType& D3D11Renderer2DCommandManager::getPSTexture(const uint32 slot, const uint32 index) const

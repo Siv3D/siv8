@@ -105,6 +105,68 @@ Engine sources are excluded; platform-specific engine membership is intentional.
 The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
 it does not compile Windows code.
 
+### Windows incremental build failures
+
+If a test run displays `EXCEPTION_ILLEGAL_INSTRUCTION`, inspect the build and
+runner reports before rerunning it. An incomplete Catch2 XML report is a failed
+run even when the application exits with code zero. Repeatedly running the same
+executable can repeatedly display exception dialogs without improving the diagnosis.
+
+A texture-lifetime regression investigation encountered this in
+`TOML.getOpt_getOr_get`: the focused texture tests passed, while the full suite
+and an isolated TOML run terminated. Restoring the renderer source and rebuilding
+incrementally produced the same termination. The engine had been recompiled, but
+the test application still reused compilation/link-time artifacts. Rebuilding the
+test application, including its PCH, object files and LTCG artifacts, made the
+full suite pass without changing TOML code. This supports stale or inconsistent
+incremental artifacts as the cause; it does not identify the exact faulty artifact
+or establish that every illegal-instruction exception has this cause.
+
+Use this order when investigating a recurrence:
+
+1. Preserve the console/XML reports under `WindowsDesktop/Intermediate/TestReports/`.
+   Record the last test started, the exception, configuration, toolchain and whether
+   the build reused object files or LTCG output. The last test name is a starting
+   point for investigation, not proof that its implementation is faulty.
+2. Stop repeated runs of the same binary. Before comparing current and reverted
+   source, establish a clean build. An engine rebuild alone does not ensure that
+   the test application's PCH, objects or LTCG artifacts have been regenerated.
+3. With no other runner or IDE build active in this checkout, rebuild the matching
+   configuration using MSBuild `Rebuild`, then run the full suite. Use the commands
+   below from the repository root in PowerShell 7. Do not manually delete broad
+   build directories or alter unrelated source to work around the exception.
+4. Confirm a complete XML report with no failures. If the cleanly rebuilt suite passes,
+   describe the artifact explanation as supported by the result, without claiming
+   a source fix. If the exception persists, preserve the new evidence and investigate
+   the faulting instruction, call stack and CPU instruction requirements instead
+   of continuing blind retries.
+
+The conservative recovery rebuilds both the engine and test application:
+
+```powershell
+$siv3dVswhere = "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe"
+$siv3dVs = & $siv3dVswhere -latest -products '*' -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+if ($LASTEXITCODE -ne 0 -or -not $siv3dVs) { throw 'Visual Studio C++ tools were not found.' }
+$siv3dMSBuild = Join-Path $siv3dVs 'MSBuild/Current/Bin/MSBuild.exe'
+$siv3dWindowsDir = (Resolve-Path 'WindowsDesktop').Path + [IO.Path]::DirectorySeparatorChar
+& $siv3dMSBuild (Join-Path $siv3dWindowsDir 'OpenSiv3D.slnx') /t:Rebuild /nologo /v:minimal /m:4 /p:CL_MPCount=4 /p:Configuration=Release /p:Platform=x64
+if ($LASTEXITCODE -ne 0) { throw 'Clean rebuild failed.' }
+./WindowsDesktop/run-tests.ps1 -Configuration Release -SkipBuild
+```
+
+If the engine library has already been successfully rebuilt with the same
+configuration and toolchain, replace the solution `Rebuild` command with this
+application-only rebuild, keeping the exit-code check and full-suite run:
+
+```powershell
+& $siv3dMSBuild (Join-Path $siv3dWindowsDir 'Siv3D-Test.vcxproj') /t:Rebuild /nologo /v:minimal /m:4 /p:CL_MPCount=4 /p:Configuration=Release /p:Platform=x64 /p:BuildProjectReferences=false "/p:SolutionDir=$siv3dWindowsDir"
+```
+
+For a Debug failure, use `Debug` consistently for the rebuild and runner.
+`-SkipBuild` is appropriate here only after the explicit rebuild succeeds and no
+source or build settings have changed. These manual MSBuild commands do not acquire
+the runner's lock; never run them concurrently with another build or test session.
+
 ## Performance experiments
 
 The [Windows BinaryFileReader benchmark](binary-file-reader-benchmark.md) compares
