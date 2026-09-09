@@ -837,6 +837,8 @@ namespace s3d
 		else
 		{
 			boost::multiprecision::bit_unset(pImpl->value, index);
+			auto& backend = pImpl->value.backend();
+			backend.sign(backend.sign()); // Clear the sign if the magnitude became zero.
 		}
 
 		return *this;
@@ -851,6 +853,8 @@ namespace s3d
 	BigInt& BigInt::bitFlip(const uint32 index)
 	{
 		boost::multiprecision::bit_flip(pImpl->value, index);
+		auto& backend = pImpl->value.backend();
+		backend.sign(backend.sign()); // Clear the sign if the magnitude became zero.
 		return *this;
 	}
 

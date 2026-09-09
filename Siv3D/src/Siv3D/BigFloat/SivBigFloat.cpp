@@ -581,13 +581,27 @@ namespace s3d
 
 	BigFloat& BigFloat::operator /=(const int64 i)
 	{
-		pImpl->value /= i;
+		if (i == 0)
+		{
+			pImpl->value /= BigFloatDetail::value_type{ 0 };
+		}
+		else
+		{
+			pImpl->value /= i;
+		}
 		return *this;
 	}
 
 	BigFloat& BigFloat::operator /=(const uint64 i)
 	{
-		pImpl->value /= i;
+		if (i == 0)
+		{
+			pImpl->value /= BigFloatDetail::value_type{ 0 };
+		}
+		else
+		{
+			pImpl->value /= i;
+		}
 		return *this;
 	}
 

@@ -418,3 +418,94 @@ TEST_CASE("BigFloat.format precision and round trip")
 	CHECK(BigFloat{ BigFloat{ "nan" }.to_string(0, std::ios_base::fmtflags{}) }.isNaN());
 	CHECK_THROWS(BigFloat{ "invalid" });
 }
+
+TEST_CASE("BigFloat.zero division and recovery")
+{
+	for (const int number : { -7, 0, 7 })
+	{
+		auto check = [&](const auto& zero)
+		{
+			BigFloat value{ number };
+			const BigFloat result = value / zero;
+			value /= zero;
+			if (number == 0)
+			{
+				CHECK(result.isNaN());
+				CHECK(value.isNaN());
+			}
+			else
+			{
+				CHECK(result.isInf());
+				CHECK(value == result);
+				CHECK(result.sign() == ((number < 0) ? -1 : 1));
+			}
+			value = "1.25";
+			CHECK(value == 1.25);
+		};
+		check(0);
+		check(0u);
+		check(0.0);
+		check(BigInt{ 0 });
+		check(BigFloat{ 0 });
+	}
+	for (const std::string_view text : { "nan", "inf", "-inf" })
+	{
+		auto check = [&](const auto zero)
+		{
+			BigFloat value{ text };
+			value /= zero;
+			if (text == "nan")
+			{
+				CHECK(value.isNaN());
+			}
+			else
+			{
+				CHECK(value == BigFloat{ text });
+			}
+		};
+		check(0);
+		check(0u);
+	}
+	for (const int64 divisor : { int64{ -7 }, int64{ -1 }, int64{ 1 }, int64{ 7 }, std::numeric_limits<int64>::min() })
+	{
+		BigFloat value{ -42 };
+		value /= divisor;
+		CHECK(value.asDouble() == (-42.0 / static_cast<double>(divisor)));
+	}
+	for (const uint64 divisor : { uint64{ 1 }, uint64{ 7 }, std::numeric_limits<uint64>::max() })
+	{
+		BigFloat value{ -42 };
+		value /= divisor;
+		CHECK(value.asDouble() == (-42.0 / static_cast<double>(divisor)));
+	}
+	BigFloat value{ 7 };
+	CHECK((7 / BigFloat{ 0 }).isInf());
+	CHECK((BigInt{ 0 } / BigFloat{ 0 }).isNaN());
+	value /= value;
+	CHECK(value == 1);
+}
+
+TEST_CASE("BigFloat.string parsing and recovery")
+{
+	CHECK(BigFloat{ std::string_view{ "1.25x", 4 } } == 1.25);
+	CHECK(BigFloat{ StringView{ U"1.25x", 4 } } == 1.25);
+	for (const std::string_view text : { "", "+", "-", "xyz", "123x", "0xGG", "1e", "1.2.3", "123456789012345678901234567890x" })
+	{
+		CAPTURE(text);
+		const String wide{ text.begin(), text.end() };
+		CHECK_THROWS(BigFloat{ text });
+		CHECK_THROWS(BigFloat{ StringView{ wide } });
+		BigFloat a{ 123 }, b{ -123 };
+		CHECK_THROWS(a = text);
+		CHECK_THROWS(b = StringView{ wide });
+		a = 5;
+		b = 6;
+		CHECK(a == 5);
+		CHECK(b == 6);
+		const BigFloat moved{ std::move(a) };
+		CHECK_THROWS(a = text);
+		a = 7;
+		CHECK(a == 7);
+		CHECK(moved == 5);
+	}
+}

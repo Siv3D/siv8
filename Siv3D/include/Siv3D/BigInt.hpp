@@ -724,6 +724,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief 絶対値の指定したビットを調べます。
+		/// @param index ビット位置
+		/// @return 指定したビットが 1 の場合 true、それ以外の場合 false
 		[[nodiscard]]
 		bool bitTest(uint32 index) const noexcept;
 
@@ -733,10 +736,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定したビットを設定します。
+		/// @brief 絶対値の指定したビットを設定します。
 		/// @param index ビット位置
 		/// @param value 設定する値
 		/// @return *this
+		/// @remark 例えば -3 のビット 0 を false にすると -2 になります。
 		/// @throws std::bad_alloc 領域の確保に失敗した場合
 		BigInt& bitSet(uint32 index, bool value);
 
@@ -746,9 +750,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 指定したビットを反転します。
+		/// @brief 絶対値の指定したビットを反転します。
 		/// @param index ビット位置
 		/// @return *this
+		/// @remark 例えば -3 のビット 2 を反転すると -7 になります。
 		/// @throws std::bad_alloc 領域の確保に失敗した場合
 		BigInt& bitFlip(uint32 index);
 

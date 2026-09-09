@@ -11,6 +11,7 @@
 # include <array>
 # include <type_traits>
 # include <utility>
+# include <unordered_set>
 
 using namespace s3d;
 
@@ -296,4 +297,133 @@ TEST_CASE("BigInt.bits and string round trip")
 	CHECK(BigInt{ value.to_string() } == value);
 	CHECK(BigInt{ value.str() } == value);
 	CHECK_THROWS(BigInt{ "invalid" });
+}
+
+TEST_CASE("BigInt.bit operations preserve zero and hash")
+{
+	for (const uint32 index : { 0u, 1u, 63u, 64u, 127u, 128u, 1024u })
+	{
+		const BigInt magnitude = BigInt{ 1 } << index;
+		for (const bool flip : { false, true })
+		{
+			CAPTURE(index, flip);
+			BigInt value = -magnitude;
+			if (flip)
+			{
+				CHECK(&value.bitFlip(index) == &value);
+			}
+			else
+			{
+				CHECK(&value.bitSet(index, false) == &value);
+			}
+			CHECK(value == 0);
+			CHECK(value.isZero());
+			CHECK(value.sign() == 0);
+			CHECK(value.to_string() == "0");
+			CHECK(value.hash() == BigInt{ 0 }.hash());
+			const std::unordered_set<BigInt> values{ value };
+			CHECK(values.contains(BigInt{ 0 }));
+			value.bitSet(index, true);
+			CHECK(value == magnitude);
+		}
+	}
+	CHECK(BigInt{ -3 }.bitTest(0));
+	CHECK(BigInt{ -3 }.bitTest(1));
+	CHECK_FALSE(BigInt{ -3 }.bitTest(2));
+	CHECK(BigInt{ -3 }.bitSet(0, false) == -2);
+	CHECK(BigInt{ -3 }.bitFlip(2) == -7);
+	CHECK_FALSE(BigInt{ 1 }.bitTest(std::numeric_limits<uint32>::max()));
+	CHECK(BigInt{ 1 }.bitSet(std::numeric_limits<uint32>::max(), false) == 1);
+	CHECK_FALSE(BigInt{ -1 }.lsb());
+	CHECK_FALSE(BigInt{ -1 }.msb());
+	CHECK_FALSE(BigInt{ 0 }.lsb());
+	CHECK_FALSE(BigInt{ 0 }.msb());
+}
+
+TEST_CASE("BigInt.shift boundaries")
+{
+	for (const int64 number : { -7, -1, 0, 1, 7 })
+	{
+		const BigInt original{ number };
+		for (const int64 shift : { int64{ -1 }, std::numeric_limits<int64>::min() })
+		{
+			BigInt value = original;
+			CHECK_THROWS_AS(value << shift, std::out_of_range);
+			CHECK_THROWS_AS(value >> shift, std::out_of_range);
+			CHECK_THROWS_AS(value <<= shift, std::out_of_range);
+			CHECK_THROWS_AS(value >>= shift, std::out_of_range);
+			CHECK(value == original);
+		}
+		for (const uint64 shift : { uint64{ 0 }, uint64{ 1 }, uint64{ 63 }, uint64{ 64 }, uint64{ 128 } })
+		{
+			BigInt value = original;
+			CHECK((value << shift) == (value << static_cast<int64>(shift)));
+			value <<= shift;
+			CHECK((value >> shift) == original);
+			value >>= shift;
+			CHECK(value == original);
+		}
+		CHECK((original >> std::numeric_limits<uint64>::max()) == ((number < 0) ? -1 : 0));
+		CHECK((original >> 1) == (number >> 1));
+	}
+}
+
+TEST_CASE("BigInt.zero division and recovery")
+{
+	for (const BigInt& value : { BigInt{ -7 }, BigInt{ 0 }, BigInt{ 7 }, BigInt{ 1 } << 256 })
+	{
+		{
+			const BigInt zero{ 0 };
+			CHECK_THROWS_AS(value / zero, std::overflow_error);
+			CHECK_THROWS_AS(value % zero, std::overflow_error);
+			CHECK_THROWS_AS(7 / zero, std::overflow_error);
+			CHECK_THROWS_AS(7 % zero, std::overflow_error);
+			BigInt quotient{ 2 }, remainder{ 3 };
+			CHECK_THROWS_AS(value.divmod(zero, quotient, remainder), std::overflow_error);
+			quotient = 4;
+			remainder = 5;
+			CHECK(quotient == 4);
+			CHECK(remainder == 5);
+		}
+		auto check = [&](const auto& zero)
+		{
+			BigInt destination = value;
+			CHECK_THROWS_AS(destination /= zero, std::overflow_error);
+			destination = 6;
+			CHECK(destination == 6);
+			CHECK_THROWS_AS(destination %= zero, std::overflow_error);
+			destination = 7;
+			CHECK(destination == 7);
+		};
+		check(0);
+		check(0u);
+		check(BigInt{ 0 });
+	}
+}
+
+TEST_CASE("BigInt.string parsing and recovery")
+{
+	CHECK(BigInt{ std::string_view{ "123x", 3 } } == 123);
+	CHECK(BigInt{ StringView{ U"123x", 3 } } == 123);
+	CHECK(BigInt{ "-0xff" } == -255);
+	CHECK(BigInt{ "077" } == 63);
+	for (const std::string_view text : { "+", "xyz", "123x", "0xGG", "09", "1.2.3", "123456789012345678901234567890x" })
+	{
+		CAPTURE(text);
+		const String wide{ text.begin(), text.end() };
+		CHECK_THROWS(BigInt{ text });
+		CHECK_THROWS(BigInt{ StringView{ wide } });
+		BigInt a{ 123 }, b{ -123 };
+		CHECK_THROWS(a = text);
+		CHECK_THROWS(b = StringView{ wide });
+		a = 5;
+		b = 6;
+		CHECK(a == 5);
+		CHECK(b == 6);
+		const BigInt moved{ std::move(a) };
+		CHECK_THROWS(a = text);
+		a = 7;
+		CHECK(a == 7);
+		CHECK(moved == 5);
+	}
 }
