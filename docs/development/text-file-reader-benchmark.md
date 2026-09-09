@@ -20,10 +20,10 @@ The benchmark's Markdown tables and CSV rows are included in the doctest report.
 Do not use `-SkipBuild` after changing implementation or test sources until the
 new executable has been built.
 
-On macOS, use the host's runner:
+On macOS, select Release explicitly (the host's runner defaults to Debug):
 
 ```sh
-./macOS/run-tests.sh '--test-case=TextFileReader.benchmark.UTF8' '--no-skip'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=TextFileReader.benchmark.UTF8' '--no-skip'
 ```
 
 For correctness checks, run the normal full suite described in the
