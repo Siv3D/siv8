@@ -75,6 +75,6 @@ Name | Version
 
 These dependencies are used by the test executable only.
 
-Name | Version | License
---- | --- | ---
-[Catch2](https://github.com/catchorg/Catch2/releases/tag/v3.16.0) | v3.16.0 | [Boost Software License 1.0](Test/ThirdParty/Catch2/LICENSE.txt)
+Name | Version
+--- | ---
+[Catch2](https://github.com/catchorg/Catch2/releases/tag/v3.16.0) | v3.16.0

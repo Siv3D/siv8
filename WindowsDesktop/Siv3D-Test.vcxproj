@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="..\Test\ThirdParty\Catch2\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Test\Siv3DTest.cpp" />
@@ -80,7 +79,7 @@
     <ClCompile Include="..\Test\Test_MemoryMappedFileView.cpp" />
     <ClCompile Include="..\Test\Test_Material.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3D.cpp" />
-	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp" />
+    <ClCompile Include="..\Test\Test_Mesh3DBounds.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DAssembly.cpp" />
     <ClCompile Include="..\Test\Test_Mesh3DAssemblyOBJ.cpp" />
@@ -109,9 +108,9 @@
     <ClCompile Include="..\Test\Test_PRNG.cpp" />
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
     <ClCompile Include="..\Test\Test_Smooth.cpp" />
-	<ClCompile Include="..\Test\Test_Quaternion.cpp" />
-	<ClCompile Include="..\Test\Test_Mat4x4.cpp" />
-	<ClCompile Include="..\Test\Test_SimdFloat4.cpp" />
+    <ClCompile Include="..\Test\Test_Quaternion.cpp" />
+    <ClCompile Include="..\Test\Test_Mat4x4.cpp" />
+    <ClCompile Include="..\Test\Test_SimdFloat4.cpp" />
     <ClCompile Include="..\Test\Test_RangeFormatter.cpp" />
     <ClCompile Include="..\Test\Test_FunctionRef.cpp" />
     <ClCompile Include="..\Test\Test_Hash.cpp" />

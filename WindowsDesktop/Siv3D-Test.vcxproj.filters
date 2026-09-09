@@ -13,7 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="..\Test\ThirdParty\Catch2\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -146,21 +145,21 @@
     <ClCompile Include="..\Test\Test_Smooth.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-	<ClCompile Include="..\Test\Test_Quaternion.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_Cylindrical.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_Spherical.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_Mat4x4.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
-	<ClCompile Include="..\Test\Test_SimdFloat4.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
+    <ClCompile Include="..\Test\Test_Quaternion.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Cylindrical.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Spherical.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Mat4x4.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_SimdFloat4.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Compression.cpp">
       <Filter>Test</Filter>
     </ClCompile>
@@ -293,9 +292,9 @@
     <ClCompile Include="..\Test\Test_Mesh3D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-	<ClCompile Include="..\Test\Test_Mesh3DBounds.cpp">
-	  <Filter>Test</Filter>
-	</ClCompile>
+    <ClCompile Include="..\Test\Test_Mesh3DBounds.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Mesh3DBuilder.cpp">
       <Filter>Test</Filter>
     </ClCompile>
