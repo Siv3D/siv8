@@ -14,6 +14,7 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Endian.hpp>
 # include <Siv3D/UnicodeConverter.hpp>
+# include <cstring>
 # include <exception>
 
 namespace s3d
@@ -31,13 +32,9 @@ namespace s3d
 
 			size_t start = 0;
 
-			for (size_t i = 0; i < s.size(); ++i)
+			for (size_t end; (end = s.find('\n', start)) != std::string::npos; start = (end + 1))
 			{
-				if (s[i] == '\n')
-				{
-					lines.push_back(s.substr(start, (i - start)));
-					start = (i + 1);
-				}
+				lines.push_back(s.substr(start, (end - start)));
 			}
 
 			lines.push_back(s.substr(start));
@@ -54,13 +51,9 @@ namespace s3d
 
 			size_t start = 0;
 
-			for (size_t i = 0; i < s.size(); ++i)
+			for (size_t end; (end = s.find('\n', start)) != std::string_view::npos; start = (end + 1))
 			{
-				if (s[i] == '\n')
-				{
-					lines.push_back(Unicode::FromUTF8(s.substr(start, (i - start))));
-					start = (i + 1);
-				}
+				lines.push_back(Unicode::FromUTF8(s.substr(start, (end - start))));
 			}
 
 			lines.push_back(Unicode::FromUTF8(s.substr(start)));
@@ -163,6 +156,8 @@ namespace s3d
 		}
 
 		m_reader.reset();
+		m_utf8BufferPos = 0;
+		m_utf8BufferLength = 0;
 
 		m_info = {};
 	}
@@ -249,30 +244,43 @@ namespace s3d
 			return false;
 		}
 
-		bool eof = true;
-
-		for (;;)
+		const auto read = [&line](auto readCodePoint)
 		{
-			char32 codePoint;
+			bool eof = true;
 
-			if (not readCodePoint(codePoint))
+			for (;;)
 			{
-				break;
+				char32 codePoint;
+
+				if (not readCodePoint(codePoint))
+				{
+					break;
+				}
+
+				eof = false;
+
+				if ((codePoint == U'\n') || (codePoint == U'\0'))
+				{
+					break;
+				}
+				else if (codePoint != U'\r')
+				{
+					line.push_back(codePoint);
+				}
 			}
 
-			eof = false;
+			return (not eof);
+		};
 
-			if ((codePoint == U'\n') || (codePoint == U'\0'))
-			{
-				break;
-			}
-			else if (codePoint != U'\r')
-			{
-				line.push_back(codePoint);
-			}
+		switch (m_info.encoding)
+		{
+		case TextEncoding::UTF16LE:
+			return read([this](char32& ch) { return readCodePointUTF16LE(ch); });
+		case TextEncoding::UTF16BE:
+			return read([this](char32& ch) { return readCodePointUTF16BE(ch); });
+		default:
+			return read([this](char32& ch) { return readCodePointUTF8(ch); });
 		}
-
-		return (not eof);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -488,10 +496,22 @@ namespace s3d
 
 	bool TextFileReader::TextFileReaderDetail::readCodePointUTF8(char32& codePoint)
 	{
-		UTF8toUTF32_Converter converter;
 		uint8 byte;
 
-		while (readByte(byte))
+		if (not readByte(byte))
+		{
+			return false;
+		}
+
+		if (byte < 0x80)
+		{
+			codePoint = byte;
+			return true;
+		}
+
+		UTF8toUTF32_Converter converter;
+
+		do
 		{
 			const auto result = converter.put(static_cast<char8>(byte));
 
@@ -503,12 +523,12 @@ namespace s3d
 			if (not result.consumed)
 			{
 				// Leave the next code unit available to all reader methods.
-				m_reader->setPos(m_reader->getPos() - 1);
+				--m_utf8BufferPos;
 			}
 
 			codePoint = converter.get();
 			return true;
-		}
+		} while (readByte(byte));
 
 		if (converter.finish())
 		{
@@ -577,7 +597,27 @@ namespace s3d
 
 	bool TextFileReader::TextFileReaderDetail::readByte(uint8& c)
 	{
-		return m_reader->read(c);
+		if ((m_utf8BufferPos == m_utf8BufferLength) && (not refillUTF8Buffer()))
+		{
+			return false;
+		}
+
+		c = m_utf8Buffer[m_utf8BufferPos++];
+		return true;
+	}
+
+	bool TextFileReader::TextFileReaderDetail::refillUTF8Buffer()
+	{
+		m_utf8BufferPos = 0;
+		m_utf8BufferLength = 0;
+
+		if (not m_utf8Buffer)
+		{
+			m_utf8Buffer = std::make_unique_for_overwrite<uint8[]>(UTF8BufferSize);
+		}
+
+		m_utf8BufferLength = static_cast<size_t>(m_reader->read(m_utf8Buffer.get(), UTF8BufferSize));
+		return (0 < m_utf8BufferLength);
 	}
 
 	bool TextFileReader::TextFileReaderDetail::readTwoBytes(uint16& c)
@@ -591,26 +631,36 @@ namespace s3d
 
 		for (;;)
 		{
-			uint8 ch;
-
-			if (not readByte(ch))
+			if ((m_utf8BufferPos == m_utf8BufferLength) && (not refillUTF8Buffer()))
 			{
-				break;
+				return (not eof);
 			}
 
 			eof = false;
-
-			if ((ch == '\n') || (ch == '\0'))
+			const size_t start = m_utf8BufferPos;
+			size_t end = start;
+			while (end < m_utf8BufferLength)
 			{
-				break;
+				const uint8 ch = m_utf8Buffer[end];
+				if ((ch == '\r') || (ch == '\n') || (ch == '\0'))
+				{
+					break;
+				}
+				++end;
 			}
-			else if (ch != '\r')
+
+			line.append(reinterpret_cast<const char*>(m_utf8Buffer.get() + start), (end - start));
+			m_utf8BufferPos = end;
+
+			if (end < m_utf8BufferLength)
 			{
-				line.push_back(ch);
+				++m_utf8BufferPos;
+				if (m_utf8Buffer[end] != '\r')
+				{
+					return true;
+				}
 			}
 		}
-
-		return (not eof);
 	}
 
 	bool TextFileReader::TextFileReaderDetail::readLineUTF16LE(std::string& line)
@@ -821,16 +871,29 @@ namespace s3d
 
 	bool TextFileReader::TextFileReaderDetail::readAllUTF8(std::string& s)
 	{
+		const size_t buffered = (m_utf8BufferLength - m_utf8BufferPos);
 		const int64 readSize = (m_reader->size() - m_reader->getPos());
 
-		int64 readBytes = 0;
+		size_t readBytes = 0;
 		std::exception_ptr readException;
-		s.resize_and_overwrite(static_cast<size_t>(readSize), [&](char* dst, size_t) noexcept -> size_t
+		s.resize_and_overwrite((buffered + static_cast<size_t>(readSize)), [&](char* dst, size_t) noexcept -> size_t
 			{
 				try
 				{
-					readBytes = m_reader->read(dst, readSize);
-					return static_cast<size_t>(readBytes);
+					if (buffered)
+					{
+						std::memcpy(dst, (m_utf8Buffer.get() + m_utf8BufferPos), buffered);
+						m_utf8BufferPos = m_utf8BufferLength;
+					}
+
+					readBytes = buffered;
+					if (readSize)
+					{
+						// Whole-file reads go directly to the destination; only an unread
+						// prefix from an earlier readChar/readLine needs to be copied.
+						readBytes += static_cast<size_t>(m_reader->read((dst + buffered), readSize));
+					}
+					return readBytes;
 				}
 				catch (...)
 				{

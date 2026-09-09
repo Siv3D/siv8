@@ -1069,6 +1069,270 @@ TEST_CASE("TextFileReader.UTF8.lines.viewsAndBoundaries")
 	}
 }
 
+
+TEST_CASE("TextFileReader.UTF8.sequential.boundaries")
+{
+	for (const size_t length : { 0, 4083, 4084, 4085, 4086, 4087, 4088, 4089, 4090, 4091, 4092, 4093, 4094, 4095, 4096, 4097, 8191, 16383, 32768 })
+	{
+		CAPTURE(length);
+		const String firstLine = (String(length, U'x') + U"\u00A2日本\U0001F600");
+		const Array<String> expectedLines = { firstLine, U"", U"end" };
+		const String expectedText = (firstLine + U"\n\nend");
+		for (const bool bom : { false, true })
+		{
+			CAPTURE(bom);
+			const std::string input = (std::string(bom ? "\xEF\xBB\xBF" : "") + firstLine.toUTF8() + "\r\n\r\nend\r");
+			const FilePath path = Test::OutputPath(U"text-reader-boundaries.txt");
+			{
+				BinaryFileWriter writer{ path };
+				REQUIRE(writer.isOpen());
+				REQUIRE(writer.write(input.data(), input.size()) == static_cast<int64>(input.size()));
+			}
+			for (const bool file : { false, true })
+			{
+				CAPTURE(file);
+				const auto makeReader = [&]() -> TextFileReader
+				{
+					return file ? TextFileReader{ path } : TextFileReader{ MemoryViewReader{ input.data(), input.size() } };
+				};
+				auto reader8 = makeReader();
+				auto reader32 = makeReader();
+				std::string line8;
+				String line32;
+				for (const auto& expected : expectedLines)
+				{
+					REQUIRE(reader8.readLine(line8));
+					CHECK(line8 == expected.toUTF8());
+					REQUIRE(reader32.readLine(line32));
+					CHECK(line32 == expected);
+				}
+				CHECK_FALSE(reader8.readLine(line8));
+				CHECK(line8.empty());
+				CHECK_FALSE(reader32.readLine(line32));
+				CHECK(line32.empty());
+				auto reader = makeReader();
+				String characters;
+				char32 ch;
+				while (reader.readChar(ch))
+				{
+					characters.push_back(ch);
+				}
+				CHECK(characters == expectedText);
+				CHECK_FALSE(reader.readChar(ch));
+			}
+		}
+	}
+}
+
+TEST_CASE("TextFileReader.UTF8.sequential.mixedMethods")
+{
+	for (const size_t length : { 0, 4093, 4094, 4095, 8192 })
+	{
+		CAPTURE(length);
+		const std::string prefix(length, 'x');
+		const std::string input = (prefix + "\n日本\U0001F600\r\n" + std::string{ "\0A\0B\r\ntail\n", 11 });
+		TextFileReader reader{ MemoryViewReader{ input.data(), input.size() } };
+		std::string line8;
+		String line32;
+		char32 ch;
+		REQUIRE(reader.readLine(line8));
+		CHECK(line8 == prefix);
+		REQUIRE(reader.readChar(ch));
+		CHECK(ch == U'日');
+		REQUIRE(reader.readLine(line32));
+		CHECK(line32 == U"本\U0001F600");
+		CHECK_FALSE(reader.readChar(ch)); // NUL ends this call, not the reader's lifetime.
+		CHECK(ch == U'\0');
+		const Array<String> expected = { String{ U"A\0B", 3 }, U"tail", U"" };
+		CHECK(reader.readLines() == expected);
+		CHECK(reader.readAllUTF8().empty());
+	}
+
+	// The remainder may be entirely prefetched, or may extend beyond it.
+	for (const size_t length : { 0, 5, 4094, 4095, 4096, 32768 })
+	{
+		CAPTURE(length);
+		const std::string tail = (std::string(length, 'x') + "日本\U0001F600\n");
+		const std::string input = ("A\r\n" + tail);
+		for (const bool utf32 : { false, true })
+		{
+			TextFileReader reader{ MemoryViewReader{ input.data(), input.size() } };
+			REQUIRE(reader.readChar() == U'A');
+			if (utf32)
+			{
+				CHECK(reader.readAll() == Unicode::FromUTF8("\n" + tail));
+			}
+			else
+			{
+				CHECK(reader.readAllUTF8() == ("\n" + tail));
+			}
+			CHECK_FALSE(reader.readChar());
+			CHECK(reader.readAllUTF8().empty());
+		}
+	}
+
+	const std::string_view delimiters{ "\r\0\r\n\r", 5 };
+	TextFileReader reader{ MemoryViewReader{ delimiters.data(), delimiters.size() } };
+	std::string line;
+	for (int i = 0; i < 3; ++i)
+	{
+		REQUIRE(reader.readLine(line));
+		CHECK(line.empty());
+	}
+	CHECK_FALSE(reader.readLine(line));
+}
+
+TEST_CASE("TextFileReader.UTF8.sequential.invalidBoundaries")
+{
+	const std::pair<std::string_view, StringView> examples[] =
+	{
+		{ "\xE2" "A", U"\uFFFDA" },
+		{ "\xE2\x82" "A", U"\uFFFDA" },
+		{ "\xE2\xC2\xA2", U"\uFFFD\u00A2" },
+		{ "\xED\xA0\x80", U"\uFFFD\uFFFD\uFFFD" },
+		{ "\xF0\x90\x80", U"\uFFFD" },
+	};
+	for (const size_t length : { 4093, 4094, 4095, 4096 })
+	{
+		CAPTURE(length);
+		for (const auto& [bytes, text] : examples)
+		{
+			const std::string input = (std::string(length, 'x') + std::string(bytes));
+			const String expected = (String(length, U'x') + text);
+			TextFileReader reader{ MemoryViewReader{ input.data(), input.size() } };
+			CHECK(reader.readLine() == expected);
+			CHECK_FALSE(reader.readLine());
+			REQUIRE(reader.open(MemoryViewReader{ input.data(), input.size() }));
+			String characters;
+			char32 ch;
+			while (reader.readChar(ch))
+			{
+				characters.push_back(ch);
+			}
+			CHECK(characters == expected);
+			REQUIRE(reader.open(MemoryViewReader{ input.data(), input.size() }));
+			std::string rawLine;
+			REQUIRE(reader.readLine(rawLine));
+			CHECK(rawLine == input);
+		}
+
+		for (const std::string_view invalid : { "\xE2", "\xE2\x82", "\xF0\x90\x80" })
+		{
+			const std::string input = (std::string(length, 'x') + "\n" + std::string(invalid) + "A\nlast");
+			TextFileReader reader{ MemoryViewReader{ input.data(), input.size() } };
+			std::string line;
+			REQUIRE(reader.readLine(line));
+			CHECK(line == std::string(length, 'x'));
+			REQUIRE(reader.readChar() == U'\uFFFD');
+			// A rejected byte at the start of a new buffer remains available to bulk reads.
+			CHECK(reader.readAllUTF8() == "A\nlast");
+		}
+	}
+}
+
+TEST_CASE("TextFileReader.UTF8.sequential.shortReads")
+{
+	const std::string_view input = "A\u00A2日本\U0001F600\r\nsecond\nlast";
+	for (const int64 limit : { 1, 2, 3, 7 })
+	{
+		CAPTURE(limit);
+		const auto makeReader = [&] { return TextFileReader{ LimitedTextReader{ input, limit }, TextEncoding::UTF8_NO_BOM }; };
+		auto reader = makeReader();
+		String characters;
+		char32 ch;
+		while (reader.readChar(ch))
+		{
+			characters.push_back(ch);
+		}
+		CHECK(characters == U"A\u00A2日本\U0001F600\nsecond\nlast");
+		auto reader8 = makeReader();
+		auto reader32 = makeReader();
+		std::string line8;
+		String line32;
+		for (const StringView expected : { U"A\u00A2日本\U0001F600", U"second", U"last" })
+		{
+			REQUIRE(reader8.readLine(line8));
+			CHECK(line8 == Unicode::ToUTF8(expected));
+			REQUIRE(reader32.readLine(line32));
+			CHECK(line32 == expected);
+		}
+		CHECK_FALSE(reader8.readLine(line8));
+		CHECK_FALSE(reader32.readLine(line32));
+	}
+}
+
+namespace
+{
+	class InterruptedTextReader : public MemoryViewReader
+	{
+	public:
+		InterruptedTextReader(const std::string_view input, const bool throws)
+			: MemoryViewReader{ input.data(), input.size() }, m_throws{ throws } {}
+
+		int64 read(void* dst, const int64 size) override
+		{
+			if ((getPos() == 3) && (not m_interrupted))
+			{
+				m_interrupted = true;
+				if (m_throws)
+				{
+					// A failed refill can modify storage without returning usable bytes.
+					if (size) { static_cast<char*>(dst)[0] = '?'; }
+					throw TextReaderFailure{};
+				}
+				return 0;
+			}
+			return MemoryViewReader::read(dst, ((getPos() < 3) ? Min(size, (3 - getPos())) : size));
+		}
+
+	private:
+		bool m_throws;
+		bool m_interrupted = false;
+	};
+}
+
+TEST_CASE("TextFileReader.UTF8.sequential.interruptionAndReopen")
+{
+	const std::string_view input = "abcDEF\nTAIL";
+	for (const bool throws : { false, true })
+	{
+		TextFileReader reader{ InterruptedTextReader{ input, throws }, TextEncoding::UTF8_NO_BOM };
+		REQUIRE(reader.readChar() == U'a');
+		std::string line;
+		if (throws)
+		{
+			CHECK_THROWS_AS(reader.readLine(line), TextReaderFailure);
+		}
+		else
+		{
+			REQUIRE(reader.readLine(line));
+			CHECK(line == "bc");
+		}
+		REQUIRE(reader.readLine(line));
+		CHECK(line == "DEF");
+		CHECK(reader.readAllUTF8() == "TAIL");
+	}
+
+	TextFileReader reader{ MemoryViewReader{ input.data(), input.size() } };
+	REQUIRE(reader.readChar() == U'a');
+	TextFileReader moved{ std::move(reader) };
+	CHECK(moved.readAllUTF8() == "bcDEF\nTAIL");
+	REQUIRE(moved.open(MemoryViewReader{ input.data(), input.size() }));
+	REQUIRE(moved.readChar() == U'a');
+	CHECK_FALSE(moved.open(std::unique_ptr<IReader>{}));
+	CHECK_FALSE(moved.isOpen());
+	CHECK(moved.readAllUTF8().empty());
+	const std::string_view utf16{ "\xFF\xFE" "N\0\n\0X\0", 8 };
+	REQUIRE(moved.open(MemoryViewReader{ utf16.data(), utf16.size() }));
+	CHECK(moved.readLine() == U"N");
+	CHECK(moved.readAll() == U"X");
+	REQUIRE(moved.open(MemoryViewReader{ input.data(), input.size() }));
+	REQUIRE(moved.readChar() == U'a');
+	moved.close();
+	REQUIRE(moved.open(MemoryViewReader{ input.data(), input.size() }));
+	CHECK(moved.readAllUTF8() == input);
+}
+
 namespace
 {
 	struct UTF8Workload
@@ -1194,6 +1458,23 @@ TEST_CASE("TextFileReader.benchmark.UTF8" * doctest::skip())
 				REQUIRE_FALSE(reader.readLine(output8));
 			}
 
+			{
+				auto reader = makeReader();
+				String characters;
+				char32 ch;
+				while (reader.readChar(ch))
+				{
+					characters.push_back(ch);
+				}
+				REQUIRE(characters == expected32);
+			}
+			{
+				auto reader = makeReader();
+				REQUIRE(reader.readLine(output8));
+				REQUIRE(output8 == workload.lines.front().toUTF8());
+				REQUIRE(reader.readAllUTF8() == workload.normalized.substr(output8.size() + 1));
+			}
+
 			std::ostringstream report;
 			Bench bench;
 			bench.title(workload.name + (file ? "/file" : "/memory"))
@@ -1248,6 +1529,24 @@ TEST_CASE("TextFileReader.benchmark.UTF8" * doctest::skip())
 					doNotOptimizeAway(*line);
 				}
 			});
+			bench.run("readChar/utf32", [&]
+			{
+				auto reader = makeReader();
+				char32 ch;
+				while (reader.readChar(ch))
+				{
+					doNotOptimizeAway(ch);
+				}
+			});
+			bench.run("readLine+readAll/utf8-reuse", [&]
+			{
+				auto reader = makeReader();
+				doNotOptimizeAway(reader.readLine(output8));
+				doNotOptimizeAway(output8);
+				doNotOptimizeAway(reader.readAll(output8));
+				doNotOptimizeAway(output8);
+			});
+
 			if (workload.name == "config-json")
 			{
 				const auto load = [&]

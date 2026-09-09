@@ -60,6 +60,14 @@ namespace s3d
 
 		std::unique_ptr<IReader> m_reader;
 
+		static constexpr size_t UTF8BufferSize = (4 * 1024);
+
+		std::unique_ptr<uint8[]> m_utf8Buffer;
+
+		size_t m_utf8BufferPos = 0;
+
+		size_t m_utf8BufferLength = 0;
+
 		struct Info
 		{
 			FilePath fullPath;
@@ -81,6 +89,9 @@ namespace s3d
 
 		[[nodiscard]]
 		bool readByte(uint8& c);
+
+		[[nodiscard]]
+		bool refillUTF8Buffer();
 
 		[[nodiscard]]
 		bool readTwoBytes(uint16& c);

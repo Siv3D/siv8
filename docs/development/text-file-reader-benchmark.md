@@ -29,7 +29,8 @@ On macOS, use the host's runner:
 For correctness checks, run the normal full suite described in the
 [development guide](README.md#build-and-test). The non-benchmark TextFileReader
 cases cover BOMs, CR removal, embedded NULs, invalid UTF-8, output reuse, mixed
-read methods, short reads, exceptions, and line boundaries.
+read methods, short reads, exceptions, and buffer boundaries (including split
+UTF-8 sequences, CRLF, and reopening a reader).
 
 ## Workloads and timing
 
@@ -55,7 +56,11 @@ is measured both as a newly returned string and with a reused destination.
 UTF-32 whole-file output and line-by-line output reuse caller storage;
 `readLine/utf32-value` calls the actual value-returning overload. Bulk line
 reading reuses the outer array, but its existing String elements are destroyed
-by the API. `JSON.Load` also includes JSON parsing and destruction.
+by the API. `readChar/utf32` consumes every decoded character without building an
+output string. `readLine+readAll/utf8-reuse` reads the first line, then reads the
+remaining text into the same UTF-8 destination; this exercises the transition
+from buffered sequential reads to bulk reads. `JSON.Load` also includes JSON
+parsing and destruction.
 
 nanobench uses 11 epochs, a minimum 2 ms per epoch, and a warmup iteration.
 Result sinks are inside timing; full-content assertions are outside it. The CSV
