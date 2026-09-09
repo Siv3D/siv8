@@ -69,6 +69,8 @@
 		480232B9203337518A6AEE90 /* Test_ArrayModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9D3A7DCD1591C2DF005A6D60 /* Test_ArrayModel.cpp */; };
 		E083A35B037003603D798AF8 /* Test_ArrayException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */; };
 		F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */; };
+		6B33913B595F8CB0EDBA09B1 /* Test_BigInt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B369622B957860456E509653 /* Test_BigInt.cpp */; };
+		3C12E829669A3CAA88A3728F /* Test_BigFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 315A1A954557FA476A89D60D /* Test_BigFloat.cpp */; };
 		F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B82B9DAEB900383E4D /* Test_Byte.cpp */; };
 		F90702F92B9DAEB900383E4D /* Test_Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702B92B9DAEB900383E4D /* Test_Color.cpp */; };
 		F90702FA2B9DAEB900383E4D /* Test_ColorF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */; };
@@ -3359,6 +3361,8 @@
 		9D3A7DCD1591C2DF005A6D60 /* Test_ArrayModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayModel.cpp; sourceTree = "<group>"; };
 		67F13F5FC510165774CCFD0F /* Test_ArrayException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayException.cpp; sourceTree = "<group>"; };
 		F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BinaryFileWriter.cpp; sourceTree = "<group>"; };
+		B369622B957860456E509653 /* Test_BigInt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BigInt.cpp; sourceTree = "<group>"; };
+		315A1A954557FA476A89D60D /* Test_BigFloat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_BigFloat.cpp; sourceTree = "<group>"; };
 		F90702B82B9DAEB900383E4D /* Test_Byte.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Byte.cpp; sourceTree = "<group>"; };
 		F90702B92B9DAEB900383E4D /* Test_Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Color.cpp; sourceTree = "<group>"; };
 		F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ColorF.cpp; sourceTree = "<group>"; };
@@ -6929,6 +6933,8 @@
 				F9528B242BAFB6B600222F45 /* Test_Base64Value.cpp */,
 				F90F2BDF2D91749500CC89CA /* Test_BinaryFileReader.cpp */,
 				F90702B72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp */,
+				B369622B957860456E509653 /* Test_BigInt.cpp */,
+				315A1A954557FA476A89D60D /* Test_BigFloat.cpp */,
 				F90702B82B9DAEB900383E4D /* Test_Byte.cpp */,
 				F90702B92B9DAEB900383E4D /* Test_Color.cpp */,
 				F90702BA2B9DAEB900383E4D /* Test_ColorF.cpp */,
@@ -16521,6 +16527,8 @@
 				F9A000052FC0000000000001 /* Test_Interpolation.cpp in Sources */,
 				F9528B322BB0564800222F45 /* Test_MemoryMappedFileView.cpp in Sources */,
 				F97E6DB92D7B3B9A0066E408 /* Test_Grid.cpp in Sources */,
+				6B33913B595F8CB0EDBA09B1 /* Test_BigInt.cpp in Sources */,
+				3C12E829669A3CAA88A3728F /* Test_BigFloat.cpp in Sources */,
 				F90702F82B9DAEB900383E4D /* Test_Byte.cpp in Sources */,
 				F9528B162BAC58A300222F45 /* Test_String.cpp in Sources */,
 				F90F2BE02D91749500CC89CA /* Test_BinaryFileReader.cpp in Sources */,

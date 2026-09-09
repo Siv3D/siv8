@@ -9,6 +9,7 @@
 //
 //-----------------------------------------------
 
+# include <cmath>
 # include <Siv3D/BigFloat.hpp>
 # include <Siv3D/Unicode.hpp>
 # include "BigFloatDetail.hpp"
@@ -51,6 +52,8 @@ namespace s3d
 	BigFloat::BigFloat(const BigFloat& other)
 		: pImpl{ std::make_unique<BigFloatDetail>(*other.pImpl) } {}
 
+	BigFloat::BigFloat(BigFloat&& other) noexcept = default;
+
 	BigFloat::BigFloat(const int64 i)
 		: pImpl{ std::make_unique<BigFloatDetail>(i) } {}
 
@@ -85,30 +88,60 @@ namespace s3d
 
 	BigFloat& BigFloat::operator =(const int64 i)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigFloatDetail>(i);
+			return *this;
+		}
+
 		pImpl->value.assign(i);
 		return *this;
 	}
 
 	BigFloat& BigFloat::operator =(const uint64 i)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigFloatDetail>(i);
+			return *this;
+		}
+
 		pImpl->value.assign(i);
 		return *this;
 	}
 
 	BigFloat& BigFloat::operator =(const long double f)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigFloatDetail>(f);
+			return *this;
+		}
+
 		pImpl->value.assign(f);
 		return *this;
 	}
 
 	BigFloat& BigFloat::operator =(const BigInt& i)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigFloatDetail>(i);
+			return *this;
+		}
+
 		pImpl->value.assign(i._detail().value);
 		return *this;
 	}
 
 	BigFloat& BigFloat::operator =(const BigFloat& other)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigFloatDetail>(*other.pImpl);
+			return *this;
+		}
+
 		pImpl->value = other.pImpl->value;
 		return *this;
 	}
@@ -121,14 +154,19 @@ namespace s3d
 
 	BigFloat& BigFloat::operator =(const std::string_view number)
 	{
+		if (not pImpl)
+		{
+			pImpl = std::make_unique<BigFloatDetail>(number);
+			return *this;
+		}
+
 		pImpl->value.assign(number);
 		return *this;
 	}
 
 	BigFloat& BigFloat::operator =(const StringView number)
 	{
-		pImpl->value.assign(Unicode::ToAscii(number));
-		return *this;
+		return (*this = Unicode::ToAscii(number));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -577,7 +615,7 @@ namespace s3d
 
 	void BigFloat::swap(BigFloat& other) noexcept
 	{
-		pImpl->value.swap(other.pImpl->value);
+		pImpl.swap(other.pImpl);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -667,42 +705,67 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	int32 BigFloat::compare(const int64 i) const noexcept
+	std::partial_ordering BigFloat::compare(const int64 i) const noexcept
 	{
-		return pImpl->value.compare(i);
+		if (isNaN())
+		{
+			return std::partial_ordering::unordered;
+		}
+
+		return (pImpl->value.compare(i) <=> 0);
 	}
 
-	int32 BigFloat::compare(const uint64 i) const noexcept
+	std::partial_ordering BigFloat::compare(const uint64 i) const noexcept
 	{
-		return pImpl->value.compare(i);
+		if (isNaN())
+		{
+			return std::partial_ordering::unordered;
+		}
+
+		return (pImpl->value.compare(i) <=> 0);
 	}
 
-	int32 BigFloat::compare(const long double f) const noexcept
+	std::partial_ordering BigFloat::compare(const long double f) const noexcept
 	{
-		return pImpl->value.compare(f);
+		if (isNaN() || std::isnan(f))
+		{
+			return std::partial_ordering::unordered;
+		}
+
+		return (pImpl->value.compare(f) <=> 0);
 	}
 
-	int32 BigFloat::compare(const BigInt& i) const
+	std::partial_ordering BigFloat::compare(const BigInt& i) const
 	{
+		if (isNaN())
+		{
+			return std::partial_ordering::unordered;
+		}
+
 		// コスト節約のため、先に符号で比較する
 		const int32 a_sign = pImpl->value.sign();
 		const int32 b_sign = i.sign();
 
 		if (a_sign < b_sign)
 		{
-			return -1;
+			return std::partial_ordering::less;
 		}
 		else if (a_sign > b_sign)
 		{
-			return 1;
+			return std::partial_ordering::greater;
 		}
 
-		return pImpl->value.compare(BigFloatDetail::value_type{ i._detail().value });
+		return (pImpl->value.compare(BigFloatDetail::value_type{ i._detail().value }) <=> 0);
 	}
 
-	int32 BigFloat::compare(const BigFloat& f) const noexcept
+	std::partial_ordering BigFloat::compare(const BigFloat& f) const noexcept
 	{
-		return pImpl->value.compare(f.pImpl->value);
+		if (isNaN() || f.isNaN())
+		{
+			return std::partial_ordering::unordered;
+		}
+
+		return (pImpl->value.compare(f.pImpl->value) <=> 0);
 	}
 
 	////////////////////////////////////////////////////////////////

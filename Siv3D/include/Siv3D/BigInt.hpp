@@ -11,6 +11,7 @@
 
 # pragma once
 # include <memory>
+# include <compare>
 # include "Common.hpp"
 # include "Concepts.hpp"
 # include "String.hpp"
@@ -28,6 +29,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 多倍長整数
+	/// @remark 組み込み浮動小数点数との比較は小数部分まで厳密に行い、NaN を比較不能として扱います。
+	/// @remark ムーブ元は、破棄、代入先としての使用、swap() が可能です。値を読む操作の前に再代入してください。
 	class BigInt
 	{
 	public:
@@ -45,7 +48,7 @@ namespace s3d
 		BigInt(const BigInt& other);
 
 		[[nodiscard]]
-		BigInt(BigInt&& other) noexcept = default;
+		BigInt(BigInt&& other) noexcept;
 
 		[[nodiscard]]
 		BigInt(Concept::SignedIntegral auto i);
@@ -154,6 +157,16 @@ namespace s3d
 
 		[[nodiscard]]
 		BigInt operator -(const BigInt& i) const;
+
+		/// @brief 整数から多倍長整数を引いた値を返します。
+		/// @param a 引かれる整数
+		/// @param b 引く多倍長整数
+		/// @return a - b
+		[[nodiscard]]
+		friend BigInt operator -(const Concept::Integral auto a, const BigInt& b)
+		{
+			return -(b - a);
+		}
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -582,7 +595,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		friend bool operator ==(const BigInt& a, const Concept::Arithmetic auto b) noexcept
+		friend bool operator ==(const BigInt& a, const Concept::Arithmetic auto b) noexcept(noexcept(a.compare(b)))
 		{
 			return (a.compare(b) == 0);
 		}
@@ -600,9 +613,16 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		friend auto operator <=>(const BigInt& a, const Concept::Arithmetic auto b) noexcept
+		friend auto operator <=>(const BigInt& a, const Concept::Arithmetic auto b) noexcept(noexcept(a.compare(b)))
 		{
-			return (a.compare(b) <=> 0);
+			if constexpr (Concept::FloatingPoint<decltype(b)>)
+			{
+				return a.compare(b);
+			}
+			else
+			{
+				return (a.compare(b) <=> 0);
+			}
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -668,8 +688,11 @@ namespace s3d
 
 		/// @brief 除算と剰余を計算します。
 		/// @param x 割る数
-		/// @param q 除算の結果
-		/// @param r 剰余の結果
+		/// @param q 0 方向に切り捨てた商
+		/// @param r 剰余。0 または被除数と同じ符号
+		/// @pre q と r は異なるオブジェクトであること。
+		/// @remark 入力と出力は同じオブジェクトを共有できます。
+		/// @throws std::overflow_error x が 0 の場合
 		void divmod(const BigInt& x, BigInt& q, BigInt& r) const;
 
 		////////////////////////////////////////////////////////////////
@@ -709,7 +732,12 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		BigInt& bitSet(uint32 index, bool value) noexcept;
+		/// @brief 指定したビットを設定します。
+		/// @param index ビット位置
+		/// @param value 設定する値
+		/// @return *this
+		/// @throws std::bad_alloc 領域の確保に失敗した場合
+		BigInt& bitSet(uint32 index, bool value);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -717,7 +745,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		BigInt& bitFlip(uint32 index) noexcept;
+		/// @brief 指定したビットを反転します。
+		/// @param index ビット位置
+		/// @return *this
+		/// @throws std::bad_alloc 領域の確保に失敗した場合
+		BigInt& bitFlip(uint32 index);
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -763,6 +795,8 @@ namespace s3d
 		[[nodiscard]]
 		int32 asInt32() const noexcept;
 
+		/// @brief uint32 に変換します。
+		/// @return 2^32 を法とする非負の剰余（例: -1 は最大値）
 		[[nodiscard]]
 		uint32 asUint32() const noexcept;
 
@@ -775,6 +809,8 @@ namespace s3d
 		[[nodiscard]]
 		int64 asInt64() const noexcept;
 
+		/// @brief uint64 に変換します。
+		/// @return 2^64 を法とする非負の剰余（例: -1 は最大値）
 		[[nodiscard]]
 		uint64 asUint64() const noexcept;
 
@@ -805,6 +841,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		/// @brief size_t に変換します。
+		/// @return 2^(sizeof(size_t) * CHAR_BIT) を法とする非負の剰余（例: -1 は最大値）
 		[[nodiscard]]
 		explicit operator size_t() const noexcept;
 
@@ -859,14 +897,23 @@ namespace s3d
 		[[nodiscard]]
 		int32 compare(uint64 i) const noexcept;
 
+		/// @brief 浮動小数点数と小数部分も含めて厳密に比較します。
+		/// @param f 比較する値
+		/// @return 大小関係。f が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(float f) const noexcept;
+		std::partial_ordering compare(float f) const;
 
+		/// @brief 浮動小数点数と小数部分も含めて厳密に比較します。
+		/// @param f 比較する値
+		/// @return 大小関係。f が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(double f) const noexcept;
+		std::partial_ordering compare(double f) const;
 
+		/// @brief 浮動小数点数と小数部分も含めて厳密に比較します。
+		/// @param f 比較する値
+		/// @return 大小関係。f が NaN の場合は unordered
 		[[nodiscard]]
-		int32 compare(long double f) const noexcept;
+		std::partial_ordering compare(long double f) const;
 
 		[[nodiscard]]
 		int32 compare(Concept::SignedIntegral auto i) const noexcept;

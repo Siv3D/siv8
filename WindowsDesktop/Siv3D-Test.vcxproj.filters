@@ -52,6 +52,12 @@
     <ClCompile Include="..\Test\Test_Utility.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_BigInt.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_BigFloat.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Byte.cpp">
       <Filter>Test</Filter>
     </ClCompile>
