@@ -25,9 +25,10 @@ class App {
         string mode = args.FirstOrDefault(a => a.StartsWith("--runner-fixture=")) ?? "";
         if (mode.EndsWith("child")) { Thread.Sleep(60000); return 0; }
         File.WriteAllLines("arguments.txt", args);
-        string output = args.Single(a => a.StartsWith("--out=")).Substring(6);
-        if (Path.IsPathRooted(output) || output.Any(c => c > 127)) return 90;
-        if (!args.Contains("--test-only") || !args.Contains("--reporters=console")) return 91;
+        string output = args.Single(a => a.StartsWith("console::out=")).Substring(13);
+        string xmlOutput = args.Single(a => a.StartsWith("xml::out=")).Substring(9);
+        if (new[] { output, xmlOutput }.Any(p => Path.IsPathRooted(p) || p.Any(c => c > 127))) return 90;
+        if (!args.Contains("--test-only") || args.Count(a => a == "--reporter") != 2) return 91;
         if (mode.EndsWith("hang")) {
             var child = Process.Start(new ProcessStartInfo(
                 Process.GetCurrentProcess().MainModule.FileName, "--runner-fixture=child") {
@@ -37,17 +38,19 @@ class App {
             Thread.Sleep(60000);
         }
         if (mode.EndsWith("missing")) return 0;
+        File.WriteAllText(output, "Catch2 console report fixture\n");
         if (mode.EndsWith("incomplete")) {
-            File.WriteAllText(output, "[doctest] doctest version is stub\n");
+            File.WriteAllText(xmlOutput, "<Catch2TestRun>");
             return 0;
         }
-        bool failed = mode.EndsWith("failure");
-        File.WriteAllText(output, "[doctest] test cases: " +
-            (mode.EndsWith("zero") ? "0 | 0 passed | 0 failed | 1 skipped\n" :
-             failed ? "1 | 0 passed | 1 failed | 0 skipped\n" :
-             "1 | 1 passed | 0 failed | 0 skipped\n") +
-            "[doctest] Status: " + (failed ? "FAILURE!\n" : "SUCCESS!\n"));
-        return failed || mode.EndsWith("bad-exit") ? 3 : 0;
+        bool failed = mode.EndsWith("failure") || mode.EndsWith("false-success");
+        string passed = mode.EndsWith("zero") || mode.EndsWith("skipped") || failed ? "0" : "1";
+        string totals = " successes=\"" + passed + "\" failures=\"" + (failed ? "1" : "0") +
+            "\" expectedFailures=\"0\" skips=\"" + (mode.EndsWith("skipped") ? "1" : "0") + "\"";
+        File.WriteAllText(xmlOutput, "<Catch2TestRun><TestCase><StdOut>fixture stdout \u65e5\u672c\u8a9e</StdOut>" +
+            "<StdErr>fixture stderr</StdErr></TestCase><OverallResults" + totals +
+            "/><OverallResultsCases" + totals + "/></Catch2TestRun>");
+        return mode.EndsWith("failure") || mode.EndsWith("bad-exit") ? 3 : 0;
     }
 }
 """
@@ -98,20 +101,27 @@ class RunnerTests(unittest.TestCase):
         return output
 
     def test_success_and_argument_boundaries(self):
-        self.run_case("-Configuration", "Debug", "-TestArguments", '--test-case=*spaces 日本語 "quoted"*')
+        output = self.run_case("-Configuration", "Debug", "-TestArguments", '--test-case=*spaces 日本語 "quoted"*')
         args = (self.app / "arguments.txt").read_text(encoding="utf-8-sig").splitlines()
         self.assertIn('--test-case=*spaces 日本語 "quoted"*', args)
-        self.assertTrue(any("Debug-" in arg for arg in args if arg.startswith("--out=")))
+        self.assertTrue(any("Debug-" in arg for arg in args if arg.startswith("console::out=")))
+        report_path = next(arg[len("console::out="):] for arg in args if arg.startswith("console::out="))
+        report = (self.app / report_path).read_text(encoding="utf-8")
+        for message in ("fixture stdout 日本語", "fixture stderr"):
+            self.assertIn(message, output)
+            self.assertIn(message, report)
 
     def test_incomplete_and_failed_runs(self):
         for mode, error in [("missing", "did not complete"), ("incomplete", "did not complete"),
-                            ("zero", "No test cases ran"), ("failure", "exit 3"), ("bad-exit", "exit 3")]:
+                            ("zero", "No test cases ran"), ("skipped", "No test cases ran"),
+                            ("false-success", "failed in the XML report"), ("failure", "exit 3"), ("bad-exit", "exit 3")]:
             with self.subTest(mode=mode):
                 self.run_case("-TestArguments", f"--runner-fixture={mode}", error=error)
         self.run_case()  # All failure paths must release the checkout lock.
 
     def test_reserved_options(self):
-        for argument in ("--out=elsewhere.txt", "-dt-r=xml", "--dt-quiet", "-m", "--count", "--ne=true", "--first=999999", "-dt-l=0"):
+        for argument in ("--out=elsewhere.txt", "--reporter=xml", "--colour-mode=ansi", "-rxml", "-srxml",
+                         "--list-tests", "--list-tags", "--help", "--libidentify", "--allow-running-no-tests", "--"):
             with self.subTest(argument=argument):
                 self.run_case("-TestArguments", argument, error="is reserved")
 

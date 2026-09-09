@@ -10,7 +10,7 @@ On Windows, use PowerShell 7, Python, and Visual Studio C++ tools. Run from the
 repository root:
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=*Mesh3D*', '--duration'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=*Mesh3D*', '--durations', 'yes'
 ./WindowsDesktop/run-tests.ps1
 python tools/check_test_projects.py --windows-only
 ```
@@ -18,17 +18,16 @@ python tools/check_test_projects.py --windows-only
 The [Windows runner](../../WindowsDesktop/run-tests.ps1) can be invoked from any
 working directory. It checks Visual Studio test registration, builds the x64
 solution (default `Release`), and launches the test application with `--test-only`.
-Success requires exit code zero, a successful doctest completion report, and at
-least one executed test. A filter that matches nothing is an error.
+Success requires exit code zero, a complete Catch2 XML report with no failures,
+and at least one executed, non-skipped test. A filter that matches nothing is an error.
 
 `-Configuration Debug` selects Debug; `-Jobs 4` controls build parallelism.
 `-SkipBuild` uses the existing application, which must already match the current
-sources and selected configuration. Pass each doctest execution argument as a
+sources and selected configuration. Pass each Catch2 execution argument as a
 separate element of `-TestArguments`. Report output, reporter selection, color,
-quiet/minimal output, exit-code suppression and query-only options are reserved
-by the runner, including their short and `dt-` aliases. `--first`/`--last` ranges
-are also rejected because doctest counts matching tests before applying the
-range; use test-case, test-suite or source-file filters instead. Use
+verbosity, query-only options and `--allow-running-no-tests` are reserved by the
+runner. Pass short options separately from their values (for example, `-d`,
+`yes`); combined short options and `--` are rejected. Use
 `Get-Help ./WindowsDesktop/run-tests.ps1 -Detailed` for script help.
 
 `-TimeoutSeconds 600` limits the test application's runtime, excluding the build;
@@ -37,8 +36,11 @@ launched application and its child processes. The runner holds a file lock
 throughout the build and test run, so a second runner in the same checkout fails
 immediately. This lock does not coordinate manually launched tests or IDE builds.
 
-Reports are retained in `WindowsDesktop/Intermediate/TestReports/` and can be
-removed when no longer needed. The empty `runner.lock` file may remain after a
+Console (`.txt`) and XML reports are retained in
+`WindowsDesktop/Intermediate/TestReports/` and can be
+removed when no longer needed. After reading a complete XML report from a
+zero-exit run, the runner appends captured test stdout/stderr to the console
+report and prints it, including benchmark tables. The empty `runner.lock` file may remain after a
 run; its existence does not indicate a held lock. The early-exit block in
 `WindowsDesktop/Main.cpp` is required by this workflow. Windows registration
 validation checks the Visual Studio project and its filters; it does not
@@ -60,7 +62,43 @@ On macOS, run from the repository root, outside the sandbox:
 
 The runner checks test registration, then builds and launches the application.
 `CONFIGURATION` selects the build configuration (default `Debug`); other arguments
-are passed to doctest.
+are passed to the shared Catch2 runner. `--test-only` and `--test-verbose` are
+application options; the latter enables the normal engine logs.
+On macOS, the shared runner also consumes Xcode's automatically supplied
+`-NSDocumentRevisionsDebugMode YES` (or `NO`) preference before parsing test
+options. Running from Xcode with no user arguments executes the default suite.
+
+`--test-case=<pattern>` (or `--test-case <pattern>`) remains a convenience alias
+for Catch2's positional test specification. Empty filters are rejected. Use
+Catch2 syntax for other options: `--durations yes` for timings and `--list-tests`
+when launching the macOS runner or the executable to list cases. Windows' runner
+reserves listing options because it requires actual test execution. Unknown
+options fail instead of being ignored.
+
+Filter syntax follows [Catch2](https://github.com/catchorg/Catch2/blob/v3.16.0/docs/command-line.md):
+`Array*`, `*Mesh3D*`, exact names, and tags are supported. This alias does not
+emulate the former framework's full filter syntax. The `[.benchmark]` tag hides
+the opt-in TextFileReader benchmark from the default suite. An explicit matching
+name, wildcard, or tag runs it; there is no `--no-skip` option. Use
+`~[.benchmark]` alongside a broad positive filter to exclude it.
+
+The vendored [Catch2 sources](../../Test/ThirdParty/Catch2/catch_amalgamated.hpp)
+and [implementation](../../Test/ThirdParty/Catch2/catch_amalgamated.cpp) are the
+unmodified amalgamated distribution from the pinned
+[v3.16.0 release](https://github.com/catchorg/Catch2/releases/tag/v3.16.0), under the
+[Boost Software License](../../Test/ThirdParty/Catch2/LICENSE.txt). Both test
+projects compile the implementation directly with `CATCH_AMALGAMATED_CUSTOM_MAIN`;
+`RunTest()` owns the session. Updating Catch2 requires replacing both distribution
+files together and validating both platform projects. The Windows test target
+uses its normal Release optimization settings, including LTCG. The external
+implementation opts out of the application's PCH and forced includes.
+
+[Siv3DTestFramework.hpp](../../Test/Siv3DTestFramework.hpp) supplies the shared
+framework include, argument adapter and `Test::Approx`. The comparison helper
+uses `abs(actual - expected) < epsilon * (scale + max(abs(actual), abs(expected)))`,
+with default `scale = 1` and `epsilon = 100 * numeric_limits<float>::epsilon()`.
+This preserves existing numerical tolerances; it differs from `Catch::Approx`.
+
 The project validator checks syntax and registration of `Test/Test_*.cpp` in
 Xcode's `Siv3D-Test` Sources, Visual Studio's test project, and its filters.
 Engine sources are excluded; platform-specific engine membership is intentional.

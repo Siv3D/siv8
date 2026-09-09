@@ -40,10 +40,10 @@ TEST_CASE("Mesh3DAddResult ranges")
 
 	const Mesh3DAddResult boxResult = builder.addBox(Vec3{ 2.0, 4.0, 6.0 });
 	REQUIRE(boxResult);
-	CHECK_EQ(boxResult->vertexOffset, size_t{ 0 });
-	CHECK_EQ(boxResult->vertexCount, size_t{ 24 });
-	CHECK_EQ(boxResult->triangleOffset, size_t{ 0 });
-	CHECK_EQ(boxResult->triangleCount, size_t{ 12 });
+	CHECK((boxResult->vertexOffset) == (size_t{ 0 }));
+	CHECK((boxResult->vertexCount) == (size_t{ 24 }));
+	CHECK((boxResult->triangleOffset) == (size_t{ 0 }));
+	CHECK((boxResult->triangleCount) == (size_t{ 12 }));
 	CHECK_FALSE(boxResult->isEmpty());
 	CheckRangeIndices(builder.getMesh(), *boxResult);
 
@@ -52,18 +52,18 @@ TEST_CASE("Mesh3DAddResult ranges")
 		path, 0.25, { Vec3{ 1.0, 2.0, 3.0 }, Quaternion::RotateX(30_degF) },
 		TubeOptions{ .sides = 8 });
 	REQUIRE(tubeResult);
-	CHECK_EQ(tubeResult->vertexOffset, boxResult->vertexCount);
-	CHECK_EQ(tubeResult->vertexCount, size_t{ 36 });
-	CHECK_EQ(tubeResult->triangleOffset, boxResult->triangleCount);
-	CHECK_EQ(tubeResult->triangleCount, size_t{ 32 });
+	CHECK((tubeResult->vertexOffset) == (boxResult->vertexCount));
+	CHECK((tubeResult->vertexCount) == (size_t{ 36 }));
+	CHECK((tubeResult->triangleOffset) == (boxResult->triangleCount));
+	CHECK((tubeResult->triangleCount) == (size_t{ 32 }));
 	CHECK_FALSE(tubeResult->isEmpty());
 	CheckRangeIndices(builder.getMesh(), *tubeResult);
 
 	const Mesh3DAddResult emptyResult = builder.addBox(
 		Vec3{ 1.0, 1.0, 1.0 }, BoxFace::None_);
 	REQUIRE(emptyResult);
-	CHECK_EQ(emptyResult->vertexOffset, builder.getMesh().vertexCount());
-	CHECK_EQ(emptyResult->triangleOffset, builder.getMesh().triangleCount());
+	CHECK((emptyResult->vertexOffset) == (builder.getMesh().vertexCount()));
+	CHECK((emptyResult->triangleOffset) == (builder.getMesh().triangleCount()));
 	CHECK(emptyResult->isEmpty());
 }
 
@@ -92,12 +92,10 @@ TEST_CASE("Mesh3DAddResult covers every builder shape family")
 		const size_t triangleOffset = builder.getMesh().triangleCount();
 		const Mesh3DAddResult result = add();
 		REQUIRE(result);
-		CHECK_EQ(result->vertexOffset, vertexOffset);
-		CHECK_EQ(result->triangleOffset, triangleOffset);
-		CHECK_EQ(result->vertexCount,
-			(builder.getMesh().vertexCount() - vertexOffset));
-		CHECK_EQ(result->triangleCount,
-			(builder.getMesh().triangleCount() - triangleOffset));
+		CHECK((result->vertexOffset) == (vertexOffset));
+		CHECK((result->triangleOffset) == (triangleOffset));
+		CHECK((result->vertexCount) == ((builder.getMesh().vertexCount() - vertexOffset)));
+		CHECK((result->triangleCount) == ((builder.getMesh().triangleCount() - triangleOffset)));
 		CHECK_FALSE(result->isEmpty());
 		CheckRangeIndices(builder.getMesh(), *result);
 	};
@@ -149,8 +147,8 @@ TEST_CASE("Mesh3DAddResult covers every builder shape family")
 		Vec3::One(), 0.1, BoxFace::All);
 	REQUIRE(emptyResult);
 	CHECK(emptyResult->isEmpty());
-	CHECK_EQ(emptyResult->vertexOffset, vertexCount);
-	CHECK_EQ(emptyResult->triangleOffset, triangleCount);
+	CHECK((emptyResult->vertexOffset) == (vertexCount));
+	CHECK((emptyResult->triangleOffset) == (triangleCount));
 }
 
 TEST_CASE("Mesh3DAddResult errors and atomicity")
@@ -193,7 +191,7 @@ TEST_CASE("Mesh3DAddResult errors and atomicity")
 	const auto checkFailure = [&](const Mesh3DAddResult& result, const Mesh3DErrorCode code)
 	{
 		REQUIRE_FALSE(result);
-		CHECK_EQ(result.error().code, code);
+		CHECK((result.error().code) == (code));
 		CHECK_FALSE(result.error().message.isEmpty());
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	};
@@ -395,8 +393,8 @@ TEST_CASE("Mesh3DBuilder::addMesh classifies geometry errors consistently with A
 		REQUIRE_FALSE(plain);
 		REQUIRE_FALSE(placed);
 		REQUIRE_FALSE(registered);
-		CHECK_EQ(plain.error().code, Mesh3DErrorCode::InvalidGeometry);
-		CHECK_EQ(placed.error().code, registered.error().code);
+		CHECK((plain.error().code) == (Mesh3DErrorCode::InvalidGeometry));
+		CHECK((placed.error().code) == (registered.error().code));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), original);
 	}
 	REQUIRE(builder.addMesh(original));

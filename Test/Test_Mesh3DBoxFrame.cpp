@@ -45,8 +45,8 @@ TEST_CASE("Mesh3D::BoxFrame geometry")
 	constexpr Vec3 BeamSize{ 0.25, 0.5, 0.75 };
 	const Mesh3D mesh = Mesh3D::BoxFrame(Size, BeamSize);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 192 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 96 });
+	CHECK((mesh.vertexCount()) == (size_t{ 192 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 96 }));
 	CHECK(mesh.vertexCount() < (12 * Mesh3D::Box().vertexCount()));
 	CHECK(mesh.triangleCount() < (12 * Mesh3D::Box().triangleCount()));
 	CheckMeshGeometry(mesh);
@@ -134,8 +134,8 @@ TEST_CASE("Mesh3DBuilder::addBoxFrame transforms and storage")
 	const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 	REQUIRE(builder.addBoxFrame(Size, BeamSize, { offset, rotation }));
 	REQUIRE(builder.addBoxFrame(Size, BeamSize, BoxUVMapping{}, transform));
-	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-	CHECK_EQ(builder.getMesh().indices.data(), indexData);
+	CHECK((builder.getMesh().vertices.data()) == (vertexData));
+	CHECK((builder.getMesh().indices.data()) == (indexData));
 
 	Mesh3D expected = Mesh3D::BoxFrame(Size, BeamSize);
 	REQUIRE(expected.append(

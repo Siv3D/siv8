@@ -50,31 +50,31 @@ TEST_CASE("Mesh3D::Extrude rectangle")
 	} };
 	const Mesh3D mesh = Mesh3D::Extrude(polygon, 6.0);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CHECK((mesh.vertexCount()) == (size_t{ 24 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 	CheckMeshGeometry(mesh);
 
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -2.0f, 3.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[0].normal, Float3::UnitY());
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[2].pos, Float3{ 2.0f, 3.0f, -3.0f });
-	CHECK_EQ(mesh.vertices[2].tex, Float2{ 1.0f, 1.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ -2.0f, 3.0f, 1.0f }));
+	CHECK((mesh.vertices[0].normal) == (Float3::UnitY()));
+	CHECK((mesh.vertices[0].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[2].pos) == (Float3{ 2.0f, 3.0f, -3.0f }));
+	CHECK((mesh.vertices[2].tex) == (Float2{ 1.0f, 1.0f }));
 
-	CHECK_EQ(mesh.vertices[4].pos, Float3{ -2.0f, -3.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[4].normal, -Float3::UnitY());
-	CHECK_EQ(mesh.vertices[4].tex, Float2{ 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[6].tex, Float2{ 1.0f, 0.0f });
+	CHECK((mesh.vertices[4].pos) == (Float3{ -2.0f, -3.0f, 1.0f }));
+	CHECK((mesh.vertices[4].normal) == (-Float3::UnitY()));
+	CHECK((mesh.vertices[4].tex) == (Float2{ 0.0f, 1.0f }));
+	CHECK((mesh.vertices[6].tex) == (Float2{ 1.0f, 0.0f }));
 
 	constexpr size_t SideVertexBase = 8;
-	CHECK_EQ(mesh.vertices[SideVertexBase + 0].normal, Float3::UnitZ());
-	CHECK_EQ(mesh.vertices[SideVertexBase + 0].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[SideVertexBase + 1].tex, Float2{ 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[SideVertexBase + 2].tex, Float2{ 0.25f, 0.0f });
-	CHECK_EQ(mesh.vertices[SideVertexBase + 0].tangent, Float4{ 1.0f, 0.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[SideVertexBase + 0].bitangent(), -Float3::UnitY());
-	CHECK_EQ(mesh.vertices[SideVertexBase + 4].normal, Float3::UnitX());
-	CHECK_EQ(mesh.vertices[SideVertexBase + 8].normal, -Float3::UnitZ());
-	CHECK_EQ(mesh.vertices[SideVertexBase + 12].normal, -Float3::UnitX());
+	CHECK((mesh.vertices[SideVertexBase + 0].normal) == (Float3::UnitZ()));
+	CHECK((mesh.vertices[SideVertexBase + 0].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[SideVertexBase + 1].tex) == (Float2{ 0.0f, 1.0f }));
+	CHECK((mesh.vertices[SideVertexBase + 2].tex) == (Float2{ 0.25f, 0.0f }));
+	CHECK((mesh.vertices[SideVertexBase + 0].tangent) == (Float4{ 1.0f, 0.0f, 0.0f, -1.0f }));
+	CHECK((mesh.vertices[SideVertexBase + 0].bitangent()) == (-Float3::UnitY()));
+	CHECK((mesh.vertices[SideVertexBase + 4].normal) == (Float3::UnitX()));
+	CHECK((mesh.vertices[SideVertexBase + 8].normal) == (-Float3::UnitZ()));
+	CHECK((mesh.vertices[SideVertexBase + 12].normal) == (-Float3::UnitX()));
 
 	for (const Vertex3D& vertex : mesh.vertices)
 	{
@@ -92,8 +92,8 @@ TEST_CASE("Mesh3D::Extrude concave polygon")
 	} };
 	const Mesh3D mesh = Mesh3D::Extrude(polygon, 2.0);
 
-	CHECK_EQ(mesh.vertexCount(), ((polygon.vertices().size() * 2) + 24));
-	CHECK_EQ(mesh.triangleCount(), ((polygon.indices().size() * 2) + 12));
+	CHECK((mesh.vertexCount()) == (((polygon.vertices().size() * 2) + 24)));
+	CHECK((mesh.triangleCount()) == (((polygon.indices().size() * 2) + 12)));
 	CheckMeshGeometry(mesh);
 }
 
@@ -109,23 +109,23 @@ TEST_CASE("Mesh3D::Extrude polygon with a hole")
 	};
 	const Mesh3D mesh = Mesh3D::Extrude(polygon, 4.0);
 
-	CHECK_EQ(mesh.vertexCount(), ((polygon.vertices().size() * 2) + 32));
-	CHECK_EQ(mesh.triangleCount(), ((polygon.indices().size() * 2) + 16));
+	CHECK((mesh.vertexCount()) == (((polygon.vertices().size() * 2) + 32)));
+	CHECK((mesh.triangleCount()) == (((polygon.indices().size() * 2) + 16)));
 	CheckMeshGeometry(mesh);
 
 	const size_t innerSideVertexBase = ((polygon.vertices().size() * 2) + 16);
-	CHECK_EQ(mesh.vertices[innerSideVertexBase].pos, Float3{ -1.0f, 2.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[innerSideVertexBase].normal, Float3::UnitX());
-	CHECK_EQ(mesh.vertices[innerSideVertexBase].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[innerSideVertexBase + 2].tex, Float2{ 0.25f, 0.0f });
-	CHECK_EQ(mesh.vertices[innerSideVertexBase + 4].normal, Float3::UnitZ());
-	CHECK_EQ(mesh.vertices[innerSideVertexBase + 8].normal, -Float3::UnitX());
-	CHECK_EQ(mesh.vertices[innerSideVertexBase + 12].normal, -Float3::UnitZ());
+	CHECK((mesh.vertices[innerSideVertexBase].pos) == (Float3{ -1.0f, 2.0f, 1.0f }));
+	CHECK((mesh.vertices[innerSideVertexBase].normal) == (Float3::UnitX()));
+	CHECK((mesh.vertices[innerSideVertexBase].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[innerSideVertexBase + 2].tex) == (Float2{ 0.25f, 0.0f }));
+	CHECK((mesh.vertices[innerSideVertexBase + 4].normal) == (Float3::UnitZ()));
+	CHECK((mesh.vertices[innerSideVertexBase + 8].normal) == (-Float3::UnitX()));
+	CHECK((mesh.vertices[innerSideVertexBase + 12].normal) == (-Float3::UnitZ()));
 
 	const Mesh3D smoothMesh = Mesh3D::Extrude(polygon, 4.0, ExtrudeOptions{ .smoothingAngle = Math::HalfPi });
 	CheckMeshGeometry(smoothMesh);
-	CHECK(smoothMesh.vertices[innerSideVertexBase].normal.x == doctest::Approx(Math::InvSqrt2));
-	CHECK(smoothMesh.vertices[innerSideVertexBase].normal.z == doctest::Approx(-Math::InvSqrt2));
+	CHECK(smoothMesh.vertices[innerSideVertexBase].normal.x == Test::Approx(Math::InvSqrt2));
+	CHECK(smoothMesh.vertices[innerSideVertexBase].normal.z == Test::Approx(-Math::InvSqrt2));
 }
 
 TEST_CASE("Mesh3D::Extrude polygon produced by a shape")
@@ -133,8 +133,8 @@ TEST_CASE("Mesh3D::Extrude polygon produced by a shape")
 	const Polygon polygon = Circle{ 2.0 }.asPolygon(PointsPerCircle{ 12 });
 	const Mesh3D mesh = Mesh3D::Extrude(polygon, 3.0);
 
-	CHECK_EQ(mesh.vertexCount(), ((polygon.vertices().size() * 2) + (polygon.outer().size() * 4)));
-	CHECK_EQ(mesh.triangleCount(), ((polygon.indices().size() * 2) + (polygon.outer().size() * 2)));
+	CHECK((mesh.vertexCount()) == (((polygon.vertices().size() * 2) + (polygon.outer().size() * 4))));
+	CHECK((mesh.triangleCount()) == (((polygon.indices().size() * 2) + (polygon.outer().size() * 2))));
 	CheckMeshGeometry(mesh);
 }
 
@@ -149,25 +149,25 @@ TEST_CASE("Mesh3D::Extrude side normal smoothing")
 	const Mesh3D smoothCorners = Mesh3D::Extrude(rectangle, 2.0, ExtrudeOptions{ .smoothingAngle = Math::HalfPi });
 	const size_t sideVertexBase = (rectangle.vertices().size() * 2);
 
-	REQUIRE_EQ(zeroAngle.vertexCount(), hard.vertexCount());
-	REQUIRE_EQ(zeroAngle.triangleCount(), hard.triangleCount());
+	REQUIRE((zeroAngle.vertexCount()) == (hard.vertexCount()));
+	REQUIRE((zeroAngle.triangleCount()) == (hard.triangleCount()));
 	for (size_t i = 0; i < hard.vertexCount(); ++i)
 	{
-		CHECK_EQ(zeroAngle.vertices[i].normal, hard.vertices[i].normal);
-		CHECK_EQ(zeroAngle.vertices[i].tangent, hard.vertices[i].tangent);
+		CHECK((zeroAngle.vertices[i].normal) == (hard.vertices[i].normal));
+		CHECK((zeroAngle.vertices[i].tangent) == (hard.vertices[i].tangent));
 	}
 
 	CheckMeshGeometry(belowCornerAngle);
-	CHECK_EQ(belowCornerAngle.vertices[sideVertexBase].normal, Float3::UnitZ());
-	CHECK_EQ(belowCornerAngle.vertices[sideVertexBase + 2].normal, Float3::UnitZ());
+	CHECK((belowCornerAngle.vertices[sideVertexBase].normal) == (Float3::UnitZ()));
+	CHECK((belowCornerAngle.vertices[sideVertexBase + 2].normal) == (Float3::UnitZ()));
 
 	CheckMeshGeometry(smoothCorners);
 	const Float3 startNormal = smoothCorners.vertices[sideVertexBase].normal;
 	const Float3 endNormal = smoothCorners.vertices[sideVertexBase + 2].normal;
-	CHECK(startNormal.x == doctest::Approx(-Math::InvSqrt2));
-	CHECK(startNormal.z == doctest::Approx(Math::InvSqrt2));
-	CHECK(endNormal.x == doctest::Approx(Math::InvSqrt2));
-	CHECK(endNormal.z == doctest::Approx(Math::InvSqrt2));
+	CHECK(startNormal.x == Test::Approx(-Math::InvSqrt2));
+	CHECK(startNormal.z == Test::Approx(Math::InvSqrt2));
+	CHECK(endNormal.x == Test::Approx(Math::InvSqrt2));
+	CHECK(endNormal.z == Test::Approx(Math::InvSqrt2));
 
 	const Polygon circle = Circle{ 2.0 }.asPolygon(PointsPerCircle{ 12 });
 	const Mesh3D smoothCircle = Mesh3D::Extrude(circle, 2.0, ExtrudeOptions{ .smoothingAngle = Math::QuarterPi });
@@ -198,15 +198,15 @@ TEST_CASE("Mesh3D::Extrude large finite coordinates")
 	};
 	const Mesh3D mesh = Mesh3D::Extrude(polygon, 1.0);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CHECK((mesh.vertexCount()) == (size_t{ 24 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 	REQUIRE(mesh.validate());
 	for (const Vertex3D& vertex : mesh.vertices)
 	{
 		CheckVertexFrame(vertex);
 	}
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[2].tex, Float2{ 1.0f, 1.0f });
+	CHECK((mesh.vertices[0].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[2].tex) == (Float2{ 1.0f, 1.0f }));
 }
 
 TEST_CASE("Mesh3D::Extrude invalid arguments")
@@ -262,7 +262,7 @@ TEST_CASE("Mesh3DBuilder::addExtrude")
 	constexpr double Height = 4.0;
 	constexpr double SmoothingAngle = Math::HalfPi;
 
-	SUBCASE("Direct append reuses reserved storage")
+	SECTION("Direct append reuses reserved storage")
 	{
 		const Mesh3D source = Mesh3D::Extrude(polygon, Height);
 		Mesh3DBuilder builder;
@@ -273,15 +273,15 @@ TEST_CASE("Mesh3DBuilder::addExtrude")
 
 		const Mat4x4 transform = Mat4x4::Translate(Float3{ 3.0f, 4.0f, 5.0f });
 		REQUIRE(builder.addExtrude(polygon, Height, transform));
-		CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-		CHECK_EQ(builder.getMesh().indices.data(), indexData);
+		CHECK((builder.getMesh().vertices.data()) == (vertexData));
+		CHECK((builder.getMesh().indices.data()) == (indexData));
 
 		Mesh3D expected = source;
 		REQUIRE(expected.append(source, transform));
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Smoothing and transform overloads")
+	SECTION("Smoothing and transform overloads")
 	{
 		const Vec3 offset{ 3.0, 4.0, 5.0 };
 		const Quaternion rotation = Quaternion::RotateY(Math::QuarterPiF);
@@ -312,7 +312,7 @@ TEST_CASE("Mesh3DBuilder::addExtrude")
 		Mesh3DTest::CheckMeshDataEqual(builder.getMesh(), expected);
 	}
 
-	SUBCASE("Failure leaves existing content unchanged")
+	SECTION("Failure leaves existing content unchanged")
 	{
 		Mesh3DBuilder builder;
 		REQUIRE(builder.addBox());

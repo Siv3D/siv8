@@ -1637,9 +1637,9 @@ namespace
 	}
 }
 
-// Opt in with --no-skip --test-case=TextFileReader.benchmark.UTF8.
+// Opt in with --test-case=TextFileReader.benchmark.UTF8.
 // Fixture creation and complete content checks are outside the timed regions.
-TEST_CASE("TextFileReader.benchmark.UTF8" * doctest::skip())
+TEST_CASE("TextFileReader.benchmark.UTF8", "[.benchmark]")
 {
 	using ankerl::nanobench::Bench;
 	using ankerl::nanobench::doNotOptimizeAway;
@@ -1858,7 +1858,7 @@ TEST_CASE("TextFileReader.benchmark.UTF8" * doctest::skip())
 			}
 			// CSV includes seconds per complete workload, not rounded ns/byte.
 			ankerl::nanobench::render(ankerl::nanobench::templates::csv(), bench, report);
-			MESSAGE(report.str());
+			Catch::cout() << report.str() << std::flush;
 		}
 	}
 }

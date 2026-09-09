@@ -10,7 +10,6 @@ Name | Version
 [cpu_features](https://github.com/google/cpu_features) | v0.11.0
 [DirectXMath](https://github.com/microsoft/DirectXMath) | June 2026
 [DirectXMesh](https://github.com/microsoft/directxmesh) | May 7, 2026
-[doctest](https://github.com/doctest/doctest) | v2.5.3
 [double-conversion](https://github.com/google/double-conversion) | v3.4.0
 [dr_mp3](https://github.com/mackron/dr_libs) | v0.7.4
 [Easing Equations](http://robertpenner.com/easing/) | 
@@ -71,3 +70,11 @@ Name | Version
 [xxHash](https://github.com/Cyan4973/xxHash) | v0.8.2
 [zlib](https://www.zlib.net/) | 1.3.2
 [Zstandard](https://github.com/facebook/zstd) | v1.5.7
+
+## Test dependencies
+
+These dependencies are used by the test executable only.
+
+Name | Version | License
+--- | --- | ---
+[Catch2](https://github.com/catchorg/Catch2/releases/tag/v3.16.0) | v3.16.0 | [Boost Software License 1.0](Test/ThirdParty/Catch2/LICENSE.txt)

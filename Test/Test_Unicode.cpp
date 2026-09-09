@@ -25,16 +25,16 @@ namespace
 		const auto* storage = dst.data();
 
 		write(input, dst);
-		CHECK_EQ(dst, expected);
+		CHECK((dst) == (expected));
 		CHECK(dst.data() == storage);
-		CHECK_EQ(make(input), expected);
+		CHECK((make(input)) == (expected));
 
 		write(View{}, dst);
 		CHECK(dst.empty());
 		CHECK(dst.data() == storage);
 
 		write(input, dst);
-		CHECK_EQ(dst, expected);
+		CHECK((dst) == (expected));
 		CHECK(dst.data() == storage);
 	}
 
@@ -151,11 +151,11 @@ TEST_CASE("Unicode.Destination.UTF32SelfReference")
 			String dst = original;
 			const String expected = original.substr(offset, count);
 			Unicode::FromUTF32(std::u32string_view{ dst.data() + offset, count }, dst);
-			CHECK_EQ(dst, expected);
+			CHECK((dst) == (expected));
 
 			std::u32string dst32(original.begin(), original.end());
 			Unicode::ToUTF32(StringView{ dst32.data() + offset, count }, dst32);
-			CHECK_EQ(dst32, std::u32string(expected.begin(), expected.end()));
+			CHECK((dst32) == (std::u32string(expected.begin(), expected.end())));
 		}
 	}
 }
@@ -181,8 +181,8 @@ TEST_CASE("Unicode.FromAscii.RoundTrip")
 
 			const std::string_view input{ (storage.data() + offset), length };
 			const auto result = Unicode::FromAscii(input);
-			CHECK_EQ(result, expected);
-			CHECK_EQ(Unicode::ToAscii(result), input);
+			CHECK((result) == (expected));
+			CHECK((Unicode::ToAscii(result)) == (input));
 		}
 	}
 }
@@ -222,17 +222,17 @@ TEST_CASE("Unicode.Wstring.RoundTrip")
 	const String expected{ text, (std::size(text) - 1) };
 	const std::wstring wide{ wideText, (std::size(wideText) - 1) };
 
-	CHECK_EQ(Unicode::FromWstring(wide), expected);
-	CHECK_EQ(Unicode::ToWstring(expected), wide);
-	CHECK_EQ(Unicode::FromWstring(Unicode::ToWstring(expected)), expected);
+	CHECK((Unicode::FromWstring(wide)) == (expected));
+	CHECK((Unicode::ToWstring(expected)) == (wide));
+	CHECK((Unicode::FromWstring(Unicode::ToWstring(expected))) == (expected));
 
 	for (const size_t length : { 1, 4, 7, 8, 15, 16, 17, 31, 32, 33, 63, 64, 65, 127, 128, 129, 256, 4096 })
 	{
 		CAPTURE(length);
 		const String s(length, U'あ');
 		const std::wstring w(length, L'あ');
-		CHECK_EQ(Unicode::FromWstring(w), s);
-		CHECK_EQ(Unicode::ToWstring(s), w);
+		CHECK((Unicode::FromWstring(w)) == (s));
+		CHECK((Unicode::ToWstring(s)) == (w));
 	}
 }
 
@@ -303,38 +303,38 @@ TEST_CASE("Unicode.Wstring.AllScalars")
 	}
 
 	const std::wstring wide = Unicode::ToWstring(s);
-	CHECK_EQ(Unicode::FromWstring(wide), s);
+	CHECK((Unicode::FromWstring(wide)) == (s));
 }
 
 TEST_CASE("Unicode.ValidateAscii")
 {
 	{
 		const std::string s = "abcdef";
-		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), true);
+		CHECK((Unicode::ValidateAscii(s).has_value()) == (true));
 	}
 
 	{
 		const std::string s = "abcあdef";
-		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 3u);
+		CHECK((Unicode::ValidateAscii(s).has_value()) == (false));
+		CHECK((Unicode::ValidateAscii(s).error()) == (3u));
 	}
 
 	{
 		std::string s = "\x80" "abcdef";
-		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 0u);
+		CHECK((Unicode::ValidateAscii(s).has_value()) == (false));
+		CHECK((Unicode::ValidateAscii(s).error()) == (0u));
 	}
 
 	{
 		std::string s = "abc" "\x80" "def";
-		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 3u);
+		CHECK((Unicode::ValidateAscii(s).has_value()) == (false));
+		CHECK((Unicode::ValidateAscii(s).error()) == (3u));
 	}
 
 	{
 		const std::string s = "abcdef\x80";
-		CHECK_EQ(Unicode::ValidateAscii(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateAscii(s).error(), 6u);
+		CHECK((Unicode::ValidateAscii(s).has_value()) == (false));
+		CHECK((Unicode::ValidateAscii(s).error()) == (6u));
 	}
 
 }
@@ -343,34 +343,34 @@ TEST_CASE("Unicode.ValidateUTF8")
 {
 	{
 		const std::string s = "abcdef";
-		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), true);
+		CHECK((Unicode::ValidateUTF8(s).has_value()) == (true));
 	}
 
 	{
 		const std::string s = "abcあdef";
-		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), true);
+		CHECK((Unicode::ValidateUTF8(s).has_value()) == (true));
 	}
 
 	{
 		std::string s = "\x80" "abcdef";
-		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 0u);
+		CHECK((Unicode::ValidateUTF8(s).has_value()) == (false));
+		CHECK((Unicode::ValidateUTF8(s).error()) == (0u));
 	}
 
 	{
 		std::string s = "abc" "\x80" "def";
-		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 3u);
+		CHECK((Unicode::ValidateUTF8(s).has_value()) == (false));
+		CHECK((Unicode::ValidateUTF8(s).error()) == (3u));
 	}
 
 	{
 		const std::string s = "abcあdef\x80";
-		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), false);
-		CHECK_EQ(Unicode::ValidateUTF8(s).error(), 9u);
+		CHECK((Unicode::ValidateUTF8(s).has_value()) == (false));
+		CHECK((Unicode::ValidateUTF8(s).error()) == (9u));
 	}
 
 	{
 		const std::string s = "あいうえお";
-		CHECK_EQ(Unicode::ValidateUTF8(s).has_value(), true);
+		CHECK((Unicode::ValidateUTF8(s).has_value()) == (true));
 	}
 }

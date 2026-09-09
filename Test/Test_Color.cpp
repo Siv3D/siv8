@@ -117,7 +117,7 @@ TEST_CASE("Color.grayscale")
 	static_assert(Color{ 0, 255, 0 }.grayscale8() == 149);
 	static_assert(Color{ 0, 0, 255 }.grayscale8() == 29);
 
-	CHECK(Color{ 12, 34, 56 }.grayscale() == doctest::Approx(29930.0 / 255000.0));
+	CHECK(Color{ 12, 34, 56 }.grayscale() == Test::Approx(29930.0 / 255000.0));
 }
 
 TEST_CASE("Color.min/max component")
@@ -154,10 +154,10 @@ TEST_CASE("Color.color conversion")
 	const Color color{ 255, 0, 0, 128 };
 
 	const HSV hsv = color.toHSV();
-	CHECK(hsv.h == doctest::Approx(0.0));
-	CHECK(hsv.s == doctest::Approx(1.0));
-	CHECK(hsv.v == doctest::Approx(1.0));
-	CHECK(hsv.a == doctest::Approx(128.0 / 255.0));
+	CHECK(hsv.h == Test::Approx(0.0));
+	CHECK(hsv.s == Test::Approx(1.0));
+	CHECK(hsv.v == Test::Approx(1.0));
+	CHECK(hsv.a == Test::Approx(128.0 / 255.0));
 
 	CHECK(color.hueShifted(120.0) == Color{ 0, 255, 0, 128 });
 	CHECK(hsv.hueShifted(120.0) == HSV{ 120.0, 1.0, 1.0, (128.0 / 255.0) });
@@ -169,16 +169,16 @@ TEST_CASE("Color.color conversion")
 	CHECK(roundTrip == Color{ 0x12, 0x34, 0x56, 0x78 });
 
 	const ColorF linearRed = HSV{ 0.0, 1.0, 1.0, 0.5 }.srgbToLinear();
-	CHECK(linearRed.r == doctest::Approx(1.0));
-	CHECK(linearRed.g == doctest::Approx(0.0));
-	CHECK(linearRed.b == doctest::Approx(0.0));
-	CHECK(linearRed.a == doctest::Approx(0.5));
+	CHECK(linearRed.r == Test::Approx(1.0));
+	CHECK(linearRed.g == Test::Approx(0.0));
+	CHECK(linearRed.b == Test::Approx(0.0));
+	CHECK(linearRed.a == Test::Approx(0.5));
 
 	const ColorF srgbRed = HSV{ 0.0, 1.0, 1.0, 0.5 }.linearToSRGB();
-	CHECK(srgbRed.r == doctest::Approx(1.0));
-	CHECK(srgbRed.g == doctest::Approx(0.0));
-	CHECK(srgbRed.b == doctest::Approx(0.0));
-	CHECK(srgbRed.a == doctest::Approx(0.5));
+	CHECK(srgbRed.r == Test::Approx(1.0));
+	CHECK(srgbRed.g == Test::Approx(0.0));
+	CHECK(srgbRed.b == Test::Approx(0.0));
+	CHECK(srgbRed.a == Test::Approx(0.5));
 }
 
 TEST_CASE("Color.toHexRGB/toHexRGBA")

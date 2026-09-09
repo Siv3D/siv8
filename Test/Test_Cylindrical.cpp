@@ -56,9 +56,9 @@ TEST_CASE("Cylindrical::constructors")
 	CHECK(fromPosition.toVec3().epsilonEquals(Vec3{ 1.25, -2.5, 3.75 }, CylindricalEpsilon));
 
 	const Cylindrical onAxis{ Vec3{ 0.0, 4.0, 0.0 } };
-	CHECK_EQ(onAxis.r, 0.0);
-	CHECK_EQ(onAxis.phi, 0.0);
-	CHECK_EQ(onAxis.y, 4.0);
+	CHECK((onAxis.r) == (0.0));
+	CHECK((onAxis.phi) == (0.0));
+	CHECK((onAxis.y) == (4.0));
 }
 
 TEST_CASE("Cylindrical::coordinate_convention")
@@ -88,8 +88,8 @@ TEST_CASE("Cylindrical::operations")
 	static_assert(value.rotated(1.0).phi == 1.5);
 
 	Cylindrical mutableValue = value;
-	CHECK_EQ(&mutableValue.rotate(1.0), &mutableValue);
-	CHECK_EQ(mutableValue.phi, 1.5);
+	CHECK((&mutableValue.rotate(1.0)) == (&mutableValue));
+	CHECK((mutableValue.phi) == (1.5));
 
 	CHECK((-value).toVec3().epsilonEquals(-value.toVec3(), CylindricalEpsilon));
 	CHECK((value + Vec3{ 1.0, 2.0, 3.0 }).epsilonEquals(value.toVec3() + Vec3{ 1.0, 2.0, 3.0 }, CylindricalEpsilon));
@@ -97,37 +97,37 @@ TEST_CASE("Cylindrical::operations")
 
 	const Cylindrical interpolated = Cylindrical{ 2.0, (Math::Pi - 0.1), 3.0 }
 		.lerp(Cylindrical{ 4.0, (-Math::Pi + 0.1), 7.0 }, 0.5);
-	CHECK_EQ(interpolated.r, 3.0);
-	CHECK_EQ(interpolated.y, 5.0);
+	CHECK((interpolated.r) == (3.0));
+	CHECK((interpolated.y) == (5.0));
 	CHECK(std::abs(std::abs(interpolated.phi) - Math::Pi) < CylindricalEpsilon);
 
 	const CylindricalF interpolatedF = CylindricalF{ 2.0f, 0.25f, 3.0f }.lerp(CylindricalF{ 4.0f, 0.75f, 7.0f }, 0.5);
-	CHECK_EQ(interpolatedF.r, 3.0f);
-	CHECK_EQ(interpolatedF.phi, 0.5f);
-	CHECK_EQ(interpolatedF.y, 5.0f);
+	CHECK((interpolatedF.r) == (3.0f));
+	CHECK((interpolatedF.phi) == (0.5f));
+	CHECK((interpolatedF.y) == (5.0f));
 }
 
 TEST_CASE("Cylindrical::format_hash_and_json")
 {
 	const Cylindrical value{ 1.5, -2.25, 3.75 };
-	CHECK_EQ(Format(value), U"(1.5, -2.25, 3.75)");
-	CHECK_EQ(U"{:.1f}"_fmt(value), U"(1.5, -2.2, 3.8)");
-	CHECK_EQ(std::hash<Cylindrical>{}(value), value.hash());
+	CHECK((Format(value)) == (U"(1.5, -2.25, 3.75)"));
+	CHECK((U"{:.1f}"_fmt(value)) == (U"(1.5, -2.2, 3.8)"));
+	CHECK((std::hash<Cylindrical>{}(value)) == (value.hash()));
 
 	std::stringstream stream;
 	stream << value;
 	Cylindrical parsed;
 	stream >> parsed;
-	CHECK_EQ(parsed.r, value.r);
-	CHECK_EQ(parsed.phi, value.phi);
-	CHECK_EQ(parsed.y, value.y);
+	CHECK((parsed.r) == (value.r));
+	CHECK((parsed.phi) == (value.phi));
+	CHECK((parsed.y) == (value.y));
 
 	const JSON json = value;
-	CHECK_EQ(json[U"r"].get<double>(), value.r);
-	CHECK_EQ(json[U"phi"].get<double>(), value.phi);
-	CHECK_EQ(json[U"y"].get<double>(), value.y);
+	CHECK((json[U"r"].get<double>()) == (value.r));
+	CHECK((json[U"phi"].get<double>()) == (value.phi));
+	CHECK((json[U"y"].get<double>()) == (value.y));
 	const Cylindrical restored = json.get<Cylindrical>();
-	CHECK_EQ(restored.r, value.r);
-	CHECK_EQ(restored.phi, value.phi);
-	CHECK_EQ(restored.y, value.y);
+	CHECK((restored.r) == (value.r));
+	CHECK((restored.phi) == (value.phi));
+	CHECK((restored.y) == (value.y));
 }

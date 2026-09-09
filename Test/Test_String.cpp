@@ -39,57 +39,57 @@ TEST_CASE("String.operator ==")
 	const String sa10000 = (U'a' + s9999);
 	const String sb10000 = (U'b' + s9999);
 
-	CHECK_EQ(s0, s0);
-	CHECK_EQ(s3, s3);
-	CHECK_EQ(s5, s5);
-	CHECK_EQ(s8, s8);
-	CHECK_EQ(s15, s15);
+	CHECK((s0) == (s0));
+	CHECK((s3) == (s3));
+	CHECK((s5) == (s5));
+	CHECK((s8) == (s8));
+	CHECK((s15) == (s15));
 
-	CHECK_EQ(s9999, s9999);
-	CHECK_EQ(s10000a, s10000a);
-	CHECK_EQ(s10000b, s10000b);
-	CHECK_EQ(sa10000, sa10000);
-	CHECK_EQ(sb10000, sb10000);
+	CHECK((s9999) == (s9999));
+	CHECK((s10000a) == (s10000a));
+	CHECK((s10000b) == (s10000b));
+	CHECK((sa10000) == (sa10000));
+	CHECK((sb10000) == (sb10000));
 
-	CHECK_NE(s0, s3);
-	CHECK_NE(s0, s9999);
-	CHECK_NE(s3, s5);
-	CHECK_NE(s3, s9999);
-	CHECK_NE(s5, s8);
-	CHECK_NE(s5, s9999);
-	CHECK_NE(s8, s15);
-	CHECK_NE(s8, s9999);
-	CHECK_NE(s15, s9999);
+	CHECK((s0) != (s3));
+	CHECK((s0) != (s9999));
+	CHECK((s3) != (s5));
+	CHECK((s3) != (s9999));
+	CHECK((s5) != (s8));
+	CHECK((s5) != (s9999));
+	CHECK((s8) != (s15));
+	CHECK((s8) != (s9999));
+	CHECK((s15) != (s9999));
 
-	CHECK_NE(s9999, s0);
-	CHECK_NE(s9999, s10000a);
-	CHECK_NE(s9999, s10000b);
-	CHECK_NE(s9999, sa10000);
-	CHECK_NE(s9999, sb10000);
+	CHECK((s9999) != (s0));
+	CHECK((s9999) != (s10000a));
+	CHECK((s9999) != (s10000b));
+	CHECK((s9999) != (sa10000));
+	CHECK((s9999) != (sb10000));
 
-	CHECK_NE(s10000a, s0);
-	CHECK_NE(s10000a, s9999);
-	CHECK_NE(s10000a, s10000b);
-	CHECK_NE(s10000a, sa10000);
-	CHECK_NE(s10000a, sb10000);
+	CHECK((s10000a) != (s0));
+	CHECK((s10000a) != (s9999));
+	CHECK((s10000a) != (s10000b));
+	CHECK((s10000a) != (sa10000));
+	CHECK((s10000a) != (sb10000));
 
-	CHECK_NE(s10000b, s0);
-	CHECK_NE(s10000b, s9999);
-	CHECK_NE(s10000b, s10000a);
-	CHECK_NE(s10000b, sa10000);
-	CHECK_NE(s10000b, sb10000);
+	CHECK((s10000b) != (s0));
+	CHECK((s10000b) != (s9999));
+	CHECK((s10000b) != (s10000a));
+	CHECK((s10000b) != (sa10000));
+	CHECK((s10000b) != (sb10000));
 
-	CHECK_NE(sa10000, s0);
-	CHECK_NE(sa10000, s9999);
-	CHECK_NE(sa10000, s10000a);
-	CHECK_NE(sa10000, s10000b);
-	CHECK_NE(sa10000, sb10000);
+	CHECK((sa10000) != (s0));
+	CHECK((sa10000) != (s9999));
+	CHECK((sa10000) != (s10000a));
+	CHECK((sa10000) != (s10000b));
+	CHECK((sa10000) != (sb10000));
 
-	CHECK_NE(sb10000, s0);
-	CHECK_NE(sb10000, s9999);
-	CHECK_NE(sb10000, s10000a);
-	CHECK_NE(sb10000, s10000b);
-	CHECK_NE(sb10000, sa10000);
+	CHECK((sb10000) != (s0));
+	CHECK((sb10000) != (s9999));
+	CHECK((sb10000) != (s10000a));
+	CHECK((sb10000) != (s10000b));
+	CHECK((sb10000) != (sa10000));
 }
 
 TEST_CASE("String.replacedAll")
@@ -102,7 +102,7 @@ TEST_CASE("String.replacedAll")
 				return U"<{}{}{}>"_fmt(match[1], match[2].lowercased(), match[3]);
 			});
 		const String expected = UR"(<div class="Test">Hello <span>World</span></div>)";
-		CHECK_EQ(result, expected);
+		CHECK((result) == (expected));
 	}
 
 	{
@@ -113,7 +113,7 @@ TEST_CASE("String.replacedAll")
 				return Format(Parse<int32>(match[0]) + 1);
 			});
 		const String expected = U"I have 9 apples, 10 oranges, and 11 bananas.";
-		CHECK_EQ(result, expected);
+		CHECK((result) == (expected));
 	}
 }
 
@@ -419,30 +419,30 @@ TEST_CASE("String.array_like_contract")
 	static_assert(std::same_as<decltype(String{} += U'a'), String>);
 	static_assert(std::same_as<decltype(String{} << U'a'), String>);
 	String s = U"a\U0001F600bc";
-	CHECK_EQ(s.size(), size_t{ 4 });
-	CHECK_EQ(s.get_if(1), &s[1]);
-	CHECK_EQ(std::as_const(s).get_if(1), &s[1]);
-	CHECK_EQ(s.get_if(4), nullptr);
-	CHECK_EQ(s.find_if([](char32 ch) { return ch == U'b'; }), &s[2]);
-	CHECK_EQ(s.find_if([](char32 ch) { return ch == U'z'; }), nullptr);
-	CHECK_EQ(s.indexOf_if([](char32 ch) { return ch == U'b'; }), Optional<size_t>{ 2 });
-	CHECK_EQ(s.indexOf_if([](char32 ch) { return ch == U'z'; }), none);
-	CHECK_EQ(s.drop(1), U"\U0001F600bc");
+	CHECK((s.size()) == (size_t{ 4 }));
+	CHECK((s.get_if(1)) == (&s[1]));
+	CHECK((std::as_const(s).get_if(1)) == (&s[1]));
+	CHECK((s.get_if(4)) == (nullptr));
+	CHECK((s.find_if([](char32 ch) { return ch == U'b'; })) == (&s[2]));
+	CHECK((s.find_if([](char32 ch) { return ch == U'z'; })) == (nullptr));
+	CHECK((s.indexOf_if([](char32 ch) { return ch == U'b'; })) == (Optional<size_t>{ 2 }));
+	CHECK((s.indexOf_if([](char32 ch) { return ch == U'z'; })) == (none));
+	CHECK((s.drop(1)) == (U"\U0001F600bc"));
 	CHECK(s.drop(100).isEmpty());
-	CHECK_EQ(s.drop_while([](char32 ch) { return ch != U'b'; }), U"bc");
-	CHECK_EQ(s.drop_while([](char32) { return false; }), s);
+	CHECK((s.drop_while([](char32 ch) { return ch != U'b'; })) == (U"bc"));
+	CHECK((s.drop_while([](char32) { return false; })) == (s));
 	CHECK(s.drop_while([](char32) { return true; }).isEmpty());
-	CHECK_EQ(s.filter([](char32 ch) { return ch <= U'z'; }), U"abc");
+	CHECK((s.filter([](char32 ch) { return ch <= U'z'; })) == (U"abc"));
 	s.reserve(128);
 	const auto storage = s.data();
 	auto result = std::move(s).drop(1).filter([](char32 ch) { return ch <= U'z'; }).append(U'd');
-	CHECK_EQ(result, U"bcd");
-	CHECK_EQ(result.data(), storage);
-	CHECK_EQ(String{ U"abc" }.append(StringView{ U"def" }), U"abcdef");
-	CHECK_EQ(String{ U"abc" }.assign(2, U'z').append(2, U'x'), U"zzxx");
-	CHECK_EQ(String{ U"abc" }.insert(1, U"XY").erase(0, 1), U"XYbc");
-	CHECK_EQ((String{ U"ab" } += U"cd"), U"abcd");
-	CHECK_EQ(String{ U"ab" }.keep_if([](char32 ch) { return ch == U'b'; }), U"b");
+	CHECK((result) == (U"bcd"));
+	CHECK((result.data()) == (storage));
+	CHECK((String{ U"abc" }.append(StringView{ U"def" })) == (U"abcdef"));
+	CHECK((String{ U"abc" }.assign(2, U'z').append(2, U'x')) == (U"zzxx"));
+	CHECK((String{ U"abc" }.insert(1, U"XY").erase(0, 1)) == (U"XYbc"));
+	CHECK(((String{ U"ab" } += U"cd")) == (U"abcd"));
+	CHECK((String{ U"ab" }.keep_if([](char32 ch) { return ch == U'b'; })) == (U"b"));
 	CHECK_THROWS_AS((void) result.filter([](char32) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
 	CHECK_THROWS_AS((void) result.erase_all_if([](char32) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
 	CHECK_THROWS_AS((void) result.replace_if([](char32) -> bool { throw std::runtime_error("predicate"); }, U'x'), std::runtime_error);
@@ -455,10 +455,10 @@ TEST_CASE("String.owning_storage_transfer")
 	String s(64, U'x');
 	const auto storage = s.data();
 	auto underlying = std::move(s).str();
-	CHECK_EQ(underlying.data(), storage);
-	CHECK_EQ(underlying.size(), size_t{ 64 });
+	CHECK((underlying.data()) == (storage));
+	CHECK((underlying.size()) == (size_t{ 64 }));
 	s.assign(128, U'y');
 	s.release();
 	CHECK(s.isEmpty());
-	CHECK_EQ(s.capacity(), String{}.capacity());
+	CHECK((s.capacity()) == (String{}.capacity()));
 }

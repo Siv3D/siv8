@@ -6,7 +6,7 @@ Build and run the Windows x64 automated tests from any directory.
 .EXAMPLE
 ./WindowsDesktop/run-tests.ps1
 .EXAMPLE
-./WindowsDesktop/run-tests.ps1 -SkipBuild -TestArguments '--test-case=*BinaryFileReader*', '--duration'
+./WindowsDesktop/run-tests.ps1 -SkipBuild -TestArguments '--test-case=*BinaryFileReader*', '--durations', 'yes'
 .PARAMETER Configuration
 Build configuration (Release by default).
 .PARAMETER Jobs
@@ -14,7 +14,7 @@ Maximum MSBuild nodes and compiler processes per project (default: 4).
 .PARAMETER SkipBuild
 Run the existing executable; the caller must ensure it matches current sources.
 .PARAMETER TestArguments
-Doctest execution arguments, one per array element. The runner owns reporting
+Catch2 execution arguments, one per array element. The runner owns reporting
 options and requires at least one executed test; query-only flags are rejected.
 .PARAMETER TimeoutSeconds
 Maximum test application runtime, excluding the build. Default: 600 seconds.
@@ -32,16 +32,16 @@ $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 if (-not $IsWindows) { throw 'This runner requires Windows.' }
 
-# These options can suppress, redirect or replace the completion report, or skip execution.
-# doctest counts matching cases before applying first/last, so ranges could falsely
-# report a nonzero count without running a test. Use named filters instead.
-$reserved = @('out', 'o', 'reporters', 'r', 'quiet', 'q', 'minimal', 'm',
-    'no-colors', 'nc', 'force-colors', 'fc', 'no-exitcode', 'ne', 'no-run', 'nr',
-    'help', 'h', '?', 'version', 'v', 'count', 'c', 'list-test-cases', 'ltc',
-    'list-test-suites', 'lts', 'list-reporters', 'lr', 'first', 'f', 'last', 'l')
+# The runner owns both reports and requires test execution. Reject queries and
+# report overrides, including attached/combined short options that could hide one.
+$reserved = @('out', 'reporter', 'colour-mode', 'verbosity', 'help', 'libidentify',
+    'list-tests', 'list-tags', 'list-reporters', 'list-listeners', 'allow-running-no-tests')
 foreach ($argument in $TestArguments) {
-    if ($argument -cmatch '^-+(?:dt-)?([^=]+)(?:=.*)?$' -and $reserved -ccontains $Matches[1]) {
-        throw "Doctest option '$argument' is reserved: this runner requires its console report and actual test execution."
+    $reservedLong = $argument -cmatch '^--([^=]+)(?:=.*)?$' -and $reserved -ccontains $Matches[1]
+    $unsupportedShort = $argument -cmatch '^-[^-]' -and
+        $argument -cnotmatch '^-(?:s|b|i|a|x|w|d|f|c|#|n|e|x[0-9]+)$'
+    if ($reservedLong -or $unsupportedShort -or $argument -ceq '--') {
+        throw "Catch2 option '$argument' is reserved: this runner requires its reports and actual test execution."
     }
 }
 
@@ -74,17 +74,19 @@ try {
     if (-not (Test-Path -LiteralPath $exe -PathType Leaf)) { throw "Test executable not found: $exe" }
     $reportName = "{0}-{1}.txt" -f $Configuration, (Get-Date -Format 'yyyyMMdd-HHmmss-fffffff')
     $report = Join-Path $reports $reportName
-    Write-Host "Test report: $report"
+    $xmlReport = [IO.Path]::ChangeExtension($report, 'xml')
+    Write-Host "Test reports: $report and $xmlReport"
     $info = [Diagnostics.ProcessStartInfo]::new()
     $info.FileName = $exe
     $info.WorkingDirectory = Join-Path $PSScriptRoot 'App'
     $info.UseShellExecute = $false
     $info.CreateNoWindow = $true
     $info.WindowStyle = [Diagnostics.ProcessWindowStyle]::Hidden
-    # doctest opens its output through a narrow filename on Windows. Keep this
-    # path ASCII and relative to App, even when the checkout path contains Unicode.
-    foreach ($argument in (@('--test-only', '--reporters=console', '--no-colors',
-        "--out=../Intermediate/TestReports/$reportName") + $TestArguments)) {
+    # Keep the reporter paths ASCII and relative to App, including in Unicode checkouts.
+    $relativeReport = "../Intermediate/TestReports/$reportName"
+    $relativeXmlReport = [IO.Path]::ChangeExtension($relativeReport, 'xml')
+    foreach ($argument in (@('--test-only', '--colour-mode', 'none',
+        '--reporter', "console::out=$relativeReport", '--reporter', "xml::out=$relativeXmlReport") + $TestArguments)) {
         $info.ArgumentList.Add($argument)
     }
     $process = [Diagnostics.Process]::Start($info)
@@ -109,23 +111,39 @@ try {
             $process.Dispose()
         }
     }
-    $testCount = $null
-    $completed = $false
     if (Test-Path -LiteralPath $report -PathType Leaf) {
-        foreach ($line in [IO.File]::ReadLines($report)) {
-            Write-Output $line
-            if ($line -cmatch '^\[doctest\] test cases:\s+([0-9]+)\s+\|') {
-                $testCount = [long]$Matches[1]
-            }
-            if ($line -ceq '[doctest] Status: SUCCESS!') { $completed = $true }
-        }
+        foreach ($line in [IO.File]::ReadLines($report)) { Write-Output $line }
     }
     if ($timedOut) { throw "Test application exceeded $TimeoutSeconds seconds and was terminated. Report: $report" }
     if ($code -ne 0) { throw "Windows tests failed (exit $code). Report: $report" }
-    if (-not $completed -or $null -eq $testCount) {
-        throw "The test application did not complete its report. Inspect $report and WindowsDesktop/App logs."
+    # XML must be complete; a process can exit zero before the test runner finishes.
+    try {
+        $document = [xml]::new()
+        $document.XmlResolver = $null
+        $document.Load($xmlReport)
+        $counts = $document.SelectSingleNode('/Catch2TestRun/OverallResultsCases')
+        $assertions = $document.SelectSingleNode('/Catch2TestRun/OverallResults')
+        if ($null -eq $counts -or $null -eq $assertions) { throw 'Missing totals' }
+        foreach ($totals in @($counts, $assertions)) {
+            foreach ($attribute in @('successes', 'failures', 'expectedFailures', 'skips')) {
+                if ($totals.GetAttribute($attribute) -cnotmatch '^[0-9]+$') { throw 'Invalid totals' }
+            }
+        }
+        $testCount = [long]$counts.GetAttribute('successes') + [long]$counts.GetAttribute('failures') +
+            [long]$counts.GetAttribute('expectedFailures')
+        $failed = [long]$counts.GetAttribute('failures') + [long]$assertions.GetAttribute('failures')
+    } catch {
+        throw "The test application did not complete its report. Inspect $xmlReport and WindowsDesktop/App logs."
+    }
+    # Catch2's console reporter does not write captured test output to its file.
+    # Retain benchmark tables and other stdout/stderr alongside the console summary.
+    foreach ($node in $document.SelectNodes('/Catch2TestRun/TestCase/StdOut | /Catch2TestRun/TestCase/StdErr')) {
+        $captured = $node.InnerText
+        [IO.File]::AppendAllText($report, "`n$captured`n")
+        Write-Output $captured
     }
     if ($testCount -eq 0) { throw "No test cases ran. Check -TestArguments filters. Report: $report" }
+    if ($failed -ne 0) { throw "Windows tests failed in the XML report. Report: $xmlReport" }
 } finally {
     $runLock.Dispose()
 }

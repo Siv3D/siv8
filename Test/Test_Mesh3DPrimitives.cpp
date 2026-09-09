@@ -65,8 +65,8 @@ namespace
 
 	static void CheckUV(const Float2 actual, const Float2 expected)
 	{
-		CHECK(actual.x == doctest::Approx(expected.x).epsilon(FrameEpsilon));
-		CHECK(actual.y == doctest::Approx(expected.y).epsilon(FrameEpsilon));
+		CHECK(actual.x == Test::Approx(expected.x).epsilon(FrameEpsilon));
+		CHECK(actual.y == Test::Approx(expected.y).epsilon(FrameEpsilon));
 	}
 
 	static void CheckRegularPolyhedron(
@@ -75,8 +75,8 @@ namespace
 		const size_t faceCount,
 		const size_t verticesPerFace)
 	{
-		REQUIRE_EQ(mesh.vertexCount(), (faceCount * verticesPerFace));
-		REQUIRE_EQ(mesh.triangleCount(), (faceCount * (verticesPerFace - 2)));
+		REQUIRE((mesh.vertexCount()) == ((faceCount * verticesPerFace)));
+		REQUIRE((mesh.triangleCount()) == ((faceCount * (verticesPerFace - 2))));
 		CheckMeshGeometry(mesh);
 		const float expectedEdgeLength = mesh.vertices[0].pos.distanceFrom(mesh.vertices[1].pos);
 
@@ -89,10 +89,10 @@ namespace
 			{
 				const Vertex3D& vertex = mesh.vertices[vertexBase + i];
 				const Vertex3D& nextVertex = mesh.vertices[vertexBase + ((i + 1) % verticesPerFace)];
-				CHECK(vertex.pos.length() == doctest::Approx(radius).epsilon(FrameEpsilon));
-				CHECK(vertex.pos.distanceFrom(nextVertex.pos) == doctest::Approx(expectedEdgeLength).epsilon(FrameEpsilon));
-				CHECK_EQ(vertex.normal, mesh.vertices[vertexBase].normal);
-				CHECK_EQ(vertex.tangent, mesh.vertices[vertexBase].tangent);
+				CHECK(vertex.pos.length() == Test::Approx(radius).epsilon(FrameEpsilon));
+				CHECK(vertex.pos.distanceFrom(nextVertex.pos) == Test::Approx(expectedEdgeLength).epsilon(FrameEpsilon));
+				CHECK((vertex.normal) == (mesh.vertices[vertexBase].normal));
+				CHECK((vertex.tangent) == (mesh.vertices[vertexBase].tangent));
 				CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
 				CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
 				faceCenter += vertex.pos;
@@ -108,8 +108,8 @@ TEST_CASE("Mesh3D::Box")
 {
 	const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 });
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CHECK((mesh.vertexCount()) == (size_t{ 24 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 	CheckMeshGeometry(mesh);
 
 	for (const auto& vertex : mesh.vertices)
@@ -148,40 +148,40 @@ TEST_CASE("Mesh3D::Box face mask")
 	for (const auto& [face, normal] : FaceCases)
 	{
 		const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, face);
-		REQUIRE_EQ(mesh.vertexCount(), size_t{ 4 });
-		REQUIRE_EQ(mesh.triangleCount(), size_t{ 2 });
+		REQUIRE((mesh.vertexCount()) == (size_t{ 4 }));
+		REQUIRE((mesh.triangleCount()) == (size_t{ 2 }));
 		CheckMeshGeometry(mesh);
 
 		for (const auto& vertex : mesh.vertices)
 		{
-			CHECK_EQ(vertex.normal, normal);
+			CHECK((vertex.normal) == (normal));
 		}
 	}
 
-	SUBCASE("Multiple faces")
+	SECTION("Multiple faces")
 	{
 		const BoxFace faces = (BoxFace::NegativeX | BoxFace::PositiveY | BoxFace::PositiveZ);
 		const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, faces);
-		CHECK_EQ(mesh.vertexCount(), size_t{ 12 });
-		CHECK_EQ(mesh.triangleCount(), size_t{ 6 });
+		CHECK((mesh.vertexCount()) == (size_t{ 12 }));
+		CHECK((mesh.triangleCount()) == (size_t{ 6 }));
 		CheckMeshGeometry(mesh);
 	}
 
-	SUBCASE("No faces")
+	SECTION("No faces")
 	{
 		CHECK(Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, BoxFace::None_).isEmpty());
 		CHECK(Mesh3D::Box(Vec3{ 0.0, 4.0, 6.0 }, BoxFace::None_).isEmpty());
 	}
 
-	SUBCASE("Only selected UV rectangles are validated")
+	SECTION("Only selected UV rectangles are validated")
 	{
 		BoxUVMapping uvMapping;
 		uvMapping.negativeX.left = std::numeric_limits<float>::quiet_NaN();
 
 		const Mesh3D mesh = Mesh3D::Box(
 			Vec3{ 2.0, 4.0, 6.0 }, uvMapping, BoxFace::PositiveX);
-		CHECK_EQ(mesh.vertexCount(), size_t{ 4 });
-		CHECK_EQ(mesh.triangleCount(), size_t{ 2 });
+		CHECK((mesh.vertexCount()) == (size_t{ 4 }));
+		CHECK((mesh.triangleCount()) == (size_t{ 2 }));
 		CHECK(Mesh3D::Box(
 			Vec3{ 2.0, 4.0, 6.0 }, uvMapping, BoxFace::NegativeX).isEmpty());
 		CHECK(Mesh3D::Box(
@@ -209,21 +209,21 @@ TEST_CASE("Mesh3D::Box with UV mapping")
 	};
 	const Mesh3D mesh = Mesh3D::Box(Vec3{ 2.0, 4.0, 6.0 }, uvMapping);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CHECK((mesh.vertexCount()) == (size_t{ 24 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 	CheckMeshGeometry(mesh);
 
 	for (size_t faceIndex = 0; faceIndex < uvRects.size(); ++faceIndex)
 	{
 		const FloatRect rect = uvRects[faceIndex];
 		const size_t vertexOffset = (faceIndex * 4);
-		CHECK_EQ(mesh.vertices[vertexOffset + 0].tex, Float2{ rect.left, rect.top });
-		CHECK_EQ(mesh.vertices[vertexOffset + 1].tex, Float2{ rect.right, rect.top });
-		CHECK_EQ(mesh.vertices[vertexOffset + 2].tex, Float2{ rect.left, rect.bottom });
-		CHECK_EQ(mesh.vertices[vertexOffset + 3].tex, Float2{ rect.right, rect.bottom });
+		CHECK((mesh.vertices[vertexOffset + 0].tex) == (Float2{ rect.left, rect.top }));
+		CHECK((mesh.vertices[vertexOffset + 1].tex) == (Float2{ rect.right, rect.top }));
+		CHECK((mesh.vertices[vertexOffset + 2].tex) == (Float2{ rect.left, rect.bottom }));
+		CHECK((mesh.vertices[vertexOffset + 3].tex) == (Float2{ rect.right, rect.bottom }));
 	}
 
-	SUBCASE("Invalid UV rectangles")
+	SECTION("Invalid UV rectangles")
 	{
 		BoxUVMapping invalid = uvMapping;
 		invalid.negativeX.left = std::numeric_limits<float>::quiet_NaN();
@@ -248,42 +248,42 @@ TEST_CASE("Mesh3D::Box with flipped UV mapping")
 	const Mesh3D flippedMesh = Mesh3D::Box(Vec3{ 1.0, 1.0, 1.0 }, uvMapping);
 	CheckMeshGeometry(flippedMesh);
 
-	SUBCASE("U flip")
+	SECTION("U flip")
 	{
 		constexpr size_t VertexOffset = 0;
-		CHECK_EQ(flippedMesh.vertices[VertexOffset + 0].tex, Float2{ 1.0f, 0.0f });
-		CHECK_EQ(flippedMesh.vertices[VertexOffset + 3].tex, Float2{ 0.0f, 1.0f });
+		CHECK((flippedMesh.vertices[VertexOffset + 0].tex) == (Float2{ 1.0f, 0.0f }));
+		CHECK((flippedMesh.vertices[VertexOffset + 3].tex) == (Float2{ 0.0f, 1.0f }));
 
 		for (size_t i = 0; i < 4; ++i)
 		{
-			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.xyz(), -defaultMesh.vertices[VertexOffset + i].tangent.xyz());
-			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.w, -defaultMesh.vertices[VertexOffset + i].tangent.w);
+			CHECK((flippedMesh.vertices[VertexOffset + i].tangent.xyz()) == (-defaultMesh.vertices[VertexOffset + i].tangent.xyz()));
+			CHECK((flippedMesh.vertices[VertexOffset + i].tangent.w) == (-defaultMesh.vertices[VertexOffset + i].tangent.w));
 		}
 	}
 
-	SUBCASE("V flip")
+	SECTION("V flip")
 	{
 		constexpr size_t VertexOffset = 4;
-		CHECK_EQ(flippedMesh.vertices[VertexOffset + 0].tex, Float2{ 0.0f, 1.0f });
-		CHECK_EQ(flippedMesh.vertices[VertexOffset + 3].tex, Float2{ 1.0f, 0.0f });
+		CHECK((flippedMesh.vertices[VertexOffset + 0].tex) == (Float2{ 0.0f, 1.0f }));
+		CHECK((flippedMesh.vertices[VertexOffset + 3].tex) == (Float2{ 1.0f, 0.0f }));
 
 		for (size_t i = 0; i < 4; ++i)
 		{
-			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.xyz(), defaultMesh.vertices[VertexOffset + i].tangent.xyz());
-			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.w, -defaultMesh.vertices[VertexOffset + i].tangent.w);
+			CHECK((flippedMesh.vertices[VertexOffset + i].tangent.xyz()) == (defaultMesh.vertices[VertexOffset + i].tangent.xyz()));
+			CHECK((flippedMesh.vertices[VertexOffset + i].tangent.w) == (-defaultMesh.vertices[VertexOffset + i].tangent.w));
 		}
 	}
 
-	SUBCASE("U and V flip")
+	SECTION("U and V flip")
 	{
 		constexpr size_t VertexOffset = 8;
-		CHECK_EQ(flippedMesh.vertices[VertexOffset + 0].tex, Float2{ 1.0f, 1.0f });
-		CHECK_EQ(flippedMesh.vertices[VertexOffset + 3].tex, Float2{ 0.0f, 0.0f });
+		CHECK((flippedMesh.vertices[VertexOffset + 0].tex) == (Float2{ 1.0f, 1.0f }));
+		CHECK((flippedMesh.vertices[VertexOffset + 3].tex) == (Float2{ 0.0f, 0.0f }));
 
 		for (size_t i = 0; i < 4; ++i)
 		{
-			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.xyz(), -defaultMesh.vertices[VertexOffset + i].tangent.xyz());
-			CHECK_EQ(flippedMesh.vertices[VertexOffset + i].tangent.w, defaultMesh.vertices[VertexOffset + i].tangent.w);
+			CHECK((flippedMesh.vertices[VertexOffset + i].tangent.xyz()) == (-defaultMesh.vertices[VertexOffset + i].tangent.xyz()));
+			CHECK((flippedMesh.vertices[VertexOffset + i].tangent.w) == (defaultMesh.vertices[VertexOffset + i].tangent.w));
 		}
 	}
 }
@@ -299,33 +299,33 @@ TEST_CASE("Mesh3D::Box with collapsed UV mapping")
 	const Mesh3D collapsedMesh = Mesh3D::Box(Vec3{ 1.0, 1.0, 1.0 }, uvMapping);
 	CheckMeshGeometry(collapsedMesh);
 
-	SUBCASE("Collapsed U")
+	SECTION("Collapsed U")
 	{
 		constexpr size_t VertexOffset = 0;
 		for (size_t i = 0; i < 4; ++i)
 		{
-			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tex.x, 0.25f);
-			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
+			CHECK((collapsedMesh.vertices[VertexOffset + i].tex.x) == (0.25f));
+			CHECK((collapsedMesh.vertices[VertexOffset + i].tangent) == (defaultMesh.vertices[VertexOffset + i].tangent));
 		}
 	}
 
-	SUBCASE("Collapsed V")
+	SECTION("Collapsed V")
 	{
 		constexpr size_t VertexOffset = 4;
 		for (size_t i = 0; i < 4; ++i)
 		{
-			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tex.y, 0.75f);
-			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
+			CHECK((collapsedMesh.vertices[VertexOffset + i].tex.y) == (0.75f));
+			CHECK((collapsedMesh.vertices[VertexOffset + i].tangent) == (defaultMesh.vertices[VertexOffset + i].tangent));
 		}
 	}
 
-	SUBCASE("Collapsed U and V")
+	SECTION("Collapsed U and V")
 	{
 		constexpr size_t VertexOffset = 8;
 		for (size_t i = 0; i < 4; ++i)
 		{
-			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tex, Float2{ 0.25f, 0.75f });
-			CHECK_EQ(collapsedMesh.vertices[VertexOffset + i].tangent, defaultMesh.vertices[VertexOffset + i].tangent);
+			CHECK((collapsedMesh.vertices[VertexOffset + i].tex) == (Float2{ 0.25f, 0.75f }));
+			CHECK((collapsedMesh.vertices[VertexOffset + i].tangent) == (defaultMesh.vertices[VertexOffset + i].tangent));
 		}
 	}
 }
@@ -337,8 +337,8 @@ TEST_CASE("Mesh3D::RoundedBox")
 	constexpr uint32 Subdivisions = 2;
 	const Mesh3D mesh = Mesh3D::RoundedBox(Size, Radius, Subdivisions);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 216 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 300 });
+	CHECK((mesh.vertexCount()) == (size_t{ 216 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 300 }));
 	CheckMeshGeometry(mesh);
 
 	const Float3 innerHalfSize{ 0.5f, 1.5f, 2.5f };
@@ -354,11 +354,11 @@ TEST_CASE("Mesh3D::RoundedBox")
 			std::clamp(vertex.pos.z, -innerHalfSize.z, innerHalfSize.z)
 		};
 		const Float3 offset = (vertex.pos - innerPoint);
-		CHECK(offset.length() == doctest::Approx(Radius).epsilon(FrameEpsilon));
-		CHECK(vertex.normal.dot(offset.normalized()) == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+		CHECK(offset.length() == Test::Approx(Radius).epsilon(FrameEpsilon));
+		CHECK(vertex.normal.dot(offset.normalized()) == Test::Approx(1.0f).epsilon(FrameEpsilon));
 	}
 
-	SUBCASE("Box projection and flipped UV")
+	SECTION("Box projection and flipped UV")
 	{
 		BoxUVMapping uvMapping;
 		uvMapping.negativeZ = FloatRect{ 2.0f, 3.0f, -2.0f, -1.0f };
@@ -374,59 +374,59 @@ TEST_CASE("Mesh3D::RoundedBox")
 				(0.5f - (vertex.pos.y / static_cast<float>(Size.y)))
 			};
 			CheckUV(vertex.tex, MapUV(uvMapping.negativeZ, projectedUV.x, projectedUV.y));
-			CHECK(vertex.tangent.xyz().dot(mesh.vertices[i].tangent.xyz()) == doctest::Approx(-1.0f).epsilon(FrameEpsilon));
-			CHECK_EQ(vertex.tangent.w, mesh.vertices[i].tangent.w);
+			CHECK(vertex.tangent.xyz().dot(mesh.vertices[i].tangent.xyz()) == Test::Approx(-1.0f).epsilon(FrameEpsilon));
+			CHECK((vertex.tangent.w) == (mesh.vertices[i].tangent.w));
 		}
 	}
 
-	SUBCASE("Zero radius equals Box")
+	SECTION("Zero radius equals Box")
 	{
 		const Mesh3D box = Mesh3D::Box(Size);
 		const Mesh3D zeroRadius = Mesh3D::RoundedBox(Size, 0.0, Subdivisions);
-		REQUIRE_EQ(zeroRadius.vertexCount(), box.vertexCount());
-		REQUIRE_EQ(zeroRadius.triangleCount(), box.triangleCount());
+		REQUIRE((zeroRadius.vertexCount()) == (box.vertexCount()));
+		REQUIRE((zeroRadius.triangleCount()) == (box.triangleCount()));
 
 		for (size_t i = 0; i < box.vertices.size(); ++i)
 		{
-			CHECK_EQ(zeroRadius.vertices[i].pos, box.vertices[i].pos);
-			CHECK_EQ(zeroRadius.vertices[i].normal, box.vertices[i].normal);
-			CHECK_EQ(zeroRadius.vertices[i].tex, box.vertices[i].tex);
-			CHECK_EQ(zeroRadius.vertices[i].tangent, box.vertices[i].tangent);
+			CHECK((zeroRadius.vertices[i].pos) == (box.vertices[i].pos));
+			CHECK((zeroRadius.vertices[i].normal) == (box.vertices[i].normal));
+			CHECK((zeroRadius.vertices[i].tex) == (box.vertices[i].tex));
+			CHECK((zeroRadius.vertices[i].tangent) == (box.vertices[i].tangent));
 		}
 
 		for (size_t i = 0; i < box.indices.size(); ++i)
 		{
-			CHECK_EQ(zeroRadius.indices[i].i0, box.indices[i].i0);
-			CHECK_EQ(zeroRadius.indices[i].i1, box.indices[i].i1);
-			CHECK_EQ(zeroRadius.indices[i].i2, box.indices[i].i2);
+			CHECK((zeroRadius.indices[i].i0) == (box.indices[i].i0));
+			CHECK((zeroRadius.indices[i].i1) == (box.indices[i].i1));
+			CHECK((zeroRadius.indices[i].i2) == (box.indices[i].i2));
 		}
 	}
 
-	SUBCASE("Maximum radius on a cube")
+	SECTION("Maximum radius on a cube")
 	{
 		const Mesh3D sphere = Mesh3D::RoundedBox(Vec3{ 2.0, 2.0, 2.0 }, 1.0, Subdivisions);
-		CHECK_EQ(sphere.vertexCount(), size_t{ 150 });
-		CHECK_EQ(sphere.triangleCount(), size_t{ 192 });
+		CHECK((sphere.vertexCount()) == (size_t{ 150 }));
+		CHECK((sphere.triangleCount()) == (size_t{ 192 }));
 		CheckMeshGeometry(sphere);
 
 		for (const Vertex3D& vertex : sphere.vertices)
 		{
-			CHECK(vertex.pos.length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
-			CHECK(vertex.normal.dot(vertex.pos) == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+			CHECK(vertex.pos.length() == Test::Approx(1.0f).epsilon(FrameEpsilon));
+			CHECK(vertex.normal.dot(vertex.pos) == Test::Approx(1.0f).epsilon(FrameEpsilon));
 		}
 
 		const Mesh3D roundedCapsule = Mesh3D::RoundedBox(Size, 1.0, Subdivisions);
-		CHECK_EQ(roundedCapsule.vertexCount(), size_t{ 192 });
-		CHECK_EQ(roundedCapsule.triangleCount(), size_t{ 260 });
+		CHECK((roundedCapsule.vertexCount()) == (size_t{ 192 }));
+		CHECK((roundedCapsule.triangleCount()) == (size_t{ 260 }));
 		CheckMeshGeometry(roundedCapsule);
 	}
 
-	SUBCASE("Minimum subdivisions")
+	SECTION("Minimum subdivisions")
 	{
 		CheckMeshGeometry(Mesh3D::RoundedBox(Size, Radius, 1));
 	}
 
-	SUBCASE("Invalid arguments")
+	SECTION("Invalid arguments")
 	{
 		CHECK(Mesh3D::RoundedBox(Vec3{ 0.0, 1.0, 1.0 }, 0.1, 1).isEmpty());
 		CHECK(Mesh3D::RoundedBox(Vec3{ 1.0, -1.0, 1.0 }, 0.1, 1).isEmpty());
@@ -451,8 +451,8 @@ TEST_CASE("Mesh3D::ChamferedBox")
 	constexpr double Chamfer = 0.5;
 	const Mesh3D mesh = Mesh3D::ChamferedBox(Size, Chamfer);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 96 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 44 });
+	CHECK((mesh.vertexCount()) == (size_t{ 96 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 44 }));
 	CheckMeshGeometry(mesh);
 
 	size_t mainVertexCount = 0;
@@ -484,18 +484,18 @@ TEST_CASE("Mesh3D::ChamferedBox")
 		}
 	}
 
-	CHECK_EQ(mainVertexCount, size_t{ 24 });
-	CHECK_EQ(edgeVertexCount, size_t{ 48 });
-	CHECK_EQ(cornerVertexCount, size_t{ 24 });
+	CHECK((mainVertexCount) == (size_t{ 24 }));
+	CHECK((edgeVertexCount) == (size_t{ 48 }));
+	CHECK((cornerVertexCount) == (size_t{ 24 }));
 
-	SUBCASE("Zero chamfer equals Box")
+	SECTION("Zero chamfer equals Box")
 	{
 		Mesh3DTest::CheckMeshDataEqual(
 			Mesh3D::ChamferedBox(Size, 0.0),
 			Mesh3D::Box(Size));
 	}
 
-	SUBCASE("Projection-axis priority")
+	SECTION("Projection-axis priority")
 	{
 		const BoxUVMapping uvMapping{
 			.negativeZ = FloatRect{ 10.0f, 0.0f, 10.0f, 1.0f },
@@ -538,10 +538,10 @@ TEST_CASE("Mesh3D::ChamferedBox")
 		}
 
 		constexpr std::array<size_t, 6> ExpectedCounts{ 4, 4, 32, 32, 12, 12 };
-		CHECK_EQ(projectionCounts, ExpectedCounts);
+		CHECK((projectionCounts) == (ExpectedCounts));
 	}
 
-	SUBCASE("Boundary and invalid arguments")
+	SECTION("Boundary and invalid arguments")
 	{
 		CheckMeshGeometry(Mesh3D::ChamferedBox(Size, 0.99));
 		CHECK(Mesh3D::ChamferedBox(Size, 1.0).isEmpty());
@@ -566,8 +566,8 @@ TEST_CASE("Mesh3D::Wedge")
 	const Vec3 size{ 4.0, 2.0, 6.0 };
 	const Mesh3D mesh = Mesh3D::Wedge(size);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 18 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 8 });
+	CHECK((mesh.vertexCount()) == (size_t{ 18 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 8 }));
 	CheckMeshGeometry(mesh);
 
 	const Float3 expectedSlopeNormal = Float3{ 0.0f, 6.0f, -2.0f }.normalized();
@@ -580,20 +580,20 @@ TEST_CASE("Mesh3D::Wedge")
 		if (vertex.normal.dot(expectedSlopeNormal) > (1.0f - FrameEpsilon))
 		{
 			++slopeVertexCount;
-			CHECK(vertex.pos.y == doctest::Approx(vertex.pos.z / 3.0f).epsilon(FrameEpsilon));
+			CHECK(vertex.pos.y == Test::Approx(vertex.pos.z / 3.0f).epsilon(FrameEpsilon));
 		}
 	}
-	CHECK_EQ(slopeVertexCount, size_t{ 4 });
+	CHECK((slopeVertexCount) == (size_t{ 4 }));
 
 	const Mesh3D defaultMappingMesh = Mesh3D::Wedge(size, BoxUVMapping{});
-	REQUIRE_EQ(defaultMappingMesh.vertexCount(), mesh.vertexCount());
-	REQUIRE_EQ(defaultMappingMesh.triangleCount(), mesh.triangleCount());
+	REQUIRE((defaultMappingMesh.vertexCount()) == (mesh.vertexCount()));
+	REQUIRE((defaultMappingMesh.triangleCount()) == (mesh.triangleCount()));
 	for (size_t i = 0; i < mesh.vertices.size(); ++i)
 	{
-		CHECK_EQ(defaultMappingMesh.vertices[i].pos, mesh.vertices[i].pos);
-		CHECK_EQ(defaultMappingMesh.vertices[i].normal, mesh.vertices[i].normal);
-		CHECK_EQ(defaultMappingMesh.vertices[i].tex, mesh.vertices[i].tex);
-		CHECK_EQ(defaultMappingMesh.vertices[i].tangent, mesh.vertices[i].tangent);
+		CHECK((defaultMappingMesh.vertices[i].pos) == (mesh.vertices[i].pos));
+		CHECK((defaultMappingMesh.vertices[i].normal) == (mesh.vertices[i].normal));
+		CHECK((defaultMappingMesh.vertices[i].tex) == (mesh.vertices[i].tex));
+		CHECK((defaultMappingMesh.vertices[i].tangent) == (mesh.vertices[i].tangent));
 	}
 
 	CHECK(Mesh3D::Wedge(Vec3{ 0.0, 1.0, 1.0 }).isEmpty());
@@ -662,8 +662,8 @@ TEST_CASE("Mesh3D::TriangularPrism")
 	const Vec3 size{ 4.0, 2.0, 6.0 };
 	const Mesh3D mesh = Mesh3D::TriangularPrism(size);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 18 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 8 });
+	CHECK((mesh.vertexCount()) == (size_t{ 18 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 8 }));
 	CheckMeshGeometry(mesh);
 
 	const Float3 expectedFrontNormal = Float3{ 0.0f, 3.0f, -2.0f }.normalized();
@@ -683,18 +683,18 @@ TEST_CASE("Mesh3D::TriangularPrism")
 		else if (vertex.normal.dot(expectedBackNormal) > (1.0f - FrameEpsilon)) { ++normalCounts[4]; }
 	}
 
-	CHECK_EQ(normalCounts, (std::array<size_t, 5>{ 3, 3, 4, 4, 4 }));
-	CHECK_EQ(mesh.vertices[2].pos, Float3{ 2.0f, 1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[5].pos, Float3{ -2.0f, 1.0f, 0.0f });
+	CHECK((normalCounts) == ((std::array<size_t, 5>{ 3, 3, 4, 4, 4 })));
+	CHECK((mesh.vertices[2].pos) == (Float3{ 2.0f, 1.0f, 0.0f }));
+	CHECK((mesh.vertices[5].pos) == (Float3{ -2.0f, 1.0f, 0.0f }));
 
 	const Mesh3D defaultMappingMesh = Mesh3D::TriangularPrism(size, BoxUVMapping{});
-	REQUIRE_EQ(defaultMappingMesh.vertexCount(), mesh.vertexCount());
+	REQUIRE((defaultMappingMesh.vertexCount()) == (mesh.vertexCount()));
 	for (size_t i = 0; i < mesh.vertexCount(); ++i)
 	{
-		CHECK_EQ(defaultMappingMesh.vertices[i].pos, mesh.vertices[i].pos);
-		CHECK_EQ(defaultMappingMesh.vertices[i].normal, mesh.vertices[i].normal);
-		CHECK_EQ(defaultMappingMesh.vertices[i].tex, mesh.vertices[i].tex);
-		CHECK_EQ(defaultMappingMesh.vertices[i].tangent, mesh.vertices[i].tangent);
+		CHECK((defaultMappingMesh.vertices[i].pos) == (mesh.vertices[i].pos));
+		CHECK((defaultMappingMesh.vertices[i].normal) == (mesh.vertices[i].normal));
+		CHECK((defaultMappingMesh.vertices[i].tex) == (mesh.vertices[i].tex));
+		CHECK((defaultMappingMesh.vertices[i].tangent) == (mesh.vertices[i].tangent));
 	}
 
 	CHECK(Mesh3D::TriangularPrism(Vec3{ 0.0, 1.0, 1.0 }).isEmpty());
@@ -750,8 +750,8 @@ TEST_CASE("Mesh3D::Stairs")
 	const Vec3 size{ 4.0, 2.0, 8.0 };
 	const Mesh3D mesh = Mesh3D::Stairs(size, Steps);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ (16 * Steps) + 8 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ (8 * Steps) + 4 });
+	CHECK((mesh.vertexCount()) == (size_t{ (16 * Steps) + 8 }));
+	CHECK((mesh.triangleCount()) == (size_t{ (8 * Steps) + 4 }));
 	CheckMeshGeometry(mesh);
 
 	std::array<size_t, 6> normalCounts{};
@@ -768,16 +768,16 @@ TEST_CASE("Mesh3D::Stairs")
 		else if (vertex.normal == Float3::UnitY()) { ++normalCounts[4]; }
 		else if (vertex.normal == -Float3::UnitY()) { ++normalCounts[5]; }
 	}
-	CHECK_EQ(normalCounts[0], size_t{ 4 * Steps });
-	CHECK_EQ(normalCounts[1], size_t{ 4 });
-	CHECK_EQ(normalCounts[2], size_t{ 4 * Steps });
-	CHECK_EQ(normalCounts[3], size_t{ 4 * Steps });
-	CHECK_EQ(normalCounts[4], size_t{ 4 * Steps });
-	CHECK_EQ(normalCounts[5], size_t{ 4 });
+	CHECK((normalCounts[0]) == (size_t{ 4 * Steps }));
+	CHECK((normalCounts[1]) == (size_t{ 4 }));
+	CHECK((normalCounts[2]) == (size_t{ 4 * Steps }));
+	CHECK((normalCounts[3]) == (size_t{ 4 * Steps }));
+	CHECK((normalCounts[4]) == (size_t{ 4 * Steps }));
+	CHECK((normalCounts[5]) == (size_t{ 4 }));
 
 	const Mesh3D oneStep = Mesh3D::Stairs(size, 1);
-	CHECK_EQ(oneStep.vertexCount(), size_t{ 24 });
-	CHECK_EQ(oneStep.triangleCount(), size_t{ 12 });
+	CHECK((oneStep.vertexCount()) == (size_t{ 24 }));
+	CHECK((oneStep.triangleCount()) == (size_t{ 12 }));
 	CheckMeshGeometry(oneStep);
 
 	CHECK(Mesh3D::Stairs(size, 0).isEmpty());
@@ -836,11 +836,11 @@ TEST_CASE("Mesh3D::Stairs with projected UV mapping")
 
 	const Mesh3D defaultMesh = Mesh3D::Stairs(size, Steps);
 	const Mesh3D defaultMappingMesh = Mesh3D::Stairs(size, Steps, BoxUVMapping{});
-	REQUIRE_EQ(defaultMappingMesh.vertexCount(), defaultMesh.vertexCount());
+	REQUIRE((defaultMappingMesh.vertexCount()) == (defaultMesh.vertexCount()));
 	for (size_t i = 0; i < defaultMesh.vertices.size(); ++i)
 	{
-		CHECK_EQ(defaultMappingMesh.vertices[i].tex, defaultMesh.vertices[i].tex);
-		CHECK_EQ(defaultMappingMesh.vertices[i].tangent, defaultMesh.vertices[i].tangent);
+		CHECK((defaultMappingMesh.vertices[i].tex) == (defaultMesh.vertices[i].tex));
+		CHECK((defaultMappingMesh.vertices[i].tangent) == (defaultMesh.vertices[i].tangent));
 	}
 
 	BoxUVMapping invalid = uvMapping;
@@ -854,8 +854,8 @@ TEST_CASE("Mesh3D::Pyramid")
 	constexpr double Height = 3.0;
 	const Mesh3D mesh = Mesh3D::Pyramid(baseSizeXZ, Height);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 16 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 6 });
+	CHECK((mesh.vertexCount()) == (size_t{ 16 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 6 }));
 	CheckMeshGeometry(mesh);
 
 	for (const auto& vertex : mesh.vertices)
@@ -885,46 +885,46 @@ TEST_CASE("Mesh3D::Pyramid")
 	for (size_t faceIndex = 0; faceIndex < 4; ++faceIndex)
 	{
 		const size_t vertexOffset = (faceIndex * 3);
-		CHECK_EQ(mesh.vertices[vertexOffset + 0].tex, Float2{ 1.0f, 1.0f });
-		CHECK_EQ(mesh.vertices[vertexOffset + 1].tex, Float2{ 0.0f, 1.0f });
-		CHECK_EQ(mesh.vertices[vertexOffset + 2].pos, Float3{ 0.0f, 1.5f, 0.0f });
-		CHECK_EQ(mesh.vertices[vertexOffset + 2].tex, Float2{ 0.5f, 0.0f });
+		CHECK((mesh.vertices[vertexOffset + 0].tex) == (Float2{ 1.0f, 1.0f }));
+		CHECK((mesh.vertices[vertexOffset + 1].tex) == (Float2{ 0.0f, 1.0f }));
+		CHECK((mesh.vertices[vertexOffset + 2].pos) == (Float3{ 0.0f, 1.5f, 0.0f }));
+		CHECK((mesh.vertices[vertexOffset + 2].tex) == (Float2{ 0.5f, 0.0f }));
 
 		for (size_t i = 0; i < 3; ++i)
 		{
 			const Vertex3D& vertex = mesh.vertices[vertexOffset + i];
-			CHECK(vertex.normal.x == doctest::Approx(expectedSideNormals[faceIndex].x).epsilon(FrameEpsilon));
-			CHECK(vertex.normal.y == doctest::Approx(expectedSideNormals[faceIndex].y).epsilon(FrameEpsilon));
-			CHECK(vertex.normal.z == doctest::Approx(expectedSideNormals[faceIndex].z).epsilon(FrameEpsilon));
-			CHECK_EQ(vertex.tangent, Float4{ expectedSideTangents[faceIndex], 1.0f });
+			CHECK(vertex.normal.x == Test::Approx(expectedSideNormals[faceIndex].x).epsilon(FrameEpsilon));
+			CHECK(vertex.normal.y == Test::Approx(expectedSideNormals[faceIndex].y).epsilon(FrameEpsilon));
+			CHECK(vertex.normal.z == Test::Approx(expectedSideNormals[faceIndex].z).epsilon(FrameEpsilon));
+			CHECK((vertex.tangent) == (Float4{ expectedSideTangents[faceIndex], 1.0f }));
 		}
 	}
 
 	constexpr size_t BottomVertexBase = 12;
-	CHECK_EQ(mesh.vertices[BottomVertexBase + 0].pos, Float3{ -2.0f, -1.5f, -1.0f });
-	CHECK_EQ(mesh.vertices[BottomVertexBase + 1].pos, Float3{ 2.0f, -1.5f, -1.0f });
-	CHECK_EQ(mesh.vertices[BottomVertexBase + 2].pos, Float3{ -2.0f, -1.5f, 1.0f });
-	CHECK_EQ(mesh.vertices[BottomVertexBase + 3].pos, Float3{ 2.0f, -1.5f, 1.0f });
-	CHECK_EQ(mesh.vertices[BottomVertexBase + 0].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[BottomVertexBase + 3].tex, Float2{ 1.0f, 1.0f });
+	CHECK((mesh.vertices[BottomVertexBase + 0].pos) == (Float3{ -2.0f, -1.5f, -1.0f }));
+	CHECK((mesh.vertices[BottomVertexBase + 1].pos) == (Float3{ 2.0f, -1.5f, -1.0f }));
+	CHECK((mesh.vertices[BottomVertexBase + 2].pos) == (Float3{ -2.0f, -1.5f, 1.0f }));
+	CHECK((mesh.vertices[BottomVertexBase + 3].pos) == (Float3{ 2.0f, -1.5f, 1.0f }));
+	CHECK((mesh.vertices[BottomVertexBase + 0].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[BottomVertexBase + 3].tex) == (Float2{ 1.0f, 1.0f }));
 
 	for (size_t i = BottomVertexBase; i < mesh.vertices.size(); ++i)
 	{
-		CHECK_EQ(mesh.vertices[i].normal, -Float3::UnitY());
-		CHECK_EQ(mesh.vertices[i].tangent, Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
+		CHECK((mesh.vertices[i].normal) == (-Float3::UnitY()));
+		CHECK((mesh.vertices[i].tangent) == (Float4{ 1.0f, 0.0f, 0.0f, 1.0f }));
 	}
 
 	CheckMeshGeometry(Mesh3D::Pyramid());
 	const Mesh3D squareMesh = Mesh3D::Pyramid(2.0, Height);
 	const Mesh3D squareMeshFromSize = Mesh3D::Pyramid(SizeF{ 2.0, 2.0 }, Height);
-	CHECK_EQ(squareMesh.vertexCount(), squareMeshFromSize.vertexCount());
-	CHECK_EQ(squareMesh.triangleCount(), squareMeshFromSize.triangleCount());
+	CHECK((squareMesh.vertexCount()) == (squareMeshFromSize.vertexCount()));
+	CHECK((squareMesh.triangleCount()) == (squareMeshFromSize.triangleCount()));
 	for (size_t i = 0; i < squareMesh.vertices.size(); ++i)
 	{
-		CHECK_EQ(squareMesh.vertices[i].pos, squareMeshFromSize.vertices[i].pos);
-		CHECK_EQ(squareMesh.vertices[i].normal, squareMeshFromSize.vertices[i].normal);
-		CHECK_EQ(squareMesh.vertices[i].tex, squareMeshFromSize.vertices[i].tex);
-		CHECK_EQ(squareMesh.vertices[i].tangent, squareMeshFromSize.vertices[i].tangent);
+		CHECK((squareMesh.vertices[i].pos) == (squareMeshFromSize.vertices[i].pos));
+		CHECK((squareMesh.vertices[i].normal) == (squareMeshFromSize.vertices[i].normal));
+		CHECK((squareMesh.vertices[i].tex) == (squareMeshFromSize.vertices[i].tex));
+		CHECK((squareMesh.vertices[i].tangent) == (squareMeshFromSize.vertices[i].tangent));
 	}
 	CHECK(Mesh3D::Pyramid(-1.0, 1.0).isEmpty());
 	CHECK(Mesh3D::Pyramid(SizeF{ 0.0, 1.0 }, 1.0).isEmpty());
@@ -941,8 +941,8 @@ TEST_CASE("Mesh3D::RectangularFrustum")
 	constexpr double Height = 4.0;
 	const Mesh3D mesh = Mesh3D::RectangularFrustum(bottomSizeXZ, topSizeXZ, Height);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+	CHECK((mesh.vertexCount()) == (size_t{ 24 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 	CheckMeshGeometry(mesh);
 
 	const std::array<Float3, 6> expectedNormals{
@@ -963,13 +963,13 @@ TEST_CASE("Mesh3D::RectangularFrustum")
 		}
 	}
 
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -1.0f, 2.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[2].pos, Float3{ -2.0f, -2.0f, -3.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ -1.0f, 2.0f, -1.0f }));
+	CHECK((mesh.vertices[2].pos) == (Float3{ -2.0f, -2.0f, -3.0f }));
 	CheckUV(mesh.vertices[16].tex, Float2{ 0.25f, (1.0f / 3.0f) });
 	CheckUV(mesh.vertices[19].tex, Float2{ 0.75f, (2.0f / 3.0f) });
 
 	const Mesh3D inverted = Mesh3D::RectangularFrustum(topSizeXZ, bottomSizeXZ, Height);
-	CHECK_EQ(inverted.vertexCount(), mesh.vertexCount());
+	CHECK((inverted.vertexCount()) == (mesh.vertexCount()));
 	CheckMeshGeometry(inverted);
 
 	const BoxUVMapping uvMapping{
@@ -989,14 +989,14 @@ TEST_CASE("Mesh3D::RectangularFrustum")
 
 	const Mesh3D box = Mesh3D::Box(Vec3{ 4.0, Height, 6.0 }, uvMapping);
 	const Mesh3D equalEnds = Mesh3D::RectangularFrustum(bottomSizeXZ, bottomSizeXZ, Height, uvMapping);
-	REQUIRE_EQ(equalEnds.vertexCount(), box.vertexCount());
-	REQUIRE_EQ(equalEnds.triangleCount(), box.triangleCount());
+	REQUIRE((equalEnds.vertexCount()) == (box.vertexCount()));
+	REQUIRE((equalEnds.triangleCount()) == (box.triangleCount()));
 	for (size_t i = 0; i < box.vertexCount(); ++i)
 	{
-		CHECK_EQ(equalEnds.vertices[i].pos, box.vertices[i].pos);
-		CHECK_EQ(equalEnds.vertices[i].normal, box.vertices[i].normal);
-		CHECK_EQ(equalEnds.vertices[i].tex, box.vertices[i].tex);
-		CHECK_EQ(equalEnds.vertices[i].tangent, box.vertices[i].tangent);
+		CHECK((equalEnds.vertices[i].pos) == (box.vertices[i].pos));
+		CHECK((equalEnds.vertices[i].normal) == (box.vertices[i].normal));
+		CHECK((equalEnds.vertices[i].tex) == (box.vertices[i].tex));
+		CHECK((equalEnds.vertices[i].tangent) == (box.vertices[i].tangent));
 	}
 
 	CHECK(Mesh3D::RectangularFrustum(SizeF{ 0.0, 1.0 }, topSizeXZ, Height).isEmpty());
@@ -1014,9 +1014,9 @@ TEST_CASE("Mesh3D::Tetrahedron")
 {
 	const Mesh3D mesh = Mesh3D::Tetrahedron(2.0);
 	CheckRegularPolyhedron(mesh, 2.0, 4, 3);
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ 1.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[1].tex, Float2{ 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[2].tex, Float2{ 0.5f, 0.0f });
+	CHECK((mesh.vertices[0].tex) == (Float2{ 1.0f, 1.0f }));
+	CHECK((mesh.vertices[1].tex) == (Float2{ 0.0f, 1.0f }));
+	CHECK((mesh.vertices[2].tex) == (Float2{ 0.5f, 0.0f }));
 	CheckRegularPolyhedron(Mesh3D::Tetrahedron(), 1.0, 4, 3);
 	CHECK(Mesh3D::Tetrahedron(0.0).isEmpty());
 	CHECK(Mesh3D::Tetrahedron(std::numeric_limits<double>::infinity()).isEmpty());
@@ -1046,8 +1046,8 @@ TEST_CASE("Mesh3D::IcoSphere")
 	for (uint32 subdivisions = 0; subdivisions < ExpectedVertexCounts.size(); ++subdivisions)
 	{
 		const Mesh3D mesh = Mesh3D::IcoSphere(2.0, subdivisions);
-		REQUIRE_EQ(mesh.vertexCount(), ExpectedVertexCounts[subdivisions]);
-		REQUIRE_EQ(mesh.triangleCount(), ExpectedTriangleCounts[subdivisions]);
+		REQUIRE((mesh.vertexCount()) == (ExpectedVertexCounts[subdivisions]));
+		REQUIRE((mesh.triangleCount()) == (ExpectedTriangleCounts[subdivisions]));
 		CheckMeshGeometry(mesh, Mesh3DTest::TangentHandedness::Positive);
 
 		Array<bool> usedVertices(mesh.vertexCount(), false);
@@ -1061,20 +1061,20 @@ TEST_CASE("Mesh3D::IcoSphere")
 		for (size_t i = 0; i < mesh.vertexCount(); ++i)
 		{
 			const Vertex3D& vertex = mesh.vertices[i];
-			CHECK(vertex.pos.length() == doctest::Approx(2.0f).epsilon(FrameEpsilon));
-			CHECK_EQ(vertex.normal, (vertex.pos / 2.0f));
-			CHECK_EQ(vertex.tex, Float2{ 0.0f, 0.0f });
+			CHECK(vertex.pos.length() == Test::Approx(2.0f).epsilon(FrameEpsilon));
+			CHECK((vertex.normal) == ((vertex.pos / 2.0f)));
+			CHECK((vertex.tex) == (Float2{ 0.0f, 0.0f }));
 			CHECK(usedVertices[i]);
 		}
 	}
 
 	const Mesh3D defaultMesh = Mesh3D::IcoSphere();
-	CHECK_EQ(defaultMesh.vertexCount(), size_t{ 162 });
-	CHECK_EQ(defaultMesh.triangleCount(), size_t{ 320 });
+	CHECK((defaultMesh.vertexCount()) == (size_t{ 162 }));
+	CHECK((defaultMesh.triangleCount()) == (size_t{ 320 }));
 
 	const Mesh3D maximumMesh = Mesh3D::IcoSphere(1.0, 8);
-	CHECK_EQ(maximumMesh.vertexCount(), size_t{ 655362 });
-	CHECK_EQ(maximumMesh.triangleCount(), size_t{ 1310720 });
+	CHECK((maximumMesh.vertexCount()) == (size_t{ 655362 }));
+	CHECK((maximumMesh.triangleCount()) == (size_t{ 1310720 }));
 	CHECK(maximumMesh.validate());
 
 	CHECK(Mesh3D::IcoSphere(0.0, 0).isEmpty());
@@ -1098,13 +1098,13 @@ TEST_CASE("Mesh3D::Plane")
 	const Vec2 uvOffset{ -0.25, 0.5 };
 	const Mesh3D mesh = Mesh3D::Plane(SizeF{ 4.0, 2.0 }, uvScale, uvOffset);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 4 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 2 });
+	CHECK((mesh.vertexCount()) == (size_t{ 4 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 2 }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -2.0f, 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[3].pos, Float3{ 2.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ uvOffset });
-	CHECK_EQ(mesh.vertices[3].tex, Float2{ (uvOffset + uvScale) });
+	CHECK((mesh.vertices[0].pos) == (Float3{ -2.0f, 0.0f, 1.0f }));
+	CHECK((mesh.vertices[3].pos) == (Float3{ 2.0f, 0.0f, -1.0f }));
+	CHECK((mesh.vertices[0].tex) == (Float2{ uvOffset }));
+	CHECK((mesh.vertices[3].tex) == (Float2{ (uvOffset + uvScale) }));
 
 	CHECK(Mesh3D::Plane(SizeF{ -1.0, 1.0 }).isEmpty());
 }
@@ -1115,16 +1115,16 @@ TEST_CASE("Mesh3D::Grid")
 	const Vec2 uvOffset{ 0.25, -0.5 };
 	const Mesh3D mesh = Mesh3D::Grid(SizeF{ 4.0, 2.0 }, 2, 1, uvScale, uvOffset);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 6 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 4 });
+	CHECK((mesh.vertexCount()) == (size_t{ 6 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 4 }));
 	CheckMeshGeometry(mesh);
 
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ -2.0f, 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[2].pos, Float3{ 2.0f, 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[3].pos, Float3{ -2.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[5].pos, Float3{ 2.0f, 0.0f, -1.0f });
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ uvOffset });
-	CHECK_EQ(mesh.vertices[5].tex, Float2{ (uvOffset + uvScale) });
+	CHECK((mesh.vertices[0].pos) == (Float3{ -2.0f, 0.0f, 1.0f }));
+	CHECK((mesh.vertices[2].pos) == (Float3{ 2.0f, 0.0f, 1.0f }));
+	CHECK((mesh.vertices[3].pos) == (Float3{ -2.0f, 0.0f, -1.0f }));
+	CHECK((mesh.vertices[5].pos) == (Float3{ 2.0f, 0.0f, -1.0f }));
+	CHECK((mesh.vertices[0].tex) == (Float2{ uvOffset }));
+	CHECK((mesh.vertices[5].tex) == (Float2{ (uvOffset + uvScale) }));
 
 	CHECK(Mesh3D::Grid(SizeF{ 1.0, 1.0 }, 0, 1).isEmpty());
 	CHECK(Mesh3D::Grid(SizeF{ 1.0, 1.0 }, 1, 0).isEmpty());
@@ -1141,13 +1141,13 @@ TEST_CASE("Mesh3D::Sphere")
 	const size_t expectedVertexCount = ((Stacks - 1) * (Slices + 1) + (2 * Slices));
 	const size_t expectedTriangleCount = (2 * Slices * (Stacks - 1));
 
-	CHECK_EQ(mesh.vertexCount(), expectedVertexCount);
-	CHECK_EQ(mesh.triangleCount(), expectedTriangleCount);
+	CHECK((mesh.vertexCount()) == (expectedVertexCount));
+	CHECK((mesh.triangleCount()) == (expectedTriangleCount));
 	CheckMeshGeometry(mesh);
 
 	for (const auto& vertex : mesh.vertices)
 	{
-		CHECK(vertex.pos.length() == doctest::Approx(2.0f).epsilon(FrameEpsilon));
+		CHECK(vertex.pos.length() == Test::Approx(2.0f).epsilon(FrameEpsilon));
 		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
 		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
 	}
@@ -1155,34 +1155,34 @@ TEST_CASE("Mesh3D::Sphere")
 	const size_t firstRingBase = Slices;
 	for (uint32 x = 0; x < Slices; ++x)
 	{
-		CHECK_EQ(mesh.vertices[x].pos, Float3{ 0.0f, 2.0f, 0.0f });
-		CHECK_EQ(mesh.vertices[x].tex.y, 0.0f);
+		CHECK((mesh.vertices[x].pos) == (Float3{ 0.0f, 2.0f, 0.0f }));
+		CHECK((mesh.vertices[x].tex.y) == (0.0f));
 	}
 
 	const size_t equatorBase = (firstRingBase + (Stacks / 2 - 1) * (Slices + 1));
-	CHECK(mesh.vertices[equatorBase + 0].pos.x == doctest::Approx(2.0f).epsilon(FrameEpsilon));
-	CHECK(mesh.vertices[equatorBase + 0].pos.y == doctest::Approx(0.0f).epsilon(FrameEpsilon));
-	CHECK(mesh.vertices[equatorBase + 0].pos.z == doctest::Approx(0.0f).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[equatorBase + 0].tex, Float2{ 0.0f, 0.5f });
+	CHECK(mesh.vertices[equatorBase + 0].pos.x == Test::Approx(2.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + 0].pos.y == Test::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + 0].pos.z == Test::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[equatorBase + 0].tex) == (Float2{ 0.0f, 0.5f }));
 	CHECK(mesh.vertices[equatorBase + 1].pos.z > 0.0f);
 	CHECK(mesh.vertices[equatorBase + 1].tex.x > mesh.vertices[equatorBase + 0].tex.x);
-	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.x == doctest::Approx(0.0f).epsilon(FrameEpsilon));
-	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.y == doctest::Approx(0.0f).epsilon(FrameEpsilon));
-	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.z == doctest::Approx(2.0f).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[equatorBase + Slices / 4].tex, Float2{ 0.25f, 0.5f });
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.x == Test::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.y == Test::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.z == Test::Approx(2.0f).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[equatorBase + Slices / 4].tex) == (Float2{ 0.25f, 0.5f }));
 
 	const size_t bottomPoleBase = (firstRingBase + (Stacks - 1) * (Slices + 1));
 	for (uint32 x = 0; x < Slices; ++x)
 	{
-		CHECK_EQ(mesh.vertices[bottomPoleBase + x].pos, Float3{ 0.0f, -2.0f, 0.0f });
-		CHECK_EQ(mesh.vertices[bottomPoleBase + x].tex.y, 1.0f);
+		CHECK((mesh.vertices[bottomPoleBase + x].pos) == (Float3{ 0.0f, -2.0f, 0.0f }));
+		CHECK((mesh.vertices[bottomPoleBase + x].tex.y) == (1.0f));
 	}
 
-	CHECK_EQ(mesh.vertices[firstRingBase].pos, mesh.vertices[firstRingBase + Slices].pos);
-	CHECK_EQ(mesh.vertices[firstRingBase].normal, mesh.vertices[firstRingBase + Slices].normal);
-	CHECK_EQ(mesh.vertices[firstRingBase].tangent, mesh.vertices[firstRingBase + Slices].tangent);
-	CHECK_EQ(mesh.vertices[firstRingBase].tex.x, 0.0f);
-	CHECK_EQ(mesh.vertices[firstRingBase + Slices].tex.x, 1.0f);
+	CHECK((mesh.vertices[firstRingBase].pos) == (mesh.vertices[firstRingBase + Slices].pos));
+	CHECK((mesh.vertices[firstRingBase].normal) == (mesh.vertices[firstRingBase + Slices].normal));
+	CHECK((mesh.vertices[firstRingBase].tangent) == (mesh.vertices[firstRingBase + Slices].tangent));
+	CHECK((mesh.vertices[firstRingBase].tex.x) == (0.0f));
+	CHECK((mesh.vertices[firstRingBase + Slices].tex.x) == (1.0f));
 
 	CHECK(Mesh3D::Sphere(0.0, Slices, Stacks).isEmpty());
 	CHECK(Mesh3D::Sphere(1.0, 2, Stacks).isEmpty());
@@ -1199,68 +1199,68 @@ TEST_CASE("Mesh3D::Hemisphere")
 	const size_t expectedVertexCount = (Slices + Stacks * (Slices + 1));
 	const size_t expectedTriangleCount = (Slices * (2 * Stacks - 1));
 
-	CHECK_EQ(mesh.vertexCount(), expectedVertexCount);
-	CHECK_EQ(mesh.triangleCount(), expectedTriangleCount);
+	CHECK((mesh.vertexCount()) == (expectedVertexCount));
+	CHECK((mesh.triangleCount()) == (expectedTriangleCount));
 	CheckMeshGeometry(mesh);
 
 	for (const auto& vertex : mesh.vertices)
 	{
-		CHECK(vertex.pos.length() == doctest::Approx(Radius).epsilon(FrameEpsilon));
+		CHECK(vertex.pos.length() == Test::Approx(Radius).epsilon(FrameEpsilon));
 		CHECK(vertex.pos.y >= 0.0f);
 		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
 		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
 	}
 
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ 0.0f, Radius, 0.0f });
-	CHECK_EQ(mesh.vertices[0].normal, Float3::UnitY());
-	CHECK_EQ(mesh.vertices[0].tex.y, 0.0f);
+	CHECK((mesh.vertices[0].pos) == (Float3{ 0.0f, Radius, 0.0f }));
+	CHECK((mesh.vertices[0].normal) == (Float3::UnitY()));
+	CHECK((mesh.vertices[0].tex.y) == (0.0f));
 
 	const size_t equatorBase = (Slices + (Stacks - 1) * (Slices + 1));
-	CHECK_EQ(mesh.vertices[equatorBase].pos, mesh.vertices[equatorBase + Slices].pos);
-	CHECK_EQ(mesh.vertices[equatorBase].normal, mesh.vertices[equatorBase + Slices].normal);
-	CHECK_EQ(mesh.vertices[equatorBase].tangent, mesh.vertices[equatorBase + Slices].tangent);
-	CHECK_EQ(mesh.vertices[equatorBase].pos.y, 0.0f);
-	CHECK_EQ(mesh.vertices[equatorBase].normal.y, 0.0f);
-	CHECK_EQ(mesh.vertices[equatorBase].tex, Float2{ 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[equatorBase + Slices].tex, Float2{ 1.0f, 1.0f });
+	CHECK((mesh.vertices[equatorBase].pos) == (mesh.vertices[equatorBase + Slices].pos));
+	CHECK((mesh.vertices[equatorBase].normal) == (mesh.vertices[equatorBase + Slices].normal));
+	CHECK((mesh.vertices[equatorBase].tangent) == (mesh.vertices[equatorBase + Slices].tangent));
+	CHECK((mesh.vertices[equatorBase].pos.y) == (0.0f));
+	CHECK((mesh.vertices[equatorBase].normal.y) == (0.0f));
+	CHECK((mesh.vertices[equatorBase].tex) == (Float2{ 0.0f, 1.0f }));
+	CHECK((mesh.vertices[equatorBase + Slices].tex) == (Float2{ 1.0f, 1.0f }));
 	CHECK(mesh.vertices[equatorBase + 1].pos.z > 0.0f);
 	CHECK(mesh.vertices[equatorBase + 1].tex.x > mesh.vertices[equatorBase].tex.x);
-	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.x == doctest::Approx(0.0f).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[equatorBase + Slices / 4].pos.y, 0.0f);
-	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.z == doctest::Approx(Radius).epsilon(FrameEpsilon));
-	CHECK_EQ(mesh.vertices[equatorBase + Slices / 4].tex, Float2{ 0.25f, 1.0f });
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.x == Test::Approx(0.0f).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[equatorBase + Slices / 4].pos.y) == (0.0f));
+	CHECK(mesh.vertices[equatorBase + Slices / 4].pos.z == Test::Approx(Radius).epsilon(FrameEpsilon));
+	CHECK((mesh.vertices[equatorBase + Slices / 4].tex) == (Float2{ 0.25f, 1.0f }));
 
 	const Mesh3D explicitOpenMesh = Mesh3D::Hemisphere(Radius, CloseBottom::No, Slices, Stacks);
-	CHECK_EQ(explicitOpenMesh.vertexCount(), mesh.vertexCount());
-	CHECK_EQ(explicitOpenMesh.triangleCount(), mesh.triangleCount());
+	CHECK((explicitOpenMesh.vertexCount()) == (mesh.vertexCount()));
+	CHECK((explicitOpenMesh.triangleCount()) == (mesh.triangleCount()));
 
 	const Mesh3D closedMesh = Mesh3D::Hemisphere(Radius, CloseBottom::Yes, Slices, Stacks);
-	CHECK_EQ(closedMesh.vertexCount(), (expectedVertexCount + Slices + 1));
-	CHECK_EQ(closedMesh.triangleCount(), (expectedTriangleCount + Slices));
+	CHECK((closedMesh.vertexCount()) == ((expectedVertexCount + Slices + 1)));
+	CHECK((closedMesh.triangleCount()) == ((expectedTriangleCount + Slices)));
 	CheckMeshGeometry(closedMesh);
 
 	for (size_t i = 0; i < mesh.vertices.size(); ++i)
 	{
-		CHECK_EQ(closedMesh.vertices[i].pos, mesh.vertices[i].pos);
-		CHECK_EQ(closedMesh.vertices[i].normal, mesh.vertices[i].normal);
-		CHECK_EQ(closedMesh.vertices[i].tex, mesh.vertices[i].tex);
-		CHECK_EQ(closedMesh.vertices[i].tangent, mesh.vertices[i].tangent);
+		CHECK((closedMesh.vertices[i].pos) == (mesh.vertices[i].pos));
+		CHECK((closedMesh.vertices[i].normal) == (mesh.vertices[i].normal));
+		CHECK((closedMesh.vertices[i].tex) == (mesh.vertices[i].tex));
+		CHECK((closedMesh.vertices[i].tangent) == (mesh.vertices[i].tangent));
 	}
 
 	const size_t bottomCenterIndex = expectedVertexCount;
 	const size_t bottomRingBase = (bottomCenterIndex + 1);
-	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].pos, Float3::Zero());
-	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].normal, -Float3::UnitY());
-	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].tex, Float2{ 0.5f, 0.5f });
-	CHECK_EQ(closedMesh.vertices[bottomCenterIndex].tangent, Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
-	CHECK_EQ(closedMesh.vertices[bottomRingBase].pos, Float3{ Radius, 0.0f, 0.0f });
-	CHECK_EQ(closedMesh.vertices[bottomRingBase].tex, Float2{ 1.0f, 0.5f });
+	CHECK((closedMesh.vertices[bottomCenterIndex].pos) == (Float3::Zero()));
+	CHECK((closedMesh.vertices[bottomCenterIndex].normal) == (-Float3::UnitY()));
+	CHECK((closedMesh.vertices[bottomCenterIndex].tex) == (Float2{ 0.5f, 0.5f }));
+	CHECK((closedMesh.vertices[bottomCenterIndex].tangent) == (Float4{ 1.0f, 0.0f, 0.0f, 1.0f }));
+	CHECK((closedMesh.vertices[bottomRingBase].pos) == (Float3{ Radius, 0.0f, 0.0f }));
+	CHECK((closedMesh.vertices[bottomRingBase].tex) == (Float2{ 1.0f, 0.5f }));
 
 	for (size_t i = bottomRingBase; i < closedMesh.vertices.size(); ++i)
 	{
-		CHECK_EQ(closedMesh.vertices[i].pos.y, 0.0f);
-		CHECK_EQ(closedMesh.vertices[i].normal, -Float3::UnitY());
-		CHECK_EQ(closedMesh.vertices[i].tangent, Float4{ 1.0f, 0.0f, 0.0f, 1.0f });
+		CHECK((closedMesh.vertices[i].pos.y) == (0.0f));
+		CHECK((closedMesh.vertices[i].normal) == (-Float3::UnitY()));
+		CHECK((closedMesh.vertices[i].tangent) == (Float4{ 1.0f, 0.0f, 0.0f, 1.0f }));
 		CHECK((0.0f <= closedMesh.vertices[i].tex.x && closedMesh.vertices[i].tex.x <= 1.0f));
 		CHECK((0.0f <= closedMesh.vertices[i].tex.y && closedMesh.vertices[i].tex.y <= 1.0f));
 	}
@@ -1280,15 +1280,15 @@ TEST_CASE("Mesh3D::Disc")
 	constexpr uint32 Segments = 8;
 	const Mesh3D mesh = Mesh3D::Disc(2.0, Segments);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ Segments + 1 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ Segments });
+	CHECK((mesh.vertexCount()) == (size_t{ Segments + 1 }));
+	CHECK((mesh.triangleCount()) == (size_t{ Segments }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3::Zero());
-	CHECK_EQ(mesh.vertices[0].tex, Float2{ 0.5f, 0.5f });
+	CHECK((mesh.vertices[0].pos) == (Float3::Zero()));
+	CHECK((mesh.vertices[0].tex) == (Float2{ 0.5f, 0.5f }));
 
 	for (size_t i = 1; i < mesh.vertices.size(); ++i)
 	{
-		CHECK(mesh.vertices[i].pos.length() == doctest::Approx(2.0f).epsilon(FrameEpsilon));
+		CHECK(mesh.vertices[i].pos.length() == Test::Approx(2.0f).epsilon(FrameEpsilon));
 	}
 
 	CheckMeshGeometry(Mesh3D::Disc(1.0, 3));
@@ -1302,14 +1302,14 @@ TEST_CASE("Mesh3D::Annulus")
 	constexpr uint32 Segments = 8;
 	const Mesh3D mesh = Mesh3D::Annulus(1.0, 2.0, Segments);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ Segments * 2 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ Segments * 2 });
+	CHECK((mesh.vertexCount()) == (size_t{ Segments * 2 }));
+	CHECK((mesh.triangleCount()) == (size_t{ Segments * 2 }));
 	CheckMeshGeometry(mesh);
 
 	for (size_t i = 0; i < Segments; ++i)
 	{
-		CHECK(mesh.vertices[i].pos.length() == doctest::Approx(2.0f).epsilon(FrameEpsilon));
-		CHECK(mesh.vertices[Segments + i].pos.length() == doctest::Approx(1.0f).epsilon(FrameEpsilon));
+		CHECK(mesh.vertices[i].pos.length() == Test::Approx(2.0f).epsilon(FrameEpsilon));
+		CHECK(mesh.vertices[Segments + i].pos.length() == Test::Approx(1.0f).epsilon(FrameEpsilon));
 	}
 
 	CheckMeshGeometry(Mesh3D::Annulus(0.5, 1.0, 3));
@@ -1336,43 +1336,43 @@ TEST_CASE("Mesh3D::HollowCylinder")
 	const size_t bottomOuterBase = (topInnerBase + Segments);
 	const size_t bottomInnerBase = (bottomOuterBase + Segments);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ (8 * Segments) + 4 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 8 * Segments });
+	CHECK((mesh.vertexCount()) == (size_t{ (8 * Segments) + 4 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 8 * Segments }));
 	CheckMeshGeometry(mesh);
 
-	CHECK_EQ(mesh.vertices[outerTopBase].pos, Float3{ 2.0f, 2.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[outerTopBase].normal, Float3::UnitX());
-	CHECK_EQ(mesh.vertices[outerTopBase].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[outerTopBase].tangent, Float4{ 0.0f, 0.0f, 1.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[outerTopBase + Segments].pos, mesh.vertices[outerTopBase].pos);
-	CHECK_EQ(mesh.vertices[outerTopBase + Segments].normal, mesh.vertices[outerTopBase].normal);
-	CHECK_EQ(mesh.vertices[outerTopBase + Segments].tangent, mesh.vertices[outerTopBase].tangent);
-	CHECK_EQ(mesh.vertices[outerTopBase + Segments].tex, Float2{ 1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[outerBottomBase].tex, Float2{ 0.0f, 1.0f });
+	CHECK((mesh.vertices[outerTopBase].pos) == (Float3{ 2.0f, 2.0f, 0.0f }));
+	CHECK((mesh.vertices[outerTopBase].normal) == (Float3::UnitX()));
+	CHECK((mesh.vertices[outerTopBase].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[outerTopBase].tangent) == (Float4{ 0.0f, 0.0f, 1.0f, 1.0f }));
+	CHECK((mesh.vertices[outerTopBase + Segments].pos) == (mesh.vertices[outerTopBase].pos));
+	CHECK((mesh.vertices[outerTopBase + Segments].normal) == (mesh.vertices[outerTopBase].normal));
+	CHECK((mesh.vertices[outerTopBase + Segments].tangent) == (mesh.vertices[outerTopBase].tangent));
+	CHECK((mesh.vertices[outerTopBase + Segments].tex) == (Float2{ 1.0f, 0.0f }));
+	CHECK((mesh.vertices[outerBottomBase].tex) == (Float2{ 0.0f, 1.0f }));
 
-	CHECK_EQ(mesh.vertices[innerTopBase].pos, Float3{ 1.0f, 2.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[innerTopBase].normal, -Float3::UnitX());
-	CHECK_EQ(mesh.vertices[innerTopBase].tex, Float2{ 0.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[innerTopBase].tangent, Float4{ 0.0f, 0.0f, -1.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[innerTopBase + Segments].pos, mesh.vertices[innerTopBase].pos);
-	CHECK_EQ(mesh.vertices[innerTopBase + Segments].normal, mesh.vertices[innerTopBase].normal);
-	CHECK_EQ(mesh.vertices[innerTopBase + Segments].tangent, mesh.vertices[innerTopBase].tangent);
-	CHECK_EQ(mesh.vertices[innerTopBase + Segments].tex, Float2{ 1.0f, 0.0f });
-	CHECK_EQ(mesh.vertices[innerBottomBase].tex, Float2{ 0.0f, 1.0f });
+	CHECK((mesh.vertices[innerTopBase].pos) == (Float3{ 1.0f, 2.0f, 0.0f }));
+	CHECK((mesh.vertices[innerTopBase].normal) == (-Float3::UnitX()));
+	CHECK((mesh.vertices[innerTopBase].tex) == (Float2{ 0.0f, 0.0f }));
+	CHECK((mesh.vertices[innerTopBase].tangent) == (Float4{ 0.0f, 0.0f, -1.0f, 1.0f }));
+	CHECK((mesh.vertices[innerTopBase + Segments].pos) == (mesh.vertices[innerTopBase].pos));
+	CHECK((mesh.vertices[innerTopBase + Segments].normal) == (mesh.vertices[innerTopBase].normal));
+	CHECK((mesh.vertices[innerTopBase + Segments].tangent) == (mesh.vertices[innerTopBase].tangent));
+	CHECK((mesh.vertices[innerTopBase + Segments].tex) == (Float2{ 1.0f, 0.0f }));
+	CHECK((mesh.vertices[innerBottomBase].tex) == (Float2{ 0.0f, 1.0f }));
 
 	for (size_t i = 0; i <= Segments; ++i)
 	{
 		const Vertex3D& outer = mesh.vertices[outerTopBase + i];
 		const Vertex3D& inner = mesh.vertices[innerTopBase + i];
-		CHECK(inner.pos.x == doctest::Approx(outer.pos.x * 0.5f).epsilon(FrameEpsilon));
-		CHECK(inner.pos.z == doctest::Approx(outer.pos.z * -0.5f).epsilon(FrameEpsilon));
-		CHECK_EQ(inner.tex.x, outer.tex.x);
+		CHECK(inner.pos.x == Test::Approx(outer.pos.x * 0.5f).epsilon(FrameEpsilon));
+		CHECK(inner.pos.z == Test::Approx(outer.pos.z * -0.5f).epsilon(FrameEpsilon));
+		CHECK((inner.tex.x) == (outer.tex.x));
 	}
 
-	CHECK_EQ(mesh.vertices[topOuterBase].tex, Float2{ 1.0f, 0.5f });
-	CHECK_EQ(mesh.vertices[topInnerBase].tex, Float2{ 0.75f, 0.5f });
-	CHECK_EQ(mesh.vertices[bottomOuterBase].tex, Float2{ 1.0f, 0.5f });
-	CHECK_EQ(mesh.vertices[bottomInnerBase].tex, Float2{ 0.75f, 0.5f });
+	CHECK((mesh.vertices[topOuterBase].tex) == (Float2{ 1.0f, 0.5f }));
+	CHECK((mesh.vertices[topInnerBase].tex) == (Float2{ 0.75f, 0.5f }));
+	CHECK((mesh.vertices[bottomOuterBase].tex) == (Float2{ 1.0f, 0.5f }));
+	CHECK((mesh.vertices[bottomInnerBase].tex) == (Float2{ 0.75f, 0.5f }));
 
 	CheckMeshGeometry(Mesh3D::HollowCylinder(0.5, 1.0, 1.0, 3));
 	CHECK(Mesh3D::HollowCylinder(0.0, OuterRadius, Height, Segments).isEmpty());
@@ -1395,26 +1395,26 @@ TEST_CASE("Mesh3D::Torus")
 	const Mesh3D mesh = Mesh3D::Torus(MajorRadius, TubeRadius, RingSegments, TubeSegments);
 	const size_t ringStride = (RingSegments + 1);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ (RingSegments + 1) * (TubeSegments + 1) });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * RingSegments * TubeSegments });
+	CHECK((mesh.vertexCount()) == (size_t{ (RingSegments + 1) * (TubeSegments + 1) }));
+	CHECK((mesh.triangleCount()) == (size_t{ 2 * RingSegments * TubeSegments }));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ MajorRadius, TubeRadius, 0.0f });
-	CHECK_EQ(mesh.vertices[RingSegments].pos, mesh.vertices[0].pos);
-	CHECK_EQ(mesh.vertices[RingSegments].normal, mesh.vertices[0].normal);
-	CHECK_EQ(mesh.vertices[RingSegments].tangent, mesh.vertices[0].tangent);
-	CHECK_EQ(mesh.vertices[RingSegments].tex, Float2{ 1.0f, 0.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ MajorRadius, TubeRadius, 0.0f }));
+	CHECK((mesh.vertices[RingSegments].pos) == (mesh.vertices[0].pos));
+	CHECK((mesh.vertices[RingSegments].normal) == (mesh.vertices[0].normal));
+	CHECK((mesh.vertices[RingSegments].tangent) == (mesh.vertices[0].tangent));
+	CHECK((mesh.vertices[RingSegments].tex) == (Float2{ 1.0f, 0.0f }));
 
 	const size_t lastTubeRow = (TubeSegments * ringStride);
-	CHECK_EQ(mesh.vertices[lastTubeRow].pos, mesh.vertices[0].pos);
-	CHECK_EQ(mesh.vertices[lastTubeRow].normal, mesh.vertices[0].normal);
-	CHECK_EQ(mesh.vertices[lastTubeRow].tangent, mesh.vertices[0].tangent);
-	CHECK_EQ(mesh.vertices[lastTubeRow].tex, Float2{ 0.0f, 1.0f });
+	CHECK((mesh.vertices[lastTubeRow].pos) == (mesh.vertices[0].pos));
+	CHECK((mesh.vertices[lastTubeRow].normal) == (mesh.vertices[0].normal));
+	CHECK((mesh.vertices[lastTubeRow].tangent) == (mesh.vertices[0].tangent));
+	CHECK((mesh.vertices[lastTubeRow].tex) == (Float2{ 0.0f, 1.0f }));
 
 	for (const auto& vertex : mesh.vertices)
 	{
 		const float radialDistance = std::sqrt((vertex.pos.x * vertex.pos.x) + (vertex.pos.z * vertex.pos.z));
 		const double profileDistance = std::hypot((radialDistance - MajorRadius), vertex.pos.y);
-		CHECK(profileDistance == doctest::Approx(TubeRadius).epsilon(FrameEpsilon));
+		CHECK(profileDistance == Test::Approx(TubeRadius).epsilon(FrameEpsilon));
 		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
 		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
 	}
@@ -1442,19 +1442,19 @@ TEST_CASE("Mesh3D::Capsule")
 	const size_t ringStride = (Slices + 1);
 	const size_t firstRingBase = Slices;
 
-	CHECK_EQ(mesh.vertexCount(), ((interiorRingCount * ringStride) + (2 * Slices)));
-	CHECK_EQ(mesh.triangleCount(), (2 * Slices * interiorRingCount));
+	CHECK((mesh.vertexCount()) == (((interiorRingCount * ringStride) + (2 * Slices))));
+	CHECK((mesh.triangleCount()) == ((2 * Slices * interiorRingCount)));
 	CheckMeshGeometry(mesh);
-	CHECK_EQ(mesh.vertices[0].pos, Float3{ 0.0f, 2.0f, 0.0f });
+	CHECK((mesh.vertices[0].pos) == (Float3{ 0.0f, 2.0f, 0.0f }));
 
 	for (size_t ring = 0; ring < interiorRingCount; ++ring)
 	{
 		const size_t ringBase = (firstRingBase + (ring * ringStride));
-		CHECK_EQ(mesh.vertices[ringBase].pos, mesh.vertices[ringBase + Slices].pos);
-		CHECK_EQ(mesh.vertices[ringBase].normal, mesh.vertices[ringBase + Slices].normal);
-		CHECK_EQ(mesh.vertices[ringBase].tangent, mesh.vertices[ringBase + Slices].tangent);
-		CHECK_EQ(mesh.vertices[ringBase].tex.x, 0.0f);
-		CHECK_EQ(mesh.vertices[ringBase + Slices].tex.x, 1.0f);
+		CHECK((mesh.vertices[ringBase].pos) == (mesh.vertices[ringBase + Slices].pos));
+		CHECK((mesh.vertices[ringBase].normal) == (mesh.vertices[ringBase + Slices].normal));
+		CHECK((mesh.vertices[ringBase].tangent) == (mesh.vertices[ringBase + Slices].tangent));
+		CHECK((mesh.vertices[ringBase].tex.x) == (0.0f));
+		CHECK((mesh.vertices[ringBase + Slices].tex.x) == (1.0f));
 	}
 
 	const float halfCylinderHeight = static_cast<float>(CylinderHeight * 0.5);
@@ -1463,31 +1463,31 @@ TEST_CASE("Mesh3D::Capsule")
 		const float closestY = ((vertex.pos.y < -halfCylinderHeight) ? -halfCylinderHeight
 			: ((halfCylinderHeight < vertex.pos.y) ? halfCylinderHeight : vertex.pos.y));
 		const Float3 closestAxisPoint{ 0.0f, closestY, 0.0f };
-		CHECK(vertex.pos.distanceFrom(closestAxisPoint) == doctest::Approx(Radius).epsilon(FrameEpsilon));
+		CHECK(vertex.pos.distanceFrom(closestAxisPoint) == Test::Approx(Radius).epsilon(FrameEpsilon));
 		CHECK((0.0f <= vertex.tex.x && vertex.tex.x <= 1.0f));
 		CHECK((0.0f <= vertex.tex.y && vertex.tex.y <= 1.0f));
 	}
 
-	SUBCASE("Zero cylinder height")
+	SECTION("Zero cylinder height")
 	{
 		const Mesh3D capsule = Mesh3D::Capsule(Radius, 0.0, Slices, HemisphereStacks);
 		const Mesh3D sphere = Mesh3D::Sphere(Radius, Slices, (HemisphereStacks * 2));
-		REQUIRE_EQ(capsule.vertexCount(), sphere.vertexCount());
-		REQUIRE_EQ(capsule.triangleCount(), sphere.triangleCount());
+		REQUIRE((capsule.vertexCount()) == (sphere.vertexCount()));
+		REQUIRE((capsule.triangleCount()) == (sphere.triangleCount()));
 
 		for (size_t i = 0; i < capsule.vertexCount(); ++i)
 		{
-			CHECK_EQ(capsule.vertices[i].pos, sphere.vertices[i].pos);
-			CHECK_EQ(capsule.vertices[i].normal, sphere.vertices[i].normal);
-			CHECK_EQ(capsule.vertices[i].tex, sphere.vertices[i].tex);
-			CHECK_EQ(capsule.vertices[i].tangent, sphere.vertices[i].tangent);
+			CHECK((capsule.vertices[i].pos) == (sphere.vertices[i].pos));
+			CHECK((capsule.vertices[i].normal) == (sphere.vertices[i].normal));
+			CHECK((capsule.vertices[i].tex) == (sphere.vertices[i].tex));
+			CHECK((capsule.vertices[i].tangent) == (sphere.vertices[i].tangent));
 		}
 
 		for (size_t i = 0; i < capsule.triangleCount(); ++i)
 		{
-			CHECK_EQ(capsule.indices[i].i0, sphere.indices[i].i0);
-			CHECK_EQ(capsule.indices[i].i1, sphere.indices[i].i1);
-			CHECK_EQ(capsule.indices[i].i2, sphere.indices[i].i2);
+			CHECK((capsule.indices[i].i0) == (sphere.indices[i].i0));
+			CHECK((capsule.indices[i].i1) == (sphere.indices[i].i1));
+			CHECK((capsule.indices[i].i2) == (sphere.indices[i].i2));
 		}
 	}
 
@@ -1505,8 +1505,8 @@ TEST_CASE("Mesh3D::ConicalFrustum")
 	constexpr uint32 Segments = 8;
 	const Mesh3D mesh = Mesh3D::ConicalFrustum(2.0, 1.0, 4.0, Segments);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ (4 * Segments) + 4 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Segments });
+	CHECK((mesh.vertexCount()) == (size_t{ (4 * Segments) + 4 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 4 * Segments }));
 	CheckMeshGeometry(mesh);
 
 	for (const auto& vertex : mesh.vertices)
@@ -1516,7 +1516,7 @@ TEST_CASE("Mesh3D::ConicalFrustum")
 	}
 
 	const Mesh3D invertedFrustum = Mesh3D::ConicalFrustum(1.0, 2.0, 4.0, Segments);
-	CHECK_EQ(invertedFrustum.vertexCount(), mesh.vertexCount());
+	CHECK((invertedFrustum.vertexCount()) == (mesh.vertexCount()));
 	CheckMeshGeometry(invertedFrustum);
 	CheckMeshGeometry(Mesh3D::ConicalFrustum(1.0, 0.5, 1.0, 3));
 
@@ -1532,8 +1532,8 @@ TEST_CASE("Mesh3D::Cylinder")
 	constexpr uint32 Segments = 8;
 	const Mesh3D mesh = Mesh3D::Cylinder(2.0, 4.0, Segments);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ (4 * Segments) + 4 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 4 * Segments });
+	CHECK((mesh.vertexCount()) == (size_t{ (4 * Segments) + 4 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 4 * Segments }));
 	CheckMeshGeometry(mesh);
 
 	CHECK(Mesh3D::Cylinder(0.0, 1.0, Segments).isEmpty());
@@ -1545,28 +1545,26 @@ TEST_CASE("Mesh3D::Cone")
 	constexpr uint32 Segments = 8;
 	const Mesh3D mesh = Mesh3D::Cone(2.0, 4.0, Segments);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ (3 * Segments) + 2 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 2 * Segments });
+	CHECK((mesh.vertexCount()) == (size_t{ (3 * Segments) + 2 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 2 * Segments }));
 	CheckMeshGeometry(mesh);
 
 	for (size_t i = 0; i < Segments; ++i)
 	{
-		CHECK_EQ(mesh.vertices[i].pos, mesh.vertices[0].pos);
-		CHECK_EQ(mesh.vertices[i].tex,
-			Float2{ ((static_cast<float>(i) + 0.5f) / static_cast<float>(Segments)), 0.0f });
-		CHECK_EQ(mesh.vertices[i].tangent.w, 1.0f);
+		CHECK((mesh.vertices[i].pos) == (mesh.vertices[0].pos));
+		CHECK((mesh.vertices[i].tex) == (Float2{ ((static_cast<float>(i) + 0.5f) / static_cast<float>(Segments)), 0.0f }));
+		CHECK((mesh.vertices[i].tangent.w) == (1.0f));
 	}
 
 	constexpr size_t BottomSideBase = Segments;
 	for (size_t i = 0; i <= Segments; ++i)
 	{
-		CHECK_EQ(mesh.vertices[BottomSideBase + i].tex,
-			Float2{ (static_cast<float>(i) / static_cast<float>(Segments)), 1.0f });
-		CHECK_EQ(mesh.vertices[BottomSideBase + i].tangent.w, 1.0f);
+		CHECK((mesh.vertices[BottomSideBase + i].tex) == (Float2{ (static_cast<float>(i) / static_cast<float>(Segments)), 1.0f }));
+		CHECK((mesh.vertices[BottomSideBase + i].tangent.w) == (1.0f));
 	}
-	CHECK_EQ(mesh.vertices[BottomSideBase].pos, mesh.vertices[BottomSideBase + Segments].pos);
-	CHECK_EQ(mesh.vertices[BottomSideBase].tex, Float2{ 0.0f, 1.0f });
-	CHECK_EQ(mesh.vertices[BottomSideBase + Segments].tex, Float2{ 1.0f, 1.0f });
+	CHECK((mesh.vertices[BottomSideBase].pos) == (mesh.vertices[BottomSideBase + Segments].pos));
+	CHECK((mesh.vertices[BottomSideBase].tex) == (Float2{ 0.0f, 1.0f }));
+	CHECK((mesh.vertices[BottomSideBase + Segments].tex) == (Float2{ 1.0f, 1.0f }));
 
 	CheckMeshGeometry(Mesh3D::Cone(1.0, 1.0, 3));
 	CHECK(Mesh3D::Cone(0.0, 1.0, Segments).isEmpty());

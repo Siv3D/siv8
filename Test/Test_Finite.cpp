@@ -53,8 +53,9 @@ namespace
 	}
 }
 
-TEST_CASE_TEMPLATE("Vector.isFinite", Float, float, double, long double)
+TEMPLATE_TEST_CASE("Vector.isFinite", "", float, double, long double)
 {
+	using Float = TestType;
 	using V2 = Vector2D<Float>;
 	using V3 = Vector3D<Float>;
 	using V4 = Vector4D<Float>;

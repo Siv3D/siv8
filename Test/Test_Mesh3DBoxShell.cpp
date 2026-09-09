@@ -37,8 +37,8 @@ TEST_CASE("Mesh3D::BoxShell closed")
 {
 	const Mesh3D mesh = Mesh3D::BoxShell(Vec3{ 2.0, 4.0, 6.0 }, 0.25);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 48 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 24 });
+	CHECK((mesh.vertexCount()) == (size_t{ 48 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 24 }));
 	CheckMeshGeometry(mesh);
 
 	for (const Vertex3D& vertex : mesh.vertices)
@@ -57,8 +57,8 @@ TEST_CASE("Mesh3D::BoxShell one opening")
 	constexpr Vec3 Thickness{ 0.25, 0.5, 0.75 };
 	const Mesh3D mesh = Mesh3D::BoxShell(OuterSize, Thickness, BoxFace::PositiveZ);
 
-	CHECK_EQ(mesh.vertexCount(), size_t{ 56 });
-	CHECK_EQ(mesh.triangleCount(), size_t{ 28 });
+	CHECK((mesh.vertexCount()) == (size_t{ 56 }));
+	CHECK((mesh.triangleCount()) == (size_t{ 28 }));
 	CheckMeshGeometry(mesh);
 
 	size_t openingRimVertexCount = 0;
@@ -81,39 +81,39 @@ TEST_CASE("Mesh3D::BoxShell one opening")
 		}
 	}
 
-	CHECK_EQ(openingRimVertexCount, size_t{ 16 });
+	CHECK((openingRimVertexCount) == (size_t{ 16 }));
 	CHECK(innerTopReachesOpening);
 }
 
 TEST_CASE("Mesh3D::BoxShell multiple openings")
 {
-	SUBCASE("Adjacent openings")
+	SECTION("Adjacent openings")
 	{
 		const Mesh3D mesh = Mesh3D::BoxShell(
 			Vec3{ 2.0, 4.0, 6.0 }, 0.25,
 			(BoxFace::PositiveX | BoxFace::PositiveZ));
-		CHECK_EQ(mesh.vertexCount(), size_t{ 56 });
-		CHECK_EQ(mesh.triangleCount(), size_t{ 28 });
+		CHECK((mesh.vertexCount()) == (size_t{ 56 }));
+		CHECK((mesh.triangleCount()) == (size_t{ 28 }));
 		CheckMeshGeometry(mesh);
 	}
 
-	SUBCASE("Opposite openings form a tube")
+	SECTION("Opposite openings form a tube")
 	{
 		const Mesh3D mesh = Mesh3D::BoxShell(
 			Vec3{ 2.0, 4.0, 6.0 }, 0.25,
 			(BoxFace::NegativeZ | BoxFace::PositiveZ));
-		CHECK_EQ(mesh.vertexCount(), size_t{ 64 });
-		CHECK_EQ(mesh.triangleCount(), size_t{ 32 });
+		CHECK((mesh.vertexCount()) == (size_t{ 64 }));
+		CHECK((mesh.triangleCount()) == (size_t{ 32 }));
 		CheckMeshGeometry(mesh);
 	}
 
-	SUBCASE("One remaining wall")
+	SECTION("One remaining wall")
 	{
 		const BoxFace openFaces = static_cast<BoxFace>(
 			static_cast<uint8>(BoxFace::All) & ~static_cast<uint8>(BoxFace::PositiveY));
 		const Mesh3D mesh = Mesh3D::BoxShell(Vec3{ 2.0, 4.0, 6.0 }, 0.25, openFaces);
-		CHECK_EQ(mesh.vertexCount(), size_t{ 24 });
-		CHECK_EQ(mesh.triangleCount(), size_t{ 12 });
+		CHECK((mesh.vertexCount()) == (size_t{ 24 }));
+		CHECK((mesh.triangleCount()) == (size_t{ 12 }));
 		CheckMeshGeometry(mesh);
 	}
 }
@@ -159,8 +159,8 @@ TEST_CASE("Mesh3DBuilder::addBoxShell transforms and storage")
 	const TriangleIndex32* const indexData = builder.getMesh().indices.data();
 	REQUIRE(builder.addBoxShell(OuterSize, Thickness, { offset, rotation }, openFaces));
 	REQUIRE(builder.addBoxShell(OuterSize, Thickness, BoxUVMapping{}, transform, openFaces));
-	CHECK_EQ(builder.getMesh().vertices.data(), vertexData);
-	CHECK_EQ(builder.getMesh().indices.data(), indexData);
+	CHECK((builder.getMesh().vertices.data()) == (vertexData));
+	CHECK((builder.getMesh().indices.data()) == (indexData));
 
 	Mesh3D expected = Mesh3D::BoxShell(OuterSize, Thickness, openFaces);
 	REQUIRE(expected.append(

@@ -823,7 +823,6 @@
     <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXMath.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\DirectXPackedVector.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\DirectXMath\sal.h" />
-    <ClInclude Include="..\Siv3D\include\ThirdParty\doctest\doctest.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\EnumBitmask\EnumBitmask.hpp" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\base.h" />
     <ClInclude Include="..\Siv3D\include\ThirdParty\fmt\chrono.h" />

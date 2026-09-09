@@ -10,20 +10,20 @@ suite and does not require changing `SIV3D_RUN_BENCHMARK`.
 Build and run on Windows from the repository root:
 
 ```powershell
-./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=TextFileReader.benchmark.UTF8', '--no-skip'
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=TextFileReader.benchmark.UTF8'
 ```
 
 For repeated measurements of the same build, add `-SkipBuild`. Use Release,
 run on an idle machine, and collect at least three reports for each revision.
 The runner retains reports under `WindowsDesktop/Intermediate/TestReports/`.
-The benchmark's Markdown tables and CSV rows are included in the doctest report.
+The benchmark's Markdown tables and CSV rows are included in the Catch2 console report (and captured output in the XML report).
 Do not use `-SkipBuild` after changing implementation or test sources until the
 new executable has been built.
 
 On macOS, select Release explicitly (the host's runner defaults to Debug):
 
 ```sh
-CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=TextFileReader.benchmark.UTF8' '--no-skip'
+CONFIGURATION=Release ./macOS/run-tests.sh '--test-case=TextFileReader.benchmark.UTF8'
 ```
 
 For correctness checks, run the normal full suite described in the

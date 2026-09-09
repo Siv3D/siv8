@@ -19,14 +19,14 @@ namespace
 	{
 		for (const auto& [value, expected] : cases)
 		{
-			CHECK_EQ(Format(value), expected);
+			CHECK((Format(value)) == (expected));
 		}
 	}
 }
 
 TEST_CASE("EnumFormatter")
 {
-	SUBCASE("BrowserApp")
+	SECTION("BrowserApp")
 	{
 		static constexpr std::array Cases =
 		{
@@ -42,7 +42,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("TexturePixelFormat")
+	SECTION("TexturePixelFormat")
 	{
 		static constexpr std::array Cases =
 		{
@@ -73,7 +73,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("AnimatedImageDecodeError")
+	SECTION("AnimatedImageDecodeError")
 	{
 		static constexpr std::array Cases =
 		{
@@ -93,7 +93,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("INIParseErrorCode")
+	SECTION("INIParseErrorCode")
 	{
 		static constexpr std::array Cases =
 		{
@@ -112,7 +112,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("CSVParseErrorCode")
+	SECTION("CSVParseErrorCode")
 	{
 		static constexpr std::array Cases =
 		{
@@ -129,7 +129,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("AnimatedImageReadStatus")
+	SECTION("AnimatedImageReadStatus")
 	{
 		static constexpr std::array Cases =
 		{
@@ -141,7 +141,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("MessageBoxResult")
+	SECTION("MessageBoxResult")
 	{
 		static constexpr std::array Cases =
 		{
@@ -154,7 +154,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("ChildProcessPipe")
+	SECTION("ChildProcessPipe")
 	{
 		static constexpr std::array Cases =
 		{
@@ -167,7 +167,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("FileChangeAction")
+	SECTION("FileChangeAction")
 	{
 		static constexpr std::array Cases =
 		{
@@ -180,7 +180,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("LinePattern")
+	SECTION("LinePattern")
 	{
 		static constexpr std::array Cases =
 		{
@@ -195,7 +195,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("SamplerBorderColor")
+	SECTION("SamplerBorderColor")
 	{
 		static constexpr std::array Cases =
 		{
@@ -207,7 +207,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("PolygonFailureType")
+	SECTION("PolygonFailureType")
 	{
 		static constexpr std::array Cases =
 		{
@@ -231,7 +231,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("NotificationActionCategory")
+	SECTION("NotificationActionCategory")
 	{
 		static constexpr std::array Cases =
 		{
@@ -251,7 +251,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("NotificationResponseType")
+	SECTION("NotificationResponseType")
 	{
 		static constexpr std::array Cases =
 		{
@@ -265,7 +265,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("AudioFormat")
+	SECTION("AudioFormat")
 	{
 		static constexpr std::array Cases =
 		{
@@ -283,7 +283,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("ShaderStage")
+	SECTION("ShaderStage")
 	{
 		static constexpr std::array Cases =
 		{
@@ -294,7 +294,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("LogLevel")
+	SECTION("LogLevel")
 	{
 		static constexpr std::array Cases =
 		{
@@ -310,7 +310,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("DragDropItemType")
+	SECTION("DragDropItemType")
 	{
 		static constexpr std::array Cases =
 		{
@@ -321,7 +321,7 @@ TEST_CASE("EnumFormatter")
 		CheckEnumFormatter(Cases);
 	}
 
-	SUBCASE("LetterCase")
+	SECTION("LetterCase")
 	{
 		static constexpr std::array Cases =
 		{

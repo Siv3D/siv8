@@ -71,23 +71,23 @@ TEST_CASE("AsyncTask")
 {
 	using namespace std::chrono_literals;
 
-	SUBCASE("AsyncTaskStatus Formatter")
+	SECTION("AsyncTaskStatus Formatter")
 	{
-		CHECK_EQ(Format(AsyncTaskStatus::Invalid), U"Invalid");
-		CHECK_EQ(Format(AsyncTaskStatus::Running), U"Running");
-		CHECK_EQ(Format(AsyncTaskStatus::Ready), U"Ready");
+		CHECK((Format(AsyncTaskStatus::Invalid)) == (U"Invalid"));
+		CHECK((Format(AsyncTaskStatus::Running)) == (U"Running"));
+		CHECK((Format(AsyncTaskStatus::Ready)) == (U"Ready"));
 	}
 
-	SUBCASE("Default construction")
+	SECTION("Default construction")
 	{
 		const AsyncTask<int32> task;
 
 		CHECK_FALSE(task.isValid());
-		CHECK_EQ(task.status(), AsyncTaskStatus::Invalid);
+		CHECK((task.status()) == (AsyncTaskStatus::Invalid));
 		CHECK_FALSE(task.isReady());
 	}
 
-	SUBCASE("Value result and status")
+	SECTION("Value result and status")
 	{
 		std::promise<void> promise;
 		const std::shared_future<void> gate = promise.get_future().share();
@@ -100,20 +100,20 @@ TEST_CASE("AsyncTask")
 		static_assert(std::same_as<decltype(task), AsyncTask<int32>>);
 
 		CHECK(task.isValid());
-		CHECK_EQ(task.status(), AsyncTaskStatus::Running);
-		CHECK_EQ(task.wait_for(0ms), std::future_status::timeout);
+		CHECK((task.status()) == (AsyncTaskStatus::Running));
+		CHECK((task.wait_for(0ms)) == (std::future_status::timeout));
 
 		promise.set_value();
 		task.wait();
 
-		CHECK_EQ(task.status(), AsyncTaskStatus::Ready);
+		CHECK((task.status()) == (AsyncTaskStatus::Ready));
 		CHECK(task.isReady());
-		CHECK_EQ(task.get(), 42);
+		CHECK((task.get()) == (42));
 		CHECK_FALSE(task.isValid());
-		CHECK_EQ(task.status(), AsyncTaskStatus::Invalid);
+		CHECK((task.status()) == (AsyncTaskStatus::Invalid));
 	}
 
-	SUBCASE("Void result")
+	SECTION("Void result")
 	{
 		int32 value = 0;
 		AsyncTask<void> task{ [&value]
@@ -123,11 +123,11 @@ TEST_CASE("AsyncTask")
 
 		task.get();
 
-		CHECK_EQ(value, 42);
+		CHECK((value) == (42));
 		CHECK_FALSE(task.isValid());
 	}
 
-	SUBCASE("Reference result")
+	SECTION("Reference result")
 	{
 		int32 value = 42;
 		AsyncTask<int32&> task{ [&value]() -> int32&
@@ -137,22 +137,22 @@ TEST_CASE("AsyncTask")
 
 		int32& result = task.get();
 
-		CHECK_EQ(&result, &value);
+		CHECK((&result) == (&value));
 		result = 123;
-		CHECK_EQ(value, 123);
+		CHECK((value) == (123));
 	}
 
-	SUBCASE("Move-only callable")
+	SECTION("Move-only callable")
 	{
 		AsyncTask task{ [value = std::make_unique<int32>(42)]
 		{
 			return *value;
 		} };
 
-		CHECK_EQ(task.get(), 42);
+		CHECK((task.get()) == (42));
 	}
 
-	SUBCASE("Arguments")
+	SECTION("Arguments")
 	{
 		int32 value = 1;
 		AsyncTask task{ [](int32& target, int32 amount)
@@ -162,10 +162,10 @@ TEST_CASE("AsyncTask")
 
 		task.get();
 
-		CHECK_EQ(value, 42);
+		CHECK((value) == (42));
 	}
 
-	SUBCASE("share")
+	SECTION("share")
 	{
 		AsyncTask task{ []
 		{
@@ -175,7 +175,7 @@ TEST_CASE("AsyncTask")
 		const std::shared_future<int32> sharedTask = std::move(task).share();
 
 		CHECK_FALSE(task.isValid());
-		CHECK_EQ(task.status(), AsyncTaskStatus::Invalid);
-		CHECK_EQ(sharedTask.get(), 42);
+		CHECK((task.status()) == (AsyncTaskStatus::Invalid));
+		CHECK((sharedTask.get()) == (42));
 	}
 }

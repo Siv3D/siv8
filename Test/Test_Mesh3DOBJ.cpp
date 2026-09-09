@@ -103,10 +103,10 @@ TEST_CASE("Mesh3D::encodeOBJ")
 
 	MemoryWriter writer;
 	REQUIRE(mesh.encodeOBJ(writer));
-	CHECK_EQ(BlobToString(writer.getBlob()), ExpectedOBJ);
+	CHECK((BlobToString(writer.getBlob())) == (ExpectedOBJ));
 
 	const Blob blob = mesh.encodeOBJ();
-	CHECK_EQ(BlobToString(blob), ExpectedOBJ);
+	CHECK((BlobToString(blob)) == (ExpectedOBJ));
 }
 
 TEST_CASE("Mesh3D::encodeOBJ converts Siv3D V coordinates to OBJ V coordinates")
@@ -114,9 +114,9 @@ TEST_CASE("Mesh3D::encodeOBJ converts Siv3D V coordinates to OBJ V coordinates")
 	const Mesh3D sphere = Mesh3D::Sphere(1.0, 4, 2);
 	const std::string obj = BlobToString(sphere.encodeOBJ());
 
-	CHECK_NE(obj.find("vt 0.125 1\n"), std::string::npos); // North pole: Siv3D V = 0, OBJ V = 1
-	CHECK_NE(obj.find("vt 0 0.5\n"), std::string::npos);   // Equator
-	CHECK_NE(obj.find("vt 0.125 0\n"), std::string::npos); // South pole: Siv3D V = 1, OBJ V = 0
+	CHECK((obj.find("vt 0.125 1\n")) != (std::string::npos)); // North pole: Siv3D V = 0, OBJ V = 1
+	CHECK((obj.find("vt 0 0.5\n")) != (std::string::npos));   // Equator
+	CHECK((obj.find("vt 0.125 0\n")) != (std::string::npos)); // South pole: Siv3D V = 1, OBJ V = 0
 }
 
 TEST_CASE("Mesh3D::saveOBJ")
@@ -126,7 +126,7 @@ TEST_CASE("Mesh3D::saveOBJ")
 
 	FileSystem::Remove(path);
 	REQUIRE(mesh.saveOBJ(path));
-	CHECK_EQ(BlobToString(Blob{ path }), ExpectedOBJ);
+	CHECK((BlobToString(Blob{ path })) == (ExpectedOBJ));
 	FileSystem::Remove(path);
 }
 
@@ -153,7 +153,7 @@ TEST_CASE("Mesh3D::saveOBJ with Material")
 	const std::string expectedOBJ =
 		"mtllib mesh3d_material.mtl\n"
 		+ std::string{ ExpectedOBJ }.replace(ExpectedOBJ.find("f "), 0, "usemtl Example Material\n");
-	CHECK_EQ(BlobToString(Blob{ objPath }), expectedOBJ);
+	CHECK((BlobToString(Blob{ objPath })) == (expectedOBJ));
 
 	constexpr std::string_view ExpectedMTL =
 		"newmtl Example Material\n"
@@ -168,7 +168,7 @@ TEST_CASE("Mesh3D::saveOBJ with Material")
 		"map_Kd example.jpg\n"
 		"norm normal.png\n"
 		"map_Ke emissive.png\n";
-	CHECK_EQ(BlobToString(Blob{ mtlPath }), ExpectedMTL);
+	CHECK((BlobToString(Blob{ mtlPath })) == (ExpectedMTL));
 
 	FileSystem::Remove(objPath);
 	FileSystem::Remove(mtlPath);
@@ -200,7 +200,7 @@ TEST_CASE("Mesh3D OBJ material conversion preserves base color across metallic e
 		const auto read = [&](const std::string& key, const size_t count)
 		{
 			const size_t offset = text.find("\n" + key + " ");
-			REQUIRE_NE(offset, std::string::npos);
+			REQUIRE((offset) != (std::string::npos));
 			std::istringstream stream{ text.substr(offset + key.size() + 2) };
 			Array<double> values(count);
 			for (auto& value : values)
@@ -212,9 +212,9 @@ TEST_CASE("Mesh3D OBJ material conversion preserves base color across metallic e
 		const auto kd = read("Kd", 3), ks = read("Ks", 3);
 		CHECK(Vec3{ kd[0], kd[1], kd[2] }.epsilonEquals(c.diffuse, 1e-12));
 		CHECK(Vec3{ ks[0], ks[1], ks[2] }.epsilonEquals(c.specular, 1e-12));
-		CHECK(read("Ns", 1)[0] == doctest::Approx(c.exponent));
-		CHECK(read("Pm", 1)[0] == doctest::Approx(Clamp(c.metallic, 0.0, 1.0)));
-		CHECK(read("Pr", 1)[0] == doctest::Approx(Clamp(c.roughness, 0.0, 1.0)));
+		CHECK(read("Ns", 1)[0] == Test::Approx(c.exponent));
+		CHECK(read("Pm", 1)[0] == Test::Approx(Clamp(c.metallic, 0.0, 1.0)));
+		CHECK(read("Pr", 1)[0] == Test::Approx(Clamp(c.roughness, 0.0, 1.0)));
 	}
 }
 
@@ -227,28 +227,28 @@ TEST_CASE("Mesh3D::saveOBJ with Material rejects invalid input")
 	FileSystem::Remove(objPath);
 	FileSystem::Remove(mtlPath);
 
-	SUBCASE("non-finite value")
+	SECTION("non-finite value")
 	{
 		Material material;
 		material.roughness = std::numeric_limits<double>::quiet_NaN();
 		CHECK_FALSE(mesh.saveOBJ(objPath, material));
 	}
 
-	SUBCASE("invalid material name")
+	SECTION("invalid material name")
 	{
 		Material material;
 		material.name = U"First\nSecond";
 		CHECK_FALSE(mesh.saveOBJ(objPath, material));
 	}
 
-	SUBCASE("unsupported UV set")
+	SECTION("unsupported UV set")
 	{
 		Material material;
 		material.baseColorTexture = MaterialTexture{ U"example.jpg", 1 };
 		CHECK_FALSE(mesh.saveOBJ(objPath, material));
 	}
 
-	SUBCASE("OBJ path collides with MTL path")
+	SECTION("OBJ path collides with MTL path")
 	{
 		const FilePath collisionPath{ Test::OutputPath(U"mesh3d_invalid_material.MTL") };
 		FileSystem::Remove(collisionPath);
@@ -302,13 +302,13 @@ TEST_CASE("Mesh3D::encodeOBJ accepts finite float boundary values")
 	CHECK_FALSE(blob.isEmpty());
 
 	const std::string obj = BlobToString(blob);
-	CHECK_EQ(obj.find("inf"), std::string::npos);
-	CHECK_EQ(obj.find("nan"), std::string::npos);
+	CHECK((obj.find("inf")) == (std::string::npos));
+	CHECK((obj.find("nan")) == (std::string::npos));
 }
 
 TEST_CASE("Mesh3D::encodeOBJ rejects invalid input")
 {
-	SUBCASE("empty mesh")
+	SECTION("empty mesh")
 	{
 		MemoryWriter writer;
 		CHECK_FALSE(Mesh3D{}.encodeOBJ(writer));
@@ -316,35 +316,35 @@ TEST_CASE("Mesh3D::encodeOBJ rejects invalid input")
 		CHECK(Mesh3D{}.encodeOBJ().isEmpty());
 	}
 
-	SUBCASE("vertices without triangles")
+	SECTION("vertices without triangles")
 	{
 		Mesh3D mesh = MakeTriangleMesh();
 		mesh.indices.clear();
 		CHECK(mesh.encodeOBJ().isEmpty());
 	}
 
-	SUBCASE("out-of-range index")
+	SECTION("out-of-range index")
 	{
 		Mesh3D mesh = MakeTriangleMesh();
 		mesh.indices[0].i2 = 3;
 		CHECK(mesh.encodeOBJ().isEmpty());
 	}
 
-	SUBCASE("non-finite position")
+	SECTION("non-finite position")
 	{
 		Mesh3D mesh = MakeTriangleMesh();
 		mesh.vertices[0].pos.x = std::numeric_limits<float>::infinity();
 		CHECK(mesh.encodeOBJ().isEmpty());
 	}
 
-	SUBCASE("non-finite texture coordinate")
+	SECTION("non-finite texture coordinate")
 	{
 		Mesh3D mesh = MakeTriangleMesh();
 		mesh.vertices[0].tex.y = std::numeric_limits<float>::quiet_NaN();
 		CHECK(mesh.encodeOBJ().isEmpty());
 	}
 
-	SUBCASE("non-finite normal")
+	SECTION("non-finite normal")
 	{
 		Mesh3D mesh = MakeTriangleMesh();
 		mesh.vertices[0].normal.z = -std::numeric_limits<float>::infinity();
@@ -373,9 +373,9 @@ TEST_CASE("Mesh3D::saveOBJ preserves MTL when OBJ cannot be opened")
 	{
 		BinaryFileWriter writer{ mtlPath };
 		REQUIRE(writer);
-		REQUIRE_EQ(writer.write("keep", 4), int64{ 4 });
+		REQUIRE((writer.write("keep", 4)) == (int64{ 4 }));
 	}
 	CHECK_FALSE(MakeTriangleMesh().saveOBJ(objPath, Material{}));
-	CHECK_EQ(BlobToString(Blob{ mtlPath }), "keep");
+	CHECK((BlobToString(Blob{ mtlPath })) == ("keep"));
 	FileSystem::Remove(directory);
 }

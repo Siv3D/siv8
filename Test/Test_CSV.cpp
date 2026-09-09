@@ -39,8 +39,8 @@ TEST_CASE("CSV.default")
 	CHECK(csv.isValid());
 	CHECK(not csv.isInvalid());
 	CHECK(csv.isEmpty());
-	CHECK_EQ(csv.rows(), 0u);
-	CHECK_EQ(csv.columns(0), 0u);
+	CHECK((csv.rows()) == (0u));
+	CHECK((csv.columns(0)) == (0u));
 	CHECK(not csv.inBounds(0, 0));
 	CHECK(csv.data().isEmpty());
 	CHECK(csv.format().isEmpty());
@@ -52,7 +52,7 @@ TEST_CASE("CSV.default")
 	CHECK(not invalid.isValid());
 	CHECK(invalid.isInvalid());
 	CHECK(invalid.isEmpty());
-	CHECK_EQ(invalid.rows(), 0u);
+	CHECK((invalid.rows()) == (0u));
 	CHECK(invalid.format().isEmpty());
 	CHECK(invalid.formatUTF8().empty());
 
@@ -71,25 +71,25 @@ TEST_CASE("CSV.Load.basic")
 
 	REQUIRE(csv);
 	CHECK(not csv.isEmpty());
-	CHECK_EQ(csv.rows(), 3u);
-	CHECK_EQ(csv.columns(0), 3u);
-	CHECK_EQ(csv.columns(1), 3u);
-	CHECK_EQ(csv.columns(999), 0u);
+	CHECK((csv.rows()) == (3u));
+	CHECK((csv.columns(0)) == (3u));
+	CHECK((csv.columns(1)) == (3u));
+	CHECK((csv.columns(999)) == (0u));
 
 	CHECK(csv.inBounds(0, 0));
 	CHECK(csv.inBounds(2, 2));
 	CHECK(not csv.inBounds(3, 0));
 	CHECK(not csv.inBounds(0, 3));
 
-	CHECK_EQ(csv[0][0], U"id");
-	CHECK_EQ(csv[0][1], U"name");
-	CHECK_EQ(csv[0][2], U"score");
-	CHECK_EQ(csv[1][0], U"1");
-	CHECK_EQ(csv[1][1], U"Alice");
-	CHECK_EQ(csv[1][2], U"95");
-	CHECK_EQ(csv[2][0], U"2");
-	CHECK_EQ(csv[2][1], U"Bob");
-	CHECK_EQ(csv[2][2], U"88");
+	CHECK((csv[0][0]) == (U"id"));
+	CHECK((csv[0][1]) == (U"name"));
+	CHECK((csv[0][2]) == (U"score"));
+	CHECK((csv[1][0]) == (U"1"));
+	CHECK((csv[1][1]) == (U"Alice"));
+	CHECK((csv[1][2]) == (U"95"));
+	CHECK((csv[2][0]) == (U"2"));
+	CHECK((csv[2][1]) == (U"Bob"));
+	CHECK((csv[2][2]) == (U"88"));
 }
 
 // StringView と std::string からのパース、および空入力と失敗時の invalid 化を確認する。
@@ -99,23 +99,23 @@ TEST_CASE("CSV.Parse")
 		const CSV csv = CSV::Parse(U"a,b,c\n1,2,3\n");
 
 		REQUIRE(csv);
-		CHECK_EQ(csv.rows(), 2u);
-		CHECK_EQ(csv[0][0], U"a");
-		CHECK_EQ(csv[0][1], U"b");
-		CHECK_EQ(csv[0][2], U"c");
-		CHECK_EQ(csv[1][0], U"1");
-		CHECK_EQ(csv[1][1], U"2");
-		CHECK_EQ(csv[1][2], U"3");
+		CHECK((csv.rows()) == (2u));
+		CHECK((csv[0][0]) == (U"a"));
+		CHECK((csv[0][1]) == (U"b"));
+		CHECK((csv[0][2]) == (U"c"));
+		CHECK((csv[1][0]) == (U"1"));
+		CHECK((csv[1][1]) == (U"2"));
+		CHECK((csv[1][2]) == (U"3"));
 	}
 
 	{
 		const CSV csv = CSV::Parse(std::string{ "a,b,c\r\n1,2,3\r\n" });
 
 		REQUIRE(csv);
-		CHECK_EQ(csv.rows(), 2u);
-		CHECK_EQ(csv[1][0], U"1");
-		CHECK_EQ(csv[1][1], U"2");
-		CHECK_EQ(csv[1][2], U"3");
+		CHECK((csv.rows()) == (2u));
+		CHECK((csv[1][0]) == (U"1"));
+		CHECK((csv[1][1]) == (U"2"));
+		CHECK((csv[1][2]) == (U"3"));
 	}
 
 	{
@@ -123,7 +123,7 @@ TEST_CASE("CSV.Parse")
 
 		REQUIRE(csv);
 		CHECK(csv.isEmpty());
-		CHECK_EQ(csv.rows(), 0u);
+		CHECK((csv.rows()) == (0u));
 	}
 
 	{
@@ -142,7 +142,7 @@ TEST_CASE("CSV.LoadResult.ParseResult")
 
 		REQUIRE(result);
 		CHECK(result.value());
-		CHECK_EQ(result.value().rows(), 3u);
+		CHECK((result.value().rows()) == (3u));
 	}
 
 	{
@@ -150,8 +150,8 @@ TEST_CASE("CSV.LoadResult.ParseResult")
 
 		REQUIRE(result);
 		CHECK(result.value());
-		CHECK_EQ(result.value()[1][0], U"10");
-		CHECK_EQ(result.value()[1][1], U"20");
+		CHECK((result.value()[1][0]) == (U"10"));
+		CHECK((result.value()[1][1]) == (U"20"));
 	}
 
 	{
@@ -159,7 +159,7 @@ TEST_CASE("CSV.LoadResult.ParseResult")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::InvalidReader);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::InvalidReader));
 		CHECK(not result.error().front().title.isEmpty());
 		CHECK(not result.error().front().format().isEmpty());
 	}
@@ -169,7 +169,7 @@ TEST_CASE("CSV.LoadResult.ParseResult")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::UnterminatedQuotedField);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::UnterminatedQuotedField));
 		CHECK(not result.error().front().title.isEmpty());
 		CHECK(not result.error().front().locations.isEmpty());
 		CHECK(result.error().front().locations.front().contains(U"inline.csv"));
@@ -216,31 +216,31 @@ TEST_CASE("CSV.RFC4180_quoted_fields")
 	const CSV csv = CSV::Load(ValidQuoted);
 
 	REQUIRE(csv);
-	REQUIRE_EQ(csv.rows(), 3u);
-	REQUIRE_EQ(csv.columns(0), 3u);
-	REQUIRE_EQ(csv.columns(1), 3u);
-	REQUIRE_EQ(csv.columns(2), 3u);
+	REQUIRE((csv.rows()) == (3u));
+	REQUIRE((csv.columns(0)) == (3u));
+	REQUIRE((csv.columns(1)) == (3u));
+	REQUIRE((csv.columns(2)) == (3u));
 
-	CHECK_EQ(csv[0][0], U"name");
-	CHECK_EQ(csv[0][1], U"note");
-	CHECK_EQ(csv[0][2], U"text");
+	CHECK((csv[0][0]) == (U"name"));
+	CHECK((csv[0][1]) == (U"note"));
+	CHECK((csv[0][2]) == (U"text"));
 
-	CHECK_EQ(csv[1][0], U"Alice");
-	CHECK_EQ(csv[1][1], U"Hello, CSV");
-	CHECK_EQ(csv[1][2], U"He said \"Hi\"");
+	CHECK((csv[1][0]) == (U"Alice"));
+	CHECK((csv[1][1]) == (U"Hello, CSV"));
+	CHECK((csv[1][2]) == (U"He said \"Hi\""));
 
-	CHECK_EQ(csv[2][0], U"Bob");
-	CHECK_EQ(csv[2][1], U"Line1\r\nLine2");
-	CHECK_EQ(csv[2][2], U"");
+	CHECK((csv[2][0]) == (U"Bob"));
+	CHECK((csv[2][1]) == (U"Line1\r\nLine2"));
+	CHECK((csv[2][2]) == (U""));
 
 	{
 		const CSV parsed = CSV::Parse(U"\"a,b\",\"c\"\"d\",\"e\r\nf\"\r\n");
 
 		REQUIRE(parsed);
-		REQUIRE_EQ(parsed.rows(), 1u);
-		CHECK_EQ(parsed[0][0], U"a,b");
-		CHECK_EQ(parsed[0][1], U"c\"d");
-		CHECK_EQ(parsed[0][2], U"e\r\nf");
+		REQUIRE((parsed.rows()) == (1u));
+		CHECK((parsed[0][0]) == (U"a,b"));
+		CHECK((parsed[0][1]) == (U"c\"d"));
+		CHECK((parsed[0][2]) == (U"e\r\nf"));
 	}
 }
 
@@ -251,9 +251,9 @@ TEST_CASE("CSV.newlines_options")
 		const CSV csv = CSV::Load(ValidLF);
 
 		REQUIRE(csv);
-		CHECK_EQ(csv.rows(), 3u);
-		CHECK_EQ(csv[1][0], U"1");
-		CHECK_EQ(csv[2][1], U"Bob");
+		CHECK((csv.rows()) == (3u));
+		CHECK((csv[1][0]) == (U"1"));
+		CHECK((csv[2][1]) == (U"Bob"));
 	}
 
 	{
@@ -264,7 +264,7 @@ TEST_CASE("CSV.newlines_options")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::BareLF);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::BareLF));
 	}
 
 	{
@@ -272,7 +272,7 @@ TEST_CASE("CSV.newlines_options")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::BareCR);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::BareCR));
 	}
 
 	{
@@ -282,8 +282,8 @@ TEST_CASE("CSV.newlines_options")
 		const auto result = CSV::LoadResult(ValidLoneCR, options);
 
 		REQUIRE(result);
-		CHECK_EQ(result.value().rows(), 3u);
-		CHECK_EQ(result.value()[2][1], U"Bob");
+		CHECK((result.value().rows()) == (3u));
+		CHECK((result.value()[2][1]) == (U"Bob"));
 	}
 
 	{
@@ -294,7 +294,7 @@ TEST_CASE("CSV.newlines_options")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::BareLF);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::BareLF));
 	}
 }
 
@@ -305,27 +305,27 @@ TEST_CASE("CSV.unicode_bom_empty")
 		const CSV csv = CSV::Load(ValidUnicode);
 
 		REQUIRE(csv);
-		REQUIRE_EQ(csv.rows(), 3u);
-		CHECK_EQ(csv[0][0], U"name");
-		CHECK_EQ(csv[1][0], U"太郎");
-		CHECK_EQ(csv[1][1], U"こんにちは");
-		CHECK_EQ(csv[1][2], U"🎮");
-		CHECK_EQ(csv[2][0], U"Αλφα");
-		CHECK_EQ(csv[2][1], U"βγ");
-		CHECK_EQ(csv[2][2], U"🌏");
+		REQUIRE((csv.rows()) == (3u));
+		CHECK((csv[0][0]) == (U"name"));
+		CHECK((csv[1][0]) == (U"太郎"));
+		CHECK((csv[1][1]) == (U"こんにちは"));
+		CHECK((csv[1][2]) == (U"🎮"));
+		CHECK((csv[2][0]) == (U"Αλφα"));
+		CHECK((csv[2][1]) == (U"βγ"));
+		CHECK((csv[2][2]) == (U"🌏"));
 	}
 
 	{
 		const CSV csv = CSV::Load(ValidUTF8BOM);
 
 		REQUIRE(csv);
-		REQUIRE_EQ(csv.rows(), 3u);
-		CHECK_EQ(csv[0][0], U"title");
-		CHECK_EQ(csv[0][1], U"value");
-		CHECK_EQ(csv[1][0], U"UTF-8 BOM test");
-		CHECK_EQ(csv[1][1], U"42");
-		CHECK_EQ(csv[2][0], U"message");
-		CHECK_EQ(csv[2][1], U"BOM 付き UTF-8");
+		REQUIRE((csv.rows()) == (3u));
+		CHECK((csv[0][0]) == (U"title"));
+		CHECK((csv[0][1]) == (U"value"));
+		CHECK((csv[1][0]) == (U"UTF-8 BOM test"));
+		CHECK((csv[1][1]) == (U"42"));
+		CHECK((csv[2][0]) == (U"message"));
+		CHECK((csv[2][1]) == (U"BOM 付き UTF-8"));
 	}
 
 	{
@@ -333,7 +333,7 @@ TEST_CASE("CSV.unicode_bom_empty")
 
 		REQUIRE(csv);
 		CHECK(csv.isEmpty());
-		CHECK_EQ(csv.rows(), 0u);
+		CHECK((csv.rows()) == (0u));
 	}
 }
 
@@ -344,10 +344,10 @@ TEST_CASE("CSV.consistent_columns")
 		const CSV csv = CSV::Load(ValidRagged);
 
 		REQUIRE(csv);
-		REQUIRE_EQ(csv.rows(), 3u);
-		CHECK_EQ(csv.columns(0), 3u);
-		CHECK_EQ(csv.columns(1), 2u);
-		CHECK_EQ(csv.columns(2), 4u);
+		REQUIRE((csv.rows()) == (3u));
+		CHECK((csv.columns(0)) == (3u));
+		CHECK((csv.columns(1)) == (2u));
+		CHECK((csv.columns(2)) == (4u));
 	}
 
 	{
@@ -357,11 +357,11 @@ TEST_CASE("CSV.consistent_columns")
 		const auto result = CSV::LoadResult(ValidRagged, options);
 
 		REQUIRE(not result);
-		REQUIRE_EQ(result.error().size(), 2u);
-		CHECK_EQ(result.error()[0].code, CSVParseErrorCode::InconsistentColumns);
-		CHECK_EQ(result.error()[0].row, 1u);
-		CHECK_EQ(result.error()[1].code, CSVParseErrorCode::InconsistentColumns);
-		CHECK_EQ(result.error()[1].row, 2u);
+		REQUIRE((result.error().size()) == (2u));
+		CHECK((result.error()[0].code) == (CSVParseErrorCode::InconsistentColumns));
+		CHECK((result.error()[0].row) == (1u));
+		CHECK((result.error()[1].code) == (CSVParseErrorCode::InconsistentColumns));
+		CHECK((result.error()[1].row) == (2u));
 	}
 }
 
@@ -371,29 +371,29 @@ TEST_CASE("CSV.get_getOpt_getOr")
 	const CSV csv = CSV::Parse(U"int,float,text,bad\n123,3.5,Siv3D,abc\n");
 
 	REQUIRE(csv);
-	REQUIRE_EQ(csv.rows(), 2u);
+	REQUIRE((csv.rows()) == (2u));
 
-	CHECK_EQ(csv.get<String>(0, 0), U"int");
-	CHECK_EQ(csv.get<int32>(1, 0), 123);
-	CHECK(csv.get<double>(1, 1) == doctest::Approx(3.5));
-	CHECK_EQ(csv.get<String>(1, 2), U"Siv3D");
+	CHECK((csv.get<String>(0, 0)) == (U"int"));
+	CHECK((csv.get<int32>(1, 0)) == (123));
+	CHECK(csv.get<double>(1, 1) == Test::Approx(3.5));
+	CHECK((csv.get<String>(1, 2)) == (U"Siv3D"));
 
 	{
 		const Optional<int32> opt = csv.getOpt<int32>(1, 0);
 		REQUIRE(opt);
-		CHECK_EQ(*opt, 123);
+		CHECK((*opt) == (123));
 	}
 
 	CHECK(not csv.getOpt<int32>(1, 2));
 	CHECK(not csv.getOpt<int32>(1, 3));
 	CHECK(not csv.getOpt<int32>(99, 99));
 
-	CHECK_EQ(csv.getOr<int32>(1, 0, -1), 123);
-	CHECK_EQ(csv.getOr<int32>(1, 2, -1), -1);
-	CHECK_EQ(csv.getOr<String>(99, 99, String{ U"default" }), U"default");
+	CHECK((csv.getOr<int32>(1, 0, -1)) == (123));
+	CHECK((csv.getOr<int32>(1, 2, -1)) == (-1));
+	CHECK((csv.getOr<String>(99, 99, String{ U"default" })) == (U"default"));
 
-	CHECK_EQ(csv.get<int32>(99, 99), 0);
-	CHECK_EQ(csv.get<String>(99, 99), U"");
+	CHECK((csv.get<int32>(99, 99)) == (0));
+	CHECK((csv.get<String>(99, 99)) == (U""));
 }
 
 // data, getData, row, getRow, operator[] の参照アクセサを確認する。
@@ -407,10 +407,10 @@ TEST_CASE("CSV.data_access")
 	CHECK(csv[1] == CSV::Row{ U"1", U"2" });
 
 	csv.row(1)[1] = U"200";
-	CHECK_EQ(csv[1][1], U"200");
+	CHECK((csv[1][1]) == (U"200"));
 
 	csv.data()[0][0] = U"header";
-	CHECK_EQ(csv[0][0], U"header");
+	CHECK((csv[0][0]) == (U"header"));
 }
 
 // addRow, write, writeRow, newLine によるインメモリ編集を確認する。
@@ -427,7 +427,7 @@ TEST_CASE("CSV.modify")
 	csv.addRow(CSV::Row{ U"3", U"Charlie" });
 
 	REQUIRE(csv);
-	REQUIRE_EQ(csv.rows(), 4u);
+	REQUIRE((csv.rows()) == (4u));
 	CHECK(csv.data() == CSV::Table{
 		CSV::Row{ U"id", U"name" },
 		CSV::Row{ U"1", U"Alice" },
@@ -439,7 +439,7 @@ TEST_CASE("CSV.modify")
 
 	CHECK(csv);
 	CHECK(csv.isEmpty());
-	CHECK_EQ(csv.rows(), 0u);
+	CHECK((csv.rows()) == (0u));
 }
 
 // save を使わずに、CSVWriteOptions と RFC 4180 形式の文字列化を確認する。
@@ -448,21 +448,21 @@ TEST_CASE("CSV.format")
 	CSV csv;
 	csv.addRow(U"plain", U"comma,value", U"quote \" value", U"line\nbreak");
 
-	CHECK_EQ(csv.format(), U"plain,\"comma,value\",\"quote \"\" value\",\"line\nbreak\"\r\n");
-	CHECK_EQ(csv.formatUTF8(), std::string{ "plain,\"comma,value\",\"quote \"\" value\",\"line\nbreak\"\r\n" });
+	CHECK((csv.format()) == (U"plain,\"comma,value\",\"quote \"\" value\",\"line\nbreak\"\r\n"));
+	CHECK((csv.formatUTF8()) == (std::string{ "plain,\"comma,value\",\"quote \"\" value\",\"line\nbreak\"\r\n" }));
 
 	{
 		CSVWriteOptions options;
 		options.alwaysQuote = true;
 
-		CHECK_EQ(csv.format(options), U"\"plain\",\"comma,value\",\"quote \"\" value\",\"line\nbreak\"\r\n");
+		CHECK((csv.format(options)) == (U"\"plain\",\"comma,value\",\"quote \"\" value\",\"line\nbreak\"\r\n"));
 	}
 
 	{
 		CSVWriteOptions options;
 		options.trailingNewline = false;
 
-		CHECK_EQ(csv.format(options), U"plain,\"comma,value\",\"quote \"\" value\",\"line\nbreak\"");
+		CHECK((csv.format(options)) == (U"plain,\"comma,value\",\"quote \"\" value\",\"line\nbreak\""));
 	}
 
 	{
@@ -472,7 +472,7 @@ TEST_CASE("CSV.format")
 		const std::string formatted = csv.formatUTF8(options);
 
 		REQUIRE(3u <= formatted.size());
-		CHECK_EQ(formatted.substr(0, 3), std::string{ "\xEF\xBB\xBF", 3 });
+		CHECK((formatted.substr(0, 3)) == (std::string{ "\xEF\xBB\xBF", 3 }));
 	}
 }
 
@@ -484,10 +484,10 @@ TEST_CASE("CSV.error_codes")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::UnexpectedQuoteInUnquotedField);
-		CHECK_EQ(result.error().front().line, 1u);
-		CHECK_EQ(result.error().front().row, 0u);
-		CHECK_EQ(result.error().front().column, 1u);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::UnexpectedQuoteInUnquotedField));
+		CHECK((result.error().front().line) == (1u));
+		CHECK((result.error().front().row) == (0u));
+		CHECK((result.error().front().column) == (1u));
 	}
 
 	{
@@ -495,7 +495,7 @@ TEST_CASE("CSV.error_codes")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::UnexpectedCharacterAfterClosingQuote);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::UnexpectedCharacterAfterClosingQuote));
 	}
 
 	{
@@ -503,7 +503,7 @@ TEST_CASE("CSV.error_codes")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::UnterminatedQuotedField);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::UnterminatedQuotedField));
 	}
 
 	{
@@ -514,7 +514,7 @@ TEST_CASE("CSV.error_codes")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::BareLF);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::BareLF));
 	}
 
 	{
@@ -522,6 +522,6 @@ TEST_CASE("CSV.error_codes")
 
 		REQUIRE(not result);
 		REQUIRE(not result.error().isEmpty());
-		CHECK_EQ(result.error().front().code, CSVParseErrorCode::InvalidEncoding);
+		CHECK((result.error().front().code) == (CSVParseErrorCode::InvalidEncoding));
 	}
 }

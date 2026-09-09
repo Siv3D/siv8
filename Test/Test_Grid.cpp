@@ -370,7 +370,7 @@ namespace
 
 TEST_CASE("Grid.constructor")
 {
-	SUBCASE("valid size with Array")
+	SECTION("valid size with Array")
 	{
 		const Array<int32> data = { 1, 2, 3 };
 
@@ -381,7 +381,7 @@ TEST_CASE("Grid.constructor")
 		CHECK(moved == Grid<int32>{ { 1, 2 }, { 3, 4 } });
 	}
 
-	SUBCASE("invalid size with Array")
+	SECTION("invalid size with Array")
 	{
 		const size_t invalidWidth = (static_cast<size_t>(std::numeric_limits<int32>::max()) + 1);
 		const Array<int32> data = { 1, 2, 3 };
@@ -395,7 +395,7 @@ TEST_CASE("Grid.constructor")
 		CHECK(moved.empty());
 	}
 
-	SUBCASE("empty initializer-list")
+	SECTION("empty initializer-list")
 	{
 		const Grid<int32> grid(std::initializer_list<std::initializer_list<int32>>{});
 		CHECK(grid.size() == Size{ 0, 0 });
@@ -1127,7 +1127,7 @@ TEST_CASE("Grid.shift and shifted")
 
 TEST_CASE("Grid.column mutations")
 {
-	SUBCASE("insert_column with overlapping rows")
+	SECTION("insert_column with overlapping rows")
 	{
 		Grid<int32> grid = Grid<int32>::IndexedGenerate(Size{ 5, 3 },
 			[](const Point pos) { return (pos.y * 5 + pos.x); });
@@ -1140,7 +1140,7 @@ TEST_CASE("Grid.column mutations")
 		});
 	}
 
-	SUBCASE("values may refer to elements in the Grid")
+	SECTION("values may refer to elements in the Grid")
 	{
 		Grid<int32> inserted = { { 1, 2 }, { 3, 4 } };
 		inserted.insert_column(1, inserted[0, 1]);
@@ -1159,7 +1159,7 @@ TEST_CASE("Grid.column mutations")
 		CHECK(resized == Grid<int32>{ { 1, 2, 3, 3 }, { 3, 4, 3, 3 } });
 	}
 
-	SUBCASE("resizeWidth from zero width")
+	SECTION("resizeWidth from zero width")
 	{
 		Grid<int32> grid{ Size{ 0, 3 } };
 		grid.resizeWidth(2, 7);
@@ -1175,7 +1175,7 @@ TEST_CASE("Grid.column mutations")
 		CHECK(grid == Grid<int32>(1, 3, 8));
 	}
 
-	SUBCASE("out of range")
+	SECTION("out of range")
 	{
 		Grid<int32> grid(2, 2);
 		CHECK_THROWS_AS(grid.insert_column(3, 0), std::out_of_range);
@@ -1218,7 +1218,7 @@ TEST_CASE("Grid.dimension safety")
 {
 	constexpr int32 MaxDimension = std::numeric_limits<int32>::max();
 
-	SUBCASE("reserve validates dimensions")
+	SECTION("reserve validates dimensions")
 	{
 		Grid<int32> grid;
 		grid.reserve(2, 3);
@@ -1229,7 +1229,7 @@ TEST_CASE("Grid.dimension safety")
 		CHECK(invalid.capacity() == 0);
 	}
 
-	SUBCASE("height limit")
+	SECTION("height limit")
 	{
 		Grid<int32> grid{ Size{ 0, MaxDimension } };
 		CHECK_THROWS_AS(grid.push_back_row(0), std::length_error);
@@ -1240,7 +1240,7 @@ TEST_CASE("Grid.dimension safety")
 		CHECK(grid.size() == Size{ 0, MaxDimension });
 	}
 
-	SUBCASE("width limit")
+	SECTION("width limit")
 	{
 		Grid<int32> grid{ Size{ MaxDimension, 0 } };
 		CHECK_THROWS_AS(grid.push_back_column(0), std::length_error);
@@ -1251,7 +1251,7 @@ TEST_CASE("Grid.dimension safety")
 		CHECK(grid.size() == Size{ MaxDimension, 0 });
 	}
 
-	SUBCASE("removal range addition does not overflow")
+	SECTION("removal range addition does not overflow")
 	{
 		Grid<int32> grid(2, 2, 1);
 		CHECK_THROWS_AS(grid.remove_rows(1, std::numeric_limits<size_t>::max()), std::out_of_range);
@@ -1264,7 +1264,7 @@ TEST_CASE("Grid.dimension safety")
 
 TEST_CASE("Grid.resize")
 {
-	SUBCASE("expand and shrink")
+	SECTION("expand and shrink")
 	{
 		Grid<int32> grid = { { 1, 2 }, { 3, 4 } };
 		grid.resize(3, 3, 9);
@@ -1281,7 +1281,7 @@ TEST_CASE("Grid.resize")
 		CHECK(grid == Grid<int32>{ { 1, 8 } });
 	}
 
-	SUBCASE("resizeWidth and resizeHeight")
+	SECTION("resizeWidth and resizeHeight")
 	{
 		Grid<int32> grid = { { 1, 2 }, { 3, 4 } };
 		grid.resizeWidth(3, 5);
@@ -1295,7 +1295,7 @@ TEST_CASE("Grid.resize")
 		CHECK(grid == Grid<int32>{ { 1 } });
 	}
 
-	SUBCASE("zero and invalid dimensions")
+	SECTION("zero and invalid dimensions")
 	{
 		Grid<int32> grid(2, 2, 1);
 		grid.resize(Size{ 0, 3 });
@@ -1319,7 +1319,7 @@ TEST_CASE("Grid.rotate columns and rows")
 		{ 7, 8, 9 },
 	};
 
-	SUBCASE("columns")
+	SECTION("columns")
 	{
 		const Grid<int32> expected = {
 			{ 2, 3, 1 },
@@ -1351,7 +1351,7 @@ TEST_CASE("Grid.rotate columns and rows")
 		CHECK_THROWS_AS(zeroWidth.rotate_columns(1), std::out_of_range);
 	}
 
-	SUBCASE("rows")
+	SECTION("rows")
 	{
 		const Grid<int32> expected = {
 			{ 4, 5, 6 },
@@ -1431,7 +1431,7 @@ TEST_CASE("Grid.scaled")
 
 TEST_CASE("Grid.rvalue operator[]")
 {
-	SUBCASE("Point")
+	SECTION("Point")
 	{
 		Grid<std::unique_ptr<int32>> grid(1, 1);
 		grid[Point{ 0, 0 }] = std::make_unique<int32>(42);
@@ -1441,7 +1441,7 @@ TEST_CASE("Grid.rvalue operator[]")
 		CHECK(*value == 42);
 	}
 
-	SUBCASE("y, x")
+	SECTION("y, x")
 	{
 		Grid<std::unique_ptr<int32>> grid(1, 1);
 		grid[0, 0] = std::make_unique<int32>(42);
@@ -1473,7 +1473,7 @@ TEST_CASE("Grid.exception specifications")
 	static_assert(std::is_nothrow_swappable_v<Grid<int32>>);
 	static_assert(not std::is_nothrow_swappable_v<StatefulGrid>);
 
-	SUBCASE("rvalue element access propagates move exceptions")
+	SECTION("rvalue element access propagates move exceptions")
 	{
 		Grid<ThrowingMove> frontGrid(1, 1);
 		CHECK_THROWS(static_cast<void>(std::move(frontGrid).front()));
@@ -1482,7 +1482,7 @@ TEST_CASE("Grid.exception specifications")
 		CHECK_THROWS(static_cast<void>(std::move(backGrid).back()));
 	}
 
-	SUBCASE("geometric transformations propagate swap exceptions")
+	SECTION("geometric transformations propagate swap exceptions")
 	{
 		Grid<ThrowingSwappable> rotateGrid(2, 1);
 		CHECK_THROWS(rotateGrid.rotate180());
@@ -1956,23 +1956,23 @@ TEST_CASE("Grid.array_like_contract")
 {
 	static_assert(std::same_as<decltype(Grid<int32>{}.fill(1)), Grid<int32>>);
 	Grid<int32> grid{ { 1, 2, 3 }, { 4, 5, 6 } };
-	CHECK_EQ(grid.get_if(Point{ 1, 1 }), &grid[1, 1]);
-	CHECK_EQ(std::as_const(grid).get_if(1, 2), &grid[1, 2]);
-	CHECK_EQ(grid.get_if(Point{ -1, 0 }), nullptr);
-	CHECK_EQ(grid.get_if(Point{ 0, -1 }), nullptr);
-	CHECK_EQ(grid.get_if(2, 0), nullptr);
-	CHECK_EQ(grid.get_if(0, 3), nullptr);
-	CHECK_EQ(grid.get_if(std::numeric_limits<size_t>::max(), 0), nullptr);
-	CHECK_EQ(Grid<int32>{}.getContainer().size(), size_t{ 0 });
+	CHECK((grid.get_if(Point{ 1, 1 })) == (&grid[1, 1]));
+	CHECK((std::as_const(grid).get_if(1, 2)) == (&grid[1, 2]));
+	CHECK((grid.get_if(Point{ -1, 0 })) == (nullptr));
+	CHECK((grid.get_if(Point{ 0, -1 })) == (nullptr));
+	CHECK((grid.get_if(2, 0)) == (nullptr));
+	CHECK((grid.get_if(0, 3)) == (nullptr));
+	CHECK((grid.get_if(std::numeric_limits<size_t>::max(), 0)) == (nullptr));
+	CHECK((Grid<int32>{}.getContainer().size()) == (size_t{ 0 }));
 	const auto storage = grid.data();
 	auto result = std::move(grid).fill(Rect{ 1, 0, 2, 2 }, 9);
-	CHECK_EQ(result.size(), Size{ 3, 2 });
-	CHECK_EQ(result.data(), storage);
-	CHECK_EQ(result, Grid<int32>{ { 1, 9, 9 }, { 4, 9, 9 } });
+	CHECK((result.size()) == (Size{ 3, 2 }));
+	CHECK((result.data()) == (storage));
+	CHECK((result) == (Grid<int32>{ { 1, 9, 9 }, { 4, 9, 9 } }));
 	result.release();
-	CHECK_EQ(result.size(), Size{ 0, 0 });
-	CHECK_EQ(result.capacity(), size_t{ 0 });
-	CHECK_EQ(result.get_if(Point{}), nullptr);
+	CHECK((result.size()) == (Size{ 0, 0 }));
+	CHECK((result.capacity()) == (size_t{ 0 }));
+	CHECK((result.get_if(Point{})) == (nullptr));
 }
 
 TEST_CASE("Grid.parallel_map_result_type")
@@ -1980,19 +1980,19 @@ TEST_CASE("Grid.parallel_map_result_type")
 	const Grid<int32> source{ { 1, 2, 3 }, { 4, 5, 6 } };
 	const auto doubles = source.parallel_map([](int32 v) { return v + 0.5; });
 	static_assert(std::same_as<std::remove_cvref_t<decltype(doubles)>, Grid<double>>);
-	CHECK_EQ(doubles.size(), source.size());
-	CHECK_EQ(doubles[1, 2], 6.5);
+	CHECK((doubles.size()) == (source.size()));
+	CHECK((doubles[1, 2]) == (6.5));
 	const auto flags = source.parallel_map([](int32 v) { return (v % 2) == 0; });
 	static_assert(std::same_as<std::remove_cvref_t<decltype(flags)>, Grid<bool>>);
-	CHECK_EQ(flags, Grid<bool>{ { false, true, false }, { true, false, true } });
+	CHECK((flags) == (Grid<bool>{ { false, true, false }, { true, false, true } }));
 	const auto constructed = source.parallel_map([](int32 v) { return GridConstructOnlyResult{ v * 10 }; });
-	CHECK_EQ(constructed.size(), source.size());
-	CHECK_EQ(constructed[1, 2].value, 60);
+	CHECK((constructed.size()) == (source.size()));
+	CHECK((constructed[1, 2].value) == (60));
 	CHECK_THROWS_AS((void) source.parallel_map([](int32) -> int32 { throw std::runtime_error("worker"); }), std::runtime_error);
 	const Grid<int32> empty{ 0, 3 };
 	const auto emptyResult = empty.parallel_map([](int32 v) { return double(v); });
-	CHECK_EQ(emptyResult.size(), empty.size());
-	CHECK_EQ(emptyResult.elementCount(), size_t{ 0 });
+	CHECK((emptyResult.size()) == (empty.size()));
+	CHECK((emptyResult.elementCount()) == (size_t{ 0 }));
 }
 
 TEST_CASE("Grid.derived_allocator")
@@ -2001,30 +2001,30 @@ TEST_CASE("Grid.derived_allocator")
 	using G = Grid<int32, A>;
 	Array<int32, A> data({ 1, 2, 3, 4, 5, 6 }, A{ 42 });
 	G grid{ Size{ 3, 2 }, std::move(data) };
-	CHECK_EQ(grid.get_allocator().id, 42);
-	CHECK_EQ(G{ grid }.get_allocator().id, 0);
-	CHECK_EQ(grid.reversed().get_allocator().id, 42);
-	CHECK_EQ(grid.transposed().get_allocator().id, 42);
-	CHECK_EQ(grid.rotated90().get_allocator().id, 42);
-	CHECK_EQ(grid.rotated180().get_allocator().id, 42);
-	CHECK_EQ(grid.rotated270().get_allocator().id, 42);
-	CHECK_EQ(grid.rotated_columns(1).get_allocator().id, 42);
-	CHECK_EQ(grid.rotated_rows(1).get_allocator().id, 42);
-	CHECK_EQ(grid.subgrid(Point{ 1, 0 }, Size{ 2, 2 }).get_allocator().id, 42);
-	CHECK_EQ(grid.subgrid(Point{ 0, 0 }, Size{ 0, 0 }).get_allocator().id, 42);
-	CHECK_EQ(grid.scaled(1).get_allocator().id, 42);
-	CHECK_EQ(grid.scaled(2).get_allocator().id, 42);
-	CHECK_EQ(grid.shifted(1, 0, 0).get_allocator().id, 42);
-	CHECK_EQ(grid.map([](int32 v) { return double(v); })[1, 2], 6.0);
+	CHECK((grid.get_allocator().id) == (42));
+	CHECK((G{ grid }.get_allocator().id) == (0));
+	CHECK((grid.reversed().get_allocator().id) == (42));
+	CHECK((grid.transposed().get_allocator().id) == (42));
+	CHECK((grid.rotated90().get_allocator().id) == (42));
+	CHECK((grid.rotated180().get_allocator().id) == (42));
+	CHECK((grid.rotated270().get_allocator().id) == (42));
+	CHECK((grid.rotated_columns(1).get_allocator().id) == (42));
+	CHECK((grid.rotated_rows(1).get_allocator().id) == (42));
+	CHECK((grid.subgrid(Point{ 1, 0 }, Size{ 2, 2 }).get_allocator().id) == (42));
+	CHECK((grid.subgrid(Point{ 0, 0 }, Size{ 0, 0 }).get_allocator().id) == (42));
+	CHECK((grid.scaled(1).get_allocator().id) == (42));
+	CHECK((grid.scaled(2).get_allocator().id) == (42));
+	CHECK((grid.shifted(1, 0, 0).get_allocator().id) == (42));
+	CHECK((grid.map([](int32 v) { return double(v); })[1, 2]) == (6.0));
 	const auto mapped = grid.parallel_map([](int32 v) { return double(v); });
 	static_assert(std::same_as<std::remove_cvref_t<decltype(mapped)>, Grid<double>>);
-	CHECK_EQ(mapped[1, 2], 6.0);
+	CHECK((mapped[1, 2]) == (6.0));
 	grid.transpose();
-	CHECK_EQ(grid.get_allocator().id, 42);
-	CHECK_EQ(grid.size(), Size{ 2, 3 });
+	CHECK((grid.get_allocator().id) == (42));
+	CHECK((grid.size()) == (Size{ 2, 3 }));
 	grid.release();
-	CHECK_EQ(grid.get_allocator().id, 42);
-	CHECK_EQ(grid.capacity(), size_t{ 0 });
+	CHECK((grid.get_allocator().id) == (42));
+	CHECK((grid.capacity()) == (size_t{ 0 }));
 }
 
 TEST_CASE("Grid.moved_from_dimensions")
@@ -2032,18 +2032,18 @@ TEST_CASE("Grid.moved_from_dimensions")
 	Grid<int32> original{ { 1, 2 }, { 3, 4 } };
 	const auto storage = original.data();
 	Grid<int32> moved{ std::move(original) };
-	CHECK_EQ(moved.data(), storage);
-	CHECK_EQ(original.size(), Size{ 0, 0 });
-	CHECK_EQ(original.get_if(Point{}), nullptr);
+	CHECK((moved.data()) == (storage));
+	CHECK((original.size()) == (Size{ 0, 0 }));
+	CHECK((original.get_if(Point{})) == (nullptr));
 	original = std::move(moved);
-	CHECK_EQ(original.data(), storage);
-	CHECK_EQ(moved.size(), Size{ 0, 0 });
-	CHECK_EQ(moved.get_if(Point{}), nullptr);
+	CHECK((original.data()) == (storage));
+	CHECK((moved.size()) == (Size{ 0, 0 }));
+	CHECK((moved.get_if(Point{})) == (nullptr));
 	auto& alias = original;
 	original = std::move(alias);
-	CHECK_EQ(original.size(), Size{ 2, 2 });
-	CHECK_EQ(original.data(), storage);
+	CHECK((original.size()) == (Size{ 2, 2 }));
+	CHECK((original.data()) == (storage));
 	const auto array = std::move(original).getContainer();
-	CHECK_EQ(array.size(), size_t{ 4 });
-	CHECK_EQ(original.size(), Size{ 0, 0 });
+	CHECK((array.size()) == (size_t{ 4 }));
+	CHECK((original.size()) == (Size{ 0, 0 }));
 }

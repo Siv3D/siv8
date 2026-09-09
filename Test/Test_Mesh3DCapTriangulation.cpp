@@ -63,22 +63,19 @@ TEST_CASE("Mesh3D generators omit zero-area cap triangles")
 	REQUIRE(positiveCapTriangleCount < polygon.indices().size());
 
 	const Mesh3D extrude = Mesh3D::Extrude(polygon, 2.0);
-	CHECK_EQ(extrude.triangleCount(),
-		((positiveCapTriangleCount * 2) + (outline.size() * 2)));
+	CHECK((extrude.triangleCount()) == (((positiveCapTriangleCount * 2) + (outline.size() * 2))));
 	CheckMeshGeometry(extrude);
 
 	const Mesh3D sweep = Mesh3D::Sweep(
 		polygon,
 		{ Vec3{ 0.0, 0.0, 0.0 }, Vec3{ 0.0, 2.0, 0.0 } },
 		SweepOptions{ .initialXAxis = Vec3::UnitX() });
-	CHECK_EQ(sweep.triangleCount(),
-		((positiveCapTriangleCount * 2) + (outline.size() * 2)));
+	CHECK((sweep.triangleCount()) == (((positiveCapTriangleCount * 2) + (outline.size() * 2))));
 	CheckMeshGeometry(sweep);
 
 	const Array<Array<Vec2>> sections{ outline, outline };
 	const Mesh3D loft = Mesh3D::Loft(Mesh3DTest::LoftSections(sections, std::array{ 0.0, 2.0 }));
-	CHECK_EQ(loft.triangleCount(),
-		((positiveCapTriangleCount * 2) + (outline.size() * 2)));
+	CHECK((loft.triangleCount()) == (((positiveCapTriangleCount * 2) + (outline.size() * 2))));
 	CheckMeshGeometry(loft);
 
 }

@@ -17,6 +17,6 @@ TEST_CASE("TupleFormatter")
 		const std::tuple<int32, String, double, char32, Optional<int32>> t(111, U"bbb", 123.4567, U'あ', none);
 		FormatData formatData;
 		Formatter(formatData, t);
-		CHECK_EQ(formatData.string, U"(111, \"bbb\", 123.4567, 'あ', none)");
+		CHECK((formatData.string) == (U"(111, \"bbb\", 123.4567, 'あ', none)"));
 	}
 }

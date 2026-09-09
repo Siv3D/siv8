@@ -89,24 +89,24 @@ TEST_CASE("LineString")
 
 	const auto parsedEmpty = LineString::Parse(Format(empty));
 	REQUIRE(parsedEmpty);
-	CHECK_EQ(*parsedEmpty, empty);
+	CHECK((*parsedEmpty) == (empty));
 
 	const auto parsedValue = LineString::Parse(Format(value).toUTF8());
 	REQUIRE(parsedValue);
-	CHECK_EQ(*parsedValue, value);
+	CHECK((*parsedValue) == (value));
 
 	const auto parsedPrecise = LineString::Parse(Format(precise));
 	REQUIRE(parsedPrecise);
-	CHECK_EQ(*parsedPrecise, precise);
+	CHECK((*parsedPrecise) == (precise));
 
 	const auto parsedWithSpaces = LineString::Parse(
 		U" \n [ (0e0, 1), (-2.5, 3E+2) ] \t");
 	REQUIRE(parsedWithSpaces);
-	CHECK_EQ(*parsedWithSpaces, LineString{ Vec2{ 0, 1 }, Vec2{ -2.5, 300 } });
+	CHECK((*parsedWithSpaces) == (LineString{ Vec2{ 0, 1 }, Vec2{ -2.5, 300 } }));
 
 	const auto parsedSingle = LineString::Parse(U"[(1, 2)]");
 	REQUIRE(parsedSingle);
-	CHECK_EQ(*parsedSingle, LineString{ Vec2{ 1, 2 } });
+	CHECK((*parsedSingle) == (LineString{ Vec2{ 1, 2 } }));
 
 	const Array<StringView> invalidSources{
 		U"",
@@ -325,22 +325,22 @@ TEST_CASE("Polygon")
 
 	const auto parsedSquare = Polygon::Parse(Format(square));
 	REQUIRE(parsedSquare);
-	CHECK_EQ(parsedSquare->outer(), square.outer());
-	CHECK_EQ(parsedSquare->inners(), square.inners());
+	CHECK((parsedSquare->outer()) == (square.outer()));
+	CHECK((parsedSquare->inners()) == (square.inners()));
 
 	const auto parsedDonut = Polygon::Parse(Format(donut).toUTF8());
 	REQUIRE(parsedDonut);
-	CHECK_EQ(parsedDonut->outer(), donut.outer());
-	CHECK_EQ(parsedDonut->inners(), donut.inners());
+	CHECK((parsedDonut->outer()) == (donut.outer()));
+	CHECK((parsedDonut->inners()) == (donut.inners()));
 
 	const auto parsedPrecise = Polygon::Parse(Format(precise));
 	REQUIRE(parsedPrecise);
-	CHECK_EQ(parsedPrecise->outer(), precise.outer());
+	CHECK((parsedPrecise->outer()) == (precise.outer()));
 
 	const auto parsedWithSpaces = Polygon::Parse(
 		U" \n ( ( (0e0, 0), (4, 0), (4, 4), (0, 4) ) ) \t");
 	REQUIRE(parsedWithSpaces);
-	CHECK_EQ(parsedWithSpaces->outer(), square.outer());
+	CHECK((parsedWithSpaces->outer()) == (square.outer()));
 
 	const Array<StringView> invalidSources{
 		U"",

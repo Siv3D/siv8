@@ -28,8 +28,8 @@ TEST_CASE("Base64Value")
 	for (const auto& [s, base64] : testCases)
 	{
 		const Base64Value base64Value{ base64 };
-		CHECK_EQ(base64Value.getBase64(), base64);
-		CHECK_EQ(Base64Value::EncodeFromUTF8(s).getBase64(), base64);
+		CHECK((base64Value.getBase64()) == (base64));
+		CHECK((Base64Value::EncodeFromUTF8(s).getBase64()) == (base64));
 
 		std::string decoded(base64Value.getMaxBinarySize(), '\0');
 		
@@ -41,17 +41,17 @@ TEST_CASE("Base64Value")
 			decoded.resize(result.value());
 		}
 
-		CHECK_EQ(s, decoded);
+		CHECK((s) == (decoded));
 	}
 
 	for (const auto& [s, base64] : testCases)
 	{
-		CHECK_EQ(s, Base64Value{ base64 }.decodeToUTF8());
+		CHECK((s) == (Base64Value{ base64 }.decodeToUTF8()));
 	}
 
 	for (const auto& [s, base64] : testCases)
 	{
-		CHECK_EQ(Unicode::FromUTF8(s), Base64Value{ Unicode::FromUTF8(base64) }.decodeToString());
+		CHECK((Unicode::FromUTF8(s)) == (Base64Value{ Unicode::FromUTF8(base64) }.decodeToString()));
 	}
 }
 
@@ -164,9 +164,9 @@ TEST_CASE("Base64Value.decodeToString.Success")
 		const auto encoded = Base64Value::EncodeFromUTF8(Unicode::ToUTF8(input));
 		const auto result = encoded.decodeToString(dst);
 		REQUIRE(result);
-		CHECK_EQ(*result, input.size());
-		CHECK_EQ(dst, input);
-		CHECK_EQ(encoded.decodeToString(), input);
+		CHECK((*result) == (input.size()));
+		CHECK((dst) == (input));
+		CHECK((encoded.decodeToString()) == (input));
 	}
 
 	for (const size_t length : { 15, 16, 17, 31, 32, 33, 63, 64, 65, 127, 128, 129, 4096 })
@@ -175,18 +175,18 @@ TEST_CASE("Base64Value.decodeToString.Success")
 		const String input(length, U'\U0001F600');
 		const auto result = Base64Value::EncodeFromUTF8(Unicode::ToUTF8(input)).decodeToString(dst);
 		REQUIRE(result);
-		CHECK_EQ(*result, length);
-		CHECK_EQ(dst, input);
+		CHECK((*result) == (length));
+		CHECK((dst) == (input));
 	}
 
 	const auto whitespace = Base64Value{ " \tZg==\r\n" }.decodeToString(dst);
 	REQUIRE(whitespace);
-	CHECK_EQ(*whitespace, 1u);
-	CHECK_EQ(dst, U"f");
+	CHECK((*whitespace) == (1u));
+	CHECK((dst) == (U"f"));
 
 	const auto empty = Base64Value{ " \t\r\n" }.decodeToString(dst);
 	REQUIRE(empty);
-	CHECK_EQ(*empty, 0u);
+	CHECK((*empty) == (0u));
 	CHECK(dst.isEmpty());
 }
 
@@ -207,7 +207,7 @@ TEST_CASE("Base64Value.decodeToString.InvalidBase64")
 		const auto result = encoded.decodeToString(dst);
 		REQUIRE_FALSE(result);
 		CHECK(result.error().code == Base64Value::DecodeError::Code::InvalidBase64);
-		CHECK_EQ(result.error().position, position);
+		CHECK((result.error().position) == (position));
 		CHECK(dst.isEmpty());
 		CHECK(encoded.decodeToString().isEmpty());
 	}
@@ -219,7 +219,7 @@ TEST_CASE("Base64Value.decodeToString.InvalidUTF8")
 	const auto singleByte = Base64Value{ "/w==" }.decodeToString(dst);
 	REQUIRE_FALSE(singleByte);
 	CHECK(singleByte.error().code == Base64Value::DecodeError::Code::InvalidUTF8);
-	CHECK_EQ(singleByte.error().position, 0u);
+	CHECK((singleByte.error().position) == (0u));
 	CHECK(dst.isEmpty());
 
 	const Array<std::string> invalidSequences = {
@@ -243,7 +243,7 @@ TEST_CASE("Base64Value.decodeToString.InvalidUTF8")
 				const auto result = encoded.decodeToString(dst);
 				REQUIRE_FALSE(result);
 				CHECK(result.error().code == Base64Value::DecodeError::Code::InvalidUTF8);
-				CHECK_EQ(result.error().position, prefix.size());
+				CHECK((result.error().position) == (prefix.size()));
 				CHECK(dst.isEmpty());
 				CHECK(encoded.decodeToString().isEmpty());
 			}
@@ -261,12 +261,12 @@ TEST_CASE("Base64Value.decodeToString.ReuseAfterError")
 
 		const auto success = Base64Value{ "Zm9v" }.decodeToString(dst);
 		REQUIRE(success);
-		CHECK_EQ(*success, 3u);
-		CHECK_EQ(dst, U"foo");
+		CHECK((*success) == (3u));
+		CHECK((dst) == (U"foo"));
 
 		const auto empty = Base64Value{}.decodeToString(dst);
 		REQUIRE(empty);
-		CHECK_EQ(*empty, 0u);
+		CHECK((*empty) == (0u));
 		CHECK(dst.isEmpty());
 	}
 }

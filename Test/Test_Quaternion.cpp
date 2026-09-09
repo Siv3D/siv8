@@ -20,7 +20,7 @@ namespace
 
 	void CheckComponents(const Quaternion& actual, const Float4 expected)
 	{
-		CHECK_EQ(actual.toFloat4(), expected);
+		CHECK((actual.toFloat4()) == (expected));
 	}
 
 	void CheckVector(const Float3 actual, const Float3 expected, const float epsilon = QuaternionEpsilon)
@@ -44,7 +44,7 @@ TEST_CASE("Quaternion::constructors")
 	const Quaternion copied = identity;
 	CHECK(copied == identity);
 	Quaternion assigned;
-	CHECK_EQ(&(assigned = Quaternion{ 1.0f, 2.0f, 3.0f, 4.0f }), &assigned);
+	CHECK((&(assigned = Quaternion{ 1.0f, 2.0f, 3.0f, 4.0f })) == (&assigned));
 	CheckComponents(assigned, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
 
 	CheckComponents(Quaternion{ 1.0f, 2.0f, 3.0f, 4.0f }, Float4{ 1.0f, 2.0f, 3.0f, 4.0f });
@@ -63,20 +63,20 @@ TEST_CASE("Quaternion::comparison_and_access")
 	CHECK(q.epsilonEquals(Quaternion{ 1.01f, 1.99f, 3.01f, 3.99f }, 0.011f));
 	CHECK_FALSE(q.epsilonEquals(Quaternion{ 1.01f, 1.99f, 3.01f, 3.99f }, 0.009f));
 
-	CHECK_EQ(q.xyz(), (Float3{ 1.0f, 2.0f, 3.0f }));
-	CHECK_EQ(q.getX(), 1.0f);
-	CHECK_EQ(q.getY(), 2.0f);
-	CHECK_EQ(q.getZ(), 3.0f);
-	CHECK_EQ(q.getW(), 4.0f);
+	CHECK((q.xyz()) == ((Float3{ 1.0f, 2.0f, 3.0f })));
+	CHECK((q.getX()) == (1.0f));
+	CHECK((q.getY()) == (2.0f));
+	CHECK((q.getZ()) == (3.0f));
+	CHECK((q.getW()) == (4.0f));
 
 	const Quaternion rotation = Quaternion::RollPitchYaw(0.25f, -0.5f, 0.75f);
 	const Float4 components = rotation.toFloat4();
 	const Quaternion negative{ -components.x, -components.y, -components.z, -components.w };
 	CHECK(rotation.rotationEquals(negative));
 	CHECK_FALSE(rotation.epsilonEquals(negative, QuaternionEpsilon));
-	CHECK(rotation.angleTo(negative) == doctest::Approx(0.0f).epsilon(QuaternionEpsilon));
+	CHECK(rotation.angleTo(negative) == Test::Approx(0.0f).epsilon(QuaternionEpsilon));
 	CHECK(Quaternion{}.angleTo(Quaternion::RotateZ(Math::HalfPiF))
-		== doctest::Approx(Math::HalfPiF).epsilon(QuaternionEpsilon));
+		== Test::Approx(Math::HalfPiF).epsilon(QuaternionEpsilon));
 }
 
 TEST_CASE("Quaternion::classification")
@@ -99,22 +99,22 @@ TEST_CASE("Quaternion::classification")
 TEST_CASE("Quaternion::math")
 {
 	const Quaternion q{ 1.0f, 2.0f, 2.0f, 4.0f };
-	CHECK_EQ(q.dot(q), 25.0f);
-	CHECK_EQ(q.lengthSq(), 25.0f);
-	CHECK_EQ(q.length(), 5.0f);
+	CHECK((q.dot(q)) == (25.0f));
+	CHECK((q.lengthSq()) == (25.0f));
+	CHECK((q.length()) == (5.0f));
 
 	const Quaternion normalized = q.normalized();
 	CHECK(normalized.epsilonEquals(Quaternion{ 0.2f, 0.4f, 0.4f, 0.8f }, 0.000001f));
 	CHECK(normalized.isNormalized());
 
 	Quaternion mutableValue = q;
-	CHECK_EQ(&mutableValue.normalize(), &mutableValue);
+	CHECK((&mutableValue.normalize()) == (&mutableValue));
 	CHECK(mutableValue.epsilonEquals(normalized, 0.000001f));
 	CHECK(q.fastNormalized().isNormalized(0.02f));
 
 	CheckComponents(q.conjugated(), Float4{ -1.0f, -2.0f, -2.0f, 4.0f });
 	mutableValue = q;
-	CHECK_EQ(&mutableValue.conjugate(), &mutableValue);
+	CHECK((&mutableValue.conjugate()) == (&mutableValue));
 	CheckComponents(mutableValue, Float4{ -1.0f, -2.0f, -2.0f, 4.0f });
 	CHECK(q.inverse().epsilonEquals(Quaternion{ -0.04f, -0.08f, -0.08f, 0.16f }, 0.000001f));
 
@@ -131,7 +131,7 @@ TEST_CASE("Quaternion::canonicalization")
 	CheckComponents(q, Float4{ 1.0f, -2.0f, 3.0f, -4.0f });
 
 	Quaternion mutableValue{ -1.0f, 2.0f, -3.0f, 0.0f };
-	CHECK_EQ(&mutableValue.canonicalize(), &mutableValue);
+	CHECK((&mutableValue.canonicalize()) == (&mutableValue));
 	CheckComponents(mutableValue, Float4{ 1.0f, -2.0f, 3.0f, 0.0f });
 
 	CheckComponents(Quaternion{ 0.0f, -2.0f, 3.0f, 0.0f }.canonicalized(),
@@ -149,7 +149,7 @@ TEST_CASE("Quaternion::composition_and_rotation")
 	CheckVector(composed.rotate(vector), second.rotate(first.rotate(vector)));
 
 	Quaternion mutableValue = first;
-	CHECK_EQ(&(mutableValue *= second), &mutableValue);
+	CHECK((&(mutableValue *= second)) == (&mutableValue));
 	CHECK(mutableValue.rotationEquals(composed));
 	CheckVector(composed.inverseRotate(composed.rotate(vector)), vector);
 }
@@ -165,15 +165,15 @@ TEST_CASE("Quaternion::Vec3 rotation precision")
 
 	// These coordinates lose information when converted to Float3.
 	const Vec3 precise{ 1.0 + 0x1p-30, -2.0 - 0x1p-29, 3.0 + 0x1p-28 };
-	CHECK_NE(Vec3{ Float3{ precise } }, precise);
-	CHECK_EQ(Quaternion{}.rotate(precise), precise);
-	CHECK_EQ(Quaternion{}.inverseRotate(precise), precise);
+	CHECK((Vec3{ Float3{ precise } }) != (precise));
+	CHECK((Quaternion{}.rotate(precise)) == (precise));
+	CHECK((Quaternion{}.inverseRotate(precise)) == (precise));
 
 	// An exactly representable unit quaternion rotates X -> Y -> Z -> X.
 	const Quaternion cyclic{ 0.5f, 0.5f, 0.5f, 0.5f };
-	CHECK_EQ(cyclic.rotate(precise), (Vec3{ precise.z, precise.x, precise.y }));
-	CHECK_EQ(cyclic.inverseRotate(precise), (Vec3{ precise.y, precise.z, precise.x }));
-	CHECK_EQ(cyclic.inverseRotate(cyclic.rotate(precise)), precise);
+	CHECK((cyclic.rotate(precise)) == ((Vec3{ precise.z, precise.x, precise.y })));
+	CHECK((cyclic.inverseRotate(precise)) == ((Vec3{ precise.y, precise.z, precise.x })));
+	CHECK((cyclic.inverseRotate(cyclic.rotate(precise))) == (precise));
 
 	// Both magnitudes are outside the float range, but need no special handling.
 	for (const double scale : { 1e-100, 1e100 })
@@ -182,8 +182,8 @@ TEST_CASE("Quaternion::Vec3 rotation precision")
 		CHECK(cyclic.rotate(v).epsilonEquals(Vec3{ v.z, v.x, v.y }, (scale * 1e-14)));
 		CHECK(cyclic.inverseRotate(v).epsilonEquals(Vec3{ v.y, v.z, v.x }, (scale * 1e-14)));
 	}
-	CHECK_EQ(cyclic.rotate(Vec3::Zero()), Vec3::Zero());
-	CHECK_EQ(cyclic.inverseRotate(Vec3::Zero()), Vec3::Zero());
+	CHECK((cyclic.rotate(Vec3::Zero())) == (Vec3::Zero()));
+	CHECK((cyclic.inverseRotate(Vec3::Zero())) == (Vec3::Zero()));
 }
 
 TEST_CASE("Quaternion::Vec3 rotation directions and composition")
@@ -206,8 +206,8 @@ TEST_CASE("Quaternion::Vec3 rotation directions and composition")
 		CHECK(q.inverseRotate(v).epsilonEquals(Vec3{ q.inverseRotate(Float3{ v }) }, 1e-6));
 		const Float4 c = q.toFloat4();
 		const Quaternion negative{ -c.x, -c.y, -c.z, -c.w };
-		CHECK_EQ(q.rotate(v), negative.rotate(v));
-		CHECK_EQ(q.inverseRotate(v), negative.inverseRotate(v));
+		CHECK((q.rotate(v)) == (negative.rotate(v)));
+		CHECK((q.inverseRotate(v)) == (negative.inverseRotate(v)));
 	}
 }
 
@@ -232,11 +232,11 @@ TEST_CASE("Quaternion::interpolation_and_transcendentals")
 
 	const auto [axis, angle] = Quaternion::RotationNormal(Float3::UnitZ(), 1.25f).toAxisAngle();
 	CheckVector(axis, Float3::UnitZ());
-	CHECK(angle == doctest::Approx(1.25f).epsilon(QuaternionEpsilon));
+	CHECK(angle == Test::Approx(1.25f).epsilon(QuaternionEpsilon));
 
 	const auto [identityAxis, identityAngle] = Quaternion{}.toAxisAngle();
 	CheckVector(identityAxis, Float3::Zero());
-	CHECK(identityAngle == doctest::Approx(0.0f).epsilon(QuaternionEpsilon));
+	CHECK(identityAngle == Test::Approx(0.0f).epsilon(QuaternionEpsilon));
 }
 
 TEST_CASE("Quaternion::factories")
@@ -285,15 +285,15 @@ TEST_CASE("Quaternion::axis rotation directions")
 TEST_CASE("Quaternion::format_and_stream")
 {
 	const Quaternion q{ 1.25f, 2.5f, 3.75f, 4.0f };
-	CHECK_EQ(Format(q), U"(1.25, 2.5, 3.75, 4)");
-	CHECK_EQ(fmt::format("{}", q), "(1.25, 2.5, 3.75, 4)");
-	CHECK_EQ(fmt::format("{:.1f}", q), "(1.2, 2.5, 3.8, 4.0)");
-	CHECK_EQ(U"{}"_fmt(q), U"(1.25, 2.5, 3.75, 4)");
-	CHECK_EQ(U"{:.1f}"_fmt(q), U"(1.2, 2.5, 3.8, 4.0)");
+	CHECK((Format(q)) == (U"(1.25, 2.5, 3.75, 4)"));
+	CHECK((fmt::format("{}", q)) == ("(1.25, 2.5, 3.75, 4)"));
+	CHECK((fmt::format("{:.1f}", q)) == ("(1.2, 2.5, 3.8, 4.0)"));
+	CHECK((U"{}"_fmt(q)) == (U"(1.25, 2.5, 3.75, 4)"));
+	CHECK((U"{:.1f}"_fmt(q)) == (U"(1.2, 2.5, 3.8, 4.0)"));
 
 	std::stringstream output;
 	output << q;
-	CHECK_EQ(output.str(), "(1.25, 2.5, 3.75, 4)");
+	CHECK((output.str()) == ("(1.25, 2.5, 3.75, 4)"));
 
 	std::stringstream input{ "(1, 2, 3, 4)" };
 	Quaternion parsed;

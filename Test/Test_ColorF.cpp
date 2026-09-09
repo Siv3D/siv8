@@ -165,7 +165,7 @@ TEST_CASE("ColorF.grayscale and min/max")
 {
 	constexpr ColorF color{ 0.25, 0.5, 0.75, 0.125 };
 
-	CHECK(color.grayscale() == doctest::Approx(0.45375));
+	CHECK(color.grayscale() == Test::Approx(0.45375));
 	static_assert(color.minRGBComponent() == 0.25);
 	static_assert(color.maxRGBComponent() == 0.75);
 	static_assert(color.minComponent() == 0.125);
@@ -196,25 +196,25 @@ TEST_CASE("ColorF.color conversion")
 	const ColorF color{ 1.0, 0.0, 0.0, 0.5 };
 
 	const HSV hsv = color.toHSV();
-	CHECK(hsv.h == doctest::Approx(0.0));
-	CHECK(hsv.s == doctest::Approx(1.0));
-	CHECK(hsv.v == doctest::Approx(1.0));
-	CHECK(hsv.a == doctest::Approx(0.5));
+	CHECK(hsv.h == Test::Approx(0.0));
+	CHECK(hsv.s == Test::Approx(1.0));
+	CHECK(hsv.v == Test::Approx(1.0));
+	CHECK(hsv.a == Test::Approx(0.5));
 
-	CHECK(color.hueShifted(120.0).r == doctest::Approx(0.0));
-	CHECK(color.hueShifted(120.0).g == doctest::Approx(1.0));
-	CHECK(color.hueShifted(120.0).b == doctest::Approx(0.0));
-	CHECK(color.complemented().r == doctest::Approx(0.0));
-	CHECK(color.complemented().g == doctest::Approx(1.0));
-	CHECK(color.complemented().b == doctest::Approx(1.0));
+	CHECK(color.hueShifted(120.0).r == Test::Approx(0.0));
+	CHECK(color.hueShifted(120.0).g == Test::Approx(1.0));
+	CHECK(color.hueShifted(120.0).b == Test::Approx(0.0));
+	CHECK(color.complemented().r == Test::Approx(0.0));
+	CHECK(color.complemented().g == Test::Approx(1.0));
+	CHECK(color.complemented().b == Test::Approx(1.0));
 	CHECK(color.gammaCorrected(1.0) == color);
 	CHECK(color.gammaCorrected(0.0) == ColorF{ 0.0, 0.0, 0.0, 0.5 });
 
 	const ColorF srgb{ 0.25, 0.5, 0.75, 0.125 };
 	const ColorF roundTrip = srgb.srgbToLinear().linearToSRGB();
-	CHECK(roundTrip.r == doctest::Approx(srgb.r));
-	CHECK(roundTrip.g == doctest::Approx(srgb.g));
-	CHECK(roundTrip.b == doctest::Approx(srgb.b));
+	CHECK(roundTrip.r == Test::Approx(srgb.r));
+	CHECK(roundTrip.g == Test::Approx(srgb.g));
+	CHECK(roundTrip.b == Test::Approx(srgb.b));
 	CHECK(roundTrip.a == srgb.a);
 }
 

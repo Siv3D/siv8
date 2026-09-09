@@ -14,12 +14,6 @@
 # define ANKERL_NANOBENCH_IMPLEMENT
 # include <ThirdParty/nanobench/nanobench.h>
 
-# define DOCTEST_CONFIG_IMPLEMENT
-# define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
-# if SIV3D_COMPILER(APPLE_CLANG) // Xcode では色付けを無効化
-#   define DOCTEST_CONFIG_COLORS_NONE
-# endif
-# include <ThirdParty/doctest/doctest.h>
 # include "Siv3DTest.hpp"
 
 namespace
@@ -84,8 +78,28 @@ int32 RunTest()
 		return 1;
 	}
 
-	doctest::Context context;
-	context.applyCommandLine(System::GetArgc(), System::GetArgv());
+	Catch::Session session;
+	session.configData().defaultColourMode = Catch::ColourMode::None;
+	std::vector<std::string> arguments;
+	try
+	{
+		arguments = Test::CatchArguments(System::GetArgc(), System::GetArgv());
+	}
+	catch (const std::invalid_argument& error)
+	{
+		Console << Unicode::FromUTF8(error.what());
+		return 1;
+	}
+	std::vector<const char*> argv;
+	argv.reserve(arguments.size());
+	for (const auto& argument : arguments)
+	{
+		argv.push_back(argument.c_str());
+	}
+	if (const int result = session.applyCommandLine(static_cast<int>(argv.size()), argv.data()))
+	{
+		return result;
+	}
 
 	const FilePath outputDirectory = FileSystem::FullPath(U"../../Test/output/");
 	g_outputDirectory = outputDirectory;
@@ -96,7 +110,7 @@ int32 RunTest()
 		return 1;
 	}
 
-	const int32 exitCode = context.run();
+	const int32 exitCode = session.run();
 
 	if (FileSystem::Exists(outputDirectory) && (not FileSystem::Remove(outputDirectory)))
 	{

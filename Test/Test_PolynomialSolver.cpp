@@ -24,7 +24,7 @@ namespace
 	using namespace s3d;
 
 	// 相対誤差比較。expected == 0.0 の場合は absEps による絶対比較。
-	// doctest::Approx は既定で scale=1 の項を含み、1e-300 級の微小根では
+	// Test::Approx は既定で scale=1 の項を含み、1e-300 級の微小根では
 	// あらゆる値が一致扱いになるため使用しない。
 	[[nodiscard]]
 	static bool IsClose(const double value, const double expected, const double relEps, const double absEps = 0.0) noexcept
@@ -89,30 +89,30 @@ TEST_CASE("PolynomialSolver.contract.basic")
 	{
 		const PolynomialRoots roots = Math::SolveLinearEquation(0.0, 0.0);
 		CHECK(roots.hasInfiniteSolutions);
-		CHECK_EQ(roots.count, 0u);
+		CHECK((roots.count) == (0u));
 	}
 
 	{
 		const PolynomialRoots roots = Math::SolveCubicEquation(0.0, 0.0, 0.0, 0.0);
 		CHECK(roots.hasInfiniteSolutions);
-		CHECK_EQ(roots.count, 0u);
+		CHECK((roots.count) == (0u));
 	}
 
 	{
 		const PolynomialRoots roots = Math::SolveLinearEquation(0.0, 5.0);
 		CHECK(not roots.hasInfiniteSolutions);
-		CHECK_EQ(roots.count, 0u);
+		CHECK((roots.count) == (0u));
 	}
 
 	{
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1.0, 0.0, 1.0);
-		CHECK_EQ(roots.count, 0u); // 実数解なし
+		CHECK((roots.count) == (0u)); // 実数解なし
 	}
 
 	{
 		// 4 引数版の低次ディスパッチ: 0x^3 + x^2 + 0x - 4 = 0
 		const PolynomialRoots roots = Math::SolveCubicEquation(0.0, 1.0, 0.0, -4.0);
-		REQUIRE_EQ(roots.count, 2u);
+		REQUIRE((roots.count) == (2u));
 		CHECK(IsClose(roots.roots[0], -2.0, 1e-12));
 		CHECK(IsClose(roots.roots[1], 2.0, 1e-12));
 	}
@@ -120,7 +120,7 @@ TEST_CASE("PolynomialSolver.contract.basic")
 	{
 		// (x-1)(x-2)(x-3), 4 引数版 (a=2)。
 		const PolynomialRoots roots = Math::SolveCubicEquation(2.0, -12.0, 22.0, -12.0);
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(AllFinite(roots));
 		CHECK(IsSortedStrictly(roots));
 		CHECK(IsClose(roots.roots[0], 1.0, 1e-12));
@@ -131,14 +131,14 @@ TEST_CASE("PolynomialSolver.contract.basic")
 	{
 		// x^3 + x + 1 = 0（実根 1 つ）。参照値は高精度計算による。
 		const PolynomialRoots roots = Math::SolveCubicEquation(1.0, 0.0, 1.0, 1.0);
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(IsClose(roots.roots[0], -0.6823278038280193, 1e-12));
 	}
 
 	{
 		// Citardauq: 大小の離れた 2 根 (x - 1e8)(x - 1e-8)
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1.0, -(1e8 + 1e-8), 1.0);
-		REQUIRE_EQ(roots.count, 2u);
+		REQUIRE((roots.count) == (2u));
 		CHECK(IsClose(roots.roots[0], 1e-8, 1e-12));
 		CHECK(IsClose(roots.roots[1], 1e8, 1e-12));
 	}
@@ -157,7 +157,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots")
 		// R <= 1e15 では全係数が double で正確に表現される（整数 < 2^53）。
 		const PolynomialRoots roots = Math::SolveCubicEquation(-(R + 3.0), (3.0 * R + 2.0), (-2.0 * R));
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(AllFinite(roots));
 		CHECK(IsSortedStrictly(roots));
 		CHECK(IsClose(roots.roots[0], 1.0, 1e-9));
@@ -170,7 +170,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots")
 		const double R = 1e10;
 		const PolynomialRoots roots = Math::SolveCubicEquation(1.0, -(R + 3.0), (3.0 * R + 2.0), (-2.0 * R));
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], 1.0, 1e-9));
 		CHECK(IsClose(roots.roots[1], 2.0, 1e-9));
 		CHECK(IsClose(roots.roots[2], R, 1e-12));
@@ -209,7 +209,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots.signVariants")
 		const double R = 1e10;
 		const PolynomialRoots roots = Math::SolveCubicEquation((R - 3.0), (2.0 - 3.0 * R), (2.0 * R));
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], -R, 1e-12));
 		CHECK(IsClose(roots.roots[1], 1.0, 1e-9));
 		CHECK(IsClose(roots.roots[2], 2.0, 1e-9));
@@ -220,7 +220,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots.signVariants")
 		const double R = 1e10;
 		const PolynomialRoots roots = Math::SolveCubicEquation((R + 3.0), (3.0 * R + 2.0), (2.0 * R));
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], -R, 1e-12));
 		CHECK(IsClose(roots.roots[1], -2.0, 1e-9));
 		CHECK(IsClose(roots.roots[2], -1.0, 1e-9));
@@ -230,7 +230,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots.signVariants")
 		// 小スケール正クラスタ。
 		const PolynomialRoots roots = Math::SolveCubicEquation(-0.06, 0.0011, -6e-6);
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], 0.01, 1e-9));
 		CHECK(IsClose(roots.roots[1], 0.02, 1e-9));
 		CHECK(IsClose(roots.roots[2], 0.03, 1e-9));
@@ -240,7 +240,7 @@ TEST_CASE("PolynomialSolver.Cubic.separatedRoots.signVariants")
 		// 小スケール負クラスタ（鏡像）
 		const PolynomialRoots roots = Math::SolveCubicEquation(0.06, 0.0011, 6e-6);
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], -0.03, 1e-9));
 		CHECK(IsClose(roots.roots[1], -0.02, 1e-9));
 		CHECK(IsClose(roots.roots[2], -0.01, 1e-9));
@@ -256,7 +256,7 @@ TEST_CASE("PolynomialSolver.Cubic.repeatedRoots")
 		// (x-1)^2 (x-5) = x^3 - 7x^2 + 11x - 5
 		const PolynomialRoots roots = Math::SolveCubicEquation(-7.0, 11.0, -5.0);
 
-		REQUIRE_EQ(roots.count, 2u);
+		REQUIRE((roots.count) == (2u));
 		CHECK(IsClose(roots.roots[0], 1.0, 1e-6));
 		CHECK(IsClose(roots.roots[1], 5.0, 1e-12));
 	}
@@ -265,7 +265,7 @@ TEST_CASE("PolynomialSolver.Cubic.repeatedRoots")
 		// (x-1)^3 = x^3 - 3x^2 + 3x - 1
 		const PolynomialRoots roots = Math::SolveCubicEquation(-3.0, 3.0, -1.0);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(IsClose(roots.roots[0], 1.0, 1e-4));
 	}
 
@@ -291,7 +291,7 @@ TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 		// x^3 + x + 1e160 = 0: 実根 1 つ ~ -cbrt(1e160)
 		const PolynomialRoots roots = Math::SolveCubicEquation(1.0, 1e160);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(IsClose(roots.roots[0], -2.1544346900318838e+53, 1e-10));
 	}
 
@@ -299,7 +299,7 @@ TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 		// x^3 + 1e-160 = 0: 実根 1 つ = cbrt(-1e-160)
 		const PolynomialRoots roots = Math::SolveCubicEquation(0.0, 1e-160);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(IsClose(roots.roots[0], -4.6415888336127785e-54, 1e-10));
 	}
 
@@ -308,7 +308,7 @@ TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 		// スケール後係数が underflow する場合でも、元係数空間で妥当な根を返す。
 		const PolynomialRoots roots = Math::SolveCubicEquation(1e300, 1.0);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1e-300, 1e-9));
 	}
@@ -317,8 +317,8 @@ TEST_CASE("PolynomialSolver.CubicPQ.extreme")
 		// x(x^2 - 1e-108) = 0: 3 根が実用マージ許容内 → {0}
 		const PolynomialRoots roots = Math::SolveCubicEquation(-1e-108, 0.0);
 
-		REQUIRE_EQ(roots.count, 1u);
-		CHECK_EQ(roots.roots[0], 0.0);
+		REQUIRE((roots.count) == (1u));
+		CHECK((roots.roots[0]) == (0.0));
 	}
 }
 
@@ -331,7 +331,7 @@ TEST_CASE("PolynomialSolver.Cubic.extremeCoefficients")
 		// 混入を禁止する。
 		const PolynomialRoots roots = Math::SolveCubicEquation(1e160, 0.0, 1.0);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1e160, 1e-10));
 	}
@@ -340,7 +340,7 @@ TEST_CASE("PolynomialSolver.Cubic.extremeCoefficients")
 		// x^3 + 1e160 x^2 + x + 1 = 0: こちらも実根 1 つ。
 		const PolynomialRoots roots = Math::SolveCubicEquation(1e160, 1.0, 1.0);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(IsClose(roots.roots[0], -1e160, 1e-10));
 
 		for (const double root : roots)
@@ -353,9 +353,9 @@ TEST_CASE("PolynomialSolver.Cubic.extremeCoefficients")
 		// 4 引数版, 巨大な最高次係数: 1e160 x^3 - 1e160 x = 0 -> {-1, 0, 1}
 		const PolynomialRoots roots = Math::SolveCubicEquation(1e160, 0.0, -1e160, 0.0);
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], -1.0, 1e-12));
-		CHECK_EQ(roots.roots[1], 0.0);
+		CHECK((roots.roots[1]) == (0.0));
 		CHECK(IsClose(roots.roots[2], 1.0, 1e-12));
 	}
 }
@@ -367,7 +367,7 @@ TEST_CASE("PolynomialSolver.finiteContract")
 		// -b/a ~ -1e320 は double で表現不能。表現不能な有限実根は返さない。
 		const PolynomialRoots roots = Math::SolveLinearEquation(1e-160, 1e160);
 
-		CHECK_EQ(roots.count, 0u);
+		CHECK((roots.count) == (0u));
 		CHECK(not roots.hasInfiniteSolutions);
 	}
 
@@ -375,7 +375,7 @@ TEST_CASE("PolynomialSolver.finiteContract")
 		// 境界の内側: -b/a = -1e308 は表現可能なので返す。
 		const PolynomialRoots roots = Math::SolveLinearEquation(1e-154, 1e154);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(std::isfinite(roots.roots[0]));
 		CHECK(IsClose(roots.roots[0], -1e308, 1e-12));
 	}
@@ -384,19 +384,19 @@ TEST_CASE("PolynomialSolver.finiteContract")
 		// quadratic の c == 0 分岐: -b/a が overflow するケースでは {0} のみを返す。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-160, 1e160, 0.0);
 
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(AllFinite(roots));
-		CHECK_EQ(roots.roots[0], 0.0);
+		CHECK((roots.roots[0]) == (0.0));
 	}
 
 	{
 		// 同分岐で表現可能な巨大根は保持する: {0, -1e200}
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-200, 1.0, 0.0);
 
-		REQUIRE_EQ(roots.count, 2u);
+		REQUIRE((roots.count) == (2u));
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1e200, 1e-12));
-		CHECK_EQ(roots.roots[1], 0.0);
+		CHECK((roots.roots[1]) == (0.0));
 	}
 
 	{
@@ -466,7 +466,7 @@ TEST_CASE("PolynomialSolver.residualContract")
 
 			if (scale == 0.0)
 			{
-				CHECK_EQ(f, 0.0);
+				CHECK((f) == (0.0));
 			}
 			else
 			{
@@ -487,7 +487,7 @@ TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 		const PolynomialRoots roots = Math::SolveCubicEquation(
 			-(r1 + r2 + r3), (r1 * r2 + r1 * r3 + r2 * r3), -(r1 * r2 * r3));
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], r1, 1e-6));
 		CHECK(IsClose(roots.roots[1], r2, 1e-9));
 		CHECK(IsClose(roots.roots[2], r3, 1e-9));
@@ -499,7 +499,7 @@ TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 		const PolynomialRoots roots = Math::SolveCubicEquation(
 			-(r1 + r2 + r3), (r1 * r2 + r1 * r3 + r2 * r3), -(r1 * r2 * r3));
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(IsClose(roots.roots[0], r2, 1e-9));
 		CHECK(IsClose(roots.roots[1], r1, 1e-6));
 		CHECK(IsClose(roots.roots[2], r3, 1e-9));
@@ -510,7 +510,7 @@ TEST_CASE("PolynomialSolver.Cubic.tinyRootWithLargeCompanions")
 		// 真の実根は {-1e154, ~1e-8, 1e154}。
 		const PolynomialRoots roots = Math::SolveCubicEquation(-1e308, 1e300);
 
-		REQUIRE_EQ(roots.count, 3u);
+		REQUIRE((roots.count) == (3u));
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1e154, 1e-9));
 		CHECK(IsClose(roots.roots[1], 1e-8, 1e-6));
@@ -525,13 +525,13 @@ TEST_CASE("PolynomialSolver.Quadratic.degenerateLeadingCoefficient")
 	{
 		// 1e-160 x^2 + 1e-160 x + 1 = 0: 判別式 < 0、実数解なし。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-160, 1e-160, 1.0);
-		CHECK_EQ(roots.count, 0u);
+		CHECK((roots.count) == (0u));
 	}
 
 	{
 		// 1e-200 x^2 + x + 1 = 0: 根 ~{-1e200, -1}、どちらも表現可能。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-200, 1.0, 1.0);
-		REQUIRE_EQ(roots.count, 2u);
+		REQUIRE((roots.count) == (2u));
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1e200, 1e-12));
 		CHECK(IsClose(roots.roots[1], -1.0, 1e-12));
@@ -540,7 +540,7 @@ TEST_CASE("PolynomialSolver.Quadratic.degenerateLeadingCoefficient")
 	{
 		// 1e-320 x^2 + x + 1 = 0: 巨大根 ~-1e320 は表現不能なので落とし、-1 のみ返す。
 		const PolynomialRoots roots = Math::SolveQuadraticEquation(1e-320, 1.0, 1.0);
-		REQUIRE_EQ(roots.count, 1u);
+		REQUIRE((roots.count) == (1u));
 		CHECK(AllFinite(roots));
 		CHECK(IsClose(roots.roots[0], -1.0, 1e-9));
 	}

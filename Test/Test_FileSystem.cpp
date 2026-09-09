@@ -103,9 +103,9 @@ TEST_CASE("FileSystem::Path status")
 	for (const auto& test : cases)
 	{
 		CAPTURE(test.path);
-		CHECK_EQ(FileSystem::Exists(test.path), test.exists);
-		CHECK_EQ(FileSystem::IsDirectory(test.path), test.isDirectory);
-		CHECK_EQ(FileSystem::IsFile(test.path), test.isFile);
+		CHECK((FileSystem::Exists(test.path)) == (test.exists));
+		CHECK((FileSystem::IsDirectory(test.path)) == (test.isDirectory));
+		CHECK((FileSystem::IsFile(test.path)) == (test.isFile));
 	}
 }
 
@@ -119,114 +119,114 @@ TEST_CASE("FileSystem::IsResourcePath")
 
 TEST_CASE("FileSystem::Extension")
 {
-	CHECK_EQ(FileSystem::Extension(U"aaa.png"), U"png");
-	CHECK_EQ(FileSystem::Extension(U"./aaa.png"), U"png");
-	CHECK_EQ(FileSystem::Extension(U"../aaa.png"), U"png");
-	CHECK_EQ(FileSystem::Extension(U"aaa"), U"");
-	CHECK_EQ(FileSystem::Extension(U"aaa.bbb/ccc"), U"");
-	CHECK_EQ(FileSystem::Extension(U"aaa.bbb/ccc.d"), U"d");
-	CHECK_EQ(FileSystem::Extension(U"aaa.bbb/ccc.d.e"), U"e");
-	CHECK_EQ(FileSystem::Extension(U""), U"");
-	CHECK_EQ(FileSystem::Extension(U"./"), U"");
-	CHECK_EQ(FileSystem::Extension(U"../"), U"");
-	CHECK_EQ(FileSystem::Extension(U"document.txt"), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"filename"), U"");
-	CHECK_EQ(FileSystem::Extension(U"./filename"), U"");
-	CHECK_EQ(FileSystem::Extension(U".gitignore"), U"");
-	CHECK_EQ(FileSystem::Extension(U".test.txt"), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"document.TXT"), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"FILENAME"), U"");
-	CHECK_EQ(FileSystem::Extension(U"./FILENAME"), U"");
-	CHECK_EQ(FileSystem::Extension(U".GITIGNORE"), U"");
-	CHECK_EQ(FileSystem::Extension(U".test.TXT"), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"path/to/file.pdf"), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"./path/./to/file.pdf"), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"./path/../to/file.pdf"), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"../path/to/file.pdf"), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"archive.tar.gz"), U"gz");
-	CHECK_EQ(FileSystem::Extension(U"archive.tar.GZ"), U"gz");
-	CHECK_EQ(FileSystem::Extension(U"file."), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.."), U"");
-	CHECK_EQ(FileSystem::Extension(U"file..."), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.txt."), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.txt.."), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.txt..."), U"");
-	CHECK_EQ(FileSystem::Extension(U"my document.docx"), U"docx");
-	CHECK_EQ(FileSystem::Extension(U".hidden.tar.gz"), U"gz");
-	CHECK_EQ(FileSystem::Extension(U"path/to/.config.file.dat"), U"dat");
-	CHECK_EQ(FileSystem::Extension(U"...."), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.middle."), U"");
-	CHECK_EQ(FileSystem::Extension(U"path.to.folder/file"), U"");
-	CHECK_EQ(FileSystem::Extension(U"C:\\path\\to\\file.docx"), U"docx");
-	CHECK_EQ(FileSystem::Extension(U"file.extension-with-special_chars!@#"), U"extension-with-special_chars!@#");
-	CHECK_EQ(FileSystem::Extension(U"メモ.テキスト"), U"テキスト");
-	CHECK_EQ(FileSystem::Extension(U"my file. "), U" ");
-	CHECK_EQ(FileSystem::Extension(U"file..txt"), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"a.a"), U"a");
-	CHECK_EQ(FileSystem::Extension(U"a.A"), U"a");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example/windmill.png")), U"png");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example/windmill.PNG")), U"png");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example/windmill")), U"");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/windmill")), U"");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/windmill.p")), U"p");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p")), U"p");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p.q")), U"q");
+	CHECK((FileSystem::Extension(U"aaa.png")) == (U"png"));
+	CHECK((FileSystem::Extension(U"./aaa.png")) == (U"png"));
+	CHECK((FileSystem::Extension(U"../aaa.png")) == (U"png"));
+	CHECK((FileSystem::Extension(U"aaa")) == (U""));
+	CHECK((FileSystem::Extension(U"aaa.bbb/ccc")) == (U""));
+	CHECK((FileSystem::Extension(U"aaa.bbb/ccc.d")) == (U"d"));
+	CHECK((FileSystem::Extension(U"aaa.bbb/ccc.d.e")) == (U"e"));
+	CHECK((FileSystem::Extension(U"")) == (U""));
+	CHECK((FileSystem::Extension(U"./")) == (U""));
+	CHECK((FileSystem::Extension(U"../")) == (U""));
+	CHECK((FileSystem::Extension(U"document.txt")) == (U"txt"));
+	CHECK((FileSystem::Extension(U"filename")) == (U""));
+	CHECK((FileSystem::Extension(U"./filename")) == (U""));
+	CHECK((FileSystem::Extension(U".gitignore")) == (U""));
+	CHECK((FileSystem::Extension(U".test.txt")) == (U"txt"));
+	CHECK((FileSystem::Extension(U"document.TXT")) == (U"txt"));
+	CHECK((FileSystem::Extension(U"FILENAME")) == (U""));
+	CHECK((FileSystem::Extension(U"./FILENAME")) == (U""));
+	CHECK((FileSystem::Extension(U".GITIGNORE")) == (U""));
+	CHECK((FileSystem::Extension(U".test.TXT")) == (U"txt"));
+	CHECK((FileSystem::Extension(U"path/to/file.pdf")) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"./path/./to/file.pdf")) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"./path/../to/file.pdf")) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"../path/to/file.pdf")) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"archive.tar.gz")) == (U"gz"));
+	CHECK((FileSystem::Extension(U"archive.tar.GZ")) == (U"gz"));
+	CHECK((FileSystem::Extension(U"file.")) == (U""));
+	CHECK((FileSystem::Extension(U"file..")) == (U""));
+	CHECK((FileSystem::Extension(U"file...")) == (U""));
+	CHECK((FileSystem::Extension(U"file.txt.")) == (U""));
+	CHECK((FileSystem::Extension(U"file.txt..")) == (U""));
+	CHECK((FileSystem::Extension(U"file.txt...")) == (U""));
+	CHECK((FileSystem::Extension(U"my document.docx")) == (U"docx"));
+	CHECK((FileSystem::Extension(U".hidden.tar.gz")) == (U"gz"));
+	CHECK((FileSystem::Extension(U"path/to/.config.file.dat")) == (U"dat"));
+	CHECK((FileSystem::Extension(U"....")) == (U""));
+	CHECK((FileSystem::Extension(U"file.middle.")) == (U""));
+	CHECK((FileSystem::Extension(U"path.to.folder/file")) == (U""));
+	CHECK((FileSystem::Extension(U"C:\\path\\to\\file.docx")) == (U"docx"));
+	CHECK((FileSystem::Extension(U"file.extension-with-special_chars!@#")) == (U"extension-with-special_chars!@#"));
+	CHECK((FileSystem::Extension(U"メモ.テキスト")) == (U"テキスト"));
+	CHECK((FileSystem::Extension(U"my file. ")) == (U" "));
+	CHECK((FileSystem::Extension(U"file..txt")) == (U"txt"));
+	CHECK((FileSystem::Extension(U"a.a")) == (U"a"));
+	CHECK((FileSystem::Extension(U"a.A")) == (U"a"));
+	CHECK((FileSystem::Extension(Resource(U"example/windmill.png"))) == (U"png"));
+	CHECK((FileSystem::Extension(Resource(U"example/windmill.PNG"))) == (U"png"));
+	CHECK((FileSystem::Extension(Resource(U"example/windmill"))) == (U""));
+	CHECK((FileSystem::Extension(Resource(U"example.test/windmill"))) == (U""));
+	CHECK((FileSystem::Extension(Resource(U"example.test/windmill.p"))) == (U"p"));
+	CHECK((FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p"))) == (U"p"));
+	CHECK((FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p.q"))) == (U"q"));
 }
 
 TEST_CASE("FileSystem::Extension(PreserveCase::Yes)")
 {
-	CHECK_EQ(FileSystem::Extension(U"aaa.png", PreserveCase::Yes), U"png");
-	CHECK_EQ(FileSystem::Extension(U"./aaa.png", PreserveCase::Yes), U"png");
-	CHECK_EQ(FileSystem::Extension(U"../aaa.png", PreserveCase::Yes), U"png");
-	CHECK_EQ(FileSystem::Extension(U"aaa", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"aaa.bbb/ccc", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"aaa.bbb/ccc.d", PreserveCase::Yes), U"d");
-	CHECK_EQ(FileSystem::Extension(U"aaa.bbb/ccc.d.e", PreserveCase::Yes), U"e");
-	CHECK_EQ(FileSystem::Extension(U"", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"./", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"../", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"document.txt", PreserveCase::Yes), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"filename", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"./filename", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U".gitignore", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U".test.txt", PreserveCase::Yes), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"document.TXT", PreserveCase::Yes), U"TXT");
-	CHECK_EQ(FileSystem::Extension(U"FILENAME", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"./FILENAME", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U".GITIGNORE", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U".test.TXT", PreserveCase::Yes), U"TXT");
-	CHECK_EQ(FileSystem::Extension(U"path/to/file.pdf", PreserveCase::Yes), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"./path/./to/file.pdf", PreserveCase::Yes), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"./path/../to/file.pdf", PreserveCase::Yes), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"../path/to/file.pdf", PreserveCase::Yes), U"pdf");
-	CHECK_EQ(FileSystem::Extension(U"archive.tar.gz", PreserveCase::Yes), U"gz");
-	CHECK_EQ(FileSystem::Extension(U"archive.tar.GZ", PreserveCase::Yes), U"GZ");
-	CHECK_EQ(FileSystem::Extension(U"file.", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"file..", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"file...", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.txt.", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.txt..", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.txt...", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"my document.docx", PreserveCase::Yes), U"docx");
-	CHECK_EQ(FileSystem::Extension(U".hidden.tar.gz", PreserveCase::Yes), U"gz");
-	CHECK_EQ(FileSystem::Extension(U"path/to/.config.file.dat", PreserveCase::Yes), U"dat");
-	CHECK_EQ(FileSystem::Extension(U"....", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"file.middle.", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"path.to.folder/file", PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(U"C:\\path\\to\\file.docx", PreserveCase::Yes), U"docx");
-	CHECK_EQ(FileSystem::Extension(U"file.extension-with-special_chars!@#", PreserveCase::Yes), U"extension-with-special_chars!@#");
-	CHECK_EQ(FileSystem::Extension(U"メモ.テキスト", PreserveCase::Yes), U"テキスト");
-	CHECK_EQ(FileSystem::Extension(U"my file. ", PreserveCase::Yes), U" ");
-	CHECK_EQ(FileSystem::Extension(U"file..txt", PreserveCase::Yes), U"txt");
-	CHECK_EQ(FileSystem::Extension(U"a.a", PreserveCase::Yes), U"a");
-	CHECK_EQ(FileSystem::Extension(U"a.A", PreserveCase::Yes), U"A");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example/windmill.png"), PreserveCase::Yes), U"png");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example/windmill.PNG"), PreserveCase::Yes), U"PNG");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example/windmill"), PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/windmill"), PreserveCase::Yes), U"");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/windmill.p"), PreserveCase::Yes), U"p");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p"), PreserveCase::Yes), U"p");
-	CHECK_EQ(FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p.q"), PreserveCase::Yes), U"q");
+	CHECK((FileSystem::Extension(U"aaa.png", PreserveCase::Yes)) == (U"png"));
+	CHECK((FileSystem::Extension(U"./aaa.png", PreserveCase::Yes)) == (U"png"));
+	CHECK((FileSystem::Extension(U"../aaa.png", PreserveCase::Yes)) == (U"png"));
+	CHECK((FileSystem::Extension(U"aaa", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"aaa.bbb/ccc", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"aaa.bbb/ccc.d", PreserveCase::Yes)) == (U"d"));
+	CHECK((FileSystem::Extension(U"aaa.bbb/ccc.d.e", PreserveCase::Yes)) == (U"e"));
+	CHECK((FileSystem::Extension(U"", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"./", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"../", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"document.txt", PreserveCase::Yes)) == (U"txt"));
+	CHECK((FileSystem::Extension(U"filename", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"./filename", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U".gitignore", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U".test.txt", PreserveCase::Yes)) == (U"txt"));
+	CHECK((FileSystem::Extension(U"document.TXT", PreserveCase::Yes)) == (U"TXT"));
+	CHECK((FileSystem::Extension(U"FILENAME", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"./FILENAME", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U".GITIGNORE", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U".test.TXT", PreserveCase::Yes)) == (U"TXT"));
+	CHECK((FileSystem::Extension(U"path/to/file.pdf", PreserveCase::Yes)) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"./path/./to/file.pdf", PreserveCase::Yes)) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"./path/../to/file.pdf", PreserveCase::Yes)) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"../path/to/file.pdf", PreserveCase::Yes)) == (U"pdf"));
+	CHECK((FileSystem::Extension(U"archive.tar.gz", PreserveCase::Yes)) == (U"gz"));
+	CHECK((FileSystem::Extension(U"archive.tar.GZ", PreserveCase::Yes)) == (U"GZ"));
+	CHECK((FileSystem::Extension(U"file.", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"file..", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"file...", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"file.txt.", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"file.txt..", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"file.txt...", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"my document.docx", PreserveCase::Yes)) == (U"docx"));
+	CHECK((FileSystem::Extension(U".hidden.tar.gz", PreserveCase::Yes)) == (U"gz"));
+	CHECK((FileSystem::Extension(U"path/to/.config.file.dat", PreserveCase::Yes)) == (U"dat"));
+	CHECK((FileSystem::Extension(U"....", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"file.middle.", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"path.to.folder/file", PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(U"C:\\path\\to\\file.docx", PreserveCase::Yes)) == (U"docx"));
+	CHECK((FileSystem::Extension(U"file.extension-with-special_chars!@#", PreserveCase::Yes)) == (U"extension-with-special_chars!@#"));
+	CHECK((FileSystem::Extension(U"メモ.テキスト", PreserveCase::Yes)) == (U"テキスト"));
+	CHECK((FileSystem::Extension(U"my file. ", PreserveCase::Yes)) == (U" "));
+	CHECK((FileSystem::Extension(U"file..txt", PreserveCase::Yes)) == (U"txt"));
+	CHECK((FileSystem::Extension(U"a.a", PreserveCase::Yes)) == (U"a"));
+	CHECK((FileSystem::Extension(U"a.A", PreserveCase::Yes)) == (U"A"));
+	CHECK((FileSystem::Extension(Resource(U"example/windmill.png"), PreserveCase::Yes)) == (U"png"));
+	CHECK((FileSystem::Extension(Resource(U"example/windmill.PNG"), PreserveCase::Yes)) == (U"PNG"));
+	CHECK((FileSystem::Extension(Resource(U"example/windmill"), PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(Resource(U"example.test/windmill"), PreserveCase::Yes)) == (U""));
+	CHECK((FileSystem::Extension(Resource(U"example.test/windmill.p"), PreserveCase::Yes)) == (U"p"));
+	CHECK((FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p"), PreserveCase::Yes)) == (U"p"));
+	CHECK((FileSystem::Extension(Resource(U"example.test/a.b.c/windmill.p.q"), PreserveCase::Yes)) == (U"q"));
 }
 
 TEST_CASE("FileSystem::Extension dot files")
@@ -261,140 +261,140 @@ TEST_CASE("FileSystem::Extension dot files")
 		for (const FilePathView prefix : prefixes)
 		{
 			const FilePath path = (prefix + test.name);
-			CHECK_EQ(FileSystem::Extension(path), test.extension);
-			CHECK_EQ(FileSystem::Extension(path, PreserveCase::No), test.extension);
-			CHECK_EQ(FileSystem::Extension(path, PreserveCase::Yes), test.preservedExtension);
+			CHECK((FileSystem::Extension(path)) == (test.extension));
+			CHECK((FileSystem::Extension(path, PreserveCase::No)) == (test.extension));
+			CHECK((FileSystem::Extension(path, PreserveCase::Yes)) == (test.preservedExtension));
 		}
 
 		const FilePath resourcePath = Resource(test.name);
-		CHECK_EQ(FileSystem::Extension(resourcePath), test.extension);
-		CHECK_EQ(FileSystem::Extension(resourcePath, PreserveCase::No), test.extension);
-		CHECK_EQ(FileSystem::Extension(resourcePath, PreserveCase::Yes), test.preservedExtension);
+		CHECK((FileSystem::Extension(resourcePath)) == (test.extension));
+		CHECK((FileSystem::Extension(resourcePath, PreserveCase::No)) == (test.extension));
+		CHECK((FileSystem::Extension(resourcePath, PreserveCase::Yes)) == (test.preservedExtension));
 	}
 }
 
 TEST_CASE("FileSystem::FileName")
 {
-	CHECK_EQ(FileSystem::FileName(U"aaa.png"), U"aaa.png");
-	CHECK_EQ(FileSystem::FileName(U"./aaa.png"), U"aaa.png");
-	CHECK_EQ(FileSystem::FileName(U"../aaa.png"), U"aaa.png");
-	CHECK_EQ(FileSystem::FileName(U"aaa/"), U"");
-	CHECK_EQ(FileSystem::FileName(U"aaa/bbb/"), U"");
-	CHECK_EQ(FileSystem::FileName(U"aaa/bbb.aa/ccc"), U"ccc");
-	CHECK_EQ(FileSystem::FileName(U"aaa/bbb.aa/ccc/"), U"");
-	CHECK_EQ(FileSystem::FileName(U"aaa"), U"aaa");
-	CHECK_EQ(FileSystem::FileName(U"aaa.bbb/ccc"), U"ccc");
-	CHECK_EQ(FileSystem::FileName(U"aaa.bbb/ccc.d"), U"ccc.d");
-	CHECK_EQ(FileSystem::FileName(U"aaa.bbb/ccc.d.e"), U"ccc.d.e");
-	CHECK_EQ(FileSystem::FileName(U""), U"");
-	CHECK_EQ(FileSystem::FileName(U"./"), U"");
-	CHECK_EQ(FileSystem::FileName(U"../"), U"");
-	CHECK_EQ(FileSystem::FileName(U"document.txt"), U"document.txt");
-	CHECK_EQ(FileSystem::FileName(U"filename"), U"filename");
-	CHECK_EQ(FileSystem::FileName(U"./filename"), U"filename");
-	CHECK_EQ(FileSystem::FileName(U".gitignore"), U".gitignore");
-	CHECK_EQ(FileSystem::FileName(U".test.txt"), U".test.txt");
-	CHECK_EQ(FileSystem::FileName(U"document.TXT"), U"document.TXT");
-	CHECK_EQ(FileSystem::FileName(U"FILENAME"), U"FILENAME");
-	CHECK_EQ(FileSystem::FileName(U"./FILENAME"), U"FILENAME");
-	CHECK_EQ(FileSystem::FileName(U".GITIGNORE"), U".GITIGNORE");
-	CHECK_EQ(FileSystem::FileName(U".test.TXT"), U".test.TXT");
-	CHECK_EQ(FileSystem::FileName(U"path/to/file.pdf"), U"file.pdf");
-	CHECK_EQ(FileSystem::FileName(U"./path/./to/file.pdf"), U"file.pdf");
-	CHECK_EQ(FileSystem::FileName(U"./path/../to/file.pdf"), U"file.pdf");
-	CHECK_EQ(FileSystem::FileName(U"../path/to/file.pdf"), U"file.pdf");
-	CHECK_EQ(FileSystem::FileName(U"archive.tar.gz"), U"archive.tar.gz");
-	CHECK_EQ(FileSystem::FileName(U"archive.tar.GZ"), U"archive.tar.GZ");
-	CHECK_EQ(FileSystem::FileName(U"file."), U"file.");
-	CHECK_EQ(FileSystem::FileName(U"file.."), U"file..");
-	CHECK_EQ(FileSystem::FileName(U"file..."), U"file...");
-	CHECK_EQ(FileSystem::FileName(U"file.txt."), U"file.txt.");
-	CHECK_EQ(FileSystem::FileName(U"file.txt.."), U"file.txt..");
-	CHECK_EQ(FileSystem::FileName(U"file.txt..."), U"file.txt...");
-	CHECK_EQ(FileSystem::FileName(U"my document.docx"), U"my document.docx");
-	CHECK_EQ(FileSystem::FileName(U".hidden.tar.gz"), U".hidden.tar.gz");
-	CHECK_EQ(FileSystem::FileName(U"path/to/.config.file.dat"), U".config.file.dat");
-	CHECK_EQ(FileSystem::FileName(U"...."), U"....");
-	CHECK_EQ(FileSystem::FileName(U"file.middle."), U"file.middle.");
-	CHECK_EQ(FileSystem::FileName(U"path.to.folder/file"), U"file");
-	CHECK_EQ(FileSystem::FileName(U"C:\\path\\to\\file.docx"), U"file.docx");
-	CHECK_EQ(FileSystem::FileName(U"file.extension-with-special_chars!@#"), U"file.extension-with-special_chars!@#");
-	CHECK_EQ(FileSystem::FileName(U"メモ.テキスト"), U"メモ.テキスト");
-	CHECK_EQ(FileSystem::FileName(U"my file. "), U"my file. ");
-	CHECK_EQ(FileSystem::FileName(U"file..txt"), U"file..txt");
-	CHECK_EQ(FileSystem::FileName(U"a.a"), U"a.a");
-	CHECK_EQ(FileSystem::FileName(U"a.A"), U"a.A");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example/windmill.png")), U"windmill.png");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example/windmill.PNG")), U"windmill.PNG");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example/windmill")), U"windmill");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example.test/windmill")), U"windmill");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example.test/windmill/")), U"");
-	CHECK_EQ(FileSystem::FileName(Resource(U"")), U"");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example.test/windmill.p")), U"windmill.p");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example.test/a.b.c/windmill.p")), U"windmill.p");
-	CHECK_EQ(FileSystem::FileName(Resource(U"example.test/a.b.c/windmill.p.q")), U"windmill.p.q");
+	CHECK((FileSystem::FileName(U"aaa.png")) == (U"aaa.png"));
+	CHECK((FileSystem::FileName(U"./aaa.png")) == (U"aaa.png"));
+	CHECK((FileSystem::FileName(U"../aaa.png")) == (U"aaa.png"));
+	CHECK((FileSystem::FileName(U"aaa/")) == (U""));
+	CHECK((FileSystem::FileName(U"aaa/bbb/")) == (U""));
+	CHECK((FileSystem::FileName(U"aaa/bbb.aa/ccc")) == (U"ccc"));
+	CHECK((FileSystem::FileName(U"aaa/bbb.aa/ccc/")) == (U""));
+	CHECK((FileSystem::FileName(U"aaa")) == (U"aaa"));
+	CHECK((FileSystem::FileName(U"aaa.bbb/ccc")) == (U"ccc"));
+	CHECK((FileSystem::FileName(U"aaa.bbb/ccc.d")) == (U"ccc.d"));
+	CHECK((FileSystem::FileName(U"aaa.bbb/ccc.d.e")) == (U"ccc.d.e"));
+	CHECK((FileSystem::FileName(U"")) == (U""));
+	CHECK((FileSystem::FileName(U"./")) == (U""));
+	CHECK((FileSystem::FileName(U"../")) == (U""));
+	CHECK((FileSystem::FileName(U"document.txt")) == (U"document.txt"));
+	CHECK((FileSystem::FileName(U"filename")) == (U"filename"));
+	CHECK((FileSystem::FileName(U"./filename")) == (U"filename"));
+	CHECK((FileSystem::FileName(U".gitignore")) == (U".gitignore"));
+	CHECK((FileSystem::FileName(U".test.txt")) == (U".test.txt"));
+	CHECK((FileSystem::FileName(U"document.TXT")) == (U"document.TXT"));
+	CHECK((FileSystem::FileName(U"FILENAME")) == (U"FILENAME"));
+	CHECK((FileSystem::FileName(U"./FILENAME")) == (U"FILENAME"));
+	CHECK((FileSystem::FileName(U".GITIGNORE")) == (U".GITIGNORE"));
+	CHECK((FileSystem::FileName(U".test.TXT")) == (U".test.TXT"));
+	CHECK((FileSystem::FileName(U"path/to/file.pdf")) == (U"file.pdf"));
+	CHECK((FileSystem::FileName(U"./path/./to/file.pdf")) == (U"file.pdf"));
+	CHECK((FileSystem::FileName(U"./path/../to/file.pdf")) == (U"file.pdf"));
+	CHECK((FileSystem::FileName(U"../path/to/file.pdf")) == (U"file.pdf"));
+	CHECK((FileSystem::FileName(U"archive.tar.gz")) == (U"archive.tar.gz"));
+	CHECK((FileSystem::FileName(U"archive.tar.GZ")) == (U"archive.tar.GZ"));
+	CHECK((FileSystem::FileName(U"file.")) == (U"file."));
+	CHECK((FileSystem::FileName(U"file..")) == (U"file.."));
+	CHECK((FileSystem::FileName(U"file...")) == (U"file..."));
+	CHECK((FileSystem::FileName(U"file.txt.")) == (U"file.txt."));
+	CHECK((FileSystem::FileName(U"file.txt..")) == (U"file.txt.."));
+	CHECK((FileSystem::FileName(U"file.txt...")) == (U"file.txt..."));
+	CHECK((FileSystem::FileName(U"my document.docx")) == (U"my document.docx"));
+	CHECK((FileSystem::FileName(U".hidden.tar.gz")) == (U".hidden.tar.gz"));
+	CHECK((FileSystem::FileName(U"path/to/.config.file.dat")) == (U".config.file.dat"));
+	CHECK((FileSystem::FileName(U"....")) == (U"...."));
+	CHECK((FileSystem::FileName(U"file.middle.")) == (U"file.middle."));
+	CHECK((FileSystem::FileName(U"path.to.folder/file")) == (U"file"));
+	CHECK((FileSystem::FileName(U"C:\\path\\to\\file.docx")) == (U"file.docx"));
+	CHECK((FileSystem::FileName(U"file.extension-with-special_chars!@#")) == (U"file.extension-with-special_chars!@#"));
+	CHECK((FileSystem::FileName(U"メモ.テキスト")) == (U"メモ.テキスト"));
+	CHECK((FileSystem::FileName(U"my file. ")) == (U"my file. "));
+	CHECK((FileSystem::FileName(U"file..txt")) == (U"file..txt"));
+	CHECK((FileSystem::FileName(U"a.a")) == (U"a.a"));
+	CHECK((FileSystem::FileName(U"a.A")) == (U"a.A"));
+	CHECK((FileSystem::FileName(Resource(U"example/windmill.png"))) == (U"windmill.png"));
+	CHECK((FileSystem::FileName(Resource(U"example/windmill.PNG"))) == (U"windmill.PNG"));
+	CHECK((FileSystem::FileName(Resource(U"example/windmill"))) == (U"windmill"));
+	CHECK((FileSystem::FileName(Resource(U"example.test/windmill"))) == (U"windmill"));
+	CHECK((FileSystem::FileName(Resource(U"example.test/windmill/"))) == (U""));
+	CHECK((FileSystem::FileName(Resource(U""))) == (U""));
+	CHECK((FileSystem::FileName(Resource(U"example.test/windmill.p"))) == (U"windmill.p"));
+	CHECK((FileSystem::FileName(Resource(U"example.test/a.b.c/windmill.p"))) == (U"windmill.p"));
+	CHECK((FileSystem::FileName(Resource(U"example.test/a.b.c/windmill.p.q"))) == (U"windmill.p.q"));
 }
 
 TEST_CASE("FileSystem::BaseName")
 {
-	CHECK_EQ(FileSystem::BaseName(U"aaa.png"), U"aaa");
-	CHECK_EQ(FileSystem::BaseName(U"./aaa.png"), U"aaa");
-	CHECK_EQ(FileSystem::BaseName(U"../aaa.png"), U"aaa");
-	CHECK_EQ(FileSystem::BaseName(U"aaa/"), U"");
-	CHECK_EQ(FileSystem::BaseName(U"aaa/bbb/"), U"");
-	CHECK_EQ(FileSystem::BaseName(U"aaa/bbb.aa/ccc"), U"ccc");
-	CHECK_EQ(FileSystem::BaseName(U"aaa/bbb.aa/ccc/"), U"");
-	CHECK_EQ(FileSystem::BaseName(U"aaa"), U"aaa");
-	CHECK_EQ(FileSystem::BaseName(U"aaa.bbb/ccc"), U"ccc");
-	CHECK_EQ(FileSystem::BaseName(U"aaa.bbb/ccc.d"), U"ccc");
-	CHECK_EQ(FileSystem::BaseName(U"aaa.bbb/ccc.d.e"), U"ccc.d");
-	CHECK_EQ(FileSystem::BaseName(U""), U"");
-	CHECK_EQ(FileSystem::BaseName(U"./"), U"");
-	CHECK_EQ(FileSystem::BaseName(U"../"), U"");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example/windmill.png")), U"windmill");
-	CHECK_EQ(FileSystem::BaseName(U"document.txt"), U"document");
-	CHECK_EQ(FileSystem::BaseName(U"filename"), U"filename");
-	CHECK_EQ(FileSystem::BaseName(U"./filename"), U"filename");
-	CHECK_EQ(FileSystem::BaseName(U".gitignore"), U".gitignore");
-	CHECK_EQ(FileSystem::BaseName(U".test.txt"), U".test");
-	CHECK_EQ(FileSystem::BaseName(U"document.TXT"), U"document");
-	CHECK_EQ(FileSystem::BaseName(U"FILENAME"), U"FILENAME");
-	CHECK_EQ(FileSystem::BaseName(U"./FILENAME"), U"FILENAME");
-	CHECK_EQ(FileSystem::BaseName(U".GITIGNORE"), U".GITIGNORE");
-	CHECK_EQ(FileSystem::BaseName(U".test.TXT"), U".test");
-	CHECK_EQ(FileSystem::BaseName(U"path/to/file.pdf"), U"file");
-	CHECK_EQ(FileSystem::BaseName(U"./path/./to/file.pdf"), U"file");
-	CHECK_EQ(FileSystem::BaseName(U"./path/../to/file.pdf"), U"file");
-	CHECK_EQ(FileSystem::BaseName(U"../path/to/file.pdf"), U"file");
-	CHECK_EQ(FileSystem::BaseName(U"archive.tar.gz"), U"archive.tar");
-	CHECK_EQ(FileSystem::BaseName(U"archive.tar.GZ"), U"archive.tar");
-	CHECK_EQ(FileSystem::BaseName(U"file."), U"file.");
-	CHECK_EQ(FileSystem::BaseName(U"file.."), U"file..");
-	CHECK_EQ(FileSystem::BaseName(U"file..."), U"file...");
-	CHECK_EQ(FileSystem::BaseName(U"file.txt."), U"file.txt.");
-	CHECK_EQ(FileSystem::BaseName(U"file.txt.."), U"file.txt..");
-	CHECK_EQ(FileSystem::BaseName(U"file.txt..."), U"file.txt...");
-	CHECK_EQ(FileSystem::BaseName(U"my document.docx"), U"my document");
-	CHECK_EQ(FileSystem::BaseName(U".hidden.tar.gz"), U".hidden.tar");
-	CHECK_EQ(FileSystem::BaseName(U"path/to/.config.file.dat"), U".config.file");
-	CHECK_EQ(FileSystem::BaseName(U"...."), U"....");
-	CHECK_EQ(FileSystem::BaseName(U"file.middle."), U"file.middle.");
-	CHECK_EQ(FileSystem::BaseName(U"path.to.folder/file"), U"file");
-	CHECK_EQ(FileSystem::BaseName(U"C:\\path\\to\\file.docx"), U"file");
-	CHECK_EQ(FileSystem::BaseName(U"file.extension-with-special_chars!@#"), U"file");
-	CHECK_EQ(FileSystem::BaseName(U"メモ.テキスト"), U"メモ");
-	CHECK_EQ(FileSystem::BaseName(U"my file. "), U"my file");
-	CHECK_EQ(FileSystem::BaseName(U"file..txt"), U"file.");
-	CHECK_EQ(FileSystem::BaseName(U"a.a"), U"a");
-	CHECK_EQ(FileSystem::BaseName(U"a.A"), U"a");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example/windmill.png")), U"windmill");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example/windmill")), U"windmill");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example.test/windmill")), U"windmill");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example.test/windmill/")), U"");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"")), U"");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example.test/windmill.p")), U"windmill");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example.test/a.b.c/windmill.p")), U"windmill");
-	CHECK_EQ(FileSystem::BaseName(Resource(U"example.test/a.b.c/windmill.p.q")), U"windmill.p");
+	CHECK((FileSystem::BaseName(U"aaa.png")) == (U"aaa"));
+	CHECK((FileSystem::BaseName(U"./aaa.png")) == (U"aaa"));
+	CHECK((FileSystem::BaseName(U"../aaa.png")) == (U"aaa"));
+	CHECK((FileSystem::BaseName(U"aaa/")) == (U""));
+	CHECK((FileSystem::BaseName(U"aaa/bbb/")) == (U""));
+	CHECK((FileSystem::BaseName(U"aaa/bbb.aa/ccc")) == (U"ccc"));
+	CHECK((FileSystem::BaseName(U"aaa/bbb.aa/ccc/")) == (U""));
+	CHECK((FileSystem::BaseName(U"aaa")) == (U"aaa"));
+	CHECK((FileSystem::BaseName(U"aaa.bbb/ccc")) == (U"ccc"));
+	CHECK((FileSystem::BaseName(U"aaa.bbb/ccc.d")) == (U"ccc"));
+	CHECK((FileSystem::BaseName(U"aaa.bbb/ccc.d.e")) == (U"ccc.d"));
+	CHECK((FileSystem::BaseName(U"")) == (U""));
+	CHECK((FileSystem::BaseName(U"./")) == (U""));
+	CHECK((FileSystem::BaseName(U"../")) == (U""));
+	CHECK((FileSystem::BaseName(Resource(U"example/windmill.png"))) == (U"windmill"));
+	CHECK((FileSystem::BaseName(U"document.txt")) == (U"document"));
+	CHECK((FileSystem::BaseName(U"filename")) == (U"filename"));
+	CHECK((FileSystem::BaseName(U"./filename")) == (U"filename"));
+	CHECK((FileSystem::BaseName(U".gitignore")) == (U".gitignore"));
+	CHECK((FileSystem::BaseName(U".test.txt")) == (U".test"));
+	CHECK((FileSystem::BaseName(U"document.TXT")) == (U"document"));
+	CHECK((FileSystem::BaseName(U"FILENAME")) == (U"FILENAME"));
+	CHECK((FileSystem::BaseName(U"./FILENAME")) == (U"FILENAME"));
+	CHECK((FileSystem::BaseName(U".GITIGNORE")) == (U".GITIGNORE"));
+	CHECK((FileSystem::BaseName(U".test.TXT")) == (U".test"));
+	CHECK((FileSystem::BaseName(U"path/to/file.pdf")) == (U"file"));
+	CHECK((FileSystem::BaseName(U"./path/./to/file.pdf")) == (U"file"));
+	CHECK((FileSystem::BaseName(U"./path/../to/file.pdf")) == (U"file"));
+	CHECK((FileSystem::BaseName(U"../path/to/file.pdf")) == (U"file"));
+	CHECK((FileSystem::BaseName(U"archive.tar.gz")) == (U"archive.tar"));
+	CHECK((FileSystem::BaseName(U"archive.tar.GZ")) == (U"archive.tar"));
+	CHECK((FileSystem::BaseName(U"file.")) == (U"file."));
+	CHECK((FileSystem::BaseName(U"file..")) == (U"file.."));
+	CHECK((FileSystem::BaseName(U"file...")) == (U"file..."));
+	CHECK((FileSystem::BaseName(U"file.txt.")) == (U"file.txt."));
+	CHECK((FileSystem::BaseName(U"file.txt..")) == (U"file.txt.."));
+	CHECK((FileSystem::BaseName(U"file.txt...")) == (U"file.txt..."));
+	CHECK((FileSystem::BaseName(U"my document.docx")) == (U"my document"));
+	CHECK((FileSystem::BaseName(U".hidden.tar.gz")) == (U".hidden.tar"));
+	CHECK((FileSystem::BaseName(U"path/to/.config.file.dat")) == (U".config.file"));
+	CHECK((FileSystem::BaseName(U"....")) == (U"...."));
+	CHECK((FileSystem::BaseName(U"file.middle.")) == (U"file.middle."));
+	CHECK((FileSystem::BaseName(U"path.to.folder/file")) == (U"file"));
+	CHECK((FileSystem::BaseName(U"C:\\path\\to\\file.docx")) == (U"file"));
+	CHECK((FileSystem::BaseName(U"file.extension-with-special_chars!@#")) == (U"file"));
+	CHECK((FileSystem::BaseName(U"メモ.テキスト")) == (U"メモ"));
+	CHECK((FileSystem::BaseName(U"my file. ")) == (U"my file"));
+	CHECK((FileSystem::BaseName(U"file..txt")) == (U"file."));
+	CHECK((FileSystem::BaseName(U"a.a")) == (U"a"));
+	CHECK((FileSystem::BaseName(U"a.A")) == (U"a"));
+	CHECK((FileSystem::BaseName(Resource(U"example/windmill.png"))) == (U"windmill"));
+	CHECK((FileSystem::BaseName(Resource(U"example/windmill"))) == (U"windmill"));
+	CHECK((FileSystem::BaseName(Resource(U"example.test/windmill"))) == (U"windmill"));
+	CHECK((FileSystem::BaseName(Resource(U"example.test/windmill/"))) == (U""));
+	CHECK((FileSystem::BaseName(Resource(U""))) == (U""));
+	CHECK((FileSystem::BaseName(Resource(U"example.test/windmill.p"))) == (U"windmill"));
+	CHECK((FileSystem::BaseName(Resource(U"example.test/a.b.c/windmill.p"))) == (U"windmill"));
+	CHECK((FileSystem::BaseName(Resource(U"example.test/a.b.c/windmill.p.q"))) == (U"windmill.p"));
 }
 
 TEST_CASE("FileSystem::FileName and BaseName path views")
@@ -431,8 +431,8 @@ TEST_CASE("FileSystem::FileName and BaseName path views")
 			// Neither end of the view coincides with an end of the backing string.
 			const String storage = (U"ignored/" + path + U".ignored/suffix");
 			const FilePathView view{ (storage.data() + 8), path.size() };
-			CHECK_EQ(FileSystem::FileName(view), test.name);
-			CHECK_EQ(FileSystem::BaseName(view), test.baseName);
+			CHECK((FileSystem::FileName(view)) == (test.name));
+			CHECK((FileSystem::BaseName(view)) == (test.baseName));
 			for (const char32 separator : { U'/', U'\\' })
 			{
 				CHECK(FileSystem::FileName(path + separator).isEmpty());
@@ -469,13 +469,13 @@ TEST_CASE("FileSystem::ParentPath")
 		CAPTURE(test.level);
 		const FilePath fullPath = FileSystem::FullPath(test.path);
 		FilePath base = U"previous value";
-		CHECK_EQ(FileSystem::ParentPath(test.path, test.level), test.expected);
-		CHECK_EQ(FileSystem::ParentPath(test.path, test.level, base), test.expected);
-		CHECK_EQ(base, fullPath);
+		CHECK((FileSystem::ParentPath(test.path, test.level)) == (test.expected));
+		CHECK((FileSystem::ParentPath(test.path, test.level, base)) == (test.expected));
+		CHECK((base) == (fullPath));
 		// The input may refer to the output string reused by the caller.
 		base = test.path;
-		CHECK_EQ(FileSystem::ParentPath(base, test.level, base), test.expected);
-		CHECK_EQ(base, fullPath);
+		CHECK((FileSystem::ParentPath(base, test.level, base)) == (test.expected));
+		CHECK((base) == (fullPath));
 	}
 }
 
@@ -509,7 +509,7 @@ TEST_CASE("FileSystem::Downloads folder")
 		{
 			expected.push_back(U'/');
 		}
-		CHECK_EQ(actual, expected);
+		CHECK((actual) == (expected));
 	}
 }
 
@@ -531,7 +531,7 @@ TEST_CASE("FileSystem::File time conversion")
 			REQUIRE(::SystemTimeToTzSpecificLocalTimeEx(nullptr, &utc, &local));
 			const DateTime expected{ local.wYear, local.wMonth, local.wDay,
 				local.wHour, local.wMinute, local.wSecond, local.wMilliseconds };
-			CHECK_EQ(detail::FileTimeToTime(fileTime), expected);
+			CHECK((detail::FileTimeToTime(fileTime)) == (expected));
 			{
 				const HANDLE handle = ::CreateFileW(Unicode::ToWstring(path).c_str(), FILE_WRITE_ATTRIBUTES,
 					(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE), nullptr, OPEN_EXISTING, 0, nullptr);
@@ -539,9 +539,9 @@ TEST_CASE("FileSystem::File time conversion")
 				const ScopeExit closeHandle{ [handle] { ::CloseHandle(handle); } };
 				REQUIRE(::SetFileTime(handle, &fileTime, &fileTime, &fileTime));
 			}
-			CHECK_EQ(FileSystem::CreationTime(path), expected);
-			CHECK_EQ(FileSystem::WriteTime(path), expected);
-			CHECK_EQ(FileSystem::AccessTime(path), expected);
+			CHECK((FileSystem::CreationTime(path)) == (expected));
+			CHECK((FileSystem::WriteTime(path)) == (expected));
+			CHECK((FileSystem::AccessTime(path)) == (expected));
 		}
 	}
 	for (const DWORD high : { DWORD{ 0xC0000000 }, DWORD{ 0xFFFFFFFF } })
@@ -572,8 +572,8 @@ TEST_CASE("FileSystem::File time conversion")
 			REQUIRE(::utimensat(AT_FDCWD, native.c_str(), times, 0) == 0);
 			const DateTime expected{ local.tm_year + 1900, local.tm_mon + 1, local.tm_mday,
 				local.tm_hour, local.tm_min, local.tm_sec, static_cast<int32>(nanoseconds / 1'000'000) };
-			CHECK_EQ(FileSystem::WriteTime(path), expected);
-			CHECK_EQ(FileSystem::AccessTime(path), expected);
+			CHECK((FileSystem::WriteTime(path)) == (expected));
+			CHECK((FileSystem::AccessTime(path)) == (expected));
 		}
 	}
 	struct stat status;
@@ -587,7 +587,7 @@ TEST_CASE("FileSystem::File time conversion")
 	REQUIRE(::localtime_r(&created.tv_sec, &local) != nullptr);
 	const DateTime expected{ local.tm_year + 1900, local.tm_mon + 1, local.tm_mday,
 		local.tm_hour, local.tm_min, local.tm_sec, static_cast<int32>(created.tv_nsec / 1'000'000) };
-	CHECK_EQ(FileSystem::CreationTime(path), expected);
+	CHECK((FileSystem::CreationTime(path)) == (expected));
 }
 
 # endif
@@ -600,17 +600,17 @@ TEST_CASE("FileSystem::ChangeCurrentDirectory")
 			FileSystem::ChangeCurrentDirectory(currentDirectory);
 		} };
 
-	CHECK_EQ(FileSystem::ChangeCurrentDirectory(U"./"), true);
-	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
+	CHECK((FileSystem::ChangeCurrentDirectory(U"./")) == (true));
+	CHECK((FileSystem::CurrentDirectory()) == (currentDirectory));
 
-	CHECK_EQ(FileSystem::ChangeCurrentDirectory(currentDirectory), true);
-	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
+	CHECK((FileSystem::ChangeCurrentDirectory(currentDirectory)) == (true));
+	CHECK((FileSystem::CurrentDirectory()) == (currentDirectory));
 
 	REQUIRE(FileSystem::ChangeCurrentDirectory(U"example/"));
-	CHECK_EQ(FileSystem::CurrentDirectory(), (currentDirectory + U"example/"));
+	CHECK((FileSystem::CurrentDirectory()) == ((currentDirectory + U"example/")));
 
-	CHECK_EQ(FileSystem::ChangeCurrentDirectory(U"../"), true);
-	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
+	CHECK((FileSystem::ChangeCurrentDirectory(U"../")) == (true));
+	CHECK((FileSystem::CurrentDirectory()) == (currentDirectory));
 }
 
 TEST_CASE("FileSystem::CurrentDirectory Unicode")
@@ -623,8 +623,8 @@ TEST_CASE("FileSystem::CurrentDirectory Unicode")
 	const FilePath directory = Test::OutputPath(U"filesystem/currentdirectory/日本語-😀/");
 	REQUIRE(FileSystem::CreateDirectories(directory));
 	REQUIRE(FileSystem::ChangeCurrentDirectory(directory));
-	CHECK_EQ(FileSystem::CurrentDirectory(), directory);
-	CHECK_EQ(FileSystem::RelativePath(directory), U"./");
+	CHECK((FileSystem::CurrentDirectory()) == (directory));
+	CHECK((FileSystem::RelativePath(directory)) == (U"./"));
 }
 
 # if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
@@ -652,7 +652,7 @@ TEST_CASE("FileSystem::CurrentDirectory removed directory")
 		CHECK_NOTHROW(result = FileSystem::RelativePath(currentDirectory));
 		CHECK(result.isEmpty());
 	}
-	CHECK_EQ(FileSystem::CurrentDirectory(), currentDirectory);
+	CHECK((FileSystem::CurrentDirectory()) == (currentDirectory));
 }
 
 # endif
@@ -679,16 +679,15 @@ TEST_CASE("FileSystem::RelativePath")
 	for (const FilePath& workingDirectory : { base, other })
 	{
 		REQUIRE(FileSystem::ChangeCurrentDirectory(workingDirectory));
-		CHECK_EQ(FileSystem::RelativePath(base + U"directory", base), U"directory/");
-		CHECK_EQ(FileSystem::RelativePath(base + U"file.txt", base), U"file.txt");
-		CHECK_EQ(FileSystem::RelativePath(base + U"missing", base), U"missing");
-		CHECK_EQ(FileSystem::RelativePath(base, base), U"./");
-		CHECK_EQ(FileSystem::FullPath(base + FileSystem::RelativePath(base + U"file.txt", base)),
-			FileSystem::FullPath(base + U"file.txt"));
+		CHECK((FileSystem::RelativePath(base + U"directory", base)) == (U"directory/"));
+		CHECK((FileSystem::RelativePath(base + U"file.txt", base)) == (U"file.txt"));
+		CHECK((FileSystem::RelativePath(base + U"missing", base)) == (U"missing"));
+		CHECK((FileSystem::RelativePath(base, base)) == (U"./"));
+		CHECK((FileSystem::FullPath(base + FileSystem::RelativePath(base + U"file.txt", base))) == (FileSystem::FullPath(base + U"file.txt")));
 	}
 
-	CHECK_EQ(FileSystem::RelativePath(U"", base), U"");
-	CHECK_EQ(FileSystem::RelativePath(base, U""), U"");
+	CHECK((FileSystem::RelativePath(U"", base)) == (U""));
+	CHECK((FileSystem::RelativePath(base, U"")) == (U""));
 }
 
 TEST_CASE("FileSystem::RelativePath Unicode")
@@ -726,10 +725,10 @@ TEST_CASE("FileSystem::RelativePath Unicode")
 				CAPTURE(test.start);
 				FilePath relative;
 				CHECK_NOTHROW(relative = FileSystem::RelativePath(test.path, test.start));
-				CHECK_EQ(relative, test.expected);
+				CHECK((relative) == (test.expected));
 				if (FileSystem::IsDirectory(test.start))
 				{
-					CHECK_EQ(FileSystem::FullPath(test.start + relative), FileSystem::FullPath(test.path));
+					CHECK((FileSystem::FullPath(test.start + relative)) == (FileSystem::FullPath(test.path)));
 				}
 			}
 		};
@@ -761,18 +760,18 @@ TEST_CASE("FileSystem::FullPath normal paths")
 	{
 		const FilePath path = (root + test.path);
 		const FilePath expected = (root + test.expected);
-		CHECK_EQ(FileSystem::FullPath(path), expected);
+		CHECK((FileSystem::FullPath(path)) == (expected));
 		const NativeFilePath native = FileSystem::NativePath(path);
 # if SIV3D_PLATFORM(WINDOWS)
-		CHECK_EQ(FileSystem::FullPath(Unicode::FromWstring(native)), expected);
+		CHECK((FileSystem::FullPath(Unicode::FromWstring(native))) == (expected));
 # else
-		CHECK_EQ(FileSystem::FullPath(Unicode::FromUTF8(native)), expected);
+		CHECK((FileSystem::FullPath(Unicode::FromUTF8(native))) == (expected));
 # endif
 	}
 	CHECK(FileSystem::FullPath(U"").isEmpty());
 	CHECK(FileSystem::NativePath(U"").empty());
-	CHECK_EQ(FileSystem::RelativePath(root + U"file.txt", root + U"missing/"), root + U"file.txt");
-	CHECK_EQ(FileSystem::RelativePath(root + U"nested", root + U"file.txt"), root + U"nested/");
+	CHECK((FileSystem::RelativePath(root + U"file.txt", root + U"missing/")) == (root + U"file.txt"));
+	CHECK((FileSystem::RelativePath(root + U"nested", root + U"file.txt")) == (root + U"nested/"));
 
 	const FilePath currentDirectory = FileSystem::CurrentDirectory();
 	const ScopeExit restoreDirectory{ [&currentDirectory]
@@ -780,7 +779,7 @@ TEST_CASE("FileSystem::FullPath normal paths")
 			FileSystem::ChangeCurrentDirectory(currentDirectory);
 		} };
 	REQUIRE(FileSystem::ChangeCurrentDirectory(root));
-	CHECK_EQ(FileSystem::FullPath(U"nested/../file.txt"), root + U"file.txt");
+	CHECK((FileSystem::FullPath(U"nested/../file.txt")) == (root + U"file.txt"));
 }
 
 # if SIV3D_PLATFORM(WINDOWS)
@@ -803,8 +802,8 @@ TEST_CASE("FileSystem::NativePath buffer boundaries")
 			}
 			expected.append((length - expected.size()), L'b');
 			const FilePath path = Unicode::FromWstring(expected);
-			CHECK_EQ(FileSystem::NativePath(path), expected);
-			CHECK_EQ(FileSystem::NativePath(path.replaced(U'\\', U'/')), expected);
+			CHECK((FileSystem::NativePath(path)) == (expected));
+			CHECK((FileSystem::NativePath(path.replaced(U'\\', U'/'))) == (expected));
 		}
 	}
 }
@@ -856,21 +855,20 @@ TEST_CASE("FileSystem::Directory traversal sharing failure")
 
 			uint64 size = 123;
 			CHECK_NOTHROW(size = FileSystem::Size(root));
-			CHECK_EQ(size, 0);
+			CHECK((size) == (0));
 			Array<FilePath> paths{ U"unchanged" };
 			CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root));
 			CHECK(paths.isEmpty());
-			CHECK_EQ(FileSystem::DirectoryContents(root, Recursive::No).sorted(),
-				(Array<FilePath>{ root + U"file.bin", locked }.sorted()));
+			CHECK((FileSystem::DirectoryContents(root, Recursive::No).sorted()) == ((Array<FilePath>{ root + U"file.bin", locked }.sorted())));
 		}
 
-		CHECK_EQ(FileSystem::Size(root), (populated ? 8 : 4));
+		CHECK((FileSystem::Size(root)) == ((populated ? 8 : 4)));
 		Array<FilePath> expected{ root + U"file.bin", locked };
 		if (populated)
 		{
 			expected << (locked + U"inside.bin");
 		}
-		CHECK_EQ(FileSystem::DirectoryContents(root).sorted(), expected.sorted());
+		CHECK((FileSystem::DirectoryContents(root).sorted()) == (expected.sorted()));
 	}
 }
 
@@ -986,7 +984,7 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 		}
 		uint64 size = 123;
 		CHECK_NOTHROW(size = FileSystem::Size(path));
-		CHECK_EQ(size, 0);
+		CHECK((size) == (0));
 		Array<FilePath> paths{ U"unchanged" };
 		CHECK_NOTHROW(paths = FileSystem::DirectoryContents(path));
 		CHECK(paths.isEmpty());
@@ -998,7 +996,7 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 		}
 		else
 		{
-			CHECK_EQ(fullPath, path);
+			CHECK((fullPath) == (path));
 		}
 		CHECK_FALSE(FileSystem::NativePath(path).empty());
 	}
@@ -1009,9 +1007,9 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 		{
 			FilePath relative;
 			CHECK_NOTHROW(relative = FileSystem::RelativePath(alias + U"/file.bin", root));
-			CHECK_EQ(relative, U"directory/file.bin");
+			CHECK((relative) == (U"directory/file.bin"));
 			CHECK_NOTHROW(relative = FileSystem::RelativePath(directory + U"file.bin", alias));
-			CHECK_EQ(relative, U"file.bin");
+			CHECK((relative) == (U"file.bin"));
 		};
 	checkRelativePath();
 	WithOEMFileAPIs(checkRelativePath);
@@ -1019,7 +1017,7 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 	for (const auto& base : { directory, (alias + U'/') })
 	{
 		CAPTURE(base);
-		CHECK_EQ(FileSystem::Size(base), 8);
+		CHECK((FileSystem::Size(base)) == (8));
 		for (const Recursive recursive : { Recursive::No, Recursive::Yes })
 		{
 			Array<FilePath> expected{
@@ -1029,12 +1027,12 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 			{
 				expected << (base + U"nested/file.bin") << (base + U"nested/empty/") << (base + U"nested/parent/");
 			}
-			CHECK_EQ(FileSystem::DirectoryContents(base, recursive).sorted(), expected.sorted());
+			CHECK((FileSystem::DirectoryContents(base, recursive).sorted()) == (expected.sorted()));
 		}
 	}
-	CHECK_EQ(FileSystem::Size(links[0]), 10);
-	CHECK_EQ(FileSystem::DirectoryContents(links[0]), Array<FilePath>{ links[0] + U"/outside.bin" });
-	CHECK_EQ(FileSystem::Size(outside), 10);
+	CHECK((FileSystem::Size(links[0])) == (10));
+	CHECK((FileSystem::DirectoryContents(links[0])) == (Array<FilePath>{ links[0] + U"/outside.bin" }));
+	CHECK((FileSystem::Size(outside)) == (10));
 }
 
 # endif
@@ -1060,7 +1058,7 @@ TEST_CASE("FileSystem::DirectoryContents normal paths")
 			expected.push_back(root + U"nested/資料/\U0001F3AE.txt");
 		}
 		Array<FilePath> actual = FileSystem::DirectoryContents(root, recursive);
-		CHECK_EQ(actual.sort(), expected.sort());
+		CHECK((actual.sort()) == (expected.sort()));
 		CHECK(FileSystem::DirectoryContents(root + U"nested/empty/", recursive).isEmpty());
 		CHECK(FileSystem::DirectoryContents(root + U"file.txt", recursive).isEmpty());
 		CHECK(FileSystem::DirectoryContents(root + U"missing", recursive).isEmpty());
@@ -1087,17 +1085,17 @@ TEST_CASE("FileSystem::Size")
 		{
 			BinaryFileWriter writer{ root + file.path };
 			REQUIRE(writer.isOpen());
-			REQUIRE(writer.write(file.contents.data(), file.contents.size()) == file.contents.size());
+			REQUIRE(writer.write(file.contents.data(), file.contents.size()) == static_cast<int64>(file.contents.size()));
 		}
-		CHECK_EQ(FileSystem::Size(root + file.path), file.contents.size());
-		CHECK_EQ(FileSystem::Size(root + U"nested/../" + file.path), file.contents.size());
+		CHECK((FileSystem::Size(root + file.path)) == (file.contents.size()));
+		CHECK((FileSystem::Size(root + U"nested/../" + file.path)) == (file.contents.size()));
 	}
-	CHECK_EQ(FileSystem::Size(root), 13);
-	CHECK_EQ(FileSystem::Size(root + U"nested"), 7);
-	CHECK_EQ(FileSystem::Size(root + U"nested/empty/"), 0);
-	CHECK_EQ(FileSystem::Size(root + U"missing"), 0);
-	CHECK_EQ(FileSystem::Size(root + U"file.bin/child"), 0);
-	CHECK_EQ(FileSystem::Size(U""), 0);
+	CHECK((FileSystem::Size(root)) == (13));
+	CHECK((FileSystem::Size(root + U"nested")) == (7));
+	CHECK((FileSystem::Size(root + U"nested/empty/")) == (0));
+	CHECK((FileSystem::Size(root + U"missing")) == (0));
+	CHECK((FileSystem::Size(root + U"file.bin/child")) == (0));
+	CHECK((FileSystem::Size(U"")) == (0));
 }
 
 TEST_CASE("FileSystem::IsEmptyDirectory")
@@ -1125,7 +1123,7 @@ TEST_CASE("FileSystem::IsEmptyDirectory")
 	};
 	for (const auto& test : cases)
 	{
-		CHECK_EQ(FileSystem::IsEmptyDirectory(test.path), test.expected);
+		CHECK((FileSystem::IsEmptyDirectory(test.path)) == (test.expected));
 	}
 }
 
@@ -1139,9 +1137,9 @@ TEST_CASE("FileSystem::Path operations round trip")
 		const FilePath source = (directory + name + U".bin");
 		const FilePath copy = (directory + name + U"-copy.bin");
 		const FilePath renamed = (directory + name + U"-renamed.bin");
-		CHECK_EQ(FileSystem::PathAppend(root, name), root + name);
-		CHECK_EQ(FileSystem::PathAppend(directory, name + U".bin"), source);
-		CHECK_EQ(FileSystem::PathAppend(directory, U""), directory);
+		CHECK((FileSystem::PathAppend(root, name)) == (root + name));
+		CHECK((FileSystem::PathAppend(directory, name + U".bin")) == (source));
+		CHECK((FileSystem::PathAppend(directory, U"")) == (directory));
 		REQUIRE(FileSystem::CreateDirectories(directory));
 		CHECK(FileSystem::IsEmptyDirectory(directory));
 		{
@@ -1160,7 +1158,7 @@ TEST_CASE("FileSystem::Path operations round trip")
 			REQUIRE(reader.isOpen());
 			char contents[4]{};
 			REQUIRE(reader.read(contents, sizeof(contents)) == sizeof(contents));
-			CHECK_EQ(std::string_view(contents, sizeof(contents)), "data");
+			CHECK((std::string_view(contents, sizeof(contents))) == ("data"));
 		}
 	}
 }
@@ -1207,7 +1205,7 @@ TEST_CASE("FileSystem::CreateParentDirectories file collision")
 	BinaryFileReader reader{ blocker };
 	char contents[4]{};
 	REQUIRE(reader.read(contents, sizeof(contents)) == sizeof(contents));
-	CHECK_EQ(std::string_view(contents, sizeof(contents)), "keep");
+	CHECK((std::string_view(contents, sizeof(contents))) == ("keep"));
 }
 
 TEST_CASE("FileSystem::Copy parent directories")
@@ -1225,10 +1223,10 @@ TEST_CASE("FileSystem::Copy parent directories")
 		BinaryFileReader reader{ destination };
 		char contents[4]{};
 		REQUIRE(reader.read(contents, sizeof(contents)) == sizeof(contents));
-		CHECK_EQ(std::string_view(contents, sizeof(contents)), "data");
+		CHECK((std::string_view(contents, sizeof(contents))) == ("data"));
 	}
 	CHECK_FALSE(FileSystem::Copy(source, source + U"/child.bin"));
-	CHECK_EQ(FileSystem::FileSize(source), 4);
+	CHECK((FileSystem::FileSize(source)) == (4));
 }
 
 TEST_CASE("FileSystem::RemoveContents")
@@ -1265,12 +1263,12 @@ TEST_CASE("FileSystem::FullPath directory links")
 	const FilePath alias = (root + U"alias");
 	REQUIRE(FileSystem::CreateDirectories(directory + U"nested/"));
 	REQUIRE(::symlink(Unicode::ToUTF8(directory).c_str(), Unicode::ToUTF8(alias).c_str()) == 0);
-	CHECK_EQ(FileSystem::FullPath(alias), directory);
-	CHECK_EQ(FileSystem::FullPath(alias + U"/missing.txt"), directory + U"missing.txt");
-	CHECK_EQ(FileSystem::FullPath(Unicode::FromUTF8(FileSystem::NativePath(alias))), directory);
+	CHECK((FileSystem::FullPath(alias)) == (directory));
+	CHECK((FileSystem::FullPath(alias + U"/missing.txt")) == (directory + U"missing.txt"));
+	CHECK((FileSystem::FullPath(Unicode::FromUTF8(FileSystem::NativePath(alias)))) == (directory));
 	for (const Recursive recursive : { Recursive::No, Recursive::Yes })
 	{
-		CHECK_EQ(FileSystem::DirectoryContents(alias, recursive), Array<FilePath>{ directory + U"nested/" });
+		CHECK((FileSystem::DirectoryContents(alias, recursive)) == (Array<FilePath>{ directory + U"nested/" }));
 	}
 }
 
@@ -1297,7 +1295,7 @@ TEST_CASE("FileSystem::DirectoryContents permission failure")
 {
 	if (::geteuid() == 0)
 	{
-		MESSAGE("Permission denial requires a non-root user.");
+		WARN("Permission denial requires a non-root user.");
 		return;
 	}
 	const FilePath root = Test::OutputPath(U"filesystem/directorycontents/permissions/");
@@ -1316,7 +1314,7 @@ TEST_CASE("FileSystem::DirectoryContents permission failure")
 	CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root, Recursive::Yes));
 	CHECK(paths.isEmpty());
 	CHECK_NOTHROW(paths = FileSystem::DirectoryContents(root, Recursive::No));
-	CHECK_EQ(paths, Array<FilePath>{ directory });
+	CHECK((paths) == (Array<FilePath>{ directory }));
 }
 
 TEST_CASE("FileSystem::IsResourcePath directory links")
@@ -1357,7 +1355,7 @@ TEST_CASE("FileSystem::IsResourcePath permission failure")
 {
 	if (::geteuid() == 0)
 	{
-		MESSAGE("Permission denial requires a non-root user.");
+		WARN("Permission denial requires a non-root user.");
 		return;
 	}
 	const FilePath directory = Test::OutputPath(U"filesystem/isresourcepath/locked/");
@@ -1375,8 +1373,8 @@ TEST_CASE("FileSystem::IsResourcePath permission failure")
 TEST_CASE("FileSystem::Size attribute failure")
 {
 	FilePathView scenario;
-	SUBCASE("broken link") { scenario = U"broken"; }
-	SUBCASE("cyclic link") { scenario = U"cycle"; }
+	SECTION("broken link") { scenario = U"broken"; }
+	SECTION("cyclic link") { scenario = U"cycle"; }
 	const FilePath root = Test::OutputPath(U"filesystem/size/attribute/" + scenario + U'/');
 	REQUIRE(FileSystem::CreateDirectories(root));
 	{
@@ -1388,16 +1386,16 @@ TEST_CASE("FileSystem::Size attribute failure")
 		Unicode::ToUTF8(root + U"link").c_str()) == 0);
 	uint64 size = 123;
 	CHECK_NOTHROW(size = FileSystem::Size(root));
-	CHECK_EQ(size, 0);
-	CHECK_EQ(FileSystem::Size(root + U"file.bin"), 4);
-	CHECK_EQ(FileSystem::Size(root + U"link"), 0);
+	CHECK((size) == (0));
+	CHECK((FileSystem::Size(root + U"file.bin")) == (4));
+	CHECK((FileSystem::Size(root + U"link")) == (0));
 }
 
 TEST_CASE("FileSystem::Size permission failure")
 {
 	if (::geteuid() == 0)
 	{
-		MESSAGE("Permission denial requires a non-root user.");
+		WARN("Permission denial requires a non-root user.");
 		return;
 	}
 	const FilePath root = Test::OutputPath(U"filesystem/size/permissions/");
@@ -1416,11 +1414,11 @@ TEST_CASE("FileSystem::Size permission failure")
 	{
 		uint64 size = 123;
 		CHECK_NOTHROW(size = FileSystem::Size(path));
-		CHECK_EQ(size, 0);
+		CHECK((size) == (0));
 	}
 	REQUIRE(::chmod(native.c_str(), 0500) == 0);
-	CHECK_EQ(FileSystem::Size(directory), 4);
-	CHECK_EQ(FileSystem::Size(root), 8);
+	CHECK((FileSystem::Size(directory)) == (4));
+	CHECK((FileSystem::Size(root)) == (8));
 }
 
 TEST_CASE("FileSystem::Size symbolic links")
@@ -1444,17 +1442,17 @@ TEST_CASE("FileSystem::Size symbolic links")
 	REQUIRE(::symlink(Unicode::ToUTF8(outside + U"file.bin").c_str(), Unicode::ToUTF8(directory + U"file-link").c_str()) == 0);
 	REQUIRE(::symlink(Unicode::ToUTF8(outside).c_str(), Unicode::ToUTF8(directory + U"directory-link").c_str()) == 0);
 	REQUIRE(::symlink(".", Unicode::ToUTF8(directory + U"cycle").c_str()) == 0);
-	CHECK_EQ(FileSystem::Size(directory), 8);
-	CHECK_EQ(FileSystem::Size(alias), 8);
-	CHECK_EQ(FileSystem::Size(alias + U'/'), 8);
-	CHECK_EQ(FileSystem::Size(directory + U"file-link"), 5);
+	CHECK((FileSystem::Size(directory)) == (8));
+	CHECK((FileSystem::Size(alias)) == (8));
+	CHECK((FileSystem::Size(alias + U'/')) == (8));
+	CHECK((FileSystem::Size(directory + U"file-link")) == (5));
 }
 
 TEST_CASE("FileSystem::IsEmptyDirectory permission failure")
 {
 	if (::geteuid() == 0)
 	{
-		MESSAGE("Permission denial requires a non-root user.");
+		WARN("Permission denial requires a non-root user.");
 		return;
 	}
 	for (const bool populated : { false, true })
@@ -1476,7 +1474,7 @@ TEST_CASE("FileSystem::IsEmptyDirectory permission failure")
 		CHECK_FALSE(result);
 		CHECK_FALSE(FileSystem::IsEmptyDirectory(directory + U"missing"));
 		REQUIRE(::chmod(native.c_str(), 0500) == 0);
-		CHECK_EQ(FileSystem::IsEmptyDirectory(directory), (not populated));
+		CHECK((FileSystem::IsEmptyDirectory(directory)) == ((not populated)));
 	}
 }
 
@@ -1516,14 +1514,14 @@ TEST_CASE("FileSystem::CreateParentDirectories resolution failure")
 		CHECK_FALSE(FileSystem::CreateParentDirectories(path));
 		CHECK_FALSE(FileSystem::Copy(source, path));
 	}
-	CHECK_EQ(FileSystem::FileSize(source), 4);
+	CHECK((FileSystem::FileSize(source)) == (4));
 }
 
 TEST_CASE("FileSystem::CreateParentDirectories permission failure")
 {
 	if (::geteuid() == 0)
 	{
-		MESSAGE("Permission denial requires a non-root user.");
+		WARN("Permission denial requires a non-root user.");
 		return;
 	}
 	const FilePath directory = Test::OutputPath(U"filesystem/createparent/locked/");
@@ -1572,7 +1570,7 @@ TEST_CASE("FileSystem::FullPath permission failure")
 {
 	if (::geteuid() == 0)
 	{
-		MESSAGE("Permission denial requires a non-root user.");
+		WARN("Permission denial requires a non-root user.");
 		return;
 	}
 	const FilePath root = Test::OutputPath(U"filesystem/fullpath/permissions/");
@@ -1617,8 +1615,8 @@ TEST_CASE("FileSystem::RemoveContents preserves directory")
 	REQUIRE(::setxattr(native.c_str(), attribute, value, sizeof(value), 0, 0) == 0);
 # endif
 
-	SUBCASE("empty directory") {}
-	SUBCASE("populated directory")
+	SECTION("empty directory") {}
+	SECTION("populated directory")
 	{
 		BinaryFileWriter writer{ directory + U"file.txt" };
 		REQUIRE(writer.isOpen());
@@ -1628,22 +1626,22 @@ TEST_CASE("FileSystem::RemoveContents preserves directory")
 	CHECK(FileSystem::IsEmptyDirectory(directory));
 	struct stat after{};
 	REQUIRE(::stat(native.c_str(), &after) == 0);
-	CHECK_EQ(after.st_dev, before.st_dev);
-	CHECK_EQ(after.st_ino, before.st_ino);
-	CHECK_EQ((after.st_mode & 07777), (before.st_mode & 07777));
+	CHECK((after.st_dev) == (before.st_dev));
+	CHECK((after.st_ino) == (before.st_ino));
+	CHECK(((after.st_mode & 07777)) == ((before.st_mode & 07777)));
 # if SIV3D_PLATFORM(MACOS)
 	char actual[sizeof(value)]{};
-	CHECK_EQ(::getxattr(native.c_str(), attribute, actual, sizeof(actual), 0, 0), sizeof(value));
-	CHECK_EQ(std::string_view(actual, sizeof(actual)), std::string_view(value, sizeof(value)));
+	CHECK((::getxattr(native.c_str(), attribute, actual, sizeof(actual), 0, 0)) == (sizeof(value)));
+	CHECK((std::string_view(actual, sizeof(actual))) == (std::string_view(value, sizeof(value))));
 # endif
 }
 
 TEST_CASE("FileSystem::RemoveContents symbolic links")
 {
 	FilePathView scenario;
-	SUBCASE("directory path") { scenario = U"directory"; }
-	SUBCASE("directory link") { scenario = U"link"; }
-	SUBCASE("directory link with trailing slash") { scenario = U"link-with-slash"; }
+	SECTION("directory path") { scenario = U"directory"; }
+	SECTION("directory link") { scenario = U"link"; }
+	SECTION("directory link with trailing slash") { scenario = U"link-with-slash"; }
 
 	const FilePath root = Test::OutputPath(U"filesystem/removecontents/links/" + scenario + U'/');
 	const FilePath directory = (root + U"directory/");
@@ -1678,7 +1676,7 @@ TEST_CASE("FileSystem::RemoveContents symbolic links")
 	CHECK(FileSystem::RemoveContents(argument));
 	CHECK(FileSystem::IsEmptyDirectory(directory));
 	CHECK(FileSystem::IsFile(outside + U"keep.txt"));
-	CHECK_EQ(FileSystem::FileSize(outside + U"keep.txt"), 4);
+	CHECK((FileSystem::FileSize(outside + U"keep.txt")) == (4));
 	if (argument != directory)
 	{
 		if (argument.ends_with(U'/'))
@@ -1693,12 +1691,12 @@ TEST_CASE("FileSystem::RemoveContents permission failure")
 {
 	if (::geteuid() == 0)
 	{
-		MESSAGE("Permission denial requires a non-root user.");
+		WARN("Permission denial requires a non-root user.");
 		return;
 	}
 	mode_t permissions = 0500;
-	SUBCASE("deletion denied") {}
-	SUBCASE("enumeration denied") { permissions = 0000; }
+	SECTION("deletion denied") {}
+	SECTION("enumeration denied") { permissions = 0000; }
 
 	const FilePath directory = Test::OutputPath(U"filesystem/removecontents/locked/");
 	REQUIRE(FileSystem::CreateDirectories(directory));
@@ -1726,8 +1724,8 @@ TEST_CASE("FileSystem::RemoveContents empty directory with trash")
 	CHECK(FileSystem::IsEmptyDirectory(directory));
 	struct stat after{};
 	REQUIRE(::stat(native.c_str(), &after) == 0);
-	CHECK_EQ(after.st_dev, before.st_dev);
-	CHECK_EQ(after.st_ino, before.st_ino);
+	CHECK((after.st_dev) == (before.st_dev));
+	CHECK((after.st_ino) == (before.st_ino));
 }
 
 # endif

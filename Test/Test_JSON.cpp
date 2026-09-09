@@ -24,15 +24,15 @@ TEST_CASE("JSON")
 		const JSON j_number_float(JSONValueType::NumberFloat);
 		const JSON j_binary(JSONValueType::Binary);
 
-		CHECK_EQ(j_null.getType(), JSONValueType::Null);
-		CHECK_EQ(j_object.getType(), JSONValueType::Object);
-		CHECK_EQ(j_array.getType(), JSONValueType::Array);
-		CHECK_EQ(j_string.getType(), JSONValueType::String);
-		CHECK_EQ(j_boolean.getType(), JSONValueType::Bool);
-		CHECK_EQ(j_number_int.getType(), JSONValueType::NumberInt);
-		CHECK_EQ(j_number_uint.getType(), JSONValueType::NumberUint);
-		CHECK_EQ(j_number_float.getType(), JSONValueType::NumberFloat);
-		CHECK_EQ(j_binary.getType(), JSONValueType::Binary);
+		CHECK((j_null.getType()) == (JSONValueType::Null));
+		CHECK((j_object.getType()) == (JSONValueType::Object));
+		CHECK((j_array.getType()) == (JSONValueType::Array));
+		CHECK((j_string.getType()) == (JSONValueType::String));
+		CHECK((j_boolean.getType()) == (JSONValueType::Bool));
+		CHECK((j_number_int.getType()) == (JSONValueType::NumberInt));
+		CHECK((j_number_uint.getType()) == (JSONValueType::NumberUint));
+		CHECK((j_number_float.getType()) == (JSONValueType::NumberFloat));
+		CHECK((j_binary.getType()) == (JSONValueType::Binary));
 
 		CHECK(j_null.isNull());
 		CHECK(j_object.isObject());
@@ -57,14 +57,14 @@ TEST_CASE("JSON")
 		const JSON j_number_uint(42u);
 		const JSON j_number_float(42.0);
 
-		CHECK_EQ(j_null.getType(), JSONValueType::Null);
-		CHECK_EQ(j_object.getType(), JSONValueType::Object);
-		CHECK_EQ(j_array.getType(), JSONValueType::Array);
-		CHECK_EQ(j_string.getType(), JSONValueType::String);
-		CHECK_EQ(j_boolean.getType(), JSONValueType::Bool);
-		CHECK_EQ(j_number_int.getType(), JSONValueType::NumberInt);
-		CHECK_EQ(j_number_uint.getType(), JSONValueType::NumberUint);
-		CHECK_EQ(j_number_float.getType(), JSONValueType::NumberFloat);
+		CHECK((j_null.getType()) == (JSONValueType::Null));
+		CHECK((j_object.getType()) == (JSONValueType::Object));
+		CHECK((j_array.getType()) == (JSONValueType::Array));
+		CHECK((j_string.getType()) == (JSONValueType::String));
+		CHECK((j_boolean.getType()) == (JSONValueType::Bool));
+		CHECK((j_number_int.getType()) == (JSONValueType::NumberInt));
+		CHECK((j_number_uint.getType()) == (JSONValueType::NumberUint));
+		CHECK((j_number_float.getType()) == (JSONValueType::NumberFloat));
 	}
 
 	{
@@ -77,14 +77,14 @@ TEST_CASE("JSON")
 		const JSON j_number_uint = 42u;
 		const JSON j_number_float = 42.0;
 
-		CHECK_EQ(j_null.getType(), JSONValueType::Null);
-		CHECK_EQ(j_object.getType(), JSONValueType::Object);
-		CHECK_EQ(j_array.getType(), JSONValueType::Array);
-		CHECK_EQ(j_string.getType(), JSONValueType::String);
-		CHECK_EQ(j_boolean.getType(), JSONValueType::Bool);
-		CHECK_EQ(j_number_int.getType(), JSONValueType::NumberInt);
-		CHECK_EQ(j_number_uint.getType(), JSONValueType::NumberUint);
-		CHECK_EQ(j_number_float.getType(), JSONValueType::NumberFloat);
+		CHECK((j_null.getType()) == (JSONValueType::Null));
+		CHECK((j_object.getType()) == (JSONValueType::Object));
+		CHECK((j_array.getType()) == (JSONValueType::Array));
+		CHECK((j_string.getType()) == (JSONValueType::String));
+		CHECK((j_boolean.getType()) == (JSONValueType::Bool));
+		CHECK((j_number_int.getType()) == (JSONValueType::NumberInt));
+		CHECK((j_number_uint.getType()) == (JSONValueType::NumberUint));
+		CHECK((j_number_float.getType()) == (JSONValueType::NumberFloat));
 	}
 
 	{
@@ -115,33 +115,33 @@ TEST_CASE("JSON and String")
 		JSON j;
 		
 		j["a"] = "Siv3D";
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		j["a"] = std::string_view{ "Siv3D" };
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		j["a"] = std::string{ "Siv3D" };
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		const char* str = "Siv3D";
 		j["a"] = str;
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		j["a"] = U"Siv3D";
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		j["a"] = std::u32string_view{ U"Siv3D" };
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		j["a"] = StringView{ U"Siv3D" };
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		j["a"] = String{ U"Siv3D" };
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 
 		const char32* str32 = U"Siv3D";
 		j["a"] = str32;
-		CHECK_EQ(j, json);
+		CHECK((j) == (json));
 	}
 }
 

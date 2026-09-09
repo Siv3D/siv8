@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="..\Test\ThirdParty\Catch2\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -20,6 +21,12 @@
     </ClCompile>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="..\Test\Siv3DTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\ThirdParty\Catch2\catch_amalgamated.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_TestFramework.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_TestEnvironment.cpp">
@@ -374,6 +381,12 @@
       <Filter>Precompiled Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\Test\Siv3DTest.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\ThirdParty\Catch2\catch_amalgamated.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Test\Siv3DTestFramework.hpp">
       <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>

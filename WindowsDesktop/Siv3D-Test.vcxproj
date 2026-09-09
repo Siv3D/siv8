@@ -12,13 +12,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="..\Test\ThirdParty\Catch2\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Test\Siv3DTest.cpp">
-      <!-- Keep doctest's implementation out of LTCG (MSVC optimizer ICE). -->
-      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="..\Test\Siv3DTest.cpp" />
+    <ClCompile Include="..\Test\Test_TestFramework.cpp" />
+    <ClCompile Include="..\Test\ThirdParty\Catch2\catch_amalgamated.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <PreprocessorDefinitions>CATCH_AMALGAMATED_CUSTOM_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\Test\Test_TestEnvironment.cpp" />
     <ClCompile Include="..\Test\Test_Array.cpp" />
@@ -140,6 +142,8 @@
     <ClInclude Include="..\Test\Mesh3DTestHelper.hpp" />
     <ClInclude Include="..\Test\Mesh3DAssemblyExamples.hpp" />
     <ClInclude Include="..\Test\Siv3DTest.hpp" />
+    <ClInclude Include="..\Test\Siv3DTestFramework.hpp" />
+    <ClInclude Include="..\Test\ThirdParty\Catch2\catch_amalgamated.hpp" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

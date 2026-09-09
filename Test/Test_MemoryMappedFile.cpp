@@ -45,7 +45,7 @@ TEST_CASE("MemoryMappedFile")
 			MemoryMappedFile mmf{ Test::OutputPath(U"mmf/text.txt"), MemoryMappedFile::ExistingFilePolicy::JustOpen };
 			CHECK(mmf.isOpen());
 			CHECK(mmf.path() == FileSystem::FullPath(Test::OutputPath(U"mmf/text.txt")));
-			CHECK(mmf.size() == testData.size());
+			CHECK(mmf.size() == static_cast<int64>(testData.size()));
 
 			{
 				auto mapped = mmf.mapAll();

@@ -6,7 +6,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Array.hpp>
-# include <ThirdParty/doctest/doctest.h>
+# include "Siv3DTestFramework.hpp"
 # include <random>
 
 using namespace s3d;
@@ -16,13 +16,13 @@ namespace
 	template <class T>
 	void CheckValues(const Array<T>& actual, const std::vector<T>& expected)
 	{
-		REQUIRE_EQ(actual.size(), expected.size());
-		CHECK_GE(actual.capacity(), actual.size());
-		CHECK_EQ(actual.get_if(actual.size()), nullptr);
+		REQUIRE((actual.size()) == (expected.size()));
+		CHECK((actual.capacity()) >= (actual.size()));
+		CHECK((actual.get_if(actual.size())) == (nullptr));
 		for (size_t i = 0; i < expected.size(); ++i)
 		{
-			CHECK_EQ(actual[i], static_cast<T>(expected[i]));
-			CHECK_EQ(actual.get_if(i), actual.data() + i);
+			CHECK((actual[i]) == (static_cast<T>(expected[i])));
+			CHECK((actual.get_if(i)) == (actual.data() + i));
 		}
 	}
 

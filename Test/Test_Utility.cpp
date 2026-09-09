@@ -33,7 +33,7 @@ enum class ColorType : uint8
 
 TEST_CASE("Utility")
 {
-	SUBCASE("Min")
+	SECTION("Min")
 	{
 		const std::string a;
 
@@ -50,7 +50,7 @@ TEST_CASE("Utility")
 		static_assert(std::is_reference_v<decltype(Min(a, a))>);
 	}
 
-	SUBCASE("Max")
+	SECTION("Max")
 	{
 		const std::string a;
 
@@ -67,7 +67,7 @@ TEST_CASE("Utility")
 		static_assert(std::is_reference_v<decltype(Max(a, a))>);
 	}
 
-	SUBCASE("Clamp")
+	SECTION("Clamp")
 	{
 		const std::string a;
 
@@ -87,7 +87,7 @@ TEST_CASE("Utility")
 		static_assert(std::is_reference_v<decltype(Clamp(a, a, a))>);	
 	}
 
-	SUBCASE("InRange")
+	SECTION("InRange")
 	{
 		static_assert(InRange(1, 2, 3) == false);
 		static_assert(InRange(2, 1, 3) == true);
@@ -100,7 +100,7 @@ TEST_CASE("Utility")
 		static_assert(InRange(MyInt{ 3 }, MyInt{ 1 }, MyInt{ 2 }) == false);
 	}
 
-	SUBCASE("InOpenRange")
+	SECTION("InOpenRange")
 	{
 		static_assert(InOpenRange(1, 3, 5) == false);
 		static_assert(InOpenRange(3, 1, 5) == true);
@@ -113,7 +113,7 @@ TEST_CASE("Utility")
 		static_assert(InOpenRange(MyInt{ 5 }, MyInt{ 1 }, MyInt{ 3 }) == false);
 	}
 
-	SUBCASE("Abs")
+	SECTION("Abs")
 	{
 		static_assert(Abs(1) == 1);
 		static_assert(Abs(-1) == 1);
@@ -130,7 +130,7 @@ TEST_CASE("Utility")
 		static_assert(Abs(-std::numeric_limits<double>::max()) == std::numeric_limits<double>::max());
 	}
 
-	SUBCASE("AbsDiff")
+	SECTION("AbsDiff")
 	{
 		static_assert(AbsDiff(1, 2) == 1);
 		static_assert(AbsDiff(2, 1) == 1);
@@ -159,7 +159,7 @@ TEST_CASE("Utility")
 		static_assert(AbsDiff(std::numeric_limits<double>::max() / 2, -std::numeric_limits<double>::max() / 2) == std::numeric_limits<double>::max());
 	}
 
-	SUBCASE("FromEnum")
+	SECTION("FromEnum")
 	{
 		static_assert(FromEnum(One) == 1);
 		static_assert(FromEnum(Two) == 2);
@@ -172,7 +172,7 @@ TEST_CASE("Utility")
 		static_assert(std::is_same_v<decltype(FromEnum(ColorType::Red)), uint8>);
 	}
 
-	SUBCASE("ToEnum")
+	SECTION("ToEnum")
 	{
 		static_assert(ToEnum<Number>(1) == One);
 		static_assert(ToEnum<Number>(2) == Two);
@@ -185,7 +185,7 @@ TEST_CASE("Utility")
 		static_assert(std::is_same_v<decltype(ToEnum<ColorType>(0)), ColorType>);
 	}
 
-	SUBCASE("IsOdd")
+	SECTION("IsOdd")
 	{
 		static_assert(IsOdd(std::numeric_limits<int32>::min()) == false);
 		static_assert(IsOdd(-2) == false);
@@ -209,7 +209,7 @@ TEST_CASE("Utility")
 		static_assert(IsOdd(std::numeric_limits<int64>::max()) == true);
 	}
 
-	SUBCASE("IsEven")
+	SECTION("IsEven")
 	{
 		static_assert(IsEven(std::numeric_limits<int32>::min()) == true);
 		static_assert(IsEven(-2) == true);
@@ -233,7 +233,7 @@ TEST_CASE("Utility")
 		static_assert(IsEven(std::numeric_limits<int64>::max()) == false);
 	}
 
-	SUBCASE("Identity")
+	SECTION("Identity")
 	{
 		static_assert(Identity(1) == 1);
 		static_assert(Identity(1.0) == 1.0);

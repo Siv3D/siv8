@@ -421,7 +421,7 @@ TEST_CASE("BinaryFileReader Windows sparse offsets")
 		DWORD count = 0;
 		if (not ::DeviceIoControl(handle, FSCTL_SET_SPARSE, nullptr, 0, nullptr, 0, &count, nullptr))
 		{
-			WARN_MESSAGE(false, "Sparse-file check unavailable on this filesystem");
+			WARN("Sparse-file check unavailable on this filesystem");
 			return;
 		}
 		LARGE_INTEGER pos;
