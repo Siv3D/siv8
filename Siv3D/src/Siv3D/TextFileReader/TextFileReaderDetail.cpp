@@ -14,6 +14,7 @@
 # include <Siv3D/FileSystem.hpp>
 # include <Siv3D/Endian.hpp>
 # include <Siv3D/UnicodeConverter.hpp>
+# include <exception>
 
 namespace s3d
 {
@@ -42,7 +43,7 @@ namespace s3d
 			lines.push_back(s.substr(start));
 		}
 
-		static void SplitLines(const std::string& s, Array<String>& lines)
+		static void SplitLines(const std::string_view s, Array<String>& lines)
 		{
 			lines.clear();
 
@@ -822,13 +823,27 @@ namespace s3d
 	{
 		const int64 readSize = (m_reader->size() - m_reader->getPos());
 
-		s.resize(readSize);
+		int64 readBytes = 0;
+		std::exception_ptr readException;
+		s.resize_and_overwrite(static_cast<size_t>(readSize), [&](char* dst, size_t) noexcept -> size_t
+			{
+				try
+				{
+					readBytes = m_reader->read(dst, readSize);
+					return static_cast<size_t>(readBytes);
+				}
+				catch (...)
+				{
+					// resize_and_overwrite requires a non-throwing operation, but
+					// an IReader can throw after writing part of the destination.
+					readException = std::current_exception();
+					return 0;
+				}
+			});
 
-		const int64 readBytes = m_reader->read(s.data(), readSize);
-
-		if (readBytes < readSize)
+		if (readException)
 		{
-			s.resize(readBytes);
+			std::rethrow_exception(readException);
 		}
 
 		s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());

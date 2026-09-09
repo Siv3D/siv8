@@ -13,6 +13,14 @@
 
 - macOS で共通実装の変更後のビルド・全自動テストを実行する。
 
+## `Siv3D/include/Siv3D/TextFileReader.hpp`
+
+### UTF-8 読み込みの段階的な高速化
+
+- [UTF-8 ベンチマーク](docs/development/text-file-reader-benchmark.md) を使い、行・文字読み込みの入力バッファ化を評価する。バッファは再利用し、全文読み込みへの追加コピーを避ける。混在する readChar / readLine / readAll と、不正 UTF-8 の読み戻し・NUL・末尾空行・短い読み込みを確認する。
+- `readAll(String&)` の一時 UTF-8 領域と CR 除去の走査を見直す。既存の simdutf 一括変換との比較を行い、変換エラー時の挙動を暗黙に変更しない。
+- macOS で共通実装のビルド・全自動テストと UTF-8 ベンチマークを実行する。
+
 ## `Siv3D/include/Siv3D/FileSystem.hpp`
 
 ### プラットフォーム検証

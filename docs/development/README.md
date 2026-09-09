@@ -73,6 +73,10 @@ The [Windows BinaryFileReader benchmark](binary-file-reader-benchmark.md) compar
 the current Win32 reader with the historical `ifstream` implementation and
 experimental buffer sizes using controlled I/O patterns and real asset workloads. It builds and runs independently of the test app.
 
+The [TextFileReader benchmark](text-file-reader-benchmark.md) measures UTF-8
+whole-file and line reading with generated application workloads, memory/file
+inputs, reusable destinations, and the JSON loading path. It is an opt-in test.
+
 ## Test output and configuration
 
 [RunTest](../../Test/Siv3DTest.cpp) verifies the platform `App/` working directory
