@@ -509,7 +509,7 @@ namespace s3d
 			return asPolygon();
 		}
 
-		const float scale = SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+		const float scale = SIV3D_ENGINE(Renderer2D)->getRMSScaling();
 
 		const Vertex2D::IndexType tlQuality = (tl ? CaluculateFanQuality(tl * scale) : 1);
 		const Vertex2D::IndexType trQuality = (tr ? CaluculateFanQuality(tr * scale) : 1);
@@ -1177,7 +1177,7 @@ namespace s3d
 			return asPolygon();
 		}
 
-		const float scale = SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+		const float scale = SIV3D_ENGINE(Renderer2D)->getRMSScaling();
 		const Vertex2D::IndexType quality = CaluculateFanQuality(r * scale);
 		const std::span<const Float2> sc = QuarterArcTable::GetUnitVectors(quality);
 
@@ -1264,7 +1264,7 @@ namespace s3d
 
 		ScaleCornerSizes(tl, tr, br, bl, w, h);
 
-		const float scale = SIV3D_ENGINE(Renderer2D)->getMaxScaling();
+		const float scale = SIV3D_ENGINE(Renderer2D)->getRMSScaling();
 		const Vertex2D::IndexType tlQuality = (tl ? CaluculateFanQuality(tl * scale) : 1);
 		const Vertex2D::IndexType trQuality = (tr ? CaluculateFanQuality(tr * scale) : 1);
 		const Vertex2D::IndexType brQuality = (br ? CaluculateFanQuality(br * scale) : 1);

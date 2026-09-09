@@ -14,15 +14,6 @@
 
 namespace s3d
 {
-	namespace
-	{
-		[[nodiscard]]
-		static float CalculateMaxScaling(const Mat3x2& mat)
-		{
-			return (Float2{ (mat._11 + mat._21), (mat._12 + mat._22) }.length() / Math::Sqrt2_v<float>);
-		}
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -985,7 +976,7 @@ namespace s3d
 			{
 				currentLocal = local;
 				currentCombined = combinedTransform;
-				m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+				m_current.rmsScaling = combinedTransform.rmsScaling();
 				m_stateTracker.set(Command);
 			}
 		}
@@ -998,7 +989,7 @@ namespace s3d
 
 			currentLocal = local;
 			currentCombined = combinedTransform;
-			m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+			m_current.rmsScaling = combinedTransform.rmsScaling();
 		}
 	}
 
@@ -1027,7 +1018,7 @@ namespace s3d
 			{
 				currentCamera = camera;
 				currentCombined = combinedTransform;
-				m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+				m_current.rmsScaling = combinedTransform.rmsScaling();
 				m_stateTracker.set(Command);
 			}
 		}
@@ -1040,7 +1031,7 @@ namespace s3d
 
 			currentCamera = camera;
 			currentCombined = combinedTransform;
-			m_current.maxScaling = CalculateMaxScaling(combinedTransform);
+			m_current.rmsScaling = combinedTransform.rmsScaling();
 		}
 	}
 
@@ -1067,13 +1058,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getCurrentMaxScaling
+	//	getCurrentRMSScaling
 	//
 	////////////////////////////////////////////////////////////////
 
-	float D3D11Renderer2DCommandManager::getCurrentMaxScaling() const noexcept
+	float D3D11Renderer2DCommandManager::getCurrentRMSScaling() const noexcept
 	{
-		return m_current.maxScaling;
+		return m_current.rmsScaling;
 	}
 
 	////////////////////////////////////////////////////////////////

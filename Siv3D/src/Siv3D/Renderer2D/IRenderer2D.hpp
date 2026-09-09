@@ -233,7 +233,7 @@ namespace s3d
 
 		virtual void setCameraTransform(const Mat3x2& matrix) = 0;
 
-		virtual float getMaxScaling() const noexcept = 0;
+		virtual float getRMSScaling() const noexcept = 0;
 
 
 

@@ -103,7 +103,7 @@ namespace s3d
 
 		const Mat3x2& getCombinedTransform(uint32 index) const;
 		const Mat3x2& getCurrentCombinedTransform() const;
-		float getCurrentMaxScaling() const noexcept;
+		float getCurrentRMSScaling() const noexcept;
 
 		void pushVSTextureUnbind(uint32 slot);
 		void pushVSTexture(uint32 slot, const Texture& texture);
@@ -195,7 +195,7 @@ namespace s3d
 			
 			Mat3x2 combinedTransform			= Mat3x2::Identity();
 
-			float maxScaling					= 1.0f;
+			float rmsScaling					= 1.0f;
 
 			std::array<Texture::IDType, Graphics::TextureSlotCount> vsTextures;
 

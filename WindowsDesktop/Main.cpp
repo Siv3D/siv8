@@ -1,50 +1,56 @@
-﻿# include <Siv3D.hpp> // Siv3D v0.8.0
-# include "../Test/Siv3DTest.hpp"
-//SIV3D_SET(EngineOption::D3D11Driver::WARP);
+﻿# include <Siv3D.hpp>
 
 void Main()
 {
-	// WindowsDesktop/run-tests.ps1 depends on this early-exit block.
-	const int32 exitCode = RunTest();
-	if (System::GetCommandLineArgs().contains(U"--test-only"))
-	{
-		System::Exit(exitCode);
-		return;
-	}
-
-	Scene::SetBackground(ColorF{ 0.6, 0.8, 0.7 });
-	//Window::SetStyle(WindowStyle::Sizable);
-	//Scene::SetResizeMode(ResizeMode::Keep);
-
-	const Texture texture{ U"example/windmill.png" };
-	const Texture emoji{ U"🔥"_emoji, 200 };
-	const Font font{ 40, Typeface::Bold };
-	font.addFallback(Font{ 40, Typeface::ColorEmoji });
-
-	Print << U"Hello, Siv3D! 🐥";
+	Window::Resize(1000, 680);
+	Scene::SetBackground(ColorF{ 0.12 });
+	const Font font{ 18 };
+	bool animate = false;
+	double angle = 0.0;
 
 	while (System::Update())
 	{
-		const double t = Scene::Time();
+		if (KeySpace.down())
+		{
+			animate = not animate;
+		}
+		if (animate)
+		{
+			angle += Scene::DeltaTime() * 30_deg;
+		}
 
-		Scene::Rect().draw(Pattern::Checker{ ColorF{ 0.2 }, ColorF{ 0.25 }, 40 });
-
-		texture.draw(10, 10);
-		RectF{ 40, 40, 120 }.draw();
-		RectF{ 200, 40, 120 }.draw(Pattern::PolkaDot{ ColorF{ 0.2, 1.0, 0.5 }, ColorF{ 0.2, 0.2, 0.8 }, 18, 0.8, 45_deg, Vec2::All(t) });
-		Circle{ 420, 100, 60 }.draw(Pattern::Grid{ ColorF{ 0.2, 1.0, 0.5 }, ColorF{ 0.2, 0.2, 0.8 }, 20.0, 0.4, (t * 10_deg) });
-		Line{ 40, 220, 360, 200 }.draw(LineStyle::Round, 6, ColorF{ 0.2, 0.2, 0.8 }, ColorF{ 0.2, 1.0, 0.5 });
-		Line{ 40, 260, 360, 240 }.draw(LineStyle::Dashed(t * 3), 6, ColorF{ 0.2, 0.2, 0.8 }, ColorF{ 0.2, 1.0, 0.5 });
-		Line{ 40, 300, 360, 280 }.draw(LineStyle::DashDot(t * 3), 6, ColorF{ 0.2, 0.2, 0.8 }, ColorF{ 0.2, 1.0, 0.5 });
-
-		Circle{ 140, 440, 80 }.drawArc(LineCap::Round, (t * 90_deg), 240_deg, 20, 20, Arg::start(0.2, 0.2, 0.8), Arg::end(0.2, 1.0, 0.5));
-		Circle{ 140, 440, 30 }.draw(Arg::left(0.2, 1.0, 0.5), Arg::right(0.2, 0.2, 0.8));
-		emoji.scaled(1.0 + Periodic::Sine1_1(4s) * 0.2).drawAt(360, 440);
-
-		font(U"Hello, Siv3D!\nあいうえお🐥").draw(Vec2{ 520, 40 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
-		font(U"Siv3D v0.8").drawBase(Vec2{ 520, 240 }, TextEffect::VerticalGradient{ ColorF{ 0.8, 0.9, 1.0 }, ColorF{ 0.0, 0.8, 0.4 }, 0.5, 0.9 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
-		font(ReadingDirection::TopToBottom, U"縦書き、文章。").draw(Vec2{ 520, 280 }).drawFrame(0, 1, ColorF{ 0.2, 1.0, 0.5 });
-
-		Circle{ Cursor::Pos(), 100 }.draw(ColorF{ 1.0, 0.0, 0.0, 0.5 });
+		font(U"Space: animate / pause").draw(20, 15);
+		font(U"Circle / round rectangle / line / corner polygon / pattern").draw(20, 42);
+		for (int32 column = 0; column < 3; ++column)
+		{
+			const double x = (180 + column * 320);
+			const Mat3x2 linear = (Mat3x2::Rotate(angle + column * 45_deg)
+				* Mat3x2::Scale(4.0f, 1.0f));
+			font(U"RMS: ", linear.rmsScaling()).draw(x - 100, 85);
+			for (int32 row = 0; row < 5; ++row)
+			{
+				const Transformer2D transform{ linear.translated(x, 160 + row * 105) };
+				switch (row)
+				{
+				case 0:
+					Circle{ 0, 0, 26 }.draw(ColorF{ 0.3, 0.8, 1.0 });
+					break;
+				case 1:
+					RectF{ -24, -18, 48, 36 }.rounded(8).draw(ColorF{ 0.9, 0.6, 0.2 });
+					break;
+				case 2:
+					Line{ -24, 0, 24, 0 }.draw(LineCap::Round, LineCap::Round,
+						12.0 / Graphics2D::GetRMSScaling(), ColorF{ 0.4, 1.0, 0.5 });
+					break;
+				case 3:
+					RectF{ -24, -18, 48, 36 }.rounded(4, 8, 12, 16).draw(ColorF{ 0.8, 0.5, 1.0 });
+					break;
+				case 4:
+					Circle{ 0, 0, 26 }.draw(Pattern::PolkaDot{
+						.primary = ColorF{ 1.0 }, .background = ColorF{ 0.2, 0.4, 0.7 }, .scale = 14.0 });
+					break;
+				}
+			}
+		}
 	}
 }

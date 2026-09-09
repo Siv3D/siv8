@@ -198,6 +198,10 @@ The [RemoveContents Trash check](../../Test/Manual/FileSystemRemoveContentsTrash
 uses a separate macOS application to verify native Trash behavior and documents
 cleanup of its retained fixture and Trash items.
 
+The [Renderer2D RMS scaling check](../../Test/Manual/Renderer2DRMSScaling.md)
+compares tessellation, line-width compensation, and patterns under nonuniform
+scaling and rotation on D3D11 and Metal.
+
 ## Documentation checks
 
 ```sh

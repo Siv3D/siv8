@@ -34,7 +34,7 @@ namespace s3d
 		PatternType type = PatternType::PolkaDot;
 
 		[[nodiscard]]
-		constexpr std::array<Float4, 3> toFloat4Array(float maxScalingInv) const noexcept;
+		constexpr std::array<Float4, 3> toFloat4Array(float rmsScalingInv) const noexcept;
 	};
 }
 

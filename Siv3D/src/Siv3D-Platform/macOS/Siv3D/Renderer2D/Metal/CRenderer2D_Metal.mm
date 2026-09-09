@@ -172,7 +172,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addLine(const LineCap startCap, const LineCap endCap, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, start, end, thickness, colors, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, start, end, thickness, colors, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -190,7 +190,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addLine(const LineStyle& style, const Float2& start, const Float2& end, float thickness, const Float4(&colors)[2])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_Metal::createBuffer, this), style, start, end, thickness, colors, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLine(std::bind_front(&CRenderer2D_Metal::createBuffer, this), style, start, end, thickness, colors, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -234,7 +234,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addArrow(LineCap startCap, const Float2& start, const Float2& end, float thickness, const Float2& headSize, const Float4(&colors)[2])
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildArrow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, start, end, thickness, headSize, colors, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildArrow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, start, end, thickness, headSize, colors, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -306,7 +306,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -368,7 +368,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -412,7 +412,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -450,7 +450,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircle(const Float2& center, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, colorType, color0, color1, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, colorType, color0, color1, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -468,7 +468,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircle(const Float2& center, const float r, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -480,7 +480,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -494,7 +494,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleFrame(const Float2& center, const float rInner, const float thickness, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, rInner, thickness, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, rInner, thickness, innerColor, outerColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -512,7 +512,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleFrame(const Float2& center, const float rInner, const float thickness, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, rInner, thickness, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, rInner, thickness, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -524,7 +524,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -538,7 +538,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleDashedFrame(const Float2& center, const float rInner, const float startAngle, const float thickness, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleDashedFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, rInner, startAngle, thickness, dashRatio, dashCount, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleDashedFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, rInner, startAngle, thickness, dashRatio, dashCount, innerColor, outerColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -562,7 +562,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, innerColor, outerColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -580,7 +580,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCirclePie(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCirclePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -592,7 +592,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -606,7 +606,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const Float4& color0, const Float4& color1, ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, colorType, color0, color1, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, colorType, color0, color1, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -624,7 +624,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleArc(const LineCap lineCap, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleArc(std::bind_front(&CRenderer2D_Metal::createBuffer, this), lineCap, center, rInner, startAngle, angle, thickness, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -636,7 +636,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -650,7 +650,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -668,7 +668,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleSegment(const Float2& center, const float r, const float startAngle, const float angle, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleSegment(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, r, startAngle, angle, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -680,7 +680,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -694,7 +694,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addEllipse(const Float2& center, const float a, const float b, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, colorType, color0, color1, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, colorType, color0, color1, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -712,7 +712,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addEllipse(const Float2& center, const float a, const float b, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -724,7 +724,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -738,7 +738,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addEllipseFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, innerThickness, outerThickness, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, innerThickness, outerThickness, innerColor, outerColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -755,7 +755,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addEllipseFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, innerThickness, outerThickness, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, innerThickness, outerThickness, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -767,7 +767,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 			
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -781,7 +781,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addEllipseDashedFrame(const Float2& center, const float a, const float b, const float innerThickness, const float outerThickness, const float offset, const float dashRatio, const uint32 dashCount, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipseDashedFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, innerThickness, outerThickness, offset, dashRatio, dashCount, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipseDashedFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, innerThickness, outerThickness, offset, dashRatio, dashCount, innerColor, outerColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -805,7 +805,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addEllipsePie(const Float2& center, const float a, const float b, const float startAngle, const float angle, const Float4& innerColor, const Float4& outerColor)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, startAngle, angle, innerColor, outerColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, startAngle, angle, innerColor, outerColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -823,7 +823,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addEllipsePie(const Float2& center, const float a, const float b, const float startAngle, const float angle, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, startAngle, angle, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildEllipsePie(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, startAngle, angle, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -835,7 +835,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 			
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -849,7 +849,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addSuperEllipse(const Float2& center, const float a, const float b, const float n, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, n, colorType, color0, color1, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, n, colorType, color0, color1, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -867,7 +867,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addSuperEllipse(const Float2& center, const float a, const float b, const float n, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, n, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildSuperEllipse(std::bind_front(&CRenderer2D_Metal::createBuffer, this), center, a, b, n, ColorFillDirection::InOut, pattern.primaryColor, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -879,7 +879,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -941,7 +941,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -955,7 +955,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addRoundRect(const FloatRect& rect, const float r, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, r, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, r, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -973,7 +973,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addRoundRect(const FloatRect& rect, const float r, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, r, colorType, color0, color1, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, r, colorType, color0, color1, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -991,7 +991,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addRoundRect(const FloatRect& rect, const float r, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, r, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, r, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1003,7 +1003,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1018,7 +1018,7 @@ namespace s3d
 	void CRenderer2D_Metal::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, color, getMaxScaling()))
+			innerRect, innerR, outerRect, outerR, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1037,7 +1037,7 @@ namespace s3d
 	void CRenderer2D_Metal::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const Float4& color0, const Float4& color1, const ColorFillDirection colorType)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, colorType, color0, color1, getMaxScaling()))
+			innerRect, innerR, outerRect, outerR, colorType, color0, color1, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1055,7 +1055,7 @@ namespace s3d
 	void CRenderer2D_Metal::addRoundRectFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const PatternParameters& pattern)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, pattern.primaryColor, getMaxScaling()))
+			innerRect, innerR, outerRect, outerR, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1067,7 +1067,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 			
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1082,7 +1082,7 @@ namespace s3d
 	void CRenderer2D_Metal::addRoundRectDashedFrame(const FloatRect& innerRect, const float innerR, const FloatRect& outerRect, const float outerR, const float offset, const float dashRatio, const uint32 dashCount, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectDashedFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this),
-			innerRect, innerR, outerRect, outerR, offset, dashRatio, dashCount, color, getMaxScaling()))
+			innerRect, innerR, outerRect, outerR, offset, dashRatio, dashCount, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1136,7 +1136,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1174,7 +1174,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1218,7 +1218,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1232,7 +1232,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), vertices, offset, thickness, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), vertices, offset, thickness, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1250,7 +1250,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addShape2DFrame(const std::span<const Float2> vertices, const Optional<Float2>& offset, const float thickness, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), vertices, offset, thickness, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildShape2DFrame(std::bind_front(&CRenderer2D_Metal::createBuffer, this), vertices, offset, thickness, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1262,7 +1262,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1276,7 +1276,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1294,7 +1294,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, colorStart, colorEnd, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, colorStart, colorEnd, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1312,7 +1312,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const PatternParameters& pattern)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, pattern.primaryColor, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, pattern.primaryColor, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1324,7 +1324,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getMaxScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1332,7 +1332,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addLineString(const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, colors, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildLineString(std::bind_front(&CRenderer2D_Metal::createBuffer, this), startCap, endCap, points, offset, thickness, inner, closeRing, colors, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1356,7 +1356,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedCircle(const Texture& texture, const Circle& circle, const FloatRect& uv, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, uv, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedCircle(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, uv, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1425,7 +1425,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addTexturedRoundRect(const Texture& texture, const FloatRect& rect, const float w, const float h, const float r, const FloatRect& uvRect, const Float4& color)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, w, h, r, uvRect, color, getMaxScaling()))
+		if (const auto indexCount = Vertex2DBuilder::BuildTexturedRoundRect(std::bind_front(&CRenderer2D_Metal::createBuffer, this), rect, w, h, r, uvRect, color, getRMSScaling()))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1450,7 +1450,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addCircleShadow(const Circle& circle, const float blur, const Float4& color, const bool fill)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, blur, color, getMaxScaling(), fill))
+		if (const auto indexCount = Vertex2DBuilder::BuildCircleShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), circle, blur, color, getRMSScaling(), fill))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -1500,7 +1500,7 @@ namespace s3d
 
 	void CRenderer2D_Metal::addRoundRectShadow(const RoundRect& roundRect, const float blur, const Float4& color, const bool fill)
 	{
-		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), roundRect, blur, color, getMaxScaling(), fill))
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectShadow(std::bind_front(&CRenderer2D_Metal::createBuffer, this), roundRect, blur, color, getRMSScaling(), fill))
 		{
 			if (not m_currentCustomShader.vs)
 			{
@@ -2186,13 +2186,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getMaxScaling
+	//	getRMSScaling
 	//
 	////////////////////////////////////////////////////////////////
 
-	float CRenderer2D_Metal::getMaxScaling() const noexcept
+	float CRenderer2D_Metal::getRMSScaling() const noexcept
 	{
-		return m_commandManager.getCurrentMaxScaling();
+		return m_commandManager.getCurrentRMSScaling();
 	}
 
 	////////////////////////////////////////////////////////////////

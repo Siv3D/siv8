@@ -160,6 +160,12 @@
     <ClCompile Include="..\Test\Test_Spherical.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Mat3x2.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Mat4x4.cpp">
       <Filter>Test</Filter>
     </ClCompile>
