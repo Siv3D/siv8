@@ -79,7 +79,7 @@ int32 RunTest()
 	}
 
 	Catch::Session session;
-	session.configData().defaultColourMode = Catch::ColourMode::None;
+	session.configData().defaultColourMode = Catch::ColourMode::PlatformDefault;
 	std::vector<std::string> arguments;
 	try
 	{
