@@ -1043,18 +1043,21 @@ TEST_CASE("FileSystem::DirectoryContents normal paths")
 {
 	const FilePath root = Test::OutputPath(U"filesystem/directorycontents/normal/");
 	REQUIRE(FileSystem::CreateDirectories(root + U"nested/empty/"));
-	for (const FilePathView name : { U"file.txt", U".hidden", U"nested/inside.txt" })
+	REQUIRE(FileSystem::CreateDirectories(root + U"nested/資料/"));
+	for (const FilePathView name : { U"file.txt", U".hidden", U"日本語.txt", U"nested/inside.txt", U"nested/資料/\U0001F3AE.txt" })
 	{
 		BinaryFileWriter writer{ root + name };
 		REQUIRE(writer.isOpen());
 	}
 	for (const Recursive recursive : { Recursive::No, Recursive::Yes })
 	{
-		Array<FilePath> expected{ root + U"file.txt", root + U".hidden", root + U"nested/" };
+		Array<FilePath> expected{ root + U"file.txt", root + U".hidden", root + U"日本語.txt", root + U"nested/" };
 		if (recursive)
 		{
 			expected.push_back(root + U"nested/empty/");
 			expected.push_back(root + U"nested/inside.txt");
+			expected.push_back(root + U"nested/資料/");
+			expected.push_back(root + U"nested/資料/\U0001F3AE.txt");
 		}
 		Array<FilePath> actual = FileSystem::DirectoryContents(root, recursive);
 		CHECK_EQ(actual.sort(), expected.sort());

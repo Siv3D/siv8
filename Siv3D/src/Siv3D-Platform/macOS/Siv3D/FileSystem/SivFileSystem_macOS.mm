@@ -391,60 +391,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	DirectoryContents
-		//
-		////////////////////////////////////////////////////////////////
-
-		Array<FilePath> DirectoryContents(const FilePathView path, const Recursive recursive)
-		{
-			Array<FilePath> paths;
-			
-			if (path.isEmpty())
-			{
-				return paths;
-			}
-
-			std::error_code error;
-			const auto appendPaths = [&paths, &error](auto it)
-			{
-				const decltype(it) end;
-				while (it != end)
-				{
-					FilePath fullPath = FullPath(Unicode::FromUTF8(it->path().native()));
-					if (fullPath.isEmpty())
-					{
-						return false;
-					}
-					paths.push_back(std::move(fullPath));
-					it.increment(error);
-					if (error)
-					{
-						return false;
-					}
-				}
-				return (not error);
-			};
-
-			if (recursive)
-			{
-				if (not appendPaths(std::filesystem::recursive_directory_iterator{ detail::ToPath(path), error }))
-				{
-					return{};
-				}
-			}
-			else
-			{
-				if (not appendPaths(std::filesystem::directory_iterator{ detail::ToPath(path), error }))
-				{
-					return{};
-				}
-			}
-			
-			return paths;
-		}
-	
-		////////////////////////////////////////////////////////////////
-		//
 		//	GetLaunchDirectory
 		//
 		////////////////////////////////////////////////////////////////

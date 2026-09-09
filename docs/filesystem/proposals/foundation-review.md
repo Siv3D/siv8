@@ -12,7 +12,7 @@
 |---|---|---|
 | パスの解釈 | macOS では `directory\data.bin` の Exists が true でも Copy が失敗する。存在確認は `\` を `/` に置換し、Copy は置換しない | FileSystem と Reader / Writer が同じ対象を扱うようにする。区切り文字の契約と既存利用への影響を先に確認する |
 | 列挙でのリンク名 | macOS の DirectoryContents はリンク名をリンク先へ置き換える。同じ対象への別名が同じパスとして返る | アセット一覧でエントリ名を扱えるよう、列挙とリンク解決の関係を見直す。現行 FullPath の意味まで一括変更しない |
-| 重複処理 | macOS の DirectoryContents は各項目で文字列を往復変換し、FullPath を呼ぶ | 現在の戻り値・失敗時の挙動を維持できる範囲から、操作内でパスや取得済み情報を再利用する |
+| 重複処理 | macOS の DirectoryContents は各項目で親ディレクトリを含めてパスを解決する | 現在の戻り値・失敗時の挙動を維持できる範囲から、操作内でパスや取得済み情報を再利用する |
 
 根拠は [共通実装](../../../Siv3D/src/Siv3D/FileSystem/SivFileSystem.cpp)、
 [macOS / Linux 共通実装](../../../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/FileSystem/SivFileSystem_macOS_Linux.cpp)、
