@@ -7,38 +7,6 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## `Siv3D/include/Siv3D/BinaryFileReader.hpp`
-
-### プラットフォーム検証
-
-- macOS で共通実装の変更後のビルド・全自動テストを実行する。
-
-## `Siv3D/include/Siv3D/TextFileReader.hpp`
-
-### プラットフォーム検証
-
-- macOS で共通実装のビルド・全自動テストと [UTF-8 ベンチマーク](docs/development/text-file-reader-benchmark.md) を実行する。
-
-## `Siv3D/include/Siv3D/FileSystem.hpp`
-
-### プラットフォーム検証
-
-- Windows で、OEM コードページが UTF-8 以外の環境での Unicode 相対パス、夏時間のあるタイムゾーンでのファイル日時、移動先を使用する環境での Downloads 取得を確認する。
-- Linux のビルド・自動テスト手順を整備し、macOS と共通の実装を検証する。
-
-### 基盤の見直し
-
-- [基盤見直し案](docs/filesystem/proposals/foundation-review.md) に沿って、列挙の重複した変換や属性取得を減らす。代表的なアセット一覧・属性取得を同じ Release 条件で比較する。
-- macOS で存在確認と I/O が異なる対象を指す区切り文字の扱い、および列挙でリンク名が失われる挙動を見直す。契約と Reader / Writer・資源一覧への影響を確認してから変更する。
-- [診断プログラム](Test/Manual/FileSystemReview.md) を必要に応じて Windows でも実行し、変更に関係する OS 差を照合する。
-
-## `Siv3D/include/Siv3D/Array.hpp`
-
-### テストのプラットフォーム・計測範囲
-
-- Windows / MSVC で `Test_Array.cpp`、`Test_ArrayException.cpp`、`Test_ArrayModel.cpp` を実行し、特に `Array<bool>` の領域切り替えとアロケータ伝播を確認する。
-- 通常の API・並列処理テストも含めたサニタイザ／カバレッジ計測を整備する。`tools/run-array-checks.sh` の対象は例外・モデルテストであり、未実体化のテンプレートメンバはカバレッジの分母に含まれない。
-
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 
 ### Squad 補間

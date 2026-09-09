@@ -64,6 +64,48 @@ TEST_CASE("TextFileReader.path")
 	}
 }
 
+
+TEST_CASE("TextFileReader.path.sourcesAndReopen")
+{
+	const auto path = Test::OutputPath(U"text-reader/path/日本語 file.txt");
+	const std::string_view input = "path\r\n日本語";
+	{
+		BinaryFileWriter writer{ path };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write(input.data(), input.size()) == static_cast<int64>(input.size()));
+	}
+	const Array<FilePath> sources =
+	{
+		path,
+		FileSystem::RelativePath(path),
+		(FileSystem::ParentPath(path) + U"./日本語 file.txt"),
+		Resource(U"engine/texture/box-shadow/64.png"),
+		path,
+	};
+	TextFileReader reader;
+	for (const auto& source : sources)
+	{
+		BinaryFileReader binary{ source };
+		REQUIRE(binary.isOpen());
+		CHECK(binary.path() == FileSystem::FullPath(source));
+		const Blob bytes = binary.readToEnd();
+		std::string expected{ reinterpret_cast<const char*>(bytes.data()), bytes.size() };
+		expected.erase(std::remove(expected.begin(), expected.end(), '\r'), expected.end());
+		REQUIRE(reader.open(source, TextEncoding::UTF8_NO_BOM));
+		CHECK(reader.path() == binary.path());
+		CHECK(reader.readAllUTF8() == expected);
+	}
+	CHECK_FALSE(reader.open(Test::OutputPath(U"text-reader/path/absent.txt")));
+	CHECK_FALSE(reader.isOpen());
+	CHECK(reader.path().isEmpty());
+	REQUIRE(reader.open(MemoryViewReader{ input.data(), input.size() }));
+	CHECK(reader.path().isEmpty());
+	CHECK(reader.readAllUTF8() == "path\n日本語");
+	REQUIRE(reader.open(path));
+	reader.close();
+	CHECK(reader.path().isEmpty());
+}
+
 TEST_CASE("TextFileReader.isOpen")
 {
 	REQUIRE(TextFileReader{}.isOpen() == false);
@@ -934,6 +976,81 @@ namespace
 	};
 }
 
+
+TEST_CASE("TextFileReader.UTF8.emptyAndMixedLines")
+{
+	struct Example
+	{
+		std::string input;
+		Array<std::string> sequential;
+		Array<std::string> bulk;
+	};
+	const Example examples[] =
+	{
+		{ "", {}, {} },
+		{ "\r\r", { "" }, {} },
+		{ "\n\r\n\n", { "", "", "" }, { "", "", "", "" } },
+		{ "\r\nA\rB\r\n\n日本語\n", { "", "AB", "", "日本語" }, { "", "AB", "", "日本語", "" } },
+		{ "\n\rX\r", { "", "X" }, { "", "X" } },
+		{ std::string("\r\n\0X\n", 5), { "", "", "X" }, { "", std::string("\0X", 2), "" } },
+	};
+	for (const auto& example : examples)
+	{
+		const auto makeReader = [&] { return TextFileReader{ MemoryViewReader{ example.input.data(), example.input.size() }, TextEncoding::UTF8_NO_BOM }; };
+		Array<std::string> lines8 = { "old" };
+		CHECK(makeReader().readLines(lines8) == (not example.input.empty()));
+		REQUIRE(lines8.size() == example.bulk.size());
+		for (size_t i = 0; i < lines8.size(); ++i)
+		{
+			CHECK(lines8[i] == example.bulk[i]);
+		}
+		Array<String> expected32;
+		for (const auto& line : example.bulk)
+		{
+			expected32.push_back(Unicode::FromUTF8(line));
+		}
+		Array<String> lines32 = { U"old" };
+		CHECK(makeReader().readLines(lines32) == (not example.input.empty()));
+		CHECK(lines32 == expected32);
+		for (const int64 chunk : { 1, 2, 3, 4096 })
+		{
+			CAPTURE(chunk);
+			TextFileReader reader{ LimitedTextReader{ example.input, chunk }, TextEncoding::UTF8_NO_BOM };
+			std::string line = "old";
+			for (const auto& expected : example.sequential)
+			{
+				REQUIRE(reader.readLine(line));
+				CHECK(line == expected);
+			}
+			CHECK_FALSE(reader.readLine(line));
+			CHECK(line.empty());
+		}
+	}
+	for (const size_t length : { 4094, 4095, 4096, 4097 })
+	{
+		CAPTURE(length);
+		const std::string longLine(length, 'x');
+		const std::string input = (longLine + "\r\n\r\nA\n\n" + longLine);
+		const Array<std::string> expected = { longLine, "", "A", "", longLine };
+		TextFileReader reader{ MemoryViewReader{ input.data(), input.size() }, TextEncoding::UTF8_NO_BOM };
+		std::string line;
+		for (const auto& value : expected)
+		{
+			REQUIRE(reader.readLine(line));
+			CHECK(line == value);
+		}
+		CHECK_FALSE(reader.readLine(line));
+		REQUIRE(reader.open(MemoryViewReader{ input.data(), input.size() }));
+		Array<std::string> lines;
+		REQUIRE(reader.readLines(lines));
+		REQUIRE(lines.size() == expected.size());
+		for (size_t i = 0; i < lines.size(); ++i)
+		{
+			CHECK(lines[i] == expected[i]);
+		}
+	}
+}
+
 TEST_CASE("TextFileReader.UTF8.bulk.normalAndReuse")
 {
 	struct Example
@@ -1498,6 +1615,24 @@ namespace
 			addLine(blankLines, U"", true);
 		}
 		workloads.push_back(std::move(blankLines));
+		UTF8Workload blankLF{ .name = "blank-lines-lf" };
+		for (size_t i = 0; i < 32768; ++i)
+		{
+			addLine(blankLF, U"");
+		}
+		workloads.push_back(std::move(blankLF));
+
+		UTF8Workload mixed{ .name = "mixed-empty-lines" };
+		for (size_t i = 0; i < 256; ++i)
+		{
+			addLine(mixed, U"", true);
+			addLine(mixed, U"x");
+			addLine(mixed, U"");
+			addLine(mixed, U"日本語の会話と English \U0001F600", true);
+			addLine(mixed, String(4097, U'x'), true);
+			addLine(mixed, U"", true);
+		}
+		workloads.push_back(std::move(mixed));
 		return workloads;
 	}
 }
@@ -1596,6 +1731,12 @@ TEST_CASE("TextFileReader.benchmark.UTF8" * doctest::skip())
 				.unit("byte").batch(workload.input.size()).epochs(11)
 				.minEpochTime(std::chrono::milliseconds(2)).warmup(1)
 				.performanceCounters(false).output(&report);
+			bench.run("open-close", [&]
+			{
+				auto reader = makeReader();
+				doNotOptimizeAway(reader.isOpen());
+				doNotOptimizeAway(reader.encoding());
+			});
 			bench.run("readAllUTF8/fresh", [&]
 			{
 				auto reader = makeReader();
@@ -1641,6 +1782,19 @@ TEST_CASE("TextFileReader.benchmark.UTF8" * doctest::skip())
 				});
 			}
 
+			Array<std::string> lines8;
+			REQUIRE(makeReader().readLines(lines8));
+			REQUIRE(lines8.size() == expectedLines.size());
+			for (size_t i = 0; i < lines8.size(); ++i)
+			{
+				REQUIRE(lines8[i] == expectedLines[i].toUTF8());
+			}
+			bench.run("readLines/utf8", [&]
+			{
+				auto reader = makeReader();
+				doNotOptimizeAway(reader.readLines(lines8));
+				doNotOptimizeAway(lines8);
+			});
 			bench.run("readLines/utf32", [&]
 			{
 				auto reader = makeReader();
