@@ -3173,9 +3173,9 @@
 		F9F00A7B2CD299C10097C165 /* variant.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A672CD299C10097C165 /* variant.hpp */; };
 		F9F00A7C2CD299C10097C165 /* geometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A632CD299C10097C165 /* geometry.hpp */; };
 		F9F00A7F2CE06CA10097C165 /* SivLineString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A7D2CE06CA10097C165 /* SivLineString.cpp */; };
-		F9F00A822CE06CC20097C165 /* SivWebBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A802CE06CC20097C165 /* SivWebBrowser.cpp */; };
-		F9F00A842CE06CD50097C165 /* WebBrowser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A832CE06CD50097C165 /* WebBrowser.hpp */; };
-		F9F4A7202CE1B58400FC5119 /* SivWebBrowser_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F4A71E2CE1B58400FC5119 /* SivWebBrowser_macOS.cpp */; };
+		F9F00A822CE06CC20097C165 /* SivBrowserApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F00A802CE06CC20097C165 /* SivBrowserApp.cpp */; };
+		F9F00A842CE06CD50097C165 /* BrowserApp.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9F00A832CE06CD50097C165 /* BrowserApp.hpp */; };
+		F9F4A7202CE1B58400FC5119 /* SivBrowserApp_macOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9F4A71E2CE1B58400FC5119 /* SivBrowserApp_macOS.cpp */; };
 		F9FD0B2F2D1D314A00A584CE /* SivTextureRegion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9FD0B2D2D1D314A00A584CE /* SivTextureRegion.cpp */; };
 		F9FD0B312D1D315D00A584CE /* TextureRegion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0B302D1D315D00A584CE /* TextureRegion.hpp */; };
 		F9FD0B712D1D334700A584CE /* MTLResourceStatePass.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9FD0B682D1D334700A584CE /* MTLResourceStatePass.hpp */; };
@@ -6586,9 +6586,9 @@
 		F9F00A672CD299C10097C165 /* variant.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = variant.hpp; sourceTree = "<group>"; };
 		F9F00A682CD299C10097C165 /* variant_visitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = variant_visitor.hpp; sourceTree = "<group>"; };
 		F9F00A7D2CE06CA10097C165 /* SivLineString.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivLineString.cpp; sourceTree = "<group>"; };
-		F9F00A802CE06CC20097C165 /* SivWebBrowser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivWebBrowser.cpp; sourceTree = "<group>"; };
-		F9F00A832CE06CD50097C165 /* WebBrowser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WebBrowser.hpp; sourceTree = "<group>"; };
-		F9F4A71E2CE1B58400FC5119 /* SivWebBrowser_macOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivWebBrowser_macOS.cpp; sourceTree = "<group>"; };
+		F9F00A802CE06CC20097C165 /* SivBrowserApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBrowserApp.cpp; sourceTree = "<group>"; };
+		F9F00A832CE06CD50097C165 /* BrowserApp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BrowserApp.hpp; sourceTree = "<group>"; };
+		F9F4A71E2CE1B58400FC5119 /* SivBrowserApp_macOS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivBrowserApp_macOS.cpp; sourceTree = "<group>"; };
 		F9FD0B2D2D1D314A00A584CE /* SivTextureRegion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivTextureRegion.cpp; sourceTree = "<group>"; };
 		F9FD0B302D1D315D00A584CE /* TextureRegion.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TextureRegion.hpp; sourceTree = "<group>"; };
 		F9FD0B322D1D334700A584CE /* Metal.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Metal.hpp; sourceTree = "<group>"; };
@@ -8053,7 +8053,7 @@
 				F9797E642F667E6100518D26 /* WaveProcessing.hpp */,
 				F9797DC22F60272200518D26 /* WaveSample.hpp */,
 				F9797E5F2F667E2F00518D26 /* WAVSaveFormat.hpp */,
-				F9F00A832CE06CD50097C165 /* WebBrowser.hpp */,
+				F9F00A832CE06CD50097C165 /* BrowserApp.hpp */,
 				F9070C3A2B9F175000383E4D /* Window.hpp */,
 				F9070C3B2B9F175000383E4D /* WindowState.hpp */,
 				F9070C3C2B9F175000383E4D /* WindowStyle.hpp */,
@@ -8843,7 +8843,7 @@
 				F9797E5D2F667E0400518D26 /* Wave */,
 				F9797E672F667E7300518D26 /* WaveProcessing */,
 				F9797E622F667E4A00518D26 /* WAVSaveFormat */,
-				F9F00A812CE06CC20097C165 /* WebBrowser */,
+				F9F00A812CE06CC20097C165 /* BrowserApp */,
 				F9070DAB2B9F175E00383E4D /* Window */,
 			);
 			path = Siv3D;
@@ -8900,7 +8900,7 @@
 				F90DA06A2D1A934E0003E1E8 /* Texture */,
 				F9070E062B9F176B00383E4D /* Time */,
 				F986060C2BE71918006A4C0F /* UserInfo */,
-				F9F4A71F2CE1B58400FC5119 /* WebBrowser */,
+				F9F4A71F2CE1B58400FC5119 /* BrowserApp */,
 				F9070E8A2B9F183100383E4D /* Window */,
 			);
 			path = Siv3D;
@@ -14177,20 +14177,20 @@
 			path = LineString;
 			sourceTree = "<group>";
 		};
-		F9F00A812CE06CC20097C165 /* WebBrowser */ = {
+		F9F00A812CE06CC20097C165 /* BrowserApp */ = {
 			isa = PBXGroup;
 			children = (
-				F9F00A802CE06CC20097C165 /* SivWebBrowser.cpp */,
+				F9F00A802CE06CC20097C165 /* SivBrowserApp.cpp */,
 			);
-			path = WebBrowser;
+			path = BrowserApp;
 			sourceTree = "<group>";
 		};
-		F9F4A71F2CE1B58400FC5119 /* WebBrowser */ = {
+		F9F4A71F2CE1B58400FC5119 /* BrowserApp */ = {
 			isa = PBXGroup;
 			children = (
-				F9F4A71E2CE1B58400FC5119 /* SivWebBrowser_macOS.cpp */,
+				F9F4A71E2CE1B58400FC5119 /* SivBrowserApp_macOS.cpp */,
 			);
-			path = WebBrowser;
+			path = BrowserApp;
 			sourceTree = "<group>";
 		};
 		F9FD0B2E2D1D314A00A584CE /* TextureRegion */ = {
@@ -15083,7 +15083,7 @@
 				F980C45C2C01B20F00A86B68 /* RasterizerStateBuilder.hpp in Headers */,
 				F9AEA5122E6B3E92003734E7 /* ShaderGroup.hpp in Headers */,
 				F9E7944B2C1973FD002615BA /* Periodic.hpp in Headers */,
-				F9F00A842CE06CD50097C165 /* WebBrowser.hpp in Headers */,
+				F9F00A842CE06CD50097C165 /* BrowserApp.hpp in Headers */,
 				F98605C72BE4B680006A4C0F /* Input.ipp in Headers */,
 				F9070AFF2B9DEB5900383E4D /* utils.h in Headers */,
 				F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */,
@@ -16716,7 +16716,7 @@
 				F9797DD12F60277E00518D26 /* SivTextToSpeech.cpp in Sources */,
 				F9070DFC2B9F175E00383E4D /* UserActionFactory.cpp in Sources */,
 				F98605B42BE49C00006A4C0F /* CMouse.cpp in Sources */,
-				F9F4A7202CE1B58400FC5119 /* SivWebBrowser_macOS.cpp in Sources */,
+				F9F4A7202CE1B58400FC5119 /* SivBrowserApp_macOS.cpp in Sources */,
 				F998814B2F40B55E00C8991D /* SivPolynomialSolver.cpp in Sources */,
 				F9070DC62B9F175E00383E4D /* Siv3DEngine.cpp in Sources */,
 				F9766B832C29C7A700DE4107 /* SivCamera2DControlBuilder.cpp in Sources */,
@@ -16772,7 +16772,7 @@
 				F9070DDF2B9F175E00383E4D /* SivParseBoolExtended.cpp in Sources */,
 				F9797E682F667E7300518D26 /* SivWaveProcessing.cpp in Sources */,
 				F986F91E2BC8441F006A4C0F /* regexec.c in Sources */,
-				F9F00A822CE06CC20097C165 /* SivWebBrowser.cpp in Sources */,
+				F9F00A822CE06CC20097C165 /* SivBrowserApp.cpp in Sources */,
 				F9797DFA2F62764B00518D26 /* PDFDocumentData.cpp in Sources */,
 				F9797DFB2F62764B00518D26 /* PDFiumAPI.cpp in Sources */,
 				F9797DFC2F62764B00518D26 /* PDFRendererFactory.cpp in Sources */,

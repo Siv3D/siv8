@@ -1027,8 +1027,8 @@
 // UUID | UUID
 # include <Siv3D/UUIDValue.hpp>
 
-// Web ブラウザ | Web browser
-# include <Siv3D/WebBrowser.hpp>
+// Web ブラウザアプリ | Web browser application
+# include <Siv3D/BrowserApp.hpp>
 
 ////////////////////////////////////////////////////////////////
 //

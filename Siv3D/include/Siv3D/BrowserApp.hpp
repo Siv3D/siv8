@@ -19,12 +19,12 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	WebBrowser
+	//	BrowserApp
 	//
 	////////////////////////////////////////////////////////////////
 
-	/// @brief Web ブラウザ | Web browser
-	enum class WebBrowser : uint8
+	/// @brief Web ブラウザアプリ | Web browser application
+	enum class BrowserApp : uint8
 	{
 		/// @brief Google Chrome
 		Chrome,
@@ -58,7 +58,7 @@ namespace s3d
 	/// @param formatData 文字列バッファ
 	/// @param value Web ブラウザ
 	/// @remark この関数は Format 用の関数です。通常、ユーザーが直接呼び出す必要はありません。
-	void Formatter(FormatData& formatData, WebBrowser value);
+	void Formatter(FormatData& formatData, BrowserApp value);
 
 	namespace System
 	{
@@ -69,9 +69,9 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief Web ブラウザのパスを取得します。
-		/// @param webBrowser Web ブラウザ | Web browser
+		/// @param browserApp Web ブラウザ | Web browser
 		/// @return Web ブラウザのパス。失敗した場合は空の文字列 | The path to the web browser. An empty string if it fails.
 		[[nodiscard]]
-		FilePath GetWebBrowserPath(WebBrowser webBrowser);
+		FilePath GetWebBrowserPath(BrowserApp browserApp);
 	}
 }

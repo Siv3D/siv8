@@ -12,7 +12,7 @@
 # include <array>
 # include <CoreFoundation/CoreFoundation.h>
 # include <ApplicationServices/ApplicationServices.h>
-# include <Siv3D/WebBrowser.hpp>
+# include <Siv3D/BrowserApp.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/FileSystem.hpp>
 
@@ -85,14 +85,14 @@ namespace s3d
 
 	namespace System
 	{
-		FilePath GetWebBrowserPath(const WebBrowser webBrowser)
+		FilePath GetWebBrowserPath(const BrowserApp browserApp)
 		{
-			if (FileSystem::Exists(BrowserPaths[FromEnum(webBrowser)]))
+			if (FileSystem::Exists(BrowserPaths[FromEnum(browserApp)]))
 			{
-				return BrowserPaths[FromEnum(webBrowser)];
+				return BrowserPaths[FromEnum(browserApp)];
 			}
 			
-			return GetAppPath(BrowserBundleIDs[FromEnum(webBrowser)]);
+			return GetAppPath(BrowserBundleIDs[FromEnum(browserApp)]);
 		}
 	}
 }

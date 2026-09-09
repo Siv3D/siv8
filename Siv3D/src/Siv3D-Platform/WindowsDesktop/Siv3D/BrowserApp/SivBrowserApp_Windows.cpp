@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/WebBrowser.hpp>
+# include <Siv3D/BrowserApp.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Windows/MinWindows.hpp>
 
@@ -56,15 +56,15 @@ namespace s3d
 
 	namespace System
 	{
-		FilePath GetWebBrowserPath(const WebBrowser webBrowser)
+		FilePath GetWebBrowserPath(const BrowserApp browserApp)
 		{
 			// Windows では Safari はサポートされない
-			if (webBrowser == WebBrowser::Safari)
+			if (browserApp == BrowserApp::Safari)
 			{
 				return{};
 			}
 
-			return FindBrowserInRegistry(BrowserRegistryKeys[FromEnum(webBrowser)]);
+			return FindBrowserInRegistry(BrowserRegistryKeys[FromEnum(browserApp)]);
 		}
 	}
 }

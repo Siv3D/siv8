@@ -10,7 +10,7 @@
 //-----------------------------------------------
 
 # include <array>
-# include <Siv3D/WebBrowser.hpp>
+# include <Siv3D/BrowserApp.hpp>
 # include <Siv3D/StringView.hpp>
 # include <Siv3D/FormatData.hpp>
 
@@ -18,7 +18,7 @@ namespace s3d
 {
 	namespace
 	{
-		static constexpr std::array WebBrowserStrings =
+		static constexpr std::array BrowserAppStrings =
 		{
 			U"Chrome"_sv,
 			U"Firefox"_sv,
@@ -36,8 +36,8 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void Formatter(FormatData& formatData, const WebBrowser value)
+	void Formatter(FormatData& formatData, const BrowserApp value)
 	{
-		formatData.string.append(WebBrowserStrings[FromEnum(value)]);
+		formatData.string.append(BrowserAppStrings[FromEnum(value)]);
 	}
 }

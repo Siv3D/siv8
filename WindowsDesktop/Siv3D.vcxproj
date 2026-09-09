@@ -806,7 +806,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\WaveProcessing.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WaveSample.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WAVSaveFormat.hpp" />
-    <ClInclude Include="..\Siv3D\include\Siv3D\WebBrowser.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\BrowserApp.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Window.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowState.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\WindowStyle.hpp" />
@@ -1615,7 +1615,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Texture\TextureFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Time\SivTime.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\UserInfo\SivUserInfo_Windows.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\WebBrowser\SivWebBrowser_Windows.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\BrowserApp\SivBrowserApp_Windows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Windows\SivWindows.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\CWindow.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Window\User32Lib.cpp" />
@@ -2049,7 +2049,7 @@
     <ClCompile Include="..\Siv3D\src\Siv3D\WaveProcessing\SivWaveProcessing.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Wave\SivWave.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\WAVSaveFormat\SivWAVSaveFormat.cpp" />
-    <ClCompile Include="..\Siv3D\src\Siv3D\WebBrowser\SivWebBrowser.cpp" />
+    <ClCompile Include="..\Siv3D\src\Siv3D\BrowserApp\SivBrowserApp.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Window\SivWindow.cpp" />
     <ClCompile Include="..\Siv3D\src\Siv3D\Window\WindowFactory.cpp" />
     <ClCompile Include="..\Siv3D\src\ThirdParty\absl\numeric\int128.cc" />

@@ -26,6 +26,22 @@ namespace
 
 TEST_CASE("EnumFormatter")
 {
+	SUBCASE("BrowserApp")
+	{
+		static constexpr std::array Cases =
+		{
+			std::pair{ BrowserApp::Chrome, StringView{ U"Chrome" } },
+			std::pair{ BrowserApp::Firefox, StringView{ U"Firefox" } },
+			std::pair{ BrowserApp::Edge, StringView{ U"Edge" } },
+			std::pair{ BrowserApp::Safari, StringView{ U"Safari" } },
+			std::pair{ BrowserApp::Opera, StringView{ U"Opera" } },
+			std::pair{ BrowserApp::Brave, StringView{ U"Brave" } },
+			std::pair{ BrowserApp::Vivaldi, StringView{ U"Vivaldi" } },
+		};
+
+		CheckEnumFormatter(Cases);
+	}
+
 	SUBCASE("TexturePixelFormat")
 	{
 		static constexpr std::array Cases =

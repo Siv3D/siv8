@@ -32,6 +32,10 @@
 # endif
 
 # if SIV3D_PLATFORM(WINDOWS)
+// SDK browser declarations must coexist with Siv3D's default using-directive.
+static_assert(std::is_class_v<::WebBrowser>);
+static_assert(std::is_enum_v<BrowserApp>);
+
 namespace
 {
 	template <class F>
