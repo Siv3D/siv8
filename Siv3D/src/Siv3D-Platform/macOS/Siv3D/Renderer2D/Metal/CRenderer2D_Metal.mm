@@ -1570,8 +1570,15 @@ namespace s3d
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, color))
 		{
-			m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
-			m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
+			if (not m_currentCustomShader.vs)
+			{
+				m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
+			}
+
+			if (not m_currentCustomShader.ps)
+			{
+				m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
+			}
 
 			const std::array<Float4, 3> quadWarpParams =
 			{
