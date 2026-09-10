@@ -329,7 +329,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void MetalRenderer2DCommandManager::pushDraw(const Vertex2D::IndexType indexCount)
+	void MetalRenderer2DCommandManager::pushDraw(const uint32 indexCount)
 	{
 		if (m_stateTracker.hasStateChange())
 		{

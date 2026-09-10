@@ -105,6 +105,11 @@ namespace s3d
 
 	Vertex2DBufferPointer D3D11VertexBufferManager2D::requestBuffer(const uint16 vertexCount, const uint32 indexCount, D3D11Renderer2DCommandManager& commandManager)
 	{
+		if (IndexBufferSize < indexCount)
+		{
+			return{ nullptr, nullptr, 0 };
+		}
+
 		// VB
 		{
 			const uint32 vertexArrayWritePosTarget = (m_vertexArrayWritePos + vertexCount);

@@ -42,7 +42,7 @@ namespace s3d
 
 		void pushUpdateBuffers(uint32 batchIndex);
 
-		void pushDraw(Vertex2D::IndexType indexCount);
+		void pushDraw(uint32 indexCount);
 		const D3D11DrawCommand& getDraw(uint32 index) const noexcept;
 
 		void pushColorMul(const Float4& color);

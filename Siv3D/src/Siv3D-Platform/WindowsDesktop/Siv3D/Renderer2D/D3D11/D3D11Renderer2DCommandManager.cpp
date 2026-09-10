@@ -351,7 +351,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11Renderer2DCommandManager::pushDraw(const Vertex2D::IndexType indexCount)
+	void D3D11Renderer2DCommandManager::pushDraw(const uint32 indexCount)
 	{
 		if (m_stateTracker.hasStateChange())
 		{

@@ -40,7 +40,7 @@ namespace s3d
 
 		const Array<MetalRenderer2DCommand>& getCommands() const noexcept;
 
-		void pushDraw(Vertex2D::IndexType indexCount);
+		void pushDraw(uint32 indexCount);
 		const MetalDrawCommand& getDraw(uint32 index) const noexcept;
 
 		void pushColorMul(const Float4& color);

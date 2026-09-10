@@ -67,6 +67,11 @@ namespace s3d
 
 	Vertex2DBufferPointer MetalVertexBufferManager2D::Buffer::requestBuffer(MTL::Device* device, const uint16 vertexCount, const uint32 indexCount)
 	{
+		if ((MaxIndexBufferSize - indexBuffer.writePos) < indexCount)
+		{
+			return{ nullptr, nullptr, 0 };
+		}
+
 		// VB
 		{
 			const uint32 vertexArrayWritePosTarget = (vertexBuffer.writePos + vertexCount);
