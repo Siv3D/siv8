@@ -37,6 +37,8 @@ namespace s3d
 		{
 			m_commands.clear();
 			m_stateTracker.clear();
+			m_pendingBufferUpdates.clear();
+			m_submittedIndexCount = 0;
 		}
 
 		// clear buffers
@@ -334,15 +336,14 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	pushUpdateBuffers
+	//	deferUpdateBuffers
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11Renderer2DCommandManager::pushUpdateBuffers(const uint32 batchIndex)
+	void D3D11Renderer2DCommandManager::deferUpdateBuffers(const uint32 batchIndex, const uint32 previousBatchIndexCount)
 	{
-		flush();
-
-		m_commands.emplace_back(D3D11Renderer2DCommandType::UpdateBuffers, batchIndex);
+		// 図形の生成途中では Draw が未登録なので、切り替えは pushDraw() まで保留する
+		m_pendingBufferUpdates.push_back({ batchIndex, previousBatchIndexCount });
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -358,7 +359,25 @@ namespace s3d
 			flush();
 		}
 
-		m_current.draw.indexCount += indexCount;
+		uint32 remainingIndexCount = indexCount;
+
+		for (const auto& update : m_pendingBufferUpdates)
+		{
+			// 今回の図形のうち、切り替え前のバッチに入った部分を先に描画する
+			assert(m_submittedIndexCount <= update.previousBatchIndexCount);
+			const uint32 previousBatchIndexCount = (update.previousBatchIndexCount - m_submittedIndexCount);
+			assert(previousBatchIndexCount <= remainingIndexCount);
+			m_current.draw.indexCount += previousBatchIndexCount;
+			remainingIndexCount -= previousBatchIndexCount;
+			flush();
+
+			m_commands.emplace_back(D3D11Renderer2DCommandType::UpdateBuffers, update.batchIndex);
+			m_submittedIndexCount = 0;
+		}
+
+		m_pendingBufferUpdates.clear();
+		m_current.draw.indexCount += remainingIndexCount;
+		m_submittedIndexCount += remainingIndexCount;
 	}
 
 	const D3D11DrawCommand& D3D11Renderer2DCommandManager::getDraw(const uint32 index) const noexcept

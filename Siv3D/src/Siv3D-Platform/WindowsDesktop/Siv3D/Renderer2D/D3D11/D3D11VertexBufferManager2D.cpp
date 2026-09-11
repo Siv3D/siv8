@@ -145,7 +145,7 @@ namespace s3d
 			if ((VertexBufferSize < (pLastBatch->vertexPos + vertexCount)
 				|| (IndexBufferSize < (pLastBatch->indexPos + indexCount))))
 			{
-				commandManager.pushUpdateBuffers(static_cast<uint32>(m_batches.size()));
+				commandManager.deferUpdateBuffers(static_cast<uint32>(m_batches.size()), pLastBatch->indexPos);
 				m_batches.emplace_back();
 				pLastBatch = &m_batches.back();
 			}

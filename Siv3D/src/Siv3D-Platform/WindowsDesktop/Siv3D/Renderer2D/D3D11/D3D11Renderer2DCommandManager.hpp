@@ -40,7 +40,7 @@ namespace s3d
 
 		const Array<D3D11Renderer2DCommand>& getCommands() const noexcept;
 
-		void pushUpdateBuffers(uint32 batchIndex);
+		void deferUpdateBuffers(uint32 batchIndex, uint32 previousBatchIndexCount);
 
 		void pushDraw(uint32 indexCount);
 		const D3D11DrawCommand& getDraw(uint32 index) const noexcept;
@@ -118,6 +118,18 @@ namespace s3d
 		const std::array<Texture::IDType, Graphics::TextureSlotCount>& getCurrentPSTextures() const;
 
 	private:
+
+		struct PendingBufferUpdate
+		{
+			uint32 batchIndex;
+
+			uint32 previousBatchIndexCount;
+		};
+
+		Array<PendingBufferUpdate> m_pendingBufferUpdates;
+
+		// 現在のバッチで pushDraw() に渡されたインデックス数（flush() ではリセットしない）
+		uint32 m_submittedIndexCount = 0;
 
 		Array<D3D11Renderer2DCommand> m_commands;
 
