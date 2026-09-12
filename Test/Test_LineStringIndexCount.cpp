@@ -153,3 +153,61 @@ TEST_CASE("LineString.rejected_body_has_no_caps")
 		CHECK(empty.triangleCount == 4);
 	}
 }
+
+TEST_CASE("LineString.cap_combinations")
+{
+	for (const Coloring coloring : { Coloring::Solid, Coloring::Gradient, Coloring::PerPoint, Coloring::Pattern })
+	{
+		INFO(static_cast<int32>(coloring));
+		for (const bool singlePoint : { false, true })
+		{
+			INFO(singlePoint);
+			const LineString line = (singlePoint ? LineString{ Vec2{ 200, 100 } }
+				: LineString{ Vec2{ 100, 100 }, Vec2{ 200, 100 }, Vec2{ 300, 100 } });
+			for (const LineCap startCap : { LineCap::Flat, LineCap::Square, LineCap::Round })
+			{
+				for (const LineCap endCap : { LineCap::Flat, LineCap::Square, LineCap::Round })
+				{
+					INFO(static_cast<int32>(startCap));
+					INFO(static_cast<int32>(endCap));
+					const auto actual = CaptureLine([&] { DrawLine(line, coloring, startCap, endCap); });
+					const int32 startX = (singlePoint ? 200 : 100);
+					const int32 endX = (singlePoint ? 200 : 300);
+					CHECK(actual.image[100][startX - 5] == ((startCap == LineCap::Flat) ? Palette::Black : Palette::Green));
+					CHECK(actual.image[100][endX + 5] == ((endCap == LineCap::Flat) ? Palette::Black : Palette::Green));
+					// The outer corners distinguish square caps from round caps.
+					CHECK(actual.image[91][startX - 9] == ((startCap == LineCap::Square) ? Palette::Green : Palette::Black));
+					CHECK(actual.image[91][endX + 9] == ((endCap == LineCap::Square) ? Palette::Green : Palette::Black));
+					const auto capTriangles = [](const LineCap cap) { return ((cap == LineCap::Square) ? 2 : ((cap == LineCap::Round) ? 9 : 0)); };
+					CHECK(actual.triangleCount == (4 + (singlePoint ? 0 : 4) + capTriangles(startCap) + capTriangles(endCap)));
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("LineString.cap_gradient_direction")
+{
+	for (const LineCap cap : { LineCap::Square, LineCap::Round })
+	{
+		INFO(static_cast<int32>(cap));
+		// A collapsed colored line uses the original endpoint colors for its caps.
+		const auto gradient = CaptureLine([&]
+		{
+			LineString{ Vec2{ 200, 100 } }.draw(cap, 20, Palette::Red, Palette::Blue);
+		});
+		const auto perPoint = CaptureLine([&]
+		{
+			LineString(3, Vec2{ 200, 100 }).draw(cap, 20, Array<ColorF>{ Palette::Red, Palette::Green, Palette::Blue });
+		});
+		CHECK((gradient.image == perPoint.image));
+		CHECK(gradient.image[100][195].r > gradient.image[100][195].b);
+		CHECK(gradient.image[100][205].r < gradient.image[100][205].b);
+		const auto normal = CaptureLine([&]
+		{
+			LineString{ Vec2{ 100, 100 }, Vec2{ 200, 60 }, Vec2{ 300, 100 } }.draw(cap, 20, Palette::Red, Palette::Blue);
+		});
+		CHECK(normal.image[100][95].r > normal.image[100][95].b);
+		CHECK(normal.image[100][305].r < normal.image[100][305].b);
+	}
+}

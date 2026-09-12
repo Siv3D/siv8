@@ -218,4 +218,59 @@ TEST_CASE("Renderer2D.line_allocation_failure")
 	CHECK(actual.triangleCount == (4 + 15 * 87381 + 87368));
 }
 
+TEST_CASE("Renderer2D.linestring_allocation_failure")
+{
+	const auto reference = CaptureBatchDraw([]
+	{
+		RectF{ 20, 20, 20, 20 }.draw(Palette::Red);
+		RectF{ 60, 20, 20, 20 }.draw(Palette::Blue);
+	});
+	Mesh2D filler{ 3, 87381 };
+	for (auto& vertex : filler.vertices)
+	{
+		vertex.set(Float2{ -10, -10 }, Float2{ 0, 0 }, Float4{ 1, 1, 1, 1 });
+	}
+	filler.indices.fill(TriangleIndex{ 0, 1, 2 });
+	REQUIRE(filler.validate());
+	Mesh2D lastFiller = filler;
+	for (const int32 shape : { 0, 1, 2 })
+	{
+		INFO(shape);
+		const LineString line = ((shape == 0) ? LineString{ Vec2{ 100, 100 }, Vec2{ 200, 100 }, Vec2{ 300, 100 } }
+			: LineString((shape == 1) ? 1 : 3, Vec2{ 200, 100 }));
+		const Array<ColorF> colors(line.size(), Palette::Green);
+		for (const LineCap cap : { LineCap::Square, LineCap::Round })
+		{
+			INFO(static_cast<int32>(cap));
+			// Leave 49 indices for round caps, or 16 (body) / 10 (caps only) for square caps.
+			// Some parts would fit independently, but the whole shape must be rejected.
+			const size_t lastTriangleCount = ((cap == LineCap::Round) ? 87368 : ((shape == 0) ? 87379 : 87381));
+			lastFiller.indices.resize(lastTriangleCount, TriangleIndex{ 0, 1, 2 });
+			for (const int32 coloring : { 0, 1, 2, 3 })
+			{
+				INFO(coloring);
+				const auto actual = CaptureBatchDraw([&]
+				{
+					RectF{ 20, 20, 20, 20 }.draw(Palette::Red);
+					for (int32 i = 0; i < 15; ++i)
+					{
+						filler.draw();
+					}
+					lastFiller.draw();
+					switch (coloring)
+					{
+					case 0: line.draw(cap, 20, Palette::Green); break;
+					case 1: line.draw(cap, 20, Palette::Red, Palette::Blue); break;
+					case 2: line.draw(cap, 20, colors); break;
+					case 3: line.draw(cap, 20, Pattern::PolkaDot{ .primary = Palette::Green, .background = Palette::Green }); break;
+					}
+					RectF{ 60, 20, 20, 20 }.draw(Palette::Blue);
+				});
+				CHECK((actual.image == reference.image));
+				CHECK(actual.triangleCount == (4 + 15 * 87381 + static_cast<int64>(lastTriangleCount)));
+			}
+		}
+	}
+}
+
 # endif
