@@ -4,6 +4,7 @@
 - Run `git diff --check` before finishing any code change.
 - Preserve the user's uncommitted changes and do not revert unrelated diffs.
 - Treat `Siv3D/src/ThirdParty/` as vendored code and do not change it unless the task requires it. Suppress third-party warnings with target- or file-scoped build settings instead of source edits.
+- Before adding local complexity, examine callers, callees, and responsibility boundaries for a simpler overall design. Proactively propose changes at the source of the complexity, including broader refactoring when justified, and break larger changes into small, reviewable stages.
 
 # Runtime performance
 

@@ -159,7 +159,7 @@ namespace s3d
 			{
 				// 頂点・インデックスのどちらかが収まらなければ、両方とも新しいバッチへ移る。
 				// バッチ内の位置は 0 から始まるが、CPU 配列への書き込みは続きに追加する。
-				commandManager.deferUpdateBuffers(static_cast<uint32>(m_batches.size()), pLastBatch->indexPos);
+				commandManager.deferUpdateBuffers(static_cast<uint32>(m_batches.size()));
 				m_batches.emplace_back();
 				// emplace_back() で配列が再確保される可能性があるため、ポインタを取り直す。
 				pLastBatch = &m_batches.back();

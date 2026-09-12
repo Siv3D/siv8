@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Array.hpp>
 # include <Siv3D/HashMap.hpp>
+# include <Siv3D/Optional.hpp>
 # include <Siv3D/Vertex2D.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/BlendState.hpp>
@@ -40,7 +41,7 @@ namespace s3d
 
 		const Array<D3D11Renderer2DCommand>& getCommands() const noexcept;
 
-		void deferUpdateBuffers(uint32 batchIndex, uint32 previousBatchIndexCount);
+		void deferUpdateBuffers(uint32 batchIndex);
 
 		void pushDraw(uint32 indexCount);
 		const D3D11DrawCommand& getDraw(uint32 index) const noexcept;
@@ -119,17 +120,8 @@ namespace s3d
 
 	private:
 
-		struct PendingBufferUpdate
-		{
-			uint32 batchIndex;
-
-			uint32 previousBatchIndexCount;
-		};
-
-		Array<PendingBufferUpdate> m_pendingBufferUpdates;
-
-		// 現在のバッチで pushDraw() に渡されたインデックス数（flush() ではリセットしない）
-		uint32 m_submittedIndexCount = 0;
+		// 次の Draw が使うバッチ。描画を伴わない確保が続いても、最後の切り替え先だけ保持する。
+		Optional<uint32> m_pendingBatchIndex;
 
 		Array<D3D11Renderer2DCommand> m_commands;
 

@@ -37,8 +37,7 @@ namespace s3d
 		{
 			m_commands.clear();
 			m_stateTracker.clear();
-			m_pendingBufferUpdates.clear();
-			m_submittedIndexCount = 0;
+			m_pendingBatchIndex.reset();
 			m_current.draw = {};
 		}
 
@@ -342,10 +341,11 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11Renderer2DCommandManager::deferUpdateBuffers(const uint32 batchIndex, const uint32 previousBatchIndexCount)
+	void D3D11Renderer2DCommandManager::deferUpdateBuffers(const uint32 batchIndex)
 	{
-		// 図形の生成途中では Draw が未登録なので、切り替えは pushDraw() まで保留する
-		m_pendingBufferUpdates.push_back({ batchIndex, previousBatchIndexCount });
+		// 確保だけでは描画されるとは限らないため、切り替えは次の pushDraw() まで保留する。
+		// その間に別のバッチへ進んだ場合、中間のバッチには Draw がないので転送を省略できる。
+		m_pendingBatchIndex = batchIndex;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -356,31 +356,21 @@ namespace s3d
 
 	void D3D11Renderer2DCommandManager::pushDraw(const uint32 indexCount)
 	{
-		if (m_stateTracker.hasStateChange())
+		// 描画状態またはバッチを切り替える前に、それまでの Draw を確定する。
+		if (m_stateTracker.hasStateChange() || m_pendingBatchIndex)
 		{
 			flush();
 		}
 
-		uint32 remainingIndexCount = indexCount;
-
-		for (const auto& update : m_pendingBufferUpdates)
+		if (m_pendingBatchIndex)
 		{
-			// 今回の図形のうち、切り替え前のバッチに入った部分を先に描画する
-			assert(m_submittedIndexCount <= update.previousBatchIndexCount);
-			const uint32 previousBatchIndexCount = (update.previousBatchIndexCount - m_submittedIndexCount);
-			assert(previousBatchIndexCount <= remainingIndexCount);
-			m_current.draw.indexCount += previousBatchIndexCount;
-			remainingIndexCount -= previousBatchIndexCount;
-			flush();
-
-			m_commands.emplace_back(D3D11Renderer2DCommandType::UpdateBuffers, update.batchIndex);
+			m_commands.emplace_back(D3D11Renderer2DCommandType::UpdateBuffers, *m_pendingBatchIndex);
 			m_current.draw.startIndex = 0;
-			m_submittedIndexCount = 0;
+			m_pendingBatchIndex.reset();
 		}
 
-		m_pendingBufferUpdates.clear();
-		m_current.draw.indexCount += remainingIndexCount;
-		m_submittedIndexCount += remainingIndexCount;
+		// 各 Build は図形全体を一度に確保するため、今回のインデックスはすべて同じバッチに属する。
+		m_current.draw.indexCount += indexCount;
 	}
 
 	const D3D11DrawCommand& D3D11Renderer2DCommandManager::getDraw(const uint32 index) const noexcept

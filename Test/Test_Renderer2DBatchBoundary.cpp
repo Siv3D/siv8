@@ -114,6 +114,40 @@ TEST_CASE("Renderer2D.vertex_batch_boundary")
 	}
 }
 
+TEST_CASE("Renderer2D.batches_without_triangles")
+{
+	// Vertex-only shapes reserve space without submitting a Draw. Repeating them
+	// advances across batches, including a batch that contains no triangles at all.
+	const Shape2D verticesOnly{ Array<Float2>(65530, Float2{ -10, -10 }), Array<TriangleIndex>{} };
+	for (const bool changeState : { false, true })
+	{
+		INFO(changeState);
+		const auto draw = [&](const bool reserveVertices)
+		{
+			RectF{ 20, 20, 40, 40 }.draw(Palette::Red);
+			if (reserveVertices)
+			{
+				for (int32 i = 0; i < 3; ++i)
+				{
+					verticesOnly.draw();
+				}
+			}
+			const ScopedColorMul2D colorMul{ changeState ? Palette::Green : Palette::White };
+			RectF{ 40, 40, 40, 40 }.draw();
+			if (reserveVertices)
+			{
+				// End the frame with a pending switch and no following Draw.
+				verticesOnly.draw();
+			}
+		};
+		const auto reference = CaptureBatchDraw([&] { draw(false); });
+		const auto actual = CaptureBatchDraw([&] { draw(true); });
+		CHECK((actual.image == reference.image));
+		CHECK(actual.triangleCount == reference.triangleCount);
+		CHECK(actual.triangleCount == 4);
+	}
+}
+
 TEST_CASE("Renderer2D.index_batch_boundary")
 {
 	const Texture red{ Image{ 2, 2, Palette::Red } };
