@@ -1679,6 +1679,9 @@ namespace s3d
 				.blendState = BlendState::Default2D,
 			};
 			
+			// pixelFormat と sampleCount はこの encoder 内で固定。最初の Draw では必ず設定する。
+			bool pipelineDirty = true;
+
 			m_pRenderer->getSamplerState().resetStates();
 			
 			CommandState commandState;
@@ -1697,8 +1700,13 @@ namespace s3d
 					}
 				case MetalRenderer2DCommandType::Draw:
 					{
-						const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
-						renderCommandEncoder->setRenderPipelineState(pipeline);
+						// 変換・色・テクスチャ・頂点区間だけの変更では、同じパイプラインを再利用する。
+						if (pipelineDirty)
+						{
+							const auto pipeline = m_pRenderer->getRenderPipelineState().get(pipelineStateDesc);
+							renderCommandEncoder->setRenderPipelineState(pipeline);
+							pipelineDirty = false;
+						}
 						
 						if (m_vsConstants.isDirty())
 						{
@@ -1767,6 +1775,7 @@ namespace s3d
 				case MetalRenderer2DCommandType::BlendState:
 					{
 						pipelineStateDesc.blendState = m_commandManager.getBlendState(command.index);
+						pipelineDirty = true;
 						LOG_COMMAND(fmt::format("BlendState[{}]", command.index));
 						break;
 					}
@@ -1872,6 +1881,7 @@ namespace s3d
 						else
 						{
 							pipelineStateDesc.vs = vsID;
+							pipelineDirty = true;
 							LOG_COMMAND(fmt::format("SetVS[{}]: {}", command.index, vsID.value()));
 						}
 
@@ -1889,6 +1899,7 @@ namespace s3d
 						else
 						{
 							pipelineStateDesc.ps = psID;
+							pipelineDirty = true;
 							LOG_COMMAND(fmt::format("SetPS[{}]: {}", command.index, psID.value()));
 						}
 

@@ -60,6 +60,9 @@ On macOS, run from the repository root, outside the sandbox:
 ./macOS/validate-projects.sh               # Project syntax and shared tests
 ```
 
+For the public Renderer2D CPU benchmark, measurement boundaries, and a standalone
+program, see [Renderer2D pipeline state benchmark](../../Test/Manual/Renderer2DPipelineState.md).
+
 The runner checks test registration, then builds and launches the application.
 `CONFIGURATION` selects the build configuration (default `Debug`); other arguments
 are passed to the shared Catch2 runner. `--test-only` and `--test-verbose` are
