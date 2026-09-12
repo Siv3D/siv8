@@ -108,7 +108,7 @@ TEST_CASE("Renderer2D.vertex_batch_boundary")
 				}
 				DrawScene(red, shape);
 			});
-			CHECK(actual.image == reference.image);
+			CHECK((actual.image == reference.image));
 			CHECK(actual.triangleCount == (reference.triangleCount + rectangleCount * 2));
 		}
 	}
@@ -135,9 +135,87 @@ TEST_CASE("Renderer2D.index_batch_boundary")
 			filler.draw();
 			DrawScene(red, Shape::Line);
 		});
-		CHECK(actual.image == reference.image);
+		CHECK((actual.image == reference.image));
 		CHECK(actual.triangleCount == (reference.triangleCount + static_cast<int64>(triangleCount)));
 	}
+}
+
+TEST_CASE("Renderer2D.line_cap_combinations")
+{
+	for (const LineCap startCap : { LineCap::Flat, LineCap::Square, LineCap::Round })
+	{
+		for (const LineCap endCap : { LineCap::Flat, LineCap::Square, LineCap::Round })
+		{
+			INFO(static_cast<int32>(startCap));
+			INFO(static_cast<int32>(endCap));
+			const auto draw = [&]
+			{
+				Line{ 100, 60, 300, 60 }.draw(startCap, endCap, 20);
+				Line{ 100, 120, 300, 120 }.draw(startCap, endCap, 20, Palette::Red, Palette::Blue);
+			};
+			const auto reference = CaptureBatchDraw(draw);
+			REQUIRE(reference.image.width() >= 320);
+			REQUIRE(reference.image.height() >= 140);
+			CHECK(reference.image[60][200] == Palette::White);
+			CHECK(reference.image[60][95] == ((startCap == LineCap::Flat) ? Palette::Black : Palette::White));
+			CHECK(reference.image[60][305] == ((endCap == LineCap::Flat) ? Palette::Black : Palette::White));
+			if (startCap == LineCap::Round)
+			{
+				CHECK(reference.image[120][95] == Palette::Red);
+			}
+			if (endCap == LineCap::Round)
+			{
+				CHECK(reference.image[120][305] == Palette::Blue);
+			}
+
+			// Seven vertices remain: a line body fits, but a body with a round cap does not.
+			constexpr int32 rectangleCount = 16382;
+			const auto actual = CaptureBatchDraw([&]
+			{
+				for (int32 i = 0; i < rectangleCount; ++i)
+				{
+					RectF{ -10, -10, 1, 1 }.draw();
+				}
+				draw();
+			});
+			CHECK((actual.image == reference.image));
+			CHECK(actual.triangleCount == (reference.triangleCount + rectangleCount * 2));
+		}
+	}
+}
+
+TEST_CASE("Renderer2D.line_allocation_failure")
+{
+	const auto reference = CaptureBatchDraw([]
+	{
+		RectF{ 20, 20, 20, 20 }.draw(Palette::Red);
+		RectF{ 60, 20, 20, 20 }.draw(Palette::Blue);
+	});
+	Mesh2D filler{ 3, 87381 };
+	for (auto& vertex : filler.vertices)
+	{
+		vertex.set(Float2{ -10, -10 }, Float2{ 0, 0 }, Float4{ 1, 1, 1, 1 });
+	}
+	filler.indices.fill(TriangleIndex{ 0, 1, 2 });
+	REQUIRE(filler.validate());
+	Mesh2D lastFiller = filler;
+	lastFiller.indices.resize(87368);
+	const auto actual = CaptureBatchDraw([&]
+	{
+		RectF{ 20, 20, 20, 20 }.draw(Palette::Red);
+		for (int32 i = 0; i < 15; ++i)
+		{
+			filler.draw();
+		}
+		lastFiller.draw();
+		// Leave 49 indices below the CPU array limit. The body (6) and one cap (27)
+		// would fit, but the entire line (60) must fail without reserving either part.
+		Line{ 100, 100, 300, 100 }.draw(LineCap::Round, LineCap::Round, 20);
+		// A later, smaller draw must still succeed at the correct index position.
+		RectF{ 60, 20, 20, 20 }.draw(Palette::Blue);
+	});
+	CHECK((actual.image == reference.image));
+	CHECK(actual.triangleCount == (4 + 15 * 87381 + 87368));
 }
 
 # endif

@@ -105,27 +105,37 @@ namespace s3d
 
 	Vertex2DBufferPointer D3D11VertexBufferManager2D::requestBuffer(const uint16 vertexCount, const uint32 indexCount, D3D11Renderer2DCommandManager& commandManager)
 	{
+		// 描画データを書き込む CPU 配列の領域を予約し、その先頭ポインタを返す。
+		// GPU への転送はここでは行わず、後で commitBuffers() がバッチ単位で行う。
+		// バッチは、固定サイズの GPU 頂点・インデックスバッファに収まるデータのまとまり。
+
+		// 1 回の要求を複数バッチには分割しないため、単独で GPU バッファを超える要求は拒否する。
+		// 頂点数は引数が uint16 なので、VertexBufferSize（65,535）以下に収まる。
 		if (IndexBufferSize < indexCount)
 		{
 			return{ nullptr, nullptr, 0 };
 		}
 
-		// VB
+		// CPU 側の頂点配列を必要に応じて拡張する。複数バッチのデータを連続して保持するため、
+		// 配列全体の上限 MaxVertexArraySize と、1 バッチの上限 VertexBufferSize は別に扱う。
 		{
+			// CPU 配列全体での「今回の予約領域の末尾の次」。単位はバイトではなく頂点数。
 			const uint32 vertexArrayWritePosTarget = (m_vertexArrayWritePos + vertexCount);
 
 			if (m_vertexArray.size() < vertexArrayWritePosTarget)
 			{
+				// CPU 配列の上限を超える場合は、書き込み位置を進めずに失敗を返す。
 				if (MaxVertexArraySize < vertexArrayWritePosTarget)
 				{
 					return{ nullptr, 0, 0 };
 				}
 
+				// 小さな要求のたびに再確保しないよう、必要数以上の最小の 2 の累乗へ拡張する。
 				Resize(m_vertexArray, vertexArrayWritePosTarget);
 			}
 		}
 
-		// IB
+		// CPU 側のインデックス配列も同様に拡張する。こちらの位置と個数はインデックス単位。
 		{
 			const uint32 indexArrayWritePosTarget = (m_indexArrayWritePos + indexCount);
 
@@ -140,17 +150,25 @@ namespace s3d
 			}
 		}
 		
+		// 現在のバッチに追加できるかを調べる。vertexPos / indexPos は、
+		// CPU 配列全体ではなく、そのバッチ内での使用数（次の書き込み位置）を表す。
 		BatchBufferPos* pLastBatch = &m_batches.back();
 		{
 			if ((VertexBufferSize < (pLastBatch->vertexPos + vertexCount)
 				|| (IndexBufferSize < (pLastBatch->indexPos + indexCount))))
 			{
+				// 頂点・インデックスのどちらかが収まらなければ、両方とも新しいバッチへ移る。
+				// バッチ内の位置は 0 から始まるが、CPU 配列への書き込みは続きに追加する。
 				commandManager.deferUpdateBuffers(static_cast<uint32>(m_batches.size()), pLastBatch->indexPos);
 				m_batches.emplace_back();
+				// emplace_back() で配列が再確保される可能性があるため、ポインタを取り直す。
 				pLastBatch = &m_batches.back();
 			}
 		}
 
+		// 呼び出し側が頂点とインデックスを書き込む場所は、CPU 配列全体での位置から求める。
+		// 一方、インデックスに加える indexOffset は、このバッチの先頭頂点からの相対位置。
+		// GPU 上でのバッチの配置位置は、描画時に別途 baseVertexLocation として加算される。
 		const Vertex2DBufferPointer result
 		{
 			.pVertex		= (m_vertexArray.data() + m_vertexArrayWritePos),
@@ -158,9 +176,11 @@ namespace s3d
 			.indexOffset	= static_cast<Vertex2D::IndexType>(pLastBatch->vertexPos),
 		};
 
+		// 予約した分だけ CPU 配列全体の位置を進め、次の要求と領域が重ならないようにする。
 		m_vertexArrayWritePos	+= vertexCount;
 		m_indexArrayWritePos	+= indexCount;
 
+		// バッチ内の使用数も進める。次回の収容判定と、バッチ内の相対位置に使う。
 		pLastBatch->vertexPos	+= vertexCount;
 		pLastBatch->indexPos	+= indexCount;
 

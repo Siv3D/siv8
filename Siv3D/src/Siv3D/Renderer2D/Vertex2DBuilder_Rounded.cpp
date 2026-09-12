@@ -106,6 +106,44 @@ namespace s3d
 				(baseY - normal.y * innerThickness));
 		}
 
+		// 確保済みの領域に半円を書き込む。領域の確保と品質の決定は呼び出し側が行う。
+		static void EmitRoundCap(const Vertex2DBufferPointer buffer, const Float2& center, const float r, const float startAngle, const Float4& color, const Vertex2D::IndexType quality)
+		{
+			auto [pVertex, pIndex, indexOffset] = buffer;
+			const Vertex2D::IndexType VertexCount = (quality + 1);
+
+			const float centerX = center.x;
+			const float centerY = center.y;
+
+			// 中心
+			pVertex[0].pos.set(centerX, centerY);
+
+			// 周
+			{
+				const float radDelta = (Math::PiF / (quality - 1));
+				Vertex2D* pDst = &pVertex[1];
+
+				for (Vertex2D::IndexType i = 0; i < quality; ++i)
+				{
+					const float rad = (startAngle + (radDelta * i));
+					const auto [s, c] = FastMath::SinCos(rad);
+					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
+				}
+			}
+
+			for (size_t i = 0; i < VertexCount; ++i)
+			{
+				(pVertex++)->color = color;
+			}
+
+			for (Vertex2D::IndexType i = 0; i < (quality - 1); ++i)
+			{
+				*pIndex++ = indexOffset;
+				*pIndex++ = (indexOffset + i + 1);
+				*pIndex++ = (indexOffset + i + 2);
+			}
+		}
+
 		[[nodiscard]]
 		static Vertex2D::IndexType BuildRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& color, const float scale)
 		{
@@ -119,36 +157,7 @@ namespace s3d
 				return 0;
 			}
 
-			const float centerX = center.x;
-			const float centerY = center.y;
-
-			// 中心
-			pVertex[0].pos.set(centerX, centerY);
-
-			// 周
-			{
-				const float radDelta = (Math::PiF / (Quality - 1));
-				Vertex2D* pDst = &pVertex[1];
-
-				for (Vertex2D::IndexType i = 0; i < Quality; ++i)
-				{
-					const float rad = (startAngle + (radDelta * i));
-					const auto [s, c] = FastMath::SinCos(rad);
-					(pDst++)->pos.set((centerX + r * s), (centerY - r * c));
-				}
-			}
-
-			for (size_t i = 0; i < VertexCount; ++i)
-			{
-				(pVertex++)->color = color;
-			}
-
-			for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
-			{
-				*pIndex++ = indexOffset;
-				*pIndex++ = (indexOffset + i + 1);
-				*pIndex++ = (indexOffset + i + 2);
-			}
+			EmitRoundCap({ pVertex, pIndex, indexOffset }, center, r, startAngle, color, Quality);
 
 			return IndexCount;
 		}
@@ -1035,13 +1044,28 @@ namespace s3d
 		{
 			constexpr Vertex2D::IndexType VertexCount = 4;
 			constexpr Vertex2D::IndexType IndexCount = 6;
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			const float halfThickness = (thickness * 0.5f);
+			const Vertex2D::IndexType roundCapCount = ((startCap == LineCap::Round) + (endCap == LineCap::Round));
+			Vertex2D::IndexType capQuality = 0;
+			Vertex2D::IndexType capVertexCount = 0;
+			Vertex2D::IndexType capIndexCount = 0;
+
+			if (roundCapCount)
+			{
+				capQuality = CalculateCirclePieQuality((halfThickness * scale), Math::PiF);
+				capVertexCount = (capQuality + 1);
+				capIndexCount = ((capQuality - 1) * 3);
+			}
+
+			// 本体と丸い両端を一度に確保し、図形の途中でのバッチ切り替えや確保失敗を避ける。
+			const Vertex2D::IndexType totalVertexCount = (VertexCount + roundCapCount * capVertexCount);
+			const Vertex2D::IndexType totalIndexCount = (IndexCount + roundCapCount * capIndexCount);
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(totalVertexCount, totalIndexCount);
 			if (not pVertex)
 			{
 				return 0;
 			}
 
-			const float halfThickness = (thickness * 0.5f);
 			const float length = (end - start).length();
 			const Float2 line = (length ? ((end - start) / length) : Float2{ 1, 0 });
 			const Float2 vNormal{ (-line.y * halfThickness), (line.x * halfThickness) };
@@ -1076,20 +1100,25 @@ namespace s3d
 				*pIndex++ = (indexOffset + RectIndexTable[i]);
 			}
 
-			Vertex2D::IndexType roundIndexCount = 0;
+			// インデックスの書き込み先 pIndex は、本体の書き込みで既に IndexCount 個進んでいる。
+			// 頂点の書き込み先と頂点番号も本体の直後に合わせ、始端、終端の順に書き込む。
+			Vertex2DBufferPointer capBuffer{ (pVertex + VertexCount), pIndex, static_cast<Vertex2D::IndexType>(indexOffset + VertexCount) };
 			const float startAngle = std::atan2(vNormal.x, -vNormal.y);
 
 			if (startCap == LineCap::Round)
 			{
-				roundIndexCount += BuildRoundCap(bufferCreator, start, halfThickness, startAngle, colors[0], scale);
+				EmitRoundCap(capBuffer, start, halfThickness, startAngle, colors[0], capQuality);
+				capBuffer.pVertex += capVertexCount;
+				capBuffer.pIndex += capIndexCount;
+				capBuffer.indexOffset += capVertexCount;
 			}
 
 			if (endCap == LineCap::Round)
 			{
-				roundIndexCount += BuildRoundCap(bufferCreator, end, halfThickness, (startAngle + Math::PiF), colors[1], scale);
+				EmitRoundCap(capBuffer, end, halfThickness, (startAngle + Math::PiF), colors[1], capQuality);
 			}
 
-			return (IndexCount + roundIndexCount);
+			return totalIndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
