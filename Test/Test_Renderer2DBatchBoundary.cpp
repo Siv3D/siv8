@@ -118,25 +118,29 @@ TEST_CASE("Renderer2D.index_batch_boundary")
 {
 	const Texture red{ Image{ 2, 2, Palette::Red } };
 	REQUIRE(red);
-	const auto reference = CaptureBatchDraw([&] { DrawScene(red, Shape::Line); });
-	for (const size_t triangleCount : { 87350u, 87368u, 87377u, 87378u, 87379u, 87381u })
+	for (const Shape shape : { Shape::Line, Shape::Arrow })
 	{
-		INFO(triangleCount);
-		// Degenerate off-screen triangles fill the index buffer with only three vertices.
-		Mesh2D filler{ 3, triangleCount };
-		for (auto& vertex : filler.vertices)
+		INFO(static_cast<int32>(shape));
+		const auto reference = CaptureBatchDraw([&] { DrawScene(red, shape); });
+		for (const size_t triangleCount : { 87350u, 87368u, 87377u, 87378u, 87379u, 87381u })
 		{
-			vertex.set(Float2{ -10, -10 }, Float2{ 0, 0 }, Float4{ 1, 1, 1, 1 });
+			INFO(triangleCount);
+			// Degenerate off-screen triangles fill the index buffer with only three vertices.
+			Mesh2D filler{ 3, triangleCount };
+			for (auto& vertex : filler.vertices)
+			{
+				vertex.set(Float2{ -10, -10 }, Float2{ 0, 0 }, Float4{ 1, 1, 1, 1 });
+			}
+			filler.indices.fill(TriangleIndex{ 0, 1, 2 });
+			REQUIRE(filler.validate());
+			const auto actual = CaptureBatchDraw([&]
+			{
+				filler.draw();
+				DrawScene(red, shape);
+			});
+			CHECK((actual.image == reference.image));
+			CHECK(actual.triangleCount == (reference.triangleCount + static_cast<int64>(triangleCount)));
 		}
-		filler.indices.fill(TriangleIndex{ 0, 1, 2 });
-		REQUIRE(filler.validate());
-		const auto actual = CaptureBatchDraw([&]
-		{
-			filler.draw();
-			DrawScene(red, Shape::Line);
-		});
-		CHECK((actual.image == reference.image));
-		CHECK(actual.triangleCount == (reference.triangleCount + static_cast<int64>(triangleCount)));
 	}
 }
 
@@ -184,7 +188,7 @@ TEST_CASE("Renderer2D.line_cap_combinations")
 	}
 }
 
-TEST_CASE("Renderer2D.line_allocation_failure")
+TEST_CASE("Renderer2D.line_and_arrow_allocation_failure")
 {
 	const auto reference = CaptureBatchDraw([]
 	{
@@ -199,23 +203,35 @@ TEST_CASE("Renderer2D.line_allocation_failure")
 	filler.indices.fill(TriangleIndex{ 0, 1, 2 });
 	REQUIRE(filler.validate());
 	Mesh2D lastFiller = filler;
-	lastFiller.indices.resize(87368);
-	const auto actual = CaptureBatchDraw([&]
+	for (const Shape shape : { Shape::Line, Shape::Arrow })
 	{
-		RectF{ 20, 20, 20, 20 }.draw(Palette::Red);
-		for (int32 i = 0; i < 15; ++i)
+		INFO(static_cast<int32>(shape));
+		const size_t lastTriangleCount = ((shape == Shape::Line) ? 87368 : 87379);
+		lastFiller.indices.resize(lastTriangleCount, TriangleIndex{ 0, 1, 2 });
+		const auto actual = CaptureBatchDraw([&]
 		{
-			filler.draw();
-		}
-		lastFiller.draw();
-		// Leave 49 indices below the CPU array limit. The body (6) and one cap (27)
-		// would fit, but the entire line (60) must fail without reserving either part.
-		Line{ 100, 100, 300, 100 }.draw(LineCap::Round, LineCap::Round, 20);
-		// A later, smaller draw must still succeed at the correct index position.
-		RectF{ 60, 20, 20, 20 }.draw(Palette::Blue);
-	});
-	CHECK((actual.image == reference.image));
-	CHECK(actual.triangleCount == (4 + 15 * 87381 + 87368));
+			RectF{ 20, 20, 20, 20 }.draw(Palette::Red);
+			for (int32 i = 0; i < 15; ++i)
+			{
+				filler.draw();
+			}
+			lastFiller.draw();
+			// Leave 49 indices for the line (60 needed), or 16 for the arrow (36 needed).
+			// The body alone would fit, but the whole shape must fail without reserving it.
+			if (shape == Shape::Line)
+			{
+				Line{ 100, 100, 300, 100 }.draw(LineCap::Round, LineCap::Round, 20);
+			}
+			else
+			{
+				Line{ 100, 100, 300, 100 }.drawArrow(LineCap::Round, 20, SizeF{ 40, 40 }, Palette::Red, Palette::Blue);
+			}
+			// A later, smaller draw must still succeed at the correct index position.
+			RectF{ 60, 20, 20, 20 }.draw(Palette::Blue);
+		});
+		CHECK((actual.image == reference.image));
+		CHECK(actual.triangleCount == (4 + 15 * 87381 + static_cast<int64>(lastTriangleCount)));
+	}
 }
 
 TEST_CASE("Renderer2D.linestring_allocation_failure")

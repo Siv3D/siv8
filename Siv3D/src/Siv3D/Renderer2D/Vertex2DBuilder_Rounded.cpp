@@ -144,24 +144,6 @@ namespace s3d
 			}
 		}
 
-		[[nodiscard]]
-		static Vertex2D::IndexType BuildRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const Float4& color, const float scale)
-		{
-			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
-			const Vertex2D::IndexType VertexCount = (Quality + 1);
-			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			EmitRoundCap({ pVertex, pIndex, indexOffset }, center, r, startAngle, color, Quality);
-
-			return IndexCount;
-		}
-
 		static void EmitRoundCap(const Vertex2DBufferPointer buffer, const Float2& center, const float r, const float startAngle, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const Vertex2D::IndexType quality)
 		{
 			auto [pVertex, pIndex, indexOffset] = buffer;
@@ -1241,7 +1223,19 @@ namespace s3d
 
 			constexpr Vertex2D::IndexType VertexCount = 7;
 			constexpr Vertex2D::IndexType IndexCount = 9;
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
+			Vertex2D::IndexType capQuality = 0;
+			Vertex2D::IndexType totalVertexCount = VertexCount;
+			Vertex2D::IndexType totalIndexCount = IndexCount;
+
+			if (startCap == LineCap::Round)
+			{
+				capQuality = CalculateCirclePieQuality((halfThickness * scale), Math::PiF);
+				totalVertexCount += (capQuality + 1);
+				totalIndexCount += ((capQuality - 1) * 3);
+			}
+
+			// 矢印の本体と丸い始端を一度に確保し、途中でのバッチ切り替えや確保失敗を避ける。
+			auto [pVertex, pIndex, indexOffset] = bufferCreator(totalVertexCount, totalIndexCount);
 			if (not pVertex)
 			{
 				return 0;
@@ -1273,15 +1267,16 @@ namespace s3d
 				pIndex[8] = (indexOffset + 2);
 			}
 
-			Vertex2D::IndexType roundIndexCount = 0;
-
 			if (startCap == LineCap::Round)
 			{
 				const float startAngle = std::atan2(leftOffset.x, -leftOffset.y);
-				roundIndexCount += BuildRoundCap(bufferCreator, start, halfThickness, (startAngle + Math::PiF), colors[0], scale);
+				// 本体は添字で書き込んだため、pVertex と pIndex はまだ確保領域の先頭を指している。
+				// 両方を本体の直後へずらした書き込み先を、始端用に渡す。
+				const Vertex2DBufferPointer capBuffer{ (pVertex + VertexCount), (pIndex + IndexCount), static_cast<Vertex2D::IndexType>(indexOffset + VertexCount) };
+				EmitRoundCap(capBuffer, start, halfThickness, (startAngle + Math::PiF), colors[0], capQuality);
 			}
 
-			return (IndexCount + roundIndexCount);
+			return totalIndexCount;
 		}
 
 		////////////////////////////////////////////////////////////////
