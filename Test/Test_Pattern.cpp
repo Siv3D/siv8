@@ -71,25 +71,45 @@ namespace
 		}
 	}
 
-	Image CapturePattern(const PatternParameters& pattern, const Mat3x2& local,
-		const Mat3x2& camera = Mat3x2::Identity())
+	struct PatternFrame
+	{
+		Image image;
+		FrameMetrics metrics;
+	};
+
+	template <class Draw>
+	PatternFrame CapturePatternDraw(Draw&& draw)
 	{
 		const ColorF background = Scene::GetBackground();
 		const ScopeExit restore{ [&] { Scene::SetBackground(background); } };
 		Scene::SetBackground(Palette::Black);
-		const Transformer2D cameraScope{ camera, Transformer2D::Target::SetCamera };
-		const Transformer2D localScope{ local, Transformer2D::Target::SetLocal };
+		const Transformer2D cameraScope{ Mat3x2::Identity(), Transformer2D::Target::SetCamera };
+		const Transformer2D localScope{ Mat3x2::Identity(), Transformer2D::Target::SetLocal };
+		const ScopedViewport2D viewport{ none };
+		const ScopedScissorRect2D scissor{ none };
 		const ScopedColorMul2D colorMul{ Palette::White };
 		const ScopedColorAdd2D colorAdd{ 0.0 };
+		const ScopedRenderStates2D states{ BlendState::Default2D, RasterizerState::Default2D };
 		REQUIRE(System::Update());
-		RectF{ 0, 0, 72, 64 }.draw(pattern);
+		draw();
 		ScreenCapture::RequestCurrentFrame();
 		REQUIRE(System::Update());
 		REQUIRE(ScreenCapture::HasNewFrame());
-		const Image image = ScreenCapture::GetFrame();
+		Image image = ScreenCapture::GetFrame();
 		REQUIRE(image.width() >= 520);
 		REQUIRE(image.height() >= 360);
-		return image;
+		return { std::move(image), Profiler::GetFrameMetrics() };
+	}
+
+	Image CapturePattern(const PatternParameters& pattern, const Mat3x2& local,
+		const Mat3x2& camera = Mat3x2::Identity())
+	{
+		return CapturePatternDraw([&]
+		{
+			const Transformer2D cameraScope{ camera, Transformer2D::Target::SetCamera };
+			const Transformer2D localScope{ local, Transformer2D::Target::SetLocal };
+			RectF{ 0, 0, 72, 64 }.draw(pattern);
+		}).image;
 	}
 
 	void CheckCorrespondingInterior(const Image& reference, const Image& actual,
@@ -144,6 +164,9 @@ TEST_CASE("Pattern.Metal.drawing_coordinates")
 		Mat3x2{ 0, 1, -1, 0, 250, 120 }, // Exact quarter turn.
 		Mat3x2::Scale(3).translated(240, 110),
 		Mat3x2::Scale(3, 1).translated(240, 110),
+		Mat3x2::Scale(-1, 1).translated(240, 110),
+		Mat3x2::ShearX(0.5f).translated(240, 110),
+		Mat3x2::Rotate(31_deg).scaled(2).translated(240, 110),
 	};
 	for (const PatternType type : { PatternType::PolkaDot, PatternType::Stripe,
 		PatternType::Grid, PatternType::Checker, PatternType::Triangle, PatternType::HexGrid })
@@ -160,6 +183,397 @@ TEST_CASE("Pattern.Metal.drawing_coordinates")
 		const Mat3x2 local = Mat3x2::Scale(3, 1);
 		const Mat3x2 camera{ 0, 1, -1, 0, 250, 100 };
 		CheckCorrespondingInterior(reference, CapturePattern(pattern, local, camera), local * camera);
+	}
+}
+
+TEST_CASE("Pattern.Metal.viewport_and_continuity")
+{
+	for (const PatternType type : { PatternType::PolkaDot, PatternType::Stripe,
+		PatternType::Grid, PatternType::Checker, PatternType::Triangle, PatternType::HexGrid })
+	{
+		INFO(static_cast<int32>(type));
+		const auto pattern = MakeTestPattern(type);
+		const auto draw = [&](const bool viewport, const bool split)
+		{
+			RectF{ 20, 180, 20, 20 }.draw(Palette::Red);
+			{
+				const ScopedViewport2D vp{ viewport ? Optional<Rect>{ Rect{ 137, 81, 190, 110 } } : none };
+				const Transformer2D transform{ Mat3x2::Scale(2, 1).translated(
+					viewport ? 7 : 144, viewport ? 9 : 90) };
+				if (split)
+				{
+					// The seam is deliberately unrelated to the pattern period.
+					RectF{ 0, 0, 29, 64 }.draw(pattern);
+					Triangle{ 29, 0, 72, 0, 29, 64 }.draw(pattern);
+					Triangle{ 72, 0, 72, 64, 29, 64 }.draw(pattern);
+				}
+				else
+				{
+					RectF{ 0, 0, 72, 64 }.draw(pattern);
+				}
+			}
+			RectF{ 60, 180, 20, 20 }.draw(Palette::Blue);
+		};
+		const auto reference = CapturePatternDraw([&] { draw(false, false); });
+		CHECK(reference.image[190][30] == Palette::Red);
+		CHECK(reference.image[190][70] == Palette::Blue);
+		for (const bool split : { false, true })
+		{
+			INFO(split);
+			const auto actual = CapturePatternDraw([&] { draw(true, split); });
+			CHECK(actual.image == reference.image);
+			// Splitting unchanged pattern state must not split the GPU draw.
+			CHECK(actual.metrics.drawCalls == reference.metrics.drawCalls);
+		}
+		// Geometry extends beyond a viewport with a nonzero origin. Clipping must
+		// crop the pattern, not restart it at the viewport or leak into its neighbors.
+		const auto unclipped = CapturePatternDraw([&]
+		{
+			const Transformer2D transform{ Mat3x2::Translate(137, 81) };
+			RectF{ -20, -20, 200, 160 }.draw(pattern);
+		});
+		const auto clipped = CapturePatternDraw([&]
+		{
+			const ScopedViewport2D viewport{ 137, 81, 100, 80 };
+			RectF{ -20, -20, 200, 160 }.draw(pattern);
+		});
+		int32 clippingMismatches = 0;
+		String firstDifference;
+		for (int32 y = 60; y < 190; ++y)
+		{
+			for (int32 x = 115; x < 280; ++x)
+			{
+				const bool inside = (137 <= x && x < 237 && 81 <= y && y < 161);
+				const Color expected = inside ? unclipped.image[y][x] : Palette::Black;
+				const Color actual = clipped.image[y][x];
+				const int32 error = Max(Max(Abs(int32(actual.r) - int32(expected.r)), Abs(int32(actual.g) - int32(expected.g))),
+					Max(Abs(int32(actual.b) - int32(expected.b)), Abs(int32(actual.a) - int32(expected.a))));
+				// Different viewport projection sizes can round filtered pattern colors
+				// by one 8-bit unit. Outside the viewport, require exact background.
+				if (error > (inside ? 1 : 0))
+				{
+					++clippingMismatches;
+					if (firstDifference.isEmpty())
+					{
+						firstDifference = Format(Point{ x, y }, U" expected ", expected, U" actual ", actual);
+					}
+				}
+			}
+		}
+		INFO(firstDifference);
+		CHECK(clippingMismatches == 0);
+	}
+}
+
+TEST_CASE("Pattern.Metal.pattern_and_color_state_restore")
+{
+	const auto pattern = MakeTestPattern(PatternType::PolkaDot);
+	const auto draw = [&](const bool scoped)
+	{
+		for (int32 i = 0; i < 3; ++i)
+		{
+			const Transformer2D transform{ Mat3x2::Translate(30 + i * 100, 40) };
+			if ((i == 1) && scoped)
+			{
+				const ScopedColorMul2D mul{ ColorF{ 0.8, 0.5, 0.25, 0.75 } };
+				const ScopedColorAdd2D add{ ColorF{ 0.1, 0.2, 0.3 } };
+				RectF{ 0, 0, 72, 64 }.draw(pattern);
+			}
+			else
+			{
+				auto p = pattern;
+				if (i == 1)
+				{
+					p.primaryColor = Float4{ 0.9f, 0.7f, 0.55f, 0.75f };
+					p.backgroundColor = Float4{ 0.1f, 0.2f, 0.3f, 0.75f };
+				}
+				RectF{ 0, 0, 72, 64 }.draw(p);
+			}
+		}
+		// Empty geometry must not prevent the following valid draw from restoring state.
+		{
+			const Transformer2D collapsed{ Mat3x2::Scale(0) };
+			RectF{ 0, 0, 72, 64 }.draw(MakeTestPattern(PatternType::Grid));
+		}
+		RectF{ 340, 40, 40, 40 }.draw(Palette::Green);
+	};
+	const auto reference = CapturePatternDraw([&] { draw(false); });
+	for (int32 frame = 0; frame < 4; ++frame)
+	{
+		const auto actual = CapturePatternDraw([&] { draw(true); });
+		// Equivalent color arithmetic can round differently by one 8-bit unit.
+		int32 differences = 0;
+		for (int32 y = 40; y < 104; ++y)
+		{
+			for (int32 x = 30; x < 380; ++x)
+			{
+				const Color a = actual.image[y][x], b = reference.image[y][x];
+				differences += (Abs(int32(a.r) - int32(b.r)) > 1
+					|| Abs(int32(a.g) - int32(b.g)) > 1 || Abs(int32(a.b) - int32(b.b)) > 1);
+			}
+		}
+		CHECK(differences == 0);
+		CHECK(actual.image[50][350] == Palette::Green);
+	}
+}
+
+TEST_CASE("Pattern.Metal.batch_boundaries_and_mixed_shaders")
+{
+	Image pixels{ 2, 2, Palette::Red };
+	pixels[0][1] = Palette::Blue;
+	pixels[1][0] = Palette::Green;
+	pixels[1][1] = Palette::Yellow;
+	const Texture texture{ pixels };
+	REQUIRE(texture);
+	const auto draw = [&]
+	{
+		const auto pattern = MakeTestPattern(PatternType::Stripe);
+		const Transformer2D transform{ Mat3x2::Translate(33, 27) };
+		RectF{ 0, 0, 72, 64 }.draw(pattern);
+		texture.resized(40, 40).draw(100, 0);
+		Circle{ 190, 32, 28 }.draw(pattern);
+		RectF{ 240, 0, 40, 40 }.draw(Palette::Blue);
+		const Quad quad{ 300, 0, 360, 10, 350, 64, 310, 56 };
+		REQUIRE(texture.drawQuadWarp(quad));
+		Circle{ 40, 120, 28 }.drawArc(LineCap::Round, 0, 270_deg, 8, 8, pattern);
+		LineString{ Vec2{ 100, 100 }, Vec2{ 160, 140 }, Vec2{ 220, 100 } }
+			.draw(LineCap::Round, 16, pattern);
+		RectF{ 270, 100, 72, 64 }.draw(MakeTestPattern(PatternType::Checker));
+	};
+	const auto reference = CapturePatternDraw(draw);
+	CHECK(reference.image[40][280] == Palette::Blue);
+	for (const int32 rectangles : { 16380, 16381, 16382, 16383, 16384, 32765 })
+	{
+		INFO(rectangles);
+		const auto actual = CapturePatternDraw([&]
+		{
+			for (int32 i = 0; i < rectangles; ++i)
+			{
+				RectF{ -10, -10, 1, 1 }.draw();
+			}
+			draw();
+		});
+		CHECK(actual.image == reference.image);
+		CHECK(actual.metrics.triangleCount == reference.metrics.triangleCount + rectangles * 2);
+	}
+
+	// Equal pattern state batches; alternating with solid/texture/quad warp requires
+	// one draw per state, with no extra draw introduced by the dedicated Pattern VS.
+	for (const bool mixed : { false, true })
+	{
+		const auto frame = CapturePatternDraw([&]
+		{
+			const auto pattern = MakeTestPattern(PatternType::Checker);
+			for (int32 i = 0; i < 8; ++i)
+			{
+				const double y = 20 + i * 36;
+				RectF{ 20, y, 32, 32 }.draw(pattern);
+				if (mixed)
+				{
+					RectF{ 60, y, 32, 32 }.draw(Palette::Red);
+					texture.resized(32, 32).draw(100, y);
+					REQUIRE(texture.drawQuadWarp(Quad{ 140, y, 172, y, 172, y + 32, 140, y + 32 }));
+				}
+			}
+		});
+		CHECK(frame.metrics.drawCalls == (mixed ? 32 : 1));
+		CHECK(frame.metrics.triangleCount == (mixed ? 64 : 16));
+	}
+}
+
+TEST_CASE("Pattern.Metal.custom_shader_contract")
+{
+	const std::string source = R"(
+#include <metal_stdlib>
+using namespace metal;
+struct Vertex { float2 pos; float2 uv; float4 color; };
+struct Constants { float2x4 transform; float4 colorMul; };
+struct Varying { float4 position [[position]]; float4 colorPMA; float2 uv; };
+vertex Varying ShiftPattern(uint id [[vertex_id]], constant Vertex* vertices [[buffer(0)]],
+                           constant Constants& c [[buffer(1)]])
+{
+    const float2 pos = vertices[id].pos + float2(23, 0);
+    Varying result;
+    result.position = float4(c.transform[0].zw + pos.x * c.transform[0].xy + pos.y * c.transform[1].xy, 0, 1);
+    result.colorPMA = vertices[id].color * c.colorMul;
+    result.colorPMA.rgb *= result.colorPMA.a;
+    result.uv = vertices[id].pos;
+    return result;
+}
+fragment float4 Coordinates(Varying input [[stage_in]])
+{
+    return float4(fract(input.uv / 32.0f), 0, 1);
+}
+)";
+	const VertexShader vs = VertexShader::MSL(source, U"ShiftPattern");
+	const PixelShader ps = PixelShader::MSL(source, U"Coordinates");
+	REQUIRE(vs);
+	REQUIRE(ps);
+	const auto pattern = MakeTestPattern(PatternType::Triangle);
+	const auto draw = [&](const bool custom)
+	{
+		for (int32 i = 0; i < 3; ++i)
+		{
+			const Transformer2D transform{ Mat3x2::Translate(30 + i * 120, 40) };
+			if (custom && i == 1)
+			{
+				const ScopedCustomShader2D shader{ vs };
+				RectF{ 0, 0, 72, 64 }.draw(pattern);
+			}
+			else
+			{
+				const Transformer2D shift{ Mat3x2::Translate(i == 1 ? 23 : 0, 0) };
+				RectF{ 0, 0, 72, 64 }.draw(pattern);
+			}
+		}
+	};
+	const auto reference = CapturePatternDraw([&] { draw(false); });
+	for (int32 frame = 0; frame < 4; ++frame)
+	{
+		const auto actual = CapturePatternDraw([&] { draw(true); });
+		CHECK(actual.image == reference.image);
+	}
+	const auto diagnostic = CapturePatternDraw([&]
+	{
+		{
+			const Transformer2D transform{ Mat3x2::Translate(30, 40) };
+			const ScopedCustomShader2D shader{ ps };
+			RectF{ 0, 0, 72, 64 }.draw(pattern);
+		}
+		{
+			const Transformer2D transform{ Mat3x2::Translate(150, 40) };
+			const ScopedCustomShader2D shader{ vs, ps };
+			RectF{ 0, 0, 72, 64 }.draw(pattern);
+		}
+		const Transformer2D transform{ Mat3x2::Translate(270, 40) };
+		RectF{ 0, 0, 72, 64 }.draw(pattern);
+	});
+	// Pixel centers (10.5, 20.5) map to (10.5/32, 20.5/32), independently of
+	// which VS supplies the coordinates. A normal texture UV would fail this check.
+	for (const int32 origin : { 30, 173 })
+	{
+		const Color color = diagnostic.image[60][origin + 10];
+		CHECK(Abs(int32(color.r) - 84) <= 1);
+		CHECK(Abs(int32(color.g) - 163) <= 1);
+		CHECK(color.b == 0);
+	}
+	for (int32 y = 40; y < 104; ++y)
+	{
+		for (int32 x = 270; x < 342; ++x)
+		{
+			REQUIRE(diagnostic.image[y][x] == reference.image[y][x]);
+		}
+	}
+}
+
+namespace
+{
+	// Exercise distinct shape/geometry builders using the same paint argument for
+	// an ordinary white coverage mask and the actual pattern.
+	void DrawPatternShape(const int32 shape, const auto& paint)
+	{
+		const RectF rect{ 8, 8, 56, 48 };
+		const Circle circle{ 36, 32, 25 };
+		const Ellipse ellipse{ 36, 32, 28, 22 };
+		switch (shape)
+		{
+		case 0: Triangle{ 8, 8, 64, 8, 36, 56 }.draw(paint); break;
+		case 1: rect.draw(paint); break;
+		case 2: rect.drawFrame(10, paint); break;
+		case 3: circle.draw(paint); break;
+		case 4: circle.drawFrame(10, paint); break;
+		case 5: circle.drawPie(15_deg, 270_deg, paint); break;
+		case 6: circle.drawArc(LineCap::Round, 15_deg, 270_deg, 8, 4, paint); break;
+		case 7: circle.drawSegment(90_deg, 30, paint); break;
+		case 8: ellipse.draw(paint); break;
+		case 9: ellipse.drawFrame(10, paint); break;
+		case 10: ellipse.drawPie(15_deg, 270_deg, paint); break;
+		case 11: SuperEllipse{ 36, 32, 28, 22, 4 }.draw(paint); break;
+		case 12: Quad{ 8, 8, 64, 12, 60, 56, 12, 52 }.draw(paint); break;
+		case 13: rect.rounded(10).draw(paint); break;
+		case 14: rect.rounded(10).drawFrame(10, paint); break;
+		case 15:
+			Polygon{ { Vec2{ 8, 8 }, Vec2{ 64, 8 }, Vec2{ 52, 56 }, Vec2{ 12, 52 } } }
+				.draw(Vec2{ 3, -2 }, paint);
+			break;
+		case 16:
+			Polygon{ { Vec2{ -24, -20 }, Vec2{ 24, -20 }, Vec2{ 24, 20 }, Vec2{ -24, 20 } } }
+				.drawTransformed(17_deg, Vec2{ 36, 32 }, paint);
+			break;
+		case 17:
+			Shape2D{ { Float2{ 8, 8 }, Float2{ 64, 8 }, Float2{ 36, 56 } }, { TriangleIndex{ 0, 1, 2 } } }
+				.drawFrame(10, paint);
+			break;
+		case 18:
+			LineString{ Vec2{ 8, 16 }, Vec2{ 36, 48 }, Vec2{ 64, 16 } }.draw(LineCap::Round, 14, paint);
+			break;
+		default:
+			// Rounded joins use the triangulated closed-line path.
+			Quad{ 8, 8, 64, 8, 64, 56, 8, 56 }.drawFrame(10, paint, JoinStyle::Round);
+			break;
+		}
+	}
+}
+
+TEST_CASE("Pattern.Metal.shape_paths")
+{
+	const auto pattern = MakeTestPattern(PatternType::Checker);
+	const auto draw = [&](const int32 kind)
+	{
+		for (int32 i = 0; i < 20; ++i)
+		{
+			const Transformer2D transform{ Mat3x2::Scale(1.1, 1.2)
+				.translated(20 + (i % 5) * 100, 20 + (i / 5) * 110) };
+			if (kind == 0)
+			{
+				RectF{ 0, 0, 80, 72 }.draw(pattern);
+			}
+			else if (kind == 1)
+			{
+				DrawPatternShape(i, ColorF{ Palette::White });
+			}
+			else
+			{
+				DrawPatternShape(i, pattern);
+			}
+		}
+	};
+	const auto reference = CapturePatternDraw([&] { draw(0); });
+	const auto mask = CapturePatternDraw([&] { draw(1); });
+	const auto actual = CapturePatternDraw([&] { draw(2); });
+	REQUIRE(actual.image.height() >= 440);
+	for (int32 shape = 0; shape < 20; ++shape)
+	{
+		INFO(shape);
+		int32 whiteSamples = 0, blackSamples = 0, mismatches = 0;
+		for (int32 y = 22 + (shape / 5) * 110; y < 103 + (shape / 5) * 110; ++y)
+		{
+			for (int32 x = 22 + (shape % 5) * 100; x < 107 + (shape % 5) * 100; ++x)
+			{
+				bool interior = true;
+				const Color expected = reference.image[y][x];
+				if ((expected != Palette::White) && (expected != Palette::Black))
+				{
+					continue;
+				}
+				for (int32 dy = -1; dy <= 1; ++dy)
+				{
+					for (int32 dx = -1; dx <= 1; ++dx)
+					{
+						interior &= (mask.image[y + dy][x + dx] == Palette::White
+							&& reference.image[y + dy][x + dx] == expected);
+					}
+				}
+				if (interior)
+				{
+					(expected == Palette::White) ? ++whiteSamples : ++blackSamples;
+					mismatches += (actual.image[y][x] != expected);
+				}
+			}
+		}
+		CHECK(whiteSamples > 5);
+		CHECK(blackSamples > 5);
+		CHECK(mismatches == 0);
 	}
 }
 

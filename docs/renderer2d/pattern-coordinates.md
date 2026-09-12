@@ -1,7 +1,7 @@
 # Pattern coordinate design
 
-Status: the basic Metal coordinate path is implemented. Complete Metal validation
-before porting the behavior to D3D11. Public-header documentation describes the
+Status: the Metal coordinate path and its validation stage are complete. The
+D3D11 port is pending. Public-header documentation describes the
 adopted coordinate contract. Temporary backend differences belong in development
 notes and test instructions, not the public API documentation.
 Pending stages are tracked in [TODO](../../TODO.md).
@@ -61,9 +61,18 @@ calculation and pattern filtering can remain in the fragment shader. Removing
 RMS compensation also removes the pattern packing step's reciprocal-scale
 dependency. Tessellation still uses RMS and is a separate responsibility.
 
-Changing the vertex shader selected for pattern draws can change batching and
-pipeline transitions when mixed with other draws. An unchanged vertex format
-does not establish identical performance; validate those transitions explicitly.
+Pattern draws use a separate vertex shader without changing the vertex layout or
+adding per-vertex data. The pattern fragment shaders still perform one affine UV
+mapping and their existing filtering. No inverse transform or extra pattern
+coordinate state is computed by the command manager.
+
+Batching is checked with frame metrics: eight rectangles sharing one pattern and
+transform produce one draw call. Eight repetitions of pattern, solid, texture,
+and quad warp produce 32 draw calls, one for each required state. Pattern draws
+with different local/camera transforms still need transform-state transitions;
+removing RMS packing does not combine those draws. These checks establish draw
+counts and correct output, not a GPU-time speedup. No GPU timing comparison is
+claimed.
 
 ## Integration boundaries
 
@@ -84,16 +93,32 @@ matching varying. Replacing only the fragment shader can also expose the new
 varying values to that custom shader. The existing shape/texture shader interface
 must not be changed globally to achieve the pattern behavior.
 
-Validation should cover translation, rotation, uniform/nonuniform scale, shear,
-reflection, local/camera composition, nonzero viewport origins, offset and angle,
-and continuity across separate primitives. Also check changes between pattern,
-solid, texture, and quad-warp draws, state restoration, and vertex batch splits.
-Tests should compare known interior colors or corresponding image regions with
-appropriate filtering tolerances, rather than require byte-identical edge
-antialiasing. Store automated cases and complete visual programs under `Test`.
+## Validation
 
-[Test_Pattern.cpp](../../Test/Test_Pattern.cpp) checks parameter packing and the
-basic Metal coordinate path for all six patterns: translation, quarter-turn
-rotation, uniform/nonuniform scale, and local/camera composition. The image
-comparison selects neighborhoods with stable interior colors in a reference
-render, then samples the corresponding transformed positions.
+[Test_Pattern.cpp](../../Test/Test_Pattern.cpp) owns these automated checks:
+
+| Check | Evidence |
+| --- | --- |
+| Parameter packing | Affine mapping, translation, payload preservation, and the legacy scaling overload |
+| Drawing coordinates | All six patterns with translation, quarter-turn and arbitrary rotation, uniform/nonuniform scale, reflection, shear, and local/camera composition; nonzero pattern angle and offset |
+| Viewport and continuity | Nonzero viewport origins, clipping, restoration, and a rectangle split into a rectangle and two triangles without restarting the pattern |
+| Shape paths | All 20 Metal pattern entry points, including fills, frames, arcs, polygons, CPU-transformed polygon coordinates, and line strings |
+| State restoration | Pattern background and primary color multiplication/addition, alpha, collapsed geometry followed by a valid draw, and multiple frames |
+| Shader and vertex batch transitions | Interleaved patterns, solid shapes, a multicolor texture, and quad warp before/at/after vertex-range boundaries |
+| Custom shaders | A custom VS forwarding drawing coordinates, a custom PS consuming them, both together, and restoration of the built-in shaders |
+
+Corresponding-position tests sample neighborhoods with stable interior colors
+and allow a small color tolerance for transformed filtering. Shape-path tests
+use ordinary solid geometry as a coverage mask and compare against a rectangular
+pattern reference in the same drawing coordinates. Thus both missing geometry
+and wrong pattern coordinates are observable. Continuity and batch tests compare
+complete images when rasterization is expected to remain identical. Clipping
+tests require exact background outside the viewport and allow one 8-bit unit of
+color rounding inside, where a different projection size can affect filtering.
+
+[Pattern transforms](../../Test/Manual/PatternTransforms.md) provides a complete
+interactive program for comparing a single rectangle, the same shape divided
+into primitives, and geometry moving within a shared coordinate system. It also
+switches between local and camera transforms. The
+[gallery](../../Test/Manual/PatternGallery.md) covers editable pattern parameters
+and the separate effect of scene presentation scaling.
