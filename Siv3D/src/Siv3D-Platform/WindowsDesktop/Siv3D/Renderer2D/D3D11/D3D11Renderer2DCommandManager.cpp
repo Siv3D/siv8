@@ -39,6 +39,7 @@ namespace s3d
 			m_stateTracker.clear();
 			m_pendingBufferUpdates.clear();
 			m_submittedIndexCount = 0;
+			m_current.draw = {};
 		}
 
 		// clear buffers
@@ -179,6 +180,7 @@ namespace s3d
 		{
 			m_commands.emplace_back(D3D11Renderer2DCommandType::Draw, static_cast<uint32>(m_buffer.draws.size()));
 			m_buffer.draws.push_back(m_current.draw);
+			m_current.draw.startIndex += m_current.draw.indexCount;
 			m_current.draw.indexCount = 0;
 		}
 
@@ -372,6 +374,7 @@ namespace s3d
 			flush();
 
 			m_commands.emplace_back(D3D11Renderer2DCommandType::UpdateBuffers, update.batchIndex);
+			m_current.draw.startIndex = 0;
 			m_submittedIndexCount = 0;
 		}
 

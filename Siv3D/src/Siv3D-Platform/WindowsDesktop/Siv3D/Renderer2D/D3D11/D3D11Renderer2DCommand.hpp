@@ -136,6 +136,9 @@ namespace s3d
 
 	struct D3D11DrawCommand
 	{
+		// 現在のバッチ内での開始位置（インデックス単位）
+		uint32 startIndex = 0;
+
 		uint32 indexCount = 0;
 	};
 }

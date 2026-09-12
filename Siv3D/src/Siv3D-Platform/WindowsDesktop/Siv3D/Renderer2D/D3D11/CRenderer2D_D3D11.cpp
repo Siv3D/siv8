@@ -1707,11 +1707,10 @@ namespace s3d
 
 					const D3D11DrawCommand& draw = m_commandManager.getDraw(command.index);
 					const uint32 indexCount = draw.indexCount;
-					const uint32 startIndexLocation = commandState.batchInfo.startIndexLocation;
+					const uint32 startIndexLocation = (commandState.batchInfo.startIndexLocation + draw.startIndex);
 					const uint32 baseVertexLocation = commandState.batchInfo.baseVertexLocation;
 
 					m_context->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
-					commandState.batchInfo.startIndexLocation += indexCount;
 					
 					++stat.drawCalls;
 					stat.triangleCount += (indexCount / 3);
