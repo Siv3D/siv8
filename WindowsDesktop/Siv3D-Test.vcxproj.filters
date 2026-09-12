@@ -166,6 +166,9 @@
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Pattern.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp">
       <Filter>Test</Filter>
     </ClCompile>

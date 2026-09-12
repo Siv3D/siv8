@@ -41,6 +41,7 @@ namespace s3d
 			m_vertexShaders << MSL{ U"VS_FullscreenTriangle" };
 			m_vertexShaders << MSL{ U"VS_Shape" };
 			m_vertexShaders << MSL{ U"VS_QuadWarp" };
+			m_vertexShaders << MSL{ U"VS_Pattern" };
 			
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{

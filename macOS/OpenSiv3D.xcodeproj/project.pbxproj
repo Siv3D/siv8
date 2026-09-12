@@ -18,6 +18,7 @@
 		A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F41030A5000000000002 /* Test_Quaternion.cpp */; };
 		5F6B30571A8B487F8EDD0E68 /* Test_Mat3x2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */; };
 		63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */; };
+		7FDD8DF2077848B08664D6C6 /* Test_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */; };
 		EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */; };
 		1FA97E5DF1DA4C8AA4714B11 /* Test_Renderer2DBatchBoundary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */; };
 		C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */; };
@@ -3321,6 +3322,7 @@
 		A5D4F41030A5000000000002 /* Test_Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Quaternion.cpp; sourceTree = "<group>"; };
 		4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mat3x2.cpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
+		1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Pattern.cpp; sourceTree = "<group>"; };
 		479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DIndexCount.cpp; sourceTree = "<group>"; };
 		42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DBatchBoundary.cpp; sourceTree = "<group>"; };
 		C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleDashedFrame.cpp; sourceTree = "<group>"; };
@@ -7011,6 +7013,7 @@
 				A5D4F4B030A5000000000002 /* Test_Spherical.cpp */,
 				4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */,
 				D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */,
+				1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */,
 				479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */,
 				42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */,
 				C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */,
@@ -16545,6 +16548,7 @@
 				A5D4F4B030A5000000000001 /* Test_Spherical.cpp in Sources */,
 				5F6B30571A8B487F8EDD0E68 /* Test_Mat3x2.cpp in Sources */,
 				63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */,
+				7FDD8DF2077848B08664D6C6 /* Test_Pattern.cpp in Sources */,
 				EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */,
 				1FA97E5DF1DA4C8AA4714B11 /* Test_Renderer2DBatchBoundary.cpp in Sources */,
 				C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */,

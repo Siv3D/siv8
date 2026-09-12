@@ -23,6 +23,7 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 
 # Public API documentation
 
+- Do not expose temporary migration states or incomplete backend ports in user-facing API documentation. Describe the adopted contract there; track implementation gaps and temporary differences in development documentation, test instructions, and TODO.md.
 - Document facts that affect how callers use the API: preconditions, return values, failure behavior, side effects, ownership, and non-obvious boundary cases. Omit assurances of expected behavior, such as Unicode support or an empty file having size zero.
 - Describe observable behavior, not implementation steps, bug-fix history, or verification status. A fix that restores an already documented contract does not by itself require new prose. Add platform notes only for meaningful differences in the public contract; combine identical behavior across platforms.
 - Keep each fact in the appropriate Doxygen field. Do not repeat `@param` or `@return` information in `@remark`. Retain examples that help readers understand an operation, including ordinary cases. Prefer input/output pairs, and improve incomplete examples rather than deleting them merely because the behavior can be inferred from prose.

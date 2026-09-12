@@ -92,6 +92,19 @@ PSInput VS_QuadWarp(	uint vertexID [[vertex_id]],
 	return result;
 }
 
+// Keep the pattern interface independent of quad-warp interpolation.
+vertex
+PSInput VS_Pattern(	uint vertexID [[vertex_id]],
+					constant VSInput* vertices,
+					constant VSConstants2D* c0)
+{
+	PSInput result;
+	result.position	= s3d_positionTransform(vertices[vertexID].position, c0->g_transform);
+	result.colorPMA	= s3d_premultiplyAlpha(vertices[vertexID].color * c0->g_colorMul);
+	result.uv		= vertices[vertexID].position;
+	return result;
+}
+
 fragment
 float4 PS_Shape(	PSInput input [[stage_in]],
 					constant PSConstants2D* c0 [[buffer(0)]])
@@ -260,7 +273,7 @@ float4 PS_PatternPolkaDot(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
 	const float2 repeat = (2.0f * fract(uv) - 1.0f);
 	const float value = length(repeat);
 	const float fw = (length(float2(dfdx(value), dfdy(value))) * 0.70710678118);
@@ -279,7 +292,7 @@ float4 PS_PatternStripe(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float u = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform).x;
+	const float u = Pattern_UVTransform(input.uv, c1->g_patternUVTransform).x;
 	const float fw = fwidth(u);
 	const float repeat = (2.0f * fract(u) - 1.0f);
 	const float value = abs(repeat);
@@ -298,7 +311,7 @@ float4 PS_PatternGrid(	PSInput input [[stage_in]],
 						constant PSConstants2D* c0 [[buffer(0)]],
 						constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
 	const float2 fw = fwidth(uv);
 	const float2 repeat = (2.0f * fract(uv) - 1.0f);
 	const float2 value = abs(repeat);
@@ -318,7 +331,7 @@ float4 PS_PatternChecker(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
 	const float t = Pattern_CheckersFiltered(uv, c1->g_patternUVTransform[1].zw);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
@@ -332,7 +345,7 @@ float4 PS_PatternTriangle(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
 	const float2 fw = (fwidth(uv) * 0.25f);
 
 	const float2 s1 = Pattern_Skew(uv + float2(-fw.x, -fw.y));
@@ -356,7 +369,7 @@ float4 PS_PatternHexGrid(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy, c1->g_patternUVTransform);
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
 	const float2 fw = fwidth(uv);
 	const float w = (max(fw.x, fw.y) * 0.5f);
 

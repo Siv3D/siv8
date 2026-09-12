@@ -17,6 +17,8 @@ The program uses public APIs and requires no external assets or output files.
    not apply to the current type. Enable `Animate offset` to scroll the pattern.
 4. Set `Object zoom` to 0.5, 1, and 2. Compare the two bottom previews. `Zoom = 1`
    resets only this zoom; `Reset` restores the editable pattern and stops animation.
+   Disable `Animate offset` and enable `Pan shapes` to observe translation: on
+   Metal the pattern stays attached as the previews move horizontally.
 5. Keep object zoom fixed and use the window-size buttons or resize the window by
    hand. The scene stays at 1200 x 800 (`ResizeMode::Keep`). The footer reports the
    actual framebuffer/scene presentation scale, including HiDPI and letterboxing.
@@ -37,16 +39,18 @@ The program uses public APIs and requires no external assets or output files.
   previews, their rulers, and the UI. Even the right preview then changes size in
   framebuffer pixels. Its compensation applies to object zoom only. Texture
   filtering can soften the presentation at non-integral scales.
-- These shaders derive UVs from render-target positions and apply the combined
-  local/camera RMS scale. They do not attach a local UV origin to each shape.
-  The two previews can therefore differ in pattern phase despite equal settings;
-  compare spacing, not exact feature alignment. Pattern angle is independent of
-  shape orientation. Offset is in pattern coordinates, and its phase also passes
-  through the RMS compensation; the animation is for inspection, not a promise
-  of constant world-space velocity.
-- Metal and D3D11 should show equivalent variations and scaling behavior. This
-  sample intentionally uses uniform transforms; it makes no exact compensation
-  claim for nonuniform scaling.
+- Metal evaluates patterns in drawing coordinates before the local/camera
+  transforms. The two previews have the same phase at zoom 1, and moving either
+  preview with `Pan shapes` carries its pattern with it. Offset scrolls the
+  pattern in its own coordinates. At other zoom values the two previews use
+  different pattern scales; their features need not align.
+- There is no per-shape origin. The rectangle and circle in a preview share one
+  pattern coordinate system. Changing their geometry coordinates directly would
+  move their outlines within that pattern; the pan uses `Transformer2D` instead.
+- D3D11 still derives UVs from render-target positions and applies the combined
+  local/camera RMS scale. Its pattern does not pan with the shapes, and its two
+  previews can differ in phase even at zoom 1. This backend difference remains
+  until the D3D11 port. Uniform-zoom spacing comparisons apply to both backends.
 
 ## Complete Main.cpp
 
@@ -143,7 +147,7 @@ namespace
 	}
 
 	void DrawPreview(const Font& font, const size_t type, const Settings& settings,
-		const double zoom, const double x, const bool compensate)
+		const double zoom, const double x, const bool compensate, const double pan)
 	{
 		font(compensate ? U"B: scale / zoom (fixed spacing in scene)"
 			: U"A: scale unchanged (spacing follows zoom)").draw(x, 500);
@@ -151,7 +155,7 @@ namespace
 		DrawSubstrate(panel);
 		{
 			const Transformer2D transform{
-				Mat3x2::Scale(zoom).translated(x + 280, 621) };
+				Mat3x2::Scale(zoom).translated(x + 280 + pan, 621) };
 			const auto pattern = MakePattern(type, settings, compensate ? zoom : 1.0);
 			RectF{ -112, -36, 112, 72 }.rounded(12).draw(pattern);
 			Circle{ 70, 0, 36 }.draw(pattern);
@@ -180,6 +184,7 @@ void Main()
 	double zoom = 1.0;
 	double animation = 0.0;
 	bool animate = false;
+	bool panShapes = false;
 	int32 activeSlider = -1;
 
 	while (System::Update())
@@ -255,11 +260,13 @@ void Main()
 		Slider(font, 7, activeSlider, U"background alpha", settings.backgroundAlpha, 0, 1, 334);
 		Slider(font, 8, activeSlider, U"Object zoom", zoom, 0.5, 2, 366);
 		SimpleGUI::CheckBox(animate, U"Animate offset", Vec2{ 782, 405 });
+		SimpleGUI::CheckBox(panShapes, U"Pan shapes", Vec2{ 1000, 405 });
 		if (SimpleGUI::Button(U"Reset", Vec2{ 782, 450 }, 112.0))
 		{
 			settings = Settings{};
 			animation = 0.0;
 			animate = false;
+			panShapes = false;
 		}
 		if (SimpleGUI::Button(U"Zoom = 1", Vec2{ 914, 450 }, 130.0))
 		{
@@ -271,8 +278,9 @@ void Main()
 		}
 		Settings preview = settings;
 		preview.offset += Vec2{ animation, animation * 0.4 };
-		DrawPreview(font, type, preview, zoom, 20, false);
-		DrawPreview(font, type, preview, zoom, 620, true);
+		const double pan = panShapes ? (25.0 * Periodic::Sine1_1(6s)) : 0.0;
+		DrawPreview(font, type, preview, zoom, 20, false, pan);
+		DrawPreview(font, type, preview, zoom, 620, true, pan);
 
 		const Size framebuffer = Window::GetState().frameBufferSize;
 		const double presentation = Min(framebuffer.x / 1200.0, framebuffer.y / 800.0);

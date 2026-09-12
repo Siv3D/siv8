@@ -113,6 +113,7 @@
     <ClCompile Include="..\Test\Test_Quaternion.cpp" />
     <ClCompile Include="..\Test\Test_Mat3x2.cpp" />
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
+    <ClCompile Include="..\Test\Test_Pattern.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />

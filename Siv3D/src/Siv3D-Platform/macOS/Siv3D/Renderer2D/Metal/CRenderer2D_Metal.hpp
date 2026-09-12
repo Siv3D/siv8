@@ -569,6 +569,8 @@ namespace s3d
 			VertexShader::IDType vsShape;
 			
 			VertexShader::IDType vsQuadWarp;
+
+			VertexShader::IDType vsPattern;
 			
 			PixelShader::IDType psShape;
 

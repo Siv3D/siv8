@@ -17,6 +17,8 @@ namespace s3d
 {
 	namespace Pattern
 	{
+		/// @brief 縞の模様を指定します。
+		/// @see PatternParameters 模様の基準座標と描画変換の扱い
 		struct Stripe
 		{
 			ColorF primary{ 1.0, 1.0 };

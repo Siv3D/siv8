@@ -125,6 +125,7 @@ namespace s3d
 
 		m_engineShader.vsShape				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
 		m_engineShader.vsQuadWarp			= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::QuadWarp).id();
+		m_engineShader.vsPattern				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Pattern2D).id();
 		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
 		m_engineShader.psQuadWarp			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::QuadWarp).id();
@@ -298,7 +299,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -306,7 +307,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -360,7 +361,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -368,7 +369,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -404,7 +405,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -412,7 +413,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -472,7 +473,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -480,7 +481,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -516,7 +517,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -524,7 +525,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -584,7 +585,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -592,7 +593,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -628,7 +629,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -636,7 +637,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -672,7 +673,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -680,7 +681,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -716,7 +717,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -724,7 +725,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -759,7 +760,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -767,7 +768,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 			
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -827,7 +828,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -835,7 +836,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 			
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -871,7 +872,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -879,7 +880,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -933,7 +934,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -941,7 +942,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -995,7 +996,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1003,7 +1004,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1059,7 +1060,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 			
 			if (not m_currentCustomShader.ps)
@@ -1067,7 +1068,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 			
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 			
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1128,7 +1129,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1136,7 +1137,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1166,7 +1167,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1174,7 +1175,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1210,7 +1211,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1218,7 +1219,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1254,7 +1255,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1262,7 +1263,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}
@@ -1316,7 +1317,7 @@ namespace s3d
 		{
 			if (not m_currentCustomShader.vs)
 			{
-				m_commandManager.pushEngineVS(m_engineShader.vsShape);
+				m_commandManager.pushEngineVS(m_engineShader.vsPattern);
 			}
 
 			if (not m_currentCustomShader.ps)
@@ -1324,7 +1325,7 @@ namespace s3d
 				m_commandManager.pushEnginePS(m_engineShader.getPatternShader(pattern.type));
 			}
 
-			m_commandManager.pushPatternParameter(pattern.toFloat4Array(1.0f / getRMSScaling()));
+			m_commandManager.pushPatternParameter(pattern.toFloat4Array());
 
 			m_commandManager.pushDraw(indexCount);
 		}

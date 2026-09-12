@@ -23,11 +23,14 @@ by a nonuniform scale. It uses public APIs and creates no output files.
 - The next three rows show round rectangles, round-ended lines, and polygons made
   from rectangles with unequal corner radii. Their shapes rotate and distort, but
   there should be no periodic jumps in subdivision density caused by scale changes.
-- The final row shows patterned circles. Pattern spacing should not pulsate as the
-  angle changes. Rotation and nonuniform deformation of the pattern can still occur.
+- The final row shows patterned circles. On Metal, the pattern follows the full
+  drawing transform: dots rotate and stretch with the geometry. On D3D11, the
+  pattern stays aligned to the render target and its size follows the constant
+  RMS scale. It should not pulsate as the angle changes. The backends use different
+  pattern coordinate models until the D3D11 port.
 - Dividing line thickness by RMS compensates uniform scaling exactly. With the
   nonuniform scale, thickness depends on orientation and is only approximated by
-  this scalar. D3D11 and Metal should show equivalent behavior.
+  this scalar. D3D11 and Metal should show equivalent line-width behavior.
 
 ## Complete code
 

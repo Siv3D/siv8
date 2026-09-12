@@ -7,6 +7,6 @@ Renderer design notes and related checks:
 - [Pattern gallery](../../Test/Manual/PatternGallery.md): interactive parameter
   variations and a comparison of pattern size under zoom.
 - [RMS scaling check](../../Test/Manual/Renderer2DRMSScaling.md): tessellation and
-  the existing pattern behavior under nonuniform transforms.
+  the backend-specific pattern behavior under nonuniform transforms.
 
 Pending implementation stages are tracked in [TODO](../../TODO.md).

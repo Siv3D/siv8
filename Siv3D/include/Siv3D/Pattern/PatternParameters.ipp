@@ -13,14 +13,23 @@
 
 namespace s3d
 {
-	constexpr std::array<Float4, 3> PatternParameters::toFloat4Array(const float rmsScalingInv) const noexcept
+	constexpr std::array<Float4, 3> PatternParameters::toFloat4Array() const noexcept
 	{
-		Mat3x2 mat = uvTransform.scaled(rmsScalingInv);
+		const Mat3x2& mat = uvTransform;
 
 		return{ {
 			{ mat._11, mat._12, mat._31, mat._32 },
 			{ mat._21, mat._22, param0, param1 },
 			backgroundColor
 		} };
+	}
+
+	constexpr std::array<Float4, 3> PatternParameters::toFloat4Array(const float rmsScalingInv) const noexcept
+	{
+		auto result = toFloat4Array();
+		result[0] *= rmsScalingInv;
+		result[1].x *= rmsScalingInv;
+		result[1].y *= rmsScalingInv;
+		return result;
 	}
 }
