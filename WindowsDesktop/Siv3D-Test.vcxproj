@@ -115,6 +115,7 @@
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp" />
+    <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />
     <ClCompile Include="..\Test\Test_LineStringIndexCount.cpp" />
     <ClCompile Include="..\Test\Test_Mat4x4.cpp" />
     <ClCompile Include="..\Test\Test_SimdFloat4.cpp" />

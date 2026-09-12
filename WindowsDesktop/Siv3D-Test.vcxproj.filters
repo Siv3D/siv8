@@ -172,6 +172,9 @@
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_LineStringIndexCount.cpp">
       <Filter>Test</Filter>
     </ClCompile>

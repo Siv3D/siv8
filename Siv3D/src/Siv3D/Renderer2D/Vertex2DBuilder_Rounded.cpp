@@ -1472,7 +1472,12 @@ namespace s3d
 			const float rOuter = (rInner + thickness);
 			const float angleStep = (Math::TwoPiF / dashCount);
 			const float dashAngle = (angleStep * clampedDashRatio);
-			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), dashAngle);
+			const Vertex2D::IndexType baseQuality = (CalculateCircleQuality(rOuter * scale) * 4);
+			const float angleDelta = (Math::TwoPiF / baseQuality);
+			// 通常円の 1 分割以下の短い破線は、内外周の両端だけで描く。
+			// 半円の cap に必要な最小点数をここへ適用せず、長い破線の分割数は従来どおりに保つ。
+			const Vertex2D::IndexType Quality = ((dashAngle <= angleDelta) ? 2
+				: static_cast<Vertex2D::IndexType>(Max(std::ceil(dashAngle / angleDelta), 5.0f)));
 
 			const size_t vertexCount = (static_cast<size_t>(dashCount) * Quality * 2);
 			const size_t indexCount = (static_cast<size_t>(dashCount) * (Quality - 1) * 6);
