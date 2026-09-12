@@ -43,6 +43,8 @@ namespace s3d
 		void pushDraw(uint32 indexCount);
 		const MetalDrawCommand& getDraw(uint32 index) const noexcept;
 
+		void pushBaseVertex(uint32 baseVertex);
+
 		void pushColorMul(const Float4& color);
 		const Float4& getColorMul(uint32 index) const;
 		const Float4& getCurrentColorMul() const;

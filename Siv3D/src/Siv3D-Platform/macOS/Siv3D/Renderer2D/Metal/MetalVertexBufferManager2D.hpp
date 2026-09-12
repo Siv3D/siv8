@@ -45,6 +45,8 @@ namespace s3d
 		}
 
 		Vertex2DBufferPointer requestBuffer(uint16 vertexCount, uint32 indexCount);
+
+		uint32 getBaseVertex() const noexcept;
 		
 		bool hasBatch() const noexcept;
 		
@@ -60,7 +62,8 @@ namespace s3d
 		
 		static constexpr uint32 MaxIndexBufferSize		= (1 << 22);	// 4,194,304
 		
-		static constexpr uint32 MaxVertexCountPerDraw	= 65535;
+		// GPU バッファの容量とは独立した、16 ビットで参照できる頂点区間の長さ
+		static constexpr uint32 MaxVertexCountPerRange	= (1 << 16);
 		
 		struct VertexBuffer
 		{
@@ -127,6 +130,8 @@ namespace s3d
 			VertexBuffer vertexBuffer;
 			
 			IndexBuffer indexBuffer;
+
+			uint32 baseVertex = 0;
 			
 			Vertex2DBufferPointer requestBuffer(MTL::Device* device, uint16 vertexCount, uint32 indexCount);
 		};

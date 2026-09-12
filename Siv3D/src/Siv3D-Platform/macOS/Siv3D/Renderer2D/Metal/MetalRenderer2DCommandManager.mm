@@ -348,6 +348,29 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	pushBaseVertex
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushBaseVertex(const uint32 baseVertex)
+	{
+		if (m_current.draw.baseVertex == baseVertex)
+		{
+			return;
+		}
+
+		// 描画状態が同じでも、異なる頂点区間のインデックスを一つの Draw にまとめない。
+		if (m_current.draw.indexCount)
+		{
+			flush();
+		}
+
+		// 頂点だけの図形は Draw を登録しないため、基準位置は確保時に更新する。
+		m_current.draw.baseVertex = baseVertex;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	pushColorMul, getColorMul, getCurrentColorMul
 	//
 	////////////////////////////////////////////////////////////////

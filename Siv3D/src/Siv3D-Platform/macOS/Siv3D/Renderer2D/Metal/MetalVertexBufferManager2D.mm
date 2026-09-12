@@ -48,11 +48,17 @@ namespace s3d
 		
 		m_buffers[m_bufferIndex].vertexBuffer.writePos	= 0;
 		m_buffers[m_bufferIndex].indexBuffer.writePos	= 0;
+		m_buffers[m_bufferIndex].baseVertex			= 0;
 	}
 
 	Vertex2DBufferPointer MetalVertexBufferManager2D::requestBuffer(const uint16 vertexCount, const uint32 indexCount)
 	{
 		return m_buffers[m_bufferIndex].requestBuffer(m_device, vertexCount, indexCount);
+	}
+
+	uint32 MetalVertexBufferManager2D::getBaseVertex() const noexcept
+	{
+		return m_buffers[m_bufferIndex].baseVertex;
 	}
 
 	bool MetalVertexBufferManager2D::hasBatch() const noexcept
@@ -102,11 +108,18 @@ namespace s3d
 			}
 		}
 		
+		// 確保が成功することを確認してから、図形全体が収まる頂点区間を選ぶ。
+		// 区間を変えても GPU バッファ内の書き込み位置は巻き戻さない。
+		if ((MaxVertexCountPerRange - (vertexBuffer.writePos - baseVertex)) < vertexCount)
+		{
+			baseVertex = vertexBuffer.writePos;
+		}
+
 		const Vertex2DBufferPointer result
 		{
 			.pVertex		= (vertexBuffer.pointer	+ vertexBuffer.writePos),
 			.pIndex			= (indexBuffer.pointer	+ indexBuffer.writePos),
-			.indexOffset	= static_cast<Vertex2D::IndexType>(vertexBuffer.writePos),
+			.indexOffset	= static_cast<Vertex2D::IndexType>(vertexBuffer.writePos - baseVertex),
 		};
 		
 		vertexBuffer.writePos	+= vertexCount;

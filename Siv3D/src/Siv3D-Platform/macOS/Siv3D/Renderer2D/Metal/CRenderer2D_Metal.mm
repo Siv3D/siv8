@@ -2248,6 +2248,11 @@ namespace s3d
 
 	Vertex2DBufferPointer CRenderer2D_Metal::createBuffer(const uint16 vertexCount, const uint32 indexCount)
 	{
-		return m_vertexBufferManager.requestBuffer(vertexCount, indexCount);
+		const auto buffer = m_vertexBufferManager.requestBuffer(vertexCount, indexCount);
+		if (buffer.pVertex)
+		{
+			m_commandManager.pushBaseVertex(m_vertexBufferManager.getBaseVertex());
+		}
+		return buffer;
 	}
 }

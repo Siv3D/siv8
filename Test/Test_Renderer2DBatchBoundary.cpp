@@ -11,8 +11,8 @@
 
 # include "Siv3DTest.hpp"
 
-// These counts target D3D11's fixed vertex and index buffer capacities.
-# if SIV3D_PLATFORM(WINDOWS)
+// Vertex boundaries apply to both D3D11 buffers and Metal vertex ranges.
+# if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
 
 namespace
 {
@@ -23,7 +23,7 @@ namespace
 	};
 
 	template <class Draw>
-	CapturedDraw CaptureBatchDraw(Draw&& draw)
+	CapturedDraw CaptureBatchDraw(Draw&& draw, const bool beginFrame = true)
 	{
 		const ColorF previousBackground = Scene::GetBackground();
 		const ScopeExit restoreBackground{ [&] { Scene::SetBackground(previousBackground); } };
@@ -33,7 +33,10 @@ namespace
 		const ScopedColorMul2D colorMul{ Palette::White };
 		const ScopedColorAdd2D colorAdd{ 0.0 };
 
-		REQUIRE(System::Update());
+		if (beginFrame)
+		{
+			REQUIRE(System::Update());
+		}
 		draw();
 		ScreenCapture::RequestCurrentFrame();
 		REQUIRE(System::Update());
@@ -114,6 +117,55 @@ TEST_CASE("Renderer2D.vertex_batch_boundary")
 	}
 }
 
+TEST_CASE("Renderer2D.vertex_index_ranges")
+{
+	for (const bool changeState : { false, true })
+	{
+		INFO(changeState);
+		const auto draw = [&](const Shape2D* filler)
+		{
+			const std::array colors{ Palette::Red, Palette::Green, Palette::Blue, Palette::White };
+			for (int32 i = 0; i < 4; ++i)
+			{
+				if (filler && i)
+				{
+					filler->draw();
+				}
+				const ScopedColorMul2D colorMul{ changeState ? colors[i] : Palette::White };
+				RectF{ (20 + i * 30), (20 + i * 20), 80, 80 }.draw(changeState ? Palette::White : colors[i]);
+			}
+		};
+		const auto reference = CaptureBatchDraw([&] { draw(nullptr); });
+		REQUIRE(reference.image.width() >= 200);
+		REQUIRE(reference.image.height() >= 170);
+		CHECK(reference.image[30][30] == Palette::Red);
+		CHECK(reference.image[50][60] == Palette::Green);
+		CHECK(reference.image[70][90] == Palette::Blue);
+		CHECK(reference.image[90][120] == Palette::White);
+		CHECK(reference.triangleCount == 8);
+
+		// 四角形の直前で 65,536 頂点に達する場合と、図形内の加算で超える場合を含む。
+		// 縮退三角形を持たせ、同じ描画状態でも区間ごとに Draw が分かれることを確認する。
+		for (const size_t vertexCount : { 65528u, 65529u, 65530u, 65531u, 65532u, 65533u, 65534u, 65535u })
+		{
+			INFO(vertexCount);
+			const Shape2D filler{ Array<Float2>(vertexCount, Float2{ -10, -10 }), Array<TriangleIndex>{ TriangleIndex{ 0, 0, 0 } } };
+			const auto actual = CaptureBatchDraw([&] { draw(&filler); });
+			CHECK((actual.image == reference.image));
+			CHECK(actual.triangleCount == (reference.triangleCount + 3));
+
+			// 直後のフレームから確認し、triple-buffer の全スロットの再利用も通す。
+			for (int32 frame = 0; frame < 4; ++frame)
+			{
+				INFO(frame);
+				const auto reset = CaptureBatchDraw([&] { draw(nullptr); }, false);
+				CHECK((reset.image == reference.image));
+				CHECK(reset.triangleCount == reference.triangleCount);
+			}
+		}
+	}
+}
+
 TEST_CASE("Renderer2D.batches_without_triangles")
 {
 	// Vertex-only shapes reserve space without submitting a Draw. Repeating them
@@ -145,8 +197,17 @@ TEST_CASE("Renderer2D.batches_without_triangles")
 		CHECK((actual.image == reference.image));
 		CHECK(actual.triangleCount == reference.triangleCount);
 		CHECK(actual.triangleCount == 4);
+		for (int32 frame = 0; frame < 4; ++frame)
+		{
+			const auto reset = CaptureBatchDraw([&] { draw(false); }, false);
+			CHECK((reset.image == reference.image));
+			CHECK(reset.triangleCount == reference.triangleCount);
+		}
 	}
 }
+
+// D3D11 has a fixed index buffer capacity per batch.
+# if SIV3D_PLATFORM(WINDOWS)
 
 TEST_CASE("Renderer2D.index_batch_boundary")
 {
@@ -178,6 +239,8 @@ TEST_CASE("Renderer2D.index_batch_boundary")
 	}
 }
 
+# endif
+
 TEST_CASE("Renderer2D.line_cap_combinations")
 {
 	for (const LineCap startCap : { LineCap::Flat, LineCap::Square, LineCap::Round })
@@ -206,7 +269,7 @@ TEST_CASE("Renderer2D.line_cap_combinations")
 				CHECK(reference.image[120][305] == Palette::Blue);
 			}
 
-			// Seven vertices remain: a line body fits, but a body with a round cap does not.
+			// Seven (D3D11) or eight (Metal) vertices remain: a body fits, but round caps do not.
 			constexpr int32 rectangleCount = 16382;
 			const auto actual = CaptureBatchDraw([&]
 			{
@@ -221,6 +284,8 @@ TEST_CASE("Renderer2D.line_cap_combinations")
 		}
 	}
 }
+
+# if SIV3D_PLATFORM(WINDOWS)
 
 TEST_CASE("Renderer2D.round_cap_allocation_failure")
 {
@@ -329,6 +394,8 @@ TEST_CASE("Renderer2D.linestring_allocation_failure")
 	}
 }
 
+# endif
+
 TEST_CASE("Renderer2D.round_arc_directions")
 {
 	for (const double angle : { 0.0, 180_deg, -180_deg, 360_deg, -360_deg })
@@ -364,7 +431,7 @@ TEST_CASE("Renderer2D.round_arc_directions")
 				CHECK(reference.image[160][200].r < reference.image[160][200].b);
 			}
 
-			// Seven vertices remain: the first cap cannot fit in the current batch.
+			// Seven (D3D11) or eight (Metal) vertices remain: the first cap cannot fit.
 			constexpr int32 rectangleCount = 16382;
 			const auto actual = CaptureBatchDraw([&]
 			{
