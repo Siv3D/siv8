@@ -3232,7 +3232,7 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color, const float scale)
+		uint32 BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const Float4& color, const float scale)
 		{
 			const size_t num_points = points.size();
 
@@ -3281,7 +3281,11 @@ namespace s3d
 			{
 				float startAngle = 0.0f, endAngle = 0.0f;
 
-				Vertex2D::IndexType indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+				uint32 indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+				if (indexCount == 0)
+				{
+					return 0;
+				}
 
 				indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, color, color, scale);
 
@@ -3289,7 +3293,7 @@ namespace s3d
 			}
 		}
 
-		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd, const float scale)
+		uint32 BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const Float4& colorStart, const Float4& colorEnd, const float scale)
 		{
 			const size_t num_points = points.size();
 
@@ -3347,14 +3351,18 @@ namespace s3d
 
 			float startAngle = 0.0f, endAngle = 0.0f;
 
-			Vertex2D::IndexType indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+			uint32 indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+			if (indexCount == 0)
+			{
+				return 0;
+			}
 
 			indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, colorStart, stripStartColor, stripEndColor, colorEnd, scale);
 
 			return indexCount;
 		}
 
-		Vertex2D::IndexType BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors, const float scale)
+		uint32 BuildLineString(const BufferCreatorFunc& bufferCreator, const LineCap startCap, const LineCap endCap, const std::span<const Vec2> points, const Optional<Float2>& offset, const float thickness, const bool inner, const CloseRing closeRing, const std::span<const ColorF> colors, const float scale)
 		{
 			const size_t num_points = points.size();
 
@@ -3407,7 +3415,11 @@ namespace s3d
 			{
 				float startAngle = 0.0f, endAngle = 0.0f;
 
-				Vertex2D::IndexType indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+				uint32 indexCount = EmitLineStringStrip(bufferCreator, prepared.points, halfThickness, false, colorAt, &startAngle, &endAngle);
+				if (indexCount == 0)
+				{
+					return 0;
+				}
 
 				indexCount += BuildLineStringCaps(bufferCreator, startCap, endCap, points.front(), startAngle, points.back(), endAngle, offset, thickness, colorStart, colorEnd, scale);
 
