@@ -118,7 +118,7 @@ TEST_CASE("Renderer2D.index_batch_boundary")
 {
 	const Texture red{ Image{ 2, 2, Palette::Red } };
 	REQUIRE(red);
-	for (const Shape shape : { Shape::Line, Shape::Arrow })
+	for (const Shape shape : { Shape::Line, Shape::Arrow, Shape::Arc })
 	{
 		INFO(static_cast<int32>(shape));
 		const auto reference = CaptureBatchDraw([&] { DrawScene(red, shape); });
@@ -188,7 +188,7 @@ TEST_CASE("Renderer2D.line_cap_combinations")
 	}
 }
 
-TEST_CASE("Renderer2D.line_and_arrow_allocation_failure")
+TEST_CASE("Renderer2D.round_cap_allocation_failure")
 {
 	const auto reference = CaptureBatchDraw([]
 	{
@@ -203,10 +203,12 @@ TEST_CASE("Renderer2D.line_and_arrow_allocation_failure")
 	filler.indices.fill(TriangleIndex{ 0, 1, 2 });
 	REQUIRE(filler.validate());
 	Mesh2D lastFiller = filler;
-	for (const Shape shape : { Shape::Line, Shape::Arrow })
+	for (const auto& [shape, angle] : { std::pair{ Shape::Line, 0.0 }, std::pair{ Shape::Arrow, 0.0 },
+		std::pair{ Shape::Arc, 180_deg }, std::pair{ Shape::Arc, 0.0 } })
 	{
 		INFO(static_cast<int32>(shape));
-		const size_t lastTriangleCount = ((shape == Shape::Line) ? 87368 : 87379);
+		INFO(angle);
+		const size_t lastTriangleCount = ((shape == Shape::Arrow) ? 87379 : 87368);
 		lastFiller.indices.resize(lastTriangleCount, TriangleIndex{ 0, 1, 2 });
 		const auto actual = CaptureBatchDraw([&]
 		{
@@ -216,15 +218,19 @@ TEST_CASE("Renderer2D.line_and_arrow_allocation_failure")
 				filler.draw();
 			}
 			lastFiller.draw();
-			// Leave 49 indices for the line (60 needed), or 16 for the arrow (36 needed).
-			// The body alone would fit, but the whole shape must fail without reserving it.
+			// Leave 49 indices for the line/arc, or 16 for the arrow. A body or cap
+			// alone would fit, but the whole shape must fail without reserving any part.
 			if (shape == Shape::Line)
 			{
 				Line{ 100, 100, 300, 100 }.draw(LineCap::Round, LineCap::Round, 20);
 			}
-			else
+			else if (shape == Shape::Arrow)
 			{
 				Line{ 100, 100, 300, 100 }.drawArrow(LineCap::Round, 20, SizeF{ 40, 40 }, Palette::Red, Palette::Blue);
+			}
+			else
+			{
+				Circle{ 200, 100, 60 }.drawArc(LineCap::Round, 0.0, angle, 10, 10, Arg::start(Palette::Red), Arg::end(Palette::Blue));
 			}
 			// A later, smaller draw must still succeed at the correct index position.
 			RectF{ 60, 20, 20, 20 }.draw(Palette::Blue);
@@ -285,6 +291,57 @@ TEST_CASE("Renderer2D.linestring_allocation_failure")
 				CHECK((actual.image == reference.image));
 				CHECK(actual.triangleCount == (4 + 15 * 87381 + static_cast<int64>(lastTriangleCount)));
 			}
+		}
+	}
+}
+
+TEST_CASE("Renderer2D.round_arc_directions")
+{
+	for (const double angle : { 0.0, 180_deg, -180_deg, 360_deg, -360_deg })
+	{
+		INFO(angle);
+		for (const int32 coloring : { 0, 1, 2, 3 })
+		{
+			INFO(coloring);
+			const auto draw = [&]
+			{
+				const Circle circle{ 200, 100, 60 };
+				// Translucent colors cover cap/body overlap, including full-circle endpoints.
+				const ColorF red{ 1.0, 0.0, 0.0, 0.5 }, blue{ 0.0, 0.0, 1.0, 0.5 };
+				switch (coloring)
+				{
+				case 0: circle.drawArc(LineCap::Round, 0.0, angle, 10, 10, ColorF{ 1.0, 0.5 }); break;
+				case 1: circle.drawArc(LineCap::Round, 0.0, angle, 10, 10, red, blue); break;
+				case 2: circle.drawArc(LineCap::Round, 0.0, angle, 10, 10, Arg::start(red), Arg::end(blue)); break;
+				case 3: circle.drawArc(LineCap::Round, 0.0, angle, 10, 10, Pattern::PolkaDot{ .primary = ColorF{ 1.0, 0.5 }, .background = ColorF{ 1.0, 0.5 } }); break;
+				}
+			};
+			const auto reference = CaptureBatchDraw(draw);
+			REQUIRE(reference.image.width() >= 320);
+			REQUIRE(reference.image.height() >= 180);
+			CHECK(reference.image[40][200] != Palette::Black);
+			if (angle == 0.0)
+			{
+				CHECK(reference.triangleCount == 18);
+			}
+			else if ((coloring == 2) && (Abs(angle) == 180_deg))
+			{
+				CHECK(reference.image[40][200].r > reference.image[40][200].b);
+				CHECK(reference.image[160][200].r < reference.image[160][200].b);
+			}
+
+			// Seven vertices remain: the first cap cannot fit in the current batch.
+			constexpr int32 rectangleCount = 16382;
+			const auto actual = CaptureBatchDraw([&]
+			{
+				for (int32 i = 0; i < rectangleCount; ++i)
+				{
+					RectF{ -10, -10, 1, 1 }.draw();
+				}
+				draw();
+			});
+			CHECK((actual.image == reference.image));
+			CHECK(actual.triangleCount == (reference.triangleCount + rectangleCount * 2));
 		}
 	}
 }

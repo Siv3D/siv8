@@ -202,28 +202,8 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Vertex2D::IndexType BuildRoundCap(const BufferCreatorFunc& bufferCreator, const Float2& center, const float r, const float startAngle, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
-		{
-			const Vertex2D::IndexType Quality = CalculateCirclePieQuality((r * scale), Math::PiF);
-			const Vertex2D::IndexType VertexCount = (Quality + 1);
-			const Vertex2D::IndexType IndexCount = ((Quality - 1) * 3);
-			auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
-
-			if (not pVertex)
-			{
-				return 0;
-			}
-
-			EmitRoundCap({ pVertex, pIndex, indexOffset }, center, r, startAngle, colorType, color0, color1, Quality);
-
-			return IndexCount;
-		}
-
-		[[nodiscard]]
 		static Vertex2D::IndexType BuildRoundCircleArc(const BufferCreatorFunc& bufferCreator, const Float2& center, const float rInner, const float startAngle, const float angle, const float thickness, const ColorFillDirection colorType, const Float4& color0, const Float4& color1, const float scale)
 		{
-			Vertex2D::IndexType indexCount = 0;
-
 			const float halfThickness = (thickness * 0.5f);
 			const float r = (rInner + halfThickness);
 			const float length = (r * Abs(angle) + halfThickness * 2);
@@ -249,50 +229,70 @@ namespace s3d
 				}
 			}
 
+			const float rOuter = (rInner + thickness);
+			const Vertex2D::IndexType capQuality = CalculateCirclePieQuality((halfThickness * scale), Math::PiF);
+			const Vertex2D::IndexType capVertexCount = (capQuality + 1);
+			const Vertex2D::IndexType capIndexCount = ((capQuality - 1) * 3);
+			Vertex2D::IndexType arcQuality = 0;
+			Vertex2D::IndexType arcVertexCount = 0;
+			Vertex2D::IndexType arcIndexCount = 0;
+
+			// 角度が 0 の場合は本体を作らず、両端の半円だけを描く。
+			if (angle != 0.0)
+			{
+				arcQuality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
+				arcVertexCount = (arcQuality * 2);
+				arcIndexCount = ((arcQuality - 1) * 6);
+			}
+
+			// 始端、本体、終端を一度に確保する。途中失敗で始端だけが予約されることはない。
+			const Vertex2D::IndexType vertexCount = (capVertexCount * 2 + arcVertexCount);
+			const Vertex2D::IndexType indexCount = (capIndexCount * 2 + arcIndexCount);
+			const auto buffer = bufferCreator(vertexCount, indexCount);
+			if (not buffer.pVertex)
+			{
+				return 0;
+			}
+
+			// 重なる部分の合成結果を保つため、従来どおり始端 → 本体 → 終端の順に配置する。
 			if (colorType == ColorFillDirection::LeftRight)
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, c1, color1, scale);
+					EmitRoundCap(buffer, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, c1, color1, capQuality);
 				}
 				else
 				{
-					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, c0, color0, scale);
+					EmitRoundCap(buffer, startCenter, halfThickness, (startAngle + Math::PiF), colorType, c0, color0, capQuality);
 				}
 			}
 			else
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, color0, color1, scale);
+					EmitRoundCap(buffer, startCenter, halfThickness, (startAngle + angle + Math::PiF), colorType, color0, color1, capQuality);
 				}
 				else
 				{
-					indexCount += BuildRoundCap(bufferCreator, startCenter, halfThickness, (startAngle + Math::PiF), colorType, color0, color1, scale);
+					EmitRoundCap(buffer, startCenter, halfThickness, (startAngle + Math::PiF), colorType, color0, color1, capQuality);
 				}
 			}
 
 			if (angle != 0.0)
 			{
-				const float rOuter = (rInner + thickness);
-				const Vertex2D::IndexType Quality = CalculateCirclePieQuality((rOuter * scale), Abs(angle));
-				const Vertex2D::IndexType VertexCount = (Quality * 2);
-				const Vertex2D::IndexType IndexCount = ((Quality - 1) * 6);
-				auto [pVertex, pIndex, indexOffset] = bufferCreator(VertexCount, IndexCount);
-
-				if (not pVertex)
-				{
-					return 0;
-				}
+				// 本体の書き込み先は、始端の半円の直後。
+				Vertex2D* pVertex = (buffer.pVertex + capVertexCount);
+				Vertex2D::IndexType* pIndex = (buffer.pIndex + capIndexCount);
+				const Vertex2D::IndexType indexOffset = (buffer.indexOffset + capVertexCount);
 
 				{
 					const float centerX = center.x;
 					const float centerY = center.y;
 					const float start = (startAngle + ((angle < 0.0f) ? angle : 0.0f));
-					const float radDelta = (Abs(angle) / (Quality - 1));
+					const float radDelta = (Abs(angle) / (arcQuality - 1));
 					Vertex2D* pDst = pVertex;
 
-					for (Vertex2D::IndexType i = 0; i < Quality; ++i)
+					for (Vertex2D::IndexType i = 0; i < arcQuality; ++i)
 					{
 						const float rad = (start + (radDelta * i));
 						const auto [s, c] = FastMath::SinCos(rad);
@@ -305,9 +305,9 @@ namespace s3d
 				{
 					const Float4 startColor = ((angle < 0.0f) ? c1 : c0);
 					const Float4 endColor = ((angle < 0.0f) ? c0 : c1);
-					const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((VertexCount / 2) - 1));
+					const Float4 colorDelta = ((endColor - startColor) / static_cast<float>((arcVertexCount / 2) - 1));
 
-					for (Vertex2D::IndexType i = 0; i < (VertexCount / 2); ++i)
+					for (Vertex2D::IndexType i = 0; i < (arcVertexCount / 2); ++i)
 					{
 						const Float4 color = (startColor + (colorDelta * i));
 						(pVertex++)->color = color;
@@ -316,44 +316,44 @@ namespace s3d
 				}
 				else
 				{
-					for (size_t i = 0; i < VertexCount / 2; ++i)
+					for (size_t i = 0; i < arcVertexCount / 2; ++i)
 					{
 						(pVertex++)->color = color0;
 						(pVertex++)->color = color1;
 					}
 				}
 
-				for (Vertex2D::IndexType i = 0; i < (Quality - 1); ++i)
+				for (Vertex2D::IndexType i = 0; i < (arcQuality - 1); ++i)
 				{
 					for (Vertex2D::IndexType k = 0; k < 6; ++k)
 					{
 						*pIndex++ = indexOffset + (i * 2 + RectIndexTable[k]);
 					}
 				}
-
-				indexCount += IndexCount;
 			}
 
+			// 本体がない場合も、終端は始端の直後になる。
+			const Vertex2DBufferPointer endCapBuffer{ (buffer.pVertex + capVertexCount + arcVertexCount), (buffer.pIndex + capIndexCount + arcIndexCount), static_cast<Vertex2D::IndexType>(buffer.indexOffset + capVertexCount + arcVertexCount) };
 			if (colorType == ColorFillDirection::LeftRight)
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, c0, color0, scale);
+					EmitRoundCap(endCapBuffer, endCenter, halfThickness, startAngle, colorType, c0, color0, capQuality);
 				}
 				else
 				{
-					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, c1, color1, scale);
+					EmitRoundCap(endCapBuffer, endCenter, halfThickness, (startAngle + angle), colorType, c1, color1, capQuality);
 				}
 			}
 			else
 			{
 				if (angle < 0.0)
 				{
-					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, startAngle, colorType, color1, color0, scale);
+					EmitRoundCap(endCapBuffer, endCenter, halfThickness, startAngle, colorType, color1, color0, capQuality);
 				}
 				else
 				{
-					indexCount += BuildRoundCap(bufferCreator, endCenter, halfThickness, (startAngle + angle), colorType, color1, color0, scale);
+					EmitRoundCap(endCapBuffer, endCenter, halfThickness, (startAngle + angle), colorType, color1, color0, capQuality);
 				}
 			}
 
