@@ -138,5 +138,8 @@ namespace s3d
 	struct MetalDrawCommand
 	{
 		uint32 indexCount = 0;
+
+		// 16 ビットの相対インデックスが参照する頂点区間の先頭（頂点単位）
+		uint32 baseVertex = 0;
 	};
 }

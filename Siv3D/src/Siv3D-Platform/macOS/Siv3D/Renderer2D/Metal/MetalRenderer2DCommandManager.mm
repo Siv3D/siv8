@@ -36,6 +36,8 @@ namespace s3d
 		{
 			m_commands.clear();
 			m_stateTracker.clear();
+			// 次のフレームに描画数と頂点区間の基準位置を持ち越さない
+			m_current.draw = {};
 		}
 
 		// clear buffers

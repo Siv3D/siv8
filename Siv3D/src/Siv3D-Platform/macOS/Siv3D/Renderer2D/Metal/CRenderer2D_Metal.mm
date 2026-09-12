@@ -1721,10 +1721,11 @@ namespace s3d
 						const MetalDrawCommand& draw = m_commandManager.getDraw(command.index);
 						const uint32 indexCount = draw.indexCount;
 						
-						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, commandState.startIndexLocation));
+						LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}, baseVertex = {}", command.index, indexCount, commandState.startIndexLocation, draw.baseVertex));
 						
-						// indexBufferOffset, 4 の倍数でなくても大丈夫？
-						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(), (sizeof(Vertex2D::IndexType) * commandState.startIndexLocation));
+						// インデックスバッファ内のバイト位置と、頂点区間の基準位置を別々に指定する
+						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(),
+							(sizeof(Vertex2D::IndexType) * commandState.startIndexLocation), 1, draw.baseVertex, 0);
 						commandState.startIndexLocation += indexCount;
 						
 						++stat.drawCalls;
