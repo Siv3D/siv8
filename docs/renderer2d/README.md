@@ -11,9 +11,9 @@ Renderer design notes and related checks:
 - [Pattern expressiveness proposal](proposals/pattern-expressiveness.md):
   unadopted exploration of parameter units, additional motifs, and size gradients.
 - [Polka-dot size gradient](polka-dot-size-gradient.md): adopted API, coordinate
-  field, packing, Metal filtering, and validation.
-- [D3D11 size-gradient port](d3d11-polka-dot-size-gradient-handoff.md): next-stage
-  shader integration and verification.
+  field, packing, fragment filtering, and validation.
+- [D3D11 size-gradient integration](d3d11-polka-dot-size-gradient-handoff.md):
+  shader loading and Windows verification.
 - [Size-gradient manual sample](../../Test/Manual/PolkaDotSizeGradient.md): presets,
   independent field/lattice controls, and object transformations.
 - [Earlier size-gradient proposal](proposals/polka-dot-size-gradient.md):

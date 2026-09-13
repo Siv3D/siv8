@@ -8,9 +8,9 @@ The authoritative API contract is in
 The [interactive sample](../../Test/Manual/PolkaDotSizeGradient.md) provides
 presets, independent controls, and a transformed comparison.
 
-The shared type and Metal shader are implemented. The D3D11 shader and its
-renderer connection remain a separate stage in [TODO](../../TODO.md); use the
-[porting guide](d3d11-polka-dot-size-gradient-handoff.md) for that work.
+The shared type, Metal shader, and D3D11 shader/renderer connection are implemented.
+The [D3D11 integration guide](d3d11-polka-dot-size-gradient-handoff.md) describes
+shader loading and verification.
 
 ## Why a separate pattern
 
@@ -103,11 +103,13 @@ interpolators, command payload types, and buffer bindings do not grow.
 The conversion requires finite inputs satisfying the header's preconditions;
 it does not add exceptional-input guards to the drawing path.
 
-## Metal fragment evaluation
+## Fragment evaluation
 
-[PS_PatternPolkaDotSizeGradient](../../macOS/App/engine/shader/metal/2d.metal)
-computes the cell center, saturates its field value, applies smoothstep, and
-interpolates the two packed radii. It uses the same foreground/background color
+`PS_PatternPolkaDotSizeGradient` in
+[Metal](../../macOS/App/engine/shader/metal/2d.metal) and
+[HLSL](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) computes the cell
+center, saturates its field value, applies smoothstep, and interpolates the two
+packed radii. It uses the same foreground/background color
 and premultiplied-alpha operations as the other patterns.
 
 Antialiasing differentiates the continuous q coordinates. It does not
@@ -126,8 +128,8 @@ strong minification and rapidly varying radii can still alias.
 
 The shader does no per-fragment matrix inversion or endpoint normalization.
 There is one additional engine pixel shader. Existing engine enum indices are
-preserved by appending its entry after the current font shaders; the Metal
-loader appends in the same order. No GPU-time improvement is claimed.
+preserved by appending its entry after the current font shaders; both loaders
+append in the same order, after FontPrint. No GPU-time improvement is claimed.
 
 ## Validation
 
@@ -136,5 +138,6 @@ field against drawing-space projection, endpoint boundaries, negative cells,
 rotated lattices, independent placement, zero radius, and equal radii. GPU checks
 compare interior pixels to circles reconstructed in drawing coordinates, cover
 zero-background compositing, object/camera transforms, split geometry with a
-nonzero viewport, and state changes/repeated frames. The GPU checks currently
-run on Metal; the porting guide describes enabling them for D3D11.
+nonzero viewport, and state changes/repeated frames. The GPU checks run on both
+Metal and D3D11. The integration guide explains the D3D11 split-image comparison's
+limited allowance for antialiasing-rounding differences.

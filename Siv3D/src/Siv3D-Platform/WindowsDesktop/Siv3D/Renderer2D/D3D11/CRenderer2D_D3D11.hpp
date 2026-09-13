@@ -585,6 +585,8 @@ namespace s3d
 
 			PixelShader::IDType psPatternHexGrid;
 
+			PixelShader::IDType psPatternPolkaDotSizeGradient;
+
 			[[nodiscard]]
 			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;
 

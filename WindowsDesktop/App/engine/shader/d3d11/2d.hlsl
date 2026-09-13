@@ -260,6 +260,23 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 	return lerp(primary, background, c);
 }
 
+float4 PS_PatternPolkaDotSizeGradient(PSInput input) : SV_TARGET
+{
+	const float2 uv = Pattern_UVTransform(input.uv);
+	const float2 cellCenter = (floor(uv) + 0.5f);
+	const float2 repeat = (2.0f * (uv - cellCenter));
+	const float t = saturate(dot(cellCenter, g_patternExtraParams.xy) + g_patternExtraParams.z);
+	const float radius = lerp(g_patternUVTransform[1].z, g_patternUVTransform[1].w,
+		(t * t * (3.0f - 2.0f * t)));
+	// Differentiate continuous UVs, not the radius that changes between cells.
+	const float fw = length(fwidth(uv));
+	const float coverage = ((1.0f - smoothstep(radius - fw, radius + fw, length(repeat)))
+		* saturate(radius / fw));
+	const float4 primary = s3d_shapeColor(input.colorPMA);
+	const float4 background = Pattern_BackgroundColor();
+	return lerp(background, primary, coverage);
+}
+
 float4 PS_PatternStripe(PSInput input) : SV_TARGET
 {
 	const float u = Pattern_UVTransform(input.uv).x;

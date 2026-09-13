@@ -8,8 +8,11 @@ lattice rotated by 45 degrees. Radius varies per dot, using a smoothstep profile
 
 1. Paste the complete program below into a separate Siv3D application built with
    this revision. Keep the repository's platform test entry point intact.
-2. Run on macOS (Metal). D3D11 integration is tracked in the
-   [porting guide](../../docs/renderer2d/d3d11-polka-dot-size-gradient-handoff.md).
+2. Run on macOS (Metal) or Windows (D3D11). On Windows, include the standard
+   Siv3D application resources and place the executable beside the `engine/`
+   assets, as in `WindowsDesktop/App/`. See the
+   [D3D11 integration guide](../../docs/renderer2d/d3d11-polka-dot-size-gradient-handoff.md)
+   for automated verification and image-comparison criteria.
 3. Compare the presets, then drag the controls. `Start` and `End` are fractions
    of the 340-unit reference span. `Field direction` rotates the transition
    independently of `Lattice angle`. Both previews use identical paint parameters.
@@ -20,6 +23,9 @@ lattice rotated by 45 degrees. Radius varies per dot, using a smoothstep profile
 6. Optionally launch with `--capture`. It saves `pattern-size-gradient.png` in the
    application's working directory and exits. This optional retained screenshot
    is not an automated-test fixture; remove it when no longer needed.
+   A separate Windows sample build and retained comparison captures can live in
+   `WindowsDesktop/Intermediate/Manual/PolkaDotSizeGradient/`; keep generated
+   source and project files out of the platform test entry point.
 
 ## Expected results
 

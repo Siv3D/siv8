@@ -7,12 +7,6 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## `Siv3D/include/Siv3D/Pattern/PatternParameters.hpp`
-
-### 水玉のサイズ変化
-
-- `Pattern::PolkaDotSizeGradient` の共有 API と Metal 実装を基準に、D3D11 のシェーダ・選択・ロードを追加し、描画テストを有効化する。[申し送り](docs/renderer2d/d3d11-polka-dot-size-gradient-handoff.md) に従ってバイトコードを生成し、Windows で全テストとサンプルを検証する。
-
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 
 ### 数値文字列の受理範囲

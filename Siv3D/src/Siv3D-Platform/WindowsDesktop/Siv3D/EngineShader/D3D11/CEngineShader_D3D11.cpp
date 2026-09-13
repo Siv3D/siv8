@@ -165,6 +165,11 @@ namespace s3d
 			throw InternalEngineError{ "Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_pattern_polka_dot_size_gradient.ps", ShaderStage::Pixel, U"PS_PatternPolkaDotSizeGradient"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
 	# endif
 
 		{
@@ -201,6 +206,7 @@ namespace s3d
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_outline_shadow.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_glow.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_print.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_polka_dot_size_gradient.ps" };
 
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

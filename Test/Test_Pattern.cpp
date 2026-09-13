@@ -275,8 +275,6 @@ namespace
 	}
 }
 
-# if SIV3D_PLATFORM(MACOS)
-
 TEST_CASE("Pattern.polka_dot_size_gradient_rendering")
 {
 	const Pattern::PolkaDotSizeGradient base{
@@ -372,7 +370,26 @@ TEST_CASE("Pattern.polka_dot_size_gradient_transforms_and_state")
 		Triangle{ 29, 0, 72, 0, 29, 64 }.draw(p);
 		Triangle{ 72, 0, 72, 64, 29, 64 }.draw(p);
 	});
+# if SIV3D_PLATFORM(WINDOWS)
+	// D3D11 interpolation can differ by a few float ULPs between the translated
+	// rectangle and viewport/split geometry. Permit one UNORM level only on AA
+	// edges; solid interiors and alpha must still match exactly.
+	REQUIRE(split.image.size() == reference.size());
+	int32 splitMismatches = 0;
+	for (size_t i = 0; i < reference.pixelCount(); ++i)
+	{
+		const Color expected = reference.data()[i];
+		const Color actual = split.image.data()[i];
+		const int32 tolerance = ((expected == Palette::Black || expected == Palette::White) ? 0 : 1);
+		splitMismatches += ((Abs(int32(actual.r) - expected.r) > tolerance)
+			|| (Abs(int32(actual.g) - expected.g) > tolerance)
+			|| (Abs(int32(actual.b) - expected.b) > tolerance)
+			|| (actual.a != expected.a));
+	}
+	CHECK(splitMismatches == 0);
+# else
 	CHECK(split.image == reference);
+# endif
 	CHECK(split.metrics.drawCalls == 1);
 
 	auto other = p;
@@ -415,8 +432,6 @@ TEST_CASE("Pattern.polka_dot_size_gradient_transforms_and_state")
 	}
 	CHECK(differences > 100);
 }
-
-# endif
 
 TEST_CASE("Pattern.drawing_coordinates")
 {

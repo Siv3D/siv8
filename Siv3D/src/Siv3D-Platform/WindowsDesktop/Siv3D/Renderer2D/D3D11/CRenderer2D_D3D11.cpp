@@ -67,6 +67,8 @@ namespace s3d
 			return psPatternTriangle;
 		case PatternType::HexGrid:
 			return psPatternHexGrid;
+		case PatternType::PolkaDotSizeGradient:
+			return psPatternPolkaDotSizeGradient;
 		default:
 			return psShape;
 		}
@@ -155,6 +157,7 @@ namespace s3d
 		m_engineShader.psPatternChecker		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternChecker).id();
 		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
 		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
+		m_engineShader.psPatternPolkaDotSizeGradient = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternPolkaDotSizeGradient).id();
 
 		// シャドウ画像を作成
 		{
