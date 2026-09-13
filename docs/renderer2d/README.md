@@ -34,9 +34,11 @@ Renderer design notes and related checks:
   background recipes, transparent overlays, and optional lattice motion.
 - [Earlier size-gradient proposal](proposals/halftone.md):
   superseded compact-layout exploration and payload size tradeoffs.
-- [Pattern collection](../../Test/Manual/PatternCollection.md): a minimal
-  1680 x 1050 gallery of 32 backgrounds from seven Pattern types, with
-  keyboard-controlled animation and layered combinations.
+- [Pattern collection](../../Test/Manual/PatternCollection.md): a 960 x 700
+  gallery of 84 backgrounds, with tabs for all eleven patterns and combinations,
+  paging, and animation controls.
+- [Original 32-card overview](../../Test/Manual/PatternCollection32.md): preserved
+  full-scene gallery and original recipes.
 - [Pattern gallery](../../Test/Manual/PatternGallery.md): interactive parameter
   variations and a comparison of pattern size under zoom.
 - [Pattern transforms](../../Test/Manual/PatternTransforms.md): attachment,

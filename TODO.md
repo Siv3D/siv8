@@ -7,10 +7,6 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## `Siv3D/include/Siv3D/Pattern/Wave.hpp` / 追加 Pattern
-
-- 新しい Pattern が揃った後、[32 案ギャラリー](Test/Manual/PatternCollection.md)を統合ギャラリーに整理する。既存レシピを保存し、控えめな画面サイズで Pattern ごとのページを切り替える。模様・枠・名前を主体にし、アニメーションのオン・オフも維持する。
-
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 
 ### 数値文字列の受理範囲

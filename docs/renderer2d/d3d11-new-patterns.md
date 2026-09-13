@@ -93,5 +93,5 @@ exception. Verify source LF, `git diff --check`, documentation links, and binary
 shader bytes. Shared test changes also require a macOS full-suite run; Windows
 execution does not validate Metal.
 
-The combined gallery with smaller pages is a separate task in [TODO](../../TODO.md).
-Keep the existing recipes intact when assembling it.
+The [combined gallery](../../Test/Manual/PatternCollection.md) groups the original
+recipes and all four new patterns into smaller pages with animation controls.
