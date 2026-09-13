@@ -5,9 +5,6 @@ It contains 84 recipes, including fine and bold variations in light and dark
 palettes. Pattern cards retain only their frame and name;
 compact navigation and animation controls sit outside them.
 
-The [original 32-card overview](PatternCollection32.md) is preserved separately,
-including its complete program and original parameter values.
-
 ## Execution
 
 1. Paste the complete program below into a separate Siv3D application built with
@@ -37,14 +34,12 @@ including its complete program and original parameter values.
 - PolkaDot, Stripe, Grid, Checker, Triangle, and HexGrid each have six recipes,
   contrasting fine and large motifs, light and dark palettes, and angles.
 - Truchet includes Orbit, a teal ring lattice using one Alternating pattern.
-  The original two-PolkaDot recipe remains in the archived overview.
 - Layers combines Woven Light (Weave + Halftone), Pearl Circuit, Tartan,
   Interference, Ember Mesh, Kaleidoscope, Solar Static, and Petal Cut. Aligned
   masks move together.
-- New types use the same card dimensions to compare them as button backgrounds.
-  Wave, Ripple, Weave, and the first seven Truchet recipes retain the parameter
-  values from their focused samples; a shorter card reveals a smaller vertical portion of these infinite patterns. Zero/full
-  width diagnostics remain in the focused samples, not in this collection.
+- All types use the same card dimensions to compare them as button backgrounds.
+  Zero/full-width and filtering regression checks are in
+  [Test_Pattern.cpp](../Test_Pattern.cpp).
 - Pages hold up to eight cards in two columns. Collections with fewer than eight
   recipes leave the remaining space free. Wave's second page contains Echo and Straight.
 - Ripple expands radially without moving its center. Other patterns translate;
@@ -54,9 +49,8 @@ including its complete program and original parameter values.
 - Strongly minified or fine overlapping patterns can alias. This gallery uses
   the existing shaders and does not alter their filtering or parameter payloads.
 
-For editable parameters and geometric transformations use the focused samples:
-[Pattern gallery](PatternGallery.md), [Wave](Wave.md), [Ripple](Ripple.md),
-[Weave](Weave.md), and [Truchet](Truchet.md).
+Edit each type's preset array below to change its recipes. For diagnostic controls,
+use [Halftone](Halftone.md) and [Pattern transforms](PatternTransforms.md).
 
 ## Complete Main.cpp
 

@@ -1,15 +1,13 @@
 # Pattern parameter payload
 
-The pattern record contains four Float4 values (64 bytes). The fourth value is
-additional pattern data; the existing six built-in pattern shaders ignore it.
-The [size-gradient pattern](halftone.md) uses that additional
-vector for an independent linear field. Its shader does not change the storage
-layout or the adopted [coordinate model](pattern-coordinates.md).
+The pattern record contains four Float4 values (64 bytes). The fourth vector
+stores type-specific data for [Halftone](halftone.md), [Wave](wave.md), and
+[Truchet](truchet.md). PolkaDot, Stripe, Grid, Checker, Triangle, HexGrid, Ripple,
+and Weave ignore it. The adopted [coordinate model](pattern-coordinates.md)
+applies to every type.
 
 D3D11 and Metal record and upload all four values using the same effect-buffer
-layout. The [D3D11 validation guide](d3d11-pattern-payload-handoff.md) describes
-shader-bytecode regeneration and Windows rendering checks. Unimplemented
-expression candidates remain in [TODO](../../TODO.md).
+layout.
 
 ## CPU record and shader constants
 
@@ -26,8 +24,8 @@ defaults `extraParams` to zero. Its
 
 The first three vectors retain their existing meaning and order. Foreground
 color travels through vertices, and pattern type selects the pixel shader.
-Existing typed pattern constructors default the additional member to zero. The
-packing return type is `std::array<Float4, 4>`.
+Typed patterns leave unused additional components zero. The packing return type
+is `std::array<Float4, 4>`.
 
 The shader effect structure groups all Pattern fields in its first 64 bytes and
 all QuadWarp fields in its second 64 bytes:
@@ -53,13 +51,37 @@ aliased, and its shader calculations and vertex interface are independent.
 Both command managers record, compare, retrieve, and restore all four vectors.
 Their initial pattern records and current values are zero-initialized. Changing
 only `extraParams` creates a pattern-state transition; identical values still
-batch. Returning to a default pattern restores zero, including across frames.
+batch. Returning to a pattern with unused extras restores zero, including across
+frames.
 
 Each pattern record uses 64 bytes. Both backends submit the full 128-byte effect
 buffer when it is dirty. Vertex size, vertex attributes, and the number of
 interpolators are unchanged by the storage extension. Existing built-in pattern
 fragment calculations are also unchanged. These are layout and operation facts,
 not a measured GPU-time result.
+
+## Backend shader maintenance
+
+[2d.metal](../../macOS/App/engine/shader/metal/2d.metal) and
+[2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) must agree with
+the shared effect layout. Both backends use `VS_Pattern` and select dedicated
+pixel shaders from `PatternType`. Loader order must match
+[EnginePS](../../Siv3D/src/Siv3D/EngineShader/IEngineShader.hpp): Halftone follows
+FontPrint, then Wave, Ripple, Weave, and Truchet.
+
+[CEngineShader_D3D11::init](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/EngineShader/D3D11/CEngineShader_D3D11.cpp)
+contains the startup HLSL compilation block and loads the tracked `.vs`/`.ps`
+assets by path. When changing HLSL, regenerate affected bytecode on Windows
+through that block. An effect-layout change also affects QuadWarp; rebuild all
+listed entry points so no binary retains an old layout. Preserve shader assets
+as binary data. The Windows SDK's `fxc /dumpbin` can inspect reflected offsets.
+
+Run the [Pattern tests and full suite](pattern-coordinates.md#validation) on each
+affected host. The [gallery](../../Test/Manual/PatternCollection.md) checks visual
+appearance and animation. Keep temporary sample sources and captures out of
+tracked files and restore any platform entry point used for verification. For
+incomplete Windows reports or illegal-instruction failures, follow the
+[clean-build diagnosis](../development/README.md#windows-incremental-build-failures).
 
 ## Validation
 

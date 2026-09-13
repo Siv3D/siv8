@@ -8,9 +8,9 @@ The authoritative API contract is in
 The [interactive sample](../../Test/Manual/Halftone.md) provides
 presets, independent controls, and a transformed comparison.
 
-The shared type, Metal shader, and D3D11 shader/renderer connection are implemented.
-The [D3D11 integration guide](d3d11-halftone.md) describes
-shader loading and verification.
+Metal and D3D11 share this calculation and payload. See the
+[shader maintenance notes](pattern-payload.md#backend-shader-maintenance)
+for shader loading and bytecode regeneration.
 
 ## Why a separate pattern
 
@@ -139,5 +139,10 @@ rotated lattices, independent placement, zero radius, and equal radii. GPU check
 compare interior pixels to circles reconstructed in drawing coordinates, cover
 zero-background compositing, object/camera transforms, split geometry with a
 nonzero viewport, and state changes/repeated frames. The GPU checks run on both
-Metal and D3D11. The integration guide explains the D3D11 split-image comparison's
-limited allowance for antialiasing-rounding differences.
+Metal and D3D11; see the [test commands](pattern-coordinates.md#validation).
+
+D3D11 interpolation can differ by a few floating-point ULPs between the translated
+rectangle and viewport/split geometry. That comparison permits one 8-bit RGB
+level only at antialiased intermediate pixels; solid black/white pixels and alpha
+must match exactly. Metal uses exact image equality. This allowance is confined
+to the Halftone split-image comparison; it does not relax other Pattern checks.

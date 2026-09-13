@@ -2,8 +2,8 @@
 
 An interactive check of pattern attachment, continuity across primitives, and the
 difference between moving geometry and moving its coordinate system. No external
-assets or output files are required. Use the [gallery](PatternGallery.md) to edit
-individual pattern parameters.
+assets or output files are required. The [Pattern collection](PatternCollection.md)
+provides appearance recipes for all eleven types.
 
 ## Execution
 

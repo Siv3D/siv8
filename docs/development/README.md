@@ -205,9 +205,10 @@ The [Renderer2D RMS scaling check](../../Test/Manual/Renderer2DRMSScaling.md)
 compares tessellation, line-width compensation, and patterns under nonuniform
 scaling and rotation on D3D11 and Metal.
 
-The [Pattern gallery](../../Test/Manual/PatternGallery.md) provides editable presets
-for the six constant-parameter pattern shaders and compares object zoom, pattern scale compensation,
-and fixed-scene presentation scaling.
+The [Pattern collection](../../Test/Manual/PatternCollection.md) provides the
+integrated gallery for all eleven patterns. Dedicated
+[transform checks](../../Test/Manual/PatternTransforms.md) compare pattern
+attachment and continuity across split geometry.
 
 ## Documentation checks
 

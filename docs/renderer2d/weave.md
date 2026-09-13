@@ -3,8 +3,8 @@
 `Pattern::Weave` draws plain weave using alternating over/under crossings, one
 foreground color, and background-colored gaps. The authoritative contract is
 [Weave.hpp](../../Siv3D/include/Siv3D/Pattern/Weave.hpp); the
-[manual sample](../../Test/Manual/Weave.md) provides nine presets and transform
-controls. Metal and D3D11 use the same filtered band, gap, and parity masks.
+[Pattern collection](../../Test/Manual/PatternCollection.md) provides appearance
+recipes and animation. Metal and D3D11 use the same filtered band, gap, and parity masks.
 
 ## Placement and gaps
 
@@ -62,7 +62,7 @@ additional work.
 [2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) preserves the
 filtered parity, both band masks, and the premultiplied color path. The loader
 appends `2d_pattern_weave.ps` after Ripple, and the renderer selects it for
-`PatternType::Weave`. See the [combined integration guide](d3d11-new-patterns.md)
+`PatternType::Weave`. See the [shader maintenance notes](pattern-payload.md#backend-shader-maintenance)
 for shader generation and verification.
 
 ## Validation

@@ -2,8 +2,8 @@
 
 `Pattern::Wave` repeats parallel sine-wave centerlines. The authoritative API
 contract is [Wave.hpp](../../Siv3D/include/Siv3D/Pattern/Wave.hpp); the
-[manual sample](../../Test/Manual/Wave.md) contains colored presets and transform
-controls. Metal and D3D11 use the same wave calculation and payload.
+[Pattern collection](../../Test/Manual/PatternCollection.md) provides appearance
+recipes and animation. Metal and D3D11 use the same wave calculation and payload.
 
 ## Coordinates and width
 
@@ -56,7 +56,7 @@ width correction are specific to Wave.
 Metal shader's order of filtering and wrapping, using `frac`, `fwidth`, and the
 existing UV and premultiplied color helpers. The loader appends
 `2d_pattern_wave.ps` after Halftone, and the renderer selects it for
-`PatternType::Wave`. See the [combined integration guide](d3d11-new-patterns.md)
+`PatternType::Wave`. See the [shader maintenance notes](pattern-payload.md#backend-shader-maintenance)
 for shader generation and verification.
 
 ## Validation

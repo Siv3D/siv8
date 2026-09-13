@@ -2,9 +2,9 @@
 
 `Pattern::Truchet` joins two quarter-circle arcs per square tile. The public
 contract is in [Truchet.hpp](../../Siv3D/include/Siv3D/Pattern/Truchet.hpp); the
-[manual sample](../../Test/Manual/Truchet.md) compares three layouts and seeds.
+[Pattern collection](../../Test/Manual/PatternCollection.md) includes all three layouts.
 Metal and D3D11 use the same arc geometry and deterministic integer hash. See
-the [combined D3D11 integration guide](d3d11-new-patterns.md) for backend wiring.
+the [shader maintenance notes](pattern-payload.md#backend-shader-maintenance) for backend wiring.
 
 ## Geometry and layout
 

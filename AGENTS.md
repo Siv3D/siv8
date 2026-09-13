@@ -53,4 +53,5 @@ Siv3D is used for games and other real-time applications, so treat runtime perfo
 
 - Store durable usage guides and development knowledge under `docs/<subject>/`, with a subject `README.md` linked from `docs/README.md`. Follow `docs/AGENTS.md` for documentation changes.
 - Keep pending work in root `TODO.md`; place unadopted designs in the relevant subject's `proposals/` directory with an explicit status. Root README and AGENTS remain entry points.
-- Update affected links when moving documents and run `python3 tools/check_docs.py` after documentation changes.
+- At feature completion, remove superseded galleries, completed handoffs, obsolete proposals, and temporary artifacts within the work scope. Fold durable knowledge into existing subject guides, keep a single canonical gallery per feature, and retain separate manual programs only for distinct validation needs. Use Git history instead of archival copies; avoid adding files that duplicate existing responsibilities.
+- Update affected links when moving or removing documents and run `python3 tools/check_docs.py` after documentation changes.

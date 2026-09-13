@@ -1,49 +1,29 @@
 # Renderer2D
 
-Renderer design notes and related checks:
+## Pattern design
 
-- [Pattern coordinate design](pattern-coordinates.md): adopted coordinate model
-  and the data path for making patterns follow local and camera transforms.
-- [Pattern parameter payload](pattern-payload.md): four-vector packing, effect
-  constant offsets, state tracking, and storage-only validation.
-- [D3D11 payload validation](d3d11-pattern-payload-handoff.md): data flow,
-  shader-bytecode regeneration, and Windows verification.
-- [Pattern expressiveness proposal](proposals/pattern-expressiveness.md):
-  unadopted exploration of parameter units, additional motifs, and size gradients.
-- [Truchet](truchet.md): connected arcs, regular/random layouts, and seed encoding.
-- [Truchet manual sample](../../Test/Manual/Truchet.md): three layouts, seeds,
-  animation, and transforms.
-- [D3D11 new-pattern integration](d3d11-new-patterns.md): shader wiring and verification
-  for Wave, Ripple, Weave, and Truchet.
-- [Weave](weave.md): alternating crossings, filtered gaps, payload, and integration.
-- [Weave manual sample](../../Test/Manual/Weave.md): fabric and basket presets,
-  animation, and transform controls.
-- [Ripple](ripple.md): concentric bands, center filtering, payload, and integration.
-- [Ripple manual sample](../../Test/Manual/Ripple.md): off-card centers, layered
-  circles, radial motion, and transform controls.
-- [Wave](wave.md): sine-wave width approximation, payload, and shader integration.
-- [Wave manual sample](../../Test/Manual/Wave.md): presets, animation, and
-  transform controls.
-- [Halftone](halftone.md): adopted API, coordinate
-  field, packing, fragment filtering, and validation.
-- [D3D11 Halftone integration](d3d11-halftone.md):
-  shader loading and Windows verification.
-- [Halftone manual sample](../../Test/Manual/Halftone.md): presets,
-  independent field/lattice controls, and object transformations.
-- [Halftone button gallery](../../Test/Manual/HalftoneButtonGallery.md): eight
-  background recipes, transparent overlays, and optional lattice motion.
-- [Earlier size-gradient proposal](proposals/halftone.md):
-  superseded compact-layout exploration and payload size tradeoffs.
-- [Pattern collection](../../Test/Manual/PatternCollection.md): a 960 x 700
-  gallery of 84 backgrounds, with tabs for all eleven patterns and combinations,
-  paging, and animation controls.
-- [Original 32-card overview](../../Test/Manual/PatternCollection32.md): preserved
-  full-scene gallery and original recipes.
-- [Pattern gallery](../../Test/Manual/PatternGallery.md): interactive parameter
-  variations and a comparison of pattern size under zoom.
+- [Coordinates](pattern-coordinates.md): attachment to local/camera transforms,
+  primitive continuity, and custom-shader interfaces.
+- [Parameter payload](pattern-payload.md): four-vector packing, effect-buffer
+  offsets, state tracking, and backend shader maintenance.
+- [Halftone](halftone.md): independent radius field and per-dot sampling.
+- [Wave](wave.md): sine-wave bands and the normal-width approximation.
+- [Ripple](ripple.md): concentric bands and center-safe filtering.
+- [Weave](weave.md): alternating crossings, gaps, and filtered parity.
+- [Truchet](truchet.md): connected arcs, layouts, and deterministic seed encoding.
+
+## Gallery and checks
+
+- [Pattern collection](../../Test/Manual/PatternCollection.md): the canonical
+  960 x 700 gallery of 84 backgrounds across all eleven patterns and combinations,
+  with paging and animation controls.
+- [Halftone controls](../../Test/Manual/Halftone.md): independent field/lattice
+  controls, guides, split geometry, and transformed comparisons.
 - [Pattern transforms](../../Test/Manual/PatternTransforms.md): attachment,
   continuity across primitives, and geometry versus coordinate-system movement.
-- [RMS scaling check](../../Test/Manual/Renderer2DRMSScaling.md): tessellation and
-  the backend-specific pattern behavior under nonuniform transforms.
+- [RMS scaling](../../Test/Manual/Renderer2DRMSScaling.md): tessellation and
+  line-width compensation under nonuniform transforms.
 
-Pending implementation stages are tracked in [TODO](../../TODO.md).
+[Test_Pattern.cpp](../../Test/Test_Pattern.cpp) owns automated packing and GPU
+regression checks. See [coordinate validation](pattern-coordinates.md#validation)
+for the host-specific test commands.

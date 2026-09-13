@@ -134,5 +134,5 @@ color rounding inside, where a different projection size can affect filtering.
 interactive program for comparing a single rectangle, the same shape divided
 into primitives, and geometry moving within a shared coordinate system. It also
 switches between local and camera transforms. The
-[gallery](../../Test/Manual/PatternGallery.md) covers editable pattern parameters
-and the separate effect of scene presentation scaling.
+[Pattern collection](../../Test/Manual/PatternCollection.md) provides appearance
+recipes for all eleven types.

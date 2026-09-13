@@ -11,7 +11,7 @@ lattice rotated by 45 degrees. Radius varies per dot, using a smoothstep profile
 2. Run on macOS (Metal) or Windows (D3D11). On Windows, include the standard
    Siv3D application resources and place the executable beside the `engine/`
    assets, as in `WindowsDesktop/App/`. See the
-   [D3D11 integration guide](../../docs/renderer2d/d3d11-halftone.md)
+   [Halftone validation notes](../../docs/renderer2d/halftone.md#validation)
    for automated verification and image-comparison criteria.
 3. Compare the presets, then drag the controls. `Start` and `End` are fractions
    of the 340-unit reference span. `Field direction` rotates the transition
