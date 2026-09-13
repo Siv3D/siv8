@@ -75,6 +75,28 @@ the seed from the numeric halves described in [Truchet](truchet.md#deterministic
 the named Random and Alternating constants match `Pattern::Truchet::Layout`.
 Uniform keeps the original tile orientation.
 
+## Shared XY transform
+
+Within each backend, `s3d_transformPoint2D` supplies the XY calculation for both
+`s3d_positionTransform` and `Pattern_UVTransform`. The packed matrix components
+have the following roles:
+
+| Local name | CPU matrix components | HLSL access | Metal access |
+| --- | --- | --- | --- |
+| `translation` | `m31, m32` | `transform._13_14` | `transform[0].zw` |
+| `basisX` | `m11, m12` | `transform._11_12` | `transform[0].xy` |
+| `basisY` | `m21, m22` | `transform._21_22` | `transform[1].xy` |
+
+The expression keeps the order `translation + position.x * basisX + position.y * basisY`.
+Only these six components enter the XY result; the Pattern parameters in the
+remaining two components stay available to their consuming pixel shaders.
+
+The vertex-position wrapper supplies Z/W separately: HLSL reads
+`transform._23_24`, while Metal uses `(0, 1)`. The CPU's built-in vertex transform
+also stores `(0, 1)` in those positions. Pattern UV conversion remains in the
+pixel shader, using the original drawing-position varying and the existing
+effect-buffer layout.
+
 ## Color composition
 
 The pattern vertex shader multiplies the foreground by ColorMul and converts it

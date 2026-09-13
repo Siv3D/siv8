@@ -52,9 +52,17 @@ cbuffer PSEffectConstants2D : register(b1)
 	float4 g_quadWarpUVTransform;
 }
 
-inline float4 s3d_positionTransform(const float2 pos, const float2x4 t)
+inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transform)
 {
-	return float4((t._13_14 + (pos.x * t._11_12) + (pos.y * t._21_22)), t._23_24);
+	const float2 translation = transform._13_14;
+	const float2 basisX = transform._11_12;
+	const float2 basisY = transform._21_22;
+	return (translation + (position.x * basisX) + (position.y * basisY));
+}
+
+inline float4 s3d_positionTransform(const float2 position, const float2x4 transform)
+{
+	return float4(s3d_transformPoint2D(position, transform), transform._23_24);
 }
 
 inline float4 s3d_premultiplyAlpha(const float4 color)
@@ -211,9 +219,7 @@ inline float4 Pattern_BackgroundColorPMA()
 
 inline float2 Pattern_UVTransform(const float2 drawingPosition)
 {
-	return (g_patternUVTransform._13_14
-		+ (drawingPosition.x * g_patternUVTransform._11_12)
-		+ (drawingPosition.y * g_patternUVTransform._21_22));
+	return s3d_transformPoint2D(drawingPosition, g_patternUVTransform);
 }
 
 inline float2 Pattern_Integral(float2 v)

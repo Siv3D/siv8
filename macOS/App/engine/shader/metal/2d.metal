@@ -43,12 +43,17 @@ struct PSEffectConstants2D
 
 static_assert(sizeof(PSEffectConstants2D) == 128, "PSEffectConstants2D layout must match the CPU buffer");
 
-inline float4 s3d_positionTransform(float2 pos, float2x4 t)
+inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transform)
 {
-	const float2 t_13_14 = float2(t[0][2], t[0][3]);
-	const float2 t_11_12 = float2(t[0][0], t[0][1]);
-	const float2 t_21_22 = float2(t[1][0], t[1][1]);
-	return float4((t_13_14 + (pos.x * t_11_12) + (pos.y * t_21_22)), 0.0f, 1.0f);
+	const float2 translation = transform[0].zw;
+	const float2 basisX = transform[0].xy;
+	const float2 basisY = transform[1].xy;
+	return (translation + (position.x * basisX) + (position.y * basisY));
+}
+
+inline float4 s3d_positionTransform(const float2 position, const float2x4 transform)
+{
+	return float4(s3d_transformPoint2D(position, transform), 0.0f, 1.0f);
 }
 
 inline float4 s3d_premultiplyAlpha(float4 color)
@@ -233,12 +238,9 @@ inline float4 Pattern_BackgroundColorPMA(float4 backgroundColor, constant PSCons
 	return s3d_premultiplyAlpha(backgroundColor * c->g_patternBackgroundColorMul);
 }
 
-inline float2 Pattern_UVTransform(float2 drawingPosition, float2x4 t)
+inline float2 Pattern_UVTransform(const float2 drawingPosition, const float2x4 transform)
 {
-	const float2 t_13_14 = float2(t[0][2], t[0][3]);
-	const float2 t_11_12 = float2(t[0][0], t[0][1]);
-	const float2 t_21_22 = float2(t[1][0], t[1][1]);
-	return (t_13_14 + (drawingPosition.x * t_11_12) + (drawingPosition.y * t_21_22));
+	return s3d_transformPoint2D(drawingPosition, transform);
 }
 
 inline float2 Pattern_Integral(float2 v)
