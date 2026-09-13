@@ -518,22 +518,23 @@ static const float MSDF_TextThreshold = 0.5;
 
 struct MSDFState
 {
-	float2 textureSize;
 	float2 invTextureSize;
-	float scale;
+	float coverageScale;
 };
 
 inline MSDFState MSDF_Init(const float2 uv)
 {
-	MSDFState st;
-	g_texture0.GetDimensions(st.textureSize.x, st.textureSize.y);
-	st.invTextureSize = rcp(st.textureSize);
+	float2 textureSize;
+	g_texture0.GetDimensions(textureSize.x, textureSize.y);
+
+	MSDFState state;
+	state.invTextureSize = rcp(textureSize);
 
 	// Combine atlas dimensions and UV derivatives before taking the reciprocal.
-	const float2 screenPixelRange = ((0.5f * MSDF_PixelRange) / (st.textureSize * fwidth(uv)));
-	st.scale = (screenPixelRange.x + screenPixelRange.y);
+	const float2 screenPixelRange = ((0.5f * MSDF_PixelRange) / (textureSize * fwidth(uv)));
+	state.coverageScale = (screenPixelRange.x + screenPixelRange.y);
 
-	return st;
+	return state;
 }
 
 inline float MSDF_Median(const float r, const float g, const float b)
@@ -551,21 +552,21 @@ inline float MSDF_SampleDistance(const float2 uv)
 	return MSDF_Median(g_texture0.Sample(g_sampler0, uv).rgb);
 }
 
-inline float MSDF_Coverage(const float d, const float threshold, const float scale)
+inline float MSDF_Coverage(const float sampledDistance, const float threshold, const float coverageScale)
 {
-	return saturate((d - threshold) * scale + 0.5);
+	return saturate((sampledDistance - threshold) * coverageScale + 0.5);
 }
 
-inline float MSDF_AlphaAt(const float2 uv, const float threshold, const MSDFState st)
+inline float MSDF_AlphaAt(const float2 uv, const float threshold, const MSDFState state)
 {
-	return MSDF_Coverage(MSDF_SampleDistance(uv), threshold, st.scale);
+	return MSDF_Coverage(MSDF_SampleDistance(uv), threshold, state.coverageScale);
 }
 
 float4 PS_MSDFFont(PSInput input) : SV_TARGET
 {
-	const MSDFState st = MSDF_Init(input.uv);
+	const MSDFState state = MSDF_Init(input.uv);
 	
-	const float textAlpha = MSDF_AlphaAt(input.uv, MSDF_TextThreshold, st);
+	const float textAlpha = MSDF_AlphaAt(input.uv, MSDF_TextThreshold, state);
 	
 	const float4 textPMA = (input.colorPMA * textAlpha);
 	return s3d_applyColorAdd(textPMA, g_colorAdd);
@@ -573,14 +574,16 @@ float4 PS_MSDFFont(PSInput input) : SV_TARGET
 
 float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 {
-	const MSDFState st = MSDF_Init(input.uv);
-	const float d = MSDF_SampleDistance(input.uv);
-	
-	const float outlineAlpha = MSDF_Coverage(d, g_sdfParam.y, st.scale);
-	const float textAlpha = MSDF_Coverage(d, g_sdfParam.x, st.scale);
+	const float textThreshold = g_sdfParam.x;
+	const float outlineThreshold = g_sdfParam.y;
 
-	const float blend = textAlpha;
-	float4 colorPMA = lerp(g_sdfOutlineColorPMA, input.colorPMA, blend);
+	const MSDFState state = MSDF_Init(input.uv);
+	const float sampledDistance = MSDF_SampleDistance(input.uv);
+	
+	const float outlineAlpha = MSDF_Coverage(sampledDistance, outlineThreshold, state.coverageScale);
+	const float textAlpha = MSDF_Coverage(sampledDistance, textThreshold, state.coverageScale);
+
+	float4 colorPMA = lerp(g_sdfOutlineColorPMA, input.colorPMA, textAlpha);
 	colorPMA *= outlineAlpha;
 	
 	return s3d_applyColorAdd(colorPMA, g_colorAdd);
@@ -588,16 +591,18 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 
 float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
 {
-	const MSDFState st = MSDF_Init(input.uv);
+	const float2 shadowOffsetTexels = g_sdfParam.zw;
 
-	const float textAlpha = MSDF_AlphaAt(input.uv, MSDF_TextThreshold, st);
+	const MSDFState state = MSDF_Init(input.uv);
+
+	const float textAlpha = MSDF_AlphaAt(input.uv, MSDF_TextThreshold, state);
 	
-	const float2 shadowOffset = (g_sdfParam.zw * st.invTextureSize);
-	const float shadowAlpha = MSDF_AlphaAt((input.uv - shadowOffset), MSDF_TextThreshold, st);
+	const float2 shadowOffsetUV = (shadowOffsetTexels * state.invTextureSize);
+	const float shadowAlpha = MSDF_AlphaAt((input.uv - shadowOffsetUV), MSDF_TextThreshold, state);
 
-	const float sBase = (shadowAlpha * (1.0 - textAlpha));
+	const float shadowOnlyAlpha = (shadowAlpha * (1.0 - textAlpha));
 	const float4 textPMA = (input.colorPMA * textAlpha);
-	const float4 shadowPMA = (g_sdfShadowColorPMA * sBase);
+	const float4 shadowPMA = (g_sdfShadowColorPMA * shadowOnlyAlpha);
 
 	const float4 finalPMA = (textPMA + shadowPMA);
 	return s3d_applyColorAdd(finalPMA, g_colorAdd);
@@ -605,14 +610,18 @@ float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
 
 float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
 {
-	const MSDFState st = MSDF_Init(input.uv);
-	const float d = MSDF_SampleDistance(input.uv);
+	const float textThreshold = g_sdfParam.x;
+	const float outlineThreshold = g_sdfParam.y;
+	const float2 shadowOffsetTexels = g_sdfParam.zw;
 
-	const float outlineAlpha = MSDF_Coverage(d, g_sdfParam.y, st.scale);
-	const float textAlpha = MSDF_Coverage(d, g_sdfParam.x, st.scale);
+	const MSDFState state = MSDF_Init(input.uv);
+	const float sampledDistance = MSDF_SampleDistance(input.uv);
 
-	const float2 shadowOffset = (g_sdfParam.zw * st.invTextureSize);
-	const float shadowAlpha = MSDF_AlphaAt((input.uv - shadowOffset), g_sdfParam.y, st);
+	const float outlineAlpha = MSDF_Coverage(sampledDistance, outlineThreshold, state.coverageScale);
+	const float textAlpha = MSDF_Coverage(sampledDistance, textThreshold, state.coverageScale);
+
+	const float2 shadowOffsetUV = (shadowOffsetTexels * state.invTextureSize);
+	const float shadowAlpha = MSDF_AlphaAt((input.uv - shadowOffsetUV), outlineThreshold, state);
 
 	const float4 textPMA = (input.colorPMA * textAlpha);
 
@@ -628,27 +637,30 @@ float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
 
 float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
 {
-	const float d = saturate(g_texture0.Sample(g_sampler0, input.uv).a * 2.0);
-	const float pd = pow(abs(d), g_sdfParam.x);
+	const float glowExponent = g_sdfParam.x;
 
-	const float4 finalPMA = float4((input.colorPMA.rgb * pd), (input.colorPMA.a * pd));
+	const float glowBase = saturate(g_texture0.Sample(g_sampler0, input.uv).a * 2.0);
+	const float glowFactor = pow(abs(glowBase), glowExponent);
+
+	const float4 finalPMA = float4((input.colorPMA.rgb * glowFactor), (input.colorPMA.a * glowFactor));
 	return s3d_applyColorAdd(finalPMA, g_colorAdd);
 }
 
 float4 PS_MSDFFont_Print(PSInput input) : SV_TARGET
 {
-	const MSDFState st = MSDF_Init(input.uv);
-	const float d = MSDF_SampleDistance(input.uv);
+	const MSDFState state = MSDF_Init(input.uv);
+	const float sampledDistance = MSDF_SampleDistance(input.uv);
 
-	const float outlineDistance = 0.04;
-	const float outlineThreshold = (MSDF_TextThreshold - outlineDistance);
+	const float outlineDistanceOffset = 0.04;
+	const float outlineThreshold = (MSDF_TextThreshold - outlineDistanceOffset);
 
-	const float textAlpha = sqrt(saturate((d - 0.5) * st.scale + 0.5));
-	const float outlineAlpha = sqrt(saturate((d - outlineThreshold) * st.scale + 0.5));
+	const float textAlpha = sqrt(saturate((sampledDistance - 0.5) * state.coverageScale + 0.5));
+	const float outlineAlpha = sqrt(saturate((sampledDistance - outlineThreshold) * state.coverageScale + 0.5));
 
-	const float2 shadowOffset = (float2(0.625, 0.625) * st.invTextureSize);
-	const float d2 = MSDF_SampleDistance(input.uv - shadowOffset);
-	const float shadowAlpha = sqrt(saturate((d2 - outlineThreshold) * st.scale + 0.5));
+	const float2 shadowOffsetTexels = float2(0.625, 0.625);
+	const float2 shadowOffsetUV = (shadowOffsetTexels * state.invTextureSize);
+	const float shadowDistance = MSDF_SampleDistance(input.uv - shadowOffsetUV);
+	const float shadowAlpha = sqrt(saturate((shadowDistance - outlineThreshold) * state.coverageScale + 0.5));
 
 	float3 color = lerp(float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0), textAlpha);
 	const float hollowShadowAlpha = saturate(shadowAlpha * (1.0 - outlineAlpha));
