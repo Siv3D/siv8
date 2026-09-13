@@ -2,8 +2,8 @@
 
 ## Pattern design
 
-- [D3D11 shader optimization audit](proposals/d3d11-shader-optimization-audit.md):
-  unadopted optimization candidates, DXBC comparisons, and a Metal review handoff.
+- [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):
+  proposed stages, D3D11/Metal evidence, compatibility boundaries, and validation.
 - [Coordinates](pattern-coordinates.md): attachment to local/camera transforms,
   primitive continuity, and custom-shader interfaces.
 - [Parameter payload](pattern-payload.md): four-vector packing, effect-buffer

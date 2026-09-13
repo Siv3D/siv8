@@ -78,8 +78,9 @@ orientation-dependent distances or wrapped tile coordinates. The distance
 agrees on either side of each tile edge. The filter is local; it does not
 integrate many subpixel tiles, so strong minification can alias.
 
-Layout branches are uniform for a draw. Regular layouts skip hashing. No vertex,
-command, effect-buffer, or QuadWarp changes are required.
+Layout selection is uniform for a draw. Regular layouts do not depend on the
+hash result; a compiler may still evaluate it when lowering branches to selects.
+No vertex, command, effect-buffer, or QuadWarp changes are required.
 
 ## D3D11 integration
 

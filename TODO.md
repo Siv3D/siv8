@@ -9,9 +9,10 @@
 
 ## Renderer2D / 組み込みシェーダ最適化
 
-- [D3D11 HLSL 調査](docs/renderer2d/proposals/d3d11-shader-optimization-audit.md)を Metal 側の調査と統合し、採用範囲を決める。まず Pattern の色加算共通化、Truchet の距離式、Triangle の skew、影なし MSDF の除算を個別評価する。
-- QuadWarp の VS 移動と Truchet の配置分岐を GPU 計測で評価する。Pattern UV の VS 移動はカスタムシェーダ契約、背景色・MSDF 寸法の前計算は状態追従と定数管理の費用を確認してから判断する。
-- 通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。
+- [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)に沿って、Truchet の距離式、Pattern の色加算共通化、影なし MSDF の除算を順に独立評価し、採用を決める。HLSL / MSL・配布バイナリを揃え、境界画像と両ホストの全自動テスト、安定した GPU / CPU 計測で確認する。
+- QuadWarp の VS 移動は専用補間と定数管理、custom VS / PS 混在時の互換性を先に設計する。Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
+- Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
+- Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。
 
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 

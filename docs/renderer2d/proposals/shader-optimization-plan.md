@@ -1,28 +1,127 @@
-# D3D11 HLSL shader optimization audit
+# Built-in shader optimization assessment and plan
 
-Status: **Unadopted investigation; implementation and GPU timing pending.**
+Status: **Proposed implementation scope; engine changes and performance acceptance pending.**
 Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタムシェーダ契約を
-変える案は、Metal 側との統合判断を経て別段階で扱う。
+維持する局所変更を先に評価し、描画側の状態管理・補間インターフェース・画質を
+変える案は別段階で扱う。D3D11 と Metal の調査結果をこの文書に集約する。
 
-## MacBook 側への申し送り
+## 統合判断
 
-まず **Pattern の色加算共通化と Truchet の距離式整理**を検討する。
-どちらもシェーダ内部で完結し、現行の定数配置・varying・ハッシュ値を維持できる。
-次に Triangle の skew 共通化、影なし MSDF の除算整理を評価する。
-大面積描画向けには QuadWarp の同次座標を VS で計算する案が有望。
-Pattern UV の VS 移動は、公開済みのカスタムシェーダ契約があるため後回しにする。
+初期実装の候補は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
+それぞれ独立した差分で評価する。定数配置・varying・描画状態を増やさず、
+両コンパイラの中間表現に演算削減が現れるためである。
+数学的な等価性は浮動小数点の画像一致を保証しないので、採用は描画比較と計測を経て決める。
+
+| 扱い | 候補 | 判断理由 |
+| --- | --- | --- |
+| 初期評価 1 | A2 Truchet の距離式 | 両側で sqrt 削減。Metal の限定描画比較は一致。hash と AA を維持できる |
+| 初期評価 2 | A1 Pattern の ColorAdd | 全 11 種に適用できる小変更。Metal の限定描画比較では最大 1/255 のチャンネル差 |
+| 初期評価 3 | A4 影なし MSDF | 両側で除算削減。実フォントの倍率・変換・アトラス寸法を追加検証する |
+| 次段階の設計・試作 | B1 QuadWarp | 大面積描画で期待できるが、補間成分と VS 定数管理が増える |
+| D3D11 固有の計測候補 | B2 Truchet の分岐 | DXBC は現行で hash を常時計算。Metal AIR には既に条件分岐がある |
+| 保留 | A3 Triangle の skew | Metal の式共通化でも境界に大きな色差を確認。画質判断を先に行う |
+| 保留 | M1 Weave の微分共有 | Metal AIR の重複を除けるが、画像は bit 単位で一致しない。D3D11 の差と実効性能は未確認 |
+| 負荷の根拠が得られてから | B3 背景色・B5 MSDF 寸法の CPU 前計算 | 追加の状態追従と定数管理を、局所変更だけでは不足する場合に評価する |
+| 初期対象外 | B4 Pattern UV の VS 移動 | 公開済み custom shader 契約に対し、派生経路を増やす費用が大きい |
+
+実行時間の改善率は未確定。DXBC の slots と Metal AIR の命令数は相互換算できず、
+どちらも最終 GPU 命令・実レジスタ数・occupancy の測定ではない。
+候補の削減量は、特記しない限り各案を単独適用した値で、単純加算できない。
+未完了の作業一覧は [TODO](../../../TODO.md) が管理する。
+
+## 段階的な作業計画
+
+1. **比較条件を固定する。** 変更前後で描画面積、頂点数、draw call、blend、MSAA、
+   sampler を揃える。大面積の少数図形と多数の小図形、状態を固定する描画と頻繁に
+   切り替える描画を分ける。CPU 提出時間・定常 GPU 時間・初回生成時間を別々に測る。
+   タイミングが安定しない条件では改善率を判定しない。
+2. **A2 → A1 → A4 を個別に実装・検証する。** 一つずつ HLSL / MSL を揃え、
+   Windows で対応する配布バイナリを再生成する。既存の Pattern / Renderer2D テストを使い、
+   実フォントの描画検証が必要なら専用のテストに置く。各変更の境界比較と両ホストの
+   全自動テストが通った段階で採用判断する。中間命令の減少だけで高速化を宣言しない。
+3. **B1 QuadWarp の責務を設計する。** 専用の float3 補間と VS への定数供給を先に整理し、
+   custom VS / PS の片側差し替えを含めた互換性を決める。行列積の VS 移動と UV scale / offset
+   の行列合成は別差分にする。小 quad の悪化と CPU 状態更新の費用も採否に含める。
+4. **バックエンド固有の費用を独立して評価する。** D3D11 の B2 はまず `[branch]` を試し、
+   配置別 PS の増設はその結果を見て判断する。Windows の起動時 HLSL 再生成と Metal の
+   初回 PSO 生成は別の問題として計測し、後述の生成・キャッシュ手順を設計する。
+5. **保留案は必要性と画質の合意を得てから進める。** Triangle、Weave、half、PolkaDot / MSDF
+   の AA 方針変更を局所最適化へ混ぜない。Pattern UV や CPU 前計算も、先行変更後に
+   残った負荷を根拠に再評価する。
+
+画像比較では、丸めに由来する最大 1/255 の差も自動的に許容しない。差の位置、件数、
+透明合成後の結果、連続フレームでの見え方を確認する。既存の厳密な hash・端点・
+状態復帰の検証を緩めて通す変更は避ける。許容差が必要なら当該比較に限定して根拠を記録する。
+GPU 計測は温度・クロック変動や他の負荷の影響を受けるため、順序を交互にした反復比較と
+ばらつきを確認し、通常のエンジン描画でも再確認する。
+
+## Metal 側の照合
+
+対象は [2d.metal](../../../macOS/App/engine/shader/metal/2d.metal)、
+[fullscreen_triangle.metal](../../../macOS/App/engine/shader/metal/fullscreen_triangle.metal)、
+それらの描画・定数バインド・パイプライン生成経路。
+`metal -O3 -S -emit-llvm` による AIR 比較と、一時的なオフスクリーン描画で候補を照合した。
+これは Xcode の製品ビルド全体やエンジン全自動テストの検証ではない。
+
+画像比較は 1024 × 1024、RGBA8Unorm、MSAA なし、PMA blend、半透明の色と ColorAdd、
+平行移動・斜交成分を持つ Pattern UV 変換を使った限定条件。
+MSDF は合成した距離テクスチャによる比較であり、実フォントのアトラスや描画経路は未検証。
+比較結果はこの条件に限られ、全入力での一致を示すものではない。
+
+| 候補 | Metal AIR の差 | 限定描画比較・解釈 |
+| --- | --- | --- |
+| A1 ColorAdd 集約 | 全 11 種で vector fmul と fadd が各 1 個減る | 最大チャンネル差 1/255。PMA 化の位置は維持 |
+| A2 Truchet 距離式 | シェーダ全体の scalar sqrt が 3 → 2 | 比較画像は一致。全 layout・幅端点等は採用前に検証 |
+| A3 Triangle skew 共通化 | float2 dot が 8 → 6 | 最大チャンネル差 33/255。step の境界変化を確認 |
+| A4 MSDF 除算 | 通常・Outline の vector fdiv が 2 → 1 | 通常 MSDF の比較画像は一致。Outline の画像は追加検証。OutlineShadow の除算数は変わらない |
+| B2 Truchet 配置分岐 | 現行 AIR は layout の switch 内の Random ブロックに hash を置く | 最終 GPU コードが同じ分岐を保つかは未確認。D3D11 の常時計算を Metal に一般化しない |
+| M1 Weave 微分共有 | float2 fwidth が 2 → 1 | 最大チャンネル差 1/255。uv + 0.5 の丸め差に注意 |
+
+A3 は定数三角関数を維持したまま、中心とオフセットへ skew を分解した実験。
+別に行った tan / sin の小数定数化も画像の境界を変えたが、両案は同じ変更ではない。
+定数化だけを速度改善として採用しない。
+
+M1 は `PS_PatternWeave` の既存 `fwidth(uv)` から幅を求め、
+`Pattern_CheckersFiltered(uv + 0.5, ...)` に渡す案。
+数学上は定数平行移動で微分は変わらないが、浮動小数点では完全には一致しない。
+Checker 自体の積分式・parity フィルタは維持する。再利用可能な幅を受け取る計算を
+共通にし、通常の Checker 呼び出しは幅を計算して渡す形にできる。
+
+GPU 時間の予備比較はばらつきが大きく、速度改善の根拠には採用していない。
+使用した命令表示ツールでは最終 GPU コードを逆アセンブルできず、AIR 以降の
+除去・定数畳み込み・分岐形態は未確認。ソースや AIR の見た目から実行回数を断定しない。
+
+### Metal 固有の候補
+
+- **頂点配列のアドレス空間。** `VS_Shape` / `VS_QuadWarp` / `VS_Pattern` の
+  `constant VSInput*` は vertex ID ごとに異なる項目を読む。
+  `const device VSInput*` はアクセス方法に適するが、予備比較では明確な速度差はなかった。
+  定数バッファは同じ理由で device へ変更しない。
+- **half の限定利用。** 最初の評価対象は画面転送の `texture2d<half>` と出力色。
+  UV・位置・微分・MSDF 距離・Truchet の hash 入力は float を維持する。
+  一般の色計算へ広げる前に透明合成、階調、値域と既存の shader interface を確認する。
+  現段階では画像・速度とも未検証。
+- **初回 PSO 生成。** [MetalRenderPipelineState::get](../../../Siv3D/src/Siv3D-Platform/macOS/Siv3D/Renderer/Metal/RenderPipelineState/MetalRenderPipelineState.mm)
+  はキャッシュミス時、描画処理から同期生成する。通常利用する組み合わせの事前生成を
+  先に検討し、残る費用に応じて Binary Archive を評価する。全組み合わせの列挙や
+  大規模な永続キャッシュから始めない。起動時間への移動と定常 GPU 時間の改善を区別する。
+
+アドレス空間・16-bit 型・uniform 計算の扱いは
+[Apple の Metal 最適化指針](https://developer.apple.com/videos/play/wwdc2020/10632/)、
+事前コンパイルは [Binary Archive](https://developer.apple.com/documentation/metal/metal-binary-archives)
+を参照する。描画中に一定の背景色などは Metal のコンパイラも前計算できるため、
+B3 の DXBC 削減量をそのまま Metal の費用削減とみなさない。
+
+## D3D11 の比較結果
 
 以下は Windows の D3DCompile と D3DDisassemble による **DXBC 命令列の比較**。
 GPU の実行時間、消費電力、実レジスタ数、occupancy の改善を示す数値ではない。
-Metal コンパイラが同じ式を既に最適化している可能性もある。
-候補の削減量は、特記しない限り各案を単独適用した値で、単純加算できない。
-採用判断待ちの作業は [TODO](../../../TODO.md) に集約する。
 
 | 候補 | D3D11 で確認した差 | 統合判断の要点 |
 | --- | --- | --- |
-| A1. Pattern の色加算を補間後へ集約 | 全 11 種で各 1 slot 減。Stripe は 24 → 23、仮想 temp は 3 → 2 | 最初の候補。透明色・ColorMul・ColorAdd を確認 |
+| A1. Pattern の色加算を補間後へ集約 | 全 11 種で各 1 slot 減。Stripe は 24 → 23、仮想 temp は 3 → 2 | 初期候補。透明色・ColorMul・ColorAdd を確認 |
 | A2. Truchet の距離を二乗値で比較 | 59 → 57 slots、scalar sqrt が 3 → 2 | 配置・seed・AA 式を維持できる |
-| A3. Triangle の skew を中心とオフセットに分解 | 34 → 31 slots、仮想 temp は 4 → 3 | step の境界で演算順の差が出るため画像比較必須 |
+| A3. Triangle の skew を中心とオフセットに分解 | 34 → 31 slots、仮想 temp は 4 → 3 | Metal の境界差を踏まえ初期実装から外す |
 | A4. 影なし MSDF の除算をまとめる | 通常 18 → 17、Outline 20 → 19。vector div が 2 → 1 | Shadow/Print は改善しない。精度差を確認 |
 | B1. QuadWarp の同次座標を VS へ移す | PS 9 → 6、VS 8 → 10。UV 変換を行列に合成する追加案では PS 5 | varying が float2 → float3。VS 定数の管理が必要 |
 | B2. Truchet の uniform branch / 配置別専用化 | 現行は全配置でハッシュ命令を実行。定数専用化では Random 52、Uniform 33、Alternating 39 slots | 分岐またはシェーダ数の増加と比較する |
@@ -30,7 +129,7 @@ Metal コンパイラが同じ式を既に最適化している可能性もあ�
 | B4. Pattern UV の VS 前計算 | 調べた 4 種で PS が各 2～3 slots 減 | カスタムシェーダとの互換性が最大の制約 |
 | B5. MSDF の逆テクスチャ寸法を定数化 | 通常 18 → 16、Outline 20 → 18、Shadow 29 → 26、Print 30 → 27 | アトラス交換・拡張時の状態追従が必要 |
 
-## 調査範囲と根拠
+## D3D11 側の調査範囲と根拠
 
 - 主対象は [2d.hlsl](../../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl)
   と [fullscreen_triangle.hlsl](../../../WindowsDesktop/App/engine/shader/d3d11/fullscreen_triangle.hlsl)。
@@ -49,10 +148,10 @@ Metal コンパイラが同じ式を既に最適化している可能性もあ�
   出力末尾の approximate instruction slots、`temp` は `dcl_temps`。
   後段のドライバによる変換や、スカラ・ベクトル命令の費用差は含まない。
 - エンジンの HLSL、C++、配布シェーダバイナリは変更していない。
-  描画 A/B、GPU timestamp、Windows のエンジン全テスト、Metal の実行は未実施。
-  これは調査・文書化であり、実装完了報告ではない。
+  D3D11 描画 A/B、GPU timestamp、Windows のエンジン全テストは未実施。
+  Metal の限定比較は前節を参照。これは調査・文書化であり、実装完了報告ではない。
 
-## A. 現行インターフェースのまま評価できる案
+## A. 現行インターフェースのまま評価できる案の詳細
 
 ### A1. Pattern の ColorAdd を補間後の 1 回にする
 
@@ -289,10 +388,10 @@ Shadow・Print が各 3 slots 減。テクスチャの sample 数は変わらな
 
 ## 採用前の検証順序
 
-1. A1、A2、A3、A4 を独立した差分として評価する。
+1. 初期候補の A2、A1、A4 を独立した差分として評価する。A3 は画質判断を伴う別段階にする。
    [Pattern tests](../../../Test/Test_Pattern.cpp) の既存検証を利用し、変更箇所に応じて境界を補う。
-   A2 は [Truchet manual sample](../../../Test/Manual/Truchet.md)、A3 は
-   [Pattern gallery](../../../Test/Manual/PatternGallery.md) で動く境界も見る。
+   [Pattern collection](../../../Test/Manual/PatternCollection.md) で Truchet の各配置と
+   Triangle の動く境界も見る。保留中の M1 は Weave の幅・gap・交差部を追加確認する。
 2. B1 と B2 は、画面を広く覆う少数の quad と、多数の小さい quad を分けて測る。
    Pattern の模様別、Truchet の配置別、文字の通常 / 影 / outline を混ぜずに基準を取る。
    同じ描画面積、blend、MSAA、sampler、draw call 数で比較し、GPU timestamp の
@@ -308,5 +407,5 @@ Shadow・Print が各 3 slots 減。テクスチャの sample 数は変わらな
 一般方針として、計算頻度を下げられるものを前段へ移す考え方は
 [Microsoft の HLSL 最適化指針](https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-optimize)
 とも一致する。本件では既存の呼び出し経路・公開契約・O3 の出力を優先して候補を絞った。
-**MacBook 側では、A1～A4 の Metal 出力、B1 の追加補間と定数管理の費用、
-B2 の uniform branch の扱いを照合し、両バックエンドで採用する範囲を判断してほしい。**
+実装時は先頭の統合判断と段階的計画に従い、採用した項目の知識を既存の subject guide へ
+反映する。未完了項目は TODO に残し、完了後はこの提案を履歴として複製保存しない。
