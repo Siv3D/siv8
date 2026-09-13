@@ -9,7 +9,7 @@
 
 ## Renderer2D / 組み込みシェーダ最適化
 
-- [Pattern の座標・パラメータ命名](docs/renderer2d/pattern-payload.md#shader-side-interpretation)と Truchet の seed 復元関数について、macOS で Metal のコンパイル、Pattern 関連テスト、全自動テストを実行する。
+- [Pattern の座標・パラメータ命名](docs/renderer2d/pattern-payload.md#shader-side-interpretation)、Truchet の seed 復元関数、[色加算の共通化と背景色の PMA 命名](docs/renderer2d/pattern-payload.md#color-composition)について、macOS で Metal のコンパイル、Pattern・MSDF 関連テスト、全自動テストを実行する。
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、macOS のエンジン全自動テスト、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
 - QuadWarp の VS 移動は専用補間と定数管理、custom VS / PS 混在時の互換性を先に設計する。Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。

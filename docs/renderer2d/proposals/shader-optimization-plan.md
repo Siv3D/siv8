@@ -194,7 +194,7 @@ macOS のエンジン全自動テストも別途必要であり、Windows の結
 
 HLSL / MSL ソースへ適用済み。色加算を集約できる理由、PMA 化の順序、回帰テストは
 [Pattern の色合成](../pattern-payload.md#color-composition)を参照する。
-対象は `Pattern_BackgroundColor()` と全 `PS_Pattern*`。前景・背景への個別の色加算を、
+対象は `Pattern_BackgroundColorPMA()` と全 `PS_Pattern*`。前景・背景への個別の色加算を、
 補間後の 1 回へ集約した。逆向きの補間を使う Halftone 等も向きと coverage を維持する。
 
 Metal AIR では全 11 種で vector fmul と fadd が各 1 個減る。
@@ -329,18 +329,19 @@ layout は定数バッファ由来で draw 内では uniform。両分岐の外�
 
 ### B3. Pattern の背景色を描画状態変更時に前計算する
 
-`Pattern_BackgroundColor()` は各ピクセルで同じ背景色乗算・PMA 化・色加算を計算する。
+A1 適用前の背景色関数は、各ピクセルで同じ背景色乗算・PMA 化・色加算を計算していた。
 その結果を定数として与えた PS の実験では、Stripe / PolkaDot / Weave / Truchet で
 各 3 slots 減を確認した。これは CPU 側を含む統合実装ではない。
 
-依存するのは `PatternParameters` だけでなく `ColorMul` と `ColorAdd`。
+現行の `Pattern_BackgroundColorPMA()` は、背景色乗算と PMA 化を担う。
+この結果を前計算する場合、依存するのは `PatternParameters` と `ColorMul`。
 パターン生成時に確定させず、`flush()` で関係する状態が変わったときに更新する設計が必要。
 コマンド順、同じパターンで色だけ変更する draw、フレーム復帰を含める。
 [共通定数レイアウト](../../../Siv3D/src/Siv3D/Renderer2D/Renderer2DCommon.hpp) と
 [payload の既存検証](../pattern-payload.md) を確認し、生の背景色を読む custom PS の
 意味を上書きしない。
 
-A1 を採用した場合、背景色には ColorAdd 前の PMA 色を前計算する案が自然。
+ColorAdd は補間後に適用し、前計算する背景色には含めない。
 A1 の 1 slot とこの 3 slots は削減対象が重なるため、再コンパイルして判断する。
 CPU 状態管理の増加に対して、小さい描画では得が少ない可能性がある。
 

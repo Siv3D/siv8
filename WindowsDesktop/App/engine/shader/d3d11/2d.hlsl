@@ -62,15 +62,15 @@ inline float4 s3d_premultiplyAlpha(const float4 color)
 	return float4((color.rgb * color.a), color.a);
 }
 
-inline float4 s3d_shapeColor(const float4 vertexColorPMA)
+inline float4 s3d_applyColorAdd(const float4 colorPMA, const float4 colorAdd)
 {
-	return (vertexColorPMA + (g_colorAdd * vertexColorPMA.a));
+	return (colorPMA + (colorAdd * colorPMA.a));
 }
 
 inline float4 s3d_textureColor(float4 vertexColorPMA, const float4 textureColorPMA)
 {
 	vertexColorPMA *= textureColorPMA;
-	return (vertexColorPMA + (g_colorAdd * vertexColorPMA.a));
+	return s3d_applyColorAdd(vertexColorPMA, g_colorAdd);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ PSInput VS_Pattern(VSInput input)
 
 float4 PS_Shape(PSInput input) : SV_TARGET
 {
-	return s3d_shapeColor(input.colorPMA);
+	return s3d_applyColorAdd(input.colorPMA, g_colorAdd);
 }
 
 float4 PS_Texture(PSInput input) : SV_TARGET
@@ -140,7 +140,7 @@ float4 PS_LineDot(PSInput input) : SV_TARGET
 	const float alpha = smoothstep((0.5 - w), (0.5 + w), value);
 	result *= alpha;
 
-	return s3d_shapeColor(result);
+	return s3d_applyColorAdd(result, g_colorAdd);
 }
 
 float4 PS_LineDash(PSInput input) : SV_TARGET
@@ -153,7 +153,7 @@ float4 PS_LineDash(PSInput input) : SV_TARGET
 	const float alpha = smoothstep((0.4 - w), (0.4 + w), distance);
 	result *= alpha;
 
-	return s3d_shapeColor(result);
+	return s3d_applyColorAdd(result, g_colorAdd);
 }
 
 float4 PS_LineLongDash(PSInput input) : SV_TARGET
@@ -166,7 +166,7 @@ float4 PS_LineLongDash(PSInput input) : SV_TARGET
 	const float alpha = smoothstep((0.3 - w), (0.3 + w), distance);
 	result *= alpha;
 
-	return s3d_shapeColor(result);
+	return s3d_applyColorAdd(result, g_colorAdd);
 }
 
 float4 PS_LineDashDot(PSInput input) : SV_TARGET
@@ -182,7 +182,7 @@ float4 PS_LineDashDot(PSInput input) : SV_TARGET
 	const float alpha2 = smoothstep((0.9 - w), (0.9 + w), distance2);
 	result *= max(alpha1, alpha2);
 
-	return s3d_shapeColor(result);
+	return s3d_applyColorAdd(result, g_colorAdd);
 }
 
 float4 PS_LineRoundDot(PSInput input) : SV_TARGET
@@ -195,7 +195,7 @@ float4 PS_LineRoundDot(PSInput input) : SV_TARGET
 	const float alpha = (1.0 - smoothstep((1.0 - w), (1.0 + w), distance));
 	result *= alpha;
 
-	return s3d_shapeColor(result);
+	return s3d_applyColorAdd(result, g_colorAdd);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -204,9 +204,8 @@ float4 PS_LineRoundDot(PSInput input) : SV_TARGET
 //
 ////////////////////////////////////////////////////////////////
 	
-inline float4 Pattern_BackgroundColor()
+inline float4 Pattern_BackgroundColorPMA()
 {
-	// Apply ColorAdd once, after interpolating the two PMA colors.
 	return s3d_premultiplyAlpha(g_patternBackgroundColor * g_patternBackgroundColorMul);
 }
 
@@ -261,9 +260,9 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 	const float c = smoothstep((normalizedRadius - fw), (normalizedRadius + fw), value);
 
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
+	const float4 background = Pattern_BackgroundColorPMA();
 
-	return s3d_shapeColor(lerp(primary, background, c));
+	return s3d_applyColorAdd(lerp(primary, background, c), g_colorAdd);
 }
 
 float4 PS_PatternHalftone(PSInput input) : SV_TARGET
@@ -286,8 +285,8 @@ float4 PS_PatternHalftone(PSInput input) : SV_TARGET
 	const float coverage = ((1.0f - smoothstep(normalizedRadius - fw, normalizedRadius + fw, length(repeat)))
 		* saturate(normalizedRadius / fw));
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
-	return s3d_shapeColor(lerp(background, primary, coverage));
+	const float4 background = Pattern_BackgroundColorPMA();
+	return s3d_applyColorAdd(lerp(background, primary, coverage), g_colorAdd);
 }
 
 float4 PS_PatternWave(PSInput input) : SV_TARGET
@@ -309,8 +308,8 @@ float4 PS_PatternWave(PSInput input) : SV_TARGET
 	const float thickness = (width * (1.0f + 2.0f * fw) - fw);
 	const float t = smoothstep(thickness - fw, thickness + fw, value);
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
-	return s3d_shapeColor(lerp(primary, background, t));
+	const float4 background = Pattern_BackgroundColorPMA();
+	return s3d_applyColorAdd(lerp(primary, background, t), g_colorAdd);
 }
 
 float4 PS_PatternRipple(PSInput input) : SV_TARGET
@@ -328,8 +327,8 @@ float4 PS_PatternRipple(PSInput input) : SV_TARGET
 	const float thickness = (normalizedThickness * (1.0f + 2.0f * fw) - fw);
 	const float t = smoothstep(thickness - fw, thickness + fw, value);
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
-	return s3d_shapeColor(lerp(primary, background, t));
+	const float4 background = Pattern_BackgroundColorPMA();
+	return s3d_applyColorAdd(lerp(primary, background, t), g_colorAdd);
 }
 
 float4 PS_PatternWeave(PSInput input) : SV_TARGET
@@ -351,8 +350,8 @@ float4 PS_PatternWeave(PSInput input) : SV_TARGET
 	const float horizontalCut = ((expanded.y - band.y) * band.x);
 	const float coverage = (max(band.x, band.y) - lerp(verticalCut, horizontalCut, horizontalOver));
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
-	return s3d_shapeColor(lerp(background, primary, coverage));
+	const float4 background = Pattern_BackgroundColorPMA();
+	return s3d_applyColorAdd(lerp(background, primary, coverage), g_colorAdd);
 }
 
 // Matches Pattern::Truchet::Layout.
@@ -410,8 +409,8 @@ float4 PS_PatternTruchet(PSInput input) : SV_TARGET
 	const float width = (normalizedThickness * (1.0f + 2.0f * fw) - fw);
 	const float coverage = (1.0f - smoothstep(width - fw, width + fw, 2.0f * distance));
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
-	return s3d_shapeColor(lerp(background, primary, coverage));
+	const float4 background = Pattern_BackgroundColorPMA();
+	return s3d_applyColorAdd(lerp(background, primary, coverage), g_colorAdd);
 }
 
 float4 PS_PatternStripe(PSInput input) : SV_TARGET
@@ -428,9 +427,9 @@ float4 PS_PatternStripe(PSInput input) : SV_TARGET
 	const float c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
+	const float4 background = Pattern_BackgroundColorPMA();
 
-	return s3d_shapeColor(lerp(primary, background, c));
+	return s3d_applyColorAdd(lerp(primary, background, c), g_colorAdd);
 }
 
 float4 PS_PatternGrid(PSInput input) : SV_TARGET
@@ -448,9 +447,9 @@ float4 PS_PatternGrid(PSInput input) : SV_TARGET
 	const float c2 = min(c.x, c.y);
 
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
+	const float4 background = Pattern_BackgroundColorPMA();
 
-	return s3d_shapeColor(lerp(primary, background, c2));
+	return s3d_applyColorAdd(lerp(primary, background, c2), g_colorAdd);
 }
 
 float4 PS_PatternChecker(PSInput input) : SV_TARGET
@@ -462,9 +461,9 @@ float4 PS_PatternChecker(PSInput input) : SV_TARGET
 	const float c = Pattern_CheckersFiltered(patternUV, axisIntensity);
 
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
+	const float4 background = Pattern_BackgroundColorPMA();
 
-	return s3d_shapeColor(lerp(primary, background, c));
+	return s3d_applyColorAdd(lerp(primary, background, c), g_colorAdd);
 }
 
 float4 PS_PatternTriangle(PSInput input) : SV_TARGET
@@ -484,9 +483,9 @@ float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 	const float c = dot(ss, 0.25);
 
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
+	const float4 background = Pattern_BackgroundColorPMA();
 
-	return s3d_shapeColor(lerp(primary, background, c));
+	return s3d_applyColorAdd(lerp(primary, background, c), g_colorAdd);
 }
 
 float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
@@ -503,9 +502,9 @@ float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 	const float c = smoothstep((filteredEdgeThreshold - w), (filteredEdgeThreshold + w), h);
 
 	const float4 primary = input.colorPMA;
-	const float4 background = Pattern_BackgroundColor();
+	const float4 background = Pattern_BackgroundColorPMA();
 
-	return s3d_shapeColor(lerp(background, primary, c));
+	return s3d_applyColorAdd(lerp(background, primary, c), g_colorAdd);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -562,11 +561,6 @@ inline float MSDF_AlphaAt(const float2 uv, const float threshold, const MSDFStat
 	return MSDF_Coverage(MSDF_SampleDistance(uv), threshold, st.scale);
 }
 
-inline float4 MSDF_PremulAdd(const float4 colorPMA)
-{
-	return (colorPMA + (g_colorAdd * colorPMA.a));
-}
-
 float4 PS_MSDFFont(PSInput input) : SV_TARGET
 {
 	const MSDFState st = MSDF_Init(input.uv);
@@ -574,7 +568,7 @@ float4 PS_MSDFFont(PSInput input) : SV_TARGET
 	const float textAlpha = MSDF_AlphaAt(input.uv, MSDF_TextThreshold, st);
 	
 	const float4 textPMA = (input.colorPMA * textAlpha);
-	return MSDF_PremulAdd(textPMA);
+	return s3d_applyColorAdd(textPMA, g_colorAdd);
 }
 
 float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
@@ -589,7 +583,7 @@ float4 PS_MSDFFont_Outline(PSInput input) : SV_TARGET
 	float4 colorPMA = lerp(g_sdfOutlineColorPMA, input.colorPMA, blend);
 	colorPMA *= outlineAlpha;
 	
-	return MSDF_PremulAdd(colorPMA);
+	return s3d_applyColorAdd(colorPMA, g_colorAdd);
 }
 
 float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
@@ -606,7 +600,7 @@ float4 PS_MSDFFont_Shadow(PSInput input) : SV_TARGET
 	const float4 shadowPMA = (g_sdfShadowColorPMA * sBase);
 
 	const float4 finalPMA = (textPMA + shadowPMA);
-	return MSDF_PremulAdd(finalPMA);
+	return s3d_applyColorAdd(finalPMA, g_colorAdd);
 }
 
 float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
@@ -629,7 +623,7 @@ float4 PS_MSDFFont_OutlineShadow(PSInput input) : SV_TARGET
 	const float4 shadowPMA = g_sdfShadowColorPMA * shadowCoverage;
 
 	const float4 finalPMA = (textPMA + outlinePMA + shadowPMA);
-	return MSDF_PremulAdd(finalPMA);
+	return s3d_applyColorAdd(finalPMA, g_colorAdd);
 }
 
 float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
@@ -638,7 +632,7 @@ float4 PS_MSDFFont_Glow(PSInput input) : SV_TARGET
 	const float pd = pow(abs(d), g_sdfParam.x);
 
 	const float4 finalPMA = float4((input.colorPMA.rgb * pd), (input.colorPMA.a * pd));
-	return MSDF_PremulAdd(finalPMA);
+	return s3d_applyColorAdd(finalPMA, g_colorAdd);
 }
 
 float4 PS_MSDFFont_Print(PSInput input) : SV_TARGET

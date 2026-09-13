@@ -78,10 +78,12 @@ Uniform keeps the original tile orientation.
 ## Color composition
 
 The pattern vertex shader multiplies the foreground by ColorMul and converts it
-to premultiplied alpha (PMA). `Pattern_BackgroundColor` does the same for the
+to premultiplied alpha (PMA). `Pattern_BackgroundColorPMA` does the same for the
 background using the pixel-shader copy of ColorMul. Each pattern interpolates
-these PMA colors using its coverage, then calls `s3d_shapeColor` to apply ColorAdd
-once to the result.
+these PMA colors using its coverage, then calls `s3d_applyColorAdd` to apply ColorAdd
+once to the result. The same helper applies ColorAdd after PMA composition in
+shape, line, texture, and MSDF shaders; MSDF Print uses its own composition
+without ColorAdd.
 
 For a fixed additive color, `A(C) = C + ColorAdd * C.a` is linear, so
 `mix(A(P), A(B), t) = A(mix(P, B, t))`. This lets the two colors share the
