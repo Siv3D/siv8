@@ -3,8 +3,8 @@
 `Pattern::Truchet` joins two quarter-circle arcs per square tile. The public
 contract is in [Truchet.hpp](../../Siv3D/include/Siv3D/Pattern/Truchet.hpp); the
 [manual sample](../../Test/Manual/Truchet.md) compares three layouts and seeds.
-Metal rendering is implemented. The remaining backend work is tracked in
-[TODO](../../TODO.md) and the [combined D3D11 handoff](d3d11-new-patterns.md).
+Metal and D3D11 use the same arc geometry and deterministic integer hash. See
+the [combined D3D11 integration guide](d3d11-new-patterns.md) for backend wiring.
 
 ## Geometry and layout
 
@@ -28,8 +28,7 @@ Nonuniform local/camera transforms deform circles with the object.
 
 ## Deterministic random layout
 
-Do not use a trigonometric floating-point hash for the D3D11 port. The shader
-hashes the IEEE-754 binary32 bits of `floor(uv) + 0.5`, then uses unsigned 32-bit
+The shader hashes the IEEE-754 binary32 bits of `floor(uv) + 0.5`, then uses unsigned 32-bit
 arithmetic with modulo-2^32 multiplication and logical shifts:
 
 ```text
@@ -82,17 +81,19 @@ integrate many subpixel tiles, so strong minification can alias.
 Layout branches are uniform for a draw. Regular layouts skip hashing. No vertex,
 command, effect-buffer, or QuadWarp changes are required.
 
-## D3D11 port details
+## D3D11 integration
 
-Translate `PS_PatternTruchet` and `Pattern_TruchetHash` from
-[2d.metal](../../macOS/App/engine/shader/metal/2d.metal) into HLSL. Use
-`asuint(cell + 0.5f)` for coordinate keys and numeric `(uint)` conversions for
-seed halves. Preserve the uint arithmetic, all constants, and layout IDs.
-Register `2d_pattern_truchet.ps` after Weave in the engine shader loader and add
-the renderer shader ID/selection. Before this port the existing default selector
-draws a solid shape; public Doxygen does not describe that temporary state.
+`PS_PatternTruchet` and `Pattern_TruchetHash` in
+[2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) use
+`asuint(cell + 0.5f)` for coordinate keys and numeric `uint` conversions for
+seed halves. Unsigned arithmetic, constants, and layout IDs match Metal.
+The loader appends `2d_pattern_truchet.ps` after Weave, and the renderer selects
+it for `PatternType::Truchet`.
 
-Enable the Truchet GPU cases on Windows, run the focused and full test suites,
-and compare regular/random galleries. Retain exact solid-interior, zero/full-width,
-seed-independence for regular layouts, and tile-midpoint checks. Do not treat
-matching seed packing alone as verification of the GPU hash or rendered layout.
+## Validation
+
+CPU packing and Metal/D3D11 GPU cases cover all layouts, negative coordinates,
+seeds with high bits set, transformations, split geometry, and state restoration.
+Solid interiors, zero/full-width compositing, seed independence for regular
+layouts, and tile-midpoint connectivity have exact checks. GPU rendering uses
+an independent geometric reference, rather than seed packing alone.

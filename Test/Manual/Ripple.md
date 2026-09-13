@@ -1,7 +1,7 @@
 # Ripple
 
-A 1280 x 780 gallery of concentric-circle backgrounds. Metal is the current
-execution target; see the [port checklist](../../docs/renderer2d/ripple.md).
+A 1280 x 780 gallery of concentric-circle backgrounds. Runs on Windows (D3D11)
+and macOS (Metal); see the [design notes](../../docs/renderer2d/ripple.md).
 This focused sample is separate from the planned gallery of all Pattern types.
 
 ## Execution
@@ -9,6 +9,9 @@ This focused sample is separate from the planned gallery of all Pattern types.
 1. Paste the complete program into a separate Siv3D application built with this
    revision. Keep the repository's platform test entry point intact.
 2. Run with the standard engine assets; no extra images are needed.
+   On Windows, include the standard `App/Resource.rc` and place the executable
+   beside the `engine/` assets. [D3D11 verification](../../docs/renderer2d/d3d11-new-patterns.md#verification)
+   also describes separate sample builds.
 3. Space toggles outward radial motion; R restores the initial state.
 4. Down/Up change object scale (0.3 to 1). Left/Right rotate the objects;
    zoom out first to leave space between rotated cards. N toggles nonuniform scale.

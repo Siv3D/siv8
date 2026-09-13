@@ -13,16 +13,15 @@ Renderer design notes and related checks:
 - [Truchet](truchet.md): connected arcs, regular/random layouts, and seed encoding.
 - [Truchet manual sample](../../Test/Manual/Truchet.md): three layouts, seeds,
   animation, and transforms.
-- [D3D11 new-pattern handoff](d3d11-new-patterns.md): combined integration steps
+- [D3D11 new-pattern integration](d3d11-new-patterns.md): shader wiring and verification
   for Wave, Ripple, Weave, and Truchet.
-- [Weave](weave.md): alternating crossings, filtered gaps, payload, and D3D11 port.
+- [Weave](weave.md): alternating crossings, filtered gaps, payload, and integration.
 - [Weave manual sample](../../Test/Manual/Weave.md): fabric and basket presets,
   animation, and transform controls.
-- [Ripple](ripple.md): concentric bands, center filtering, payload, and D3D11 port.
+- [Ripple](ripple.md): concentric bands, center filtering, payload, and integration.
 - [Ripple manual sample](../../Test/Manual/Ripple.md): off-card centers, layered
   circles, radial motion, and transform controls.
-- [Wave](wave.md): sine-wave width approximation, payload, Metal integration,
-  and D3D11 port checklist.
+- [Wave](wave.md): sine-wave width approximation, payload, and shader integration.
 - [Wave manual sample](../../Test/Manual/Wave.md): presets, animation, and
   transform controls.
 - [Halftone](halftone.md): adopted API, coordinate

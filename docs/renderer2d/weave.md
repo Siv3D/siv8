@@ -4,7 +4,7 @@
 foreground color, and background-colored gaps. The authoritative contract is
 [Weave.hpp](../../Siv3D/include/Siv3D/Pattern/Weave.hpp); the
 [manual sample](../../Test/Manual/Weave.md) provides nine presets and transform
-controls. Metal is implemented; D3D11 remains in [TODO](../../TODO.md).
+controls. Metal and D3D11 use the same filtered band, gap, and parity masks.
 
 ## Placement and gaps
 
@@ -56,30 +56,19 @@ Pattern vertex path, shape overloads, command storage, and QuadWarp are unchange
 The extra mask filtering is specific to Weave; other Pattern shaders incur no
 additional work.
 
-## D3D11 port checklist
+## D3D11 integration
 
-1. Translate `PS_PatternWeave` from
-   [2d.metal](../../macOS/App/engine/shader/metal/2d.metal) to
-   [2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl), preserving the
-   filtered parity, the two band masks, and the existing premultiplied color path.
-   The HLSL file already has `Pattern_CheckersFiltered`.
-2. Append `2d_pattern_weave.ps` compilation/loading at `EnginePS::PatternWeave`,
-   after Ripple, and regenerate the DXBC on Windows. Register the renderer's
-   shader ID, initialization, and `PatternType::Weave` selection.
-3. Enable the Weave GPU cases in
-   [Test_Pattern.cpp](../../Test/Test_Pattern.cpp) for Windows. Keep exact
-   zero/full-width compositing and solid-interior checks. Inspect any differences
-   at antialiased edges separately.
-4. Run focused Pattern tests and the complete Windows suite, then inspect the
-   gallery, animation, negative coordinates, transforms, and maximum-gap cuts.
-
-Until the renderer selection is ported, its existing default draws a solid shape.
-This temporary state belongs in development notes, not public-header Doxygen.
+`PS_PatternWeave` in
+[2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) preserves the
+filtered parity, both band masks, and the premultiplied color path. The loader
+appends `2d_pattern_weave.ps` after Ripple, and the renderer selects it for
+`PatternType::Weave`. See the [combined integration guide](d3d11-new-patterns.md)
+for shader generation and verification.
 
 ## Validation
 
 CPU tests cover rotated/negative crossing positions, colors, band/gap packing,
-and zero/full-width and zero/maximum-gap endpoints. Metal readbacks compare
+and zero/full-width and zero/maximum-gap endpoints. Metal and D3D11 readbacks compare
 interiors with geometric crossing rules, exercise maximum-gap antialiasing,
 verify alpha compositing, local/camera transforms, split geometry and viewports,
 and restore a gap-only state change across Wave and repeated frames.

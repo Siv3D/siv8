@@ -457,8 +457,6 @@ namespace
 	}
 }
 
-# if SIV3D_PLATFORM(MACOS)
-
 TEST_CASE("Pattern.truchet_rendering")
 {
 	using Layout = Pattern::Truchet::Layout;
@@ -1073,8 +1071,6 @@ TEST_CASE("Pattern.wave_transforms_and_state")
 	CHECK(mismatches == 0);
 	CHECK(differences > 100);
 }
-
-# endif
 
 TEST_CASE("Pattern.halftone_rendering")
 {

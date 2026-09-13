@@ -277,6 +277,99 @@ float4 PS_PatternHalftone(PSInput input) : SV_TARGET
 	return lerp(background, primary, coverage);
 }
 
+float4 PS_PatternWave(PSInput input) : SV_TARGET
+{
+	const float2 uv = Pattern_UVTransform(input.uv);
+	const float phase = (6.28318530718f * uv.x);
+	const float u = (uv.y - g_patternUVTransform[1].w * sin(phase) + 0.5f);
+	const float slope = (g_patternExtraParams.x * cos(phase));
+	// First-order normal-width correction, not an exact distance to the sine curve.
+	const float width = saturate(g_patternUVTransform[1].z * sqrt(1.0f + slope * slope));
+	// Differentiate before wrapping; zero amplitude uses the Stripe filter.
+	const float fw = fwidth(u);
+	const float value = abs(2.0f * frac(u) - 1.0f);
+	const float thickness = (width * (1.0f + 2.0f * fw) - fw);
+	const float t = smoothstep(thickness - fw, thickness + fw, value);
+	const float4 primary = s3d_shapeColor(input.colorPMA);
+	const float4 background = Pattern_BackgroundColor();
+	return lerp(primary, background, t);
+}
+
+float4 PS_PatternRipple(PSInput input) : SV_TARGET
+{
+	const float2 uv = Pattern_UVTransform(input.uv);
+	const float u = (length(uv) - g_patternUVTransform[1].w + 0.5f);
+	// Continuous UV derivatives remain defined at the radial center, including
+	// a 2x2 fragment quad whose four samples have equal distance to the center.
+	const float fw = length(fwidth(uv));
+	const float value = abs(2.0f * frac(u) - 1.0f);
+	const float thickness = (g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float t = smoothstep(thickness - fw, thickness + fw, value);
+	const float4 primary = s3d_shapeColor(input.colorPMA);
+	const float4 background = Pattern_BackgroundColor();
+	return lerp(primary, background, t);
+}
+
+float4 PS_PatternWeave(PSInput input) : SV_TARGET
+{
+	const float2 uv = Pattern_UVTransform(input.uv);
+	const float2 fw = fwidth(uv);
+	const float2 value = abs(2.0f * frac(uv + 0.5f) - 1.0f);
+	const float2 width = (g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float2 clearance = (g_patternUVTransform[1].w * (1.0f + 2.0f * fw) - fw);
+	const float2 band = (1.0f - smoothstep(width - fw, width + fw, value));
+	const float2 expanded = (1.0f - smoothstep(clearance - fw, clearance + fw, value));
+	// Filter the crossing parity too: at maximum gap, cuts reach cell boundaries.
+	const float horizontalOver = Pattern_CheckersFiltered(uv + 0.5f, float2(1.0f, 1.0f));
+	const float verticalCut = ((expanded.x - band.x) * band.y);
+	const float horizontalCut = ((expanded.y - band.y) * band.x);
+	const float coverage = (max(band.x, band.y) - lerp(verticalCut, horizontalCut, horizontalOver));
+	const float4 primary = s3d_shapeColor(input.colorPMA);
+	const float4 background = Pattern_BackgroundColor();
+	return lerp(background, primary, coverage);
+}
+
+inline uint Pattern_TruchetHash(float2 cell, uint seed)
+{
+	// Hash exact IEEE-754 bits of half-integer cell centers. This avoids signed
+	// float-to-int conversion limits and gives +0/-0 the same key at the origin.
+	const uint2 key = asuint(cell + 0.5f);
+	uint h = ((key.x * 0x9E3779B9u) ^ (key.y * 0x85EBCA6Bu) ^ seed);
+	h ^= (h >> 16);
+	h *= 0x7FEB352Du;
+	h ^= (h >> 15);
+	h *= 0x846CA68Bu;
+	h ^= (h >> 16);
+	return h;
+}
+
+float4 PS_PatternTruchet(PSInput input) : SV_TARGET
+{
+	const float2 uv = Pattern_UVTransform(input.uv);
+	const float2 cell = floor(uv);
+	float2 q = (uv - cell);
+	const uint layout = uint(g_patternExtraParams.z);
+	bool flip = false;
+	if (layout == 0u)
+	{
+		const uint seed = (uint(g_patternExtraParams.x) | (uint(g_patternExtraParams.y) << 16));
+		flip = ((Pattern_TruchetHash(cell, seed) & 1u) != 0u);
+	}
+	else if (layout == 2u)
+	{
+		flip = (frac(dot(cell, float2(0.5f, 0.5f))) > 0.25f);
+	}
+	q.x = (flip ? (1.0f - q.x) : q.x);
+	const float distance = min(abs(length(q) - 0.5f), abs(length(q - 1.0f) - 0.5f));
+	// Differentiate the continuous coordinates, not tile-dependent arc distances.
+	const float fw = length(fwidth(uv));
+	const float width = (g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float coverage = (1.0f - smoothstep(width - fw, width + fw, 2.0f * distance));
+	const float4 primary = s3d_shapeColor(input.colorPMA);
+	const float4 background = Pattern_BackgroundColor();
+	return lerp(background, primary, coverage);
+}
+
 float4 PS_PatternStripe(PSInput input) : SV_TARGET
 {
 	const float u = Pattern_UVTransform(input.uv).x;

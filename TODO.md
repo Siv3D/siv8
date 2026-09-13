@@ -9,14 +9,7 @@
 
 ## `Siv3D/include/Siv3D/Pattern/Wave.hpp` / 追加 Pattern
 
-- Wave / Ripple / Weave / Truchet の Metal 実装を D3D11 に移植する。共有 API は登録済みだが、D3D11 シェーダと選択経路は未実装。[4 種類の移植申し送り](docs/renderer2d/d3d11-new-patterns.md)を参照する。
 - 新しい Pattern が揃った後、[32 案ギャラリー](Test/Manual/PatternCollection.md)を統合ギャラリーに整理する。既存レシピを保存し、控えめな画面サイズで Pattern ごとのページを切り替える。模様・枠・名前を主体にし、アニメーションのオン・オフも維持する。
-
-## `Siv3D/include/Siv3D/Pattern/Halftone.hpp`
-
-### Windows での名称変更後の検証
-
-- 公開型・列挙値・両シェーダ・ロード先を `Halftone` に統一済み。Windows 上で Pattern テストと全テストを実行し、新しい HLSL エントリポイントのコンパイルと `2d_pattern_halftone.ps` のロードを確認する。[検証手順](docs/renderer2d/d3d11-halftone.md)。完了後にこの項目を削除する。
 
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 

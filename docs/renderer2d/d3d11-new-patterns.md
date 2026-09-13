@@ -1,62 +1,97 @@
-# D3D11 handoff: Wave, Ripple, Weave, and Truchet
+# D3D11 integration: Wave, Ripple, Weave, and Truchet
 
-The shared public APIs and Metal implementations of these four patterns are
-ready for D3D11 integration. Implement the adopted result; no compatibility
-payload or transitional public API documentation is needed. Preserve unrelated
-uncommitted work and the independent QuadWarp implementation.
-
-## Sources and registration
-
-Read the repository instructions and the individual design/port notes:
+The D3D11 and Metal backends implement these four patterns through the shared
+public APIs and existing Pattern drawing path. Their design notes describe the
+adopted equations and filtering limits:
 
 - [Wave](wave.md): sine-wave bands with approximate normal-width correction.
 - [Ripple](ripple.md): concentric bands and center-safe derivative filtering.
 - [Weave](weave.md): alternating crossings with filtered gaps and parity.
 - [Truchet](truchet.md): connected quarter-circle tiles and deterministic seeds.
 
-Port the four entry points and the Truchet hash helper from
-[2d.metal](../../macOS/App/engine/shader/metal/2d.metal) into
-[2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl).
-The shared enums and public-header registrations already exist on both platforms.
-The four-Float4 Pattern payload and 128-byte effect constants are already in place.
-Do not modify the buffer layout or existing pattern equations.
+## Data path and registration
 
-In `CEngineShader_D3D11.cpp`, append compilation/loading in the shared enum order,
-after Halftone: Wave, Ripple, Weave, Truchet. Generate and check in these assets
-using the existing Windows shader compilation workflow:
+[2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) implements
+`PS_PatternWave`, `PS_PatternRipple`, `PS_PatternWeave`, `PS_PatternTruchet`, and
+`Pattern_TruchetHash` with the same calculations as
+[2d.metal](../../macOS/App/engine/shader/metal/2d.metal).
 
-```text
-2d_pattern_wave.ps
-2d_pattern_ripple.ps
-2d_pattern_weave.ps
-2d_pattern_truchet.ps
+Shape overloads feed drawing coordinates through the existing `VS_Pattern`.
+The [four-Float4 Pattern payload](pattern-payload.md) remains 64 bytes and the
+effect constants remain 128 bytes. Foreground and background use the existing
+premultiplied color helpers. QuadWarp retains its independent shaders and state.
+
+[CEngineShader_D3D11.cpp](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/EngineShader/D3D11/CEngineShader_D3D11.cpp)
+compiles and loads the following binaries in the shared
+[EnginePS](../../Siv3D/src/Siv3D/EngineShader/IEngineShader.hpp) order, after
+Halftone:
+
+| Pattern | Tracked shader asset |
+| --- | --- |
+| Wave | [2d_pattern_wave.ps](../../WindowsDesktop/App/engine/shader/d3d11/2d_pattern_wave.ps) |
+| Ripple | [2d_pattern_ripple.ps](../../WindowsDesktop/App/engine/shader/d3d11/2d_pattern_ripple.ps) |
+| Weave | [2d_pattern_weave.ps](../../WindowsDesktop/App/engine/shader/d3d11/2d_pattern_weave.ps) |
+| Truchet | [2d_pattern_truchet.ps](../../WindowsDesktop/App/engine/shader/d3d11/2d_pattern_truchet.ps) |
+
+The enabled startup compilation block regenerates these assets on Windows.
+Preserve their binary bytes; do not apply text line-ending conversion. Existing
+shader outputs should remain byte-identical when only adding these entry points.
+
+[CRenderer2D_D3D11](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Renderer2D/D3D11/CRenderer2D_D3D11.cpp)
+initializes the matching shader IDs and selects each dedicated shader from
+`PatternType`. The shared enums and public headers are registered on both
+platforms. The binary shaders are loaded by path, so this connection needs no
+new project entries or shape overloads.
+
+## Filtering and seed representation
+
+Wave differentiates its unwrapped phase before measuring the repeating band.
+Ripple and Truchet differentiate continuous UVs, preserving filtering at the
+radial center and across tile orientations. Weave filters both the band masks
+and crossing parity; an unfiltered integer branch changes maximum-gap boundaries.
+
+Truchet reconstructs its seed numerically from two 16-bit halves, hashes
+coordinate keys with `asuint`, and retains unsigned wraparound. All uint32 seeds
+are valid. Regular layouts skip hashing and ignore seed changes.
+
+## Verification
+
+Run from the repository root on Windows:
+
+```powershell
+./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=Pattern*'
+./WindowsDesktop/run-tests.ps1
 ```
 
-In `CRenderer2D_D3D11.hpp/.cpp`, add shader IDs, initialize them from the matching
-EnginePS entries, and extend PatternType selection. Mirror the Metal wiring.
-Missing selection currently falls through to a solid shape; compiling HLSL alone
-is not sufficient to finish the port.
+The CPU packing and all four patterns' GPU cases in
+[Test_Pattern.cpp](../../Test/Test_Pattern.cpp) run on Windows and macOS. They
+check solid interiors, endpoint compositing, continuous-UV filtering, Truchet
+hash/layout agreement, transforms, viewports, split geometry, batch counts, and
+restoration across different shaders and repeated frames. Existing Pattern,
+font, and QuadWarp tests provide regression coverage.
 
-## Checks that matter
+Investigate AA-only readback rounding separately from solid interiors. These
+four patterns retain their shared comparison criteria, including exact split
+images and state restoration; no additional D3D11 tolerance is applied.
 
-- Preserve `VS_Pattern`, drawing-coordinate input, and premultiplied foreground
-  and background compositing. No new shape overloads are needed.
-- Ripple and Truchet use continuous UV derivatives. Weave also filters parity;
-  an unfiltered integer branch changes maximum-gap boundaries.
-- Reconstruct Truchet seed from two numeric 16-bit halves. Hash coordinate keys
-  with `asuint`, and retain unsigned wraparound. All uint32 seeds are valid.
-- In [Test_Pattern.cpp](../../Test/Test_Pattern.cpp), enable the Metal-only block
-  containing these four patterns' GPU cases for Windows. CPU packing tests already
-  run on both hosts. Run focused Pattern tests and the full suite using the
-  [Windows test workflow](../development/README.md). Follow its clean-build
-  diagnosis if an incremental test executable reports illegal instructions.
-- Investigate AA-only readback rounding separately from solid interiors. Do not
-  broadly relax comparisons to hide layout, alpha, or state-restoration errors.
-- Build and inspect the complete programs in [Wave](../../Test/Manual/Wave.md),
-  [Ripple](../../Test/Manual/Ripple.md), [Weave](../../Test/Manual/Weave.md), and
-  [Truchet](../../Test/Manual/Truchet.md), including animation and transforms.
-  Preserve the normal platform Main.cpp after temporary verification.
+Build and inspect the complete programs in [Wave](../../Test/Manual/Wave.md),
+[Ripple](../../Test/Manual/Ripple.md), [Weave](../../Test/Manual/Weave.md), and
+[Truchet](../../Test/Manual/Truchet.md), including animation and transforms.
+For separate sample builds, use the Windows application's compiler/link settings
+with the standard `App/Resource.rc`, put generated sources and intermediates
+under `WindowsDesktop/Intermediate/Manual/`, and place the executable beside
+`WindowsDesktop/App/engine/`. Each sample's `--capture` option saves its named
+PNG in the application working directory; `--animate --capture` captures a
+moving phase. Remove temporary sources and captures when no longer needed.
+Keep the normal platform `Main.cpp` intact.
 
-Update TODO and integration notes to reflect the completed port. Report actual
-build/test results and remaining limitations. The combined gallery with smaller
-pages is a subsequent task; keep the existing recipes intact during this port.
+Preserve incomplete or failed reports under
+`WindowsDesktop/Intermediate/TestReports/` and follow the development guide's
+[clean-build diagnosis](../development/README.md#windows-incremental-build-failures)
+before retrying an executable with an incomplete report or illegal-instruction
+exception. Verify source LF, `git diff --check`, documentation links, and binary
+shader bytes. Shared test changes also require a macOS full-suite run; Windows
+execution does not validate Metal.
+
+The combined gallery with smaller pages is a separate task in [TODO](../../TODO.md).
+Keep the existing recipes intact when assembling it.

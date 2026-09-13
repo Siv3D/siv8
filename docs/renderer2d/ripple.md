@@ -3,8 +3,8 @@
 `Pattern::Ripple` repeats a band along the distance from a common center. Its
 contract is in [Ripple.hpp](../../Siv3D/include/Siv3D/Pattern/Ripple.hpp), and the
 [manual sample](../../Test/Manual/Ripple.md) provides compact cards, off-card
-centers, layered rings, radial animation, and object transforms. Metal rendering
-is implemented; D3D11 work is tracked in [TODO](../../TODO.md).
+centers, layered rings, radial animation, and object transforms. Metal and D3D11
+use the same radial calculation and center filter.
 
 ## Placement and filtering
 
@@ -45,30 +45,20 @@ radius zero at a band center when offset is zero. Wrapping this scalar with
 The current Stripe edge-filter formula then evaluates the normalized width.
 No command, buffer, vertex, or QuadWarp changes are required.
 
-## D3D11 port checklist
+## D3D11 integration
 
-1. Port `PS_PatternRipple` from
-   [2d.metal](../../macOS/App/engine/shader/metal/2d.metal) into
-   [2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl). Preserve the
-   UV footprint instead of switching to `fwidth(length(uv))`. Use the existing
-   pattern UV and premultiplied color helpers.
-2. Add `2d_pattern_ripple.ps` compilation/loading, preserving the appended
-   `EnginePS::PatternRipple` order after Wave, and regenerate DXBC on Windows.
-3. Add the D3D11 renderer shader ID, initialization, and `PatternType::Ripple`
-   selection. The current default selector draws a solid shape until this port
-   is implemented; this temporary limitation does not belong in public Doxygen.
-4. Enable the Ripple GPU cases in
-   [Test_Pattern.cpp](../../Test/Test_Pattern.cpp) for Windows. CPU packing cases
-   already run on both hosts. Retain the center-quad edge case and exact
-   zero/full-width compositing checks.
-5. Run focused Pattern tests and the complete Windows suite. Inspect the sample
-   at rest and in motion, including offset wraparound and nonuniform transforms.
+`PS_PatternRipple` in
+[2d.hlsl](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) uses continuous
+UV derivatives and the existing premultiplied color helpers. The loader appends
+`2d_pattern_ripple.ps` after Wave, and the renderer selects it for
+`PatternType::Ripple`. See the [combined integration guide](d3d11-new-patterns.md)
+for shader generation and verification.
 
 ## Validation
 
 CPU tests reconstruct radii along multiple directions at positive and negative
 positions, check colors, spacing, offsets, width endpoints, and unused extras.
-Metal readbacks cover ring interiors, off-shape centers, positive/negative
+Metal and D3D11 readbacks cover ring interiors, off-shape centers, positive/negative
 phase, the symmetric center quad, alpha compositing, offset periodicity,
 object/camera transforms, split shapes with a viewport, state restoration across
 Wave, and repeated frames.

@@ -1,14 +1,17 @@
 # Wave
 
 A gallery of sine-wave backgrounds, using drawing-unit spacing, thickness,
-amplitude, wavelength, and origin. Metal is the current execution target; see
-[the port checklist](../../docs/renderer2d/wave.md) for D3D11 integration.
+amplitude, wavelength, and origin. Runs on Windows (D3D11) and macOS (Metal);
+see the [design notes](../../docs/renderer2d/wave.md).
 
 ## Execution
 
 1. Paste the complete program into a separate Siv3D application built with this
    revision. Keep the repository's normal platform test entry point intact.
 2. Run with the standard engine assets. No additional images are required.
+   On Windows, include the standard `App/Resource.rc` and place the executable
+   beside the `engine/` assets. [D3D11 verification](../../docs/renderer2d/d3d11-new-patterns.md#verification)
+   also describes separate sample builds.
 3. Space toggles motion of the pattern origin; R restores the initial state.
 4. Up/Down adjust object scale (0.3 to 1). Left/Right adjust object rotation.
    N toggles nonuniform scale. Geometry and pattern should move together.

@@ -1,14 +1,17 @@
 # Weave
 
 A 1280 x 780 gallery of plain-weave backgrounds, from fine cloth to broad basket
-strips. Metal is the current target; see the
-[port checklist](../../docs/renderer2d/weave.md).
+strips. Runs on Windows (D3D11) and macOS (Metal); see the
+[design notes](../../docs/renderer2d/weave.md).
 
 ## Execution
 
 1. Paste the complete program into a separate Siv3D application built with this
    revision. Keep the repository's platform test entry point intact.
 2. Run with the standard engine assets. No extra images are needed.
+   On Windows, include the standard `App/Resource.rc` and place the executable
+   beside the `engine/` assets. [D3D11 verification](../../docs/renderer2d/d3d11-new-patterns.md#verification)
+   also describes separate sample builds.
 3. Space toggles motion of the weave origin; R restores the initial state.
 4. Down/Up adjust object scale (0.3 to 1). Left/Right rotate; zoom out first to
    leave space between rotated cards. N toggles nonuniform scale.

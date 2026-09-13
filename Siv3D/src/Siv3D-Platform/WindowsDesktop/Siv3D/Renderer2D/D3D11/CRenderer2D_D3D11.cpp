@@ -69,6 +69,14 @@ namespace s3d
 			return psPatternHexGrid;
 		case PatternType::Halftone:
 			return psPatternHalftone;
+		case PatternType::Wave:
+			return psPatternWave;
+		case PatternType::Ripple:
+			return psPatternRipple;
+		case PatternType::Weave:
+			return psPatternWeave;
+		case PatternType::Truchet:
+			return psPatternTruchet;
 		default:
 			return psShape;
 		}
@@ -158,6 +166,10 @@ namespace s3d
 		m_engineShader.psPatternTriangle	= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTriangle).id();
 		m_engineShader.psPatternHexGrid		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHexGrid).id();
 		m_engineShader.psPatternHalftone = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHalftone).id();
+		m_engineShader.psPatternWave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWave).id();
+		m_engineShader.psPatternRipple = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternRipple).id();
+		m_engineShader.psPatternWeave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWeave).id();
+		m_engineShader.psPatternTruchet = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternTruchet).id();
 
 		// シャドウ画像を作成
 		{

@@ -170,6 +170,26 @@ namespace s3d
 			throw InternalEngineError{ "Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_pattern_wave.ps", ShaderStage::Pixel, U"PS_PatternWave"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_pattern_ripple.ps", ShaderStage::Pixel, U"PS_PatternRipple"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_pattern_weave.ps", ShaderStage::Pixel, U"PS_PatternWeave"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_pattern_truchet.ps", ShaderStage::Pixel, U"PS_PatternTruchet"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
 	# endif
 
 		{
@@ -207,6 +227,10 @@ namespace s3d
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_glow.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/msdffont_print.ps" };
 			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_halftone.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_wave.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_ripple.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_weave.ps" };
+			m_pixelShaders << HLSL{ U"engine/shader/d3d11/2d_pattern_truchet.ps" };
 
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

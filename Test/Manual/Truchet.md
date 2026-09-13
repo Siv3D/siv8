@@ -1,13 +1,16 @@
 # Truchet
 
-A 1280 x 780 gallery of connected quarter-circle tiles. Metal is the current
-execution target; see the [design and port notes](../../docs/renderer2d/truchet.md).
+A 1280 x 780 gallery of connected quarter-circle tiles. Runs on Windows (D3D11)
+and macOS (Metal); see the [design notes](../../docs/renderer2d/truchet.md).
 
 ## Execution
 
 1. Paste the complete program into a separate Siv3D application built with this
    revision. Keep the repository's platform test entry point intact.
 2. Run with the standard engine assets. No extra image files are needed.
+   On Windows, include the standard `App/Resource.rc` and place the executable
+   beside the `engine/` assets. [D3D11 verification](../../docs/renderer2d/d3d11-new-patterns.md#verification)
+   also describes separate sample builds.
 3. Space toggles tiling motion; S changes the random seeds; R restores the initial
    state. Seed changes should not change either regular layout.
 4. Down/Up adjust object scale (0.3 to 1). Left/Right rotate; zoom out first to
