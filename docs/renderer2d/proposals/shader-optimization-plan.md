@@ -1,6 +1,6 @@
 # Built-in shader optimization assessment and plan
 
-Status: **A2, A1, and A4 source implementation approved; other stages proposed; cross-platform verification and performance acceptance pending.**
+Status: **A2, A1, and A4 source implementation approved; Windows bytecode regeneration and regression tests complete; other stages proposed; cross-platform verification and performance acceptance pending.**
 Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタムシェーダ契約を
 維持する局所変更を先に評価し、描画側の状態管理・補間インターフェース・画質を
 変える案は別段階で扱う。D3D11 と Metal の調査結果をこの文書に集約する。
@@ -8,7 +8,8 @@ Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタ�
 ## 統合判断
 
 初期評価の順序は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
-A2 / A1 / A4 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ更新と検証をまとめて行う。
+A2 / A1 / A4 は HLSL / MSL ソースへ適用済み。Windows の配布バイナリ更新、
+DXBC 照合、関連テストと全自動テストは完了した。確認範囲は後述の Windows 回帰検証を参照する。
 各段階は着手前に方針・変更箇所・期待結果を説明して承認を得る。
 それぞれ独立した差分で評価する。定数配置・varying・描画状態を増やさず、
 両コンパイラの中間表現に演算削減が現れるためである。
@@ -16,9 +17,9 @@ A2 / A1 / A4 は HLSL / MSL ソースへ適用し、Windows の配布バイナ�
 
 | 扱い | 候補 | 判断理由 |
 | --- | --- | --- |
-| ソースへ適用・Windows 検証待ち | A2 Truchet の距離式 | hash と AA を維持。Windows の配布バイナリ更新と実行確認は TODO で追跡 |
-| ソースへ適用・Windows 検証待ち | A1 Pattern の ColorAdd | 全 11 種に適用。Metal の限定描画比較では最大 1/255 のチャンネル差 |
-| ソースへ適用・Windows 検証待ち | A4 影なし MSDF | 通常・Outline の除算を集約。共通関数を使う影付き・Print も検証対象 |
+| ソース・Windows 配布バイナリへ適用済み | A2 Truchet の距離式 | hash と AA を維持。Windows の円弧境界・配置・状態復帰テストも通過 |
+| ソース・Windows 配布バイナリへ適用済み | A1 Pattern の ColorAdd | 全 11 種の Windows 色合成テストを通過。Metal の限定描画比較では最大 1/255 のチャンネル差 |
+| ソース・Windows 配布バイナリへ適用済み | A4 影なし MSDF | 通常・Outline の除算を集約。影付き・Print を含む Windows アトラス寸法テストも通過 |
 | 次段階の設計・試作 | B1 QuadWarp | 大面積描画で期待できるが、補間成分と VS 定数管理が増える |
 | D3D11 固有の計測候補 | B2 Truchet の分岐 | DXBC は現行で hash を常時計算。Metal AIR には既に条件分岐がある |
 | 保留 | A3 Triangle の skew | Metal の式共通化でも境界に大きな色差を確認。画質判断を先に行う |
@@ -151,9 +152,41 @@ GPU の実行時間、消費電力、実レジスタ数、occupancy の改善を
   出力末尾の approximate instruction slots、`temp` は `dcl_temps`。
   後段のドライバによる変換や、スカラ・ベクトル命令の費用差は含まない。
 - この D3D11 比較は実験用 HLSL 文字列と変更前の配布バイナリを使った調査値。
-  A2 / A1 / A4 のソース適用後の配布バイナリは別途再生成する必要がある。
-  D3D11 描画 A/B、GPU timestamp、Windows のエンジン全テストは未実施。
-  Metal の予備比較は前節を参照し、未完了の実行確認は TODO で追跡する。
+  A2 / A1 / A4 適用後の配布バイナリと Windows 回帰検証は次節に分けて記す。
+  D3D11 の変更前後の描画 A/B と GPU timestamp は未実施。
+  Metal の予備比較は前節を参照し、残る検証は TODO で追跡する。
+
+### 配布バイナリの再生成と Windows 回帰検証
+
+現行 HLSL を、エンジン起動時のコンパイル処理で全 30 エントリーポイントについて
+再生成した。再生成前の配布バイナリを保存し、Windows SDK の `fxc /dumpbin` で
+定数の反映情報、リソース割り当て、入出力 signature、命令列を比較した。
+HLSL / MSL のソース、CPU 側コード、テストと許容差は変更していない。
+
+変更されたバイナリは Pattern 全 11 種と MSDF 5 種。残り 14 本はバイト単位で一致した。
+全 30 本で定数の配置・リソース割り当て・入出力 signature と sample 命令数を維持している。
+次の値は個別案の実験値ではなく、A2 / A1 / A4 を反映した配布バイナリの比較結果。
+
+| 対象 | 再生成前 → 後の slots | その他の差 |
+| --- | --- | --- |
+| Truchet 以外の Pattern 10 種 | 各 1 slot 減 | PolkaDot / Wave / Ripple / Stripe / Grid / Checker の `dcl_temps` は 3 → 2 |
+| Truchet | 59 → 56 | A1 と A2 の合計。scalar sqrt は 3 → 2、`dcl_temps` は 3 のまま |
+| 通常 MSDF / Outline | 18 → 17 / 20 → 19 | vector div は各 2 → 1、`dcl_temps` は 2 のまま |
+| Shadow / OutlineShadow / Print | 29 → 29 / 32 → 32 / 30 → 30 | 寸法と微分を組み合わせる式へ変更。vector div は各 2、`dcl_temps` は各 2 のまま |
+
+`./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=Pattern*,MSDFFont*'`
+と、同じ Release ビルドでの全自動テストが通過した。両方の XML レポートが完結し、
+失敗・スキップがないことを確認した。対象の描画検証は次を含む。
+
+- Pattern 全 11 種の PMA 色合成、透明色、ColorMul / ColorAdd、重ね描き。
+- Truchet の円弧境界、全配置、seed、座標変換、状態復帰。
+- Pattern のカスタム VS / PS 契約と定数バッファの配置・状態復帰。
+- 通常・Outline・Shadow・OutlineShadow・Print の実フォント描画。
+  正方形・長方形・非 2 冪幅のアトラス、縮小・拡大・回転と非等方変換を比較。
+
+この結果は既存の描画回帰条件を満たすことを示す。旧バイナリと新バイナリを切り替えた
+描画 A/B や全入力での画像一致、GPU 時間の改善は確認していない。
+macOS のエンジン全自動テストも別途必要であり、Windows の結果で代用しない。
 
 ## A. 現行インターフェースのまま評価できる案の詳細
 
@@ -167,15 +200,16 @@ HLSL / MSL ソースへ適用済み。色加算を集約できる理由、PMA �
 Metal AIR では全 11 種で vector fmul と fadd が各 1 個減る。
 D3D11 の個別実験では 11 種すべてで 1 slot 減を確認。PolkaDot / Wave / Ripple / Stripe / Grid / Checker は
 `dcl_temps` も 3 → 2。追加定数、VS 切り替え、draw call の増加は不要。
-この DXBC 比較は Windows の現行配布バイナリを再生成・実行した結果ではない。
-未完了の再生成・検証・実行時間の評価は TODO で追跡する。
+再生成した Windows 配布バイナリでも削減を確認し、全 11 種の色合成回帰テストが通過した。
+未完了の描画 A/B・macOS 全自動テスト・実行時間の評価は TODO で追跡する。
 
 ### A2. Truchet の円弧距離を sqrt 前に比較する
 
 HLSL / MSL ソースへ適用済み。距離式の理由と境界テストは
 [Truchet の実装説明](../truchet.md#payload-and-filtering)を参照する。
-以下は変更前と候補を個別に比較した調査値で、Windows の現行配布バイナリを
-再生成・実行した結果ではない。未完了の再生成・検証は TODO で追跡する。
+以下の 59 → 57 slots は A2 を単独で比較した調査値。
+再生成した Windows 配布バイナリは A1 も含み 56 slots で、円弧境界・描画・状態復帰の
+回帰テストを通過した。残る検証は TODO で追跡する。
 
 対象: `PS_PatternTruchet` の `distance`。
 
@@ -238,8 +272,9 @@ D3D11 の個別実験でも vector div が 2 → 1、各 1 slot 減だった。
 Shadow / OutlineShadow / Print は影の offset に逆寸法を使うため、Metal の除算数は
 2 のまま。D3D11 で実験した Shadow と Print も slots は変わらなかった。
 Glow は `MSDF_Init` を使わず、この案の対象外。
-この DXBC 比較は現行 HLSL の配布バイナリを再生成した結果ではない。
-未完了の Windows 検証と実行時間の評価は TODO で追跡する。
+再生成した Windows 配布バイナリでも通常・Outline の削減を確認し、影付き・Print を含む
+アトラス寸法の回帰テストが通過した。未完了の描画 A/B・macOS 全自動テスト・
+実行時間の評価は TODO で追跡する。
 
 ## B. 描画側との協調が必要な案
 
