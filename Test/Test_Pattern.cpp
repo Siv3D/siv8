@@ -366,6 +366,23 @@ namespace
 			return Pattern::Checker{ primary, background, 24, 1, 1, 17_deg, offset };
 		case PatternType::Triangle:
 			return Pattern::Triangle{ primary, background, 24, 17_deg, offset };
+		case PatternType::Halftone:
+			return Pattern::Halftone{ .primary = primary, .background = background,
+				.pitch = 24, .minRadius = 3, .maxRadius = 10, .angle = 17_deg,
+				.origin = offset, .start = { 0, 0 }, .end = { 72, 64 } };
+		case PatternType::Wave:
+			return Pattern::Wave{ .primary = primary, .background = background,
+				.pitch = 24, .thickness = 8, .amplitude = 6, .wavelength = 48,
+				.angle = 17_deg, .origin = offset };
+		case PatternType::Ripple:
+			return Pattern::Ripple{ .primary = primary, .background = background,
+				.pitch = 24, .thickness = 8, .center = { 36, 32 }, .radiusOffset = 3 };
+		case PatternType::Weave:
+			return Pattern::Weave{ .primary = primary, .background = background,
+				.pitch = 24, .thickness = 10, .gap = 3, .angle = 17_deg, .origin = offset };
+		case PatternType::Truchet:
+			return Pattern::Truchet{ .primary = primary, .background = background,
+				.pitch = 24, .thickness = 8, .angle = 17_deg, .origin = offset };
 		default:
 			return Pattern::HexGrid{ primary, background, 24, 0.5, 17_deg, offset };
 		}
@@ -1395,6 +1412,88 @@ TEST_CASE("Pattern.viewport_and_continuity")
 		}
 		INFO(firstDifference);
 		CHECK(clippingMismatches == 0);
+	}
+}
+
+TEST_CASE("Pattern.color_composition")
+{
+	constexpr std::array types{
+		PatternType::PolkaDot, PatternType::Stripe, PatternType::Grid, PatternType::Checker,
+		PatternType::Triangle, PatternType::HexGrid, PatternType::Halftone, PatternType::Wave,
+		PatternType::Ripple, PatternType::Weave, PatternType::Truchet };
+	struct ColorCase
+	{
+		Float4 mul;
+		Float3 add;
+		float primaryAlpha;
+		float backgroundAlpha;
+	};
+	constexpr ColorCase cases[]{
+		{ { 0.8f, 0.6f, 1.1f, 0.7f }, { 0.12f, -0.08f, 0.2f }, 0.8f, 0.3f },
+		{ { 0.8f, 0.6f, 1.1f, 0.7f }, { 0.12f, -0.08f, 0.2f }, 0.0f, 0.6f },
+		{ { 0.8f, 0.6f, 1.1f, 0.7f }, { 0.12f, -0.08f, 0.2f }, 0.6f, 0.0f },
+		{ { 0.8f, 0.6f, 1.1f, 0.7f }, { 0.12f, -0.08f, 0.2f }, 0.0f, 0.0f },
+		{ { 0.8f, 0.6f, 1.1f, 0.0f }, { 0.12f, -0.08f, 0.2f }, 0.8f, 0.3f },
+		{ { 1.5f, 0.75f, 2.0f, 0.65f }, { 1.2f, -0.3f, 0.4f }, 0.75f, 0.25f },
+	};
+	constexpr Color canvas{ 37, 61, 83 };
+	for (const auto& colors : cases)
+	{
+		INFO("mul = " << colors.mul << ", add = " << colors.add
+			<< ", alpha = " << colors.primaryAlpha << ", " << colors.backgroundAlpha);
+		// Bake the public straight-color operation into both colors as a reference.
+		// The shader remains responsible for coverage, PMA conversion, and blending.
+		const auto bake = [&](const Float4 color)
+		{
+			return (color * colors.mul + Float4{ colors.add, 0.0f });
+		};
+		const auto draw = [&](const bool scoped)
+		{
+			Rect{ 20, 30, 480, 320 }.draw(canvas);
+			for (size_t i = 0; i < types.size(); ++i)
+			{
+				const Transformer2D transform{ Mat3x2::Translate(30 + (i % 4) * 120, 40 + (i / 4) * 112) };
+				auto pattern = MakeTestPattern(types[i]);
+				pattern.primaryColor = { 0.75f, 0.25f, 0.5f, colors.primaryAlpha };
+				pattern.backgroundColor = { 0.125f, 0.625f, 0.875f, colors.backgroundAlpha };
+				if (not scoped)
+				{
+					pattern.primaryColor = bake(pattern.primaryColor);
+					pattern.backgroundColor = bake(pattern.backgroundColor);
+				}
+				const ScopedColorMul2D mul{ scoped ? ColorF{ colors.mul } : ColorF{ 1.0 } };
+				const ScopedColorAdd2D add{ scoped ? colors.add : Float3{ 0.0f, 0.0f, 0.0f } };
+				RectF{ 0, 0, 72, 64 }.draw(pattern);
+				RectF{ 16, 12, 72, 64 }.draw(pattern);
+			}
+		};
+		const auto reference = CapturePatternDraw([&] { draw(false); });
+		const auto actual = CapturePatternDraw([&] { draw(true); });
+		for (size_t i = 0; i < types.size(); ++i)
+		{
+			INFO("pattern = " << static_cast<int32>(types[i]));
+			int32 differences = 0;
+			int32 transparentDifferences = 0;
+			for (int32 y = 0; y < 76; ++y)
+			{
+				for (int32 x = 0; x < 88; ++x)
+				{
+					const Point p{ static_cast<int32>(30 + (i % 4) * 120) + x,
+						static_cast<int32>(40 + (i / 4) * 112) + y };
+					const Color a = actual.image[p], b = reference.image[p];
+					// Equivalent CPU/GPU arithmetic may differ by one RGBA8 unit.
+					differences += (Abs(int32(a.r) - int32(b.r)) > 1
+						|| Abs(int32(a.g) - int32(b.g)) > 1 || Abs(int32(a.b) - int32(b.b)) > 1
+						|| Abs(int32(a.a) - int32(b.a)) > 1);
+					if (((colors.primaryAlpha == 0.0f) && (colors.backgroundAlpha == 0.0f)) || (colors.mul.w == 0.0f))
+					{
+						transparentDifferences += ((a != canvas) || (b != canvas));
+					}
+				}
+			}
+			CHECK(differences == 0);
+			CHECK(transparentDifferences == 0);
+		}
 	}
 }
 

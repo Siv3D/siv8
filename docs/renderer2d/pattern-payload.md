@@ -46,6 +46,28 @@ place `g_patternExtraParams` immediately after `g_patternBackgroundColor`.
 D3D11 binds the effect buffer to pixel-shader slot b1. No QuadWarp storage is
 aliased, and its shader calculations and vertex interface are independent.
 
+## Color composition
+
+The pattern vertex shader multiplies the foreground by ColorMul and converts it
+to premultiplied alpha (PMA). `Pattern_BackgroundColor` does the same for the
+background using the pixel-shader copy of ColorMul. Each pattern interpolates
+these PMA colors using its coverage, then calls `s3d_shapeColor` to apply ColorAdd
+once to the result.
+
+For a fixed additive color, `A(C) = C + ColorAdd * C.a` is linear, so
+`mix(A(P), A(B), t) = A(mix(P, B, t))`. This lets the two colors share the
+additive operation. PMA conversion must remain before interpolation: multiplying
+interpolated straight RGB by interpolated alpha would mix the two colors'
+alpha contributions incorrectly when their alpha values differ.
+
+Floating-point operation order can affect RGBA8 rounding. The
+`Pattern.color_composition` test compares scoped ColorMul/ColorAdd with the same
+straight-color operations baked into both pattern colors before drawing. It
+covers all pattern types, unequal foreground/background alpha, either or both
+colors fully transparent, zero ColorMul alpha, negative and above-one color
+components, and overlapping draws. This comparison permits one RGBA8 unit of
+CPU/GPU rounding; fully transparent draws must preserve the canvas exactly.
+
 ## State and cost
 
 Both command managers record, compare, retrieve, and restore all four vectors.
@@ -98,5 +120,7 @@ incomplete Windows reports or illegal-instruction failures, follow the
 - All six existing patterns render identically with zero and nonzero additional
   values. Existing coordinate, shape-path, viewport, custom-shader, and batch
   tests remain applicable.
+- Color composition follows the PMA and ColorAdd ordering described above for
+  all pattern types.
 
 The diagnostic shader is test-only. It is not a new built-in pattern feature.

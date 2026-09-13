@@ -1,6 +1,6 @@
 # Built-in shader optimization assessment and plan
 
-Status: **A2 source implementation approved; other stages proposed; cross-platform verification and performance acceptance pending.**
+Status: **A2 and A1 source implementation approved; other stages proposed; cross-platform verification and performance acceptance pending.**
 Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタムシェーダ契約を
 維持する局所変更を先に評価し、描画側の状態管理・補間インターフェース・画質を
 変える案は別段階で扱う。D3D11 と Metal の調査結果をこの文書に集約する。
@@ -8,7 +8,7 @@ Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタ�
 ## 統合判断
 
 初期評価の順序は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
-A2 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ更新と検証を後続段階とまとめて行う。
+A2 と A1 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ更新と検証を後続段階とまとめて行う。
 各段階は着手前に方針・変更箇所・期待結果を説明して承認を得る。
 それぞれ独立した差分で評価する。定数配置・varying・描画状態を増やさず、
 両コンパイラの中間表現に演算削減が現れるためである。
@@ -17,7 +17,7 @@ A2 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ更新と
 | 扱い | 候補 | 判断理由 |
 | --- | --- | --- |
 | ソースへ適用・Windows 検証待ち | A2 Truchet の距離式 | hash と AA を維持。Windows の配布バイナリ更新と実行確認は TODO で追跡 |
-| 初期評価 2 | A1 Pattern の ColorAdd | 全 11 種に適用できる小変更。Metal の限定描画比較では最大 1/255 のチャンネル差 |
+| ソースへ適用・Windows 検証待ち | A1 Pattern の ColorAdd | 全 11 種に適用。Metal の限定描画比較では最大 1/255 のチャンネル差 |
 | 初期評価 3 | A4 影なし MSDF | 両側で除算削減。実フォントの倍率・変換・アトラス寸法を追加検証する |
 | 次段階の設計・試作 | B1 QuadWarp | 大面積描画で期待できるが、補間成分と VS 定数管理が増える |
 | D3D11 固有の計測候補 | B2 Truchet の分岐 | DXBC は現行で hash を常時計算。Metal AIR には既に条件分岐がある |
@@ -151,7 +151,7 @@ GPU の実行時間、消費電力、実レジスタ数、occupancy の改善を
   出力末尾の approximate instruction slots、`temp` は `dcl_temps`。
   後段のドライバによる変換や、スカラ・ベクトル命令の費用差は含まない。
 - この D3D11 比較は実験用 HLSL 文字列と変更前の配布バイナリを使った調査値。
-  A2 のソース適用後の配布バイナリは別途再生成する必要がある。
+  A2 / A1 のソース適用後の配布バイナリは別途再生成する必要がある。
   D3D11 描画 A/B、GPU timestamp、Windows のエンジン全テストは未実施。
   Metal の予備比較は前節を参照し、未完了の実行確認は TODO で追跡する。
 
@@ -159,29 +159,16 @@ GPU の実行時間、消費電力、実レジスタ数、occupancy の改善を
 
 ### A1. Pattern の ColorAdd を補間後の 1 回にする
 
-対象: `Pattern_BackgroundColor()` と全 `PS_Pattern*`。
-現在は foreground と background に別々に `g_colorAdd * alpha` を加え、
-その後に `lerp` している。
+HLSL / MSL ソースへ適用済み。色加算を集約できる理由、PMA 化の順序、回帰テストは
+[Pattern の色合成](../pattern-payload.md#color-composition)を参照する。
+対象は `Pattern_BackgroundColor()` と全 `PS_Pattern*`。前景・背景への個別の色加算を、
+補間後の 1 回へ集約した。逆向きの補間を使う Halftone 等も向きと coverage を維持する。
 
-`A(C) = C + g_colorAdd * C.a` は、描画中に固定された `g_colorAdd` に対する線形写像。
-したがって `lerp(A(P), A(B), c) = A(lerp(P, B, c))`。
-各色の PMA 化は今の場所に維持し、ColorAdd だけを補間の後へ移す。
-
-```hlsl
-// Background helper: color multiplication and PMA conversion only.
-return s3d_premultiplyAlpha(g_patternBackgroundColor * g_patternBackgroundColorMul);
-
-// Preserve each pattern's interpolation direction and coverage.
-const float4 primary = input.colorPMA;
-const float4 background = Pattern_BackgroundColor();
-return s3d_shapeColor(lerp(primary, background, c));
-```
-
-逆向きの補間を使う Halftone 等は、その向きを維持する。
-11 種すべてで 1 slot 減を確認。PolkaDot / Wave / Ripple / Stripe / Grid / Checker は
+Metal AIR では全 11 種で vector fmul と fadd が各 1 個減る。
+D3D11 の個別実験では 11 種すべてで 1 slot 減を確認。PolkaDot / Wave / Ripple / Stripe / Grid / Checker は
 `dcl_temps` も 3 → 2。追加定数、VS 切り替え、draw call の増加は不要。
-浮動小数点の演算順は変わるので、半透明の両色、ColorAdd、色乗算、重ね描き、
-大きい色成分の出力を比較する。PMA 化自体を補間後へ移してはいけない。
+この DXBC 比較は Windows の現行配布バイナリを再生成・実行した結果ではない。
+未完了の再生成・検証・実行時間の評価は TODO で追跡する。
 
 ### A2. Truchet の円弧距離を sqrt 前に比較する
 
