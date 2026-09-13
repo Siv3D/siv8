@@ -46,6 +46,35 @@ place `g_patternExtraParams` immediately after `g_patternBackgroundColor`.
 D3D11 binds the effect buffer to pixel-shader slot b1. No QuadWarp storage is
 aliased, and its shader calculations and vertex interface are independent.
 
+## Shader-side interpretation
+
+Each pattern shader reads the existing `input.uv` varying as `drawingPosition`,
+the common drawing coordinates before local and camera transforms.
+`Pattern_UVTransform` produces `patternUV`; Stripe uses only its x component
+as `stripeCoord`. The externally visible varying keeps its name, type, and
+coordinate contract.
+
+The packed fields retain their layout. Local aliases give each used component
+its pattern-specific meaning before filtering. Declaration comments specify
+the CPU normalization, which is not a conversion to screen pixels:
+
+| Pattern | Shader aliases | Interpretation |
+| --- | --- | --- |
+| PolkaDot / Halftone | `normalizedRadius` | Radius in centered cell coordinates spanning [-1, 1]; Halftone packs its endpoints as `2 * radius / pitch` |
+| Stripe / Grid | `normalizedThickness` | `thicknessScale / 2`, with Grid using the same value on both axes |
+| Wave / Ripple / Truchet | `normalizedThickness` | `thickness / pitch` |
+| Wave | `normalizedAmplitude`, `slopeAmplitude` | `amplitude / pitch` and `2 * pi * amplitude / wavelength` respectively |
+| Ripple | `normalizedRadiusOffset` | `radiusOffset / pitch` |
+| Weave | `normalizedBandWidth`, `normalizedClearanceWidth` | `thickness / pitch` and `(thickness + 2 * gap) / pitch` respectively |
+| Checker | `axisIntensity` | x is vertical intensity; y is horizontal intensity |
+| HexGrid | `cellEdgeThreshold` | `0.5 - thicknessScale * 0.25`, the threshold applied to the hex-cell metric |
+
+Halftone's `radiusFieldGradient` and `radiusFieldBias` express its linear field
+in pattern UV coordinates. Truchet's `Pattern_DecodeTruchetSeed` reconstructs
+the seed from the numeric halves described in [Truchet](truchet.md#deterministic-random-layout);
+the named Random and Alternating constants match `Pattern::Truchet::Layout`.
+Uniform keeps the original tile orientation.
+
 ## Color composition
 
 The pattern vertex shader multiplies the foreground by ColorMul and converts it

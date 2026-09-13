@@ -43,8 +43,10 @@ cbuffer PSConstants2D : register(b0)
 
 cbuffer PSEffectConstants2D : register(b1)
 {
+	// [0] = (m11, m12, m31, m32); [1] = (m21, m22, param0, param1).
 	row_major float2x4 g_patternUVTransform;
 	float4 g_patternBackgroundColor;
+	// Type-specific payload, decoded by the selected pattern shader.
 	float4 g_patternExtraParams;
 	row_major float3x3 g_quadWarpInvHomography;
 	float4 g_quadWarpUVTransform;
@@ -208,9 +210,11 @@ inline float4 Pattern_BackgroundColor()
 	return s3d_premultiplyAlpha(g_patternBackgroundColor * g_patternBackgroundColorMul);
 }
 
-inline float2 Pattern_UVTransform(const float2 uv)
+inline float2 Pattern_UVTransform(const float2 drawingPosition)
 {
-	return (g_patternUVTransform._13_14 + (uv.x * g_patternUVTransform._11_12) + (uv.y * g_patternUVTransform._21_22));
+	return (g_patternUVTransform._13_14
+		+ (drawingPosition.x * g_patternUVTransform._11_12)
+		+ (drawingPosition.y * g_patternUVTransform._21_22));
 }
 
 inline float2 Pattern_Integral(float2 v)
@@ -219,12 +223,12 @@ inline float2 Pattern_Integral(float2 v)
 	return (floor(v) + max((2.0 * frac(v) - 1.0), 0.0));
 }
 
-inline float Pattern_CheckersFiltered(const float2 p, const float2 hv)
+inline float Pattern_CheckersFiltered(const float2 p, const float2 axisIntensity)
 {
 	const float2 fw = fwidth(p);
 	const float w = max(fw.x, fw.y);
 	float2 i = (Pattern_Integral(p + 0.5 * w) - Pattern_Integral(p - 0.5 * w));
-	i *= hv;
+	i *= axisIntensity;
 	i /= w;
 	return (i.x + i.y - 2.0 * i.x * i.y);
 }
@@ -246,13 +250,15 @@ inline float Pattern_Hex(const float2 p)
 
 float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float2 repeat = (2.0 * frac(uv) - 1.0);
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float2 repeat = (2.0 * frac(patternUV) - 1.0);
 	const float value = length(repeat);
 	const float fw = (length(float2(ddx(value), ddy(value))) * 0.70710678118);
 
-	const float radiusScale = g_patternUVTransform[1].z;
-	const float c = smoothstep((radiusScale - fw), (radiusScale + fw), value);
+	// Radius in centered cell coordinates spanning [-1, 1].
+	const float normalizedRadius = g_patternUVTransform[1].z;
+	const float c = smoothstep((normalizedRadius - fw), (normalizedRadius + fw), value);
 
 	const float4 primary = input.colorPMA;
 	const float4 background = Pattern_BackgroundColor();
@@ -262,16 +268,23 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 
 float4 PS_PatternHalftone(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float2 cellCenter = (floor(uv) + 0.5f);
-	const float2 repeat = (2.0f * (uv - cellCenter));
-	const float t = saturate(dot(cellCenter, g_patternExtraParams.xy) + g_patternExtraParams.z);
-	const float radius = lerp(g_patternUVTransform[1].z, g_patternUVTransform[1].w,
-		(t * t * (3.0f - 2.0f * t)));
+	const float normalizedMinRadius = g_patternUVTransform[1].z; // 2 * minRadius / pitch
+	const float normalizedMaxRadius = g_patternUVTransform[1].w; // 2 * maxRadius / pitch
+	// Linear radius field expressed in pattern UV coordinates.
+	const float2 radiusFieldGradient = g_patternExtraParams.xy;
+	const float radiusFieldBias = g_patternExtraParams.z;
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float2 cellCenter = (floor(patternUV) + 0.5f);
+	const float2 repeat = (2.0f * (patternUV - cellCenter));
+	const float radiusBlend = saturate(dot(cellCenter, radiusFieldGradient) + radiusFieldBias);
+	const float normalizedRadius = lerp(normalizedMinRadius, normalizedMaxRadius,
+		(radiusBlend * radiusBlend * (3.0f - 2.0f * radiusBlend)));
 	// Differentiate continuous UVs, not the radius that changes between cells.
-	const float fw = length(fwidth(uv));
-	const float coverage = ((1.0f - smoothstep(radius - fw, radius + fw, length(repeat)))
-		* saturate(radius / fw));
+	const float fw = length(fwidth(patternUV));
+	const float coverage = ((1.0f - smoothstep(normalizedRadius - fw, normalizedRadius + fw, length(repeat)))
+		* saturate(normalizedRadius / fw));
 	const float4 primary = input.colorPMA;
 	const float4 background = Pattern_BackgroundColor();
 	return s3d_shapeColor(lerp(background, primary, coverage));
@@ -279,15 +292,20 @@ float4 PS_PatternHalftone(PSInput input) : SV_TARGET
 
 float4 PS_PatternWave(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float phase = (6.28318530718f * uv.x);
-	const float u = (uv.y - g_patternUVTransform[1].w * sin(phase) + 0.5f);
-	const float slope = (g_patternExtraParams.x * cos(phase));
+	const float normalizedThickness = g_patternUVTransform[1].z; // thickness / pitch
+	const float normalizedAmplitude = g_patternUVTransform[1].w; // amplitude / pitch
+	const float slopeAmplitude = g_patternExtraParams.x; // 2 * pi * amplitude / wavelength
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float phase = (6.28318530718f * patternUV.x);
+	const float waveCoord = (patternUV.y - normalizedAmplitude * sin(phase) + 0.5f);
+	const float slope = (slopeAmplitude * cos(phase));
 	// First-order normal-width correction, not an exact distance to the sine curve.
-	const float width = saturate(g_patternUVTransform[1].z * sqrt(1.0f + slope * slope));
+	const float width = saturate(normalizedThickness * sqrt(1.0f + slope * slope));
 	// Differentiate before wrapping; zero amplitude uses the Stripe filter.
-	const float fw = fwidth(u);
-	const float value = abs(2.0f * frac(u) - 1.0f);
+	const float fw = fwidth(waveCoord);
+	const float value = abs(2.0f * frac(waveCoord) - 1.0f);
 	const float thickness = (width * (1.0f + 2.0f * fw) - fw);
 	const float t = smoothstep(thickness - fw, thickness + fw, value);
 	const float4 primary = input.colorPMA;
@@ -297,13 +315,17 @@ float4 PS_PatternWave(PSInput input) : SV_TARGET
 
 float4 PS_PatternRipple(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float u = (length(uv) - g_patternUVTransform[1].w + 0.5f);
+	const float normalizedThickness = g_patternUVTransform[1].z; // thickness / pitch
+	const float normalizedRadiusOffset = g_patternUVTransform[1].w; // radiusOffset / pitch
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float ringCoord = (length(patternUV) - normalizedRadiusOffset + 0.5f);
 	// Continuous UV derivatives remain defined at the radial center, including
 	// a 2x2 fragment quad whose four samples have equal distance to the center.
-	const float fw = length(fwidth(uv));
-	const float value = abs(2.0f * frac(u) - 1.0f);
-	const float thickness = (g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float fw = length(fwidth(patternUV));
+	const float value = abs(2.0f * frac(ringCoord) - 1.0f);
+	const float thickness = (normalizedThickness * (1.0f + 2.0f * fw) - fw);
 	const float t = smoothstep(thickness - fw, thickness + fw, value);
 	const float4 primary = input.colorPMA;
 	const float4 background = Pattern_BackgroundColor();
@@ -312,21 +334,37 @@ float4 PS_PatternRipple(PSInput input) : SV_TARGET
 
 float4 PS_PatternWeave(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float2 fw = fwidth(uv);
-	const float2 value = abs(2.0f * frac(uv + 0.5f) - 1.0f);
-	const float2 width = (g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
-	const float2 clearance = (g_patternUVTransform[1].w * (1.0f + 2.0f * fw) - fw);
+	const float normalizedBandWidth = g_patternUVTransform[1].z; // thickness / pitch
+	const float normalizedClearanceWidth = g_patternUVTransform[1].w; // (thickness + 2 * gap) / pitch
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float2 fw = fwidth(patternUV);
+	const float2 value = abs(2.0f * frac(patternUV + 0.5f) - 1.0f);
+	const float2 width = (normalizedBandWidth * (1.0f + 2.0f * fw) - fw);
+	const float2 clearance = (normalizedClearanceWidth * (1.0f + 2.0f * fw) - fw);
 	const float2 band = (1.0f - smoothstep(width - fw, width + fw, value));
 	const float2 expanded = (1.0f - smoothstep(clearance - fw, clearance + fw, value));
 	// Filter the crossing parity too: at maximum gap, cuts reach cell boundaries.
-	const float horizontalOver = Pattern_CheckersFiltered(uv + 0.5f, float2(1.0f, 1.0f));
+	const float horizontalOver = Pattern_CheckersFiltered(patternUV + 0.5f, float2(1.0f, 1.0f));
 	const float verticalCut = ((expanded.x - band.x) * band.y);
 	const float horizontalCut = ((expanded.y - band.y) * band.x);
 	const float coverage = (max(band.x, band.y) - lerp(verticalCut, horizontalCut, horizontalOver));
 	const float4 primary = input.colorPMA;
 	const float4 background = Pattern_BackgroundColor();
 	return s3d_shapeColor(lerp(background, primary, coverage));
+}
+
+// Matches Pattern::Truchet::Layout.
+static const uint Pattern_TruchetLayoutRandom = 0u;
+static const uint Pattern_TruchetLayoutAlternating = 2u;
+
+inline uint Pattern_DecodeTruchetSeed(float2 seedHalves)
+{
+	// The CPU stores finite numeric 16-bit halves, not bit-cast float payloads.
+	const uint seedLow = uint(seedHalves.x);
+	const uint seedHigh = uint(seedHalves.y);
+	return (seedLow | (seedHigh << 16));
 }
 
 inline uint Pattern_TruchetHash(float2 cell, uint seed)
@@ -345,27 +383,31 @@ inline uint Pattern_TruchetHash(float2 cell, uint seed)
 
 float4 PS_PatternTruchet(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float2 cell = floor(uv);
-	float2 q = (uv - cell);
+	const float normalizedThickness = g_patternUVTransform[1].z; // thickness / pitch
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float2 cell = floor(patternUV);
+	float2 tilePosition = (patternUV - cell);
 	const uint layout = uint(g_patternExtraParams.z);
-	bool flip = false;
-	if (layout == 0u)
+	bool flip = false; // Uniform (1) keeps the original orientation.
+	if (layout == Pattern_TruchetLayoutRandom)
 	{
-		const uint seed = (uint(g_patternExtraParams.x) | (uint(g_patternExtraParams.y) << 16));
+		const uint seed = Pattern_DecodeTruchetSeed(g_patternExtraParams.xy);
 		flip = ((Pattern_TruchetHash(cell, seed) & 1u) != 0u);
 	}
-	else if (layout == 2u)
+	else if (layout == Pattern_TruchetLayoutAlternating)
 	{
 		flip = (frac(dot(cell, float2(0.5f, 0.5f))) > 0.25f);
 	}
-	q.x = (flip ? (1.0f - q.x) : q.x);
+	tilePosition.x = (flip ? (1.0f - tilePosition.x) : tilePosition.x);
 	// These equal-radius circles are disjoint, so the nearer center gives the nearer arc.
-	const float2 q2 = (q - 1.0f);
-	const float distance = abs(sqrt(min(dot(q, q), dot(q2, q2))) - 0.5f);
+	const float2 oppositeCornerOffset = (tilePosition - 1.0f);
+	const float distance = abs(sqrt(min(dot(tilePosition, tilePosition),
+		dot(oppositeCornerOffset, oppositeCornerOffset))) - 0.5f);
 	// Differentiate the continuous coordinates, not tile-dependent arc distances.
-	const float fw = length(fwidth(uv));
-	const float width = (g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float fw = length(fwidth(patternUV));
+	const float width = (normalizedThickness * (1.0f + 2.0f * fw) - fw);
 	const float coverage = (1.0f - smoothstep(width - fw, width + fw, 2.0f * distance));
 	const float4 primary = input.colorPMA;
 	const float4 background = Pattern_BackgroundColor();
@@ -374,12 +416,15 @@ float4 PS_PatternTruchet(PSInput input) : SV_TARGET
 
 float4 PS_PatternStripe(PSInput input) : SV_TARGET
 {
-	const float u = Pattern_UVTransform(input.uv).x;
-	const float fw = fwidth(u);
-	const float repeat = (2.0 * frac(u) - 1.0);
+	const float normalizedThickness = g_patternUVTransform[1].z; // thicknessScale / 2
+
+	const float2 drawingPosition = input.uv;
+	const float stripeCoord = Pattern_UVTransform(drawingPosition).x;
+	const float fw = fwidth(stripeCoord);
+	const float repeat = (2.0 * frac(stripeCoord) - 1.0);
 	const float value = abs(repeat);
 
-	const float thicknessScale = (g_patternUVTransform[1].z * (1 + 2 * fw) - fw);
+	const float thicknessScale = (normalizedThickness * (1 + 2 * fw) - fw);
 	const float c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 
 	const float4 primary = input.colorPMA;
@@ -390,12 +435,15 @@ float4 PS_PatternStripe(PSInput input) : SV_TARGET
 
 float4 PS_PatternGrid(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float2 fw = fwidth(uv);
-	const float2 repeat = (2.0 * frac(uv) - 1.0);
+	const float2 normalizedThickness = g_patternUVTransform[1].zz; // thicknessScale / 2 on both axes
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float2 fw = fwidth(patternUV);
+	const float2 repeat = (2.0 * frac(patternUV) - 1.0);
 	const float2 value = abs(repeat);
 
-	const float2 thicknessScale = (g_patternUVTransform[1].zz * float2(1 + fw) - fw);
+	const float2 thicknessScale = (normalizedThickness * float2(1 + fw) - fw);
 	const float2 c = smoothstep((thicknessScale - fw), (thicknessScale + fw), value);
 	const float c2 = min(c.x, c.y);
 
@@ -407,8 +455,11 @@ float4 PS_PatternGrid(PSInput input) : SV_TARGET
 
 float4 PS_PatternChecker(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float c = Pattern_CheckersFiltered(uv, g_patternUVTransform[1].zw);
+	const float2 axisIntensity = g_patternUVTransform[1].zw; // (verticalIntensity, horizontalIntensity)
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float c = Pattern_CheckersFiltered(patternUV, axisIntensity);
 
 	const float4 primary = input.colorPMA;
 	const float4 background = Pattern_BackgroundColor();
@@ -418,13 +469,14 @@ float4 PS_PatternChecker(PSInput input) : SV_TARGET
 
 float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float2 fw = (fwidth(uv) * 0.25);
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float2 fw = (fwidth(patternUV) * 0.25);
 
-	const float2 s1 = Pattern_Skew(uv + float2(-fw.x, -fw.y));
-	const float2 s2 = Pattern_Skew(uv + float2(fw.x, fw.y));
-	const float2 s3 = Pattern_Skew(uv + float2(-fw.x, fw.y));
-	const float2 s4 = Pattern_Skew(uv + float2(fw.x, -fw.y));
+	const float2 s1 = Pattern_Skew(patternUV + float2(-fw.x, -fw.y));
+	const float2 s2 = Pattern_Skew(patternUV + float2(fw.x, fw.y));
+	const float2 s3 = Pattern_Skew(patternUV + float2(-fw.x, fw.y));
+	const float2 s4 = Pattern_Skew(patternUV + float2(fw.x, -fw.y));
 
 	const float4 f1 = frac(float4(s1, s2));
 	const float4 f2 = frac(float4(s3, s4));
@@ -439,13 +491,16 @@ float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 
 float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.uv);
-	const float2 fw = fwidth(uv);
+	const float cellEdgeThreshold = g_patternUVTransform[1].z; // 0.5 - thicknessScale * 0.25
+
+	const float2 drawingPosition = input.uv;
+	const float2 patternUV = Pattern_UVTransform(drawingPosition);
+	const float2 fw = fwidth(patternUV);
 	const float w = (max(fw.x, fw.y) * 0.5);
 
-	const float thicknessScale = (g_patternUVTransform[1].z * (1 + 2 * w));
-	const float h = Pattern_Hex(uv);
-	const float c = smoothstep((thicknessScale - w), (thicknessScale + w), h);
+	const float filteredEdgeThreshold = (cellEdgeThreshold * (1 + 2 * w));
+	const float h = Pattern_Hex(patternUV);
+	const float c = smoothstep((filteredEdgeThreshold - w), (filteredEdgeThreshold + w), h);
 
 	const float4 primary = input.colorPMA;
 	const float4 background = Pattern_BackgroundColor();
