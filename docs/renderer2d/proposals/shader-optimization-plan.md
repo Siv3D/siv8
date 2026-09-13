@@ -1,6 +1,6 @@
 # Built-in shader optimization assessment and plan
 
-Status: **A2, A1, and A4 source implementation approved; Windows bytecode regeneration and regression tests complete; other stages proposed; cross-platform verification and performance acceptance pending.**
+Status: **A2, A1, and A4 source implementation approved; Windows bytecode regeneration and D3D11/Metal regression tests complete; other stages proposed; remaining rendering comparisons and performance acceptance pending.**
 Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタムシェーダ契約を
 維持する局所変更を先に評価し、描画側の状態管理・補間インターフェース・画質を
 変える案は別段階で扱う。D3D11 と Metal の調査結果をこの文書に集約する。
@@ -9,7 +9,8 @@ Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタ�
 
 初期評価の順序は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
 A2 / A1 / A4 は HLSL / MSL ソースへ適用済み。Windows の配布バイナリ更新、
-DXBC 照合、関連テストと全自動テストは完了した。確認範囲は後述の Windows 回帰検証を参照する。
+DXBC 照合と、Windows / macOS の関連テスト・全自動テストは完了した。
+確認範囲は後述の各ホストの回帰検証を参照する。
 各段階は着手前に方針・変更箇所・期待結果を説明して承認を得る。
 それぞれ独立した差分で評価する。定数配置・varying・描画状態を増やさず、
 両コンパイラの中間表現に演算削減が現れるためである。
@@ -17,9 +18,9 @@ DXBC 照合、関連テストと全自動テストは完了した。確認範囲
 
 | 扱い | 候補 | 判断理由 |
 | --- | --- | --- |
-| ソース・Windows 配布バイナリへ適用済み | A2 Truchet の距離式 | hash と AA を維持。Windows の円弧境界・配置・状態復帰テストも通過 |
-| ソース・Windows 配布バイナリへ適用済み | A1 Pattern の ColorAdd | 全 11 種の Windows 色合成テストを通過。Metal の限定描画比較では最大 1/255 のチャンネル差 |
-| ソース・Windows 配布バイナリへ適用済み | A4 影なし MSDF | 通常・Outline の除算を集約。影付き・Print を含む Windows アトラス寸法テストも通過 |
+| ソース・Windows 配布バイナリへ適用済み | A2 Truchet の距離式 | hash と AA を維持。両ホストの円弧境界・配置・状態復帰テストも通過 |
+| ソース・Windows 配布バイナリへ適用済み | A1 Pattern の ColorAdd | 全 11 種の色合成テストを両ホストで通過。Metal の限定描画比較では最大 1/255 のチャンネル差 |
+| ソース・Windows 配布バイナリへ適用済み | A4 影なし MSDF | 通常・Outline の除算を集約。影付き・Print を含むアトラス寸法テストも両ホストで通過 |
 | 次段階の設計・試作 | B1 QuadWarp | 大面積描画で期待できるが、補間成分と VS 定数管理が増える |
 | D3D11 固有の計測候補 | B2 Truchet の分岐 | DXBC は現行で hash を常時計算。Metal AIR には既に条件分岐がある |
 | 保留 | A3 Triangle の skew | Metal の式共通化でも境界に大きな色差を確認。画質判断を先に行う |
@@ -65,7 +66,7 @@ GPU 計測は温度・クロック変動や他の負荷の影響を受けるた�
 [fullscreen_triangle.metal](../../../macOS/App/engine/shader/metal/fullscreen_triangle.metal)、
 それらの描画・定数バインド・パイプライン生成経路。
 `metal -O3 -S -emit-llvm` による AIR 比較と、一時的なオフスクリーン描画で候補を照合した。
-これは Xcode の製品ビルド全体やエンジン全自動テストの検証ではない。
+この予備比較と、後述の Xcode ビルド・エンジン回帰検証は分けて扱う。
 
 以下のソース適用前の予備画像比較は 1024 × 1024、RGBA8Unorm、MSAA なし、PMA blend、半透明の色と ColorAdd、
 平行移動・斜交成分を持つ Pattern UV 変換を使った限定条件。
@@ -94,6 +95,29 @@ Checker 自体の積分式・parity フィルタは維持する。再利用可�
 GPU 時間の予備比較はばらつきが大きく、速度改善の根拠には採用していない。
 使用した命令表示ツールでは最終 GPU コードを逆アセンブルできず、AIR 以降の
 除去・定数畳み込み・分岐形態は未確認。ソースや AIR の見た目から実行回数を断定しない。
+
+### macOS のビルドとエンジン回帰検証
+
+[`macOS/run-tests.sh`](../../../macOS/run-tests.sh) の Debug ビルドで
+Pattern / MSDF / Renderer2D の関連テストと全自動テストが通過した。
+全自動テストの XML レポートが完結し、失敗・スキップがないことを確認した。
+Xcode が生成した default library の全 30 エントリーポイントをエンジンがロードし、
+Metal の実描画経路を使用している。テストや許容差の変更は不要だった。
+
+描画検証には、Pattern 全 11 種の PMA 色合成、Truchet の円弧境界・全配置・seed、
+座標変換、定数・カスタムシェーダの契約と状態復帰、Renderer2D のバッチ境界を含む。
+MSDF は通常・Outline・Shadow・OutlineShadow・Print の実フォントを使い、
+正方形・長方形・非 2 冪幅のアトラス、縮小・拡大・回転と非等方変換を比較した。
+
+加えて、`2d.metal` と `fullscreen_triangle.metal` を `metal -O3 -Werror -c` で
+コンパイルし、`metallib` によるライブラリ生成も通過した。
+A2 / A1 / A4 適用後、命名整理・色加算と XY 座標変換の共通化前のソースと現行を
+`metal -O3 -Werror -S -emit-llvm` で比較すると、`2d.metal` の全 28 エントリーポイントで
+型別の算術命令数と組み込み関数ごとの呼び出し数を含む命令数は維持されていた。
+Truchet の scalar sqrt は 2、通常・Outline の vector fdiv は 1、
+Shadow・OutlineShadow・Print の vector fdiv は 2 のまま。
+ロード順や一部の加算順には差があるため、AIR の完全一致や全入力での画像一致は主張しない。
+この検証は GPU 時間の改善を判定するものではない。
 
 ### Metal 固有の候補
 
@@ -186,7 +210,7 @@ HLSL / MSL のソース、CPU 側コード、テストと許容差は変更し�
 
 この結果は既存の描画回帰条件を満たすことを示す。旧バイナリと新バイナリを切り替えた
 描画 A/B や全入力での画像一致、GPU 時間の改善は確認していない。
-macOS のエンジン全自動テストも別途必要であり、Windows の結果で代用しない。
+macOS の独立した検証結果は前述の「macOS のビルドとエンジン回帰検証」を参照する。
 
 ## A. 現行インターフェースのまま評価できる案の詳細
 
@@ -201,7 +225,7 @@ Metal AIR では全 11 種で vector fmul と fadd が各 1 個減る。
 D3D11 の個別実験では 11 種すべてで 1 slot 減を確認。PolkaDot / Wave / Ripple / Stripe / Grid / Checker は
 `dcl_temps` も 3 → 2。追加定数、VS 切り替え、draw call の増加は不要。
 再生成した Windows 配布バイナリでも削減を確認し、全 11 種の色合成回帰テストが通過した。
-未完了の描画 A/B・macOS 全自動テスト・実行時間の評価は TODO で追跡する。
+Metal の色合成回帰テストも通過した。未完了の描画 A/B・実行時間の評価は TODO で追跡する。
 
 ### A2. Truchet の円弧距離を sqrt 前に比較する
 
@@ -273,8 +297,8 @@ Shadow / OutlineShadow / Print は影の offset に逆寸法を使うため、Me
 2 のまま。D3D11 で実験した Shadow と Print も slots は変わらなかった。
 Glow は `MSDF_Init` を使わず、この案の対象外。
 再生成した Windows 配布バイナリでも通常・Outline の削減を確認し、影付き・Print を含む
-アトラス寸法の回帰テストが通過した。未完了の描画 A/B・macOS 全自動テスト・
-実行時間の評価は TODO で追跡する。
+アトラス寸法の回帰テストが通過した。Metal でも同じ回帰テストと全自動テストが通過した。
+未完了の描画 A/B・実行時間の評価は TODO で追跡する。
 
 ## B. 描画側との協調が必要な案
 
