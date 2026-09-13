@@ -9,8 +9,8 @@
 
 ## `Siv3D/include/Siv3D/Pattern/Wave.hpp` / 追加 Pattern
 
-- 次は Weave（織り目）、その後 Truchet（円弧タイル）の順に API・Metal 実装・テスト・手動サンプルを進める。4 種類は採用済み。各段階を個別にレビューする。
-- Metal 側の仕様を固めた後、4 種類を D3D11 に移植する。Wave / Ripple の共有 API は登録済みだが、D3D11 シェーダと選択経路は未実装。[Wave](docs/renderer2d/wave.md)・[Ripple](docs/renderer2d/ripple.md) の設計・移植手順を参照する。
+- 次は Truchet（円弧タイル）の API・Metal 実装・テスト・手動サンプルを進める。4 種類は採用済み。各段階を個別にレビューする。
+- Metal 側の仕様を固めた後、4 種類を D3D11 に移植する。Wave / Ripple / Weave の共有 API は登録済みだが、D3D11 シェーダと選択経路は未実装。[Wave](docs/renderer2d/wave.md)・[Ripple](docs/renderer2d/ripple.md)・[Weave](docs/renderer2d/weave.md) の設計・移植手順を参照する。
 - 新しい Pattern が揃った後、[32 案ギャラリー](Test/Manual/PatternCollection.md)を統合ギャラリーに整理する。既存レシピを保存し、控えめな画面サイズで Pattern ごとのページを切り替える。模様・枠・名前を主体にし、アニメーションのオン・オフも維持する。
 - Truchet の配置規則と seed の契約は実装前に決める。ランダム配置は両バックエンドで一致させる。
 

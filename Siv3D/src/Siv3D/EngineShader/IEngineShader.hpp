@@ -50,6 +50,7 @@ namespace s3d
 		PatternHalftone,
 		PatternWave,
 		PatternRipple,
+		PatternWeave,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

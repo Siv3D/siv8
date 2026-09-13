@@ -163,6 +163,39 @@ TEST_CASE("Pattern.halftone_packing")
 	}
 }
 
+TEST_CASE("Pattern.weave_packing")
+{
+	const Pattern::Weave defaults;
+	static_assert(noexcept(static_cast<PatternParameters>(defaults)));
+	for (const double angle : { 0.0, 45_deg, -31_deg })
+	{
+		const Pattern::Weave p{ .primary = ColorF{ 0.2, 0.4, 0.6, 0.8 },
+			.background = ColorF{ 0.9, 0.7, 0.5, 0.3 },
+			.pitch = 32, .thickness = 12, .gap = 3, .angle = angle, .origin = { -37, 23 } };
+		const PatternParameters packed = p;
+		CHECK(packed.type == PatternType::Weave);
+		CHECK(packed.primaryColor == p.primary.toFloat4());
+		CHECK(packed.backgroundColor == p.background.toFloat4());
+		CHECK(packed.param0 == 0.375f);
+		CHECK(packed.param1 == 0.5625f);
+		CHECK(packed.extraParams == Float4{ 0, 0, 0, 0 });
+		for (const Vec2 cell : { Vec2{ -3, -2 }, Vec2{ 0, 0 }, Vec2{ 1, 0 }, Vec2{ 2, 4 } })
+		{
+			const Float2 uv = packed.uvTransform.transformPoint(p.origin + (cell * p.pitch).rotated(angle));
+			CHECK(uv.x == Catch::Approx(cell.x).margin(0.00001));
+			CHECK(uv.y == Catch::Approx(cell.y).margin(0.00001));
+		}
+	}
+	for (const double width : { 0.0, 12.0, 32.0 })
+	{
+		Pattern::Weave p{ .pitch = 32, .thickness = width, .gap = 0 };
+		const PatternParameters grid = p;
+		CHECK(grid.param0 == grid.param1);
+		p.gap = (p.pitch - width) / 2;
+		CHECK(static_cast<PatternParameters>(p).param1 == 1.0f);
+	}
+}
+
 TEST_CASE("Pattern.ripple_packing")
 {
 	const Pattern::Ripple defaults;
@@ -361,6 +394,149 @@ namespace
 }
 
 # if SIV3D_PLATFORM(MACOS)
+
+TEST_CASE("Pattern.weave_rendering")
+{
+	const Pattern::Weave base{ .primary = Palette::White, .background = Palette::Black,
+		.pitch = 40, .thickness = 16, .gap = 8, .origin = { 128, 128 } };
+	for (int32 variation = 0; variation < 6; ++variation)
+	{
+		INFO(variation);
+		auto p = base;
+		if (variation == 1) { p.angle = -31_deg; }
+		if (variation == 2) { p.gap = 0; }
+		if (variation == 3) { p.gap = (p.pitch - p.thickness) / 2; }
+		if (variation == 4) { p.thickness = 0; }
+		if (variation == 5) { p.thickness = p.pitch; p.gap = 0; }
+		const auto frame = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(p); });
+		int32 white = 0, black = 0, mismatches = 0;
+		for (int32 y = 12; y < 248; y += 2)
+		{
+			for (int32 x = 12; x < 248; x += 2)
+			{
+				const Vec2 q = (Vec2{ x + 0.5, y + 0.5 } - p.origin).rotated(-p.angle);
+				const int32 column = static_cast<int32>(std::floor(q.x / p.pitch + 0.5));
+				const int32 row = static_cast<int32>(std::floor(q.y / p.pitch + 0.5));
+				const double dx = Abs(q.x - column * p.pitch), dy = Abs(q.y - row * p.pitch);
+				const double halfWidth = (p.thickness / 2), outer = (halfWidth + p.gap);
+				const bool empty = (p.thickness == 0), full = (p.thickness == p.pitch);
+				// Exclude all geometric edges and parity boundaries from the solid-interior oracle.
+				if (not empty && not full && (Abs(dx - halfWidth) < 3 || Abs(dy - halfWidth) < 3
+					|| Abs(dx - outer) < 3 || Abs(dy - outer) < 3
+					|| (p.pitch / 2 - dx) < 3 || (p.pitch / 2 - dy) < 3)) { continue; }
+				const bool verticalOver = (((column + row) % 2) == 0);
+				const bool foreground = (not empty && (full || (verticalOver
+					? ((dx < halfWidth) || (dy < halfWidth && dx > outer))
+					: ((dy < halfWidth) || (dx < halfWidth && dy > outer)))));
+				foreground ? ++white : ++black;
+				mismatches += (frame.image[y][x] != (foreground ? Palette::White : Palette::Black));
+			}
+		}
+		CHECK(mismatches == 0);
+		CHECK((variation == 4 ? white == 0 : white > 50));
+		CHECK((variation == 5 ? black == 0 : black > 50));
+	}
+
+	// Maximum gap ends at the half-cell boundary; the changing parity must be filtered.
+	auto maximum = base;
+	maximum.gap = (maximum.pitch - maximum.thickness) / 2;
+	maximum.origin = { 128.5, 128.5 };
+	const auto edge = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(maximum); });
+	CHECK(edge.image[128][148].r > 0);
+	CHECK(edge.image[128][148].r < 255);
+	CHECK(edge.image[128][144] == Palette::Black);
+	CHECK(edge.image[128][152] == Palette::White);
+
+	for (const bool full : { false, true })
+	{
+		auto p = base;
+		p.thickness = (full ? p.pitch : 0);
+		p.gap = 0;
+		p.primary = ColorF{ 0.8, 0.3, 0.1, 0.5 };
+		p.background = ColorF{ 0.2, 0.4, 0.6, 0.5 };
+		const auto actual = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(p);
+		});
+		const auto expected = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(full ? p.primary : p.background);
+		});
+		CHECK(actual.image == expected.image);
+	}
+}
+
+TEST_CASE("Pattern.weave_transforms_and_state")
+{
+	const Pattern::Weave p{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 24, .thickness = 10, .gap = 3, .origin = { -7, -11 },
+	};
+	const Image reference = CapturePattern(p, Mat3x2::Translate(20, 20));
+	for (const Mat3x2 transform : {
+		Mat3x2::Translate(233, 97), Mat3x2{ 0, 1, -1, 0, 250, 120 },
+		Mat3x2::Scale(3).translated(240, 110), Mat3x2::Scale(3, 1).translated(240, 110),
+		Mat3x2::Scale(-1, 1).translated(240, 110),
+		Mat3x2::ShearX(0.5f).translated(240, 110) })
+	{
+		INFO(transform);
+		CheckCorrespondingInterior(reference, CapturePattern(p, transform), transform);
+	}
+	const Mat3x2 local = Mat3x2::Scale(3, 1);
+	const Mat3x2 camera{ 0, 1, -1, 0, 250, 100 };
+	CheckCorrespondingInterior(reference, CapturePattern(p, local, camera), local * camera);
+	const auto split = CapturePatternDraw([&]
+	{
+		const ScopedViewport2D viewport{ 20, 20, 100, 100 };
+		RectF{ 0, 0, 29, 64 }.draw(p);
+		Triangle{ 29, 0, 72, 0, 29, 64 }.draw(p);
+		Triangle{ 72, 0, 72, 64, 29, 64 }.draw(p);
+	});
+	CHECK(split.image == reference);
+	CHECK(split.metrics.drawCalls == 1);
+	PatternParameters extra = p;
+	extra.extraParams = { 17, -6, 23, 42 };
+	CHECK(CapturePattern(extra, Mat3x2::Translate(20, 20)) == reference);
+
+	auto other = p;
+	other.gap = 6;
+	const auto draw = [&]
+	{
+		RectF{ 10, 10, 40, 64 }.draw(p);
+		RectF{ 50, 10, 40, 64 }.draw(p);
+		RectF{ 90, 10, 40, 64 }.draw(other);
+		RectF{ 130, 10, 40, 64 }.draw(Pattern::Wave{});
+		RectF{ 170, 10, 40, 64 }.draw(p);
+	};
+	const auto expected = CapturePatternDraw(draw);
+	CHECK(expected.metrics.drawCalls == 4);
+	for (int32 frame = 0; frame < 2; ++frame)
+	{
+		const auto actual = CapturePatternDraw(draw);
+		CHECK(actual.image == expected.image);
+		CHECK(actual.metrics.drawCalls == expected.metrics.drawCalls);
+	}
+	const auto uninterrupted = CapturePatternDraw([&] { RectF{ 10, 10, 200, 64 }.draw(p); });
+	int32 differences = 0, mismatches = 0;
+	for (int32 y = 10; y < 74; ++y)
+	{
+		for (int32 x = 10; x < 210; ++x)
+		{
+			if ((x < 90) || (170 <= x))
+			{
+				mismatches += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+			else if (x < 130)
+			{
+				differences += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+		}
+	}
+	CHECK(mismatches == 0);
+	CHECK(differences > 100);
+}
 
 TEST_CASE("Pattern.ripple_rendering")
 {

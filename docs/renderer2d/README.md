@@ -10,6 +10,9 @@ Renderer design notes and related checks:
   shader-bytecode regeneration, and Windows verification.
 - [Pattern expressiveness proposal](proposals/pattern-expressiveness.md):
   unadopted exploration of parameter units, additional motifs, and size gradients.
+- [Weave](weave.md): alternating crossings, filtered gaps, payload, and D3D11 port.
+- [Weave manual sample](../../Test/Manual/Weave.md): fabric and basket presets,
+  animation, and transform controls.
 - [Ripple](ripple.md): concentric bands, center filtering, payload, and D3D11 port.
 - [Ripple manual sample](../../Test/Manual/Ripple.md): off-card centers, layered
   circles, radial motion, and transform controls.

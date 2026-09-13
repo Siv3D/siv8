@@ -33,5 +33,7 @@ namespace s3d
 		Wave,
 
 		Ripple,
+
+		Weave,
 	};
 }

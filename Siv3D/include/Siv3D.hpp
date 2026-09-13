@@ -748,6 +748,8 @@
 
 # include <Siv3D/Pattern/Ripple.hpp>
 
+# include <Siv3D/Pattern/Weave.hpp>
+
 # include <Siv3D/Pattern/Grid.hpp>
 
 # include <Siv3D/Pattern/Checker.hpp>

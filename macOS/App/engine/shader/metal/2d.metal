@@ -350,6 +350,28 @@ float4 PS_PatternRipple(PSInput input [[stage_in]],
 }
 
 fragment
+float4 PS_PatternWeave(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
+	const float2 fw = fwidth(uv);
+	const float2 value = abs(2.0f * fract(uv + 0.5f) - 1.0f);
+	const float2 width = (c1->g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float2 clearance = (c1->g_patternUVTransform[1].w * (1.0f + 2.0f * fw) - fw);
+	const float2 band = (1.0f - smoothstep(width - fw, width + fw, value));
+	const float2 expanded = (1.0f - smoothstep(clearance - fw, clearance + fw, value));
+	// Filter the crossing parity too: at maximum gap, cuts reach cell boundaries.
+	const float horizontalOver = Pattern_CheckersFiltered(uv + 0.5f, float2(1.0f));
+	const float verticalCut = ((expanded.x - band.x) * band.y);
+	const float horizontalCut = ((expanded.y - band.y) * band.x);
+	const float coverage = (max(band.x, band.y) - mix(verticalCut, horizontalCut, horizontalOver));
+	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
+	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	return mix(background, primary, coverage);
+}
+
+fragment
 float4 PS_PatternStripe(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])

@@ -86,6 +86,8 @@ namespace s3d
 			return psPatternWave;
 		case PatternType::Ripple:
 			return psPatternRipple;
+		case PatternType::Weave:
+			return psPatternWeave;
 		default:
 			return psShape;
 		}
@@ -149,6 +151,7 @@ namespace s3d
 		m_engineShader.psPatternHalftone = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternHalftone).id();
 		m_engineShader.psPatternWave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWave).id();
 		m_engineShader.psPatternRipple = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternRipple).id();
+		m_engineShader.psPatternWeave = SIV3D_ENGINE(EngineShader)->getPS(EnginePS::PatternWeave).id();
 		
 		m_vertexBufferManager.init(m_device);
 
