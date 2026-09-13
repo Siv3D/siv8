@@ -45,6 +45,7 @@ cbuffer PSEffectConstants2D : register(b1)
 {
 	row_major float2x4 g_patternUVTransform;
 	float4 g_patternBackgroundColor;
+	float4 g_patternExtraParams;
 	row_major float3x3 g_quadWarpInvHomography;
 	float4 g_quadWarpUVTransform;
 }

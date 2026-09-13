@@ -437,10 +437,18 @@ TEST_CASE("Pattern.batch_boundaries_and_mixed_shaders")
 	}
 }
 
-# if SIV3D_PLATFORM(MACOS)
-
 TEST_CASE("Pattern.extra_parameters")
 {
+# if SIV3D_PLATFORM(WINDOWS)
+	const std::string source = R"(
+cbuffer Effects : register(b1) { float4 padding[3]; float4 extra; };
+float4 ReadExtra() : SV_TARGET
+{
+    return float4(extra.xyz * extra.w, 1);
+}
+)";
+	const PixelShader ps = PixelShader::HLSL(source, U"ReadExtra");
+# else
 	const std::string source = R"(
 #include <metal_stdlib>
 using namespace metal;
@@ -452,6 +460,7 @@ fragment float4 ReadExtra(Varying input [[stage_in]], constant float4* effects [
 }
 )";
 	const PixelShader ps = PixelShader::MSL(source, U"ReadExtra");
+# endif
 	REQUIRE(ps);
 	const Texture texture{ Image{ 2, 2, Palette::White } };
 	REQUIRE(texture);
@@ -516,8 +525,6 @@ fragment float4 ReadExtra(Varying input [[stage_in]], constant float4* effects [
 	CHECK(actual.image == reference.image);
 	CHECK(actual.metrics.drawCalls == reference.metrics.drawCalls);
 }
-
-# endif
 
 TEST_CASE("Pattern.custom_shader_contract")
 {

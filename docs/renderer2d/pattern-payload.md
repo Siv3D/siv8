@@ -5,10 +5,10 @@ additional pattern data; the existing six built-in pattern shaders ignore it.
 This storage extension does not add a pattern type, gradient, profile, or change
 the adopted [coordinate model](pattern-coordinates.md).
 
-Metal records and uploads all four values. D3D11 completion is tracked in
-[TODO](../../TODO.md); the [Windows handoff](d3d11-pattern-payload-handoff.md)
-describes the remaining port. Backend staging information belongs here rather
-than in public API documentation.
+D3D11 and Metal record and upload all four values using the same effect-buffer
+layout. The [D3D11 validation guide](d3d11-pattern-payload-handoff.md) describes
+shader-bytecode regeneration and Windows rendering checks. Unimplemented
+expression candidates remain in [TODO](../../TODO.md).
 
 ## CPU record and shader constants
 
@@ -25,9 +25,8 @@ defaults `extraParams` to zero. Its
 
 The first three vectors retain their existing meaning and order. Foreground
 color travels through vertices, and pattern type selects the pixel shader.
-Existing typed pattern constructors default the new member to zero. The packing
-return type changes from `std::array<Float4, 3>` to `std::array<Float4, 4>`;
-callers explicitly depending on that type need updating.
+Existing typed pattern constructors default the additional member to zero. The
+packing return type is `std::array<Float4, 4>`.
 
 The shader effect structure groups all Pattern fields in its first 64 bytes and
 all QuadWarp fields in its second 64 bytes:
@@ -43,34 +42,23 @@ all QuadWarp fields in its second 64 bytes:
 
 [PSEffectConstants2D::setPattern](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DCommon.hpp)
 maps all four packed vectors to the first 64 bytes of the effect buffer.
-`setQuadWarp` does not modify pattern fields. The Metal declaration uses
-`g_patternExtraParams` at the matching position. No QuadWarp storage is aliased,
-and its shader calculations and vertex interface are independent.
+`setQuadWarp` does not modify pattern fields. Both HLSL and Metal declarations
+place `g_patternExtraParams` immediately after `g_patternBackgroundColor`.
+D3D11 binds the effect buffer to pixel-shader slot b1. No QuadWarp storage is
+aliased, and its shader calculations and vertex interface are independent.
 
 ## State and cost
 
-The Metal command manager records and compares all four vectors. Changing only
-`extraParams` must create a pattern-state transition; identical values must still
-batch. Transitioning back to a default pattern must restore zero rather than
-retain data from an earlier draw or frame.
+Both command managers record, compare, retrieve, and restore all four vectors.
+Their initial pattern records and current values are zero-initialized. Changing
+only `extraParams` creates a pattern-state transition; identical values still
+batch. Returning to a default pattern restores zero, including across frames.
 
-Pattern record storage grows from 48 to 64 bytes. The shared effect structure
-grows from 112 to 128 bytes; Metal submits its full size when that buffer is
-dirty. Vertex size, vertex attributes, and the number of interpolators do not
-change. Existing built-in pattern fragment calculations do not change. These
-are layout and operation facts, not a measured GPU-time result.
-
-## D3D11 staging boundary
-
-The shared packing API and `setPattern` use four vectors without compatibility
-overloads. D3D11 still has its original three-vector command path and must be
-updated before rebuilding. Its HLSL declaration and bytecode must also adopt the
-new offsets: the old QuadWarp layout no longer matches the C++ effect structure.
-There is no staging adapter or alternate layout to preserve the old path.
-
-The Windows port should extend pattern input/record/current-state/getter types
-to four vectors, place the added HLSL field immediately after the background,
-regenerate shader bytecode, and validate the resulting build and rendering.
+Each pattern record uses 64 bytes. Both backends submit the full 128-byte effect
+buffer when it is dirty. Vertex size, vertex attributes, and the number of
+interpolators are unchanged by the storage extension. Existing built-in pattern
+fragment calculations are also unchanged. These are layout and operation facts,
+not a measured GPU-time result.
 
 ## Validation
 
@@ -80,7 +68,7 @@ regenerate shader bytecode, and validate the resulting build and rendering.
   mappings, and fixed shader field offsets.
 - Pattern updates preserve QuadWarp fields, and QuadWarp updates preserve all
   pattern fields.
-- A Metal diagnostic pixel shader reads byte offset 48 and uses all four
+- HLSL and Metal diagnostic pixel shaders read byte offset 48 and use all four
   components. The sequence zero/A/A/B/A/zero verifies restoration, state changes,
   and batching when only the additional vector differs. A QuadWarp draw and a
   subsequent diagnostic draw verify the independent state across shader changes.

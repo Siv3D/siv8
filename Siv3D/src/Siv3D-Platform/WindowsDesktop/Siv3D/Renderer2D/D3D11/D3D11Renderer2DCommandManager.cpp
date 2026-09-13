@@ -507,7 +507,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	void D3D11Renderer2DCommandManager::pushPatternParameter(const std::array<Float4, 3>& patternParameter)
+	void D3D11Renderer2DCommandManager::pushPatternParameter(const std::array<Float4, 4>& patternParameter)
 	{
 		constexpr auto Command = D3D11Renderer2DCommandType::PatternParameters;
 		auto& current = m_current.patternParameter;
@@ -532,12 +532,12 @@ namespace s3d
 		}
 	}
 	
-	const std::array<Float4, 3>& D3D11Renderer2DCommandManager::getPatternParameter(const uint32 index) const
+	const std::array<Float4, 4>& D3D11Renderer2DCommandManager::getPatternParameter(const uint32 index) const
 	{
 		return m_buffer.patternParameters[index];
 	}
 	
-	const std::array<Float4, 3>& D3D11Renderer2DCommandManager::getPatternParameter() const
+	const std::array<Float4, 4>& D3D11Renderer2DCommandManager::getPatternParameter() const
 	{
 		return m_current.patternParameter;
 	}

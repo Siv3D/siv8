@@ -6,8 +6,8 @@ Renderer design notes and related checks:
   and the data path for making patterns follow local and camera transforms.
 - [Pattern parameter payload](pattern-payload.md): four-vector packing, effect
   constant offsets, state tracking, and storage-only validation.
-- [Windows payload handoff](d3d11-pattern-payload-handoff.md): implementation and
-  verification instructions for the D3D11 storage extension.
+- [D3D11 payload validation](d3d11-pattern-payload-handoff.md): data flow,
+  shader-bytecode regeneration, and Windows verification.
 - [Pattern expressiveness proposal](proposals/pattern-expressiveness.md):
   unadopted exploration of parameter units, additional motifs, and size gradients.
 - [Polka-dot size gradient candidate](proposals/polka-dot-size-gradient.md):
