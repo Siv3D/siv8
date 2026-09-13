@@ -35,5 +35,7 @@ namespace s3d
 		Ripple,
 
 		Weave,
+
+		Truchet,
 	};
 }

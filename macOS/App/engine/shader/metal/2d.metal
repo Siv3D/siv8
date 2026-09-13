@@ -371,6 +371,50 @@ float4 PS_PatternWeave(PSInput input [[stage_in]],
 	return mix(background, primary, coverage);
 }
 
+inline uint Pattern_TruchetHash(float2 cell, uint seed)
+{
+	// Hash exact IEEE-754 bits of half-integer cell centers. This avoids signed
+	// float-to-int conversion limits and gives +0/-0 the same key at the origin.
+	const uint2 key = as_type<uint2>(cell + 0.5f);
+	uint h = ((key.x * 0x9E3779B9u) ^ (key.y * 0x85EBCA6Bu) ^ seed);
+	h ^= (h >> 16);
+	h *= 0x7FEB352Du;
+	h ^= (h >> 15);
+	h *= 0x846CA68Bu;
+	h ^= (h >> 16);
+	return h;
+}
+
+fragment
+float4 PS_PatternTruchet(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
+	const float2 cell = floor(uv);
+	float2 q = (uv - cell);
+	const uint layout = uint(c1->g_patternExtraParams.z);
+	bool flip = false;
+	if (layout == 0u)
+	{
+		const uint seed = (uint(c1->g_patternExtraParams.x) | (uint(c1->g_patternExtraParams.y) << 16));
+		flip = ((Pattern_TruchetHash(cell, seed) & 1u) != 0u);
+	}
+	else if (layout == 2u)
+	{
+		flip = (fract(dot(cell, float2(0.5f))) > 0.25f);
+	}
+	q.x = (flip ? (1.0f - q.x) : q.x);
+	const float distance = min(abs(length(q) - 0.5f), abs(length(q - 1.0f) - 0.5f));
+	// Differentiate the continuous coordinates, not tile-dependent arc distances.
+	const float fw = length(fwidth(uv));
+	const float width = (c1->g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float coverage = (1.0f - smoothstep(width - fw, width + fw, 2.0f * distance));
+	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
+	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	return mix(background, primary, coverage);
+}
+
 fragment
 float4 PS_PatternStripe(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],

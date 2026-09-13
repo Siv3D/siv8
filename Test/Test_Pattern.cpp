@@ -12,6 +12,7 @@
 # include "Siv3DTest.hpp"
 # include "../Siv3D/src/Siv3D/Renderer2D/Renderer2DCommon.hpp"
 # include <cstddef>
+# include <bit>
 
 TEST_CASE("PatternParameters.packing")
 {
@@ -161,6 +162,69 @@ TEST_CASE("Pattern.halftone_packing")
 			CHECK(zeroRadius.param1 == 0.0f);
 		}
 	}
+}
+
+namespace
+{
+	uint32 TruchetReferenceHash(const int32 x, const int32 y, const uint32 seed)
+	{
+		const uint32 kx = std::bit_cast<uint32>(static_cast<float>(x) + 0.5f);
+		const uint32 ky = std::bit_cast<uint32>(static_cast<float>(y) + 0.5f);
+		uint32 h = ((kx * 0x9E3779B9u) ^ (ky * 0x85EBCA6Bu) ^ seed);
+		h ^= (h >> 16);
+		h *= 0x7FEB352Du;
+		h ^= (h >> 15);
+		h *= 0x846CA68Bu;
+		h ^= (h >> 16);
+		return h;
+	}
+}
+
+TEST_CASE("Pattern.truchet_packing")
+{
+	using Layout = Pattern::Truchet::Layout;
+	const Pattern::Truchet defaults;
+	static_assert(noexcept(static_cast<PatternParameters>(defaults)));
+	for (const uint32 seed : { 0u, 1u, 0x10000u, 0x80000000u, 0x7FC00001u, 0xFFFFFFFFu })
+	{
+		for (const Layout layout : { Layout::Random, Layout::Uniform, Layout::Alternating })
+		{
+			const PatternParameters packed = Pattern::Truchet{ .layout = layout, .seed = seed };
+			CHECK(packed.type == PatternType::Truchet);
+			CHECK((static_cast<uint32>(packed.extraParams.x) | (static_cast<uint32>(packed.extraParams.y) << 16)) == seed);
+			CHECK(packed.extraParams.z == static_cast<float>(layout));
+			CHECK(packed.extraParams.w == 0.0f);
+			CHECK(packed.extraParams == packed.extraParams); // No NaN seeds in state comparisons.
+		}
+	}
+	for (const double angle : { 0.0, 45_deg, -31_deg })
+	{
+		const Pattern::Truchet p{ .primary = ColorF{ 0.2, 0.4, 0.6, 0.8 },
+			.background = ColorF{ 0.9, 0.7, 0.5, 0.3 },
+			.pitch = 32, .thickness = 8, .angle = angle, .origin = { -37, 23 } };
+		const PatternParameters packed = p;
+		CHECK(packed.primaryColor == p.primary.toFloat4());
+		CHECK(packed.backgroundColor == p.background.toFloat4());
+		CHECK(packed.param0 == 0.25f);
+		CHECK(packed.param1 == 0.0f);
+		for (const Vec2 cell : { Vec2{ -3, -2 }, Vec2{ 0, 0 }, Vec2{ 1, 0 }, Vec2{ 2, 4 } })
+		{
+			const Float2 uv = packed.uvTransform.transformPoint(p.origin + (cell * p.pitch).rotated(angle));
+			CHECK(uv.x == Catch::Approx(cell.x).margin(0.00001));
+			CHECK(uv.y == Catch::Approx(cell.y).margin(0.00001));
+		}
+	}
+	CHECK(static_cast<PatternParameters>(Pattern::Truchet{ .thickness = 0 }).param0 == 0.0f);
+	CHECK(static_cast<PatternParameters>(Pattern::Truchet{ .pitch = 32, .thickness = 32 }).param0 == 1.0f);
+
+	// Fixed unsigned-32-bit port vectors: coordinate keys are IEEE-754 cell centers.
+	CHECK(TruchetReferenceHash(0, 0, 0) == 0x5FB971A6u);
+	CHECK(TruchetReferenceHash(1, 0, 0) == 0xAECF142Du);
+	CHECK(TruchetReferenceHash(-1, 0, 0) == 0x639B032Bu);
+	CHECK(TruchetReferenceHash(-3, 2, 1) == 0x40F4689Fu);
+	CHECK(TruchetReferenceHash(17, -9, 0x10000u) == 0x60836BC3u);
+	CHECK(TruchetReferenceHash(0, 0, 0x80000000u) == 0x639B032Bu);
+	CHECK(TruchetReferenceHash(3, 7, 0xFFFFFFFFu) == 0x2263AF31u);
 }
 
 TEST_CASE("Pattern.weave_packing")
@@ -394,6 +458,166 @@ namespace
 }
 
 # if SIV3D_PLATFORM(MACOS)
+
+TEST_CASE("Pattern.truchet_rendering")
+{
+	using Layout = Pattern::Truchet::Layout;
+	const Pattern::Truchet base{ .primary = Palette::White, .background = Palette::Black,
+		.pitch = 32, .thickness = 10, .origin = { 128, 128 } };
+	for (int32 variation = 0; variation < 8; ++variation)
+	{
+		INFO(variation);
+		auto p = base;
+		if (variation == 1) { p.layout = Layout::Uniform; }
+		if (variation == 2) { p.layout = Layout::Alternating; }
+		if (variation == 3) { p.angle = -31_deg; p.seed = 0x10000u; }
+		if (variation == 4) { p.seed = 0x7FC00001u; }
+		if (variation == 5) { p.seed = 0xFFFFFFFFu; }
+		if (variation == 6) { p.thickness = 0; }
+		if (variation == 7) { p.thickness = p.pitch; }
+		const auto frame = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(p); });
+		int32 white = 0, black = 0, mismatches = 0;
+		for (int32 y = 12; y < 248; y += 2)
+		{
+			for (int32 x = 12; x < 248; x += 2)
+			{
+				const Vec2 q = (Vec2{ x + 0.5, y + 0.5 } - p.origin).rotated(-p.angle);
+				const int32 column = static_cast<int32>(std::floor(q.x / p.pitch));
+				const int32 row = static_cast<int32>(std::floor(q.y / p.pitch));
+				const bool flip = (p.layout == Layout::Random ? ((TruchetReferenceHash(column, row, p.seed) & 1u) != 0)
+					: (p.layout == Layout::Alternating && (column + row) % 2 != 0));
+				const Vec2 corner = Vec2{ column, row } * p.pitch;
+				const Vec2 centerA = corner + Vec2{ (flip ? p.pitch : 0), 0 };
+				const Vec2 centerB = corner + Vec2{ (flip ? 0 : p.pitch), p.pitch };
+				const double distance = Min(Abs(q.distanceFrom(centerA) - p.pitch / 2),
+					Abs(q.distanceFrom(centerB) - p.pitch / 2));
+				const Color actual = frame.image[y][x];
+				if ((p.thickness == 0) || (distance > p.thickness / 2 + 3))
+				{
+					++black;
+					mismatches += (actual != Palette::Black);
+				}
+				else if ((p.thickness == p.pitch) || (distance < p.thickness / 2 - 3))
+				{
+					++white;
+					mismatches += (actual != Palette::White);
+				}
+			}
+		}
+		CHECK(mismatches == 0);
+		CHECK((variation == 6 ? white == 0 : white > 100));
+		CHECK((variation == 7 ? black == 0 : black > 100));
+	}
+
+	for (const Layout layout : { Layout::Random, Layout::Uniform, Layout::Alternating })
+	{
+		auto p = base;
+		p.layout = layout;
+		p.origin = { 128.5, 128.5 };
+		p.seed = 0xFFFFFFFFu;
+		const auto frame = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(p); });
+		// Both orientations meet at every edge midpoint, including negative cells.
+		for (int32 y = 32; y <= 192; y += 32)
+		{
+			for (int32 x = 32; x <= 192; x += 32)
+			{
+				CHECK(frame.image[y + 16][x] == Palette::White);
+				CHECK(frame.image[y][x + 16] == Palette::White);
+				CHECK(frame.image[y][x] == Palette::Black);
+			}
+		}
+		if (layout != Layout::Random)
+		{
+			p.seed = 0;
+			CHECK(CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(p); }).image == frame.image);
+		}
+	}
+	for (const bool full : { false, true })
+	{
+		auto p = base;
+		p.thickness = (full ? p.pitch : 0);
+		p.primary = ColorF{ 0.8, 0.3, 0.1, 0.5 };
+		p.background = ColorF{ 0.2, 0.4, 0.6, 0.5 };
+		const auto actual = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(p);
+		});
+		const auto expected = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(full ? p.primary : p.background);
+		});
+		CHECK(actual.image == expected.image);
+	}
+}
+
+TEST_CASE("Pattern.truchet_transforms_and_state")
+{
+	const Pattern::Truchet p{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 24, .thickness = 8, .origin = { -7, -11 }, .seed = 1,
+	};
+	const Image reference = CapturePattern(p, Mat3x2::Translate(20, 20));
+	for (const Mat3x2 transform : {
+		Mat3x2::Translate(233, 97), Mat3x2{ 0, 1, -1, 0, 250, 120 },
+		Mat3x2::Scale(3).translated(240, 110), Mat3x2::Scale(3, 1).translated(240, 110),
+		Mat3x2::Scale(-1, 1).translated(240, 110),
+		Mat3x2::ShearX(0.5f).translated(240, 110) })
+	{
+		INFO(transform);
+		CheckCorrespondingInterior(reference, CapturePattern(p, transform), transform);
+	}
+	const Mat3x2 local = Mat3x2::Scale(3, 1);
+	const Mat3x2 camera{ 0, 1, -1, 0, 250, 100 };
+	CheckCorrespondingInterior(reference, CapturePattern(p, local, camera), local * camera);
+	const auto split = CapturePatternDraw([&]
+	{
+		const ScopedViewport2D viewport{ 20, 20, 100, 100 };
+		RectF{ 0, 0, 29, 64 }.draw(p);
+		Triangle{ 29, 0, 72, 0, 29, 64 }.draw(p);
+		Triangle{ 72, 0, 72, 64, 29, 64 }.draw(p);
+	});
+	CHECK(split.image == reference);
+	CHECK(split.metrics.drawCalls == 1);
+
+	auto other = p;
+	other.seed = 0x10001u;
+	const auto draw = [&]
+	{
+		RectF{ 10, 10, 40, 64 }.draw(p);
+		RectF{ 50, 10, 40, 64 }.draw(p);
+		RectF{ 90, 10, 40, 64 }.draw(other);
+		RectF{ 130, 10, 40, 64 }.draw(Pattern::Wave{});
+		RectF{ 170, 10, 40, 64 }.draw(p);
+	};
+	const auto expected = CapturePatternDraw(draw);
+	CHECK(expected.metrics.drawCalls == 4);
+	for (int32 frame = 0; frame < 2; ++frame)
+	{
+		const auto actual = CapturePatternDraw(draw);
+		CHECK(actual.image == expected.image);
+		CHECK(actual.metrics.drawCalls == expected.metrics.drawCalls);
+	}
+	const auto uninterrupted = CapturePatternDraw([&] { RectF{ 10, 10, 200, 64 }.draw(p); });
+	int32 differences = 0, mismatches = 0;
+	for (int32 y = 10; y < 74; ++y)
+	{
+		for (int32 x = 10; x < 210; ++x)
+		{
+			if ((x < 90) || (170 <= x))
+			{
+				mismatches += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+			else if (x < 130)
+			{
+				differences += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+		}
+	}
+	CHECK(mismatches == 0);
+	CHECK(differences > 100);
+}
 
 TEST_CASE("Pattern.weave_rendering")
 {

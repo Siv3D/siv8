@@ -75,6 +75,7 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_PatternWave" };
 			m_pixelShaders << MSL{ U"PS_PatternRipple" };
 			m_pixelShaders << MSL{ U"PS_PatternWeave" };
+			m_pixelShaders << MSL{ U"PS_PatternTruchet" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

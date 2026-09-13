@@ -51,6 +51,7 @@ namespace s3d
 		PatternWave,
 		PatternRipple,
 		PatternWeave,
+		PatternTruchet,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

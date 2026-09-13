@@ -603,6 +603,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Wave.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Ripple.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Weave.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Truchet.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Stripe.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\Pattern\Triangle.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\PCG64.hpp" />

@@ -750,6 +750,8 @@
 
 # include <Siv3D/Pattern/Weave.hpp>
 
+# include <Siv3D/Pattern/Truchet.hpp>
+
 # include <Siv3D/Pattern/Grid.hpp>
 
 # include <Siv3D/Pattern/Checker.hpp>

@@ -10,6 +10,11 @@ Renderer design notes and related checks:
   shader-bytecode regeneration, and Windows verification.
 - [Pattern expressiveness proposal](proposals/pattern-expressiveness.md):
   unadopted exploration of parameter units, additional motifs, and size gradients.
+- [Truchet](truchet.md): connected arcs, regular/random layouts, and seed encoding.
+- [Truchet manual sample](../../Test/Manual/Truchet.md): three layouts, seeds,
+  animation, and transforms.
+- [D3D11 new-pattern handoff](d3d11-new-patterns.md): combined integration steps
+  for Wave, Ripple, Weave, and Truchet.
 - [Weave](weave.md): alternating crossings, filtered gaps, payload, and D3D11 port.
 - [Weave manual sample](../../Test/Manual/Weave.md): fabric and basket presets,
   animation, and transform controls.

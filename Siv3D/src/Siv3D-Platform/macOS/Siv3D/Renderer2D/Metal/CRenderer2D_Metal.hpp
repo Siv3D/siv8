@@ -607,6 +607,8 @@ namespace s3d
 			PixelShader::IDType psPatternRipple;
 
 			PixelShader::IDType psPatternWeave;
+
+			PixelShader::IDType psPatternTruchet;
 			
 			[[nodiscard]]
 			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;

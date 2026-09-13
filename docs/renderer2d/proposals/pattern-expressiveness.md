@@ -4,8 +4,8 @@ Status: broader exploration remains unadopted; release scope is not scheduled.
 The [parameter storage extension](../pattern-payload.md) and the separate
 [halftone design](../halftone.md) are adopted.
 Wave, Ripple, Weave, and Truchet have also been selected for staged implementation.
-[Wave](../wave.md), [Ripple](../ripple.md), and [Weave](../weave.md) record the
-implemented designs; remaining stages are in
+[Wave](../wave.md), [Ripple](../ripple.md), [Weave](../weave.md), and
+[Truchet](../truchet.md) record the implemented designs; remaining stages are in
 [TODO](../../../TODO.md). Other API names below describe concepts, not available
 C++ declarations.
 
