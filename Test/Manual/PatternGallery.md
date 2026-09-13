@@ -1,10 +1,11 @@
 # Pattern gallery and zoom comparison
 
-An interactive gallery for all six built-in `Pattern` shaders. Each type has six
+An interactive gallery for the six constant-parameter `Pattern` shaders. Each type has six
 parameter presets, editable controls, and two simultaneous uniform-zoom previews.
 The program uses public APIs and requires no external assets or output files.
 For rotation, nonuniform scale, reflection, shear, and primitive continuity,
-use the [coordinate comparison](PatternTransforms.md).
+use the [coordinate comparison](PatternTransforms.md). For independently varying
+dot radii, use the [size-gradient sample](PolkaDotSizeGradient.md).
 
 ## Execution
 

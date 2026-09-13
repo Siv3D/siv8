@@ -47,6 +47,7 @@ namespace s3d
 		FontMSDF_OutlineShadow,
 		FontMSDF_Glow,
 		FontPrint,
+		PatternPolkaDotSizeGradient,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

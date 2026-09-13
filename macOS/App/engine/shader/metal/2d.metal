@@ -291,6 +291,26 @@ float4 PS_PatternPolkaDot(	PSInput input [[stage_in]],
 }
 
 fragment
+float4 PS_PatternPolkaDotSizeGradient(PSInput input [[stage_in]],
+							constant PSConstants2D* c0 [[buffer(0)]],
+							constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
+	const float2 cellCenter = (floor(uv) + 0.5f);
+	const float2 repeat = (2.0f * (uv - cellCenter));
+	const float t = saturate(dot(cellCenter, c1->g_patternExtraParams.xy) + c1->g_patternExtraParams.z);
+	const float radius = mix(c1->g_patternUVTransform[1].z, c1->g_patternUVTransform[1].w,
+		(t * t * (3.0f - 2.0f * t)));
+	// Differentiate continuous UVs, not the radius that changes between cells.
+	const float fw = length(fwidth(uv));
+	const float coverage = ((1.0f - smoothstep(radius - fw, radius + fw, length(repeat)))
+		* saturate(radius / fw));
+	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
+	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	return mix(background, primary, coverage);
+}
+
+fragment
 float4 PS_PatternStripe(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])

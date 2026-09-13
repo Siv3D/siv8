@@ -3022,6 +3022,7 @@
 		F9D41B862C56057700290998 /* PatternParameters.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7C2C56057700290998 /* PatternParameters.ipp */; };
 		F9D41B872C56057700290998 /* PatternType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7D2C56057700290998 /* PatternType.hpp */; };
 		F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7E2C56057700290998 /* PolkaDot.hpp */; };
+		C94BD36A8015474EA6324EE1 /* PolkaDotSizeGradient.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C94BD36A8015474EA6324EE2 /* PolkaDotSizeGradient.hpp */; };
 		F9D41B892C56057700290998 /* Stripe.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7F2C56057700290998 /* Stripe.hpp */; };
 		F9D41B8A2C56057700290998 /* Triangle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B802C56057700290998 /* Triangle.hpp */; };
 		F9D41CE32C9972D800290998 /* SivGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9D41CE12C9972D800290998 /* SivGrid.cpp */; };
@@ -6438,6 +6439,7 @@
 		F9D41B7C2C56057700290998 /* PatternParameters.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternParameters.ipp; sourceTree = "<group>"; };
 		F9D41B7D2C56057700290998 /* PatternType.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PatternType.hpp; sourceTree = "<group>"; };
 		F9D41B7E2C56057700290998 /* PolkaDot.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolkaDot.hpp; sourceTree = "<group>"; };
+		C94BD36A8015474EA6324EE2 /* PolkaDotSizeGradient.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolkaDotSizeGradient.hpp; sourceTree = "<group>"; };
 		F9D41B7F2C56057700290998 /* Stripe.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Stripe.hpp; sourceTree = "<group>"; };
 		F9D41B802C56057700290998 /* Triangle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangle.hpp; sourceTree = "<group>"; };
 		F9D41CE12C9972D800290998 /* SivGrid.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivGrid.cpp; sourceTree = "<group>"; };
@@ -13810,6 +13812,7 @@
 				F9D41B7C2C56057700290998 /* PatternParameters.ipp */,
 				F9D41B7D2C56057700290998 /* PatternType.hpp */,
 				F9D41B7E2C56057700290998 /* PolkaDot.hpp */,
+				C94BD36A8015474EA6324EE2 /* PolkaDotSizeGradient.hpp */,
 				F9D41B7F2C56057700290998 /* Stripe.hpp */,
 				F9D41B802C56057700290998 /* Triangle.hpp */,
 			);
@@ -15399,6 +15402,7 @@
 				F986FA942BCFB53B006A4C0F /* ftsnames.h in Headers */,
 				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
 				F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */,
+				C94BD36A8015474EA6324EE1 /* PolkaDotSizeGradient.hpp in Headers */,
 				F99881792F45A22000C8991D /* IClipboard.hpp in Headers */,
 				F98603F52BCFBB54006A4C0F /* SkSLConstructorDiagonalMatrix.h in Headers */,
 				F986003E2BCFBB53006A4C0F /* SkSerialProcs.h in Headers */,

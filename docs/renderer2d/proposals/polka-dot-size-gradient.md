@@ -1,8 +1,9 @@
 # Polka-dot size gradient
 
-Status: expression adoption candidate; its API and shaders are not approved.
-The separate [storage extension](../pattern-payload.md) is adopted and proceeds
-before new expressions. Release scope for the expression is not scheduled.
+Status: superseded by the adopted [design](../polka-dot-size-gradient.md).
+The independent-field API and Metal shader are implemented; D3D11 is tracked in
+[TODO](../../../TODO.md). The compact alternative below is historical exploration,
+not the adopted API or payload.
 This is a feasibility review following the broader
 [pattern expressiveness exploration](pattern-expressiveness.md).
 

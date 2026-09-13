@@ -2,8 +2,9 @@
 
 The pattern record contains four Float4 values (64 bytes). The fourth value is
 additional pattern data; the existing six built-in pattern shaders ignore it.
-This storage extension does not add a pattern type, gradient, profile, or change
-the adopted [coordinate model](pattern-coordinates.md).
+The [size-gradient pattern](polka-dot-size-gradient.md) uses that additional
+vector for an independent linear field. Its shader does not change the storage
+layout or the adopted [coordinate model](pattern-coordinates.md).
 
 D3D11 and Metal record and upload all four values using the same effect-buffer
 layout. The [D3D11 validation guide](d3d11-pattern-payload-handoff.md) describes

@@ -11,7 +11,7 @@
 
 ### 水玉のサイズ変化
 
-- [水玉のサイズ変化](docs/renderer2d/proposals/polka-dot-size-gradient.md) の API とシェーダの実装を検討する。開始位置は水玉の配置から独立させる。
+- `Pattern::PolkaDotSizeGradient` の共有 API と Metal 実装を基準に、D3D11 のシェーダ・選択・ロードを追加し、描画テストを有効化する。[申し送り](docs/renderer2d/d3d11-polka-dot-size-gradient-handoff.md) に従ってバイトコードを生成し、Windows で全テストとサンプルを検証する。
 
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 

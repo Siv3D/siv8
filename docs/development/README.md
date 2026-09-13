@@ -206,7 +206,7 @@ compares tessellation, line-width compensation, and patterns under nonuniform
 scaling and rotation on D3D11 and Metal.
 
 The [Pattern gallery](../../Test/Manual/PatternGallery.md) provides editable presets
-for all six pattern shaders and compares object zoom, pattern scale compensation,
+for the six constant-parameter pattern shaders and compares object zoom, pattern scale compensation,
 and fixed-scene presentation scaling.
 
 ## Documentation checks

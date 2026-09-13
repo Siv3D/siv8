@@ -101,6 +101,68 @@ TEST_CASE("PatternParameters.effect_constants")
 	CHECK(constants.patternExtraParams == Float4{ 0, 0, 0, 0 });
 }
 
+TEST_CASE("Pattern.polka_dot_size_gradient_packing")
+{
+	const Pattern::PolkaDotSizeGradient defaults;
+	const PatternParameters packedDefaults = defaults;
+	CHECK(packedDefaults.type == PatternType::PolkaDotSizeGradient);
+	CHECK(packedDefaults.param0 == 0.0f);
+	CHECK(packedDefaults.param1 == Catch::Approx(2.0 / 3.0));
+	CHECK(packedDefaults.extraParams.w == 0.0f);
+	static_assert(noexcept(static_cast<PatternParameters>(defaults)));
+
+	for (const double angle : { 0.0, 45_deg, -31_deg })
+	{
+		for (const double pitch : { 12.0, 36.0, 80.0 })
+		{
+			Pattern::PolkaDotSizeGradient p{
+				.primary = ColorF{ 0.2, 0.4, 0.6, 0.8 },
+				.background = ColorF{ 0.9, 0.7, 0.5, 0.3 },
+				.pitch = pitch, .minRadius = 2, .maxRadius = pitch / 2,
+				.angle = angle, .origin = { -37, 23 },
+				.start = { 17, -61 }, .end = { 137, 119 },
+			};
+			const PatternParameters packed = p;
+			CHECK(packed.primaryColor == p.primary.toFloat4());
+			CHECK(packed.backgroundColor == p.background.toFloat4());
+			CHECK(packed.param0 == Catch::Approx(4.0 / pitch));
+			CHECK(packed.param1 == 1.0f);
+			const auto field = [&](const Vec2 point)
+			{
+				const Float2 uv = packed.uvTransform.transformPoint(point);
+				return (uv.x * packed.extraParams.x + uv.y * packed.extraParams.y + packed.extraParams.z);
+			};
+			// An independent drawing-space projection is the public contract.
+			for (const double t : { -0.5, 0.0, 0.25, 0.5, 1.0, 1.5 })
+			{
+				const Vec2 point = (p.start + (p.end - p.start) * t);
+				CHECK(field(point) == Catch::Approx(t).margin(0.00001));
+				CHECK(field(point + Vec2{ -180, 120 }) == Catch::Approx(t).margin(0.00001));
+			}
+			// Include negative cells and ensure origin is a dot center, not a cell corner.
+			for (const Vec2 cell : { Vec2{ -3, -2 }, Vec2{ 0, 0 }, Vec2{ 2, 4 } })
+			{
+				const Vec2 center = (p.origin + (cell * pitch).rotated(angle));
+				const Float2 uv = packed.uvTransform.transformPoint(center);
+				CHECK(uv.x == Catch::Approx(cell.x + 0.5).margin(0.00001));
+				CHECK(uv.y == Catch::Approx(cell.y + 0.5).margin(0.00001));
+			}
+			p.start = { -80, 40 };
+			p.end = { 10, 40 };
+			const PatternParameters movedField = p;
+			CHECK(movedField.uvTransform == packed.uvTransform);
+			CHECK(movedField.extraParams != packed.extraParams);
+			p.minRadius = p.maxRadius;
+			const PatternParameters constantRadius = p;
+			CHECK(constantRadius.param0 == constantRadius.param1);
+			p.minRadius = p.maxRadius = 0;
+			const PatternParameters zeroRadius = p;
+			CHECK(zeroRadius.param0 == 0.0f);
+			CHECK(zeroRadius.param1 == 0.0f);
+		}
+	}
+}
+
 # if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
 
 namespace
@@ -212,6 +274,149 @@ namespace
 		CHECK(mismatches == 0);
 	}
 }
+
+# if SIV3D_PLATFORM(MACOS)
+
+TEST_CASE("Pattern.polka_dot_size_gradient_rendering")
+{
+	const Pattern::PolkaDotSizeGradient base{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 32, .minRadius = 0, .maxRadius = 13,
+		.angle = 45_deg, .origin = { 128.5, 128.5 },
+		.start = { 0, 55 }, .end = { 0, 205 },
+	};
+	for (int32 variation = 0; variation < 6; ++variation)
+	{
+		INFO(variation);
+		auto p = base;
+		if (variation == 1) { p.angle = 0; }
+		if (variation == 2) { p.start = { 60, 0 }; p.end = { 190, 0 }; }
+		if (variation == 3) { p.start = { 185, 180 }; p.end = { 65, 55 }; p.minRadius = 3; }
+		if (variation == 4) { p.minRadius = p.maxRadius = p.pitch / 2; }
+		if (variation == 5) { p.minRadius = p.maxRadius = 0; }
+		const auto frame = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(p); });
+		int32 white = 0, black = 0, mismatches = 0;
+		for (int32 y = 12; y < 248; y += 2)
+		{
+			for (int32 x = 12; x < 248; x += 2)
+			{
+				const Vec2 point{ x + 0.5, y + 0.5 };
+				const Vec2 lattice = ((point - p.origin).rotated(-p.angle) / p.pitch);
+				const Vec2 cell{ std::floor(lattice.x + 0.5), std::floor(lattice.y + 0.5) };
+				const Vec2 center = (p.origin + (cell * p.pitch).rotated(p.angle));
+				const Vec2 direction = (p.end - p.start);
+				const double t = Clamp((center - p.start).dot(direction) / direction.lengthSq(), 0.0, 1.0);
+				const double radius = (p.minRadius + (p.maxRadius - p.minRadius) * t * t * (3 - 2 * t));
+				const double distance = point.distanceFrom(center);
+				const Color actual = frame.image[y][x];
+				// Compare interiors against circles in drawing space, independently of GPU packing/AA.
+				if ((radius == 0) || (distance > radius + 2))
+				{
+					++black;
+					mismatches += (actual != Palette::Black);
+				}
+				else if (distance < radius - 2)
+				{
+					++white;
+					mismatches += (actual != Palette::White);
+				}
+			}
+		}
+		CHECK(mismatches == 0);
+		CHECK(black > 100);
+		CHECK((variation == 5 ? white == 0 : white > 100));
+	}
+
+	// A zero radius must reveal exactly the same composited background as a solid fill.
+	auto zero = base;
+	zero.minRadius = zero.maxRadius = 0;
+	zero.background = ColorF{ 0.2, 0.4, 0.6, 0.5 };
+	const auto patternBackground = CapturePatternDraw([&]
+	{
+		RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+		RectF{ 10, 10, 240, 240 }.draw(zero);
+	});
+	const auto solidBackground = CapturePatternDraw([&]
+	{
+		RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+		RectF{ 10, 10, 240, 240 }.draw(zero.background);
+	});
+	CHECK(patternBackground.image == solidBackground.image);
+}
+
+TEST_CASE("Pattern.polka_dot_size_gradient_transforms_and_state")
+{
+	const Pattern::PolkaDotSizeGradient p{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 20, .minRadius = 2, .maxRadius = 8,
+		.angle = 45_deg, .origin = { -7, -11 }, .start = { 0, 0 }, .end = { 0, 60 },
+	};
+	const Image reference = CapturePattern(p, Mat3x2::Translate(20, 20));
+	for (const Mat3x2 transform : {
+		Mat3x2::Translate(233, 97), Mat3x2{ 0, 1, -1, 0, 250, 120 },
+		Mat3x2::Scale(3).translated(240, 110), Mat3x2::Scale(3, 1).translated(240, 110),
+		Mat3x2::Scale(-1, 1).translated(240, 110),
+		Mat3x2::ShearX(0.5f).translated(240, 110),
+		Mat3x2::Rotate(31_deg).scaled(2).translated(240, 110) })
+	{
+		INFO(transform);
+		CheckCorrespondingInterior(reference, CapturePattern(p, transform), transform);
+	}
+	const Mat3x2 local = Mat3x2::Scale(3, 1);
+	const Mat3x2 camera{ 0, 1, -1, 0, 250, 100 };
+	CheckCorrespondingInterior(reference, CapturePattern(p, local, camera), local * camera);
+	const auto split = CapturePatternDraw([&]
+	{
+		const ScopedViewport2D viewport{ 20, 20, 100, 100 };
+		RectF{ 0, 0, 29, 64 }.draw(p);
+		Triangle{ 29, 0, 72, 0, 29, 64 }.draw(p);
+		Triangle{ 72, 0, 72, 64, 29, 64 }.draw(p);
+	});
+	CHECK(split.image == reference);
+	CHECK(split.metrics.drawCalls == 1);
+
+	auto other = p;
+	other.start = { 0, 60 };
+	other.end = { 0, 0 };
+	const auto draw = [&]
+	{
+		RectF{ 10, 10, 40, 64 }.draw(p);
+		RectF{ 50, 10, 40, 64 }.draw(p);
+		RectF{ 90, 10, 40, 64 }.draw(other);
+		RectF{ 130, 10, 40, 64 }.draw(p);
+		RectF{ 170, 10, 40, 64 }.draw(Palette::Red);
+		RectF{ 210, 10, 40, 64 }.draw(MakeTestPattern(PatternType::PolkaDot));
+		RectF{ 250, 10, 40, 64 }.draw(p);
+	};
+	const auto expected = CapturePatternDraw(draw);
+	CHECK(expected.metrics.drawCalls == 6);
+	CHECK(expected.metrics.triangleCount == 14);
+	for (int32 frame = 0; frame < 2; ++frame)
+	{
+		const auto actual = CapturePatternDraw(draw);
+		CHECK(actual.image == expected.image);
+		CHECK(actual.metrics.drawCalls == expected.metrics.drawCalls);
+	}
+	const auto uninterrupted = CapturePatternDraw([&] { RectF{ 10, 10, 280, 64 }.draw(p); });
+	int32 differences = 0;
+	for (int32 y = 10; y < 74; ++y)
+	{
+		for (int32 x = 10; x < 290; ++x)
+		{
+			if ((x < 90) || (130 <= x && x < 170) || (250 <= x))
+			{
+				CHECK(expected.image[y][x] == uninterrupted.image[y][x]);
+			}
+			else if (x < 130)
+			{
+				differences += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+		}
+	}
+	CHECK(differences > 100);
+}
+
+# endif
 
 TEST_CASE("Pattern.drawing_coordinates")
 {

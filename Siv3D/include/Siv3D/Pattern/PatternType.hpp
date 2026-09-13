@@ -27,5 +27,7 @@ namespace s3d
 		Triangle,
 
 		HexGrid,
+
+		PolkaDotSizeGradient,
 	};
 }

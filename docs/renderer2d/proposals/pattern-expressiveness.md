@@ -1,9 +1,9 @@
 # Pattern expressiveness
 
-Status: exploration proposal, not adopted or implemented. Release scope: not
-scheduled. API names below describe concepts, not available C++ declarations.
-The separate [parameter storage extension](../pattern-payload.md) is adopted;
-it does not implement the expressions proposed here.
+Status: broader exploration remains unadopted; release scope is not scheduled.
+The [parameter storage extension](../pattern-payload.md) and the separate
+[polka-dot size-gradient design](../polka-dot-size-gradient.md) are adopted.
+Other API names below describe concepts, not available C++ declarations.
 
 This proposal builds on the adopted [coordinate model](../pattern-coordinates.md).
 It explores predictable parameters, additional motifs, and spatial variation of
