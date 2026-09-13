@@ -148,6 +148,9 @@
     <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ScopeExit.cpp">
       <Filter>Test</Filter>
     </ClCompile>

@@ -136,8 +136,6 @@ namespace s3d
 			
 			m_fullscreenTriangleRenderPipelineState = getRenderPipelineState().get(pipelineStateDesc);
 		}
-
-		beginFrame();
 	}
 
 	////////////////////////////////////////////////////////////////

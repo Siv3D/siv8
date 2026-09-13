@@ -91,6 +91,10 @@ namespace s3d
 		SIV3D_ENGINE(NativeShare)->init();
 		SIV3D_ENGINE(Notifications)->init();
 
+		// 初回フレームも描画用バッファの空きを取得してから開始する。
+		SIV3D_ENGINE(Renderer)->waitForFrame();
+		SIV3D_ENGINE(Renderer)->beginFrame();
+
 		LOG_INFO("✅ Siv3D engine has initialized");
 	}
 	

@@ -31,7 +31,7 @@
 
 # include "Siv3DTestFramework.hpp"
 
-int32 RunTest();
+s3d::int32 RunTest();
 
 namespace s3d
 {
