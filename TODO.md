@@ -7,6 +7,12 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## Renderer2D / 組み込みシェーダ最適化
+
+- [D3D11 HLSL 調査](docs/renderer2d/proposals/d3d11-shader-optimization-audit.md)を Metal 側の調査と統合し、採用範囲を決める。まず Pattern の色加算共通化、Truchet の距離式、Triangle の skew、影なし MSDF の除算を個別評価する。
+- QuadWarp の VS 移動と Truchet の配置分岐を GPU 計測で評価する。Pattern UV の VS 移動はカスタムシェーダ契約、背景色・MSDF 寸法の前計算は状態追従と定数管理の費用を確認してから判断する。
+- 通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。
+
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 
 ### 数値文字列の受理範囲
