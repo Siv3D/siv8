@@ -32,20 +32,25 @@ TEST_CASE("PatternParameters.packing")
 	const Float2 uv = (packed[0].zw() + point.x * packed[0].xy() + point.y * packed[1].xy());
 	CHECK(uv == pattern.uvTransform.transformPoint(point));
 
-	// The existing D3D11 packing path still scales all six matrix elements only.
-	for (const float factor : { 0.0f, 0.5f, 1.0f, 2.0f })
+	constexpr auto defaults = PatternParameters{}.toFloat4Array();
+	CHECK(defaults[0] == Float4{ 1, 0, 0, 0 });
+	CHECK(defaults[1] == Float4{ 0, 1, 0, 0 });
+	CHECK(defaults[2] == Float4{ 0, 0, 0, 0 });
+
+	// Singular and reflected UV transforms are packed without scale compensation.
+	for (const Mat3x2 transform : { Mat3x2::Scale(0), Mat3x2::Scale(-2, 3).translated(5, -7) })
 	{
-		const auto legacy = pattern.toFloat4Array(factor);
-		CHECK(legacy[0] == packed[0] * factor);
-		CHECK(legacy[1].xy() == packed[1].xy() * factor);
-		CHECK(legacy[1].zw() == packed[1].zw());
-		CHECK(legacy[2] == packed[2]);
+		auto p = pattern;
+		p.uvTransform = transform;
+		const auto data = p.toFloat4Array();
+		CHECK(data[0].zw() + point.x * data[0].xy() + point.y * data[1].xy()
+			== transform.transformPoint(point));
+		CHECK(data[1].zw() == packed[1].zw());
+		CHECK(data[2] == packed[2]);
 	}
-	CHECK(PatternParameters{}.toFloat4Array()[0] == Float4{ 1, 0, 0, 0 });
 }
 
-// D3D11 keeps the previous coordinate model until the backend port.
-# if SIV3D_PLATFORM(MACOS)
+# if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
 
 namespace
 {
@@ -157,7 +162,7 @@ namespace
 	}
 }
 
-TEST_CASE("Pattern.Metal.drawing_coordinates")
+TEST_CASE("Pattern.drawing_coordinates")
 {
 	const Mat3x2 transforms[]{
 		Mat3x2::Translate(233, 97),
@@ -186,7 +191,7 @@ TEST_CASE("Pattern.Metal.drawing_coordinates")
 	}
 }
 
-TEST_CASE("Pattern.Metal.viewport_and_continuity")
+TEST_CASE("Pattern.viewport_and_continuity")
 {
 	for (const PatternType type : { PatternType::PolkaDot, PatternType::Stripe,
 		PatternType::Grid, PatternType::Checker, PatternType::Triangle, PatternType::HexGrid })
@@ -265,7 +270,7 @@ TEST_CASE("Pattern.Metal.viewport_and_continuity")
 	}
 }
 
-TEST_CASE("Pattern.Metal.pattern_and_color_state_restore")
+TEST_CASE("Pattern.pattern_and_color_state_restore")
 {
 	const auto pattern = MakeTestPattern(PatternType::PolkaDot);
 	const auto draw = [&](const bool scoped)
@@ -317,7 +322,7 @@ TEST_CASE("Pattern.Metal.pattern_and_color_state_restore")
 	}
 }
 
-TEST_CASE("Pattern.Metal.batch_boundaries_and_mixed_shaders")
+TEST_CASE("Pattern.batch_boundaries_and_mixed_shaders")
 {
 	Image pixels{ 2, 2, Palette::Red };
 	pixels[0][1] = Palette::Blue;
@@ -381,8 +386,31 @@ TEST_CASE("Pattern.Metal.batch_boundaries_and_mixed_shaders")
 	}
 }
 
-TEST_CASE("Pattern.Metal.custom_shader_contract")
+TEST_CASE("Pattern.custom_shader_contract")
 {
+# if SIV3D_PLATFORM(WINDOWS)
+	const std::string source = R"(
+struct Vertex { float2 position : POSITION; float2 uv : TEXCOORD0; float4 color : COLOR0; };
+cbuffer Constants : register(b0) { row_major float2x4 transform; float4 colorMul; };
+struct Varying { float4 position : SV_POSITION; float4 colorPMA : COLOR0; float2 uv : TEXCOORD0; };
+Varying ShiftPattern(Vertex input)
+{
+    const float2 pos = input.position + float2(23, 0);
+    Varying result;
+    result.position = float4(transform[0].zw + pos.x * transform[0].xy + pos.y * transform[1].xy, 0, 1);
+    result.colorPMA = input.color * colorMul;
+    result.colorPMA.rgb *= result.colorPMA.a;
+    result.uv = input.position;
+    return result;
+}
+float4 Coordinates(Varying input) : SV_TARGET
+{
+    return float4(frac(input.uv / 32.0f), 0, 1);
+}
+)";
+	const VertexShader vs = VertexShader::HLSL(source, U"ShiftPattern");
+	const PixelShader ps = PixelShader::HLSL(source, U"Coordinates");
+# else
 	const std::string source = R"(
 #include <metal_stdlib>
 using namespace metal;
@@ -407,6 +435,7 @@ fragment float4 Coordinates(Varying input [[stage_in]])
 )";
 	const VertexShader vs = VertexShader::MSL(source, U"ShiftPattern");
 	const PixelShader ps = PixelShader::MSL(source, U"Coordinates");
+# endif
 	REQUIRE(vs);
 	REQUIRE(ps);
 	const auto pattern = MakeTestPattern(PatternType::Triangle);
@@ -515,7 +544,7 @@ namespace
 	}
 }
 
-TEST_CASE("Pattern.Metal.shape_paths")
+TEST_CASE("Pattern.shape_paths")
 {
 	const auto pattern = MakeTestPattern(PatternType::Checker);
 	const auto draw = [&](const int32 kind)

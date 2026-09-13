@@ -94,6 +94,16 @@ PSInput VS_QuadWarp(VSInput input)
 	return result;
 }
 
+// Keep the pattern interface independent of quad-warp interpolation.
+PSInput VS_Pattern(VSInput input)
+{
+	PSInput result;
+	result.position	= s3d_positionTransform(input.position, g_transform);
+	result.colorPMA = s3d_premultiplyAlpha(input.color * g_colorMul);
+	result.uv		= input.position;
+	return result;
+}
+
 float4 PS_Shape(PSInput input) : SV_TARGET
 {
 	return s3d_shapeColor(input.colorPMA);
@@ -235,7 +245,7 @@ inline float Pattern_Hex(const float2 p)
 
 float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.uv);
 	const float2 repeat = (2.0 * frac(uv) - 1.0);
 	const float value = length(repeat);
 	const float fw = (length(float2(ddx(value), ddy(value))) * 0.70710678118);
@@ -251,7 +261,7 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 
 float4 PS_PatternStripe(PSInput input) : SV_TARGET
 {
-	const float u = Pattern_UVTransform(input.position.xy).x;
+	const float u = Pattern_UVTransform(input.uv).x;
 	const float fw = fwidth(u);
 	const float repeat = (2.0 * frac(u) - 1.0);
 	const float value = abs(repeat);
@@ -267,7 +277,7 @@ float4 PS_PatternStripe(PSInput input) : SV_TARGET
 
 float4 PS_PatternGrid(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.uv);
 	const float2 fw = fwidth(uv);
 	const float2 repeat = (2.0 * frac(uv) - 1.0);
 	const float2 value = abs(repeat);
@@ -284,7 +294,7 @@ float4 PS_PatternGrid(PSInput input) : SV_TARGET
 
 float4 PS_PatternChecker(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.uv);
 	const float c = Pattern_CheckersFiltered(uv, g_patternUVTransform[1].zw);
 
 	const float4 primary = s3d_shapeColor(input.colorPMA);
@@ -295,7 +305,7 @@ float4 PS_PatternChecker(PSInput input) : SV_TARGET
 
 float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.uv);
 	const float2 fw = (fwidth(uv) * 0.25);
 
 	const float2 s1 = Pattern_Skew(uv + float2(-fw.x, -fw.y));
@@ -316,7 +326,7 @@ float4 PS_PatternTriangle(PSInput input) : SV_TARGET
 
 float4 PS_PatternHexGrid(PSInput input) : SV_TARGET
 {
-	const float2 uv = Pattern_UVTransform(input.position.xy);
+	const float2 uv = Pattern_UVTransform(input.uv);
 	const float2 fw = fwidth(uv);
 	const float w = (max(fw.x, fw.y) * 0.5);
 

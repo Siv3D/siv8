@@ -19,8 +19,8 @@ use the [coordinate comparison](PatternTransforms.md).
    not apply to the current type. Enable `Animate offset` to scroll the pattern.
 4. Set `Object zoom` to 0.5, 1, and 2. Compare the two bottom previews. `Zoom = 1`
    resets only this zoom; `Reset` restores the editable pattern and stops animation.
-   Disable `Animate offset` and enable `Pan shapes` to observe translation: on
-   Metal the pattern stays attached as the previews move horizontally.
+   Disable `Animate offset` and enable `Pan shapes` to observe translation:
+   the pattern stays attached as the previews move horizontally.
 5. Keep object zoom fixed and use the window-size buttons or resize the window by
    hand. The scene stays at 1200 x 800 (`ResizeMode::Keep`). The footer reports the
    actual framebuffer/scene presentation scale, including HiDPI and letterboxing.
@@ -41,7 +41,7 @@ use the [coordinate comparison](PatternTransforms.md).
   previews, their rulers, and the UI. Even the right preview then changes size in
   framebuffer pixels. Its compensation applies to object zoom only. Texture
   filtering can soften the presentation at non-integral scales.
-- Metal evaluates patterns in drawing coordinates before the local/camera
+- Both backends evaluate patterns in drawing coordinates before the local/camera
   transforms. The two previews have the same phase at zoom 1, and moving either
   preview with `Pan shapes` carries its pattern with it. Offset scrolls the
   pattern in its own coordinates. At other zoom values the two previews use
@@ -49,10 +49,6 @@ use the [coordinate comparison](PatternTransforms.md).
 - There is no per-shape origin. The rectangle and circle in a preview share one
   pattern coordinate system. Changing their geometry coordinates directly would
   move their outlines within that pattern; the pan uses `Transformer2D` instead.
-- D3D11 still derives UVs from render-target positions and applies the combined
-  local/camera RMS scale. Its pattern does not pan with the shapes, and its two
-  previews can differ in phase even at zoom 1. This backend difference remains
-  until the D3D11 port. Uniform-zoom spacing comparisons apply to both backends.
 
 ## Complete Main.cpp
 

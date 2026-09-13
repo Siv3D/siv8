@@ -9,7 +9,8 @@ individual pattern parameters.
 
 1. Paste the complete code below into the `Main.cpp` of a separate application
    built with this Siv3D revision. Keep the repository test entry points intact.
-2. Run on Metal. Select each of the six pattern types, then each transform mode.
+2. Run on Windows (D3D11) or macOS (Metal). Select each of the six pattern types,
+   then each transform mode.
 3. Toggle `Camera` to apply the same matrix as a camera transform instead of a
    local transform. Press Space or use `Animate` to pause/resume; `Reset` returns
    the animation to its starting point.
@@ -21,7 +22,7 @@ individual pattern parameters.
 
 ## Expected results
 
-- On Metal, the left and middle panels show the same pattern phase and spacing.
+- The left and middle panels show the same pattern phase and spacing.
   Dividing a shape into separate rectangles and triangles does not restart the
   pattern at each primitive's origin. Ignore the middle panel's cyan seam marker.
 - Translation, rotation, nonuniform scale, reflection, and shear move or deform
@@ -34,8 +35,6 @@ individual pattern parameters.
 - Pause animation to compare individual dots, grid intersections, or triangle
   corners. Narrow features may change antialiasing under deformation; they should
   not visibly slide across the geometry in the left/middle panels.
-- D3D11 still uses the previous screen-coordinate model until its port. It is not
-  expected to pass the attachment/continuity comparisons across these viewports.
 
 ## Complete Main.cpp
 

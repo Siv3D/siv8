@@ -45,11 +45,6 @@ namespace s3d
 		[[nodiscard]]
 		constexpr std::array<Float4, 3> toFloat4Array() const noexcept;
 
-		/// @brief UV 変換に倍率補正を加え、シェーダ定数用に格納します。
-		/// @param rmsScalingInv UV 変換の線形部分と平行移動部分に乗じる倍率
-		/// @return 補正後の行列を格納した toFloat4Array() と同じ形式の 3 要素
-		[[nodiscard]]
-		constexpr std::array<Float4, 3> toFloat4Array(float rmsScalingInv) const noexcept;
 	};
 }
 

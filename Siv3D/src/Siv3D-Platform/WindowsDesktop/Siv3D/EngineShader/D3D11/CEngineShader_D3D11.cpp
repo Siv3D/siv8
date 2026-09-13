@@ -60,6 +60,11 @@ namespace s3d
 			throw InternalEngineError{ "Failed to compile a engine shader" };
 		}
 
+		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_pattern.vs", ShaderStage::Vertex, U"VS_Pattern"))
+		{
+			throw InternalEngineError{ "Failed to compile a engine shader" };
+		}
+
 		if (not Platform::Windows::CompileHLSLFromFile(U"engine/shader/d3d11/2d.hlsl", U"engine/shader/d3d11/2d_shape.ps", ShaderStage::Pixel, U"PS_Shape"))
 		{
 			throw InternalEngineError{ "Failed to compile a engine shader" };
@@ -166,6 +171,7 @@ namespace s3d
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/fullscreen_triangle.vs" };
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/2d.vs" };
 			m_vertexShaders << HLSL{ U"engine/shader/d3d11/2d_quadwarp.vs" };
+			m_vertexShaders << HLSL{ U"engine/shader/d3d11/2d_pattern.vs" };
 
 			if (not m_vertexShaders.all([](const auto& vs) { return static_cast<bool>(vs); })) // もしロードに失敗したシェーダがあれば
 			{

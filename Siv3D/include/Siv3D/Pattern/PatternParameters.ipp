@@ -24,12 +24,4 @@ namespace s3d
 		} };
 	}
 
-	constexpr std::array<Float4, 3> PatternParameters::toFloat4Array(const float rmsScalingInv) const noexcept
-	{
-		auto result = toFloat4Array();
-		result[0] *= rmsScalingInv;
-		result[1].x *= rmsScalingInv;
-		result[1].y *= rmsScalingInv;
-		return result;
-	}
 }
