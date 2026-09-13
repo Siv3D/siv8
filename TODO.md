@@ -9,7 +9,8 @@
 
 ## Renderer2D / 組み込みシェーダ最適化
 
-- [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)に沿って、Truchet の距離式、Pattern の色加算共通化、影なし MSDF の除算を順に独立評価し、採用を決める。HLSL / MSL・配布バイナリを揃え、境界画像と両ホストの全自動テスト、安定した GPU / CPU 計測で確認する。
+- [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)に沿って、次は Pattern の色加算共通化、続いて影なし MSDF の除算を独立評価する。各段階の着手前に方針・変更箇所・期待結果を説明して承認を得る。
+- Truchet の距離式（A2）は HLSL / MSL ソースへ適用済み。Windows の `PS_PatternTruchet` → `WindowsDesktop/App/engine/shader/d3d11/2d_pattern_truchet.ps` の再生成、`Pattern.truchet*` と全自動テスト、GPU 時間の評価が未完了。Windows の確認は後続の承認済み修正とまとめて実行できる。中間命令の削減を実行時間の改善率とみなさない。
 - QuadWarp の VS 移動は専用補間と定数管理、custom VS / PS 混在時の互換性を先に設計する。Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
 - Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。

@@ -405,7 +405,9 @@ float4 PS_PatternTruchet(PSInput input [[stage_in]],
 		flip = (fract(dot(cell, float2(0.5f))) > 0.25f);
 	}
 	q.x = (flip ? (1.0f - q.x) : q.x);
-	const float distance = min(abs(length(q) - 0.5f), abs(length(q - 1.0f) - 0.5f));
+	// These equal-radius circles are disjoint, so the nearer center gives the nearer arc.
+	const float2 q2 = (q - 1.0f);
+	const float distance = abs(sqrt(min(dot(q, q), dot(q2, q2))) - 0.5f);
 	// Differentiate the continuous coordinates, not tile-dependent arc distances.
 	const float fw = length(fwidth(uv));
 	const float width = (c1->g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);

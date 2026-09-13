@@ -550,6 +550,66 @@ TEST_CASE("Pattern.truchet_rendering")
 	}
 }
 
+TEST_CASE("Pattern.truchet_arc_edges")
+{
+	using Layout = Pattern::Truchet::Layout;
+	for (const Layout layout : { Layout::Random, Layout::Uniform, Layout::Alternating })
+	{
+		for (const double pitch : { 64.0, 8.0, 4.0 })
+		{
+			for (const double angle : { 0.0, 31_deg })
+			{
+				// The second width also exercises the meeting of the two bands near
+				// the cell center, where the distances to the circle centers are equal.
+				for (const double ratio : { 0.25, (std::sqrt(2.0) - 1.0) })
+				{
+					INFO(static_cast<int32>(layout));
+					INFO(pitch);
+					INFO(angle);
+					INFO(ratio);
+					const Pattern::Truchet p{ .primary = Palette::White, .background = Palette::Black,
+						.pitch = pitch, .thickness = pitch * ratio, .angle = angle,
+						.origin = { 128.5, 128.5 }, .layout = layout, .seed = 0xFFFFFFFFu };
+					const auto frame = CapturePatternDraw([&] { RectF{ 16, 16, 240, 240 }.draw(p); });
+					// Express the existing edge filter in drawing pixels. Compute each
+					// circle's signed radial distance independently in double precision.
+					const double footprint = (std::sqrt(2.0) * (Abs(std::cos(angle)) + Abs(std::sin(angle))));
+					const double halfWidth = (p.thickness / 2 + (ratio - 0.5) * footprint);
+					int32 edgePixels = 0, maxError = 0;
+					for (int32 y = 18; y < 254; ++y)
+					{
+						for (int32 x = 18; x < 254; ++x)
+						{
+							const Vec2 point = (Vec2{ x + 0.5, y + 0.5 } - p.origin).rotated(-angle);
+							const int32 column = static_cast<int32>(std::floor(point.x / pitch));
+							const int32 row = static_cast<int32>(std::floor(point.y / pitch));
+							const bool flip = (layout == Layout::Random ? ((TruchetReferenceHash(column, row, p.seed) & 1u) != 0)
+								: (layout == Layout::Alternating && (column + row) % 2 != 0));
+							const Vec2 corner = Vec2{ column, row } * pitch;
+							const Vec2 centerA = corner + Vec2{ (flip ? pitch : 0), 0 };
+							const Vec2 centerB = corner + Vec2{ (flip ? 0 : pitch), pitch };
+							const double distance = Min(Abs(point.distanceFrom(centerA) - pitch / 2),
+								Abs(point.distanceFrom(centerB) - pitch / 2));
+							const double coverage = (1 - Math::Smoothstep(halfWidth - footprint / 2,
+								halfWidth + footprint / 2, distance));
+							const int32 expected = static_cast<int32>(std::lround(255 * coverage));
+							edgePixels += ((0 < expected) && (expected < 255));
+							const Color actual = frame.image[y][x];
+							maxError = Max(maxError, Abs(int32(actual.r) - expected));
+							maxError = Max(maxError, Abs(int32(actual.g) - expected));
+							maxError = Max(maxError, Abs(int32(actual.b) - expected));
+						}
+					}
+					CHECK(edgePixels > 100);
+					// One conversion unit covers float shader vs. double reference
+					// rounding; apply the same bound to the entire sampled region.
+					CHECK(maxError <= 1);
+				}
+			}
+		}
+	}
+}
+
 TEST_CASE("Pattern.truchet_transforms_and_state")
 {
 	const Pattern::Truchet p{

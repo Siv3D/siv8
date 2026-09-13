@@ -72,7 +72,12 @@ The [64-byte Pattern payload](pattern-payload.md) remains unchanged:
 | extraParams.z | Layout: Random=0, Uniform=1, Alternating=2 |
 | extraParams.w | Reserved, zero |
 
-The fragment shader computes the smaller distance to the two quarter circles.
+The fragment shader compares squared distances to the two centers before taking
+one square root and the absolute difference from radius 0.5. This gives the
+nearest arc because the circles have equal radii and are disjoint. For center
+distances `a <= b`, if `a >= 0.5` the ordering of arc distances is immediate;
+otherwise `a + b >= sqrt(2) > 1` implies `0.5 - a < b - 0.5`.
+
 It uses `length(fwidth(uv))` as the edge footprint, rather than differentiating
 orientation-dependent distances or wrapped tile coordinates. The distance
 agrees on either side of each tile edge. The filter is local; it does not
@@ -98,3 +103,9 @@ seeds with high bits set, transformations, split geometry, and state restoration
 Solid interiors, zero/full-width compositing, seed independence for regular
 layouts, and tile-midpoint connectivity have exact checks. GPU rendering uses
 an independent geometric reference, rather than seed packing alone.
+The arc-edge test also compares filtered pixels to a double-precision circle
+reference in drawing coordinates, using the existing filter width in pixels.
+It covers negative cells, all layouts, rotated and small-pitch patterns, and
+bands meeting near equal center distances. This comparison allows one 8-bit
+conversion unit for the float shader versus double reference; the exact checks
+for endpoints and state restoration remain separate.

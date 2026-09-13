@@ -1,20 +1,22 @@
 # Built-in shader optimization assessment and plan
 
-Status: **Proposed implementation scope; engine changes and performance acceptance pending.**
+Status: **A2 source implementation approved; other stages proposed; cross-platform verification and performance acceptance pending.**
 Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタムシェーダ契約を
 維持する局所変更を先に評価し、描画側の状態管理・補間インターフェース・画質を
 変える案は別段階で扱う。D3D11 と Metal の調査結果をこの文書に集約する。
 
 ## 統合判断
 
-初期実装の候補は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
+初期評価の順序は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
+A2 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ更新と検証を後続段階とまとめて行う。
+各段階は着手前に方針・変更箇所・期待結果を説明して承認を得る。
 それぞれ独立した差分で評価する。定数配置・varying・描画状態を増やさず、
 両コンパイラの中間表現に演算削減が現れるためである。
 数学的な等価性は浮動小数点の画像一致を保証しないので、採用は描画比較と計測を経て決める。
 
 | 扱い | 候補 | 判断理由 |
 | --- | --- | --- |
-| 初期評価 1 | A2 Truchet の距離式 | 両側で sqrt 削減。Metal の限定描画比較は一致。hash と AA を維持できる |
+| ソースへ適用・Windows 検証待ち | A2 Truchet の距離式 | hash と AA を維持。Windows の配布バイナリ更新と実行確認は TODO で追跡 |
 | 初期評価 2 | A1 Pattern の ColorAdd | 全 11 種に適用できる小変更。Metal の限定描画比較では最大 1/255 のチャンネル差 |
 | 初期評価 3 | A4 影なし MSDF | 両側で除算削減。実フォントの倍率・変換・アトラス寸法を追加検証する |
 | 次段階の設計・試作 | B1 QuadWarp | 大面積描画で期待できるが、補間成分と VS 定数管理が増える |
@@ -36,7 +38,8 @@ Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタ�
    切り替える描画を分ける。CPU 提出時間・定常 GPU 時間・初回生成時間を別々に測る。
    タイミングが安定しない条件では改善率を判定しない。
 2. **A2 → A1 → A4 を個別に実装・検証する。** 一つずつ HLSL / MSL を揃え、
-   Windows で対応する配布バイナリを再生成する。既存の Pattern / Renderer2D テストを使い、
+   Windows で対応する配布バイナリを再生成する。Windows の再生成・テストは複数段階を
+   まとめて行ってよく、対象エントリーポイントを TODO に記録する。既存の Pattern / Renderer2D テストを使い、
    実フォントの描画検証が必要なら専用のテストに置く。各変更の境界比較と両ホストの
    全自動テストが通った段階で採用判断する。中間命令の減少だけで高速化を宣言しない。
 3. **B1 QuadWarp の責務を設計する。** 専用の float3 補間と VS への定数供給を先に整理し、
@@ -147,9 +150,10 @@ GPU の実行時間、消費電力、実レジスタ数、occupancy の改善を
 - `slots` は [D3DDisassemble](https://learn.microsoft.com/en-us/windows/win32/api/d3dcompiler/nf-d3dcompiler-d3ddisassemble)
   出力末尾の approximate instruction slots、`temp` は `dcl_temps`。
   後段のドライバによる変換や、スカラ・ベクトル命令の費用差は含まない。
-- エンジンの HLSL、C++、配布シェーダバイナリは変更していない。
+- この D3D11 比較は実験用 HLSL 文字列と変更前の配布バイナリを使った調査値。
+  A2 のソース適用後の配布バイナリは別途再生成する必要がある。
   D3D11 描画 A/B、GPU timestamp、Windows のエンジン全テストは未実施。
-  Metal の限定比較は前節を参照。これは調査・文書化であり、実装完了報告ではない。
+  Metal の予備比較は前節を参照し、未完了の実行確認は TODO で追跡する。
 
 ## A. 現行インターフェースのまま評価できる案の詳細
 
@@ -181,13 +185,18 @@ return s3d_shapeColor(lerp(primary, background, c));
 
 ### A2. Truchet の円弧距離を sqrt 前に比較する
 
+HLSL / MSL ソースへ適用済み。距離式の理由と境界テストは
+[Truchet の実装説明](../truchet.md#payload-and-filtering)を参照する。
+以下は変更前と候補を個別に比較した調査値で、Windows の現行配布バイナリを
+再生成・実行した結果ではない。未完了の再生成・検証は TODO で追跡する。
+
 対象: `PS_PatternTruchet` の `distance`。
 
 ```hlsl
-// Current
+// Before
 min(abs(length(q) - 0.5f), abs(length(q - 1.0f) - 0.5f))
 
-// Candidate
+// Adopted source expression
 abs(sqrt(min(dot(q, q), dot(q - 1.0f, q - 1.0f))) - 0.5f)
 ```
 
