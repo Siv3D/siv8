@@ -260,7 +260,7 @@ float4 PS_PatternPolkaDot(PSInput input) : SV_TARGET
 	return lerp(primary, background, c);
 }
 
-float4 PS_PatternPolkaDotSizeGradient(PSInput input) : SV_TARGET
+float4 PS_PatternHalftone(PSInput input) : SV_TARGET
 {
 	const float2 uv = Pattern_UVTransform(input.uv);
 	const float2 cellCenter = (floor(uv) + 0.5f);

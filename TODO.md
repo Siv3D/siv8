@@ -7,6 +7,12 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/Pattern/Halftone.hpp`
+
+### Windows での名称変更後の検証
+
+- 公開型・列挙値・両シェーダ・ロード先を `Halftone` に統一済み。Windows 上で Pattern テストと全テストを実行し、新しい HLSL エントリポイントのコンパイルと `2d_pattern_halftone.ps` のロードを確認する。[検証手順](docs/renderer2d/d3d11-halftone.md)。完了後にこの項目を削除する。
+
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 
 ### 数値文字列の受理範囲

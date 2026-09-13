@@ -2,7 +2,7 @@
 
 Status: broader exploration remains unadopted; release scope is not scheduled.
 The [parameter storage extension](../pattern-payload.md) and the separate
-[polka-dot size-gradient design](../polka-dot-size-gradient.md) are adopted.
+[halftone design](../halftone.md) are adopted.
 Other API names below describe concepts, not available C++ declarations.
 
 This proposal builds on the adopted [coordinate model](../pattern-coordinates.md).
@@ -10,7 +10,7 @@ It explores predictable parameters, additional motifs, and spatial variation of
 pattern properties. It does not change backend porting work or the independent
 QuadWarp interface.
 
-The [polka-dot size gradient candidate](polka-dot-size-gradient.md) examines a
+The [polka-dot size gradient candidate](halftone.md) examines a
 selected visual in more detail, including a constrained representation that fits
 the current payload size and the cost of retaining more independent control.
 

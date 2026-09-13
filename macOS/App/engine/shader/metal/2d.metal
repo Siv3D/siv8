@@ -291,7 +291,7 @@ float4 PS_PatternPolkaDot(	PSInput input [[stage_in]],
 }
 
 fragment
-float4 PS_PatternPolkaDotSizeGradient(PSInput input [[stage_in]],
+float4 PS_PatternHalftone(PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])
 {

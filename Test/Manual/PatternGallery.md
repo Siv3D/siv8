@@ -5,7 +5,7 @@ parameter presets, editable controls, and two simultaneous uniform-zoom previews
 The program uses public APIs and requires no external assets or output files.
 For rotation, nonuniform scale, reflection, shear, and primitive continuity,
 use the [coordinate comparison](PatternTransforms.md). For independently varying
-dot radii, use the [size-gradient sample](PolkaDotSizeGradient.md).
+dot radii, use the [size-gradient sample](Halftone.md).
 
 ## Execution
 

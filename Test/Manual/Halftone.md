@@ -1,6 +1,6 @@
-# Polka-dot size gradient
+# Halftone
 
-An interactive comparison of `Pattern::PolkaDotSizeGradient` in drawing
+An interactive comparison of `Pattern::Halftone` in drawing
 coordinates and under an object transform. The first preset uses a square
 lattice rotated by 45 degrees. Radius varies per dot, using a smoothstep profile.
 
@@ -11,7 +11,7 @@ lattice rotated by 45 degrees. Radius varies per dot, using a smoothstep profile
 2. Run on macOS (Metal) or Windows (D3D11). On Windows, include the standard
    Siv3D application resources and place the executable beside the `engine/`
    assets, as in `WindowsDesktop/App/`. See the
-   [D3D11 integration guide](../../docs/renderer2d/d3d11-polka-dot-size-gradient-handoff.md)
+   [D3D11 integration guide](../../docs/renderer2d/d3d11-halftone.md)
    for automated verification and image-comparison criteria.
 3. Compare the presets, then drag the controls. `Start` and `End` are fractions
    of the 340-unit reference span. `Field direction` rotates the transition
@@ -20,11 +20,11 @@ lattice rotated by 45 degrees. Radius varies per dot, using a smoothstep profile
    Move `Start`, then move `Origin X/Y`: only the latter moves dot centers.
 5. Enable `Split rectangle` to draw the same region as a rectangle and two
    triangles. Adjust object zoom and rotation in the right preview.
-6. Optionally launch with `--capture`. It saves `pattern-size-gradient.png` in the
+6. Optionally launch with `--capture`. It saves `halftone.png` in the
    application's working directory and exits. This optional retained screenshot
    is not an automated-test fixture; remove it when no longer needed.
    A separate Windows sample build and retained comparison captures can live in
-   `WindowsDesktop/Intermediate/Manual/PolkaDotSizeGradient/`; keep generated
+   `WindowsDesktop/Intermediate/Manual/Halftone/`; keep generated
    source and project files out of the platform test entry point.
 
 ## Expected results
@@ -76,7 +76,7 @@ namespace
 		Circle{ 1020 + t * 130, y + 14, 6 }.draw(ColorF{ 0.3, 0.8, 1 });
 	}
 
-	Pattern::PolkaDotSizeGradient MakePattern(const Settings& s)
+	Pattern::Halftone MakePattern(const Settings& s)
 	{
 		const Vec2 direction{ std::sin(s.direction * 1_deg), std::cos(s.direction * 1_deg) };
 		return {
@@ -122,7 +122,7 @@ namespace
 void Main()
 {
 	Window::Resize(1180, 760);
-	Window::SetTitle(U"Polka-dot size gradient");
+	Window::SetTitle(U"Halftone");
 	Scene::SetResizeMode(ResizeMode::Keep);
 	Scene::Resize(1180, 760);
 	Scene::SetBackground(ColorF{ 0.07, 0.09, 0.13 });
@@ -137,11 +137,11 @@ void Main()
 	{
 		if (capture && ScreenCapture::HasNewFrame())
 		{
-			ScreenCapture::GetFrame().save(U"pattern-size-gradient.png");
+			ScreenCapture::GetFrame().save(U"halftone.png");
 			return;
 		}
 		if (not MouseL.pressed()) { active = -1; }
-		title(U"Polka-dot size gradient").draw(20, 15);
+		title(U"Halftone").draw(20, 15);
 		font(U"Independent lattice and transition controls").draw(410, 23);
 		if (SimpleGUI::Button(U"45 deg / grow", Vec2{ 20, 58 }, 180)) { s = Settings{}; }
 		if (SimpleGUI::Button(U"0 deg / grow", Vec2{ 220, 58 }, 180)) { s = Settings{}; s.angle = 0; }

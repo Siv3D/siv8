@@ -1,15 +1,15 @@
-# Polka-dot size gradient
+# Halftone
 
-`Pattern::PolkaDotSizeGradient` describes circular dots on a square lattice with
+`Pattern::Halftone` describes circular dots on a square lattice with
 an independently positioned linear field controlling their radius. Its default
 lattice angle is 45 degrees; other angles do not rotate the field.
 The authoritative API contract is in
-[PolkaDotSizeGradient.hpp](../../Siv3D/include/Siv3D/Pattern/PolkaDotSizeGradient.hpp).
-The [interactive sample](../../Test/Manual/PolkaDotSizeGradient.md) provides
+[Halftone.hpp](../../Siv3D/include/Siv3D/Pattern/Halftone.hpp).
+The [interactive sample](../../Test/Manual/Halftone.md) provides
 presets, independent controls, and a transformed comparison.
 
 The shared type, Metal shader, and D3D11 shader/renderer connection are implemented.
-The [D3D11 integration guide](d3d11-polka-dot-size-gradient-handoff.md) describes
+The [D3D11 integration guide](d3d11-halftone.md) describes
 shader loading and verification.
 
 ## Why a separate pattern
@@ -105,7 +105,7 @@ it does not add exceptional-input guards to the drawing path.
 
 ## Fragment evaluation
 
-`PS_PatternPolkaDotSizeGradient` in
+`PS_PatternHalftone` in
 [Metal](../../macOS/App/engine/shader/metal/2d.metal) and
 [HLSL](../../WindowsDesktop/App/engine/shader/d3d11/2d.hlsl) computes the cell
 center, saturates its field value, applies smoothstep, and interpolates the two

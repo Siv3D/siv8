@@ -2,7 +2,7 @@
 
 The pattern record contains four Float4 values (64 bytes). The fourth value is
 additional pattern data; the existing six built-in pattern shaders ignore it.
-The [size-gradient pattern](polka-dot-size-gradient.md) uses that additional
+The [size-gradient pattern](halftone.md) uses that additional
 vector for an independent linear field. Its shader does not change the storage
 layout or the adopted [coordinate model](pattern-coordinates.md).
 

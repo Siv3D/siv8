@@ -1,6 +1,6 @@
-# Polka-dot size gradient
+# Halftone
 
-Status: superseded by the adopted [design](../polka-dot-size-gradient.md).
+Status: superseded by the adopted [design](../halftone.md).
 The independent-field API and Metal shader are implemented; D3D11 is tracked in
 [TODO](../../../TODO.md). The compact alternative below is historical exploration,
 not the adopted API or payload.
@@ -130,7 +130,7 @@ division, additional vertex attribute, or additional varying is required.
 For example, the following is provisional API syntax, not executable sample code:
 
 ```cpp
-const Pattern::PolkaDotSizeGradient pattern{
+const Pattern::Halftone pattern{
     .primary = Palette::Cornflowerblue,
     .background = Palette::White,
     .pitch = 36.0,

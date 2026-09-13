@@ -28,6 +28,6 @@ namespace s3d
 
 		HexGrid,
 
-		PolkaDotSizeGradient,
+		Halftone,
 	};
 }

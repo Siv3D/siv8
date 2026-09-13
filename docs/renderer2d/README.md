@@ -10,13 +10,15 @@ Renderer design notes and related checks:
   shader-bytecode regeneration, and Windows verification.
 - [Pattern expressiveness proposal](proposals/pattern-expressiveness.md):
   unadopted exploration of parameter units, additional motifs, and size gradients.
-- [Polka-dot size gradient](polka-dot-size-gradient.md): adopted API, coordinate
+- [Halftone](halftone.md): adopted API, coordinate
   field, packing, fragment filtering, and validation.
-- [D3D11 size-gradient integration](d3d11-polka-dot-size-gradient-handoff.md):
+- [D3D11 Halftone integration](d3d11-halftone.md):
   shader loading and Windows verification.
-- [Size-gradient manual sample](../../Test/Manual/PolkaDotSizeGradient.md): presets,
+- [Halftone manual sample](../../Test/Manual/Halftone.md): presets,
   independent field/lattice controls, and object transformations.
-- [Earlier size-gradient proposal](proposals/polka-dot-size-gradient.md):
+- [Halftone button gallery](../../Test/Manual/HalftoneButtonGallery.md): eight
+  background recipes, transparent overlays, and optional lattice motion.
+- [Earlier size-gradient proposal](proposals/halftone.md):
   superseded compact-layout exploration and payload size tradeoffs.
 - [Pattern gallery](../../Test/Manual/PatternGallery.md): interactive parameter
   variations and a comparison of pattern size under zoom.

@@ -740,7 +740,7 @@
 
 # include <Siv3D/Pattern/PolkaDot.hpp>
 
-# include <Siv3D/Pattern/PolkaDotSizeGradient.hpp>
+# include <Siv3D/Pattern/Halftone.hpp>
 
 # include <Siv3D/Pattern/Stripe.hpp>
 

@@ -19,12 +19,12 @@ namespace s3d
 {
 	namespace Pattern
 	{
-		/// @brief 正方格子上の水玉の半径が、指定した方向に滑らかに変化する模様を指定します。
+		/// @brief 正方格子上の円形ドットの半径が、指定した方向に滑らかに変化するハーフトーン模様を指定します。
 		/// @remark 各水玉の中心を start から end への直線に射影し、その位置に応じて半径を smoothstep で補間します。
 		/// start より手前では minRadius、end より先では maxRadius になります。
 		/// @remark 半径は水玉ごとに一定です。開始・終了位置で水玉を切り取ることはありません。
 		/// @see PatternParameters 模様の基準座標と描画変換の扱い
-		struct PolkaDotSizeGradient
+		struct Halftone
 		{
 			/// @brief 水玉の色です。
 			ColorF primary{ 1.0, 1.0 };
@@ -86,7 +86,7 @@ namespace s3d
 						static_cast<float>(0.5 - (-origin.x * s + origin.y * c) * invPitch) },
 					.param0 = static_cast<float>(2.0 * minRadius * invPitch),
 					.param1 = static_cast<float>(2.0 * maxRadius * invPitch),
-					.type = PatternType::PolkaDotSizeGradient,
+					.type = PatternType::Halftone,
 					.extraParams = { static_cast<float>(gx), static_cast<float>(gy), static_cast<float>(bias), 0.0f },
 				};
 			}

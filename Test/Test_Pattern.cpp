@@ -101,11 +101,11 @@ TEST_CASE("PatternParameters.effect_constants")
 	CHECK(constants.patternExtraParams == Float4{ 0, 0, 0, 0 });
 }
 
-TEST_CASE("Pattern.polka_dot_size_gradient_packing")
+TEST_CASE("Pattern.halftone_packing")
 {
-	const Pattern::PolkaDotSizeGradient defaults;
+	const Pattern::Halftone defaults;
 	const PatternParameters packedDefaults = defaults;
-	CHECK(packedDefaults.type == PatternType::PolkaDotSizeGradient);
+	CHECK(packedDefaults.type == PatternType::Halftone);
 	CHECK(packedDefaults.param0 == 0.0f);
 	CHECK(packedDefaults.param1 == Catch::Approx(2.0 / 3.0));
 	CHECK(packedDefaults.extraParams.w == 0.0f);
@@ -115,7 +115,7 @@ TEST_CASE("Pattern.polka_dot_size_gradient_packing")
 	{
 		for (const double pitch : { 12.0, 36.0, 80.0 })
 		{
-			Pattern::PolkaDotSizeGradient p{
+			Pattern::Halftone p{
 				.primary = ColorF{ 0.2, 0.4, 0.6, 0.8 },
 				.background = ColorF{ 0.9, 0.7, 0.5, 0.3 },
 				.pitch = pitch, .minRadius = 2, .maxRadius = pitch / 2,
@@ -275,9 +275,9 @@ namespace
 	}
 }
 
-TEST_CASE("Pattern.polka_dot_size_gradient_rendering")
+TEST_CASE("Pattern.halftone_rendering")
 {
-	const Pattern::PolkaDotSizeGradient base{
+	const Pattern::Halftone base{
 		.primary = Palette::White, .background = Palette::Black,
 		.pitch = 32, .minRadius = 0, .maxRadius = 13,
 		.angle = 45_deg, .origin = { 128.5, 128.5 },
@@ -342,9 +342,9 @@ TEST_CASE("Pattern.polka_dot_size_gradient_rendering")
 	CHECK(patternBackground.image == solidBackground.image);
 }
 
-TEST_CASE("Pattern.polka_dot_size_gradient_transforms_and_state")
+TEST_CASE("Pattern.halftone_transforms_and_state")
 {
-	const Pattern::PolkaDotSizeGradient p{
+	const Pattern::Halftone p{
 		.primary = Palette::White, .background = Palette::Black,
 		.pitch = 20, .minRadius = 2, .maxRadius = 8,
 		.angle = 45_deg, .origin = { -7, -11 }, .start = { 0, 0 }, .end = { 0, 60 },
