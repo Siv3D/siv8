@@ -34,9 +34,12 @@ struct PSEffectConstants2D
 {
 	float2x4 g_patternUVTransform;
 	float4 g_patternBackgroundColor;
+	float4 g_patternExtraParams;
 	float3x3 g_quadWarpInvHomography;
 	float4 g_quadWarpUVTransform;
 };
+
+static_assert(sizeof(PSEffectConstants2D) == 128, "PSEffectConstants2D layout must match the CPU buffer");
 
 inline float4 s3d_positionTransform(float2 pos, float2x4 t)
 {

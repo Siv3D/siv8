@@ -10,6 +10,8 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include "../Siv3D/src/Siv3D/Renderer2D/Renderer2DCommon.hpp"
+# include <cstddef>
 
 TEST_CASE("PatternParameters.packing")
 {
@@ -20,11 +22,15 @@ TEST_CASE("PatternParameters.packing")
 		.param0 = 0.25f,
 		.param1 = 0.75f,
 		.type = PatternType::Checker,
+		.extraParams = { -2.0f, 0.125f, 0.5f, 4.0f },
 	};
 	constexpr auto packed = pattern.toFloat4Array();
 	static_assert(noexcept(pattern.toFloat4Array()));
 	static_assert(packed[0] == Float4{ 2, 3, 6, 7 });
 	static_assert(packed[1] == Float4{ 4, 5, 0.25f, 0.75f });
+	static_assert(packed.size() == 4);
+	static_assert(sizeof(packed) == 64);
+	static_assert(packed[3] == pattern.extraParams);
 	CHECK(packed[2] == pattern.backgroundColor);
 
 	// Reconstruct the shader's affine mapping, including its translation.
@@ -36,6 +42,7 @@ TEST_CASE("PatternParameters.packing")
 	CHECK(defaults[0] == Float4{ 1, 0, 0, 0 });
 	CHECK(defaults[1] == Float4{ 0, 1, 0, 0 });
 	CHECK(defaults[2] == Float4{ 0, 0, 0, 0 });
+	CHECK(defaults[3] == Float4{ 0, 0, 0, 0 });
 
 	// Singular and reflected UV transforms are packed without scale compensation.
 	for (const Mat3x2 transform : { Mat3x2::Scale(0), Mat3x2::Scale(-2, 3).translated(5, -7) })
@@ -47,7 +54,51 @@ TEST_CASE("PatternParameters.packing")
 			== transform.transformPoint(point));
 		CHECK(data[1].zw() == packed[1].zw());
 		CHECK(data[2] == packed[2]);
+		CHECK(data[3] == packed[3]);
 	}
+}
+
+TEST_CASE("PatternParameters.effect_constants")
+{
+	static_assert(sizeof(PSEffectConstants2D) == 128);
+	static_assert(offsetof(PSEffectConstants2D, patternUVTransform) == 0);
+	static_assert(offsetof(PSEffectConstants2D, patternBackgroundColor) == 32);
+	static_assert(offsetof(PSEffectConstants2D, patternExtraParams) == 48);
+	static_assert(offsetof(PSEffectConstants2D, quadWarpInvHomography) == 64);
+	static_assert(offsetof(PSEffectConstants2D, quadWarpUVTransform) == 112);
+
+	PSEffectConstants2D constants{};
+	CHECK(constants.patternExtraParams == Float4{ 0, 0, 0, 0 });
+	const Mat3x3 homography{ 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	const Float4 quadUV{ 0.25f, 0.5f, 0.75f, 1.0f };
+	constants.setQuadWarp(homography, quadUV);
+	const auto quadState = constants;
+	const PatternParameters pattern{
+		.backgroundColor = { 0.2f, 0.3f, 0.4f, 0.5f },
+		.uvTransform = { 2, 3, 4, 5, 6, 7 },
+		.param0 = 8,
+		.param1 = 9,
+		.extraParams = { -1, 2, -3, 4 },
+	};
+	const auto packed = pattern.toFloat4Array();
+	constants.setPattern(packed);
+	CHECK(constants.patternUVTransform[0] == packed[0]);
+	CHECK(constants.patternUVTransform[1] == packed[1]);
+	CHECK(constants.patternBackgroundColor == packed[2]);
+	CHECK(constants.patternExtraParams == packed[3]);
+	for (size_t i = 0; i < 3; ++i)
+	{
+		CHECK(constants.quadWarpInvHomography[i] == quadState.quadWarpInvHomography[i]);
+	}
+	CHECK(constants.quadWarpUVTransform == quadState.quadWarpUVTransform);
+
+	constants.setQuadWarp(Mat3x3::Identity(), Float4{ 1, 1, 0, 0 });
+	CHECK(constants.patternUVTransform[0] == packed[0]);
+	CHECK(constants.patternUVTransform[1] == packed[1]);
+	CHECK(constants.patternBackgroundColor == packed[2]);
+	CHECK(constants.patternExtraParams == packed[3]);
+	constants.setPattern(PatternParameters{}.toFloat4Array());
+	CHECK(constants.patternExtraParams == Float4{ 0, 0, 0, 0 });
 }
 
 # if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
@@ -385,6 +436,88 @@ TEST_CASE("Pattern.batch_boundaries_and_mixed_shaders")
 		CHECK(frame.metrics.triangleCount == (mixed ? 64 : 16));
 	}
 }
+
+# if SIV3D_PLATFORM(MACOS)
+
+TEST_CASE("Pattern.extra_parameters")
+{
+	const std::string source = R"(
+#include <metal_stdlib>
+using namespace metal;
+struct Varying { float4 position [[position]]; float4 colorPMA; float2 uv; };
+fragment float4 ReadExtra(Varying input [[stage_in]], constant float4* effects [[buffer(1)]])
+{
+    const float4 extra = effects[3];
+    return float4(extra.xyz * extra.w, 1);
+}
+)";
+	const PixelShader ps = PixelShader::MSL(source, U"ReadExtra");
+	REQUIRE(ps);
+	const Texture texture{ Image{ 2, 2, Palette::White } };
+	REQUIRE(texture);
+	const Float4 a{ 1.0f, 0.5f, 0.25f, 0.5f };
+	const Float4 b{ 0.25f, 0.5f, 1.0f, 0.75f };
+	const std::array<Float4, 6> values{ Float4{ 0, 0, 0, 0 }, a, a, b, a, Float4{ 0, 0, 0, 0 } };
+	const auto checkColor = [](const Color color, const Float4 value)
+	{
+		const Color expected = ColorF{ value.x * value.w, value.y * value.w, value.z * value.w }.toColor();
+		CHECK(Abs(int32(color.r) - expected.r) <= 1);
+		CHECK(Abs(int32(color.g) - expected.g) <= 1);
+		CHECK(Abs(int32(color.b) - expected.b) <= 1);
+		CHECK(color.a == 255);
+	};
+
+	for (int32 frameIndex = 0; frameIndex < 2; ++frameIndex)
+	{
+		const auto frame = CapturePatternDraw([&]
+		{
+			auto pattern = MakeTestPattern(PatternType::PolkaDot);
+			{
+				const ScopedCustomShader2D shader{ ps };
+				for (size_t i = 0; i < values.size(); ++i)
+				{
+					pattern.extraParams = values[i];
+					RectF{ 20.0 + i * 70, 20, 60, 60 }.draw(pattern);
+				}
+			}
+			REQUIRE(texture.drawQuadWarp(Quad{ 20, 130, 80, 135, 75, 185, 25, 180 }));
+			const ScopedCustomShader2D shader{ ps };
+			pattern.extraParams = a;
+			RectF{ 100, 130, 60, 60 }.draw(pattern);
+		});
+		for (size_t i = 0; i < values.size(); ++i)
+		{
+			checkColor(frame.image[40][40 + i * 70], values[i]);
+		}
+		CHECK(frame.image[150][50] == Palette::White);
+		checkColor(frame.image[150][120], a);
+		// The equal A states batch, but changing only the fourth vector splits a draw.
+		CHECK(frame.metrics.drawCalls == 7);
+		CHECK(frame.metrics.triangleCount == 16);
+	}
+
+	const auto builtIns = [&](const bool extra)
+	{
+		return CapturePatternDraw([&]
+		{
+			for (int32 i = 0; i < 6; ++i)
+			{
+				auto pattern = MakeTestPattern(static_cast<PatternType>(i));
+				if (extra)
+				{
+					pattern.extraParams = ((i % 2) ? a : b);
+				}
+				RectF{ 20.0 + (i % 3) * 120, 20.0 + (i / 3) * 120, 72, 64 }.draw(pattern);
+			}
+		});
+	};
+	const auto reference = builtIns(false);
+	const auto actual = builtIns(true);
+	CHECK(actual.image == reference.image);
+	CHECK(actual.metrics.drawCalls == reference.metrics.drawCalls);
+}
+
+# endif
 
 TEST_CASE("Pattern.custom_shader_contract")
 {

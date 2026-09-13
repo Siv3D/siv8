@@ -13,14 +13,15 @@
 
 namespace s3d
 {
-	constexpr std::array<Float4, 3> PatternParameters::toFloat4Array() const noexcept
+	constexpr std::array<Float4, 4> PatternParameters::toFloat4Array() const noexcept
 	{
 		const Mat3x2& mat = uvTransform;
 
 		return{ {
 			{ mat._11, mat._12, mat._31, mat._32 },
 			{ mat._21, mat._22, param0, param1 },
-			backgroundColor
+			backgroundColor,
+			extraParams
 		} };
 	}
 

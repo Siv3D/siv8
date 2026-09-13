@@ -7,6 +7,13 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/Pattern/PatternParameters.hpp`
+
+### Pattern 定数領域の拡張
+
+- D3D11 の入力・記録・状態比較を 4 Float4 に揃え、HLSL 定数を Pattern 64 バイト + QuadWarp 64 バイトの配置に更新する。[Windows 申し送り](docs/renderer2d/d3d11-pattern-payload-handoff.md) の手順でバイトコードを再生成し、転送・復元と既存描画を検証する。移行用の互換処理は設けない。
+- 両バックエンドの領域拡張が完了してから、[水玉のサイズ変化](docs/renderer2d/proposals/polka-dot-size-gradient.md) の API とシェーダを実装する段階へ進む。開始位置は水玉の配置から独立させる。今回の領域拡張では新しい模様を追加しない。
+
 ## `Siv3D/include/Siv3D/BigInt.hpp` / `Siv3D/include/Siv3D/BigFloat.hpp`
 
 ### 数値文字列の受理範囲

@@ -51,15 +51,18 @@ namespace s3d
 		
 		Float4 patternBackgroundColor{ 0.0f, 0.0f, 0.0f, 0.0f };
 
+		Float4 patternExtraParams{ 0.0f, 0.0f, 0.0f, 0.0f };
+
 		Float4 quadWarpInvHomography[3] = { { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f } };
 
 		Float4 quadWarpUVTransform;
 
-		void setPattern(const std::array<Float4, 3>& params)
+		void setPattern(const std::array<Float4, 4>& params)
 		{
 			patternUVTransform[0]	= params[0];
 			patternUVTransform[1]	= params[1];
 			patternBackgroundColor	= params[2];
+			patternExtraParams		= params[3];
 		}
 
 		void setQuadWarp(const Mat3x3& mat, const Float4& uvTransform)

@@ -40,10 +40,14 @@ namespace s3d
 
 		PatternType type = PatternType::PolkaDot;
 
+		/// @brief 模様固有の追加パラメータです。
+		/// @remark 組み込みの PolkaDot, Stripe, Grid, Checker, Triangle, HexGrid はこの値を使用しません。
+		Float4 extraParams{ 0.0f, 0.0f, 0.0f, 0.0f };
+
 		/// @brief UV 変換・模様固有のパラメータ・背景色をシェーダ定数用に格納します。
-		/// @return { m11, m12, m31, m32 }, { m21, m22, param0, param1 }, backgroundColor の 3 要素。primaryColor と type は含みません。
+		/// @return { m11, m12, m31, m32 }, { m21, m22, param0, param1 }, backgroundColor, extraParams の 4 要素。primaryColor と type は含みません。
 		[[nodiscard]]
-		constexpr std::array<Float4, 3> toFloat4Array() const noexcept;
+		constexpr std::array<Float4, 4> toFloat4Array() const noexcept;
 
 	};
 }
