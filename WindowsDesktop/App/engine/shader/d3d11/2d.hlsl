@@ -475,9 +475,9 @@ inline MSDFState MSDF_Init(const float2 uv)
 	g_texture0.GetDimensions(st.textureSize.x, st.textureSize.y);
 	st.invTextureSize = rcp(st.textureSize);
 
-	const float2 msdfUnit = (MSDF_PixelRange * st.invTextureSize);
-	const float2 screenPixelRange = (0.5 / fwidth(uv));
-	st.scale = dot(msdfUnit, screenPixelRange);
+	// Combine atlas dimensions and UV derivatives before taking the reciprocal.
+	const float2 screenPixelRange = ((0.5f * MSDF_PixelRange) / (st.textureSize * fwidth(uv)));
+	st.scale = (screenPixelRange.x + screenPixelRange.y);
 
 	return st;
 }

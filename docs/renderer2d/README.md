@@ -1,9 +1,14 @@
 # Renderer2D
 
-## Pattern design
+## Shader design
 
 - [Shader optimization assessment and plan](proposals/shader-optimization-plan.md):
   proposed stages, D3D11/Metal evidence, compatibility boundaries, and validation.
+- [MSDF font scale](msdf-font.md): atlas dimensions, UV derivatives, shadow
+  offsets, and font shader validation.
+
+## Pattern design
+
 - [Coordinates](pattern-coordinates.md): attachment to local/camera transforms,
   primitive continuity, and custom-shader interfaces.
 - [Parameter payload](pattern-payload.md): four-vector packing, effect-buffer

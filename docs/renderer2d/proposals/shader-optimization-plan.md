@@ -1,6 +1,6 @@
 # Built-in shader optimization assessment and plan
 
-Status: **A2 and A1 source implementation approved; other stages proposed; cross-platform verification and performance acceptance pending.**
+Status: **A2, A1, and A4 source implementation approved; other stages proposed; cross-platform verification and performance acceptance pending.**
 Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタムシェーダ契約を
 維持する局所変更を先に評価し、描画側の状態管理・補間インターフェース・画質を
 変える案は別段階で扱う。D3D11 と Metal の調査結果をこの文書に集約する。
@@ -8,7 +8,7 @@ Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタ�
 ## 統合判断
 
 初期評価の順序は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
-A2 と A1 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ更新と検証を後続段階とまとめて行う。
+A2 / A1 / A4 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ更新と検証をまとめて行う。
 各段階は着手前に方針・変更箇所・期待結果を説明して承認を得る。
 それぞれ独立した差分で評価する。定数配置・varying・描画状態を増やさず、
 両コンパイラの中間表現に演算削減が現れるためである。
@@ -18,7 +18,7 @@ A2 と A1 は HLSL / MSL ソースへ適用し、Windows の配布バイナリ�
 | --- | --- | --- |
 | ソースへ適用・Windows 検証待ち | A2 Truchet の距離式 | hash と AA を維持。Windows の配布バイナリ更新と実行確認は TODO で追跡 |
 | ソースへ適用・Windows 検証待ち | A1 Pattern の ColorAdd | 全 11 種に適用。Metal の限定描画比較では最大 1/255 のチャンネル差 |
-| 初期評価 3 | A4 影なし MSDF | 両側で除算削減。実フォントの倍率・変換・アトラス寸法を追加検証する |
+| ソースへ適用・Windows 検証待ち | A4 影なし MSDF | 通常・Outline の除算を集約。共通関数を使う影付き・Print も検証対象 |
 | 次段階の設計・試作 | B1 QuadWarp | 大面積描画で期待できるが、補間成分と VS 定数管理が増える |
 | D3D11 固有の計測候補 | B2 Truchet の分岐 | DXBC は現行で hash を常時計算。Metal AIR には既に条件分岐がある |
 | 保留 | A3 Triangle の skew | Metal の式共通化でも境界に大きな色差を確認。画質判断を先に行う |
@@ -66,9 +66,9 @@ GPU 計測は温度・クロック変動や他の負荷の影響を受けるた�
 `metal -O3 -S -emit-llvm` による AIR 比較と、一時的なオフスクリーン描画で候補を照合した。
 これは Xcode の製品ビルド全体やエンジン全自動テストの検証ではない。
 
-画像比較は 1024 × 1024、RGBA8Unorm、MSAA なし、PMA blend、半透明の色と ColorAdd、
+以下のソース適用前の予備画像比較は 1024 × 1024、RGBA8Unorm、MSAA なし、PMA blend、半透明の色と ColorAdd、
 平行移動・斜交成分を持つ Pattern UV 変換を使った限定条件。
-MSDF は合成した距離テクスチャによる比較であり、実フォントのアトラスや描画経路は未検証。
+ここでの MSDF は合成した距離テクスチャによる比較であり、実フォントのアトラスや描画経路は含まない。
 比較結果はこの条件に限られ、全入力での一致を示すものではない。
 
 | 候補 | Metal AIR の差 | 限定描画比較・解釈 |
@@ -151,7 +151,7 @@ GPU の実行時間、消費電力、実レジスタ数、occupancy の改善を
   出力末尾の approximate instruction slots、`temp` は `dcl_temps`。
   後段のドライバによる変換や、スカラ・ベクトル命令の費用差は含まない。
 - この D3D11 比較は実験用 HLSL 文字列と変更前の配布バイナリを使った調査値。
-  A2 / A1 のソース適用後の配布バイナリは別途再生成する必要がある。
+  A2 / A1 / A4 のソース適用後の配布バイナリは別途再生成する必要がある。
   D3D11 描画 A/B、GPU timestamp、Windows のエンジン全テストは未実施。
   Metal の予備比較は前節を参照し、未完了の実行確認は TODO で追跡する。
 
@@ -225,22 +225,21 @@ const float2 s4 = center - offset2;
 
 ### A4. 影なし MSDF の除算をまとめる
 
-対象: `MSDF_Init`。現在のスケールは、成分ごとに
-`(16 / textureSize) * (0.5 / fwidth(uv))` を計算してから加算する。
+HLSL / MSL ソースの `MSDF_Init` へ適用済み。式と責務の説明、アトラス寸法の
+回帰テストは [MSDF font scale](../msdf-font.md) を参照する。
+バッファやフォント描画側の状態を増やさず、成分ごとの 2 回の除算を 1 回へ集約した。
+縮小時のフィルタ品質を変更する案とは分けて扱う。
+Metal のソース適用時には実フォントの文字サイズ、回転、非等方変換、小数位置を変えて
+通常・Outline・Shadow・OutlineShadow・Print を描画 A/B し、比較した画像は一致した。
+アトラス寸法の回帰テストは変更前後とも通ることを確認した。
 
-```hlsl
-st.scale = dot(float2(8.0f, 8.0f), rcp(st.textureSize * fwidth(uv)));
-```
-
-`st.invTextureSize` が他で不要な通常・Outline では、コンパイラの不要コード除去により
-vector div が 2 → 1。各 1 slot 減。
-Shadow / OutlineShadow / Print は影の offset に逆寸法を使うため、この方法の効果を
-一律に期待しない。実験した Shadow と Print は slots が変わらなかった。
+Metal AIR では通常・Outline の vector fdiv が 2 → 1。
+D3D11 の個別実験でも vector div が 2 → 1、各 1 slot 減だった。
+Shadow / OutlineShadow / Print は影の offset に逆寸法を使うため、Metal の除算数は
+2 のまま。D3D11 で実験した Shadow と Print も slots は変わらなかった。
 Glow は `MSDF_Init` を使わず、この案の対象外。
-
-バッファやフォント描画側の状態を増やさずに試せる。
-フォント倍率、回転、非等方変換、アトラス寸法を変え、輪郭 coverage の丸め差を確認する。
-縮小時のフィルタ品質変更と同じ変更に混ぜない。
+この DXBC 比較は現行 HLSL の配布バイナリを再生成した結果ではない。
+未完了の Windows 検証と実行時間の評価は TODO で追跡する。
 
 ## B. 描画側との協調が必要な案
 

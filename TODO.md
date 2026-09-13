@@ -9,8 +9,9 @@
 
 ## Renderer2D / 組み込みシェーダ最適化
 
-- [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)に沿って、次は影なし MSDF の除算を独立評価する。各段階の着手前に方針・変更箇所・期待結果を説明して承認を得る。
-- Truchet の距離式（A2）と Pattern の色加算共通化（A1）は HLSL / MSL ソースへ適用済み。Windows で全 11 種の `PS_Pattern*` → `WindowsDesktop/App/engine/shader/d3d11/2d_pattern_*.ps` の再生成、`Pattern*` と全自動テスト、GPU 時間の評価が未完了。再生成対象は PolkaDot / Stripe / Grid / Checker / Triangle / HexGrid / Halftone / Wave / Ripple / Weave / Truchet で、対応するファイル名は [CEngineShader_D3D11::init](Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/EngineShader/D3D11/CEngineShader_D3D11.cpp)を参照する。Windows の確認は後続の承認済み修正とまとめて実行できる。Metal 側も GPU 時間の評価は未完了。中間命令の削減を実行時間の改善率とみなさない。
+- [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は HLSL / MSL ソースへ適用済み。次は Windows の配布バイナリ再生成・まとめ検証を行い、その報告を踏まえて採用と次段階を判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
+- Windows の再生成対象は `WindowsDesktop/App/engine/shader/d3d11/` の Pattern 全 11 種（`2d_pattern_*.ps`）と MSDF 5 種（`msdffont.ps`、`msdffont_outline.ps`、`msdffont_shadow.ps`、`msdffont_outline_shadow.ps`、`msdffont_print.ps`）。[CEngineShader_D3D11::init](Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/EngineShader/D3D11/CEngineShader_D3D11.cpp)のエントリーポイント・ファイル対応に従う。Glow のソース変更はない。再生成後に `./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=Pattern*,MSDFFont*'` と全自動テストを実行し、完結した XML レポート、描画結果、DXBC の差を確認する。異常終了・未完結レポートは [clean-build 診断](docs/development/README.md#windows-incremental-build-failures)に従う。
+- Metal / D3D11 とも GPU 時間の評価は未完了。中間命令の削減を実行時間の改善率とみなさず、描画 A/B と安定した反復計測を踏まえて最終判断する。
 - QuadWarp の VS 移動は専用補間と定数管理、custom VS / PS 混在時の互換性を先に設計する。Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
 - Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。
