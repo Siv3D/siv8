@@ -69,6 +69,7 @@
     <ClCompile Include="..\Test\Test_DynamicTexture.cpp" />
     <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp" />
+    <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp" />
     <ClCompile Include="..\Test\Test_Image.cpp" />
     <ClCompile Include="..\Test\Test_INI.cpp" />
     <ClCompile Include="..\Test\Test_Interpolation.cpp" />
