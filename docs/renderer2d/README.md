@@ -20,6 +20,9 @@ Renderer design notes and related checks:
   background recipes, transparent overlays, and optional lattice motion.
 - [Earlier size-gradient proposal](proposals/halftone.md):
   superseded compact-layout exploration and payload size tradeoffs.
+- [Pattern collection](../../Test/Manual/PatternCollection.md): a minimal
+  1680 x 1050 gallery of 32 backgrounds from all seven Pattern types, with
+  keyboard-controlled animation and layered combinations.
 - [Pattern gallery](../../Test/Manual/PatternGallery.md): interactive parameter
   variations and a comparison of pattern size under zoom.
 - [Pattern transforms](../../Test/Manual/PatternTransforms.md): attachment,
