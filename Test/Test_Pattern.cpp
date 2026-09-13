@@ -163,6 +163,91 @@ TEST_CASE("Pattern.halftone_packing")
 	}
 }
 
+TEST_CASE("Pattern.ripple_packing")
+{
+	const Pattern::Ripple defaults;
+	static_assert(noexcept(static_cast<PatternParameters>(defaults)));
+	for (const double pitch : { 8.0, 24.0, 80.0 })
+	{
+		for (const double offset : { -35.0, 0.0, 13.0 })
+		{
+			const Pattern::Ripple p{
+				.primary = ColorF{ 0.2, 0.4, 0.6, 0.8 },
+				.background = ColorF{ 0.9, 0.7, 0.5, 0.3 },
+				.pitch = pitch, .thickness = 3, .center = { -37, 23 }, .radiusOffset = offset,
+			};
+			const PatternParameters packed = p;
+			CHECK(packed.type == PatternType::Ripple);
+			CHECK(packed.primaryColor == p.primary.toFloat4());
+			CHECK(packed.backgroundColor == p.background.toFloat4());
+			CHECK(packed.param0 == Catch::Approx(3.0 / pitch));
+			CHECK(packed.param1 == Catch::Approx(offset / pitch));
+			CHECK(packed.extraParams == Float4{ 0, 0, 0, 0 });
+			for (const double radius : { 0.0, 5.0, 27.0, 100.0 })
+			{
+				for (const double angle : { 0.0, 90_deg, -37_deg })
+				{
+					const Vec2 point = p.center + Vec2{ radius, 0 }.rotated(angle);
+					const Float2 uv = packed.uvTransform.transformPoint(point);
+					CHECK(uv.length() == Catch::Approx(radius / pitch).margin(0.00001));
+				}
+			}
+		}
+		for (const double thickness : { 0.0, pitch })
+		{
+			const PatternParameters packed = Pattern::Ripple{ .pitch = pitch, .thickness = thickness };
+			CHECK(packed.param0 == static_cast<float>(thickness / pitch));
+		}
+	}
+}
+
+TEST_CASE("Pattern.wave_packing")
+{
+	const Pattern::Wave defaults;
+	const PatternParameters packedDefaults = defaults;
+	CHECK(packedDefaults.type == PatternType::Wave);
+	CHECK(packedDefaults.extraParams.yzw() == Float3{ 0, 0, 0 });
+	static_assert(noexcept(static_cast<PatternParameters>(defaults)));
+	for (const double angle : { 0.0, 90_deg, -31_deg })
+	{
+		for (const double wavelength : { 16.0, 80.0, 200.0 })
+		{
+			Pattern::Wave p{
+				.primary = ColorF{ 0.2, 0.4, 0.6, 0.8 },
+				.background = ColorF{ 0.9, 0.7, 0.5, 0.3 },
+				.pitch = 32, .thickness = 7, .amplitude = 5,
+				.wavelength = wavelength, .angle = angle, .origin = { -37, 23 },
+			};
+			const PatternParameters packed = p;
+			CHECK(packed.primaryColor == p.primary.toFloat4());
+			CHECK(packed.backgroundColor == p.background.toFloat4());
+			CHECK(packed.param0 == Catch::Approx(p.thickness / p.pitch));
+			CHECK(packed.param1 == Catch::Approx(p.amplitude / p.pitch));
+			CHECK(packed.extraParams.x == Catch::Approx(Math::TwoPi * p.amplitude / p.wavelength));
+			// Reconstruct centerline points in drawing coordinates, including negative periods.
+			for (const double phase : { -2.25, -1.0, 0.0, 0.25, 0.5, 2.75 })
+			{
+				for (const int32 row : { -2, 0, 3 })
+				{
+					const Vec2 point = p.origin + Vec2{ phase * wavelength,
+						p.amplitude * std::sin(Math::TwoPi * phase) + row * p.pitch }.rotated(angle);
+					const Float2 uv = packed.uvTransform.transformPoint(point);
+					CHECK(uv.x == Catch::Approx(phase).margin(0.00001));
+					CHECK(uv.y == Catch::Approx(p.amplitude / p.pitch * std::sin(Math::TwoPi * phase) + row).margin(0.00001));
+				}
+			}
+			p.amplitude = 0;
+			p.thickness = 0;
+			const PatternParameters empty = p;
+			CHECK(empty.param0 == 0.0f);
+			CHECK(empty.param1 == 0.0f);
+			CHECK(empty.extraParams == Float4{ 0, 0, 0, 0 });
+			p.thickness = p.pitch;
+			CHECK(static_cast<PatternParameters>(p).param0 == 1.0f);
+		}
+	}
+}
+
 # if SIV3D_PLATFORM(WINDOWS) || SIV3D_PLATFORM(MACOS)
 
 namespace
@@ -274,6 +359,322 @@ namespace
 		CHECK(mismatches == 0);
 	}
 }
+
+# if SIV3D_PLATFORM(MACOS)
+
+TEST_CASE("Pattern.ripple_rendering")
+{
+	const Pattern::Ripple base{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 24, .thickness = 8, .center = { 128, 128 },
+	};
+	for (int32 variation = 0; variation < 6; ++variation)
+	{
+		INFO(variation);
+		auto p = base;
+		if (variation == 1) { p.center = { -30, 70 }; }
+		if (variation == 2) { p.radiusOffset = 7; }
+		if (variation == 3) { p.radiusOffset = -7; }
+		if (variation == 4) { p.thickness = 0; }
+		if (variation == 5) { p.thickness = p.pitch; }
+		const auto frame = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(p); });
+		int32 white = 0, black = 0, mismatches = 0;
+		for (int32 y = 12; y < 248; y += 2)
+		{
+			for (int32 x = 12; x < 248; x += 2)
+			{
+				const double radius = Vec2{ x + 0.5, y + 0.5 }.distanceFrom(p.center);
+				const double nearestRadius = (p.radiusOffset + std::round((radius - p.radiusOffset) / p.pitch) * p.pitch);
+				const double distance = Abs(radius - nearestRadius);
+				const Color actual = frame.image[y][x];
+				if ((p.thickness == 0) || (distance > p.thickness * 0.5 + 3))
+				{
+					++black;
+					mismatches += (actual != Palette::Black);
+				}
+				else if ((p.thickness == p.pitch) || (distance < p.thickness * 0.5 - 3))
+				{
+					++white;
+					mismatches += (actual != Palette::White);
+				}
+			}
+		}
+		CHECK(mismatches == 0);
+		CHECK((variation == 4 ? white == 0 : white > 100));
+		CHECK((variation == 5 ? black == 0 : black > 100));
+	}
+
+	// The center lies at the intersection of a 2x2 fragment quad with equal radii.
+	// A radius derivative would vanish here; an edge must still be filtered.
+	auto centered = base;
+	centered.pitch = 8;
+	centered.thickness = 2;
+	centered.radiusOffset = (std::sqrt(0.5) + 1.0);
+	const auto centerFrame = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(centered); });
+	const Color centerPixel = centerFrame.image[127][127];
+	CHECK(centerPixel.r > 0);
+	CHECK(centerPixel.r < 255);
+	CHECK(centerPixel.a == 255);
+	CHECK(centerPixel == centerFrame.image[127][128]);
+	CHECK(centerPixel == centerFrame.image[128][127]);
+	CHECK(centerPixel == centerFrame.image[128][128]);
+
+	for (const bool full : { false, true })
+	{
+		auto p = centered;
+		p.thickness = (full ? p.pitch : 0);
+		p.primary = ColorF{ 0.8, 0.3, 0.1, 0.5 };
+		p.background = ColorF{ 0.2, 0.4, 0.6, 0.5 };
+		const auto actual = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(p);
+		});
+		const auto expected = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(full ? p.primary : p.background);
+		});
+		CHECK(actual.image == expected.image);
+	}
+
+	// Offset periodicity includes negative phases. Ignore only 1-level AA rounding.
+	const Image reference = CapturePattern(base, Mat3x2::Translate(20, 20));
+	for (const double periods : { -2.0, 1.0, 3.0 })
+	{
+		auto p = base;
+		p.radiusOffset = (periods * p.pitch);
+		const Image actual = CapturePattern(p, Mat3x2::Translate(20, 20));
+		int32 mismatches = 0;
+		for (size_t i = 0; i < actual.pixelCount(); ++i)
+		{
+			mismatches += (Abs(int32(actual.data()[i].r) - int32(reference.data()[i].r)) > 1
+				|| actual.data()[i].a != reference.data()[i].a);
+		}
+		CHECK(mismatches == 0);
+	}
+}
+
+TEST_CASE("Pattern.ripple_transforms_and_state")
+{
+	const Pattern::Ripple p{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 24, .thickness = 10, .center = { 36, 32 }, .radiusOffset = 3,
+	};
+	const Image reference = CapturePattern(p, Mat3x2::Translate(20, 20));
+	for (const Mat3x2 transform : {
+		Mat3x2::Translate(233, 97), Mat3x2{ 0, 1, -1, 0, 250, 120 },
+		Mat3x2::Scale(3).translated(240, 110), Mat3x2::Scale(3, 1).translated(240, 110),
+		Mat3x2::Scale(-1, 1).translated(240, 110),
+		Mat3x2::ShearX(0.5f).translated(240, 110) })
+	{
+		INFO(transform);
+		CheckCorrespondingInterior(reference, CapturePattern(p, transform), transform);
+	}
+	const Mat3x2 local = Mat3x2::Scale(3, 1);
+	const Mat3x2 camera{ 0, 1, -1, 0, 250, 100 };
+	CheckCorrespondingInterior(reference, CapturePattern(p, local, camera), local * camera);
+	const auto split = CapturePatternDraw([&]
+	{
+		const ScopedViewport2D viewport{ 20, 20, 100, 100 };
+		RectF{ 0, 0, 29, 64 }.draw(p);
+		Triangle{ 29, 0, 72, 0, 29, 64 }.draw(p);
+		Triangle{ 72, 0, 72, 64, 29, 64 }.draw(p);
+	});
+	CHECK(split.image == reference);
+	CHECK(split.metrics.drawCalls == 1);
+	PatternParameters extra = p;
+	extra.extraParams = { 17, -6, 23, 42 };
+	CHECK(CapturePattern(extra, Mat3x2::Translate(20, 20)) == reference);
+
+	auto other = p;
+	other.radiusOffset += 9;
+	const auto draw = [&]
+	{
+		RectF{ 10, 10, 40, 64 }.draw(p);
+		RectF{ 50, 10, 40, 64 }.draw(p);
+		RectF{ 90, 10, 40, 64 }.draw(other);
+		RectF{ 130, 10, 40, 64 }.draw(Pattern::Wave{});
+		RectF{ 170, 10, 40, 64 }.draw(p);
+	};
+	const auto expected = CapturePatternDraw(draw);
+	CHECK(expected.metrics.drawCalls == 4);
+	for (int32 frame = 0; frame < 2; ++frame)
+	{
+		const auto actual = CapturePatternDraw(draw);
+		CHECK(actual.image == expected.image);
+		CHECK(actual.metrics.drawCalls == expected.metrics.drawCalls);
+	}
+	const auto uninterrupted = CapturePatternDraw([&] { RectF{ 10, 10, 200, 64 }.draw(p); });
+	int32 differences = 0, mismatches = 0;
+	for (int32 y = 10; y < 74; ++y)
+	{
+		for (int32 x = 10; x < 210; ++x)
+		{
+			if ((x < 90) || (170 <= x))
+			{
+				mismatches += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+			else if (x < 130)
+			{
+				differences += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+		}
+	}
+	CHECK(mismatches == 0);
+	CHECK(differences > 100);
+}
+
+TEST_CASE("Pattern.wave_rendering")
+{
+	const Pattern::Wave base{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 32, .thickness = 10, .amplitude = 6,
+		.wavelength = 80, .angle = 0, .origin = { 128.5, 128.5 },
+	};
+	for (int32 variation = 0; variation < 5; ++variation)
+	{
+		INFO(variation);
+		auto p = base;
+		if (variation == 1) { p.angle = -31_deg; }
+		if (variation == 2) { p.amplitude = 0; }
+		if (variation == 3) { p.thickness = 0; }
+		if (variation == 4) { p.thickness = p.pitch; }
+		const auto frame = CapturePatternDraw([&] { RectF{ 10, 10, 240, 240 }.draw(p); });
+		int32 white = 0, black = 0, mismatches = 0;
+		for (int32 y = 12; y < 248; y += 2)
+		{
+			for (int32 x = 12; x < 248; x += 2)
+			{
+				const Vec2 q = (Vec2{ x + 0.5, y + 0.5 } - p.origin).rotated(-p.angle);
+				const double phase = (Math::TwoPi * q.x / p.wavelength);
+				const double height = (q.y - p.amplitude * std::sin(phase));
+				const double slope = (Math::TwoPi * p.amplitude / p.wavelength * std::cos(phase));
+				const double halfWidth = (p.thickness * 0.5 * std::sqrt(1 + slope * slope));
+				const double distance = Abs(height - std::round(height / p.pitch) * p.pitch);
+				const Color actual = frame.image[y][x];
+				// Check solid interiors; the edge filter is intentionally not a CPU pixel oracle.
+				if ((p.thickness == 0) || (distance > halfWidth + 3))
+				{
+					++black;
+					mismatches += (actual != Palette::Black);
+				}
+				else if ((p.thickness == p.pitch) || (distance < halfWidth - 3))
+				{
+					++white;
+					mismatches += (actual != Palette::White);
+				}
+			}
+		}
+		CHECK(mismatches == 0);
+		CHECK((variation == 3 ? white == 0 : white > 100));
+		CHECK((variation == 4 ? black == 0 : black > 100));
+	}
+
+	// Equal affine phase and width must reduce exactly to the existing Stripe filter.
+	auto straight = base;
+	straight.amplitude = 0;
+	straight.angle = 90_deg;
+	const PatternParameters wave = straight;
+	auto stripe = wave;
+	stripe.type = PatternType::Stripe;
+	stripe.uvTransform = { wave.uvTransform._12, 0, wave.uvTransform._22, 0,
+		wave.uvTransform._32 + 0.5f, 0 };
+	CHECK(CapturePattern(wave, Mat3x2::Translate(20, 20))
+		== CapturePattern(stripe, Mat3x2::Translate(20, 20)));
+
+	// Zero-width and full-width endpoints retain normal premultiplied color compositing.
+	for (const bool full : { false, true })
+	{
+		auto p = base;
+		p.thickness = (full ? p.pitch : 0);
+		p.primary = ColorF{ 0.8, 0.3, 0.1, 0.5 };
+		p.background = ColorF{ 0.2, 0.4, 0.6, 0.5 };
+		const auto actual = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(p);
+		});
+		const auto expected = CapturePatternDraw([&]
+		{
+			RectF{ 10, 10, 240, 240 }.draw(Palette::Green);
+			RectF{ 10, 10, 240, 240 }.draw(full ? p.primary : p.background);
+		});
+		CHECK(actual.image == expected.image);
+	}
+}
+
+TEST_CASE("Pattern.wave_transforms_and_state")
+{
+	const Pattern::Wave p{
+		.primary = Palette::White, .background = Palette::Black,
+		.pitch = 24, .thickness = 10, .amplitude = 5, .wavelength = 64,
+		.angle = 0, .origin = { -7, -11 },
+	};
+	const Image reference = CapturePattern(p, Mat3x2::Translate(20, 20));
+	for (const Mat3x2 transform : {
+		Mat3x2::Translate(233, 97), Mat3x2{ 0, 1, -1, 0, 250, 120 },
+		Mat3x2::Scale(3).translated(240, 110), Mat3x2::Scale(3, 1).translated(240, 110),
+		Mat3x2::Scale(-1, 1).translated(240, 110),
+		Mat3x2::ShearX(0.5f).translated(240, 110) })
+	{
+		INFO(transform);
+		CheckCorrespondingInterior(reference, CapturePattern(p, transform), transform);
+	}
+	const Mat3x2 local = Mat3x2::Scale(3, 1);
+	const Mat3x2 camera{ 0, 1, -1, 0, 250, 100 };
+	CheckCorrespondingInterior(reference, CapturePattern(p, local, camera), local * camera);
+	const auto split = CapturePatternDraw([&]
+	{
+		const ScopedViewport2D viewport{ 20, 20, 100, 100 };
+		RectF{ 0, 0, 29, 64 }.draw(p);
+		Triangle{ 29, 0, 72, 0, 29, 64 }.draw(p);
+		Triangle{ 72, 0, 72, 64, 29, 64 }.draw(p);
+	});
+	CHECK(split.image == reference);
+	CHECK(split.metrics.drawCalls == 1);
+
+	// Change only the extra vector, then restore it across another pattern shader.
+	const PatternParameters paint = p;
+	auto other = paint;
+	other.extraParams.x = 3.0f;
+	const auto draw = [&]
+	{
+		RectF{ 10, 10, 40, 64 }.draw(paint);
+		RectF{ 50, 10, 40, 64 }.draw(paint);
+		RectF{ 90, 10, 40, 64 }.draw(other);
+		RectF{ 130, 10, 40, 64 }.draw(Pattern::Halftone{});
+		RectF{ 170, 10, 40, 64 }.draw(paint);
+	};
+	const auto expected = CapturePatternDraw(draw);
+	CHECK(expected.metrics.drawCalls == 4);
+	for (int32 frame = 0; frame < 2; ++frame)
+	{
+		const auto actual = CapturePatternDraw(draw);
+		CHECK(actual.image == expected.image);
+		CHECK(actual.metrics.drawCalls == expected.metrics.drawCalls);
+	}
+	const auto uninterrupted = CapturePatternDraw([&] { RectF{ 10, 10, 200, 64 }.draw(paint); });
+	int32 differences = 0, mismatches = 0;
+	for (int32 y = 10; y < 74; ++y)
+	{
+		for (int32 x = 10; x < 210; ++x)
+		{
+			if ((x < 90) || (170 <= x))
+			{
+				mismatches += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+			else if (x < 130)
+			{
+				differences += (expected.image[y][x] != uninterrupted.image[y][x]);
+			}
+		}
+	}
+	CHECK(mismatches == 0);
+	CHECK(differences > 100);
+}
+
+# endif
 
 TEST_CASE("Pattern.halftone_rendering")
 {

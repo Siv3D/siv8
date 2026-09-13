@@ -48,6 +48,8 @@ namespace s3d
 		FontMSDF_Glow,
 		FontPrint,
 		PatternHalftone,
+		PatternWave,
+		PatternRipple,
 	};
 
 	class SIV3D_NOVTABLE ISiv3DEngineShader

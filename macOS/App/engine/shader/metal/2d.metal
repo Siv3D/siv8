@@ -311,6 +311,45 @@ float4 PS_PatternHalftone(PSInput input [[stage_in]],
 }
 
 fragment
+float4 PS_PatternWave(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
+	const float phase = (6.28318530718f * uv.x);
+	const float u = (uv.y - c1->g_patternUVTransform[1].w * sin(phase) + 0.5f);
+	const float slope = (c1->g_patternExtraParams.x * cos(phase));
+	// First-order normal-width correction, not an exact distance to the sine curve.
+	const float width = saturate(c1->g_patternUVTransform[1].z * sqrt(1.0f + slope * slope));
+	// Differentiate before wrapping; zero amplitude uses the Stripe filter.
+	const float fw = fwidth(u);
+	const float value = abs(2.0f * fract(u) - 1.0f);
+	const float thickness = (width * (1.0f + 2.0f * fw) - fw);
+	const float t = smoothstep(thickness - fw, thickness + fw, value);
+	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
+	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	return mix(primary, background, t);
+}
+
+fragment
+float4 PS_PatternRipple(PSInput input [[stage_in]],
+						constant PSConstants2D* c0 [[buffer(0)]],
+						constant PSEffectConstants2D* c1 [[buffer(1)]])
+{
+	const float2 uv = Pattern_UVTransform(input.uv, c1->g_patternUVTransform);
+	const float u = (length(uv) - c1->g_patternUVTransform[1].w + 0.5f);
+	// Continuous UV derivatives remain defined at the radial center, including
+	// a 2x2 fragment quad whose four samples have equal distance to the center.
+	const float fw = length(fwidth(uv));
+	const float value = abs(2.0f * fract(u) - 1.0f);
+	const float thickness = (c1->g_patternUVTransform[1].z * (1.0f + 2.0f * fw) - fw);
+	const float t = smoothstep(thickness - fw, thickness + fw, value);
+	const float4 primary = s3d_shapeColor(input.colorPMA, c0);
+	const float4 background = Pattern_BackgroundColor(c1->g_patternBackgroundColor, c0);
+	return mix(primary, background, t);
+}
+
+fragment
 float4 PS_PatternStripe(	PSInput input [[stage_in]],
 							constant PSConstants2D* c0 [[buffer(0)]],
 							constant PSEffectConstants2D* c1 [[buffer(1)]])

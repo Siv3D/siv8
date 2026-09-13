@@ -10,6 +10,13 @@ Renderer design notes and related checks:
   shader-bytecode regeneration, and Windows verification.
 - [Pattern expressiveness proposal](proposals/pattern-expressiveness.md):
   unadopted exploration of parameter units, additional motifs, and size gradients.
+- [Ripple](ripple.md): concentric bands, center filtering, payload, and D3D11 port.
+- [Ripple manual sample](../../Test/Manual/Ripple.md): off-card centers, layered
+  circles, radial motion, and transform controls.
+- [Wave](wave.md): sine-wave width approximation, payload, Metal integration,
+  and D3D11 port checklist.
+- [Wave manual sample](../../Test/Manual/Wave.md): presets, animation, and
+  transform controls.
 - [Halftone](halftone.md): adopted API, coordinate
   field, packing, fragment filtering, and validation.
 - [D3D11 Halftone integration](d3d11-halftone.md):
@@ -21,7 +28,7 @@ Renderer design notes and related checks:
 - [Earlier size-gradient proposal](proposals/halftone.md):
   superseded compact-layout exploration and payload size tradeoffs.
 - [Pattern collection](../../Test/Manual/PatternCollection.md): a minimal
-  1680 x 1050 gallery of 32 backgrounds from all seven Pattern types, with
+  1680 x 1050 gallery of 32 backgrounds from seven Pattern types, with
   keyboard-controlled animation and layered combinations.
 - [Pattern gallery](../../Test/Manual/PatternGallery.md): interactive parameter
   variations and a comparison of pattern size under zoom.

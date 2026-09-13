@@ -72,6 +72,8 @@ namespace s3d
 			m_pixelShaders << MSL{ U"PS_MSDFFont_Glow" };
 			m_pixelShaders << MSL{ U"PS_MSDFFont_Print" };
 			m_pixelShaders << MSL{ U"PS_PatternHalftone" };
+			m_pixelShaders << MSL{ U"PS_PatternWave" };
+			m_pixelShaders << MSL{ U"PS_PatternRipple" };
 			
 			if (not m_pixelShaders.all([](const auto& ps) { return static_cast<bool>(ps); })) // もしロードに失敗したシェーダがあれば
 			{

@@ -3,7 +3,10 @@
 Status: broader exploration remains unadopted; release scope is not scheduled.
 The [parameter storage extension](../pattern-payload.md) and the separate
 [halftone design](../halftone.md) are adopted.
-Other API names below describe concepts, not available C++ declarations.
+Wave, Ripple, Weave, and Truchet have also been selected for staged implementation.
+[Wave](../wave.md) and [Ripple](../ripple.md) record the implemented designs; remaining stages are in
+[TODO](../../../TODO.md). Other API names below describe concepts, not available
+C++ declarations.
 
 This proposal builds on the adopted [coordinate model](../pattern-coordinates.md).
 It explores predictable parameters, additional motifs, and spatial variation of

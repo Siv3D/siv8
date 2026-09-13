@@ -601,6 +601,10 @@ namespace s3d
 			PixelShader::IDType psPatternHexGrid;
 
 			PixelShader::IDType psPatternHalftone;
+
+			PixelShader::IDType psPatternWave;
+
+			PixelShader::IDType psPatternRipple;
 			
 			[[nodiscard]]
 			PixelShader::IDType getPatternShader(PatternType pattern) const noexcept;

@@ -41,7 +41,7 @@ namespace s3d
 		PatternType type = PatternType::PolkaDot;
 
 		/// @brief 模様固有の追加パラメータです。
-		/// @remark 組み込みの PolkaDot, Stripe, Grid, Checker, Triangle, HexGrid はこの値を使用しません。
+		/// @remark 組み込みの PolkaDot, Stripe, Grid, Checker, Triangle, HexGrid, Ripple はこの値を使用しません。
 		Float4 extraParams{ 0.0f, 0.0f, 0.0f, 0.0f };
 
 		/// @brief UV 変換・模様固有のパラメータ・背景色をシェーダ定数用に格納します。

@@ -744,6 +744,10 @@
 
 # include <Siv3D/Pattern/Stripe.hpp>
 
+# include <Siv3D/Pattern/Wave.hpp>
+
+# include <Siv3D/Pattern/Ripple.hpp>
+
 # include <Siv3D/Pattern/Grid.hpp>
 
 # include <Siv3D/Pattern/Checker.hpp>

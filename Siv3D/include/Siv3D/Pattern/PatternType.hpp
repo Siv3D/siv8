@@ -29,5 +29,9 @@ namespace s3d
 		HexGrid,
 
 		Halftone,
+
+		Wave,
+
+		Ripple,
 	};
 }
