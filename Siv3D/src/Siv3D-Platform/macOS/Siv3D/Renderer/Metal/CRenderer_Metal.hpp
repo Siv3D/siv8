@@ -123,7 +123,7 @@ namespace s3d
 
 		NS::SharedPtr<MTL::CommandQueue> m_commandQueue;
 
-		MTL::CommandBuffer* m_commandBuffer = nullptr;
+		NS::SharedPtr<MTL::CommandBuffer> m_commandBuffer;
 		
 		struct SceneBuffer
 		{

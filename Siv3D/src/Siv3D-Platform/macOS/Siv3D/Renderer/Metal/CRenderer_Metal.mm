@@ -165,14 +165,10 @@ namespace s3d
 			resizeBackBuffer(windowFrameBufferSize);
 		}
 		
-		if (m_commandBuffer)
-		{
-			m_commandBuffer->release();
-		}
-		
-		m_commandBuffer = m_commandQueue->commandBuffer();
+		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		m_commandBuffer = NS::RetainPtr(m_commandQueue->commandBuffer());
 
-		m_pRenderer2D->beginFrame(m_commandBuffer);
+		m_pRenderer2D->beginFrame(m_commandBuffer.get());
 	}
 
 	////////////////////////////////////////////////////////////////
