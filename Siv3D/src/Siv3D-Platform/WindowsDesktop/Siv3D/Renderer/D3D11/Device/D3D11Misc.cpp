@@ -27,53 +27,6 @@ namespace s3d
 	{
 		inline constexpr D3D_FEATURE_LEVEL MinimumD3DFeatureLevel = D3D_FEATURE_LEVEL_11_0;
 
-		[[nodiscard]]
-		static Optional<D3D11AdapterCache> LoadAdapterCache()
-		{
-			LOG_SCOPED_DEBUG("LoadAdapterCache()");
-
-			const FilePath adapterCacheFilePath = (CacheDirectory::Engine() + U"gpu/adapter.cache");
-
-			if (not FileSystem::Exists(adapterCacheFilePath))
-			{
-				LOG_INFO("ℹ️ Adapter cache file not found");
-				return none;
-			}
-
-			if (const auto lastWrite = FileSystem::WriteTime(adapterCacheFilePath))
-			{
-				const Days duration = DurationCast<Days>(DateTime::Now() - *lastWrite);
-
-				if (Days{ 14 } <= duration)
-				{
-					// 2 週間以上前のキャッシュファイルの場合、再更新を行う
-					LOG_INFO("ℹ️ 14 days or older cache file found");
-					FileSystem::Remove(adapterCacheFilePath);
-
-					return none;
-				}
-			}
-
-			BinaryFileReader reader{ adapterCacheFilePath };
-
-			if (not reader)
-			{
-				return none;
-			}
-
-			if (D3D11AdapterCache cache{}; reader.readExact(cache))
-			{
-				const size_t adapterNameLength = (reader.size() - reader.getPos());
-				std::string adapterName(adapterNameLength, '\0');
-				reader.read(adapterName.data(), adapterName.size());
-
-				LOG_INFO(fmt::format("ℹ️ Adapter cache loaded ({})", adapterName));
-				return cache;
-			}
-
-			return none;
-		}
-
 		static void SaveAdapterCache(const DXGI_ADAPTER_DESC& adapterDesc, const D3D_FEATURE_LEVEL featureLevel)
 		{
 			LOG_SCOPED_DEBUG("SaveAdapterCache()");
@@ -266,97 +219,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static Array<D3D11Adapter> EnumHardwareAdapters_impl(IDXGIFactory6* pDXGIFactory6, IDXGIFactory2* pDXGIFactory2, PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
-			const Optional<D3D11AdapterCache>& cache, const DXGI_GPU_PREFERENCE GPU_Preference)
-		{
-			LOG_SCOPED_DEBUG("EnumHardwareAdapters_impl()");
-
-			Array<D3D11Adapter> adapters;
-
-			for (uint32 adapterIndex = 0; ; ++adapterIndex)
-			{
-				ComPtr<IDXGIAdapter1> pAdapter;
-
-				// リストの最後で DXGIERR_NOT_FOUND が返る
-				{
-					HRESULT hr = DXGI_ERROR_NOT_FOUND;
-
-					if (pDXGIFactory6)
-					{
-						LOG_TRACE("IDXGIFactory6::EnumAdapterByGpuPreference()");
-						hr = pDXGIFactory6->EnumAdapterByGpuPreference(adapterIndex, GPU_Preference, IID_PPV_ARGS(&pAdapter));
-					}
-					else
-					{
-						LOG_TRACE("IDXGIFactory2::EnumAdapters1()");
-						hr = pDXGIFactory2->EnumAdapters1(adapterIndex, &pAdapter);
-					}
-
-					if (hr == DXGI_ERROR_NOT_FOUND)
-					{
-						LOG_TRACE("-> DXGI_ERROR_NOT_FOUND");
-						break;
-					}
-				}
-			
-				DXGI_ADAPTER_DESC1 adapterDesc;
-				pAdapter->GetDesc1(&adapterDesc);
-
-				// キャッシュされたアダプターと一致したらこれ以上調べない
-				if (cache && Match(adapterDesc, *cache))
-				{
-					LOG_INFO("ℹ️ Found a cached hardware adapter");
-
-					D3D11Adapter adapter =
-					{
-						.pAdapter		= pAdapter,
-						.adapterIndex	= adapterIndex,
-						.name			= Unicode::FromWstring(adapterDesc.Description),
-						.featureLevel	= cache->featureLevel,
-						.vendor			= ToVendor(adapterDesc.VendorId),
-						.desc			= adapterDesc,
-					};
-
-					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {} (feature level: {})", adapterIndex, ToString(adapterDesc), ToString(adapter.featureLevel)));
-					adapters.push_back(std::move(adapter));
-					
-					// 残りのアダプターをスキップする
-					LOG_INFO("ℹ️ Skipped the remaining adapters");
-					return adapters;
-				}
-
-				// Microsoft Basics Display Driver はスキップする
-				if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-				{
-					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: software adapter (skipped)", adapterIndex));
-					continue;
-				}
-
-				D3D11Adapter adapter =
-				{
-					.pAdapter		= pAdapter,
-					.adapterIndex	= adapterIndex,
-					.name			= Unicode::FromWstring(adapterDesc.Description),
-					.featureLevel	= CheckFeatureLevel(pAdapter.Get(), pD3D11CreateDevice),
-					.vendor			= ToVendor(adapterDesc.VendorId),
-					.desc			= adapterDesc,
-				};
-
-				if (adapter.featureLevel < MinimumD3DFeatureLevel)
-				{
-					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}] does not support D3D_FEATURE_LEVEL_{} (skipped)", adapterIndex, ToString(MinimumD3DFeatureLevel)));
-					continue;
-				}
-
-				LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {} (feature level: {})", adapterIndex, ToString(adapterDesc), ToString(adapter.featureLevel)));
-				adapters.push_back(std::move(adapter));
-			}
-
-			LOG_INFO(fmt::format("ℹ️ {} hardware adapter{} available", adapters.size(), ((adapters.size() == 1) ? "" : "s")));
-			return adapters;
-		}
-
-		[[nodiscard]]
 		static D3D_FEATURE_LEVEL GetWARPFeatureLevel(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice)
 		{
 			LOG_SCOPED_DEBUG("GetWARPFeatureLevel()");
@@ -515,6 +377,25 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static Optional<D3D11DeviceInfo> TryHardwareAdapters(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
+			const Array<D3D11Adapter>& hardwareAdapters, const std::span<const uint32> attempts, const bool saveAdapterCache)
+		{
+			for (const uint32 flags : attempts)
+			{
+				for (const auto& adapter : hardwareAdapters)
+				{
+					if (auto deviceInfo = CreateHardwareDevice(pD3D11CreateDevice, adapter.pAdapter.Get(),
+						{ &adapter.featureLevel, 1 }, flags))
+					{
+						return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, false, saveAdapterCache);
+					}
+				}
+			}
+
+			return none;
+		}
+
+		[[nodiscard]]
 		static Optional<D3D11DeviceInfo> CreateWARPDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const D3D_FEATURE_LEVEL targetFeatureLevel, const uint32 createDeviceFlag)
 		{
 			LOG_SCOPED_DEBUG("CreateWARPDevice()");
@@ -593,22 +474,152 @@ namespace s3d
 	{
 		////////////////////////////////////////////////////////////////
 		//
+		//	LoadAdapterCache
+		//
+		////////////////////////////////////////////////////////////////
+
+		Optional<D3D11AdapterCache> LoadAdapterCache()
+		{
+			LOG_SCOPED_DEBUG("LoadAdapterCache()");
+
+			const FilePath adapterCacheFilePath = (CacheDirectory::Engine() + U"gpu/adapter.cache");
+
+			if (not FileSystem::Exists(adapterCacheFilePath))
+			{
+				LOG_INFO("ℹ️ Adapter cache file not found");
+				return none;
+			}
+
+			if (const auto lastWrite = FileSystem::WriteTime(adapterCacheFilePath))
+			{
+				const Days duration = DurationCast<Days>(DateTime::Now() - *lastWrite);
+
+				if (Days{ 14 } <= duration)
+				{
+					// 2 週間以上前のキャッシュファイルの場合、再更新を行う
+					LOG_INFO("ℹ️ 14 days or older cache file found");
+					FileSystem::Remove(adapterCacheFilePath);
+
+					return none;
+				}
+			}
+
+			BinaryFileReader reader{ adapterCacheFilePath };
+
+			if (not reader)
+			{
+				return none;
+			}
+
+			if (D3D11AdapterCache cache{}; reader.readExact(cache))
+			{
+				const size_t adapterNameLength = (reader.size() - reader.getPos());
+				std::string adapterName(adapterNameLength, '\0');
+				reader.read(adapterName.data(), adapterName.size());
+
+				LOG_INFO(fmt::format("ℹ️ Adapter cache loaded ({})", adapterName));
+				return cache;
+			}
+
+			return none;
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
 		//	EnumHardwareAdapters
 		//
 		////////////////////////////////////////////////////////////////
 
-		Array<D3D11Adapter> EnumHardwareAdapters(IDXGIFactory6* pDXGIFactory6, IDXGIFactory2* pDXGIFactory2, PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const DXGI_GPU_PREFERENCE GPU_Preference)
+		void EnumHardwareAdapters(HardwareAdapterList& result, IDXGIFactory6* pDXGIFactory6, IDXGIFactory2* pDXGIFactory2,
+			PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const DXGI_GPU_PREFERENCE GPU_Preference, const Optional<D3D11AdapterCache>& cache)
 		{
 			LOG_SCOPED_DEBUG("EnumHardwareAdapters()");
 
-			Optional<D3D11AdapterCache> cache;
+			result.adapters.clear();
+			result.usedCache = false;
+			auto& adapters = result.adapters;
 
-			if (GPU_Preference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE)
+			for (uint32 adapterIndex = 0; ; ++adapterIndex)
 			{
-				cache = LoadAdapterCache();
+				ComPtr<IDXGIAdapter1> pAdapter;
+
+				// リストの最後で DXGIERR_NOT_FOUND が返る
+				{
+					HRESULT hr = DXGI_ERROR_NOT_FOUND;
+
+					if (pDXGIFactory6)
+					{
+						LOG_TRACE("IDXGIFactory6::EnumAdapterByGpuPreference()");
+						hr = pDXGIFactory6->EnumAdapterByGpuPreference(adapterIndex, GPU_Preference, IID_PPV_ARGS(&pAdapter));
+					}
+					else
+					{
+						LOG_TRACE("IDXGIFactory2::EnumAdapters1()");
+						hr = pDXGIFactory2->EnumAdapters1(adapterIndex, &pAdapter);
+					}
+
+					if (hr == DXGI_ERROR_NOT_FOUND)
+					{
+						LOG_TRACE("-> DXGI_ERROR_NOT_FOUND");
+						break;
+					}
+				}
+
+				DXGI_ADAPTER_DESC1 adapterDesc;
+				pAdapter->GetDesc1(&adapterDesc);
+
+				// キャッシュされたアダプターと一致したらこれ以上調べない
+				if (cache && Match(adapterDesc, *cache))
+				{
+					LOG_INFO("ℹ️ Found a cached hardware adapter");
+
+					D3D11Adapter adapter =
+					{
+						.pAdapter		= pAdapter,
+						.adapterIndex	= adapterIndex,
+						.name			= Unicode::FromWstring(adapterDesc.Description),
+						.featureLevel	= cache->featureLevel,
+						.vendor			= ToVendor(adapterDesc.VendorId),
+						.desc			= adapterDesc,
+					};
+
+					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {} (feature level: {})", adapterIndex, ToString(adapterDesc), ToString(adapter.featureLevel)));
+					adapters.push_back(std::move(adapter));
+
+					// 残りのアダプターをスキップする
+					LOG_INFO("ℹ️ Skipped the remaining adapters");
+					result.usedCache = true;
+					return;
+				}
+
+				// Microsoft Basics Display Driver はスキップする
+				if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+				{
+					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: software adapter (skipped)", adapterIndex));
+					continue;
+				}
+
+				D3D11Adapter adapter =
+				{
+					.pAdapter		= pAdapter,
+					.adapterIndex	= adapterIndex,
+					.name			= Unicode::FromWstring(adapterDesc.Description),
+					.featureLevel	= CheckFeatureLevel(pAdapter.Get(), pD3D11CreateDevice),
+					.vendor			= ToVendor(adapterDesc.VendorId),
+					.desc			= adapterDesc,
+				};
+
+				if (adapter.featureLevel < MinimumD3DFeatureLevel)
+				{
+					LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}] does not support D3D_FEATURE_LEVEL_{} (skipped)", adapterIndex, ToString(MinimumD3DFeatureLevel)));
+					continue;
+				}
+
+				LOG_INFO(fmt::format("ℹ️ IDXGIAdapter [{}]: {} (feature level: {})", adapterIndex, ToString(adapterDesc), ToString(adapter.featureLevel)));
+				adapters.push_back(std::move(adapter));
 			}
 
-			return EnumHardwareAdapters_impl(pDXGIFactory6, pDXGIFactory2, pD3D11CreateDevice, cache, GPU_Preference);
+			LOG_INFO(fmt::format("ℹ️ {} hardware adapter{} available", adapters.size(), ((adapters.size() == 1) ? "" : "s")));
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -617,7 +628,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice, const Array<D3D11Adapter>& hardwareAdapters,
+		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
+			FunctionRef<void(HardwareAdapterList&, bool)> enumHardwareAdapters,
 			EngineOption::D3D11Driver targetDriverType, const bool useDebugLayer)
 		{
 			LOG_SCOPED_DEBUG("CreateDevice()");
@@ -632,16 +644,24 @@ namespace s3d
 				constexpr uint32 CreateDeviceFlags[] = { (BaseCreateDeviceFlag | D3D11_CREATE_DEVICE_DEBUG), BaseCreateDeviceFlag };
 				const auto attempts = std::span{ CreateDeviceFlags }.subspan(useDebugLayer ? 0 : 1);
 
-				// Try every explicit candidate, with and without the debug layer, before the default adapter.
-				for (const uint32 flags : attempts)
+				HardwareAdapterList hardwareAdapters;
+				enumHardwareAdapters(hardwareAdapters, true);
+
+				// Exhaust both debug modes before discarding a cached selection.
+				if (auto deviceInfo = TryHardwareAdapters(pD3D11CreateDevice, hardwareAdapters.adapters, attempts, saveAdapterCache))
 				{
-					for (const auto& hardwareAdapter : hardwareAdapters)
+					return std::move(*deviceInfo);
+				}
+
+				if (hardwareAdapters.usedCache)
+				{
+					LOG_WARN("ℹ️ Cached hardware candidates failed. Enumerating again without the adapter cache");
+					enumHardwareAdapters(hardwareAdapters, false);
+
+					// Retry once, including a fresh feature-level probe of the previously cached adapter.
+					if (auto deviceInfo = TryHardwareAdapters(pD3D11CreateDevice, hardwareAdapters.adapters, attempts, saveAdapterCache))
 					{
-						if (auto deviceInfo = CreateHardwareDevice(pD3D11CreateDevice, hardwareAdapter.pAdapter.Get(),
-							{ &hardwareAdapter.featureLevel, 1 }, flags))
-						{
-							return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, false, saveAdapterCache);
-						}
+						return std::move(*deviceInfo);
 					}
 				}
 
@@ -660,7 +680,7 @@ namespace s3d
 				{
 					if (auto deviceInfo = CreateHardwareDevice(pD3D11CreateDevice, nullptr, DefaultFeatureLevels, flags))
 					{
-						return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, true, saveAdapterCache);
+						return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters.adapters, flags, true, saveAdapterCache);
 					}
 				}
 

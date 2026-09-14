@@ -75,11 +75,47 @@ namespace
 			const EngineOption::D3D11Driver driver = EngineOption::D3D11Driver::Hardware_FavorIntegrated)
 		{
 			// FavorIntegrated exercises hardware selection without touching the user's adapter cache.
-			return D3D11Misc::CreateDevice(CreateDevice, candidates, driver, debug);
+			return D3D11Misc::CreateDevice(CreateDevice,
+				[&](D3D11Misc::HardwareAdapterList& result, const bool useCache)
+				{
+					cacheRequests.push_back(useCache);
+					creationCountsAtEnumeration.push_back(calls.size());
+					result.adapters = (useCache ? candidates : refreshedCandidates);
+					result.usedCache = (useCache && usedCache);
+				}, driver, debug);
+		}
+
+		void enumerate(D3D11Misc::HardwareAdapterList& result, const Optional<D3D11AdapterCache>& cache)
+		{
+			const auto& backing = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer))->getDevice();
+			D3D11Misc::EnumHardwareAdapters(result, nullptr, backing.getDXGIFactory2(), CreateDevice,
+				DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, cache);
+		}
+
+		D3D11AdapterCache firstAdapterCache()
+		{
+			const auto& backing = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer))->getDevice();
+			ComPtr<IDXGIAdapter1> adapter;
+			REQUIRE(SUCCEEDED(backing.getDXGIFactory2()->EnumAdapters1(0, &adapter)));
+			DXGI_ADAPTER_DESC1 desc{};
+			REQUIRE(SUCCEEDED(adapter->GetDesc1(&desc)));
+			return D3D11AdapterCache{
+				.luid = desc.AdapterLuid,
+				.vendorId = desc.VendorId,
+				.deviceId = desc.DeviceId,
+				.subSysId = desc.SubSysId,
+				.revision = desc.Revision,
+				.featureLevel = D3D_FEATURE_LEVEL_12_1,
+			};
 		}
 
 		Array<D3D11Adapter> candidates;
+		Array<D3D11Adapter> refreshedCandidates;
+		bool usedCache = false;
+		Array<bool> cacheRequests;
+		Array<size_t> creationCountsAtEnumeration;
 		Array<HRESULT> results;
+		HRESULT defaultResult = E_FAIL;
 		Array<DeviceCreationCall> calls;
 
 	private:
@@ -94,7 +130,7 @@ namespace
 			script.calls.push_back({ adapter, driverType, flags,
 				Array<D3D_FEATURE_LEVEL>{ featureLevels, (featureLevels + featureLevelCount) } });
 			const size_t index = (script.calls.size() - 1);
-			const HRESULT result = ((index < script.results.size()) ? script.results[index] : E_FAIL);
+			const HRESULT result = ((index < script.results.size()) ? script.results[index] : script.defaultResult);
 			if (FAILED(result))
 			{
 				return result;
@@ -241,6 +277,7 @@ TEST_CASE("D3D11Device.warp_follows_default_hardware_failure")
 	CHECK(script.calls[4].driverType == D3D_DRIVER_TYPE_WARP);
 	CHECK(device.deviceType == D3D_DRIVER_TYPE_WARP);
 	CHECK(not device.adapterIndex);
+	CHECK(script.cacheRequests == Array<bool>{ true });
 }
 
 TEST_CASE("D3D11Device.explicit_software_driver_bypasses_hardware_selection")
@@ -255,6 +292,7 @@ TEST_CASE("D3D11Device.explicit_software_driver_bypasses_hardware_selection")
 		CHECK(script.calls[0].driverType == expected);
 		CHECK(script.calls[1].driverType == expected);
 		CHECK(device.deviceType == expected);
+		CHECK(script.cacheRequests.isEmpty());
 	}
 }
 
@@ -266,6 +304,183 @@ TEST_CASE("D3D11Device.all_creation_paths_fail")
 	CHECK(script.calls[2].driverType == D3D_DRIVER_TYPE_HARDWARE);
 	CHECK(script.calls[3].driverType == D3D_DRIVER_TYPE_WARP);
 	CHECK(script.calls[5].driverType == D3D_DRIVER_TYPE_REFERENCE);
+}
+
+TEST_CASE("D3D11Device.cached_success_avoids_reenumeration")
+{
+	DeviceCreationScript script;
+	script.candidates.erase(script.candidates.begin());
+	script.usedCache = true;
+	script.results = { S_OK };
+	const auto device = script.run();
+	CHECK(script.cacheRequests == Array<bool>{ true });
+	CHECK(script.calls.size() == 1);
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.cached_success_without_debug_avoids_reenumeration")
+{
+	DeviceCreationScript script;
+	script.candidates.erase(script.candidates.begin());
+	script.usedCache = true;
+	script.results = { DXGI_ERROR_SDK_COMPONENT_MISSING, S_OK };
+	const auto device = script.run(true);
+	CHECK(script.cacheRequests == Array<bool>{ true });
+	CHECK(script.calls.size() == 2);
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.cache_failure_recovers_a_later_adapter")
+{
+	DeviceCreationScript script;
+	script.refreshedCandidates = script.candidates;
+	script.candidates.pop_back();
+	script.usedCache = true;
+	script.results = { E_FAIL, E_FAIL, S_OK };
+	const auto device = script.run();
+	CHECK(script.cacheRequests == Array<bool>{ true, false });
+	CHECK(script.creationCountsAtEnumeration == Array<size_t>{ 0, 1 });
+	REQUIRE(script.calls.size() == 3);
+	for (const auto& call : script.calls)
+	{
+		CHECK(call.driverType == D3D_DRIVER_TYPE_UNKNOWN);
+	}
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.stale_cached_feature_level_is_replaced_before_default_fallback")
+{
+	DeviceCreationScript script;
+	script.candidates.erase(script.candidates.begin());
+	script.refreshedCandidates = script.candidates;
+	script.candidates.front().featureLevel = D3D_FEATURE_LEVEL_12_1;
+	script.usedCache = true;
+	script.results = { E_FAIL, S_OK };
+	const auto device = script.run();
+	CHECK(script.cacheRequests == Array<bool>{ true, false });
+	REQUIRE(script.calls.size() == 2);
+	CHECK(script.calls[0].featureLevels == Array<D3D_FEATURE_LEVEL>{ D3D_FEATURE_LEVEL_12_1 });
+	CHECK(script.calls[1].featureLevels == Array<D3D_FEATURE_LEVEL>{ D3D_FEATURE_LEVEL_11_0 });
+	CHECK(script.calls[1].driverType == D3D_DRIVER_TYPE_UNKNOWN);
+	CHECK(device.featureLevel == D3D_FEATURE_LEVEL_11_0);
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.cache_failure_exhausts_debug_modes_before_reenumeration")
+{
+	DeviceCreationScript script;
+	script.candidates.erase(script.candidates.begin());
+	script.refreshedCandidates = script.candidates;
+	script.candidates.front().featureLevel = D3D_FEATURE_LEVEL_12_1;
+	script.usedCache = true;
+	script.results = { E_FAIL, E_FAIL, S_OK };
+	const auto device = script.run(true);
+	CHECK(script.cacheRequests == Array<bool>{ true, false });
+	CHECK(script.creationCountsAtEnumeration == Array<size_t>{ 0, 2 });
+	REQUIRE(script.calls.size() == 3);
+	CHECK(script.calls[0].flags == static_cast<UINT>(D3D11_CREATE_DEVICE_DEBUG));
+	CHECK(script.calls[1].flags == 0u);
+	CHECK(script.calls[2].flags == static_cast<UINT>(D3D11_CREATE_DEVICE_DEBUG));
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.failed_cache_refresh_precedes_default_adapter")
+{
+	DeviceCreationScript script;
+	script.refreshedCandidates = script.candidates;
+	script.candidates.pop_back();
+	script.usedCache = true;
+	script.results = { E_FAIL, E_FAIL, E_FAIL, S_OK };
+	const auto device = script.run();
+	CHECK(script.cacheRequests == Array<bool>{ true, false });
+	REQUIRE(script.calls.size() == 4);
+	CHECK(script.calls[1].driverType == D3D_DRIVER_TYPE_UNKNOWN);
+	CHECK(script.calls[2].driverType == D3D_DRIVER_TYPE_UNKNOWN);
+	CHECK(script.calls[3].driverType == D3D_DRIVER_TYPE_HARDWARE);
+	CHECK(script.calls[3].adapter == nullptr);
+	// The refreshed list supplies the actual default GPU's index.
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.empty_cache_refresh_still_tries_default_adapter")
+{
+	DeviceCreationScript script;
+	script.candidates.pop_back();
+	script.usedCache = true;
+	script.results = { E_FAIL, S_OK };
+	const auto device = script.run();
+	CHECK(script.cacheRequests == Array<bool>{ true, false });
+	REQUIRE(script.calls.size() == 2);
+	CHECK(script.calls[1].driverType == D3D_DRIVER_TYPE_HARDWARE);
+	CHECK(not device.adapterIndex);
+}
+
+TEST_CASE("D3D11Device.failed_cache_refresh_and_default_adapter_fall_back_to_warp")
+{
+	DeviceCreationScript script;
+	script.refreshedCandidates = script.candidates;
+	script.candidates.pop_back();
+	script.usedCache = true;
+	script.results = { E_FAIL, E_FAIL, E_FAIL, E_FAIL, S_OK, S_OK };
+	const auto device = script.run();
+	CHECK(script.cacheRequests == Array<bool>{ true, false });
+	REQUIRE(script.calls.size() == 6);
+	CHECK(script.calls[3].driverType == D3D_DRIVER_TYPE_HARDWARE);
+	CHECK(script.calls[4].driverType == D3D_DRIVER_TYPE_WARP);
+	CHECK(script.calls[5].driverType == D3D_DRIVER_TYPE_WARP);
+	CHECK(device.deviceType == D3D_DRIVER_TYPE_WARP);
+}
+
+TEST_CASE("D3D11Device.cache_refresh_is_bounded_when_every_creation_path_fails")
+{
+	DeviceCreationScript script;
+	script.refreshedCandidates = script.candidates;
+	script.candidates.pop_back();
+	script.usedCache = true;
+	CHECK_THROWS_AS(script.run(), InternalEngineError);
+	CHECK(script.cacheRequests == Array<bool>{ true, false });
+	REQUIRE(script.calls.size() == 8);
+	CHECK(script.calls[3].driverType == D3D_DRIVER_TYPE_HARDWARE);
+	CHECK(script.calls[4].driverType == D3D_DRIVER_TYPE_WARP);
+	CHECK(script.calls[6].driverType == D3D_DRIVER_TYPE_REFERENCE);
+}
+
+TEST_CASE("D3D11Device.enumeration_reports_cache_use_and_refreshes_feature_levels")
+{
+	DeviceCreationScript script;
+	script.defaultResult = S_OK;
+	D3D11Misc::HardwareAdapterList result;
+	const auto cache = script.firstAdapterCache();
+	result.adapters.reserve(64);
+	script.enumerate(result, cache);
+	REQUIRE(result.usedCache);
+	REQUIRE(result.adapters.size() == 1);
+	CHECK(result.adapters.front().featureLevel == D3D_FEATURE_LEVEL_12_1);
+	CHECK(script.calls.isEmpty());
+	const size_t capacity = result.adapters.capacity();
+
+	// Use the real enumeration loop with successful feature probes, without creating extra devices.
+	script.enumerate(result, none);
+	CHECK(not result.usedCache);
+	CHECK(result.adapters.capacity() >= capacity);
+	CHECK(script.calls.size() == result.adapters.size());
+	for (const auto& adapter : result.adapters)
+	{
+		CHECK(adapter.featureLevel == D3D_FEATURE_LEVEL_11_0);
+	}
+}
+
+TEST_CASE("D3D11Device.unmatched_cache_does_not_mark_enumeration_as_cached")
+{
+	DeviceCreationScript script;
+	script.defaultResult = S_OK;
+	auto cache = script.firstAdapterCache();
+	cache.vendorId = 0xFFFFFFFF;
+	D3D11Misc::HardwareAdapterList result;
+	result.usedCache = true;
+	script.enumerate(result, cache);
+	CHECK(not result.usedCache);
+	CHECK(script.calls.size() == result.adapters.size());
 }
 
 # endif

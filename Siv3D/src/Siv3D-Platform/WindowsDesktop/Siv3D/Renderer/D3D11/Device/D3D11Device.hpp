@@ -11,8 +11,6 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/Array.hpp>
-# include "D3D11Adapter.hpp"
 # include "D3D11DeviceInfo.hpp"
 
 namespace s3d
@@ -68,8 +66,6 @@ namespace s3d
 		ComPtr<IDXGIFactory2> m_DXGIFactory2;
 
 		ComPtr<IDXGIFactory6> m_DXGIFactory6;
-
-		Array<D3D11Adapter> m_hardwareAdapters;
 
 		D3D11DeviceInfo m_deviceInfo;
 
