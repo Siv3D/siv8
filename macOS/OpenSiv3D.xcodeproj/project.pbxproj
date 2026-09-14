@@ -40,6 +40,7 @@
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
 		8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
 		E92FD05051964B5DBF236498 /* Quaternion.ipp in Headers */ = {isa = PBXBuildFile; fileRef = 7D2189FE0435464583450CED /* Quaternion.ipp */; };
 		EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */; };
@@ -3350,6 +3351,7 @@
 		F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalResourceLifetime.cpp; sourceTree = "<group>"; };
 		1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalFrameSynchronization.cpp; sourceTree = "<group>"; };
 		1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalInternalTexture2D.cpp; sourceTree = "<group>"; };
+		D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderPipelineState.cpp; sourceTree = "<group>"; };
 		B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.hpp; sourceTree = "<group>"; };
 		E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSimdFloat4.cpp; sourceTree = "<group>"; };
 		F90000013000000000000002 /* libSiv3DSkiaCOLRv1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSiv3DSkiaCOLRv1.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -7008,6 +7010,7 @@
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
 				1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */,
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
+				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
 				F90702C02B9DAEB900383E4D /* Test_Indexed.cpp */,
 				F90F7A192FA9DB730077F398 /* Test_INI.cpp */,
@@ -16693,6 +16696,7 @@
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,
 				8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */,
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
+				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,
 				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,
 				F9528C522BC029E800222F45 /* Test_MemoryMappedFile.cpp in Sources */,
 			);

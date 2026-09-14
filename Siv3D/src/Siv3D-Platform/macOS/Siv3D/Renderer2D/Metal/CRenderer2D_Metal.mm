@@ -1685,6 +1685,11 @@ namespace s3d
 		@autoreleasepool
 		{
 			MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
+			// パイプライン生成などで例外が発生した場合もエンコードを終了する。
+			const ScopeExit endEncoding{ [renderCommandEncoder]() noexcept
+			{
+				renderCommandEncoder->endEncoding();
+			} };
 			
 			PipelineStateDesc pipelineStateDesc
 			{
@@ -1985,8 +1990,6 @@ namespace s3d
 					}
 				}
 			}
-						
-			renderCommandEncoder->endEncoding();
 		}
 
 		SIV3D_ENGINE(Profiler)->reportStat(ProfilerStat::Renderer2D_DrawCalls, stat.drawCalls);

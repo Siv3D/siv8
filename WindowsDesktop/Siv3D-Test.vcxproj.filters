@@ -154,6 +154,9 @@
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_ScopeExit.cpp">
       <Filter>Test</Filter>
     </ClCompile>

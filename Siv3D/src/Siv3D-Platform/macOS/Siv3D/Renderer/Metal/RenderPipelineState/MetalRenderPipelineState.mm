@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "MetalRenderPipelineState.hpp"
+# include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Shader/Metal/CShader_Metal.hpp>
 # include <Siv3D/EngineLog.hpp>
 
@@ -110,8 +111,17 @@ namespace s3d
 			cd->setPixelFormat(ToEnum<MTL::PixelFormat>(desc.pixelFormat));
 			SetBlendState(renderPipelineDescriptor.get(), cd, desc.blendState);
 			
-			NS::Error* error;
+			NS::Error* error = nullptr;
 			NS::SharedPtr<MTL::RenderPipelineState> pipelineState = NS::TransferPtr(m_device->newRenderPipelineState(renderPipelineDescriptor.get(), &error));
+			if (not pipelineState)
+			{
+				const NS::String* description = (error ? error->localizedDescription() : nullptr);
+				const char* details = (description ? description->utf8String() : nullptr);
+				throw InternalEngineError{ fmt::format("MTL::Device::newRenderPipelineState() failed (vs = {}, ps = {}, pixelFormat = {}, sampleCount = {}, blendStateHash = {}): {}",
+					desc.vs.value(), desc.ps.value(), desc.pixelFormat, desc.sampleCount, std::hash<BlendState>{}(desc.blendState),
+					(details ? details : "No Metal error details")) };
+			}
+
 			it = m_pipelineStates.emplace(desc, std::move(pipelineState)).first;
 			LOG_DEBUG(fmt::format("Created RenderPipelineState2D({}, {}, {}, {}, {})",
 								  desc.vs.value(), desc.ps.value(), desc.pixelFormat, desc.sampleCount, std::hash<BlendState>{}(desc.blendState)));
