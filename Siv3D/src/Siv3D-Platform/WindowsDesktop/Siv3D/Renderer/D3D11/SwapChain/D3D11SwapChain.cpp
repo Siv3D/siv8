@@ -14,7 +14,6 @@
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
-# include <dwmapi.h>
 
 namespace s3d
 {
@@ -33,48 +32,6 @@ namespace s3d
 			const HRESULT hr = factory5->CheckFeatureSupport(
 				DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
 			return (SUCCEEDED(hr) && (allowTearing == TRUE));
-		}
-
-		[[nodiscard]]
-		static double ToRefreshRateHz(const uint64 count)
-		{
-			::LARGE_INTEGER frequency;
-			::QueryPerformanceFrequency(&frequency);
-			return (static_cast<double>(frequency.QuadPart) / count);
-		}
-
-		[[nodiscard]]
-		static double GetDisplayFrequency(IDXGISwapChain1* swapChain1)
-		{
-			ComPtr<IDXGIOutput> pOutput;
-
-			LOG_TRACE("IDXGISwapChain::GetContainingOutput()");
-
-			if (SUCCEEDED(swapChain1->GetContainingOutput(&pOutput)))
-			{
-				DXGI_OUTPUT_DESC desc;
-
-				LOG_TRACE("IDXGIOutput::GetDesc()");
-
-				if (SUCCEEDED(pOutput->GetDesc(&desc)))
-				{
-					LOG_TRACE("EnumDisplaySettingsW()");
-
-					DEVMODE devMode{};
-					devMode.dmSize = sizeof(DEVMODE);
-					::EnumDisplaySettingsW(desc.DeviceName, ENUM_CURRENT_SETTINGS, &devMode);
-
-					return devMode.dmDisplayFrequency;
-				}
-			}
-
-			LOG_TRACE("DwmGetCompositionTimingInfo()");
-
-			DWM_TIMING_INFO timingInfo{};
-			timingInfo.cbSize = sizeof(DWM_TIMING_INFO);
-			::DwmGetCompositionTimingInfo(nullptr, &timingInfo);
-
-			return ToRefreshRateHz(timingInfo.qpcRefreshPeriod);
 		}
 	}
 
@@ -97,6 +54,8 @@ namespace s3d
 	void D3D11SwapChain::init(const HWND hWnd, IDXGIFactory2* factory, ID3D11Device* device, const Size& frameBufferSize)
 	{
 		LOG_SCOPED_DEBUG("D3D11SwapChain::init()");
+
+		m_hWnd = hWnd;
 
 		const bool allowTearing = CheckTearingSupport(factory);
 
@@ -167,8 +126,7 @@ namespace s3d
 			throw InternalEngineError{ "IDXGISwapChain2::GetFrameLatencyWaitableObject() failed" };
 		}
 
-		m_displayFrequency = GetDisplayFrequency(m_swapChain1.Get());
-		LOG_INFO(fmt::format("ℹ️ Display refresh rate: {:.1f} Hz", m_displayFrequency));
+		m_displayFrequency.update(m_hWnd);
 
 		m_previousWindowBounds = Window::GetState().bounds;
 	}
@@ -184,10 +142,8 @@ namespace s3d
 		if (const Rect windowBounds = Window::GetState().bounds;
 			windowBounds != m_previousWindowBounds)
 		{
-			m_displayFrequency		= GetDisplayFrequency(m_swapChain1.Get());
-			m_previousWindowBounds	= windowBounds;
-			
-			LOG_INFO(fmt::format("ℹ️ Display refresh rate: {:.1f} Hz", m_displayFrequency));
+			m_displayFrequency.update(m_hWnd);
+			m_previousWindowBounds = windowBounds;
 		}
 
 		if (m_vSyncEnabled)
@@ -248,7 +204,7 @@ namespace s3d
 
 		if (hr == DXGI_STATUS_OCCLUDED)
 		{
-			::Sleep(static_cast<int32>((1000 / m_displayFrequency) * 0.9));
+			::Sleep(m_displayFrequency.getOccludedSleepMillisec());
 		}
 		else if (hr == DXGI_ERROR_DEVICE_RESET)
 		{
@@ -270,7 +226,7 @@ namespace s3d
 
 		if (hr == DXGI_STATUS_OCCLUDED)
 		{
-			::Sleep(static_cast<int32>((1000 / m_displayFrequency) * 0.9));
+			::Sleep(m_displayFrequency.getOccludedSleepMillisec());
 		}
 		else if (hr == DXGI_ERROR_DEVICE_RESET)
 		{

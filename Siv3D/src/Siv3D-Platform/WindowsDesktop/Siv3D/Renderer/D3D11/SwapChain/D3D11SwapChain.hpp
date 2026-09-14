@@ -14,6 +14,7 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include "../D3D11.hpp"
+# include "D3D11DisplayFrequency.hpp"
 
 namespace s3d
 {
@@ -51,7 +52,9 @@ namespace s3d
 
 		HANDLE m_waitableObject = nullptr;
 
-		double m_displayFrequency		= 60.0;
+		HWND m_hWnd = nullptr;
+
+		D3D11DisplayFrequency m_displayFrequency;
 
 		Rect m_previousWindowBounds		= Rect::Empty();
 

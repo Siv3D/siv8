@@ -225,7 +225,7 @@ namespace
 		void init()
 		{
 			auto* device = static_cast<CRenderer_D3D11*>(SIV3D_ENGINE(Renderer))->getDevice().getDevice();
-			// Only the fake factory receives this HWND; the desktop window is never modified.
+			// The fake factory and refresh-rate query use this HWND; the desktop window is never modified.
 			const HWND window = ::GetDesktopWindow();
 			factory->expectedDevice = device;
 			factory->expectedWindow = window;
