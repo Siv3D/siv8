@@ -147,6 +147,7 @@ namespace s3d
 	void CRenderer_Metal::waitForFrame()
 	{
 		const size_t frameIndex = m_frameContext.waitForFrame();
+		m_frameContext.reportErrors();
 		m_pRenderer2D->prepareFrame(frameIndex);
 	}
 

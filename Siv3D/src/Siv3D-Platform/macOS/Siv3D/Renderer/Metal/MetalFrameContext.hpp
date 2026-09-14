@@ -55,14 +55,18 @@ namespace s3d
 		// 最後に送信したフレームの完了を待つ。一度も送信していなければ何もしない。
 		void waitForLastSubmittedFrame() const;
 
+		// 描画スレッドから呼び、完了通知が記録したエラーをログに出力する。
+		// 前回の回収以降に記録された先頭のエラーと件数をまとめ、一度だけ出力する。
+		void reportErrors();
+
 		[[nodiscard]]
 		dispatch_semaphore_t getSemaphore() const noexcept;
 
 	private:
 
-		struct Semaphore;
+		struct CompletionState;
 
-		std::shared_ptr<Semaphore> m_semaphore;
+		std::shared_ptr<CompletionState> m_completionState;
 
 		NS::SharedPtr<MTL::CommandBuffer> m_commandBuffer;
 
@@ -70,6 +74,8 @@ namespace s3d
 
 		// 番号は送信時に進める。取り消した番号は次回も再利用する。
 		size_t m_frameIndex = 1;
+
+		uint64 m_submissionCount = 0;
 
 		bool m_frameAcquired = false;
 	};
