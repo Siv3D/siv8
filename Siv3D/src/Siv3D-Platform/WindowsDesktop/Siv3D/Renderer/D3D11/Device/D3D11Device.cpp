@@ -90,15 +90,14 @@ namespace s3d
 		{
 			const EngineOption::D3D11Driver targetDriverType = g_engineOptions.d3d11Driver;
 
-			const auto cache = ((targetDriverType == EngineOption::D3D11Driver::Hardware) ? D3D11Misc::LoadAdapterCache() : none);
 			const DXGI_GPU_PREFERENCE preference = ((targetDriverType == EngineOption::D3D11Driver::Hardware_FavorIntegrated)
 				? DXGI_GPU_PREFERENCE_MINIMUM_POWER : DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 
 			m_deviceInfo = D3D11Misc::CreateDevice(m_pD3D11CreateDevice,
-				[&](D3D11Misc::HardwareAdapterList& result, const bool useCache)
+				[&](Array<D3D11Adapter>& result)
 				{
 					D3D11Misc::EnumHardwareAdapters(result, m_DXGIFactory6.Get(), m_DXGIFactory2.Get(),
-						m_pD3D11CreateDevice, preference, (useCache ? cache : none));
+						preference);
 				}, targetDriverType, m_hasDebugLayer);
 		}
 	}

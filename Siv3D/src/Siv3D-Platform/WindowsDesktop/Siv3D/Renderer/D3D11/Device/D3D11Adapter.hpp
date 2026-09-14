@@ -11,7 +11,6 @@
 
 # pragma once
 # include <Siv3D/Common.hpp>
-# include <Siv3D/String.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
 
 namespace s3d
@@ -21,24 +20,6 @@ namespace s3d
 		ComPtr<IDXGIAdapter1> pAdapter;
 
 		uint32 adapterIndex = 0;
-
-		String name;
-
-		D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_9_1;
-
-		enum class Vendor : uint8
-		{
-			NVIDIA,
-
-			AMD,
-
-			Intel,
-
-			Microsoft,
-
-			Unknown,
-
-		} vendor = Vendor::Unknown;
 
 		DXGI_ADAPTER_DESC1 desc{};
 	};
