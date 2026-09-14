@@ -282,6 +282,85 @@ namespace s3d
 		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
 	}
 
+	TEST_CASE("MetalFrameSynchronization.uninitialized_renderer_destruction")
+	{
+		auto renderer = std::make_unique<CRenderer_Metal>();
+		dispatch_semaphore_t semaphore = renderer->getFrameContext().getSemaphore();
+		CHECK_NOTHROW(renderer.reset());
+		CHECK(AvailableFrameSlots(semaphore) == FrameSlots);
+	}
+
+	TEST_CASE("MetalFrameSynchronization.drain_cancels_unsubmitted_frame")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		MetalFrameContext context;
+		NS::SharedPtr<MTL::CommandBuffer> discarded;
+		SECTION("No frame acquired") {}
+		SECTION("Slot acquired before command buffer creation")
+		{
+			CHECK(context.waitForFrame() == 1);
+		}
+		SECTION("Command buffer created but not submitted")
+		{
+			CHECK(context.waitForFrame() == 1);
+			context.beginFrame(renderer->getCommandQueue());
+			discarded = NS::RetainPtr(context.getCommandBuffer());
+			REQUIRE(discarded);
+		}
+		context.drain();
+		CHECK(context.getCommandBuffer() == nullptr);
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+		if (discarded)
+		{
+			CHECK(discarded->status() == MTL::CommandBufferStatusNotEnqueued);
+		}
+		context.drain();
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+	}
+
+	TEST_CASE("MetalFrameSynchronization.drain_waits_for_all_inflight_frames")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		const auto event = NS::TransferPtr(renderer->getDevice()->newSharedEvent());
+		REQUIRE(event);
+		MetalFrameContext context;
+		std::promise<void> started;
+		auto start = started.get_future();
+		std::future<void> draining;
+		// Release the GPU before the future is destroyed, even if an assertion fails.
+		const ScopeExit unblockOnExit{ [&] { event->setSignaledValue(1); } };
+		for (size_t i = 0; i < (FrameSlots - 1); ++i)
+		{
+			(void)context.waitForFrame();
+			context.beginFrame(renderer->getCommandQueue());
+			context.getCommandBuffer()->encodeWait(event.get(), 1);
+			context.submit();
+		}
+		(void)context.waitForFrame();
+		context.beginFrame(renderer->getCommandQueue());
+		const auto discarded = NS::RetainPtr(context.getCommandBuffer());
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == 0);
+		// Transfer exclusive access to the context to this thread for the wait.
+		draining = std::async(std::launch::async, [&]
+		{
+			@autoreleasepool
+			{
+				started.set_value();
+				context.drain();
+			}
+		});
+		REQUIRE(start.wait_for(std::chrono::seconds{ 5 }) == std::future_status::ready);
+		CHECK(draining.wait_for(std::chrono::milliseconds{ 50 }) == std::future_status::timeout);
+		event->setSignaledValue(1);
+		REQUIRE(draining.wait_for(std::chrono::seconds{ 5 }) == std::future_status::ready);
+		draining.get();
+		CHECK(discarded->status() == MTL::CommandBufferStatusNotEnqueued);
+		CHECK(context.getCommandBuffer() == nullptr);
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+	}
+
 	TEST_CASE("MetalFrameSynchronization.command_buffer_creation_failure_returns_slot")
 	{
 		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());

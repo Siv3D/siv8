@@ -131,6 +131,23 @@ namespace s3d
 		}
 	}
 
+	void MetalFrameContext::drain() noexcept
+	{
+		cancel();
+
+		// 完了通知が全枠を返すまで待つことで、各フレームのエラー記録も完了する。
+		// 全枠を取得してから返すことで、同じ空き枠を繰り返し取得するのを防ぐ。
+		for (size_t i = 0; i < MaxInflightFrames; ++i)
+		{
+			dispatch_semaphore_wait(m_completionState->semaphore, DISPATCH_TIME_FOREVER);
+		}
+		for (size_t i = 0; i < MaxInflightFrames; ++i)
+		{
+			dispatch_semaphore_signal(m_completionState->semaphore);
+		}
+		m_lastSubmittedCommandBuffer.reset();
+	}
+
 	void MetalFrameContext::reportErrors()
 	{
 		if (not m_completionState->hasError.load(std::memory_order_acquire))

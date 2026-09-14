@@ -23,6 +23,7 @@
 # include <Siv3D/Scene/SceneUtility.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <cstdio>
 
 namespace s3d
 {
@@ -41,6 +42,18 @@ namespace s3d
 	CRenderer_Metal::~CRenderer_Metal()
 	{
 		LOG_SCOPED_DEBUG("CRenderer_Metal::~CRenderer_Metal()");
+
+		// Logger が生存している間に、送信済みフレームのエラーを最後に回収する。
+		m_frameContext.drain();
+		try
+		{
+			m_frameContext.reportErrors();
+		}
+		catch (...)
+		{
+			// ログ出力に失敗しても、残りの破棄処理を継続する。
+			std::fputs("Failed to report Metal shutdown errors\n", stderr);
+		}
 
 		m_sceneBuffers = {};
 

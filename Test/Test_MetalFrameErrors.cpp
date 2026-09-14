@@ -18,6 +18,7 @@
 # include <future>
 # include <iostream>
 # include <latch>
+# include <ranges>
 # include <sstream>
 
 // Deliver controlled completion results through the real registered handler.
@@ -227,6 +228,37 @@ namespace s3d
 		CHECK(AvailableFrameSlots(semaphore) == (MetalFrameContext::MaxInflightFrames - 1));
 		CompleteAsync(buffer, MTLCommandBufferStatusError).get();
 		CHECK(AvailableFrameSlots(semaphore) == MetalFrameContext::MaxInflightFrames);
+		CHECK(log.take().empty());
+	}
+
+	TEST_CASE("MetalFrameErrors.shutdown_drains_pending_errors")
+	{
+		MetalFrameContext context;
+		Siv3DTestFrameCommandQueue* queue = [[Siv3DTestFrameCommandQueue alloc] init];
+		std::array<Siv3DTestFrameCommandBuffer*, MetalFrameContext::MaxInflightFrames> buffers;
+		for (auto& buffer : buffers)
+		{
+			buffer = Submit(context, queue);
+		}
+		LogCapture log;
+		auto completion = std::async(std::launch::async, [&]
+		{
+			@autoreleasepool
+			{
+				// Complete the newest first so waiting for only that frame is insufficient.
+				for (auto* buffer : buffers | std::views::reverse)
+				{
+					[buffer completeWithStatus:MTLCommandBufferStatusError error:nil];
+				}
+			}
+		});
+		context.drain();
+		context.reportErrors();
+		CHECK(ReportedFailures(log.take()) == MetalFrameContext::MaxInflightFrames);
+		completion.get();
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == MetalFrameContext::MaxInflightFrames);
+		context.drain();
+		context.reportErrors();
 		CHECK(log.take().empty());
 	}
 

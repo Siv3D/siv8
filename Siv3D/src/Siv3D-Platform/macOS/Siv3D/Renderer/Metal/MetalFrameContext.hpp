@@ -55,6 +55,11 @@ namespace s3d
 		// 最後に送信したフレームの完了を待つ。一度も送信していなければ何もしない。
 		void waitForLastSubmittedFrame() const;
 
+		// 未送信のフレームを取り消し、全フレームの GPU 完了とエラー記録を待つ。
+		// 描画スレッドから、すべての encoder を終了し、新たな送信を停止して呼ぶこと。
+		// Context 外で送信した転送などは待たない。ログ出力は reportErrors() で行う。
+		void drain() noexcept;
+
 		// 描画スレッドから呼び、完了通知が記録したエラーをログに出力する。
 		// 前回の回収以降に記録された先頭のエラーと件数をまとめ、一度だけ出力する。
 		void reportErrors();
