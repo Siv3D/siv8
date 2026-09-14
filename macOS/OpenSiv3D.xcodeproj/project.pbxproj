@@ -39,6 +39,7 @@
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
 		8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		B9E12327D2D6400894431833 /* SivSimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1920A054F3542BCA1B99FC2 /* SivSimdFloat4.cpp */; };
@@ -3352,6 +3353,7 @@
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalResourceLifetime.cpp; sourceTree = "<group>"; };
 		1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalFrameSynchronization.cpp; sourceTree = "<group>"; };
+		6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalPresentation.cpp; sourceTree = "<group>"; };
 		1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalInternalTexture2D.cpp; sourceTree = "<group>"; };
 		D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderPipelineState.cpp; sourceTree = "<group>"; };
 		B5EACFA140224D61B0CA57D3 /* SimdFloat4.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.hpp; sourceTree = "<group>"; };
@@ -7013,6 +7015,7 @@
 				A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */,
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
 				1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */,
+				6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */,
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
 				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
 				F9528B3D2BB69C5F00222F45 /* Test_Image.cpp */,
@@ -16702,6 +16705,7 @@
 				A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */,
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,
 				8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */,
+				2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */,
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
 				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,
 				F9528B3E2BB69C5F00222F45 /* Test_Image.cpp in Sources */,

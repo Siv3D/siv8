@@ -123,8 +123,6 @@ namespace s3d
 
 		bool m_vSyncEnabled = true;
 		
-		CA::MetalDrawable* m_metalDrawable = nullptr;
-
 		NS::SharedPtr<MTL::CommandQueue> m_commandQueue;
 
 		MetalFrameContext m_frameContext;

@@ -190,13 +190,13 @@ namespace s3d
 		@autoreleasepool
 		{
 			MTL::CommandBuffer* commandBuffer = m_frameContext.getCommandBuffer();
-			m_metalDrawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable];
 
+			if (CA::MetalDrawable* drawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable])
 			{
 				NS::SharedPtr<MTL::RenderPassDescriptor> renderPassDescriptor = NS::TransferPtr(MTL::RenderPassDescriptor::alloc()->init());
 				
 				MTL::RenderPassColorAttachmentDescriptor* cd = renderPassDescriptor->colorAttachments()->object(0);
-				cd->setTexture(m_metalDrawable->texture());
+				cd->setTexture(drawable->texture());
 				cd->setLoadAction(MTL::LoadActionClear);
 				cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
 				cd->setStoreAction(MTL::StoreActionStore);
@@ -216,10 +216,11 @@ namespace s3d
 				renderCommandEncoder->setFragmentTexture(m_sceneBuffers.nonMSAA.getTexture(), 0);
 				renderCommandEncoder->drawPrimitives(MTL::PrimitiveTypeTriangle, NS::UInteger{ 0 }, 3);
 				renderCommandEncoder->endEncoding();
+
+				commandBuffer->presentDrawable(drawable);
 			}
 			
-			commandBuffer->presentDrawable(m_metalDrawable);
-			
+			// 表示先がなくてもシーン描画は送信し、スクリーンショットと GPU 完了時の枠の返却を維持する。
 			m_frameContext.submit();
 		}
 
