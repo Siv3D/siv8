@@ -127,8 +127,6 @@ namespace s3d
 
 		NS::SharedPtr<MTL::CommandQueue> m_commandQueue;
 
-		NS::SharedPtr<MTL::CommandBuffer> m_commandBuffer;
-
 		MetalFrameContext m_frameContext;
 		
 		struct SceneBuffer

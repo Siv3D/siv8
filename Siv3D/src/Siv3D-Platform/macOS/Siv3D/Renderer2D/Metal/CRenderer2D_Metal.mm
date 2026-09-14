@@ -1684,7 +1684,8 @@ namespace s3d
 
 		@autoreleasepool
 		{
-			MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
+			MTL::CommandBuffer* commandBuffer = m_pRenderer->getFrameContext().getCommandBuffer();
+			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
 			// パイプライン生成などで例外が発生した場合もエンコードを終了する。
 			const ScopeExit endEncoding{ [renderCommandEncoder]() noexcept
 			{
@@ -2246,17 +2247,6 @@ namespace s3d
 	void CRenderer2D_Metal::prepareFrame(const size_t frameIndex)
 	{
 		m_vertexBufferManager.prepareFrame(frameIndex);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	beginFrame
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::beginFrame(MTL::CommandBuffer* commandBuffer)
-	{
-		m_commandBuffer = commandBuffer;
 	}
 
 	////////////////////////////////////////////////////////////////

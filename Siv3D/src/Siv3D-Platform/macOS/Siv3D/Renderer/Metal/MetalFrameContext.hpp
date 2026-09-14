@@ -32,11 +32,28 @@ namespace s3d
 		MetalFrameContext& operator =(const MetalFrameContext&) = delete;
 
 		// 空き枠を取得し、このフレームで使用できるバッファ番号を返す。
+		// 未送信の枠を保持していないときに呼ぶ。
 		[[nodiscard]]
 		size_t waitForFrame();
 
-		// 取得した枠を GPU 完了時に返す。呼び出し元で commandBuffer を commit すること。
-		void releaseOnCompletion(MTL::CommandBuffer* commandBuffer);
+		// waitForFrame() の後に一度呼び、記録用のコマンドバッファを作成する。
+		// 作成に失敗した場合は枠を返し、InternalEngineError を送出する。
+		void beginFrame(MTL::CommandQueue* commandQueue);
+
+		// 記録中のコマンドバッファを借用する。記録中でなければ nullptr。
+		// 借用は submit() / cancel() まで。送信は Context に任せること。
+		[[nodiscard]]
+		MTL::CommandBuffer* getCommandBuffer() const noexcept;
+
+		// 記録中のフレームに完了通知を登録し、送信する。すべての encoder を終了してから呼ぶ。
+		void submit();
+
+		// 未送信のフレームを破棄し、枠を返す。取得した枠がなければ何もしない。
+		// すべての encoder を終了してから呼ぶ。次の waitForFrame() は取り消した番号を返す。
+		void cancel() noexcept;
+
+		// 最後に送信したフレームの完了を待つ。一度も送信していなければ何もしない。
+		void waitForLastSubmittedFrame() const;
 
 		[[nodiscard]]
 		dispatch_semaphore_t getSemaphore() const noexcept;
@@ -47,7 +64,12 @@ namespace s3d
 
 		std::shared_ptr<Semaphore> m_semaphore;
 
-		size_t m_frameIndex = 0;
+		NS::SharedPtr<MTL::CommandBuffer> m_commandBuffer;
+
+		NS::SharedPtr<MTL::CommandBuffer> m_lastSubmittedCommandBuffer;
+
+		// 番号は送信時に進める。取り消した番号は次回も再利用する。
+		size_t m_frameIndex = 1;
 
 		bool m_frameAcquired = false;
 	};

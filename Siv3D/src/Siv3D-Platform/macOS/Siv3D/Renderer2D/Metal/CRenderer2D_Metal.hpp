@@ -532,14 +532,6 @@ namespace s3d
 
 		void prepareFrame(size_t frameIndex);
 
-		////////////////////////////////////////////////////////////////
-		//
-		//	beginFrame
-		//
-		////////////////////////////////////////////////////////////////
-
-		void beginFrame(MTL::CommandBuffer* commandBuffer);
-
 	private:
 
 		MTL::Device* m_device			= nullptr;
@@ -553,8 +545,6 @@ namespace s3d
 		MetalVertexBufferManager2D m_vertexBufferManager;
 
 		MetalRenderer2DCommandManager m_commandManager;
-
-		MTL::CommandBuffer* m_commandBuffer = nullptr;
 
 		struct EngineShader
 		{

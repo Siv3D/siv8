@@ -164,10 +164,7 @@ namespace s3d
 			resizeBackBuffer(windowFrameBufferSize);
 		}
 		
-		const auto autoreleasePool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
-		m_commandBuffer = NS::RetainPtr(m_commandQueue->commandBuffer());
-
-		m_pRenderer2D->beginFrame(m_commandBuffer.get());
+		m_frameContext.beginFrame(m_commandQueue.get());
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -192,6 +189,7 @@ namespace s3d
 		// SceneToBackBuffer
 		@autoreleasepool
 		{
+			MTL::CommandBuffer* commandBuffer = m_frameContext.getCommandBuffer();
 			m_metalDrawable = (__bridge CA::MetalDrawable*)[m_metalLayer nextDrawable];
 
 			{
@@ -203,7 +201,7 @@ namespace s3d
 				cd->setClearColor(MTL::ClearColor{ m_sceneStyle.letterboxColor.r, m_sceneStyle.letterboxColor.g, m_sceneStyle.letterboxColor.b, 1.0 });
 				cd->setStoreAction(MTL::StoreActionStore);
 				
-				MTL::RenderCommandEncoder* renderCommandEncoder = m_commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
+				MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor.get());
 				renderCommandEncoder->setRenderPipelineState(m_fullscreenTriangleRenderPipelineState);
 				const auto [s, viewRect] = getLetterboxComposition();
 				const MTL::Viewport viewport = {
@@ -220,11 +218,9 @@ namespace s3d
 				renderCommandEncoder->endEncoding();
 			}
 			
-			m_commandBuffer->presentDrawable(m_metalDrawable);
+			commandBuffer->presentDrawable(m_metalDrawable);
 			
-			m_frameContext.releaseOnCompletion(m_commandBuffer.get());
-			m_commandBuffer->commit();
-			//m_commandBuffer->waitUntilCompleted();
+			m_frameContext.submit();
 		}
 
 		return true;
@@ -378,7 +374,7 @@ namespace s3d
 			m_screenCapture.resize(sceneSize);
 		}
 		
-		m_commandBuffer->waitUntilCompleted();
+		m_frameContext.waitForLastSubmittedFrame();
 		
 		m_sceneBuffers.nonMSAA.getTexture()->getBytes(m_screenCapture.data(),
 												   m_screenCapture.bytesPerRow(),

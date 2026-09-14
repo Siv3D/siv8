@@ -16,10 +16,25 @@
 // Xcode compiles this file as Objective-C++ with NO_S3D_USING so the native
 // Metal headers can coexist with the shared test PCH's Siv3D types.
 # include <Siv3D/Engine/Siv3DEngine.hpp>
+# include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Renderer/Metal/CRenderer_Metal.hpp>
 # include <condition_variable>
 # include <future>
 # include <mutex>
+
+// Inject allocation failure without adding a test hook to the frame context.
+@interface Siv3DTestCommandQueue : NSObject
+@property(nonatomic, strong) id<MTLCommandQueue> backingQueue;
+@property(nonatomic) BOOL failCreation;
+- (id<MTLCommandBuffer>)commandBuffer;
+@end
+
+@implementation Siv3DTestCommandQueue
+- (id<MTLCommandBuffer>)commandBuffer
+{
+	return self.failCreation ? nil : [self.backingQueue commandBuffer];
+}
+@end
 
 namespace s3d
 {
@@ -130,11 +145,12 @@ namespace s3d
 		{
 			CHECK(context.waitForFrame() == ((i + 1) % FrameSlots));
 			CHECK(AvailableFrameSlots(context.getSemaphore()) == (FrameSlots - 1));
-			const auto commandBuffer = NS::RetainPtr(renderer->getCommandQueue()->commandBuffer());
+			context.beginFrame(renderer->getCommandQueue());
+			const auto commandBuffer = NS::RetainPtr(context.getCommandBuffer());
 			REQUIRE(commandBuffer);
-			context.releaseOnCompletion(commandBuffer.get());
-			commandBuffer->commit();
-			commandBuffer->waitUntilCompleted();
+			context.submit();
+			CHECK(context.getCommandBuffer() == nullptr);
+			context.waitForLastSubmittedFrame();
 			CHECK(commandBuffer->status() == MTL::CommandBufferStatusCompleted);
 			CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
 		}
@@ -142,11 +158,19 @@ namespace s3d
 
 	TEST_CASE("MetalFrameSynchronization.context_returns_unsubmitted_slot_on_destruction")
 	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		auto context = std::make_unique<MetalFrameContext>();
 		// This test retains the semaphore so its count can be checked after teardown.
 		dispatch_semaphore_t semaphore = context->getSemaphore();
 		CHECK(context->waitForFrame() == 1);
 		CHECK(AvailableFrameSlots(semaphore) == (FrameSlots - 1));
+		SECTION("Before command buffer creation") {}
+		SECTION("After command buffer creation")
+		{
+			context->beginFrame(renderer->getCommandQueue());
+			REQUIRE(context->getCommandBuffer());
+		}
 		context.reset();
 		CHECK(AvailableFrameSlots(semaphore) == FrameSlots);
 	}
@@ -156,18 +180,18 @@ namespace s3d
 		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
 		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
 		const auto event = NS::TransferPtr(renderer->getDevice()->newSharedEvent());
-		const auto commandBuffer = NS::RetainPtr(renderer->getCommandQueue()->commandBuffer());
 		REQUIRE(event);
+		auto context = std::make_unique<MetalFrameContext>();
+		CHECK(context->waitForFrame() == 1);
+		context->beginFrame(renderer->getCommandQueue());
+		const auto commandBuffer = NS::RetainPtr(context->getCommandBuffer());
 		REQUIRE(commandBuffer);
 		commandBuffer->encodeWait(event.get(), 1);
 		const ScopeExit unblockOnExit{ [&] { event->setSignaledValue(1); } };
 
-		auto context = std::make_unique<MetalFrameContext>();
 		// A weak reference ensures the test itself does not keep the semaphore alive.
 		__weak dispatch_semaphore_t semaphore = context->getSemaphore();
-		CHECK(context->waitForFrame() == 1);
-		context->releaseOnCompletion(commandBuffer.get());
-		commandBuffer->commit();
+		context->submit();
 		context.reset();
 		REQUIRE(semaphore != nil);
 		// After verifying callback ownership, retain it to inspect the returned slot.
@@ -178,6 +202,118 @@ namespace s3d
 		commandBuffer->waitUntilCompleted();
 		CHECK(commandBuffer->status() == MTL::CommandBufferStatusCompleted);
 		CHECK(AvailableFrameSlots(survivingSemaphore) == FrameSlots);
+	}
+
+	TEST_CASE("MetalFrameSynchronization.cancel_discards_commands")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		const auto buffer = NS::TransferPtr(renderer->getDevice()->newBuffer(sizeof(uint32), MTL::ResourceStorageModeShared));
+		REQUIRE(buffer);
+		auto* value = static_cast<uint32*>(buffer->contents());
+		*value = 0;
+
+		MetalFrameContext context;
+		// Cancellation is also safe before a slot or command buffer exists.
+		context.cancel();
+		context.waitForLastSubmittedFrame();
+		CHECK(context.waitForFrame() == 1);
+		context.cancel();
+		CHECK(context.waitForFrame() == 1);
+		context.beginFrame(renderer->getCommandQueue());
+		const auto discarded = NS::RetainPtr(context.getCommandBuffer());
+		REQUIRE(discarded);
+		auto* encoder = discarded->blitCommandEncoder();
+		REQUIRE(encoder);
+		encoder->fillBuffer(buffer.get(), NS::Range{ 0, sizeof(uint32) }, 0xFF);
+		encoder->endEncoding();
+		context.cancel();
+		context.cancel();
+		CHECK(context.getCommandBuffer() == nullptr);
+		REQUIRE(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+		CHECK(discarded->status() == MTL::CommandBufferStatusNotEnqueued);
+
+		// A later submission completes without executing the discarded write.
+		CHECK(context.waitForFrame() == 1);
+		context.beginFrame(renderer->getCommandQueue());
+		context.submit();
+		context.waitForLastSubmittedFrame();
+		CHECK(*value == 0);
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+	}
+
+	TEST_CASE("MetalFrameSynchronization.cancel_reuses_slot_while_gpu_is_busy")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		const auto event = NS::TransferPtr(renderer->getDevice()->newSharedEvent());
+		REQUIRE(event);
+		MetalFrameContext context;
+		const ScopeExit unblockOnExit{ [&] { event->setSignaledValue(1); } };
+
+		// Fill two slots. Both submissions remain in flight behind the GPU event.
+		for (size_t i = 0; i < (FrameSlots - 1); ++i)
+		{
+			CHECK(context.waitForFrame() == (i + 1));
+			context.beginFrame(renderer->getCommandQueue());
+			if (i == 0)
+			{
+				context.getCommandBuffer()->encodeWait(event.get(), 1);
+			}
+			context.submit();
+		}
+		context.cancel(); // Submitted slots belong to their completion callbacks.
+		REQUIRE(AvailableFrameSlots(context.getSemaphore()) == 1);
+
+		for (size_t i = 0; i < (FrameSlots * 2); ++i)
+		{
+			// Every retry must use slot 0; slots 1 and 2 are still owned by the GPU.
+			CHECK(context.waitForFrame() == 0);
+			context.beginFrame(renderer->getCommandQueue());
+			CHECK(AvailableFrameSlots(context.getSemaphore()) == 0);
+			context.cancel();
+			context.cancel();
+			REQUIRE(AvailableFrameSlots(context.getSemaphore()) == 1);
+		}
+		CHECK(event->signaledValue() == 0);
+		event->setSignaledValue(1);
+		// Cancelling newer frames must preserve the previous submission for waiting.
+		context.waitForLastSubmittedFrame();
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+	}
+
+	TEST_CASE("MetalFrameSynchronization.command_buffer_creation_failure_returns_slot")
+	{
+		const auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
+		auto* renderer = static_cast<CRenderer_Metal*>(SIV3D_ENGINE(Renderer));
+		__attribute__((objc_precise_lifetime)) Siv3DTestCommandQueue* queue = [[Siv3DTestCommandQueue alloc] init];
+		queue.backingQueue = (__bridge id<MTLCommandQueue>)renderer->getCommandQueue();
+		queue.failCreation = YES;
+		MetalFrameContext context;
+		for (size_t i = 0; i < 2; ++i)
+		{
+			CHECK(context.waitForFrame() == 1);
+			try
+			{
+				context.beginFrame((__bridge MTL::CommandQueue*)queue);
+				FAIL_CHECK("Command buffer creation failure must throw InternalEngineError");
+			}
+			catch (const InternalEngineError& error)
+			{
+				CHECK(error.messageUTF8().contains("MTL::CommandQueue::commandBuffer() failed"));
+			}
+			CHECK(context.getCommandBuffer() == nullptr);
+			REQUIRE(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+		}
+
+		queue.failCreation = NO;
+		CHECK(context.waitForFrame() == 1);
+		context.beginFrame((__bridge MTL::CommandQueue*)queue);
+		REQUIRE(context.getCommandBuffer());
+		context.submit();
+		context.waitForLastSubmittedFrame();
+		CHECK(AvailableFrameSlots(context.getSemaphore()) == FrameSlots);
+		CHECK(context.waitForFrame() == 2);
 	}
 }
 
