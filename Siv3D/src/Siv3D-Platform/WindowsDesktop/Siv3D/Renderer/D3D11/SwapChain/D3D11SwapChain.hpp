@@ -13,7 +13,7 @@
 # include <Siv3D/Common.hpp>
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
-# include "../Device/D3D11Device.hpp"
+# include "../D3D11.hpp"
 
 namespace s3d
 {
@@ -23,7 +23,7 @@ namespace s3d
 
 		~D3D11SwapChain();
 
-		void init(const HWND hWnd, const D3D11Device& device, const Size& frameBufferSize);
+		void init(HWND hWnd, IDXGIFactory2* factory, ID3D11Device* device, const Size& frameBufferSize);
 
 		[[nodiscard]]
 		bool present();
@@ -45,27 +45,15 @@ namespace s3d
 
 		static constexpr uint32 DefaultMaximumFrameLatency = 1;
 		
-		HWND m_hWnd						= nullptr;
-		
-		ID3D11Device* m_device			= nullptr;
-		
-		ID3D11DeviceContext* m_context	= nullptr;
-
-		IDXGIDevice1* m_dxgiDevice1		= nullptr;
-
-		bool m_tearingSupport			= false;
+		uint32 m_nonVSyncPresentFlags = 0;
 
 		ComPtr<IDXGISwapChain1> m_swapChain1;
-
-		ComPtr<IDXGISwapChain2> m_swapChain2;
 
 		HANDLE m_waitableObject = nullptr;
 
 		double m_displayFrequency		= 60.0;
 
 		Rect m_previousWindowBounds		= Rect::Empty();
-
-		uint32 m_maximumFrameLatency	= DefaultMaximumFrameLatency;
 
 		bool m_vSyncEnabled				= true;
 

@@ -28,12 +28,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		IDXGIFactory6* getDXGIFactory6() const noexcept
-		{
-			return m_DXGIFactory6.Get();
-		}
-
-		[[nodiscard]]
 		ID3D11Device* getDevice() const noexcept
 		{
 			return m_deviceInfo.device.Get();
@@ -49,12 +43,6 @@ namespace s3d
 		ID3D11DeviceContext* getContext() const noexcept
 		{
 			return m_deviceInfo.context.Get();
-		}
-
-		[[nodiscard]]
-		bool supportsDXGI1_4() const noexcept
-		{
-			return (m_DXGIFactory6 != nullptr);
 		}
 
 	private:

@@ -71,7 +71,7 @@ namespace s3d
 		const HWND hWnd = static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle());
 		const Size windowFrameBufferSize = SIV3D_ENGINE(Window)->getState().frameBufferSize;
 
-		m_swapChain.init(hWnd, m_device, windowFrameBufferSize);
+		m_swapChain.init(hWnd, m_device.getDXGIFactory2(), m_device.getDevice(), windowFrameBufferSize);
 		m_backBuffer.init(m_device, m_swapChain.getSwapChain1(), this);
 		m_blendState.init(m_device);
 		m_rasterizerState.init(m_device);
