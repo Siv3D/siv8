@@ -2239,13 +2239,13 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	waitForFrame
+	//	prepareFrame
 	//
 	////////////////////////////////////////////////////////////////
 
-	void CRenderer2D_Metal::waitForFrame()
+	void CRenderer2D_Metal::prepareFrame(const size_t frameIndex)
 	{
-		m_vertexBufferManager.waitForFrame();
+		m_vertexBufferManager.prepareFrame(frameIndex);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2257,17 +2257,6 @@ namespace s3d
 	void CRenderer2D_Metal::beginFrame(MTL::CommandBuffer* commandBuffer)
 	{
 		m_commandBuffer = commandBuffer;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	getSemaphore
-	//
-	////////////////////////////////////////////////////////////////
-
-	dispatch_semaphore_t CRenderer2D_Metal::getSemaphore() const
-	{
-		return m_vertexBufferManager.getSemaphore();
 	}
 
 	////////////////////////////////////////////////////////////////

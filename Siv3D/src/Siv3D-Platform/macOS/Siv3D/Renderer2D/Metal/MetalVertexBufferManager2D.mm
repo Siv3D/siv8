@@ -11,6 +11,7 @@
 
 # include "MetalVertexBufferManager2D.hpp"
 # include <Siv3D/EngineLog.hpp>
+# include <cassert>
 
 namespace s3d
 {
@@ -40,11 +41,10 @@ namespace s3d
 		}
 	}
 
-	void MetalVertexBufferManager2D::waitForFrame()
+	void MetalVertexBufferManager2D::prepareFrame(const size_t frameIndex)
 	{
-		dispatch_semaphore_wait(m_frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
-			
-		++m_bufferIndex %= MaxInflightBuffers;
+		assert(frameIndex < MaxInflightBuffers);
+		m_bufferIndex = frameIndex;
 		
 		m_buffers[m_bufferIndex].vertexBuffer.writePos	= 0;
 		m_buffers[m_bufferIndex].indexBuffer.writePos	= 0;

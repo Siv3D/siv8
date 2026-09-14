@@ -12,7 +12,7 @@
 # pragma once
 # include <Siv3D/Array.hpp>
 # include <Siv3D/Vertex2D.hpp>
-# include <Siv3D/Renderer/Metal/Metal.hpp>
+# include <Siv3D/Renderer/Metal/MetalFrameContext.hpp>
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 
 namespace s3d
@@ -21,18 +21,13 @@ namespace s3d
 	{
 	public:
 		
-		static constexpr size_t MaxInflightBuffers = 3;
+		static constexpr size_t MaxInflightBuffers = MetalFrameContext::MaxInflightFrames;
 
 		std::array<NS::SharedPtr<MTL::Buffer>, MaxInflightBuffers> indexBuffers;
 	
 		void init(MTL::Device* device);
 
-		void waitForFrame();
-		
-		dispatch_semaphore_t getSemaphore() const
-		{
-			return m_frameBoundarySemaphore;
-		}
+		void prepareFrame(size_t frameIndex);
 
 		const MTL::Buffer* getVertexBuffer() const
 		{
@@ -139,8 +134,6 @@ namespace s3d
 		MTL::Device* m_device = nullptr;
 	
 		std::array<Buffer, MaxInflightBuffers> m_buffers;
-		
-		dispatch_semaphore_t m_frameBoundarySemaphore = dispatch_semaphore_create(MaxInflightBuffers);
 		
 		size_t m_bufferIndex = 0;	
 	};

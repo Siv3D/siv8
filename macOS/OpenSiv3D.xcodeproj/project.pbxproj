@@ -1133,7 +1133,9 @@
 		F97203182BF09E2E000E21DD /* SceneStyle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97203172BF09E2E000E21DD /* SceneStyle.hpp */; };
 		F972031A2BF09E51000E21DD /* Scene.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F97203192BF09E51000E21DD /* Scene.ipp */; };
 		F97203212BF09E80000E21DD /* CRenderer_Metal.mm in Sources */ = {isa = PBXBuildFile; fileRef = F972031B2BF09E80000E21DD /* CRenderer_Metal.mm */; };
+		42D32438FF254CFB91AEC911 /* MetalFrameContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 288B73B82D6A4999946C5A71 /* MetalFrameContext.mm */; };
 		F97203222BF09E80000E21DD /* CRenderer_Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F972031C2BF09E80000E21DD /* CRenderer_Metal.hpp */; };
+		49EAF2E1C42C4EC5906EA830 /* MetalFrameContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 40BAF825BB2E4A0DADB18C01 /* MetalFrameContext.hpp */; };
 		F97203232BF09E80000E21DD /* Metal.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F972031D2BF09E80000E21DD /* Metal.hpp */; };
 		F97203242BF09E80000E21DD /* RendererFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = F972031F2BF09E80000E21DD /* RendererFactory.mm */; };
 		F97204312BF0A314000E21DD /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97204302BF0A314000E21DD /* Metal.framework */; };
@@ -4510,7 +4512,9 @@
 		F97203172BF09E2E000E21DD /* SceneStyle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SceneStyle.hpp; sourceTree = "<group>"; };
 		F97203192BF09E51000E21DD /* Scene.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Scene.ipp; sourceTree = "<group>"; };
 		F972031B2BF09E80000E21DD /* CRenderer_Metal.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CRenderer_Metal.mm; sourceTree = "<group>"; };
+		288B73B82D6A4999946C5A71 /* MetalFrameContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalFrameContext.mm; sourceTree = "<group>"; };
 		F972031C2BF09E80000E21DD /* CRenderer_Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CRenderer_Metal.hpp; sourceTree = "<group>"; };
+		40BAF825BB2E4A0DADB18C01 /* MetalFrameContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MetalFrameContext.hpp; sourceTree = "<group>"; };
 		F972031D2BF09E80000E21DD /* Metal.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Metal.hpp; sourceTree = "<group>"; };
 		F972031F2BF09E80000E21DD /* RendererFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RendererFactory.mm; sourceTree = "<group>"; };
 		F97204122BF0A25B000E21DD /* CADefines.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CADefines.hpp; sourceTree = "<group>"; };
@@ -10557,7 +10561,9 @@
 				F9807D7E2BF1229700D9B590 /* BackBuffer */,
 				F97204342BF0A39F000E21DD /* Metal.cpp */,
 				F972031B2BF09E80000E21DD /* CRenderer_Metal.mm */,
+				288B73B82D6A4999946C5A71 /* MetalFrameContext.mm */,
 				F972031C2BF09E80000E21DD /* CRenderer_Metal.hpp */,
+				40BAF825BB2E4A0DADB18C01 /* MetalFrameContext.hpp */,
 				F972031D2BF09E80000E21DD /* Metal.hpp */,
 			);
 			path = Metal;
@@ -15042,6 +15048,7 @@
 				F9797E592F667DEF00518D26 /* WAVFormat.hpp in Headers */,
 				F90DA05B2D1A91D90003E1E8 /* ITexture.hpp in Headers */,
 				F97203222BF09E80000E21DD /* CRenderer_Metal.hpp in Headers */,
+				49EAF2E1C42C4EC5906EA830 /* MetalFrameContext.hpp in Headers */,
 				F97202F82BEDF2D9000E21DD /* Scene.hpp in Headers */,
 				F98601A92BCFBB53006A4C0F /* SkDrawProcs.h in Headers */,
 				F9070C4A2B9F175000383E4D /* Color.ipp in Headers */,
@@ -16929,6 +16936,7 @@
 				F9528C352BBF026F00222F45 /* zstdmt_compress.c in Sources */,
 				F9528B662BB6DC9200222F45 /* SivMillisecClock.cpp in Sources */,
 				F97203212BF09E80000E21DD /* CRenderer_Metal.mm in Sources */,
+				42D32438FF254CFB91AEC911 /* MetalFrameContext.mm in Sources */,
 				F986F89B2BC7FB4D006A4C0F /* SivColormap.cpp in Sources */,
 				F9797EA72F667ED800518D26 /* SivMP3Quality.cpp in Sources */,
 				F9797EA82F667ED800518D26 /* MediaTranscoderFactory.cpp in Sources */,

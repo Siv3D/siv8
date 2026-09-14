@@ -146,7 +146,8 @@ namespace s3d
 
 	void CRenderer_Metal::waitForFrame()
 	{
-		m_pRenderer2D->waitForFrame();
+		const size_t frameIndex = m_frameContext.waitForFrame();
+		m_pRenderer2D->prepareFrame(frameIndex);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -221,10 +222,7 @@ namespace s3d
 			
 			m_commandBuffer->presentDrawable(m_metalDrawable);
 			
-			__weak dispatch_semaphore_t semaphore = m_pRenderer2D->getSemaphore();
-			m_commandBuffer->addCompletedHandler(^(MTL::CommandBuffer*) {
-				dispatch_semaphore_signal(semaphore);
-			});
+			m_frameContext.releaseOnCompletion(m_commandBuffer.get());
 			m_commandBuffer->commit();
 			//m_commandBuffer->waitUntilCompleted();
 		}
@@ -437,6 +435,17 @@ namespace s3d
 	MTL::CommandQueue* CRenderer_Metal::getCommandQueue() const noexcept
 	{
 		return m_commandQueue.get();
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	getFrameContext
+	//
+	////////////////////////////////////////////////////////////////
+
+	const MetalFrameContext& CRenderer_Metal::getFrameContext() const noexcept
+	{
+		return m_frameContext;
 	}
 
 	////////////////////////////////////////////////////////////////

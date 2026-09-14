@@ -16,6 +16,7 @@
 # include <Siv3D/Scene/SceneStyle.hpp>
 # include <Siv3D/GLFW/GLFW.hpp>
 # include "Metal.hpp"
+# include "MetalFrameContext.hpp"
 # include "BackBuffer/MetalInternalTexture2D.hpp"
 # include "RenderPipelineState/MetalRenderPipelineState.hpp"
 # include "SamplerState/MetalSamplerState.hpp"
@@ -84,6 +85,9 @@ namespace s3d
 		[[nodiscard]]
 		MTL::CommandQueue* getCommandQueue() const noexcept;
 
+		[[nodiscard]]
+		const MetalFrameContext& getFrameContext() const noexcept;
+
 		[[nodiscard]]		
 		uint32 getSceneSampleCount() const noexcept;
 
@@ -124,6 +128,8 @@ namespace s3d
 		NS::SharedPtr<MTL::CommandQueue> m_commandQueue;
 
 		NS::SharedPtr<MTL::CommandBuffer> m_commandBuffer;
+
+		MetalFrameContext m_frameContext;
 		
 		struct SceneBuffer
 		{
