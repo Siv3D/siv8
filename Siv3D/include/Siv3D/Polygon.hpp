@@ -792,7 +792,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の凸包を計算して返します。
-		/// @return 多角形の凸包
+		/// @return 多角形の凸包。空の多角形、または外周の頂点がすべて一直線上にある場合は空の Polygon
 		[[nodiscard]]
 		Polygon computeConvexHull() const;
 
@@ -848,7 +848,7 @@ namespace s3d
 		/// @brief 多角形の外周の一部を LineString で返します。
 		/// @param distanceFromOrigin 取得の開始位置（Polygon 外周の最初の頂点からの距離）
 		/// @param length 取得する LineString の長さ
-		/// @return 取得した多角形の外周の一部
+		/// @return 取得した多角形の外周の一部。空の多角形の場合は空の LineString
 		[[nodiscard]]
 		LineString outline(double distanceFromOrigin, double length) const;
 

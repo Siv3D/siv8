@@ -83,7 +83,7 @@ namespace s3d
 
 		const std::vector<Vertex2D::IndexType> indices = mapbox::earcut<Vertex2D::IndexType>(polygon);
 
-		if (indices.size() % 3 != 0)
+		if (indices.empty() || (indices.size() % 3 != 0))
 		{
 			return false;
 		}

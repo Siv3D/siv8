@@ -79,6 +79,7 @@
     <ClCompile Include="..\Test\Test_JSON.cpp" />
     <ClCompile Include="..\Test\Test_JSONSerialization.cpp" />
     <ClCompile Include="..\Test\Test_ArrayLike.cpp" />
+    <ClCompile Include="..\Test\Test_Polygon.cpp" />
     <ClCompile Include="..\Test\Test_MultiPolygon.cpp" />
     <ClCompile Include="..\Test\Test_Blob.cpp" />
     <ClCompile Include="..\Test\Test_Wave.cpp" />

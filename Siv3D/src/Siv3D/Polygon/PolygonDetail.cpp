@@ -242,7 +242,7 @@ namespace s3d
 					inner = inner.subspan(0, (inner.size() - 1));
 				}
 
-				holes[i].assign(inner.rbegin(), inner.rend());
+				holes[i].assign(inner.begin(), inner.end());
 			}
 
 			return Polygon{ outer, std::move(holes), SkipValidation::Yes };

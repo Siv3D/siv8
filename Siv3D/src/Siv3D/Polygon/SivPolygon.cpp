@@ -813,13 +813,19 @@ namespace s3d
 
 	LineString Polygon::outline(double distanceFromOrigin, double length) const
 	{
+		const auto& out = outer();
+
+		if (out.isEmpty())
+		{
+			return{};
+		}
+
 		if (length <= 0.0)
 		{
 			distanceFromOrigin += length;
 			length = -length;
 		}
 
-		const auto& out = outer();
 		const size_t N = out.size();
 		Array<double> lens(N);
 		{

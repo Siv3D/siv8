@@ -25,7 +25,7 @@ namespace s3d
 	/// @param outer 外周の頂点
 	/// @param holes 穴の頂点
 	/// @param dstIndices 生成された三角形のインデックス
-	/// @return 三角形分割に成功した場合 true, それ以外の場合は false
+	/// @return 1 個以上の三角形を生成できた場合 true, それ以外の場合は false
 	[[nodiscard]]
 	bool Triangulate(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes, Array<TriangleIndex>& dstIndices);
 
