@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "D3D11SwapChain.hpp"
+# include "../D3D11Diagnostics.hpp"
 # include <Siv3D/Window.hpp>
 # include <Siv3D/WindowState.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
@@ -146,14 +147,23 @@ namespace s3d
 			m_previousWindowBounds = windowBounds;
 		}
 
-		if (m_vSyncEnabled)
+		const uint32 syncInterval = (m_vSyncEnabled ? 1u : 0u);
+		const uint32 flags = (m_vSyncEnabled ? 0u : m_nonVSyncPresentFlags);
+		const HRESULT hr = m_swapChain1->Present(syncInterval, flags);
+
+		if (hr == DXGI_STATUS_OCCLUDED)
 		{
-			return presentVSync();
+			::Sleep(m_displayFrequency.getOccludedSleepMillisec());
+			return true;
 		}
-		else
+
+		if (FAILED(hr))
 		{
-			return presentNonVSync();
+			LOG_FAIL(D3D11Diagnostics::GetPresentFailureMessage(m_swapChain1.Get(), hr, syncInterval, flags));
+			return false;
 		}
+
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -192,53 +202,4 @@ namespace s3d
 		return m_vSyncEnabled;
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	(private function)
-	//
-	////////////////////////////////////////////////////////////////
-
-	bool D3D11SwapChain::presentVSync()
-	{
-		const HRESULT hr = m_swapChain1->Present(1, 0);
-
-		if (hr == DXGI_STATUS_OCCLUDED)
-		{
-			::Sleep(m_displayFrequency.getOccludedSleepMillisec());
-		}
-		else if (hr == DXGI_ERROR_DEVICE_RESET)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_RESET)");
-			return false;
-		}
-		else if (hr == DXGI_ERROR_DEVICE_REMOVED)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_REMOVED)");
-			return false;
-		}
-
-		return true;
-	}
-
-	bool D3D11SwapChain::presentNonVSync()
-	{
-		const HRESULT hr = m_swapChain1->Present(0, m_nonVSyncPresentFlags);
-
-		if (hr == DXGI_STATUS_OCCLUDED)
-		{
-			::Sleep(m_displayFrequency.getOccludedSleepMillisec());
-		}
-		else if (hr == DXGI_ERROR_DEVICE_RESET)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_RESET)");
-			return false;
-		}
-		else if (hr == DXGI_ERROR_DEVICE_REMOVED)
-		{
-			LOG_FAIL("❌ IDXGISwapChain::Present() failed (DXGI_ERROR_DEVICE_REMOVED)");
-			return false;
-		}
-
-		return true;
-	}
 }

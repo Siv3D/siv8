@@ -3510,6 +3510,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\CRenderer_D3D11.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\D3D11Diagnostics.hpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Device.hpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device</Filter>
     </ClInclude>
@@ -8064,6 +8067,9 @@
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\CRenderer_D3D11.cpp">
+      <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\D3D11Diagnostics.cpp">
       <Filter>src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D-Platform\WindowsDesktop\Siv3D\Renderer\D3D11\Device\D3D11Device.cpp">

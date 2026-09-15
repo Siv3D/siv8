@@ -60,10 +60,5 @@ namespace s3d
 
 		bool m_vSyncEnabled				= true;
 
-		[[nodiscard]]
-		bool presentVSync();
-
-		[[nodiscard]]
-		bool presentNonVSync();
 	};
 }

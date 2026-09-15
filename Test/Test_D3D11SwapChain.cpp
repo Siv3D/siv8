@@ -16,6 +16,7 @@
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
+# include <Siv3D/Renderer/D3D11/D3D11Diagnostics.hpp>
 # include <Siv3D/Renderer/D3D11/SwapChain/D3D11SwapChain.hpp>
 # include <wrl/implements.h>
 
@@ -26,6 +27,59 @@ namespace
 	using FactoryInterfaces = ChainInterfaces<IDXGIFactory5, IDXGIFactory4, IDXGIFactory3, IDXGIFactory2, IDXGIFactory1, IDXGIFactory, IDXGIObject>;
 
 	// These COM objects record the real initialization/Present calls without creating another window or GPU swap chain.
+	class ScriptedDevice final : public RuntimeClass<RuntimeClassFlags<ClassicCom>, ID3D11Device>
+	{
+	public:
+		HRESULT removedReason = S_OK;
+		uint32 removedReasonCalls = 0;
+
+		HRESULT STDMETHODCALLTYPE GetDeviceRemovedReason() override
+		{
+			++removedReasonCalls;
+			return removedReason;
+		}
+
+		HRESULT STDMETHODCALLTYPE CreateBuffer(const D3D11_BUFFER_DESC*, const D3D11_SUBRESOURCE_DATA*, ID3D11Buffer**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateTexture1D(const D3D11_TEXTURE1D_DESC*, const D3D11_SUBRESOURCE_DATA*, ID3D11Texture1D**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateTexture2D(const D3D11_TEXTURE2D_DESC*, const D3D11_SUBRESOURCE_DATA*, ID3D11Texture2D**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateTexture3D(const D3D11_TEXTURE3D_DESC*, const D3D11_SUBRESOURCE_DATA*, ID3D11Texture3D**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateShaderResourceView(ID3D11Resource*, const D3D11_SHADER_RESOURCE_VIEW_DESC*, ID3D11ShaderResourceView**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateUnorderedAccessView(ID3D11Resource*, const D3D11_UNORDERED_ACCESS_VIEW_DESC*, ID3D11UnorderedAccessView**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateRenderTargetView(ID3D11Resource*, const D3D11_RENDER_TARGET_VIEW_DESC*, ID3D11RenderTargetView**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateDepthStencilView(ID3D11Resource*, const D3D11_DEPTH_STENCIL_VIEW_DESC*, ID3D11DepthStencilView**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC*, UINT, const void*, SIZE_T, ID3D11InputLayout**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateVertexShader(const void*, SIZE_T, ID3D11ClassLinkage*, ID3D11VertexShader**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateGeometryShader(const void*, SIZE_T, ID3D11ClassLinkage*, ID3D11GeometryShader**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateGeometryShaderWithStreamOutput(const void*, SIZE_T, const D3D11_SO_DECLARATION_ENTRY*, UINT, const UINT*, UINT, UINT, ID3D11ClassLinkage*, ID3D11GeometryShader**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreatePixelShader(const void*, SIZE_T, ID3D11ClassLinkage*, ID3D11PixelShader**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateHullShader(const void*, SIZE_T, ID3D11ClassLinkage*, ID3D11HullShader**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateDomainShader(const void*, SIZE_T, ID3D11ClassLinkage*, ID3D11DomainShader**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateComputeShader(const void*, SIZE_T, ID3D11ClassLinkage*, ID3D11ComputeShader**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateClassLinkage(ID3D11ClassLinkage**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateBlendState(const D3D11_BLEND_DESC*, ID3D11BlendState**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateDepthStencilState(const D3D11_DEPTH_STENCIL_DESC*, ID3D11DepthStencilState**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateRasterizerState(const D3D11_RASTERIZER_DESC*, ID3D11RasterizerState**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateSamplerState(const D3D11_SAMPLER_DESC*, ID3D11SamplerState**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateQuery(const D3D11_QUERY_DESC*, ID3D11Query**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreatePredicate(const D3D11_QUERY_DESC*, ID3D11Predicate**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateCounter(const D3D11_COUNTER_DESC*, ID3D11Counter**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CreateDeferredContext(UINT, ID3D11DeviceContext**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE OpenSharedResource(HANDLE, REFIID, void**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CheckFormatSupport(DXGI_FORMAT, UINT*) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CheckMultisampleQualityLevels(DXGI_FORMAT, UINT, UINT*) override { return E_NOTIMPL; }
+		void STDMETHODCALLTYPE CheckCounterInfo(D3D11_COUNTER_INFO*) override {  }
+		HRESULT STDMETHODCALLTYPE CheckCounter(const D3D11_COUNTER_DESC*, D3D11_COUNTER_TYPE*, UINT*, LPSTR, UINT*, LPSTR, UINT*, LPSTR, UINT*) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE CheckFeatureSupport(D3D11_FEATURE, void*, UINT) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE GetPrivateData(REFGUID, UINT*, void*) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE SetPrivateData(REFGUID, UINT, const void*) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE SetPrivateDataInterface(REFGUID, const IUnknown*) override { return E_NOTIMPL; }
+		D3D_FEATURE_LEVEL STDMETHODCALLTYPE GetFeatureLevel() override { return D3D_FEATURE_LEVEL_11_0; }
+		UINT STDMETHODCALLTYPE GetCreationFlags() override { return 0; }
+		void STDMETHODCALLTYPE GetImmediateContext(ID3D11DeviceContext** context) override { *context = nullptr; }
+		HRESULT STDMETHODCALLTYPE SetExceptionMode(UINT) override { return E_NOTIMPL; }
+		UINT STDMETHODCALLTYPE GetExceptionMode() override { return 0; }
+	};
+
 	class ScriptedSwapChain final : public RuntimeClass<RuntimeClassFlags<ClassicCom>, SwapChainInterfaces>
 	{
 		using Base = RuntimeClass<RuntimeClassFlags<ClassicCom>, SwapChainInterfaces>;
@@ -33,6 +87,10 @@ namespace
 	public:
 		bool exposeSwapChain2 = true;
 		HRESULT latencyResult = S_OK;
+		HRESULT presentResult = S_OK;
+		HRESULT getDeviceResult = S_OK;
+		uint32 getDeviceCalls = 0;
+		ComPtr<ScriptedDevice> device = Make<ScriptedDevice>();
 		bool provideWaitableHandle = true;
 		UINT maximumFrameLatency = 0;
 		uint32 latencyCalls = 0;
@@ -54,7 +112,7 @@ namespace
 		HRESULT STDMETHODCALLTYPE Present(UINT interval, UINT flags) override
 		{
 			presents.emplace_back(interval, flags);
-			return S_OK;
+			return presentResult;
 		}
 
 		HRESULT STDMETHODCALLTYPE GetDesc1(DXGI_SWAP_CHAIN_DESC1* result) override
@@ -93,7 +151,17 @@ namespace
 		HRESULT STDMETHODCALLTYPE SetPrivateDataInterface(REFGUID, const IUnknown*) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE GetPrivateData(REFGUID, UINT*, void*) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE GetParent(REFIID, void**) override { return E_NOTIMPL; }
-		HRESULT STDMETHODCALLTYPE GetDevice(REFIID, void**) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE GetDevice(REFIID iid, void** result) override
+		{
+			++getDeviceCalls;
+			CHECK(iid == __uuidof(ID3D11Device));
+			*result = nullptr;
+			if (FAILED(getDeviceResult))
+			{
+				return getDeviceResult;
+			}
+			return device.CopyTo(iid, result);
+		}
 		HRESULT STDMETHODCALLTYPE GetBuffer(UINT, REFIID, void**) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE SetFullscreenState(BOOL, IDXGIOutput*) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE GetFullscreenState(BOOL*, IDXGIOutput**) override { return E_NOTIMPL; }
@@ -326,9 +394,147 @@ TEST_CASE("D3D11SwapChain.present_flags_follow_creation_flags_and_vsync")
 			CHECK(flags == ((not vsync && tearing) ? DXGI_PRESENT_ALLOW_TEARING : 0u));
 		}
 		CHECK(fixture.factory->swapChain->presents.size() == 4);
+		CHECK(fixture.factory->swapChain->getDeviceCalls == 0);
+		CHECK(fixture.factory->swapChain->device->removedReasonCalls == 0);
 		CHECK(fixture.factory->factory5Queries == 1);
 		CHECK(fixture.factory->featureQueries == 1);
 	}
+}
+
+TEST_CASE("D3D11SwapChain.success_statuses_skip_failure_diagnostics")
+{
+	for (const BOOL tearing : { FALSE, TRUE })
+	{
+		SwapChainFixture fixture;
+		fixture.factory->allowTearing = tearing;
+		fixture.init();
+		auto& scripted = *fixture.factory->swapChain.Get();
+		for (const bool vsync : { true, false })
+		{
+			fixture.swapChain.setVSyncEnabled(vsync);
+			for (const HRESULT hr : { S_OK, S_FALSE, DXGI_STATUS_MODE_CHANGED })
+			{
+				CAPTURE(tearing, vsync, hr);
+				scripted.presentResult = hr;
+				const size_t previousCalls = scripted.presents.size();
+				CHECK(fixture.swapChain.present());
+				CHECK(scripted.presents.size() == (previousCalls + 1));
+				CHECK(scripted.getDeviceCalls == 0);
+				CHECK(scripted.device->removedReasonCalls == 0);
+			}
+		}
+	}
+}
+
+TEST_CASE("D3D11SwapChain.occlusion_allows_subsequent_presentation")
+{
+	for (const BOOL tearing : { FALSE, TRUE })
+	{
+		SwapChainFixture fixture;
+		fixture.factory->allowTearing = tearing;
+		fixture.init();
+		auto& scripted = *fixture.factory->swapChain.Get();
+		for (const bool vsync : { true, false })
+		{
+			fixture.swapChain.setVSyncEnabled(vsync);
+			for (const HRESULT hr : { DXGI_STATUS_OCCLUDED, S_OK })
+			{
+				CAPTURE(tearing, vsync, hr);
+				scripted.presentResult = hr;
+				const size_t previousCalls = scripted.presents.size();
+				CHECK(fixture.swapChain.present());
+				CHECK(scripted.presents.size() == (previousCalls + 1));
+				CHECK(scripted.getDeviceCalls == 0);
+				CHECK(scripted.device->removedReasonCalls == 0);
+			}
+		}
+	}
+}
+
+TEST_CASE("D3D11SwapChain.every_failed_present_stops_without_retry")
+{
+	for (const BOOL tearing : { FALSE, TRUE })
+	{
+		SwapChainFixture fixture;
+		fixture.factory->allowTearing = tearing;
+		fixture.init();
+		auto& scripted = *fixture.factory->swapChain.Get();
+		for (const bool vsync : { true, false })
+		{
+			fixture.swapChain.setVSyncEnabled(vsync);
+			for (const HRESULT hr : { DXGI_ERROR_DEVICE_RESET, DXGI_ERROR_DEVICE_REMOVED,
+				DXGI_ERROR_DEVICE_HUNG, DXGI_ERROR_INVALID_CALL, E_FAIL, E_INVALIDARG,
+				E_OUTOFMEMORY, static_cast<HRESULT>(0x887A1234u) })
+			{
+				CAPTURE(tearing, vsync, hr);
+				scripted.presentResult = hr;
+				const size_t previousCalls = scripted.presents.size();
+				CHECK_FALSE(fixture.swapChain.present());
+				REQUIRE(scripted.presents.size() == (previousCalls + 1));
+				CHECK(scripted.presents.back().first == (vsync ? 1u : 0u));
+				CHECK(scripted.presents.back().second == ((not vsync && tearing) ? DXGI_PRESENT_ALLOW_TEARING : 0u));
+				CHECK(scripted.getDeviceCalls == scripted.presents.size());
+				CHECK(scripted.device->removedReasonCalls == scripted.presents.size());
+			}
+		}
+	}
+}
+
+TEST_CASE("D3D11SwapChain.failed_device_query_preserves_present_failure")
+{
+	SwapChainFixture fixture;
+	fixture.init();
+	auto& scripted = *fixture.factory->swapChain.Get();
+	scripted.presentResult = DXGI_ERROR_DEVICE_REMOVED;
+	for (const bool vsync : { true, false })
+	{
+		fixture.swapChain.setVSyncEnabled(vsync);
+		for (const HRESULT hr : { E_NOINTERFACE, E_FAIL })
+		{
+			CAPTURE(vsync, hr);
+			scripted.getDeviceResult = hr;
+			const size_t previousCalls = scripted.presents.size();
+			CHECK_FALSE(fixture.swapChain.present());
+			CHECK(scripted.presents.size() == (previousCalls + 1));
+			CHECK(scripted.getDeviceCalls == scripted.presents.size());
+			CHECK(scripted.device->removedReasonCalls == 0);
+		}
+	}
+}
+
+TEST_CASE("D3D11SwapChain.present_diagnostics_preserve_original_and_device_errors")
+{
+	const auto scripted = Make<ScriptedSwapChain>();
+	for (const auto& [reason, formattedReason] : {
+		std::pair{ S_OK, "0x00000000 (S_OK)" },
+		std::pair{ DXGI_ERROR_DEVICE_HUNG, "0x887A0006 (DXGI_ERROR_DEVICE_HUNG)" },
+		std::pair{ DXGI_ERROR_DEVICE_RESET, "0x887A0007 (DXGI_ERROR_DEVICE_RESET)" },
+		std::pair{ static_cast<HRESULT>(0x887A1234u), "0x887A1234" } })
+	{
+		CAPTURE(reason);
+		scripted->device->removedReason = reason;
+		const std::string message = D3D11Diagnostics::GetPresentFailureMessage(
+			scripted.Get(), DXGI_ERROR_DEVICE_REMOVED, 0, DXGI_PRESENT_ALLOW_TEARING);
+		CHECK(message == (std::string{
+			"IDXGISwapChain::Present failed: SyncInterval=0, Flags=0x00000200, "
+			"HRESULT=0x887A0005 (DXGI_ERROR_DEVICE_REMOVED); DeviceRemovedReason=" } + formattedReason));
+	}
+	CHECK(scripted->getDeviceCalls == 4);
+	CHECK(scripted->device->removedReasonCalls == 4);
+	CHECK(scripted->presents.isEmpty());
+}
+
+TEST_CASE("D3D11SwapChain.present_diagnostics_report_failed_device_query")
+{
+	const auto scripted = Make<ScriptedSwapChain>();
+	scripted->getDeviceResult = E_NOINTERFACE;
+	const std::string message = D3D11Diagnostics::GetPresentFailureMessage(
+		scripted.Get(), static_cast<HRESULT>(0x887A1234u), 1, 0);
+	CHECK(message == "IDXGISwapChain::Present failed: SyncInterval=1, Flags=0x00000000, "
+		"HRESULT=0x887A1234; GetDevice(ID3D11Device) failed: HRESULT=0x80004002 (E_NOINTERFACE)");
+	CHECK(scripted->getDeviceCalls == 1);
+	CHECK(scripted->device->removedReasonCalls == 0);
+	CHECK(scripted->presents.isEmpty());
 }
 
 TEST_CASE("D3D11SwapChain.creation_failure_stops_initialization")

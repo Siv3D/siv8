@@ -11,6 +11,7 @@
 
 # include <Siv3D/Optional.hpp>
 # include "D3D11Misc.hpp"
+# include "../D3D11Diagnostics.hpp"
 # include <Siv3D/FormatUtility.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
@@ -111,60 +112,13 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static std::string FormatHRESULT(const HRESULT hr)
-		{
-			std::string_view name;
-			switch (hr)
-			{
-			case E_INVALIDARG:
-				name = "E_INVALIDARG"; break;
-			case E_OUTOFMEMORY:
-				name = "E_OUTOFMEMORY"; break;
-			case E_FAIL:
-				name = "E_FAIL"; break;
-			case E_NOINTERFACE:
-				name = "E_NOINTERFACE"; break;
-			case E_NOTIMPL:
-				name = "E_NOTIMPL"; break;
-			case E_ACCESSDENIED:
-				name = "E_ACCESSDENIED"; break;
-			case DXGI_ERROR_INVALID_CALL:
-				name = "DXGI_ERROR_INVALID_CALL"; break;
-			case DXGI_ERROR_NOT_FOUND:
-				name = "DXGI_ERROR_NOT_FOUND"; break;
-			case DXGI_ERROR_UNSUPPORTED:
-				name = "DXGI_ERROR_UNSUPPORTED"; break;
-			case DXGI_ERROR_DEVICE_REMOVED:
-				name = "DXGI_ERROR_DEVICE_REMOVED"; break;
-			case DXGI_ERROR_DEVICE_HUNG:
-				name = "DXGI_ERROR_DEVICE_HUNG"; break;
-			case DXGI_ERROR_DEVICE_RESET:
-				name = "DXGI_ERROR_DEVICE_RESET"; break;
-			case DXGI_ERROR_DRIVER_INTERNAL_ERROR:
-				name = "DXGI_ERROR_DRIVER_INTERNAL_ERROR"; break;
-			case DXGI_ERROR_NOT_CURRENTLY_AVAILABLE:
-				name = "DXGI_ERROR_NOT_CURRENTLY_AVAILABLE"; break;
-			case DXGI_ERROR_SDK_COMPONENT_MISSING:
-				name = "DXGI_ERROR_SDK_COMPONENT_MISSING"; break;
-			default:
-				break;
-			}
-
-			if (name.empty())
-			{
-				return fmt::format("0x{:08X}", static_cast<uint32>(hr));
-			}
-			return fmt::format("0x{:08X} ({})", static_cast<uint32>(hr), name);
-		}
-
-		[[nodiscard]]
 		static ComPtr<IDXGIDevice1> GetDXGIDevice1(ID3D11Device* pDevice)
 		{
 			ComPtr<IDXGIDevice1> dxgiDevice;
 			if (const HRESULT hr = pDevice->QueryInterface(IID_PPV_ARGS(&dxgiDevice)); FAILED(hr))
 			{
 				throw InternalEngineError{ fmt::format(
-					"ID3D11Device::QueryInterface(IDXGIDevice1) failed: HRESULT={}", FormatHRESULT(hr)) };
+					"ID3D11Device::QueryInterface(IDXGIDevice1) failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 			return dxgiDevice;
 		}
@@ -198,7 +152,7 @@ namespace s3d
 				writeLog(LogLevel::Info, fmt::format(
 					"D3D11CreateDevice failed: adapter={}, driver={}, flags=0x{:08X} (debug={}), featureLevels={}, HRESULT={}",
 					adapterName, ToString(driverType), createDeviceFlag, !!(createDeviceFlag & D3D11_CREATE_DEVICE_DEBUG),
-					ToString(featureLevels), FormatHRESULT(hr)));
+					ToString(featureLevels), D3D11Diagnostics::FormatHRESULT(hr)));
 
 				if (hr != E_INVALIDARG)
 				{
@@ -236,13 +190,13 @@ namespace s3d
 			ComPtr<IDXGIAdapter> adapter;
 			if (const HRESULT hr = deviceInfo.dxgiDevice->GetAdapter(&adapter); FAILED(hr))
 			{
-				throw InternalEngineError{ fmt::format("IDXGIDevice::GetAdapter() failed: HRESULT={}", FormatHRESULT(hr)) };
+				throw InternalEngineError{ fmt::format("IDXGIDevice::GetAdapter() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 
 			DXGI_ADAPTER_DESC desc{};
 			if (const HRESULT hr = adapter->GetDesc(&desc); FAILED(hr))
 			{
-				throw InternalEngineError{ fmt::format("IDXGIAdapter::GetDesc() failed: HRESULT={}", FormatHRESULT(hr)) };
+				throw InternalEngineError{ fmt::format("IDXGIAdapter::GetDesc() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 
 			for (const auto& candidate : hardwareAdapters)
@@ -304,7 +258,7 @@ namespace s3d
 				{
 					LOG_WARN(fmt::format("{} failed: adapterIndex={}, HRESULT={}",
 						(pDXGIFactory6 ? "IDXGIFactory6::EnumAdapterByGpuPreference()" : "IDXGIFactory2::EnumAdapters1()"),
-						adapterIndex, FormatHRESULT(hr)));
+						adapterIndex, D3D11Diagnostics::FormatHRESULT(hr)));
 					break;
 				}
 
@@ -312,7 +266,7 @@ namespace s3d
 				if (const HRESULT descResult = pAdapter->GetDesc1(&adapterDesc); FAILED(descResult))
 				{
 					LOG_WARN(fmt::format("IDXGIAdapter1::GetDesc1() failed: adapterIndex={}, HRESULT={}",
-						adapterIndex, FormatHRESULT(descResult)));
+						adapterIndex, D3D11Diagnostics::FormatHRESULT(descResult)));
 					continue;
 				}
 
