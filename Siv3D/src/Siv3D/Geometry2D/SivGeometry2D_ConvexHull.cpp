@@ -114,7 +114,7 @@ namespace s3d
 			}
 			else
 			{
-				outer.assign_range(hull);
+				outer = hull.map([](const PointType& point) { return Vec2{ point }; });
 			}
 
 			return Polygon{ outer, detail::MakeTriangleFan(outer.size()), Geometry2D::BoundingRect(outer), SkipValidation::Yes };
