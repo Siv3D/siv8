@@ -14,6 +14,7 @@
 # include <Siv3D/Array.hpp>
 # include <Siv3D/EngineOption.hpp>
 # include <Siv3D/FunctionRef.hpp>
+# include <Siv3D/LogLevel.hpp>
 # include "D3D11Adapter.hpp"
 # include "D3D11DeviceInfo.hpp"
 
@@ -31,5 +32,13 @@ namespace s3d
 		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
 			FunctionRef<void(Array<D3D11Adapter>&)> enumHardwareAdapters,
 			EngineOption::D3D11Driver targetDriverType, bool useDebugLayer);
+
+		// Writes creation diagnostics synchronously; the callback and message views are not retained.
+		// The overload above routes these messages to the engine logger.
+		[[nodiscard]]
+		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
+			FunctionRef<void(Array<D3D11Adapter>&)> enumHardwareAdapters,
+			EngineOption::D3D11Driver targetDriverType, bool useDebugLayer,
+			FunctionRef<void(LogLevel, std::string_view)> writeLog);
 	}
 }

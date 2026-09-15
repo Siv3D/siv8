@@ -18,6 +18,7 @@
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Renderer/D3D11/Device/D3D11Misc.hpp>
 # include <wrl/implements.h>
+# include <cwchar>
 
 namespace
 {
@@ -25,6 +26,8 @@ namespace
 	class AdapterToken final : public Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IDXGIAdapter1>
 	{
 	public:
+		uint32 descCalls = 0;
+
 		HRESULT STDMETHODCALLTYPE SetPrivateData(REFGUID, UINT, const void*) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE SetPrivateDataInterface(REFGUID, const IUnknown*) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE GetPrivateData(REFGUID, UINT*, void*) override { return E_NOTIMPL; }
@@ -32,7 +35,11 @@ namespace
 		HRESULT STDMETHODCALLTYPE EnumOutputs(UINT, IDXGIOutput**) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE GetDesc(DXGI_ADAPTER_DESC*) override { return E_NOTIMPL; }
 		HRESULT STDMETHODCALLTYPE CheckInterfaceSupport(REFGUID, LARGE_INTEGER*) override { return E_NOTIMPL; }
-		HRESULT STDMETHODCALLTYPE GetDesc1(DXGI_ADAPTER_DESC1*) override { return E_NOTIMPL; }
+		HRESULT STDMETHODCALLTYPE GetDesc1(DXGI_ADAPTER_DESC1*) override
+		{
+			++descCalls;
+			return E_NOTIMPL;
+		}
 	};
 
 	const Array<D3D_FEATURE_LEVEL> HardwareLevels = {
@@ -44,6 +51,13 @@ namespace
 		D3D_DRIVER_TYPE driverType;
 		UINT flags;
 		Array<D3D_FEATURE_LEVEL> featureLevels;
+	};
+
+	struct DeviceCreationLog
+	{
+		LogLevel level;
+		std::string message;
+		size_t creationCount;
 	};
 
 	class DeviceCreationScript
@@ -94,7 +108,11 @@ namespace
 				{
 					creationCountsAtEnumeration.push_back(calls.size());
 					result = candidates;
-				}, driver, debug);
+				}, driver, debug,
+				[&](const LogLevel level, const std::string_view message)
+				{
+					logs.push_back({ level, std::string{ message }, calls.size() });
+				});
 			CHECK(result.device.Get() == m_device.Get());
 			CHECK(result.context.Get() == m_context.Get());
 			CHECK(result.dxgiDevice != nullptr);
@@ -108,6 +126,7 @@ namespace
 		HRESULT defaultResult = E_FAIL;
 		D3D_FEATURE_LEVEL successFeatureLevel = D3D_FEATURE_LEVEL_11_0;
 		Array<DeviceCreationCall> calls;
+		Array<DeviceCreationLog> logs;
 
 	private:
 
@@ -162,6 +181,10 @@ TEST_CASE("D3D11Device.first_candidate_with_debug_stops_selection")
 	CHECK(script.calls[0].driverType == D3D_DRIVER_TYPE_UNKNOWN);
 	CHECK(script.calls[0].flags == static_cast<UINT>(D3D11_CREATE_DEVICE_DEBUG));
 	CHECK(device.adapterIndex == 9u);
+	REQUIRE(script.logs.size() == 1);
+	CHECK(script.logs[0].level == LogLevel::Info);
+	CHECK(script.logs[0].creationCount == 1);
+	CHECK(script.logs[0].message.find("created.") != std::string::npos);
 }
 
 TEST_CASE("D3D11Device.explicit_candidates_precede_default_adapter")
@@ -497,6 +520,159 @@ TEST_CASE("D3D11Device.enumeration_collects_metadata_and_reuses_storage")
 	D3D11Misc::EnumHardwareAdapters(candidates, nullptr, backing.getDXGIFactory2(), DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 	CHECK(candidates.size() == expectedCount);
 	CHECK(candidates.capacity() >= capacity);
+}
+
+
+TEST_CASE("D3D11Device.failure_diagnostics_use_existing_candidate_metadata")
+{
+	for (const bool debug : { false, true })
+	{
+		DeviceCreationScript script;
+		REQUIRE(::wcscpy_s(script.candidates[0].desc.Description, L"Scripted GPU A") == 0);
+		REQUIRE(::wcscpy_s(script.candidates[1].desc.Description, L"Scripted GPU B") == 0);
+		script.results = { E_FAIL, E_FAIL, S_OK };
+		const auto device = script.run(debug);
+		REQUIRE(script.calls.size() == 3);
+		REQUIRE(script.logs.size() >= 3);
+		const std::string_view labels[] = { "adapter=[3] \"Scripted GPU A\"", "adapter=[9] \"Scripted GPU B\"" };
+		for (size_t i = 0; i < 2; ++i)
+		{
+			const auto& log = script.logs[i];
+			CHECK(log.level == LogLevel::Info);
+			CHECK(log.creationCount == (i + 1));
+			CHECK(log.message.starts_with("D3D11CreateDevice failed: "));
+			CHECK(log.message.find(labels[i]) != std::string::npos);
+			CHECK(log.message.find("driver=UNKNOWN") != std::string::npos);
+			CHECK(log.message.find(debug ? "flags=0x00000002 (debug=true)" : "flags=0x00000000 (debug=false)") != std::string::npos);
+			CHECK(log.message.find("featureLevels=[12_1, 12_0, 11_1, 11_0]") != std::string::npos);
+			CHECK(log.message.find("HRESULT=0x80004005 (E_FAIL)") != std::string::npos);
+		}
+		// Logging must use the metadata, not query the scripted adapter again.
+		CHECK(static_cast<AdapterToken*>(script.candidates[0].pAdapter.Get())->descCalls == 0);
+		// Success is identified using the actual device, not either synthetic name.
+		CHECK(script.logs.back().message.find("Scripted GPU") == std::string::npos);
+		CHECK(device.adapterIndex == 9u);
+	}
+}
+
+TEST_CASE("D3D11Device.failure_diagnostics_record_each_list_before_retry")
+{
+	DeviceCreationScript script;
+	script.results = { E_INVALIDARG, E_INVALIDARG, E_FAIL, S_OK };
+	const auto device = script.run();
+	REQUIRE(script.logs.size() == 6);
+	const std::string_view levels[] = { "[12_1, 12_0, 11_1, 11_0]", "[11_1, 11_0]", "[11_0]" };
+	const std::string_view errors[] = { "0x80070057 (E_INVALIDARG)", "0x80070057 (E_INVALIDARG)", "0x80004005 (E_FAIL)" };
+	for (size_t i = 0; i < 3; ++i)
+	{
+		const auto& log = script.logs[i * 2];
+		CHECK(log.level == LogLevel::Info);
+		CHECK(log.creationCount == (i + 1));
+		CHECK(log.message.starts_with("D3D11CreateDevice failed: "));
+		CHECK(log.message.find("adapter=[3] ") != std::string::npos);
+		CHECK(log.message.find(std::string{ "featureLevels=" } + std::string{ levels[i] }) != std::string::npos);
+		CHECK(log.message.find(errors[i]) != std::string::npos);
+	}
+	for (size_t i = 0; i < 2; ++i)
+	{
+		const auto& retry = script.logs[i * 2 + 1];
+		CHECK(retry.level == LogLevel::Info);
+		CHECK(retry.creationCount == (i + 1));
+		CHECK(retry.message == (std::string{ "Retrying D3D11CreateDevice after E_INVALIDARG with featureLevels=" } + std::string{ levels[i + 1] }));
+	}
+	CHECK(script.logs.back().creationCount == 4);
+	CHECK(script.logs.back().message.find("created.") != std::string::npos);
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.diagnostics_distinguish_default_hardware_and_debug_flags")
+{
+	DeviceCreationScript script;
+	script.results = { E_FAIL, E_FAIL, E_FAIL, E_FAIL, DXGI_ERROR_SDK_COMPONENT_MISSING, S_OK };
+	const auto device = script.run(true);
+	REQUIRE(script.logs.size() == 7);
+	for (size_t i = 0; i < 4; ++i)
+	{
+		CHECK(script.logs[i].creationCount == (i + 1));
+		CHECK(script.logs[i].message.find((i < 2) ? "flags=0x00000002 (debug=true)" : "flags=0x00000000 (debug=false)") != std::string::npos);
+	}
+	CHECK(script.logs[4].message.find("nullptr + HARDWARE") != std::string::npos);
+	const auto& failure = script.logs[5];
+	CHECK(failure.creationCount == 5);
+	CHECK(failure.level == LogLevel::Info);
+	CHECK(failure.message.find("adapter=default (nullptr), driver=HARDWARE") != std::string::npos);
+	CHECK(failure.message.find("flags=0x00000002 (debug=true)") != std::string::npos);
+	CHECK(failure.message.find("DXGI_ERROR_SDK_COMPONENT_MISSING") != std::string::npos);
+	CHECK(failure.message.find("adapter=[") == std::string::npos);
+	CHECK(script.logs.back().creationCount == 6);
+	CHECK(script.logs.back().message.find("default adapter fallback") != std::string::npos);
+	CHECK(script.logs.back().message.find("with debug layer") == std::string::npos);
+	CHECK(device.adapterIndex == 9u);
+}
+
+TEST_CASE("D3D11Device.diagnostics_preserve_unknown_hresult_bits")
+{
+	const std::pair<HRESULT, const char*> cases[] =
+	{
+		{ static_cast<HRESULT>(0x887A1234u), "HRESULT=0x887A1234" },
+		{ static_cast<HRESULT>(0xFFFFFFFFu), "HRESULT=0xFFFFFFFF" },
+	};
+	for (const auto& [hr, expected] : cases)
+	{
+		DeviceCreationScript script;
+		script.results = { hr, S_OK };
+		script.run();
+		REQUIRE(script.logs.size() == 2);
+		CHECK(script.logs[0].level == LogLevel::Info);
+		CHECK(script.logs[0].message.ends_with(expected));
+		CHECK(script.logs[1].message.find("created.") != std::string::npos);
+	}
+}
+
+TEST_CASE("D3D11Device.diagnostics_name_common_hresult_values")
+{
+	const std::pair<HRESULT, const char*> cases[] =
+	{
+		{ E_OUTOFMEMORY, "HRESULT=0x8007000E (E_OUTOFMEMORY)" },
+		{ E_NOINTERFACE, "HRESULT=0x80004002 (E_NOINTERFACE)" },
+		{ E_NOTIMPL, "HRESULT=0x80004001 (E_NOTIMPL)" },
+		{ E_ACCESSDENIED, "HRESULT=0x80070005 (E_ACCESSDENIED)" },
+		{ DXGI_ERROR_INVALID_CALL, "HRESULT=0x887A0001 (DXGI_ERROR_INVALID_CALL)" },
+		{ DXGI_ERROR_UNSUPPORTED, "HRESULT=0x887A0004 (DXGI_ERROR_UNSUPPORTED)" },
+		{ DXGI_ERROR_DEVICE_REMOVED, "HRESULT=0x887A0005 (DXGI_ERROR_DEVICE_REMOVED)" },
+		{ DXGI_ERROR_SDK_COMPONENT_MISSING, "HRESULT=0x887A002D (DXGI_ERROR_SDK_COMPONENT_MISSING)" },
+	};
+	for (const auto& [hr, expected] : cases)
+	{
+		DeviceCreationScript script;
+		script.results = { hr, S_OK };
+		script.run();
+		REQUIRE(script.logs.size() == 2);
+		CHECK(script.logs[0].message.ends_with(expected));
+	}
+}
+
+TEST_CASE("D3D11Device.diagnostics_distinguish_software_fallbacks_and_final_failure")
+{
+	DeviceCreationScript script;
+	CHECK_THROWS_AS(script.run(), InternalEngineError);
+	REQUIRE(script.logs.size() == 9);
+	CHECK(script.logs[4].level == LogLevel::Warning);
+	CHECK(script.logs[4].message.find("Fallback to WARP") != std::string::npos);
+	CHECK(script.logs[6].level == LogLevel::Warning);
+	CHECK(script.logs[6].message.find("Fallback to Reference") != std::string::npos);
+	const auto& warpFailure = script.logs[5];
+	CHECK(warpFailure.level == LogLevel::Info);
+	CHECK(warpFailure.creationCount == 4);
+	CHECK(warpFailure.message.find("adapter=none (nullptr), driver=WARP") != std::string::npos);
+	CHECK(warpFailure.message.find("featureLevels=[12_1, 12_0, 11_1, 11_0, 10_1]") != std::string::npos);
+	const auto& referenceFailure = script.logs[7];
+	CHECK(referenceFailure.level == LogLevel::Info);
+	CHECK(referenceFailure.creationCount == 5);
+	CHECK(referenceFailure.message.find("adapter=none (nullptr), driver=REFERENCE") != std::string::npos);
+	CHECK(referenceFailure.message.find("featureLevels=[11_1, 11_0, 10_1]") != std::string::npos);
+	CHECK(script.logs.back().level == LogLevel::Fail);
+	CHECK(script.logs.back().creationCount == 5);
 }
 
 # endif

@@ -73,21 +73,109 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		static constexpr std::string_view ToString(const D3D_DRIVER_TYPE driverType) noexcept
+		{
+			switch (driverType)
+			{
+			case D3D_DRIVER_TYPE_UNKNOWN:
+				return "UNKNOWN";
+			case D3D_DRIVER_TYPE_HARDWARE:
+				return "HARDWARE";
+			case D3D_DRIVER_TYPE_REFERENCE:
+				return "REFERENCE";
+			case D3D_DRIVER_TYPE_NULL:
+				return "NULL";
+			case D3D_DRIVER_TYPE_SOFTWARE:
+				return "SOFTWARE";
+			case D3D_DRIVER_TYPE_WARP:
+				return "WARP";
+			default:
+				return "Unknown";
+			}
+		}
+
+		[[nodiscard]]
+		static std::string ToString(const std::span<const D3D_FEATURE_LEVEL> featureLevels)
+		{
+			std::string result = "[";
+			for (size_t i = 0; i < featureLevels.size(); ++i)
+			{
+				if (i)
+				{
+					result += ", ";
+				}
+				result += ToString(featureLevels[i]);
+			}
+			result += ']';
+			return result;
+		}
+
+		[[nodiscard]]
+		static std::string FormatHRESULT(const HRESULT hr)
+		{
+			std::string_view name;
+			switch (hr)
+			{
+			case E_INVALIDARG:
+				name = "E_INVALIDARG"; break;
+			case E_OUTOFMEMORY:
+				name = "E_OUTOFMEMORY"; break;
+			case E_FAIL:
+				name = "E_FAIL"; break;
+			case E_NOINTERFACE:
+				name = "E_NOINTERFACE"; break;
+			case E_NOTIMPL:
+				name = "E_NOTIMPL"; break;
+			case E_ACCESSDENIED:
+				name = "E_ACCESSDENIED"; break;
+			case DXGI_ERROR_INVALID_CALL:
+				name = "DXGI_ERROR_INVALID_CALL"; break;
+			case DXGI_ERROR_NOT_FOUND:
+				name = "DXGI_ERROR_NOT_FOUND"; break;
+			case DXGI_ERROR_UNSUPPORTED:
+				name = "DXGI_ERROR_UNSUPPORTED"; break;
+			case DXGI_ERROR_DEVICE_REMOVED:
+				name = "DXGI_ERROR_DEVICE_REMOVED"; break;
+			case DXGI_ERROR_DEVICE_HUNG:
+				name = "DXGI_ERROR_DEVICE_HUNG"; break;
+			case DXGI_ERROR_DEVICE_RESET:
+				name = "DXGI_ERROR_DEVICE_RESET"; break;
+			case DXGI_ERROR_DRIVER_INTERNAL_ERROR:
+				name = "DXGI_ERROR_DRIVER_INTERNAL_ERROR"; break;
+			case DXGI_ERROR_NOT_CURRENTLY_AVAILABLE:
+				name = "DXGI_ERROR_NOT_CURRENTLY_AVAILABLE"; break;
+			case DXGI_ERROR_SDK_COMPONENT_MISSING:
+				name = "DXGI_ERROR_SDK_COMPONENT_MISSING"; break;
+			default:
+				break;
+			}
+
+			if (name.empty())
+			{
+				return fmt::format("0x{:08X}", static_cast<uint32>(hr));
+			}
+			return fmt::format("0x{:08X} ({})", static_cast<uint32>(hr), name);
+		}
+
+		[[nodiscard]]
 		static ComPtr<IDXGIDevice1> GetDXGIDevice1(ID3D11Device* pDevice)
 		{
 			ComPtr<IDXGIDevice1> dxgiDevice;
-			if (FAILED(pDevice->QueryInterface(IID_PPV_ARGS(&dxgiDevice))))
+			if (const HRESULT hr = pDevice->QueryInterface(IID_PPV_ARGS(&dxgiDevice)); FAILED(hr))
 			{
-				throw InternalEngineError{ "ID3D11Device::QueryInterface(IDXGIDevice1) failed" };
+				throw InternalEngineError{ fmt::format(
+					"ID3D11Device::QueryInterface(IDXGIDevice1) failed: HRESULT={}", FormatHRESULT(hr)) };
 			}
 			return dxgiDevice;
 		}
 
 		[[nodiscard]]
 		static Optional<D3D11DeviceInfo> TryCreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
-			IDXGIAdapter1* pAdapter, const D3D_DRIVER_TYPE driverType,
-			std::span<const D3D_FEATURE_LEVEL> featureLevels, const uint32 createDeviceFlag)
+			const D3D11Adapter* adapter, const D3D_DRIVER_TYPE driverType,
+			std::span<const D3D_FEATURE_LEVEL> featureLevels, const uint32 createDeviceFlag,
+			FunctionRef<void(LogLevel, std::string_view)> writeLog)
 		{
+			IDXGIAdapter1* pAdapter = (adapter ? adapter->pAdapter.Get() : nullptr);
 			for (;;)
 			{
 				D3D11DeviceInfo deviceInfo;
@@ -102,6 +190,15 @@ namespace s3d
 					deviceInfo.deviceType = (pAdapter ? D3D_DRIVER_TYPE_HARDWARE : driverType);
 					return deviceInfo;
 				}
+
+				// Use the existing candidate metadata, and record this call's list before shortening it.
+				const std::string adapterName = (adapter
+					? fmt::format("[{}] \"{}\"", adapter->adapterIndex, Unicode::FromWstring(adapter->desc.Description))
+					: ((driverType == D3D_DRIVER_TYPE_HARDWARE) ? "default (nullptr)" : "none (nullptr)"));
+				writeLog(LogLevel::Info, fmt::format(
+					"D3D11CreateDevice failed: adapter={}, driver={}, flags=0x{:08X} (debug={}), featureLevels={}, HRESULT={}",
+					adapterName, ToString(driverType), createDeviceFlag, !!(createDeviceFlag & D3D11_CREATE_DEVICE_DEBUG),
+					ToString(featureLevels), FormatHRESULT(hr)));
 
 				if (hr != E_INVALIDARG)
 				{
@@ -124,24 +221,28 @@ namespace s3d
 				{
 					return none;
 				}
+
+				writeLog(LogLevel::Info, fmt::format(
+					"Retrying D3D11CreateDevice after E_INVALIDARG with featureLevels={}", ToString(featureLevels)));
 			}
 		}
 
 		[[nodiscard]]
 		static D3D11DeviceInfo FinishHardwareDevice(D3D11DeviceInfo deviceInfo, const Array<D3D11Adapter>& hardwareAdapters,
-			const uint32 createDeviceFlag, const bool usedDefaultAdapter)
+			const uint32 createDeviceFlag, const bool usedDefaultAdapter,
+			FunctionRef<void(LogLevel, std::string_view)> writeLog)
 		{
 			// Query the created device: the default adapter need not be one of the enumerated candidates.
 			ComPtr<IDXGIAdapter> adapter;
-			if (FAILED(deviceInfo.dxgiDevice->GetAdapter(&adapter)))
+			if (const HRESULT hr = deviceInfo.dxgiDevice->GetAdapter(&adapter); FAILED(hr))
 			{
-				throw InternalEngineError{ "IDXGIDevice::GetAdapter() failed" };
+				throw InternalEngineError{ fmt::format("IDXGIDevice::GetAdapter() failed: HRESULT={}", FormatHRESULT(hr)) };
 			}
 
 			DXGI_ADAPTER_DESC desc{};
-			if (FAILED(adapter->GetDesc(&desc)))
+			if (const HRESULT hr = adapter->GetDesc(&desc); FAILED(hr))
 			{
-				throw InternalEngineError{ "IDXGIAdapter::GetDesc() failed" };
+				throw InternalEngineError{ fmt::format("IDXGIAdapter::GetDesc() failed: HRESULT={}", FormatHRESULT(hr)) };
 			}
 
 			for (const auto& candidate : hardwareAdapters)
@@ -154,7 +255,7 @@ namespace s3d
 				}
 			}
 
-			LOG_INFO(fmt::format("✅ D3D11 device{} created. Driver type: Hardware ({}) (feature level: {}){}",
+			writeLog(LogLevel::Info, fmt::format("✅ D3D11 device{} created. Driver type: Hardware ({}) (feature level: {}){}",
 				((createDeviceFlag & D3D11_CREATE_DEVICE_DEBUG) ? " with debug layer" : ""),
 				Unicode::FromWstring(desc.Description), ToString(deviceInfo.featureLevel),
 				(usedDefaultAdapter ? " (default adapter fallback)" : "")));
@@ -201,14 +302,17 @@ namespace s3d
 
 				if (FAILED(hr))
 				{
-					LOG_WARN("Failed to enumerate a DXGI adapter");
+					LOG_WARN(fmt::format("{} failed: adapterIndex={}, HRESULT={}",
+						(pDXGIFactory6 ? "IDXGIFactory6::EnumAdapterByGpuPreference()" : "IDXGIFactory2::EnumAdapters1()"),
+						adapterIndex, FormatHRESULT(hr)));
 					break;
 				}
 
 				DXGI_ADAPTER_DESC1 adapterDesc{};
-				if (FAILED(pAdapter->GetDesc1(&adapterDesc)))
+				if (const HRESULT descResult = pAdapter->GetDesc1(&adapterDesc); FAILED(descResult))
 				{
-					LOG_WARN("IDXGIAdapter1::GetDesc1() failed");
+					LOG_WARN(fmt::format("IDXGIAdapter1::GetDesc1() failed: adapterIndex={}, HRESULT={}",
+						adapterIndex, FormatHRESULT(descResult)));
 					continue;
 				}
 
@@ -239,7 +343,19 @@ namespace s3d
 
 		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
 			FunctionRef<void(Array<D3D11Adapter>&)> enumHardwareAdapters,
-			EngineOption::D3D11Driver targetDriverType, const bool useDebugLayer)
+			const EngineOption::D3D11Driver targetDriverType, const bool useDebugLayer)
+		{
+			return CreateDevice(pD3D11CreateDevice, enumHardwareAdapters, targetDriverType, useDebugLayer,
+				[](const LogLevel level, const std::string_view message)
+				{
+					Internal::OutputEngineLog(level, message);
+				});
+		}
+
+		D3D11DeviceInfo CreateDevice(PFN_D3D11_CREATE_DEVICE pD3D11CreateDevice,
+			FunctionRef<void(Array<D3D11Adapter>&)> enumHardwareAdapters,
+			EngineOption::D3D11Driver targetDriverType, const bool useDebugLayer,
+			FunctionRef<void(LogLevel, std::string_view)> writeLog)
 		{
 			LOG_SCOPED_DEBUG("CreateDevice()");
 			constexpr uint32 BaseCreateDeviceFlag = 0;
@@ -258,49 +374,49 @@ namespace s3d
 				{
 					for (const auto& adapter : hardwareAdapters)
 					{
-						if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, adapter.pAdapter.Get(),
-							D3D_DRIVER_TYPE_UNKNOWN, HardwareFeatureLevels, flags))
+						if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, &adapter,
+							D3D_DRIVER_TYPE_UNKNOWN, HardwareFeatureLevels, flags, writeLog))
 						{
-							return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, false);
+							return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, false, writeLog);
 						}
 					}
 				}
 
 				// Keep nullptr + HARDWARE for drivers that may reject explicit selection, even with no candidates.
-				LOG_INFO("ℹ️ Explicit hardware adapters failed. Trying the default adapter (nullptr + HARDWARE)");
+				writeLog(LogLevel::Info, "ℹ️ Explicit hardware adapters failed. Trying the default adapter (nullptr + HARDWARE)");
 				for (const uint32 flags : attempts)
 				{
-					if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_HARDWARE, HardwareFeatureLevels, flags))
+					if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_HARDWARE, HardwareFeatureLevels, flags, writeLog))
 					{
-						return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, true);
+						return FinishHardwareDevice(std::move(*deviceInfo), hardwareAdapters, flags, true, writeLog);
 					}
 				}
 
-				LOG_WARN("ℹ️ Failed to create D3D11 device with hardware adapters. Fallback to WARP driver");
+				writeLog(LogLevel::Warning, "ℹ️ Failed to create D3D11 device with hardware adapters. Fallback to WARP driver");
 				targetDriverType = EngineOption::D3D11Driver::WARP;
 			}
 
 			if (targetDriverType == EngineOption::D3D11Driver::WARP)
 			{
-				if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_WARP, WARPFeatureLevels, BaseCreateDeviceFlag))
+				if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_WARP, WARPFeatureLevels, BaseCreateDeviceFlag, writeLog))
 				{
-					LOG_INFO(fmt::format("✅ D3D11 device created. Driver type: WARP (feature level: {})", ToString(deviceInfo->featureLevel)));
+					writeLog(LogLevel::Info, fmt::format("✅ D3D11 device created. Driver type: WARP (feature level: {})", ToString(deviceInfo->featureLevel)));
 					return std::move(*deviceInfo);
 				}
 
-				LOG_WARN("ℹ️ Failed to create D3D11 device with WARP driver. Fallback to Reference driver");
+				writeLog(LogLevel::Warning, "ℹ️ Failed to create D3D11 device with WARP driver. Fallback to Reference driver");
 				targetDriverType = EngineOption::D3D11Driver::Reference;
 			}
 
 			if (targetDriverType == EngineOption::D3D11Driver::Reference)
 			{
-				if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_REFERENCE, ReferenceFeatureLevels, BaseCreateDeviceFlag))
+				if (auto deviceInfo = TryCreateDevice(pD3D11CreateDevice, nullptr, D3D_DRIVER_TYPE_REFERENCE, ReferenceFeatureLevels, BaseCreateDeviceFlag, writeLog))
 				{
-					LOG_INFO(fmt::format("✅ D3D11 device created. Driver type: Reference (feature level: {})", ToString(deviceInfo->featureLevel)));
+					writeLog(LogLevel::Info, fmt::format("✅ D3D11 device created. Driver type: Reference (feature level: {})", ToString(deviceInfo->featureLevel)));
 					return std::move(*deviceInfo);
 				}
 
-				LOG_FAIL("❌ Failed to create D3D11 device with Reference driver");
+				writeLog(LogLevel::Fail, "❌ Failed to create D3D11 device with Reference driver");
 			}
 
 			throw InternalEngineError{ "D3D11Misc::CreateDevice() failed" };
