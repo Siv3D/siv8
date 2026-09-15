@@ -32,7 +32,7 @@ Name | Version
 [Material Design Icons](https://github.com/Templarian/MaterialDesign) | v7.4.47
 [metal-cpp](https://developer.apple.com/metal/cpp/) | macOS15.2_iOS18.2
 [MikkTSpace](https://github.com/mmikk/MikkTSpace) | 
-[mimalloc](https://github.com/microsoft/mimalloc) | v3.3.2
+[mimalloc](https://github.com/microsoft/mimalloc) | v3.4.5
 [miniaudio](https://github.com/mackron/miniaudio) | Version 0.11.25
 [M PLUS 2](https://github.com/coz-m/MPLUS_FONTS) |
 [msdfgen](https://github.com/Chlumsky/msdfgen) | Version 1.13
