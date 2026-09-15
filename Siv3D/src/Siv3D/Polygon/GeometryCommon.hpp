@@ -44,19 +44,6 @@ namespace s3d
 	/// @remark Polygon の作成を経由せずに、三角形分割の結果を描画で使用する関数です。
 	void DrawTriangles(std::span<const Vec2> outer, const InnersType& holes, const PatternParameters& pattern);
 
-	template <class Iterator>
-	class MultiPointView : public boost::iterator_range<Iterator>
-	{
-		using base_type = boost::iterator_range<Iterator>;
-
-	public:
-
-		using base_type::base_type;
-	};
-
-	template<class Iterator>
-	MultiPointView(Iterator, Iterator) -> MultiPointView<Iterator>;
-
 	namespace detail
 	{
 		// Boost.Geometry と Siv3D の輪郭は、外周が画面座標で時計回り、穴が反時計回り。
@@ -96,4 +83,3 @@ BOOST_GEOMETRY_REGISTER_POINT_2D(s3d::Vec2, double, boost::geometry::cs::cartesi
 BOOST_GEOMETRY_REGISTER_SEGMENT(s3d::Line, s3d::Vec2, start, end)
 BOOST_GEOMETRY_REGISTER_LINESTRING(s3d::LineString)
 BOOST_GEOMETRY_REGISTER_MULTI_POINT(s3d::Array<s3d::Vec2>)
-BOOST_GEOMETRY_REGISTER_MULTI_POINT_TEMPLATED(s3d::MultiPointView)

@@ -800,7 +800,7 @@ namespace s3d
 
 		/// @brief 線分を太らせて作成した、新しい Polygon を返します。
 		/// @param distance 太らせる距離
-		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
+		/// @return 線分に垂直な端をもつ長方形。distance が 0 以下、または線分の長さが 0 の場合は空の Polygon
 		[[nodiscard]]
 		Polygon computeMiterBufferPolygon(double distance) const;
 
@@ -810,10 +810,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 線分を丸く太らせて作成した、新しい Polygon を返します。分割数は半径に応じて自動的に決定されます。
+		/// @brief 線分の両端を半円で丸く太らせた、カプセル形状の Polygon を返します。
 		/// @param distance 太らせる距離
-		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
-		/// @return 新しい Polygon. distance が 0 以下の場合は空の Polygon
+		/// @param qualityFactor 半円の分割品質。同じ半径の Circle::asPolygon() と同じ品質指定です。
+		/// @return カプセル形状の Polygon。distance が 0 以下の場合は空の Polygon
+		/// @remark 線分の長さが 0 の場合は、始点を中心、distance を半径とする Circle::asPolygon(qualityFactor) と同じ多角形を返します。
 		[[nodiscard]]
 		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 

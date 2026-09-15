@@ -902,6 +902,7 @@
 		F95122582CB8239800151291 /* SivPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F951224F2CB8239800151291 /* SivPolygon.cpp */; };
 		F95122592CB8239800151291 /* Triangulate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F95122502CB8239800151291 /* Triangulate.cpp */; };
 		F951225A2CB8239800151291 /* Triangulate.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95122512CB8239800151291 /* Triangulate.hpp */; };
+		C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6360779D59BA45A4BFE36368 /* TriangleFan.hpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
@@ -3292,6 +3293,7 @@
 		1F13900D16FF4E439715F589 /* Test_Finite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D38289ABC948A9810E2D02 /* Test_Finite.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		3D8E6E0EF9D84CBFA3FFFDC8 /* Test_Polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */; };
+		20DCB0E4E3634E269B8D9992 /* Test_LineBufferPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */; };
 		66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */; };
 		3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */; };
 		BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F317E375B37CAD38878B805B /* Test_Wave.cpp */; };
@@ -4286,6 +4288,7 @@
 		F951224F2CB8239800151291 /* SivPolygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivPolygon.cpp; sourceTree = "<group>"; };
 		F95122502CB8239800151291 /* Triangulate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Triangulate.cpp; sourceTree = "<group>"; };
 		F95122512CB8239800151291 /* Triangulate.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangulate.hpp; sourceTree = "<group>"; };
+		6360779D59BA45A4BFE36368 /* TriangleFan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TriangleFan.hpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
@@ -6733,6 +6736,7 @@
 		36D38289ABC948A9810E2D02 /* Test_Finite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Finite.cpp; sourceTree = "<group>"; };
 		37B19946552E772146018900 /* Test_ArrayLike.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayLike.cpp; sourceTree = "<group>"; };
 		0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Polygon.cpp; sourceTree = "<group>"; };
+		7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_LineBufferPolygon.cpp; sourceTree = "<group>"; };
 		B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MultiPolygon.cpp; sourceTree = "<group>"; };
 		F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Blob.cpp; sourceTree = "<group>"; };
 		F317E375B37CAD38878B805B /* Test_Wave.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Wave.cpp; sourceTree = "<group>"; };
@@ -7037,6 +7041,7 @@
 				F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */,
 				37B19946552E772146018900 /* Test_ArrayLike.cpp */,
 				0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */,
+				7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */,
 				B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */,
 				F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */,
 				F317E375B37CAD38878B805B /* Test_Wave.cpp */,
@@ -10054,6 +10059,7 @@
 				F9F00A3D2CC7F5FB0097C165 /* PolygonBuffer.hpp */,
 				F951224E2CB8239800151291 /* PolygonDetail.hpp */,
 				F95122512CB8239800151291 /* Triangulate.hpp */,
+				6360779D59BA45A4BFE36368 /* TriangleFan.hpp */,
 			);
 			path = Polygon;
 			sourceTree = "<group>";
@@ -15979,6 +15985,7 @@
 				F986FA482BCFB53B006A4C0F /* svfntfmt.h in Headers */,
 				F9D41B892C56057700290998 /* Stripe.hpp in Headers */,
 				F951225A2CB8239800151291 /* Triangulate.hpp in Headers */,
+				C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
 				F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */,
@@ -16668,6 +16675,7 @@
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
 				DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */,
 				3D8E6E0EF9D84CBFA3FFFDC8 /* Test_Polygon.cpp in Sources */,
+				20DCB0E4E3634E269B8D9992 /* Test_LineBufferPolygon.cpp in Sources */,
 				66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */,
 				3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */,
 				BFBDC05B28387ABE5F218BFF /* Test_Wave.cpp in Sources */,

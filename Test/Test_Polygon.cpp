@@ -5,6 +5,7 @@
 // Licensed under the MIT License.
 //-----------------------------------------------
 # include "Siv3DTest.hpp"
+# include <random>
 
 namespace
 {
@@ -618,4 +619,87 @@ TEST_CASE("Geometry2D.ComposePolygons.touching_hole")
 	REQUIRE(result.size() == 1);
 	CheckPolygonRings(result.front(), 1);
 	CHECK(result.front().area() == Test::Approx(45.0));
+}
+
+TEST_CASE("Geometry2D.ConvexHull.input_order_and_types")
+{
+	std::mt19937 random{ 0xC01234 };
+	for (size_t trial = 0; trial < 64; ++trial)
+	{
+		CAPTURE(trial);
+		Array<Point> points;
+		for (size_t i = 0; i < 64; ++i)
+		{
+			points.emplace_back(static_cast<int32>(random() % 201) - 100, static_cast<int32>(random() % 201) - 100);
+		}
+		const auto original = points;
+		const Polygon hull = Geometry2D::ConvexHull(std::span<const Point>{ points });
+		CheckPolygonRings(hull, 0);
+		CHECK(hull.triangleCount() == (hull.outer().size() - 2));
+		CHECK(points == original);
+		for (size_t i = 0; i < hull.outer().size(); ++i)
+		{
+			const Vec2 a = hull.outer()[i];
+			const Vec2 b = hull.outer()[(i + 1) % hull.outer().size()];
+			const Vec2 c = hull.outer()[(i + 2) % hull.outer().size()];
+			CHECK((b - a).cross(c - b) > 0.0);
+			CHECK(points.any([a](const Point& point) { return (Vec2{ point } == a); }));
+			for (const auto& point : points)
+			{
+				CHECK((b - a).cross(Vec2{ point } - a) >= 0.0);
+			}
+		}
+		std::shuffle(points.begin(), points.end(), random);
+		CHECK(Geometry2D::ConvexHull(std::span<const Point>{ points }).outer() == hull.outer());
+		const Array<Float2> floats(points.begin(), points.end());
+		const Array<Vec2> doubles(points.begin(), points.end());
+		CHECK(Geometry2D::ConvexHull(std::span<const Float2>{ floats }).outer() == hull.outer());
+		CHECK(Geometry2D::ConvexHull(std::span<const Vec2>{ doubles }).outer() == hull.outer());
+		CHECK(hull.computeConvexHull().outer() == hull.outer());
+	}
+}
+
+TEST_CASE("Geometry2D.ConvexHull.Point.full_range")
+{
+	constexpr int32 lo = std::numeric_limits<int32>::min();
+	constexpr int32 hi = std::numeric_limits<int32>::max();
+	const Array<Point> square{ { lo, lo }, { hi, hi }, { 0, 0 }, { lo, hi }, { hi, lo }, { lo, lo } };
+	const Polygon hull = Geometry2D::ConvexHull(std::span<const Point>{ square });
+	CHECK(hull.outer() == Array<Vec2>{ { lo, lo }, { hi, lo }, { hi, hi }, { lo, hi } });
+	CHECK(hull.triangleCount() == 2);
+	CHECK(hull.boundingRect() == RectF{ lo, lo, 4294967295.0, 4294967295.0 });
+
+	// The exact determinant is 1; subtracting rounded double products yields 0.
+	const Array<Point> thin{ { lo, lo }, { hi - 1, hi - 2 }, { hi, hi - 1 } };
+	const Polygon triangle = Geometry2D::ConvexHull(std::span<const Point>{ thin });
+	CHECK(triangle.outer() == Array<Vec2>{ { lo, lo }, { hi - 1, hi - 2 }, { hi, hi - 1 } });
+	CHECK(triangle.triangleCount() == 1);
+	CHECK(Geometry2D::ConvexHull(std::span<const Point>{ thin.reversed() }).outer() == triangle.outer());
+}
+
+TEST_CASE("Geometry2D.ConvexHull.nearly_collinear")
+{
+	const double offset = std::ldexp(1.0, -40);
+	const Array<Vec2> points{ { 0, 0 }, { 1, 1 }, { 2, 2 + offset }, { 1, 1 } };
+	const Polygon hull = Geometry2D::ConvexHull(std::span<const Vec2>{ points });
+	CHECK(hull.outer() == Array<Vec2>{ { 0, 0 }, { 1, 1 }, { 2, 2 + offset } });
+	CHECK(hull.triangleCount() == 1);
+}
+
+TEST_CASE("Geometry2D.ConvexHull.boundary_points")
+{
+	const Array<Vec2> points{
+		{ 2, 0 }, { 4, 0 }, { 4, 2 }, { 4, 4 }, { 2, 4 }, { 0, 4 }, { 0, 2 }, { 0, 0 }, { 2, 2 },
+	};
+	const Polygon hull = Geometry2D::ConvexHull(std::span<const Vec2>{ points });
+	CHECK(hull.outer() == Array<Vec2>{ { 0, 0 }, { 4, 0 }, { 4, 4 }, { 0, 4 } });
+	CHECK(hull.triangleCount() == 2);
+}
+
+TEST_CASE("Geometry2D.ConvexHull.collinear_products")
+{
+	// With a fused multiply-subtract, two equal products can leave a nonzero residual.
+	const Vec2 v{ 2991312382.0, 3062119789.0 };
+	const Array<Vec2> points{ v * 2, Vec2{ 0, 0 }, v, v * 3 };
+	CHECK(Geometry2D::ConvexHull(std::span<const Vec2>{ points }).isEmpty());
 }

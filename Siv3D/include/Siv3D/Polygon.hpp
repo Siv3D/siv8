@@ -793,6 +793,7 @@ namespace s3d
 
 		/// @brief 多角形の凸包を計算して返します。
 		/// @return 多角形の凸包。空の多角形、または外周の頂点がすべて一直線上にある場合は空の Polygon
+		/// @remark 重複点と、凸包の直線辺の途中にある点は頂点列に含まれません。
 		[[nodiscard]]
 		Polygon computeConvexHull() const;
 

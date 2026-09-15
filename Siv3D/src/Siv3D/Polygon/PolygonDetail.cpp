@@ -12,6 +12,7 @@
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
+# include <Siv3D/Geometry2D/ConvexHull.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -701,11 +702,7 @@ namespace s3d
 
 	Polygon Polygon::PolygonDetail::computeConvexHull() const
 	{
-		CWOpenRing result;
-
-		boost::geometry::convex_hull(m_polygon.outer, result);
-
-		return Polygon{ result, m_boundingRect, SkipValidation::Yes };
+		return Geometry2D::ConvexHull(m_polygon.outer);
 	}
 
 	////////////////////////////////////////////////////////////////

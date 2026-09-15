@@ -19,33 +19,6 @@ namespace s3d
 {
 	////////////////////////////////////////////////////////////////
 	//
-	//	ComputeMiterBufferPolygon
-	//
-	////////////////////////////////////////////////////////////////
-
-	/// @brief 線分を指定した距離だけ膨張させた Polygon を作成します。
-	/// @param line 対象の線分
-	/// @param distance 線分からの膨張距離
-	/// @return 作成された Polygon. 作成に失敗した場合は空の Polygon
-	[[nodiscard]]
-	Polygon ComputeMiterBufferPolygon(const Line& line, double distance);
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	ComputeRoundBufferPolygon
-	//
-	////////////////////////////////////////////////////////////////
-
-	/// @brief 線分を指定した距離だけ膨張させたカプセル形状の Polygon を作成します。
-	/// @param line 対象の線分
-	/// @param distance 線分からの膨張距離。カプセルの半径に相当します。
-	/// @param qualityFactor 半円部分の分割品質
-	/// @return 作成された Polygon. 作成に失敗した場合は空の Polygon
-	[[nodiscard]]
-	Polygon ComputeRoundBufferPolygon(const Line& line, double distance, const QualityFactor& qualityFactor);
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	ComputeRoundPolygon
 	//
 	////////////////////////////////////////////////////////////////
