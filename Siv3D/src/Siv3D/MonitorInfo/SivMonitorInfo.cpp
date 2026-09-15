@@ -42,7 +42,7 @@ namespace s3d
 
 		if (scaling)
 		{
-			output += U"scaling: {} %\n"_fmt(*scaling * 100);
+			output += U"scaling: {}%\n"_fmt(*scaling * 100);
 		}
 		else
 		{
