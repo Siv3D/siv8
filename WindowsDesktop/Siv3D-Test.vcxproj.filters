@@ -250,6 +250,9 @@
     <ClCompile Include="..\Test\Test_Polygon.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Polygon.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_LineBufferPolygon.cpp">
       <Filter>Test</Filter>
     </ClCompile>

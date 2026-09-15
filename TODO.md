@@ -32,14 +32,15 @@
 
 ## `Siv3D/include/Siv3D/Polygon.hpp`
 
-### 幾何判定と描画頂点の分離
+### 包含判定と描画頂点の分離
 
-- `Intersects()`・`Contains()` の Polygon 判定と、`ClosestPoints()` の共通点候補生成には、描画用 `Float2` の三角形を使う箇所が残っている。幾何計算用 `Vec2` 輪郭を使う形に揃え、大きな平行移動、小さな穴、凹形状、境界接触で各 API の整合性を確認する。
-- 描画頂点とインデックスを指定する Polygon コンストラクターもあるため、描画インデックスが外周・穴を連結した順序に対応すると仮定しない。輪郭を直接使う判定と既存の境界走査の共有を先に検討する。
+- `Contains()` の線分・三角形・Polygon 全体の包含判定には、描画用 `Float2` の三角形を使う箇所が残っている。幾何計算用 `Vec2` 輪郭に揃え、大きな平行移動、小さな穴、凹形状、境界に沿う線分、穴を完全に覆う図形で整合性を確認する。
+- `ContainsLinePolygonNonEmpty()` の区間配列・ソートと、`ContainsTrianglePolygonNonEmpty()` の交差面積の合計を、輪郭に基づく判定へ置き換えられるか検討する。面積の許容誤差で小さな穴の見落としを許す設計は避ける。凸形状が Polygon を含む場合は、外周頂点だけの検査に簡略化できるか先に調べる。
+- 描画頂点とインデックスを指定する Polygon コンストラクターもあるため、描画インデックスが外周・穴を連結した順序に対応すると仮定しない。内部ヘッダー `Geometry2D/PolygonGeometry.hpp` の輪郭走査を共有する。
 
-### 距離計算の境界配列
+### 交点列挙の境界配列
 
-- 非交差形状の `Distance()`・`ClosestPoints()` では、Polygon / MultiPolygon / LineString の全辺を `Array<BoundaryPiece>` へ展開している。輪郭を参照するビューや走査処理へ置き換え、境界を必要とする他の幾何判定と共有できるか検討する。曲線の距離計算、退化線分、最近点が複数ある場合の選択順序も維持する。
+- `IntersectsAt()` には Polygon / MultiPolygon / LineString の全辺を `Array<BoundaryPiece>` へ展開する処理が残っている。距離計算と同様に入力を参照するビューへ置き換え、交点順序、重複点の除去、一次元以上の共有部分の扱いを維持する。
 
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 

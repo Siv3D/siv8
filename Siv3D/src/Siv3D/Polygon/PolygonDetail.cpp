@@ -70,6 +70,22 @@ namespace s3d
 			return vertices;
 		}
 
+		[[nodiscard]]
+		static RectF NormalizeScaledBounds(RectF bounds) noexcept
+		{
+			if (bounds.w < 0.0)
+			{
+				bounds.x += bounds.w;
+				bounds.w = -bounds.w;
+			}
+			if (bounds.h < 0.0)
+			{
+				bounds.y += bounds.h;
+				bounds.h = -bounds.h;
+			}
+			return bounds;
+		}
+
 		struct PolygonIntegral
 		{
 			double area2x = 0.0;
@@ -517,7 +533,7 @@ namespace s3d
 			point *= sf;
 		}
 
-		m_boundingRect = m_boundingRect.scaledFrom(Vec2{ 0, 0 }, s);
+		m_boundingRect = NormalizeScaledBounds(m_boundingRect.scaledFrom(Vec2{ 0, 0 }, s));
 	}
 
 	void Polygon::PolygonDetail::scaleFromOrigin(const Vec2 s)
@@ -547,7 +563,7 @@ namespace s3d
 			point *= sf;
 		}
 		
-		m_boundingRect = m_boundingRect.scaledFrom(Vec2{ 0, 0 }, s);
+		m_boundingRect = NormalizeScaledBounds(m_boundingRect.scaledFrom(Vec2{ 0, 0 }, s));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -584,7 +600,7 @@ namespace s3d
 			point = (posF + (point - posF) * sf);
 		}
 
-		m_boundingRect = m_boundingRect.scaledFrom(pos, s);
+		m_boundingRect = NormalizeScaledBounds(m_boundingRect.scaledFrom(pos, s));
 	}
 
 	void Polygon::PolygonDetail::scaleFrom(const Vec2 pos, const Vec2 s)
@@ -615,7 +631,7 @@ namespace s3d
 			point = (posF + (point - posF) * sf);
 		}
 		
-		m_boundingRect = m_boundingRect.scaledFrom(pos, s);
+		m_boundingRect = NormalizeScaledBounds(m_boundingRect.scaledFrom(pos, s));
 	}
 
 	////////////////////////////////////////////////////////////////

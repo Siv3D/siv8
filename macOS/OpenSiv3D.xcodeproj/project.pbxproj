@@ -903,6 +903,7 @@
 		F95122592CB8239800151291 /* Triangulate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F95122502CB8239800151291 /* Triangulate.cpp */; };
 		F951225A2CB8239800151291 /* Triangulate.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95122512CB8239800151291 /* Triangulate.hpp */; };
 		C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6360779D59BA45A4BFE36368 /* TriangleFan.hpp */; };
+		0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FD27361D562242F4A48719CB /* PolygonGeometry.hpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
@@ -3293,6 +3294,7 @@
 		1F13900D16FF4E439715F589 /* Test_Finite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 36D38289ABC948A9810E2D02 /* Test_Finite.cpp */; };
 		DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37B19946552E772146018900 /* Test_ArrayLike.cpp */; };
 		3D8E6E0EF9D84CBFA3FFFDC8 /* Test_Polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */; };
+		920E5794B6C44B628B9F7904 /* Test_Geometry2D_Polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 427183128F20406C94B67D32 /* Test_Geometry2D_Polygon.cpp */; };
 		20DCB0E4E3634E269B8D9992 /* Test_LineBufferPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */; };
 		66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */; };
 		3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */; };
@@ -4289,6 +4291,7 @@
 		F95122502CB8239800151291 /* Triangulate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Triangulate.cpp; sourceTree = "<group>"; };
 		F95122512CB8239800151291 /* Triangulate.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangulate.hpp; sourceTree = "<group>"; };
 		6360779D59BA45A4BFE36368 /* TriangleFan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TriangleFan.hpp; sourceTree = "<group>"; };
+		FD27361D562242F4A48719CB /* PolygonGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolygonGeometry.hpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
@@ -6736,6 +6739,7 @@
 		36D38289ABC948A9810E2D02 /* Test_Finite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Finite.cpp; sourceTree = "<group>"; };
 		37B19946552E772146018900 /* Test_ArrayLike.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ArrayLike.cpp; sourceTree = "<group>"; };
 		0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Polygon.cpp; sourceTree = "<group>"; };
+		427183128F20406C94B67D32 /* Test_Geometry2D_Polygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Polygon.cpp; sourceTree = "<group>"; };
 		7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_LineBufferPolygon.cpp; sourceTree = "<group>"; };
 		B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MultiPolygon.cpp; sourceTree = "<group>"; };
 		F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Blob.cpp; sourceTree = "<group>"; };
@@ -7041,6 +7045,7 @@
 				F93BD7F230168A0200B3542E /* Test_JSONSerialization.cpp */,
 				37B19946552E772146018900 /* Test_ArrayLike.cpp */,
 				0D48862E5BEF40D286027DD5 /* Test_Polygon.cpp */,
+				427183128F20406C94B67D32 /* Test_Geometry2D_Polygon.cpp */,
 				7049E7E4F7F14E7196743E3C /* Test_LineBufferPolygon.cpp */,
 				B75E5C435CF097C983467FC2 /* Test_MultiPolygon.cpp */,
 				F64B962D0EE7CADB5F129E38 /* Test_Blob.cpp */,
@@ -9766,6 +9771,7 @@
 				F93BD7A0300FB1B200B3542E /* SivGeometry2D_Contains.cpp */,
 				F93BD7A1300FB1B200B3542E /* SivGeometry2D_ConvexHull.cpp */,
 				F93BD7A2300FB1B200B3542E /* SivGeometry2D_Distance.cpp */,
+				FD27361D562242F4A48719CB /* PolygonGeometry.hpp */,
 				F93BD7A3300FB1B200B3542E /* SivGeometry2D_Intersects.cpp */,
 				F93BD7A4300FB1B200B3542E /* SivGeometry2D_IntersectsAt.cpp */,
 				F93BD7A5300FB1B200B3542E /* SivGeometry2D_IsClockwise.cpp */,
@@ -15986,6 +15992,7 @@
 				F9D41B892C56057700290998 /* Stripe.hpp in Headers */,
 				F951225A2CB8239800151291 /* Triangulate.hpp in Headers */,
 				C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */,
+				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
 				F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */,
@@ -16675,6 +16682,7 @@
 				F9528C492BBF028E00222F45 /* Test_Compression.cpp in Sources */,
 				DA189FA09D6408CF59D62202 /* Test_ArrayLike.cpp in Sources */,
 				3D8E6E0EF9D84CBFA3FFFDC8 /* Test_Polygon.cpp in Sources */,
+				920E5794B6C44B628B9F7904 /* Test_Geometry2D_Polygon.cpp in Sources */,
 				20DCB0E4E3634E269B8D9992 /* Test_LineBufferPolygon.cpp in Sources */,
 				66C55B0F7F87E34B2274DEE9 /* Test_MultiPolygon.cpp in Sources */,
 				3231D844BE176C480D164263 /* Test_Blob.cpp in Sources */,

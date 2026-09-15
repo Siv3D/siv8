@@ -21,6 +21,7 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
+# include "PolygonGeometry.hpp"
 
 namespace s3d
 {
@@ -898,18 +899,22 @@ namespace s3d
 				return false;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
+			constexpr PointContainmentOptions OuterOptions{ .boundary = PointContainmentBoundaryPolicy::Included };
+			constexpr PointContainmentOptions HoleOptions{ .boundary = PointContainmentBoundaryPolicy::Excluded };
+			if (not Geometry2D::ContainsPoint<OuterOptions>(std::span<const Vec2>{ polygon.outer() }, p))
 			{
-				if (Geometry2D::ContainsPoint<detail::ConvexClockwise>(
-					pVertex[triangleIndex.i0], pVertex[triangleIndex.i1], pVertex[triangleIndex.i2], p))
+				return false;
+			}
+
+			for (const auto& hole : polygon.inners())
+			{
+				if (Geometry2D::ContainsPoint<HoleOptions>(std::span<const Vec2>{ hole }, p))
 				{
-					return true;
+					return false;
 				}
 			}
 
-			return false;
+			return true;
 		}
 
 		[[nodiscard]]
@@ -920,21 +925,11 @@ namespace s3d
 				return false;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (Geometry2D::Intersects(segment, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(segment.start, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(segment, edge);
+					});
 		}
 
 		[[nodiscard]]
@@ -1322,27 +1317,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(curve.p2, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsBezier2Triangle(curve, curveBounds, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return IntersectsLineBezier2(edge, curve);
+					});
 		}
 
 		[[nodiscard]]
@@ -1676,27 +1655,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(curve.p3, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsBezier3Triangle(curve, curveBounds, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(curve.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return IntersectsLineBezier3(edge, curve);
+					});
 		}
 
 		[[nodiscard]]
@@ -1917,8 +1880,6 @@ namespace s3d
 
 			const double left = rect.pos.x;
 			const double top = rect.pos.y;
-			const double right = (rect.pos.x + rect.size.x);
-			const double bottom = (rect.pos.y + rect.size.y);
 
 			const RectF polygonBounds = polygon.boundingRect();
 
@@ -1927,45 +1888,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(Vec2{ left, top }, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(Vec2{ right, top }, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(Vec2{ right, bottom }, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(Vec2{ left, bottom }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			for (const auto& vertex : polygon.vertices())
-			{
-				if (detail::IntersectsPointRectFNonEmpty(Vec2{ vertex.x, vertex.y }, rect))
-				{
-					return true;
-				}
-			}
-
-			if (IntersectsLinePolygonNonEmpty(Line{ Vec2{ left, top }, Vec2{ right, top } }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ right, top }, Vec2{ right, bottom } }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ right, bottom }, Vec2{ left, bottom } }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ Vec2{ left, bottom }, Vec2{ left, top } }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsRectFTriangleArea(rect, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(Vec2{ left, top }, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(edge, rect);
+					});
 		}
 
 		[[nodiscard]]
@@ -2331,21 +2258,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsEllipseTriangleArea(ellipse, ellipseBounds, Triangle{ p0, p1, p2 }))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return Geometry2D::Intersects(edge, ellipse);
+				});
 		}
 
 		[[nodiscard]]
@@ -2504,21 +2420,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsSuperEllipseTriangleArea(superEllipse, superEllipseBounds, Triangle{ p0, p1, p2 }))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return Geometry2D::Intersects(edge, superEllipse);
+				});
 		}
 
 		[[nodiscard]]
@@ -2601,43 +2506,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(triangle.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(triangle.p1, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(triangle.p2, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			for (const auto& vertex : polygon.vertices())
-			{
-				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, triangle))
-				{
-					return true;
-				}
-			}
-
-			if (IntersectsLinePolygonNonEmpty(Line{ triangle.p0, triangle.p1 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ triangle.p1, triangle.p2 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ triangle.p2, triangle.p0 }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (Geometry2D::Intersects(triangle, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(triangle.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(edge, triangle);
+					});
 		}
 
 		[[nodiscard]]
@@ -2664,45 +2537,11 @@ namespace s3d
 				return false;
 			}
 
-			if (IntersectsPointPolygonNonEmpty(quad.p0, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(quad.p1, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(quad.p2, polygon, polygonBounds)
-				|| IntersectsPointPolygonNonEmpty(quad.p3, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			for (const auto& vertex : polygon.vertices())
-			{
-				if (Geometry2D::Intersects(Vec2{ vertex.x, vertex.y }, quad))
-				{
-					return true;
-				}
-			}
-
-			if (IntersectsLinePolygonNonEmpty(Line{ quad.p0, quad.p1 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ quad.p1, quad.p2 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ quad.p2, quad.p3 }, polygon, polygonBounds)
-				|| IntersectsLinePolygonNonEmpty(Line{ quad.p3, quad.p0 }, polygon, polygonBounds))
-			{
-				return true;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (Geometry2D::Intersects(quad, Triangle{ p0, p1, p2 }))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return IntersectsPointPolygonNonEmpty(quad.p0, polygon, polygonBounds)
+				|| detail::AnyPolygonEdge(polygon, [&](const Line& edge)
+					{
+						return Geometry2D::Intersects(edge, quad);
+					});
 		}
 
 		[[nodiscard]]
@@ -2799,21 +2638,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsCircleTriangleArea(circle, circleBounds, Triangle{ p0, p1, p2 }))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return Geometry2D::Intersects(edge, circle);
+				});
 		}
 
 		[[nodiscard]]
@@ -3409,21 +3237,10 @@ namespace s3d
 				return true;
 			}
 
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-
-				if (IntersectsTriangleRoundRectArea(Triangle{ p0, p1, p2 }, roundRect, effectiveRadius))
+			return detail::AnyPolygonEdge(polygon, [&](const Line& edge)
 				{
-					return true;
-				}
-			}
-
-			return false;
+					return detail::IntersectsLineRoundRectArea(edge, roundRect, effectiveRadius);
+				});
 		}
 
 		[[nodiscard]]
@@ -3482,23 +3299,20 @@ namespace s3d
 				return false;
 			}
 
-			const Float2* pVertex = a.vertices().data();
-
-			for (const auto& triangleIndex : a.indices())
+			if (IntersectsPointPolygonNonEmpty(a.outer().front(), b, bBounds)
+				|| IntersectsPointPolygonNonEmpty(b.outer().front(), a, aBounds))
 			{
-				const Vec2 p0{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y };
-				const Vec2 p1{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y };
-				const Vec2 p2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y };
-				const Triangle triangle{ p0, p1, p2 };
-				const RectF triangleBounds = triangle.boundingRect();
-
-				if (IntersectsTrianglePolygonNonEmpty(triangle, triangleBounds, b, bBounds))
-				{
-					return true;
-				}
+				return true;
 			}
 
-			return false;
+			return detail::AnyPolygonEdge(a, [&](const Line& edgeA)
+				{
+					return detail::IntersectsLineRectFNonEmpty(edgeA, bBounds)
+						&& detail::AnyPolygonEdge(b, [&](const Line& edgeB)
+							{
+								return Geometry2D::Intersects(edgeA, edgeB);
+							});
+				});
 		}
 
 		[[nodiscard]]

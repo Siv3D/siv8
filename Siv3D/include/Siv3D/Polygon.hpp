@@ -881,6 +881,7 @@ namespace s3d
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		/// @remark outer() と inners() の頂点座標が表す領域で判定します。外周と穴の境界を含み、穴の内部は含みません。
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
