@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include <Siv3D/LineCap.hpp>
-# include <Siv3D/LineString.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Geometry2D/ConvexHull.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -1078,65 +1077,4 @@ namespace s3d
 		return (corrected.empty() ? Polygon{} : detail::ToPolygon(corrected.front()));
 	}
 
-	////////////////////////////////////////////////////////////////
-	//
-	//	simplified
-	//
-	////////////////////////////////////////////////////////////////
-
-	LineString LineString::simplified(const double maxDistance, const CloseRing closeRing) const
-	{
-		if (size() < 2)
-		{
-			return *this;
-		}
-
-		LineString result;
-
-		if (closeRing && (front() != back()))
-		{
-			LineString input(begin(), end());
-			input.push_back(input.front());
-
-			boost::geometry::simplify(input, result, maxDistance);
-			result.pop_back();
-		}
-		else
-		{
-			boost::geometry::simplify(*this, result, maxDistance);
-		}
-
-		return result;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	densified
-	//
-	////////////////////////////////////////////////////////////////
-
-	LineString LineString::densified(const double maxSegmentLength, const CloseRing closeRing) const
-	{
-		if (size() < 2)
-		{
-			return *this;
-		}
-
-		LineString result;
-
-		if (closeRing && (front() != back()))
-		{
-			LineString input(begin(), end());
-			input.push_back(input.front());
-
-			boost::geometry::densify(input, result, maxSegmentLength);
-			result.pop_back();
-		}
-		else
-		{
-			boost::geometry::densify(*this, result, maxSegmentLength);
-		}
-
-		return result;
-	}
 }

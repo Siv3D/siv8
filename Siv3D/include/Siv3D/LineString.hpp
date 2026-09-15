@@ -2478,10 +2478,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 連続する線分を単純化した LineString を返します。
-		/// @param maxDistance 単純化の大きさ
-		/// @param closeRing 終点と始点を結ぶか
-		/// @return 単純化した LineString
+		/// @brief Douglas–Peucker 法で連続する線分を単純化した LineString を返します。
+		/// @param maxDistance 頂点を省略するときに許容する線分からの距離。有限の値。負の場合は元の点列を返します。
+		/// @param closeRing 終点と始点を結ぶ区間も単純化の対象にするか
+		/// @return 入力の頂点を順序を保って間引いた LineString
+		/// @remark 始点は保持します。開いた点列では終点も保持します。2 頂点が同じ位置に縮退した結果は 1 頂点にまとめます。
+		/// @remark 閉じた点列の末尾に始点を重複して追加しません。入力にある閉じ点は、結果が 1 頂点になる場合を除いて保持します。
+		/// @remark 自己交差の発生や、閉じた点列の面積・向きの維持は保証しません。
 		[[nodiscard]]
 		LineString simplified(double maxDistance = 2.0, CloseRing closeRing = CloseRing::No) const;
 
@@ -2491,10 +2494,13 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 頂点間の距離が `maxDistance` より大きくならないよう、区間ごとに最小回数で均等に分割した結果を返します。
-		/// @param maxSegmentLength 分割後の各線分の最大長
-		/// @param closeRing 終点と始点を結ぶか
-		/// @return 分割した結果
+		/// @brief 各線分が `maxSegmentLength` 以下になる最小の区間数に均等分割した結果を返します。
+		/// @param maxSegmentLength 分割後の各線分の最大長。有限の正の値。
+		/// @param closeRing 終点と始点を結ぶ区間も分割の対象にするか
+		/// @return 元の頂点の間に分割点を追加した LineString。頂点が 2 個未満の場合は元の点列。
+		/// @throws std::invalid_argument 頂点が 2 個以上あり、maxSegmentLength が 0 以下の場合
+		/// @remark 元の頂点とその順序を保持します。長さ 4 の線分に最大長 2 を指定すると、長さ 2 の 2 区間になります。
+		/// @remark 閉じた点列の末尾に始点を重複して追加しません。入力にある閉じ点は保持します。
 		[[nodiscard]]
 		LineString densified(double maxSegmentLength, CloseRing closeRing = CloseRing::No) const;
 

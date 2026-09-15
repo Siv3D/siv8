@@ -848,7 +848,7 @@ TEST_CASE("LineString.simplified")
 TEST_CASE("LineString.densified")
 {
 	CHECK((LineString{ Vec2{ 0, 0 } }.densified(2.0)) == (LineString{ Vec2{ 0, 0 } }));
-	CHECK((LineString{ Vec2{ 0, 0 }, Vec2{ 4, 0 } }.densified(2.0)) == (LineString{ Vec2{ 0, 0 }, Vec2{ (4.0 / 3.0), 0 }, Vec2{ (8.0 / 3.0), 0 }, Vec2{ 4, 0 } }));
+	CHECK((LineString{ Vec2{ 0, 0 }, Vec2{ 4, 0 } }.densified(2.0)) == (LineString{ Vec2{ 0, 0 }, Vec2{ 2, 0 }, Vec2{ 4, 0 } }));
 }
 
 TEST_CASE("LineString.catmullRom")
@@ -943,4 +943,159 @@ TEST_CASE("LineString.array_like_contract")
 	CHECK((result.size()) == (size_t{ 2 }));
 	CHECK((result[0]) == (result[1]));
 	CHECK_THROWS_AS((void) result.filter([](Vec2) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
+}
+
+TEST_CASE("LineString.simplified.boundaries")
+{
+	CHECK(LineString{}.simplified().isEmpty());
+	const LineString peak{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } };
+	CHECK(peak.simplified(1.0) == LineString{ Vec2{ 0, 0 }, Vec2{ 2, 0 } });
+	CHECK(peak.simplified(std::nextafter(1.0, 0.0)) == peak);
+	CHECK(peak.simplified(0.0) == peak);
+	CHECK(peak.simplified(-1.0) == peak);
+	CHECK(peak.simplified(-1.0, CloseRing::Yes) == peak);
+
+	const LineString repeated{ Vec2{ 1, 2 }, Vec2{ 1, 2 }, Vec2{ 1, 2 } };
+	CHECK(repeated.simplified(0.0) == LineString{ Vec2{ 1, 2 } });
+	CHECK(repeated.simplified(0.0, CloseRing::Yes) == LineString{ Vec2{ 1, 2 } });
+	const LineString pair{ Vec2{ 1, 2 }, Vec2{ 1, 2 } };
+	CHECK(pair.simplified() == LineString{ Vec2{ 1, 2 } });
+	CHECK(pair.simplified(-1.0) == pair);
+
+	// The error is measured from the finite segment, not its infinite line.
+	const LineString excursion{ Vec2{ 0, 0 }, Vec2{ 3, 0 }, Vec2{ 1, 0 } };
+	CHECK(excursion.simplified(0.0) == excursion);
+	CHECK(LineString{ Vec2{ 0, 0 }, Vec2{ 2, 2 }, Vec2{ 4, 4 } }.simplified(0.0)
+		== LineString{ Vec2{ 0, 0 }, Vec2{ 4, 4 } });
+	CHECK(peak == LineString{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 2, 0 } });
+}
+
+TEST_CASE("LineString.simplified.closed")
+{
+	const LineString ring{
+		Vec2{ 0, 0 }, Vec2{ 2, 0 }, Vec2{ 4, 0 }, Vec2{ 4, 2 },
+		Vec2{ 4, 4 }, Vec2{ 2, 4 }, Vec2{ 0, 4 }, Vec2{ 0, 2 }
+	};
+	const LineString corners{ Vec2{ 0, 0 }, Vec2{ 4, 0 }, Vec2{ 4, 4 }, Vec2{ 0, 4 } };
+	CHECK(ring.simplified(0.25, CloseRing::Yes) == corners);
+	LineString openResult = corners;
+	openResult.push_back(ring.back());
+	CHECK(ring.simplified(0.25) == openResult);
+
+	LineString closed = ring;
+	closed.push_back(closed.front());
+	LineString closedResult = corners;
+	closedResult.push_back(closedResult.front());
+	CHECK(closed.simplified(0.25) == closedResult);
+	CHECK(closed.simplified(0.25, CloseRing::Yes) == closedResult);
+	CHECK(closed.reversed().simplified(0.25, CloseRing::Yes) == closedResult.reversed());
+
+	// Collapsing a closed path must retain its starting point.
+	CHECK(ring.simplified(100.0, CloseRing::Yes) == LineString{ ring.front() });
+	CHECK(closed.simplified(100.0) == LineString{ ring.front() });
+	CHECK(closed.simplified(100.0, CloseRing::Yes) == LineString{ ring.front() });
+	const LineString pair{ Vec2{ 0, 0 }, Vec2{ 2, 0 } };
+	CHECK(pair.simplified(2.0, CloseRing::Yes) == LineString{ pair.front() });
+	CHECK(pair.simplified(1.0, CloseRing::Yes) == pair);
+}
+
+TEST_CASE("LineString.simplified.error_and_translation")
+{
+	std::mt19937 random{ 0xD061A5 };
+	for (size_t trial = 0; trial < 24; ++trial)
+	{
+		LineString source;
+		for (size_t i = 0; i < 128; ++i)
+		{
+			source.emplace_back(i * 0.25, (static_cast<int32>(random() % 65) - 32) * 0.125);
+		}
+		for (const double tolerance : { 0.0, 0.2, 1.0, 8.0 })
+		{
+			CAPTURE(trial, tolerance);
+			const LineString simplified = source.simplified(tolerance);
+			REQUIRE(simplified.size() >= 2);
+			CHECK(simplified.front() == source.front());
+			CHECK(simplified.back() == source.back());
+			size_t begin = 0;
+			for (size_t i = 1; i < simplified.size(); ++i)
+			{
+				size_t end = (begin + 1);
+				while ((end < source.size()) && (source[end] != simplified[i]))
+				{
+					++end;
+				}
+				REQUIRE(end < source.size());
+				const Line segment{ simplified[i - 1], simplified[i] };
+				for (size_t j = (begin + 1); j < end; ++j)
+				{
+					CHECK(segment.distanceFrom(source[j]) <= (tolerance + 1e-12));
+				}
+				begin = end;
+			}
+			const Vec2 offset{ 134217728, -134217728 };
+			CHECK(source.movedBy(offset).simplified(tolerance) == simplified.movedBy(offset));
+		}
+	}
+
+	LineString zigzag;
+	for (size_t i = 0; i < 1024; ++i)
+	{
+		zigzag.emplace_back(static_cast<double>(i), static_cast<double>(i % 2));
+	}
+	CHECK(zigzag.simplified(0.1) == zigzag);
+}
+
+TEST_CASE("LineString.densified.minimum_subdivisions")
+{
+	CHECK(LineString{}.densified(2.0).isEmpty());
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 4, 0 } };
+	CHECK(line.densified(4.0) == line);
+	CHECK(line.densified(8.0) == line);
+	CHECK(line.densified(3.0) == LineString{ Vec2{ 0, 0 }, Vec2{ 2, 0 }, Vec2{ 4, 0 } });
+	CHECK(line.densified(1.0) == LineString{ Vec2{ 0, 0 }, Vec2{ 1, 0 }, Vec2{ 2, 0 }, Vec2{ 3, 0 }, Vec2{ 4, 0 } });
+	CHECK(line.densified(std::nextafter(2.0, 0.0)).size() == 4);
+	CHECK(line.densified(std::nextafter(2.0, 3.0)).size() == 3);
+	CHECK(line.densified(2.0).densified(2.0) == line.densified(2.0));
+
+	const LineString repeated{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 2, 0 }, Vec2{ 2, 0 } };
+	CHECK(repeated.densified(1.0) == LineString{ Vec2{ 0, 0 }, Vec2{ 0, 0 }, Vec2{ 1, 0 }, Vec2{ 2, 0 }, Vec2{ 2, 0 } });
+	const LineString same{ Vec2{ 1, 2 }, Vec2{ 1, 2 }, Vec2{ 1, 2 } };
+	CHECK(same.densified(1.0, CloseRing::Yes) == same);
+	CHECK(line == LineString{ Vec2{ 0, 0 }, Vec2{ 4, 0 } });
+}
+
+TEST_CASE("LineString.densified.closed_and_diagonal")
+{
+	const LineString path{ Vec2{ 0, 0 }, Vec2{ 3, 0 }, Vec2{ 3, 4 } };
+	const LineString expected{
+		Vec2{ 0, 0 }, Vec2{ 1.5, 0 }, Vec2{ 3, 0 }, Vec2{ 3, 2 }, Vec2{ 3, 4 },
+		Vec2{ 2, (8.0 / 3.0) }, Vec2{ 1, (4.0 / 3.0) }
+	};
+	const LineString actual = path.densified(2.0, CloseRing::Yes);
+	REQUIRE(actual.size() == expected.size());
+	for (size_t i = 0; i < actual.size(); ++i)
+	{
+		CHECK(actual[i].distanceFrom(expected[i]) < 1e-12);
+		CHECK(actual.segment(i, CloseRing::Yes).length() <= (2.0 + 1e-12));
+	}
+	CHECK(path.densified(2.0).size() == 5);
+	LineString closed = path;
+	closed.push_back(closed.front());
+	LineString closedExpected = actual;
+	closedExpected.push_back(actual.front());
+	CHECK(closed.densified(2.0) == closedExpected);
+	CHECK(closed.densified(2.0, CloseRing::Yes) == closedExpected);
+	CHECK(path.densified(8.0, CloseRing::Yes) == path);
+	CHECK(closed.densified(8.0, CloseRing::Yes) == closed);
+	const Vec2 offset{ 134217728, -134217728 };
+	CHECK(path.movedBy(offset).densified(2.0, CloseRing::Yes) == actual.movedBy(offset));
+}
+
+TEST_CASE("LineString.densified.invalid_length")
+{
+	const LineString line{ Vec2{ 0, 0 }, Vec2{ 4, 0 } };
+	CHECK_THROWS_AS(line.densified(0.0), std::invalid_argument);
+	CHECK_THROWS_AS(line.densified(-1.0, CloseRing::Yes), std::invalid_argument);
+	CHECK_NOTHROW(LineString{}.densified(0.0));
+	CHECK_NOTHROW(LineString{ Vec2{ 1, 2 } }.densified(0.0));
 }

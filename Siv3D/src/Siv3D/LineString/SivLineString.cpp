@@ -350,6 +350,131 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	simplified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::simplified(const double maxDistance, const CloseRing closeRing) const
+	{
+		const size_t n = size();
+		if ((n < 2) || (maxDistance < 0.0))
+		{
+			return *this;
+		}
+
+		const Vec2* points = data();
+		const bool appendClosingPoint = (closeRing && (front() != back()));
+		const size_t last = (appendClosingPoint ? n : (n - 1));
+		const double maxDistanceSq = (maxDistance * maxDistance);
+		LineString result;
+		result.push_back(points[0]);
+
+		// Defer right-hand intervals and finish left-hand intervals first, so
+		// retained vertices can be emitted in order without a per-vertex flag array.
+		Array<size_t> pendingEnds;
+		size_t begin = 0;
+		size_t end = last;
+		for (;;)
+		{
+			// Index n is the implicit closing point; the input needs no copy.
+			const Vec2& endPoint = points[(end == n) ? 0 : end];
+			const Vec2 direction = (endPoint - points[begin]);
+			const double lengthSq = direction.lengthSq();
+			double farthestDistanceSq = maxDistanceSq;
+			size_t split = begin;
+
+			for (size_t i = (begin + 1); i < end; ++i)
+			{
+				const Vec2 relative = (points[i] - points[begin]);
+				const double projection = relative.dot(direction);
+				double distanceSq;
+				if (projection <= 0.0)
+				{
+					distanceSq = relative.lengthSq();
+				}
+				else if (lengthSq <= projection)
+				{
+					distanceSq = points[i].distanceFromSq(endPoint);
+				}
+				else
+				{
+					distanceSq = (relative - direction * (projection / lengthSq)).lengthSq();
+				}
+
+				if (farthestDistanceSq < distanceSq)
+				{
+					farthestDistanceSq = distanceSq;
+					split = i;
+				}
+			}
+
+			if (split != begin)
+			{
+				pendingEnds.push_back(end);
+				end = split;
+				continue;
+			}
+
+			// Omit only the implicit closing point. Keep an explicit closing point
+			// unless the entire result has collapsed to the starting point.
+			if ((end != n) && not ((result.size() == 1) && (result.front() == endPoint)))
+			{
+				result.push_back(endPoint);
+			}
+			if (pendingEnds.isEmpty())
+			{
+				break;
+			}
+			begin = end;
+			end = pendingEnds.back();
+			pendingEnds.pop_back();
+		}
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	densified
+	//
+	////////////////////////////////////////////////////////////////
+
+	LineString LineString::densified(const double maxSegmentLength, const CloseRing closeRing) const
+	{
+		if (size() < 2)
+		{
+			return *this;
+		}
+		if (maxSegmentLength <= 0.0)
+		{
+			throw std::invalid_argument{ "LineString::densified(): maxSegmentLength must be positive" };
+		}
+
+		LineString result{ Arg::reserve = size() };
+		auto AppendInteriorPoints = [&](const Vec2& start, const Vec2& end)
+		{
+			const Vec2 direction = (end - start);
+			const size_t parts = static_cast<size_t>(std::ceil(direction.length() / maxSegmentLength));
+			for (size_t i = 1; i < parts; ++i)
+			{
+				result.push_back(start + direction * (static_cast<double>(i) / static_cast<double>(parts)));
+			}
+		};
+
+		result.push_back(front());
+		for (size_t i = 1; i < size(); ++i)
+		{
+			AppendInteriorPoints(m_vertices[i - 1], m_vertices[i]);
+			result.push_back(m_vertices[i]);
+		}
+		if (closeRing && (front() != back()))
+		{
+			AppendInteriorPoints(back(), front());
+		}
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	catmullRom
 	//
 	////////////////////////////////////////////////////////////////
