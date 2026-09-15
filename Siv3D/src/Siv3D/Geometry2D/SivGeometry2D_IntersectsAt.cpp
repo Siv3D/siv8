@@ -19,6 +19,7 @@
 # include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/IntersectsAt.hpp>
+# include "PolygonGeometry.hpp"
 
 namespace s3d
 {
@@ -401,35 +402,9 @@ namespace s3d
 			}
 		}
 
-		void AppendRingPieces(Array<BoundaryPiece>& pieces, const std::span<const Vec2> ring)
-		{
-			if (ring.size() < 2)
-			{
-				return;
-			}
-
-			for (size_t i = 0; i < ring.size(); ++i)
-			{
-				AppendLinePiece(pieces, Line{ ring[i], ring[(i + 1) % ring.size()] });
-			}
-		}
-
 		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Line& shape)
 		{
 			AppendLinePiece(pieces, shape);
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const LineString& shape)
-		{
-			if (shape.size() < 2)
-			{
-				return;
-			}
-
-			for (size_t i = 0; i < (shape.size() - 1); ++i)
-			{
-				AppendLinePiece(pieces, Line{ shape[i], shape[i + 1] });
-			}
 		}
 
 		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Bezier2& shape)
@@ -622,29 +597,6 @@ namespace s3d
 			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, top + r }, r }, ArcRegion::TopRight });
 			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, bottom - r }, r }, ArcRegion::BottomRight });
 			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft });
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Polygon& shape)
-		{
-			if (shape.isEmpty())
-			{
-				return;
-			}
-
-			AppendRingPieces(pieces, shape.outer());
-
-			for (const auto& inner : shape.inners())
-			{
-				AppendRingPieces(pieces, inner);
-			}
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const MultiPolygon& shape)
-		{
-			for (const auto& polygon : shape)
-			{
-				AppendBoundaryPieces(pieces, polygon);
-			}
 		}
 
 		template <class Shape>
@@ -1351,7 +1303,7 @@ namespace s3d
 		struct ShapeIntersectionData
 		{
 			Optional<Vec2> pointGeometry;
-			Array<BoundaryPiece> boundaryPieces;
+			detail::BoundarySource<BoundaryPiece> boundaryPieces;
 		};
 
 		template <class Shape>
@@ -1367,7 +1319,8 @@ namespace s3d
 			}
 			else
 			{
-				AppendBoundaryPieces(data.boundaryPieces, shape);
+				data.boundaryPieces = detail::MakeBoundarySource<BoundaryPiece>(shape,
+					[&](auto& pieces) { AppendBoundaryPieces(pieces, shape); });
 			}
 
 			return data;
@@ -1389,16 +1342,18 @@ namespace s3d
 
 			IntersectionAccumulator accumulator;
 
-			for (const BoundaryPiece& pieceA : a.boundaryPieces)
-			{
-				for (const BoundaryPiece& pieceB : b.boundaryPieces)
+			(void)detail::AnyBoundaryPiece(a.boundaryPieces, [&](const BoundaryPiece& pieceA)
 				{
-					std::visit([&](const auto& primitiveA, const auto& primitiveB)
-					{
-						ProcessPiecePair(accumulator, primitiveA, primitiveB);
-					}, pieceA, pieceB);
-				}
-			}
+					(void)detail::AnyBoundaryPiece(b.boundaryPieces, [&](const BoundaryPiece& pieceB)
+						{
+							std::visit([&](const auto& primitiveA, const auto& primitiveB)
+								{
+									ProcessPiecePair(accumulator, primitiveA, primitiveB);
+								}, pieceA, pieceB);
+							return false;
+						});
+					return false;
+				});
 
 			return FinalizePoints(std::move(accumulator));
 		}

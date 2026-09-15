@@ -63,49 +63,8 @@ namespace s3d
 		struct ShapeDistanceData
 		{
 			Optional<Vec2> pointGeometry;
-			std::variant<Array<BoundaryPiece>, std::span<const Vec2>, std::span<const Polygon>> boundaryPieces;
+			detail::BoundarySource<BoundaryPiece> boundaryPieces;
 		};
-
-		template <class Predicate>
-		[[nodiscard]]
-		bool AnyBoundaryPiece(const ShapeDistanceData& data, Predicate&& predicate)
-		{
-			auto TestEdge = [&](const Line& edge)
-			{
-				return (edge.start != edge.end) && predicate(BoundaryPiece{ edge });
-			};
-
-			return std::visit([&](const auto& source)
-				{
-					using Source = std::decay_t<decltype(source)>;
-					if constexpr (std::is_same_v<Source, std::span<const Vec2>>)
-					{
-						return detail::AnyPolylineSegment<false>(source, TestEdge);
-					}
-					else if constexpr (std::is_same_v<Source, std::span<const Polygon>>)
-					{
-						for (const auto& polygon : source)
-						{
-							if (detail::AnyPolygonEdge(polygon, TestEdge))
-							{
-								return true;
-							}
-						}
-					}
-					else
-					{
-						for (const BoundaryPiece& piece : source)
-						{
-							if (predicate(piece))
-							{
-								return true;
-							}
-						}
-					}
-
-					return false;
-				}, data.boundaryPieces);
-		}
 
 		[[nodiscard]]
 		constexpr double ClampUnit(const double value) noexcept
@@ -1363,21 +1322,10 @@ namespace s3d
 			{
 				data.pointGeometry = point;
 			}
-			else if constexpr (std::is_same_v<Shape, LineString>)
-			{
-				data.boundaryPieces = std::span<const Vec2>{ shape };
-			}
-			else if constexpr (std::is_same_v<Shape, Polygon>)
-			{
-				data.boundaryPieces = std::span<const Polygon>{ &shape, 1 };
-			}
-			else if constexpr (std::is_same_v<Shape, MultiPolygon>)
-			{
-				data.boundaryPieces = std::span<const Polygon>{ shape.data(), shape.size() };
-			}
 			else
 			{
-				AppendBoundaryPieces(std::get<Array<BoundaryPiece>>(data.boundaryPieces), shape);
+				data.boundaryPieces = detail::MakeBoundarySource<BoundaryPiece>(shape,
+					[&](auto& pieces) { AppendBoundaryPieces(pieces, shape); });
 			}
 
 			return data;
@@ -1440,7 +1388,7 @@ namespace s3d
 			{
 				const ShapeDistanceData data = MakeShapeDistanceData(source);
 				Optional<Vec2> result;
-				(void)AnyBoundaryPiece(data, [&](const BoundaryPiece& piece)
+				(void)detail::AnyBoundaryPiece(data.boundaryPieces, [&](const BoundaryPiece& piece)
 					{
 						for (int32 i = 0; i <= 32; ++i)
 						{
@@ -1505,7 +1453,7 @@ namespace s3d
 
 			if (dataA.pointGeometry)
 			{
-				(void)AnyBoundaryPiece(dataB, [&](const BoundaryPiece& pieceB)
+				(void)detail::AnyBoundaryPiece(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
 					{
 						const auto candidate = ClosestPointPiece(*dataA.pointGeometry, pieceB);
 						if (candidate.distanceSq < best.distanceSq)
@@ -1519,7 +1467,7 @@ namespace s3d
 
 			if (dataB.pointGeometry)
 			{
-				(void)AnyBoundaryPiece(dataA, [&](const BoundaryPiece& pieceA)
+				(void)detail::AnyBoundaryPiece(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
 					{
 						auto candidate = ClosestPointPiece(*dataB.pointGeometry, pieceA);
 						std::swap(candidate.pointA, candidate.pointB);
@@ -1533,9 +1481,9 @@ namespace s3d
 				return best;
 			}
 
-			(void)AnyBoundaryPiece(dataA, [&](const BoundaryPiece& pieceA)
+			(void)detail::AnyBoundaryPiece(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
 				{
-					(void)AnyBoundaryPiece(dataB, [&](const BoundaryPiece& pieceB)
+					(void)detail::AnyBoundaryPiece(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
 						{
 							const auto candidate = ClosestPiecePair(pieceA, pieceB);
 							if (candidate.distanceSq < best.distanceSq)

@@ -899,22 +899,7 @@ namespace s3d
 				return false;
 			}
 
-			constexpr PointContainmentOptions OuterOptions{ .boundary = PointContainmentBoundaryPolicy::Included };
-			constexpr PointContainmentOptions HoleOptions{ .boundary = PointContainmentBoundaryPolicy::Excluded };
-			if (not Geometry2D::ContainsPoint<OuterOptions>(std::span<const Vec2>{ polygon.outer() }, p))
-			{
-				return false;
-			}
-
-			for (const auto& hole : polygon.inners())
-			{
-				if (Geometry2D::ContainsPoint<HoleOptions>(std::span<const Vec2>{ hole }, p))
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return detail::PolygonContainsPoint(detail::GetPolygonRings(polygon), p);
 		}
 
 		[[nodiscard]]

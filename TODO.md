@@ -30,18 +30,6 @@
 - 現在は BigInt が例外後に 0 になり、BigFloat は元の値を保持する。両型とも再代入は可能。
 - BigInt も元の値を保持する契約へ揃えるかを決める。変更する場合は確保・コピーのコストと例外時の保証を確認する。
 
-## `Siv3D/include/Siv3D/Polygon.hpp`
-
-### 包含判定と描画頂点の分離
-
-- `Contains()` の線分・三角形・Polygon 全体の包含判定には、描画用 `Float2` の三角形を使う箇所が残っている。幾何計算用 `Vec2` 輪郭に揃え、大きな平行移動、小さな穴、凹形状、境界に沿う線分、穴を完全に覆う図形で整合性を確認する。
-- `ContainsLinePolygonNonEmpty()` の区間配列・ソートと、`ContainsTrianglePolygonNonEmpty()` の交差面積の合計を、輪郭に基づく判定へ置き換えられるか検討する。面積の許容誤差で小さな穴の見落としを許す設計は避ける。凸形状が Polygon を含む場合は、外周頂点だけの検査に簡略化できるか先に調べる。
-- 描画頂点とインデックスを指定する Polygon コンストラクターもあるため、描画インデックスが外周・穴を連結した順序に対応すると仮定しない。内部ヘッダー `Geometry2D/PolygonGeometry.hpp` の輪郭走査を共有する。
-
-### 交点列挙の境界配列
-
-- `IntersectsAt()` には Polygon / MultiPolygon / LineString の全辺を `Array<BoundaryPiece>` へ展開する処理が残っている。距離計算と同様に入力を参照するビューへ置き換え、交点順序、重複点の除去、一次元以上の共有部分の扱いを維持する。
-
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 
 ### Squad 補間
