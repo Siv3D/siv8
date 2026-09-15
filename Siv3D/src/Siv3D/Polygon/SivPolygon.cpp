@@ -1294,28 +1294,7 @@ namespace s3d
 
 	Polygon Polygon::CorrectOne(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
-		Array<Polygon> polygons = Correct(outer, holes);
-
-		if (polygons.isEmpty())
-		{
-			return Polygon{};
-		}
-
-		size_t largestIndex = 0;
-		double largestArea = polygons[0].area();
-
-		for (size_t i = 1; i < polygons.size(); ++i)
-		{
-			const double area = polygons[i].area();
-			
-			if (largestArea < area)
-			{
-				largestIndex = i;
-				largestArea = area;
-			}
-		}
-
-		return std::move(polygons[largestIndex]);
+		return PolygonDetail::CorrectOne(outer, holes);
 	}
 
 	////////////////////////////////////////////////////////////////

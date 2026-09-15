@@ -375,3 +375,247 @@ TEST_CASE("Polygon.generated_rings.closed_line_string_duplicates")
 	CheckPolygonRings(ring.computeRoundBufferPolygon(2.0, CloseRing::Yes), 1);
 	CHECK(ring == original);
 }
+
+TEST_CASE("Geometry2D.ComposePolygons.empty_and_short_rings")
+{
+	CHECK(Geometry2D::ComposePolygons({}).isEmpty());
+	CHECK(Geometry2D::ComposePolygons({ {}, { { 1, 1 } }, { { 0, 0 }, { 2, 2 } } }).isEmpty());
+	const Polygon reference = MakePolygonWithHole();
+	const LineString outer{ reference.outer() };
+	const LineString hole{ reference.inners().front() };
+	CHECK(Geometry2D::ComposePolygons({ hole }).isEmpty());
+	const auto result = Geometry2D::ComposePolygons({ {}, outer, { { 1, 1 } }, hole });
+	REQUIRE(result.size() == 1);
+	CheckPolygonRings(result.front(), 1);
+	CHECK(result.front().outer() == reference.outer());
+	CHECK(result.front().inners() == reference.inners());
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.nested_components")
+{
+	const LineString outerA{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } };
+	const LineString outerB{ { 30, 30 }, { 40, 30 }, { 40, 40 }, { 30, 40 } };
+	const LineString island{ { 9, 9 }, { 11, 9 }, { 11, 11 }, { 9, 11 } };
+	const LineString holeA1{ { 2, 2 }, { 2, 4 }, { 4, 4 }, { 4, 2 } };
+	const LineString holeA2{ { 8, 8 }, { 8, 12 }, { 12, 12 }, { 12, 8 } };
+	const LineString holeB{ { 32, 32 }, { 32, 35 }, { 35, 35 }, { 35, 32 } };
+	const LineString islandHole{ { 9.5, 9.5 }, { 9.5, 10.5 }, { 10.5, 10.5 }, { 10.5, 9.5 } };
+	const Array<LineString> rings{ islandHole, holeA1, outerB, outerA, holeB, island, holeA2 };
+	const Array<LineString> original = rings;
+	const auto result = Geometry2D::ComposePolygons(rings);
+	REQUIRE(result.size() == 3);
+	const Array<Polygon> expected{
+		Polygon{ outerB, { holeB.asArray() } },
+		Polygon{ outerA, { holeA1.asArray(), holeA2.asArray() } },
+		Polygon{ island, { islandHole.asArray() } },
+	};
+	for (size_t i = 0; i < expected.size(); ++i)
+	{
+		CAPTURE(i);
+		CheckPolygonRings(result[i], expected[i].holeCount());
+		CHECK(result[i].outer() == expected[i].outer());
+		CHECK(result[i].inners() == expected[i].inners());
+		CHECK(result[i].area() == expected[i].area());
+	}
+	CHECK(rings == original);
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.concave_outer")
+{
+	const LineString outer{ { 0, 0 }, { 12, 0 }, { 12, 4 }, { 8, 4 }, { 8, 12 }, { 0, 12 } };
+	const LineString hole{ { 1, 7 }, { 1, 10 }, { 4, 10 }, { 4, 7 } };
+	const LineString outside{ { 9, 7 }, { 9, 10 }, { 11, 10 }, { 11, 7 } };
+	const auto result = Geometry2D::ComposePolygons({ outside, hole, outer });
+	REQUIRE(result.size() == 1);
+	CheckPolygonRings(result.front(), 1);
+	CHECK(result.front().area() == Test::Approx(103.0));
+	CHECK(result.front().inners().front() == hole.asArray());
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.many_holes")
+{
+	Array<LineString> rings{ { { 0, 0 }, { 100, 0 }, { 100, 100 }, { 0, 100 } } };
+	for (int32 y = 0; y < 8; ++y)
+	{
+		for (int32 x = 0; x < 8; ++x)
+		{
+			const Vec2 p{ 2.0 + (x * 10.0), 2.0 + (y * 10.0) };
+			rings.push_back(LineString{ p, p + Vec2{ 0, 2 }, p + Vec2{ 2, 2 }, p + Vec2{ 2, 0 } });
+		}
+	}
+	const auto result = Geometry2D::ComposePolygons(rings);
+	REQUIRE(result.size() == 1);
+	CheckPolygonRings(result.front(), 64);
+	CHECK(result.front().area() == Test::Approx(9744.0));
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.invalid_holes_best_effort")
+{
+	const LineString outer{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } };
+	const LineString first{ { 2, 2 }, { 2, 6 }, { 6, 6 }, { 6, 2 } };
+	const LineString overlapping{ { 4, 4 }, { 4, 8 }, { 8, 8 }, { 8, 4 } };
+	const LineString crossingOuter{ { 18, 2 }, { 18, 6 }, { 22, 6 }, { 22, 2 } };
+	const LineString last{ { 12, 12 }, { 12, 16 }, { 16, 16 }, { 16, 12 } };
+	const auto result = Geometry2D::ComposePolygons({ outer, first, overlapping, crossingOuter, last });
+	REQUIRE(result.size() == 1);
+	CheckPolygonRings(result.front(), 2);
+	CHECK(result.front().inners() == Array<Array<Vec2>>{ first.asArray(), last.asArray() });
+	CHECK(result.front().area() == Test::Approx(368.0));
+}
+
+TEST_CASE("Polygon.Correct.orientation_and_holes")
+{
+	const Polygon reference = MakePolygonWithHole();
+	for (const bool reverseOuter : { false, true })
+	{
+		for (const bool reverseHole : { false, true })
+		{
+			CAPTURE(reverseOuter, reverseHole);
+			const auto outer = reverseOuter ? reference.outer().reversed() : reference.outer();
+			auto holes = reference.inners();
+			if (reverseHole)
+			{
+				holes.front().reverse();
+			}
+			const auto results = Polygon::Correct(outer, holes);
+			REQUIRE(results.size() == 1);
+			CheckPolygonRings(results.front(), 1);
+			CHECK(results.front().area() == reference.area());
+			const Polygon one = Polygon::CorrectOne(outer, holes);
+			CHECK(one.outer() == results.front().outer());
+			CHECK(one.inners() == results.front().inners());
+			CheckTriangleIndices(one, results.front());
+		}
+	}
+}
+
+TEST_CASE("Polygon.Correct.degenerate")
+{
+	const Array<Array<Vec2>> cases{
+		{}, { { 1, 2 } }, { { 0, 0 }, { 4, 4 } },
+		{ { 0, 0 }, { 2, 2 }, { 4, 4 } },
+		{ { 1, 2 }, { 1, 2 }, { 1, 2 } },
+	};
+	for (const auto& outer : cases)
+	{
+		CHECK(Polygon::Correct(outer).isEmpty());
+		CHECK(Polygon::CorrectOne(outer).isEmpty());
+	}
+}
+
+TEST_CASE("Polygon.CorrectOne.multiple_components")
+{
+	const Array<Array<Vec2>> cases{
+		{ { 0, 0 }, { 6, 6 }, { 0, 6 }, { 2, 0 } },
+		{ { 0, 0 }, { 4, 4 }, { 0, 4 }, { 4, 0 } },
+	};
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, 134217728 } })
+	{
+		for (size_t i = 0; i < cases.size(); ++i)
+		{
+			CAPTURE(i, offset);
+			const auto outer = cases[i].map([offset](const Vec2& point) { return (point + offset); });
+			const auto results = Polygon::Correct(outer);
+			REQUIRE(results.size() == 2);
+			const Polygon* largest = &results.front();
+			for (const auto& polygon : results)
+			{
+				CheckPolygonRings(polygon, 0);
+				if (largest->area() < polygon.area())
+				{
+					largest = &polygon;
+				}
+			}
+			const Polygon one = Polygon::CorrectOne(outer);
+			CHECK(one.outer() == largest->outer());
+			CHECK(one.inners() == largest->inners());
+			CHECK(one.area() == largest->area());
+			CheckTriangleIndices(one, *largest);
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.repaired_outer")
+{
+	const LineString outer{ { 0, 0 }, { 6, 6 }, { 0, 6 }, { 2, 0 } };
+	const LineString hole{ { 1.5, 4 }, { 1.5, 5 }, { 2.5, 5 }, { 2.5, 4 } };
+	const auto results = Geometry2D::ComposePolygons({ hole, outer });
+	REQUIRE(results.size() == 2);
+	size_t holeCount = 0;
+	double area = 0.0;
+	for (const auto& polygon : results)
+	{
+		CheckPolygonRings(polygon, polygon.holeCount());
+		holeCount += polygon.holeCount();
+		area += polygon.area();
+	}
+	CHECK(holeCount == 1);
+	CHECK(area == Test::Approx(14.0));
+}
+
+TEST_CASE("Polygon.Correct.closed_rings")
+{
+	const Polygon reference = MakePolygonWithHole();
+	auto outer = reference.outer();
+	auto holes = reference.inners();
+	outer.push_back(outer.front());
+	holes.front().push_back(holes.front().front());
+	const auto results = Polygon::Correct(outer, holes);
+	REQUIRE(results.size() == 1);
+	CheckPolygonRings(results.front(), 1);
+	CHECK(results.front().area() == reference.area());
+}
+
+TEST_CASE("Polygon.Validate.failure_classification")
+{
+	const Polygon reference = MakePolygonWithHole();
+	CHECK(Polygon::Validate({}) == PolygonFailureType::FewPoints);
+	CHECK(Polygon::Validate(reference.outer().reversed()) == PolygonFailureType::WrongOrientation);
+	auto outer = reference.outer();
+	outer.push_back(outer.front());
+	CHECK(Polygon::Validate(outer) == PolygonFailureType::DuplicatePoints);
+	CHECK(Polygon::Validate(reference.outer(), { { { 1, 1 }, { 2, 2 } } }) == PolygonFailureType::FewPoints);
+	auto holes = reference.inners();
+	holes.front().push_back(holes.front().front());
+	CHECK(Polygon::Validate(reference.outer(), holes) == PolygonFailureType::DuplicatePoints);
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.font_glyphs")
+{
+	const Font font{ 40 };
+	REQUIRE(font);
+	for (const char32 ch : StringView{ U"B8@日田語" })
+	{
+		CAPTURE(static_cast<uint32>(ch));
+		const auto glyph = font.generatePolygonGlyph(ch);
+		REQUIRE(not glyph.polygons.isEmpty());
+		for (const auto& polygon : glyph.polygons)
+		{
+			CheckPolygonRings(polygon, polygon.holeCount());
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.vertex_precision")
+{
+	const Vec2 offset{ 134217728, 134217728 };
+	const LineString outer = LineString{ { 0, 0 }, { 7, 0 }, { 7, 7 }, { 0, 7 } }.movedBy(offset);
+	const LineString hole = LineString{ { 1, 1 }, { 1, 2 }, { 2, 2 }, { 2, 1 } }.movedBy(offset);
+	const auto result = Geometry2D::ComposePolygons({ hole, outer });
+	REQUIRE(result.size() == 1);
+	CheckPolygonRings(result.front(), 1);
+	// Hole assignment uses Vec2 contours even when Float2 rendering vertices collapse.
+	CHECK(result.front().outer() == outer.asArray());
+	CHECK(result.front().inners().front() == hole.asArray());
+	CHECK(result.front().boundingRect() == RectF{ offset, Vec2{ 7, 7 } });
+}
+
+TEST_CASE("Geometry2D.ComposePolygons.touching_hole")
+{
+	const LineString outer{ { 0, 0 }, { 7, 0 }, { 7, 7 }, { 0, 7 } };
+	const LineString hole{ { 0, 3 }, { 2, 5 }, { 2, 1 } };
+	const auto result = Geometry2D::ComposePolygons({ outer, hole });
+	REQUIRE(result.size() == 1);
+	CheckPolygonRings(result.front(), 1);
+	CHECK(result.front().area() == Test::Approx(45.0));
+}

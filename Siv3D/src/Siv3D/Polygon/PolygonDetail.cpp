@@ -9,7 +9,6 @@
 //
 //-----------------------------------------------
 
-# include <Siv3D/HashSet.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
@@ -19,61 +18,12 @@
 # include "PolygonDetail.hpp"
 # include "GeometryCommon.hpp"
 # include "Triangulate.hpp"
-
-SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4127)
-# include <ThirdParty/boost/geometry/extensions/algorithms/dissolve.hpp>
-SIV3D_DISABLE_MSVC_WARNINGS_POP()
 # include "PolygonParser.hpp"
 
 namespace s3d
 {
 	namespace
 	{
-		[[nodiscard]]
-		static bool HasDuplicatePoints(const std::span<const Vec2> points)
-		{
-			return (HashSet<Vec2>{ points.begin(), points.end() }.size() != points.size());
-		}
-
-		[[nodiscard]]
-		static constexpr PolygonFailureType ToPolygonFailureType(const boost::geometry::validity_failure_type failure) noexcept
-		{
-			// https://www.boost.org/doc/libs/1_84_0/libs/geometry/doc/html/geometry/reference/enumerations/validity_failure_type.html
-			switch (failure)
-			{
-			case boost::geometry::no_failure:
-				return PolygonFailureType::Ok;
-			case boost::geometry::failure_few_points:
-				return PolygonFailureType::FewPoints;
-			case boost::geometry::failure_wrong_topological_dimension:
-				return PolygonFailureType::WrongTopologicalDimension;
-			case boost::geometry::failure_spikes:
-				return PolygonFailureType::Spikes;
-			case boost::geometry::failure_duplicate_points:
-				return PolygonFailureType::DuplicatePoints;
-			case boost::geometry::failure_not_closed:
-				return PolygonFailureType::NotClosed;
-			case boost::geometry::failure_self_intersections:
-				return PolygonFailureType::SelfIntersections;
-			case boost::geometry::failure_wrong_orientation:
-				return PolygonFailureType::WrongOrientation;
-			case boost::geometry::failure_interior_rings_outside:
-				return PolygonFailureType::InteriorRingsOutside;
-			case boost::geometry::failure_nested_interior_rings:
-				return PolygonFailureType::NestedInteriorRings;
-			case boost::geometry::failure_disconnected_interior:
-				return PolygonFailureType::DisconnectedInterior;
-			case boost::geometry::failure_intersecting_interiors:
-				return PolygonFailureType::IntersectingInteriors;
-			case boost::geometry::failure_wrong_corner_order:
-				return PolygonFailureType::WrongCornerOrder;
-			case boost::geometry::failure_invalid_coordinate:
-				return PolygonFailureType::InvalidCoordinate;
-			default:
-				return PolygonFailureType::Unknown;
-			}
-		}
-
 		[[nodiscard]]
 		static PolygonData MakePolygonData(const std::span<const Vec2> outerVertices, Array<Array<Vec2>> holes)
 		{
@@ -117,64 +67,6 @@ namespace s3d
 			}
 
 			return vertices;
-		}
-
-		[[nodiscard]]
-		static PolygonFailureType ValidatePolygon(const PolygonData& polygonData)
-		{
-			boost::geometry::validity_failure_type failure = boost::geometry::no_failure;
-
-			// 非連続な頂点どうしの重複は boost::geometry::is_valid() で取得できないので、HasDuplicatePoints() でチェック
-			if (HasDuplicatePoints(polygonData.outer))
-			{
-				return PolygonFailureType::DuplicatePoints;
-			}
-
-			for (const auto& inner : polygonData.inners)
-			{
-				if (inner.size() < 3)
-				{
-					return PolygonFailureType::FewPoints;
-				}
-
-				if (HasDuplicatePoints(inner))
-				{
-					return PolygonFailureType::DuplicatePoints;
-				}
-			}
-
-			boost::geometry::is_valid(detail::ToCwOpenPolygon(polygonData.outer, polygonData.inners), failure);
-
-			return ToPolygonFailureType(failure);
-		}
-
-		[[nodiscard]]
-		static PolygonFailureType ValidatePolygon(const CwOpenPolygon& polygon)
-		{
-			boost::geometry::validity_failure_type failure = boost::geometry::no_failure;
-
-			// 非連続な頂点どうしの重複は boost::geometry::is_valid() で取得できないので、HasDuplicatePoints() でチェック
-			if (HasDuplicatePoints(polygon.outer()))
-			{
-				return PolygonFailureType::DuplicatePoints;
-			}
-
-			for (const auto& inner : polygon.inners())
-			{
-				if (inner.size() < 3)
-				{
-					return PolygonFailureType::FewPoints;
-				}
-
-				if (HasDuplicatePoints(inner))
-				{
-					return PolygonFailureType::DuplicatePoints;
-				}
-			}
-
-			boost::geometry::is_valid(polygon, failure);
-
-			return ToPolygonFailureType(failure);
 		}
 
 		/// @brief 三角形の面積の 2 倍を計算します。
@@ -221,7 +113,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
+			if (detail::ValidatePolygon(polygon.outer, polygon.inners) != PolygonFailureType::Ok)
 			{
 				return false;
 			}
@@ -243,7 +135,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
+			if (detail::ValidatePolygon(polygon.outer, polygon.inners) != PolygonFailureType::Ok)
 			{
 				return;
 			}
@@ -264,7 +156,7 @@ namespace s3d
 
 		if (not skipValidation)
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
+			if (detail::ValidatePolygon(polygon.outer, polygon.inners) != PolygonFailureType::Ok)
 			{
 				return;
 			}
@@ -1104,7 +996,7 @@ namespace s3d
 
 	PolygonFailureType Polygon::PolygonDetail::Validate(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
-		return ValidatePolygon(detail::ToCwOpenPolygon(outer, holes));
+		return detail::ValidatePolygon(outer, holes);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1115,36 +1007,51 @@ namespace s3d
 
 	Array<Polygon> Polygon::PolygonDetail::Correct(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
-		CwOpenPolygon polygon = detail::ToCwOpenPolygon(outer, holes);
+		const auto corrected = detail::CorrectPolygonRings(outer, holes);
+		Array<Polygon> results{ Arg::reserve = corrected.size() };
 
-		if (ValidatePolygon(polygon) == PolygonFailureType::Ok)
+		for (const auto& polygon : corrected)
 		{
-			return{ Polygon{ outer, holes, SkipValidation::Yes } };
-		}
-
-		boost::geometry::correct(polygon);
-		
-		CwOpenMultiPolygon solvedPolygons;
-		boost::geometry::dissolve(polygon, solvedPolygons);
-
-		Array<Polygon> results;
-
-		for (const auto& solvedPolygon : solvedPolygons)
-		{
-			Array<Array<Vec2>> retHoles;
-
-			for (const auto& hole : solvedPolygon.inners())
+			if (Polygon result = detail::ToPolygon(polygon))
 			{
-				retHoles.emplace_back(hole.begin(), hole.end());
-			}
-
-			if (Validate(solvedPolygon.outer(), retHoles) == PolygonFailureType::Ok)
-			{
-				results.emplace_back(solvedPolygon.outer(), retHoles);
+				results.push_back(std::move(result));
 			}
 		}
 
 		return results;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	CorrectOne
+	//
+	////////////////////////////////////////////////////////////////
+
+	Polygon Polygon::PolygonDetail::CorrectOne(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
+	{
+		const auto corrected = detail::CorrectPolygonRings(outer, holes);
+		if (corrected.empty())
+		{
+			return{};
+		}
+
+		Polygon largest = detail::ToPolygon(corrected.front());
+		double largestArea = largest.area();
+
+		for (size_t i = 1; i < corrected.size(); ++i)
+		{
+			Polygon candidate = detail::ToPolygon(corrected[i]);
+			const double area = candidate.area();
+
+			// Polygon::area() と同じ面積で比較し、同面積なら先の候補を保持する。
+			if (not largest || (largestArea < area))
+			{
+				largest = std::move(candidate);
+				largestArea = area;
+			}
+		}
+
+		return largest;
 	}
 
 	////////////////////////////////////////////////////////////////

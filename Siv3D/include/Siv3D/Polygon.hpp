@@ -1304,8 +1304,8 @@ namespace s3d
 		/// @brief 頂点配列を修正して多角形を生成し、最も面積の大きい多角形を返します。
 		/// @param outer 外周の頂点配列
 		/// @param holes 多角形の穴
-		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形
-		/// @remark Correct() の結果から選択します。複数の多角形に分かれた場合、最大面積以外は返しません。
+		/// @return 頂点配列から生成した多角形のうち、最も面積の大きい多角形。修復できなければ空の Polygon
+		/// @remark Correct() の結果を area() で比較したときの最大の多角形を返します。同面積の場合は、先に現れる多角形を返します。
 		[[nodiscard]]
 		static Polygon CorrectOne(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
 

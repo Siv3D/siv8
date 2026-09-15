@@ -296,6 +296,9 @@ namespace s3d
 		[[nodiscard]]
 		static Array<Polygon> Correct(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes);
 
+		[[nodiscard]]
+		static Polygon CorrectOne(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes);
+
 	private:
 
 		bool initialize(std::span<const Vec2> outer, Array<Array<Vec2>> holes, SkipValidation skipValidation);

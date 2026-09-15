@@ -76,6 +76,16 @@ namespace s3d
 		CwOpenPolygon ToCwOpenPolygon(const Polygon& polygon);
 
 		[[nodiscard]]
+		PolygonFailureType ValidatePolygon(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes);
+
+		[[nodiscard]]
+		PolygonFailureType ValidatePolygon(const CwOpenPolygon& polygon);
+
+		// 修復と検証を行い、三角形化していない有効な輪郭を返す。
+		[[nodiscard]]
+		CwOpenMultiPolygon CorrectPolygonRings(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes = {});
+
+		[[nodiscard]]
 		size_t CalculateCircleQuality(double r) noexcept;
 	}
 }

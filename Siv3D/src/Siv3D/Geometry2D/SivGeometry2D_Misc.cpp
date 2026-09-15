@@ -13,6 +13,8 @@
 # include <Siv3D/Geometry2D/IsClockwise.hpp>
 # include <Siv3D/Geometry2D/Contains.hpp>
 # include <Siv3D/Geometry2D/Distance.hpp>
+# include <Siv3D/Geometry2D/BoundingRect.hpp>
+# include <Siv3D/Geometry2D/PointContainment.hpp>
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Number.hpp>
 # include <Siv3D/Polygon/GeometryCommon.hpp>
@@ -202,56 +204,124 @@ namespace s3d
 			//	- fal_rnd
 			//-----------------------------------------------
 
-			MultiPolygon results, outers;
-			Array<LineString> holes;
+			struct Component
+			{
+				CwOpenPolygon polygon;
+				RectF bounds;
+				Array<size_t> holeIndices;
+			};
+
+			Array<Component> outers;
+			Array<std::span<const Vec2>> holes;
 
 			for (const auto& ring : rings)
 			{
+				if (ring.size() < 3)
+				{
+					continue;
+				}
+
 				if (Geometry2D::IsClockwise(ring))
 				{
-					const Array<Polygon> polygons = Polygon::Correct(ring);
-					outers.append_range(polygons);
-					results.append_range(polygons);
+					auto corrected = detail::CorrectPolygonRings(ring);
+
+					for (auto& polygon : corrected)
+					{
+						const RectF bounds = Geometry2D::BoundingRect(polygon.outer());
+						outers.push_back(Component{ std::move(polygon), bounds, {} });
+					}
 				}
 				else
 				{
-					holes << ring;
+					holes.emplace_back(ring);
 				}
 			}
 
-			const size_t outers_size = outers.size();
-
-			for (const LineString& hole : holes)
+			// 穴の割り当ては、描画用 Float2 頂点や三角形を作らずに元の輪郭で判定する。
+			for (size_t holeIndex = 0; holeIndex < holes.size(); ++holeIndex)
 			{
-				size_t w = (size_t)-1;
-				double dist = Inf<double>;
+				size_t owner = outers.size();
+				double distance = Inf<double>;
+				const Vec2& point = holes[holeIndex].front();
 
-				const Vec2& point = hole.front();
-
-				for (size_t i = 0; i < outers_size; ++i)
+				for (size_t i = 0; i < outers.size(); ++i)
 				{
-					if (Geometry2D::Contains(outers[i], point))
+					const auto& component = outers[i];
+					const auto& polygon = component.polygon;
+
+					if (not Geometry2D::Contains(component.bounds, point)
+						|| not Geometry2D::ContainsPoint<PointContainmentOptions{ .boundary = PointContainmentBoundaryPolicy::Included }, Vec2>(polygon.outer(), point))
 					{
-						const Array<Vec2>& outer = outers[i].outer();
+						continue;
+					}
 
-						double d = Inf<double>;
-
-						for (size_t j = 0, outer_size = outer.size(); j < outer_size; ++j)
+					// 外周の修復によって既に生じた穴の内部は、割り当て対象から除く。
+					if (polygon.inners().any([&point](const auto& inner)
 						{
-							d = Min(d, Geometry2D::Distance(point, Line{ outer[j], outer[(j + 1) % outer_size] }));
-						}
+							return Geometry2D::ContainsPoint<PointContainmentOptions{ .boundary = PointContainmentBoundaryPolicy::Excluded }, Vec2>(inner, point);
+						}))
+					{
+						continue;
+					}
 
-						if (d < dist)
-						{
-							dist = d;
-							w = i;
-						}
+					const auto& outer = polygon.outer();
+					double d = Inf<double>;
+
+					for (size_t j = 0; j < outer.size(); ++j)
+					{
+						d = Min(d, Geometry2D::Distance(point, Line{ outer[j], outer[(j + 1) % outer.size()] }));
+					}
+
+					if (d < distance)
+					{
+						distance = d;
+						owner = i;
 					}
 				}
 
-				if (w != (size_t)-1)
+				if (owner != outers.size())
 				{
-					results[w].addHole(hole);
+					outers[owner].holeIndices.push_back(holeIndex);
+				}
+			}
+
+			MultiPolygon results;
+			results.reserve(outers.size());
+
+			for (auto& component : outers)
+			{
+				auto& polygon = component.polygon;
+				const size_t originalHoleCount = polygon.inners().size();
+				polygon.inners().reserve(originalHoleCount + component.holeIndices.size());
+
+				for (const size_t holeIndex : component.holeIndices)
+				{
+					const auto hole = holes[holeIndex];
+					polygon.inners().emplace_back(hole.begin(), hole.end());
+				}
+
+				const bool valid = (component.holeIndices.isEmpty() || (detail::ValidatePolygon(polygon) == PolygonFailureType::Ok));
+
+				if (not valid)
+				{
+					polygon.inners().resize(originalHoleCount);
+				}
+
+				Polygon result{ detail::OpenRingView(polygon.outer()), detail::CopyPolygonHoles(polygon), component.bounds, SkipValidation::Yes };
+
+				if (not valid)
+				{
+					// 不正な穴が混在する場合も、従来どおり追加できる穴だけを入力順に採用する。
+					for (const size_t holeIndex : component.holeIndices)
+					{
+						const auto hole = holes[holeIndex];
+						result.addHole(Array<Vec2>{ hole.begin(), hole.end() });
+					}
+				}
+
+				if (result)
+				{
+					results.push_back(std::move(result));
 				}
 			}
 
