@@ -40,6 +40,18 @@ namespace
 		CHECK(parsed->inners() == polygon.inners());
 	}
 
+	void CheckTriangleIndices(const Polygon& polygon, const Polygon& reference)
+	{
+		REQUIRE(polygon.indices().size() == reference.indices().size());
+		for (size_t i = 0; i < polygon.indices().size(); ++i)
+		{
+			CAPTURE(i);
+			CHECK(polygon.indices()[i].i0 == reference.indices()[i].i0);
+			CHECK(polygon.indices()[i].i1 == reference.indices()[i].i1);
+			CHECK(polygon.indices()[i].i2 == reference.indices()[i].i2);
+		}
+	}
+
 	template <class PointType>
 	void CheckConvexHullCases()
 	{
@@ -224,4 +236,142 @@ TEST_CASE("Polygon.outline.segment")
 	CHECK(polygon.outline(35.0, 10.0) == closingCorner);
 	CHECK(polygon.outline(-5.0, 10.0) == closingCorner);
 	CHECK(polygon.outline(5.0, 0.0) == LineString{ { 5, 0 }, { 5, 0 } });
+}
+
+TEST_CASE("Polygon.construction.moves_owned_holes")
+{
+	for (const auto skipValidation : { SkipValidation::No, SkipValidation::Yes })
+	{
+		for (const bool suppliedBounds : { false, true })
+		{
+			CAPTURE(suppliedBounds, skipValidation);
+			const Polygon reference = MakePolygonWithHole();
+			Array<Vec2> outer = reference.outer();
+			Array<Array<Vec2>> holes = reference.inners();
+			const auto* holeArrayStorage = holes.data();
+			const auto* holeVertexStorage = holes.front().data();
+			const RectF bounds{ -1, -1, 22, 22 };
+
+			const Polygon polygon = suppliedBounds
+				? Polygon{ outer, std::move(holes), bounds, skipValidation }
+				: Polygon{ outer, std::move(holes), skipValidation };
+			CheckPolygonRings(polygon, 1);
+			CHECK(polygon.inners().data() == holeArrayStorage);
+			CHECK(polygon.inners().front().data() == holeVertexStorage);
+			CHECK(polygon.outer().data() != outer.data());
+			CHECK(polygon.boundingRect() == (suppliedBounds ? bounds : reference.boundingRect()));
+			CHECK(polygon.vertices() == reference.vertices());
+			CheckTriangleIndices(polygon, reference);
+
+			outer.front() = Vec2{ -100, -100 };
+			CHECK(polygon.outer() == reference.outer());
+		}
+	}
+}
+
+TEST_CASE("Polygon.construction.multiple_holes_triangulation")
+{
+	const Array<Vec2> outer{ { 0, 0 }, { 12, 0 }, { 12, 4 }, { 8, 4 }, { 8, 12 }, { 0, 12 } };
+	const Array<Array<Vec2>> holes{
+		{ { 1, 1 }, { 1, 3 }, { 3, 3 }, { 3, 1 } },
+		{ { 1, 7 }, { 1, 10 }, { 4, 10 }, { 4, 7 } },
+	};
+	const Polygon polygon{ outer, holes };
+	CheckPolygonRings(polygon, 2);
+	CHECK(polygon.area() == Test::Approx(99.0));
+	CHECK(polygon.outer() == outer);
+	CHECK(polygon.inners() == holes);
+
+	Array<Float2> expectedVertices;
+	expectedVertices.append_range(outer);
+	for (const auto& hole : holes)
+	{
+		expectedVertices.append_range(hole);
+	}
+	CHECK(polygon.vertices() == expectedVertices);
+
+	double triangleArea = 0.0;
+	for (const auto& index : polygon.indices())
+	{
+		REQUIRE(index.i0 < expectedVertices.size());
+		REQUIRE(index.i1 < expectedVertices.size());
+		REQUIRE(index.i2 < expectedVertices.size());
+		const Vec2 p0 = expectedVertices[index.i0];
+		const Vec2 p1 = expectedVertices[index.i1];
+		const Vec2 p2 = expectedVertices[index.i2];
+		const double area2x = (p1 - p0).cross(p2 - p0);
+		CHECK(area2x > 0.0);
+		triangleArea += (area2x * 0.5);
+	}
+	CHECK(triangleArea == Test::Approx(99.0));
+	CHECK(Geometry2D::Contains(polygon, Vec2{ 6, 6 }));
+	CHECK_FALSE(Geometry2D::Contains(polygon, Vec2{ 2, 2 }));
+	CHECK_FALSE(Geometry2D::Contains(polygon, Vec2{ 2, 8 }));
+	CHECK_FALSE(Geometry2D::Contains(polygon, Vec2{ 10, 8 }));
+}
+
+TEST_CASE("Polygon.construction.validation_failure")
+{
+	const Polygon reference = MakePolygonWithHole();
+	for (const bool suppliedBounds : { false, true })
+	{
+		CAPTURE(suppliedBounds);
+		Array<Array<Vec2>> holes = reference.inners();
+		holes.front().reverse();
+		const Polygon polygon = suppliedBounds
+			? Polygon{ reference.outer(), std::move(holes), reference.boundingRect() }
+			: Polygon{ reference.outer(), std::move(holes) };
+		CHECK(polygon.isEmpty());
+		CHECK(polygon.inners().isEmpty());
+		CHECK(polygon.vertices().isEmpty());
+		CHECK(polygon.indices().isEmpty());
+		CHECK(polygon.boundingRect() == RectF::Empty());
+	}
+}
+
+TEST_CASE("Polygon.append.disconnected_preserves_original")
+{
+	Polygon polygon = MakePolygonWithHole();
+	const Polygon original = polygon;
+	CHECK_FALSE(polygon.append(RectF{ 30, 30, 5, 5 }));
+	CHECK_FALSE(polygon.append(RectF{ 30, 30, 5, 5 }.asPolygon()));
+	CHECK(polygon.outer() == original.outer());
+	CHECK(polygon.inners() == original.inners());
+	CHECK(polygon.vertices() == original.vertices());
+	CheckTriangleIndices(polygon, original);
+}
+
+TEST_CASE("Polygon.generated_rings.disconnected_union")
+{
+	const Polygon donut = MakePolygonWithHole();
+	const Polygon other = RectF{ 30, 30, 5, 5 }.asPolygon();
+	const Array<MultiPolygon> results{
+		Geometry2D::Or(donut, other),
+		Geometry2D::Or(MultiPolygon{ donut }, other),
+	};
+	for (const auto& result : results)
+	{
+		REQUIRE(result.size() == 2);
+		size_t holes = 0;
+		double area = 0.0;
+		for (const auto& polygon : result)
+		{
+			CheckPolygonRings(polygon, polygon.holeCount());
+			holes += polygon.holeCount();
+			area += polygon.area();
+		}
+		CHECK(holes == 1);
+		CHECK(area == Test::Approx(361.0));
+	}
+}
+
+TEST_CASE("Polygon.generated_rings.closed_line_string_duplicates")
+{
+	const LineString ring{ { 0, 0 }, { 20, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 }, { 0, 0 } };
+	const LineString original = ring;
+	const Polygon miter = ring.computeMiterBufferPolygon(2.0, CloseRing::Yes);
+	CheckPolygonRings(miter, 1);
+	CHECK(miter.area() == Test::Approx(320.0));
+	CheckPolygonRings(ring.computeRoundBufferPolygon(2.0, CloseRing::Yes), 1);
+	CHECK(ring == original);
 }

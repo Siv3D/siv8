@@ -17,6 +17,7 @@
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include "PolygonDetail.hpp"
+# include "GeometryCommon.hpp"
 # include "Triangulate.hpp"
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4127)
@@ -91,32 +92,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		static CwOpenPolygon MakeCWOpenPolygon(const std::span<const Vec2> outerVertices, const Array<Array<Vec2>>& holes)
-		{
-			CwOpenPolygon polygon;
-
-			auto& outer = polygon.outer();
-			{
-				outer.assign_range(outerVertices);
-
-				polygon.inners().reserve(holes.size());
-
-				for (const auto& hole : holes)
-				{
-					polygon.inners().emplace_back(hole.begin(), hole.end());
-				}
-			}
-
-			return polygon;
-		}
-
-		[[nodiscard]]
-		static CwOpenPolygon ToCWOpenPolygon(const PolygonData& polygonData)
-		{
-			return MakeCWOpenPolygon(polygonData.outer, polygonData.inners);
-		}
-
-		[[nodiscard]]
 		static size_t GetVertexCount(const Array<Array<Vec2>>& holes) noexcept
 		{
 			size_t count = 0;
@@ -168,7 +143,7 @@ namespace s3d
 				}
 			}
 
-			boost::geometry::is_valid(ToCWOpenPolygon(polygonData), failure);
+			boost::geometry::is_valid(detail::ToCwOpenPolygon(polygonData.outer, polygonData.inners), failure);
 
 			return ToPolygonFailureType(failure);
 		}
@@ -218,37 +193,6 @@ namespace s3d
 		}
 	}
 
-	namespace detail
-	{
-		Polygon ToPolygon(const CwOpenPolygon& polygon)
-		{
-			std::span<const Vec2> outer = polygon.outer();
-
-			if ((2 < outer.size()) && (outer.front() == outer.back()))
-			{
-				outer = outer.subspan(0, (outer.size() - 1));
-			}
-
-			const auto& inners = polygon.inners();
-
-			Array<Array<Vec2>> holes(inners.size());
-
-			for (size_t i = 0; i < holes.size(); ++i)
-			{
-				std::span<const Vec2> inner = inners[i];
-
-				if ((2 < inner.size()) && (inner.front() == inner.back()))
-				{
-					inner = inner.subspan(0, (inner.size() - 1));
-				}
-
-				holes[i].assign(inner.begin(), inner.end());
-			}
-
-			return Polygon{ outer, std::move(holes), SkipValidation::Yes };
-		}
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	(constructor)
@@ -257,50 +201,40 @@ namespace s3d
 
 	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
 	{
-		auto polygon = MakePolygonData(outer, holes);
-
-		if (not skipValidation)
+		if (initialize(outer, std::move(holes), skipValidation))
 		{
-			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
-			{
-				return;
-			}
+			m_boundingRect = Geometry2D::BoundingRect(m_polygon.outer);
 		}
-
-		if (not Triangulate(outer, holes, m_indices))
-		{
-			return;
-		}
-
-		m_polygon		= std::move(polygon);
-
-		m_vertices		= MakeVertices(outer, holes);
-
-		m_boundingRect	= Geometry2D::BoundingRect(outer);
 	}
 
 	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const RectF& boundingRect, const SkipValidation skipValidation)
 	{
-		auto polygon = MakePolygonData(outer, holes);
+		if (initialize(outer, std::move(holes), skipValidation))
+		{
+			m_boundingRect = boundingRect;
+		}
+	}
+
+	bool Polygon::PolygonDetail::initialize(const std::span<const Vec2> outer, Array<Array<Vec2>> holes, const SkipValidation skipValidation)
+	{
+		auto polygon = MakePolygonData(outer, std::move(holes));
 
 		if (not skipValidation)
 		{
 			if (ValidatePolygon(polygon) != PolygonFailureType::Ok)
 			{
-				return;
+				return false;
 			}
 		}
 
-		if (not Triangulate(outer, holes, m_indices))
+		if (not Triangulate(polygon.outer, polygon.inners, m_indices))
 		{
-			return;
+			return false;
 		}
 
-		m_polygon		= std::move(polygon);
-
-		m_vertices		= MakeVertices(outer, holes);
-
-		m_boundingRect	= boundingRect;
+		m_vertices = MakeVertices(polygon.outer, polygon.inners);
+		m_polygon = std::move(polygon);
+		return true;
 	}
 
 	Polygon::PolygonDetail::PolygonDetail(const std::span<const Vec2> outer, Array<TriangleIndex> indices, const RectF& boundingRect, const SkipValidation skipValidation)
@@ -892,7 +826,7 @@ namespace s3d
 	{
 		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
 
-		boost::geometry::buffer(toCwOpenPolygon(), multiPolygon,
+		boost::geometry::buffer(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
 			boost::geometry::strategy::buffer::join_miter{},
@@ -917,7 +851,7 @@ namespace s3d
 	{
 		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
 
-		boost::geometry::buffer(toCwOpenPolygon(), multiPolygon,
+		boost::geometry::buffer(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), multiPolygon,
 			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
 			boost::geometry::strategy::buffer::side_straight{},
 			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(Abs(distance) * qualityFactor.value()) },
@@ -946,7 +880,7 @@ namespace s3d
 		}
 
 		CwOpenPolygon result;
-		boost::geometry::simplify(toCwOpenPolygon(), result, maxDistance);
+		boost::geometry::simplify(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), result, maxDistance);
 
 		if (result.outer().empty())
 		{
@@ -968,37 +902,15 @@ namespace s3d
 
 		Array<CwOpenPolygon> results;
 
-		boost::geometry::union_(toCwOpenPolygon(), box, results);
+		boost::geometry::union_(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), box, results);
 
 		if (results.size() != 1)
 		{
 			return false;
 		}
 
-		auto& outer = results[0].outer();
-
-		if ((2 < outer.size())
-			&& (outer.front() == outer.back()))
-		{
-			outer.pop_back();
-		}
-
-		Array<Array<Vec2>> holes;
-
-		const auto& result = results[0];
-
-		if (const size_t holeCount = result.inners().size())
-		{
-			holes.resize(holeCount);
-
-			for (size_t i = 0; i < holeCount; ++i)
-			{
-				const auto& resultHole = result.inners()[i];
-				holes[i].assign(resultHole.begin(), resultHole.end());
-			}
-		}
-
-		*this = PolygonDetail{ outer, holes, SkipValidation::Yes };
+		const auto& result = results.front();
+		*this = PolygonDetail{ detail::OpenRingView(result.outer()), detail::CopyPolygonHoles(result), SkipValidation::Yes };
 
 		return true;
 	}
@@ -1007,37 +919,15 @@ namespace s3d
 	{
 		Array<CwOpenPolygon> results;
 
-		boost::geometry::union_(ToCWOpenPolygon(m_polygon), ToCWOpenPolygon(other._detail()->m_polygon), results);
+		boost::geometry::union_(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), detail::ToCwOpenPolygon(other), results);
 
 		if (results.size() != 1)
 		{
 			return false;
 		}
 
-		auto& outer = results[0].outer();
-
-		if ((2 < outer.size())
-			&& (outer.front() == outer.back()))
-		{
-			outer.pop_back();
-		}
-
-		Array<Array<Vec2>> holes;
-
-		const auto& result = results[0];
-
-		if (const size_t holeCount = result.inners().size())
-		{
-			holes.resize(holeCount);
-
-			for (size_t i = 0; i < holeCount; ++i)
-			{
-				const auto& resultHole = result.inners()[i];
-				holes[i].assign(resultHole.begin(), resultHole.end());
-			}
-		}
-
-		*this = PolygonDetail{ outer, holes, SkipValidation::Yes };
+		const auto& result = results.front();
+		*this = PolygonDetail{ detail::OpenRingView(result.outer()), detail::CopyPolygonHoles(result), SkipValidation::Yes };
 
 		return true;
 	}
@@ -1197,17 +1087,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	toCwOpenPolygon
-	//
-	////////////////////////////////////////////////////////////////
-
-	CwOpenPolygon Polygon::PolygonDetail::toCwOpenPolygon() const
-	{
-		return MakeCWOpenPolygon(m_polygon.outer, m_polygon.inners);
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	Parse
 	//
 	////////////////////////////////////////////////////////////////
@@ -1225,7 +1104,7 @@ namespace s3d
 
 	PolygonFailureType Polygon::PolygonDetail::Validate(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
-		return ValidatePolygon(MakeCWOpenPolygon(outer, holes));
+		return ValidatePolygon(detail::ToCwOpenPolygon(outer, holes));
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1236,7 +1115,7 @@ namespace s3d
 
 	Array<Polygon> Polygon::PolygonDetail::Correct(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
-		CwOpenPolygon polygon = MakeCWOpenPolygon(outer, holes);
+		CwOpenPolygon polygon = detail::ToCwOpenPolygon(outer, holes);
 
 		if (ValidatePolygon(polygon) == PolygonFailureType::Ok)
 		{

@@ -10,7 +10,6 @@
 //-----------------------------------------------
 
 # include "PolygonBuffer.hpp"
-# include "PolygonDetail.hpp"
 # include "GeometryCommon.hpp"
 
 namespace s3d

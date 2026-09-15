@@ -13,6 +13,7 @@
 # include <Siv3D/PointVector.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Array.hpp>
+# include <Siv3D/Polygon.hpp>
 
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(5311)
 # include <boost/geometry.hpp>
@@ -29,6 +30,20 @@ namespace s3d
 	using CWOpenRing			= boost::geometry::model::ring<Vec2, false, false, Array>;
 	using InnersType			= Array<boost::geometry::model::ring<Vec2, false, false, Array>>;
 
+	/// @brief 外周頂点と穴の頂点をもとに多角形を三角形分割し、描画します。
+	/// @param outer 外周の頂点
+	/// @param holes 穴の頂点
+	/// @param color 多角形の色
+	/// @remark Polygon の作成を経由せずに、三角形分割の結果を描画で使用する関数です。
+	void DrawTriangles(std::span<const Vec2> outer, const InnersType& holes, const ColorF& color);
+
+	/// @brief 外周頂点と穴の頂点をもとに多角形を三角形分割し、描画します。
+	/// @param outer 外周の頂点
+	/// @param holes 穴の頂点
+	/// @param pattern 塗りつぶしのパターン
+	/// @remark Polygon の作成を経由せずに、三角形分割の結果を描画で使用する関数です。
+	void DrawTriangles(std::span<const Vec2> outer, const InnersType& holes, const PatternParameters& pattern);
+
 	template <class Iterator>
 	class MultiPointView : public boost::iterator_range<Iterator>
 	{
@@ -44,6 +59,22 @@ namespace s3d
 
 	namespace detail
 	{
+		// Boost.Geometry と Siv3D の輪郭は、外周が画面座標で時計回り、穴が反時計回り。
+		[[nodiscard]]
+		std::span<const Vec2> OpenRingView(std::span<const Vec2> ring) noexcept;
+
+		[[nodiscard]]
+		Array<Array<Vec2>> CopyPolygonHoles(const CwOpenPolygon& polygon);
+
+		[[nodiscard]]
+		Polygon ToPolygon(const CwOpenPolygon& polygon, SkipValidation skipValidation = SkipValidation::Yes);
+
+		[[nodiscard]]
+		CwOpenPolygon ToCwOpenPolygon(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes);
+
+		[[nodiscard]]
+		CwOpenPolygon ToCwOpenPolygon(const Polygon& polygon);
+
 		[[nodiscard]]
 		size_t CalculateCircleQuality(double r) noexcept;
 	}

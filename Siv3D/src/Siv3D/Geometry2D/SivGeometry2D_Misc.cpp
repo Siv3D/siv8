@@ -16,7 +16,6 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Number.hpp>
 # include <Siv3D/Polygon/GeometryCommon.hpp>
-# include <Siv3D/Polygon/PolygonDetail.hpp>
 
 namespace s3d
 {
@@ -37,8 +36,8 @@ namespace s3d
 		MultiPolygon And(const RectF& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::intersection(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::intersection(ToGBox(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		MultiPolygon And(const Polygon& a, const RectF& b)
@@ -49,8 +48,8 @@ namespace s3d
 		MultiPolygon And(const Polygon& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::intersection(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::intersection(detail::ToCwOpenPolygon(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		//////////////////////////////////////////////////
@@ -62,8 +61,8 @@ namespace s3d
 		MultiPolygon Or(const RectF& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::union_(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::union_(ToGBox(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		MultiPolygon Or(const Polygon& a, const RectF& b)
@@ -74,8 +73,8 @@ namespace s3d
 		MultiPolygon Or(const Polygon& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::union_(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::union_(detail::ToCwOpenPolygon(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		MultiPolygon Or(const MultiPolygon& a, const Polygon& b)
@@ -84,25 +83,18 @@ namespace s3d
 			{
 				for (const auto& ap : a)
 				{
-					polygons.push_back(ap._detail()->toCwOpenPolygon());
+					polygons.push_back(detail::ToCwOpenPolygon(ap));
 				}
 			}
 
 			boost::geometry::model::multi_polygon<CwOpenPolygon> unions;
-			boost::geometry::union_(polygons, b._detail()->toCwOpenPolygon(), unions);
+			boost::geometry::union_(polygons, detail::ToCwOpenPolygon(b), unions);
 
 			MultiPolygon results;
 			{
 				for (const auto& polygon : unions)
 				{
-					Array<Array<Vec2>> retHoles;
-
-					for (const auto& hole : polygon.inners())
-					{
-						retHoles.emplace_back(hole.begin(), hole.end());
-					}
-
-					if (Polygon newPolygon{ polygon.outer(), retHoles, SkipValidation::No })
+					if (Polygon newPolygon = detail::ToPolygon(polygon, SkipValidation::No))
 					{
 						results.push_back(std::move(newPolygon));
 					}
@@ -121,8 +113,8 @@ namespace s3d
 		MultiPolygon Xor(const RectF& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::sym_difference(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::sym_difference(ToGBox(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		MultiPolygon Xor(const Polygon& a, const RectF& b)
@@ -133,8 +125,8 @@ namespace s3d
 		MultiPolygon Xor(const Polygon& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::sym_difference(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::sym_difference(detail::ToCwOpenPolygon(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		//////////////////////////////////////////////////
@@ -146,22 +138,22 @@ namespace s3d
 		MultiPolygon Subtract(const RectF& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::difference(ToGBox(a), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::difference(ToGBox(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		MultiPolygon Subtract(const Polygon& a, const RectF& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::difference(a._detail()->toCwOpenPolygon(), ToGBox(b), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::difference(detail::ToCwOpenPolygon(a), ToGBox(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		MultiPolygon Subtract(const Polygon& a, const Polygon& b)
 		{
 			Array<CwOpenPolygon> results;
-			boost::geometry::difference(a._detail()->toCwOpenPolygon(), b._detail()->toCwOpenPolygon(), results);
-			return results.map(detail::ToPolygon);
+			boost::geometry::difference(detail::ToCwOpenPolygon(a), detail::ToCwOpenPolygon(b), results);
+			return results.map([](const CwOpenPolygon& polygon) { return detail::ToPolygon(polygon); });
 		}
 
 		//////////////////////////////////////////////////

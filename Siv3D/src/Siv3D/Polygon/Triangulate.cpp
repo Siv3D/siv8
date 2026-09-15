@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include "Triangulate.hpp"
+# include "GeometryCommon.hpp"
 # include <ThirdParty/Earcut/earcut.hpp>
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -40,6 +41,46 @@ namespace s3d
 {
 	namespace
 	{
+		template <class InnerRing>
+		struct PolygonRingsView
+		{
+			std::span<const Vec2> outer;
+			std::span<const InnerRing> holes;
+
+			[[nodiscard]]
+			size_t size() const noexcept
+			{
+				return (1 + holes.size());
+			}
+
+			[[nodiscard]]
+			bool empty() const noexcept
+			{
+				return false; // The first ring always represents the outer boundary.
+			}
+
+			[[nodiscard]]
+			std::span<const Vec2> operator [](const size_t index) const noexcept
+			{
+				return ((index == 0) ? outer : std::span<const Vec2>{ holes[index - 1] });
+			}
+		};
+
+		template <class InnerRing>
+		[[nodiscard]]
+		std::vector<Vertex2D::IndexType> MakeTriangleIndices(const std::span<const Vec2> outer, const Array<InnerRing>& holes)
+		{
+			const PolygonRingsView<InnerRing> polygon{ outer, holes };
+			auto indices = mapbox::earcut<Vertex2D::IndexType>(polygon);
+
+			if (indices.size() % 3 != 0)
+			{
+				indices.clear();
+			}
+
+			return indices;
+		}
+
 		[[nodiscard]]
 		static size_t GetVertexCount(const InnersType& holes) noexcept
 		{
@@ -71,19 +112,9 @@ namespace s3d
 
 	bool Triangulate(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes, Array<TriangleIndex>& dstIndices)
 	{
-		Array<Array<Vec2>> polygon{ Arg::reserve = (1 + holes.size()) };
-		{
-			polygon.emplace_back(outer.begin(), outer.end());
+		const auto indices = MakeTriangleIndices(outer, holes);
 
-			for (const auto& hole : holes)
-			{
-				polygon.emplace_back(hole.begin(), hole.end());
-			}
-		}
-
-		const std::vector<Vertex2D::IndexType> indices = mapbox::earcut<Vertex2D::IndexType>(polygon);
-
-		if (indices.empty() || (indices.size() % 3 != 0))
+		if (indices.empty())
 		{
 			return false;
 		}
@@ -97,47 +128,29 @@ namespace s3d
 		return true;
 	}
 
-	void DrawTriangles(const std::span<const Vec2> outer, const InnersType& holes, const ColorF& color)
+	namespace
 	{
-		Array<Array<Vec2>> polygon{ Arg::reserve = (1 + holes.size()) };
+		template <class Fill>
+		void DrawTrianglesImpl(const std::span<const Vec2> outer, const InnersType& holes, const Fill& fill)
 		{
-			polygon.emplace_back(outer.begin(), outer.end());
+			const auto indices = MakeTriangleIndices(outer, holes);
 
-			for (const auto& hole : holes)
+			if (indices.empty())
 			{
-				polygon.emplace_back(hole.begin(), hole.end());
+				return;
 			}
+
+			SIV3D_ENGINE(Renderer2D)->addPolygon(MakeVertices(outer, holes), indices, fill);
 		}
-
-		const std::vector<Vertex2D::IndexType> indices = mapbox::earcut<Vertex2D::IndexType>(polygon);
-
-		if (indices.size() % 3 != 0)
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addPolygon(MakeVertices(outer, holes), indices, color.toFloat4());
 	}
 
-	void DrawTriangles(std::span<const Vec2> outer, const InnersType& holes, const PatternParameters& pattern)
+	void DrawTriangles(const std::span<const Vec2> outer, const InnersType& holes, const ColorF& color)
 	{
-		Array<Array<Vec2>> polygon{ Arg::reserve = (1 + holes.size()) };
-		{
-			polygon.emplace_back(outer.begin(), outer.end());
+		DrawTrianglesImpl(outer, holes, color.toFloat4());
+	}
 
-			for (const auto& hole : holes)
-			{
-				polygon.emplace_back(hole.begin(), hole.end());
-			}
-		}
-
-		const std::vector<Vertex2D::IndexType> indices = mapbox::earcut<Vertex2D::IndexType>(polygon);
-
-		if (indices.size() % 3 != 0)
-		{
-			return;
-		}
-
-		SIV3D_ENGINE(Renderer2D)->addPolygon(MakeVertices(outer, holes), indices, pattern);
+	void DrawTriangles(const std::span<const Vec2> outer, const InnersType& holes, const PatternParameters& pattern)
+	{
+		DrawTrianglesImpl(outer, holes, pattern);
 	}
 }

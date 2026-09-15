@@ -15,7 +15,6 @@
 # include <Siv3D/LineString.hpp>
 # include "ClosedLineString.hpp"
 # include "GeometryCommon.hpp"
-# include "Triangulate.hpp"
 # include <Siv3D/Renderer2D/IRenderer2D.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 

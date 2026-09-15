@@ -11,15 +11,9 @@
 
 # pragma once
 # include <Siv3D/Polygon.hpp>
-# include "GeometryCommon.hpp"
 
 namespace s3d
 {
-	namespace detail
-	{
-		Polygon ToPolygon(const CwOpenPolygon& polygon);
-	}
-
 	struct PolygonData
 	{
 		// 外周の頂点配列（時計回り）
@@ -277,14 +271,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	toCwOpenPolygon
-		//
-		////////////////////////////////////////////////////////////////
-
-		CwOpenPolygon toCwOpenPolygon() const;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	Parse
 		//
 		////////////////////////////////////////////////////////////////
@@ -311,6 +297,8 @@ namespace s3d
 		static Array<Polygon> Correct(std::span<const Vec2> outer, const Array<Array<Vec2>>& holes);
 
 	private:
+
+		bool initialize(std::span<const Vec2> outer, Array<Array<Vec2>> holes, SkipValidation skipValidation);
 
 		PolygonData m_polygon;
 
