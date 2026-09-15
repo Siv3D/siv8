@@ -210,6 +210,10 @@ integrated gallery for all eleven patterns. Dedicated
 [transform checks](../../Test/Manual/PatternTransforms.md) compare pattern
 attachment and continuity across split geometry.
 
+The [Polygon simplification check](../../Test/Manual/PolygonSimplification.md)
+compares hole preservation, rejected simplifications, and triangulated rendering
+across a range of distance thresholds.
+
 ## Documentation checks
 
 ```sh

@@ -19,6 +19,7 @@
 # include "GeometryCommon.hpp"
 # include "Triangulate.hpp"
 # include "PolygonParser.hpp"
+# include <Siv3D/LineString/SimplifyLineString.hpp>
 
 namespace s3d
 {
@@ -782,22 +783,90 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	Polygon Polygon::PolygonDetail::simplified(const double maxDistance) const
+	Optional<PolygonData> Polygon::PolygonDetail::simplified(const double maxDistance) const
 	{
-		if (not m_polygon.outer)
+		struct RingChange
 		{
-			return{};
+			size_t index; // 0: outer, 1...: holes
+			Array<Vec2> vertices;
+		};
+		Array<RingChange> changes;
+		Array<Vec2> simplified;
+		Array<size_t> pendingEnds;
+		auto SimplifyRing = [&](const std::span<const Vec2> ring, const size_t index)
+		{
+			if (ring.size() <= 3)
+			{
+				return;
+			}
+			detail::SimplifyLineString(ring, maxDistance, CloseRing::Yes, simplified, pendingEnds);
+			// Preserve every ring, including holes smaller than the tolerance.
+			if ((3 <= simplified.size()) && (simplified.size() < ring.size()))
+			{
+				changes.push_back({ index, std::move(simplified) });
+			}
+		};
+		SimplifyRing(m_polygon.outer, 0);
+		for (size_t i = 0; i < m_polygon.inners.size(); ++i)
+		{
+			SimplifyRing(m_polygon.inners[i], (i + 1));
+		}
+		if (changes.isEmpty())
+		{
+			return none;
 		}
 
-		CwOpenPolygon result;
-		boost::geometry::simplify(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), result, maxDistance);
-
-		if (result.outer().empty())
+		// Reuse one converted geometry for all topology checks. Swapping a batch
+		// back restores the accepted geometry.
+		auto polygon = detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners);
+		auto SwapChanges = [&](const size_t begin, const size_t end)
 		{
-			return{};
+			for (size_t i = begin; i < end; ++i)
+			{
+				auto& change = changes[i];
+				Array<Vec2>& ring = ((change.index == 0)
+					? static_cast<Array<Vec2>&>(polygon.outer())
+					: static_cast<Array<Vec2>&>(polygon.inners()[change.index - 1]));
+				ring.swap(change.vertices);
+			}
+		};
+
+		Array<std::pair<size_t, size_t>> batches{ { 0, changes.size() } };
+		bool changed = false;
+		while (not batches.isEmpty())
+		{
+			const auto [begin, end] = batches.back();
+			batches.pop_back();
+			SwapChanges(begin, end);
+			if (detail::ValidatePolygon(polygon) == PolygonFailureType::Ok)
+			{
+				changed = true;
+				continue;
+			}
+			SwapChanges(begin, end);
+			if ((end - begin) == 1)
+			{
+				continue;
+			}
+			// Isolate conflicting rings while accepting safe groups together.
+			// Process in source order for a deterministic result.
+			const size_t middle = (begin + (end - begin) / 2);
+			batches.emplace_back(middle, end);
+			batches.emplace_back(begin, middle);
+		}
+		if (not changed)
+		{
+			return none;
 		}
 
-		return detail::ToPolygon(result);
+		PolygonData result;
+		result.outer = std::move(polygon.outer());
+		result.inners.reserve(polygon.inners().size());
+		for (auto& hole : polygon.inners())
+		{
+			result.inners.emplace_back(std::move(hole));
+		}
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////

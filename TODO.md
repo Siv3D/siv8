@@ -30,13 +30,6 @@
 - 現在は BigInt が例外後に 0 になり、BigFloat は元の値を保持する。両型とも再代入は可能。
 - BigInt も元の値を保持する契約へ揃えるかを決める。変更する場合は確保・コピーのコストと例外時の保証を確認する。
 
-## `Siv3D/include/Siv3D/Polygon.hpp`
-
-### 輪郭の簡略化
-
-- `Polygon::simplified()` に残る Boost Geometry の簡略化と輪郭変換を見直す。`LineString::simplified()` と共有する場合は、閉じた輪郭の始点・向き・縮退の扱いを先に整理する。
-- 現在は簡略化後の輪郭を検証せず `ToPolygon()` へ渡している。自己交差、穴同士の接触、穴と外周の交差が生じた場合の戻り値を決め、穴の反時計回りの規約と合わせてテストする。
-
 ## `Siv3D/include/Siv3D/Quaternion.hpp`
 
 ### Squad 補間

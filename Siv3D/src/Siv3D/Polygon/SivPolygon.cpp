@@ -779,7 +779,17 @@ namespace s3d
 			return *this;
 		}
 
-		return pImpl->simplified(maxDistance);
+		auto rings = pImpl->simplified(maxDistance);
+		if (not rings)
+		{
+			return *this;
+		}
+		Polygon result{ rings->outer, std::move(rings->inners), SkipValidation::Yes };
+		if (not result)
+		{
+			return *this;
+		}
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////

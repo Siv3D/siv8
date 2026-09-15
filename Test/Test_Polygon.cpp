@@ -841,3 +841,180 @@ TEST_CASE("Polygon.area_and_centroid.supplied_mesh")
 		CHECK(*polygon.centroid() == (offset + Vec2{ 2, 1 }));
 	}
 }
+
+TEST_CASE("Polygon.simplified.preserves_small_holes")
+{
+	const Array<Vec2> outer{ { 0, 0 }, { 50, 0 }, { 100, 0 }, { 100, 50 }, { 100, 100 }, { 50, 100 }, { 0, 100 }, { 0, 50 } };
+	const Array<Array<Vec2>> holes{
+		{ { 10, 10 }, { 10, 10.5 }, { 10, 11 }, { 10.5, 11 }, { 11, 11 }, { 11, 10.5 }, { 11, 10 }, { 10.5, 10 } },
+		{ { 30, 30 }, { 30, 40 }, { 30, 50 }, { 40, 50 }, { 50, 50 }, { 50, 40 }, { 50, 30 }, { 40, 30 } }
+	};
+	const Polygon source{ outer, holes };
+	REQUIRE(source);
+	const Polygon result = source.simplified(5.0);
+	REQUIRE(result.holeCount() == 2);
+	CheckPolygonRings(result, 2);
+	CHECK(result.outer().size() < outer.size());
+	CHECK(result.inners()[0] == holes[0]);
+	CHECK(result.inners()[1].size() < holes[1].size());
+	CHECK_FALSE(result.contains(Vec2{ 10.5, 10.5 }));
+	CHECK_FALSE(result.contains(Vec2{ 40, 40 }));
+	CHECK(source.outer() == outer);
+	CHECK(source.inners() == holes);
+}
+
+TEST_CASE("Polygon.simplified.hole_near_outer_boundary")
+{
+	const Polygon source{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 6 }, { 26, 6 }, { 26, 14 }, { 20, 14 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 21, 8 }, { 21, 12 }, { 24, 12 }, { 24, 8 } } }
+	};
+	REQUIRE(source);
+	for (const double distance : { 0.5, 2.0, 4.0, 8.0, 16.0, 64.0 })
+	{
+		CAPTURE(distance);
+		const Polygon result = source.simplified(distance);
+		REQUIRE(result.holeCount() == 1);
+		CheckPolygonRings(result, 1);
+		CHECK(result.outer().size() <= source.outer().size());
+		CHECK(result.inners()[0].size() <= source.inners()[0].size());
+	}
+}
+
+TEST_CASE("Polygon.simplified.neighboring_holes")
+{
+	const Array<Vec2> outer{ { 0, 0 }, { 20, 0 }, { 40, 0 }, { 40, 20 }, { 40, 40 }, { 20, 40 }, { 0, 40 }, { 0, 20 } };
+	const Array<Vec2> cShape{ { 4, 4 }, { 28, 4 }, { 28, 8 }, { 8, 8 }, { 8, 24 }, { 28, 24 }, { 28, 28 }, { 4, 28 } };
+	const Polygon source{ outer, Array<Array<Vec2>>{ cShape.reversed(), { { 16, 12 }, { 16, 18 }, { 20, 18 }, { 20, 12 } } } };
+	REQUIRE(source);
+	for (const double distance : { 0.5, 2.0, 4.0, 8.0, 16.0, 64.0 })
+	{
+		CAPTURE(distance);
+		CheckPolygonRings(source.simplified(distance), 2);
+	}
+}
+
+TEST_CASE("Polygon.simplified.rejects_conflicting_ring_only")
+{
+	const Array<Vec2> outer{ { 0, 0 }, { 20, 0 }, { 40, 0 }, { 40, 20 }, { 40, 40 }, { 20, 40 }, { 0, 40 }, { 0, 20 } };
+	const Array<Vec2> cShape{ { 4, 4 }, { 28, 4 }, { 28, 8 }, { 8, 8 }, { 8, 24 }, { 28, 24 }, { 28, 28 }, { 4, 28 } };
+	const Array<Array<Vec2>> holes{ cShape.reversed(), { { 16, 12 }, { 16, 18 }, { 20, 18 }, { 20, 12 } } };
+	const Polygon source{ outer, holes };
+	REQUIRE(source);
+	const auto unsafeHole = LineString{ holes[0] }.simplified(16.0, CloseRing::Yes).asArray();
+	REQUIRE(unsafeHole.size() >= 3);
+	REQUIRE(Polygon::Validate(outer, { unsafeHole, holes[1] }) != PolygonFailureType::Ok);
+
+	const Polygon result = source.simplified(16.0);
+	CheckPolygonRings(result, 2);
+	CHECK(result.outer().size() < source.outer().size());
+	CHECK(result.inners() == source.inners());
+}
+
+TEST_CASE("Polygon.simplified.rejects_self_intersection")
+{
+	const Polygon source{ Array<Vec2>{
+		{ 24, 10 }, { 17, 13 }, { 17, 11 }, { 2, 20 }, { 2, 23 }, { 1, 19 }, { 1, 11 }, { 10, 8 },
+		{ 26, 4 }, { 25, 15 }, { 17, 18 }, { 20, 17 }, { 15, 21 }, { 21, 21 }, { 6, 26 }, { 4, 26 }
+	} };
+	REQUIRE(source);
+	const LineString unsafe = LineString{ source.outer() }.simplified(10.0, CloseRing::Yes);
+	REQUIRE(Polygon::Validate(unsafe.asArray()) == PolygonFailureType::SelfIntersections);
+	const Polygon result = source.simplified(10.0);
+	CheckPolygonRings(result, 0);
+	CHECK(result.outer() == source.outer());
+	CheckTriangleIndices(result, source);
+}
+
+TEST_CASE("Polygon.simplified.unchanged_preserves_mesh")
+{
+	CHECK(Polygon{}.simplified(10.0).isEmpty());
+	const Polygon donut = MakePolygonWithHole();
+	Array<TriangleIndex> indices = donut.indices();
+	std::rotate(indices.begin(), indices.begin() + 1, indices.end());
+	const Polygon source{ donut.outer(), donut.inners(), donut.vertices(), indices, donut.boundingRect() };
+	for (const double distance : { -1.0, 0.0, 100.0 })
+	{
+		CAPTURE(distance);
+		const Polygon result = source.simplified(distance);
+		CheckPolygonRings(result, 1);
+		CHECK(result.outer() == source.outer());
+		CHECK(result.inners() == source.inners());
+		CHECK(result.vertices() == source.vertices());
+		CheckTriangleIndices(result, source);
+	}
+	const MultiPolygon multi{ Polygon{}, source };
+	const MultiPolygon result = multi.simplified(100.0);
+	REQUIRE(result.size() == 2);
+	CHECK(result[0].isEmpty());
+	CheckPolygonRings(result[1], 1);
+}
+
+TEST_CASE("Polygon.simplified.many_holes_and_error_bound")
+{
+	const Array<Vec2> outer{ { 0, 0 }, { 50, 0 }, { 100, 0 }, { 100, 50 }, { 100, 100 }, { 50, 100 }, { 0, 100 }, { 0, 50 } };
+	Array<Array<Vec2>> holes;
+	for (int32 y = 0; y < 6; ++y)
+	{
+		for (int32 x = 0; x < 6; ++x)
+		{
+			const Vec2 center{ (10.0 + x * 16), (10.0 + y * 16) };
+			Array<Vec2> ring;
+			for (int32 i = 0; i < 16; ++i)
+			{
+				const double angle = (-Math::TwoPi * i / 16.0);
+				const double radius = ((i % 2) ? 3.0 : 4.0);
+				ring.push_back(center + Vec2{ std::cos(angle), std::sin(angle) } * radius);
+			}
+			holes.push_back(std::move(ring));
+		}
+	}
+	const Polygon original{ outer, holes };
+	REQUIRE(original);
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+	{
+		const Polygon source = original.movedBy(offset);
+		REQUIRE(Polygon::Validate(source.outer(), source.inners()) == PolygonFailureType::Ok);
+		for (const double distance : { 0.25, 1.0, 3.0, 10.0 })
+		{
+			CAPTURE(offset, distance);
+			const Polygon result = source.simplified(distance);
+			CheckPolygonRings(result, holes.size());
+			auto CheckError = [distance](const Array<Vec2>& before, const Array<Vec2>& after)
+			{
+				REQUIRE(after.size() <= before.size());
+				REQUIRE(after.front() == before.front());
+				size_t begin = 0;
+				for (size_t i = 1; i <= after.size(); ++i)
+				{
+					size_t end = before.size();
+					const Vec2 next = after[i % after.size()];
+					if (i < after.size())
+					{
+						end = (begin + 1);
+						while ((end < before.size()) && (before[end] != next))
+						{
+							++end;
+						}
+						REQUIRE(end < before.size());
+					}
+					const Line relative{ Vec2{ 0, 0 }, (next - before[begin]) };
+					for (size_t j = (begin + 1); j < end; ++j)
+					{
+						CHECK(relative.distanceFrom(before[j] - before[begin]) <= (distance + 1e-12));
+					}
+					begin = end;
+				}
+			};
+			CheckError(source.outer(), result.outer());
+			REQUIRE(result.holeCount() == source.holeCount());
+			for (size_t i = 0; i < source.holeCount(); ++i)
+			{
+				CheckError(source.inners()[i], result.inners()[i]);
+			}
+			const Polygon again = source.simplified(distance);
+			CHECK(again.outer() == result.outer());
+			CHECK(again.inners() == result.inners());
+		}
+	}
+}

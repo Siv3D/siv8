@@ -3009,6 +3009,7 @@
 		F9B7DA1B2D8C72DF002ABACE /* BCnData.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */; };
 		F9B7DA1D2D8C72F5002ABACE /* BCnData.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */; };
 		F9C0D00130A0000100000001 /* LineStringParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9C0D00330A0000100000001 /* LineStringParser.cpp */; };
+		73E1247D696D44C786AAE6BB /* SimplifyLineString.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0F487CCABD204C60AF81A919 /* SimplifyLineString.hpp */; };
 		F9C0D00230A0000100000001 /* LineStringParser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9C0D00430A0000100000001 /* LineStringParser.hpp */; };
 		F9C1000130A0000000000001 /* Test_ChildProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9C1000230A0000000000001 /* Test_ChildProcess.cpp */; };
 		F9CD6A112DE226E800EFA782 /* ReadingDirection.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */; };
@@ -6446,6 +6447,7 @@
 		F9B7DA1A2D8C72DF002ABACE /* BCnData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.hpp; sourceTree = "<group>"; };
 		F9B7DA1C2D8C72F5002ABACE /* BCnData.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BCnData.ipp; sourceTree = "<group>"; };
 		F9C0D00330A0000100000001 /* LineStringParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LineStringParser.cpp; sourceTree = "<group>"; };
+		0F487CCABD204C60AF81A919 /* SimplifyLineString.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimplifyLineString.hpp; sourceTree = "<group>"; };
 		F9C0D00430A0000100000001 /* LineStringParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LineStringParser.hpp; sourceTree = "<group>"; };
 		F9C1000230A0000000000001 /* Test_ChildProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_ChildProcess.cpp; sourceTree = "<group>"; };
 		F9CD6A102DE226E800EFA782 /* ReadingDirection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ReadingDirection.hpp; sourceTree = "<group>"; };
@@ -14267,6 +14269,7 @@
 			children = (
 				F9C0D00330A0000100000001 /* LineStringParser.cpp */,
 				F9C0D00430A0000100000001 /* LineStringParser.hpp */,
+				0F487CCABD204C60AF81A919 /* SimplifyLineString.hpp */,
 				F9F00A7D2CE06CA10097C165 /* SivLineString.cpp */,
 			);
 			path = LineString;
@@ -14585,6 +14588,7 @@
 				F9DD965A2F1238B70026DFA5 /* FrameMetrics.hpp in Headers */,
 				F93BD7F93016AE7100B3542E /* PolygonParser.hpp in Headers */,
 				F9C0D00230A0000100000001 /* LineStringParser.hpp in Headers */,
+				73E1247D696D44C786AAE6BB /* SimplifyLineString.hpp in Headers */,
 				F986019D2BCFBB53006A4C0F /* SkDevice.h in Headers */,
 				F98600722BCFBB53006A4C0F /* SkCPUTypes.h in Headers */,
 				F98600552BCFBB53006A4C0F /* SkXPSDocument.h in Headers */,
