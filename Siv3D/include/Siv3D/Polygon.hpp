@@ -759,7 +759,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の面積を返します。
-		/// @return 多角形の面積
+		/// @remark outer() と inners() の頂点座標に基づき、穴の面積を除いて計算します。
+		/// @return 多角形の面積。空の場合は 0
 		[[nodiscard]]
 		double area() const noexcept;
 
@@ -781,6 +782,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形の重心の座標を返します。
+		/// @remark outer() と inners() の頂点座標に基づき、穴を除いた領域の重心を計算します。
 		/// @return 多角形の重心の座標、面積を持たない場合は none
 		[[nodiscard]]
 		Optional<Vec2> centroid() const noexcept;

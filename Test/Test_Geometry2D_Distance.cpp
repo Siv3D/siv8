@@ -202,3 +202,45 @@ TEST_CASE("Geometry2D.Distance.Curves")
 		CheckWitnessConsistency(*result, 1.0e-7);
 	}
 }
+
+TEST_CASE("Geometry2D.Distance.Polygon.intersection_and_containment_witnesses")
+{
+	const Polygon polygon{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 6, 6 }, { 6, 14 }, { 14, 14 }, { 14, 6 } } }
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const double expected)
+	{
+		CHECK(Geometry2D::Distance(a, b) == Test::Approx(expected));
+		CHECK(Geometry2D::Distance(b, a) == Test::Approx(expected));
+		const auto ab = Geometry2D::ClosestPoints(a, b);
+		const auto ba = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(ab);
+		REQUIRE(ba);
+		CHECK(ab->distance == Test::Approx(expected));
+		CHECK(ba->distance == Test::Approx(expected));
+		CHECK(Geometry2D::Intersects(ab->pointA, a));
+		CHECK(Geometry2D::Intersects(ab->pointB, b));
+		CHECK(Geometry2D::Intersects(ba->pointA, b));
+		CHECK(Geometry2D::Intersects(ba->pointB, a));
+		CheckWitnessConsistency(*ab);
+		CheckWitnessConsistency(*ba);
+	};
+
+	CheckPair(polygon, polygon, 0.0);
+	CheckPair(polygon, Vec2{ 2, 3 }, 0.0);
+	CheckPair(polygon, Vec2{ 10, 10 }, 4.0);
+	CheckPair(polygon, LineString{ Vec2{ 2, 3 }, Vec2{ 2, 3 }, Vec2{ 2, 3 } }, 0.0);
+	CheckPair(polygon, Line{ Vec2{ -5, 10 }, Vec2{ 25, 10 } }, 0.0);
+	CheckPair(polygon, Circle{ Vec2{ 3, 3 }, 1.0 }, 0.0);
+	CheckPair(polygon, RectF{ 1, 1, 2, 2 }.asPolygon(), 0.0);
+	CheckPair(polygon, RectF{ -10, -10, 40, 40 }.asPolygon(), 0.0);
+	CheckPair(polygon, RectF{ 7, 7, 2, 2 }.asPolygon(), 1.0);
+	CheckPair(polygon, RectF{ 18, 1, 4, 2 }.asPolygon(), 0.0);
+	CheckPair(polygon, RectF{ 30, 1, 4, 2 }.asPolygon(), 10.0);
+	const MultiPolygon multi{ Polygon{}, polygon, RectF{ 30, 1, 4, 2 }.asPolygon(), Polygon{} };
+	CheckPair(multi, Vec2{ 32, 2 }, 0.0);
+	CheckPair(multi, Vec2{ 25, 2 }, 5.0);
+	CHECK(std::isinf(Geometry2D::Distance(polygon, MultiPolygon{ Polygon{} })));
+	CHECK(not Geometry2D::ClosestPoints(polygon, MultiPolygon{ Polygon{} }));
+}

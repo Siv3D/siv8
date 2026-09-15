@@ -46,3 +46,27 @@ TEST_CASE("MultiPolygon.array_like_contract")
 	CHECK(std::ranges::equal(result[0].vertices(), result[1].vertices()));
 	CHECK_THROWS_AS((void) result.filter([](const Polygon&) -> bool { throw std::runtime_error("predicate"); }), std::runtime_error);
 }
+
+TEST_CASE("MultiPolygon.area_and_centroid.contours")
+{
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 4, 0 }, { 4, 4 }, { 0, 4 } },
+		Array<Array<Vec2>>{ { { 1, 1 }, { 1, 2 }, { 2, 2 }, { 2, 1 } } }
+	};
+	const Polygon rectangle = RectF{ 8, 0, 2, 4 }.asPolygon();
+	const double expectedArea = 23.0;
+	const Vec2 expectedCentroid{ ((30.5 + 9 * 8) / 23.0), ((30.5 + 2 * 8) / 23.0) };
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+	{
+		const MultiPolygon polygons{ Polygon{}, donut.movedBy(offset), rectangle.movedBy(offset), Polygon{} };
+		CHECK(polygons.area() == expectedArea);
+		const auto centroid = polygons.centroid();
+		REQUIRE(centroid);
+		CHECK(centroid->distanceFrom(expectedCentroid + offset) <= 3.0e-8);
+	}
+	CHECK(MultiPolygon{}.area() == 0.0);
+	CHECK(not MultiPolygon{}.centroid());
+	const MultiPolygon collapsed{ donut.scaledFromOrigin(Vec2{ 0, 1 }), Polygon{} };
+	CHECK(collapsed.area() == 0.0);
+	CHECK(not collapsed.centroid());
+}

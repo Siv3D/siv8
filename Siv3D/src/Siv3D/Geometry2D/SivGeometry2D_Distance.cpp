@@ -61,10 +61,8 @@ namespace s3d
 
 		struct ShapeDistanceData
 		{
-			bool empty = true;
 			Optional<Vec2> pointGeometry;
 			Array<BoundaryPiece> boundaryPieces;
-			Array<Vec2> representativePoints;
 		};
 
 		[[nodiscard]]
@@ -1365,37 +1363,44 @@ namespace s3d
 			}
 		}
 
+		// 呼び出し側で空形状を除外してから、必要な経路だけで作る。
 		template <class Shape>
 		[[nodiscard]]
 		ShapeDistanceData MakeShapeDistanceData(const Shape& shape)
 		{
 			ShapeDistanceData data;
-
-			if (IsEmptyGeometry(shape))
-			{
-				return data;
-			}
-
-			data.empty = false;
 			Vec2 point;
 
 			if (TryGetPointGeometry(shape, point))
 			{
 				data.pointGeometry = point;
-				data.representativePoints.push_back(point);
-				return data;
+			}
+			else
+			{
+				AppendBoundaryPieces(data.boundaryPieces, shape);
 			}
 
-			AppendBoundaryPieces(data.boundaryPieces, shape);
-			AppendRepresentativePoints(data.representativePoints, shape);
 			return data;
+		}
+
+		template <class Shape>
+		[[nodiscard]]
+		Array<Vec2> MakeRepresentativePoints(const Shape& shape)
+		{
+			Vec2 point;
+			if (TryGetPointGeometry(shape, point))
+			{
+				return { point };
+			}
+
+			Array<Vec2> points;
+			AppendRepresentativePoints(points, shape);
+			return points;
 		}
 
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
-		Optional<Vec2> FindCommonPoint(
-			const ShapeA& a, const ShapeB& b,
-			const ShapeDistanceData& dataA, const ShapeDistanceData& dataB)
+		Vec2 FindCommonPoint(const ShapeA& a, const ShapeB& b)
 		{
 			if (const auto events = Geometry2D::IntersectsAt(a, b))
 			{
@@ -1419,16 +1424,19 @@ namespace s3d
 				return none;
 			};
 
-			if (const auto point = TestPoints(dataA.representativePoints))
+			const Array<Vec2> pointsA = MakeRepresentativePoints(a);
+			if (const auto point = TestPoints(pointsA))
 			{
-				return point;
+				return *point;
 			}
 
-			if (const auto point = TestPoints(dataB.representativePoints))
+			const Array<Vec2> pointsB = MakeRepresentativePoints(b);
+			if (const auto point = TestPoints(pointsB))
 			{
-				return point;
+				return *point;
 			}
 
+			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
 			for (const BoundaryPiece& piece : dataA.boundaryPieces)
 			{
 				for (int32 i = 0; i <= 32; ++i)
@@ -1442,6 +1450,7 @@ namespace s3d
 				}
 			}
 
+			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
 			for (const BoundaryPiece& piece : dataB.boundaryPieces)
 			{
 				for (int32 i = 0; i <= 32; ++i)
@@ -1455,8 +1464,8 @@ namespace s3d
 				}
 			}
 
-			const size_t countA = std::min(dataA.representativePoints.size(), static_cast<size_t>(12));
-			const size_t countB = std::min(dataB.representativePoints.size(), static_cast<size_t>(12));
+			const size_t countA = std::min(pointsA.size(), static_cast<size_t>(12));
+			const size_t countB = std::min(pointsB.size(), static_cast<size_t>(12));
 
 			for (size_t i = 0; i < countA; ++i)
 			{
@@ -1464,8 +1473,8 @@ namespace s3d
 				{
 					for (int32 k = 1; k < 32; ++k)
 					{
-						const Vec2 point = dataA.representativePoints[i].lerp(
-							dataB.representativePoints[j], (static_cast<double>(k) / 32.0));
+						const Vec2 point = pointsA[i].lerp(
+							pointsB[j], (static_cast<double>(k) / 32.0));
 
 						if (Geometry2D::Intersects(point, a)
 							&& Geometry2D::Intersects(point, b))
@@ -1476,7 +1485,9 @@ namespace s3d
 				}
 			}
 
-			return none;
+			// Preserve zero distance if numeric errors prevent finding an intersection witness.
+			assert(false);
+			return (not pointsA.isEmpty() ? pointsA.front() : pointsB.front());
 		}
 
 		[[nodiscard]]
@@ -1562,32 +1573,19 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ComputeClosestPointsCanonical(const ShapeA& a, const ShapeB& b)
 		{
-			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
-			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
-
-			if (dataA.empty || dataB.empty)
+			if (IsEmptyGeometry(a) || IsEmptyGeometry(b))
 			{
 				return none;
 			}
 
 			if (Geometry2D::Intersects(a, b))
 			{
-				if (const auto commonPoint = FindCommonPoint(a, b, dataA, dataB))
-				{
-					return ClosestPoints2D{ *commonPoint, *commonPoint, 0.0 };
-				}
-
-				// A valid intersection always has a common point. The exhaustive witness
-				// paths above cover supported valid geometry. This fallback preserves the
-				// normative zero distance if an implementation-specific numeric case fails
-				// to enumerate a witness.
-				assert(false);
-				const Vec2 fallback = not dataA.representativePoints.isEmpty()
-					? dataA.representativePoints.front()
-					: dataB.representativePoints.front();
-				return ClosestPoints2D{ fallback, fallback, 0.0 };
+				const Vec2 commonPoint = FindCommonPoint(a, b);
+				return ClosestPoints2D{ commonPoint, commonPoint, 0.0 };
 			}
 
+			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
+			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
 			const ClosestPairCandidate candidate = ComputeDisjointClosestPair(dataA, dataB);
 			assert(std::isfinite(candidate.distanceSq));
 			return ClosestPoints2D{
@@ -1622,10 +1620,7 @@ namespace s3d
 		[[nodiscard]]
 		double ComputeDistanceCanonical(const ShapeA& a, const ShapeB& b)
 		{
-			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
-			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
-
-			if (dataA.empty || dataB.empty)
+			if (IsEmptyGeometry(a) || IsEmptyGeometry(b))
 			{
 				return std::numeric_limits<double>::infinity();
 			}
@@ -1635,6 +1630,8 @@ namespace s3d
 				return 0.0;
 			}
 
+			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
+			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
 			const ClosestPairCandidate candidate = ComputeDisjointClosestPair(dataA, dataB);
 			assert(std::isfinite(candidate.distanceSq));
 			return std::sqrt(Max(0.0, candidate.distanceSq));

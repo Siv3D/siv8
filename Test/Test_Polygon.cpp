@@ -509,6 +509,8 @@ TEST_CASE("Polygon.CorrectOne.multiple_components")
 	const Array<Array<Vec2>> cases{
 		{ { 0, 0 }, { 6, 6 }, { 0, 6 }, { 2, 0 } },
 		{ { 0, 0 }, { 4, 4 }, { 0, 4 }, { 4, 0 } },
+		{ { 0, 0 }, { 4, 4 }, { 0, 4 }, { (4.0 + 0x1p-16), 0 } },
+		{ { 0, 0 }, { 4, 4 }, { 0, 4 }, { (4.0 - 0x1p-16), 0 } },
 	};
 	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, 134217728 } })
 	{
@@ -518,6 +520,10 @@ TEST_CASE("Polygon.CorrectOne.multiple_components")
 			const auto outer = cases[i].map([offset](const Vec2& point) { return (point + offset); });
 			const auto results = Polygon::Correct(outer);
 			REQUIRE(results.size() == 2);
+			if (i >= 2)
+			{
+				CHECK(results[0].area() != results[1].area());
+			}
 			const Polygon* largest = &results.front();
 			for (const auto& polygon : results)
 			{
@@ -702,4 +708,136 @@ TEST_CASE("Geometry2D.ConvexHull.collinear_products")
 	const Vec2 v{ 2991312382.0, 3062119789.0 };
 	const Array<Vec2> points{ v * 2, Vec2{ 0, 0 }, v, v * 3 };
 	CHECK(Geometry2D::ConvexHull(std::span<const Vec2>{ points }).isEmpty());
+}
+
+TEST_CASE("Polygon.area_and_centroid.concave_with_holes")
+{
+	const Array<Vec2> outer{ { 0, 0 }, { 12, 0 }, { 12, 4 }, { 8, 4 }, { 8, 12 }, { 0, 12 } };
+	const Array<Array<Vec2>> holes{
+		{ { 1, 1 }, { 1, 3 }, { 3, 3 }, { 3, 1 } },
+		{ { 1, 7 }, { 1, 10 }, { 4, 10 }, { 4, 7 } },
+	};
+	// A 12 x 12 square minus the lower-right notch and two rectangular holes.
+	const double expectedArea = (144.0 - 32.0 - 4.0 - 9.0);
+	const Vec2 expectedCentroid = (Vec2{ 6, 6 } * 144.0 - Vec2{ 10, 8 } * 32.0
+		- Vec2{ 2, 2 } * 4.0 - Vec2{ 2.5, 8.5 } * 9.0) / expectedArea;
+
+	for (size_t first = 0; first < outer.size(); ++first)
+	{
+		CAPTURE(first);
+		auto shiftedOuter = outer;
+		std::rotate(shiftedOuter.begin(), (shiftedOuter.begin() + first), shiftedOuter.end());
+		auto shiftedHoles = holes;
+		for (auto& hole : shiftedHoles)
+		{
+			std::rotate(hole.begin(), (hole.begin() + first % hole.size()), hole.end());
+		}
+		if (first % 2)
+		{
+			std::reverse(shiftedHoles.begin(), shiftedHoles.end());
+		}
+
+		const Polygon polygon{ shiftedOuter, shiftedHoles };
+		CheckPolygonRings(polygon, 2);
+		CHECK(polygon.area() == expectedArea);
+		const auto centroid = polygon.centroid();
+		REQUIRE(centroid);
+		CHECK(centroid->distanceFrom(expectedCentroid) <= 1.0e-12);
+
+		for (const Vec2 scale : { Vec2{ 2, 3 }, Vec2{ -2, 3 }, Vec2{ 2, -3 }, Vec2{ -2, -3 } })
+		{
+			const Polygon scaled = polygon.scaledFromOrigin(scale);
+			CHECK(scaled.area() == (expectedArea * 6.0));
+			const auto scaledCentroid = scaled.centroid();
+			REQUIRE(scaledCentroid);
+			CHECK(scaledCentroid->distanceFrom(expectedCentroid * scale) <= 1.0e-12);
+		}
+
+		const Polygon rotated = polygon.rotated(0.37);
+		CHECK(Abs(rotated.area() - expectedArea) <= 1.0e-12);
+		const auto rotatedCentroid = rotated.centroid();
+		REQUIRE(rotatedCentroid);
+		CHECK(rotatedCentroid->distanceFrom(expectedCentroid.rotated(0.37)) <= 1.0e-12);
+	}
+}
+
+TEST_CASE("Polygon.area_and_centroid.translation")
+{
+	const Polygon polygon{
+		Array<Vec2>{ { 0, 0 }, { 4, 0 }, { 4, 4 }, { 0, 4 } },
+		Array<Array<Vec2>>{ { { 1, 1 }, { 1, 2 }, { 2, 2 }, { 2, 1 } } }
+	};
+	const double expectedArea = 15.0;
+	const Vec2 expectedCentroid{ (30.5 / 15.0), (30.5 / 15.0) };
+
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+	{
+		const Polygon moved = polygon.movedBy(offset);
+		const Polygon rebuilt{ moved.outer(), moved.inners() };
+		const Polygon roundTrip = moved.movedBy(-offset);
+		for (const Polygon* result : { &moved, &rebuilt, &roundTrip })
+		{
+			CHECK(result->area() == expectedArea);
+			const auto centroid = result->centroid();
+			REQUIRE(centroid);
+			const Vec2 expected = (expectedCentroid + ((result == &roundTrip) ? Vec2{ 0, 0 } : offset));
+			CHECK(centroid->distanceFrom(expected) <= 1.0e-12);
+		}
+	}
+}
+
+TEST_CASE("Polygon.area_and_centroid.small_hole")
+{
+	constexpr double side = 0x1p-13;
+	const Vec2 holeCenter{ 0.25, 0.75 };
+	const Polygon polygon{
+		Array<Vec2>{ { 0, 0 }, { 1, 0 }, { 1, 1 }, { 0, 1 } },
+		Array<Array<Vec2>>{ {
+			holeCenter + Vec2{ (-side * 0.5), (-side * 0.5) },
+			holeCenter + Vec2{ (-side * 0.5), ( side * 0.5) },
+			holeCenter + Vec2{ ( side * 0.5), ( side * 0.5) },
+			holeCenter + Vec2{ ( side * 0.5), (-side * 0.5) },
+		} }
+	};
+	const double expectedArea = (1.0 - side * side);
+	const Vec2 expectedCentroid = ((Vec2{ 0.5, 0.5 } - holeCenter * (side * side)) / expectedArea);
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 1048576, 1048576 } })
+	{
+		const Polygon moved = polygon.movedBy(offset);
+		REQUIRE(moved);
+		CHECK(moved.area() == expectedArea);
+		const auto centroid = moved.centroid();
+		REQUIRE(centroid);
+		CHECK(centroid->distanceFrom(expectedCentroid + offset) <= 1.0e-12);
+	}
+}
+
+TEST_CASE("Polygon.area_and_centroid.empty_and_collapsed")
+{
+	CHECK(Polygon{}.area() == 0.0);
+	CHECK(not Polygon{}.centroid());
+	const Polygon polygon = MakePolygonWithHole();
+	for (const Vec2 scale : { Vec2{ 0, 0 }, Vec2{ 0, 1 }, Vec2{ 1, 0 } })
+	{
+		const Polygon collapsed = polygon.scaledFromOrigin(scale);
+		CHECK(collapsed.area() == 0.0);
+		CHECK(not collapsed.centroid());
+	}
+}
+
+TEST_CASE("Polygon.area_and_centroid.supplied_mesh")
+{
+	const Vec2 offset{ 134217728, 134217728 };
+	const Array<Vec2> outer{ offset, (offset + Vec2{ 4, 0 }), (offset + Vec2{ 4, 2 }), (offset + Vec2{ 0, 2 }) };
+	const Array<Float2> vertices(outer.begin(), outer.end());
+	for (const Array<TriangleIndex>& indices : {
+		Array<TriangleIndex>{ { 0, 1, 2 }, { 0, 2, 3 } },
+		Array<TriangleIndex>{ { 0, 1, 3 }, { 1, 2, 3 } } })
+	{
+		const Polygon polygon{ outer, Array<Array<Vec2>>{}, vertices, indices, RectF{ offset, 4, 2 } };
+		REQUIRE(polygon);
+		CHECK(polygon.area() == 8.0);
+		REQUIRE(polygon.centroid());
+		CHECK(*polygon.centroid() == (offset + Vec2{ 2, 1 }));
+	}
 }

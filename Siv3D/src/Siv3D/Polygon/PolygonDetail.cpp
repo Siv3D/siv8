@@ -70,19 +70,75 @@ namespace s3d
 			return vertices;
 		}
 
-		/// @brief 三角形の面積の 2 倍を計算します。
-		/// @param p0 頂点 0
-		/// @param p1 頂点 1
-		/// @param p2 頂点 2
-		/// @return 三角形の面積の 2 倍
-		[[nodiscard]]
-		static constexpr double TriangleArea2x(const Float2& p0, const Float2& p1, const Float2& p2) noexcept
+		struct PolygonIntegral
 		{
-			const double ax = (static_cast<double>(p1.x) - static_cast<double>(p0.x));
-			const double ay = (static_cast<double>(p1.y) - static_cast<double>(p0.y));
-			const double bx = (static_cast<double>(p2.x) - static_cast<double>(p0.x));
-			const double by = (static_cast<double>(p2.y) - static_cast<double>(p0.y));
-			return Abs((ax * by) - (ay * bx));
+			double area2x = 0.0;
+			Vec2 moment6x{ 0, 0 };
+		};
+
+		// 各輪郭の先頭を原点にして積分する。穴の小さな面積も、外周からの距離に依存せず計算する。
+		template <bool ComputeCentroid>
+		[[nodiscard]]
+		static PolygonIntegral IntegrateRing(const std::span<const Vec2> ring) noexcept
+		{
+			if (ring.size() < 3)
+			{
+				return {};
+			}
+
+			const Vec2 reference = ring.front();
+			Vec2 a = (ring[1] - reference);
+			KahanSummation<double> area2x, momentX, momentY;
+
+			for (size_t i = 2; i < ring.size(); ++i)
+			{
+				const Vec2 b = (ring[i] - reference);
+				const double cross = a.cross(b);
+				area2x += cross;
+
+				if constexpr (ComputeCentroid)
+				{
+					momentX += ((a.x + b.x) * cross);
+					momentY += ((a.y + b.y) * cross);
+				}
+
+				a = b;
+			}
+
+			return { area2x.value(), { momentX.value(), momentY.value() } };
+		}
+
+		template <bool ComputeCentroid, class InnerRings>
+		[[nodiscard]]
+		static PolygonIntegral IntegratePolygon(const std::span<const Vec2> outer, const InnerRings& holes) noexcept
+		{
+			const auto outerIntegral = IntegrateRing<ComputeCentroid>(outer);
+			KahanSummation<double> area2x{ outerIntegral.area2x };
+			KahanSummation<double> momentX{ outerIntegral.moment6x.x };
+			KahanSummation<double> momentY{ outerIntegral.moment6x.y };
+
+			for (const auto& hole : holes)
+			{
+				const auto integral = IntegrateRing<ComputeCentroid>(hole);
+				area2x += integral.area2x;
+
+				if constexpr (ComputeCentroid)
+				{
+					// 穴のモーメントを外周と同じ原点へ移す。穴の符号は外周と逆になる。
+					const Vec2 offset = (hole.front() - outer.front());
+					momentX += (integral.moment6x.x + (3.0 * integral.area2x * offset.x));
+					momentY += (integral.moment6x.y + (3.0 * integral.area2x * offset.y));
+				}
+			}
+
+			return { area2x.value(), { momentX.value(), momentY.value() } };
+		}
+
+		template <class InnerRings>
+		[[nodiscard]]
+		static double PolygonArea(const std::span<const Vec2> outer, const InnerRings& holes) noexcept
+		{
+			return (Abs(IntegratePolygon<false>(outer, holes).area2x) * 0.5);
 		}
 	}
 
@@ -570,19 +626,7 @@ namespace s3d
 
 	double Polygon::PolygonDetail::area() const noexcept
 	{
-		const TriangleIndex* pIndex = m_indices.data();
-		const TriangleIndex* const pIndexEnd = (pIndex + m_indices.size());
-		const Float2* pVertex = m_vertices.data();
-
-		KahanSummation<double> area2x;
-
-		while (pIndex != pIndexEnd)
-		{
-			area2x += TriangleArea2x(pVertex[pIndex->i0], pVertex[pIndex->i1], pVertex[pIndex->i2]);
-			++pIndex;
-		}
-
-		return (area2x.value() * 0.5);
+		return PolygonArea(m_polygon.outer, m_polygon.inners);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -639,58 +683,20 @@ namespace s3d
 
 	Optional<PolygonCentroidResult> Polygon::PolygonDetail::centroid() const
 	{
-		if (m_indices.empty())
+		if (m_polygon.outer.empty())
 		{
 			return none;
 		}
 
-		const Float2* const pVertex = m_vertices.data();
-
-		const Float2& referenceVertex = pVertex[m_indices.front().i0];
-		const double referenceX = static_cast<double>(referenceVertex.x);
-		const double referenceY = static_cast<double>(referenceVertex.y);
-
-		KahanSummation<double> totalArea2x;
-		KahanSummation<double> weightedX;
-		KahanSummation<double> weightedY;
-
-		for (const TriangleIndex& index : m_indices)
-		{
-			const Float2& p0 = pVertex[index.i0];
-			const Float2& p1 = pVertex[index.i1];
-			const Float2& p2 = pVertex[index.i2];
-
-			const double area2x = TriangleArea2x(p0, p1, p2);
-
-			if (area2x == 0.0)
-			{
-				continue;
-			}
-
-			const double x0 = (static_cast<double>(p0.x) - referenceX);
-			const double y0 = (static_cast<double>(p0.y) - referenceY);
-			const double x1 = (static_cast<double>(p1.x) - referenceX);
-			const double y1 = (static_cast<double>(p1.y) - referenceY);
-			const double x2 = (static_cast<double>(p2.x) - referenceX);
-			const double y2 = (static_cast<double>(p2.y) - referenceY);
-
-			totalArea2x += area2x;
-			weightedX += (area2x * (x0 + x1 + x2));
-			weightedY += (area2x * (y0 + y1 + y2));
-		}
-
-		const double area2x = totalArea2x.value();
-
-		if (area2x == 0.0)
+		const auto integral = IntegratePolygon<true>(m_polygon.outer, m_polygon.inners);
+		if (integral.area2x == 0.0)
 		{
 			return none;
 		}
-
-		const double denominator = (3.0 * area2x);
 
 		return PolygonCentroidResult{
-			.centroid = { (referenceX + (weightedX.value() / denominator)), (referenceY + (weightedY.value() / denominator)) },
-			.area = (area2x * 0.5)
+			.centroid = (m_polygon.outer.front() + (integral.moment6x / (3.0 * integral.area2x))),
+			.area = (Abs(integral.area2x) * 0.5)
 		};
 	}
 
@@ -1026,29 +1032,34 @@ namespace s3d
 
 	Polygon Polygon::PolygonDetail::CorrectOne(const std::span<const Vec2> outer, const Array<Array<Vec2>>& holes)
 	{
-		const auto corrected = detail::CorrectPolygonRings(outer, holes);
-		if (corrected.empty())
+		auto corrected = detail::CorrectPolygonRings(outer, holes);
+
+		while (1 < corrected.size())
 		{
-			return{};
-		}
+			size_t largestIndex = 0;
+			double largestArea = PolygonArea(corrected.front().outer(), corrected.front().inners());
 
-		Polygon largest = detail::ToPolygon(corrected.front());
-		double largestArea = largest.area();
-
-		for (size_t i = 1; i < corrected.size(); ++i)
-		{
-			Polygon candidate = detail::ToPolygon(corrected[i]);
-			const double area = candidate.area();
-
-			// Polygon::area() と同じ面積で比較し、同面積なら先の候補を保持する。
-			if (not largest || (largestArea < area))
+			for (size_t i = 1; i < corrected.size(); ++i)
 			{
-				largest = std::move(candidate);
-				largestArea = area;
+				const double area = PolygonArea(corrected[i].outer(), corrected[i].inners());
+				if (largestArea < area)
+				{
+					largestIndex = i;
+					largestArea = area;
+				}
 			}
+
+			// Polygon::area() と同じ積分で比較し、選択した成分だけを三角形化する。
+			if (Polygon result = detail::ToPolygon(corrected[largestIndex]))
+			{
+				return result;
+			}
+
+			// 三角形化できない成分は Correct() の結果にも含まれない。
+			corrected.erase(corrected.begin() + largestIndex);
 		}
 
-		return largest;
+		return (corrected.empty() ? Polygon{} : detail::ToPolygon(corrected.front()));
 	}
 
 	////////////////////////////////////////////////////////////////
