@@ -160,6 +160,179 @@ TEST_CASE("Polygon.generated_rings.buffers_and_simplification")
 	CHECK(simplified.area() == Test::Approx(336.0));
 }
 
+TEST_CASE("Polygon.buffer.single_component")
+{
+	const Polygon source = MakePolygonWithHole();
+	for (const bool round : { false, true })
+	{
+		for (const double distance : { -1.0, 1.0 })
+		{
+			CAPTURE(round, distance);
+			const MultiPolygon result = round
+				? source.computeRoundBufferMultiPolygon(distance)
+				: source.computeMiterBufferMultiPolygon(distance);
+			const Polygon single = round
+				? source.computeRoundBufferPolygon(distance)
+				: source.computeMiterBufferPolygon(distance);
+			REQUIRE(result.size() == 1);
+			CheckPolygonRings(result[0], 1);
+			CHECK(result[0].outer() == single.outer());
+			CHECK(result[0].inners() == single.inners());
+			CHECK(result[0].vertices() == single.vertices());
+			CheckTriangleIndices(result[0], single);
+			CHECK(result[0].boundingRect() == RectF{ -distance, -distance, (20 + 2 * distance), (20 + 2 * distance) });
+			CHECK(result[0].contains(Vec2{ 3, 3 }));
+			CHECK_FALSE(result[0].contains(Vec2{ 10, 10 }));
+			CHECK((result[0].area() > source.area()) == (distance > 0.0));
+			if (not round)
+			{
+				CHECK(result[0].area() == Test::Approx(distance > 0.0 ? 448.0 : 224.0));
+			}
+		}
+	}
+	CHECK(source.outer() == MakePolygonWithHole().outer());
+	CHECK(source.inners() == MakePolygonWithHole().inners());
+}
+
+TEST_CASE("Polygon.buffer.split_components")
+{
+	// Two 20 x 20 regions connected by a strip of width 2.
+	const Array<Vec2> outer{
+		{ 0, 0 }, { 20, 0 }, { 20, 9 }, { 30, 9 }, { 30, 0 }, { 50, 0 },
+		{ 50, 20 }, { 30, 20 }, { 30, 11 }, { 20, 11 }, { 20, 20 }, { 0, 20 }
+	};
+	const Array<Array<Vec2>> holes{
+		{ { 6, 6 }, { 6, 8 }, { 8, 8 }, { 8, 6 } },
+		{ { 42, 6 }, { 42, 8 }, { 44, 8 }, { 44, 6 } }
+	};
+	for (const bool withHoles : { false, true })
+	{
+		const Polygon source{ outer, withHoles ? holes : Array<Array<Vec2>>{} };
+		REQUIRE(source);
+		for (const bool round : { false, true })
+		{
+			for (const double distance : { -0.5, -1.0, -1.5 })
+			{
+				CAPTURE(withHoles, round, distance);
+				const MultiPolygon result = round
+					? source.computeRoundBufferMultiPolygon(distance)
+					: source.computeMiterBufferMultiPolygon(distance);
+				const Polygon single = round
+					? source.computeRoundBufferPolygon(distance)
+					: source.computeMiterBufferPolygon(distance);
+				const bool split = (distance <= -1.0);
+				REQUIRE(result.size() == (split ? 2 : 1));
+				CHECK(single.isEmpty() == split);
+				size_t leftCount = 0, rightCount = 0;
+				for (const auto& component : result)
+				{
+					CheckPolygonRings(component, withHoles ? (split ? 1 : 2) : 0);
+					leftCount += component.contains(Vec2{ 10, 15 });
+					rightCount += component.contains(Vec2{ 40, 15 });
+					if (split)
+					{
+						CHECK_FALSE(component.contains(Vec2{ 25, 10 }));
+					}
+					if (withHoles)
+					{
+						CHECK_FALSE(component.contains(Vec2{ 7, 7 }));
+						CHECK_FALSE(component.contains(Vec2{ 43, 7 }));
+					}
+					double triangleArea = 0.0;
+					for (size_t i = 0; i < component.triangleCount(); ++i)
+					{
+						triangleArea += component.triangleAtIndex(i).area();
+					}
+					CHECK(triangleArea == Test::Approx(component.area()).epsilon(1e-5));
+				}
+				CHECK(leftCount == 1);
+				CHECK(rightCount == 1);
+			}
+		}
+	}
+}
+
+TEST_CASE("Polygon.buffer.empty_and_disappearing")
+{
+	for (const double distance : { -2.0, -0.0, 0.0, 2.0 })
+	{
+		CAPTURE(distance);
+		const Polygon empty;
+		CHECK(empty.computeMiterBufferPolygon(distance).isEmpty());
+		CHECK(empty.computeRoundBufferPolygon(distance).isEmpty());
+		CHECK(empty.computeMiterBufferMultiPolygon(distance).isEmpty());
+		CHECK(empty.computeRoundBufferMultiPolygon(distance).isEmpty());
+	}
+	const Polygon source = RectF{ 0, 0, 10, 10 }.asPolygon();
+	for (const double distance : { -4.5, -5.0, -6.0 })
+	{
+		CAPTURE(distance);
+		const bool disappears = (distance <= -5.0);
+		CHECK(source.computeMiterBufferPolygon(distance).isEmpty() == disappears);
+		CHECK(source.computeRoundBufferPolygon(distance).isEmpty() == disappears);
+		CHECK(source.computeMiterBufferMultiPolygon(distance).size() == (disappears ? 0 : 1));
+		CHECK(source.computeRoundBufferMultiPolygon(distance).size() == (disappears ? 0 : 1));
+	}
+}
+
+TEST_CASE("Polygon.buffer.zero_preserves_mesh")
+{
+	const Polygon donut = MakePolygonWithHole();
+	Array<TriangleIndex> indices = donut.indices();
+	std::rotate(indices.begin(), indices.begin() + 1, indices.end());
+	const Polygon source{ donut.outer(), donut.inners(), donut.vertices(), indices, donut.boundingRect() };
+	for (const double distance : { -0.0, 0.0 })
+	{
+		const MultiPolygon miter = source.computeMiterBufferMultiPolygon(distance);
+		const MultiPolygon round = source.computeRoundBufferMultiPolygon(distance);
+		REQUIRE(miter.size() == 1);
+		REQUIRE(round.size() == 1);
+		for (const auto& result : Array<Polygon>{ source.computeMiterBufferPolygon(distance),
+			source.computeRoundBufferPolygon(distance), miter[0], round[0] })
+		{
+			CheckPolygonRings(result, 1);
+			CHECK(result.outer() == source.outer());
+			CHECK(result.inners() == source.inners());
+			CHECK(result.vertices() == source.vertices());
+			CHECK(result.boundingRect() == source.boundingRect());
+			CheckTriangleIndices(result, source);
+		}
+	}
+}
+
+TEST_CASE("Polygon.buffer.disappearing_hole")
+{
+	const Polygon source = MakePolygonWithHole();
+	for (const double distance : { 4.0, 5.0 })
+	{
+		CAPTURE(distance);
+		for (const auto& result : Array<MultiPolygon>{ source.computeMiterBufferMultiPolygon(distance),
+			source.computeRoundBufferMultiPolygon(distance) })
+		{
+			REQUIRE(result.size() == 1);
+			CheckPolygonRings(result[0], 0);
+			CHECK(result[0].contains(Vec2{ 10, 10 }));
+		}
+	}
+	CHECK(source.holeCount() == 1);
+}
+
+TEST_CASE("Polygon.buffer.round_quality")
+{
+	const Polygon source = RectF{ 0, 0, 20, 20 }.asPolygon();
+	const MultiPolygon low = source.computeRoundBufferMultiPolygon(8.0, QualityFactor{ 1.0 });
+	const MultiPolygon high = source.computeRoundBufferMultiPolygon(8.0, QualityFactor{ 4.0 });
+	REQUIRE(low.size() == 1);
+	REQUIRE(high.size() == 1);
+	CheckPolygonRings(low[0], 0);
+	CheckPolygonRings(high[0], 0);
+	CHECK(high[0].outer().size() > low[0].outer().size());
+	const double exactArea = (400.0 + 80.0 * 8.0 + Math::Pi * 8.0 * 8.0);
+	CHECK(Abs(high[0].area() - exactArea) < Abs(low[0].area() - exactArea));
+	const Polygon single = source.computeRoundBufferPolygon(8.0, QualityFactor{ 4.0 });
+	CHECK(high[0].outer() == single.outer());
+}
+
 TEST_CASE("Polygon.generated_rings.other_construction_paths")
 {
 	const Polygon donut = MakePolygonWithHole();

@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/LineCap.hpp>
+# include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/Geometry2D/BoundingRect.hpp>
 # include <Siv3D/Geometry2D/ConvexHull.hpp>
 # include <Siv3D/Pattern/PatternParameters.hpp>
@@ -25,6 +26,33 @@ namespace s3d
 {
 	namespace
 	{
+		template <class JoinStrategy, class EndStrategy>
+		void BufferPolygon(const PolygonData& polygon, CwOpenMultiPolygon& result,
+			const double distance, const JoinStrategy& joinStrategy, const EndStrategy& endStrategy)
+		{
+			boost::geometry::buffer(detail::ToCwOpenPolygon(polygon.outer, polygon.inners), result,
+				boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
+				boost::geometry::strategy::buffer::side_straight{},
+				joinStrategy, endStrategy,
+				boost::geometry::strategy::buffer::point_circle{ 0 });
+		}
+
+		[[nodiscard]]
+		MultiPolygon ToBufferMultiPolygon(const CwOpenMultiPolygon& polygons)
+		{
+			MultiPolygon result{ Arg::reserve = polygons.size() };
+			for (const auto& polygon : polygons)
+			{
+				Polygon component = detail::ToPolygon(polygon);
+				if (not component)
+				{
+					return{}; // Do not return a partial buffer if construction fails.
+				}
+				result.push_back(std::move(component));
+			}
+			return result;
+		}
+
 		[[nodiscard]]
 		static PolygonData MakePolygonData(const std::span<const Vec2> outerVertices, Array<Array<Vec2>> holes)
 		{
@@ -735,14 +763,10 @@ namespace s3d
 
 	Polygon Polygon::PolygonDetail::computeMiterBufferPolygon(const double distance) const
 	{
-		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
-
-		boost::geometry::buffer(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), multiPolygon,
-			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
-			boost::geometry::strategy::buffer::side_straight{},
+		CwOpenMultiPolygon multiPolygon;
+		BufferPolygon(m_polygon, multiPolygon, distance,
 			boost::geometry::strategy::buffer::join_miter{},
-			boost::geometry::strategy::buffer::end_flat{},
-			boost::geometry::strategy::buffer::point_circle{ 0 });
+			boost::geometry::strategy::buffer::end_flat{});
 
 		if (multiPolygon.size() != 1)
 		{
@@ -760,14 +784,10 @@ namespace s3d
 
 	Polygon Polygon::PolygonDetail::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
-		boost::geometry::model::multi_polygon<CwOpenPolygon> multiPolygon;
-
-		boost::geometry::buffer(detail::ToCwOpenPolygon(m_polygon.outer, m_polygon.inners), multiPolygon,
-			boost::geometry::strategy::buffer::distance_symmetric<double>{ distance },
-			boost::geometry::strategy::buffer::side_straight{},
+		CwOpenMultiPolygon multiPolygon;
+		BufferPolygon(m_polygon, multiPolygon, distance,
 			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(Abs(distance) * qualityFactor.value()) },
-			boost::geometry::strategy::buffer::end_round{},
-			boost::geometry::strategy::buffer::point_circle{ 0 });
+			boost::geometry::strategy::buffer::end_round{});
 
 		if (multiPolygon.size() != 1)
 		{
@@ -775,6 +795,36 @@ namespace s3d
 		}
 
 		return detail::ToPolygon(multiPolygon.front());
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeMiterBufferMultiPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	MultiPolygon Polygon::PolygonDetail::computeMiterBufferMultiPolygon(const double distance) const
+	{
+		CwOpenMultiPolygon multiPolygon;
+		BufferPolygon(m_polygon, multiPolygon, distance,
+			boost::geometry::strategy::buffer::join_miter{},
+			boost::geometry::strategy::buffer::end_flat{});
+		return ToBufferMultiPolygon(multiPolygon);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeRoundBufferMultiPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	MultiPolygon Polygon::PolygonDetail::computeRoundBufferMultiPolygon(const double distance, const QualityFactor& qualityFactor) const
+	{
+		CwOpenMultiPolygon multiPolygon;
+		BufferPolygon(m_polygon, multiPolygon, distance,
+			boost::geometry::strategy::buffer::join_round{ detail::CalculateCircleQuality(Abs(distance) * qualityFactor.value()) },
+			boost::geometry::strategy::buffer::end_round{});
+		return ToBufferMultiPolygon(multiPolygon);
 	}
 
 	////////////////////////////////////////////////////////////////

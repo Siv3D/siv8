@@ -806,8 +806,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形を太らせた、新しい多角形を返します。
-		/// @param distance 太らせる距離。負の場合は細らせます。
-		/// @return 新しい多角形
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
+		/// @return 新しい多角形。入力が空、領域が消滅、複数の成分に分離、または結果を構築できない場合は空の Polygon。距離が 0 の場合は元の多角形。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @see computeMiterBufferMultiPolygon()
 		[[nodiscard]]
 		Polygon computeMiterBufferPolygon(double distance) const;
 
@@ -818,11 +820,44 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形を丸く太らせた、新しい多角形を返します。分割数は半径に応じて自動的に決定されます。
-		/// @param distance 太らせる距離。負の場合は細らせます。
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
 		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
-		/// @return 新しい多角形
+		/// @return 新しい多角形。入力が空、領域が消滅、複数の成分に分離、または結果を構築できない場合は空の Polygon。距離が 0 の場合は元の多角形。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @see computeRoundBufferMultiPolygon()
 		[[nodiscard]]
 		Polygon computeRoundBufferPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeMiterBufferMultiPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形を太らせ、分離した成分も含むすべての多角形を返します。
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
+		/// @return バッファの全成分。入力が空、領域が消滅、またはいずれかの成分を構築できない場合は空の MultiPolygon。空でない入力で距離が 0 の場合は元の多角形を 1 個含む MultiPolygon。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @remark 成分の順序は保証しません。拡大・縮小によって穴が消滅する場合があります。
+		/// @see computeMiterBufferPolygon()
+		[[nodiscard]]
+		MultiPolygon computeMiterBufferMultiPolygon(double distance) const;
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	computeRoundBufferMultiPolygon
+		//
+		////////////////////////////////////////////////////////////////
+
+		/// @brief 多角形を丸く太らせ、分離した成分も含むすべての多角形を返します。
+		/// @param distance 太らせる距離。有限の値。負の場合は細らせます。
+		/// @param qualityFactor 品質係数。大きいほど分割数が増えます。
+		/// @return バッファの全成分。入力が空、領域が消滅、またはいずれかの成分を構築できない場合は空の MultiPolygon。空でない入力で距離が 0 の場合は元の多角形を 1 個含む MultiPolygon。
+		/// @pre 空でない場合は、有効な多角形であること。
+		/// @remark 成分の順序は保証しません。拡大・縮小によって穴が消滅する場合があります。
+		/// @see computeRoundBufferPolygon()
+		[[nodiscard]]
+		MultiPolygon computeRoundBufferMultiPolygon(double distance, const QualityFactor& qualityFactor = QualityFactor{ 1.0 }) const;
 
 		////////////////////////////////////////////////////////////////
 		//

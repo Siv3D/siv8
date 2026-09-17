@@ -10,6 +10,7 @@
 //-----------------------------------------------
 
 # include <Siv3D/Polygon.hpp>
+# include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Math.hpp>
 # include <Siv3D/Shape2D.hpp>
@@ -752,6 +753,11 @@ namespace s3d
 
 	Polygon Polygon::computeMiterBufferPolygon(const double distance) const
 	{
+		if (isEmpty() || (distance == 0.0))
+		{
+			return *this;
+		}
+
 		return pImpl->computeMiterBufferPolygon(distance);
 	}
 
@@ -763,7 +769,56 @@ namespace s3d
 
 	Polygon Polygon::computeRoundBufferPolygon(const double distance, const QualityFactor& qualityFactor) const
 	{
+		if (isEmpty() || (distance == 0.0))
+		{
+			return *this;
+		}
+
 		return pImpl->computeRoundBufferPolygon(distance, qualityFactor);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeMiterBufferMultiPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	MultiPolygon Polygon::computeMiterBufferMultiPolygon(const double distance) const
+	{
+		if (isEmpty())
+		{
+			return{};
+		}
+		if (distance == 0.0)
+		{
+			MultiPolygon result;
+			result.push_back(*this);
+			return result;
+		}
+
+		return pImpl->computeMiterBufferMultiPolygon(distance);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	computeRoundBufferMultiPolygon
+	//
+	////////////////////////////////////////////////////////////////
+
+	MultiPolygon Polygon::computeRoundBufferMultiPolygon(const double distance, const QualityFactor& qualityFactor) const
+	{
+		if (isEmpty())
+		{
+			return{};
+		}
+		if (distance == 0.0)
+		{
+			MultiPolygon result;
+			result.push_back(*this);
+			return result;
+		}
+
+		return pImpl->computeRoundBufferMultiPolygon(distance, qualityFactor);
 	}
 
 	////////////////////////////////////////////////////////////////
