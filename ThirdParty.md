@@ -20,7 +20,7 @@ Name | Version
 [fmt](https://github.com/fmtlib/fmt) | 12.2.0
 [FreeType](https://www.freetype.org/) | 2.13.3
 [geometry.hpp](https://github.com/mapbox/geometry.hpp) | v2.0.3
-[GLFW](https://github.com/glfw/glfw) | 3.4
+[GLFW](https://github.com/glfw/glfw) | 3.5.1
 [HarfBuzz](https://github.com/harfbuzz/harfbuzz) | 12.3.2
 [JSON for Modern C++](https://github.com/nlohmann/json) | v3.12.0
 [levenshtein-sse](https://github.com/addaleax/levenshtein-sse) | 

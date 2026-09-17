@@ -43,6 +43,7 @@
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
 		8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D604008E420486985B6EF7F /* Test_GLFW.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
@@ -450,8 +451,8 @@
 		F9070ED42B9F1C8900383E4D /* cocoa_joystick.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070E962B9F1C8900383E4D /* cocoa_joystick.m */; };
 		F9070ED52B9F1C8900383E4D /* cocoa_monitor.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070E972B9F1C8900383E4D /* cocoa_monitor.m */; };
 		F9070ED62B9F1C8900383E4D /* cocoa_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E982B9F1C8900383E4D /* cocoa_platform.h */; };
-		F9070ED72B9F1C8900383E4D /* cocoa_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E992B9F1C8900383E4D /* cocoa_time.c */; };
-		F9070ED82B9F1C8900383E4D /* cocoa_time.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E9A2B9F1C8900383E4D /* cocoa_time.h */; };
+		F9070ED72B9F1C8900383E4D /* macos_time.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E992B9F1C8900383E4D /* macos_time.c */; };
+		F9070ED82B9F1C8900383E4D /* macos_time.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070E9A2B9F1C8900383E4D /* macos_time.h */; };
 		F9070ED92B9F1C8900383E4D /* cocoa_window.m in Sources */ = {isa = PBXBuildFile; fileRef = F9070E9B2B9F1C8900383E4D /* cocoa_window.m */; };
 		F9070EDA2B9F1C8900383E4D /* context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E9C2B9F1C8900383E4D /* context.c */; };
 		F9070EDB2B9F1C8900383E4D /* egl_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070E9D2B9F1C8900383E4D /* egl_context.c */; };
@@ -471,7 +472,6 @@
 		F9070EF62B9F1C8900383E4D /* posix_time.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070EB82B9F1C8900383E4D /* posix_time.h */; };
 		F9070EF72B9F1C8900383E4D /* vulkan.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EB92B9F1C8900383E4D /* vulkan.c */; };
 		F9070F042B9F1C8900383E4D /* window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070EC62B9F1C8900383E4D /* window.c */; };
-		F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */ = {isa = PBXBuildFile; fileRef = F9070ED02B9F1C8900383E4D /* xkb_unicode.h */; };
 		F9070F302B9F252E00383E4D /* null_init.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F292B9F252D00383E4D /* null_init.c */; };
 		F9070F312B9F252E00383E4D /* osmesa_context.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2A2B9F252D00383E4D /* osmesa_context.c */; };
 		F9070F322B9F252E00383E4D /* null_window.c in Sources */ = {isa = PBXBuildFile; fileRef = F9070F2B2B9F252D00383E4D /* null_window.c */; };
@@ -3367,6 +3367,7 @@
 		F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalResourceLifetime.cpp; sourceTree = "<group>"; };
 		1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalFrameSynchronization.cpp; sourceTree = "<group>"; };
 		6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalPresentation.cpp; sourceTree = "<group>"; };
+		4D604008E420486985B6EF7F /* Test_GLFW.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_GLFW.cpp; sourceTree = "<group>"; };
 		A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalFrameErrors.cpp; sourceTree = "<group>"; };
 		1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalInternalTexture2D.cpp; sourceTree = "<group>"; };
 		D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderPipelineState.cpp; sourceTree = "<group>"; };
@@ -3775,8 +3776,8 @@
 		F9070E962B9F1C8900383E4D /* cocoa_joystick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa_joystick.m; sourceTree = "<group>"; };
 		F9070E972B9F1C8900383E4D /* cocoa_monitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa_monitor.m; sourceTree = "<group>"; };
 		F9070E982B9F1C8900383E4D /* cocoa_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_platform.h; sourceTree = "<group>"; };
-		F9070E992B9F1C8900383E4D /* cocoa_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cocoa_time.c; sourceTree = "<group>"; };
-		F9070E9A2B9F1C8900383E4D /* cocoa_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa_time.h; sourceTree = "<group>"; };
+		F9070E992B9F1C8900383E4D /* macos_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = macos_time.c; sourceTree = "<group>"; };
+		F9070E9A2B9F1C8900383E4D /* macos_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_time.h; sourceTree = "<group>"; };
 		F9070E9B2B9F1C8900383E4D /* cocoa_window.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cocoa_window.m; sourceTree = "<group>"; };
 		F9070E9C2B9F1C8900383E4D /* context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = context.c; sourceTree = "<group>"; };
 		F9070E9D2B9F1C8900383E4D /* egl_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = egl_context.c; sourceTree = "<group>"; };
@@ -3801,7 +3802,6 @@
 		F9070EBA2B9F1C8900383E4D /* wgl_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wgl_context.c; sourceTree = "<group>"; };
 		F9070EC62B9F1C8900383E4D /* window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = window.c; sourceTree = "<group>"; };
 		F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xkb_unicode.c; sourceTree = "<group>"; };
-		F9070ED02B9F1C8900383E4D /* xkb_unicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xkb_unicode.h; sourceTree = "<group>"; };
 		F9070F292B9F252D00383E4D /* null_init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_init.c; sourceTree = "<group>"; };
 		F9070F2A2B9F252D00383E4D /* osmesa_context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = osmesa_context.c; sourceTree = "<group>"; };
 		F9070F2B2B9F252D00383E4D /* null_window.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = null_window.c; sourceTree = "<group>"; };
@@ -7036,6 +7036,7 @@
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
 				1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */,
 				6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */,
+				4D604008E420486985B6EF7F /* Test_GLFW.cpp */,
 				A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */,
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
 				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
@@ -9119,7 +9120,7 @@
 		F9070ED12B9F1C8900383E4D /* GLFW */ = {
 			isa = PBXGroup;
 			children = (
-				F9070E992B9F1C8900383E4D /* cocoa_time.c */,
+				F9070E992B9F1C8900383E4D /* macos_time.c */,
 				F9070E9C2B9F1C8900383E4D /* context.c */,
 				F9070E9D2B9F1C8900383E4D /* egl_context.c */,
 				F9070EA02B9F1C8900383E4D /* glx_context.c */,
@@ -9142,7 +9143,7 @@
 				F9070ECF2B9F1C8900383E4D /* xkb_unicode.c */,
 				F9070E952B9F1C8900383E4D /* cocoa_joystick.h */,
 				F9070E982B9F1C8900383E4D /* cocoa_platform.h */,
-				F9070E9A2B9F1C8900383E4D /* cocoa_time.h */,
+				F9070E9A2B9F1C8900383E4D /* macos_time.h */,
 				F9797EEC2F6E579000518D26 /* GLFW_Siv3D_DragDropBridge.h */,
 				F9070E9E2B9F1C8900383E4D /* glfw3.h */,
 				F9070E9F2B9F1C8900383E4D /* glfw3native.h */,
@@ -9154,7 +9155,6 @@
 				F9070EB42B9F1C8900383E4D /* posix_poll.h */,
 				F9070EB62B9F1C8900383E4D /* posix_thread.h */,
 				F9070EB82B9F1C8900383E4D /* posix_time.h */,
-				F9070ED02B9F1C8900383E4D /* xkb_unicode.h */,
 				F9070E942B9F1C8900383E4D /* cocoa_init.m */,
 				F9070E962B9F1C8900383E4D /* cocoa_joystick.m */,
 				F9070E972B9F1C8900383E4D /* cocoa_monitor.m */,
@@ -15224,7 +15224,7 @@
 				F951220C2CB62E4300151291 /* insert_and_split.h in Headers */,
 				F98606022BE615C5006A4C0F /* FormatLiteralObject.hpp in Headers */,
 				F986005B2BCFBB53006A4C0F /* SkColorMatrixFilter.h in Headers */,
-				F9070ED82B9F1C8900383E4D /* cocoa_time.h in Headers */,
+				F9070ED82B9F1C8900383E4D /* macos_time.h in Headers */,
 				F98603E22BCFBB54006A4C0F /* SkSLWGSLCodeGenerator.h in Headers */,
 				F986FA692BCFB53B006A4C0F /* fttrace.h in Headers */,
 				F98603372BCFBB54006A4C0F /* SkReduceOrder.h in Headers */,
@@ -15343,7 +15343,6 @@
 				F98600252BCFBB53006A4C0F /* SkMesh.h in Headers */,
 				F98601812BCFBB53006A4C0F /* SkClipStack.h in Headers */,
 				F986FA5D2BCFB53B006A4C0F /* ftcalc.h in Headers */,
-				F9070F0E2B9F1C8900383E4D /* xkb_unicode.h in Headers */,
 				F980C4852C04B3EB00A86B68 /* Renderer2DCommon.hpp in Headers */,
 				F9DD96552F09662C0026DFA5 /* Twitter.hpp in Headers */,
 				F9DD96562F09662C0026DFA5 /* URL.hpp in Headers */,
@@ -16745,6 +16744,7 @@
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,
 				8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */,
 				2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */,
+				BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */,
 				D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */,
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
 				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,
@@ -16758,7 +16758,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9070F322B9F252E00383E4D /* null_window.c in Sources */,
-				F9070ED72B9F1C8900383E4D /* cocoa_time.c in Sources */,
+				F9070ED72B9F1C8900383E4D /* macos_time.c in Sources */,
 				F986055B2BD203D4006A4C0F /* muParserBase.cpp in Sources */,
 				F9528BB82BBF024D00222F45 /* SivCompression.cpp in Sources */,
 				F986F9222BC8441F006A4C0F /* regparse.c in Sources */,

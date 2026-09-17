@@ -70,6 +70,7 @@
     <ClCompile Include="..\Test\Test_MetalResourceLifetime.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameSynchronization.cpp" />
     <ClCompile Include="..\Test\Test_MetalPresentation.cpp" />
+    <ClCompile Include="..\Test\Test_GLFW.cpp" />
     <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp" />
     <ClCompile Include="..\Test\Test_MetalInternalTexture2D.cpp" />
     <ClCompile Include="..\Test\Test_MetalRenderPipelineState.cpp" />

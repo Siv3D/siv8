@@ -4,6 +4,9 @@
 [docs/AGENTS.md](../AGENTS.md) defines documentation ownership and organization.
 This page describes the existing validation workflows.
 
+For the vendored window library and its local integration changes, see
+[GLFW maintenance](glfw.md).
+
 ## Build and test
 
 On Windows, use PowerShell 7, Python, and Visual Studio C++ tools. Run from the
