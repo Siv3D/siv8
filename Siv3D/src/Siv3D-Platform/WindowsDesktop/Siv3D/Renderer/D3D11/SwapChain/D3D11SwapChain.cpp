@@ -82,15 +82,18 @@ namespace s3d
 		{
 			LOG_DEBUG("IDXGIFactory2::CreateSwapChainForHwnd()");
 
-			if (FAILED(factory->CreateSwapChainForHwnd(
+			if (const HRESULT hr = factory->CreateSwapChainForHwnd(
 				device,
 				hWnd,
 				&desc,
 				nullptr,
 				nullptr,
-				&m_swapChain1)))
+				&m_swapChain1); FAILED(hr))
 			{
-				throw InternalEngineError{ "IDXGIFactory2::CreateSwapChainForHwnd() failed" };
+				throw InternalEngineError{ fmt::format(
+					"IDXGIFactory2::CreateSwapChainForHwnd() failed: size={}x{}, format={}, buffers={}, swapEffect={}, flags=0x{:08X}, HRESULT={}",
+					desc.Width, desc.Height, static_cast<uint32>(desc.Format), desc.BufferCount,
+					static_cast<uint32>(desc.SwapEffect), desc.Flags, D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 		}
 
@@ -98,15 +101,15 @@ namespace s3d
 		m_nonVSyncPresentFlags = ((desc.Flags & DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING) ? DXGI_PRESENT_ALLOW_TEARING : 0);
 
 		ComPtr<IDXGISwapChain2> swapChain2;
-		if (FAILED(m_swapChain1.As(&swapChain2)))
+		if (const HRESULT hr = m_swapChain1.As(&swapChain2); FAILED(hr))
 		{
-			throw InternalEngineError{ "IDXGISwapChain1::QueryInterface(IDXGISwapChain2) failed" };
+			throw InternalEngineError{ fmt::format("IDXGISwapChain1::QueryInterface(IDXGISwapChain2) failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 		}
 
 		LOG_TRACE(fmt::format("IDXGISwapChain2::SetMaximumFrameLatency({})", DefaultMaximumFrameLatency));
-		if (FAILED(swapChain2->SetMaximumFrameLatency(DefaultMaximumFrameLatency)))
+		if (const HRESULT hr = swapChain2->SetMaximumFrameLatency(DefaultMaximumFrameLatency); FAILED(hr))
 		{
-			throw InternalEngineError{ "IDXGISwapChain2::SetMaximumFrameLatency() failed" };
+			throw InternalEngineError{ fmt::format("IDXGISwapChain2::SetMaximumFrameLatency() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 		}
 
 		{
@@ -114,9 +117,9 @@ namespace s3d
 
 			constexpr uint32 Flags = (DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
-			if (FAILED(factory->MakeWindowAssociation(hWnd, Flags)))
+			if (const HRESULT hr = factory->MakeWindowAssociation(hWnd, Flags); FAILED(hr))
 			{
-				throw InternalEngineError{ "IDXGIFactory::MakeWindowAssociation() failed" };
+				throw InternalEngineError{ fmt::format("IDXGIFactory::MakeWindowAssociation() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 			}
 		}
 

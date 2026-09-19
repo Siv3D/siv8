@@ -52,15 +52,7 @@ namespace s3d
 			// DestroyWindow() must be called from the main thread.
 			g_shouldDestroyWindow.test_and_set();
 
-			for (int32 i = 0; i < 100; ++i)
-			{
-				if (g_shouldDestroyWindow.test() == false)
-				{
-					break;
-				}
-
-				::Sleep(2);
-			}
+			g_shouldDestroyWindow.wait(true);
 		}
 
 		m_user32.unload();

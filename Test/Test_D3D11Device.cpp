@@ -15,6 +15,7 @@
 
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
+# include <Siv3D/ScopeExit.hpp>
 # include <Siv3D/Renderer/D3D11/CRenderer_D3D11.hpp>
 # include <Siv3D/Renderer/D3D11/Device/D3D11Misc.hpp>
 # include <wrl/implements.h>
@@ -673,6 +674,27 @@ TEST_CASE("D3D11Device.diagnostics_distinguish_software_fallbacks_and_final_fail
 	CHECK(referenceFailure.message.find("featureLevels=[11_1, 11_0, 10_1]") != std::string::npos);
 	CHECK(script.logs.back().level == LogLevel::Fail);
 	CHECK(script.logs.back().creationCount == 5);
+}
+
+TEST_CASE("D3D11Device.swapchain_factory_belongs_to_the_created_device")
+{
+	const auto savedDriver = g_engineOptions.d3d11Driver;
+	ScopeExit restore = [savedDriver] { g_engineOptions.d3d11Driver = savedDriver; };
+	for (const auto driver : { EngineOption::D3D11Driver::Hardware, EngineOption::D3D11Driver::WARP })
+	{
+		CAPTURE(static_cast<int>(driver));
+		g_engineOptions.d3d11Driver = driver;
+		D3D11Device device;
+		device.init();
+		ComPtr<IDXGIAdapter> adapter;
+		REQUIRE(SUCCEEDED(device.getDXGIDevice1()->GetAdapter(&adapter)));
+		ComPtr<IDXGIFactory2> parent;
+		REQUIRE(SUCCEEDED(adapter->GetParent(IID_PPV_ARGS(&parent))));
+		ComPtr<IUnknown> expected, actual;
+		REQUIRE(SUCCEEDED(parent.As(&expected)));
+		REQUIRE(SUCCEEDED(device.getDXGIFactory2()->QueryInterface(IID_PPV_ARGS(&actual))));
+		CHECK(actual.Get() == expected.Get());
+	}
 }
 
 # endif

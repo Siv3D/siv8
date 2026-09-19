@@ -9,8 +9,7 @@
 //
 //-----------------------------------------------
 
-# include <condition_variable>
-# include <mutex>
+# include <atomic>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/AsyncTask.hpp>
 # include <Siv3D/Unicode.hpp>
@@ -23,28 +22,8 @@
 # include <Siv3D/System/ExitCode.hpp>
 # include "Siv3DMainHelper.hpp"
 
-//        [THREAD #0]                        [THREAD #1]
-//                            
-// WinMain() {                 
-//   f = Async(MainThread)            || MainThread() {
-//   **LOCK**                         ||   Siv3DEngine engine;
-//                                    ||   engine->System->preInit();
-//                                    <=   **LOCK**
-//   engine->Window->init();          ||
-//   **LOCK**                         =>
-//                                    ||   engine->System->init();
-//                                    <=
-//   while (not f.isReady()) {        ||   Main() { while(System::Update()) {} } // User code
-//     PumMessages();                 ||
-//                                    ||   engine::~Siv3DEngine() {
-//     if (g_callWindowDestroy) {     ||     ...
-//       engine->Window->destroy();   ||     g_callWindowDestroy = true
-//       g_callWindowDestroy = false; ||     |
-//     }                              ||     wait until (g_callWindowDestroy == false)
-//                                    ||     ...  
-//     Sleep(1);                      ||   }
-//   }                                || }  
-// }
+// The window thread creates/destroys the HWND and pumps messages while the
+// engine thread initializes Direct3D, runs Main(), and releases the engine.
 
 namespace s3d
 {
@@ -52,13 +31,7 @@ namespace s3d
 
 	namespace
 	{
-		std::condition_variable g_cv;
-
-		std::mutex g_mutex;
-
-		int32 g_initStep = 0;
-
-		bool g_hasCriticalError = false;
+		std::atomic_flag g_shouldInitWindow;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -66,73 +39,42 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		static void MainThread()
+		static bool MainThread(std::future<bool> windowInitialized)
 		{
 			if (FAILED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 			{
 				::OutputDebugStringW(L"CoInitializeEx() failed\n");
 				FreestandingMessageBox::ShowError("CoInitializeEx() failed");
-				g_hasCriticalError = true;
-				std::unique_lock lock{ g_mutex };
-				lock.unlock();
-				g_cv.notify_one();
-				return;
+				return false;
 			}
 
 			ScopeExit coUninitialize = [] { ::CoUninitialize(); };
 
-			Siv3DEngine engine;
-
-			std::unique_lock lock{ g_mutex }; // (1)--
+			try
 			{
+				Siv3DEngine engine;
+
 				if (auto pCSystem = dynamic_cast<CSystem*>(SIV3D_ENGINE(System)))
 				{
 					pCSystem->preInit();
 				}
 
-				g_initStep = 1;
+				g_shouldInitWindow.test_and_set();
+				if (not windowInitialized.get())
+				{
+					return false;
+				}
 
-				lock.unlock(); // --(1)
-				g_cv.notify_one();
+				SIV3D_ENGINE(System)->init();
+				MainSEH();
+				return true;
 			}
-
-			lock.lock();
+			catch (const std::exception& error)
 			{
-				g_cv.wait(lock, []() { return ((g_initStep == 2) || g_hasCriticalError); }); // (3)--
-
-				if (g_hasCriticalError)
-				{
-					lock.unlock();
-					g_cv.notify_one();
-
-					return;
-				}
-
-				try
-				{
-					SIV3D_ENGINE(System)->init();
-				}
-				catch (const std::exception& error)
-				{
-					::OutputDebugStringW((Unicode::ToWstring(error.what()) + L'\n').c_str());
-					FreestandingMessageBox::ShowError(error.what());
-
-					g_hasCriticalError = true;
-
-					lock.unlock(); // --(3)
-					g_cv.notify_one();
-
-					return;
-				}
-
-				g_initStep = 3;
-
-				lock.unlock(); // --(3)
-				g_cv.notify_one();
+				::OutputDebugStringW((Unicode::ToWstring(error.what()) + L'\n').c_str());
+				FreestandingMessageBox::ShowError(error.what());
+				return false;
 			}
-
-			// (4b)--
-			MainSEH();
 		}
 
 		////////////////////////////////////////////////////////////////
@@ -149,6 +91,7 @@ namespace s3d
 			}
 
 			g_shouldDestroyWindow.clear();
+			g_shouldDestroyWindow.notify_one();
 		}
 	}
 
@@ -178,50 +121,33 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 		return -1;
 	}
 
-	ScopeExit cleanup = []{	WinMainExit(); };
+	ScopeExit cleanup = [] { WinMainExit(); };
 
-	std::unique_lock lock{ g_mutex }; // (0)--
+	std::promise<bool> windowInitialized;
+	AsyncTask<bool> mainThread = Async(MainThread, windowInitialized.get_future());
 
-	const AsyncTask<void> mainThread = Async(MainThread);
-
-	g_cv.wait(lock, [&]() { return (g_initStep == 1); }); // --(0) (2)--
+	// There is no engine window to pump yet. Early worker failures also end this wait.
+	while ((not g_shouldInitWindow.test()) && (not mainThread.isReady()))
 	{
+		::Sleep(1);
+	}
+
+	if (g_shouldInitWindow.test())
+	{
+		bool succeeded = false;
 		try
 		{
 			SIV3D_ENGINE(Window)->init();
+			succeeded = true;
 		}
 		catch (const std::exception& error)
 		{
 			::OutputDebugStringW((Unicode::ToWstring(error.what()) + L'\n').c_str());
-			g_hasCriticalError = true;
-
-			return -1;
 		}
-
-		g_initStep = 2;
-
-		lock.unlock(); // --(2)
-		g_cv.notify_one();
-		lock.lock();
+		windowInitialized.set_value(succeeded);
 	}
 
-	g_cv.wait(lock, []() { return ((g_initStep == 3) || g_hasCriticalError); }); // (4a)--
-
-	if (g_hasCriticalError)
-	{
-		while (not mainThread.isReady())
-		{
-			if (g_shouldDestroyWindow.test())
-			{
-				DestroyWindow();
-			}
-
-			::Sleep(1);
-		}
-
-		return -1;
-	}
-
+	// DXGI initialization and teardown may synchronously send window messages.
 	while (not mainThread.isReady())
 	{
 		PumpMessages();
@@ -234,5 +160,5 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 		::Sleep(1);
 	}
 
-	return GetExitCode();
+	return (mainThread.get() ? GetExitCode() : -1);
 }

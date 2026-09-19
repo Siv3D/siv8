@@ -541,7 +541,8 @@ TEST_CASE("D3D11SwapChain.creation_failure_stops_initialization")
 {
 	SwapChainFixture fixture;
 	fixture.factory->creationResult = E_FAIL;
-	CHECK_THROWS_AS(fixture.init(), InternalEngineError);
+	CHECK_THROWS_WITH(fixture.init(), "IDXGIFactory2::CreateSwapChainForHwnd() failed: "
+		"size=640x480, format=28, buffers=3, swapEffect=4, flags=0x00000840, HRESULT=0x80004005 (E_FAIL)");
 	CHECK(fixture.factory->creationCalls == 1);
 	CHECK(fixture.factory->swapChain->latencyCalls == 0);
 	CHECK(fixture.factory->swapChain->waitableCalls == 0);
@@ -561,7 +562,7 @@ TEST_CASE("D3D11SwapChain.frame_latency_failure_stops_initialization")
 {
 	SwapChainFixture fixture;
 	fixture.factory->swapChain->latencyResult = DXGI_ERROR_DEVICE_REMOVED;
-	CHECK_THROWS_AS(fixture.init(), InternalEngineError);
+	CHECK_THROWS_WITH(fixture.init(), "IDXGISwapChain2::SetMaximumFrameLatency() failed: HRESULT=0x887A0005 (DXGI_ERROR_DEVICE_REMOVED)");
 	CHECK(fixture.factory->swapChain->latencyCalls == 1);
 	CHECK(fixture.factory->swapChain->waitableCalls == 0);
 	CHECK(fixture.factory->associationCalls == 0);
@@ -571,7 +572,7 @@ TEST_CASE("D3D11SwapChain.window_association_failure_precedes_handle_acquisition
 {
 	SwapChainFixture fixture;
 	fixture.factory->associationResult = E_FAIL;
-	CHECK_THROWS_AS(fixture.init(), InternalEngineError);
+	CHECK_THROWS_WITH(fixture.init(), "IDXGIFactory::MakeWindowAssociation() failed: HRESULT=0x80004005 (E_FAIL)");
 	CHECK(fixture.factory->associationCalls == 1);
 	CHECK(fixture.factory->swapChain->waitableCalls == 0);
 }

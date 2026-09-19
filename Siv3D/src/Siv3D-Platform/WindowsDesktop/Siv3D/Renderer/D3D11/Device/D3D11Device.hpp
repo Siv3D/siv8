@@ -47,16 +47,8 @@ namespace s3d
 
 	private:
 
-		PFN_D3D11_CREATE_DEVICE m_pD3D11CreateDevice = nullptr;
-
-		decltype(CreateDXGIFactory1)* m_pCreateDXGIFactory1 = nullptr;
-
 		ComPtr<IDXGIFactory2> m_DXGIFactory2;
 
-		ComPtr<IDXGIFactory6> m_DXGIFactory6;
-
 		D3D11DeviceInfo m_deviceInfo;
-
-		bool m_hasDebugLayer = false;
 	};
 }

@@ -15,6 +15,7 @@
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "D3D11Misc.hpp"
+# include "../D3D11Diagnostics.hpp"
 
 namespace s3d
 {
@@ -72,20 +73,23 @@ namespace s3d
 	{
 		LOG_SCOPED_DEBUG("D3D11Device::init()");
 
-		m_pD3D11CreateDevice	= LoadD3D11CreateDevice();
-		m_pCreateDXGIFactory1	= LoadCreateDXGIFactory1();
+		const auto pD3D11CreateDevice = LoadD3D11CreateDevice();
+		const auto pCreateDXGIFactory1 = LoadCreateDXGIFactory1();
+		bool hasDebugLayer = false;
 
 		if constexpr (SIV3D_BUILD(DEBUG))
 		{
-			m_hasDebugLayer = HasDebugLayer();
+			hasDebugLayer = HasDebugLayer();
 			
-			if (m_hasDebugLayer)
+			if (hasDebugLayer)
 			{
 				LOG_INFO("ℹ️ D3D11 debug layer is available");
 			}
 		}
 
-		CreateDXGIFactories(m_pCreateDXGIFactory1, m_DXGIFactory2, m_DXGIFactory6);
+		ComPtr<IDXGIFactory2> factory2;
+		ComPtr<IDXGIFactory6> factory6;
+		CreateDXGIFactories(pCreateDXGIFactory1, factory2, factory6);
 
 		{
 			const EngineOption::D3D11Driver targetDriverType = g_engineOptions.d3d11Driver;
@@ -93,12 +97,23 @@ namespace s3d
 			const DXGI_GPU_PREFERENCE preference = ((targetDriverType == EngineOption::D3D11Driver::Hardware_FavorIntegrated)
 				? DXGI_GPU_PREFERENCE_MINIMUM_POWER : DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 
-			m_deviceInfo = D3D11Misc::CreateDevice(m_pD3D11CreateDevice,
+			m_deviceInfo = D3D11Misc::CreateDevice(pD3D11CreateDevice,
 				[&](Array<D3D11Adapter>& result)
 				{
-					D3D11Misc::EnumHardwareAdapters(result, m_DXGIFactory6.Get(), m_DXGIFactory2.Get(),
+					D3D11Misc::EnumHardwareAdapters(result, factory6.Get(), factory2.Get(),
 						preference);
-				}, targetDriverType, m_hasDebugLayer);
+				}, targetDriverType, hasDebugLayer);
+		}
+
+		// Default-adapter and software devices can belong to a different factory.
+		ComPtr<IDXGIAdapter> adapter;
+		if (const HRESULT hr = m_deviceInfo.dxgiDevice->GetAdapter(&adapter); FAILED(hr))
+		{
+			throw InternalEngineError{ fmt::format("IDXGIDevice::GetAdapter() failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
+		}
+		if (const HRESULT hr = adapter->GetParent(IID_PPV_ARGS(&m_DXGIFactory2)); FAILED(hr))
+		{
+			throw InternalEngineError{ fmt::format("IDXGIAdapter::GetParent(IDXGIFactory2) failed: HRESULT={}", D3D11Diagnostics::FormatHRESULT(hr)) };
 		}
 	}
 }
