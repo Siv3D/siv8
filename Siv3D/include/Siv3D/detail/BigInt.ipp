@@ -373,14 +373,31 @@ namespace s3d
 	Optional<Int> BigInt::convertTo() const noexcept
 		requires ((not std::same_as<std::remove_cv_t<Int>, bool>) && (sizeof(Int) <= sizeof(uint64)))
 	{
+		// The helpers check Int's range before narrowing the stored 64-bit value.
 		if constexpr (Concept::SignedIntegral<Int>)
 		{
-			return _convertToInt64(static_cast<int64>(std::numeric_limits<Int>::min()),
+			const auto value = _convertToInt64(static_cast<int64>(std::numeric_limits<Int>::min()),
 				static_cast<int64>(std::numeric_limits<Int>::max()));
+			if constexpr (sizeof(Int) < sizeof(int64))
+			{
+				return value ? Optional<Int>{ static_cast<Int>(*value) } : none;
+			}
+			else
+			{
+				return value;
+			}
 		}
 		else
 		{
-			return _convertToUint64(static_cast<uint64>(std::numeric_limits<Int>::max()));
+			const auto value = _convertToUint64(static_cast<uint64>(std::numeric_limits<Int>::max()));
+			if constexpr (sizeof(Int) < sizeof(uint64))
+			{
+				return value ? Optional<Int>{ static_cast<Int>(*value) } : none;
+			}
+			else
+			{
+				return value;
+			}
 		}
 	}
 
