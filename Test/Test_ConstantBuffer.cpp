@@ -171,10 +171,6 @@ TEST_CASE("ConstantBuffer.invalid_slots")
 	ConstantBuffer<Parameters> cb{};
 	for (const uint32 slot : { 0u, 1u, 14u, 0xFFFFFFFFu })
 	{
-		CHECK_THROWS_AS(Graphics2D::SetPSConstantBuffer(slot, cb), Error);
-		CHECK_THROWS_AS(Graphics2D::SetVSConstantBuffer(slot, cb), Error);
-		CHECK_THROWS_AS(Graphics2D::ResetVSConstantBuffer(slot), Error);
-		CHECK_THROWS_AS(Graphics2D::ResetPSConstantBuffer(slot), Error);
 		CHECK_THROWS_AS((ScopedVSConstantBuffer2D{ slot, cb }), Error);
 		CHECK_THROWS_AS((ScopedPSConstantBuffer2D{ slot, cb }), Error);
 	}
@@ -210,22 +206,21 @@ TEST_CASE("ConstantBuffer.sample_shaders_snapshot_and_PMA")
 			{
 				ConstantBuffer<Parameters> cb{ Parameters{ Float4{ 10, 0, 0, 0 } } };
 				// One object supplies both stages, with independent snapshots.
-				Graphics2D::SetVSConstantBuffer(2, cb);
+				const ScopedVSConstantBuffer2D offsetConstants{ 2, cb };
 				cb->value = Float4{ 1, 0, 0, 1 };
-				Graphics2D::SetPSConstantBuffer(2, cb);
+				const ScopedPSConstantBuffer2D redConstants{ 2, cb };
 				const ScopedCustomShader2D shader{ offset, shape };
 				Rect{ 20, 20, 30, 30 }.draw();
 				cb->value = Float4{ 0, 1, 0, 1 };
-				Graphics2D::SetPSConstantBuffer(2, cb);
+				const ScopedPSConstantBuffer2D greenConstants{ 2, cb };
 				Rect{ 70, 20, 30, 30 }.draw();
-				cb->value = Float4{ 0, 0, 1, 1 }; // No Set: the existing green snapshot remains.
+				cb->value = Float4{ 0, 0, 1, 1 }; // The existing green snapshot remains.
 				Rect{ 120, 20, 30, 30 }.draw();
 			}
 			{
-				ConstantBuffer<Parameters> cb{ Parameters{ Float4{ 0.5f, 1, 0.75f, 0.5f } } };
-				Graphics2D::SetPSConstantBuffer(2, cb);
-			}
-			{
+				// The source buffer is destroyed before the queued texture draw.
+				const ScopedPSConstantBuffer2D tint{ 2,
+					ConstantBuffer<Parameters>{ Parameters{ Float4{ 0.5f, 1, 0.75f, 0.5f } } } };
 				const ScopedCustomShader2D shader{ texture };
 				image.resized(40, 40).draw(20, 80);
 			}
@@ -259,9 +254,9 @@ fragment float4 PS(constant uint4& a [[buffer(2)]], constant uint4& b [[buffer(1
 	{
 		ConstantBuffer<std::array<uint32, 4>> cb;
 		(*cb)[0] = 64;
-		Graphics2D::SetPSConstantBuffer(2, cb);
+		const ScopedPSConstantBuffer2D firstSlot{ 2, cb };
 		(*cb)[0] = 192;
-		Graphics2D::SetPSConstantBuffer(13, cb);
+		const ScopedPSConstantBuffer2D lastSlot{ 13, cb };
 		const ScopedCustomShader2D shader{ ps };
 		Rect{ 20, 20, 30, 30 }.draw();
 	});
@@ -331,6 +326,10 @@ vertex Output VS(uint id [[vertex_id]], constant Input* vertices [[buffer(0)]],
 			Rect{ 70, 160, 20, 20 }.draw(Palette::Blue);
 		});
 		const ScopedCustomShader2D shader{ vs, ps };
+		(*cb)[0] = (*cb)[Count - 1] = Float4{ 5, 0, 0, 0 };
+		const ScopedVSConstantBuffer2D outerOffset{ 13, cb };
+		(*cb)[0] = (*cb)[Count - 1] = Float4{ 0, 0, 1, 1 };
+		const ScopedPSConstantBuffer2D outerTint{ 2, cb };
 		for (int32 frame = 0; frame < 5; ++frame)
 		{
 			const auto actual = CaptureConstants([&]
@@ -340,9 +339,9 @@ vertex Output VS(uint id [[vertex_id]], constant Input* vertices [[buffer(0)]],
 					// A second encoder/flush in the same frame must not recycle prior upload data.
 					if (i == 12) { Graphics2D::Flush(); }
 					(*cb)[0] = (*cb)[Count - 1] = Float4{ 5, 0, 0, 0 };
-					Graphics2D::SetVSConstantBuffer(13, cb);
+					const ScopedVSConstantBuffer2D offset{ 13, cb };
 					(*cb)[0] = (*cb)[Count - 1] = ((i % 2) ? Float4{ 0, 0, 1, 1 } : Float4{ 1, 0, 0, 1 });
-					Graphics2D::SetPSConstantBuffer(2, cb);
+					const ScopedPSConstantBuffer2D tint{ 2, cb };
 					Rect{ (20 + i % 8 * 30), (20 + i / 8 * 30), 20, 20 }.draw();
 				}
 				{
@@ -352,7 +351,7 @@ vertex Output VS(uint id [[vertex_id]], constant Input* vertices [[buffer(0)]],
 					Rect{ 20, 160, 20, 20 }.draw();
 				}
 				Graphics2D::Flush();
-				// No Set after flush: both the large VS value and restored PS value survive.
+				// Both outer snapshots survive the flush without reconstructing their scopes.
 				Rect{ 60, 160, 20, 20 }.draw();
 			});
 			CheckImages(actual, reference);
@@ -432,12 +431,10 @@ TEST_CASE("ConstantBuffer.persists_across_flush_and_frames")
 		Rect{ 30, 20, 30, 30 }.draw(Palette::Red);
 		Rect{ 80, 20, 30, 30 }.draw(Palette::Red);
 	});
-	{
-		ConstantBuffer<Parameters> cb{ Parameters{ Float4{ 10, 0, 0, 0 } } };
-		Graphics2D::SetVSConstantBuffer(2, cb);
-		cb->value = Float4{ 1, 0, 0, 1 };
-		Graphics2D::SetPSConstantBuffer(2, cb);
-	}
+	const ScopedVSConstantBuffer2D offset{ 2,
+		ConstantBuffer<Parameters>{ Parameters{ Float4{ 10, 0, 0, 0 } } } };
+	const ScopedPSConstantBuffer2D tint{ 2,
+		ConstantBuffer<Parameters>{ Parameters{ Float4{ 1, 0, 0, 1 } } } };
 	{
 		const ScopedCustomShader2D shader{ vs, ps };
 		for (int32 frame = 0; frame < 5; ++frame)
@@ -486,6 +483,11 @@ TEST_CASE("ConstantBuffer.scopes_restore_and_move")
 		const ScopedVSConstantBuffer2D offset{ 2, cb };
 		cb->value = Float4{ 1, 0, 0, 1 };
 		const ScopedPSConstantBuffer2D tint{ 2, cb };
+		{
+			const ScopedVSConstantBuffer2D inactiveVS;
+			ScopedPSConstantBuffer2D inactivePS;
+			const ScopedPSConstantBuffer2D movedInactive{ std::move(inactivePS) };
+		}
 		Rect{ 20, 20, 30, 30 }.draw();
 		{
 			std::optional<ScopedPSConstantBuffer2D> moved;
@@ -501,11 +503,13 @@ TEST_CASE("ConstantBuffer.scopes_restore_and_move")
 			}
 			Graphics2D::Flush();
 			Rect{ 120, 20, 30, 30 }.draw();
-			cb->value = Float4{ 0, 0, 1, 1 };
-			Graphics2D::SetPSConstantBuffer(2, cb);
-			Rect{ 170, 20, 30, 30 }.draw();
-			// Explicit resets within a scope must not discard its saved value.
-			Graphics2D::ResetPSConstantBuffer(2);
+			{
+				cb->value = Float4{ 0, 0, 1, 1 };
+				const ScopedPSConstantBuffer2D blue{ 2, cb };
+				Rect{ 170, 20, 30, 30 }.draw();
+				Graphics2D::Flush();
+			}
+			moved.reset();
 			Graphics2D::Flush();
 		}
 		Rect{ 220, 20, 30, 30 }.draw();
@@ -518,8 +522,6 @@ TEST_CASE("ConstantBuffer.scopes_restore_and_move")
 		CHECK(previous == 0);
 		SIV3D_ENGINE(Renderer2D)->endConstantBufferScope(stage, 2, previous);
 	}
-	Graphics2D::ResetVSConstantBuffer(2);
-	Graphics2D::ResetPSConstantBuffer(13);
 	Graphics2D::Flush();
 }
 
@@ -791,27 +793,29 @@ TEST_CASE("ConstantBuffer.external_D3D11_bindings")
 	std::array<ID3D11Buffer*, Graphics::ConstantBufferSlotCount> foreignBindings;
 	foreignBindings.fill(foreignBuffer);
 
+	std::array<std::optional<ScopedVSConstantBuffer2D>, Graphics::ConstantBufferSlotCount> vsConstants;
+	std::array<std::optional<ScopedPSConstantBuffer2D>, Graphics::ConstantBufferSlotCount> psConstants;
 	{
 		ConstantBuffer<Parameters> cb;
 		for (uint32 slot = 2; slot < Graphics::ConstantBufferSlotCount; ++slot)
 		{
 			if (slot == 5) { continue; } // A slot that has never been set by this renderer.
 			cb->value = Float4{ 10, 0, 0, 0 };
-			Graphics2D::SetVSConstantBuffer(slot, cb);
+			vsConstants[slot].emplace(slot, cb);
 			cb->value = Float4{ 1, 0, 0, 1 };
-			Graphics2D::SetPSConstantBuffer(slot, cb);
+			psConstants[slot].emplace(slot, cb);
 		}
 	} // Only the renderer's snapshots remain.
 
 	for (uint32 phase = 0; phase < 3; ++phase)
 	{
-		// Cover persistent bindings, explicitly cleared slots, and an entirely unset user range.
+		// Cover persistent scopes, ended scopes, and an entirely unset user range.
 		for (uint32 slot = 2; slot < Graphics::ConstantBufferSlotCount; ++slot)
 		{
 			if ((phase == 2) || ((phase == 1) && (slot % 2)))
 			{
-				Graphics2D::ResetVSConstantBuffer(slot);
-				Graphics2D::ResetPSConstantBuffer(slot);
+				vsConstants[slot].reset();
+				psConstants[slot].reset();
 			}
 		}
 		Graphics2D::Flush();
@@ -829,9 +833,7 @@ TEST_CASE("ConstantBuffer.external_D3D11_bindings")
 				// Simulate another renderer without informing Renderer2D or its state tracker.
 				context->VSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, foreignBindings.data());
 				context->PSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, foreignBindings.data());
-				// Reset on an already unset slot must not rely on the native binding being null.
-				Graphics2D::ResetVSConstantBuffer(5);
-				Graphics2D::ResetPSConstantBuffer(5);
+				// No scope owns slot 5; the execution boundary must clear its foreign binding.
 
 				if (phase < 2)
 				{

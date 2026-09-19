@@ -9,10 +9,11 @@
 
 ## Custom constant buffers
 
-[Graphics2D.hpp](../../Siv3D/include/Siv3D/Graphics2D.hpp) defines the public
-SetVSConstantBuffer / SetPSConstantBuffer contract. User slots are 2–13 on both
-backends; 0 and 1 are reserved for engine data. In Metal, vertex buffer 0 contains
-vertices and vertex buffer 1 contains standard VS constants.
+[ScopedConstantBuffer2D.hpp](../../Siv3D/include/Siv3D/ScopedConstantBuffer2D.hpp)
+defines the public contract for `ScopedVSConstantBuffer2D` and
+`ScopedPSConstantBuffer2D`. User slots are 2–13 on both backends; 0 and 1 are
+reserved for engine data. In Metal, vertex buffer 0 contains vertices and vertex
+buffer 1 contains standard VS constants.
 
 Use explicit layouts shared with the shader, preferably Float4 members and
 Float4 arrays. ConstantBuffer aligns the outer storage; it does not pack members
@@ -20,18 +21,20 @@ or scalar arrays into the shader's layout. The paired
 [constant-buffer sample](../../Test/Manual/ScopedCustomShader2D.md) applies a local
 vertex offset and a straight-RGBA tint, with premultiplied output.
 
-Renderer2D owns a snapshot of each Set call. Changing or destroying the source
-object does not affect that value. Shader selection and custom constants persist
-across `Graphics2D::Flush()` and frame boundaries until explicitly changed or
-restored. Shader changes do not change constant-buffer bindings.
+Construct a constant-buffer scope around the draws that use its value.
+Renderer2D owns a snapshot taken at construction; changing or destroying the
+source object does not affect that snapshot. To apply a changed value, construct
+another scope after updating the source buffer. Keep a scope around a render
+pass or frame loop when the same value should remain active throughout it.
+Shader selection and custom constants survive `Graphics2D::Flush()` and frame
+boundaries while their scopes remain alive.
 
-Use `ScopedVSConstantBuffer2D` and `ScopedPSConstantBuffer2D` for local changes.
-Each restores only its specified slot, including an originally unset slot.
-Nested scopes for the same slot must unwind in reverse order. The scopes save
-the previous snapshot, not a reference to the original ConstantBuffer.
-`ScopedCustomShader2D` independently restores only the specified shader stages.
-Use `Graphics2D::ResetVSConstantBuffer()` / `ResetPSConstantBuffer()` to release a
-persistent binding; already recorded draws retain their values.
+Each constant-buffer scope restores only its specified stage and slot, including
+an originally unset slot. Scopes for the same stage and slot must unwind in
+reverse order. They save the previous snapshot, not a reference to the original
+ConstantBuffer. Scope destruction does not affect already recorded draws.
+`ScopedCustomShader2D` independently restores only the specified shader stages
+and does not change constant-buffer bindings.
 
 ```cpp
 const ScopedCustomShader2D shader{ psHit };
@@ -42,7 +45,8 @@ enemy.draw();
 The shared constant-buffer command store separates pending commands from current
 bindings and saved scope values. Immutable snapshots use reference counts on the
 drawing thread and reusable size-class storage (16 bytes through 64 KiB). Only
-Set copies source bytes; command replay and scope restoration share snapshots.
+constructing a constant-buffer scope copies source bytes; command replay and
+scope restoration share snapshots.
 Clearing executed commands releases only their references.
 
 State changes are coalesced per stage/slot until the next draw or command flush.
@@ -51,16 +55,16 @@ a change mask; it does not allocate a command or call the graphics API. If the
 same slot is set again before a draw, the intermediate restoration is omitted.
 An empty scope returning to the recorded snapshot does not split a draw batch.
 This makes a loop of scoped draws require one parameter upload per iteration,
-with only a final restoration when that state is committed. Each Set still
-copies its source data; distinct Set calls are not deduplicated by comparing
+with only a final restoration when that state is committed. Each new binding
+copies its source data; distinct snapshots are not deduplicated by comparing
 their bytes.
 
 D3D11 reuses a growing dynamic GPU buffer per stage/slot and uploads snapshots in
 command order. Metal uses setBytes up to 4096 bytes; larger snapshots use distinct,
 256-byte-aligned regions in 64 KiB upload pages. Pages are reused only after
 MetalFrameContext permits reuse of that frame slot, including across intermediate
-flushes. Each new execution reapplies logical bindings. A reset or restoration
-to an unset slot unbinds the backend resource when that state is committed.
+flushes. Each new execution reapplies logical bindings. Restoration to an unset
+slot unbinds the backend resource when that state is committed.
 Allocation/upload failure during command execution raises InternalEngineError.
 
 The recorded snapshot IDs describe only Renderer2D's command stream, not the
@@ -88,7 +92,7 @@ tests check scoped loops, empty scopes, independent pending slots, and reset
 ordering; image comparisons check changing VS/PS parameters in a scoped loop.
 The D3D11 integration test replaces all VS/PS native bindings outside Renderer2D,
 then checks all restored slots and rendered images across intermediate flushes
-and frames, including slots that were never set or explicitly reset.
+and frames, including slots that were never set or whose scopes have ended.
 Tests save and restore the constant-buffer state they modify. Run
 `./WindowsDesktop/run-tests.ps1 -TestArguments '--test-case=ConstantBuffer.*'` on
 Windows or `./macOS/run-tests.sh '--test-case=ConstantBuffer.*'` on macOS, then the

@@ -90,10 +90,10 @@ below. Capture mode records images; it does not automatically judge them.
   translation, persistent VS/PS constants with explicit flushes, and temporary
   constant buffers destroyed before drawing. The persistent constants are bound
   once before the main loop, so switching pages and returning must retain them.
-  The bottom three panels agree: built-in red/green/red tints, repeated Set calls
-  using one object for both stages, and nested scopes that restore the outer red
-  tint. Flushes inside these scopes must not affect the images. Changing the
-  original buffer without Set must not change the inner green tint.
+  The bottom three panels agree: built-in red/green/red tints, repeated scopes
+  using one buffer object for both stages, and nested scopes that restore the
+  outer red tint. Flushes inside these scopes must not affect the images.
+  Changing the original buffer must not change an existing scope's green tint.
   Opacity preserves the checkerboard and transparent diagnostic strip.
   ScopedCustomShader2D restores shaders; constant-buffer scopes independently
   restore their specified slots. The automated tests also cover shader scopes
@@ -423,30 +423,36 @@ namespace
 			{
 				ConstantBuffer<CustomParameters> cb{ CustomParameters{ Float4{ 0, 0, 0, 0 } } };
 				const ScopedVSConstantBuffer2D offset{ 2, cb };
-				cb->value = colors[0];
-				const ScopedPSConstantBuffer2D outer{ 2, cb };
 				const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
-				for (int32 column = 0; column < 3; ++column)
+				if (i == 4)
 				{
-					const int32 x = (12 + column * 104);
-					if (i == 4)
+					for (int32 column = 0; column < 3; ++column)
 					{
 						cb->value = colors[column];
-						Graphics2D::SetPSConstantBuffer(2, cb);
-						diagnostic.resized(96, 176).draw(x, 46);
+						const ScopedPSConstantBuffer2D color{ 2, cb };
+						diagnostic.resized(96, 176).draw((12 + column * 104), 46);
 					}
-					else if (column == 1)
+				}
+				else
+				{
+					cb->value = colors[0];
+					const ScopedPSConstantBuffer2D outer{ 2, cb };
+					for (int32 column = 0; column < 3; ++column)
 					{
-						cb->value = colors[1];
-						const ScopedPSConstantBuffer2D inner{ 2, cb };
-						cb->value = Float4{ 0, 0, 1, 1 }; // No Set: green is still active.
-						Graphics2D::Flush();
-						diagnostic.resized(96, 176).draw(x, 46);
-					}
-					else
-					{
-						Graphics2D::Flush();
-						diagnostic.resized(96, 176).draw(x, 46);
+						const int32 x = (12 + column * 104);
+						if (column == 1)
+						{
+							cb->value = colors[1];
+							const ScopedPSConstantBuffer2D inner{ 2, cb };
+							cb->value = Float4{ 0, 0, 1, 1 }; // The existing scope still holds green.
+							Graphics2D::Flush();
+							diagnostic.resized(96, 176).draw(x, 46);
+						}
+						else
+						{
+							Graphics2D::Flush();
+							diagnostic.resized(96, 176).draw(x, 46);
+						}
 					}
 				}
 			}

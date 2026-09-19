@@ -19,7 +19,6 @@
 # include "ShaderStage.hpp"
 # include "VertexShader.hpp"
 # include "PixelShader.hpp"
-# include "ConstantBuffer.hpp"
 
 namespace s3d
 {
@@ -28,58 +27,6 @@ namespace s3d
 
 	namespace Graphics2D
 	{
-		////////////////////////////////////////////////////////////////
-		//
-		//	SetVSConstantBuffer
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief カスタム頂点シェーダの定数バッファを設定します。
-		/// @tparam Type 定数データの型
-		/// @param slot スロット番号。2～13。HLSL の register(bN)、MSL の buffer(N) に対応します。
-		/// @param buffer 設定する定数バッファ
-		/// @throw Error slot が範囲外の場合
-		/// @remark 呼び出し時の値をコピーします。その後の buffer の変更・破棄は記録済みの設定に影響しません。
-		/// @remark 同じステージ・スロットへの次の設定、解除、またはスコープによる復元まで、後続の描画で有効です。Flush() とフレーム境界を越えて保持されます。
-		/// @remark ScopedCustomShader2D はこの設定を復元しません。シェーダが参照するすべての独自スロットを描画前に設定してください。
-		template <class Type>
-		void SetVSConstantBuffer(uint32 slot, const ConstantBuffer<Type>& buffer);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	SetPSConstantBuffer
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief カスタムピクセルシェーダの定数バッファを設定します。
-		/// @tparam Type 定数データの型
-		/// @param slot スロット番号。2～13。HLSL の register(bN)、MSL の buffer(N) に対応します。
-		/// @param buffer 設定する定数バッファ
-		/// @throw Error slot が範囲外の場合
-		/// @remark 呼び出し時の値をコピーします。その後の buffer の変更・破棄は記録済みの設定に影響しません。
-		/// @remark 同じステージ・スロットへの次の設定、解除、またはスコープによる復元まで、後続の描画で有効です。Flush() とフレーム境界を越えて保持されます。
-		/// @remark ScopedCustomShader2D はこの設定を復元しません。シェーダが参照するすべての独自スロットを描画前に設定してください。
-		template <class Type>
-		void SetPSConstantBuffer(uint32 slot, const ConstantBuffer<Type>& buffer);
-
-		////////////////////////////////////////////////////////////////
-		//
-		//	ResetVSConstantBuffer, ResetPSConstantBuffer
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 頂点シェーダの独自定数バッファ設定を解除します。
-		/// @param slot スロット番号。2～13
-		/// @throw Error slot が範囲外の場合
-		/// @remark 記録済みの描画には影響しません。未設定のスロットでは設定を変更しません。
-		void ResetVSConstantBuffer(uint32 slot);
-
-		/// @brief ピクセルシェーダの独自定数バッファ設定を解除します。
-		/// @param slot スロット番号。2～13
-		/// @throw Error slot が範囲外の場合
-		/// @remark 記録済みの描画には影響しません。未設定のスロットでは設定を変更しません。
-		void ResetPSConstantBuffer(uint32 slot);
-
 		////////////////////////////////////////////////////////////////
 		//
 		//	Flush

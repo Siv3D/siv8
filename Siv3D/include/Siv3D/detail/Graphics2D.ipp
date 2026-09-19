@@ -52,17 +52,5 @@ namespace s3d
 			void SetCameraTransform(const Mat3x2& transform);
 		}
 
-		template <class Type>
-		void SetVSConstantBuffer(const uint32 slot, const ConstantBuffer<Type>& buffer)
-		{
-			Internal::SetConstantBuffer(ShaderStage::Vertex, slot, buffer._data(), buffer.size());
-		}
-
-		template <class Type>
-		void SetPSConstantBuffer(const uint32 slot, const ConstantBuffer<Type>& buffer)
-		{
-			Internal::SetConstantBuffer(ShaderStage::Pixel, slot, buffer._data(), buffer.size());
-		}
-
 	}
 }
