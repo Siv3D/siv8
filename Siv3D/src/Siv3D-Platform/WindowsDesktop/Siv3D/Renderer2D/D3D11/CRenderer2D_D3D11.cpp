@@ -1653,6 +1653,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	setConstantBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_D3D11::setConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	{
+		m_commandManager.pushConstantBuffer(stage, slot, data, size);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	flush
 	//
 	////////////////////////////////////////////////////////////////
@@ -1661,6 +1672,9 @@ namespace s3d
 	{
 		ScopeExit cleanUp = [this]()
 		{
+			const std::array<ID3D11Buffer*, (Graphics::ConstantBufferSlotCount - 2)> empty{};
+			m_context->VSSetConstantBuffers(2, static_cast<uint32>(empty.size()), empty.data());
+			m_context->PSSetConstantBuffers(2, static_cast<uint32>(empty.size()), empty.data());
 			m_vertexBufferManager2D.reset();
 			m_commandManager.reset();
 			m_currentCustomShader.vs.reset();
@@ -1731,6 +1745,33 @@ namespace s3d
 					++stat.drawCalls;
 					stat.triangleCount += (indexCount / 3);
 					LOG_COMMAND(fmt::format("Draw[{}] indexCount = {}, startIndexLocation = {}", command.index, indexCount, startIndexLocation));
+					break;
+				}
+			case D3D11Renderer2DCommandType::SetConstantBuffer:
+				{
+					const auto& buffers = m_commandManager.getConstantBuffers();
+					const auto& cb = buffers.get(command.index);
+					auto& destination = m_customConstantBuffers[FromEnum(cb.stage)][cb.slot];
+					if (destination.capacity < cb.size)
+					{
+						const size_t capacity = std::bit_ceil(cb.size);
+						destination.buffer = IConstantBuffer::Create(capacity);
+						destination.capacity = capacity;
+					}
+
+					if (not destination.buffer->_internal_update(buffers.data(cb), cb.size))
+					{
+						throw InternalEngineError{ "Failed to upload a custom 2D constant buffer" };
+					}
+
+					if (cb.stage == ShaderStage::Vertex)
+					{
+						m_pShader->setConstantBufferVS(cb.slot, destination.buffer.get());
+					}
+					else
+					{
+						m_pShader->setConstantBufferPS(cb.slot, destination.buffer.get());
+					}
 					break;
 				}
 			case D3D11Renderer2DCommandType::ColorMul:

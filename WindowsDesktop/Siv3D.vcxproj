@@ -1092,6 +1092,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\IRegExp.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\RegExp\RegExpDetail.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\BatchStateTracker.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ConstantBuffer2DCommands.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\IRenderer2D.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\ColorFillDirection.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Renderer2D\Renderer2DCommon.hpp" />

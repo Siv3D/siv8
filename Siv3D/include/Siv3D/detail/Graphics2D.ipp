@@ -17,6 +17,8 @@ namespace s3d
 	{
 		namespace Internal
 		{
+			void SetConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
+
 			void SetColorMul(const Float4& color);
 
 			void SetColorAdd(const Float3& color);
@@ -45,5 +47,18 @@ namespace s3d
 
 			void SetCameraTransform(const Mat3x2& transform);
 		}
+
+		template <class Type>
+		void SetVSConstantBuffer(const uint32 slot, const ConstantBuffer<Type>& buffer)
+		{
+			Internal::SetConstantBuffer(ShaderStage::Vertex, slot, buffer._data(), buffer.size());
+		}
+
+		template <class Type>
+		void SetPSConstantBuffer(const uint32 slot, const ConstantBuffer<Type>& buffer)
+		{
+			Internal::SetConstantBuffer(ShaderStage::Pixel, slot, buffer._data(), buffer.size());
+		}
+
 	}
 }

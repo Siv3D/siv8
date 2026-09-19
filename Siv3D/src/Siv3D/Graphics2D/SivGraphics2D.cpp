@@ -238,6 +238,16 @@ namespace s3d
 
 		namespace Internal
 		{
+			void SetConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+			{
+				if ((slot < 2) || (Graphics::ConstantBufferSlotCount <= slot))
+				{
+					throw Error{ "Constant buffer slot must be in [2, 13]" };
+				}
+
+				SIV3D_ENGINE(Renderer2D)->setConstantBuffer(stage, slot, data, size);
+			}
+
 			void SetColorMul(const Float4& color)
 			{
 				SIV3D_ENGINE(Renderer2D)->setColorMul(color);

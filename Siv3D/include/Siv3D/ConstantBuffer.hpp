@@ -26,6 +26,8 @@ namespace s3d
 
 	/// @brief 定数バッファ | Constant buffer
 	/// @tparam Type データの型 | Data type
+	/// @remark Type は trivially copyable で、サイズは 64 KiB 以下である必要があります。
+	/// @remark メンバの配置はシェーダの宣言に合わせてください。サイズの 16 バイト単位への切り上げは、メンバ間や配列要素間のパディングを調整しません。
 	template <class Type>
 	class ConstantBuffer
 	{
@@ -110,6 +112,10 @@ namespace s3d
 		/// @return データの先頭ポインタ
 		[[nodiscard]]
 		const float* data() const noexcept;
+
+		/// @brief 内部用。末尾のパディングを含む Size バイトの格納領域を返します。
+		[[nodiscard]]
+		const void* _data() const noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//

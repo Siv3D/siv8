@@ -19,6 +19,7 @@
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include "ColorFillDirection.hpp"
+# include <Siv3D/ShaderStage.hpp>
 
 namespace s3d
 {
@@ -177,6 +178,8 @@ namespace s3d
 
 		virtual void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4]) = 0;
 
+
+		virtual void setConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size) = 0;
 
 		virtual void flush() = 0;
 

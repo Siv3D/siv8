@@ -26,12 +26,26 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	pushConstantBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	void MetalRenderer2DCommandManager::pushConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	{
+		flush();
+		const uint32 index = m_constantBuffers.push(stage, slot, data, size);
+		m_commands.emplace_back(MetalRenderer2DCommandType::SetConstantBuffer, index);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	reset
 	//
 	////////////////////////////////////////////////////////////////
 
 	void MetalRenderer2DCommandManager::reset()
 	{
+		m_constantBuffers.clear();
 		// clear commands
 		{
 			m_commands.clear();
@@ -70,8 +84,6 @@ namespace s3d
 			m_buffer.vertexShaders		= { VertexShader::IDType::Invalid() };
 			m_buffer.pixelShaders		= { PixelShader::IDType::Invalid() };
 			m_buffer.combinedTransforms	= { m_buffer.combinedTransforms.back() };
-			//m_constants.clear();
-			//m_constantBufferCommands.clear();
 		}
 
 		// clear reserves
@@ -282,12 +294,6 @@ namespace s3d
 			m_commands.emplace_back(MetalRenderer2DCommandType::Transform, static_cast<uint32>(m_buffer.combinedTransforms.size()));
 			m_buffer.combinedTransforms.push_back(m_current.combinedTransform);
 		}
-
-		//if (m_changes.has(MetalRenderer2DCommandType::SetConstantBuffer))
-		//{
-		//	assert(not m_constantBufferCommands.isEmpty());
-		//	m_commands.emplace_back(D3D11Renderer2DCommandType::SetConstantBuffer, static_cast<uint32>(m_constantBufferCommands.size()) - 1);
-		//}
 
 		for (uint32 i = 0; i < Graphics::TextureSlotCount; ++i)
 		{

@@ -1638,6 +1638,17 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
+	//	setConstantBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::setConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	{
+		m_commandManager.pushConstantBuffer(stage, slot, data, size);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
 	//	flush
 	//
 	////////////////////////////////////////////////////////////////
@@ -1675,10 +1686,10 @@ namespace s3d
 			cd->setResolveTexture(m_pRenderer->getSceneTextureNonMSAA().getTexture());
 		}
 
-		cd->setLoadAction(MTL::LoadActionClear);
+		cd->setLoadAction(m_scenePassStarted ? MTL::LoadActionLoad : MTL::LoadActionClear);
 		const ColorF& backgroundColor = m_pRenderer->getSceneStyle().backgroundColor;
 		cd->setClearColor(MTL::ClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1));
-		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore : MTL::StoreActionMultisampleResolve);
+		cd->setStoreAction((m_pRenderer->getSceneSampleCount() == 1) ? MTL::StoreActionStore : MTL::StoreActionStoreAndMultisampleResolve);
 		
 		LOG_COMMAND("----");
 
@@ -1686,6 +1697,11 @@ namespace s3d
 		{
 			MTL::CommandBuffer* commandBuffer = m_pRenderer->getFrameContext().getCommandBuffer();
 			MTL::RenderCommandEncoder* renderCommandEncoder = commandBuffer->renderCommandEncoder(offscreenRenderPassDescriptor.get());
+			if (not renderCommandEncoder)
+			{
+				throw InternalEngineError{ "MTL::CommandBuffer::renderCommandEncoder() failed" };
+			}
+			m_scenePassStarted = true;
 			// パイプライン生成などで例外が発生した場合もエンコードを終了する。
 			const ScopeExit endEncoding{ [renderCommandEncoder]() noexcept
 			{
@@ -1708,6 +1724,7 @@ namespace s3d
 			
 			CommandState commandState;
 			commandState.screenMat = Mat3x2::Screen(currentRenderTargetSize);
+			commandState.startIndexLocation = m_indexReadPos;
 			
 			renderCommandEncoder->setVertexBuffer(m_vertexBufferManager.getVertexBuffer(), 0, 0);
 			
@@ -1757,10 +1774,18 @@ namespace s3d
 						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(),
 							(sizeof(Vertex2D::IndexType) * commandState.startIndexLocation), 1, draw.baseVertex, 0);
 						commandState.startIndexLocation += indexCount;
+						m_indexReadPos = commandState.startIndexLocation;
 						
 						++stat.drawCalls;
 						stat.triangleCount += (indexCount / 3);
 
+						break;
+					}
+				case MetalRenderer2DCommandType::SetConstantBuffer:
+					{
+						const auto& buffers = m_commandManager.getConstantBuffers();
+						const auto& cb = buffers.get(command.index);
+						bindCustomConstantBuffer(renderCommandEncoder, cb, buffers.data(cb));
 						break;
 					}
 				case MetalRenderer2DCommandType::ColorMul:
@@ -2247,6 +2272,11 @@ namespace s3d
 	void CRenderer2D_Metal::prepareFrame(const size_t frameIndex)
 	{
 		m_vertexBufferManager.prepareFrame(frameIndex);
+		m_constantBufferFrameIndex = frameIndex;
+		m_constantBufferFrames[frameIndex].pageIndex = 0;
+		m_constantBufferFrames[frameIndex].offset = 0;
+		m_indexReadPos = 0;
+		m_scenePassStarted = false;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -2263,5 +2293,61 @@ namespace s3d
 			m_commandManager.pushBaseVertex(m_vertexBufferManager.getBaseVertex());
 		}
 		return buffer;
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	bindCustomConstantBuffer
+	//
+	////////////////////////////////////////////////////////////////
+
+	void CRenderer2D_Metal::bindCustomConstantBuffer(MTL::RenderCommandEncoder* encoder, const ConstantBuffer2DCommand& command, const void* data)
+	{
+		if (command.size <= 4096)
+		{
+			if (command.stage == ShaderStage::Vertex)
+			{
+				encoder->setVertexBytes(data, command.size, command.slot);
+			}
+			else
+			{
+				encoder->setFragmentBytes(data, command.size, command.slot);
+			}
+			return;
+		}
+
+		constexpr size_t PageSize = (64 * 1024);
+		// Intel Mac を含む constant アドレス空間のオフセット要件を満たす。
+		constexpr size_t OffsetAlignment = 256;
+		auto& frame = m_constantBufferFrames[m_constantBufferFrameIndex];
+		if (PageSize < (frame.offset + command.size))
+		{
+			++frame.pageIndex;
+			frame.offset = 0;
+		}
+
+		if (frame.pageIndex == frame.pages.size())
+		{
+			auto page = NS::TransferPtr(m_device->newBuffer(PageSize,
+				(MTL::ResourceStorageModeShared | MTL::ResourceCPUCacheModeWriteCombined)));
+			if (not page)
+			{
+				throw InternalEngineError{ "Failed to allocate a custom 2D constant buffer upload page" };
+			}
+			frame.pages.push_back(std::move(page));
+		}
+
+		MTL::Buffer* buffer = frame.pages[frame.pageIndex].get();
+		std::memcpy((static_cast<std::byte*>(buffer->contents()) + frame.offset), data, command.size);
+		if (command.stage == ShaderStage::Vertex)
+		{
+			encoder->setVertexBuffer(buffer, frame.offset, command.slot);
+		}
+		else
+		{
+			encoder->setFragmentBuffer(buffer, frame.offset, command.slot);
+		}
+		// flush() では巻き戻さない。GPU 完了後の prepareFrame() でのみ再利用する。
+		frame.offset += ((command.size + OffsetAlignment - 1) & ~(OffsetAlignment - 1));
 	}
 }

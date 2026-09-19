@@ -25,6 +25,7 @@
 # include <Siv3D/Renderer/Metal/Metal.hpp>
 # include "MetalRenderer2DCommand.hpp"
 # include <Siv3D/Renderer2D/BatchStateTracker.hpp>
+# include <Siv3D/Renderer2D/ConstantBuffer2DCommands.hpp>
 
 namespace s3d
 {
@@ -33,6 +34,9 @@ namespace s3d
 	public:
 
 		MetalRenderer2DCommandManager();
+
+		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		const ConstantBuffer2DCommands& getConstantBuffers() const noexcept { return m_constantBuffers; }
 
 		void reset();
 
@@ -118,6 +122,8 @@ namespace s3d
 		const std::array<Texture::IDType, Graphics::TextureSlotCount>& getCurrentPSTextures() const;
 
 	private:
+
+		ConstantBuffer2DCommands m_constantBuffers;
 
 		Array<MetalRenderer2DCommand> m_commands;
 

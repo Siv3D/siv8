@@ -1,8 +1,9 @@
 # ScopedCustomShader2D
 
 This program compares file-based custom shaders with built-in 2D rendering on
-Windows (D3D11) and macOS (Metal). It uses only the standard vertex/pixel constant
-buffers, texture slot 0, and sampler slot 0. Shader objects and textures are created
+Windows (D3D11) and macOS (Metal). Pages 1–3 use the standard vertex/pixel constant
+buffers; page 4 also supplies custom constants at slot 2. Textures and samplers
+use slot 0. Shader objects and textures are created
 once, before the drawing loop. The generated diagnostic image is explicitly
 premultiplied before upload; constructing a texture from an Image does not
 perform that conversion.
@@ -18,6 +19,7 @@ Each shader is self-contained. Load the HLSL or MSL file at runtime using
 | Grayscale | [grayscale.hlsl](../../WindowsDesktop/App/example/shader/hlsl/grayscale.hlsl) | [grayscale.metal](../../macOS/App/example/shader/msl/grayscale.metal) | `PS_Grayscale` |
 | Red/blue exchange | [rgb_to_bgr.hlsl](../../WindowsDesktop/App/example/shader/hlsl/rgb_to_bgr.hlsl) | [rgb_to_bgr.metal](../../macOS/App/example/shader/msl/rgb_to_bgr.metal) | `PS_RGBToBGR` |
 | Posterization | [posterize.hlsl](../../WindowsDesktop/App/example/shader/hlsl/posterize.hlsl) | [posterize.metal](../../macOS/App/example/shader/msl/posterize.metal) | `PS_Posterize` |
+| Custom constants | [constant_buffer.hlsl](../../WindowsDesktop/App/example/shader/hlsl/constant_buffer.hlsl) | [constant_buffer.metal](../../macOS/App/example/shader/msl/constant_buffer.metal) | `VS_Offset`, `PS_TintShape`, `PS_TintTexture` |
 | Horizontal UV flip | [uv_flip.hlsl](../../WindowsDesktop/App/example/shader/hlsl/uv_flip.hlsl) | [uv_flip.metal](../../macOS/App/example/shader/msl/uv_flip.metal) | `VS_UVFlip` |
 
 The standard VS applies the drawing transform and color multiplication, then
@@ -51,10 +53,10 @@ these custom shader scopes. The default template's `PS_Shape` is for solid shape
    `example/shader/hlsl/` or `example/shader/msl/` directory into your application's
    asset directory. The program loads `.hlsl`/`.metal` source files; the sample
    Metal files do not need to be added to the default Metal library.
-3. Run on Windows (D3D11) and macOS (Metal). Press 1, 2, or 3 to select a page.
+3. Run on Windows (D3D11) and macOS (Metal). Press 1, 2, 3, or 4 to select a page.
    Press Space on page 3 to animate/pause rotation. Escape closes the application.
-4. Optionally launch with `--capture` to save all three stationary pages and exit.
-   Output is `Screenshot/ScopedCustomShader2D/page-1.png` through `page-3.png`,
+4. Optionally launch with `--capture` to save all four stationary pages and exit.
+   Output is `Screenshot/ScopedCustomShader2D/page-1.png` through `page-4.png`,
    relative to the asset working directory. Repeating capture replaces these
    files. Delete that directory when the captures are no longer needed.
 
@@ -84,6 +86,15 @@ below. Capture mode records images; it does not automatically judge them.
   Space animates the transforms; the matches should persist across frames.
   The solid shapes below the bottom-row textures are drawn after each custom
   scope and should remain ordinary, unmirrored shapes.
+- **Page 4 — custom constants:** The top three panels agree: a built-in tint and
+  translation, custom VS/PS constants, and a local constant buffer destroyed
+  before the draw is executed. The bottom three panels agree: built-in tints,
+  repeated updates of one PS constant buffer, and one object reused for both
+  VS and PS. Opacity preserves the checkerboard and transparent diagnostic strip.
+  Every frame rebinds all custom slots. ScopedCustomShader2D restores shaders,
+  not constant-buffer settings. The automated constant-buffer tests additionally
+  cover independent slots 2/13, integer payloads, 4096/4112/65536-byte buffers,
+  repeated updates and intermediate renderer flushes across multiple frames.
 - The footer's colored shapes, photo, and white text remain unchanged on every
   page, demonstrating restoration before subsequent built-in draws.
 
@@ -124,6 +135,8 @@ namespace
 	struct Shaders
 	{
 		VertexShader shapeVS = LoadVS(U"default2d", U"VS_Shape");
+		VertexShader offsetVS = LoadVS(U"constant_buffer", U"VS_Offset");
+		PixelShader tintPS = LoadPS(U"constant_buffer", U"PS_TintTexture");
 		VertexShader flipVS = LoadVS(U"uv_flip", U"VS_UVFlip");
 		PixelShader shapePS = LoadPS(U"default2d", U"PS_Shape");
 		PixelShader texturePS = LoadPS(U"default2d", U"PS_Texture");
@@ -355,6 +368,73 @@ namespace
 		}
 	}
 
+
+	struct CustomParameters
+	{
+		Float4 value;
+	};
+
+	void DrawConstants(const Font& font, const Shaders& shaders, const Texture& diagnostic)
+	{
+		const std::array<StringView, 6> titles{
+			U"Built-in tint + translation", U"Custom VS + PS constants", U"Local buffer lifetime",
+			U"Built-in tint sequence", U"One PS buffer, three values", U"One object, both stages" };
+		const ColorF tint{ 0.5, 1.0, 0.75, 0.65 };
+		const Float4 tintValue{ 0.5f, 1.0f, 0.75f, 0.65f };
+		const std::array<Float4, 3> colors{
+			Float4{ 1, 0.25f, 0.25f, 0.75f }, Float4{ 0.25f, 1, 0.25f, 0.75f }, Float4{ 0.25f, 0.25f, 1, 0.75f } };
+		for (int32 i = 0; i < 6; ++i)
+		{
+			const Transformer2D tile{ Mat3x2::Translate(TilePosition(i)) };
+			DrawTile(font, titles[i], ((i < 3) ? U"Top row: all three must agree" : U"Bottom row: all three must agree"));
+			if (i == 0)
+			{
+				diagnostic.resized(276, 148).draw(30, 60, tint);
+			}
+			else if (i < 3)
+			{
+				// The constants outlive neither this block nor the queued rendering.
+				// Set*ConstantBuffer copies each value immediately.
+				{
+					ConstantBuffer<CustomParameters> cb{ CustomParameters{ Float4{ 18, 14, 0, 0 } } };
+					Graphics2D::SetVSConstantBuffer(2, cb);
+					cb->value = tintValue;
+					Graphics2D::SetPSConstantBuffer(2, cb);
+					if (i == 1)
+					{
+						const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
+						diagnostic.resized(276, 148).draw(12, 46);
+					}
+				}
+				if (i == 2)
+				{
+					const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
+					diagnostic.resized(276, 148).draw(12, 46);
+				}
+			}
+			else
+			{
+				ConstantBuffer<CustomParameters> cb{ CustomParameters{ Float4{ 0, 0, 0, 0 } } };
+				if (i == 5) { Graphics2D::SetVSConstantBuffer(2, cb); }
+				for (int32 column = 0; column < 3; ++column)
+				{
+					const int32 x = (12 + column * 104);
+					if (i == 3)
+					{
+						diagnostic.resized(96, 176).draw(x, 46, ColorF{ colors[column] });
+					}
+					else
+					{
+						cb->value = colors[column];
+						Graphics2D::SetPSConstantBuffer(2, cb);
+						const ScopedCustomShader2D shader{ (i == 5) ? shaders.offsetVS : shaders.shapeVS, shaders.tintPS };
+						diagnostic.resized(96, 176).draw(x, 46);
+					}
+				}
+			}
+		}
+	}
+
 	void DrawStates(const Font& font, const Shaders& shaders, const Texture& diagnostic, const double angle)
 	{
 		const std::array<StringView, 6> titles{
@@ -390,7 +470,7 @@ void Main()
 	int32 frame = 0;
 	bool animate = false;
 	double elapsed = 0.0;
-	const std::array<StringView, 3> titles{ U"Effects", U"Nested scopes", U"Standard drawing states" };
+	const std::array<StringView, 4> titles{ U"Effects", U"Nested scopes", U"Standard drawing states", U"Custom constant buffers" };
 	while (System::Update())
 	{
 		if (capture)
@@ -402,11 +482,12 @@ void Main()
 			if (Key1.down()) { page = 0; }
 			if (Key2.down()) { page = 1; }
 			if (Key3.down()) { page = 2; }
+			if (Key4.down()) { page = 3; }
 			if (KeySpace.down()) { animate = not animate; }
 			if (animate) { elapsed += Scene::DeltaTime(); }
 		}
 		font(U"ScopedCustomShader2D / {}. {}"_fmt((page + 1), titles[page])).draw(28, Vec2{ 24, 18 });
-		font(U"1: Effects   2: Nested scopes   3: Drawing states   Space: animate / pause   Esc: exit")
+		font(U"1: Effects   2: Nested scopes   3: Drawing states   4: Constants   Space: animate   Esc: exit")
 			.draw(16, Vec2{ 24, 60 }, ColorF{ 0.75 });
 		switch (page)
 		{
@@ -420,6 +501,9 @@ void Main()
 		case 2:
 			DrawStates(font, shaders, diagnostic, (0.12 + std::sin(elapsed) * 0.12));
 			break;
+		case 3:
+			DrawConstants(font, shaders, diagnostic);
+			break;
 		}
 
 		// All custom shader, transform, and color scopes have ended here.
@@ -432,7 +516,7 @@ void Main()
 		{
 			ScreenCapture::SaveCurrentFrame(U"page-{}.png"_fmt(page + 1));
 		}
-		if (capture && (++frame == 24))
+		if (capture && (++frame == 32))
 		{
 			break; // The last requested capture was consumed by System::Update().
 		}

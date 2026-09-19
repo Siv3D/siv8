@@ -378,6 +378,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		void setConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size) override;
+
 		void flush() override;
 
 		////////////////////////////////////////////////////////////////
@@ -545,6 +547,24 @@ namespace s3d
 		MetalVertexBufferManager2D m_vertexBufferManager;
 
 		MetalRenderer2DCommandManager m_commandManager;
+
+		struct ConstantBufferFrame
+		{
+			Array<NS::SharedPtr<MTL::Buffer>> pages;
+			size_t pageIndex = 0;
+			size_t offset = 0;
+		};
+
+		std::array<ConstantBufferFrame, MetalFrameContext::MaxInflightFrames> m_constantBufferFrames;
+
+		size_t m_constantBufferFrameIndex = 0;
+
+		uint32 m_indexReadPos = 0;
+
+		bool m_scenePassStarted = false;
+
+		void bindCustomConstantBuffer(MTL::RenderCommandEncoder* encoder, const ConstantBuffer2DCommand& command, const void* data);
+
 
 		struct EngineShader
 		{

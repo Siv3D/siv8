@@ -385,6 +385,8 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
+		void setConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size) override;
+
 		void flush() override;
 
 		////////////////////////////////////////////////////////////////
@@ -548,6 +550,16 @@ namespace s3d
 		D3D11VertexBufferManager2D m_vertexBufferManager2D;
 
 		D3D11Renderer2DCommandManager m_commandManager;
+
+		struct CustomConstantBuffer
+		{
+			std::unique_ptr<IConstantBuffer> buffer;
+			size_t capacity = 0;
+		};
+
+		// 各スロットが独立した値を保持し、転送先はフレームをまたいで再利用する。
+		std::array<std::array<CustomConstantBuffer, Graphics::ConstantBufferSlotCount>, 2> m_customConstantBuffers;
+
 
 		struct EngineShader
 		{

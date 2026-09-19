@@ -84,7 +84,7 @@ namespace s3d
 
 		Transform,
 
-		//SetConstantBuffer,
+		SetConstantBuffer,
 
 		VSTexture0,
 

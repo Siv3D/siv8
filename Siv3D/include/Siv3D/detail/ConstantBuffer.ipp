@@ -74,7 +74,13 @@ namespace s3d
 	template <class Type>
 	const float* ConstantBuffer<Type>::data() const noexcept
 	{
-		return static_cast<const float*>(static_cast<const void*>(std::addressof(m_wrapper->data)));
+		return static_cast<const float*>(_data());
+	}
+
+	template <class Type>
+	const void* ConstantBuffer<Type>::_data() const noexcept
+	{
+		return m_wrapper.get();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -170,7 +176,7 @@ namespace s3d
 			return false;
 		}
 
-		if (m_base->_internal_update(std::addressof(m_wrapper->data), Size))
+		if (m_base->_internal_update(_data(), Size))
 		{
 			m_isDirty = false;
 			return true;
