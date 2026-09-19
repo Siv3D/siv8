@@ -10,9 +10,9 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
-# include <Siv3D/Renderer2D/ConstantBuffer2DCommands.hpp>
-# include <Siv3D/Renderer2D/IRenderer2D.hpp>
-# include <Siv3D/Engine/Siv3DEngine.hpp>
+# include "../Siv3D/src/Siv3D/Renderer2D/ConstantBuffer2DCommands.hpp"
+# include "../Siv3D/src/Siv3D/Renderer2D/IRenderer2D.hpp"
+# include "../Siv3D/src/Siv3D/Engine/Siv3DEngine.hpp"
 # include <cstring>
 
 namespace
