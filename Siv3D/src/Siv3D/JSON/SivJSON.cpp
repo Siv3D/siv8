@@ -16,12 +16,69 @@
 # include <Siv3D/Demangle.hpp>
 # include <Siv3D/Error.hpp>
 # include <Siv3D/TextFileWriter.hpp>
-# include <Siv3D/TextFileReader.hpp>
+# include <Siv3D/BinaryFileReader.hpp>
 
 namespace s3d
 {
 	namespace
 	{
+		[[nodiscard]]
+		static JSON JSONErrorResult(const AllowExceptions allowExceptions, const char* message)
+		{
+			if (allowExceptions)
+			{
+				throw Error{ message };
+			}
+			return JSON::Invalid();
+		}
+
+		[[nodiscard]]
+		static JSON ReadJSON(IReader& reader, const AllowExceptions allowExceptions)
+		{
+			if (not reader.isOpen())
+			{
+				return JSONErrorResult(allowExceptions, "JSON::Load(): reader is not open");
+			}
+
+			const int64 size = (reader.size() - reader.getPos());
+			if (size < 0)
+			{
+				return JSONErrorResult(allowExceptions, "JSON::Load(): invalid reader position");
+			}
+
+			const auto buffer = std::make_unique_for_overwrite<char[]>(static_cast<size_t>(size));
+			const std::string_view bytes{ buffer.get(), static_cast<size_t>(size) };
+			int64 offset = 0;
+			while (offset < size)
+			{
+				const int64 count = reader.read((buffer.get() + offset), (size - offset));
+				if ((count <= 0) || ((size - offset) < count))
+				{
+					return JSONErrorResult(allowExceptions, "JSON::Load(): incomplete read");
+				}
+				offset += count;
+			}
+
+			// Preserve CR and NUL: text-reader normalization can change JSON tokens.
+			const bool littleEndian = bytes.starts_with("\xFF\xFE");
+			if (littleEndian || bytes.starts_with("\xFE\xFF"))
+			{
+				if (bytes.size() % 2)
+				{
+					return JSONErrorResult(allowExceptions, "JSON::Load(): incomplete UTF-16 code unit");
+				}
+				std::u16string utf16((bytes.size() / 2 - 1), u'\0');
+				for (size_t i = 0; i < utf16.size(); ++i)
+				{
+					const uint16 first = static_cast<uint8>(bytes[2 + i * 2]);
+					const uint16 second = static_cast<uint8>(bytes[3 + i * 2]);
+					utf16[i] = static_cast<char16>(littleEndian ? (first | (second << 8)) : ((first << 8) | second));
+				}
+				return JSON::Parse(Unicode::UTF16ToUTF8(utf16), allowExceptions);
+			}
+			return JSON::Parse(bytes, allowExceptions);
+		}
+
 		[[nodiscard]]
 		static constexpr JSON::json_base::value_t ToValueType(const JSONValueType valueType) noexcept
 		{
@@ -203,6 +260,14 @@ namespace s3d
 
 	JSON& JSON::operator =(JSON&& value)
 	{
+		if (std::holds_alternative<json_base>(m_json)
+			&& std::holds_alternative<json_base>(value.m_json))
+		{
+			std::get<json_base>(m_json) = std::move(std::get<json_base>(value.m_json));
+			return *this;
+		}
+
+		// Borrowed source/destination values can overlap their owning root.
 		return operator =(value.getConstRef());
 	}
 
@@ -466,7 +531,7 @@ namespace s3d
 			ThrowNotBinary();
 		}
 
-		const auto& binary = getConstRef().get<JSON::json_base::binary_t>();
+		const auto& binary = getConstRef().get_binary();
 
 		return Blob{ binary.data(), binary.size() };
 	}
@@ -484,7 +549,14 @@ namespace s3d
 
 	const JSON JSON::operator [](const std::string_view key) const
 	{
-		return JSON(std::cref(getConstRef()[key]));
+		try
+		{
+			return JSON(std::cref(getConstRef().at(key)));
+		}
+		catch (const json_base::exception& e)
+		{
+			throw Error{ fmt::format("JSON::operator []: {}", e.what()) };
+		}
 	}
 
 	JSON JSON::operator [](const StringView key)
@@ -550,7 +622,7 @@ namespace s3d
 
 	void JSON::pop_back()
 	{
-		getRef().erase(getRef().end() - 1);
+		erase(size() - 1);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -603,7 +675,7 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
-	JSON::iterator JSON::begin() noexcept
+	JSON::iterator JSON::begin()
 	{
 		auto& j = getRef();
 
@@ -617,7 +689,7 @@ namespace s3d
 		}
 	}
 
-	JSON::iterator JSON::end() noexcept
+	JSON::iterator JSON::end()
 	{
 		auto& j = getRef();
 
@@ -750,6 +822,7 @@ namespace s3d
 
 	bool JSON::save(const FilePathView path, const char32 indent, const size_t spaceCount, const EnsureAscii ensureAscii) const
 	{
+		const std::string text = formatUTF8(indent, spaceCount, ensureAscii);
 		TextFileWriter writer{ path };
 
 		if (not writer)
@@ -757,7 +830,7 @@ namespace s3d
 			return false;
 		}
 
-		writer.writeUTF8(formatUTF8(indent, spaceCount, ensureAscii));
+		writer.writeUTF8(text);
 
 		return true;
 	}
@@ -770,6 +843,7 @@ namespace s3d
 
 	bool JSON::saveMinified(const FilePathView path, const EnsureAscii ensureAscii) const
 	{
+		const std::string text = formatUTF8Minified(ensureAscii);
 		TextFileWriter writer{ path };
 
 		if (not writer)
@@ -777,7 +851,7 @@ namespace s3d
 			return false;
 		}
 
-		writer.writeUTF8(formatUTF8Minified(ensureAscii));
+		writer.writeUTF8(text);
 
 		return true;
 	}
@@ -863,36 +937,17 @@ namespace s3d
 
 	JSON JSON::Load(const FilePathView path, const AllowExceptions allowExceptions)
 	{
-		TextFileReader reader{ path };
-
-		if (not reader)
-		{
-			if (allowExceptions)
-			{
-				throw Error{ fmt::format("JSON::load(): failed to open `{}`", path.toUTF8()) };
-			}
-
-			return JSON::Invalid();
-		}
-
-		return Parse(reader.readAllUTF8(), allowExceptions);
+		BinaryFileReader reader{ path };
+		return ReadJSON(reader, allowExceptions);
 	}
 
 	JSON JSON::Load(std::unique_ptr<IReader> reader, const AllowExceptions allowExceptions)
 	{
-		TextFileReader textReader{ std::move(reader) };
-
-		if (not textReader)
+		if (not reader)
 		{
-			if (allowExceptions)
-			{
-				throw Error{ "JSON::load(): failed to open from IReader" };
-			}
-
-			return JSON::Invalid();
+			return JSONErrorResult(allowExceptions, "JSON::Load(): null reader");
 		}
-
-		return Parse(textReader.readAllUTF8(), allowExceptions);
+		return ReadJSON(*reader, allowExceptions);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -903,13 +958,18 @@ namespace s3d
 
 	JSON JSON::Parse(const std::string_view s, const AllowExceptions allowExceptions)
 	{
+		if (s.find('\0') != std::string_view::npos)
+		{
+			return JSONErrorResult(allowExceptions, "JSON::Parse(): unescaped NUL in input");
+		}
+
 		JSON json;
 
 		try
 		{
 			json.m_json = JSON::json_base::parse(s, nullptr, allowExceptions.getBool(), true);
 		}
-		catch (const JSON::json_base::parse_error& e)
+		catch (const JSON::json_base::exception& e)
 		{
 			throw Error{ fmt::format("JSON::Parse(): {}", e.what()) };
 		}
@@ -1120,4 +1180,24 @@ void JSONSerializer<s3d::String>::to_json(s3d::JSON::json_base& j, const s3d::St
 void JSONSerializer<s3d::String>::from_json(const s3d::JSON::json_base& j, s3d::String& value)
 {
 	value = s3d::Unicode::FromUTF8(j.get<std::string>());
+}
+
+void JSONSerializer<std::u32string_view>::to_json(s3d::JSON::json_base& j, const std::u32string_view value)
+{
+	j = s3d::Unicode::ToUTF8(value);
+}
+
+void JSONSerializer<std::u32string>::to_json(s3d::JSON::json_base& j, const std::u32string& value)
+{
+	j = s3d::Unicode::ToUTF8(value);
+}
+
+void JSONSerializer<std::u32string>::from_json(const s3d::JSON::json_base& j, std::u32string& value)
+{
+	value = s3d::Unicode::UTF8ToUTF32(j.get<std::string_view>());
+}
+
+void JSONSerializer<const s3d::char32*>::to_json(s3d::JSON::json_base& j, const s3d::char32* value)
+{
+	j = s3d::Unicode::ToUTF8(value);
 }

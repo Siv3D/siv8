@@ -1,0 +1,11 @@
+{
+  "title": "設定 😀",
+  "players": [
+    {"id": 1, "name": "Alice", "enabled": true, "inventory": []},
+    {"id": 2, "name": "ボブ", "enabled": false, "inventory": ["鍵", "地図"]}
+  ],
+  "limits": {"minSigned": -9223372036854775808, "maxUnsigned": 18446744073709551615, "rate": 0.125},
+  "special": {"a/b": {"~key": "value"}, "": "empty key", "nul": "a\u0000b"},
+  "empty": {},
+  "optional": null
+}
