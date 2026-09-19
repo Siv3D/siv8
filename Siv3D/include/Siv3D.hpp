@@ -1575,6 +1575,7 @@
 
 // 2D シェーダスコープ | 2D shader scope
 # include <Siv3D/ScopedCustomShader2D.hpp>
+# include <Siv3D/ScopedConstantBuffer2D.hpp>
 
 //// 3D シェーダスコープ | 3D shader scope
 //# include <Siv3D/ScopedCustomShader3D.hpp>

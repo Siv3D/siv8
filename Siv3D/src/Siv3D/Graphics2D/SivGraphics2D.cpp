@@ -20,6 +20,14 @@ namespace s3d
 {
 	namespace
 	{
+		static void ValidateConstantBufferSlot(const uint32 slot)
+		{
+			if ((slot < 2) || (Graphics::ConstantBufferSlotCount <= slot))
+			{
+				throw Error{ "Constant buffer slot must be in [2, 13]" };
+			}
+		}
+
 		[[noreturn]]
 		static void ThrowVSSamplerIndexOutOfRange()
 		{
@@ -35,6 +43,32 @@ namespace s3d
 
 	namespace Graphics2D
 	{
+		////////////////////////////////////////////////////////////////
+		//
+		//	ResetVSConstantBuffer, ResetPSConstantBuffer
+		//
+		////////////////////////////////////////////////////////////////
+
+		void ResetVSConstantBuffer(const uint32 slot)
+		{
+			Internal::SetConstantBuffer(ShaderStage::Vertex, slot, nullptr, 0);
+		}
+
+		void ResetPSConstantBuffer(const uint32 slot)
+		{
+			Internal::SetConstantBuffer(ShaderStage::Pixel, slot, nullptr, 0);
+		}
+
+		////////////////////////////////////////////////////////////////
+		//
+		//	Flush
+		//
+		////////////////////////////////////////////////////////////////
+
+		void Flush()
+		{
+			SIV3D_ENGINE(Renderer2D)->flush();
+		}
 		////////////////////////////////////////////////////////////////
 		//
 		//	GetColorMul
@@ -240,12 +274,20 @@ namespace s3d
 		{
 			void SetConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
 			{
-				if ((slot < 2) || (Graphics::ConstantBufferSlotCount <= slot))
-				{
-					throw Error{ "Constant buffer slot must be in [2, 13]" };
-				}
+				ValidateConstantBufferSlot(slot);
 
 				SIV3D_ENGINE(Renderer2D)->setConstantBuffer(stage, slot, data, size);
+			}
+
+			uint32 BeginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+			{
+				ValidateConstantBufferSlot(slot);
+				return SIV3D_ENGINE(Renderer2D)->beginConstantBufferScope(stage, slot, data, size);
+			}
+
+			void EndConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
+			{
+				SIV3D_ENGINE(Renderer2D)->endConstantBufferScope(stage, slot, previous);
 			}
 
 			void SetColorMul(const Float4& color)

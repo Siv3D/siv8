@@ -32,9 +32,44 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushConstantBuffer(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
 	{
-		flush();
-		const uint32 index = m_constantBuffers.push(stage, slot, data, size);
-		m_commands.emplace_back(MetalRenderer2DCommandType::SetConstantBuffer, index);
+		m_constantBuffers.push(stage, slot, data, size);
+		if (m_constantBuffers.hasStateChange())
+		{
+			m_stateTracker.set(MetalRenderer2DCommandType::SetConstantBuffer);
+		}
+		else
+		{
+			m_stateTracker.clear(MetalRenderer2DCommandType::SetConstantBuffer);
+		}
+	}
+
+
+	uint32 MetalRenderer2DCommandManager::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	{
+		const uint32 previous = m_constantBuffers.save(stage, slot);
+		try
+		{
+			pushConstantBuffer(stage, slot, data, size);
+		}
+		catch (...)
+		{
+			m_constantBuffers.release(previous);
+			throw;
+		}
+		return previous;
+	}
+
+	void MetalRenderer2DCommandManager::endConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
+	{
+		m_constantBuffers.restore(stage, slot, previous);
+		if (m_constantBuffers.hasStateChange())
+		{
+			m_stateTracker.set(MetalRenderer2DCommandType::SetConstantBuffer);
+		}
+		else
+		{
+			m_stateTracker.clear(MetalRenderer2DCommandType::SetConstantBuffer);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -45,7 +80,7 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::reset()
 	{
-		m_constantBuffers.clear();
+		m_constantBuffers.reset();
 		// clear commands
 		{
 			m_commands.clear();
@@ -172,6 +207,11 @@ namespace s3d
 				
 				m_current.psTextures.fill(Texture::IDType::Invalid());
 			}
+		}
+
+		for (uint32 index = 0; index < m_constantBuffers.size(); ++index)
+		{
+			m_commands.emplace_back(MetalRenderer2DCommandType::SetConstantBuffer, index);
 		}
 	}
 
@@ -314,6 +354,16 @@ namespace s3d
 			{
 				m_commands.emplace_back(command, static_cast<uint32>(m_buffer.psTextures[i].size()));
 				m_buffer.psTextures[i].push_back(m_current.psTextures[i]);
+			}
+		}
+
+		if (m_stateTracker.has(MetalRenderer2DCommandType::SetConstantBuffer))
+		{
+			const uint32 first = static_cast<uint32>(m_constantBuffers.size());
+			m_constantBuffers.flush();
+			for (uint32 index = first; index < m_constantBuffers.size(); ++index)
+			{
+				m_commands.emplace_back(MetalRenderer2DCommandType::SetConstantBuffer, index);
 			}
 		}
 

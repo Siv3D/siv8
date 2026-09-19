@@ -1093,6 +1093,9 @@
     <Filter Include="src\Siv3D\ScopedCustomShader2D">
       <UniqueIdentifier>{626b7e2e-9fc2-44e7-b809-aeca34cdce74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Siv3D\ScopedConstantBuffer2D">
+      <UniqueIdentifier>{57413DF0-97CF-482F-9B08-26BED1BB68B4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Siv3D\Print">
       <UniqueIdentifier>{21db9840-593f-44ae-8099-d501c7e163e1}</UniqueIdentifier>
     </Filter>
@@ -3870,6 +3873,9 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\Graphics2D.ipp">
       <Filter>include\Siv3D\detail</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\ScopedConstantBuffer2D.ipp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedScissorRect2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
@@ -4846,6 +4852,9 @@
       <Filter>src\Siv3D\Font</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\include\Siv3D\ScopedCustomShader2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\ScopedConstantBuffer2D.hpp">
       <Filter>include\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\CPrint.hpp">
@@ -8668,6 +8677,9 @@
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\ScopedCustomShader2D\SivScopedCustomShader2D.cpp">
       <Filter>src\Siv3D\ScopedCustomShader2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\ScopedConstantBuffer2D\SivScopedConstantBuffer2D.cpp">
+      <Filter>src\Siv3D\ScopedConstantBuffer2D</Filter>
     </ClCompile>
     <ClCompile Include="..\Siv3D\src\Siv3D\Print\CPrint.cpp">
       <Filter>src\Siv3D\Print</Filter>

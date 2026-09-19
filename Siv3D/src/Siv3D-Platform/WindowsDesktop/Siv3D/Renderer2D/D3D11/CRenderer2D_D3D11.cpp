@@ -21,6 +21,7 @@
 # include <Siv3D/Renderer2D/Vertex2DBuilder.hpp>
 # include <Siv3D/Error/InternalEngineError.hpp>
 # include <Siv3D/EngineShader/IEngineShader.hpp>
+# include <Siv3D/ConstantBuffer/D3D11/ConstantBuffer_D3D11.hpp>
 # include <Siv3D/Texture/D3D11/CTexture_D3D11.hpp>
 # include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
@@ -1662,6 +1663,16 @@ namespace s3d
 		m_commandManager.pushConstantBuffer(stage, slot, data, size);
 	}
 
+	uint32 CRenderer2D_D3D11::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	{
+		return m_commandManager.beginConstantBufferScope(stage, slot, data, size);
+	}
+
+	void CRenderer2D_D3D11::endConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
+	{
+		m_commandManager.endConstantBufferScope(stage, slot, previous);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	flush
@@ -1672,13 +1683,17 @@ namespace s3d
 	{
 		ScopeExit cleanUp = [this]()
 		{
-			const std::array<ID3D11Buffer*, (Graphics::ConstantBufferSlotCount - 2)> empty{};
-			m_context->VSSetConstantBuffers(2, static_cast<uint32>(empty.size()), empty.data());
-			m_context->PSSetConstantBuffers(2, static_cast<uint32>(empty.size()), empty.data());
 			m_vertexBufferManager2D.reset();
 			m_commandManager.reset();
-			m_currentCustomShader.vs.reset();
-			m_currentCustomShader.ps.reset();
+			// 次の実行でもカスタムシェーダを適用する。論理設定は変更しない。
+			if (m_currentCustomShader.vs)
+			{
+				m_commandManager.pushCustomVS(*m_currentCustomShader.vs);
+			}
+			if (m_currentCustomShader.ps)
+			{
+				m_commandManager.pushCustomPS(*m_currentCustomShader.ps);
+			}
 		};
 
 		struct Stat
@@ -1689,9 +1704,20 @@ namespace s3d
 
 		m_commandManager.flush();
 		m_context->IASetInputLayout(m_inputLayout.Get());
-		m_pShader->setConstantBufferVS(0, m_vsConstants._base());
-		m_pShader->setConstantBufferPS(0, m_psConstants._base());
-		m_pShader->setConstantBufferPS(1, m_psEffectConstants._base());
+		// 他のレンダラーによる変更を持ち込まないよう、未設定スロットも含めて確立する。
+		// 独自定数は、この後に実行するコマンド列の先頭で保存値を再適用する。
+		const auto getBuffer = [](IConstantBuffer* buffer) noexcept -> ID3D11Buffer*
+		{
+			return (buffer ? static_cast<ConstantBuffer_D3D11*>(buffer)->getBuffer() : nullptr);
+		};
+		const std::array<ID3D11Buffer*, Graphics::ConstantBufferSlotCount> vsBuffers{
+			getBuffer(m_vsConstants._base())
+		};
+		const std::array<ID3D11Buffer*, Graphics::ConstantBufferSlotCount> psBuffers{
+			getBuffer(m_psConstants._base()), getBuffer(m_psEffectConstants._base())
+		};
+		m_context->VSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, vsBuffers.data());
+		m_context->PSSetConstantBuffers(0, Graphics::ConstantBufferSlotCount, psBuffers.data());
 
 		const Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
 		{
@@ -1751,6 +1777,19 @@ namespace s3d
 				{
 					const auto& buffers = m_commandManager.getConstantBuffers();
 					const auto& cb = buffers.get(command.index);
+					if (cb.size == 0)
+					{
+						ID3D11Buffer* empty = nullptr;
+						if (cb.stage == ShaderStage::Vertex)
+						{
+							m_context->VSSetConstantBuffers(cb.slot, 1, &empty);
+						}
+						else
+						{
+							m_context->PSSetConstantBuffers(cb.slot, 1, &empty);
+						}
+						break;
+					}
 					auto& destination = m_customConstantBuffers[FromEnum(cb.stage)][cb.slot];
 					if (destination.capacity < cb.size)
 					{

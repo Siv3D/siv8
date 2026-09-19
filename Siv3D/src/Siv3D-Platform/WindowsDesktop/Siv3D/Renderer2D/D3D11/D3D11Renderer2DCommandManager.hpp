@@ -37,6 +37,8 @@ namespace s3d
 		D3D11Renderer2DCommandManager();
 
 		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous);
 		const ConstantBuffer2DCommands& getConstantBuffers() const noexcept { return m_constantBuffers; }
 
 		void reset();

@@ -23,6 +23,9 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	/// @brief 2D 描画のカスタムシェーダを一時的に設定するスコープオブジェクト
+	/// @remark 指定したステージのシェーダを保存・設定し、破棄時に復元します。Flush() とフレーム境界を越えて有効です。
+	/// @remark 定数バッファ設定は変更・復元しません。定数バッファの復元には ScopedVSConstantBuffer2D / ScopedPSConstantBuffer2D を使用します。
 	class ScopedCustomShader2D
 	{
 	public:

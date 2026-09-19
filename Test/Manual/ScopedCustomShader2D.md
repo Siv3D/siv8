@@ -87,14 +87,18 @@ below. Capture mode records images; it does not automatically judge them.
   The solid shapes below the bottom-row textures are drawn after each custom
   scope and should remain ordinary, unmirrored shapes.
 - **Page 4 — custom constants:** The top three panels agree: a built-in tint and
-  translation, custom VS/PS constants, and a local constant buffer destroyed
-  before the draw is executed. The bottom three panels agree: built-in tints,
-  repeated updates of one PS constant buffer, and one object reused for both
-  VS and PS. Opacity preserves the checkerboard and transparent diagnostic strip.
-  Every frame rebinds all custom slots. ScopedCustomShader2D restores shaders,
-  not constant-buffer settings. The automated constant-buffer tests additionally
-  cover independent slots 2/13, integer payloads, 4096/4112/65536-byte buffers,
-  repeated updates and intermediate renderer flushes across multiple frames.
+  translation, persistent VS/PS constants with explicit flushes, and temporary
+  constant buffers destroyed before drawing. The persistent constants are bound
+  once before the main loop, so switching pages and returning must retain them.
+  The bottom three panels agree: built-in red/green/red tints, repeated Set calls
+  using one object for both stages, and nested scopes that restore the outer red
+  tint. Flushes inside these scopes must not affect the images. Changing the
+  original buffer without Set must not change the inner green tint.
+  Opacity preserves the checkerboard and transparent diagnostic strip.
+  ScopedCustomShader2D restores shaders; constant-buffer scopes independently
+  restore their specified slots. The automated tests also cover shader scopes
+  across frame boundaries, initially unset slots, moved scopes, slots 2/13,
+  integer payloads, and 4096/4112/65536-byte buffers.
 - The footer's colored shapes, photo, and white text remain unchanged on every
   page, demonstrating restoration before subsequent built-in draws.
 
@@ -377,12 +381,11 @@ namespace
 	void DrawConstants(const Font& font, const Shaders& shaders, const Texture& diagnostic)
 	{
 		const std::array<StringView, 6> titles{
-			U"Built-in tint + translation", U"Custom VS + PS constants", U"Local buffer lifetime",
-			U"Built-in tint sequence", U"One PS buffer, three values", U"One object, both stages" };
+			U"Built-in tint + translation", U"Persistent constants + flush", U"Temporary buffer lifetime",
+			U"Built-in red / green / red", U"One buffer, both stages", U"Nested constants + flush" };
 		const ColorF tint{ 0.5, 1.0, 0.75, 0.65 };
-		const Float4 tintValue{ 0.5f, 1.0f, 0.75f, 0.65f };
 		const std::array<Float4, 3> colors{
-			Float4{ 1, 0.25f, 0.25f, 0.75f }, Float4{ 0.25f, 1, 0.25f, 0.75f }, Float4{ 0.25f, 0.25f, 1, 0.75f } };
+			Float4{ 1, 0.25f, 0.25f, 0.75f }, Float4{ 0.25f, 1, 0.25f, 0.75f }, Float4{ 1, 0.25f, 0.25f, 0.75f } };
 		for (int32 i = 0; i < 6; ++i)
 		{
 			const Transformer2D tile{ Mat3x2::Translate(TilePosition(i)) };
@@ -391,43 +394,58 @@ namespace
 			{
 				diagnostic.resized(276, 148).draw(30, 60, tint);
 			}
-			else if (i < 3)
+			else if (i == 1)
 			{
-				// The constants outlive neither this block nor the queued rendering.
-				// Set*ConstantBuffer copies each value immediately.
+				// Uses constants set once in Main(), across every frame and page change.
+				const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
+				Graphics2D::Flush();
+				Graphics2D::Flush();
+				diagnostic.resized(276, 148).draw(12, 46);
+			}
+			else if (i == 2)
+			{
+				// The temporary source objects die at the ends of these declarations.
+				const ScopedVSConstantBuffer2D offset{ 2,
+					ConstantBuffer<CustomParameters>{ CustomParameters{ Float4{ 18, 14, 0, 0 } } } };
+				const ScopedPSConstantBuffer2D color{ 2,
+					ConstantBuffer<CustomParameters>{ CustomParameters{ Float4{ 0.5f, 1, 0.75f, 0.65f } } } };
+				const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
+				diagnostic.resized(276, 148).draw(12, 46);
+			}
+			else if (i == 3)
+			{
+				for (int32 column = 0; column < 3; ++column)
 				{
-					ConstantBuffer<CustomParameters> cb{ CustomParameters{ Float4{ 18, 14, 0, 0 } } };
-					Graphics2D::SetVSConstantBuffer(2, cb);
-					cb->value = tintValue;
-					Graphics2D::SetPSConstantBuffer(2, cb);
-					if (i == 1)
-					{
-						const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
-						diagnostic.resized(276, 148).draw(12, 46);
-					}
-				}
-				if (i == 2)
-				{
-					const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
-					diagnostic.resized(276, 148).draw(12, 46);
+					diagnostic.resized(96, 176).draw((12 + column * 104), 46, ColorF{ colors[column] });
 				}
 			}
 			else
 			{
 				ConstantBuffer<CustomParameters> cb{ CustomParameters{ Float4{ 0, 0, 0, 0 } } };
-				if (i == 5) { Graphics2D::SetVSConstantBuffer(2, cb); }
+				const ScopedVSConstantBuffer2D offset{ 2, cb };
+				cb->value = colors[0];
+				const ScopedPSConstantBuffer2D outer{ 2, cb };
+				const ScopedCustomShader2D shader{ shaders.offsetVS, shaders.tintPS };
 				for (int32 column = 0; column < 3; ++column)
 				{
 					const int32 x = (12 + column * 104);
-					if (i == 3)
-					{
-						diagnostic.resized(96, 176).draw(x, 46, ColorF{ colors[column] });
-					}
-					else
+					if (i == 4)
 					{
 						cb->value = colors[column];
 						Graphics2D::SetPSConstantBuffer(2, cb);
-						const ScopedCustomShader2D shader{ (i == 5) ? shaders.offsetVS : shaders.shapeVS, shaders.tintPS };
+						diagnostic.resized(96, 176).draw(x, 46);
+					}
+					else if (column == 1)
+					{
+						cb->value = colors[1];
+						const ScopedPSConstantBuffer2D inner{ 2, cb };
+						cb->value = Float4{ 0, 0, 1, 1 }; // No Set: green is still active.
+						Graphics2D::Flush();
+						diagnostic.resized(96, 176).draw(x, 46);
+					}
+					else
+					{
+						Graphics2D::Flush();
 						diagnostic.resized(96, 176).draw(x, 46);
 					}
 				}
@@ -466,6 +484,11 @@ void Main()
 	{
 		ScreenCapture::SetScreenshotDirectory(U"Screenshot/ScopedCustomShader2D/");
 	}
+	// Bind once; local scopes in DrawConstants restore these values.
+	const ScopedVSConstantBuffer2D persistentOffset{ 2,
+		ConstantBuffer<CustomParameters>{ CustomParameters{ Float4{ 18, 14, 0, 0 } } } };
+	const ScopedPSConstantBuffer2D persistentTint{ 2,
+		ConstantBuffer<CustomParameters>{ CustomParameters{ Float4{ 0.5f, 1, 0.75f, 0.65f } } } };
 	int32 page = 0;
 	int32 frame = 0;
 	bool animate = false;

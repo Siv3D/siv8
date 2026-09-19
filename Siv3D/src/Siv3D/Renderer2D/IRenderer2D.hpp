@@ -181,6 +181,10 @@ namespace s3d
 
 		virtual void setConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size) = 0;
 
+		virtual uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size) = 0;
+
+		virtual void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous) = 0;
+
 		virtual void flush() = 0;
 
 

@@ -22,7 +22,6 @@
 # include <Siv3D/Mat3x2.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Texture.hpp>
-# include <Siv3D/Renderer/Metal/Metal.hpp>
 # include "MetalRenderer2DCommand.hpp"
 # include <Siv3D/Renderer2D/BatchStateTracker.hpp>
 # include <Siv3D/Renderer2D/ConstantBuffer2DCommands.hpp>
@@ -36,6 +35,8 @@ namespace s3d
 		MetalRenderer2DCommandManager();
 
 		void pushConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size);
+		void endConstantBufferScope(ShaderStage stage, uint32 slot, uint32 previous);
 		const ConstantBuffer2DCommands& getConstantBuffers() const noexcept { return m_constantBuffers; }
 
 		void reset();

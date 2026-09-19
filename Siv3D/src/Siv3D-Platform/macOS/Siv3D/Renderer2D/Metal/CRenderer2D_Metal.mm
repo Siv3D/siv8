@@ -1647,6 +1647,16 @@ namespace s3d
 		m_commandManager.pushConstantBuffer(stage, slot, data, size);
 	}
 
+	uint32 CRenderer2D_Metal::beginConstantBufferScope(const ShaderStage stage, const uint32 slot, const void* data, const size_t size)
+	{
+		return m_commandManager.beginConstantBufferScope(stage, slot, data, size);
+	}
+
+	void CRenderer2D_Metal::endConstantBufferScope(const ShaderStage stage, const uint32 slot, const uint32 previous)
+	{
+		m_commandManager.endConstantBufferScope(stage, slot, previous);
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	flush
@@ -1658,8 +1668,15 @@ namespace s3d
 		ScopeExit cleanUp = [this]()
 		{
 			m_commandManager.reset();
-			m_currentCustomShader.vs.reset();
-			m_currentCustomShader.ps.reset();
+			// 次の実行でもカスタムシェーダを適用する。論理設定は変更しない。
+			if (m_currentCustomShader.vs)
+			{
+				m_commandManager.pushCustomVS(*m_currentCustomShader.vs);
+			}
+			if (m_currentCustomShader.ps)
+			{
+				m_commandManager.pushCustomPS(*m_currentCustomShader.ps);
+			}
 		};
 
 		struct Stat
@@ -2303,6 +2320,19 @@ namespace s3d
 
 	void CRenderer2D_Metal::bindCustomConstantBuffer(MTL::RenderCommandEncoder* encoder, const ConstantBuffer2DCommand& command, const void* data)
 	{
+		if (command.size == 0)
+		{
+			if (command.stage == ShaderStage::Vertex)
+			{
+				encoder->setVertexBuffer(nullptr, 0, command.slot);
+			}
+			else
+			{
+				encoder->setFragmentBuffer(nullptr, 0, command.slot);
+			}
+			return;
+		}
+
 		if (command.size <= 4096)
 		{
 			if (command.stage == ShaderStage::Vertex)
