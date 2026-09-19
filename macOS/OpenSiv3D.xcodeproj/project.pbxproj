@@ -23,6 +23,7 @@
 		D311D311D311D31100000001 /* Test_D3D11Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000002 /* Test_D3D11Device.cpp */; };
 		D311D311D311D31100000003 /* Test_D3D11SwapChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000004 /* Test_D3D11SwapChain.cpp */; };
 		D311D311D311D31100000005 /* Test_D3D11DisplayFrequency.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D311D311D311D31100000006 /* Test_D3D11DisplayFrequency.cpp */; };
+		1F287AC7063E47A9861C8AF4 /* Test_MonitorInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2555DB1F071C4B7AA73723B3 /* Test_MonitorInfo.cpp */; };
 		EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */; };
 		1FA97E5DF1DA4C8AA4714B11 /* Test_Renderer2DBatchBoundary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */; };
 		C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */; };
@@ -3356,6 +3357,7 @@
 		D311D311D311D31100000002 /* Test_D3D11Device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_D3D11Device.cpp; sourceTree = "<group>"; };
 		D311D311D311D31100000004 /* Test_D3D11SwapChain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_D3D11SwapChain.cpp; sourceTree = "<group>"; };
 		D311D311D311D31100000006 /* Test_D3D11DisplayFrequency.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_D3D11DisplayFrequency.cpp; sourceTree = "<group>"; };
+		2555DB1F071C4B7AA73723B3 /* Test_MonitorInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MonitorInfo.cpp; sourceTree = "<group>"; };
 		479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DIndexCount.cpp; sourceTree = "<group>"; };
 		42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DBatchBoundary.cpp; sourceTree = "<group>"; };
 		C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Renderer2DCircleDashedFrame.cpp; sourceTree = "<group>"; };
@@ -7087,6 +7089,7 @@
 				D311D311D311D31100000002 /* Test_D3D11Device.cpp */,
 				D311D311D311D31100000004 /* Test_D3D11SwapChain.cpp */,
 				D311D311D311D31100000006 /* Test_D3D11DisplayFrequency.cpp */,
+				2555DB1F071C4B7AA73723B3 /* Test_MonitorInfo.cpp */,
 				479234B1CD374876BBCA955C /* Test_Renderer2DIndexCount.cpp */,
 				42165A01DA7B4455BD75A0DB /* Test_Renderer2DBatchBoundary.cpp */,
 				C6D12DA5498B4E59A4A5C202 /* Test_Renderer2DCircleDashedFrame.cpp */,
@@ -16659,6 +16662,7 @@
 				D311D311D311D31100000001 /* Test_D3D11Device.cpp in Sources */,
 				D311D311D311D31100000003 /* Test_D3D11SwapChain.cpp in Sources */,
 				D311D311D311D31100000005 /* Test_D3D11DisplayFrequency.cpp in Sources */,
+				1F287AC7063E47A9861C8AF4 /* Test_MonitorInfo.cpp in Sources */,
 				EC07C1408CD94D4E9671121D /* Test_Renderer2DIndexCount.cpp in Sources */,
 				1FA97E5DF1DA4C8AA4714B11 /* Test_Renderer2DBatchBoundary.cpp in Sources */,
 				C6D12DA5498B4E59A4A5C201 /* Test_Renderer2DCircleDashedFrame.cpp in Sources */,

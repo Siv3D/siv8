@@ -205,6 +205,9 @@
     <ClCompile Include="..\Test\Test_D3D11DisplayFrequency.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MonitorInfo.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp">
       <Filter>Test</Filter>
     </ClCompile>

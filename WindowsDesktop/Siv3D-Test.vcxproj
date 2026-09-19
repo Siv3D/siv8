@@ -135,6 +135,9 @@
     <ClCompile Include="..\Test\Test_D3D11DisplayFrequency.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MonitorInfo.cpp">
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Renderer2DIndexCount.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DBatchBoundary.cpp" />
     <ClCompile Include="..\Test\Test_Renderer2DCircleDashedFrame.cpp" />

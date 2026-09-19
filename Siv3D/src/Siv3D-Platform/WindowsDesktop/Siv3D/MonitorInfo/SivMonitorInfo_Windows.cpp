@@ -9,12 +9,14 @@
 //
 //-----------------------------------------------
 
+# include "WindowsMonitor.hpp"
 # include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/Windows/Windows.hpp>
 # include <Siv3D/DLL.hpp>
 # include <ShellScalingApi.h> // GetDpiForMonitor()
+# include <cwchar>
 
 namespace s3d
 {
@@ -22,9 +24,6 @@ namespace s3d
 
 	namespace
 	{
-		// チェック用デバイス名とモニタハンドル
-		using MonitorCheck = std::pair<const String, HMONITOR>;
-
 		static BOOL CALLBACK MonitorCallback(HMONITOR hMonitor, HDC, LPRECT, LPARAM userData)
 		{
 			if (not g_pGetDpiForMonitor.has_value())
@@ -114,23 +113,6 @@ namespace s3d
 			return monitorInfo;
 		}
 
-		static BOOL CALLBACK MonitorCheckProc(HMONITOR hMonitor, HDC, LPRECT, LPARAM userData)
-		{
-			MONITORINFOEX monitorInfo{};
-			monitorInfo.cbSize = sizeof(monitorInfo);
-			::GetMonitorInfoW(hMonitor, &monitorInfo);
-
-			MonitorCheck* monitor = (MonitorCheck*)userData;
-
-			if (monitor->first.toWstr() == monitorInfo.szDevice)
-			{
-				monitor->second = hMonitor;
-				return false;
-			}
-
-			return true;
-		}
-
 		static bool GetFriendlyName(Array<MonitorInfo>& monitors)
 		{
 			UINT32 nPaths, nModes;
@@ -204,6 +186,95 @@ namespace s3d
 		}
 	}
 
+	namespace WindowsMonitor
+	{
+		void EnumerateMonitorDevices(const FunctionRef<bool(const DISPLAY_DEVICEW&, const DISPLAY_DEVICEW*)> visitor,
+			decltype(::EnumDisplayDevicesW)* enumDisplayDevices)
+		{
+			bool foundMonitor = false;
+
+			for (DWORD deviceIndex = 0; ; ++deviceIndex)
+			{
+				DISPLAY_DEVICEW displayDevice{ .cb = sizeof(DISPLAY_DEVICEW) };
+				if (not enumDisplayDevices(nullptr, deviceIndex, &displayDevice, 0))
+				{
+					break;
+				}
+
+				if (not (displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
+				{
+					continue;
+				}
+
+				for (DWORD monitorIndex = 0; ; ++monitorIndex)
+				{
+					DISPLAY_DEVICEW monitor{ .cb = sizeof(DISPLAY_DEVICEW) };
+					if (not enumDisplayDevices(displayDevice.DeviceName, monitorIndex, &monitor, EDD_GET_DEVICE_INTERFACE_NAME))
+					{
+						break;
+					}
+
+					if ((monitor.StateFlags & DISPLAY_DEVICE_ACTIVE)
+						&& not (monitor.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
+					{
+						foundMonitor = true;
+						if (not visitor(displayDevice, &monitor))
+						{
+							return;
+						}
+					}
+				}
+			}
+
+			if (foundMonitor)
+			{
+				return;
+			}
+
+			// Fall back to every attached display device only when no active child was found.
+			for (DWORD deviceIndex = 0; ; ++deviceIndex)
+			{
+				DISPLAY_DEVICEW displayDevice{ .cb = sizeof(DISPLAY_DEVICEW) };
+				if (not enumDisplayDevices(nullptr, deviceIndex, &displayDevice, 0))
+				{
+					break;
+				}
+
+				if ((displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
+					&& not visitor(displayDevice, nullptr))
+				{
+					return;
+				}
+			}
+		}
+
+		size_t GetCurrentMonitorIndex(const HWND window, const Functions& functions)
+		{
+			const HMONITOR currentMonitor = functions.monitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY);
+			MONITORINFOEXW monitorInfo{};
+			monitorInfo.cbSize = sizeof(monitorInfo);
+			if ((not currentMonitor) || (not functions.getMonitorInfo(currentMonitor, &monitorInfo)))
+			{
+				return 0;
+			}
+
+			size_t index = 0;
+			size_t result = 0;
+			EnumerateMonitorDevices([&](const DISPLAY_DEVICEW& displayDevice, const DISPLAY_DEVICEW*)
+			{
+				if (std::wcscmp(displayDevice.DeviceName, monitorInfo.szDevice) == 0)
+				{
+					result = index;
+					return false;
+				}
+
+				++index;
+				return true;
+			}, functions.enumDisplayDevices);
+			return result;
+		}
+	}
+
 	namespace System
 	{
 		////////////////////////////////////////////////////////////////
@@ -215,48 +286,11 @@ namespace s3d
 		Array<MonitorInfo> EnumerateMonitors()
 		{
 			Array<MonitorInfo> monitors;
-			DISPLAY_DEVICE displayDevice{ .cb = sizeof(DISPLAY_DEVICE) };
-
-			// デスクトップとして割り当てられている仮想ディスプレイを検索
-			for (int32 deviceIndex = 0; ::EnumDisplayDevicesW(0, deviceIndex, &displayDevice, 0); ++deviceIndex)
+			WindowsMonitor::EnumerateMonitorDevices([&](const DISPLAY_DEVICEW& displayDevice, const DISPLAY_DEVICEW* monitor)
 			{
-				if (displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
-				{
-					DISPLAY_DEVICE monitor{ .cb = sizeof(DISPLAY_DEVICE) };
-
-					// デスクトップとして使われているモニターの一覧を取得
-					for (int32 monitorIndex = 0; ::EnumDisplayDevicesW(displayDevice.DeviceName, monitorIndex, &monitor, EDD_GET_DEVICE_INTERFACE_NAME); ++monitorIndex)
-					{
-						if ((monitor.StateFlags & DISPLAY_DEVICE_ACTIVE) &&
-							not(monitor.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
-						{
-							
-							monitors.push_back(MakeMonitorInfo(displayDevice, &monitor));
-						}
-
-						ZeroMemory(&monitor, sizeof(monitor));
-						monitor.cb = sizeof(monitor);
-					}
-				}
-
-				ZeroMemory(&displayDevice, sizeof(displayDevice));
-				displayDevice.cb = sizeof(displayDevice);
-			}
-
-			// no monitor is found
-			if (monitors.empty())
-			{
-				for (int32 deviceIndex = 0; ::EnumDisplayDevicesW(0, deviceIndex, &displayDevice, 0); ++deviceIndex)
-				{
-					if (displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
-					{
-						monitors.push_back(MakeMonitorInfo(displayDevice, nullptr));
-					}
-
-					ZeroMemory(&displayDevice, sizeof(displayDevice));
-					displayDevice.cb = sizeof(displayDevice);
-				}
-			}
+				monitors.push_back(MakeMonitorInfo(displayDevice, monitor));
+				return true;
+			});
 
 			GetFriendlyName(monitors);
 
@@ -271,52 +305,7 @@ namespace s3d
 
 		size_t GetCurrentMonitorIndex()
 		{
-			const HMONITOR currentMonitor = ::MonitorFromWindow(static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle()), MONITOR_DEFAULTTOPRIMARY);
-			size_t index = 0;
-
-			DISPLAY_DEVICE displayDevice =
-			{
-				.cb = sizeof(DISPLAY_DEVICE),
-			};
-
-			// デスクトップとして割り当てられている仮想デスクトップを検索
-			for (int32 deviceIndex = 0; ::EnumDisplayDevicesW(0, deviceIndex, &displayDevice, 0); ++deviceIndex)
-			{
-				if (displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
-				{
-					DISPLAY_DEVICE monitor;
-					ZeroMemory(&monitor, sizeof(monitor));
-					monitor.cb = sizeof(monitor);
-
-					// デスクトップとして使われているモニターの一覧を取得
-					for (int32 monitorIndex = 0; ::EnumDisplayDevicesW(displayDevice.DeviceName, monitorIndex, &monitor, 0); ++monitorIndex)
-					{
-						if ((monitor.StateFlags & DISPLAY_DEVICE_ACTIVE) &&
-							!(monitor.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
-						{
-							MonitorCheck desc = { Unicode::FromWstring(displayDevice.DeviceName), nullptr };
-
-							// モニターのハンドルを取得
-							::EnumDisplayMonitors(nullptr, nullptr, MonitorCheckProc, (LPARAM)&desc);
-
-							if (desc.second == currentMonitor)
-							{
-								return index;
-							}
-
-							++index;
-						}
-
-						ZeroMemory(&monitor, sizeof(monitor));
-						monitor.cb = sizeof(monitor);
-					}
-				}
-
-				ZeroMemory(&displayDevice, sizeof(displayDevice));
-				displayDevice.cb = sizeof(displayDevice);
-			}
-		
-			return 0;
+			return WindowsMonitor::GetCurrentMonitorIndex(static_cast<HWND>(SIV3D_ENGINE(Window)->getHandle()));
 		}
 	}
 }
