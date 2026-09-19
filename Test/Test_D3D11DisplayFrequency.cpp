@@ -163,7 +163,6 @@ namespace
 				}
 			}
 			FAIL("The query used an unreturned path or a target ID instead of the source ID");
-			return ERROR_NOT_FOUND;
 		}
 
 		static BOOL WINAPI EnumDisplaySettings(LPCWSTR name, DWORD mode, DEVMODEW* settings)

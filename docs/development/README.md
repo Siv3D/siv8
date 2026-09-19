@@ -111,6 +111,33 @@ Engine sources are excluded; platform-specific engine membership is intentional.
 The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
 it does not compile Windows code.
 
+### MSVC warnings in tests
+
+Compare clean test-application builds in both Release and Debug with the existing
+`/W4` settings. When the engine library already matches the sources, configuration
+and toolchain, the application-only `Rebuild` command below regenerates every test
+translation unit without rebuilding the engine. Keep the build logs and follow
+template instantiation traces: a warning reported in a standard-library header
+can originate in either an expected test value or an engine template.
+
+- For C4244/C4305, check which layer owns the numeric conversion before adding
+  casts to callers. APIs intended to accept arithmetic inputs should perform the
+  conversion at their implementation boundary. Otherwise, match fixture types to
+  the API while preserving calculation precision and comparison tolerances.
+- For C4244 in expected values, construct templated wrappers with typed values:
+  `Optional<Int>{ Int{ -1 } }`. An integer literal passed through a forwarding
+  constructor can otherwise cause a narrowing warning inside the standard library.
+- For C4389, compare file I/O counts in the API's signed count type. For small fixtures,
+  convert the known representable fixture size once and reuse it for the write and
+  expected result; retain negative-result detection.
+- For C4702, Catch2 `FAIL` does not return. Remove unreachable returns after it;
+  keep the fatal assertion rather than changing it to a nonfatal check.
+
+Preserve the input types when conversion or overload selection is what a test
+exercises. If the warning originates in an engine implementation, keep its test
+coverage and handle the implementation separately from test-only cleanup. Avoid
+blanket warning suppression or edits to vendored Catch2 sources.
+
 ### Windows incremental build failures
 
 If a test run displays `EXCEPTION_ILLEGAL_INSTRUCTION`, inspect the build and

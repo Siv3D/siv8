@@ -128,11 +128,13 @@ TEST_CASE("Mesh3D::Loft tangent frames follow UV signs")
 	for (const Vec2 scale : { Vec2{ -2, 3 }, Vec2{ 2, -3 }, Vec2{ -2, -3 }, Vec2{ 0, 0 } })
 	{
 		const auto mesh = Mesh3D::Loft(sections, { .uvScale = scale });
+		const float uSign = (scale.x < 0 ? -1.0f : 1.0f);
+		const float vSign = (scale.y < 0 ? -1.0f : 1.0f);
 		CheckMeshGeometry(mesh);
 		for (size_t i = 0; i < mesh.vertexCount(); ++i)
 		{
-			CHECK(mesh.vertices[i].tangent.xyz().epsilonEquals(reference.vertices[i].tangent.xyz() * (scale.x < 0 ? -1 : 1), 1e-6f));
-			CHECK((mesh.vertices[i].tangent.w) == ((scale.x < 0 ? -1 : 1) * (scale.y < 0 ? -1 : 1)));
+			CHECK(mesh.vertices[i].tangent.xyz().epsilonEquals(reference.vertices[i].tangent.xyz() * uSign, 1e-6f));
+			CHECK((mesh.vertices[i].tangent.w) == (uSign * vSign));
 		}
 	}
 }

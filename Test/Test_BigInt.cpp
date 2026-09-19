@@ -117,8 +117,8 @@ namespace
 
 		if constexpr (Concept::SignedIntegral<Int>)
 		{
-			CHECK(BigInt{ -1 }.convertTo<Int>() == Optional<Int>{ -1 });
-			CHECK(BigInt{ -42 }.convertTo<Int>() == Optional<Int>{ -42 });
+			CHECK(BigInt{ -1 }.convertTo<Int>() == Optional<Int>{ Int{ -1 } });
+			CHECK(BigInt{ -42 }.convertTo<Int>() == Optional<Int>{ Int{ -42 } });
 		}
 		else
 		{

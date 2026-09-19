@@ -886,7 +886,8 @@ TEST_CASE("FileSystem::Directory traversal junctions")
 	{
 		BinaryFileWriter writer{ path };
 		REQUIRE(writer.isOpen());
-		REQUIRE(writer.write(contents.data(), contents.size()) == contents.size());
+		const int64 size = static_cast<int64>(contents.size());
+		REQUIRE(writer.write(contents.data(), size) == size);
 	}
 
 	const FilePath links[] = {

@@ -10,12 +10,21 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include <cmath>
 # include <limits>
 # include <sstream>
 # include <type_traits>
 
 namespace
 {
+	template <class Angle>
+	concept HasAxisRotations = requires(Angle angle)
+	{
+		{ Quaternion::RotateX<Angle>(angle) } noexcept -> std::same_as<Quaternion>;
+		{ Quaternion::RotateY<Angle>(angle) } noexcept -> std::same_as<Quaternion>;
+		{ Quaternion::RotateZ<Angle>(angle) } noexcept -> std::same_as<Quaternion>;
+	};
+
 	constexpr float QuaternionEpsilon = 1e-5f;
 
 	void CheckComponents(const Quaternion& actual, const Float4 expected)
@@ -280,6 +289,65 @@ TEST_CASE("Quaternion::axis rotation directions")
 	CheckVector(
 		Quaternion::RotateZ(Math::HalfPiF).rotate(Float3::UnitX()),
 		Float3::UnitY());
+}
+
+TEMPLATE_TEST_CASE("Quaternion::axis rotations accept arithmetic angles", "", float, double, int32, uint32, long double)
+{
+	static_assert(HasAxisRotations<TestType>);
+	static_assert(HasAxisRotations<bool>);
+	static_assert(not HasAxisRotations<String>);
+	static_assert(not HasAxisRotations<Float3>);
+
+	const auto check = [](const TestType angle)
+	{
+		CAPTURE(angle);
+		const double radians = static_cast<float>(angle);
+		const float sine = static_cast<float>(std::sin(radians));
+		const float cosine = static_cast<float>(std::cos(radians));
+		const Quaternion x = Quaternion::RotateX(angle);
+		const Quaternion y = Quaternion::RotateY(angle);
+		const Quaternion z = Quaternion::RotateZ(angle);
+		CheckVector(x.rotate(Float3::UnitX()), Float3::UnitX());
+		CheckVector(y.rotate(Float3::UnitY()), Float3::UnitY());
+		CheckVector(z.rotate(Float3::UnitZ()), Float3::UnitZ());
+		CheckVector(x.rotate(Float3::UnitY()), Float3{ 0, cosine, sine });
+		CheckVector(y.rotate(Float3::UnitX()), Float3{ cosine, 0, -sine });
+		CheckVector(z.rotate(Float3::UnitX()), Float3{ cosine, sine, 0 });
+		const Float3 point{ 2, -3, 4 };
+		for (const Quaternion rotation : { x, y, z })
+		{
+			CHECK(rotation.isNormalized());
+			CheckVector(rotation.inverseRotate(rotation.rotate(point)), point);
+		}
+	};
+
+	check(TestType{ 0 });
+	check(TestType{ 1 });
+	if constexpr (Concept::Signed<TestType>)
+	{
+		check(TestType{ -1 });
+	}
+	if constexpr (Concept::FloatingPoint<TestType>)
+	{
+		for (const double angle : { Math::HalfPi, -Math::HalfPi, Math::Pi, Math::TwoPi })
+		{
+			check(static_cast<TestType>(angle));
+		}
+	}
+}
+
+TEST_CASE("Quaternion::axis rotations use float angle precision")
+{
+	// Inputs on either side of a float rounding midpoint use the rounded angle.
+	for (const auto [angle, rounded] : {
+		std::pair{ 1.0 + 0x1p-25, 1.0f },
+		std::pair{ 1.0 + 0x1.8p-24, 1.0f + 0x1p-23f } })
+	{
+		CAPTURE(angle);
+		CheckComponents(Quaternion::RotateX(angle), Quaternion::RotateX(rounded).toFloat4());
+		CheckComponents(Quaternion::RotateY(angle), Quaternion::RotateY(rounded).toFloat4());
+		CheckComponents(Quaternion::RotateZ(angle), Quaternion::RotateZ(rounded).toFloat4());
+	}
 }
 
 TEST_CASE("Quaternion::format_and_stream")
