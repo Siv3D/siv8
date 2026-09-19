@@ -21,6 +21,9 @@
 
 ## Gallery and checks
 
+- [Custom shaders](../../Test/Manual/ScopedCustomShader2D.md): paired HLSL/MSL
+  examples using standard constant buffers, effect comparisons, nested scopes,
+  and premultiplied-alpha checks.
 - [Pattern collection](../../Test/Manual/PatternCollection.md): the canonical
   960 x 700 gallery of 84 backgrounds across all eleven patterns and combinations,
   with paging and animation controls.

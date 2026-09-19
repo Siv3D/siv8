@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-// PS_Grayscale: Convert the final tinted/added texture color to grayscale.
+// PS_Posterize: Quantize the final tinted/added texture color to five levels per RGB channel.
 // Ordinary textures only. Uses the standard PS buffer, texture 0, and sampler 0.
 // Vertex color and standard color multiplication/addition precede the effect.
 
@@ -39,12 +39,20 @@ inline float4 s3d_textureColor(float4 vertexColorPMA, const float4 textureColorP
 }
 
 fragment
-float4 PS_Grayscale(	PSInput input [[stage_in]],
+float4 PS_Posterize(	PSInput input [[stage_in]],
 					constant PSConstants2D* c0 [[buffer(0)]],
 					texture2d<float> texture0 [[texture(0)]],
 					sampler sampler0 [[sampler(0)]])
 {
 	const float4 colorPMA = s3d_textureColor(input.colorPMA, texture0.sample(sampler0, input.uv), c0);
-	const float yPMA = dot(colorPMA.rgb, float3(0.299f, 0.587f, 0.114f));
-	return float4(yPMA, yPMA, yPMA, colorPMA.a);
+	// Quantize straight RGB, then restore PMA. Alpha itself is not quantized.
+	// Four intervals give levels 0, 0.25, 0.5, 0.75, and 1 for RGB in [0, 1].
+	const float steps = 4.0f;
+	if (colorPMA.a == 0.0f)
+	{
+		return colorPMA;
+	}
+	const float3 color = (colorPMA.rgb / colorPMA.a);
+	const float3 quantized = (floor((color * steps) + 0.5f) / steps);
+	return float4((quantized * colorPMA.a), colorPMA.a);
 }

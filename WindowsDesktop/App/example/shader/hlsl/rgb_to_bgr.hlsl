@@ -9,7 +9,7 @@
 //
 //-----------------------------------------------
 
-// PS_Grayscale: Convert the final tinted/added texture color to grayscale.
+// PS_RGBToBGR: Exchange red and blue in the final tinted/added texture color.
 // Ordinary textures only. Uses the standard PS buffer, texture 0, and sampler 0.
 // Vertex color and standard color multiplication/addition precede the effect.
 
@@ -38,9 +38,8 @@ inline float4 s3d_textureColor(float4 vertexColorPMA, const float4 textureColorP
 	return (vertexColorPMA + (g_colorAdd * vertexColorPMA.a));
 }
 
-float4 PS_Grayscale(PSInput input) : SV_TARGET
+float4 PS_RGBToBGR(PSInput input) : SV_TARGET
 {
 	const float4 colorPMA = s3d_textureColor(input.colorPMA, g_texture0.Sample(g_sampler0, input.uv));
-	const float yPMA = dot(colorPMA.rgb, float3(0.299f, 0.587f, 0.114f));
-	return float4(yPMA, yPMA, yPMA, colorPMA.a);
+	return colorPMA.bgra;
 }
