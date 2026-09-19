@@ -251,8 +251,10 @@ namespace s3d
 					if (displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
 					{
 						monitors.push_back(MakeMonitorInfo(displayDevice, nullptr));
-						break;
 					}
+
+					ZeroMemory(&displayDevice, sizeof(displayDevice));
+					displayDevice.cb = sizeof(displayDevice);
 				}
 			}
 

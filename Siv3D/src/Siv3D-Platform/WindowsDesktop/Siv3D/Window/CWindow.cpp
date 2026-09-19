@@ -21,6 +21,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Engine/Siv3DEngine.hpp>
 # include <Siv3D/EngineLog.hpp>
+# include <algorithm>
 # include <dwmapi.h>
 
 namespace s3d
@@ -87,23 +88,24 @@ namespace s3d
 		// ウィンドウクラスを登録する
 		m_windowClass.registerClass(m_moduleHandle);
 
-		// プライマリモニターにウィンドウを作成する
-		for (const auto& monitor : WindowMisc::GetMonitors())
+		// プライマリモニターを優先し、見つからなければ先頭のモニターにウィンドウを作成する
 		{
-			if (monitor.isPrimary)
+			// モニターが見つからない場合は GetMonitors() が例外を送出する
+			const Array<MonitorInfo> monitors = WindowMisc::GetMonitors();
+			const auto primaryMonitor = std::find_if(monitors.begin(), monitors.end(), [](const MonitorInfo& monitor)
 			{
-				// ウィンドウを作成する
-				m_hWnd = WindowMisc::CreateMainWindow(
-					m_moduleHandle,
-					monitor,
-					m_windowClass.name,
-					m_windowTitle.actual,
-					m_user32.pAdjustWindowRectExForDpi,
-					m_dpi,
-					m_state);
+				return monitor.isPrimary;
+			});
+			const MonitorInfo& monitor = ((primaryMonitor != monitors.end()) ? *primaryMonitor : monitors.front());
 
-				break;
-			}
+			m_hWnd = WindowMisc::CreateMainWindow(
+				m_moduleHandle,
+				monitor,
+				m_windowClass.name,
+				m_windowTitle.actual,
+				m_user32.pAdjustWindowRectExForDpi,
+				m_dpi,
+				m_state);
 		}
 
 		// ウィンドウの作成に失敗したらエラー
