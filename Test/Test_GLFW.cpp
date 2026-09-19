@@ -58,6 +58,8 @@ namespace s3d
 	{
 		CHECK(glfwGetKeyScancode(SIV3D_KEY_JIS_YEN) == 0x5D);
 		CHECK(glfwGetKeyScancode(SIV3D_KEY_JIS_UNDERSCORE) == 0x5E);
+		CHECK(glfwGetKeyScancode(GLFW_KEY_PRINT_SCREEN) == 0x69);
+		CHECK(glfwGetKeyScancode(GLFW_KEY_NUM_LOCK) == 0x47);
 		CHECK(glfwGetKeyScancode(GLFW_KEY_BACKSLASH) == 0x2A);
 		CHECK(glfwGetKeyScancode(GLFW_KEY_A) == 0x00);
 	}

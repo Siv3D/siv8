@@ -44,6 +44,7 @@
 		8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D604008E420486985B6EF7F /* Test_GLFW.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
+		FCCD4144ABA44516BDF2F728 /* Test_Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63D90B4A33ED4AC68FAFC5EB /* Test_Keyboard.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
@@ -3368,6 +3369,7 @@
 		1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalFrameSynchronization.cpp; sourceTree = "<group>"; };
 		6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalPresentation.cpp; sourceTree = "<group>"; };
 		4D604008E420486985B6EF7F /* Test_GLFW.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_GLFW.cpp; sourceTree = "<group>"; };
+		63D90B4A33ED4AC68FAFC5EB /* Test_Keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Keyboard.cpp; sourceTree = "<group>"; };
 		A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalFrameErrors.cpp; sourceTree = "<group>"; };
 		1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalInternalTexture2D.cpp; sourceTree = "<group>"; };
 		D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalRenderPipelineState.cpp; sourceTree = "<group>"; };
@@ -7037,6 +7039,7 @@
 				1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */,
 				6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */,
 				4D604008E420486985B6EF7F /* Test_GLFW.cpp */,
+				63D90B4A33ED4AC68FAFC5EB /* Test_Keyboard.cpp */,
 				A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */,
 				1D304A71C72D4F6B85DBAEF6 /* Test_MetalInternalTexture2D.cpp */,
 				D4A591EB09E6471B9968BA32 /* Test_MetalRenderPipelineState.cpp */,
@@ -16745,6 +16748,7 @@
 				8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */,
 				2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */,
 				BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */,
+				FCCD4144ABA44516BDF2F728 /* Test_Keyboard.cpp in Sources */,
 				D34B549D8A49431899405CEC /* Test_MetalFrameErrors.cpp in Sources */,
 				6AD339A110194FC098CE3360 /* Test_MetalInternalTexture2D.cpp in Sources */,
 				F63F4855B2874BA3A8931F94 /* Test_MetalRenderPipelineState.cpp in Sources */,

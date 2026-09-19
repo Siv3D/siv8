@@ -17,7 +17,9 @@ backing scales. Record unavailable hardware as untested.
 2. Press `P` to move the window by 20 backing pixels. Press `C` to move the cursor
    to the scene center. Repeat on each monitor. Press `F` to enter/leave fullscreen.
 3. Press the JIS yen and underscore keys separately. Also try Ctrl+Tab,
-   Ctrl+Esc and Cmd+Period. Release each combination and repeat it.
+   Ctrl+Esc and Cmd+Period. Release each combination and repeat it. Hold yen for
+   several frames, then release it; repeat using backslash on a US keyboard.
+   Test F13 and keypad Clear where available.
 4. Drag files and selected text from other applications into the window, then
    outside it without dropping. Drop multiple files and non-ASCII text. Use `T`
    to disable/enable text acceptance and repeat. Drag the upper-right box to a
@@ -33,6 +35,12 @@ backing scales. Record unavailable hardware as untested.
   display. `C` places the crosshair at the scene center without a Retina offset.
 - The two JIS indicators respond independently. Shortcut indicators turn on while
   pressed and turn off after release; no key remains stuck.
+- For yen/backslash, the down and up counters each increase once per complete
+  press/release; holding a key does not repeatedly increase the down count.
+  F13 activates both F13 and PrintScreen; Clear activates both Clear and NumLock.
+  With a key held, move focus away and release it; no indicator remains pressed
+  when returning to the sample. Record OS-reserved shortcuts or absent keys as
+  untested instead of generating artificial hardware input.
 - Accepted drags show a hover position, cleared when leaving the window. Each
   drop is reported once at the expected scene position. Disabled text drops do
   not appear. Outbound text and files reach the destination and another drag
@@ -53,6 +61,7 @@ void Main()
 	Scene::SetResizeMode(ResizeMode::Keep);
 	DragDrop::AcceptText(true);
 	bool acceptText = true;
+	uint32 yenDownCount = 0, yenUpCount = 0;
 	String lastDrop = U"No drop yet";
 	FilePath lastFile;
 	Optional<Point> dropPosition;
@@ -62,6 +71,8 @@ void Main()
 
 	while (System::Update())
 	{
+		yenDownCount += KeyYen_JIS.down();
+		yenUpCount += KeyYen_JIS.up();
 		if (KeyP.down())
 		{
 			Window::SetPos(Window::GetState().bounds.pos + Point{ 20, 20 });
@@ -107,7 +118,10 @@ void Main()
 		Print << U"Backing: " << window.frameBufferSize << U", scale: " << window.scaling;
 		Print << U"Monitor: " << System::GetCurrentMonitorIndex();
 		Print << U"Cursor: " << Cursor::Pos() << U", raw: " << Cursor::PosRaw();
-		Print << U"JIS yen: " << KeyYen_JIS.pressed() << U", underscore: " << KeyUnderscore_JIS.pressed();
+		Print << U"JIS yen: " << KeyYen_JIS.pressed() << U", down/up: " << yenDownCount << U"/" << yenUpCount
+			<< U", underscore: " << KeyUnderscore_JIS.pressed();
+		Print << U"F13/PrintScreen: " << KeyF13.pressed() << U"/" << KeyPrintScreen.pressed()
+			<< U", Clear/NumLock: " << KeyClear.pressed() << U"/" << KeyNumLock.pressed();
 		Print << U"Tab: " << KeyTab.pressed() << U", Esc: " << KeyEscape.pressed() << U", period: " << KeyPeriod.pressed();
 		Print << U"Accept text: " << acceptText;
 		Print << U"Pen nearby: " << pen.inProximity << U", eraser: " << pen.isEraser;

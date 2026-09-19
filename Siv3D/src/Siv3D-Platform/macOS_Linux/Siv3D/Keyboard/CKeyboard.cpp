@@ -32,7 +32,11 @@ namespace s3d
 			{ 0x03, 0 },
 			{ 0x08, GLFW_KEY_BACKSPACE },
 			{ 0x09, GLFW_KEY_TAB },
+		# if SIV3D_PLATFORM(MACOS)
+			{ 0x0C, GLFW_KEY_NUM_LOCK }, // Mac keypad Clear
+		# else
 			{ 0x0C, 0 },
+		# endif
 			{ 0x0D, GLFW_KEY_ENTER },
 			{ 0x10, 0 }, // shift
 			{ 0x11, 0 }, // control
@@ -115,7 +119,11 @@ namespace s3d
 			{ 0x79, GLFW_KEY_F10 },
 			{ 0x7A, GLFW_KEY_F11 },
 			{ 0x7B, GLFW_KEY_F12 },
+		# if SIV3D_PLATFORM(MACOS)
+			{ 0x7C, GLFW_KEY_PRINT_SCREEN }, // GLFW maps Mac F13 to PrintScreen
+		# else
 			{ 0x7C, GLFW_KEY_F13 },
+		# endif
 			{ 0x7D, GLFW_KEY_F14 },
 			{ 0x7E, GLFW_KEY_F15 },
 			{ 0x7F, GLFW_KEY_F16 },
@@ -149,25 +157,52 @@ namespace s3d
 			{ 0xD9, GLFW_KEY_LEFT_SUPER },
 			{ 0xDA, GLFW_KEY_RIGHT_SUPER },
 			{ 0xDB, GLFW_KEY_LEFT_BRACKET }, // ? [Siv3D TODO]
-			{ 0xDC, GLFW_KEY_BACKSLASH }, // ? [Siv3D TODO]
-			{ 0xDC, SIV3D_KEY_JIS_YEN }, // ¥ (JIS)
+			{ 0xDC, 0 }, // Backslash / JIS yen are combined below
 			{ 0xDD, GLFW_KEY_RIGHT_BRACKET }, // ? [Siv3D TODO]
 			{ 0xDE, 0 }, // ? [Siv3D TODO]
 			{ 0xE2, SIV3D_KEY_JIS_UNDERSCORE }, // _ (JIS)
 		};
+
+		static_assert([]
+		{
+			std::array<bool, Keyboard::NumKeys> assigned{};
+			for (const auto& [index, glfwKey] : KeyConversionTable)
+			{
+				if (assigned[index])
+				{
+					return false;
+				}
+				assigned[index] = true;
+			}
+			return true;
+		}());
 	
 		[[nodiscard]]
 		static String GetKeyName(const uint32 index, const uint32 glfwKey)
 		{
 			String result;
 			
-		# if SIV3D_PLATFORM(MACOS) || SIV3D_PLATFORM(LINUX)
-			if (const char* name = ::glfwGetKeyName(glfwKey, 0))
+			const char* name = nullptr;
+			if (glfwKey != 0)
+			{
+				// The custom JIS underscore token is outside GLFW's printable-token ranges.
+				if (glfwKey == SIV3D_KEY_JIS_UNDERSCORE)
+				{
+					if (const int scancode = ::glfwGetKeyScancode(glfwKey); scancode >= 0)
+					{
+						name = ::glfwGetKeyName(GLFW_KEY_UNKNOWN, scancode);
+					}
+				}
+				else
+				{
+					name = ::glfwGetKeyName(glfwKey, 0);
+				}
+			}
+			if (name && *name)
 			{
 				result = Unicode::FromUTF8(name);
 			}
 			else
-		# endif
 			if (FallbackKeyNames[index])
 			{
 				result = FallbackKeyNames[index];
@@ -257,6 +292,11 @@ namespace s3d
 		{
 			const bool commandPressed = (keys[GLFW_KEY_LEFT_SUPER] == GLFW_PRESS) || (keys[GLFW_KEY_RIGHT_SUPER] == GLFW_PRESS);
 			m_states[0xD8].update(commandPressed);
+		}
+
+		{
+			const bool backslashPressed = (keys[GLFW_KEY_BACKSLASH] == GLFW_PRESS) || (keys[SIV3D_KEY_JIS_YEN] == GLFW_PRESS);
+			m_states[0xDC].update(backslashPressed);
 		}
 		
 		{

@@ -39,6 +39,29 @@ flags, and restoring upstream point coordinates would change Retina behavior.
 The context restrictions are intentional integration changes, not full GLFW
 OpenGL support.
 
+## Keyboard integration
+
+The engine's [CKeyboard](../../Siv3D/src/Siv3D-Platform/macOS_Linux/Siv3D/Keyboard/CKeyboard.cpp)
+polls the GLFW key-state buffer once per frame. Backslash and JIS yen share the
+existing Siv3D input code `0xDC`; their states are combined before updating that
+input once. A compile-time check rejects duplicate input codes in the conversion
+table. Aggregate modifier inputs are also updated once per frame.
+
+On Cocoa, GLFW maps the physical F13 key to `GLFW_KEY_PRINT_SCREEN` and keypad
+Clear to `GLFW_KEY_NUM_LOCK`. Siv3D exposes each through both corresponding
+inputs: F13/PrintScreen and Clear/NumLock. The original GLFW mappings and existing
+Siv3D input codes are retained.
+
+Eisu and Kana inputs are excluded: adding token/scancode mappings alone did not
+produce pressed states in hardware testing. Synthetic key-buffer tests cannot
+establish delivery of these keys from the OS.
+
+Name initialization skips unmapped entries instead of passing key zero to GLFW.
+The custom JIS underscore token uses the scancode form of
+[glfwGetKeyName](https://www.glfw.org/docs/latest/input#input_key_name);
+fixed fallback names are used when a printable name is unavailable.
+Outstanding input work and layout decisions are tracked in [TODO.md](../../TODO.md).
+
 ## Updating and checking
 
 1. Compare the current vendor tree with its exact upstream release, then port
@@ -48,7 +71,7 @@ OpenGL support.
    `cocoa_time.c/.h` became `macos_time.c/.h`, and `xkb_unicode.h` was removed.
    QuartzCore is a link dependency and is already linked by the macOS app.
 3. Run `./macOS/validate-projects.sh`, the focused
-   `./macOS/run-tests.sh '--test-case=GLFW.*'`, and the full
+   `./macOS/run-tests.sh '--test-case=GLFW.*,Keyboard.*'`, and the full
    `./macOS/run-tests.sh` outside the sandbox on macOS.
 4. Use the [interactive compatibility test](../../Test/Manual/GLFWCompatibility.md)
    for hardware and desktop interaction. Automated tests cannot establish real
@@ -63,3 +86,9 @@ Metal window configuration. It is compiled as Objective-C++ on macOS and exclude
 by a platform guard on Windows. Existing Metal tests cover rendering through the
 native content view. See the [development guide](README.md) for platform test
 workflows.
+
+[Test_Keyboard.cpp](../../Test/Test_Keyboard.cpp) injects cached GLFW key states
+into an isolated keyboard instance, restoring the engine's state afterward. It
+covers press/hold/release, overlapping backslash/yen sources,
+F13/Clear aliases, input enumeration and name initialization without GLFW errors.
+The tests do not generate OS input or establish physical keyboard delivery.

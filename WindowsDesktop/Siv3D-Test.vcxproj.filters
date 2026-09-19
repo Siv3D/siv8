@@ -157,6 +157,9 @@
     <ClCompile Include="..\Test\Test_GLFW.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Keyboard.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_MetalFrameErrors.cpp">
       <Filter>Test</Filter>
     </ClCompile>
