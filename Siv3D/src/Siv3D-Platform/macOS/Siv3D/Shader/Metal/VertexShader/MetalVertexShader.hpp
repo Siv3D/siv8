@@ -45,5 +45,7 @@ namespace s3d
 		NS::SharedPtr<MTL::Function> m_shader;
 
 		bool m_initialized = false;
+
+		void loadFunction(MTL::Library* library, const std::string& name);
 	};
 }

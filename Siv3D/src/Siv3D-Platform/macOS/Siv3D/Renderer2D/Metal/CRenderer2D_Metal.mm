@@ -1667,6 +1667,8 @@ namespace s3d
 	{
 		ScopeExit cleanUp = [this]()
 		{
+			// 成否にかかわらず、この実行のコマンドと対応するインデックス区間を消費する。
+			m_indexReadPos = m_vertexBufferManager.indexCount();
 			m_commandManager.reset();
 			// 次の実行でもカスタムシェーダを適用する。論理設定は変更しない。
 			if (m_currentCustomShader.vs)
@@ -1791,7 +1793,6 @@ namespace s3d
 						renderCommandEncoder->drawIndexedPrimitives(MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount, MTL::IndexTypeUInt16, m_vertexBufferManager.getIndexBuffer(),
 							(sizeof(Vertex2D::IndexType) * commandState.startIndexLocation), 1, draw.baseVertex, 0);
 						commandState.startIndexLocation += indexCount;
-						m_indexReadPos = commandState.startIndexLocation;
 						
 						++stat.drawCalls;
 						stat.triangleCount += (indexCount / 3);

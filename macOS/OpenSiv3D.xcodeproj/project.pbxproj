@@ -43,6 +43,7 @@
 		A5D4F52030A5000000000001 /* Test_Mesh3DBounds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F52030A5000000000002 /* Test_Mesh3DBounds.cpp */; };
 		A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */; };
 		A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */; };
+		422B87D666EA4B6F831E31FF /* Test_MetalShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */; };
 		8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4D604008E420486985B6EF7F /* Test_GLFW.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
@@ -3374,6 +3375,7 @@
 		A5D4F4B030A5000000000002 /* Test_Spherical.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Spherical.cpp; sourceTree = "<group>"; };
 		A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_DynamicTexture.cpp; sourceTree = "<group>"; };
 		F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalResourceLifetime.cpp; sourceTree = "<group>"; };
+		AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MetalShader.cpp; sourceTree = "<group>"; };
 		1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalFrameSynchronization.cpp; sourceTree = "<group>"; };
 		6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_MetalPresentation.cpp; sourceTree = "<group>"; };
 		4D604008E420486985B6EF7F /* Test_GLFW.cpp */ = {isa = PBXFileReference; fileEncoding = 4; explicitFileType = sourcecode.cpp.objcpp; path = Test_GLFW.cpp; sourceTree = "<group>"; };
@@ -7048,6 +7050,7 @@
 				F90702BF2B9DAEB900383E4D /* Test_Hash.cpp */,
 				A7C3D9012F2E1B6500D17A01 /* Test_DynamicTexture.cpp */,
 				F86493DA86254E76B0674624 /* Test_MetalResourceLifetime.cpp */,
+				AA3B7535FE2E48F48F0488AD /* Test_MetalShader.cpp */,
 				1580820B5B10419BAE5DC108 /* Test_MetalFrameSynchronization.cpp */,
 				6ADAA78CF4134669B14B4FA5 /* Test_MetalPresentation.cpp */,
 				4D604008E420486985B6EF7F /* Test_GLFW.cpp */,
@@ -16776,6 +16779,7 @@
 				F90702F72B9DAEB900383E4D /* Test_BinaryFileWriter.cpp in Sources */,
 				A7C3D9012F2E1B6500D17A02 /* Test_DynamicTexture.cpp in Sources */,
 				A8E49238CD5345518467DED4 /* Test_MetalResourceLifetime.cpp in Sources */,
+				422B87D666EA4B6F831E31FF /* Test_MetalShader.cpp in Sources */,
 				8A12BB00428A4B67B8808E23 /* Test_MetalFrameSynchronization.cpp in Sources */,
 				2E2DA8614DB64F7B9A6C76AE /* Test_MetalPresentation.cpp in Sources */,
 				BF49DC084D6747928DDBC731 /* Test_GLFW.cpp in Sources */,
