@@ -150,6 +150,67 @@ TEST_CASE("Geometry2D.Distance.Ellipse.IntersectionWitnesses")
 	}
 }
 
+TEST_CASE("Geometry2D.Distance.Ellipse.SeparatedWitnesses")
+{
+	const auto Support = [](const Vec2& axes, const Vec2& normal)
+	{
+		const Vec2 scaled = (axes * normal);
+		return (axes * scaled.normalized());
+	};
+	const auto CheckPair = [](const auto& a, const Ellipse& b,
+		const Vec2& expectedA, const Vec2& expectedB, const double gap, const double tolerance)
+	{
+		CHECK(Abs(Geometry2D::Distance(a, b) - gap) <= tolerance);
+		CHECK(Abs(Geometry2D::Distance(b, a) - gap) <= tolerance);
+		const auto pair = Geometry2D::ClosestPoints(a, b);
+		const auto reversed = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(pair);
+		REQUIRE(reversed);
+		CHECK(Abs(pair->distance - gap) <= tolerance);
+		CHECK(Abs(reversed->distance - gap) <= tolerance);
+		CHECK(pair->pointA.distanceFrom(expectedA) <= tolerance);
+		CHECK(pair->pointB.distanceFrom(expectedB) <= tolerance);
+		CHECK(reversed->pointA.distanceFrom(expectedB) <= tolerance);
+		CHECK(reversed->pointB.distanceFrom(expectedA) <= tolerance);
+		CheckWitnessConsistency(*pair, tolerance);
+		CheckWitnessConsistency(*reversed, tolerance);
+	};
+
+	for (const auto& [axesA, axesB] : {
+		std::pair{ Vec2{ 100, 100 }, Vec2{ 30, 30 } },
+		std::pair{ Vec2{ 100, 100 }, Vec2{ 30, 70 } },
+		std::pair{ Vec2{ 100, 30 }, Vec2{ 20, 70 } },
+		std::pair{ Vec2{ 100, 1 }, Vec2{ 0.5, 70 } } })
+	{
+		for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ 1, 1.0e-8 },
+			Vec2{ 1.0e-8, 1 }, Vec2{ 0.6, 0.8 }, Vec2{ std::cos(0.37), std::sin(0.37) } })
+		{
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				const Vec2 normal = (direction.normalized() * sign);
+				for (const double scale : { 0.01, 1.0, 100.0 })
+				{
+					for (const double unscaledGap : { 0.0001, 0.01, 10.0 })
+					{
+						CAPTURE(axesA, axesB, normal, scale, unscaledGap);
+						const double gap = (unscaledGap * scale);
+						const double tolerance = (1.0e-9 * scale);
+						const Ellipse a{ (Vec2{ 7, -11 } * scale), (axesA * scale) };
+						const Vec2 expectedA = (a.center + Support(a.axes, normal));
+						const Vec2 expectedB = (expectedA + normal * gap);
+						const Ellipse b{ (expectedB + Support((axesB * scale), normal)), (axesB * scale) };
+						CheckPair(a, b, expectedA, expectedB, gap, tolerance);
+						if (axesA.x == axesA.y)
+						{
+							CheckPair(Circle{ a.center, a.a }, b, expectedA, expectedB, gap, tolerance);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.Distance.AnalyticAreaCases")
 {
 	{

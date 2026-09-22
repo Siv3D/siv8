@@ -457,6 +457,79 @@ namespace s3d
 			return best;
 		}
 
+		// Disjoint positive-area ellipses. Their closest points have opposite
+		// normals. Reflect into one quadrant and solve for that shared normal.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointEllipses(const Ellipse& a, const Ellipse& b) noexcept
+		{
+			Vec2 delta = (b.center - a.center);
+			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
+			delta = { Abs(delta.x), Abs(delta.y) };
+			ClosestPairCandidate result;
+			if ((delta.x == 0.0) || (delta.y == 0.0))
+			{
+				const Vec2 normal = ((delta.x == 0.0) ? Vec2{ 0, sign.y } : Vec2{ sign.x, 0 });
+				UpdateCandidate(result, (a.center + a.axes * normal), (b.center - b.axes * normal));
+				return result;
+			}
+
+			const auto Support = [](const Vec2& axes, const double t) noexcept
+			{
+				const double h = std::hypot(axes.x, (axes.y * t));
+				const double k = (axes.x * (axes.y / h));
+				return std::pair{ Vec2{ (axes.x / h * axes.x), (axes.y * t / h * axes.y) }, (k * k / h) };
+			};
+			Vec2 axesA = a.axes, axesB = b.axes;
+			const Vec2 diagonalGap = (delta - (Support(axesA, 1.0).first + Support(axesB, 1.0).first));
+			const bool transpose = (diagonalGap.x < diagonalGap.y);
+			if (transpose)
+			{
+				std::swap(delta.x, delta.y);
+				std::swap(axesA.x, axesA.y);
+				std::swap(axesB.x, axesB.y);
+			}
+
+			// The normal (1, t), 0 <= t <= 1, avoids loss of precision near either
+			// axis. For support sum s(t), solve (delta - s(t)).dot(-t, 1) = 0.
+			// Outside the convex sum this has one root, with a negative derivative.
+			double lower = 0.0, upper = 1.0;
+			double t = Min((delta.y / delta.x), 1.0);
+			const double tolerance = (16.0 * std::numeric_limits<double>::epsilon()
+				* Max({ delta.x, delta.y, axesA.x, axesA.y, axesB.x, axesB.y }));
+			Vec2 pointA, pointB;
+			for (int32 iteration = 0; iteration < 64; ++iteration)
+			{
+				const auto [supportA, derivativeA] = Support(axesA, t);
+				const auto [supportB, derivativeB] = Support(axesB, t);
+				pointA = supportA;
+				pointB = supportB;
+				const Vec2 gap = (delta - (pointA + pointB));
+				const double f = (gap.y - t * gap.x);
+				if (Abs(f) <= tolerance)
+				{
+					break;
+				}
+				if (0.0 < f)
+				{
+					lower = t;
+				}
+				else
+				{
+					upper = t;
+				}
+				const double derivative = (-gap.x - (derivativeA + derivativeB) * (1.0 + t * t));
+				const double next = (t - f / derivative);
+				t = (((lower < next) && (next < upper)) ? next : ((lower + upper) * 0.5));
+			}
+			if (transpose)
+			{
+				std::swap(pointA.x, pointA.y);
+				std::swap(pointB.x, pointB.y);
+			}
+			UpdateCandidate(result, (a.center + sign * pointA), (b.center - sign * pointB));
+			return result;
+		}
+
 		[[nodiscard]]
 		ClosestPairCandidate RefinePointPiece(
 			const Vec2& point, const BoundaryPiece& piece,
@@ -643,6 +716,22 @@ namespace s3d
 				if (const CircleArc* arcB = std::get_if<CircleArc>(&pieceB))
 				{
 					return ClosestCircleArcCircleArc(*arcA, *arcB);
+				}
+				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB); ellipseB && (arcA->region == ArcRegion::Full))
+				{
+					return ClosestDisjointEllipses(Ellipse{ arcA->circle.center, arcA->circle.r, arcA->circle.r }, *ellipseB);
+				}
+			}
+
+			if (const Ellipse* ellipseA = std::get_if<Ellipse>(&pieceA))
+			{
+				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB))
+				{
+					return ClosestDisjointEllipses(*ellipseA, *ellipseB);
+				}
+				if (const CircleArc* arcB = std::get_if<CircleArc>(&pieceB); arcB && (arcB->region == ArcRegion::Full))
+				{
+					return ClosestDisjointEllipses(*ellipseA, Ellipse{ arcB->circle.center, arcB->circle.r, arcB->circle.r });
 				}
 			}
 
