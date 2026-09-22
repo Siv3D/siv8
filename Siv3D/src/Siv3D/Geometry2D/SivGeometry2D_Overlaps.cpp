@@ -14,6 +14,8 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/Geometry2D/Overlaps.hpp>
+# include <boost/container/small_vector.hpp>
+# include "PolygonGeometry.hpp"
 
 namespace s3d
 {
@@ -106,6 +108,15 @@ namespace s3d
 				&& (b.pos.x < (a.pos.x + a.size.x))
 				&& (a.pos.y < (b.pos.y + b.size.y))
 				&& (b.pos.y < (a.pos.y + a.size.y)));
+		}
+
+		[[nodiscard]]
+		constexpr bool BoundsIntersectLine(const RectF& bounds, const Line& edge) noexcept
+		{
+			return ((Min(edge.start.x, edge.end.x) <= (bounds.x + bounds.w))
+				&& (bounds.x <= Max(edge.start.x, edge.end.x))
+				&& (Min(edge.start.y, edge.end.y) <= (bounds.y + bounds.h))
+				&& (bounds.y <= Max(edge.start.y, edge.end.y)));
 		}
 
 		[[nodiscard]]
@@ -1208,13 +1219,33 @@ namespace s3d
 				return false;
 			}
 
-			return VisitPolygonTriangles(a, [&](const Triangle& aPart)
+			const auto aRings = detail::GetPolygonRings(a);
+			const auto bRings = detail::GetPolygonRings(b);
+			const int32 direction = (detail::PolygonRingOrientation(aRings.outer, &aBounds)
+				* detail::PolygonRingOrientation(bRings.outer, &bBounds));
+			if (direction == 0)
 			{
-				return VisitPolygonTriangles(b, [&](const Triangle& bPart)
+				return false;
+			}
+
+			if ((aRings.outer.front() != bRings.outer.front())
+				&& (detail::PolygonContainsPoint<false>(bRings, aRings.outer.front())
+					|| detail::PolygonContainsPoint<false>(aRings, bRings.outer.front())))
+			{
+				return true;
+			}
+
+			boost::container::small_vector<detail::PolygonSegmentEvent, 4> events;
+			return detail::AnyPolygonEdge(aRings, [&](const Line& edge)
 				{
-					return OverlapsTriangles(aPart, bPart);
+					return BoundsIntersectLine(bBounds, edge)
+						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(bRings, edge, events, direction);
+				})
+				|| detail::AnyPolygonEdge(bRings, [&](const Line& edge)
+				{
+					return BoundsIntersectLine(aBounds, edge)
+						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(aRings, edge, events, direction);
 				});
-			});
 		}
 
 		[[nodiscard]]

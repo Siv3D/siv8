@@ -81,11 +81,14 @@ namespace s3d::detail
 		return AnyPolygonEdge(GetPolygonRings(polygon), std::forward<Predicate>(predicate));
 	}
 
+	template <bool IncludeBoundary = true>
 	[[nodiscard]]
 	inline bool PolygonContainsPoint(const PolygonRingsView polygon, const Vec2& point) noexcept
 	{
-		constexpr PointContainmentOptions Outer{ .boundary = PointContainmentBoundaryPolicy::Included };
-		constexpr PointContainmentOptions Hole{ .boundary = PointContainmentBoundaryPolicy::Excluded };
+		constexpr PointContainmentOptions Outer{ .boundary = IncludeBoundary
+			? PointContainmentBoundaryPolicy::Included : PointContainmentBoundaryPolicy::Excluded };
+		constexpr PointContainmentOptions Hole{ .boundary = IncludeBoundary
+			? PointContainmentBoundaryPolicy::Excluded : PointContainmentBoundaryPolicy::Included };
 		if (not Geometry2D::ContainsPoint<Outer>(polygon.outer, point))
 		{
 			return false;
@@ -98,6 +101,210 @@ namespace s3d::detail
 			}
 		}
 		return true;
+	}
+
+	[[nodiscard]]
+	inline int32 PolygonRingOrientation(const std::span<const Vec2> ring, const RectF* bounds = nullptr) noexcept
+	{
+		if (ring.size() < 3)
+		{
+			return 0;
+		}
+
+		auto CornerOrientation = [&](const size_t first)
+		{
+			size_t previous = ((first + ring.size() - 1) % ring.size());
+			size_t next = ((first + 1) % ring.size());
+			while ((previous != first) && (ring[previous] == ring[first]))
+			{
+				previous = ((previous + ring.size() - 1) % ring.size());
+			}
+			while ((next != first) && (ring[next] == ring[first]))
+			{
+				next = ((next + 1) % ring.size());
+			}
+			const Vec2 a = (ring[first] - ring[previous]);
+			const Vec2 b = (ring[next] - ring[first]);
+			// Compare the products without a fused subtraction: opposite collinear
+			// vectors must not acquire a nonzero determinant from asymmetric rounding.
+			const double lhs = (a.x * b.y);
+			const double rhs = (a.y * b.x);
+			return ((rhs < lhs) - (lhs < rhs));
+		};
+
+		// A non-flat corner on a supporting bounds edge is convex.
+		if (bounds && ((ring.front().x == bounds->x) || (ring.front().y == bounds->y)
+			|| (ring.front().x == (bounds->x + bounds->w)) || (ring.front().y == (bounds->y + bounds->h))))
+		{
+			if (const int32 direction = CornerOrientation(0))
+			{
+				return direction;
+			}
+		}
+
+		size_t first = 0;
+		for (size_t i = 1; i < ring.size(); ++i)
+		{
+			if ((ring[i].x < ring[first].x)
+				|| ((ring[i].x == ring[first].x) && (ring[i].y < ring[first].y)))
+			{
+				first = i;
+			}
+		}
+		return CornerOrientation(first);
+	}
+
+	struct PolygonSegmentEvent
+	{
+		double parameter;
+		int32 boundaryDelta;
+		bool crossing;
+	};
+
+	enum class PolygonSegmentTest { Covered, InteriorIntersection, AreaOverlap };
+
+	[[nodiscard]]
+	inline double PolygonCross(const Vec2& a, const Vec2& b) noexcept
+	{
+		// Round both products before subtraction to preserve identical-edge contacts.
+		const double lhs = (a.x * b.y);
+		const double rhs = (a.y * b.x);
+		return (lhs - rhs);
+	}
+
+	// Sweep along the segment. Crossings toggle the interior parity; collinear
+	// edges cover closed boundary intervals. Equal vertex events are grouped
+	// exactly, so small gaps and holes are never merged by a tolerance.
+	template <PolygonSegmentTest Test, class EventContainer>
+	[[nodiscard]]
+	bool TestPolygonSegment(const PolygonRingsView polygon, const Line& segment,
+		EventContainer& events, const int32 requiredDirection = 0)
+	{
+		events.clear();
+		if (segment.start == segment.end)
+		{
+			if constexpr (Test == PolygonSegmentTest::Covered)
+			{
+				return PolygonContainsPoint(polygon, segment.start);
+			}
+			return false;
+		}
+
+		const Vec2 direction = (segment.end - segment.start);
+		const bool useX = (Abs(direction.y) <= Abs(direction.x));
+		const double axisDirection = (useX ? direction.x : direction.y);
+		bool inside = false;
+		int32 boundaryCount = 0;
+
+		const bool boundaryMatch = AnyPolygonEdge(polygon, [&](const Line& edge)
+			{
+				const Vec2 a = (edge.start - segment.start);
+				const Vec2 b = (edge.end - segment.start);
+				const double ca = PolygonCross(direction, a);
+				const double cb = PolygonCross(direction, b);
+				const double ax = (useX ? a.x : a.y);
+				const double bx = (useX ? b.x : b.y);
+
+				if ((ca == 0.0) && (cb == 0.0))
+				{
+					const double ta = (ax / axisDirection);
+					const double tb = (bx / axisDirection);
+					const double start = Max(0.0, Min(ta, tb));
+					const double end = Min(1.0, Max(ta, tb));
+					if (start < end)
+					{
+						// Coincident boundaries overlap in area only when their filled sides agree.
+						if constexpr (Test == PolygonSegmentTest::AreaOverlap)
+						{
+							if ((ta < tb) == (0 < requiredDirection))
+							{
+								return true;
+							}
+						}
+						else if ((requiredDirection != 0) && ((ta < tb) != (0 < requiredDirection)))
+						{
+							return true;
+						}
+						if (start == 0.0)
+						{
+							++boundaryCount;
+						}
+						else
+						{
+							events.push_back({ start, 1, false });
+						}
+						if (end < 1.0)
+						{
+							events.push_back({ end, -1, false });
+						}
+					}
+				}
+				else if ((0.0 < ca) != (0.0 < cb))
+				{
+					// Project a shared vertex directly so both incident edges use
+					// the same parameter, including tangent and collinear contacts.
+					const double t = ((ca == 0.0) ? (ax / axisDirection)
+						: ((cb == 0.0) ? (bx / axisDirection)
+							: (PolygonCross(a, b) / (cb - ca))));
+					if (t <= 0.0)
+					{
+						inside = not inside;
+					}
+					else if (t < 1.0)
+					{
+						if constexpr (Test == PolygonSegmentTest::AreaOverlap)
+						{
+							if ((ca != 0.0) && (cb != 0.0))
+							{
+								return true;
+							}
+						}
+						events.push_back({ t, 0, true });
+					}
+				}
+				return false;
+			});
+		if (boundaryMatch)
+		{
+			return (Test == PolygonSegmentTest::AreaOverlap);
+		}
+
+		auto Matches = [&]()
+		{
+			if constexpr (Test == PolygonSegmentTest::Covered)
+			{
+				return (inside || (0 < boundaryCount));
+			}
+			else
+			{
+				return (inside && (boundaryCount == 0));
+			}
+		};
+		std::sort(events.begin(), events.end(), [](const auto& a, const auto& b)
+			{ return (a.parameter < b.parameter); });
+
+		for (size_t i = 0; i < events.size();)
+		{
+			if constexpr (Test == PolygonSegmentTest::Covered)
+			{
+				if (not Matches())
+				{
+					return false;
+				}
+			}
+			else if (Matches())
+			{
+				return true;
+			}
+			const double t = events[i].parameter;
+			do
+			{
+				inside ^= events[i].crossing;
+				boundaryCount += events[i].boundaryDelta;
+				++i;
+			} while ((i < events.size()) && (events[i].parameter == t));
+		}
+		return Matches();
 	}
 
 	template <class Piece>

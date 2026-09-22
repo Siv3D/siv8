@@ -500,192 +500,30 @@ namespace s3d
 				&& Geometry2D::Contains(superEllipse, Vec2{ bounds.pos.x, bottom });
 		}
 
-		// A simple ring's lexicographically smallest vertex is convex. This uses
-		// local differences and also reports zero for a collapsed ring.
 		[[nodiscard]]
-		int32 RingOrientation(const std::span<const Vec2> ring) noexcept
-		{
-			if (ring.size() < 3)
-			{
-				return 0;
-			}
-			size_t first = 0;
-			for (size_t i = 1; i < ring.size(); ++i)
-			{
-				if ((ring[i].x < ring[first].x)
-					|| ((ring[i].x == ring[first].x) && (ring[i].y < ring[first].y)))
-				{
-					first = i;
-				}
-			}
-			size_t previous = ((first + ring.size() - 1) % ring.size());
-			size_t next = ((first + 1) % ring.size());
-			while ((previous != first) && (ring[previous] == ring[first]))
-			{
-				previous = ((previous + ring.size() - 1) % ring.size());
-			}
-			while ((next != first) && (ring[next] == ring[first]))
-			{
-				next = ((next + 1) % ring.size());
-			}
-			const double cross = (ring[first] - ring[previous]).cross(ring[next] - ring[first]);
-			return ((0.0 < cross) - (cross < 0.0));
-		}
-
-		struct SegmentEvent
-		{
-			double parameter;
-			int32 boundaryDelta;
-			bool crossing;
-		};
-
-		enum class SegmentTest { Covered, InteriorIntersection };
-
-		// Sweep along the segment. Crossings toggle the interior parity; collinear
-		// edges cover closed boundary intervals. Equal vertex events are grouped
-		// exactly, so small gaps and holes are never merged by a tolerance.
-		template <SegmentTest Test>
-		[[nodiscard]]
-		bool TestPolygonSegment(const detail::PolygonRingsView polygon, const Line& segment,
-			Array<SegmentEvent>& events, const int32 requiredDirection = 0)
-		{
-			events.clear();
-			if (segment.start == segment.end)
-			{
-				if constexpr (Test == SegmentTest::Covered)
-				{
-					return detail::PolygonContainsPoint(polygon, segment.start);
-				}
-				return false;
-			}
-
-			const Vec2 direction = (segment.end - segment.start);
-			const bool useX = (Abs(direction.y) <= Abs(direction.x));
-			const double axisDirection = (useX ? direction.x : direction.y);
-			bool inside = false;
-			int32 boundaryCount = 0;
-
-			const bool opposedBoundary = detail::AnyPolygonEdge(polygon, [&](const Line& edge)
-				{
-					const Vec2 a = (edge.start - segment.start);
-					const Vec2 b = (edge.end - segment.start);
-					const double ca = direction.cross(a);
-					const double cb = direction.cross(b);
-					const double ax = (useX ? a.x : a.y);
-					const double bx = (useX ? b.x : b.y);
-
-					if ((ca == 0.0) && (cb == 0.0))
-					{
-						const double ta = (ax / axisDirection);
-						const double tb = (bx / axisDirection);
-						const double start = Max(0.0, Min(ta, tb));
-						const double end = Min(1.0, Max(ta, tb));
-						if (start < end)
-						{
-							// Area boundaries may coincide only when their filled sides agree.
-							if ((requiredDirection != 0) && ((ta < tb) != (0 < requiredDirection)))
-							{
-								return true;
-							}
-							if (start == 0.0)
-							{
-								++boundaryCount;
-							}
-							else
-							{
-								events.push_back({ start, 1, false });
-							}
-							if (end < 1.0)
-							{
-								events.push_back({ end, -1, false });
-							}
-						}
-					}
-					else if ((0.0 < ca) != (0.0 < cb))
-					{
-						// Project a shared vertex directly so both incident edges use
-						// the same parameter, including tangent and collinear contacts.
-						const double t = ((ca == 0.0) ? (ax / axisDirection)
-							: ((cb == 0.0) ? (bx / axisDirection)
-								: (a.cross(b) / (cb - ca))));
-						if (t <= 0.0)
-						{
-							inside = not inside;
-						}
-						else if (t < 1.0)
-						{
-							events.push_back({ t, 0, true });
-						}
-					}
-					return false;
-				});
-			if (opposedBoundary)
-			{
-				return false;
-			}
-
-			auto Matches = [&]()
-			{
-				if constexpr (Test == SegmentTest::Covered)
-				{
-					return (inside || (0 < boundaryCount));
-				}
-				else
-				{
-					return (inside && (boundaryCount == 0));
-				}
-			};
-			std::sort(events.begin(), events.end(), [](const auto& a, const auto& b)
-				{ return (a.parameter < b.parameter); });
-
-			for (size_t i = 0; i < events.size();)
-			{
-				if constexpr (Test == SegmentTest::Covered)
-				{
-					if (not Matches())
-					{
-						return false;
-					}
-				}
-				else if (Matches())
-				{
-					return true;
-				}
-				const double t = events[i].parameter;
-				do
-				{
-					inside ^= events[i].crossing;
-					boundaryCount += events[i].boundaryDelta;
-					++i;
-				} while ((i < events.size()) && (events[i].parameter == t));
-			}
-			return Matches();
-		}
-
-		[[nodiscard]]
-		bool ContainsLinePolygonNonEmpty(const Polygon& polygon, const Line& segment, Array<SegmentEvent>& events)
+		bool ContainsLinePolygonNonEmpty(const Polygon& polygon, const Line& segment, Array<detail::PolygonSegmentEvent>& events)
 		{
 			const RectF& bounds = polygon.boundingRect();
 			return detail::IntersectsPointRectFNonEmpty(segment.start, bounds)
 				&& detail::IntersectsPointRectFNonEmpty(segment.end, bounds)
-				&& TestPolygonSegment<SegmentTest::Covered>(detail::GetPolygonRings(polygon), segment, events);
+				&& detail::TestPolygonSegment<detail::PolygonSegmentTest::Covered>(detail::GetPolygonRings(polygon), segment, events);
 		}
 
 		[[nodiscard]]
 		bool ContainsLinePolygonNonEmpty(const Polygon& polygon, const Line& segment) noexcept
 		{
-			Array<SegmentEvent> events;
+			Array<detail::PolygonSegmentEvent> events;
 			return ContainsLinePolygonNonEmpty(polygon, segment, events);
 		}
 
 		[[nodiscard]]
 		bool ContainsPolygonRings(const detail::PolygonRingsView container, const detail::PolygonRingsView target)
 		{
-			Array<SegmentEvent> events;
-			const int32 requiredDirection = (RingOrientation(container.outer) * RingOrientation(target.outer));
+			Array<detail::PolygonSegmentEvent> events;
+			const int32 requiredDirection = (detail::PolygonRingOrientation(container.outer) * detail::PolygonRingOrientation(target.outer));
 			if (detail::AnyPolylineSegment<true>(target.outer, [&](const Line& edge)
 				{
-					return not TestPolygonSegment<SegmentTest::Covered>(container, edge, events, requiredDirection);
+					return not detail::TestPolygonSegment<detail::PolygonSegmentTest::Covered>(container, edge, events, requiredDirection);
 				}))
 			{
 				return false;
@@ -696,7 +534,7 @@ namespace s3d
 			{
 				if (detail::AnyPolylineSegment<true>(hole, [&](const Line& edge)
 					{
-						return TestPolygonSegment<SegmentTest::InteriorIntersection>(target, edge, events);
+						return detail::TestPolygonSegment<detail::PolygonSegmentTest::InteriorIntersection>(target, edge, events);
 					}))
 				{
 					return false;
@@ -1475,7 +1313,7 @@ namespace s3d
 			{
 				return Contains(a, b.front());
 			}
-			Array<SegmentEvent> events;
+			Array<detail::PolygonSegmentEvent> events;
 			return not detail::AnyPolylineSegment<false>(b, [&](const Line& edge)
 				{
 					return not ContainsLinePolygonNonEmpty(a, edge, events);

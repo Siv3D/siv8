@@ -91,3 +91,124 @@ TEST_CASE("Geometry2D.Overlaps.Polygon_MultiPolygon")
 	CHECK(not Geometry2D::Overlaps(multiPolygon, emptyMultiPolygon));
 	CHECK(not Geometry2D::Overlaps(emptyMultiPolygon, multiPolygon));
 }
+
+TEST_CASE("Geometry2D.Overlaps.Polygon.rings")
+{
+	const Polygon square = RectF{ 0, 0, 4, 4 }.asPolygon();
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 4, 4 }, { 4, 16 }, { 16, 16 }, { 16, 4 } } }
+	};
+	const Polygon lower{ Array<Vec2>{ { 0, 0 }, { 4, 0 }, { 0, 4 } } };
+	const Polygon upper{ Array<Vec2>{ { 4, 0 }, { 4, 4 }, { 0, 4 } } };
+	const Polygon diamond{ Array<Vec2>{ { 2, 0 }, { 4, 2 }, { 2, 4 }, { 0, 2 } } };
+
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, 134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		for (const Vec2 scale : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 } })
+		{
+			CAPTURE(offset, scale);
+			auto Check = [&](const Polygon& a, const Polygon& b, const bool expected)
+			{
+				const Polygon transformedA = a.scaledFromOrigin(scale).movedBy(offset);
+				const Polygon transformedB = b.scaledFromOrigin(scale).movedBy(offset);
+				CHECK(Geometry2D::Overlaps(transformedA, transformedB) == expected);
+				CHECK(Geometry2D::Overlaps(transformedB, transformedA) == expected);
+				CHECK(Geometry2D::Overlaps(MultiPolygon{ Polygon{}, transformedA }, transformedB) == expected);
+				CHECK(Geometry2D::Overlaps(MultiPolygon{ transformedA }, MultiPolygon{ Polygon{}, transformedB }) == expected);
+			};
+			Check(square, square, true);
+			Check(square, RectF{ 1, 1, 1, 1 }.asPolygon(), true);
+			Check(square, square.movedBy(3, 3), true);
+			Check(square, square.movedBy(4, 0), false);
+			Check(square, square.movedBy(4, 4), false);
+			Check(square, RectF{ 2, 0, 4, 2 }.asPolygon(), true);
+			Check(square, diamond, true); // Every diamond vertex lies on the square's boundary.
+			Check(lower, upper, false);
+			Check(donut, donut, true);
+			Check(donut, RectF{ 6, 6, 8, 8 }.asPolygon(), false);
+			Check(donut, RectF{ 4, 4, 12, 12 }.asPolygon(), false);
+			Check(donut, RectF{ 2, 8, 16, 2 }.asPolygon(), true);
+			Check(donut, RectF{ 0, 0, 20, 20 }.asPolygon(), true);
+			Check(square, Polygon{}, false);
+		}
+	}
+
+	const Polygon point = square.scaledFrom(Vec2{ 2, 2 }, 0.0);
+	const Polygon segment = square.scaledFrom(Vec2{ 2, 2 }, Vec2{ 0, 1 }).rotated(0.5);
+	REQUIRE(not point.isEmpty());
+	REQUIRE(not segment.isEmpty());
+	CHECK_FALSE(Geometry2D::Overlaps(square, point));
+	CHECK_FALSE(Geometry2D::Overlaps(point, square));
+	CHECK_FALSE(Geometry2D::Overlaps(square, segment));
+	CHECK_FALSE(Geometry2D::Overlaps(segment, square));
+
+	for (const double angle : { 0.37, 0.5, 1.0 })
+	{
+		const Polygon a = lower.rotated(angle);
+		const Polygon b = upper.rotated(angle);
+		CHECK(Geometry2D::Overlaps(a, a));
+		CHECK_FALSE(Geometry2D::Overlaps(a, b));
+		CHECK_FALSE(Geometry2D::Overlaps(b, a));
+		CHECK_FALSE(Geometry2D::Overlaps(donut.rotated(angle), RectF{ 4, 4, 12, 12 }.asPolygon().rotated(angle)));
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.Polygon.affine_rectangles")
+{
+	const std::array<std::array<Vec2, 2>, 4> bases = {{
+		{ Vec2{ 1, 0 }, Vec2{ 0, 1 } },
+		{ Vec2{ 1, 2 }, Vec2{ 1, 3 } },
+		{ Vec2{ 0, -1 }, Vec2{ 1, 0 } },
+		{ Vec2{ -1, 0 }, Vec2{ 0, 1 } },
+	}};
+	for (const auto& basis : bases)
+	{
+		for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+		{
+			auto Make = [&](const double x, const double y, const double size)
+			{
+				auto P = [&](const double px, const double py)
+				{
+					return (offset + basis[0] * px + basis[1] * py);
+				};
+				return Polygon{ Array<Vec2>{ P(x, y), P(x + size, y), P(x + size, y + size), P(x, y + size) }, SkipValidation::Yes };
+			};
+			const Polygon a = Make(0, 0, 4);
+			REQUIRE(not a.isEmpty());
+			for (int32 x = -4; x <= 4; ++x)
+			{
+				for (int32 y = -4; y <= 4; ++y)
+				{
+					for (const double size : { 1.0, 4.0 })
+					{
+						CAPTURE(basis, offset, x, y, size);
+						const Polygon b = Make(x, y, size);
+						const bool expected = ((x < 4) && (y < 4) && (0 < x + size) && (0 < y + size));
+						CHECK(Geometry2D::Overlaps(a, b) == expected);
+						CHECK(Geometry2D::Overlaps(b, a) == expected);
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.Polygon.supplied_mesh")
+{
+	const Polygon original = RectF{ 134217728, 134217728, 4, 4 }.asPolygon();
+	Array<Float2> vertices = original.vertices();
+	std::reverse(vertices.begin(), vertices.end());
+	Array<TriangleIndex> indices = original.indices();
+	const auto last = static_cast<TriangleIndex::value_type>(vertices.size() - 1);
+	for (auto& index : indices)
+	{
+		index = { static_cast<TriangleIndex::value_type>(last - index.i0),
+			static_cast<TriangleIndex::value_type>(last - index.i1),
+			static_cast<TriangleIndex::value_type>(last - index.i2) };
+	}
+	const Polygon polygon{ original.outer(), original.inners(), vertices, indices, original.boundingRect() };
+	CHECK(Geometry2D::Overlaps(polygon, original));
+	CHECK(Geometry2D::Overlaps(original, polygon));
+	CHECK_FALSE(Geometry2D::Overlaps(polygon, original.movedBy(4, 0)));
+}
