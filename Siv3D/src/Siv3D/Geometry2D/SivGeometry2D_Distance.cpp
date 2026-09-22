@@ -814,23 +814,17 @@ namespace s3d
 
 		template <class Bezier>
 		[[nodiscard]]
-		auto BezierControlPoints(const Bezier& curve) noexcept
+		ClosestPairCandidate ClosestPointBezier(const Vec2& point, const Bezier& curve) noexcept
 		{
-			if constexpr (std::is_same_v<Bezier, Bezier2>)
-			{
-				return std::array{ curve.p0, curve.p1, curve.p2 };
-			}
-			else
-			{
-				return std::array{ curve.p0, curve.p1, curve.p2, curve.p3 };
-			}
+			const auto closest = detail::ClosestPointOnBezier(curve, point);
+			return { point, closest.point, closest.distanceSq, 0.0, closest.parameter };
 		}
 
 		template <class Bezier>
 		[[nodiscard]]
 		ClosestPairCandidate ClosestLineBezier(const Line& line, const Bezier& curve) noexcept
 		{
-			const auto controls = BezierControlPoints(curve);
+			const auto controls = detail::BezierControlPoints(curve);
 			constexpr size_t Degree = (std::tuple_size_v<decltype(controls)> - 1);
 			const Vec2 direction = (line.end - line.start);
 			const double lengthSq = direction.lengthSq();
@@ -999,11 +993,11 @@ namespace s3d
 			ClosestPairCandidate best;
 			double bestDistance = std::numeric_limits<double>::infinity();
 			double scaleSq = 0.0;
-			for (const Vec2& p : BezierControlPoints(a))
+			for (const Vec2& p : detail::BezierControlPoints(a))
 			{
 				scaleSq = Max(scaleSq, p.distanceFromSq(a.p0));
 			}
-			for (const Vec2& p : BezierControlPoints(b))
+			for (const Vec2& p : detail::BezierControlPoints(b))
 			{
 				scaleSq = Max(scaleSq, p.distanceFromSq(a.p0));
 			}
@@ -1012,8 +1006,8 @@ namespace s3d
 				const double lowerA, const double upperA, const double lowerB, const double upperB)
 			{
 				++evaluations;
-				const auto pointsA = BezierControlPoints(partA);
-				const auto pointsB = BezierControlPoints(partB);
+				const auto pointsA = detail::BezierControlPoints(partA);
+				const auto pointsB = detail::BezierControlPoints(partB);
 				const auto Bounds = [](const auto& points) noexcept
 				{
 					Vec2 lower = points.front(), upper = lower;
@@ -1197,6 +1191,15 @@ namespace s3d
 				{
 					return ClosestPointCircleArc(point, *arc);
 				}
+			}
+
+			if (const auto* curve = std::get_if<Bezier2>(&piece))
+			{
+				return ClosestPointBezier(point, *curve);
+			}
+			if (const auto* curve = std::get_if<Bezier3>(&piece))
+			{
+				return ClosestPointBezier(point, *curve);
 			}
 
 			const int32 segments = SegmentCount(piece);

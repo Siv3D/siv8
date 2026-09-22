@@ -258,27 +258,7 @@ namespace s3d
 
 	double Bezier3::computeClosestT(const position_type& targetPoint) const noexcept
 	{
-		double bestT = 0.0;
-		double bestDistanceSq = targetPoint.distanceFromSq(p0);
-		const double endDistanceSq = targetPoint.distanceFromSq(p3);
-		if (endDistanceSq < bestDistanceSq)
-		{
-			bestDistanceSq = endDistanceSq;
-			bestT = 1.0;
-		}
-
-		const auto roots = detail::BezierPointStationaryParameters(std::array{ p0, p1, p2, p3 }, targetPoint);
-		for (size_t i = 0; i < roots.count; ++i)
-		{
-			const double t = roots.values[i];
-			const double distanceSq = targetPoint.distanceFromSq(pointAt(t));
-			if (distanceSq < bestDistanceSq)
-			{
-				bestDistanceSq = distanceSq;
-				bestT = t;
-			}
-		}
-		return bestT;
+		return detail::ClosestPointOnBezier(*this, targetPoint).parameter;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -289,7 +269,7 @@ namespace s3d
 
 	Bezier3::position_type Bezier3::computeClosestPoint(const position_type& targetPoint) const noexcept
 	{
-		return pointAt(computeClosestT(targetPoint));
+		return detail::ClosestPointOnBezier(*this, targetPoint).point;
 	}
 
 	////////////////////////////////////////////////////////////////

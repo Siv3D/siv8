@@ -9,7 +9,8 @@
 
 namespace
 {
-	void CheckClosest(const Bezier3& curve, const Vec2& query, const Vec2& expected, const double tolerance = 1e-10)
+	template <class Bezier>
+	void CheckClosest(const Bezier& curve, const Vec2& query, const Vec2& expected, const double tolerance = 1e-10)
 	{
 		const double t = curve.computeClosestT(query);
 		CHECK(0.0 <= t);
@@ -84,4 +85,40 @@ TEST_CASE("Bezier3.ClosestPoint.NearbyMinima")
 	const Bezier3 curve{ c0, (c0 + c1 / 3), (c0 + 2 * c1 / 3 + c2 / 3), (c0 + c1 + c2 + c3) };
 	const Vec2 query = curve.pointAt(0.5095);
 	CheckClosest(curve, query, query, 1e-8);
+}
+
+TEST_CASE("Bezier2.ClosestPoint.EndpointsAndDegeneracy")
+{
+	const Bezier2 curve{ { 0, 0 }, { 30, 100 }, { 100, 0 } };
+	CheckClosest(curve, { -10, -10 }, curve.p0);
+	CheckClosest(curve, { 110, 0 }, curve.p2);
+	CheckClosest(Bezier2{ { 3, 4 }, { 3, 4 }, { 3, 4 } }, { 7, -2 }, { 3, 4 });
+	CheckClosest(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, { 60, 2 }, { 50, 0 });
+	CheckClosest(Bezier2{ { 0, 0 }, { 0, 0 }, { 100, 0 } }, { 25, 1 }, { 25, 0 });
+	CheckClosest(Bezier2{ { 0, 0 }, { 50, 0 }, { 100, 0 } }, { 25, 1 }, { 25, 0 });
+	CheckClosest(Bezier2{ { 0, 0 }, { 5e-9, 0 }, { 1e-8, 0 } }, { 7.5e-9, 1e-9 }, { 7.5e-9, 0 }, 1e-20);
+	for (const double t : { 0.0, 0.001, 0.123, 0.5, 0.99, 1.0 })
+	{
+		CAPTURE(t);
+		CheckClosest(curve, curve.pointAt(t), curve.pointAt(t));
+	}
+}
+
+TEST_CASE("Bezier2.ClosestPoint.ScaleAndRotation")
+{
+	// x = 100*(t - u), y = 100*(t - u)^2 + 1.
+	constexpr double u = 0.37;
+	const Vec2 c0{ (-100 * u), (100 * u * u + 1) }, c1{ 100, (-200 * u) }, c2{ 0, 100 };
+	const Bezier2 curve{ c0, (c0 + c1 / 2), (c0 + c1 + c2) };
+	for (const double scale : { 1e-8, 0.01, 1.0, 100.0 })
+	{
+		for (const double angle : { 0.0, 0.7, Math::HalfPi })
+		{
+			CAPTURE(scale, angle);
+			const auto Transform = [&](const Vec2& p) { return ((p.rotated(angle) + Vec2{ 7, -11 }) * scale); };
+			const Bezier2 transformed{ Transform(curve.p0), Transform(curve.p1), Transform(curve.p2) };
+			CheckClosest(transformed, Transform({ 0, 0 }), Transform({ 0, 1 }), (1e-10 * scale));
+			CHECK(Abs(transformed.computeClosestT(Transform({ 0, 0 })) - u) <= 1e-12);
+		}
+	}
 }

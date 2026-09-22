@@ -21,6 +21,7 @@
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
+# include "BezierGeometry.hpp"
 # include "PolygonGeometry.hpp"
 # include "EllipseGeometry.hpp"
 # include "SuperEllipseGeometry.hpp"
@@ -911,8 +912,7 @@ namespace s3d
 				return false;
 			}
 
-			const double t = curve.computeClosestT(circle.center);
-			return (curve.pointAt(t).distanceFromSq(circle.center) <= (circle.r * circle.r));
+			return (detail::ClosestPointOnBezier(curve, circle.center).distanceSq <= (circle.r * circle.r));
 		}
 
 		[[nodiscard]]
@@ -951,8 +951,7 @@ namespace s3d
 				Vec2{ ((curve.p2.x - ellipse.center.x) / ax), ((curve.p2.y - ellipse.center.y) / by) }
 			};
 
-			const double t = local.computeClosestT(Vec2{ 0, 0 });
-			return (local.pointAt(t).lengthSq() <= 1.0);
+			return (detail::ClosestPointOnBezier(local, Vec2{ 0, 0 }).distanceSq <= 1.0);
 		}
 
 		template <class Fty>
@@ -1279,8 +1278,7 @@ namespace s3d
 				return false;
 			}
 
-			const double t = curve.computeClosestT(circle.center);
-			return (curve.pointAt(t).distanceFromSq(circle.center) <= (circle.r * circle.r));
+			return (detail::ClosestPointOnBezier(curve, circle.center).distanceSq <= (circle.r * circle.r));
 		}
 
 		[[nodiscard]]
@@ -1320,8 +1318,7 @@ namespace s3d
 				Vec2{ ((curve.p3.x - ellipse.center.x) / ax), ((curve.p3.y - ellipse.center.y) / by) }
 			};
 
-			const double t = local.computeClosestT(Vec2{ 0, 0 });
-			return (local.pointAt(t).lengthSq() <= 1.0);
+			return (detail::ClosestPointOnBezier(local, Vec2{ 0, 0 }).distanceSq <= 1.0);
 		}
 
 		template <class Fty>

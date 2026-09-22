@@ -7,7 +7,7 @@
 # pragma once
 # include <array>
 # include <utility>
-# include <Siv3D/Vector2D.hpp>
+# include <Siv3D/Bezier.hpp>
 
 namespace s3d::detail
 {
@@ -106,9 +106,10 @@ namespace s3d::detail
 				}
 				else if (((lowerValue < 0.0) && (0.0 < upperValue)) || ((upperValue < 0.0) && (0.0 < lowerValue)))
 				{
-					double lo = lower, hi = upper, flo = lowerValue;
+					double lo = lower, hi = upper, flo = lowerValue, fhi = upperValue;
 					double t = ((lo + hi) * 0.5), previousStep = (hi - lo);
-					for (int32 iteration = 0; iteration < 32; ++iteration)
+					int32 iteration = 0;
+					for (; iteration < 32; ++iteration)
 					{
 						const double f = EvaluateBernstein(values, t);
 						if (f == 0.0)
@@ -123,6 +124,7 @@ namespace s3d::detail
 						else
 						{
 							hi = t;
+							fhi = f;
 						}
 						const double next = (t - f / EvaluateBernstein(derivative, t));
 						if ((Abs(next - t) <= ParameterTolerance) && (lower <= next) && (next <= upper))
@@ -138,6 +140,11 @@ namespace s3d::detail
 						{
 							break;
 						}
+					}
+					// Keep the better evaluated endpoint if a fallback step exhausts the budget.
+					if (iteration == 32)
+					{
+						t = ((Abs(flo) < Abs(fhi)) ? lo : hi);
 					}
 					roots.values[roots.count++] = t;
 				}
@@ -178,5 +185,62 @@ namespace s3d::detail
 			}
 		}
 		return BernsteinRoots(coefficients);
+	}
+
+	template <class Bezier>
+	[[nodiscard]]
+	auto BezierControlPoints(const Bezier& curve) noexcept
+	{
+		if constexpr (std::is_same_v<Bezier, Bezier2>)
+		{
+			return std::array{ curve.p0, curve.p1, curve.p2 };
+		}
+		else
+		{
+			return std::array{ curve.p0, curve.p1, curve.p2, curve.p3 };
+		}
+	}
+
+	struct BezierClosestPoint
+	{
+		Vec2 point;
+		double parameter;
+		double distanceSq;
+	};
+
+	template <class Bezier>
+	[[nodiscard]]
+	BezierClosestPoint ClosestPointOnBezier(const Bezier& curve, const Vec2& target) noexcept
+	{
+		const auto controls = BezierControlPoints(curve);
+		if constexpr (std::is_same_v<Bezier, Bezier2>)
+		{
+			if ((curve.p1 - curve.p0) == (curve.p2 - curve.p1))
+			{
+				const Vec2 direction = (curve.p2 - curve.p0);
+				const double lengthSq = direction.lengthSq();
+				const double t = ((lengthSq == 0.0) ? 0.0 : Clamp((target - curve.p0).dot(direction) / lengthSq, 0.0, 1.0));
+				const Vec2 point = curve.pointAt(t);
+				return { point, t, target.distanceFromSq(point) };
+			}
+		}
+		BezierClosestPoint best{ controls.front(), 0.0, target.distanceFromSq(controls.front()) };
+		const double endDistanceSq = target.distanceFromSq(controls.back());
+		if (endDistanceSq < best.distanceSq)
+		{
+			best = { controls.back(), 1.0, endDistanceSq };
+		}
+		const auto roots = BezierPointStationaryParameters(controls, target);
+		for (size_t i = 0; i < roots.count; ++i)
+		{
+			const double t = roots.values[i];
+			const Vec2 point = curve.pointAt(t);
+			const double distanceSq = target.distanceFromSq(point);
+			if (distanceSq < best.distanceSq)
+			{
+				best = { point, t, distanceSq };
+			}
+		}
+		return best;
 	}
 }

@@ -301,7 +301,7 @@
     <ClCompile Include="..\Test\Test_Interpolation.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="..\Test\Test_Bezier3.cpp">
+    <ClCompile Include="..\Test\Test_Bezier.cpp">
       <Filter>Test</Filter>
     </ClCompile>
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">

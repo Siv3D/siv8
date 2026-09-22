@@ -17,6 +17,32 @@ namespace
 		CHECK(result.distance >= 0.0);
 		CHECK(Abs(result.pointA.distanceFrom(result.pointB) - result.distance) <= tolerance);
 	}
+
+	template <class Bezier>
+	void CheckBezierPointDistance(const Bezier& curve, const Vec2& query, const Vec2& expected, const double tolerance = 1e-8)
+	{
+		const double distance = query.distanceFrom(expected);
+		const auto CheckTarget = [&](const auto& target)
+		{
+			const auto ab = Geometry2D::ClosestPoints(curve, target);
+			const auto ba = Geometry2D::ClosestPoints(target, curve);
+			REQUIRE(ab);
+			REQUIRE(ba);
+			CHECK(ab->pointA.distanceFrom(expected) <= tolerance);
+			CHECK(ab->pointB.distanceFrom(query) <= tolerance);
+			CHECK(ba->pointA == ab->pointB);
+			CHECK(ba->pointB == ab->pointA);
+			CHECK(Abs(ab->distance - distance) <= tolerance);
+			CHECK(Abs(Geometry2D::Distance(curve, target) - distance) <= tolerance);
+			CHECK(Geometry2D::Distance(curve, target) == Geometry2D::Distance(target, curve));
+			CheckWitnessConsistency(*ab, tolerance);
+		};
+		CheckTarget(query);
+		CheckTarget(Line{ query, query });
+		CHECK(curve.computeClosestPoint(query).distanceFrom(expected) <= tolerance);
+		CHECK(curve.pointAt(curve.computeClosestT(query)).distanceFrom(expected) <= tolerance);
+	}
+
 }
 
 TEST_CASE("Geometry2D.Distance.Empty")
@@ -663,6 +689,73 @@ TEST_CASE("Geometry2D.Distance.Curves")
 		CHECK(Abs(result->distance - 4.0) <= 1.0e-7);
 		CheckWitnessConsistency(*result, 1.0e-7);
 	}
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.PointWitnesses")
+{
+	constexpr double u = 0.37;
+	for (const double gap : { 1e-4, 1.0, 10.0 })
+	{
+		const Vec2 c0{ (-100 * u), (100 * u * u + gap) }, c1{ 100, (-200 * u) }, c2{ 0, 100 };
+		const Bezier2 quadratic{ c0, (c0 + c1 / 2), (c0 + c1 + c2) };
+		const Bezier3 cubic{ c0, (c0 + c1 / 3), (c0 + 2 * c1 / 3 + c2 / 3), (c0 + c1 + c2) };
+		for (const double scale : { 0.01, 1.0, 100.0 })
+		{
+			for (const double angle : { 0.0, 0.7, Math::HalfPi })
+			{
+				CAPTURE(gap, scale, angle);
+				const auto Transform = [&](const Vec2& p) { return ((p.rotated(angle) + Vec2{ 7, -11 }) * scale); };
+				const Vec2 query = Transform({ 0, 0 }), expected = Transform({ 0, gap });
+				const Bezier2 a{ Transform(quadratic.p0), Transform(quadratic.p1), Transform(quadratic.p2) };
+				const Bezier3 b{ Transform(cubic.p0), Transform(cubic.p1), Transform(cubic.p2), Transform(cubic.p3) };
+				CheckBezierPointDistance(a, query, expected, (1e-9 * scale));
+				CheckBezierPointDistance(b, query, expected, (1e-9 * scale));
+				CheckBezierPointDistance(a.reversed(), query, expected, (1e-9 * scale));
+				CheckBezierPointDistance(b.reversed(), query, expected, (1e-9 * scale));
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.PointBoundaries")
+{
+	CheckBezierPointDistance(Bezier2{ { 0, 0 }, { 30, 100 }, { 100, 0 } }, { -10, -10 }, { 0, 0 });
+	CheckBezierPointDistance(Bezier3{ { 0, 0 }, { 30, 100 }, { 50, 50 }, { 100, 0 } }, { 110, 0 }, { 100, 0 });
+	CheckBezierPointDistance(Bezier2{ { 3, 4 }, { 3, 4 }, { 3, 4 } }, { 0, 0 }, { 3, 4 });
+	CheckBezierPointDistance(Bezier3{ { 3, 4 }, { 3, 4 }, { 3, 4 }, { 3, 4 } }, { 0, 0 }, { 3, 4 });
+	CheckBezierPointDistance(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, { 60, 2 }, { 50, 0 });
+	CheckBezierPointDistance(Bezier3{ { 0, 0 }, { 100, 0 }, { -50, 0 }, { 50, 0 } }, { 10, 1 }, { 10, 0 });
+	const Bezier2 a{ { 0, 0 }, { 30, 100 }, { 100, 0 } };
+	const Bezier3 b{ { 0, 0 }, { 100, 200 }, { -100, 200 }, { 0, 0 } };
+	for (const double t : { 0.0, 0.123, 0.5, 1.0 })
+	{
+		CAPTURE(t);
+		CheckBezierPointDistance(a, a.pointAt(t), a.pointAt(t));
+		CheckBezierPointDistance(b, b.pointAt(t), b.pointAt(t));
+	}
+	const auto pair = Geometry2D::ClosestPoints(Point{ 0, 151 }, b);
+	REQUIRE(pair);
+	CHECK(pair->distance == 1.0);
+	CHECK((pair->pointB == Vec2{ 0, 150 }));
+	CHECK(Geometry2D::Distance(b, Point{ 0, 151 }) == 1.0);
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.PointCompetingMinima")
+{
+	// x = 10000*(t - 0.5)^2, y = 1000*(t - 0.5)^3.
+	const Vec2 c0{ 2500, -125 }, c1{ -10000, 750 }, c2{ 10000, -1500 }, c3{ 0, 1000 };
+	const Bezier3 curve{ c0, (c0 + c1 / 3), (c0 + 2 * c1 / 3 + c2 / 3), (c0 + c1 + c2 + c3) };
+	constexpr double v = 0.0055;
+	const Vec2 expected{ (10000 * v * v), (1000 * v * v * v) };
+	const Vec2 normal = Vec2{ (-3000 * v * v), (20000 * v) }.normalized();
+	const Vec2 query = (expected + normal);
+	CheckBezierPointDistance(curve, query, expected);
+	CheckBezierPointDistance(curve.reversed(), query, expected);
+	const auto pair = Geometry2D::ClosestPoints(curve, Line{ query, (query + normal) });
+	REQUIRE(pair);
+	CHECK(pair->pointA.distanceFrom(expected) <= 1e-8);
+	CHECK(pair->pointB.distanceFrom(query) <= 1e-8);
+	CHECK(Abs(pair->distance - 1.0) <= 1e-10);
 }
 
 TEST_CASE("Geometry2D.Distance.Bezier.SeparatedWitnesses")
