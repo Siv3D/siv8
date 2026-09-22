@@ -211,6 +211,117 @@ TEST_CASE("Geometry2D.Distance.Ellipse.SeparatedWitnesses")
 	}
 }
 
+TEST_CASE("Geometry2D.Distance.SuperEllipse.ConvexPairs")
+{
+	// Construct separated supporting lines with a prescribed normal and gap.
+	const auto Support = [](const Vec2& axes, const double n, const Vec2& normal)
+	{
+		const double q = (n / (n - 1.0));
+		const double x = Abs(axes.x * normal.x), y = Abs(axes.y * normal.y);
+		const double scale = Max(x, y);
+		const double denominator = std::pow((std::pow((x / scale), q) + std::pow((y / scale), q)), (1.0 / n));
+		return Vec2{ std::copysign((axes.x * std::pow((x / scale), (q - 1.0)) / denominator), normal.x),
+			std::copysign((axes.y * std::pow((y / scale), (q - 1.0)) / denominator), normal.y) };
+	};
+	const auto CheckInside = [](const Vec2& point, const SuperEllipse& shape)
+	{
+		const Vec2 p = ((point - shape.center) / shape.axes);
+		CHECK((std::pow(Abs(p.x), shape.n) + std::pow(Abs(p.y), shape.n)) <= (1.0 + 1.0e-9));
+	};
+	for (const auto [nA, nB] : { std::pair{ 2.0, 1.25 }, { 2.0, 2.0 }, { 2.0, 4.0 },
+		{ 2.0, 16.0 }, { 2.0, 64.0 }, { 4.0, 1.25 }, { 4.0, 16.0 }, { 64.0, 4.0 }, { 1.01, 1.25 } })
+	{
+		for (const auto& [axesA, axesB] : { std::pair{ Vec2{ 100, 100 }, Vec2{ 30, 70 } },
+			std::pair{ Vec2{ 100, 30 }, Vec2{ 30, 70 } }, std::pair{ Vec2{ 8, 0.15 }, Vec2{ 34, 0.5 } },
+			std::pair{ Vec2{ 13, 90 }, Vec2{ 13, 69 } } })
+		{
+			for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ 1, 1.0e-20 }, Vec2{ 1.0e-20, 1 },
+				Vec2{ 0.6, 0.8 }, Vec2{ 0.026, 1 }, Vec2{ 1, 0.15 } })
+			{
+				for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+				{
+					const Vec2 normal = (direction.normalized() * sign);
+					for (const double scale : { 0.01, 1.0, 100.0 })
+					{
+						for (const double unscaledGap : { 0.0001, 0.01, 500.0 })
+						{
+							CAPTURE(nA, nB, axesA, axesB, normal, scale, unscaledGap);
+							const double gap = (unscaledGap * scale), tolerance = (1.0e-9 * scale);
+							const SuperEllipse a{ (Vec2{ 7, -11 } * scale), (axesA * scale), nA };
+							const Vec2 expectedA = (a.center + Support(a.axes, nA, normal));
+							const Vec2 expectedB = (expectedA + normal * gap);
+							const SuperEllipse b{ (expectedB + Support((axesB * scale), nB, normal)), (axesB * scale), nB };
+							const auto CheckPair = [&](const auto& first, const SuperEllipse& second)
+							{
+								CHECK(Abs(Geometry2D::Distance(first, second) - gap) <= tolerance);
+								CHECK(Abs(Geometry2D::Distance(second, first) - gap) <= tolerance);
+								const auto ab = Geometry2D::ClosestPoints(first, second);
+								const auto ba = Geometry2D::ClosestPoints(second, first);
+								REQUIRE(ab);
+								REQUIRE(ba);
+								CHECK(Abs(ab->distance - gap) <= tolerance);
+								CHECK(Abs(ba->distance - gap) <= tolerance);
+								CheckInside(ab->pointA, a);
+								CheckInside(ab->pointB, b);
+								CheckInside(ba->pointA, b);
+								CheckInside(ba->pointB, a);
+								CheckWitnessConsistency(*ab, tolerance);
+								CheckWitnessConsistency(*ba, tolerance);
+							};
+							CheckPair(a, b);
+							if (nA == 2.0)
+							{
+								CheckPair(Ellipse{ a.center, a.axes }, b);
+								if (axesA.x == axesA.y)
+								{
+									CheckPair(Circle{ a.center, a.a }, b);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.ConvexPairBoundaries")
+{
+	const SuperEllipse a{ 0, 0, 100, 30, 4 };
+	CHECK(Geometry2D::Distance(a, SuperEllipse{ 130, 0, 30, 70, 16 }) == 0.0);
+	CHECK(Geometry2D::Distance(a, Circle{ 0, 0, 1 }) == 0.0);
+	const auto contained = Geometry2D::ClosestPoints(a, Circle{ 0, 0, 1 });
+	REQUIRE(contained);
+	CHECK(contained->pointA == contained->pointB);
+	CHECK(contained->distance == 0.0);
+	CHECK(std::isinf(Geometry2D::Distance(a, SuperEllipse{ 0, 0, 0, 0, 4 })));
+	CHECK(not Geometry2D::ClosestPoints(a, SuperEllipse{ 0, 0, 0, 0, 4 }));
+	const auto collapsed = Geometry2D::ClosestPoints(SuperEllipse{ 0, 0, 0, 10, 4 }, Circle{ 5, 0, 1 });
+	REQUIRE(collapsed);
+	CHECK(collapsed->distance == Test::Approx(4.0));
+	CheckWitnessConsistency(*collapsed);
+	const Ellipse ellipse{ 0, 0, 100, 30 };
+	const SuperEllipse nearAxis{ 130.01, 1, 30, 70, 64 };
+	CHECK(Abs(Geometry2D::Distance(ellipse, nearAxis) - 0.01) <= 1.0e-10);
+	CHECK(Abs(Geometry2D::Distance(nearAxis, ellipse) - 0.01) <= 1.0e-10);
+	const auto near = Geometry2D::ClosestPoints(ellipse, nearAxis);
+	const auto reversed = Geometry2D::ClosestPoints(nearAxis, ellipse);
+	REQUIRE(near);
+	REQUIRE(reversed);
+	CHECK(Abs(near->distance - 0.01) <= 1.0e-10);
+	CHECK(Abs(reversed->distance - 0.01) <= 1.0e-10);
+	CHECK(near->pointA.distanceFrom(Vec2{ 100, 0 }) <= 1.0e-9);
+	CHECK(near->pointB.distanceFrom(Vec2{ 100.01, 0 }) <= 1.0e-9);
+	CHECK(reversed->pointA.distanceFrom(near->pointB) <= 1.0e-9);
+	CHECK(reversed->pointB.distanceFrom(near->pointA) <= 1.0e-9);
+	CheckWitnessConsistency(*near);
+	CheckWitnessConsistency(*reversed);
+	for (const double n : { 0.5, 1.0 })
+	{
+		CHECK(Geometry2D::Distance(SuperEllipse{ 0, 0, 10, 10, n }, Circle{ 20, 0, 1 }) == Test::Approx(9.0));
+	}
+}
+
 TEST_CASE("Geometry2D.Distance.AnalyticAreaCases")
 {
 	{
