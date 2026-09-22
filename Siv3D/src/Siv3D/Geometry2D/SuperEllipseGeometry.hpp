@@ -106,12 +106,12 @@ namespace s3d::detail
 		return TestPoint(closest);
 	}
 
-	// The upper boundary in the first quadrant is concave for n >= 1.
-	struct ConvexSuperEllipseProfile
+	// The upper boundary in the first quadrant.
+	struct SuperEllipseProfile
 	{
 		double a, b, n, inverseA, inverseN;
 
-		ConvexSuperEllipseProfile(const Vec2& axes, const double exponent) noexcept
+		SuperEllipseProfile(const Vec2& axes, const double exponent) noexcept
 			: a{ axes.x }, b{ axes.y }, n{ exponent }, inverseA{ (1.0 / a) }, inverseN{ (1.0 / n) } {}
 
 		[[nodiscard]]
@@ -155,6 +155,31 @@ namespace s3d::detail
 		}
 	};
 
+	// Positive-area shapes with n <= 1. Both height functions are convex,
+	// so heightA(x) + heightB(dx - x) has its maximum at a domain endpoint.
+	template <bool IncludeBoundary>
+	[[nodiscard]]
+	inline bool TestConcaveSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b) noexcept
+	{
+		Vec2 delta{ Abs(a.x - b.x), Abs(a.y - b.y) };
+		const double limit = (IncludeBoundary ? (1.0 + SuperEllipseContactTolerance) : (1.0 - SuperEllipseContactTolerance));
+		delta /= limit;
+		const Vec2 sum = (a.axes + b.axes);
+		if ((sum.x < delta.x) || (sum.y < delta.y))
+		{
+			return false;
+		}
+		const SuperEllipseProfile p{ a.axes, a.n }, q{ b.axes, b.n };
+		auto TestHeight = [&](const double height) noexcept
+		{
+			return IncludeBoundary ? (delta.y <= height) : (delta.y < height);
+		};
+		// Each endpoint puts one profile at its center or horizontal tip.
+		// These two expressions exchange places when the arguments are reversed.
+		return TestHeight((delta.x <= b.a) ? (a.b + q.height(delta.x)) : p.height(delta.x - b.a))
+			|| TestHeight((delta.x <= a.a) ? (b.b + p.height(delta.x)) : q.height(delta.x - a.a));
+	}
+
 	// Positive-area shapes with n >= 1. Their center difference must lie in
 	// the Minkowski sum; its boundary is max_x (heightA(x) + heightB(dx - x)).
 	template <bool IncludeBoundary>
@@ -194,7 +219,7 @@ namespace s3d::detail
 			std::swap(aa, bb);
 			std::swap(an, bn);
 		}
-		const ConvexSuperEllipseProfile p{ aa, an }, q{ bb, bn };
+		const SuperEllipseProfile p{ aa, an }, q{ bb, bn };
 		auto TestHeight = [&](const double h) noexcept
 		{
 			return IncludeBoundary ? (delta.y <= h) : (delta.y < h);

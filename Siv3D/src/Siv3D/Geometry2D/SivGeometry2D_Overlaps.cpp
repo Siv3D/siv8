@@ -772,6 +772,11 @@ namespace s3d
 				return detail::TestConvexSuperEllipseAreas<false>(a, b);
 			}
 
+			if ((a.n <= 1.0) && (b.n <= 1.0))
+			{
+				return detail::TestConcaveSuperEllipseAreas<false>(a, b);
+			}
+
 			return VisitSuperEllipseFanTriangles(a, [&](const Triangle& aPart)
 			{
 				return VisitSuperEllipseFanTriangles(b, [&](const Triangle& bPart)

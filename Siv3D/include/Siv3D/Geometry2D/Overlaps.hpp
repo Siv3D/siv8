@@ -187,7 +187,7 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Ellipse& b) noexcept;
 
-		/// @remark 両方の n が 1 以上の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 両方の n が 1 以上、または両方の n が 1 以下の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const SuperEllipse& b) noexcept;
 

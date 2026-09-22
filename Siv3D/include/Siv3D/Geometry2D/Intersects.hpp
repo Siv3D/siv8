@@ -610,7 +610,7 @@ namespace s3d
 		bool Intersects(const SuperEllipse& a, const Ellipse& b) noexcept;
 
 		/// @remark 近似判定のため、離れている図形にも true を返すことがあります。
-		/// @remark 両方の n が 1 以上の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 両方の n が 1 以上、または両方の n が 1 以下の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const SuperEllipse& b) noexcept;
 

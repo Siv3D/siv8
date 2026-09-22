@@ -552,3 +552,76 @@ TEST_CASE("Geometry2D.Overlaps.SuperEllipseCurved.convex_boundaries")
 	CheckSuperEllipseCurved(concave, shape, true, true);
 	CheckSuperEllipseCurved(concave, shape.movedBy(20, 20), false, false);
 }
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipseCurved.concave_pairs")
+{
+	for (const double n : { 0.1, 0.25, 0.5, 0.9, 1.0 })
+	{
+		const SuperEllipse shape{ 0, 0, 1000, 700, n };
+		for (const double x : { 0.0, 0.5, 1.0 })
+		{
+			// For equal shapes, a horizontal tip touches the other's boundary
+			// at both ends of their shared horizontal range.
+			const Vec2 contact{ (1000 * (1.0 + x)), (700 * std::pow((1.0 - std::pow(x, n)), (1.0 / n))) };
+			for (const double gap : { -1.0e-7, 0.0, 1.0e-7 })
+			{
+				CAPTURE(n, x, gap);
+				CheckSuperEllipseCurved(shape, shape.movedBy(contact * (1.0 + gap)), (gap < 0), (gap <= 0));
+			}
+		}
+		CheckSuperEllipseCurved(shape, shape, true, true);
+		CheckSuperEllipseCurved(shape, SuperEllipse{ 0, 0, 1, 1, 0.5 }, true, true);
+		CheckSuperEllipseCurved(shape, shape.movedBy(3000, 2000), false, false);
+	}
+	const double contactY = (700 * std::pow((1.0 - std::sqrt(0.6)), 2.0));
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		for (const Vec2 reflection : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+		{
+			for (const bool swapAxes : { false, true })
+			{
+				auto Orient = [&](Vec2 p)
+				{
+					if (swapAxes)
+					{
+						std::swap(p.x, p.y);
+					}
+					return p;
+				};
+				for (const double gap : { -0.001, 0.0, 0.001 })
+				{
+					if ((gap == 0.0) && (offset != Vec2{ 0, 0 }))
+					{
+						continue;
+					}
+					CAPTURE(offset, reflection, swapAxes, gap);
+					const SuperEllipse a{ offset, Orient(Vec2{ 1000, 700 }), 0.5 };
+					const SuperEllipse b{ offset + Orient(Vec2{ 1200, (contactY + gap) } * reflection), Orient(Vec2{ 600, 200 }), 0.25 };
+					CheckSuperEllipseCurved(a, b, (gap < 0), (gap <= 0));
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipseCurved.concave_boundaries")
+{
+	const SuperEllipse shape{ 0, 0, 4, 4, 0.5 };
+	for (const Vec2 center : { Vec2{ 5, 1 }, Vec2{ 8, 0 }, Vec2{ 0, 8 } })
+	{
+		for (const double gap : { -1.0e-15, 0.0, 1.0e-15 })
+		{
+			CheckSuperEllipseCurved(shape, shape.movedBy(center * (1.0 + gap)), false, true);
+		}
+	}
+	for (const double gap : { -1.0e-7, 0.0, 1.0e-7 })
+	{
+		// The concave shape's right tip touches an edge of the diamond.
+		CheckSuperEllipseCurved(shape, SuperEllipse{ 5, (1.5 + gap), 4, 2, 1 }, (gap < 0), (gap <= 0));
+	}
+	CheckSuperEllipseCurved(shape, SuperEllipse{ 0, 0, 0, 0, 0.5 }, false, false);
+	CheckSuperEllipseCurved(shape, SuperEllipse{ 0, 0, 0, 2, 0.5 }, false, true);
+	CheckSuperEllipseCurved(shape, SuperEllipse{ 4, 0, 0, 2, 0.5 }, false, true);
+	CheckSuperEllipseCurved(shape, SuperEllipse{ 5, 0, 0, 2, 0.5 }, false, false);
+	CheckSuperEllipseCurved(shape, SuperEllipse{ 0, 4, 2, 0, 1 }, false, true);
+}

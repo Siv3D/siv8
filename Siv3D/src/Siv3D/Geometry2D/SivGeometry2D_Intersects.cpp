@@ -2669,12 +2669,6 @@ namespace s3d
 				return true;
 			}
 
-			if ((a.n <= 1.0) && (b.n <= 1.0))
-			{
-				// Between the tested cusps each vertical radius is convex. Their
-				// sum attains its maximum at an endpoint; no subdivision is needed.
-				return false;
-			}
 			struct Interval
 			{
 				double left;
@@ -2765,6 +2759,11 @@ namespace s3d
 			if ((1.0 <= a.n) && (1.0 <= b.n))
 			{
 				return detail::TestConvexSuperEllipseAreas<true>(a, b);
+			}
+
+			if ((a.n <= 1.0) && (b.n <= 1.0))
+			{
+				return detail::TestConcaveSuperEllipseAreas<true>(a, b);
 			}
 
 			return IntersectsPositiveAreaSuperEllipses(a, b);
