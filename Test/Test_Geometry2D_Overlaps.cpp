@@ -370,3 +370,68 @@ TEST_CASE("Geometry2D.Overlaps.QuadPolygon.rings")
 		CHECK(Geometry2D::Overlaps(triangle, polygon));
 	}
 }
+
+TEST_CASE("Geometry2D.Overlaps.CirclePolygon.rings")
+{
+	const Polygon square = RectF{ 0, 0, 4, 4 }.asPolygon();
+	const Polygon triangle{ Array<Vec2>{ { 0, 0 }, { 10, 0 }, { 0, 7.5 } } };
+	const Polygon concave{ Array<Vec2>{ { 0, 0 }, { 12, 0 }, { 12, 12 }, { 8, 12 }, { 8, 4 }, { 4, 4 }, { 4, 12 }, { 0, 12 } } };
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 4, 4 }, { 4, 16 }, { 16, 16 }, { 16, 4 } } }
+	};
+	const Polygon point = square.scaledFrom(Vec2{ 2, 2 }, 0.0);
+	const Polygon segment = square.scaledFrom(Vec2{ 2, 2 }, Vec2{ 0, 1 }).rotated(0.5);
+	REQUIRE(not point.isEmpty());
+	REQUIRE(not segment.isEmpty());
+
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		for (const Vec2 scale : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 } })
+		{
+			auto Check = [&](const Circle& circle, const Polygon& polygon, const bool expected)
+			{
+				CAPTURE(offset, scale, circle, expected);
+				const Circle c{ circle.center * scale + offset, circle.r };
+				const Polygon p = polygon.scaledFromOrigin(scale).movedBy(offset);
+				const MultiPolygon multi{ Polygon{}, p };
+				CHECK(Geometry2D::Overlaps(c, p) == expected);
+				CHECK(Geometry2D::Overlaps(p, c) == expected);
+				CHECK(Geometry2D::Overlaps(c, multi) == expected);
+				CHECK(Geometry2D::Overlaps(multi, c) == expected);
+			};
+			Check(Circle{ 2, 2, 1 }, square, true);
+			Check(Circle{ 2, 2, 4 }, square, true);
+			Check(Circle{ 4, 2, 1 }, square, true);
+			Check(Circle{ 5, 2, 1 }, square, false);
+			Check(Circle{ -3, -4, 5 }, square, false);
+			Check(Circle{ -3, -4, 5.125 }, square, true);
+			Check(Circle{ -3, -4, 4.875 }, square, false);
+			Check(Circle{ 6, 8, 4 }, triangle, false); // Tangent to the slanted edge.
+			Check(Circle{ 6, 8, 4.015625 }, triangle, true);
+			Check(Circle{ 6, 8, 3.984375 }, triangle, false);
+			Check(Circle{ 6, 8, 1 }, concave, false);
+			Check(Circle{ 6, 8, 2 }, concave, false);
+			Check(Circle{ 6, 8, 2.125 }, concave, true);
+			Check(Circle{ 10, 10, 2 }, donut, false);
+			Check(Circle{ 10, 10, 6 }, donut, false);
+			Check(Circle{ 10, 10, 6.125 }, donut, true);
+			Check(Circle{ 4, 10, 1 }, donut, true);
+			Check(Circle{ 10, 10, 20 }, donut, true);
+			Check(Circle{ 2, 2, 0 }, square, false);
+			Check(Circle{ 2, 2, 4 }, point, false);
+			Check(Circle{ 0, 0, 8 }, segment, false);
+			Check(Circle{ 2, 2, 1 }, Polygon{}, false);
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.CirclePolygon.contact")
+{
+	const Circle circle{ 0, 0, 5 };
+	const Polygon triangle{ Array<Vec2>{ { 5, 0 }, { 3, 4 }, { 0, 5 } } };
+	CHECK(Geometry2D::Overlaps(circle, triangle)); // A chord crosses the disk with both endpoints on the circle.
+	CHECK(Geometry2D::Intersects(Line{ Vec2{ 5, 0 }, Vec2{ 6, 0 } }, circle));
+	CHECK(Geometry2D::Intersects(Line{ Vec2{ 5, 0 }, Vec2{ 5, 0 } }, circle));
+	CHECK(Geometry2D::Intersects(Line{ Vec2{ 10, 0 }, Vec2{ 0, 7.5 } }, Circle{ 6, 8, 4 }));
+}

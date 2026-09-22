@@ -1064,10 +1064,18 @@ namespace s3d
 				return false;
 			}
 
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
+			const auto rings = detail::GetPolygonRings(polygon);
+			if (detail::PolygonRingOrientation(rings.outer, &polygonBounds) == 0)
 			{
-				return OverlapsTriangleCircleArea(part, circle);
-			});
+				return false;
+			}
+
+			return detail::IntersectsLineCircleArea<false>(Line{ rings.outer[0], rings.outer[1] }, circle)
+				|| detail::PolygonContainsPoint(rings, circle.center)
+				|| detail::AnyPolygonEdge(rings, [&](const Line& edge)
+				{
+					return detail::IntersectsLineCircleArea<false>(edge, circle);
+				});
 		}
 
 		[[nodiscard]]

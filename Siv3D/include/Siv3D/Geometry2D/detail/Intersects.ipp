@@ -182,11 +182,17 @@ namespace s3d
 				|| Geometry2D::Intersects(segment, Line{ Vec2{ left, bottom }, Vec2{ left, top } }));
 		}
 
+		template <bool IncludeBoundary = true>
 		[[nodiscard]]
 		constexpr bool IntersectsLineCircleArea(const Line& segment, const Circle& circle) noexcept
 		{
-			if (IntersectsPointCircleArea(segment.start, circle)
-				|| IntersectsPointCircleArea(segment.end, circle))
+			const double radiusSq = (circle.r * circle.r);
+			auto ContainsEndpoint = [&](const Vec2& point) constexpr noexcept
+			{
+				const double distanceSq = point.distanceFromSq(circle.center);
+				return IncludeBoundary ? (distanceSq <= radiusSq) : (distanceSq < radiusSq);
+			};
+			if (ContainsEndpoint(segment.start) || ContainsEndpoint(segment.end))
 			{
 				return true;
 			}
@@ -208,7 +214,8 @@ namespace s3d
 			}
 
 			const double cross = d.cross(f);
-			return ((cross * cross) <= (circle.r * circle.r * lengthSq));
+			return IncludeBoundary ? ((cross * cross) <= (radiusSq * lengthSq))
+				: ((cross * cross) < (radiusSq * lengthSq));
 		}
 
 		[[nodiscard]]
