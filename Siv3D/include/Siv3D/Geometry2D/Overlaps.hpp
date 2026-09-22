@@ -179,15 +179,18 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const RectF& b) noexcept;
 
-		/// @remark n が 1 以上かつ 2 以外の場合、丸め誤差内の差は接触として扱います。
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状との近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Circle& b) noexcept;
 
-		/// @remark n が 1 以上の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状との近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Ellipse& b) noexcept;
 
-		/// @remark 両方の n が 1 以上、または両方の n が 1 以下の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状と凸形状の近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const SuperEllipse& b) noexcept;
 
@@ -199,7 +202,8 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Quad& b) noexcept;
 
-		/// @remark n が 1 以上かつ有効な角丸半径が正の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 有効な角丸半径が正の場合、丸め誤差内の差は接触として扱います。
+		/// @remark 凹形状との近似判定では、重なりがあっても false を返すことがあります。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const RoundRect& b) noexcept;
 

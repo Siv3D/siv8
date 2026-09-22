@@ -1795,32 +1795,6 @@ namespace s3d
 			return false;
 		}
 
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitCircleApproximateLineSegments(const Circle& circle, Fty&& callback)
-		{
-			constexpr int32 SegmentCount = 64;
-			constexpr double TwoPi = 6.2831853071795864769252867665590058;
-			constexpr double Step = (TwoPi / SegmentCount);
-
-			Vec2 previous{ (circle.center.x + circle.r), circle.center.y };
-
-			for (int32 i = 1; i <= SegmentCount; ++i)
-			{
-				const double angle = (Step * i);
-				const Vec2 current{ (circle.center.x + std::cos(angle) * circle.r), (circle.center.y + std::sin(angle) * circle.r) };
-
-				if (callback(Line{ previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
 		[[nodiscard]]
 		bool IntersectsCircleEllipse(const Circle& circle, const Ellipse& ellipse) noexcept
 		{
@@ -1872,28 +1846,7 @@ namespace s3d
 				return IntersectsCircleEllipse(circle, Ellipse{ superEllipse.center, ax, by });
 			}
 
-			if (1.0 <= n)
-			{
-				return detail::TestConvexSuperEllipseAreas<true>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
-			}
-
-			const RectF superEllipseBounds{ (superEllipse.center.x - ax), (superEllipse.center.y - by), (ax * 2.0), (by * 2.0) };
-
-			if (not BoundsIntersectClosed(circle.boundingRect(), superEllipseBounds))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(circle.center, superEllipse)
-				|| Geometry2D::Intersects(superEllipse.center, circle))
-			{
-				return true;
-			}
-
-			return VisitCircleApproximateLineSegments(circle, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, superEllipse);
-			});
+			return detail::TestSuperEllipseAreas<true>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -2437,34 +2390,6 @@ namespace s3d
 			return false;
 		}
 
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitEllipseApproximateLineSegments(const Ellipse& ellipse, Fty&& callback)
-		{
-			constexpr int32 SegmentCount = 64;
-			constexpr double TwoPi = 6.2831853071795864769252867665590058;
-			constexpr double Step = (TwoPi / SegmentCount);
-
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			Vec2 previous{ (ellipse.center.x + ax), ellipse.center.y };
-
-			for (int32 i = 1; i <= SegmentCount; ++i)
-			{
-				const double angle = (Step * i);
-				const Vec2 current{ (ellipse.center.x + std::cos(angle) * ax), (ellipse.center.y + std::sin(angle) * by) };
-
-				if (callback(Line{ previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
 		[[nodiscard]]
 		bool IntersectsEllipseEllipse(const Ellipse& a, const Ellipse& b) noexcept
 		{
@@ -2521,28 +2446,7 @@ namespace s3d
 				return IntersectsEllipseEllipse(ellipse, Ellipse{ superEllipse.center, sx, sy });
 			}
 
-			if (1.0 <= n)
-			{
-				return detail::TestConvexSuperEllipseAreas<true>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
-			}
-
-			const RectF superEllipseBounds{ (superEllipse.center.x - sx), (superEllipse.center.y - sy), (sx * 2.0), (sy * 2.0) };
-
-			if (not BoundsIntersectClosed(ellipse.boundingRect(), superEllipseBounds))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(ellipse.center, superEllipse)
-				|| Geometry2D::Intersects(superEllipse.center, ellipse))
-			{
-				return true;
-			}
-
-			return VisitEllipseApproximateLineSegments(ellipse, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, superEllipse);
-			});
+			return detail::TestSuperEllipseAreas<true>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -2576,147 +2480,6 @@ namespace s3d
 
 			const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
 			return detail::TestEllipseRoundRectArea<true>(ellipse, core, er);
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitSuperEllipseApproximateLineSegments(const SuperEllipse& superEllipse, Fty&& callback)
-		{
-			constexpr int32 SegmentCount = 96;
-			constexpr double TwoPi = 6.2831853071795864769252867665590058;
-			constexpr double Step = (TwoPi / SegmentCount);
-
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double exponent = (2.0 / superEllipse.n);
-
-			auto SignedUnitPower = [exponent](const double v) noexcept
-			{
-				const double p = std::pow(Abs(v), exponent);
-				return ((v < 0.0) ? -p : p);
-			};
-
-			auto PointAtAngle = [&](const double angle) noexcept
-			{
-				return Vec2{
-					(superEllipse.center.x + ax * SignedUnitPower(std::cos(angle))),
-					(superEllipse.center.y + by * SignedUnitPower(std::sin(angle)))
-				};
-			};
-
-			Vec2 previous = PointAtAngle(0.0);
-
-			for (int32 i = 1; i <= SegmentCount; ++i)
-			{
-				const Vec2 current = PointAtAngle(Step * i);
-
-				if ((previous != current) && callback(Line{ previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
-		[[nodiscard]]
-		double SuperEllipseVerticalRadiusAtX(const SuperEllipse& shape, const double x) noexcept
-		{
-			const double normalizedX = Abs((x - shape.center.x) / shape.axes.x);
-
-			if (1.0 <= normalizedX)
-			{
-				return 0.0;
-			}
-
-			const double remaining = Max(0.0, (1.0 - std::pow(normalizedX, shape.n)));
-			return (shape.axes.y * std::pow(remaining, (1.0 / shape.n)));
-		}
-
-		[[nodiscard]]
-		double MaximumSuperEllipseVerticalRadiusInInterval(const SuperEllipse& shape, const double left, const double right) noexcept
-		{
-			return SuperEllipseVerticalRadiusAtX(shape, Clamp(shape.center.x, left, right));
-		}
-
-		[[nodiscard]]
-		bool IntersectsPositiveAreaSuperEllipses(const SuperEllipse& a, const SuperEllipse& b) noexcept
-		{
-			const double left = Max((a.center.x - a.axes.x), (b.center.x - b.axes.x));
-			const double right = Min((a.center.x + a.axes.x), (b.center.x + b.axes.x));
-
-			if (right < left)
-			{
-				return false;
-			}
-
-			const double centerDistanceY = Abs(a.center.y - b.center.y);
-
-			auto VerticalIntervalsOverlapAt = [&](const double x) noexcept
-			{
-				return (centerDistanceY <= (SuperEllipseVerticalRadiusAtX(a, x)
-					+ SuperEllipseVerticalRadiusAtX(b, x)));
-			};
-
-			// These points include the interval endpoints and both possible cusp / maximum locations.
-			if (VerticalIntervalsOverlapAt(left)
-				|| VerticalIntervalsOverlapAt(right)
-				|| VerticalIntervalsOverlapAt(Clamp(a.center.x, left, right))
-				|| VerticalIntervalsOverlapAt(Clamp(b.center.x, left, right)))
-			{
-				return true;
-			}
-
-			struct Interval
-			{
-				double left;
-				double right;
-				int32 depth;
-			};
-
-			constexpr int32 MaxDepth = 64;
-			constexpr int32 MaxIntervals = 256;
-			int32 remainingIntervals = MaxIntervals;
-			std::array<Interval, (MaxDepth + 2)> stack;
-			size_t stackSize = 0;
-			stack[stackSize++] = Interval{ left, right, 0 };
-
-			while (stackSize)
-			{
-				const Interval interval = stack[--stackSize];
-				const double upperBound = (MaximumSuperEllipseVerticalRadiusInInterval(a, interval.left, interval.right)
-					+ MaximumSuperEllipseVerticalRadiusInInterval(b, interval.left, interval.right));
-
-				if (upperBound < centerDistanceY)
-				{
-					continue;
-				}
-
-				const double middle = (interval.left + ((interval.right - interval.left) * 0.5));
-
-				if (VerticalIntervalsOverlapAt(middle))
-				{
-					return true;
-				}
-
-				if ((--remainingIntervals == 0)
-					|| (MaxDepth <= interval.depth)
-					|| (middle == interval.left)
-					|| (middle == interval.right))
-				{
-					// An unresolved interval may contain a contact. Keep the
-					// conservative result when either search budget is exhausted.
-					return true;
-				}
-
-				assert((stackSize + 2) <= stack.size());
-				stack[stackSize++] = Interval{ middle, interval.right, (interval.depth + 1) };
-				stack[stackSize++] = Interval{ interval.left, middle, (interval.depth + 1) };
-			}
-
-			return false;
 		}
 
 		[[nodiscard]]
@@ -2756,17 +2519,7 @@ namespace s3d
 				return IntersectsEllipseSuperEllipse(Ellipse{ b.center, bx, by }, a);
 			}
 
-			if ((1.0 <= a.n) && (1.0 <= b.n))
-			{
-				return detail::TestConvexSuperEllipseAreas<true>(a, b);
-			}
-
-			if ((a.n <= 1.0) && (b.n <= 1.0))
-			{
-				return detail::TestConcaveSuperEllipseAreas<true>(a, b);
-			}
-
-			return IntersectsPositiveAreaSuperEllipses(a, b);
+			return detail::TestSuperEllipseAreas<true>(a, b);
 		}
 
 		[[nodiscard]]
@@ -2807,29 +2560,8 @@ namespace s3d
 				return IntersectsRectFSuperEllipse(rect, superEllipse);
 			}
 
-			if (1.0 <= superEllipse.n)
-			{
-				const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
-				return detail::TestConvexSuperEllipseRoundRectArea<true>(superEllipse, core, er);
-			}
-
-			if (not BoundsIntersectClosed(superEllipse.boundingRect(), rect))
-			{
-				return false;
-			}
-
-			const Vec2 roundRectCenter{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
-
-			if (Geometry2D::Intersects(superEllipse.center, roundRect)
-				|| Geometry2D::Intersects(roundRectCenter, superEllipse))
-			{
-				return true;
-			}
-
-			return VisitSuperEllipseApproximateLineSegments(superEllipse, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, roundRect);
-			});
+			const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
+			return detail::TestSuperEllipseRoundRectArea<true>(superEllipse, core, er);
 		}
 
 		[[nodiscard]]

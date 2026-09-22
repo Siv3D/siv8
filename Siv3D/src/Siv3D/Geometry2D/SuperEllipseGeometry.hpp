@@ -6,6 +6,7 @@
 //-----------------------------------------------
 # pragma once
 # include <Siv3D/2DShapes.hpp>
+# include <Siv3D/PolynomialSolver.hpp>
 
 namespace s3d::detail
 {
@@ -273,13 +274,304 @@ namespace s3d::detail
 		return IncludeBoundary;
 	}
 
-	// A RoundRect is its core expanded by a disk. For an axis-aligned convex
-	// SuperEllipse, clamping its center gives the closest point of that core.
+	// One term of the convex shape's implicit value along a concave boundary:
+	// f(t) = (d - c*t^p)^m, with p > 1, m > 1 and d - c*t^p >= 0.
+	struct MixedSuperEllipseTerm
+	{
+		double d, c, p, m;
+		std::array<double, 4> fourthCoefficients;
+		double slopeMinimum;
+
+		MixedSuperEllipseTerm(const double offset, const double scale, const double power, const double exponent) noexcept
+			: d{ offset }, c{ scale }, p{ power }, m{ exponent }
+			, fourthCoefficients{
+				(-c * m * p * (p - 1) * (p - 2) * (p - 3)),
+				(c * c * m * (m - 1) * p * p * (p - 1) * (7 * p - 11)),
+				(-6 * c * c * c * m * (m - 1) * (m - 2) * p * p * p * (p - 1)),
+				(c * c * c * c * m * (m - 1) * (m - 2) * (m - 3) * p * p * p * p) }
+			, slopeMinimum{ std::pow(((p - 1) * d / (c * (p * m - 1))), (1 / p)) } {}
+
+		[[nodiscard]]
+		double value(const double t) const noexcept
+		{
+			const double z = Max(0.0, (d - c * std::pow(t, p)));
+			return (m == 2.0) ? (z * z) : std::pow(z, m);
+		}
+
+		struct Sample
+		{
+			double value, slope, curvature, third;
+		};
+
+		[[nodiscard]]
+		Sample sample(const double t) const noexcept
+		{
+			const double power = std::pow(t, p);
+			const double z = Max(0.0, (d - c * power));
+			const double f = ((m == 2.0) ? (z * z) : std::pow(z, m));
+			const double r = (c * p * power / (t * z)), inverseT = (1 / t);
+			return{ f, (-m * f * r),
+				(m * f * ((m - 1) * r * r - (p - 1) * r * inverseT)),
+				(m * f * (-(m - 1) * (m - 2) * r * r * r
+					+ 3 * (m - 1) * (p - 1) * r * r * inverseT
+					- (p - 1) * (p - 2) * r * inverseT * inverseT)) };
+		}
+
+		[[nodiscard]]
+		std::pair<double, double> slopeBounds(const double left, const double right) const noexcept
+		{
+			auto Slope = [&](const double t) noexcept
+			{
+				return (-m * c * p * std::pow(t, (p - 1)) * std::pow(Max(0.0, (d - c * std::pow(t, p))), (m - 1)));
+			};
+			const double a = Slope(left), b = Slope(right);
+			const double lower = (((left < slopeMinimum) && (slopeMinimum < right))
+				? Min(Min(a, b), Slope(slopeMinimum)) : Min(a, b));
+			return{ lower, Max(a, b) };
+		}
+
+		// Each derivative is a sum of C_k*t^(k*p-order)*(d-c*t^p)^(m-k).
+		// Each power product has at most one interior extremum. Bounding the
+		// terms separately gives a lower bound on the whole derivative.
+		template <size_t Order>
+		[[nodiscard]]
+		double lowerDerivative(const double left, const double right, const std::array<double, Order>& coefficients) const noexcept
+		{
+			double result = 0.0;
+			for (size_t i = 0; i < Order; ++i)
+			{
+				const double coefficient = coefficients[i];
+				if (coefficient == 0.0)
+				{
+					continue;
+				}
+				const double k = static_cast<double>(i + 1);
+				const double tExponent = (k * p - Order), zExponent = (m - k);
+				auto Product = [&](const double t) noexcept
+				{
+					return (std::pow(t, tExponent) * std::pow(Max(0.0, (d - c * std::pow(t, p))), zExponent));
+				};
+				const double a = Product(left), b = Product(right);
+				double extremum = ((0.0 < coefficient) ? Min(a, b) : Max(a, b));
+				const double criticalPower = (tExponent * d / (c * (p * m - Order)));
+				if (0.0 < criticalPower)
+				{
+					const double t = std::pow(criticalPower, (1 / p));
+					if ((left < t) && (t < right))
+					{
+						const double v = Product(t);
+						extremum = ((0.0 < coefficient) ? Min(extremum, v) : Max(extremum, v));
+					}
+				}
+				result += (coefficient * extremum);
+			}
+			return result;
+		}
+
+		[[nodiscard]]
+		double lowerCurvature(const double left, const double right) const noexcept
+		{
+			return lowerDerivative<2>(left, right,
+				{ (-c * m * p * (p - 1)), (c * c * m * (m - 1) * p * p) });
+		}
+	};
+
+	// Positive-area shapes with a.n < 1 < b.n. The relevant concave arc is
+	// (a.a*t^p, a.b*(1-t)^p), p=1/a.n. Minimize b's implicit value on it.
 	template <bool IncludeBoundary>
 	[[nodiscard]]
-	inline bool TestConvexSuperEllipseRoundRectArea(const SuperEllipse& shape, const RectF& core, const double radius) noexcept
+	inline bool TestMixedSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b) noexcept
+	{
+		Vec2 delta{ Abs(a.x - b.x), Abs(a.y - b.y) };
+		const double limit = (IncludeBoundary ? (1.0 + SuperEllipseContactTolerance) : (1.0 - SuperEllipseContactTolerance));
+		delta /= limit;
+		const Vec2 sum = (a.axes + b.axes);
+		if ((sum.x < delta.x) || (sum.y < delta.y))
+		{
+			return false;
+		}
+		if ((delta.x == 0.0) || (delta.y == 0.0))
+		{
+			return IncludeBoundary ? ((delta.x <= sum.x) && (delta.y <= sum.y))
+				: ((delta.x < sum.x) && (delta.y < sum.y));
+		}
+		const double nx = std::pow((delta.x / a.a), a.n), ny = std::pow((delta.y / a.b), a.n);
+		if ((nx + ny) <= 1.0)
+		{
+			return true;
+		}
+		const SuperEllipseProfile pa{ a.axes, a.n }, pb{ b.axes, b.n };
+		const double height = Max(((delta.x <= b.a) ? (a.b + pb.height(delta.x)) : pa.height(delta.x - b.a)),
+			((delta.x <= a.a) ? (b.b + pa.height(delta.x)) : pb.height(delta.x - a.a)));
+		// Evaluate tips in height coordinates, before converting to t. This
+		// retains precision when one curve is very thin near the other's tip.
+		if (IncludeBoundary ? (delta.y <= height) : (delta.y < height))
+		{
+			return true;
+		}
+		const double left = Max((1.0 - ny), std::pow((Max(0.0, (delta.x - b.a)) / a.a), a.n));
+		const double right = Min(nx, (1.0 - std::pow((Max(0.0, (delta.y - b.b)) / a.b), a.n)));
+		if (right < left)
+		{
+			return false;
+		}
+		const MixedSuperEllipseTerm f{ (delta.x / b.a), (a.a / b.a), (1.0 / a.n), b.n };
+		const MixedSuperEllipseTerm g{ (delta.y / b.b), (a.b / b.b), (1.0 / a.n), b.n };
+		auto Value = [&](const double t) noexcept { return (f.value(t) + g.value(1.0 - t)); };
+		auto Hit = [&](const double v) noexcept { return IncludeBoundary ? (v <= 1.0) : (v < 1.0); };
+		auto Separated = [&](const double v) noexcept { return IncludeBoundary ? (1.0 < v) : (1.0 <= v); };
+		if (Hit(Value(left)) || Hit(Value(right)))
+		{
+			return true;
+		}
+		struct Interval { double left, right; };
+		std::array<Interval, 66> stack;
+		size_t stackSize = 1;
+		stack[0] = { left, right };
+		constexpr int32 MaxIterations = 128;
+		int32 iterations = 0;
+		while (stackSize && (iterations < MaxIterations))
+		{
+			++iterations;
+			const auto [l, r] = stack[--stackSize];
+			if (Separated(f.value(r) + g.value(1.0 - l)))
+			{
+				continue;
+			}
+			if ((l == 0.0) || (r == 1.0))
+			{
+				const auto [fl, fh] = f.slopeBounds(l, r);
+				const auto [gl, gh] = g.slopeBounds((1.0 - r), (1.0 - l));
+				if ((0.0 <= (fl - gh)) || ((fh - gl) <= 0.0))
+				{
+					continue; // A monotone interval's endpoints have already been tested.
+				}
+			}
+			const double middle = (l + (r - l) * 0.5), width = ((r - l) * 0.5);
+			if (not ((l < middle) && (middle < r)))
+			{
+				return IncludeBoundary;
+			}
+			const auto s = f.sample(middle), t = g.sample(1.0 - middle);
+			const double c0 = (s.value + t.value);
+			if (Hit(c0))
+			{
+				return true;
+			}
+			const bool convex = ((f.slopeMinimum <= l) && (r <= (1.0 - g.slopeMinimum)));
+			if (not convex)
+			{
+				// A fourth-order lower Taylor bound also resolves osculating
+				// contacts, where the quadratic term vanishes. Scale to [-1,1].
+				const double c1 = ((s.slope - t.slope) * width);
+				const double c2 = ((s.curvature + t.curvature) * width * width * 0.5);
+				const double c3 = ((s.third - t.third) * width * width * width / 6.0);
+				const double c4 = ((f.lowerDerivative(l, r, f.fourthCoefficients)
+					+ g.lowerDerivative((1.0 - r), (1.0 - l), g.fourthCoefficients)) * width * width * width * width / 24.0);
+				// Derivatives can be unbounded at ordinary curve endpoints.
+				if (std::isfinite(c4) && std::isfinite(c3))
+				{
+					auto Polynomial = [&](const double x) noexcept { return ((((c4 * x + c3) * x + c2) * x + c1) * x + c0); };
+					double lower = Min(Polynomial(-1.0), Polynomial(1.0)), minimumAt = 0.0;
+					for (const double root : Math::SolveCubicEquation((4 * c4), (3 * c3), (2 * c2), c1))
+					{
+						if ((-1.0 < root) && (root < 1.0))
+						{
+							const double v = Polynomial(root);
+							if (v < lower)
+							{
+								lower = v;
+								minimumAt = root;
+							}
+						}
+					}
+					if (Hit(Value(middle + width * minimumAt)))
+					{
+						return true;
+					}
+					lower -= (SuperEllipseContactTolerance * (Abs(c0) + Abs(c1) + Abs(c2) + Abs(c3) + Abs(c4)));
+					if (Separated(lower))
+					{
+						continue;
+					}
+				}
+			}
+			if (convex || (0.0 <= (f.lowerCurvature(l, r) + g.lowerCurvature((1.0 - r), (1.0 - l)))))
+			{
+				double lo = l, hi = r, x = middle;
+				auto fs = s, gs = t;
+				while (iterations < MaxIterations)
+				{
+					const double h = (fs.value + gs.value), slope = (fs.slope - gs.slope);
+					if (Hit(h))
+					{
+						return true;
+					}
+					// A tangent bounds a convex function from below.
+					const double lower = (h + Min((slope * (lo - x)), (slope * (hi - x)))
+						- SuperEllipseContactTolerance * (Abs(h) + Abs(slope) * (hi - lo)));
+					if ((slope == 0.0) || Separated(lower))
+					{
+						break;
+					}
+					if (slope < 0.0)
+					{
+						lo = x;
+					}
+					else
+					{
+						hi = x;
+					}
+					const double next = (x - slope / (fs.curvature + gs.curvature));
+					x = (((lo < next) && (next < hi)) ? next : (lo + (hi - lo) * 0.5));
+					if (not ((lo < x) && (x < hi)))
+					{
+						return IncludeBoundary;
+					}
+					fs = f.sample(x);
+					gs = g.sample(1.0 - x);
+					++iterations;
+				}
+				if (iterations == MaxIterations)
+				{
+					return IncludeBoundary;
+				}
+				continue;
+			}
+			if (stack.size() < (stackSize + 2))
+			{
+				return IncludeBoundary;
+			}
+			stack[stackSize++] = { middle, r };
+			stack[stackSize++] = { l, middle };
+		}
+		// Unresolved intervals may intersect, but do not establish overlap.
+		return (stackSize && IncludeBoundary);
+	}
+
+	template <bool IncludeBoundary>
+	[[nodiscard]]
+	inline bool TestSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b) noexcept
+	{
+		if ((1.0 <= a.n) && (1.0 <= b.n))
+		{
+			return TestConvexSuperEllipseAreas<IncludeBoundary>(a, b);
+		}
+		if ((a.n <= 1.0) && (b.n <= 1.0))
+		{
+			return TestConcaveSuperEllipseAreas<IncludeBoundary>(a, b);
+		}
+		return (a.n < 1.0) ? TestMixedSuperEllipseAreas<IncludeBoundary>(a, b)
+			: TestMixedSuperEllipseAreas<IncludeBoundary>(b, a);
+	}
+
+	// A RoundRect is its core expanded by a disk. For any axis-aligned
+	// SuperEllipse, distance cannot increase towards its center on either axis.
+	template <bool IncludeBoundary>
+	[[nodiscard]]
+	inline bool TestSuperEllipseRoundRectArea(const SuperEllipse& shape, const RectF& core, const double radius) noexcept
 	{
 		const Vec2 point{ Clamp(shape.x, core.x, (core.x + core.w)), Clamp(shape.y, core.y, (core.y + core.h)) };
-		return TestConvexSuperEllipseAreas<IncludeBoundary>(shape, SuperEllipse{ point, radius, radius, 2.0 });
+		return TestSuperEllipseAreas<IncludeBoundary>(shape, SuperEllipse{ point, radius, radius, 2.0 });
 	}
 }

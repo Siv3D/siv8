@@ -625,3 +625,117 @@ TEST_CASE("Geometry2D.Overlaps.SuperEllipseCurved.concave_boundaries")
 	CheckSuperEllipseCurved(shape, SuperEllipse{ 5, 0, 0, 2, 0.5 }, false, false);
 	CheckSuperEllipseCurved(shape, SuperEllipse{ 0, 4, 2, 0, 1 }, false, true);
 }
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipseCurved.mixed_contact")
+{
+	for (const double n : { 0.25, 0.5, 0.75, 0.9 })
+	{
+		for (const double t : { 0.3, 0.5, 0.7 })
+		{
+			const double p = (1.0 / n);
+			const Vec2 boundary{ (1000 * std::pow(t, p)), (700 * std::pow((1 - t), p)) };
+			const Vec2 normal = Vec2{ (700 * std::pow((1 - t), (p - 1))), (1000 * std::pow(t, (p - 1))) }.normalized();
+			for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+			{
+				for (const Vec2 reflection : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+				{
+					for (const bool swapAxes : { false, true })
+					{
+						auto Orient = [&](const Vec2& v) { return swapAxes ? Vec2{ v.y, v.x } : v; };
+						auto At = [&](const Vec2& v) { return (offset + Orient(v * reflection)); };
+						const SuperEllipse shape{ offset, Orient(Vec2{ 1000, 700 }), n };
+						for (const double gap : { -1.0e-7, 0.0, 1.0e-7 })
+						{
+							if ((gap == 0.0) && (offset != Vec2{ 0, 0 }))
+							{
+								continue; // Translating a constructed tangent can round it to either side.
+							}
+							CAPTURE(n, t, offset, reflection, swapAxes, gap);
+							const Vec2 circleCenter = ((boundary + normal * 10) * (1 + gap));
+							CheckSuperEllipseCurved(shape, Circle{ At(circleCenter), 10 }, (gap < 0), (gap <= 0));
+							const Vec2 rectSize = Orient(Vec2{ 32, 36 });
+							CheckSuperEllipseCurved(shape, RoundRect{ RectF{ At(circleCenter + Vec2{ 6, 8 }) - rectSize * 0.5, rectSize }, 10 }, (gap < 0), (gap <= 0));
+							for (const double m : { 1.1, 1.5, 2.0, 4.0, 8.0 })
+							{
+								CAPTURE(m);
+								const SuperEllipse other{ 0, 0, 10, 6, m };
+								const Vec2 center = At((boundary + ConvexSuperEllipseSupport(other, normal)) * (1 + gap));
+								CheckSuperEllipseCurved(shape, SuperEllipse{ center, Orient(other.axes), m }, (gap < 0), (gap <= 0));
+								if (m == 2.0)
+								{
+									CheckSuperEllipseCurved(shape, Ellipse{ center, Orient(other.axes) }, (gap < 0), (gap <= 0));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipseCurved.mixed_flat_and_tip_contacts")
+{
+	// The circle has fourth-order contact at (250,250): along the concave
+	// arc, squared distance minus radius squared is proportional to (t-1/2)^4.
+	const SuperEllipse shape{ 0, 0, 1000, 1000, 0.5 };
+	const double radius = std::sqrt(500000.0);
+	for (const double gap : { -1.0e-7, -1.0e-12, 0.0, 1.0e-12, 1.0e-7 })
+	{
+		CAPTURE(gap);
+		const Vec2 center = (Vec2{ 750, 750 } * (1 + gap));
+		CheckSuperEllipseCurved(shape, Circle{ center, radius }, (gap < 0), (gap <= 0));
+		CheckSuperEllipseCurved(shape, Ellipse{ center, radius, radius }, (gap < 0), (gap <= 0));
+		CheckSuperEllipseCurved(shape, RoundRect{ RectF{ center - Vec2{ radius, radius }, (2 * radius), (2 * radius) }, radius }, (gap < 0), (gap <= 0));
+	}
+
+	// Contact positions obtained independently by maximizing the summed
+	// vertical profiles in quadruple precision; these lie close to curve tips.
+	const std::array<std::pair<SuperEllipse, SuperEllipse>, 3> tips{{
+		{ SuperEllipse{ 0, 0, 0.040807768690165516, 181.01178228739653, 0.5 },
+			SuperEllipse{ 0.071752891612946373, 31.986250921483371, 0.058042508574445671, 0.021635671515527116, 1.1 } },
+		{ SuperEllipse{ 0, 0, 0.045161263405331747, 0.0050239517066610279, 0.999 },
+			SuperEllipse{ 0.040474007231519282, 0.090960877202365759, 0.027748843494125829, 0.090441118621550479, 1.1 } },
+		{ SuperEllipse{ 0, 0, 9.1626836579127477, 1.681409066700049, 0.999 },
+			SuperEllipse{ 8.2036072086432661, 101.35501125508688, 43.429572721642749, 101.17957820586034, 1.1 } },
+	}};
+	for (const auto& [a, b] : tips)
+	{
+		for (const double gap : { -1.0e-7, 0.0, 1.0e-7 })
+		{
+			CAPTURE(a, b, gap);
+			CheckSuperEllipseCurved(a, SuperEllipse{ b.center * (1 + gap), b.axes, b.n }, (gap < 0), (gap <= 0));
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipseCurved.mixed_boundaries")
+{
+	const SuperEllipse shape{ 0, 0, 4, 4, 0.5 };
+	CheckSuperEllipseCurved(shape, Circle{ 0, 0, 1 }, true, true);
+	CheckSuperEllipseCurved(shape, Ellipse{ 0, 0, 1, 2 }, true, true);
+	CheckSuperEllipseCurved(shape, RoundRect{ -1, -1, 2, 2, 0.5 }, true, true);
+	CheckSuperEllipseCurved(shape, Circle{ 0, 0, 0 }, false, false);
+	CheckSuperEllipseCurved(shape, Ellipse{ 0, 0, 0, 0 }, false, false);
+	CheckSuperEllipseCurved(shape, Ellipse{ 4, 0, 0, 2 }, false, true);
+	CheckSuperEllipseCurved(shape, SuperEllipse{ 4, 0, 0, 2, 4 }, false, true);
+	CheckSuperEllipseCurved(shape, RoundRect{ 4, -2, 0, 4, 1 }, false, true);
+	CheckSuperEllipseCurved(shape, RoundRect{ 0, 0, 0, 0, 1 }, false, false);
+	for (const double gap : { -1.0e-4, 0.0, 1.0e-4 })
+	{
+		CAPTURE(gap);
+		CheckSuperEllipseCurved(shape, Circle{ (5 + gap), 0, 1 }, (gap < 0), (gap <= 0));
+		CheckSuperEllipseCurved(shape, Ellipse{ 0, (6 + gap), 1, 2 }, (gap < 0), (gap <= 0));
+		for (const double radius : { 0.0, 1.0, 2.0, 10.0 })
+		{
+			CheckSuperEllipseCurved(shape, RoundRect{ (4 + gap), -2, 2, 4, radius }, (gap < 0), (gap <= 0));
+		}
+	}
+	for (const double gap : { -1.0e-15, 0.0, 1.0e-15 })
+	{
+		CheckSuperEllipseCurved(shape, Circle{ (5 + gap), 0, 1 }, false, true);
+		CheckSuperEllipseCurved(shape, Ellipse{ (5 + gap), 0, 1, 2 }, false, true);
+		CheckSuperEllipseCurved(shape, SuperEllipse{ (5 + gap), 0, 1, 2, 4 }, false, true);
+		CheckSuperEllipseCurved(shape, RoundRect{ (4 + gap), -2, 2, 4, 1 }, false, true);
+	}
+}

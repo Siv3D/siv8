@@ -23,11 +23,6 @@ namespace s3d
 {
 	namespace
 	{
-		// Approximation-acceptable pairs use a fixed local tessellation.
-		// Analytic and polygonal pairs do not depend on this value.
-		inline constexpr int32 CurvedApproximationSegments = 64;
-		inline constexpr double TwoPi = 6.2831853071795864769252867665590058;
-
 		[[nodiscard]]
 		constexpr double Cross(const Vec2& a, const Vec2& b, const Vec2& c) noexcept
 		{
@@ -346,40 +341,6 @@ namespace s3d
 				|| (HasPositiveArea(second) && callback(second));
 		}
 
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitSuperEllipseFanTriangles(const SuperEllipse& superEllipse, Fty&& callback) noexcept
-		{
-			const double step = (TwoPi / CurvedApproximationSegments);
-			const double exponent = (2.0 / superEllipse.n);
-
-			auto PointAt = [&](const double angle) noexcept
-			{
-				const double c = std::cos(angle);
-				const double s = std::sin(angle);
-				const double x = std::copysign(std::pow(Abs(c), exponent) * superEllipse.axes.x, c);
-				const double y = std::copysign(std::pow(Abs(s), exponent) * superEllipse.axes.y, s);
-				return (superEllipse.center + Vec2{ x, y });
-			};
-
-			const Vec2 first{ (superEllipse.center.x + superEllipse.axes.x), superEllipse.center.y };
-			Vec2 previous = first;
-
-			for (int32 i = 1; i <= CurvedApproximationSegments; ++i)
-			{
-				const Vec2 current = (i == CurvedApproximationSegments) ? first : PointAt(step * i);
-
-				if (callback(Triangle{ superEllipse.center, previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
 		[[nodiscard]]
 		constexpr bool OverlapsRectRectArea(const RectF& a, const RectF& b) noexcept
 		{
@@ -645,15 +606,7 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
-			if (1.0 <= superEllipse.n)
-			{
-				return detail::TestConvexSuperEllipseAreas<false>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
-			}
-
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
-			{
-				return OverlapsTriangleCircleArea(part, circle);
-			});
+			return detail::TestSuperEllipseAreas<false>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -708,15 +661,7 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
-			if (1.0 <= superEllipse.n)
-			{
-				return detail::TestConvexSuperEllipseAreas<false>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
-			}
-
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
-			{
-				return OverlapsTriangleEllipseArea(part, ellipse);
-			});
+			return detail::TestSuperEllipseAreas<false>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -767,23 +712,7 @@ namespace s3d
 					Ellipse{ b.center, b.axes.x, b.axes.y }, a);
 			}
 
-			if ((1.0 <= a.n) && (1.0 <= b.n))
-			{
-				return detail::TestConvexSuperEllipseAreas<false>(a, b);
-			}
-
-			if ((a.n <= 1.0) && (b.n <= 1.0))
-			{
-				return detail::TestConcaveSuperEllipseAreas<false>(a, b);
-			}
-
-			return VisitSuperEllipseFanTriangles(a, [&](const Triangle& aPart)
-			{
-				return VisitSuperEllipseFanTriangles(b, [&](const Triangle& bPart)
-				{
-					return OverlapsTriangles(aPart, bPart);
-				});
-			});
+			return detail::TestSuperEllipseAreas<false>(a, b);
 		}
 
 		[[nodiscard]]
@@ -805,19 +734,11 @@ namespace s3d
 					roundRect, effectiveRadius, core);
 			}
 
-			if (1.0 <= superEllipse.n)
+			if (effectiveRadius == 0.0)
 			{
-				if (effectiveRadius == 0.0)
-				{
-					return OverlapsRectSuperEllipseArea(roundRect.rect, superEllipse);
-				}
-				return detail::TestConvexSuperEllipseRoundRectArea<false>(superEllipse, core, effectiveRadius);
+				return OverlapsRectSuperEllipseArea(roundRect.rect, superEllipse);
 			}
-
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
-			{
-				return OverlapsTriangleRoundRectArea(part, roundRect, effectiveRadius, core);
-			});
+			return detail::TestSuperEllipseRoundRectArea<false>(superEllipse, core, effectiveRadius);
 		}
 
 		[[nodiscard]]

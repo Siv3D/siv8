@@ -7,9 +7,9 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## `Siv3D/include/Siv3D/Geometry2D/Overlaps.hpp`
+## `Siv3D/include/Siv3D/Geometry2D/Contains.hpp`
 
-- 凹形状の `SuperEllipse`（`n < 1`）と凸形状（Circle / Ellipse / RoundRect / `n > 1` の SuperEllipse）の曲線同士の判定をまとめて見直す。`Overlaps` の固定 64 分割は離れた図形を重なりと判定し、`Intersects` の境界近似は浅い交差を見落とす。断面の上限と曲率で区間を絞る試作は通常の接触で有効だが、曲率が一致する接触で処理量が増えるため未採用。処理量の上限と精度を両立する探索方法を検討し、探索未確定時の true を `Overlaps` に流用しない。
+- `SuperEllipse` の包含近似による過剰な拒否をまとめて見直す。`Circle{ 0, 0, 5 }` は軸長 `{ 4, 4 }`、中心が原点の `n = 0.5` / `n = 1.001` の SuperEllipse を含むが、現状はいずれも false を返す。凹形状の外接矩形による判定と、1 に近い指数での支持関数の累乗を確認し、凸な包含側では軸上の頂点を利用する方法、支持関数のスケーリングを検討する。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
