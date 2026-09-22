@@ -19,6 +19,7 @@
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/SignedDistance.hpp>
 # include "PolygonGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -312,6 +313,13 @@ namespace s3d
 		ClosestBoundaryCandidate ClosestPointPiece(
 			const Vec2& point, const BoundaryPiece& piece)
 		{
+			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (2.0 < shape->n))
+			{
+				ClosestBoundaryCandidate result;
+				UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundary(point, *shape));
+				return result;
+			}
+
 			if (const Line* line = std::get_if<Line>(&piece))
 			{
 				return ClosestPointOnSegment(point, line->start, line->end);

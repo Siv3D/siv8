@@ -95,6 +95,75 @@ TEST_CASE("Geometry2D.SignedDistance.Ellipse_SuperEllipse")
 	CHECK(Geometry2D::SignedDistance(segment, Vec2{ 0, 2 }) == 0.0);
 }
 
+TEST_CASE("Geometry2D.SignedDistance.SuperEllipse.AxisAndNeighborhood")
+{
+	const Vec2 center{ 7, -11 };
+	for (const double n : { 2.01, 4.0, 8.0, 16.0, 64.0 })
+	{
+		for (const Vec2 axes : { Vec2{ 100, 100 }, Vec2{ 80, 5 }, Vec2{ 3, 200 } })
+		{
+			const SuperEllipse shape{ center, axes, n };
+			const double gap = (1.0e-5 * Min(axes.x, axes.y));
+			const double tolerance = (1.0e-11 * Max(axes.x, axes.y));
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				for (const double coordinate : { 0.0, 1.0e-8, 1.0e-5, 0.001, 0.1, 0.6 })
+				{
+					const double other = std::pow((1.0 - std::pow(coordinate, n)), (1.0 / n));
+					for (const Vec2 normalized : { Vec2{ coordinate, other }, Vec2{ other, coordinate } })
+					{
+						CAPTURE(n, axes, sign, normalized);
+						const Vec2 boundary = (center + sign * axes * normalized);
+						const Vec2 normal = (sign * Vec2{ (std::pow(normalized.x, (n - 1.0)) / axes.x),
+							(std::pow(normalized.y, (n - 1.0)) / axes.y) }).normalized();
+						const double onBoundary = Geometry2D::SignedDistance(shape, boundary);
+						CHECK(onBoundary == 0.0);
+						CHECK(not std::signbit(onBoundary));
+						for (const double offset : { -gap, gap })
+						{
+							const Vec2 point = (boundary + normal * offset);
+							const auto closest = Geometry2D::ClosestPointOnBoundary(shape, point);
+							REQUIRE(closest);
+							CHECK(Near(closest->distanceFrom(point), Abs(offset), tolerance));
+							CHECK(closest->distanceFrom(boundary) <= (1.0e-8 * Max(axes.x, axes.y)));
+							CHECK(Near(Geometry2D::SignedDistance(shape, point), offset, tolerance));
+							CHECK(Near(Geometry2D::Distance(shape, point), Max(offset, 0.0), tolerance));
+							const auto pair = Geometry2D::ClosestPoints(shape, point);
+							const auto reversed = Geometry2D::ClosestPoints(point, shape);
+							REQUIRE(pair);
+							REQUIRE(reversed);
+							CHECK(pair->pointB == point);
+							CHECK(reversed->pointA == point);
+							CHECK(pair->pointA == reversed->pointB);
+							CHECK(Near(pair->distance, Max(offset, 0.0), tolerance));
+							CHECK(Near(pair->pointA.distanceFrom(pair->pointB), pair->distance, tolerance));
+							if (0.0 < offset)
+							{
+								CHECK(pair->pointA == *closest);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.SignedDistance.SuperEllipse.Center")
+{
+	for (const double n : { 2.01, 4.0, 8.0, 16.0, 64.0 })
+	{
+		for (const Vec2 axes : { Vec2{ 100, 100 }, Vec2{ 80, 5 }, Vec2{ 3, 200 } })
+		{
+			const SuperEllipse shape{ Vec2{ 7, -11 }, axes, n };
+			CHECK(Near(Geometry2D::SignedDistance(shape, shape.center), -Min(axes.x, axes.y)));
+			const auto closest = Geometry2D::ClosestPointOnBoundary(shape, shape.center);
+			REQUIRE(closest);
+			CHECK(Near(closest->distanceFrom(shape.center), Min(axes.x, axes.y)));
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.SignedDistance.Triangle_Quad")
 {
 	const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };

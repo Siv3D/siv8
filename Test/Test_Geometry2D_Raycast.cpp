@@ -129,6 +129,27 @@ TEST_CASE("Geometry2D.Raycast.CircleEllipseSuperEllipse")
 	}
 }
 
+TEST_CASE("Geometry2D.Raycast.SuperEllipse.AxisBoundary")
+{
+	for (const double n : { 4.0, 8.0, 16.0, 64.0 })
+	{
+		const SuperEllipse shape{ Vec2{ 7, -11 }, SizeF{ 80, 5 }, n };
+		for (const Vec2 normal : { Vec2{ 1, 0 }, Vec2{ -1, 0 }, Vec2{ 0, 1 }, Vec2{ 0, -1 } })
+		{
+			CAPTURE(n, normal);
+			const Vec2 boundary = (shape.center + shape.axes * normal);
+			for (const Vec2 direction : { normal, -normal, Vec2{ -normal.y, normal.x } })
+			{
+				const Ray2D ray{ boundary, direction };
+				CheckHit(Geometry2D::Raycast(ray, shape), ray, boundary, normal, 0.0, false);
+				CheckHit(Geometry2D::Raycast(ray, shape, 0.0), ray, boundary, normal, 0.0, false);
+			}
+			const Ray2D inside{ (boundary - normal * 0.001), normal };
+			CheckHit(Geometry2D::Raycast(inside, shape), inside, boundary, normal, 0.001, true);
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.Raycast.PolygonalShapes")
 {
 	{

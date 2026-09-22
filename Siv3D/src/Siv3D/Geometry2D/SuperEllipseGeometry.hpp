@@ -5,12 +5,110 @@
 // Licensed under the MIT License.
 //-----------------------------------------------
 # pragma once
+# include <array>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 
 namespace s3d::detail
 {
 	inline constexpr double SuperEllipseContactTolerance = (64.0 * 2.2204460492503131e-16);
+
+	// Positive axes and n > 2. Reflection reduces the boundary to one quadrant.
+	// On each half, use the smaller normalized coordinate directly: taking a
+	// fractional power of sin/cos near their zeros loses spatial precision.
+	[[nodiscard]]
+	inline Vec2 ClosestPointOnSuperEllipseBoundary(const Vec2& point, const SuperEllipse& shape) noexcept
+	{
+		const Vec2 delta = (point - shape.center);
+		const Vec2 query{ Abs(delta.x), Abs(delta.y) };
+		Vec2 best{ shape.a, 0.0 };
+		double bestDistanceSq = query.distanceFromSq(best);
+		auto Update = [&](const Vec2& candidate) noexcept
+		{
+			const double distanceSq = query.distanceFromSq(candidate);
+			if (distanceSq < bestDistanceSq)
+			{
+				best = candidate;
+				bestDistanceSq = distanceSq;
+			}
+			return distanceSq;
+		};
+		auto Result = [&]() noexcept
+		{
+			return (shape.center + Vec2{ std::copysign(best.x, delta.x), std::copysign(best.y, delta.y) });
+		};
+		Update(Vec2{ 0.0, shape.b });
+		if (bestDistanceSq == 0.0)
+		{
+			return Result();
+		}
+
+		const double inverseN = (1.0 / shape.n);
+		const double split = std::pow(0.5, inverseN);
+		constexpr int32 Segments = 24;
+		for (const bool transpose : { false, true })
+		{
+			const Vec2 axes = (transpose ? Vec2{ shape.b, shape.a } : shape.axes);
+			auto PointAt = [&](const double t) noexcept
+			{
+				const Vec2 p{ (axes.x * split * t), (axes.y * std::pow((1.0 - 0.5 * std::pow(t, shape.n)), inverseN)) };
+				return (transpose ? Vec2{ p.y, p.x } : p);
+			};
+			// This also retains a query lying on a numerically flat part of the boundary.
+			Update(PointAt(Clamp(((transpose ? query.y : query.x) / (axes.x * split)), 0.0, 1.0)));
+			if (bestDistanceSq == 0.0)
+			{
+				return Result();
+			}
+			std::array<double, Segments + 1> values;
+			for (int32 i = 0; i <= Segments; ++i)
+			{
+				values[i] = Update(PointAt(static_cast<double>(i) / Segments));
+			}
+			if (bestDistanceSq == 0.0)
+			{
+				return Result();
+			}
+			// Interior queries can have several local minima. Refine each sampled
+			// minimum, keeping the tips, samples, and projected query as candidates.
+			for (int32 i = 0; i <= Segments; ++i)
+			{
+				if (((0 < i) && (values[i - 1] < values[i])) || ((i < Segments) && (values[i + 1] < values[i])))
+				{
+					continue;
+				}
+				double lo = (static_cast<double>(Max(0, (i - 1))) / Segments);
+				double hi = (static_cast<double>(Min(Segments, (i + 1))) / Segments);
+				constexpr double Fraction = 0.3819660112501051518;
+				double left = (lo + Fraction * (hi - lo)), right = (hi - Fraction * (hi - lo));
+				double leftValue = Update(PointAt(left)), rightValue = Update(PointAt(right));
+				for (int32 iteration = 0; iteration < 80; ++iteration)
+				{
+					if (leftValue < rightValue)
+					{
+						hi = right;
+						right = left;
+						rightValue = leftValue;
+						left = (lo + Fraction * (hi - lo));
+						leftValue = Update(PointAt(left));
+					}
+					else
+					{
+						lo = left;
+						left = right;
+						leftValue = rightValue;
+						right = (hi - Fraction * (hi - lo));
+						rightValue = Update(PointAt(right));
+					}
+					if ((hi - lo) <= 2.0e-15)
+					{
+						break;
+					}
+				}
+			}
+		}
+		return Result();
+	}
 
 	[[nodiscard]]
 	inline RectF SuperEllipseLineTestBounds(const SuperEllipse& shape) noexcept
