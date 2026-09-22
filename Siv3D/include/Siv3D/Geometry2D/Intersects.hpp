@@ -581,9 +581,11 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Vec2& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Line& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const LineString& b) noexcept;
 
@@ -609,18 +611,22 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const SuperEllipse& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Triangle& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Quad& b) noexcept;
 
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const RoundRect& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Polygon& b) noexcept;
 
+		/// @remark n が 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const MultiPolygon& b) noexcept;
 

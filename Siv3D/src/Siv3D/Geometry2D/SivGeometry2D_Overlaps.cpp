@@ -17,6 +17,7 @@
 # include <boost/container/small_vector.hpp>
 # include "PolygonGeometry.hpp"
 # include "EllipseGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -577,10 +578,15 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
+			if (not BoundsOverlapPositive(triangle.boundingRect(), superEllipse.boundingRect()))
 			{
-				return OverlapsTriangles(triangle, part);
-			});
+				return false;
+			}
+
+			return Geometry2D::Intersects(superEllipse.center, triangle)
+				|| detail::TestLineSuperEllipseArea<false>(Line{ triangle.p0, triangle.p1 }, superEllipse)
+				|| detail::TestLineSuperEllipseArea<false>(Line{ triangle.p1, triangle.p2 }, superEllipse)
+				|| detail::TestLineSuperEllipseArea<false>(Line{ triangle.p2, triangle.p0 }, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -860,9 +866,10 @@ namespace s3d
 				&& OverlapsTrianglePolygonArea(triangle, polygon);
 		}
 
+		// Requires a connected interior and a point strictly inside the shape.
 		template <class Predicate>
 		[[nodiscard]]
-		bool OverlapsConvexShapePolygonAreaNonEmpty(
+		bool OverlapsShapePolygonAreaNonEmpty(
 			const RectF& shapeBounds, const Vec2& interiorPoint,
 			const Polygon& polygon, const RectF& polygonBounds, Predicate&& intersectsInterior) noexcept
 		{
@@ -895,7 +902,7 @@ namespace s3d
 			const Circle& circle, const RectF& circleBounds,
 			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			return OverlapsConvexShapePolygonAreaNonEmpty(circleBounds, circle.center, polygon, polygonBounds,
+			return OverlapsShapePolygonAreaNonEmpty(circleBounds, circle.center, polygon, polygonBounds,
 				[&](const Line& edge) { return detail::IntersectsLineCircleArea<false>(edge, circle); });
 		}
 
@@ -925,7 +932,7 @@ namespace s3d
 			const Ellipse& ellipse, const RectF& ellipseBounds,
 			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			return OverlapsConvexShapePolygonAreaNonEmpty(ellipseBounds, ellipse.center, polygon, polygonBounds,
+			return OverlapsShapePolygonAreaNonEmpty(ellipseBounds, ellipse.center, polygon, polygonBounds,
 				[&](const Line& edge) { return detail::IntersectsLineEllipseArea<false>(edge, ellipse); });
 		}
 
@@ -955,11 +962,6 @@ namespace s3d
 			const SuperEllipse& superEllipse, const RectF& superEllipseBounds,
 			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			if (not BoundsOverlapPositive(superEllipseBounds, polygonBounds))
-			{
-				return false;
-			}
-
 			if (superEllipse.n == 2.0)
 			{
 				return OverlapsEllipsePolygonAreaNonEmpty(
@@ -967,11 +969,8 @@ namespace s3d
 					superEllipseBounds, polygon, polygonBounds);
 			}
 
-			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
-			{
-				const RectF partBounds = part.boundingRect();
-				return OverlapsTrianglePolygonAreaNonEmpty(part, partBounds, polygon, polygonBounds);
-			});
+			return OverlapsShapePolygonAreaNonEmpty(superEllipseBounds, superEllipse.center, polygon, polygonBounds,
+				[&](const Line& edge) { return detail::TestLineSuperEllipseArea<false>(edge, superEllipse); });
 		}
 
 		[[nodiscard]]
@@ -1032,7 +1031,7 @@ namespace s3d
 				return OverlapsRectPolygonAreaNonEmpty(roundRect.rect, polygon, polygonBounds);
 			}
 
-			return OverlapsConvexShapePolygonAreaNonEmpty(roundRect.rect, roundRect.rect.center(), polygon, polygonBounds,
+			return OverlapsShapePolygonAreaNonEmpty(roundRect.rect, roundRect.rect.center(), polygon, polygonBounds,
 				[&](const Line& edge)
 				{
 					return BoundsIntersectLine(roundRect.rect, edge)

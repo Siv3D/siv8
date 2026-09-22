@@ -23,6 +23,7 @@
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include "PolygonGeometry.hpp"
 # include "EllipseGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -539,33 +540,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		double SuperEllipseLocalValue(const Vec2& p, const double n) noexcept
-		{
-			return (std::pow(Abs(p.x), n) + std::pow(Abs(p.y), n));
-		}
-
-		[[nodiscard]]
-		double SuperEllipseLocalDerivative(const Vec2& p, const Vec2& d, const double n) noexcept
-		{
-			auto Term = [n](const double x, const double dx) noexcept
-			{
-				if (x < 0.0)
-				{
-					return (-dx * std::pow(-x, (n - 1.0)));
-				}
-
-				if (0.0 < x)
-				{
-					return (dx * std::pow(x, (n - 1.0)));
-				}
-
-				return 0.0;
-			};
-
-			return (n * (Term(p.x, d.x) + Term(p.y, d.y)));
-		}
-
-		[[nodiscard]]
 		bool IntersectsPointSuperEllipseArea(const Vec2& p, const SuperEllipse& superEllipse) noexcept
 		{
 			const double dx = Abs((p.x - superEllipse.center.x) / superEllipse.axes.x);
@@ -582,110 +556,7 @@ namespace s3d
 		[[nodiscard]]
 		bool IntersectsLineSuperEllipseArea(const Line& segment, const SuperEllipse& superEllipse) noexcept
 		{
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			const Vec2 p0{ ((segment.start.x - superEllipse.center.x) / ax), ((segment.start.y - superEllipse.center.y) / by) };
-			const Vec2 p1{ ((segment.end.x - superEllipse.center.x) / ax), ((segment.end.y - superEllipse.center.y) / by) };
-			const Vec2 d = (p1 - p0);
-
-			if ((SuperEllipseLocalValue(p0, n) <= 1.0)
-				|| (SuperEllipseLocalValue(p1, n) <= 1.0))
-			{
-				return true;
-			}
-
-			if (d == Vec2{ 0, 0 })
-			{
-				return false;
-			}
-
-			std::array<double, 4> ts{ 0.0, 1.0, 0.0, 0.0 };
-			size_t tCount = 2;
-
-			if (d.x != 0.0)
-			{
-				const double tx = (-p0.x / d.x);
-
-				if (InRange(tx, 0.0, 1.0))
-				{
-					ts[tCount++] = tx;
-				}
-			}
-
-			if (d.y != 0.0)
-			{
-				const double ty = (-p0.y / d.y);
-
-				if (InRange(ty, 0.0, 1.0))
-				{
-					ts[tCount++] = ty;
-				}
-			}
-
-			std::sort(ts.begin(), (ts.begin() + tCount));
-
-			auto ValueAt = [&](const double t) noexcept
-			{
-				return SuperEllipseLocalValue((p0 + d * t), n);
-			};
-
-			auto DerivativeAt = [&](const double t) noexcept
-			{
-				return SuperEllipseLocalDerivative((p0 + d * t), d, n);
-			};
-
-			for (size_t i = 1; i < tCount; ++i)
-			{
-				const double t0 = ts[i - 1];
-				const double t1 = ts[i];
-
-				if (t0 == t1)
-				{
-					continue;
-				}
-
-				if ((ValueAt(t0) <= 1.0) || (ValueAt(t1) <= 1.0))
-				{
-					return true;
-				}
-
-				if (n <= 1.0)
-				{
-					continue;
-				}
-
-				const double derivative0 = DerivativeAt(t0);
-				const double derivative1 = DerivativeAt(t1);
-
-				if ((derivative0 < 0.0) && (0.0 < derivative1))
-				{
-					double left = t0;
-					double right = t1;
-
-					for (int32 k = 0; k < 48; ++k)
-					{
-						const double mid = ((left + right) * 0.5);
-
-						if (DerivativeAt(mid) < 0.0)
-						{
-							left = mid;
-						}
-						else
-						{
-							right = mid;
-						}
-					}
-
-					if (ValueAt((left + right) * 0.5) <= 1.0)
-					{
-						return true;
-					}
-				}
-			}
-
-			return false;
+			return detail::TestLineSuperEllipseArea<true>(segment, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -2240,7 +2111,7 @@ namespace s3d
 					superEllipse.boundingRect(), triangle);
 			}
 
-			return IntersectsSuperEllipseTriangleArea(superEllipse, superEllipse.boundingRect(), triangle);
+			return IntersectsSuperEllipseTriangleArea(superEllipse, detail::SuperEllipseLineTestBounds(superEllipse), triangle);
 		}
 
 		[[nodiscard]]
@@ -2267,7 +2138,7 @@ namespace s3d
 				return IntersectsEllipseQuad(Ellipse{ superEllipse.center, ax, by }, quad);
 			}
 
-			if (not BoundsIntersectClosed(superEllipse.boundingRect(), quad.boundingRect()))
+			if (not BoundsIntersectClosed(detail::SuperEllipseLineTestBounds(superEllipse), quad.boundingRect()))
 			{
 				return false;
 			}
@@ -2328,16 +2199,14 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), polygon);
 			}
 
-			const RectF superEllipseBounds = superEllipse.boundingRect();
-
 			if (superEllipse.n == 2.0)
 			{
 				return IntersectsEllipsePolygonArea(
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y },
-					superEllipseBounds, polygon);
+					superEllipse.boundingRect(), polygon);
 			}
 
-			return IntersectsSuperEllipsePolygonArea(superEllipse, superEllipseBounds, polygon);
+			return IntersectsSuperEllipsePolygonArea(superEllipse, detail::SuperEllipseLineTestBounds(superEllipse), polygon);
 		}
 
 		[[nodiscard]]
@@ -2355,11 +2224,10 @@ namespace s3d
 				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), multiPolygon);
 			}
 
-			const RectF superEllipseBounds = superEllipse.boundingRect();
-
 			if (superEllipse.n == 2.0)
 			{
 				const Ellipse ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y };
+				const RectF superEllipseBounds = superEllipse.boundingRect();
 
 				for (const auto& polygon : multiPolygon)
 				{
@@ -2372,6 +2240,7 @@ namespace s3d
 				return false;
 			}
 
+			const RectF superEllipseBounds = detail::SuperEllipseLineTestBounds(superEllipse);
 			for (const auto& polygon : multiPolygon)
 			{
 				if (IntersectsSuperEllipsePolygonArea(superEllipse, superEllipseBounds, polygon))

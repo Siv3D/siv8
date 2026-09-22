@@ -911,6 +911,7 @@
 		F951225A2CB8239800151291 /* Triangulate.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95122512CB8239800151291 /* Triangulate.hpp */; };
 		C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6360779D59BA45A4BFE36368 /* TriangleFan.hpp */; };
 		5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */; };
+		F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */; };
 		0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FD27361D562242F4A48719CB /* PolygonGeometry.hpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
@@ -4310,6 +4311,7 @@
 		F95122512CB8239800151291 /* Triangulate.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangulate.hpp; sourceTree = "<group>"; };
 		6360779D59BA45A4BFE36368 /* TriangleFan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TriangleFan.hpp; sourceTree = "<group>"; };
 		70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EllipseGeometry.hpp; sourceTree = "<group>"; };
+		F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipseGeometry.hpp; sourceTree = "<group>"; };
 		FD27361D562242F4A48719CB /* PolygonGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolygonGeometry.hpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
@@ -9810,6 +9812,7 @@
 				F93BD7A1300FB1B200B3542E /* SivGeometry2D_ConvexHull.cpp */,
 				F93BD7A2300FB1B200B3542E /* SivGeometry2D_Distance.cpp */,
 				70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */,
+				F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */,
 				FD27361D562242F4A48719CB /* PolygonGeometry.hpp */,
 				F93BD7A3300FB1B200B3542E /* SivGeometry2D_Intersects.cpp */,
 				F93BD7A4300FB1B200B3542E /* SivGeometry2D_IntersectsAt.cpp */,
@@ -16037,6 +16040,7 @@
 				F951225A2CB8239800151291 /* Triangulate.hpp in Headers */,
 				C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */,
 				5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */,
+				F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */,
 				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,

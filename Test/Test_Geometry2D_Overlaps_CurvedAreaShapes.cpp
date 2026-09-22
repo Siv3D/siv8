@@ -325,3 +325,123 @@ TEST_CASE("Geometry2D.Overlaps.EllipseRoundRect.shallow_overlap")
 		Check(Ellipse{ 0, 0, 5, 3 }, RoundRect{ RectF{ 5 + gap, -2, 4, 4 }, 2 }, false, true);
 	}
 }
+
+namespace
+{
+	void CheckSuperEllipsePolygonal(const SuperEllipse& shape, const Triangle& triangle,
+		const bool overlaps, const bool intersects)
+	{
+		auto Check = [&](const auto& other)
+		{
+			CHECK(Geometry2D::Overlaps(shape, other) == overlaps);
+			CHECK(Geometry2D::Overlaps(other, shape) == overlaps);
+			CHECK(Geometry2D::Intersects(shape, other) == intersects);
+			CHECK(Geometry2D::Intersects(other, shape) == intersects);
+		};
+		Check(triangle);
+		Check(Quad{ triangle.p0, triangle.p1, triangle.p2, triangle.p2 });
+		const Polygon polygon = triangle.asPolygon();
+		REQUIRE(not polygon.isEmpty());
+		Check(polygon);
+		Check(MultiPolygon{ Polygon{}, polygon });
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipsePolygonal.shallow_and_concave")
+{
+	const double step = (Math::TwoPi / 64.0);
+	auto Boundary = [](const double angle, const double n)
+	{
+		return Vec2{ 1000 * std::pow(std::cos(angle), (2.0 / n)), 700 * std::pow(std::sin(angle), (2.0 / n)) };
+	};
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		for (const Vec2 reflection : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+		{
+			auto At = [&](const Vec2& p) { return (p * reflection + offset); };
+			for (const double n : { 1.5, 4.0, 8.0 })
+			{
+				CAPTURE(offset, reflection, n);
+				const Vec2 p = (Boundary((step * 0.5), n) * (1.0 - 1.0e-6));
+				const Triangle small{ At(p + Vec2{ -0.0001, -0.0001 }), At(p + Vec2{ 0.0001, -0.0001 }), At(p + Vec2{ 0, 0.0001 }) };
+				CheckSuperEllipsePolygonal(SuperEllipse{ offset, 1000, 700, n }, small, true, true);
+			}
+			const Vec2 p = ((Boundary((step * 7), 0.5) + Boundary((step * 8), 0.5)) * 0.5);
+			REQUIRE((std::sqrt((p.x - 0.01) / 1000) + std::sqrt((p.y - 0.01) / 700)) > 1.0);
+			const Triangle outside{ At(p + Vec2{ -0.01, -0.01 }), At(p + Vec2{ 0.01, -0.01 }), At(p + Vec2{ 0, 0.01 }) };
+			CheckSuperEllipsePolygonal(SuperEllipse{ offset, 1000, 700, 0.5 }, outside, false, false);
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipsePolygonal.contact")
+{
+	for (const double n : { 1.0, 1.5, 4.0, 8.0 })
+	{
+		const SuperEllipse shape{ 0, 0, 5, 3, n };
+		const double v = std::pow(0.5, (1.0 / n));
+		for (const double gap : { -1.0e-7, 0.0, 1.0e-7 })
+		{
+			CAPTURE(n, gap);
+			const Triangle triangle{
+				Vec2{ (v - 0.25 + gap), (v + 0.25 + gap) } * shape.axes,
+				Vec2{ (v + 0.25 + gap), (v - 0.25 + gap) } * shape.axes,
+				Vec2{ (v + 0.4 + gap), (v + 0.4 + gap) } * shape.axes
+			};
+			CheckSuperEllipsePolygonal(shape, triangle, (gap < 0), (gap <= 0));
+			CHECK(Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, shape) == (gap <= 0));
+			CHECK(Geometry2D::Intersects(Line{ triangle.p1, triangle.p0 }, shape) == (gap <= 0));
+		}
+	}
+	CheckSuperEllipsePolygonal(SuperEllipse{ 0, 0, 4, 4, 0.5 }, Triangle{ Vec2{ 1, 1 }, Vec2{ 2, 1 }, Vec2{ 1, 2 } }, false, true);
+	CheckSuperEllipsePolygonal(SuperEllipse{ 0, 0, 4, 4, 0.5 }, Triangle{ Vec2{ -0.1, 3 }, Vec2{ 0.1, 3 }, Vec2{ 0, 5 } }, true, true);
+	for (const double n : { 0.5, 1.0, 4.0 })
+	{
+		for (const double gap : { -1.0e-14, 0.0, 1.0e-14 })
+		{
+			const SuperEllipse shape{ 0, 0, 5, 3, n };
+			const Triangle triangle{ Vec2{ (5 + gap), -1 }, Vec2{ (5 + gap), 1 }, Vec2{ 6, 0 } };
+			CheckSuperEllipsePolygonal(shape, triangle, false, true);
+			CHECK(Geometry2D::Intersects(Line{ triangle.p0, triangle.p1 }, shape));
+			CHECK(Geometry2D::Intersects(LineString{ triangle.p0, triangle.p1 }, shape));
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.SuperEllipsePolygonal.holes_and_degeneration")
+{
+	const Polygon diamond{ Array<Vec2>{ { -8, 0 }, { 0, -4 }, { 8, 0 }, { 0, 4 } } };
+	const Polygon diamondHole{ RectF{ -20, -20, 40, 40 }.asPolygon().outer(), Array<Array<Vec2>>{ { { -8, 0 }, { 0, 4 }, { 8, 0 }, { 0, -4 } } } };
+	const Polygon rectHole{ RectF{ -20, -20, 40, 40 }.asPolygon().outer(), Array<Array<Vec2>>{ { { -8, -4 }, { -8, 4 }, { 8, 4 }, { 8, -4 } } } };
+	REQUIRE(not diamondHole.isEmpty());
+	REQUIRE(not rectHole.isEmpty());
+	const Polygon point = diamond.scaledFromOrigin(0.0);
+	const Polygon segment = diamond.scaledFromOrigin(Vec2{ 0, 1 });
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+	{
+		for (const Vec2 reflection : { Vec2{ 1, 1 }, Vec2{ -1, 1 } })
+		{
+			for (const double n : { 0.5, 1.0, 1.5, 4.0 })
+			{
+				const SuperEllipse shape{ offset, 8, 4, n };
+				auto Check = [&](const Polygon& source, const bool overlaps, const bool intersects)
+				{
+					const Polygon polygon = source.scaledFromOrigin(reflection).movedBy(offset);
+					CAPTURE(offset, reflection, n, overlaps, intersects);
+					CHECK(Geometry2D::Overlaps(shape, polygon) == overlaps);
+					CHECK(Geometry2D::Overlaps(polygon, shape) == overlaps);
+					CHECK(Geometry2D::Intersects(shape, polygon) == intersects);
+					CHECK(Geometry2D::Overlaps(shape, MultiPolygon{ Polygon{}, polygon }) == overlaps);
+				};
+				Check(diamond, true, true);
+				Check(diamondHole, (1.0 < n), true);
+				Check(rectHole, false, true);
+				Check(rectHole.scaledFromOrigin(0.999), true, true);
+				Check(rectHole.scaledFromOrigin(1.001), false, false);
+				Check(point, false, true);
+				Check(segment, false, true);
+				Check(Polygon{}, false, false);
+			}
+		}
+	}
+}

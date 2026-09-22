@@ -4143,6 +4143,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\EllipseGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\SuperEllipseGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PolygonGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>
