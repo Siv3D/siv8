@@ -12,6 +12,7 @@
 # include <Siv3D/Bezier.hpp>
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/FloatFormatter.hpp>
+# include <Siv3D/Geometry2D/BezierGeometry.hpp>
 
 namespace s3d
 {
@@ -257,160 +258,27 @@ namespace s3d
 
 	double Bezier3::computeClosestT(const position_type& targetPoint) const noexcept
 	{
-		constexpr double Eps = 1e-12;
-		constexpr double DegenerateRel = 1e-24; // relative threshold
-
-		// 退化: (ほぼ)直線 → 線分 [p0, p3] への射影
-		{
-			const Vec2 chord = (p3 - p0);
-			const double chordLenSq = chord.dot(chord);
-
-			if (chordLenSq <= Eps)
-			{
-				return 0.0; // ほぼ一点
-			}
-
-			const double scale = Max(1.0, chordLenSq);
-
-			// p1, p2 が chord にほぼ乗っているか（面積 = cross）
-			const double c1 = (p1 - p0).cross(chord);
-			const double c2 = (p2 - p0).cross(chord);
-
-			// cross^2 を length^4 に対して相対比較
-			if ((c1 * c1 <= (DegenerateRel * scale * scale))
-				&& (c2 * c2 <= (DegenerateRel * scale * scale)))
-			{
-				const double t = ((targetPoint - p0).dot(chord) / chordLenSq);
-				return Clamp(t, 0.0, 1.0);
-			}
-		}
-
-		// 端点を初期最良に
 		double bestT = 0.0;
-		double bestDistSq = targetPoint.distanceFromSq(p0);
-
+		double bestDistanceSq = targetPoint.distanceFromSq(p0);
+		const double endDistanceSq = targetPoint.distanceFromSq(p3);
+		if (endDistanceSq < bestDistanceSq)
 		{
-			const double d2 = targetPoint.distanceFromSq(p3);
-			if (d2 < bestDistSq)
-			{
-				bestDistSq = d2;
-				bestT = 1.0;
-			}
+			bestDistanceSq = endDistanceSq;
+			bestT = 1.0;
 		}
 
-		// D'(t)=0 を解く（数値）
-		// f(t) = (B(t)-P)·B'(t)
-		// f'(t)= B'(t)·B'(t) + (B(t)-P)·B''(t)
-		auto f = [this, &targetPoint](double t) noexcept -> double
+		const auto roots = detail::BezierPointStationaryParameters(std::array{ p0, p1, p2, p3 }, targetPoint);
+		for (size_t i = 0; i < roots.count; ++i)
 		{
-			const Vec2 r = (pointAt(t) - targetPoint);
-			const Vec2 d = derivativeAt(t);
-			return r.dot(d);
-		};
-
-		auto fp = [this, &targetPoint](double t) noexcept -> double
-		{
-			const Vec2 r = (pointAt(t) - targetPoint);
-			const Vec2 d1 = derivativeAt(t);
-			const Vec2 d2 = secondDerivativeAt(t);
-			return (d1.dot(d1) + r.dot(d2));
-		};
-
-		auto consider = [this, &targetPoint, &bestT, &bestDistSq](double t) noexcept
-		{
-			t = Clamp(t, 0.0, 1.0);
-			const double d2 = targetPoint.distanceFromSq(pointAt(t));
-			if (d2 < bestDistSq)
+			const double t = roots.values[i];
+			const double distanceSq = targetPoint.distanceFromSq(pointAt(t));
+			if (distanceSq < bestDistanceSq)
 			{
-				bestDistSq = d2;
+				bestDistanceSq = distanceSq;
 				bestT = t;
 			}
-		};
-
-		// 粗いサンプリングで bracket を作り、保証付き Newton で収束
-		constexpr int32 S = 64; // 分割数
-		constexpr int32 maxIter = 16;
-		constexpr double fpEps = 1e-14;
-		constexpr double tolF = 1e-12;
-
-		double tPrev = 0.0;
-		double fPrev = f(tPrev);
-
-		consider(0.0);
-
-		for (int32 i = 1; i <= S; ++i)
-		{
-			const double tCur = (static_cast<double>(i) / S);
-			const double fCur = f(tCur);
-
-			consider(tCur);
-
-			// sign change（または端のゼロ）を bracket として解く
-			const bool bracket =
-				((fPrev <= 0.0 && 0.0 <= fCur) || (fCur <= 0.0 && 0.0 <= fPrev));
-
-			if (bracket)
-			{
-				double lo = tPrev;
-				double hi = tCur;
-				double flo = fPrev;
-				double fhi = fCur;
-
-				// どちらかがほぼ 0 ならその点を候補に
-				if (Abs(flo) <= tolF) { consider(lo); }
-				if (Abs(fhi) <= tolF) { consider(hi); }
-
-				// bracket が有効なら refine
-				if (lo < hi && !(Abs(flo) <= tolF && Abs(fhi) <= tolF))
-				{
-					double t = (0.5 * (lo + hi));
-
-					for (int32 it = 0; it < maxIter; ++it)
-					{
-						t = Clamp(t, lo, hi);
-
-						const double ft = f(t);
-						if (Abs(ft) <= tolF)
-						{
-							break;
-						}
-
-						// bracket 更新
-						if ((flo <= 0.0 && 0.0 <= ft) || (ft <= 0.0 && 0.0 <= flo))
-						{
-							hi = t;
-							fhi = ft;
-						}
-						else
-						{
-							lo = t;
-							flo = ft;
-						}
-
-						double tNew = (0.5 * (lo + hi)); // fallback: bisection
-						const double fpt = fp(t);
-
-						if (fpEps < Abs(fpt))
-						{
-							const double cand = (t - ft / fpt);
-							if (cand > lo && cand < hi)
-							{
-								tNew = cand;
-							}
-						}
-
-						t = tNew;
-					}
-
-					consider(t);
-				}
-			}
-
-			tPrev = tCur;
-			fPrev = fCur;
 		}
-
-		return bestT; // [0,1]
+		return bestT;
 	}
 
 	////////////////////////////////////////////////////////////////

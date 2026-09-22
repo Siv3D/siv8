@@ -450,6 +450,27 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_RoundShapes")
 	}
 }
 
+TEST_CASE("Geometry2D.Intersects.Bezier3_ClosedAndRetracingRoundShapes")
+{
+	for (const auto& [curve, query] : {
+		std::pair{ Bezier3{ { 0, 0 }, { 100, 200 }, { -100, 200 }, { 0, 0 } }, Vec2{ 0, 151 } },
+		std::pair{ Bezier3{ { 0, 0 }, { 100, 0 }, { -50, 0 }, { 50, 0 } }, Vec2{ 10, 1 } },
+		std::pair{ Bezier3{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 100, 0 } }, Vec2{ 10, 1 } } })
+	{
+		for (const double radius : { 0.5, 1.0, 2.0 })
+		{
+			CAPTURE(curve, query, radius);
+			const bool expected = (1.0 <= radius);
+			const Circle circle{ query, radius };
+			const Ellipse ellipse{ query, (2 * radius), radius };
+			CHECK(Geometry2D::Intersects(curve, circle) == expected);
+			CHECK(Geometry2D::Intersects(circle, curve) == expected);
+			CHECK(Geometry2D::Intersects(curve, ellipse) == expected);
+			CHECK(Geometry2D::Intersects(ellipse, curve) == expected);
+		}
+	}
+}
+
 // Bezier2 と Triangle / Quad は、内部通過、境界接触、仕様で許可された単純な退化を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Bezier2_PolygonalShapes")
 {

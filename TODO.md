@@ -14,12 +14,6 @@
 - **SuperEllipse・Bezier の交点と共通点取得**: 汎用の `IntersectsAt()` は固定標本と絶対値の局所最小化で根を探す。標本間に収まる浅い交差・接触の取りこぼしと、`ClosestPoints()` の共通点取得への波及を検証し、再現例と処理量から修正範囲を決める。
 - **離れた曲線間の精度と処理量**: SuperEllipse・Bezier と点、凹 SuperEllipse（`n < 1`）と直線辺、凹 SuperEllipse・菱形（`n <= 1`）と曲線、Bezier と他種類の曲線、楕円・SuperEllipse と円弧には、固定標本・分割と局所探索による `Distance()` / `ClosestPoints()` が残る。接触付近の距離誤差と処理量をまとめて検証し、SuperEllipse の角度からの境界評価も見直す。既存の点・楕円ソルバの再利用、直線辺の厳密な処理、凹曲線向けの探索を比較し、分割数・反復数の増加だけで対応しない。
 
-## `Siv3D/include/Siv3D/Bezier3.hpp`
-
-### 点との最近点
-
-- `computeClosestT()` / `computeClosestPoint()` は、始終点が一致する曲線を点とみなし、直線上に並ぶ制御点では幾何学的な射影率をそのまま曲線のパラメータに使う。閉じた曲線で正しい距離が 1 の最近点を求めると、距離 151 の始点を返す例を確認した。Geometry2D の点向け距離・線分端点処理との計算の共通化を検討し、折り返し・複数の極小・縮退での精度と処理量を検証する。
-
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証

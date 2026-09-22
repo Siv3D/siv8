@@ -782,6 +782,7 @@
 		F93BD7DF300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7CE300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp */; };
 		F93BD7E0300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7CC300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp */; };
 		F93BD7E1300FB21400B3542E /* Test_Geometry2D_Raycast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7CF300FB21400B3542E /* Test_Geometry2D_Raycast.cpp */; };
+		D94C71C8E32144768219A412 /* Test_Bezier3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier3.cpp */; };
 		F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */; };
 		F93BD7E3300FB21400B3542E /* Test_Geometry2D_Distance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7C0300FB21400B3542E /* Test_Geometry2D_Distance.cpp */; };
 		1D34916E87204B5A936108CE /* Test_Geometry2D_Contains.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE107313882C438D856EB76E /* Test_Geometry2D_Contains.cpp */; };
@@ -911,6 +912,7 @@
 		F951225A2CB8239800151291 /* Triangulate.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95122512CB8239800151291 /* Triangulate.hpp */; };
 		C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6360779D59BA45A4BFE36368 /* TriangleFan.hpp */; };
 		5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */; };
+		D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A411 /* BezierGeometry.hpp */; };
 		F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */; };
 		0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FD27361D562242F4A48719CB /* PolygonGeometry.hpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
@@ -4189,6 +4191,7 @@
 		F93BD7D0300FB21400B3542E /* Test_Geometry2D_Raycast_Availability.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Raycast_Availability.cpp; sourceTree = "<group>"; };
 		F93BD7D1300FB21400B3542E /* Test_Geometry2D_SignedDistance.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_SignedDistance.cpp; sourceTree = "<group>"; };
 		F93BD7D2300FB21400B3542E /* Test_Geometry2D_SignedDistance_Availability.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_SignedDistance_Availability.cpp; sourceTree = "<group>"; };
+		D94C71C8E32144768219A413 /* Test_Bezier3.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Bezier3.cpp; sourceTree = "<group>"; };
 		F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_PolynomialSolver.cpp; sourceTree = "<group>"; };
 		F93BD7E93016825E00B3542E /* Test_Format_2DShapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Format_2DShapes.cpp; sourceTree = "<group>"; };
 		F93BD7EB3016828C00B3542E /* Mesh2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mesh2D.hpp; sourceTree = "<group>"; };
@@ -4311,6 +4314,7 @@
 		F95122512CB8239800151291 /* Triangulate.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Triangulate.hpp; sourceTree = "<group>"; };
 		6360779D59BA45A4BFE36368 /* TriangleFan.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TriangleFan.hpp; sourceTree = "<group>"; };
 		70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = EllipseGeometry.hpp; sourceTree = "<group>"; };
+		D94C71C8E32144768219A411 /* BezierGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BezierGeometry.hpp; sourceTree = "<group>"; };
 		F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipseGeometry.hpp; sourceTree = "<group>"; };
 		FD27361D562242F4A48719CB /* PolygonGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolygonGeometry.hpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
@@ -7084,6 +7088,7 @@
 				F9528B312BB0564800222F45 /* Test_MemoryMappedFileView.cpp */,
 				F90702C22B9DAEB900383E4D /* Test_NamedParameter.cpp */,
 				F90702C32B9DAEB900383E4D /* Test_Platform.cpp */,
+				D94C71C8E32144768219A413 /* Test_Bezier3.cpp */,
 				F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */,
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
 				F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */,
@@ -9812,6 +9817,7 @@
 				F93BD7A1300FB1B200B3542E /* SivGeometry2D_ConvexHull.cpp */,
 				F93BD7A2300FB1B200B3542E /* SivGeometry2D_Distance.cpp */,
 				70D30F6EBB2948D3BC0CCF16 /* EllipseGeometry.hpp */,
+				D94C71C8E32144768219A411 /* BezierGeometry.hpp */,
 				F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */,
 				FD27361D562242F4A48719CB /* PolygonGeometry.hpp */,
 				F93BD7A3300FB1B200B3542E /* SivGeometry2D_Intersects.cpp */,
@@ -16040,6 +16046,7 @@
 				F951225A2CB8239800151291 /* Triangulate.hpp in Headers */,
 				C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */,
 				5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */,
+				D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */,
 				F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */,
 				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
@@ -16772,6 +16779,7 @@
 				F93BD7DF300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp in Sources */,
 				F93BD7E0300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp in Sources */,
 				F93BD7E1300FB21400B3542E /* Test_Geometry2D_Raycast.cpp in Sources */,
+				D94C71C8E32144768219A412 /* Test_Bezier3.cpp in Sources */,
 				F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */,
 				F93BD7E3300FB21400B3542E /* Test_Geometry2D_Distance.cpp in Sources */,
 				1D34916E87204B5A936108CE /* Test_Geometry2D_Contains.cpp in Sources */,
