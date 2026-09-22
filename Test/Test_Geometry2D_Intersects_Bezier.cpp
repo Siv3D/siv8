@@ -662,6 +662,102 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_RoundRect")
 	}
 }
 
+namespace
+{
+	template <class Bezier>
+	void CheckBezierRoundRect(const Bezier& curve, const RoundRect& shape, const bool expected)
+	{
+		CHECK(Geometry2D::Intersects(curve, shape) == expected);
+		CHECK(Geometry2D::Intersects(shape, curve) == expected);
+		CHECK(Geometry2D::Intersects(curve.reversed(), shape) == expected);
+		CHECK(Geometry2D::Intersects(shape, curve.reversed()) == expected);
+	}
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier_RoundRect.ApproximationRegression")
+{
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		const Vec2 offset = (Vec2{ 3, -5 } * scale);
+		const auto Transform = [&](const Vec2& p) { return (p * scale + offset); };
+		const auto CheckQuadratic = [&](const Bezier2& curve, const RoundRect& shape, const bool expected)
+		{
+			const Bezier2 q{ Transform(curve.p0), Transform(curve.p1), Transform(curve.p2) };
+			const Bezier3 c{ q.p0, (q.p0 + (q.p1 - q.p0) * (2.0 / 3)),
+				(q.p2 + (q.p1 - q.p2) * (2.0 / 3)), q.p2 };
+			const RoundRect r{ RectF{ Transform(shape.rect.pos), (shape.rect.size * scale) }, (shape.r * scale) };
+			CheckBezierRoundRect(q, r, expected);
+			CheckBezierRoundRect(c, r, expected);
+		};
+		// The chord crosses the rectangle while the curve stays above it.
+		CheckQuadratic(Bezier2{ { -1, 0 }, { 0, 0.1 }, { 1, 0 } }, RoundRect{ -0.02, -0.01, 0.04, 0.02, 0.005 }, false);
+
+		constexpr double u = 0.371;
+		const Vec2 c0{ (-100 * u), (100 * u * u) }, c1{ 100, (-200 * u) }, c2{ 0, 100 };
+		const Bezier2 parabola{ c0, (c0 + c1 / 2), (c0 + c1 + c2) };
+		for (const double gap : { -1e-8, 1e-8 })
+		{
+			CheckQuadratic(parabola, RoundRect{ -1, (-6 - gap), 2, 6, 1 }, (gap < 0.0));
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier_RoundRect.Corners")
+{
+	for (const double scale : { 0.125, 1.0, 1024.0 })
+	{
+		for (const bool reflectX : { false, true })
+		{
+			for (const bool reflectY : { false, true })
+			{
+				const Vec2 offset = (Vec2{ 17, -23 } * scale);
+				const auto Transform = [&](Vec2 p)
+				{
+					if (reflectX) { p.x = (30 - p.x); }
+					if (reflectY) { p.y = (40 - p.y); }
+					return (p * scale + offset);
+				};
+				const RoundRect rounded{ RectF{ offset, SizeF{ 30 * scale, 40 * scale } }, (5 * scale) };
+				for (const double gap : { -1e-6, 0.0, 1e-6 })
+				{
+					const Vec2 p = (Vec2{ 2, 1 } + Vec2{ -3, -4 } * gap);
+					const Vec2 tangent{ 4, -3 };
+					CheckBezierRoundRect(Bezier2{ Transform(p - tangent), Transform(p), Transform(p + tangent) }, rounded, (gap <= 0.0));
+					CheckBezierRoundRect(Bezier3{ Transform(p - 3 * tangent), Transform(p - tangent),
+						Transform(p + tangent), Transform(p + 3 * tangent) }, rounded, (gap <= 0.0));
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier_RoundRect.Boundaries")
+{
+	const auto CheckCurve = [&](const auto& curve)
+	{
+		for (const auto& rounded : { RoundRect{ 0, 0, 10, 10, 2 }, RoundRect{ 0, 0, 10, 10, 100 },
+			RoundRect{ 0, 0, 10, 20, 100 }, RoundRect{ 0, 0, 20, 10, 100 }, RoundRect{ 0, 0, 10, 10, 0 } })
+		{
+			CheckBezierRoundRect(curve, rounded, true);
+			CheckBezierRoundRect(curve, rounded.movedBy(0, 6), false);
+		}
+		CheckBezierRoundRect(curve, RoundRect{ 5, 0, 0, 10, 2 }, true);
+		CheckBezierRoundRect(curve, RoundRect{ 0, 5, 10, 0, 2 }, true);
+		CheckBezierRoundRect(curve, RoundRect{ 0, 6, 10, 0, 2 }, false);
+		CheckBezierRoundRect(curve, RoundRect{ 5, 5, 0, 0, 2 }, false);
+	};
+	CheckCurve(Bezier2{ { -1, 5 }, { 5, 5 }, { 11, 5 } });
+	CheckCurve(Bezier3{ { -1, 5 }, { 100, 5 }, { -100, 5 }, { 11, 5 } });
+	CheckCurve(Bezier2{ { 5, 5 }, { 5, 5 }, { 5, 5 } });
+	CheckCurve(Bezier3{ { 5, 5 }, { 5, 5 }, { 5, 5 }, { 5, 5 } });
+	CheckBezierRoundRect(Bezier2{ { 5, 4 }, { 6, 8 }, { 4, 6 } }, RoundRect{ 0, 0, 10, 10, 2 }, true);
+	CheckBezierRoundRect(Bezier3{ { 0, 0 }, { 100, 200 }, { -100, 200 }, { 0, 0 } }, RoundRect{ -1, 149.9, 2, 6, 1 }, true);
+	CheckBezierRoundRect(Bezier2{ { 0, 0 }, { 0, 0 }, { 0, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, false);
+	CheckBezierRoundRect(Bezier3{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, false);
+	CheckBezierRoundRect(Bezier2{ { -1, 0 }, { 5, 0 }, { 11, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, true);
+	CheckBezierRoundRect(Bezier3{ { -1, 0 }, { 3, 0 }, { 7, 0 }, { 11, 0 } }, RoundRect{ 0, 0, 10, 10, 2 }, true);
+}
+
 // Bezier2 と Bezier2 / Bezier3 は、近似線分化と既存 Line x Bezier kernel による交差判定を扱うことを確認する。
 TEST_CASE("Geometry2D.Intersects.Bezier2_Curves")
 {

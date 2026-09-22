@@ -11,7 +11,7 @@
 
 ### 曲線の交点・距離計算
 
-- **SuperEllipse・Bezier の交差・交点・共通点取得**: `Bezier × RoundRect` の `Intersects()` は折れ線近似により偽陽性・偽陰性が生じる。点・線分との最近点計算を再利用する `Distance()` と共有できる処理を検討し、判定の精度と処理量を比較する。汎用の `IntersectsAt()` は固定標本と絶対値の局所最小化で根を探す。標本間に収まる浅い交差・接触の取りこぼしと、`ClosestPoints()` の共通点取得への波及を検証し、再現例と処理量から修正範囲を決める。
+- **SuperEllipse・Bezier の交差・交点・共通点取得**: Bezier 同士と `Bezier × SuperEllipse`（`n != 2`）の `Intersects()` に残る折れ線近似について、偽陽性・偽陰性と処理量をまとめて検証する。汎用の `IntersectsAt()` は固定標本と絶対値の局所最小化で根を探す。標本間に収まる浅い交差・接触の取りこぼしと、`ClosestPoints()` の共通点取得への波及を検証し、再現例と処理量から修正範囲を決める。
 - **離れた曲線間の精度と処理量**: SuperEllipse と点、凹 SuperEllipse（`n < 1`）と直線辺、凹 SuperEllipse・菱形（`n <= 1`）と曲線、Bezier と楕円・SuperEllipse、楕円・SuperEllipse と円弧には、固定標本・分割と局所探索による `Distance()` / `ClosestPoints()` が残る。接触付近の距離誤差と処理量をまとめて検証し、SuperEllipse の角度からの境界評価も見直す。既存の点・楕円ソルバの再利用、直線辺の厳密な処理、凹曲線向けの探索を比較し、分割数・反復数の増加だけで対応しない。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`

@@ -1131,8 +1131,9 @@ namespace s3d
 				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, curve));
 		}
 
+		template <class Bezier>
 		[[nodiscard]]
-		bool IntersectsBezier2RoundRect(const Bezier2& curve, const RoundRect& roundRect)
+		bool IntersectsBezierRoundRect(const Bezier& curve, const RoundRect& roundRect)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
 
@@ -1154,12 +1155,45 @@ namespace s3d
 				return Geometry2D::Intersects(rect, curve);
 			}
 
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
+			const RectF curveBounds = curve.computeBoundingRect();
+			if (not BoundsIntersectClosed(curveBounds, rect))
 			{
 				return false;
 			}
 
-			return IntersectsBezier2ApproximateShape(curve, roundRect);
+			if (Geometry2D::Intersects(curve.p0, roundRect))
+			{
+				return true;
+			}
+
+			// Two central rectangles and the corner disks cover the rounded rectangle.
+			const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
+			if ((0.0 < core.w) && Geometry2D::Intersects(curve, RectF{ core.x, rect.y, core.w, rect.h }))
+			{
+				return true;
+			}
+			if ((0.0 < core.h) && Geometry2D::Intersects(curve, RectF{ rect.x, core.y, rect.w, core.h }))
+			{
+				return true;
+			}
+
+			// Circle and capsule cores have fewer distinct corner disks.
+			const int32 columns = ((core.w == 0.0) ? 1 : 2);
+			const int32 rows = ((core.h == 0.0) ? 1 : 2);
+			for (int32 y = 0; y < rows; ++y)
+			{
+				for (int32 x = 0; x < columns; ++x)
+				{
+					const Vec2 center{ (core.x + x * core.w), (core.y + y * core.h) };
+					const RectF circleBounds{ (center.x - er), (center.y - er), (2.0 * er), (2.0 * er) };
+					if (BoundsIntersectClosed(curveBounds, circleBounds)
+						&& (detail::ClosestPointOnBezier(curve, center).distanceSq <= (er * er)))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		[[nodiscard]]
@@ -1465,37 +1499,6 @@ namespace s3d
 				|| Geometry2D::Intersects(Line{ quad.p1, quad.p2 }, curve)
 				|| Geometry2D::Intersects(Line{ quad.p2, quad.p3 }, curve)
 				|| Geometry2D::Intersects(Line{ quad.p3, quad.p0 }, curve));
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier3RoundRect(const Bezier3& curve, const RoundRect& roundRect)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(roundRect, kind), curve);
-			}
-
-			const RectF& rect = roundRect.rect;
-			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
-
-			if (er == 0.0)
-			{
-				return Geometry2D::Intersects(rect, curve);
-			}
-
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), rect))
-			{
-				return false;
-			}
-
-			return IntersectsBezier3ApproximateShape(curve, roundRect);
 		}
 
 		[[nodiscard]]
@@ -3177,7 +3180,7 @@ namespace s3d
 
 		bool Intersects(const Bezier2& curve, const RoundRect& roundRect)
 		{
-			return IntersectsBezier2RoundRect(curve, roundRect);
+			return IntersectsBezierRoundRect(curve, roundRect);
 		}
 
 		bool Intersects(const Bezier2& curve, const Polygon& polygon)
@@ -3271,7 +3274,7 @@ namespace s3d
 
 		bool Intersects(const Bezier3& curve, const RoundRect& roundRect)
 		{
-			return IntersectsBezier3RoundRect(curve, roundRect);
+			return IntersectsBezierRoundRect(curve, roundRect);
 		}
 
 		bool Intersects(const Bezier3& curve, const Polygon& polygon)
