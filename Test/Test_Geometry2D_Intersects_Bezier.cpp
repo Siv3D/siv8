@@ -814,3 +814,104 @@ TEST_CASE("Geometry2D.Intersects.Bezier3_Curves")
 		CHECK(Geometry2D::Intersects(a, b) == Geometry2D::Intersects(b, a));
 	}
 }
+
+TEST_CASE("Geometry2D.Intersects.Bezier.SimpleGeometry")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const bool expected)
+	{
+		CHECK(Geometry2D::Intersects(a, b) == expected);
+		CHECK(Geometry2D::Intersects(b, a) == expected);
+		CHECK(Geometry2D::Intersects(a.reversed(), b) == expected);
+		CHECK(Geometry2D::Intersects(a, b.reversed()) == expected);
+	};
+	for (const double scale : { 1.0e-4, 1.0, 1.0e4 })
+	{
+		const Bezier2 arch{ Vec2{ -1, 0 } * scale, Vec2{ 0, 0.2 } * scale, Vec2{ 1, 0 } * scale };
+		for (const double y : { 0.0, 0.099, 0.1, 0.101 })
+		{
+			CAPTURE(scale, y);
+			const Bezier2 straight{ Vec2{ -0.2, y } * scale, Vec2{ 0, y } * scale, Vec2{ 0.2, y } * scale };
+			const bool expected = ((y == 0.099) || (y == 0.1));
+			CheckPair(arch, straight, expected);
+			CheckPair(arch, Elevate(straight), expected);
+			CheckPair(Elevate(arch), straight, expected);
+			CheckPair(Elevate(arch), Elevate(straight), expected);
+		}
+		for (const double gap : { 0.0, (1.0e-4 * scale) })
+		{
+			const Vec2 p = (arch.pointAt(0.371) + Vec2{ 0, gap });
+			const Bezier2 point{ p, p, p };
+			CheckPair(arch, point, (gap == 0.0));
+			CheckPair(arch, Elevate(point), (gap == 0.0));
+			CheckPair(Elevate(arch), point, (gap == 0.0));
+			CheckPair(Elevate(arch), Elevate(point), (gap == 0.0));
+		}
+	}
+	const auto CheckRetracing = [&](const auto& curve, const double inside, const double outside)
+	{
+		for (const double x : { inside, outside })
+		{
+			const Bezier2 point{ { x, 0 }, { x, 0 }, { x, 0 } };
+			CheckPair(curve, point, (x == inside));
+			CheckPair(curve, Elevate(point), (x == inside));
+		}
+	};
+	CheckRetracing(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, 50.0, 50.01);
+	CheckRetracing(Bezier3{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } }, 28.8, 29.0);
+	CheckRetracing(Bezier3{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } }, -28.8, -29.0);
+	CheckPair(Bezier2{ { 0, 0 }, { 0, 100 }, { 0, 0 } }, Bezier3{ { 0, 50 }, { 0, 51 }, { 0, 52 }, { 0, 53 } }, true);
+	CheckPair(Bezier2{ { 0, 0 }, { 100, 100 }, { 0, 0 } }, Bezier2{ { 50, 50 }, { 51, 51 }, { 52, 52 } }, true);
+	CheckPair(Bezier2{ { 1, 2 }, { 1, 2 }, { 1, 2 } }, Bezier3{ { 1, 2 }, { 1, 2 }, { 1, 2 }, { 1, 2 } }, true);
+	CheckPair(Bezier2{ { 1, 2 }, { 1, 2 }, { 1, 2 } }, Bezier3{ { 1, 3 }, { 1, 3 }, { 1, 3 }, { 1, 3 } }, false);
+	CheckPair(Bezier3{ { 20, 76 }, { -63, 13 }, { -18, -66 }, { 43, 60 } },
+		Bezier3{ { 2, -2 }, { 2, 2 }, { 2, 5 }, { 2, 3 } }, true);
+	CheckPair(Bezier3{ { -29, 8 }, { 60, 72 }, { -88, 36 }, { 55, 54 } },
+		Bezier2{ { 5, 23 }, { 5, 41 }, { 5, 54 } }, true);
+	// A small but nonzero curvature must not become the endpoint chord.
+	CheckPair(Bezier2{ { -1, 0 }, { 0, 1.0e-15 }, { 1, 0 } }, Bezier2{ { -0.2, 0 }, { 0, 0 }, { 0.2, 0 } }, false);
+}
+
+TEST_CASE("Geometry2D.Intersects.Bezier.Diamond")
+{
+	const auto Check = [](const auto& curve)
+	{
+		for (const double scale : { (1.0 / 16384), 1.0, 16384.0 })
+		{
+			for (const auto [centerY, axisY, expected] : { std::tuple{ 0.0, 0.01, false },
+				std::tuple{ 0.1, 0.001, true }, std::tuple{ 0.11, 0.01, true }, std::tuple{ 0.111, 0.01, false } })
+			{
+				const auto a = [&]
+				{
+					if constexpr (std::is_same_v<std::decay_t<decltype(curve)>, Bezier2>)
+					{
+						return Bezier2{ curve.p0 * scale, curve.p1 * scale, curve.p2 * scale };
+					}
+					else
+					{
+						return Bezier3{ curve.p0 * scale, curve.p1 * scale, curve.p2 * scale, curve.p3 * scale };
+					}
+				}();
+				const SuperEllipse b{ Vec2{ 0, centerY * scale }, Vec2{ 0.02, axisY } * scale, 1.0 };
+				CAPTURE(scale, centerY);
+				CHECK(Geometry2D::Intersects(a, b) == expected);
+				CHECK(Geometry2D::Intersects(b, a) == expected);
+				CHECK(Geometry2D::Intersects(a.reversed(), b) == expected);
+			}
+		}
+	};
+	Check(Bezier2{ { -1, 0 }, { 0, 0.2 }, { 1, 0 } });
+	Check(Bezier3{ { -1, 0 }, { -1.0 / 3, 0.4 / 3 }, { 1.0 / 3, 0.4 / 3 }, { 1, 0 } });
+	for (const double n : { 0.5, 1.0, 2.0, 4.0 })
+	{
+		const SuperEllipse shape{ Vec2{ 49, 0 }, Vec2{ 1, 2 }, n };
+		CHECK(Geometry2D::Intersects(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, shape));
+		CHECK(not Geometry2D::Intersects(Bezier2{ { 51, 0 }, { 51, 0 }, { 51, 0 } }, shape));
+	}
+	const Bezier2 curve{ { -1, 0 }, { 0, 1 }, { 1, 0 } };
+	CHECK(not Geometry2D::Intersects(curve, SuperEllipse{ 0, 0, 0, 0, 1 }));
+	CHECK(Geometry2D::Intersects(curve, SuperEllipse{ 0, 0, 0, 1, 1 }));
+}

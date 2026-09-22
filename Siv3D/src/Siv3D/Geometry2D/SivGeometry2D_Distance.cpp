@@ -2427,21 +2427,24 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ComputeClosestPoints(const ShapeA& a, const ShapeB& b)
 		{
-			if constexpr (ShapeRank<ShapeB> < ShapeRank<ShapeA>)
+			return detail::WithSimpleBezierPair(a, b, [](const auto& a, const auto& b)
 			{
-				auto result = ComputeClosestPointsCanonical(b, a);
-
-				if (result)
+				if constexpr (ShapeRank<std::decay_t<decltype(b)>> < ShapeRank<std::decay_t<decltype(a)>>)
 				{
-					std::swap(result->pointA, result->pointB);
-				}
+					auto result = ComputeClosestPointsCanonical(b, a);
 
-				return result;
-			}
-			else
-			{
-				return ComputeClosestPointsCanonical(a, b);
-			}
+					if (result)
+					{
+						std::swap(result->pointA, result->pointB);
+					}
+
+					return result;
+				}
+				else
+				{
+					return ComputeClosestPointsCanonical(a, b);
+				}
+			});
 		}
 
 		template <class ShapeA, class ShapeB>
@@ -2474,14 +2477,17 @@ namespace s3d
 		[[nodiscard]]
 		double ComputeDistance(const ShapeA& a, const ShapeB& b)
 		{
-			if constexpr (ShapeRank<ShapeB> < ShapeRank<ShapeA>)
+			return detail::WithSimpleBezierPair(a, b, [](const auto& a, const auto& b)
 			{
-				return ComputeDistanceCanonical(b, a);
-			}
-			else
-			{
-				return ComputeDistanceCanonical(a, b);
-			}
+				if constexpr (ShapeRank<std::decay_t<decltype(b)>> < ShapeRank<std::decay_t<decltype(a)>>)
+				{
+					return ComputeDistanceCanonical(b, a);
+				}
+				else
+				{
+					return ComputeDistanceCanonical(a, b);
+				}
+			});
 		}
 	}
 

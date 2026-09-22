@@ -32,7 +32,7 @@ namespace
 	}
 
 	void CheckPointSet(const Optional<Array<Vec2>>& actual,
-		const std::initializer_list<Vec2> expected, const double tolerance = 1.0e-7)
+		const Array<Vec2>& expected, const double tolerance = 1.0e-7)
 	{
 		REQUIRE(actual.has_value());
 		CHECK(actual->size() == expected.size());
@@ -406,4 +406,56 @@ TEST_CASE("Geometry2D.IntersectsAt.Ellipse.CircleArcs")
 			CHECK(ContainsNear(*actual, point));
 		}
 	}
+}
+
+TEST_CASE("Geometry2D.IntersectsAt.Bezier.SimpleGeometry")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const Bezier2 arch{ { -1, 0 }, { 0, 0.2 }, { 1, 0 } };
+	const auto CheckPair = [](const auto& a, const auto& b, const Array<Vec2>& expected)
+	{
+		CheckPointSet(Geometry2D::IntersectsAt(a, b), expected, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(b, a), expected, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(a.reversed(), b), expected, 1.0e-10);
+	};
+	for (const double y : { 0.099, 0.1 })
+	{
+		const Bezier2 straight{ { -0.2, y }, { 0, y }, { 0.2, y } };
+		const Array<Vec2> expected = ((y == 0.1) ? Array<Vec2>{ { 0, y } } : Array<Vec2>{ { -0.1, y }, { 0.1, y } });
+		CheckPair(arch, straight, expected);
+		CheckPair(arch, Elevate(straight), expected);
+		CheckPair(Elevate(arch), straight, expected);
+		CheckPair(Elevate(arch), Elevate(straight), expected);
+	}
+	const Vec2 point = arch.pointAt(0.371);
+	CheckPair(arch, Bezier2{ point, point, point }, { point });
+	CheckPair(Elevate(arch), Bezier3{ point, point, point, point }, { point });
+	const Bezier2 retracing{ { 0, 0 }, { 100, 0 }, { 0, 0 } };
+	CheckPair(retracing, Bezier3{ { 50, 0 }, { 51, 0 }, { 52, 0 }, { 53, 0 } }, { { 50, 0 } });
+	const auto overlap = Geometry2D::IntersectsAt(retracing, Bezier2{ { 49, 0 }, { 50, 0 }, { 51, 0 } });
+	REQUIRE(overlap.has_value());
+	CHECK(overlap->empty());
+	CHECK(not Geometry2D::IntersectsAt(arch, Bezier2{ { -0.2, 0 }, { 0, 0 }, { 0.2, 0 } }));
+
+	// Both roots fall within one interval of the former uniform sampling.
+	const double t = 0.371, gap = 1.0e-8;
+	const Bezier2 narrow{ { 0, t * t - gap }, { 0.5, t * t - t - gap }, { 1, (1 - t) * (1 - t) - gap } };
+	CheckPointSet(Geometry2D::IntersectsAt(Line{ 0, 0, 1, 0 }, narrow), { { t - 0.0001, 0 }, { t + 0.0001, 0 } }, 1.0e-10);
+	// Cubic y(t) = (t - .2)(t - .201)(t - .8), x(t) = t.
+	const double d = -0.2 * 0.201 * 0.8, c = (0.2 * 0.201 + 0.2 * 0.8 + 0.201 * 0.8), b = -(0.2 + 0.201 + 0.8);
+	const Bezier3 cubic{ { 0, d }, { 1.0 / 3, d + c / 3 }, { 2.0 / 3, d + 2 * c / 3 + b / 3 }, { 1, d + c + b + 1 } };
+	CheckPointSet(Geometry2D::IntersectsAt(Line{ 0, 0, 1, 0 }, cubic), { { 0.2, 0 }, { 0.201, 0 }, { 0.8, 0 } }, 1.0e-10);
+
+	CheckPair(Bezier3{ { 20, 76 }, { -63, 13 }, { -18, -66 }, { 43, 60 } },
+		Bezier3{ { 2, -2 }, { 2, 2 }, { 2, 5 }, { 2, 3 } }, { { 2, 0.484375 } });
+
+	const SuperEllipse diamond{ 0, 0.1, 0.01, 0.001, 1 };
+	const double x = (0.02 / (1.0 + std::sqrt(1.04)));
+	const Array<Vec2> expected{ { -x, 0.1 * (1 - x * x) }, { x, 0.1 * (1 - x * x) } };
+	CheckPair(arch, diamond, expected);
+	CheckPair(Elevate(arch), diamond, expected);
+	CheckPair(arch, SuperEllipse{ 0, 0.11, 0.02, 0.01, 1 }, { { 0, 0.1 } });
 }

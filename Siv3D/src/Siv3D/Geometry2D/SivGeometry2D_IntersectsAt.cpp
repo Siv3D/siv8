@@ -21,6 +21,7 @@
 # include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/IntersectsAt.hpp>
+# include "BezierGeometry.hpp"
 # include "EllipseGeometry.hpp"
 # include "PolygonGeometry.hpp"
 
@@ -1129,9 +1130,8 @@ namespace s3d
 		void ProcessLineBezier(IntersectionAccumulator& accumulator, const Line& line, const Bezier& bezier)
 		{
 			const Vec2 d = (line.end - line.start);
-			const double length = std::sqrt(d.dot(d));
 
-			if (length == 0.0)
+			if (line.start == line.end)
 			{
 				if (Geometry2D::Intersects(line.start, bezier))
 				{
@@ -1140,15 +1140,36 @@ namespace s3d
 				return;
 			}
 
-			if (AppendParametricRoots(accumulator,
-				[&](const double t) { return bezier.pointAt(t); },
-				[&](const double t)
-				{
-					return (d.cross(bezier.pointAt(t) - line.start) / Max(length, 1.0));
-				},
-				[&](const Vec2& point) { return PointOnLine(point, line); }))
+			Line extent;
+			if (detail::TryGetBezierSegment(bezier, extent))
 			{
-				accumulator.positiveDimensionalComponents.emplace_back(bezier);
+				ProcessLineLine(accumulator, line, extent);
+				return;
+			}
+
+			const auto AppendRoot = [&](const double t)
+			{
+				const Vec2 point = bezier.pointAt(t);
+				if (PointOnLine(point, line))
+				{
+					AppendPoint(accumulator, point);
+				}
+				return false;
+			};
+			const double c0 = d.cross(bezier.p0 - line.start);
+			const double c1 = d.cross(bezier.p1 - line.start);
+			const double c2 = d.cross(bezier.p2 - line.start);
+			if constexpr (std::is_same_v<Bezier, Bezier2>)
+			{
+				(void)detail::CheckQuadraticRootsInUnitInterval(
+					(c0 - 2.0 * c1 + c2), (2.0 * (c1 - c0)), c0, AppendRoot);
+			}
+			else
+			{
+				const double c3 = d.cross(bezier.p3 - line.start);
+				(void)detail::CheckCubicRootsInUnitInterval(
+					(-c0 + 3.0 * c1 - 3.0 * c2 + c3), (3.0 * c0 - 6.0 * c1 + 3.0 * c2),
+					(3.0 * (c1 - c0)), c0, AppendRoot);
 			}
 		}
 
@@ -1490,13 +1511,16 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> ComputeIntersectsAt(const ShapeA& a, const ShapeB& b)
 		{
-			if (not Geometry2D::Intersects(a, b))
+			return detail::WithSimpleBezierPair(a, b, [](const auto& a, const auto& b) -> Optional<Array<Vec2>>
 			{
-				return none;
-			}
+				if (not Geometry2D::Intersects(a, b))
+				{
+					return none;
+				}
 
-			return EnumerateKnownIntersection(
-				MakeShapeIntersectionData(a), MakeShapeIntersectionData(b));
+				return EnumerateKnownIntersection(
+					MakeShapeIntersectionData(a), MakeShapeIntersectionData(b));
+			});
 		}
 	}
 

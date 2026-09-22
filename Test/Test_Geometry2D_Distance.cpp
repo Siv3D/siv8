@@ -1275,3 +1275,51 @@ TEST_CASE("Geometry2D.Distance.Polygon.point_collapse")
 	CHECK(std::isinf(Geometry2D::Distance(collapsed, MultiPolygon{ Polygon{} })));
 	CHECK(not Geometry2D::ClosestPoints(collapsed, MultiPolygon{ Polygon{} }));
 }
+
+TEST_CASE("Geometry2D.Distance.Bezier.SimpleGeometry")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const double expected)
+	{
+		CHECK(Geometry2D::Distance(a, b) == Test::Approx(expected).epsilon(1.0e-11));
+		CHECK(Geometry2D::Distance(b, a) == Test::Approx(expected).epsilon(1.0e-11));
+		const auto ab = Geometry2D::ClosestPoints(a, b);
+		const auto ba = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(ab);
+		REQUIRE(ba);
+		CHECK(ab->distance == Test::Approx(expected).epsilon(1.0e-11));
+		CHECK(ba->distance == Test::Approx(expected).epsilon(1.0e-11));
+		CHECK(Geometry2D::Distance(ab->pointA, a) < 1.0e-10);
+		CHECK(Geometry2D::Distance(ab->pointB, b) < 1.0e-10);
+		CHECK(Geometry2D::Distance(ba->pointB, a) < 1.0e-10);
+		CHECK(Geometry2D::Distance(ba->pointA, b) < 1.0e-10);
+		CheckWitnessConsistency(*ab);
+		CheckWitnessConsistency(*ba);
+	};
+	const Bezier2 arch{ { -1, 0 }, { 0, 0.2 }, { 1, 0 } };
+	for (const double y : { 0.0, 0.099, 0.1 })
+	{
+		const Bezier2 straight{ { -0.2, y }, { 0, y }, { 0.2, y } };
+		const double expected = ((y == 0.0) ? 0.095921794750111 : 0.0);
+		CheckPair(arch, straight, expected);
+		CheckPair(arch, Elevate(straight), expected);
+		CheckPair(Elevate(arch), straight, expected);
+		CheckPair(Elevate(arch), Elevate(straight), expected);
+		CheckPair(arch.reversed(), straight, expected);
+	}
+	const Vec2 point = arch.pointAt(0.371);
+	CheckPair(arch, Bezier2{ point, point, point }, 0.0);
+	CheckPair(Elevate(arch), Bezier3{ point, point, point, point }, 0.0);
+	CheckPair(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, Bezier2{ { 49, 0 }, { 50, 0 }, { 51, 0 } }, 0.0);
+	CheckPair(Bezier2{ { 0, 0 }, { 100, 0 }, { 0, 0 } }, Bezier2{ { 51, 0 }, { 51, 0 }, { 51, 0 } }, 1.0);
+	CheckPair(Bezier3{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } }, Bezier2{ { 30, 0 }, { 30, 0 }, { 30, 0 } }, (30 - 50 / std::sqrt(3.0)));
+	for (const auto [diamond, distance] : { std::pair{ SuperEllipse{ 0, 0, 0.02, 0.01, 1 }, 0.09 },
+		std::pair{ SuperEllipse{ 0, 0.1, 0.01, 0.001, 1 }, 0.0 }, std::pair{ SuperEllipse{ 0, 0.11, 0.02, 0.01, 1 }, 0.0 } })
+	{
+		CheckPair(arch, diamond, distance);
+		CheckPair(Elevate(arch), diamond, distance);
+	}
+}

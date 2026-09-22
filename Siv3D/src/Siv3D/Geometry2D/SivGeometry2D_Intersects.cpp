@@ -31,7 +31,8 @@ namespace s3d
 	namespace
 	{
 		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
-		inline constexpr double BezierRootTolerance = (64.0 * DoubleEpsilon);
+		using detail::CheckQuadraticRootsInUnitInterval;
+		using detail::CheckCubicRootsInUnitInterval;
 		inline constexpr double BezierPointTolerance = (64.0 * DoubleEpsilon);
 
 		[[nodiscard]]
@@ -63,121 +64,12 @@ namespace s3d
 		[[nodiscard]]
 		constexpr bool BezierRootPointIsOnSegmentRange(const Vec2& p, const Line& segment) noexcept
 		{
-			return NearlyBetweenBezierCoordinate(segment.start.x, p.x, segment.end.x)
-				&& NearlyBetweenBezierCoordinate(segment.start.y, p.y, segment.end.y);
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool CheckQuadraticRootsInUnitInterval(const double a, const double b, const double c, Fty&& callback)
-		{
-			// Normalize by the polynomial's own scale. Using a fixed 1.0 floor here
-			// incorrectly classifies valid small-scale polynomials as identically zero.
-			const double coefficientScale = Max({ Abs(a), Abs(b), Abs(c) });
-
-			if (coefficientScale == 0.0)
-			{
-				return false;
-			}
-
-			const double na = (a / coefficientScale);
-			const double nb = (b / coefficientScale);
-			const double nc = (c / coefficientScale);
-
-			auto CheckRoot = [&](double t)
-			{
-				if (InRange(t, -BezierRootTolerance, (1.0 + BezierRootTolerance)))
-				{
-					t = Clamp(t, 0.0, 1.0);
-					return callback(t);
-				}
-
-				return false;
-			};
-
-			if (Abs(na) <= BezierRootTolerance)
-			{
-				if (Abs(nb) <= BezierRootTolerance)
-				{
-					return false;
-				}
-
-				return CheckRoot(-nc / nb);
-			}
-
-			const double discriminantScale = (Abs(nb * nb) + Abs(4.0 * na * nc));
-			const double discriminantTolerance = (BezierRootTolerance * discriminantScale);
-			double discriminant = std::fma(nb, nb, -4.0 * na * nc);
-
-			if (discriminant < -discriminantTolerance)
-			{
-				return false;
-			}
-
-			if (discriminant < 0.0)
-			{
-				discriminant = 0.0;
-			}
-
-			const double s = std::sqrt(discriminant);
-
-			if (s == 0.0)
-			{
-				return CheckRoot(-nb / (2.0 * na));
-			}
-
-			const double q = (-0.5 * (nb + ((nb < 0.0) ? -s : s)));
-
-			if (q == 0.0)
-			{
-				return CheckRoot(-nb / (2.0 * na));
-			}
-
-			if (CheckRoot(q / na))
-			{
-				return true;
-			}
-
-			return CheckRoot(nc / q);
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool CheckCubicRootsInUnitInterval(const double a, const double b, const double c, const double d, Fty&& callback)
-		{
-			const double coefficientScale = Max({ Abs(a), Abs(b), Abs(c), Abs(d) });
-
-			if (coefficientScale == 0.0)
-			{
-				return false;
-			}
-
-			const double na = (a / coefficientScale);
-			const double nb = (b / coefficientScale);
-			const double nc = (c / coefficientScale);
-			const double nd = (d / coefficientScale);
-
-			if (Abs(na) <= BezierRootTolerance)
-			{
-				return CheckQuadraticRootsInUnitInterval(nb, nc, nd, callback);
-			}
-
-			const auto roots = Math::SolveCubicEquation(na, nb, nc, nd);
-
-			for (const double t0 : roots)
-			{
-				if (InRange(t0, -BezierRootTolerance, (1.0 + BezierRootTolerance)))
-				{
-					const double t = Clamp(t0, 0.0, 1.0);
-
-					if (callback(t))
-					{
-						return true;
-					}
-				}
-			}
-
-			return false;
+			// The root already places p on the supporting line. A constant axis
+			// must not reject it again because of polynomial evaluation roundoff.
+			const Vec2 direction = (segment.end - segment.start);
+			return ((Abs(direction.y) <= Abs(direction.x))
+				? NearlyBetweenBezierCoordinate(segment.start.x, p.x, segment.end.x)
+				: NearlyBetweenBezierCoordinate(segment.start.y, p.y, segment.end.y));
 		}
 
 		[[nodiscard]]
@@ -399,87 +291,18 @@ namespace s3d
 			}
 		}
 
+		template <class Bezier>
 		[[nodiscard]]
-		constexpr double Bezier2AxisValue(const double p0, const double p1, const double p2, const double t) noexcept
+		bool CollinearBezierIntersectsLine(const Line& segment, const Bezier& curve) noexcept
 		{
-			const double s = (1.0 - t);
-			return ((s * s * p0) + (2.0 * s * t * p1) + (t * t * p2));
-		}
-
-		[[nodiscard]]
-		constexpr double Bezier3AxisValue(const double p0, const double p1, const double p2, const double p3, const double t) noexcept
-		{
-			const double s = (1.0 - t);
-			return ((s * s * s * p0) + (3.0 * s * s * t * p1) + (3.0 * s * t * t * p2) + (t * t * t * p3));
-		}
-
-		[[nodiscard]]
-		bool CollinearBezier2IntersectsLine(const Line& segment, const Bezier2& curve) noexcept
-		{
-			const Vec2 d = (segment.end - segment.start);
-			const bool useX = (Abs(d.y) <= Abs(d.x));
-
-			const double s0 = (useX ? segment.start.x : segment.start.y);
-			const double s1 = (useX ? segment.end.x : segment.end.y);
-			const double segmentMin = Min(s0, s1);
-			const double segmentMax = Max(s0, s1);
-
-			const double p0 = (useX ? curve.p0.x : curve.p0.y);
-			const double p1 = (useX ? curve.p1.x : curve.p1.y);
-			const double p2 = (useX ? curve.p2.x : curve.p2.y);
-
-			double curveMin = Min(p0, p2);
-			double curveMax = Max(p0, p2);
-
-			const double denominator = (p0 - 2.0 * p1 + p2);
-
-			if (denominator != 0.0)
-			{
-				const double t = ((p0 - p1) / denominator);
-
-				if (InRange(t, 0.0, 1.0))
-				{
-					const double v = Bezier2AxisValue(p0, p1, p2, t);
-					curveMin = Min(curveMin, v);
-					curveMax = Max(curveMax, v);
-				}
-			}
-
-			return ((curveMin <= segmentMax) && (segmentMin <= curveMax));
-		}
-
-		[[nodiscard]]
-		bool CollinearBezier3IntersectsLine(const Line& segment, const Bezier3& curve) noexcept
-		{
-			const Vec2 d = (segment.end - segment.start);
-			const bool useX = (Abs(d.y) <= Abs(d.x));
-
-			const double s0 = (useX ? segment.start.x : segment.start.y);
-			const double s1 = (useX ? segment.end.x : segment.end.y);
-			const double segmentMin = Min(s0, s1);
-			const double segmentMax = Max(s0, s1);
-
-			const double p0 = (useX ? curve.p0.x : curve.p0.y);
-			const double p1 = (useX ? curve.p1.x : curve.p1.y);
-			const double p2 = (useX ? curve.p2.x : curve.p2.y);
-			const double p3 = (useX ? curve.p3.x : curve.p3.y);
-
-			double curveMin = Min(p0, p3);
-			double curveMax = Max(p0, p3);
-
-			const double a = (-p0 + 3.0 * p1 - 3.0 * p2 + p3);
-			const double b = (3.0 * p0 - 6.0 * p1 + 3.0 * p2);
-			const double c = (-3.0 * p0 + 3.0 * p1);
-
-			std::ignore = CheckQuadraticRootsInUnitInterval((3.0 * a), (2.0 * b), c, [&](const double t)
-			{
-				const double v = Bezier3AxisValue(p0, p1, p2, p3, t);
-				curveMin = Min(curveMin, v);
-				curveMax = Max(curveMax, v);
-				return false;
-			});
-
-			return ((curveMin <= segmentMax) && (segmentMin <= curveMax));
+			const Vec2 direction = (segment.end - segment.start);
+			const bool useX = (Abs(direction.y) <= Abs(direction.x));
+			const Line extent = detail::BezierSegmentExtent(curve, useX);
+			const double a = (useX ? segment.start.x : segment.start.y);
+			const double b = (useX ? segment.end.x : segment.end.y);
+			const double lower = (useX ? extent.start.x : extent.start.y);
+			const double upper = (useX ? extent.end.x : extent.end.y);
+			return ((lower <= Max(a, b)) && (Min(a, b) <= upper));
 		}
 
 		[[nodiscard]]
@@ -501,7 +324,7 @@ namespace s3d
 
 			if ((a == 0.0) && (b == 0.0) && (c == 0.0))
 			{
-				return CollinearBezier2IntersectsLine(segment, curve);
+				return CollinearBezierIntersectsLine(segment, curve);
 			}
 
 			return CheckQuadraticRootsInUnitInterval(a, b, c, [&](const double t)
@@ -531,7 +354,7 @@ namespace s3d
 
 			if ((a == 0.0) && (b == 0.0) && (c == 0.0) && (e == 0.0))
 			{
-				return CollinearBezier3IntersectsLine(segment, curve);
+				return CollinearBezierIntersectsLine(segment, curve);
 			}
 
 			return CheckCubicRootsInUnitInterval(a, b, c, e, [&](const double t)
@@ -3135,12 +2958,34 @@ namespace s3d
 
 		bool Intersects(const Bezier2& curve1, const Bezier2& curve2)
 		{
-			return IntersectsBezier2Bezier2Approximate(curve1, curve2);
+			return detail::WithSimpleBezierPair(curve1, curve2, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
+					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier2>)
+				{
+					return IntersectsBezier2Bezier2Approximate(a, b);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier2& curve1, const Bezier3& curve2)
 		{
-			return IntersectsBezier2Bezier3Approximate(curve1, curve2);
+			return detail::WithSimpleBezierPair(curve1, curve2, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
+					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
+				{
+					return IntersectsBezier2Bezier3Approximate(a, b);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier2& curve, const Rect& rect)
@@ -3175,7 +3020,18 @@ namespace s3d
 
 		bool Intersects(const Bezier2& curve, const SuperEllipse& superEllipse)
 		{
-			return IntersectsBezier2SuperEllipse(curve, superEllipse);
+			return detail::WithSimpleBezierPair(curve, superEllipse, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
+					&& std::is_same_v<std::decay_t<decltype(b)>, SuperEllipse>)
+				{
+					return IntersectsBezier2SuperEllipse(a, b);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier2& curve, const RoundRect& roundRect)
@@ -3234,7 +3090,18 @@ namespace s3d
 
 		bool Intersects(const Bezier3& curve1, const Bezier3& curve2)
 		{
-			return IntersectsBezier3Bezier3Approximate(curve1, curve2);
+			return detail::WithSimpleBezierPair(curve1, curve2, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier3>
+					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
+				{
+					return IntersectsBezier3Bezier3Approximate(a, b);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier3& curve, const Rect& rect)
@@ -3259,7 +3126,18 @@ namespace s3d
 
 		bool Intersects(const Bezier3& curve, const SuperEllipse& superEllipse)
 		{
-			return IntersectsBezier3SuperEllipse(curve, superEllipse);
+			return detail::WithSimpleBezierPair(curve, superEllipse, [](const auto& a, const auto& b)
+			{
+				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier3>
+					&& std::is_same_v<std::decay_t<decltype(b)>, SuperEllipse>)
+				{
+					return IntersectsBezier3SuperEllipse(a, b);
+				}
+				else
+				{
+					return Geometry2D::Intersects(a, b);
+				}
+			});
 		}
 
 		bool Intersects(const Bezier3& curve, const Triangle& triangle)
