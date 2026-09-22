@@ -211,6 +211,117 @@ TEST_CASE("Geometry2D.Distance.Ellipse.SeparatedWitnesses")
 	}
 }
 
+TEST_CASE("Geometry2D.Distance.Ellipse.PointAndLineWitnesses")
+{
+	const auto CheckPair = [](const auto& a, const Ellipse& b,
+		const Vec2& expectedA, const Vec2& expectedB, const double gap, const double tolerance)
+	{
+		CHECK(Abs(Geometry2D::Distance(a, b) - gap) <= tolerance);
+		CHECK(Abs(Geometry2D::Distance(b, a) - gap) <= tolerance);
+		const auto pair = Geometry2D::ClosestPoints(a, b);
+		const auto reversed = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(pair);
+		REQUIRE(reversed);
+		CHECK(Abs(pair->distance - gap) <= tolerance);
+		CHECK(Abs(reversed->distance - gap) <= tolerance);
+		CHECK(pair->pointA.distanceFrom(expectedA) <= tolerance);
+		CHECK(pair->pointB.distanceFrom(expectedB) <= tolerance);
+		CHECK(reversed->pointA.distanceFrom(expectedB) <= tolerance);
+		CHECK(reversed->pointB.distanceFrom(expectedA) <= tolerance);
+		CHECK(Abs(((pair->pointB - b.center) / b.axes).lengthSq() - 1.0) <= 1.0e-10);
+		CheckWitnessConsistency(*pair, tolerance);
+		CheckWitnessConsistency(*reversed, tolerance);
+	};
+	for (const Vec2 axes : { Vec2{ 100, 30 }, Vec2{ 1, 100 }, Vec2{ 100, 100 } })
+	{
+		for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ 1, 1.0e-8 },
+			Vec2{ 1.0e-8, 1 }, Vec2{ 0.6, 0.8 } })
+		{
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				const Vec2 normal = (direction.normalized() * sign);
+				const Vec2 tangent{ -normal.y, normal.x };
+				for (const double scale : { 0.01, 1.0, 100.0 })
+				{
+					const Ellipse ellipse{ (Vec2{ 7, -11 } * scale), (axes * scale) };
+					const Vec2 onEllipse = (ellipse.center + ellipse.axes * (ellipse.axes * normal).normalized());
+					for (const double unscaledGap : { 0.0001, 0.01, 10.0 })
+					{
+						CAPTURE(axes, normal, scale, unscaledGap);
+						const double gap = (unscaledGap * scale);
+						const double tolerance = (1.0e-9 * scale);
+						const Vec2 point = (onEllipse + normal * gap);
+						CheckPair(point, ellipse, point, onEllipse, gap, tolerance);
+						for (const Line line : {
+							Line{ (point - tangent * (50 * scale)), (point + tangent * (100 * scale)) },
+							Line{ point, (point + (normal * 70 + tangent * 30) * scale) },
+							Line{ point, point } })
+						{
+							CheckPair(line, ellipse, point, onEllipse, gap, tolerance);
+							CheckPair(Line{ line.end, line.start }, ellipse, point, onEllipse, gap, tolerance);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.Ellipse.LinearBoundaries")
+{
+	const Ellipse ellipse{ 0, 0, 100, 30 };
+	const Vec2 normal{ 0.6, 0.8 }, tangent{ -0.8, 0.6 };
+	const Vec2 onEllipse = (ellipse.axes * (ellipse.axes * normal).normalized());
+	const Vec2 point = (onEllipse + normal * 0.0001);
+	const Line edge{ (point - tangent * 50), (point + tangent * 100) };
+	const Quad quad{ edge.end, edge.start, (edge.start + normal * 100), (edge.end + normal * 100) };
+	const auto CheckShape = [&](const auto& shape, const Vec2& expectedA, const Vec2& expectedB, const double gap)
+	{
+		CHECK(Abs(Geometry2D::Distance(shape, ellipse) - gap) <= 1.0e-9);
+		CHECK(Abs(Geometry2D::Distance(ellipse, shape) - gap) <= 1.0e-9);
+		const auto pair = Geometry2D::ClosestPoints(shape, ellipse);
+		const auto reversed = Geometry2D::ClosestPoints(ellipse, shape);
+		REQUIRE(pair);
+		REQUIRE(reversed);
+		CHECK(pair->pointA.distanceFrom(expectedA) <= 1.0e-9);
+		CHECK(pair->pointB.distanceFrom(expectedB) <= 1.0e-9);
+		CHECK(reversed->pointA.distanceFrom(expectedB) <= 1.0e-9);
+		CHECK(reversed->pointB.distanceFrom(expectedA) <= 1.0e-9);
+		CheckWitnessConsistency(*pair);
+	};
+	CheckShape(Triangle{ edge.start, edge.end, (point + normal * 100) }, point, onEllipse, 0.0001);
+	CheckShape(quad, point, onEllipse, 0.0001);
+	const Polygon polygon{ { quad.p0, quad.p1, quad.p2, quad.p3 } };
+	REQUIRE(not polygon.isEmpty());
+	CheckShape(polygon, point, onEllipse, 0.0001);
+	CheckShape(MultiPolygon{ polygon, Rect{ -500, -500, 10, 10 }.asPolygon() },
+		point, onEllipse, 0.0001);
+	CheckShape(LineString{ edge.start, edge.end, quad.p2 }, point, onEllipse, 0.0001);
+	CheckShape(RectF{ 100.01, -20, 100, 40 }, Vec2{ 100.01, 0 }, Vec2{ 100, 0 }, 0.01);
+	CheckShape(Rect{ 101, -20, 100, 40 }, Vec2{ 101, 0 }, Vec2{ 100, 0 }, 1.0);
+
+	for (const Line line : { Line{ { 100, -20 }, { 100, 20 } }, Line{ { 0, 0 }, { 150, 0 } },
+		Line{ { 0, 0 }, { 1, 0 } }, Line{ { 0, 0 }, { 0, 0 } } })
+	{
+		CHECK(Geometry2D::Distance(line, ellipse) == 0.0);
+		const auto pair = Geometry2D::ClosestPoints(line, ellipse);
+		REQUIRE(pair);
+		CHECK(pair->pointA == pair->pointB);
+		CHECK(Geometry2D::Intersects(pair->pointA, line));
+		CHECK(Geometry2D::Intersects(pair->pointB, ellipse));
+	}
+	const Ellipse collapsed{ 0, 0, 100, 0 };
+	const Line above{ { -50, 3 }, { 50, 3 } };
+	CHECK(Geometry2D::Distance(above, collapsed) == Test::Approx(3.0));
+	const auto pair = Geometry2D::ClosestPoints(above, collapsed);
+	REQUIRE(pair);
+	CHECK(Geometry2D::Intersects(pair->pointA, above));
+	CHECK(Geometry2D::Intersects(pair->pointB, collapsed));
+	CheckWitnessConsistency(*pair);
+	CHECK(std::isinf(Geometry2D::Distance(above, Ellipse{ 0, 0, 0, 0 })));
+	CHECK(not Geometry2D::ClosestPoints(above, Ellipse{ 0, 0, 0, 0 }));
+}
+
 TEST_CASE("Geometry2D.Distance.SuperEllipse.ConvexPairs")
 {
 	// Construct separated supporting lines with a prescribed normal and gap.

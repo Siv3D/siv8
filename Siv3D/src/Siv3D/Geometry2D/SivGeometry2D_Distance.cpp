@@ -459,19 +459,32 @@ namespace s3d
 			return best;
 		}
 
-		// Disjoint positive-area ellipses. Their closest points have opposite
-		// normals. Reflect into one quadrant and solve for that shared normal.
+		// A positive-area ellipse and a disjoint ellipse or point. Reflect into
+		// one quadrant and solve for the normal joining their closest points.
+		template <class ShapeB>
 		[[nodiscard]]
-		ClosestPairCandidate ClosestDisjointEllipses(const Ellipse& a, const Ellipse& b) noexcept
+		ClosestPairCandidate ClosestDisjointEllipsePair(const Ellipse& a, const ShapeB& b) noexcept
 		{
-			Vec2 delta = (b.center - a.center);
+			constexpr bool IsPoint = std::is_same_v<ShapeB, Vec2>;
+			const auto [centerB, initialAxesB] = [&]() noexcept
+			{
+				if constexpr (IsPoint)
+				{
+					return std::pair{ b, Vec2{ 0, 0 } };
+				}
+				else
+				{
+					return std::pair{ b.center, b.axes };
+				}
+			}();
+			Vec2 delta = (centerB - a.center);
 			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
 			delta = { Abs(delta.x), Abs(delta.y) };
 			ClosestPairCandidate result;
 			if ((delta.x == 0.0) || (delta.y == 0.0))
 			{
 				const Vec2 normal = ((delta.x == 0.0) ? Vec2{ 0, sign.y } : Vec2{ sign.x, 0 });
-				UpdateCandidate(result, (a.center + a.axes * normal), (b.center - b.axes * normal));
+				UpdateCandidate(result, (a.center + a.axes * normal), (centerB - initialAxesB * normal));
 				return result;
 			}
 
@@ -481,8 +494,19 @@ namespace s3d
 				const double k = (axes.x * (axes.y / h));
 				return std::pair{ Vec2{ (axes.x / h * axes.x), (axes.y * t / h * axes.y) }, (k * k / h) };
 			};
-			Vec2 axesA = a.axes, axesB = b.axes;
-			const Vec2 diagonalGap = (delta - (Support(axesA, 1.0).first + Support(axesB, 1.0).first));
+			const auto SupportB = [&](const Vec2& axes, const double t) noexcept
+			{
+				if constexpr (IsPoint)
+				{
+					return std::pair{ Vec2{ 0, 0 }, 0.0 };
+				}
+				else
+				{
+					return Support(axes, t);
+				}
+			};
+			Vec2 axesA = a.axes, axesB = initialAxesB;
+			const Vec2 diagonalGap = (delta - (Support(axesA, 1.0).first + SupportB(axesB, 1.0).first));
 			const bool transpose = (diagonalGap.x < diagonalGap.y);
 			if (transpose)
 			{
@@ -502,7 +526,7 @@ namespace s3d
 			for (int32 iteration = 0; iteration < 64; ++iteration)
 			{
 				const auto [supportA, derivativeA] = Support(axesA, t);
-				const auto [supportB, derivativeB] = Support(axesB, t);
+				const auto [supportB, derivativeB] = SupportB(axesB, t);
 				pointA = supportA;
 				pointB = supportB;
 				const Vec2 gap = (delta - (pointA + pointB));
@@ -528,7 +552,45 @@ namespace s3d
 				std::swap(pointA.x, pointA.y);
 				std::swap(pointB.x, pointB.y);
 			}
-			UpdateCandidate(result, (a.center + sign * pointA), (b.center - sign * pointB));
+			UpdateCandidate(result, (a.center + sign * pointA), (centerB - sign * pointB));
+			return result;
+		}
+
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointLineEllipse(const Line& line, const Ellipse& ellipse) noexcept
+		{
+			const Vec2 direction = (line.end - line.start);
+			const double lengthSq = direction.lengthSq();
+			if (lengthSq != 0.0)
+			{
+				Vec2 normal{ -direction.y, direction.x };
+				if ((line.start - ellipse.center).dot(normal) < 0.0)
+				{
+					normal = -normal;
+				}
+				const Vec2 support = (ellipse.center + ellipse.axes * (ellipse.axes * normal).normalized());
+				const double t = ((support - line.start).dot(direction) / lengthSq);
+				// An interior minimum has a separating tangent parallel to the line.
+				if ((0.0 <= t) && (t <= 1.0) && (0.0 <= (line.start - support).dot(normal)))
+				{
+					ClosestPairCandidate result;
+					UpdateCandidate(result, (line.start + direction * t), support, t);
+					return result;
+				}
+			}
+
+			auto result = ClosestDisjointEllipsePair(ellipse, line.start);
+			if (lengthSq != 0.0)
+			{
+				const auto end = ClosestDisjointEllipsePair(ellipse, line.end);
+				if (end.distanceSq < result.distanceSq)
+				{
+					result = end;
+					result.parameterB = 1.0;
+				}
+			}
+			std::swap(result.pointA, result.pointB);
+			std::swap(result.parameterA, result.parameterB);
 			return result;
 		}
 
@@ -569,7 +631,7 @@ namespace s3d
 		{
 			if ((a.n == 2.0) && (b.n == 2.0))
 			{
-				return ClosestDisjointEllipses(Ellipse{ a.center, a.axes }, Ellipse{ b.center, b.axes });
+				return ClosestDisjointEllipsePair(Ellipse{ a.center, a.axes }, Ellipse{ b.center, b.axes });
 			}
 			Vec2 delta = (b.center - a.center);
 			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
@@ -951,6 +1013,13 @@ namespace s3d
 		[[nodiscard]]
 		ClosestPairCandidate ClosestPointPiece(const Vec2& point, const BoundaryPiece& piece)
 		{
+			if (const auto* ellipse = std::get_if<Ellipse>(&piece))
+			{
+				auto result = ClosestDisjointEllipsePair(*ellipse, point);
+				std::swap(result.pointA, result.pointB);
+				return result;
+			}
+
 			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (2.0 < shape->n))
 			{
 				ClosestPairCandidate result;
@@ -1075,6 +1144,10 @@ namespace s3d
 				{
 					return ClosestLineCircleArc(*lineA, *arcB);
 				}
+				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB))
+				{
+					return ClosestDisjointLineEllipse(*lineA, *ellipseB);
+				}
 			}
 
 			if (const CircleArc* arcA = std::get_if<CircleArc>(&pieceA))
@@ -1093,19 +1166,26 @@ namespace s3d
 				}
 				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB); ellipseB && (arcA->region == ArcRegion::Full))
 				{
-					return ClosestDisjointEllipses(Ellipse{ arcA->circle.center, arcA->circle.r, arcA->circle.r }, *ellipseB);
+					return ClosestDisjointEllipsePair(Ellipse{ arcA->circle.center, arcA->circle.r, arcA->circle.r }, *ellipseB);
 				}
 			}
 
 			if (const Ellipse* ellipseA = std::get_if<Ellipse>(&pieceA))
 			{
+				if (const Line* lineB = std::get_if<Line>(&pieceB))
+				{
+					auto result = ClosestDisjointLineEllipse(*lineB, *ellipseA);
+					std::swap(result.pointA, result.pointB);
+					std::swap(result.parameterA, result.parameterB);
+					return result;
+				}
 				if (const Ellipse* ellipseB = std::get_if<Ellipse>(&pieceB))
 				{
-					return ClosestDisjointEllipses(*ellipseA, *ellipseB);
+					return ClosestDisjointEllipsePair(*ellipseA, *ellipseB);
 				}
 				if (const CircleArc* arcB = std::get_if<CircleArc>(&pieceB); arcB && (arcB->region == ArcRegion::Full))
 				{
-					return ClosestDisjointEllipses(*ellipseA, Ellipse{ arcB->circle.center, arcB->circle.r, arcB->circle.r });
+					return ClosestDisjointEllipsePair(*ellipseA, Ellipse{ arcB->circle.center, arcB->circle.r, arcB->circle.r });
 				}
 			}
 
