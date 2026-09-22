@@ -218,6 +218,7 @@ namespace s3d
 				: ((cross * cross) < (radiusSq * lengthSq));
 		}
 
+		template <bool IncludeBoundary = true>
 		[[nodiscard]]
 		constexpr bool IntersectsLineEllipseArea(const Line& segment, const Ellipse& ellipse) noexcept
 		{
@@ -226,7 +227,8 @@ namespace s3d
 			const Vec2 p0{ ((segment.start.x - ellipse.center.x) / ax), ((segment.start.y - ellipse.center.y) / by) };
 			const Vec2 p1{ ((segment.end.x - ellipse.center.x) / ax), ((segment.end.y - ellipse.center.y) / by) };
 
-			if ((p0.dot(p0) <= 1.0) || (p1.dot(p1) <= 1.0))
+			if (IncludeBoundary ? ((p0.dot(p0) <= 1.0) || (p1.dot(p1) <= 1.0))
+				: ((p0.dot(p0) < 1.0) || (p1.dot(p1) < 1.0)))
 			{
 				return true;
 			}
@@ -247,7 +249,7 @@ namespace s3d
 			}
 
 			const double cross = d.cross(p0);
-			return ((cross * cross) <= lengthSq);
+			return IncludeBoundary ? ((cross * cross) <= lengthSq) : ((cross * cross) < lengthSq);
 		}
 
 		[[nodiscard]]

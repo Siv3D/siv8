@@ -347,34 +347,6 @@ namespace s3d
 
 		template <class Fty>
 		[[nodiscard]]
-		bool VisitPolygonTriangles(const Polygon& polygon, Fty&& callback) noexcept
-		{
-			if (polygon.isEmpty())
-			{
-				return false;
-			}
-
-			const Float2* pVertex = polygon.vertices().data();
-
-			for (const auto& triangleIndex : polygon.indices())
-			{
-				const Triangle triangle{
-					Vec2{ pVertex[triangleIndex.i0].x, pVertex[triangleIndex.i0].y },
-					Vec2{ pVertex[triangleIndex.i1].x, pVertex[triangleIndex.i1].y },
-					Vec2{ pVertex[triangleIndex.i2].x, pVertex[triangleIndex.i2].y }
-				};
-
-				if (HasPositiveArea(triangle) && callback(triangle))
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		template <class Fty>
-		[[nodiscard]]
 		bool VisitEllipseFanTriangles(const Ellipse& ellipse, Fty&& callback) noexcept
 		{
 			const double step = (TwoPi / CurvedApproximationSegments);
@@ -998,28 +970,43 @@ namespace s3d
 				&& OverlapsTrianglePolygonArea(triangle, polygon);
 		}
 
+		template <class Predicate>
 		[[nodiscard]]
-		bool OverlapsCirclePolygonAreaNonEmpty(
-			const Circle& circle, const RectF& circleBounds,
-			const Polygon& polygon, const RectF& polygonBounds) noexcept
+		bool OverlapsConvexShapePolygonAreaNonEmpty(
+			const RectF& shapeBounds, const Vec2& interiorPoint,
+			const Polygon& polygon, const RectF& polygonBounds, Predicate&& intersectsInterior) noexcept
 		{
-			if (not BoundsOverlapPositive(circleBounds, polygonBounds))
+			if (not BoundsOverlapPositive(shapeBounds, polygonBounds))
 			{
 				return false;
 			}
 
 			const auto rings = detail::GetPolygonRings(polygon);
-			if (detail::PolygonRingOrientation(rings.outer, &polygonBounds) == 0)
+			if (rings.outer.size() < 3)
 			{
 				return false;
 			}
 
-			return detail::IntersectsLineCircleArea<false>(Line{ rings.outer[0], rings.outer[1] }, circle)
-				|| detail::PolygonContainsPoint(rings, circle.center)
-				|| detail::AnyPolygonEdge(rings, [&](const Line& edge)
-				{
-					return detail::IntersectsLineCircleArea<false>(edge, circle);
-				});
+			// Any non-collinear corner establishes area; winding is not needed here.
+			if ((detail::PolygonCross((rings.outer.front() - rings.outer.back()),
+				(rings.outer[1] - rings.outer.front())) == 0.0)
+				&& (detail::PolygonRingOrientation(rings.outer, &polygonBounds) == 0))
+			{
+				return false;
+			}
+
+			return intersectsInterior(Line{ rings.outer[0], rings.outer[1] })
+				|| detail::PolygonContainsPoint(rings, interiorPoint)
+				|| detail::AnyPolygonEdge(rings, std::forward<Predicate>(intersectsInterior));
+		}
+
+		[[nodiscard]]
+		bool OverlapsCirclePolygonAreaNonEmpty(
+			const Circle& circle, const RectF& circleBounds,
+			const Polygon& polygon, const RectF& polygonBounds) noexcept
+		{
+			return OverlapsConvexShapePolygonAreaNonEmpty(circleBounds, circle.center, polygon, polygonBounds,
+				[&](const Line& edge) { return detail::IntersectsLineCircleArea<false>(edge, circle); });
 		}
 
 		[[nodiscard]]
@@ -1048,15 +1035,8 @@ namespace s3d
 			const Ellipse& ellipse, const RectF& ellipseBounds,
 			const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
-			if (not BoundsOverlapPositive(ellipseBounds, polygonBounds))
-			{
-				return false;
-			}
-
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
-			{
-				return OverlapsTriangleEllipseArea(part, ellipse);
-			});
+			return OverlapsConvexShapePolygonAreaNonEmpty(ellipseBounds, ellipse.center, polygon, polygonBounds,
+				[&](const Line& edge) { return detail::IntersectsLineEllipseArea<false>(edge, ellipse); });
 		}
 
 		[[nodiscard]]
@@ -1127,19 +1107,47 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool IntersectsLineRoundRectInterior(const Line& edge, const double radius, const RectF& core) noexcept
+		{
+			const double radiusSq = (radius * radius);
+			if ((DistancePointRectSq(edge.start, core) < radiusSq)
+				|| (DistancePointRectSq(edge.end, core) < radiusSq))
+			{
+				return true;
+			}
+
+			const Vec2 d = (edge.end - edge.start);
+			double t0 = 0.0;
+			double t1 = 1.0;
+			if (detail::UpdateLineClipInterval(edge.start.x, d.x, core.x, (core.x + core.w), t0, t1)
+				&& detail::UpdateLineClipInterval(edge.start.y, d.y, core.y, (core.y + core.h), t0, t1))
+			{
+				return true;
+			}
+
+			// Away from the core, the closest pair includes a segment endpoint or a core corner.
+			return detail::IntersectsLineCircleArea<false>(edge, Circle{ core.tl(), radius })
+				|| detail::IntersectsLineCircleArea<false>(edge, Circle{ core.tr(), radius })
+				|| detail::IntersectsLineCircleArea<false>(edge, Circle{ core.br(), radius })
+				|| detail::IntersectsLineCircleArea<false>(edge, Circle{ core.bl(), radius });
+		}
+
+		[[nodiscard]]
 		bool OverlapsRoundRectPolygonAreaNonEmpty(
 			const RoundRect& roundRect, const Polygon& polygon, const RectF& polygonBounds,
 			const double effectiveRadius, const RectF& core) noexcept
 		{
-			if (not BoundsOverlapPositive(roundRect.rect, polygonBounds))
+			if (effectiveRadius == 0.0)
 			{
-				return false;
+				return OverlapsRectPolygonAreaNonEmpty(roundRect.rect, polygon, polygonBounds);
 			}
 
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
-			{
-				return OverlapsTriangleRoundRectArea(part, roundRect, effectiveRadius, core);
-			});
+			return OverlapsConvexShapePolygonAreaNonEmpty(roundRect.rect, roundRect.rect.center(), polygon, polygonBounds,
+				[&](const Line& edge)
+				{
+					return BoundsIntersectLine(roundRect.rect, edge)
+						&& IntersectsLineRoundRectInterior(edge, effectiveRadius, core);
+				});
 		}
 
 		[[nodiscard]]

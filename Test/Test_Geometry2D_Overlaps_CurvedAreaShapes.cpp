@@ -117,3 +117,126 @@ TEST_CASE("Geometry2D.Overlaps.RoundRect")
 	CHECK(not Geometry2D::Overlaps(RoundRect{ RectF{ 5, 0, 0, 10 }, 2.0 }, roundRect));
 	CHECK(not Geometry2D::Overlaps(RoundRect{ RectF{ 0, 0, 0, 0 }, 2.0 }, roundRect));
 }
+
+TEST_CASE("Geometry2D.Overlaps.EllipsePolygon.rings")
+{
+	const Polygon square = RectF{ 0, 0, 8, 4 }.asPolygon();
+	const Polygon triangle{ Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 0, 7.5 } } };
+	const Polygon concave{ Array<Vec2>{ { 0, 0 }, { 12, 0 }, { 12, 12 }, { 8, 12 }, { 8, 4 }, { 4, 4 }, { 4, 12 }, { 0, 12 } } };
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 4, 4 }, { 4, 16 }, { 16, 16 }, { 16, 4 } } }
+	};
+	const Polygon point = square.scaledFrom(Vec2{ 2, 2 }, 0.0);
+	const Polygon segment = square.scaledFrom(Vec2{ 2, 2 }, Vec2{ 0, 1 }).rotated(0.5);
+	REQUIRE(not point.isEmpty());
+	REQUIRE(not segment.isEmpty());
+
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		for (const Vec2 scale : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 } })
+		{
+			auto Check = [&](const Ellipse& ellipse, const Polygon& polygon, const bool expected)
+			{
+				CAPTURE(offset, scale, ellipse, expected);
+				const Ellipse e{ ellipse.center * scale + offset, ellipse.axes };
+				const Polygon p = polygon.scaledFromOrigin(scale).movedBy(offset);
+				const MultiPolygon multi{ Polygon{}, p };
+				auto CheckShape = [&](const auto& shape)
+				{
+					CHECK(Geometry2D::Overlaps(shape, p) == expected);
+					CHECK(Geometry2D::Overlaps(p, shape) == expected);
+					CHECK(Geometry2D::Overlaps(shape, multi) == expected);
+					CHECK(Geometry2D::Overlaps(multi, shape) == expected);
+				};
+				CheckShape(e);
+				CheckShape(SuperEllipse{ e, 2.0 });
+			};
+			Check(Ellipse{ 4, 2, 2, 1 }, square, true);
+			Check(Ellipse{ 4, 2, 8, 4 }, square, true);
+			Check(Ellipse{ 8, 2, 2, 1 }, square, true);
+			Check(Ellipse{ 10, 2, 2, 1 }, square, false);
+			Check(Ellipse{ -6, -4, 10, 5 }, square, false);
+			Check(Ellipse{ -6, -4, 10.25, 5.125 }, square, true);
+			Check(Ellipse{ 12, 8, 8, 4 }, triangle, false);
+			Check(Ellipse{ 12, 8, 8.03125, 4.015625 }, triangle, true);
+			Check(Ellipse{ 12, 8, 7.96875, 3.984375 }, triangle, false);
+			Check(Ellipse{ 6, 8, 2, 1 }, concave, false);
+			Check(Ellipse{ 6, 8, 2.125, 1 }, concave, true);
+			Check(Ellipse{ 10, 10, 2, 1 }, donut, false);
+			Check(Ellipse{ 10, 10, 6, 4 }, donut, false);
+			Check(Ellipse{ 10, 10, 6.125, 4 }, donut, true);
+			Check(Ellipse{ 4, 10, 2, 1 }, donut, true);
+			Check(Ellipse{ 10, 10, 24, 16 }, donut, true);
+			Check(Ellipse{ 4, 2, 0, 1 }, square, false);
+			Check(Ellipse{ 4, 2, 2, 0 }, square, false);
+			Check(Ellipse{ 4, 2, 8, 4 }, point, false);
+			Check(Ellipse{ 0, 0, 8, 4 }, segment, false);
+			Check(Ellipse{ 4, 2, 2, 1 }, Polygon{}, false);
+		}
+	}
+
+	const Ellipse ellipse{ 0, 0, 10, 5 };
+	const Polygon chord{ Array<Vec2>{ { 10, 0 }, { 6, 4 }, { 0, 5 } } };
+	CHECK(Geometry2D::Overlaps(ellipse, chord));
+	CHECK(Geometry2D::Intersects(Line{ Vec2{ 10, 0 }, Vec2{ 12, 0 } }, ellipse));
+	CHECK(Geometry2D::Intersects(Line{ Vec2{ 10, 0 }, Vec2{ 10, 0 } }, ellipse));
+}
+
+TEST_CASE("Geometry2D.Overlaps.RoundRectPolygon.rings")
+{
+	const Polygon square = RectF{ 0, 0, 4, 4 }.asPolygon();
+	const Polygon triangle{ Array<Vec2>{ { 0, 0 }, { 10, 0 }, { 0, 7.5 } } };
+	const Polygon concave{ Array<Vec2>{ { 0, 0 }, { 12, 0 }, { 12, 12 }, { 8, 12 }, { 8, 4 }, { 4, 4 }, { 4, 12 }, { 0, 12 } } };
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 4, 4 }, { 4, 16 }, { 16, 16 }, { 16, 4 } } }
+	};
+	const Polygon point = square.scaledFrom(Vec2{ 2, 2 }, 0.0);
+	const Polygon segment = square.scaledFrom(Vec2{ 2, 2 }, Vec2{ 0, 1 }).rotated(0.5);
+	REQUIRE(not point.isEmpty());
+	REQUIRE(not segment.isEmpty());
+
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		for (const Vec2 scale : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 } })
+		{
+			auto Check = [&](const RoundRect& roundRect, const Polygon& polygon, const bool expected)
+			{
+				CAPTURE(offset, scale, roundRect, expected);
+				const RoundRect r{ RectF{ Arg::center = roundRect.rect.center() * scale + offset, roundRect.rect.size }, roundRect.r };
+				const Polygon p = polygon.scaledFromOrigin(scale).movedBy(offset);
+				const MultiPolygon multi{ Polygon{}, p };
+				CHECK(Geometry2D::Overlaps(r, p) == expected);
+				CHECK(Geometry2D::Overlaps(p, r) == expected);
+				CHECK(Geometry2D::Overlaps(r, multi) == expected);
+				CHECK(Geometry2D::Overlaps(multi, r) == expected);
+			};
+			for (const double radius : { 0.0, 0.25, 1.0, 8.0 })
+			{
+				CAPTURE(radius);
+				Check(RoundRect{ RectF{ 1, 1, 2, 2 }, radius }, square, true);
+				Check(RoundRect{ RectF{ -2, -2, 8, 8 }, radius }, square, true);
+				Check(RoundRect{ RectF{ 3, 1, 2, 2 }, radius }, square, true);
+				Check(RoundRect{ RectF{ 4, 1, 2, 2 }, radius }, square, false);
+				Check(RoundRect{ RectF{ 4, 4, 2, 2 }, radius }, square, false);
+				Check(RoundRect{ RectF{ 4, 6, 4, 2 }, radius }, concave, false);
+				Check(RoundRect{ RectF{ 3.75, 6, 4.5, 2 }, radius }, concave, true);
+				Check(RoundRect{ RectF{ 6, 6, 8, 8 }, radius }, donut, false);
+				Check(RoundRect{ RectF{ 4, 4, 12, 12 }, radius }, donut, false);
+				Check(RoundRect{ RectF{ 2, 8, 16, 2 }, radius }, donut, true);
+				Check(RoundRect{ RectF{ -4, -4, 28, 28 }, radius }, donut, true);
+				Check(RoundRect{ RectF{ 0, 0, 4, 4 }, radius }, point, false);
+				Check(RoundRect{ RectF{ -4, -4, 8, 8 }, radius }, segment, false);
+				Check(RoundRect{ RectF{ 0, 0, 4, 4 }, radius }, Polygon{}, false);
+			}
+			Check(RoundRect{ RectF{ 2, 4, 10, 10 }, 4 }, triangle, false);
+			Check(RoundRect{ RectF{ 1.875, 4, 10, 10 }, 4 }, triangle, true);
+			Check(RoundRect{ RectF{ 2.125, 4, 10, 10 }, 4 }, triangle, false);
+			Check(RoundRect{ RectF{ 0, 0, 10, 10 }, 5 }, RectF{ 8, 9, 2, 2 }.asPolygon(), false);
+			Check(RoundRect{ RectF{ 0, 0, 10, 10 }, 5 }, RectF{ 7.875, 8.875, 2, 2 }.asPolygon(), true);
+			Check(RoundRect{ RectF{ 1, 1, 0, 2 }, 1 }, square, false);
+			Check(RoundRect{ RectF{ 1, 1, 2, 0 }, 1 }, square, false);
+		}
+	}
+}
