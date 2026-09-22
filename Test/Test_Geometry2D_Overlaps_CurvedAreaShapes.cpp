@@ -46,6 +46,34 @@ TEST_CASE("Geometry2D.Overlaps.SuperEllipse")
 		SuperEllipse{ Vec2{ 0, 0 }, SizeF{ 0, 3 }, 4.0 }));
 }
 
+TEST_CASE("Geometry2D.Overlaps.SuperEllipse.triangles")
+{
+	for (const double n : { 0.5, 1.0, 4.0 })
+	{
+		const SuperEllipse shape{ Vec2{ 0, 0 }, SizeF{ 4, 3 }, n };
+		const Triangle inside{ Vec2{ 0, 0 }, Vec2{ 0.25, 0 }, Vec2{ 0, 0.25 } };
+		const Triangle crossing{ Vec2{ 3, -1 }, Vec2{ 5, -1 }, Vec2{ 3, 1 } };
+		const Triangle contact{ Vec2{ -1, 4 }, Vec2{ 0, 3 }, Vec2{ 1, 4 } };
+		const Triangle outside{ Vec2{ 3, 3 }, Vec2{ 4, 2.75 }, Vec2{ 4, 3 } };
+		CAPTURE(n);
+		auto Check = [&](const Triangle& triangle, const bool expected)
+		{
+			const Quad quad{ triangle.p0, triangle.p1, triangle.p2, triangle.p2 };
+			CHECK(Geometry2D::Overlaps(shape, triangle) == expected);
+			CHECK(Geometry2D::Overlaps(triangle, shape) == expected);
+			CHECK(Geometry2D::Overlaps(shape, quad) == expected);
+			CHECK(Geometry2D::Overlaps(quad, shape) == expected);
+		};
+		Check(inside, true);
+		Check(crossing, true);
+		Check(contact, false);
+		Check(outside, false);
+		CHECK(Geometry2D::Overlaps(shape, shape));
+		CHECK(Geometry2D::Overlaps(shape, shape.movedBy(1, 0)));
+		CHECK_FALSE(Geometry2D::Overlaps(shape, shape.movedBy(8, 0)));
+	}
+}
+
 TEST_CASE("Geometry2D.Overlaps.SuperEllipsePolygon.rings")
 {
 	const Polygon donut{

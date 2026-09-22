@@ -282,87 +282,27 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool ClippedTriangleIntersectionHasPositiveArea(const Triangle& subject, const Triangle& clip) noexcept
+		bool TriangleHasSeparatingEdge(const Triangle& a, const Triangle& b, const double orientation) noexcept
 		{
-			const double subjectOrientation = Cross(subject.p0, subject.p1, subject.p2);
-			const double clipOrientation = Cross(clip.p0, clip.p1, clip.p2);
-
-			if ((subjectOrientation == 0.0) || (clipOrientation == 0.0))
+			const std::array<Vec2, 3> points{ a.p0, a.p1, a.p2 };
+			for (size_t i = 0; i < points.size(); ++i)
 			{
-				return false;
-			}
-
-			std::array<Vec2, 12> input{};
-			std::array<Vec2, 12> output{};
-			size_t inputCount = 3;
-			input[0] = subject.p0;
-			input[1] = subject.p1;
-			input[2] = subject.p2;
-			const double orientationSign = (0.0 < clipOrientation) ? 1.0 : -1.0;
-			const std::array<Vec2, 3> clipPoints{ clip.p0, clip.p1, clip.p2 };
-
-			for (size_t edgeIndex = 0; edgeIndex < clipPoints.size(); ++edgeIndex)
-			{
-				if (inputCount == 0)
+				const Vec2 start = points[i];
+				const Vec2 edge = (points[(i + 1) % points.size()] - start);
+				auto IsInside = [&](const Vec2& point)
 				{
-					return false;
-				}
+					const double cross = detail::PolygonCross(edge, (point - start));
+					return ((0.0 < orientation) ? (0.0 < cross) : (cross < 0.0));
+				};
 
-				const Vec2 edgeStart = clipPoints[edgeIndex];
-				const Vec2 edgeEnd = clipPoints[(edgeIndex + 1) % clipPoints.size()];
-				size_t outputCount = 0;
-				Vec2 previous = input[inputCount - 1];
-				double previousDistance = (orientationSign * Cross(edgeStart, edgeEnd, previous));
-				bool previousInside = (0.0 <= previousDistance);
-
-				for (size_t i = 0; i < inputCount; ++i)
+				// Boundary-only contact leaves no vertex strictly inside this half-plane.
+				if (not (IsInside(b.p0) || IsInside(b.p1) || IsInside(b.p2)))
 				{
-					const Vec2 current = input[i];
-					const double currentDistance = (orientationSign * Cross(edgeStart, edgeEnd, current));
-					const bool currentInside = (0.0 <= currentDistance);
-
-					if (currentInside != previousInside)
-					{
-						const double denominator = (previousDistance - currentDistance);
-
-						if (denominator != 0.0)
-						{
-							const double t = (previousDistance / denominator);
-							output[outputCount++] = (previous + (current - previous) * t);
-						}
-					}
-
-					if (currentInside)
-					{
-						output[outputCount++] = current;
-					}
-
-					previous = current;
-					previousDistance = currentDistance;
-					previousInside = currentInside;
-				}
-
-				inputCount = outputCount;
-
-				for (size_t i = 0; i < outputCount; ++i)
-				{
-					input[i] = output[i];
+					return true;
 				}
 			}
 
-			if (inputCount < 3)
-			{
-				return false;
-			}
-
-			double twiceArea = 0.0;
-
-			for (size_t i = 0; i < inputCount; ++i)
-			{
-				twiceArea += input[i].cross(input[(i + 1) % inputCount]);
-			}
-
-			return (twiceArea != 0.0);
+			return false;
 		}
 
 		[[nodiscard]]
@@ -373,8 +313,12 @@ namespace s3d
 				return false;
 			}
 
-			return ClippedTriangleIntersectionHasPositiveArea(a, b)
-				|| ClippedTriangleIntersectionHasPositiveArea(b, a);
+			const double aOrientation = detail::PolygonCross((a.p1 - a.p0), (a.p2 - a.p0));
+			const double bOrientation = detail::PolygonCross((b.p1 - b.p0), (b.p2 - b.p0));
+			return (aOrientation != 0.0)
+				&& (bOrientation != 0.0)
+				&& (not TriangleHasSeparatingEdge(a, b, aOrientation))
+				&& (not TriangleHasSeparatingEdge(b, a, bOrientation));
 		}
 
 		template <class Fty>

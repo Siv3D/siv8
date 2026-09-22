@@ -54,6 +54,92 @@ TEST_CASE("Geometry2D.Overlaps.Triangle")
 	CHECK(Geometry2D::Intersects(triangle, pointTouch));
 }
 
+TEST_CASE("Geometry2D.Overlaps.Triangle.boundary")
+{
+	const Triangle lower{ Vec2{ 0, 0 }, Vec2{ 4, 0 }, Vec2{ 0, 4 } };
+	const Triangle upper{ Vec2{ 4, 0 }, Vec2{ 4, 4 }, Vec2{ 0, 4 } };
+	const Triangle pointTouch{ Vec2{ 4, 0 }, Vec2{ 8, 0 }, Vec2{ 4, 4 } };
+	const std::array<std::array<size_t, 3>, 6> orders{
+		{{ 0, 1, 2 }, { 1, 2, 0 }, { 2, 0, 1 }, { 0, 2, 1 }, { 2, 1, 0 }, { 1, 0, 2 }}
+	};
+	auto Reorder = [](const Triangle& triangle, const std::array<size_t, 3>& order)
+	{
+		const std::array<Vec2, 3> points{ triangle.p0, triangle.p1, triangle.p2 };
+		return Triangle{ points[order[0]], points[order[1]], points[order[2]] };
+	};
+
+	for (const double angle : { 0.0, 0.37, 0.5, 1.0 })
+	{
+		for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, 1.0e10 } })
+		{
+			const Triangle a = lower.rotatedAt(Vec2{ 0, 0 }, angle).movedBy(offset);
+			const Triangle b = upper.rotatedAt(Vec2{ 0, 0 }, angle).movedBy(offset);
+			const Triangle c = pointTouch.rotatedAt(Vec2{ 0, 0 }, angle).movedBy(offset);
+			const Triangle segment{ a.p0, a.p1, a.p1 };
+			CAPTURE(angle, offset);
+			for (const auto& aOrder : orders)
+			{
+				for (const auto& bOrder : orders)
+				{
+					const Triangle reorderedA = Reorder(a, aOrder);
+					CAPTURE(aOrder, bOrder);
+					CHECK_FALSE(Geometry2D::Overlaps(reorderedA, Reorder(b, bOrder)));
+					CHECK_FALSE(Geometry2D::Overlaps(Reorder(b, bOrder), reorderedA));
+					CHECK_FALSE(Geometry2D::Overlaps(reorderedA, Reorder(c, bOrder)));
+					CHECK_FALSE(Geometry2D::Overlaps(reorderedA, Reorder(segment, bOrder)));
+					CHECK(Geometry2D::Overlaps(reorderedA, Reorder(a, bOrder)));
+				}
+			}
+		}
+	}
+
+	const Triangle crossing{ Vec2{ 1, -1 }, Vec2{ 5, 3 }, Vec2{ 1, 3 } };
+	CHECK(Geometry2D::Overlaps(lower, crossing));
+	CHECK(Geometry2D::Overlaps(crossing, lower));
+	CHECK(Geometry2D::Overlaps(lower, upper.movedBy(-1.0e-12, -1.0e-12)));
+	CHECK_FALSE(Geometry2D::Overlaps(lower, upper.movedBy(1.0e-12, 1.0e-12)));
+}
+
+TEST_CASE("Geometry2D.Overlaps.Triangle.callers")
+{
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, 1.0e10 } })
+	{
+		const RectF rect{ offset, 4, 4 };
+		const RoundRect roundRect{ rect, 0.0 };
+		const Triangle contact = Triangle{ Vec2{ 2, 6 }, Vec2{ 6, 2 }, Vec2{ 6, 6 } }.movedBy(offset);
+		CAPTURE(offset);
+		for (const double displacement : { 0.0, -0.25, 0.25 })
+		{
+			const Triangle triangle = contact.movedBy(displacement, displacement);
+			const Quad quad{ triangle.p0, triangle.p1, triangle.p2, triangle.p2 };
+			const bool expected = (displacement < 0.0);
+			CAPTURE(displacement);
+			auto Check = [&](const auto& a, const auto& b)
+			{
+				CHECK(Geometry2D::Overlaps(a, b) == expected);
+				CHECK(Geometry2D::Overlaps(b, a) == expected);
+			};
+			Check(rect, triangle);
+			Check(rect, quad);
+			Check(roundRect, triangle);
+			Check(roundRect, quad);
+			Check(Quad{ rect.tl(), rect.tr(), rect.br(), rect.bl() }, triangle);
+			Check(Quad{ rect.tl(), rect.tr(), rect.br(), rect.bl() }, quad);
+		}
+	}
+
+	const Quad left{ Vec2{ 0, 0 }, Vec2{ 4, 0 }, Vec2{ 4, 4 }, Vec2{ 0, 4 } };
+	const Quad right{ Vec2{ 4, 0 }, Vec2{ 8, 0 }, Vec2{ 8, 4 }, Vec2{ 4, 4 } };
+	for (const double angle : { 0.37, 0.5, 1.0 })
+	{
+		const Quad a = left.rotatedAt(Vec2{ 0, 0 }, angle);
+		const Quad b = right.rotatedAt(Vec2{ 0, 0 }, angle);
+		CHECK_FALSE(Geometry2D::Overlaps(a, b));
+		CHECK_FALSE(Geometry2D::Overlaps(b, a));
+		CHECK(Geometry2D::Overlaps(a, a));
+	}
+}
+
 TEST_CASE("Geometry2D.Overlaps.Quad")
 {
 	const Quad quad{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } };
