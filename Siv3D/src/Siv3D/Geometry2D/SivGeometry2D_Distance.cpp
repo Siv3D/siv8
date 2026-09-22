@@ -9,6 +9,8 @@
 //
 //-----------------------------------------------
 
+# include <algorithm>
+# include <array>
 # include <variant>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Bezier.hpp>
@@ -530,6 +532,249 @@ namespace s3d
 			return result;
 		}
 
+		template <class Bezier>
+		[[nodiscard]]
+		auto BezierControlPoints(const Bezier& curve) noexcept
+		{
+			if constexpr (std::is_same_v<Bezier, Bezier2>)
+			{
+				return std::array{ curve.p0, curve.p1, curve.p2 };
+			}
+			else
+			{
+				return std::array{ curve.p0, curve.p1, curve.p2, curve.p3 };
+			}
+		}
+
+		template <class Bezier>
+		[[nodiscard]]
+		Vec2 BezierSecondDerivative(const Bezier& curve, const double t) noexcept
+		{
+			if constexpr (std::is_same_v<Bezier, Bezier2>)
+			{
+				return curve.secondDerivative();
+			}
+			else
+			{
+				return curve.secondDerivativeAt(t);
+			}
+		}
+
+		template <class BezierA, class BezierB>
+		void RefineBezierPair(const BezierA& a, const BezierB& b, ClosestPairCandidate& best) noexcept
+		{
+			double t = best.parameterA, s = best.parameterB;
+			for (int32 iteration = 0; iteration < 24; ++iteration)
+			{
+				const Vec2 r = (a.pointAt(t) - b.pointAt(s));
+				const Vec2 u = a.derivativeAt(t), v = b.derivativeAt(s);
+				const double ru = r.dot(u), rv = r.dot(v);
+				const double uu = u.lengthSq(), vv = v.lengthSq();
+				const double ra = r.dot(BezierSecondDerivative(a, t));
+				const double rb = r.dot(BezierSecondDerivative(b, s));
+				const double h1 = (uu + ra), h2 = (vv - rb), cross = u.cross(v);
+				// Cross products avoid cancellation in the Newton system when
+				// the tangents are nearly parallel at a small separation.
+				const double determinant = (cross * cross + ra * vv - rb * uu - ra * rb);
+				const bool fixedA = (((t == 0.0) && (0.0 <= ru)) || ((t == 1.0) && (ru <= 0.0)));
+				const bool fixedB = (((s == 0.0) && (rv <= 0.0)) || ((s == 1.0) && (0.0 <= rv)));
+				double dt = 0.0, ds = 0.0;
+				if ((not fixedA) && (not fixedB) && (0.0 < h1) && (0.0 < h2) && (0.0 < determinant))
+				{
+					dt = ((-r.cross(v) * cross + rb * ru) / determinant);
+					ds = ((-r.cross(u) * cross + ra * rv) / determinant);
+				}
+				else
+				{
+					if ((not fixedA) && (0.0 < Max(uu, h1)))
+					{
+						dt = (-ru / Max(uu, h1));
+					}
+					if ((not fixedB) && (0.0 < Max(vv, h2)))
+					{
+						ds = (rv / Max(vv, h2));
+					}
+				}
+				dt = (ClampUnit(t + dt) - t);
+				ds = (ClampUnit(s + ds) - s);
+				if ((Abs(dt) <= ParameterTolerance) && (Abs(ds) <= ParameterTolerance))
+				{
+					break;
+				}
+
+				bool accepted = false;
+				for (int32 backtrack = 0; backtrack < 12; ++backtrack)
+				{
+					const double nextA = ClampUnit(t + dt), nextB = ClampUnit(s + ds);
+					const Vec2 pointA = a.pointAt(nextA), pointB = b.pointAt(nextB);
+					const double distanceSq = pointA.distanceFromSq(pointB);
+					if (distanceSq <= best.distanceSq)
+					{
+						best = { pointA, pointB, distanceSq, nextA, nextB };
+						t = nextA;
+						s = nextB;
+						accepted = true;
+						break;
+					}
+					dt *= 0.5;
+					ds *= 0.5;
+				}
+				if (not accepted)
+				{
+					break;
+				}
+			}
+		}
+
+		template <class BezierA, class BezierB>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestBezierPair(const BezierA& a, const BezierB& b) noexcept
+		{
+			constexpr int32 MaxEvaluations = 128;
+			struct Node
+			{
+				BezierA a;
+				BezierB b;
+				double lowerA, upperA, lowerB, upperB;
+				double boundSq, distanceSq, parameterA, parameterB;
+				bool splitA;
+			};
+			// Each split consumes two evaluations and adds at most one queued node.
+			std::array<Node, ((MaxEvaluations + 1) / 2)> queue;
+			int32 count = 0, evaluations = 0;
+			const auto Compare = [](const Node& lhs, const Node& rhs) noexcept
+			{
+				return ((lhs.boundSq != rhs.boundSq) ? (lhs.boundSq > rhs.boundSq) : (lhs.distanceSq > rhs.distanceSq));
+			};
+			ClosestPairCandidate best;
+			double bestDistance = std::numeric_limits<double>::infinity();
+			double scaleSq = 0.0;
+			for (const Vec2& p : BezierControlPoints(a))
+			{
+				scaleSq = Max(scaleSq, p.distanceFromSq(a.p0));
+			}
+			for (const Vec2& p : BezierControlPoints(b))
+			{
+				scaleSq = Max(scaleSq, p.distanceFromSq(a.p0));
+			}
+			const double tolerance = (64.0 * std::numeric_limits<double>::epsilon() * std::sqrt(scaleSq));
+			const auto Add = [&](const BezierA& partA, const BezierB& partB,
+				const double lowerA, const double upperA, const double lowerB, const double upperB)
+			{
+				++evaluations;
+				const auto pointsA = BezierControlPoints(partA);
+				const auto pointsB = BezierControlPoints(partB);
+				const auto Bounds = [](const auto& points) noexcept
+				{
+					Vec2 lower = points.front(), upper = lower;
+					for (const Vec2& p : points)
+					{
+						lower = { Min(lower.x, p.x), Min(lower.y, p.y) };
+						upper = { Max(upper.x, p.x), Max(upper.y, p.y) };
+					}
+					return std::pair{ lower, upper };
+				};
+				const auto [minA, maxA] = Bounds(pointsA);
+				const auto [minB, maxB] = Bounds(pointsB);
+				const Vec2 boxGap{ Max({ 0.0, (minA.x - maxB.x), (minB.x - maxA.x) }),
+					Max({ 0.0, (minA.y - maxB.y), (minB.y - maxA.y) }) };
+				double boundSq = boxGap.lengthSq();
+				double cutoff = Max(0.0, (bestDistance - tolerance));
+				if ((cutoff * cutoff) <= boundSq)
+				{
+					return;
+				}
+
+				const auto seed = ClosestSegmentSegment(pointsA.front(), pointsA.back(), pointsB.front(), pointsB.back());
+				const double t = (lowerA + (upperA - lowerA) * seed.parameterA);
+				const double s = (lowerB + (upperB - lowerB) * seed.parameterB);
+				const Vec2 pointA = a.pointAt(t), pointB = b.pointAt(s);
+				UpdateCandidate(best, pointA, pointB, t, s);
+				if (evaluations == 1)
+				{
+					RefineBezierPair(a, b, best);
+				}
+				bestDistance = std::sqrt(best.distanceSq);
+				if (bestDistance <= tolerance)
+				{
+					return;
+				}
+
+				// Project the control hulls onto the candidate separation direction
+				// for a lower bound that also works for oblique, nearby curves.
+				const Vec2 normal = (pointB - pointA);
+				double projectionA = -std::numeric_limits<double>::infinity();
+				double projectionB = std::numeric_limits<double>::infinity();
+				for (const Vec2& p : pointsA)
+				{
+					projectionA = Max(projectionA, (p - partA.p0).dot(normal));
+				}
+				for (const Vec2& p : pointsB)
+				{
+					projectionB = Min(projectionB, (p - partA.p0).dot(normal));
+				}
+				const double gap = Max(0.0, (projectionB - projectionA));
+				boundSq = Max(boundSq, (gap * gap / normal.lengthSq()));
+				cutoff = Max(0.0, (bestDistance - tolerance));
+				if (((cutoff * cutoff) <= boundSq)
+					|| (((upperA - lowerA) <= ParameterTolerance) && ((upperB - lowerB) <= ParameterTolerance)))
+				{
+					return;
+				}
+				const bool splitA = ((ParameterTolerance < (upperA - lowerA))
+					&& (((upperB - lowerB) <= ParameterTolerance) || ((maxB - minB).lengthSq() <= (maxA - minA).lengthSq())));
+				queue[count++] = { partA, partB, lowerA, upperA, lowerB, upperB, boundSq, normal.lengthSq(), t, s, splitA };
+				std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+			};
+
+			Add(a, b, 0.0, 1.0, 0.0, 1.0);
+			while (count && ((evaluations + 2) <= MaxEvaluations))
+			{
+				const double cutoff = Max(0.0, (bestDistance - tolerance));
+				if ((cutoff * cutoff) <= queue.front().boundSq)
+				{
+					break;
+				}
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node node = queue[--count];
+				if (node.splitA)
+				{
+					const auto [left, right] = node.a.split(0.5);
+					const double middle = ((node.lowerA + node.upperA) * 0.5);
+					Add(left, node.b, node.lowerA, middle, node.lowerB, node.upperB);
+					Add(right, node.b, middle, node.upperA, node.lowerB, node.upperB);
+				}
+				else
+				{
+					const auto [left, right] = node.b.split(0.5);
+					const double middle = ((node.lowerB + node.upperB) * 0.5);
+					Add(node.a, left, node.lowerA, node.upperA, node.lowerB, middle);
+					Add(node.a, right, node.lowerA, node.upperA, middle, node.upperB);
+				}
+			}
+
+			RefineBezierPair(a, b, best);
+			// Finish two promising alternatives as well: the best sampled pair
+			// can belong to a different local minimum when the budget is reached.
+			for (int32 i = 0; (i < 2) && count; ++i)
+			{
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node& node = queue[--count];
+				if (best.distanceSq <= node.boundSq)
+				{
+					break;
+				}
+				ClosestPairCandidate candidate;
+				UpdateCandidate(candidate, a.pointAt(node.parameterA), b.pointAt(node.parameterB), node.parameterA, node.parameterB);
+				RefineBezierPair(a, b, candidate);
+				if (candidate.distanceSq < best.distanceSq)
+				{
+					best = candidate;
+				}
+			}
+			return best;
+		}
+
 		[[nodiscard]]
 		ClosestPairCandidate RefinePointPiece(
 			const Vec2& point, const BoundaryPiece& piece,
@@ -732,6 +977,32 @@ namespace s3d
 				if (const CircleArc* arcB = std::get_if<CircleArc>(&pieceB); arcB && (arcB->region == ArcRegion::Full))
 				{
 					return ClosestDisjointEllipses(*ellipseA, Ellipse{ arcB->circle.center, arcB->circle.r, arcB->circle.r });
+				}
+			}
+
+			if (const Bezier2* bezierA = std::get_if<Bezier2>(&pieceA))
+			{
+				if (const Bezier2* bezierB = std::get_if<Bezier2>(&pieceB))
+				{
+					return ClosestBezierPair(*bezierA, *bezierB);
+				}
+				if (const Bezier3* bezierB = std::get_if<Bezier3>(&pieceB))
+				{
+					return ClosestBezierPair(*bezierA, *bezierB);
+				}
+			}
+			if (const Bezier3* bezierA = std::get_if<Bezier3>(&pieceA))
+			{
+				if (const Bezier2* bezierB = std::get_if<Bezier2>(&pieceB))
+				{
+					auto result = ClosestBezierPair(*bezierB, *bezierA);
+					std::swap(result.pointA, result.pointB);
+					std::swap(result.parameterA, result.parameterB);
+					return result;
+				}
+				if (const Bezier3* bezierB = std::get_if<Bezier3>(&pieceB))
+				{
+					return ClosestBezierPair(*bezierA, *bezierB);
 				}
 			}
 
