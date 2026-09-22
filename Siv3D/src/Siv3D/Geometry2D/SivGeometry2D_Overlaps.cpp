@@ -645,6 +645,11 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
+			if (1.0 <= superEllipse.n)
+			{
+				return detail::TestConvexSuperEllipseAreas<false>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
+			}
+
 			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
 			{
 				return OverlapsTriangleCircleArea(part, circle);
@@ -703,6 +708,11 @@ namespace s3d
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y });
 			}
 
+			if (1.0 <= superEllipse.n)
+			{
+				return detail::TestConvexSuperEllipseAreas<false>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
+			}
+
 			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)
 			{
 				return OverlapsTriangleEllipseArea(part, ellipse);
@@ -757,6 +767,11 @@ namespace s3d
 					Ellipse{ b.center, b.axes.x, b.axes.y }, a);
 			}
 
+			if ((1.0 <= a.n) && (1.0 <= b.n))
+			{
+				return detail::TestConvexSuperEllipseAreas<false>(a, b);
+			}
+
 			return VisitSuperEllipseFanTriangles(a, [&](const Triangle& aPart)
 			{
 				return VisitSuperEllipseFanTriangles(b, [&](const Triangle& bPart)
@@ -783,6 +798,15 @@ namespace s3d
 				return OverlapsEllipseRoundRectArea(
 					Ellipse{ superEllipse.center, superEllipse.axes.x, superEllipse.axes.y },
 					roundRect, effectiveRadius, core);
+			}
+
+			if (1.0 <= superEllipse.n)
+			{
+				if (effectiveRadius == 0.0)
+				{
+					return OverlapsRectSuperEllipseArea(roundRect.rect, superEllipse);
+				}
+				return detail::TestConvexSuperEllipseRoundRectArea<false>(superEllipse, core, effectiveRadius);
 			}
 
 			return VisitSuperEllipseFanTriangles(superEllipse, [&](const Triangle& part)

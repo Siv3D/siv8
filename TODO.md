@@ -9,7 +9,7 @@
 
 ## `Siv3D/include/Siv3D/Geometry2D/Overlaps.hpp`
 
-- `SuperEllipse`（`n != 2`）と Circle / Ellipse / RoundRect / SuperEllipse の `Overlaps` に残る固定 64 分割は、凸形状で浅い重なりを見落とし、凹形状で離れた図形を重なりと判定する。曲線同士の組合せとして一括で調べ、指数ごとの判定方法・誤差・処理量上限を決めてから小さな段階に分けて修正する。`Intersects` 側に残る境界の近似も併せて扱い、探索未確定時の返値を `Overlaps` に無条件で流用しない。
+- 凹形状の `SuperEllipse`（`n < 1`）を含む Circle / Ellipse / RoundRect / SuperEllipse の曲線同士の判定をまとめて見直す。`Overlaps` の固定 64 分割は離れた図形を重なりと判定し、`Intersects` の境界近似は浅い交差を見落とす。凸形状と異なり断面の重なりに複数の極大があるため、区間の分割方法・誤差・処理量上限を決める。探索未確定時の true を `Overlaps` に流用しない。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`
 

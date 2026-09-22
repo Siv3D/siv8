@@ -1872,6 +1872,11 @@ namespace s3d
 				return IntersectsCircleEllipse(circle, Ellipse{ superEllipse.center, ax, by });
 			}
 
+			if (1.0 <= n)
+			{
+				return detail::TestConvexSuperEllipseAreas<true>(SuperEllipse{ circle.center, circle.r, circle.r, 2.0 }, superEllipse);
+			}
+
 			const RectF superEllipseBounds{ (superEllipse.center.x - ax), (superEllipse.center.y - by), (ax * 2.0), (by * 2.0) };
 
 			if (not BoundsIntersectClosed(circle.boundingRect(), superEllipseBounds))
@@ -2516,6 +2521,11 @@ namespace s3d
 				return IntersectsEllipseEllipse(ellipse, Ellipse{ superEllipse.center, sx, sy });
 			}
 
+			if (1.0 <= n)
+			{
+				return detail::TestConvexSuperEllipseAreas<true>(SuperEllipse{ ellipse, 2.0 }, superEllipse);
+			}
+
 			const RectF superEllipseBounds{ (superEllipse.center.x - sx), (superEllipse.center.y - sy), (sx * 2.0), (sy * 2.0) };
 
 			if (not BoundsIntersectClosed(ellipse.boundingRect(), superEllipseBounds))
@@ -2752,6 +2762,11 @@ namespace s3d
 				return IntersectsEllipseSuperEllipse(Ellipse{ b.center, bx, by }, a);
 			}
 
+			if ((1.0 <= a.n) && (1.0 <= b.n))
+			{
+				return detail::TestConvexSuperEllipseAreas<true>(a, b);
+			}
+
 			return IntersectsPositiveAreaSuperEllipses(a, b);
 		}
 
@@ -2791,6 +2806,12 @@ namespace s3d
 			if (er == 0.0)
 			{
 				return IntersectsRectFSuperEllipse(rect, superEllipse);
+			}
+
+			if (1.0 <= superEllipse.n)
+			{
+				const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
+				return detail::TestConvexSuperEllipseRoundRectArea<true>(superEllipse, core, er);
 			}
 
 			if (not BoundsIntersectClosed(superEllipse.boundingRect(), rect))

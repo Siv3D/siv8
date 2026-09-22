@@ -179,12 +179,15 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const RectF& b) noexcept;
 
+		/// @remark n が 1 以上かつ 2 以外の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Circle& b) noexcept;
 
+		/// @remark n が 1 以上の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Ellipse& b) noexcept;
 
+		/// @remark 両方の n が 1 以上の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const SuperEllipse& b) noexcept;
 
@@ -196,6 +199,7 @@ namespace s3d
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const Quad& b) noexcept;
 
+		/// @remark n が 1 以上かつ有効な角丸半径が正の場合、丸め誤差内の差は接触として扱います。
 		[[nodiscard]]
 		bool Overlaps(const SuperEllipse& a, const RoundRect& b) noexcept;
 
