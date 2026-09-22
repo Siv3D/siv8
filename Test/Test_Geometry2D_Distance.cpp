@@ -777,6 +777,133 @@ TEST_CASE("Geometry2D.Distance.Bezier.EndpointsAndDegeneracy")
 	CheckWitnessConsistency(*parallel);
 }
 
+TEST_CASE("Geometry2D.Distance.Bezier.LineWitnesses")
+{
+	for (const double gap : { 1.0e-8, 0.0001, 0.01, 10.0 })
+	{
+		for (const double left : { -30.0, -0.001, 0.0 })
+		{
+			const double right = ((left == -30.0) ? 20.0 : 1.0), width = (right - left), k = 0.032;
+			const double c0 = (k * left * left + gap), c1 = (2 * k * left * width), c2 = (k * width * width);
+			const Bezier2 quadratic{ { left, c0 }, { (left + width / 2), (c0 + c1 / 2) }, { right, (c0 + c1 + c2) } };
+			const Bezier3 elevated{ quadratic.p0, (quadratic.p0 + (quadratic.p1 - quadratic.p0) * (2.0 / 3.0)),
+				(quadratic.p2 + (quadratic.p1 - quadratic.p2) * (2.0 / 3.0)), quadratic.p2 };
+			// y = k*x^2*(1 - 0.6*t) + gap has its minimum at x = 0.
+			const double b1 = (c1 - 0.6 * (c0 - gap)), b2 = (c2 - 0.6 * c1), b3 = (-0.6 * c2);
+			const Bezier3 cubic{ { left, c0 }, { (left + width / 3), (c0 + b1 / 3) },
+				{ (left + 2 * width / 3), (c0 + 2 * b1 / 3 + b2 / 3) }, { right, (c0 + b1 + b2 + b3) } };
+			for (const double scale : { 0.01, 1.0, 100.0 })
+			{
+				for (const double angle : { 0.0, 0.7, Math::HalfPi })
+				{
+					CAPTURE(gap, left, scale, angle);
+					const auto Transform = [&](const Vec2& point) { return ((point.rotated(angle) + Vec2{ 7, -11 }) * scale); };
+					const auto CheckCurve = [&](auto curve)
+					{
+						curve.p0 = Transform(curve.p0);
+						curve.p1 = Transform(curve.p1);
+						curve.p2 = Transform(curve.p2);
+						if constexpr (std::is_same_v<decltype(curve), Bezier3>)
+						{
+							curve.p3 = Transform(curve.p3);
+						}
+						const auto CheckPair = [&](const Line& line, const auto& b)
+						{
+							const double tolerance = (1.0e-10 * scale);
+							CHECK(Abs(Geometry2D::Distance(line, b) - gap * scale) <= tolerance);
+							CHECK(Abs(Geometry2D::Distance(b, line) - gap * scale) <= tolerance);
+							const auto ab = Geometry2D::ClosestPoints(line, b), ba = Geometry2D::ClosestPoints(b, line);
+							REQUIRE(ab);
+							REQUIRE(ba);
+							CHECK(Abs(ab->distance - gap * scale) <= tolerance);
+							CHECK(Abs(ba->distance - gap * scale) <= tolerance);
+							CHECK(ab->pointA.distanceFrom(Transform({ 0, 0 })) <= (1.0e-6 * scale));
+							CHECK(ab->pointB.distanceFrom(Transform({ 0, gap })) <= (1.0e-6 * scale));
+							CHECK(ba->pointA.distanceFrom(ab->pointB) <= tolerance);
+							CHECK(ba->pointB.distanceFrom(ab->pointA) <= tolerance);
+							CheckWitnessConsistency(*ab, tolerance);
+						};
+						for (const Line line : { Line{ Transform({ -20, 0 }), Transform({ 80, 0 }) },
+							Line{ Transform({ 0, 0 }), Transform({ -10, -30 }) } })
+						{
+							CheckPair(line, curve);
+							CheckPair(Line{ line.end, line.start }, curve.reversed());
+						}
+					};
+					CheckCurve(quadratic);
+					CheckCurve(elevated);
+					CheckCurve(cubic);
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.LineDegeneracyAndBoundaries")
+{
+	const auto CheckPair = [](const Line& line, const auto& curve, const Vec2& expectedA, const Vec2& expectedB)
+	{
+		const double distance = expectedA.distanceFrom(expectedB);
+		CHECK(Abs(Geometry2D::Distance(line, curve) - distance) <= 1.0e-10);
+		CHECK(Abs(Geometry2D::Distance(curve, line) - distance) <= 1.0e-10);
+		const auto pair = Geometry2D::ClosestPoints(line, curve), reversed = Geometry2D::ClosestPoints(curve, line);
+		REQUIRE(pair);
+		REQUIRE(reversed);
+		CHECK(pair->pointA.distanceFrom(expectedA) <= 1.0e-7);
+		CHECK(pair->pointB.distanceFrom(expectedB) <= 1.0e-7);
+		CHECK(reversed->pointA.distanceFrom(expectedB) <= 1.0e-7);
+		CHECK(reversed->pointB.distanceFrom(expectedA) <= 1.0e-7);
+		CheckWitnessConsistency(*pair);
+	};
+	// The nearer endpoint has two local distance minima on this curve.
+	CheckPair(Line{ { -13, 74 }, { 30, 22 } }, Bezier3{ { 49, 77 }, { -49, 82 }, { 65, 49 }, { 40, -1 } },
+		{ 30, 22 }, { 41.333363837603287, 26.25614582769596 });
+	CheckPair(Line{ { 0, 151 }, { 0, 200 } }, Bezier3{ { 0, 0 }, { 100, 200 }, { -100, 200 }, { 0, 0 } }, { 0, 151 }, { 0, 150 });
+	CheckPair(Line{ { 40, 0 }, { 50, 0 } }, Bezier3{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } }, { 40, 0 }, { (50 / std::sqrt(3.0)), 0 });
+	CheckPair(Line{ { 10, 1 }, { 10, 4 } }, Bezier3{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } }, { 10, 1 }, { 10, 0 });
+	CheckPair(Line{ { 0, 0 }, { 10, 0 } }, Bezier2{ { 3, 4 }, { 3, 4 }, { 3, 4 } }, { 3, 0 }, { 3, 4 });
+	CheckPair(Line{ { 0, 0 }, { 10, 0 } }, Bezier3{ { 3, 4 }, { 3, 4 }, { 3, 4 }, { 3, 4 } }, { 3, 0 }, { 3, 4 });
+	CheckPair(Line{ { 0, 0 }, { 0, 0 } }, Bezier2{ { -1, 2 }, { 0, 0 }, { 1, 2 } }, { 0, 0 }, { 0, 1 });
+	CheckPair(Line{ { 0, 0 }, { 10, 0 } }, Bezier3{ { 5, 3 }, { 6, 4 }, { 7, 5 }, { 8, 6 } }, { 5, 0 }, { 5, 3 });
+	for (const Line line : { Line{ { -2, 0 }, { 2, 0 } }, Line{ { -2, 0.5 }, { 2, 0.5 } }, Line{ { 0, 0 }, { 0, 0 } } })
+	{
+		const Bezier2 curve{ { -1, 1 }, { 0, -1 }, { 1, 1 } };
+		CHECK(Geometry2D::Distance(line, curve) == 0.0);
+		const auto pair = Geometry2D::ClosestPoints(line, curve);
+		REQUIRE(pair);
+		CHECK(pair->pointA == pair->pointB);
+		CHECK(Geometry2D::Distance(pair->pointA, line) <= 1.0e-9);
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.LinearBoundaries")
+{
+	const Bezier2 curve{ { -30, 28.8001 }, { -5, -19.1999 }, { 20, 12.8001 } };
+	const RectF rect{ -20, -40, 100, 40 };
+	const auto CheckShape = [&](const auto& shape)
+	{
+		CHECK(Abs(Geometry2D::Distance(shape, curve) - 0.0001) <= 1.0e-10);
+		CHECK(Abs(Geometry2D::Distance(curve, shape) - 0.0001) <= 1.0e-10);
+		const auto pair = Geometry2D::ClosestPoints(shape, curve), reversed = Geometry2D::ClosestPoints(curve, shape);
+		REQUIRE(pair);
+		REQUIRE(reversed);
+		CHECK(pair->pointA.distanceFrom(Vec2{ 0, 0 }) <= 1.0e-8);
+		CHECK(pair->pointB.distanceFrom(Vec2{ 0, 0.0001 }) <= 1.0e-8);
+		CHECK(reversed->pointA.distanceFrom(pair->pointB) <= 1.0e-10);
+		CHECK(reversed->pointB.distanceFrom(pair->pointA) <= 1.0e-10);
+		CheckWitnessConsistency(*pair);
+	};
+	CheckShape(rect);
+	CheckShape(Rect{ -20, -40, 100, 40 });
+	CheckShape(rect.asQuad());
+	CheckShape(Triangle{ { -20, 0 }, { -20, -40 }, { 80, 0 } });
+	CheckShape(rect.asPolygon());
+	CheckShape(MultiPolygon{ rect.asPolygon(), Rect{ -500, -500, 10, 10 }.asPolygon() });
+	CheckShape(LineString{ { -20, 0 }, { 80, 0 }, { 80, -40 } });
+	CHECK(std::isinf(Geometry2D::Distance(Polygon{}, curve)));
+	CHECK(not Geometry2D::ClosestPoints(Polygon{}, curve));
+}
+
 TEST_CASE("Geometry2D.Distance.Bezier.CompetingMinima")
 {
 	const auto CheckPair = [](const Bezier3& a, const Bezier3& b, const double expected)
