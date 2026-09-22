@@ -18,6 +18,7 @@
 # include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/SignedDistance.hpp>
+# include "PolygonGeometry.hpp"
 
 namespace s3d
 {
@@ -60,7 +61,7 @@ namespace s3d
 			bool empty = true;
 			bool hasPositiveArea = false;
 			Optional<Vec2> pointBoundary;
-			Array<BoundaryPiece> pieces;
+			detail::BoundarySource<BoundaryPiece> pieces;
 		};
 
 		[[nodiscard]]
@@ -554,19 +555,6 @@ namespace s3d
 			}
 		}
 
-		void AppendRingPieces(Array<BoundaryPiece>& pieces, const std::span<const Vec2> ring)
-		{
-			if (ring.size() < 2)
-			{
-				return;
-			}
-
-			for (size_t i = 0; i < ring.size(); ++i)
-			{
-				AppendLinePiece(pieces, Line{ ring[i], ring[(i + 1) % ring.size()] });
-			}
-		}
-
 		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const RectF& shape)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
@@ -745,29 +733,6 @@ namespace s3d
 			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Polygon& shape)
-		{
-			if (shape.isEmpty())
-			{
-				return;
-			}
-
-			AppendRingPieces(pieces, shape.outer());
-
-			for (const auto& inner : shape.inners())
-			{
-				AppendRingPieces(pieces, inner);
-			}
-		}
-
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const MultiPolygon& shape)
-		{
-			for (const auto& polygon : shape)
-			{
-				AppendBoundaryPieces(pieces, polygon);
-			}
-		}
-
 		template <class Shape>
 		[[nodiscard]]
 		BoundaryData MakeBoundaryData(const Shape& shape)
@@ -789,8 +754,8 @@ namespace s3d
 				return data;
 			}
 
-			AppendBoundaryPieces(data.pieces, shape);
-			assert(not data.pieces.isEmpty());
+			data.pieces = detail::MakeBoundarySource<BoundaryPiece>(shape,
+				[&](auto& pieces) { AppendBoundaryPieces(pieces, shape); });
 			return data;
 		}
 
@@ -806,7 +771,7 @@ namespace s3d
 				return best;
 			}
 
-			for (const BoundaryPiece& piece : data.pieces)
+			(void)detail::AnyBoundaryPiece<true>(data.pieces, [&](const BoundaryPiece& piece)
 			{
 				const auto candidate = ClosestPointPiece(point, piece);
 
@@ -814,7 +779,8 @@ namespace s3d
 				{
 					best = candidate;
 				}
-			}
+				return false;
+			});
 
 			return best;
 		}

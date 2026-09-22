@@ -162,6 +162,57 @@ TEST_CASE("Geometry2D.SignedDistance.MultiPolygon")
 	CHECK(std::isinf(Geometry2D::SignedDistance(empty, Vec2{ 0, 0 })));
 }
 
+TEST_CASE("Geometry2D.SignedDistance.Polygon.point_collapse")
+{
+	const Polygon source{
+		Array<Vec2>{ { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } },
+		Array<Array<Vec2>>{ { { 3, 3 }, { 3, 7 }, { 7, 7 }, { 7, 3 } } }
+	};
+	const Vec2 position{ 2, 3 };
+	const Polygon point = source.scaledFrom(position, 0.0);
+	REQUIRE(not point.isEmpty());
+
+	auto CheckPointBoundary = [&](const auto& shape)
+	{
+		CHECK(Near(Geometry2D::SignedDistance(shape, Vec2{ 5, 7 }), 5.0));
+		CHECK(Near(Geometry2D::SignedDistance(shape, Point{ 5, 7 }), 5.0));
+		const auto closest = Geometry2D::ClosestPointOnBoundary(shape, Vec2{ 5, 7 });
+		REQUIRE(closest.has_value());
+		CHECK(*closest == position);
+		CHECK(Geometry2D::ClosestPointOnBoundary(shape, Point{ 5, 7 }) == closest);
+		CHECK(Geometry2D::ClosestPointOnBoundary(shape, position) == closest);
+		const double onBoundary = Geometry2D::SignedDistance(shape, position);
+		CHECK(onBoundary == 0.0);
+		CHECK(not std::signbit(onBoundary));
+	};
+	CheckPointBoundary(point);
+	CheckPointBoundary(MultiPolygon{ point });
+	CheckPointBoundary(MultiPolygon{ Polygon{}, point, point.movedBy(30, 0) });
+	CheckPointBoundary(MultiPolygon{ point.movedBy(30, 0), point, Polygon{} });
+
+	const Polygon area = source.movedBy(30, 0);
+	for (const auto& multi : { MultiPolygon{ point, Polygon{}, area }, MultiPolygon{ area, point } })
+	{
+		CheckPointBoundary(multi);
+		CHECK(Near(Geometry2D::SignedDistance(multi, Vec2{ 31, 5 }), -1.0));
+		const auto closest = Geometry2D::ClosestPointOnBoundary(multi, Vec2{ 31, 5 });
+		REQUIRE(closest.has_value());
+		CHECK(*closest == Vec2{ 30, 5 });
+	}
+
+	const Polygon segment = source.scaledFrom(position, Vec2{ 0, 1 });
+	CHECK(Near(Geometry2D::SignedDistance(segment, Vec2{ 5, 7 }), 3.0));
+	CHECK(Geometry2D::SignedDistance(segment, Vec2{ 2, 7 }) == 0.0);
+	const auto segmentClosest = Geometry2D::ClosestPointOnBoundary(segment, Vec2{ 5, 7 });
+	REQUIRE(segmentClosest.has_value());
+	CHECK(*segmentClosest == Vec2{ 2, 7 });
+
+	CHECK(std::isinf(Geometry2D::SignedDistance(Polygon{}, position)));
+	CHECK(not Geometry2D::ClosestPointOnBoundary(Polygon{}, position));
+	CHECK(std::isinf(Geometry2D::SignedDistance(MultiPolygon{ Polygon{} }, position)));
+	CHECK(not Geometry2D::ClosestPointOnBoundary(MultiPolygon{ Polygon{} }, position));
+}
+
 TEST_CASE("Geometry2D.SignedDistance.CurvedScale")
 {
 	const Ellipse large{ Vec2{ 1.0e9, -1.0e9 }, 5.0e5, 3.0e5 };
