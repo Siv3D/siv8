@@ -1388,7 +1388,7 @@ namespace s3d
 			{
 				const ShapeDistanceData data = MakeShapeDistanceData(source);
 				Optional<Vec2> result;
-				(void)detail::AnyBoundaryPiece(data.boundaryPieces, [&](const BoundaryPiece& piece)
+				(void)detail::AnyBoundaryPiece<true>(data.boundaryPieces, [&](const BoundaryPiece& piece)
 					{
 						for (int32 i = 0; i <= 32; ++i)
 						{
@@ -1453,7 +1453,7 @@ namespace s3d
 
 			if (dataA.pointGeometry)
 			{
-				(void)detail::AnyBoundaryPiece(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
+				(void)detail::AnyBoundaryPiece<true>(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
 					{
 						const auto candidate = ClosestPointPiece(*dataA.pointGeometry, pieceB);
 						if (candidate.distanceSq < best.distanceSq)
@@ -1467,7 +1467,7 @@ namespace s3d
 
 			if (dataB.pointGeometry)
 			{
-				(void)detail::AnyBoundaryPiece(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
+				(void)detail::AnyBoundaryPiece<true>(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
 					{
 						auto candidate = ClosestPointPiece(*dataB.pointGeometry, pieceA);
 						std::swap(candidate.pointA, candidate.pointB);
@@ -1481,9 +1481,9 @@ namespace s3d
 				return best;
 			}
 
-			(void)detail::AnyBoundaryPiece(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
+			(void)detail::AnyBoundaryPiece<true>(dataA.boundaryPieces, [&](const BoundaryPiece& pieceA)
 				{
-					(void)detail::AnyBoundaryPiece(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
+					(void)detail::AnyBoundaryPiece<true>(dataB.boundaryPieces, [&](const BoundaryPiece& pieceB)
 						{
 							const auto candidate = ClosestPiecePair(pieceA, pieceB);
 							if (candidate.distanceSq < best.distanceSq)

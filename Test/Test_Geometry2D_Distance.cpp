@@ -244,3 +244,56 @@ TEST_CASE("Geometry2D.Distance.Polygon.intersection_and_containment_witnesses")
 	CHECK(std::isinf(Geometry2D::Distance(polygon, MultiPolygon{ Polygon{} })));
 	CHECK(not Geometry2D::ClosestPoints(polygon, MultiPolygon{ Polygon{} }));
 }
+
+TEST_CASE("Geometry2D.Distance.Polygon.point_collapse")
+{
+	const Polygon source{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 6, 6 }, { 6, 14 }, { 14, 14 }, { 14, 6 } } }
+	};
+	const Vec2 point{ 2, 3 };
+	const Polygon collapsed = source.scaledFrom(point, 0.0);
+	REQUIRE(not collapsed.isEmpty());
+	const auto CheckPair = [](const auto& a, const auto& b, const Vec2& pointA, const Vec2& pointB)
+	{
+		const double distance = pointA.distanceFrom(pointB);
+		CHECK(Geometry2D::Distance(a, b) == Test::Approx(distance));
+		CHECK(Geometry2D::Distance(b, a) == Test::Approx(distance));
+		const auto ab = Geometry2D::ClosestPoints(a, b);
+		const auto ba = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(ab);
+		REQUIRE(ba);
+		CHECK(ab->distance == Test::Approx(distance));
+		CHECK(ba->distance == Test::Approx(distance));
+		CHECK(ab->pointA.distanceFrom(pointA) < 1e-7);
+		CHECK(ab->pointB.distanceFrom(pointB) < 1e-7);
+		CHECK(ba->pointA.distanceFrom(pointB) < 1e-7);
+		CHECK(ba->pointB.distanceFrom(pointA) < 1e-7);
+		CheckWitnessConsistency(*ab);
+		CheckWitnessConsistency(*ba);
+	};
+
+	CheckPair(collapsed, Vec2{ 5, 7 }, point, Vec2{ 5, 7 });
+	CheckPair(collapsed, source.scaledFrom(Vec2{ 5, 7 }, 0.0), point, Vec2{ 5, 7 });
+	CheckPair(collapsed, Line{ Vec2{ 5, 1 }, Vec2{ 5, 5 } }, point, Vec2{ 5, 3 });
+	CheckPair(collapsed, Circle{ 8, 3, 1 }, point, Vec2{ 7, 3 });
+	CheckPair(collapsed, Ellipse{ 8, 3, 2, 1 }, point, Vec2{ 6, 3 });
+	CheckPair(collapsed, SuperEllipse{ Vec2{ 8, 3 }, SizeF{ 2, 1 }, 4 }, point, Vec2{ 6, 3 });
+	CheckPair(collapsed, Bezier2{ Vec2{ 6, 1 }, Vec2{ 4, 3 }, Vec2{ 6, 5 } }, point, Vec2{ 5, 3 });
+	CheckPair(collapsed, RoundRect{ 6, 1, 4, 4, 1 }, point, Vec2{ 6, 3 });
+	CheckPair(collapsed, RectF{ 6, 1, 2, 4 }.asPolygon(), point, Vec2{ 6, 3 });
+	CheckPair(collapsed, source, point, point);
+	CheckPair(collapsed, collapsed, point, point);
+	CheckPair(source.scaledFromOrigin(Vec2{ 0, 1 }).movedBy(point), Vec2{ 5, 7 }, Vec2{ 2, 7 }, Vec2{ 5, 7 });
+
+	const Polygon area = RectF{ 20, 20, 4, 4 }.asPolygon();
+	for (const MultiPolygon& multi : { MultiPolygon{ Polygon{}, area, collapsed }, MultiPolygon{ collapsed, area, Polygon{} } })
+	{
+		CheckPair(multi, Vec2{ 5, 7 }, point, Vec2{ 5, 7 });
+		CheckPair(multi, RectF{ 6, 1, 2, 4 }.asPolygon(), point, Vec2{ 6, 3 });
+		CheckPair(multi, MultiPolygon{ Polygon{}, source.scaledFrom(Vec2{ 5, 7 }, 0.0) }, point, Vec2{ 5, 7 });
+	}
+	CheckPair(MultiPolygon{ collapsed, source.scaledFrom(Vec2{ 30, 30 }, 0.0) }, Vec2{ 5, 7 }, point, Vec2{ 5, 7 });
+	CHECK(std::isinf(Geometry2D::Distance(collapsed, MultiPolygon{ Polygon{} })));
+	CHECK(not Geometry2D::ClosestPoints(collapsed, MultiPolygon{ Polygon{} }));
+}

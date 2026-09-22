@@ -127,7 +127,7 @@ namespace s3d::detail
 		}
 	}
 
-	template <class Piece, class Predicate>
+	template <bool IncludePointPolygons = false, class Piece, class Predicate>
 	[[nodiscard]]
 	bool AnyBoundaryPiece(const BoundarySource<Piece>& source, Predicate&& predicate)
 	{
@@ -146,6 +146,20 @@ namespace s3d::detail
 				{
 					for (const auto& polygon : pieces)
 					{
+						if constexpr (IncludePointPolygons)
+						{
+							// A zero-scale polygon retains one point, regardless of its vertex count.
+							const RectF& bounds = polygon.boundingRect();
+							if ((bounds.w == 0.0) && (bounds.h == 0.0) && (not polygon.isEmpty()))
+							{
+								const Vec2& point = polygon.outer().front();
+								if (predicate(Piece{ Line{ point, point } }))
+								{
+									return true;
+								}
+								continue;
+							}
+						}
 						if (AnyPolygonEdge(polygon, TestEdge))
 						{
 							return true;
