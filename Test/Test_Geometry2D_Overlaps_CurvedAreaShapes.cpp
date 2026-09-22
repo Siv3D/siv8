@@ -240,3 +240,88 @@ TEST_CASE("Geometry2D.Overlaps.RoundRectPolygon.rings")
 		}
 	}
 }
+
+TEST_CASE("Geometry2D.Overlaps.EllipseEllipse.shallow_overlap")
+{
+	auto Check = [](const auto& a, const auto& b, const bool overlaps, const bool intersects)
+	{
+		CHECK(Geometry2D::Overlaps(a, b) == overlaps);
+		CHECK(Geometry2D::Overlaps(b, a) == overlaps);
+		CHECK(Geometry2D::Intersects(a, b) == intersects);
+		CHECK(Geometry2D::Intersects(b, a) == intersects);
+	};
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		const Ellipse a{ offset, 2000, 1000 };
+		for (const double angle : { 0.04908738521234052, 0.37, 0.5, 1.0 })
+		{
+			for (const double separation : { 1.9999999, 2.0000001 })
+			{
+				CAPTURE(offset, angle, separation);
+				const Ellipse b = a.movedBy(separation * a.axes.x * std::cos(angle), separation * a.axes.y * std::sin(angle));
+				const bool expected = (separation < 2.0);
+				Check(a, b, expected, expected);
+				Check(a, SuperEllipse{ b, 2.0 }, expected, expected);
+				Check(SuperEllipse{ a, 2.0 }, SuperEllipse{ b, 2.0 }, expected, expected);
+			}
+		}
+		Check(Ellipse{ offset, 5, 10 }, Ellipse{ offset + Vec2{ 28, 224 }, 65, 234 }, false, true);
+		Check(Ellipse{ offset, 5, 10 }, Ellipse{ offset + Vec2{ 27.99, 223.99 }, 65, 234 }, true, true);
+		Check(Ellipse{ offset, 5, 10 }, Ellipse{ offset + Vec2{ 28.01, 224.01 }, 65, 234 }, false, false);
+		Check(a, a.movedBy(4000, 0), false, true);
+		Check(a, a, true, true);
+		Check(a, Ellipse{ offset, 1, 2 }, true, true);
+		Check(a, Ellipse{ offset, 0, 2 }, false, true);
+		Check(a, Ellipse{ offset, 0, 0 }, false, false);
+	}
+	for (const double gap : { -1.0e-14, 0.0, 1.0e-14 })
+	{
+		Check(Ellipse{ 0, 0, 5, 3 }, Ellipse{ 10 + gap, 0, 5, 3 }, false, true);
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.EllipseRoundRect.shallow_overlap")
+{
+	auto Check = [](const auto& a, const RoundRect& b, const bool overlaps, const bool intersects)
+	{
+		CHECK(Geometry2D::Overlaps(a, b) == overlaps);
+		CHECK(Geometry2D::Overlaps(b, a) == overlaps);
+		CHECK(Geometry2D::Intersects(a, b) == intersects);
+		CHECK(Geometry2D::Intersects(b, a) == intersects);
+	};
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		const Ellipse ellipse{ offset, 2000, 1000 };
+		for (const double angle : { 0.04908738521234052, 0.37, 0.5, 1.0 })
+		{
+			const Vec2 boundary{ ellipse.axes.x * std::cos(angle), ellipse.axes.y * std::sin(angle) };
+			const Vec2 normal = Vec2{ std::cos(angle) / ellipse.axes.x, std::sin(angle) / ellipse.axes.y }.normalized();
+			for (const double gap : { -0.0001, 0.0001 })
+			{
+				CAPTURE(offset, angle, gap);
+				const Vec2 center = (offset + boundary + normal * (1000 + gap));
+				const RoundRect roundRect{ RectF{ Arg::center = center, 2000, 2000 }, 1000 };
+				Check(ellipse, roundRect, (gap < 0), (gap < 0));
+				Check(SuperEllipse{ ellipse, 2.0 }, roundRect, (gap < 0), (gap < 0));
+			}
+		}
+		const Ellipse a{ offset, 65, 117 };
+		for (const SizeF size : { SizeF{ 10, 10 }, SizeF{ 10, 20 }, SizeF{ 20, 10 }, SizeF{ 20, 20 } })
+		{
+			CAPTURE(offset, size);
+			Check(a, RoundRect{ RectF{ offset + Vec2{ 23, 107 }, size }, 5 }, false, true);
+			Check(a, RoundRect{ RectF{ offset + Vec2{ 22.99, 106.99 }, size }, 5 }, true, true);
+			Check(a, RoundRect{ RectF{ offset + Vec2{ 23.01, 107.01 }, size }, 5 }, false, false);
+		}
+		Check(a, RoundRect{ RectF{ offset + Vec2{ 65, -1 }, 5, 2 }, 0 }, false, true);
+		Check(a, RoundRect{ RectF{ offset + Vec2{ 64.99, -1 }, 5, 2 }, 0 }, true, true);
+		Check(a, RoundRect{ RectF{ offset + Vec2{ -1, -1 }, 2, 2 }, 100 }, true, true);
+		Check(a, RoundRect{ RectF{ offset, 0, 2 }, 1 }, false, true);
+		Check(Ellipse{ offset, 0, 2 }, RoundRect{ RectF{ offset + Vec2{ -1, -1 }, 2, 2 }, 1 }, false, true);
+		Check(a, RoundRect{ RectF{ offset, 0, 0 }, 1 }, false, false);
+	}
+	for (const double gap : { -1.0e-14, 0.0, 1.0e-14 })
+	{
+		Check(Ellipse{ 0, 0, 5, 3 }, RoundRect{ RectF{ 5 + gap, -2, 4, 4 }, 2 }, false, true);
+	}
+}

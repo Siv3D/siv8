@@ -7,6 +7,10 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/Geometry2D/Overlaps.hpp`
+
+- `SuperEllipse`（`n != 2`）の固定 64 分割による近似は、凸形状で浅い重なりを見落とし、凹形状で離れた図形を重なりと判定する。Circle / Ellipse / Triangle / Quad / RoundRect / Polygon / MultiPolygon / SuperEllipse との組合せを一括で調べ、指数ごとの判定方法・誤差・処理量上限を決めてから小さな段階に分けて修正する。`Intersects` との整合も確認し、探索未確定時の扱いを `Overlaps` に無条件で流用しない。
+
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証

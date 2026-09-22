@@ -22,6 +22,7 @@
 # include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include "PolygonGeometry.hpp"
+# include "EllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -30,7 +31,6 @@ namespace s3d
 		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
 		inline constexpr double BezierRootTolerance = (64.0 * DoubleEpsilon);
 		inline constexpr double BezierPointTolerance = (64.0 * DoubleEpsilon);
-		inline constexpr double EllipseDistanceRootTolerance = (16.0 * DoubleEpsilon);
 
 		[[nodiscard]]
 		constexpr bool NearlyEqualBezierCoordinate(const double a, const double b) noexcept
@@ -1924,104 +1924,6 @@ namespace s3d
 			return false;
 		}
 
-		[[nodiscard]]
-		double DistancePointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
-		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			const double x = Abs(p.x - ellipse.center.x);
-			const double y = Abs(p.y - ellipse.center.y);
-
-			const double nx = (x / ax);
-			const double ny = (y / by);
-
-			if (((nx * nx) + (ny * ny)) <= 1.0)
-			{
-				return 0.0;
-			}
-
-			if (y == 0.0)
-			{
-				return (x - ax);
-			}
-
-			if (x == 0.0)
-			{
-				return (y - by);
-			}
-
-			// For an outside point, the closest ellipse point is obtained from the
-			// unique non-negative Lagrange multiplier lambda satisfying
-			//   (a*x/(lambda+a^2))^2 + (b*y/(lambda+b^2))^2 = 1.
-			// The left-hand side is strictly decreasing, so a bracketed Newton step
-			// cannot converge to the wrong stationary point as the angle-based
-			// unbracketed Newton iteration can.
-			const double scale = Max({ ax, by, x, y });
-			const double a = (ax / scale);
-			const double b = (by / scale);
-			const double px = (x / scale);
-			const double py = (y / scale);
-			const double aa = (a * a);
-			const double bb = (b * b);
-
-			double lower = 0.0;
-			double upper = 1.0;
-
-			const double ux0 = (px / a);
-			const double uy0 = (py / b);
-			const double f0 = ((ux0 * ux0) + (uy0 * uy0) - 1.0);
-			const double df0 = (-2.0 * (((ux0 * ux0) / aa) + ((uy0 * uy0) / bb)));
-			const double initialNewton = (-f0 / df0);
-			double lambda = (((0.0 < initialNewton) && (initialNewton < 1.0)) ? initialNewton : 0.5);
-
-			// With the normalization above, lambda = 1 is always outside the root:
-			// each squared term is at most 1/4. Newton from lambda = 0 gives a
-			// useful lower-side initial estimate, and every later step remains bracketed.
-			for (int32 i = 0; i < 64; ++i)
-			{
-				const double da = (lambda + aa);
-				const double db = (lambda + bb);
-				const double ux = ((a * px) / da);
-				const double uy = ((b * py) / db);
-				const double f = ((ux * ux) + (uy * uy) - 1.0);
-
-				if (Abs(f) <= EllipseDistanceRootTolerance)
-				{
-					lower = lambda;
-					upper = lambda;
-					break;
-				}
-
-				if (0.0 < f)
-				{
-					lower = lambda;
-				}
-				else
-				{
-					upper = lambda;
-				}
-
-				const double df = (-2.0 * (((ux * ux) / da) + ((uy * uy) / db)));
-				const double newton = (lambda - (f / df));
-
-				if ((lower < newton) && (newton < upper))
-				{
-					lambda = newton;
-				}
-				else
-				{
-					lambda = ((lower + upper) * 0.5);
-				}
-			}
-
-			lambda = ((lower + upper) * 0.5);
-
-			const double closestX = ((aa * px) / (lambda + aa));
-			const double closestY = ((bb * py) / (lambda + bb));
-
-			return (scale * std::hypot((px - closestX), (py - closestY)));
-		}
-
 		template <class Fty>
 		[[nodiscard]]
 		bool VisitCircleApproximateLineSegments(const Circle& circle, Fty&& callback)
@@ -2070,7 +1972,7 @@ namespace s3d
 				return false;
 			}
 
-			return (DistancePointEllipse(circle.center, ellipse) <= circle.r);
+			return (detail::DistancePointEllipse(circle.center, ellipse) <= circle.r);
 		}
 
 		[[nodiscard]]
@@ -2711,21 +2613,7 @@ namespace s3d
 				return Geometry2D::Intersects(a, detail::GetGeometry2DDegenerateSegment(b, bKind));
 			}
 
-			if (not BoundsIntersectClosed(a.boundingRect(), b.boundingRect()))
-			{
-				return false;
-			}
-
-			if (Geometry2D::Intersects(a.center, b)
-				|| Geometry2D::Intersects(b.center, a))
-			{
-				return true;
-			}
-
-			return VisitEllipseApproximateLineSegments(a, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, b);
-			});
+			return detail::TestEllipseEllipseArea<true>(a, b);
 		}
 
 		[[nodiscard]]
@@ -2800,31 +2688,15 @@ namespace s3d
 				return Geometry2D::Intersects(ellipse, detail::GetGeometry2DDegenerateSegment(roundRect, roundRectKind));
 			}
 
-			const RectF& rect = roundRect.rect;
 			const double er = detail::GetGeometry2DEffectiveRadius(roundRect);
 
 			if (er == 0.0)
 			{
-				return Geometry2D::Intersects(ellipse, rect);
+				return Geometry2D::Intersects(ellipse, roundRect.rect);
 			}
 
-			if (not BoundsIntersectClosed(ellipse.boundingRect(), rect))
-			{
-				return false;
-			}
-
-			const Vec2 roundRectCenter{ (rect.pos.x + (rect.size.x * 0.5)), (rect.pos.y + (rect.size.y * 0.5)) };
-
-			if (Geometry2D::Intersects(ellipse.center, roundRect)
-				|| Geometry2D::Intersects(roundRectCenter, ellipse))
-			{
-				return true;
-			}
-
-			return VisitEllipseApproximateLineSegments(ellipse, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, roundRect);
-			});
+			const RectF core = detail::GetGeometry2DRoundRectCore(roundRect, er);
+			return detail::TestEllipseRoundRectArea<true>(ellipse, core, er);
 		}
 
 		template <class Fty>

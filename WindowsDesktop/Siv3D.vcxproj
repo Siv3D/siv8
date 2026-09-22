@@ -1083,6 +1083,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\PolygonParser.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\Triangulate.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Polygon\TriangleFan.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\EllipseGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PolygonGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\CPrint.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\IPrint.hpp" />

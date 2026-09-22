@@ -16,6 +16,7 @@
 # include <Siv3D/Geometry2D/Overlaps.hpp>
 # include <boost/container/small_vector.hpp>
 # include "PolygonGeometry.hpp"
+# include "EllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -25,7 +26,6 @@ namespace s3d
 		// Analytic and polygonal pairs do not depend on this value.
 		inline constexpr int32 CurvedApproximationSegments = 64;
 		inline constexpr double TwoPi = 6.2831853071795864769252867665590058;
-		inline constexpr double EllipseDistanceRootTolerance = (16.0 * 2.2204460492503131e-16);
 
 		[[nodiscard]]
 		constexpr double Cross(const Vec2& a, const Vec2& b, const Vec2& c) noexcept
@@ -347,33 +347,6 @@ namespace s3d
 
 		template <class Fty>
 		[[nodiscard]]
-		bool VisitEllipseFanTriangles(const Ellipse& ellipse, Fty&& callback) noexcept
-		{
-			const double step = (TwoPi / CurvedApproximationSegments);
-			Vec2 previous{ (ellipse.center.x + ellipse.axes.x), ellipse.center.y };
-
-			for (int32 i = 1; i <= CurvedApproximationSegments; ++i)
-			{
-				const Vec2 current = (i == CurvedApproximationSegments)
-					? Vec2{ (ellipse.center.x + ellipse.axes.x), ellipse.center.y }
-					: Vec2{
-						(ellipse.center.x + std::cos(step * i) * ellipse.axes.x),
-						(ellipse.center.y + std::sin(step * i) * ellipse.axes.y)
-					};
-
-				if (callback(Triangle{ ellipse.center, previous, current }))
-				{
-					return true;
-				}
-
-				previous = current;
-			}
-
-			return false;
-		}
-
-		template <class Fty>
-		[[nodiscard]]
 		bool VisitSuperEllipseFanTriangles(const SuperEllipse& superEllipse, Fty&& callback) noexcept
 		{
 			const double step = (TwoPi / CurvedApproximationSegments);
@@ -404,84 +377,6 @@ namespace s3d
 			}
 
 			return false;
-		}
-
-		[[nodiscard]]
-		double DistancePointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
-		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			const double x = Abs(p.x - ellipse.center.x);
-			const double y = Abs(p.y - ellipse.center.y);
-			const double nx = (x / ax);
-			const double ny = (y / by);
-
-			if (((nx * nx) + (ny * ny)) <= 1.0)
-			{
-				return 0.0;
-			}
-
-			if (y == 0.0)
-			{
-				return (x - ax);
-			}
-
-			if (x == 0.0)
-			{
-				return (y - by);
-			}
-
-			const double scale = Max({ ax, by, x, y });
-			const double a = (ax / scale);
-			const double b = (by / scale);
-			const double px = (x / scale);
-			const double py = (y / scale);
-			const double aa = (a * a);
-			const double bb = (b * b);
-			double lower = 0.0;
-			double upper = 1.0;
-			const double ux0 = (px / a);
-			const double uy0 = (py / b);
-			const double f0 = ((ux0 * ux0) + (uy0 * uy0) - 1.0);
-			const double df0 = (-2.0 * (((ux0 * ux0) / aa) + ((uy0 * uy0) / bb)));
-			const double initialNewton = (-f0 / df0);
-			double lambda = (((0.0 < initialNewton) && (initialNewton < 1.0)) ? initialNewton : 0.5);
-
-			for (int32 i = 0; i < 64; ++i)
-			{
-				const double da = (lambda + aa);
-				const double db = (lambda + bb);
-				const double ux = ((a * px) / da);
-				const double uy = ((b * py) / db);
-				const double f = ((ux * ux) + (uy * uy) - 1.0);
-
-				if (Abs(f) <= EllipseDistanceRootTolerance)
-				{
-					lower = lambda;
-					upper = lambda;
-					break;
-				}
-
-				if (0.0 < f)
-				{
-					lower = lambda;
-				}
-				else
-				{
-					upper = lambda;
-				}
-
-				const double df = (-2.0 * (((ux * ux) / da) + ((uy * uy) / db)));
-				const double newton = (lambda - (f / df));
-				lambda = ((lower < newton) && (newton < upper))
-					? newton
-					: ((lower + upper) * 0.5);
-			}
-
-			lambda = ((lower + upper) * 0.5);
-			const double closestX = ((aa * px) / (lambda + aa));
-			const double closestY = ((bb * py) / (lambda + bb));
-			return (scale * std::hypot((px - closestX), (py - closestY)));
 		}
 
 		[[nodiscard]]
@@ -724,7 +619,7 @@ namespace s3d
 		[[nodiscard]]
 		bool OverlapsCircleEllipseArea(const Circle& circle, const Ellipse& ellipse) noexcept
 		{
-			return (DistancePointEllipse(circle.center, ellipse) < circle.r);
+			return (detail::DistancePointEllipse(circle.center, ellipse) < circle.r);
 		}
 
 		[[nodiscard]]
@@ -782,14 +677,7 @@ namespace s3d
 		[[nodiscard]]
 		bool OverlapsEllipseEllipseArea(const Ellipse& a, const Ellipse& b) noexcept
 		{
-			return VisitEllipseFanTriangles(a, [&](const Triangle& part)
-			{
-				return OverlapsTriangleEllipseArea(part, b);
-			})
-				|| VisitEllipseFanTriangles(b, [&](const Triangle& part)
-				{
-					return OverlapsTriangleEllipseArea(part, a);
-				});
+			return detail::TestEllipseEllipseArea<false>(a, b);
 		}
 
 		[[nodiscard]]
@@ -827,10 +715,12 @@ namespace s3d
 		bool OverlapsEllipseRoundRectArea(const Ellipse& ellipse, const RoundRect& roundRect,
 			const double effectiveRadius, const RectF& core) noexcept
 		{
-			return VisitEllipseFanTriangles(ellipse, [&](const Triangle& part)
+			if (effectiveRadius == 0.0)
 			{
-				return OverlapsTriangleRoundRectArea(part, roundRect, effectiveRadius, core);
-			});
+				return OverlapsRectEllipseArea(roundRect.rect, ellipse);
+			}
+
+			return detail::TestEllipseRoundRectArea<false>(ellipse, core, effectiveRadius);
 		}
 
 		[[nodiscard]]
