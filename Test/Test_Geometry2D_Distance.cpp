@@ -433,6 +433,137 @@ TEST_CASE("Geometry2D.Distance.SuperEllipse.ConvexPairBoundaries")
 	}
 }
 
+TEST_CASE("Geometry2D.Distance.SuperEllipse.PointAndLineWitnesses")
+{
+	const auto Support = [](const Vec2& axes, const double n, const Vec2& normal)
+	{
+		const double q = (n / (n - 1.0));
+		const Vec2 scaled = (axes * normal);
+		const double m = Max(Abs(scaled.x), Abs(scaled.y));
+		const double denominator = std::pow((std::pow(Abs(scaled.x / m), q) + std::pow(Abs(scaled.y / m), q)), (1.0 / n));
+		return Vec2{ std::copysign((axes.x * std::pow(Abs(scaled.x / m), (q - 1.0)) / denominator), normal.x),
+			std::copysign((axes.y * std::pow(Abs(scaled.y / m), (q - 1.0)) / denominator), normal.y) };
+	};
+	for (const double n : { 1.01, 1.25, 2.0, 4.0, 16.0, 64.0 })
+	{
+		for (const Vec2 axes : { Vec2{ 100, 30 }, Vec2{ 1, 100 } })
+		{
+			for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ 1, 1.0e-20 }, Vec2{ 1.0e-20, 1 }, Vec2{ 0.6, 0.8 } })
+			{
+				for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+				{
+					const Vec2 normal = (direction.normalized() * sign), tangent{ -normal.y, normal.x };
+					for (const double scale : { 0.01, 1.0, 100.0 })
+					{
+						const SuperEllipse shape{ (Vec2{ 7, -11 } * scale), (axes * scale), n };
+						const Vec2 onShape = (shape.center + Support(shape.axes, n, normal));
+						for (const double unscaledGap : { 0.0001, 0.01, 10.0 })
+						{
+							CAPTURE(n, axes, normal, scale, unscaledGap);
+							const double gap = (unscaledGap * scale), tolerance = (1.0e-9 * scale);
+							const Vec2 point = (onShape + normal * gap);
+							const auto CheckPair = [&](const auto& first)
+							{
+								CHECK(Abs(Geometry2D::Distance(first, shape) - gap) <= tolerance);
+								CHECK(Abs(Geometry2D::Distance(shape, first) - gap) <= tolerance);
+								const auto pair = Geometry2D::ClosestPoints(first, shape), reversed = Geometry2D::ClosestPoints(shape, first);
+								REQUIRE(pair);
+								REQUIRE(reversed);
+								CHECK(Abs(pair->distance - gap) <= tolerance);
+								CHECK(Abs(reversed->distance - gap) <= tolerance);
+								const Vec2 p = ((pair->pointB - shape.center) / shape.axes);
+								CHECK((std::pow(Abs(p.x), n) + std::pow(Abs(p.y), n)) <= (1.0 + 1.0e-9));
+								if constexpr (std::is_same_v<std::decay_t<decltype(first)>, Vec2>)
+								{
+									CHECK(pair->pointA == first);
+								}
+								else
+								{
+									CHECK(Geometry2D::Distance(pair->pointA, first) <= tolerance);
+								}
+								CHECK(reversed->pointA.distanceFrom(pair->pointB) <= tolerance);
+								CHECK(reversed->pointB.distanceFrom(pair->pointA) <= tolerance);
+								CheckWitnessConsistency(*pair, tolerance);
+							};
+							CheckPair(point);
+							for (const Line line : {
+								Line{ (point - tangent * (50 * scale)), (point + tangent * (100 * scale)) },
+								Line{ point, (point + (normal * 70 + tangent * 30) * scale) }, Line{ point, point } })
+							{
+								CheckPair(line);
+								CheckPair(Line{ line.end, line.start });
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	const SuperEllipse flat{ 0, 0, 100, 30, 64 };
+	const Line nearAxis{ { 100.01, 1 }, { 100.01, 2 } };
+	CHECK(Abs(Geometry2D::Distance(nearAxis, flat) - 0.01) <= 1.0e-10);
+	const auto pair = Geometry2D::ClosestPoints(nearAxis, flat);
+	REQUIRE(pair);
+	CHECK(Abs(pair->pointA.x - 100.01) <= 1.0e-10);
+	CHECK(Abs(pair->pointB.x - 100.0) <= 1.0e-10);
+	CHECK(pair->pointB.y >= (1.0 - 1.0e-10));
+	CHECK(pair->pointB.y <= (2.0 + 1.0e-10));
+	CheckWitnessConsistency(*pair);
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.LinearBoundaries")
+{
+	for (const double n : { 1.0, 1.25, 2.0, 4.0, 64.0 })
+	{
+		CAPTURE(n);
+		const SuperEllipse shape{ 0, 0, 100, 30, n };
+		const auto CheckPair = [&](const auto& first, const double gap)
+		{
+			CHECK(Abs(Geometry2D::Distance(first, shape) - gap) <= 1.0e-9);
+			CHECK(Abs(Geometry2D::Distance(shape, first) - gap) <= 1.0e-9);
+			const auto pair = Geometry2D::ClosestPoints(first, shape), reversed = Geometry2D::ClosestPoints(shape, first);
+			REQUIRE(pair);
+			REQUIRE(reversed);
+			CHECK(Abs(pair->distance - gap) <= 1.0e-9);
+			CHECK(Abs(reversed->distance - gap) <= 1.0e-9);
+			CheckWitnessConsistency(*pair);
+		};
+		const RectF rect{ 100.01, -20, 100, 40 };
+		const Polygon polygon = rect.asPolygon();
+		CheckPair(rect, 0.01);
+		CheckPair(Rect{ 101, -20, 100, 40 }, 1.0);
+		CheckPair(rect.asQuad(), 0.01);
+		CheckPair(Triangle{ { 100.01, -20 }, { 200, 0 }, { 100.01, 20 } }, 0.01);
+		CheckPair(polygon, 0.01);
+		CheckPair(MultiPolygon{ polygon, Rect{ -500, -500, 10, 10 }.asPolygon() }, 0.01);
+		CheckPair(LineString{ { 100.01, -20 }, { 100.01, 20 }, { 200, 20 } }, 0.01);
+		for (const Line line : { Line{ { 100, -20 }, { 100, 20 } }, Line{ { 0, 0 }, { 150, 0 } },
+			Line{ { 0, 0 }, { 1, 0 } }, Line{ { 0, 0 }, { 0, 0 } } })
+		{
+			CheckPair(line, 0.0);
+		}
+		const SuperEllipse collapsed{ 0, 0, 100, 0, n };
+		const Line above{ { -50, 3 }, { 50, 3 } };
+		CHECK(Geometry2D::Distance(above, collapsed) == Test::Approx(3.0));
+		CHECK(std::isinf(Geometry2D::Distance(above, SuperEllipse{ 0, 0, 0, 0, n })));
+		CHECK(not Geometry2D::ClosestPoints(above, SuperEllipse{ 0, 0, 0, 0, n }));
+	}
+	const SuperEllipse diamond{ 0, 0, 100, 30, 1 };
+	const Vec2 normal = Vec2{ 0.3, 1 }.normalized();
+	const Line edge{ Vec2{ 20, 24 } + normal * 0.0001, Vec2{ 80, 6 } + normal * 0.0001 };
+	const Polygon reference{ { 100, 0 }, { 0, 30 }, { -100, 0 }, { 0, -30 } };
+	for (const Line line : { edge, Line{ edge.end, edge.start }, Line{ edge.start, edge.start }, Line{ { 120, 10 }, { 200, 30 } } })
+	{
+		CHECK(Abs(Geometry2D::Distance(line, diamond) - Geometry2D::Distance(line, reference)) <= 1.0e-10);
+		const auto pair = Geometry2D::ClosestPoints(line, diamond);
+		REQUIRE(pair);
+		CHECK(Geometry2D::Distance(pair->pointA, line) <= 1.0e-10);
+		CHECK((Abs(pair->pointB.x / 100) + Abs(pair->pointB.y / 30)) <= (1.0 + 1.0e-12));
+		CheckWitnessConsistency(*pair);
+	}
+	CHECK(Abs(Geometry2D::Distance(edge.start, diamond) - 0.0001) <= 1.0e-10);
+}
+
 TEST_CASE("Geometry2D.Distance.AnalyticAreaCases")
 {
 	{

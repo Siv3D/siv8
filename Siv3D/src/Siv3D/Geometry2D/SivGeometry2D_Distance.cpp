@@ -11,6 +11,7 @@
 
 # include <algorithm>
 # include <array>
+# include <tuple>
 # include <variant>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Bezier.hpp>
@@ -556,19 +557,21 @@ namespace s3d
 			return result;
 		}
 
+		template <class Support, class ClosestPoint>
 		[[nodiscard]]
-		ClosestPairCandidate ClosestDisjointLineEllipse(const Line& line, const Ellipse& ellipse) noexcept
+		ClosestPairCandidate ClosestDisjointLineConvexShape(const Line& line, const Vec2& center,
+			const Support& supportPoint, const ClosestPoint& closestPoint) noexcept
 		{
 			const Vec2 direction = (line.end - line.start);
 			const double lengthSq = direction.lengthSq();
 			if (lengthSq != 0.0)
 			{
 				Vec2 normal{ -direction.y, direction.x };
-				if ((line.start - ellipse.center).dot(normal) < 0.0)
+				if ((line.start - center).dot(normal) < 0.0)
 				{
 					normal = -normal;
 				}
-				const Vec2 support = (ellipse.center + ellipse.axes * (ellipse.axes * normal).normalized());
+				const Vec2 support = supportPoint(normal);
 				const double t = ((support - line.start).dot(direction) / lengthSq);
 				// An interior minimum has a separating tangent parallel to the line.
 				if ((0.0 <= t) && (t <= 1.0) && (0.0 <= (line.start - support).dot(normal)))
@@ -579,10 +582,10 @@ namespace s3d
 				}
 			}
 
-			auto result = ClosestDisjointEllipsePair(ellipse, line.start);
+			auto result = closestPoint(line.start);
 			if (lengthSq != 0.0)
 			{
-				const auto end = ClosestDisjointEllipsePair(ellipse, line.end);
+				const auto end = closestPoint(line.end);
 				if (end.distanceSq < result.distanceSq)
 				{
 					result = end;
@@ -594,6 +597,15 @@ namespace s3d
 			return result;
 		}
 
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointLineEllipse(const Line& line, const Ellipse& ellipse) noexcept
+		{
+			return ClosestDisjointLineConvexShape(line, ellipse.center,
+				[&](const Vec2& normal) noexcept { return (ellipse.center + ellipse.axes * (ellipse.axes * normal).normalized()); },
+				[&](const Vec2& point) noexcept { return ClosestDisjointEllipsePair(ellipse, point); });
+		}
+
+		template <bool IsPoint = false>
 		struct ConvexSuperEllipseSupport
 		{
 			Vec2 axes;
@@ -601,12 +613,17 @@ namespace s3d
 
 			ConvexSuperEllipseSupport(const Vec2& axes_, const double n_, const double power_) noexcept
 				: axes{ axes_ }, n{ n_ }, power{ power_ }, inverseN{ (1.0 / n) }
-				, powerRatio{ (power / (n - 1.0)) }, logAxisRatio{ std::log(axes.y / axes.x) } {}
+				, powerRatio{ (power / (n - 1.0)) }, logAxisRatio{ (IsPoint ? 0.0 : std::log(axes.y / axes.x)) } {}
 
 			// Support point for normal (1, t^power), and its y derivative in t.
 			[[nodiscard]]
 			std::pair<Vec2, double> sample(const double t, const double normalY) const noexcept
 			{
+				if constexpr (IsPoint)
+				{
+					return { Vec2{ 0, 0 }, 0.0 };
+				}
+
 				if (n == 2.0)
 				{
 					const double h = std::hypot(axes.x, (axes.y * normalY));
@@ -625,29 +642,50 @@ namespace s3d
 			}
 		};
 
-		// Disjoint positive-area shapes with n > 1. Solve for their shared normal.
+		// A positive-area shape with n > 1 and a disjoint convex shape or point.
+		template <class ShapeB>
 		[[nodiscard]]
-		ClosestPairCandidate ClosestDisjointConvexSuperEllipses(const SuperEllipse& a, const SuperEllipse& b) noexcept
+		ClosestPairCandidate ClosestDisjointConvexSuperEllipsePair(const SuperEllipse& a, const ShapeB& b) noexcept
 		{
-			if ((a.n == 2.0) && (b.n == 2.0))
+			constexpr bool IsPoint = std::is_same_v<ShapeB, Vec2>;
+			const auto [centerB, axesB, nB] = [&]() noexcept
 			{
-				return ClosestDisjointEllipsePair(Ellipse{ a.center, a.axes }, Ellipse{ b.center, b.axes });
+				if constexpr (IsPoint)
+				{
+					return std::tuple{ b, Vec2{ 0, 0 }, 2.0 };
+				}
+				else
+				{
+					return std::tuple{ b.center, b.axes, b.n };
+				}
+			}();
+			if ((a.n == 2.0) && (nB == 2.0))
+			{
+				if constexpr (IsPoint)
+				{
+					return ClosestDisjointEllipsePair(Ellipse{ a.center, a.axes }, b);
+				}
+				else
+				{
+					return ClosestDisjointEllipsePair(Ellipse{ a.center, a.axes }, Ellipse{ centerB, axesB });
+				}
 			}
-			Vec2 delta = (b.center - a.center);
+			Vec2 delta = (centerB - a.center);
 			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
 			delta = { Abs(delta.x), Abs(delta.y) };
 			ClosestPairCandidate result;
 			if ((delta.x == 0.0) || (delta.y == 0.0))
 			{
 				const Vec2 normal = ((delta.x == 0.0) ? Vec2{ 0, sign.y } : Vec2{ sign.x, 0 });
-				UpdateCandidate(result, (a.center + a.axes * normal), (b.center - b.axes * normal));
+				UpdateCandidate(result, (a.center + a.axes * normal), (centerB - axesB * normal));
 				return result;
 			}
 
 			// Raising t to this power keeps support positions well resolved near
 			// the axes, where an ordinary normal angle becomes too small for n > 2.
-			const double power = Max({ 1.0, (a.n - 1.0), (b.n - 1.0) });
-			ConvexSuperEllipseSupport p{ a.axes, a.n, power }, q{ b.axes, b.n, power };
+			const double power = Max({ 1.0, (a.n - 1.0), (nB - 1.0) });
+			ConvexSuperEllipseSupport<> p{ a.axes, a.n, power };
+			ConvexSuperEllipseSupport<IsPoint> q{ axesB, nB, power };
 			Vec2 upperA = p.sample(1.0, 1.0).first, upperB = q.sample(1.0, 1.0).first;
 			const Vec2 diagonalGap = (delta - upperA - upperB);
 			const bool transpose = (diagonalGap.x < diagonalGap.y);
@@ -666,7 +704,7 @@ namespace s3d
 			double lower = 0.0, upper = 1.0, previousStep = 1.0;
 			double t = std::pow(Min((delta.y / delta.x), 1.0), (1.0 / power));
 			const double tolerance = (16.0 * std::numeric_limits<double>::epsilon()
-				* Max({ delta.x, delta.y, a.a, a.b, b.a, b.b }));
+				* Max({ delta.x, delta.y, a.a, a.b, axesB.x, axesB.y }));
 			bool converged = false;
 			for (int32 iteration = 0; iteration < 32; ++iteration)
 			{
@@ -719,8 +757,58 @@ namespace s3d
 				std::swap(bestA.x, bestA.y);
 				std::swap(bestB.x, bestB.y);
 			}
-			UpdateCandidate(result, (a.center + sign * bestA), (b.center - sign * bestB));
+			UpdateCandidate(result, (a.center + sign * bestA), (centerB - sign * bestB));
 			return result;
+		}
+
+		[[nodiscard]]
+		ClosestPairCandidate ClosestLineDiamond(const Line& line, const SuperEllipse& shape) noexcept
+		{
+			const std::array vertices{ Vec2{ (shape.x + shape.a), shape.y }, Vec2{ shape.x, (shape.y + shape.b) },
+				Vec2{ (shape.x - shape.a), shape.y }, Vec2{ shape.x, (shape.y - shape.b) } };
+			ClosestPairCandidate result;
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				const auto candidate = ClosestSegmentSegment(line.start, line.end, vertices[i], vertices[(i + 1) % vertices.size()]);
+				if (candidate.distanceSq < result.distanceSq)
+				{
+					result = candidate;
+				}
+			}
+			return result;
+		}
+
+		// Positive axes and n >= 1. The caller has excluded intersections.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointLineSuperEllipse(const Line& line, const SuperEllipse& shape) noexcept
+		{
+			if (shape.n == 1.0)
+			{
+				return ClosestLineDiamond(line, shape);
+			}
+			if (shape.n == 2.0)
+			{
+				return ClosestDisjointLineEllipse(line, Ellipse{ shape.center, shape.axes });
+			}
+			return ClosestDisjointLineConvexShape(line, shape.center,
+				[&](const Vec2& normal) noexcept
+				{
+					if ((normal.x == 0.0) || (normal.y == 0.0))
+					{
+						return (shape.center + ((normal.x == 0.0)
+							? Vec2{ 0, std::copysign(shape.b, normal.y) } : Vec2{ std::copysign(shape.a, normal.x), 0 }));
+					}
+					const bool transpose = (Abs(normal.x) < Abs(normal.y));
+					const double t = Abs(transpose ? (normal.x / normal.y) : (normal.y / normal.x));
+					const ConvexSuperEllipseSupport<> support{ (transpose ? Vec2{ shape.b, shape.a } : shape.axes), shape.n, 1.0 };
+					Vec2 point = support.sample(t, t).first;
+					if (transpose)
+					{
+						std::swap(point.x, point.y);
+					}
+					return (shape.center + Vec2{ std::copysign(point.x, normal.x), std::copysign(point.y, normal.y) });
+				},
+				[&](const Vec2& point) noexcept { return ClosestDisjointConvexSuperEllipsePair(shape, point); });
 		}
 
 		template <class Bezier>
@@ -1148,6 +1236,10 @@ namespace s3d
 				{
 					return ClosestDisjointLineEllipse(*lineA, *ellipseB);
 				}
+				if (const SuperEllipse* shapeB = std::get_if<SuperEllipse>(&pieceB); shapeB && (1.0 <= shapeB->n))
+				{
+					return ClosestDisjointLineSuperEllipse(*lineA, *shapeB);
+				}
 			}
 
 			if (const CircleArc* arcA = std::get_if<CircleArc>(&pieceA))
@@ -1192,21 +1284,29 @@ namespace s3d
 			const auto TryConvexSuperEllipsePair = [](const BoundaryPiece& first, const BoundaryPiece& second) -> Optional<ClosestPairCandidate>
 			{
 				const auto* superEllipse = std::get_if<SuperEllipse>(&second);
-				if ((not superEllipse) || (superEllipse->n <= 1.0))
+				if (not superEllipse)
+				{
+					return none;
+				}
+				if (const auto* line = std::get_if<Line>(&first); line && (1.0 <= superEllipse->n))
+				{
+					return ClosestDisjointLineSuperEllipse(*line, *superEllipse);
+				}
+				if (superEllipse->n <= 1.0)
 				{
 					return none;
 				}
 				if (const auto* ellipse = std::get_if<Ellipse>(&first))
 				{
-					return ClosestDisjointConvexSuperEllipses(SuperEllipse{ *ellipse, 2.0 }, *superEllipse);
+					return ClosestDisjointConvexSuperEllipsePair(SuperEllipse{ *ellipse, 2.0 }, *superEllipse);
 				}
 				if (const auto* arc = std::get_if<CircleArc>(&first); arc && (arc->region == ArcRegion::Full))
 				{
-					return ClosestDisjointConvexSuperEllipses(SuperEllipse{ arc->circle.center, arc->circle.r, arc->circle.r, 2.0 }, *superEllipse);
+					return ClosestDisjointConvexSuperEllipsePair(SuperEllipse{ arc->circle.center, arc->circle.r, arc->circle.r, 2.0 }, *superEllipse);
 				}
 				if (const auto* other = std::get_if<SuperEllipse>(&first); other && (1.0 < other->n))
 				{
-					return ClosestDisjointConvexSuperEllipses(*other, *superEllipse);
+					return ClosestDisjointConvexSuperEllipsePair(*other, *superEllipse);
 				}
 				return none;
 			};
