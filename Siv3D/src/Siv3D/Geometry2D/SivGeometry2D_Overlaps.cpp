@@ -1026,10 +1026,11 @@ namespace s3d
 				return false;
 			}
 
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
-			{
-				return OverlapsTriangles(triangle, part);
-			});
+			const auto rings = detail::GetPolygonRings(polygon);
+			const std::array<Vec2, 3> triangleRing{ triangle.p0, triangle.p1, triangle.p2 };
+			const int32 direction = (detail::PolygonRingOrientation(triangleRing, &triangleBounds)
+				* detail::PolygonRingOrientation(rings.outer, &polygonBounds));
+			return OverlapsPolygonRingsArea(rings, polygonBounds, { triangleRing, {} }, triangleBounds, direction);
 		}
 
 		[[nodiscard]]

@@ -46,6 +46,28 @@ TEST_CASE("Geometry2D.Overlaps.SuperEllipse")
 		SuperEllipse{ Vec2{ 0, 0 }, SizeF{ 0, 3 }, 4.0 }));
 }
 
+TEST_CASE("Geometry2D.Overlaps.SuperEllipsePolygon.rings")
+{
+	const Polygon donut{
+		Array<Vec2>{ { -10, -10 }, { 10, -10 }, { 10, 10 }, { -10, 10 } },
+		Array<Array<Vec2>>{ { { -4, -4 }, { -4, 4 }, { 4, 4 }, { 4, -4 } } }
+	};
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+	{
+		for (const double n : { 1.0, 4.0 })
+		{
+			const SuperEllipse shape{ offset, SizeF{ 2, 2 }, n };
+			const Polygon square = RectF{ offset - Vec2{ 1, 1 }, 2, 2 }.asPolygon();
+			CAPTURE(offset, n);
+			CHECK(Geometry2D::Overlaps(shape, square));
+			CHECK(Geometry2D::Overlaps(square, shape));
+			CHECK(Geometry2D::Overlaps(shape, MultiPolygon{ Polygon{}, square }));
+			CHECK_FALSE(Geometry2D::Overlaps(shape, donut.movedBy(offset)));
+			CHECK_FALSE(Geometry2D::Overlaps(shape, square.movedBy(3, 0)));
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.Overlaps.RoundRect")
 {
 	const RoundRect roundRect{ RectF{ 0, 0, 10, 10 }, 2.0 };

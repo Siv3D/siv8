@@ -294,3 +294,79 @@ TEST_CASE("Geometry2D.Overlaps.RectPolygon.fractional_rectangles")
 		}
 	}
 }
+
+TEST_CASE("Geometry2D.Overlaps.TrianglePolygon.rings")
+{
+	const Triangle lower{ Vec2{ 0, 0 }, Vec2{ 4, 0 }, Vec2{ 0, 4 } };
+	const Triangle upper{ Vec2{ 4, 0 }, Vec2{ 4, 4 }, Vec2{ 0, 4 } };
+	const Polygon square = RectF{ 0, 0, 4, 4 }.asPolygon();
+	const Polygon concave{ Array<Vec2>{ { 0, 0 }, { 12, 0 }, { 12, 12 }, { 8, 12 }, { 8, 4 }, { 4, 4 }, { 4, 12 }, { 0, 12 } } };
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 4, 4 }, { 4, 16 }, { 16, 16 }, { 16, 4 } } }
+	};
+
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		for (const Vec2 scale : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 } })
+		{
+			auto Check = [&](const Triangle& triangle, const Polygon& polygon, const bool expected)
+			{
+				CAPTURE(offset, scale, triangle, expected);
+				const Triangle t = triangle.scaledFromOrigin(scale).movedBy(offset);
+				const Polygon p = polygon.scaledFromOrigin(scale).movedBy(offset);
+				const MultiPolygon multi{ Polygon{}, p };
+				for (const Triangle candidate : { t, Triangle{ t.p0, t.p2, t.p1 } })
+				{
+					CHECK(Geometry2D::Overlaps(candidate, p) == expected);
+					CHECK(Geometry2D::Overlaps(p, candidate) == expected);
+					CHECK(Geometry2D::Overlaps(candidate, multi) == expected);
+					CHECK(Geometry2D::Overlaps(multi, candidate) == expected);
+				}
+			};
+			Check(lower, lower.asPolygon(), true);
+			Check(lower, upper.asPolygon(), false);
+			Check(lower, RectF{ 1, 1, 1, 1 }.asPolygon(), true);
+			Check(lower, RectF{ -1, -1, 6, 6 }.asPolygon(), true);
+			Check(lower, RectF{ 3, 0, 2, 2 }.asPolygon(), true);
+			Check(lower, RectF{ 2, 2, 2, 2 }.asPolygon(), false);
+			Check(lower, RectF{ 3, 3, 1, 1 }.asPolygon(), false);
+			Check(Triangle{ Vec2{ 2, 0 }, Vec2{ 2, 2 }, Vec2{ 0, 2 } }, lower.asPolygon(), true);
+			Check(Triangle{ Vec2{ 5, 6 }, Vec2{ 7, 6 }, Vec2{ 5, 8 } }, concave, false);
+			Check(Triangle{ Vec2{ 2, 6 }, Vec2{ 10, 6 }, Vec2{ 6, 8 } }, concave, true);
+			Check(Triangle{ Vec2{ 6, 6 }, Vec2{ 10, 6 }, Vec2{ 6, 10 } }, donut, false);
+			Check(Triangle{ Vec2{ 4, 4 }, Vec2{ 16, 4 }, Vec2{ 4, 16 } }, donut, false);
+			Check(Triangle{ Vec2{ 2, 8 }, Vec2{ 18, 8 }, Vec2{ 10, 10 } }, donut, true);
+			Check(Triangle{ Vec2{ 0, 0 }, Vec2{ 40, 0 }, Vec2{ 0, 40 } }, donut, true);
+			Check(Triangle{ Vec2{ 1, 1 }, Vec2{ 1, 1 }, Vec2{ 1, 1 } }, square, false);
+			Check(Triangle{ Vec2{ 1, 1 }, Vec2{ 2, 2 }, Vec2{ 1, 1 } }, square, false);
+			Check(lower, square.scaledFrom(Vec2{ 1, 1 }, 0.0), false);
+			Check(lower, square.scaledFrom(Vec2{ 1, 1 }, Vec2{ 0, 1 }).rotated(0.5), false);
+			Check(lower, Polygon{}, false);
+		}
+	}
+
+	for (const double angle : { 0.37, 0.5, 1.0 })
+	{
+		const Triangle a = lower.rotatedAt(Vec2{ 0, 0 }, angle);
+		const Triangle b = upper.rotatedAt(Vec2{ 0, 0 }, angle);
+		CHECK(Geometry2D::Overlaps(a, a.asPolygon()));
+		CHECK_FALSE(Geometry2D::Overlaps(a, b.asPolygon()));
+		CHECK_FALSE(Geometry2D::Overlaps(b.asPolygon(), a));
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.QuadPolygon.rings")
+{
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+	{
+		const Quad quad{ offset, offset + Vec2{ 4, 0 }, offset + Vec2{ 4, 4 }, offset + Vec2{ 0, 4 } };
+		const Polygon polygon = RectF{ offset, 4, 4 }.asPolygon();
+		CHECK(Geometry2D::Overlaps(quad, polygon));
+		CHECK(Geometry2D::Overlaps(polygon, quad));
+		CHECK(Geometry2D::Overlaps(quad, MultiPolygon{ Polygon{}, polygon }));
+		CHECK_FALSE(Geometry2D::Overlaps(quad, polygon.movedBy(4, 0)));
+		const Quad triangle{ quad.p0, quad.p1, quad.p2, quad.p2 };
+		CHECK(Geometry2D::Overlaps(triangle, polygon));
+	}
+}
