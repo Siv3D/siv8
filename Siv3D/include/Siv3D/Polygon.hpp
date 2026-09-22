@@ -39,7 +39,7 @@ namespace s3d
 	/// @remark 各穴は、同じ式の値が負になる順序で指定します。画面座標では反時計回りに見える順序です。各輪郭では先頭頂点を末尾に重複させません。
 	/// @remark 向きは Geometry2D::IsClockwise() で判定できます。単純な非退化輪郭の向きだけを変える場合は頂点列を reverse() します。これは自己交差や重複点の修復にはなりません。
 	/// @remark 構築前に Validate() を使うと WrongOrientation、SelfIntersections などの失敗理由を調べられます。Correct() は形状を修復し、複数の多角形を返す場合があります。Loft などで頂点の対応を保ちたい場合、Correct() による修復を単なる向きの反転の代用にしないでください。
-	/// @remark Geometry2D の Distance / ClosestPoints / SignedDistance / ClosestPointOnBoundary では、ゼロ倍率で点に縮退した場合も空とは扱わず、点として距離・最近接点を求めます。
+	/// @remark 拡縮で点・線分に縮退しても、空の Polygon にはなりません。
 	/// @code
 	/// const Polygon polygon{ Array<Vec2>{
 	///     { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 }

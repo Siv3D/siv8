@@ -956,6 +956,11 @@ namespace s3d
 
 		bool Contains(const Circle& a, const Ellipse& b) noexcept
 		{
+			if (b.axes.x == b.axes.y)
+			{
+				return Contains(a, Circle{ b.center, b.axes.x });
+			}
+
 			return ContainsEllipseByApproximation(a, b);
 		}
 
@@ -1029,6 +1034,11 @@ namespace s3d
 
 		bool Contains(const Ellipse& a, const Circle& b) noexcept
 		{
+			if (a.axes.x == a.axes.y)
+			{
+				return Contains(Circle{ a.center, a.axes.x }, b);
+			}
+
 			return ContainsCircleByApproximation(a, b);
 		}
 

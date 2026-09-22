@@ -603,9 +603,7 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const Ellipse& b) noexcept;
 
-		/// @brief 2 つの SuperEllipse が共通点を持つかを返します。
-		/// @remark 数値探索には処理量の上限があり、上限内で交差を否定できない場合は true を返します。
-		/// この近似により、離れている図形を交差と判定することがあります。
+		/// @remark 近似判定のため、離れている図形にも true を返すことがあります。
 		[[nodiscard]]
 		bool Intersects(const SuperEllipse& a, const SuperEllipse& b) noexcept;
 

@@ -304,6 +304,9 @@
     <ClCompile Include="..\Test\Test_PolynomialSolver.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Geometry2D_Contains.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Geometry2D.cpp">
       <Filter>Test</Filter>
     </ClCompile>
