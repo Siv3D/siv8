@@ -247,3 +247,18 @@ TEST_CASE("Geometry2D.IntersectsAt.CurvedBoundaries")
 	REQUIRE(equivalentCurves.has_value());
 	CHECK(equivalentCurves->empty());
 }
+
+TEST_CASE("Geometry2D.IntersectsAt.Translation")
+{
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 1e10, -1e10 } })
+	{
+		const RectF a{ offset, 10, 10 };
+		const RectF b{ offset + Vec2{ 5, 5 }, 10, 10 };
+		CheckPointSet(a.intersectsAt(b), { offset + Vec2{ 10, 5 }, offset + Vec2{ 5, 10 } });
+		const auto shared = a.intersectsAt(RectF{ offset + Vec2{ 10, 0 }, 10, 10 });
+		REQUIRE(shared.has_value());
+		CHECK(shared->empty());
+		CheckPointSet(Line{ offset - Vec2{ 1, 1 }, offset + Vec2{ 11, 11 } }.intersectsAt(a),
+			{ offset, offset + Vec2{ 10, 10 } });
+	}
+}

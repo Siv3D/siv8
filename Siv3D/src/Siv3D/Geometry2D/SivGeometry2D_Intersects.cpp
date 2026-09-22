@@ -2918,6 +2918,12 @@ namespace s3d
 				return true;
 			}
 
+			if ((a.n <= 1.0) && (b.n <= 1.0))
+			{
+				// Between the tested cusps each vertical radius is convex. Their
+				// sum attains its maximum at an endpoint; no subdivision is needed.
+				return false;
+			}
 			struct Interval
 			{
 				double left;
@@ -2926,6 +2932,8 @@ namespace s3d
 			};
 
 			constexpr int32 MaxDepth = 64;
+			constexpr int32 MaxIntervals = 256;
+			int32 remainingIntervals = MaxIntervals;
 			std::array<Interval, (MaxDepth + 2)> stack;
 			size_t stackSize = 0;
 			stack[stackSize++] = Interval{ left, right, 0 };
@@ -2948,11 +2956,13 @@ namespace s3d
 					return true;
 				}
 
-				if ((MaxDepth <= interval.depth)
+				if ((--remainingIntervals == 0)
+					|| (MaxDepth <= interval.depth)
 					|| (middle == interval.left)
 					|| (middle == interval.right))
 				{
-					// At machine-resolution ambiguity, prefer the closed-set result.
+					// An unresolved interval may contain a contact. Keep the
+					// conservative result when either search budget is exhausted.
 					return true;
 				}
 

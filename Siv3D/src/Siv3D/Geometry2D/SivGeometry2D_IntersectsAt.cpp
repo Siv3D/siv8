@@ -63,7 +63,9 @@ namespace s3d
 		bool NearlyEqualCoordinate(const double a, const double b) noexcept
 		{
 			const double scale = Max({ Abs(a), Abs(b), 1.0 });
-			return (Abs(a - b) <= (PointMergeTolerance * scale));
+			// Solver residual and coordinate rounding are separate error sources.
+			// A translation must not turn the solver tolerance into a world-space radius.
+			return (Abs(a - b) <= Max(PointMergeTolerance, (4.0 * std::numeric_limits<double>::epsilon() * scale)));
 		}
 
 		[[nodiscard]]

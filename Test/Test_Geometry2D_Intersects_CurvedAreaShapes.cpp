@@ -374,3 +374,33 @@ TEST_CASE("Geometry2D.Intersects.RemainingAreaShapes")
 		CHECK(not Geometry2D::Intersects(emptyMultiPolygon, roundRect));
 	}
 }
+
+TEST_CASE("Geometry2D.Intersects.SuperEllipse.NearlyParallelBoundaries")
+{
+	const SuperEllipse diamond{ Vec2{ 0, 0 }, SizeF{ 1, 1 }, 1 };
+	for (const double gap : { 0.01, 1e-5, 1e-8 })
+	{
+		const SuperEllipse separated{ Vec2{ 1, 1 + gap }, SizeF{ 1, 1 }, 1 };
+		CHECK_FALSE(diamond.intersects(separated));
+		CHECK_FALSE(separated.intersects(diamond));
+	}
+	CHECK(diamond.intersects(SuperEllipse{ Vec2{ 1, 1 }, SizeF{ 1, 1 }, 1 }));
+	CHECK(diamond.intersects(SuperEllipse{ Vec2{ 1, 0.999 }, SizeF{ 1, 1 }, 1 }));
+}
+
+TEST_CASE("Geometry2D.Intersects.SuperEllipse.MixedConvexity")
+{
+	const SuperEllipse concave{ Vec2{ 0, 0 }, SizeF{ 1, 1 }, 0.5 };
+	for (const double offset : { 0.0, 0.5, 1.0, 1.5 })
+	{
+		const SuperEllipse convex{ Vec2{ offset, 0 }, SizeF{ 1, 1 }, 1.5 };
+		CHECK(concave.intersects(convex));
+		CHECK(convex.intersects(concave));
+	}
+	const SuperEllipse separated{ Vec2{ 1, 1.125 }, SizeF{ 1, 1 }, 1.5 };
+	CHECK_FALSE(concave.intersects(separated));
+	CHECK_FALSE(separated.intersects(concave));
+	const SuperEllipse tangent{ Vec2{ 1, 1 }, SizeF{ 1, 1 }, 1.5 };
+	CHECK(concave.intersects(tangent));
+	CHECK(tangent.intersects(concave));
+}
