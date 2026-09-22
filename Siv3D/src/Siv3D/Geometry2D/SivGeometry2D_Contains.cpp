@@ -318,31 +318,51 @@ namespace s3d
 					detail::GetGeometry2DDegenerateSegment(superEllipse, kind));
 			}
 
+			auto Diamond = [&](const Vec2& axes) noexcept
+			{
+				return Quad{
+					{ (superEllipse.x + axes.x), superEllipse.y },
+					{ superEllipse.x, (superEllipse.y + axes.y) },
+					{ (superEllipse.x - axes.x), superEllipse.y },
+					{ superEllipse.x, (superEllipse.y - axes.y) } };
+			};
 			if (superEllipse.n < 1.0)
 			{
-				// The non-convex case uses its bounding box as a conservative superset.
-				return Geometry2D::Contains(container, superEllipse.boundingRect());
+				// The four tips form the convex hull. This is exact for convex
+				// containers; testing the whole hull also respects polygon holes.
+				return Geometry2D::Contains(container, Diamond(superEllipse.axes));
 			}
 
+			// For n >= 1, |x/a| + |y/b| <= 2^(1-1/n). For n <= 2 this
+			// expanded diamond is tight enough to cheaply establish containment.
+			// Failure still needs the finer support polygon, especially for a
+			// concave container. No false result is inferred from this bound.
+			if ((superEllipse.n <= 2.0) && Geometry2D::Contains(container,
+				Diamond(superEllipse.axes * std::exp2(1.0 - 1.0 / superEllipse.n))))
+			{
+				return true;
+			}
+
+			if (superEllipse.n == 1.0)
+			{
+				return ContainsConvexSupportShape(container, superEllipse.center,
+					[&](const Vec2& normal) noexcept
+					{
+						return (superEllipse.center.dot(normal) + Max(
+							(superEllipse.a * Abs(normal.x)), (superEllipse.b * Abs(normal.y))));
+					});
+			}
+
+			const double q = (superEllipse.n / (superEllipse.n - 1.0));
+			const double inverseQ = (1.0 / q);
 			return ContainsConvexSupportShape(container, superEllipse.center,
 				[&](const Vec2& normal) noexcept
 				{
-					double radialSupport = 0.0;
-
-					if (superEllipse.n == 1.0)
-					{
-						radialSupport = Max(
-							superEllipse.axes.x * Abs(normal.x),
-							superEllipse.axes.y * Abs(normal.y));
-					}
-					else
-					{
-						const double q = (superEllipse.n / (superEllipse.n - 1.0));
-						const double x = std::pow(superEllipse.axes.x * Abs(normal.x), q);
-						const double y = std::pow(superEllipse.axes.y * Abs(normal.y), q);
-						radialSupport = std::pow((x + y), (1.0 / q));
-					}
-
+					const double x = (superEllipse.a * Abs(normal.x)), y = (superEllipse.b * Abs(normal.y));
+					const double scale = Max(x, y);
+					// Factoring out the larger term keeps the powered base <= 1,
+					// including ordinary-sized shapes with n close to 1 (large q).
+					const double radialSupport = (scale * std::pow((1.0 + std::pow((Min(x, y) / scale), q)), inverseQ));
 					return (superEllipse.center.dot(normal) + radialSupport);
 				});
 		}
