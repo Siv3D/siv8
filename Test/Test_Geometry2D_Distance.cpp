@@ -758,6 +758,162 @@ TEST_CASE("Geometry2D.Distance.Bezier.PointCompetingMinima")
 	CHECK(Abs(pair->distance - 1.0) <= 1e-10);
 }
 
+TEST_CASE("Geometry2D.Distance.Bezier.RoundedShapeWitnesses")
+{
+	const auto CheckPair = [](const auto& curve, const auto& shape, const Vec2& a, const Vec2& b, const double tolerance)
+	{
+		const auto result = Geometry2D::ClosestPoints(curve, shape);
+		const auto reversed = Geometry2D::ClosestPoints(shape, curve);
+		REQUIRE(result);
+		REQUIRE(reversed);
+		CHECK(result->pointA.distanceFrom(a) <= tolerance);
+		CHECK(result->pointB.distanceFrom(b) <= tolerance);
+		CHECK(reversed->pointA == result->pointB);
+		CHECK(reversed->pointB == result->pointA);
+		CHECK(Abs(result->distance - a.distanceFrom(b)) <= tolerance);
+		CHECK(Geometry2D::Distance(curve, shape) == result->distance);
+		CHECK(Geometry2D::Distance(shape, curve) == result->distance);
+		CheckWitnessConsistency(*result, tolerance);
+	};
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		for (const double sx : { -1.0, 1.0 })
+		{
+			for (const double sy : { -1.0, 1.0 })
+			{
+				const Vec2 normal{ (0.6 * sx), (0.8 * sy) };
+				const Vec2 tangent{ normal.y, -normal.x };
+				const Vec2 offset = (Vec2{ 17, -23 } * scale);
+				const auto Transform = [&](const Vec2& p) { return (offset + (tangent * p.x + normal * p.y) * scale); };
+				constexpr double u = 0.371;
+				const Vec2 c0{ -100 * u, 50 * u * u }, c1{ 100, -100 * u }, c2{ 0, 50 };
+				const Bezier2 quadratic{ Transform(c0), Transform(c0 + c1 / 2), Transform(c0 + c1 + c2) };
+				const Bezier3 cubic{ Transform(c0), Transform(c0 + c1 / 3), Transform(c0 + 2 * c1 / 3 + c2 / 3), Transform(c0 + c1 + c2) };
+				const Vec2 center = (offset - normal * (5 * scale));
+				const Circle circle{ center, (2 * scale) };
+				const Vec2 expected = (offset - normal * (3 * scale));
+				// The selected corner faces the curve; the rectangle extends away from it.
+				const RoundRect rounded{ (center.x + ((sx < 0) ? -2 : -18) * scale),
+					(center.y + ((sy < 0) ? -2 : -28) * scale), (20 * scale), (30 * scale), (2 * scale) };
+				const auto CheckCurve = [&](const auto& curve)
+				{
+					CheckPair(curve, circle, offset, expected, (1e-8 * scale));
+					CheckPair(curve, rounded, offset, expected, (1e-8 * scale));
+					CheckPair(curve.reversed(), circle, offset, expected, (1e-8 * scale));
+					CheckPair(curve.reversed(), rounded, offset, expected, (1e-8 * scale));
+				};
+				CheckCurve(quadratic);
+				CheckCurve(cubic);
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.RoundedShapeBoundaries")
+{
+	const auto CheckPair = [](const auto& curve, const auto& shape, const double expected)
+	{
+		const auto result = Geometry2D::ClosestPoints(curve, shape);
+		const auto reversed = Geometry2D::ClosestPoints(shape, curve);
+		REQUIRE(result);
+		REQUIRE(reversed);
+		CHECK(Abs(result->distance - expected) <= 1e-9);
+		CHECK(Geometry2D::Distance(curve, shape) == result->distance);
+		CHECK(Geometry2D::Distance(shape, curve) == result->distance);
+		CHECK(reversed->pointA == result->pointB);
+		CHECK(reversed->pointB == result->pointA);
+		CHECK(curve.computeClosestPoint(result->pointA).distanceFrom(result->pointA) <= 1e-8);
+		CHECK(Geometry2D::Distance(result->pointB, shape) <= 1e-8);
+		if (expected == 0.0)
+		{
+			CHECK(result->pointA == result->pointB);
+		}
+		CheckWitnessConsistency(*result);
+	};
+	const auto CheckCurve = [&](const auto& curve)
+	{
+		CheckPair(curve, Circle{ 0, 0, 1 }, 0.0);
+		CheckPair(curve, Circle{ 0, 1, 1 }, 0.0);
+		CheckPair(curve, Circle{ 0, 1.000001, 1 }, 0.000001);
+		CheckPair(curve, Circle{ 0, 0.999999, 1 }, 0.0);
+		CheckPair(curve, RoundRect{ -2, 1, 4, 6, 1 }, 1.0);
+		CheckPair(curve, RoundRect{ -2, 0, 4, 6, 1 }, 0.0);
+		CheckPair(curve, RoundRect{ -2, -3, 4, 6, 1 }, 0.0);
+		CheckPair(curve, RoundRect{ -2, 1, 4, 6, 10 }, 1.0);
+		CheckPair(curve, RoundRect{ -3, 1, 6, 4, 10 }, 1.0);
+		CheckPair(curve, RoundRect{ -2, 1, 4, 4, 10 }, 1.0);
+		CheckPair(curve, RoundRect{ -2, 1, 4, 6, 0 }, 1.0);
+		CheckPair(curve, RoundRect{ -2, -3, 4, 6, 0 }, 0.0);
+		CheckPair(curve, RoundRect{ 0, 1, 0, 6, 2 }, 1.0);
+		CheckPair(curve, RoundRect{ -2, 1, 4, 0, 2 }, 1.0);
+		for (const auto& empty : { RoundRect{ 0, 0, 0, 0, 0 }, RoundRect{ 0, 0, 0, 0, 2 } })
+		{
+			CHECK_FALSE(Geometry2D::ClosestPoints(curve, empty));
+			CHECK(std::isinf(Geometry2D::Distance(curve, empty)));
+		}
+		CHECK_FALSE(Geometry2D::ClosestPoints(curve, Circle{ 0, 0, 0 }));
+		CHECK(std::isinf(Geometry2D::Distance(curve, Circle{ 0, 0, 0 })));
+	};
+	CheckCurve(Bezier2{ { -10, 0 }, { 0, 0 }, { 10, 0 } });
+	CheckCurve(Bezier3{ { -10, 0 }, { 100, 0 }, { -100, 0 }, { 10, 0 } });
+	CheckCurve(Bezier2{ { 0, 0 }, { 0, 0 }, { 0, 0 } });
+	CheckCurve(Bezier3{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } });
+	CheckPair(Bezier2{ { 3, 4 }, { 5, 6 }, { 7, 8 } }, Circle{ 0, 0, 2 }, 3.0);
+	CheckPair(Bezier3{ { 0, 0 }, { 100, 200 }, { -100, 200 }, { 0, 0 } }, Circle{ 0, 152, 1 }, 1.0);
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.RoundedShapeCompetingMinima")
+{
+	const Vec2 c0{ 2500, -125 }, c1{ -10000, 750 }, c2{ 10000, -1500 }, c3{ 0, 1000 };
+	const Bezier3 curve{ c0, (c0 + c1 / 3), (c0 + 2 * c1 / 3 + c2 / 3), (c0 + c1 + c2 + c3) };
+	constexpr double v = 0.0055;
+	const Vec2 expected{ (10000 * v * v), (1000 * v * v * v) };
+	const Vec2 normal = Vec2{ (-3000 * v * v), (20000 * v) }.normalized();
+	const Vec2 center = (expected + normal);
+	const auto CheckShape = [&](const auto& shape)
+	{
+		for (const auto& c : { curve, curve.reversed() })
+		{
+			const auto result = Geometry2D::ClosestPoints(c, shape);
+			REQUIRE(result);
+			CHECK(Abs(result->distance - 0.75) <= 1e-10);
+			CHECK(result->pointA.distanceFrom(expected) <= 1e-8);
+			CHECK(result->pointB.distanceFrom(expected + normal * 0.75) <= 1e-8);
+			CHECK(Geometry2D::Distance(c, shape) == result->distance);
+			CheckWitnessConsistency(*result);
+		}
+	};
+	CheckShape(Circle{ center, 0.25 });
+	CheckShape(RoundRect{ (center.x - 0.25), (center.y - 0.25), 0.5, 0.5, 0.25 });
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.RoundedShapeNarrowContact")
+{
+	const double u = 0.371;
+	const Vec2 c0{ (-100 * u), (100 * u * u) }, c1{ 100, (-200 * u) }, c2{ 0, 100 };
+	const auto CheckCurve = [&](const auto& curve)
+	{
+		for (const double gap : { -1e-8, 1e-8 })
+		{
+			const Circle circle{ 0, (-1 - gap), 1 };
+			const RoundRect rounded{ -1, (-6 - gap), 2, 6, 1 };
+			const auto CheckShape = [&](const auto& shape)
+			{
+				const auto result = Geometry2D::ClosestPoints(curve, shape);
+				REQUIRE(result);
+				CHECK(Abs(result->distance - Max(0.0, gap)) <= 1e-12);
+				CHECK(result->pointA.distanceFrom(Vec2{ 0, 0 }) <= 1e-10);
+				CHECK(Geometry2D::Distance(curve, shape) == result->distance);
+				CheckWitnessConsistency(*result, 1e-12);
+			};
+			CheckShape(circle);
+			CheckShape(rounded);
+		}
+	};
+	CheckCurve(Bezier2{ c0, (c0 + c1 / 2), (c0 + c1 + c2) });
+	CheckCurve(Bezier3{ c0, (c0 + c1 / 3), (c0 + 2 * c1 / 3 + c2 / 3), (c0 + c1 + c2) });
+}
+
 TEST_CASE("Geometry2D.Distance.Bezier.SeparatedWitnesses")
 {
 	const auto Elevate = [](const Bezier2& curve)

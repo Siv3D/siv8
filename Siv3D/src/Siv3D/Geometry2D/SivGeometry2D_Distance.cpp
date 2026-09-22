@@ -890,6 +890,77 @@ namespace s3d
 			return best;
 		}
 
+		// Inflating the second set by a disk reduces its distance by the radius.
+		// The nearest point on the curve is also a common point on overlap.
+		[[nodiscard]]
+		ClosestPoints2D InflateClosestPair(const Vec2& curvePoint, const Vec2& corePoint,
+			const double distanceSq, const double radius) noexcept
+		{
+			if (distanceSq <= (radius * radius))
+			{
+				return { curvePoint, curvePoint, 0.0 };
+			}
+			const double distance = std::sqrt(distanceSq);
+			return { curvePoint, (corePoint + (curvePoint - corePoint) * (radius / distance)), (distance - radius) };
+		}
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
+		Optional<ClosestPoints2D> TryClosestBezierRoundedShape(const ShapeA& curve, const ShapeB& shape) noexcept
+		{
+			if constexpr ((std::is_same_v<ShapeA, Bezier2> || std::is_same_v<ShapeA, Bezier3>)
+				&& std::is_same_v<ShapeB, Circle>)
+			{
+				const auto closest = detail::ClosestPointOnBezier(curve, shape.center);
+				return InflateClosestPair(closest.point, shape.center, closest.distanceSq, shape.r);
+			}
+			else if constexpr ((std::is_same_v<ShapeA, Bezier2> || std::is_same_v<ShapeA, Bezier3>)
+				&& std::is_same_v<ShapeB, RoundRect>)
+			{
+				if ((shape.r == 0.0) || (shape.rect.w == 0.0) || (shape.rect.h == 0.0))
+				{
+					return none;
+				}
+				const double radius = detail::GetGeometry2DEffectiveRadius(shape);
+				const RectF core = detail::GetGeometry2DRoundRectCore(shape, radius);
+				const Vec2 lo = core.tl(), hi = core.br();
+				if ((lo.x <= curve.p0.x) && (curve.p0.x <= hi.x)
+					&& (lo.y <= curve.p0.y) && (curve.p0.y <= hi.y))
+				{
+					return ClosestPoints2D{ curve.p0, curve.p0, 0.0 };
+				}
+				if ((core.w == 0.0) && (core.h == 0.0))
+				{
+					const auto closest = detail::ClosestPointOnBezier(curve, lo);
+					return InflateClosestPair(closest.point, lo, closest.distanceSq, radius);
+				}
+				if ((core.w == 0.0) || (core.h == 0.0))
+				{
+					const auto closest = ClosestLineBezier(Line{ lo, hi }, curve);
+					return InflateClosestPair(closest.pointB, closest.pointA, closest.distanceSq, radius);
+				}
+
+				ClosestPairCandidate best;
+				for (const Line& edge : { core.top(), core.right(), core.bottom(), core.left() })
+				{
+					const auto closest = ClosestLineBezier(edge, curve);
+					if (closest.distanceSq < best.distanceSq)
+					{
+						best = closest;
+						if (best.distanceSq <= (radius * radius))
+						{
+							break;
+						}
+					}
+				}
+				return InflateClosestPair(best.pointB, best.pointA, best.distanceSq, radius);
+			}
+			else
+			{
+				return none;
+			}
+		}
+
 		template <class Bezier>
 		[[nodiscard]]
 		Vec2 BezierSecondDerivative(const Bezier& curve, const double t) noexcept
@@ -2330,6 +2401,11 @@ namespace s3d
 				return none;
 			}
 
+			if (const auto rounded = TryClosestBezierRoundedShape(a, b))
+			{
+				return rounded;
+			}
+
 			if (Geometry2D::Intersects(a, b))
 			{
 				const Vec2 commonPoint = FindCommonPoint(a, b);
@@ -2375,6 +2451,11 @@ namespace s3d
 			if (IsEmptyGeometry(a) || IsEmptyGeometry(b))
 			{
 				return std::numeric_limits<double>::infinity();
+			}
+
+			if (const auto rounded = TryClosestBezierRoundedShape(a, b))
+			{
+				return rounded->distance;
 			}
 
 			if (Geometry2D::Intersects(a, b))
