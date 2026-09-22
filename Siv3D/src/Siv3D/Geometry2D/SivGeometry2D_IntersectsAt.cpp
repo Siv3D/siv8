@@ -10,15 +10,18 @@
 //-----------------------------------------------
 
 # include <variant>
+# include <tuple>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Bezier.hpp>
 # include <Siv3D/LineString.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/MultiPolygon.hpp>
+# include <Siv3D/PolynomialSolver.hpp>
 # include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/IntersectsAt.hpp>
+# include "EllipseGeometry.hpp"
 # include "PolygonGeometry.hpp"
 
 namespace s3d
@@ -776,6 +779,126 @@ namespace s3d
 			}
 		}
 
+		// On either half of an ellipse, (cos, sin) = (side * (1-t^2), 2t) / (1+t^2),
+		// -1 <= t <= 1. Substitution into the other ellipse gives a quartic.
+		// Its stationary points separate all roots, including a pair of crossings
+		// too close together to bracket with fixed angular samples.
+		template <class Accept>
+		void ProcessEllipseEllipse(IntersectionAccumulator& accumulator,
+			const Ellipse& first, const Ellipse& second, Accept&& accept)
+		{
+			const Ellipse* a = &first;
+			const Ellipse* b = &second;
+			if (std::tie(b->a, b->b, b->x, b->y) < std::tie(a->a, a->b, a->x, a->y))
+			{
+				std::swap(a, b);
+			}
+			const Vec2 delta = ((a->center - b->center) / b->axes);
+			const Vec2 axes = (a->axes / b->axes);
+			// Retain a contact candidate when classification accepts a roundoff-sized gap.
+			// Convert its spatial allowance to the normalized implicit equation.
+			const double contactTolerance = (2.0 * detail::EllipseContactTolerance * Max({
+				1.0, Abs(delta.x), Abs(delta.y), axes.x, axes.y,
+				(Max({ a->a, a->b, b->a, b->b }) / Min(b->a, b->b)) }));
+
+			for (const double side : { -1.0, 1.0 })
+			{
+				const double sx = (side * axes.x), sy = axes.y;
+				const double x0 = (delta.x + sx), x2 = (delta.x - sx);
+				const double c1 = (4.0 * delta.y * sy);
+				const double c2 = (2.0 * x0 * x2 + 2.0 * Square(delta.y) + 4.0 * Square(sy) - 2.0);
+				const double c4 = (Square(x2) + Square(delta.y) - 1.0);
+				// Overlap the two parameter domains so a near-seam tangent has an
+				// interior stationary point in both searches. Emit only its own half.
+				std::array<double, 5> parameters{ -2.0 };
+				size_t count = 1;
+				for (const double root : Math::SolveCubicEquation((4.0 * c4), (3.0 * c1), (2.0 * c2), c1))
+				{
+					if ((-2.0 < root) && (root < 2.0))
+					{
+						parameters[count++] = root;
+					}
+				}
+				parameters[count++] = 2.0;
+
+				auto Value = [&](const double t)
+				{
+					const double tt = (t * t), denominator = (1.0 + tt);
+					const double x = std::fma(x2, tt, x0);
+					const double y = std::fma(delta.y, denominator, (2.0 * sy * t));
+					return std::fma(x, x, std::fma(y, y, -Square(denominator)));
+				};
+				auto EndpointValue = [&](const double t)
+				{
+					const double tt = (t * t), denominator = (1.0 + tt);
+					const double x = std::fma(x2, tt, x0);
+					const double y = std::fma(delta.y, denominator, (2.0 * sy * t));
+					const double scale = (Abs(x) * (Abs(delta.x) * denominator + Abs(sx) * Abs(1.0 - tt))
+						+ Abs(y) * (Abs(delta.y) * denominator + Abs(2.0 * sy * t)) + Square(denominator));
+					const double value = Value(t);
+					const double tolerance = Max((32.0 * std::numeric_limits<double>::epsilon() * scale),
+						(contactTolerance * Square(denominator)));
+					return (Abs(value) <= tolerance) ? 0.0 : value;
+				};
+				auto AddAt = [&](double t)
+				{
+					if ((1.0 + 8.0 * std::numeric_limits<double>::epsilon()) < Abs(t))
+					{
+						return;
+					}
+					t = Clamp(t, -1.0, 1.0);
+					const double tt = (t * t), denominator = (1.0 + tt);
+					const Vec2 point = (a->center + a->axes * Vec2{ (side * (1.0 - tt) / denominator), (2.0 * t / denominator) });
+					if (accept(point))
+					{
+						AppendPoint(accumulator, point);
+					}
+				};
+
+				double previous = EndpointValue(parameters[0]);
+				if (previous == 0.0)
+				{
+					AddAt(parameters[0]);
+				}
+				for (size_t i = 1; i < count; ++i)
+				{
+					const double value = EndpointValue(parameters[i]);
+					if (value == 0.0)
+					{
+						AddAt(parameters[i]);
+					}
+					else if (((previous < 0.0) && (0.0 < value)) || ((value < 0.0) && (0.0 < previous)))
+					{
+						double lo = parameters[i - 1], hi = parameters[i];
+						for (int32 iteration = 0; iteration < 64; ++iteration)
+						{
+							const double mid = ((lo + hi) * 0.5);
+							if ((mid == lo) || (mid == hi))
+							{
+								break;
+							}
+							const double f = Value(mid);
+							if (f == 0.0)
+							{
+								lo = hi = mid;
+								break;
+							}
+							if ((f < 0.0) == (previous < 0.0))
+							{
+								lo = mid;
+							}
+							else
+							{
+								hi = mid;
+							}
+						}
+						AddAt((lo + hi) * 0.5);
+					}
+					previous = value;
+				}
+			}
+		}
+
 		template <class PointAt, class Function, class Accept>
 		[[nodiscard]]
 		bool AppendParametricRoots(
@@ -1184,10 +1307,16 @@ namespace s3d
 			}
 			else if constexpr (std::is_same_v<A, CircleArc> && std::is_same_v<B, Ellipse>)
 			{
-				ProcessCurveImplicit(accumulator,
-					[&](const double t) { return CircleArcPointAt(a, t); },
-					[&](const Vec2& p) { return EllipseImplicit(b, p); },
-					[&](const Vec2& p) { return ArcContainsPoint(a, p); }, a);
+				const Ellipse ellipse{ a.circle.center, a.circle.r, a.circle.r };
+				if (SameEllipse(ellipse, b))
+				{
+					accumulator.positiveDimensionalComponents.emplace_back(a);
+				}
+				else
+				{
+					ProcessEllipseEllipse(accumulator, ellipse, b,
+						[&](const Vec2& p) { return ArcContainsPoint(a, p); });
+				}
 			}
 			else if constexpr (std::is_same_v<A, CircleArc> && std::is_same_v<B, SuperEllipse>)
 			{
@@ -1218,10 +1347,7 @@ namespace s3d
 				}
 				else
 				{
-					ProcessCurveImplicit(accumulator,
-						[&](const double t) { return EllipsePointAt(a, t); },
-						[&](const Vec2& p) { return EllipseImplicit(b, p); },
-						[](const Vec2&) { return true; }, a);
+					ProcessEllipseEllipse(accumulator, a, b, [](const Vec2&) { return true; });
 				}
 			}
 			else if constexpr (std::is_same_v<A, Ellipse> && std::is_same_v<B, SuperEllipse>)

@@ -1812,12 +1812,16 @@ namespace s3d
 				return Geometry2D::Intersects(circle, detail::GetGeometry2DDegenerateSegment(ellipse, ellipseKind));
 			}
 
-			if (not BoundsIntersectClosed(circle.boundingRect(), ellipse.boundingRect()))
+			const double scale = Max({ circle.r, ellipse.a, ellipse.b });
+			const double tolerance = (detail::EllipseContactTolerance * scale);
+			if (((circle.r + ellipse.a + tolerance) < Abs(circle.x - ellipse.x))
+				|| ((circle.r + ellipse.b + tolerance) < Abs(circle.y - ellipse.y)))
 			{
 				return false;
 			}
 
-			return (detail::DistancePointEllipse(circle.center, ellipse) <= circle.r);
+			return detail::EllipseDistanceWithinRadius<true>(
+				detail::DistancePointEllipse(circle.center, ellipse), circle.r, scale);
 		}
 
 		[[nodiscard]]

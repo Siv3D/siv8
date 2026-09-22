@@ -102,6 +102,54 @@ TEST_CASE("Geometry2D.Distance.IntersectionAndContainment")
 	}
 }
 
+TEST_CASE("Geometry2D.Distance.Ellipse.IntersectionWitnesses")
+{
+	const auto CheckPair = [](const auto& a, const auto& b)
+	{
+		CHECK(Geometry2D::Distance(a, b) == 0.0);
+		const auto result = Geometry2D::ClosestPoints(a, b);
+		const auto reversed = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(result.has_value());
+		REQUIRE(reversed.has_value());
+		CHECK(result->distance == 0.0);
+		CHECK(result->pointA == result->pointB);
+		CHECK(reversed->distance == 0.0);
+		CHECK(reversed->pointA == reversed->pointB);
+		const auto CheckInside = [](const Vec2& point, const auto& shape)
+		{
+			Vec2 axes;
+			if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, Circle>)
+			{
+				axes = { shape.r, shape.r };
+			}
+			else
+			{
+				axes = shape.axes;
+			}
+			CHECK(((point - shape.center) / axes).lengthSq() <= (1.0 + 1.0e-12));
+		};
+		CheckInside(result->pointA, a);
+		CheckInside(result->pointB, b);
+		CheckInside(reversed->pointA, b);
+		CheckInside(reversed->pointB, a);
+	};
+	const Vec2 direction{ 0.6, 0.8 };
+	for (const double distance : { 129.9999, 130.0, 70.0, 70.0001, 60.0, 0.0 })
+	{
+		const Ellipse b{ (direction * distance), 30, 30 };
+		CheckPair(Ellipse{ 0, 0, 100, 100 }, b);
+		CheckPair(Circle{ 0, 0, 100 }, b);
+		CheckPair(Ellipse{ 0, 0, 100, 30 }, Ellipse{ (b.center * Vec2{ 1, 0.3 }), 30, 9 });
+	}
+	CheckPair(Ellipse{ 0, 0, 100, 30 }, Ellipse{ 0, 0, 100, 30 });
+	for (const double gap : { -1.0e-12, 0.0, 1.0e-12 })
+	{
+		const Ellipse b{ (direction * (130.0 + gap)), 30, 30 };
+		CheckPair(Ellipse{ 0, 0, 100, 100 }, b);
+		CheckPair(Circle{ 0, 0, 100 }, b);
+	}
+}
+
 TEST_CASE("Geometry2D.Distance.AnalyticAreaCases")
 {
 	{
