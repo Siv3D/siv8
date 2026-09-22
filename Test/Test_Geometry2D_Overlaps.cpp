@@ -212,3 +212,85 @@ TEST_CASE("Geometry2D.Overlaps.Polygon.supplied_mesh")
 	CHECK(Geometry2D::Overlaps(original, polygon));
 	CHECK_FALSE(Geometry2D::Overlaps(polygon, original.movedBy(4, 0)));
 }
+
+TEST_CASE("Geometry2D.Overlaps.RectPolygon.rings")
+{
+	const Polygon square = RectF{ 0, 0, 4, 4 }.asPolygon();
+	const Polygon diamond{ Array<Vec2>{ { 2, 0 }, { 4, 2 }, { 2, 4 }, { 0, 2 } } };
+	const Polygon concave{ Array<Vec2>{ { 0, 0 }, { 12, 0 }, { 12, 12 }, { 8, 12 }, { 8, 4 }, { 4, 4 }, { 4, 12 }, { 0, 12 } } };
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 4, 4 }, { 4, 16 }, { 16, 16 }, { 16, 4 } } }
+	};
+	const Polygon point = square.scaledFrom(Vec2{ 2, 2 }, 0.0);
+	const Polygon segment = square.scaledFrom(Vec2{ 2, 2 }, Vec2{ 0, 1 }).rotated(0.5);
+	REQUIRE(not point.isEmpty());
+	REQUIRE(not segment.isEmpty());
+
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		CAPTURE(offset);
+		auto Check = [&](const RectF& rect, const Polygon& polygon, const bool expected)
+		{
+			const RectF movedRect = rect.movedBy(offset);
+			const Polygon movedPolygon = polygon.movedBy(offset);
+			const MultiPolygon multi{ Polygon{}, movedPolygon };
+			auto CheckRect = [&](const auto& r)
+			{
+				CHECK(Geometry2D::Overlaps(r, movedPolygon) == expected);
+				CHECK(Geometry2D::Overlaps(movedPolygon, r) == expected);
+				CHECK(Geometry2D::Overlaps(r, multi) == expected);
+				CHECK(Geometry2D::Overlaps(multi, r) == expected);
+			};
+			CheckRect(movedRect);
+			if (offset.x < 1.0e9)
+			{
+				CheckRect(Rect{ static_cast<int32>(movedRect.x), static_cast<int32>(movedRect.y),
+					static_cast<int32>(movedRect.w), static_cast<int32>(movedRect.h) });
+			}
+		};
+
+		Check(RectF{ 0, 0, 4, 4 }, square, true);
+		Check(RectF{ 1, 1, 1, 1 }, square, true);
+		Check(RectF{ -1, -1, 6, 6 }, square, true);
+		Check(RectF{ 3, 3, 2, 2 }, square, true);
+		Check(RectF{ 4, 0, 2, 2 }, square, false);
+		Check(RectF{ 4, 4, 2, 2 }, square, false);
+		Check(RectF{ 0, 0, 1, 1 }, diamond, false); // Touches a slanted edge at one vertex.
+		Check(RectF{ 0, 0, 4, 4 }, diamond, true);
+		Check(RectF{ 2, 6, 8, 2 }, concave, true);
+		Check(RectF{ 5, 6, 2, 2 }, concave, false);
+		for (const Vec2 scale : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 } })
+		{
+			const Polygon reflected = donut.scaledFrom(Vec2{ 10, 10 }, scale);
+			Check(RectF{ 6, 6, 8, 8 }, reflected, false);
+			Check(RectF{ 4, 4, 12, 12 }, reflected, false);
+			Check(RectF{ 2, 8, 16, 2 }, reflected, true);
+			Check(RectF{ 0, 0, 20, 20 }, reflected, true);
+		}
+		Check(RectF{ 0, 0, 4, 4 }, point, false);
+		Check(RectF{ -4, -4, 8, 8 }, segment, false);
+		Check(RectF{ 0, 0, 4, 4 }, Polygon{}, false);
+		Check(RectF{ 1, 1, 0, 2 }, square, false);
+		Check(RectF{ 1, 1, 2, 0 }, square, false);
+	}
+}
+
+TEST_CASE("Geometry2D.Overlaps.RectPolygon.fractional_rectangles")
+{
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 } })
+	{
+		const Polygon polygon = RectF{ offset, 1, 1 }.asPolygon();
+		for (int32 x = -4; x <= 4; ++x)
+		{
+			for (int32 y = -4; y <= 4; ++y)
+			{
+				const RectF rect{ offset + Vec2{ x * 0.25, y * 0.25 }, 0.25, 0.25 };
+				const bool expected = ((-1 < x) && (x < 4) && (-1 < y) && (y < 4));
+				CAPTURE(offset, rect);
+				CHECK(Geometry2D::Overlaps(rect, polygon) == expected);
+				CHECK(Geometry2D::Overlaps(polygon, rect) == expected);
+			}
+		}
+	}
+}

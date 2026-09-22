@@ -660,6 +660,36 @@ namespace s3d
 		}
 
 		[[nodiscard]]
+		bool OverlapsPolygonRingsArea(
+			const detail::PolygonRingsView aRings, const RectF& aBounds,
+			const detail::PolygonRingsView bRings, const RectF& bBounds, const int32 direction) noexcept
+		{
+			if (direction == 0)
+			{
+				return false;
+			}
+
+			if ((aRings.outer.front() != bRings.outer.front())
+				&& (detail::PolygonContainsPoint<false>(bRings, aRings.outer.front())
+					|| detail::PolygonContainsPoint<false>(aRings, bRings.outer.front())))
+			{
+				return true;
+			}
+
+			boost::container::small_vector<detail::PolygonSegmentEvent, 4> events;
+			return detail::AnyPolygonEdge(aRings, [&](const Line& edge)
+				{
+					return BoundsIntersectLine(bBounds, edge)
+						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(bRings, edge, events, direction);
+				})
+				|| detail::AnyPolygonEdge(bRings, [&](const Line& edge)
+				{
+					return BoundsIntersectLine(aBounds, edge)
+						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(aRings, edge, events, direction);
+				});
+		}
+
+		[[nodiscard]]
 		bool OverlapsRectPolygonAreaNonEmpty(
 			const RectF& rect, const Polygon& polygon, const RectF& polygonBounds) noexcept
 		{
@@ -668,10 +698,17 @@ namespace s3d
 				return false;
 			}
 
-			return VisitPolygonTriangles(polygon, [&](const Triangle& part)
+			const auto rings = detail::GetPolygonRings(polygon);
+			const int32 direction = detail::PolygonRingOrientation(rings.outer, &polygonBounds);
+			if ((rect.x <= polygonBounds.x) && (rect.y <= polygonBounds.y)
+				&& ((polygonBounds.x + polygonBounds.w) <= (rect.x + rect.w))
+				&& ((polygonBounds.y + polygonBounds.h) <= (rect.y + rect.h)))
 			{
-				return OverlapsRectTriangleArea(rect, part);
-			});
+				return (direction != 0);
+			}
+
+			const std::array<Vec2, 4> rectRing{ rect.tl(), rect.tr(), rect.br(), rect.bl() };
+			return OverlapsPolygonRingsArea(rings, polygonBounds, { rectRing, {} }, rect, direction);
 		}
 
 		[[nodiscard]]
@@ -1223,29 +1260,7 @@ namespace s3d
 			const auto bRings = detail::GetPolygonRings(b);
 			const int32 direction = (detail::PolygonRingOrientation(aRings.outer, &aBounds)
 				* detail::PolygonRingOrientation(bRings.outer, &bBounds));
-			if (direction == 0)
-			{
-				return false;
-			}
-
-			if ((aRings.outer.front() != bRings.outer.front())
-				&& (detail::PolygonContainsPoint<false>(bRings, aRings.outer.front())
-					|| detail::PolygonContainsPoint<false>(aRings, bRings.outer.front())))
-			{
-				return true;
-			}
-
-			boost::container::small_vector<detail::PolygonSegmentEvent, 4> events;
-			return detail::AnyPolygonEdge(aRings, [&](const Line& edge)
-				{
-					return BoundsIntersectLine(bBounds, edge)
-						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(bRings, edge, events, direction);
-				})
-				|| detail::AnyPolygonEdge(bRings, [&](const Line& edge)
-				{
-					return BoundsIntersectLine(aBounds, edge)
-						&& detail::TestPolygonSegment<detail::PolygonSegmentTest::AreaOverlap>(aRings, edge, events, direction);
-				});
+			return OverlapsPolygonRingsArea(aRings, aBounds, bRings, bBounds, direction);
 		}
 
 		[[nodiscard]]
