@@ -906,6 +906,46 @@ namespace s3d
 				Vec2{ (shape.x - shape.a), shape.y }, Vec2{ shape.x, (shape.y - shape.b) } };
 		}
 
+		[[nodiscard]]
+		double DistanceSqToSuperEllipseBox(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			const Vec2 gap{ Max(0.0, (Abs(point.x - shape.x) - shape.a)), Max(0.0, (Abs(point.y - shape.y) - shape.b)) };
+			return gap.lengthSq();
+		}
+
+		// Disjoint positive-area shapes with n <= 1. Facing concave arcs cannot
+		// have a strict distance minimum in both interiors. A minimizing pair
+		// can be chosen with an axial tip, including for diamond edges.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointConcaveSuperEllipsePair(const SuperEllipse& a, const SuperEllipse& b) noexcept
+		{
+			const auto verticesA = SuperEllipseAxisVertices(a), verticesB = SuperEllipseAxisVertices(b);
+			ClosestPairCandidate result;
+			for (const Vec2& pointA : verticesA)
+			{
+				for (const Vec2& pointB : verticesB)
+				{
+					UpdateCandidate(result, pointA, pointB);
+				}
+			}
+			const auto TestTips = [&](const auto& vertices, const SuperEllipse& other, const bool reverse) noexcept
+			{
+				for (const Vec2& point : vertices)
+				{
+					if (result.distanceSq <= DistanceSqToSuperEllipseBox(point, other))
+					{
+						continue;
+					}
+					const auto closest = ClosestDisjointPointSuperEllipse(point, other);
+					if (reverse) UpdateCandidate(result, closest.pointB, point);
+					else UpdateCandidate(result, point, closest.pointB);
+				}
+			};
+			TestTips(verticesA, b, false);
+			TestTips(verticesB, a, true);
+			return result;
+		}
+
 		// Positive axes and n <= 1; the line is disjoint from the filled shape.
 		// A concave arc cannot have a strict interior minimum of distance to a
 		// disjoint supporting line. Line endpoints and axial tips suffice.
@@ -923,9 +963,8 @@ namespace s3d
 			for (size_t i = 0; i < endpoints.size(); ++i)
 			{
 				const Vec2& point = endpoints[i];
-				const Vec2 boxGap{ Max(0.0, (Abs(point.x - shape.x) - shape.a)), Max(0.0, (Abs(point.y - shape.y) - shape.b)) };
 				// Skip endpoint searches that cannot beat the best tip projection.
-				if (result.distanceSq <= boxGap.lengthSq())
+				if (result.distanceSq <= DistanceSqToSuperEllipseBox(point, shape))
 				{
 					continue;
 				}
@@ -1607,19 +1646,24 @@ namespace s3d
 				{
 					return ClosestDisjointLineSuperEllipse(*line, *superEllipse);
 				}
-				if (superEllipse->n == 1.0)
-				{
-					if (const auto* ellipse = std::get_if<Ellipse>(&first))
-					{
-						return ClosestDisjointShapeDiamond(*ellipse, *superEllipse);
-					}
-					if (const auto* other = std::get_if<SuperEllipse>(&first))
-					{
-						return ClosestDisjointShapeDiamond(*other, *superEllipse);
-					}
-				}
 				if (superEllipse->n <= 1.0)
 				{
+					const auto* other = std::get_if<SuperEllipse>(&first);
+					if (other && (other->n <= 1.0))
+					{
+						return ClosestDisjointConcaveSuperEllipsePair(*other, *superEllipse);
+					}
+					if (superEllipse->n == 1.0)
+					{
+						if (const auto* ellipse = std::get_if<Ellipse>(&first))
+						{
+							return ClosestDisjointShapeDiamond(*ellipse, *superEllipse);
+						}
+						if (other)
+						{
+							return ClosestDisjointShapeDiamond(*other, *superEllipse);
+						}
+					}
 					return none;
 				}
 				if (const auto* ellipse = std::get_if<Ellipse>(&first))
@@ -2679,6 +2723,28 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> TryClosestEllipticSimpleShape(const ShapeA& a, const ShapeB& b)
 		{
+			if constexpr (std::is_same_v<ShapeB, SuperEllipse>
+				&& (std::is_same_v<ShapeA, Ellipse> || std::is_same_v<ShapeA, SuperEllipse>))
+			{
+				const bool firstIsCircle = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<ShapeA, SuperEllipse>) return ((a.n == 2.0) && (a.a == a.b));
+					else return (a.a == a.b);
+				}();
+				if (firstIsCircle)
+				{
+					return TryClosestEllipticSimpleShape(Circle{ a.center, a.a }, b);
+				}
+				if constexpr (std::is_same_v<ShapeA, SuperEllipse>)
+				{
+					if ((b.n == 2.0) && (b.a == b.b))
+					{
+						auto result = TryClosestEllipticSimpleShape(Circle{ b.center, b.a }, a);
+						if (result) std::swap(result->pointA, result->pointB);
+						return result;
+					}
+				}
+			}
 			constexpr bool PointFirst = (std::is_same_v<ShapeA, Point> || std::is_same_v<ShapeA, Vec2>);
 			constexpr bool ShapeFirst = ((std::is_same_v<ShapeA, Ellipse> || std::is_same_v<ShapeA, SuperEllipse>)
 				&& std::is_same_v<ShapeB, RoundRect>);
