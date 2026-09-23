@@ -50,29 +50,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		constexpr bool NearlyBetweenBezierCoordinate(const double a, const double x, const double b) noexcept
-		{
-			const double min = Min(a, b);
-			const double max = Max(a, b);
-			const double scale = Max(Max(Abs(a), Abs(x)), Max(Abs(b), 1.0));
-			const double tolerance = (BezierPointTolerance * scale);
-
-			return ((min - tolerance) <= x)
-				&& (x <= (max + tolerance));
-		}
-
-		[[nodiscard]]
-		constexpr bool BezierRootPointIsOnSegmentRange(const Vec2& p, const Line& segment) noexcept
-		{
-			// The root already places p on the supporting line. A constant axis
-			// must not reject it again because of polynomial evaluation roundoff.
-			const Vec2 direction = (segment.end - segment.start);
-			return ((Abs(direction.y) <= Abs(direction.x))
-				? NearlyBetweenBezierCoordinate(segment.start.x, p.x, segment.end.x)
-				: NearlyBetweenBezierCoordinate(segment.start.y, p.y, segment.end.y));
-		}
-
-		[[nodiscard]]
 		constexpr bool ControlPointsBoundingRectContains(const Vec2& p, const Bezier2& curve) noexcept
 		{
 			const double minX = Min({ curve.p0.x, curve.p1.x, curve.p2.x });
@@ -264,9 +241,10 @@ namespace s3d
 				return CollinearBezierIntersectsLine(segment, curve);
 			}
 
+			const double tolerance = detail::BezierEvaluationTolerance(curve);
 			return CheckQuadraticRootsInUnitInterval(a, b, c, [&](const double t)
 			{
-				return BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment);
+				return detail::BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment, tolerance);
 			});
 		}
 
@@ -294,9 +272,10 @@ namespace s3d
 				return CollinearBezierIntersectsLine(segment, curve);
 			}
 
+			const double tolerance = detail::BezierEvaluationTolerance(curve);
 			return CheckCubicRootsInUnitInterval(a, b, c, e, [&](const double t)
 			{
-				return BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment);
+				return detail::BezierRootPointIsOnSegmentRange(curve.pointAt(t), segment, tolerance);
 			});
 		}
 

@@ -6,6 +6,7 @@
 //-----------------------------------------------
 # pragma once
 # include <array>
+# include <limits>
 # include <utility>
 # include <Siv3D/Bezier.hpp>
 # include <Siv3D/Line.hpp>
@@ -318,6 +319,34 @@ namespace s3d::detail
 		{
 			return std::array{ curve.p0, curve.p1, curve.p2, curve.p3 };
 		}
+	}
+
+	template <class Bezier>
+	[[nodiscard]]
+	double BezierEvaluationTolerance(const Bezier& curve) noexcept
+	{
+		double scale = 0.0;
+		for (const Vec2& p : BezierControlPoints(curve))
+		{
+			const Vec2 delta = (p - curve.p0);
+			scale = Max({ scale, Abs(delta.x), Abs(delta.y) });
+		}
+		return (BezierRootTolerance * scale);
+	}
+
+	[[nodiscard]]
+	inline bool BezierRootPointIsOnSegmentRange(const Vec2& p, const Line& segment, const double evaluationTolerance) noexcept
+	{
+		// The polynomial root places p on the supporting line. Only its range
+		// along the dominant axis remains; include curve evaluation and coordinate roundoff.
+		const Vec2 direction = (segment.end - segment.start);
+		const bool useX = (Abs(direction.y) <= Abs(direction.x));
+		const double a = (useX ? segment.start.x : segment.start.y);
+		const double b = (useX ? segment.end.x : segment.end.y);
+		const double x = (useX ? p.x : p.y);
+		const double tolerance = Max(evaluationTolerance,
+			(4.0 * std::numeric_limits<double>::epsilon() * Max({ Abs(a), Abs(b), Abs(x) })));
+		return (((Min(a, b) - tolerance) <= x) && (x <= (Max(a, b) + tolerance)));
 	}
 
 	// Control hulls give bounds without solving coordinate extrema.

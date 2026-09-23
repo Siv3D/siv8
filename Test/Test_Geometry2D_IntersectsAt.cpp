@@ -607,3 +607,80 @@ TEST_CASE("Geometry2D.IntersectsAt.Bezier.EllipseBoundary")
 	CheckPointSet(Geometry2D::IntersectsAt(arch, SuperEllipse{ 0, 0, 0, 1, 2 }), { { 0, 0.125 } });
 	CheckPointSet(Geometry2D::IntersectsAt(Circle{ 0, 0, 1 }, SuperEllipse{ 0, 0, 1, 1, 2 }), {});
 }
+
+TEST_CASE("Geometry2D.IntersectsAt.Bezier.SmallLinearBoundaries")
+{
+	const Bezier2 base{ { 0, 0.1875 }, { 0.5, -0.3125 }, { 1, 0.1875 } }; // y=x*x-x+3/16
+	for (const double scale : { 1.0e-12, 1.0e-6, 1.0e-3, 1.0, 1.0e6 })
+	{
+		for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 13, -7 } * scale })
+		{
+			const auto Transform = [&](const Vec2& p) { return (p * scale + offset); };
+			const Bezier2 curve{ Transform(base.p0), Transform(base.p1), Transform(base.p2) };
+			const Bezier3 cubic{ curve.p0, curve.p0 + (curve.p1 - curve.p0) * (2.0 / 3),
+				curve.p2 + (curve.p1 - curve.p2) * (2.0 / 3), curve.p2 };
+			const auto CheckShape = [&](const auto& shape, const Array<Vec2>& expected)
+			{
+				Array<Vec2> points;
+				for (const Vec2& p : expected)
+				{
+					points.push_back(Transform(p));
+				}
+				const auto CheckCurve = [&](const auto& c)
+				{
+					CHECK(Geometry2D::Intersects(c, shape));
+					CheckPointSet(Geometry2D::IntersectsAt(c, shape), points, (scale * 1.0e-12));
+					CheckPointSet(Geometry2D::IntersectsAt(shape, c), points, (scale * 1.0e-12));
+					CheckPointSet(c.intersectsAt(shape), points, (scale * 1.0e-12));
+				};
+				CheckCurve(curve);
+				CheckCurve(curve.reversed());
+				CheckCurve(cubic);
+				CheckCurve(cubic.reversed());
+			};
+			// The other supporting-line root at x=.75 lies outside this edge.
+			const Line edge{ Transform({ 0.2, 0 }), Transform({ 0.3, 0 }) };
+			CheckShape(edge, { { 0.25, 0 } });
+			CheckShape(Line{ edge.end, edge.start }, { { 0.25, 0 } });
+			CheckShape(LineString{ Transform({ 0.2, 0 }), Transform({ 0.25, 0 }), Transform({ 0.3, 0 }) }, { { 0.25, 0 } });
+			CheckShape(Triangle{ Transform({ 0.2, -0.1 }), Transform({ 0.3, -0.1 }), Transform({ 0.2, 0.1 }) },
+				{ { 0.2, 0.0275 }, { 0.25, 0 } });
+			const RectF rect{ Transform({ 0.2, -0.1 }), (0.1 * scale), (0.2 * scale) };
+			const Array<Vec2> expected{ { 0.2, 0.0275 }, { 0.3, -0.0225 } };
+			CheckShape(rect, expected);
+			CheckShape(Quad{ rect.tl(), rect.tr(), rect.br(), rect.bl() }, expected);
+			CheckShape(RoundRect{ rect, (0.01 * scale) }, expected);
+			const Polygon polygon = Polygon{ { { 0.2, -0.1 }, { 0.3, -0.1 }, { 0.3, 0.1 }, { 0.2, 0.1 } } }.scaledFromOrigin(scale).movedBy(offset);
+			CheckShape(polygon, expected);
+			CheckShape(MultiPolygon{ polygon }, expected);
+			// A root just outside a short edge must not turn into a contact at small scales.
+			const Line outside{ Transform({ 0.2501, 0 }), Transform({ 0.3, 0 }) };
+			CHECK(not Geometry2D::Intersects(curve, outside));
+			CHECK(not Geometry2D::IntersectsAt(curve, outside));
+			CHECK(not Geometry2D::Intersects(cubic, outside));
+			CHECK(not Geometry2D::IntersectsAt(cubic, outside));
+			// Translation puts a genuine root at the origin, where coordinate magnitude alone gives no tolerance.
+			CheckPointSet(Geometry2D::IntersectsAt(curve.movedBy(-Transform({ 0.25, 0 })), Line{ { 0, 0 }, { (0.05 * scale), 0 } }),
+				{ { 0, 0 } }, (scale * 1.0e-12));
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.IntersectsAt.SmallLinearBoundaryEvents")
+{
+	for (const double scale : { 1.0e-12, 1.0e-6, 1.0, 1.0e6 })
+	{
+		const Bezier2 arch{ { -scale, 0 }, { 0, 0.2 * scale }, { scale, 0 } };
+		const double x = (0.02 / (1.0 + std::sqrt(1.04)));
+		CheckPointSet(Geometry2D::IntersectsAt(arch, SuperEllipse{ 0, (0.1 * scale), (0.01 * scale), (0.001 * scale), 1 }),
+			{ Vec2{ -x, 0.1 * (1 - x * x) } * scale, Vec2{ x, 0.1 * (1 - x * x) } * scale }, (scale * 1.0e-12));
+		const LineString a{ Vec2{ 0, 0 }, Vec2{ 0.5, 0 } * scale, Vec2{ 0.5, 1 } * scale };
+		const LineString b{ Vec2{ 0.25, 0 } * scale, Vec2{ 0.75, 0 } * scale,
+			Vec2{ 0.75, 0.25 } * scale, Vec2{ 0.25, 0.25 } * scale };
+		// Shared segments suppress their own points, not a nearby isolated crossing.
+		CheckPointSet(Geometry2D::IntersectsAt(a, b), { Vec2{ 0.5, 0.25 } * scale }, (scale * 1.0e-12));
+		CheckPointSet(Geometry2D::IntersectsAt(b, a), { Vec2{ 0.5, 0.25 } * scale }, (scale * 1.0e-12));
+		CheckPointSet(Geometry2D::IntersectsAt(Line{ { 0, 0 }, { scale, 0 } }, RectF{ (0.25 * scale), -scale, (0.5 * scale), (2 * scale) }),
+			{ Vec2{ 0.25, 0 } * scale, Vec2{ 0.75, 0 } * scale }, (scale * 1.0e-12));
+	}
+}

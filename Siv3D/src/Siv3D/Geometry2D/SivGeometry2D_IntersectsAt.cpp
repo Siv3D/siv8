@@ -73,7 +73,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool NearlyEqualPoint(const Vec2& a, const Vec2& b, const double tolerance = PointMergeTolerance) noexcept
+		bool NearlyEqualPoint(const Vec2& a, const Vec2& b, const double tolerance) noexcept
 		{
 			return NearlyEqualCoordinate(a.x, b.x, tolerance)
 				&& NearlyEqualCoordinate(a.y, b.y, tolerance);
@@ -98,24 +98,14 @@ namespace s3d
 		{
 			const Vec2 d = (line.end - line.start);
 			const Vec2 v = (p - line.start);
-			const double lengthSq = d.dot(d);
-
-			if (lengthSq == 0.0)
-			{
-				return NearlyEqualPoint(p, line.start);
-			}
-
-			const double cross = d.cross(v);
-			const double scale = Max({ std::sqrt(lengthSq), Abs(v.x), Abs(v.y), 1.0 });
-
-			if (Abs(cross) > (PointMergeTolerance * scale * scale))
-			{
-				return false;
-			}
-
-			const double dot = v.dot(d);
-			const double tolerance = (PointMergeTolerance * Max(lengthSq, 1.0));
-			return ((-tolerance <= dot) && (dot <= (lengthSq + tolerance)));
+			const double tolerance = (detail::BezierRootTolerance * Max(Abs(d.x), Abs(d.y)));
+			const double tx = Max(tolerance, (4.0 * std::numeric_limits<double>::epsilon()
+				* Max({ Abs(p.x), Abs(line.start.x), Abs(line.end.x) })));
+			const double ty = Max(tolerance, (4.0 * std::numeric_limits<double>::epsilon()
+				* Max({ Abs(p.y), Abs(line.start.y), Abs(line.end.y) })));
+			return (((Min(line.start.x, line.end.x) - tx) <= p.x) && (p.x <= (Max(line.start.x, line.end.x) + tx))
+				&& ((Min(line.start.y, line.end.y) - ty) <= p.y) && (p.y <= (Max(line.start.y, line.end.y) + ty))
+				&& (Abs(d.cross(v)) <= (Abs(d.x) * ty + Abs(d.y) * tx)));
 		}
 
 		[[nodiscard]]
@@ -607,6 +597,8 @@ namespace s3d
 		{
 			const Vec2 r = (a.end - a.start);
 			const Vec2 s = (b.end - b.start);
+			accumulator.pointMergeTolerance = Min(accumulator.pointMergeTolerance,
+				(detail::BezierRootTolerance * Max({ Abs(r.x), Abs(r.y), Abs(s.x), Abs(s.y) })));
 			const double rLengthSq = r.dot(r);
 			const double sLengthSq = s.dot(s);
 
@@ -1108,6 +1100,8 @@ namespace s3d
 		void ProcessLineBezier(IntersectionAccumulator& accumulator, const Line& line, const Bezier& bezier)
 		{
 			const Vec2 d = (line.end - line.start);
+			const double tolerance = detail::BezierEvaluationTolerance(bezier);
+			accumulator.pointMergeTolerance = Min(accumulator.pointMergeTolerance, tolerance);
 
 			if (line.start == line.end)
 			{
@@ -1128,7 +1122,7 @@ namespace s3d
 			const auto AppendRoot = [&](const double t)
 			{
 				const Vec2 point = bezier.pointAt(t);
-				if (PointOnLine(point, line))
+				if (detail::BezierRootPointIsOnSegmentRange(point, line, tolerance))
 				{
 					AppendPoint(accumulator, point);
 				}
