@@ -1916,6 +1916,146 @@ TEST_CASE("Geometry2D.Distance.Bezier.GeneralPairs")
 	CheckPair(near, shifted, 1.0e-13, 1.1e-10);
 }
 
+TEST_CASE("Geometry2D.Distance.Bezier.EllipticSeparation")
+{
+	const auto CheckPair = [](const auto& curve, const auto& shape, const double gap, const double tolerance)
+	{
+		for (const auto& c : { curve, curve.reversed() })
+		{
+			const auto ab = Geometry2D::ClosestPoints(c, shape), ba = Geometry2D::ClosestPoints(shape, c);
+			REQUIRE(ab);
+			REQUIRE(ba);
+			CHECK(Abs(ab->distance - gap) <= tolerance);
+			CHECK(ab->distance == ba->distance);
+			CHECK(ab->distance == Geometry2D::Distance(c, shape));
+			CHECK(ab->distance == Geometry2D::Distance(shape, c));
+			CHECK(ab->pointA == ba->pointB);
+			CHECK(ab->pointB == ba->pointA);
+			CHECK(Geometry2D::Distance(ab->pointA, c) <= tolerance);
+			CHECK(Geometry2D::Distance(ab->pointB, shape) <= tolerance);
+			CheckWitnessConsistency(*ab, tolerance);
+		}
+	};
+	for (const double n : { 1.1, 1.5, 2.0, 4.0, 16.0, 64.0 })
+	{
+		for (const Vec2& normal : { Vec2{ 0, 1 }, Vec2{ -1, 0 }, Vec2{ 0.6, 0.8 } })
+		{
+			for (const double scale : { 0.01, 1.0, 100.0 })
+			{
+				const Vec2 offset = (Vec2{ -3, 2 } * scale), axes = (Vec2{ 1, 0.5 } * scale);
+				const SuperEllipse shape{ offset, axes, n };
+				const double q = (n / (n - 1.0));
+				const Vec2 weighted = (axes * normal);
+				const double norm = std::pow((std::pow(Abs(weighted.x), q) + std::pow(Abs(weighted.y), q)), (1.0 / q));
+				const Vec2 support = offset + axes * Vec2{
+					std::copysign(std::pow((Abs(weighted.x) / norm), (q - 1.0)), normal.x),
+					std::copysign(std::pow((Abs(weighted.y) / norm), (q - 1.0)), normal.y) };
+				const double gap = (1.0e-8 * scale), t0 = 0.371;
+				const Vec2 tangent{ -normal.y, normal.x }, base = (support + normal * gap);
+				// The entire curve lies beyond a supporting line by at least gap,
+				// with equality at t0. This gives a global, analytic distance oracle.
+				const auto PointAt = [&](const double t, const double cubic)
+				{
+					const double u = (t - t0);
+					return (base + scale * (tangent * (2.0 * u + cubic * u * u * u) + normal * (0.5 * u * u)));
+				};
+				const auto Derivative = [&](const double t, const double cubic)
+				{
+					const double u = (t - t0);
+					return (scale * (tangent * (2.0 + 3.0 * cubic * u * u) + normal * u));
+				};
+				const Bezier2 quadratic{ PointAt(0, 0), PointAt(0, 0) + Derivative(0, 0) * 0.5, PointAt(1, 0) };
+				const auto CheckShape = [&](const auto& target)
+				{
+					CheckPair(quadratic, target, gap, (1.0e-11 * scale));
+					for (const double cubic : { 0.0, 0.8 })
+					{
+						const Bezier3 curve{ PointAt(0, cubic), PointAt(0, cubic) + Derivative(0, cubic) / 3.0,
+							PointAt(1, cubic) - Derivative(1, cubic) / 3.0, PointAt(1, cubic) };
+						CheckPair(curve, target, gap, (1.0e-11 * scale));
+					}
+				};
+				CheckShape(shape);
+				if (n == 2.0) CheckShape(Ellipse{ offset, axes });
+			}
+		}
+	}
+
+	for (const double n : { 0.25, 0.5, 0.9 })
+	{
+		// The curve stays above the top tip, including between control points.
+		const double t = 0.371, gap = 1.0e-8;
+		const Bezier2 curve{ { -2.0 * t, 0.5 + gap + 0.5 * t * t },
+			{ 1.0 - 2.0 * t, 0.5 + gap + 0.5 * t * t - 0.5 * t },
+			{ 2.0 * (1.0 - t), 0.5 + gap + 0.5 * (1.0 - t) * (1.0 - t) } };
+		const SuperEllipse shape{ 0, 0, 1, 0.5, n };
+		CheckPair(curve, shape, gap, 1.0e-11);
+		CheckPair(Bezier3{ curve.p0, curve.p0 + (curve.p1 - curve.p0) * (2.0 / 3),
+			curve.p2 + (curve.p1 - curve.p2) * (2.0 / 3), curve.p2 }, shape, gap, 1.0e-11);
+	}
+
+	// Separate concave boundary branches compete for the nearest point.
+	// References were computed by dense parameter sampling and interval refinement.
+	CheckPair(Bezier3{ { 5.5617564617795381, 0.17666508013798171 }, { -4.5604151127169157, 0.17801755108014303 },
+		{ 2.767875558078444, 0.10413739717110759 }, { -1.8121046520184694, 0.10440929234143076 } },
+		SuperEllipse{ 0, 0, 2.8158581215670875, 0.11199782827096076, 0.23935855964217026 }, 0.042654805061624675, 1.0e-10);
+	CheckPair(Bezier3{ { 2.6442679241788132, 0.29931210085442944 }, { 0.23820109294743458, -0.13312520079403226 },
+		{ 1.7313673108963381, 0.35408600902009257 }, { -1.1546491201596358, 0.22088996920380138 } },
+		SuperEllipse{ 0, 0, 1.4341105070007207, 0.18346678812697309, 0.17032970518439911 }, 0.058647606779981779, 1.0e-10);
+}
+
+TEST_CASE("Geometry2D.Distance.Bezier.EllipticReductions")
+{
+	const auto CheckCurve = [](const auto& curve)
+	{
+		for (const double radius : { 0.0, 0.01, 1.0, 10.0 })
+		{
+			const Vec2 center{ 0.25, 0.1 };
+			const auto expected = Geometry2D::ClosestPoints(curve, Circle{ center, radius });
+			const auto Check = [&](const auto& shape)
+			{
+				const auto actual = Geometry2D::ClosestPoints(curve, shape);
+				CHECK(static_cast<bool>(actual) == static_cast<bool>(expected));
+				if (actual && expected)
+				{
+					CHECK(Abs(actual->distance - expected->distance) < 1.0e-12);
+					CHECK(Abs(Geometry2D::Distance(curve, shape) - expected->distance) < 1.0e-12);
+					CheckWitnessConsistency(*actual);
+				}
+				else
+				{
+					CHECK(std::isinf(Geometry2D::Distance(curve, shape)));
+				}
+			};
+			Check(Ellipse{ center, radius, radius });
+			Check(SuperEllipse{ center, radius, radius, 2.0 });
+		}
+		for (const Vec2& axes : { Vec2{ 2, 0.5 }, Vec2{ 0.5, 2 }, Vec2{ 0, 2 }, Vec2{ 2, 0 }, Vec2{ 0, 0 } })
+		{
+			const Ellipse ellipse{ 0, 0, axes };
+			const SuperEllipse equivalent{ ellipse, 2.0 };
+			const auto a = Geometry2D::ClosestPoints(curve, ellipse), b = Geometry2D::ClosestPoints(curve, equivalent);
+			CHECK(static_cast<bool>(a) == static_cast<bool>(b));
+			CHECK(Geometry2D::Distance(curve, ellipse) == Geometry2D::Distance(curve, equivalent));
+			if (a && b)
+			{
+				CHECK(a->distance == b->distance);
+				CheckWitnessConsistency(*a);
+				CHECK(Geometry2D::Distance(a->pointA, curve) < 1.0e-10);
+				CHECK(Geometry2D::Distance(a->pointB, ellipse) < 1.0e-10);
+			}
+		}
+	};
+	for (const Bezier2& q : { Bezier2{ { -1, 0 }, { 0, 0.25 }, { 1, 0 } },
+		Bezier2{ { -1, 0.5 }, { 0, 0.5 }, { -1, 0.5 } },
+		Bezier2{ { 3, 0.5 }, { 1, 0.5 }, { 3, 0.5 } },
+		Bezier2{ { 3, 4 }, { 3, 4 }, { 3, 4 } } })
+	{
+		CheckCurve(q);
+		CheckCurve(Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 });
+	}
+}
+
 TEST_CASE("Geometry2D.Distance.Bezier.GeneralSuperEllipse")
 {
 	const auto Elevate = [](const Bezier2& q)

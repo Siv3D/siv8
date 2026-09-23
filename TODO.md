@@ -7,12 +7,6 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## `Siv3D/include/Siv3D/Geometry2D/`
-
-### 曲線の距離計算
-
-- **Bezier × 楕円・一般の SuperEllipse（`n != 1`）**: 固定標本・分割と局所探索による `Distance()` / `ClosestPoints()` が残る。接触付近の距離誤差と処理量をまとめて検証し、SuperEllipse の角度からの境界評価も見直す。分割数・反復数の増加だけで対応しない。
-
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証

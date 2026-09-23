@@ -1389,6 +1389,229 @@ namespace s3d
 			}
 		}
 
+		template <size_t N>
+		[[nodiscard]]
+		auto BezierProjectionStationaryParameters(const std::array<Vec2, N>& controls, const Vec2& normal) noexcept
+		{
+			std::array<double, N - 1> derivative;
+			for (size_t i = 0; i < (N - 1); ++i)
+			{
+				derivative[i] = (controls[i + 1] - controls[i]).dot(normal);
+			}
+			return detail::BernsteinRoots(derivative);
+		}
+
+		// Positive axes, n != 1. Search only the Bezier parameter; each sample
+		// uses the point-to-shape solver, including concave boundary branches.
+		template <class Bezier>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestBezierSuperEllipse(const Bezier& original, const SuperEllipse& input,
+			const Optional<double> seed = none) noexcept
+		{
+			constexpr int32 MaxSubdivisions = 32;
+			const auto curve = original.movedBy(-input.center);
+			const SuperEllipse shape{ 0, 0, input.axes, input.n };
+			const bool convex = (1.0 < shape.n);
+			Optional<ConvexSuperEllipseSupport<>> support, transposedSupport;
+			double holderScale = 0.0;
+			if (convex)
+			{
+				support.emplace(shape.axes, shape.n, 1.0);
+				transposedSupport.emplace(Vec2{ shape.b, shape.a }, shape.n, 1.0);
+			}
+			else
+			{
+				const double power = (2.0 * shape.n / (2.0 - shape.n));
+				holderScale = std::pow((std::pow(shape.a, -power) + std::pow(shape.b, -power)), (-1.0 / power));
+			}
+			const auto controls = detail::BezierControlPoints(curve);
+			double scale = Max(shape.a, shape.b);
+			for (const Vec2& point : controls)
+			{
+				scale = Max({ scale, Abs(point.x), Abs(point.y) });
+			}
+			const double tolerance = (64.0 * std::numeric_limits<double>::epsilon() * scale);
+			ClosestPairCandidate best;
+			const auto Evaluate = [&](const double t)
+			{
+				const Vec2 point = curve.pointAt(t);
+				ClosestPairCandidate candidate;
+				if ((std::pow(Abs(point.x / shape.a), shape.n) + std::pow(Abs(point.y / shape.b), shape.n)) <= 1.0)
+				{
+					UpdateCandidate(candidate, point, point, t);
+				}
+				else
+				{
+					candidate = ClosestDisjointPointSuperEllipse(point, shape);
+					candidate.parameterA = t;
+				}
+				if (candidate.distanceSq < best.distanceSq)
+				{
+					best = candidate;
+				}
+				return candidate;
+			};
+			const auto Refine = [&](ClosestPairCandidate current)
+			{
+				for (int32 iteration = 0; iteration < 8; ++iteration)
+				{
+					const double t = current.parameterA, distance = std::sqrt(current.distanceSq);
+					if (distance <= tolerance) break;
+					const Vec2 gap = (current.pointA - current.pointB), normal = (gap / distance);
+					const Vec2 u = curve.derivativeAt(t), v = BezierSecondDerivative(curve, t);
+					const Vec2 p{ Abs(current.pointB.x / shape.a), Abs(current.pointB.y / shape.b) };
+					double factor;
+					if (((p.x == 0.0) || (p.y == 0.0)) && (shape.n != 2.0))
+					{
+						// Concave tips are fixed projections. Convex axial curvature
+						// tends to infinity for n < 2 and to zero for n > 2.
+						factor = ((shape.n < 2.0) ? 1.0 : 0.0);
+					}
+					else
+					{
+						const Vec2 gradient{ (std::pow(p.x, (shape.n - 1.0)) / shape.a),
+							(std::pow(p.y, (shape.n - 1.0)) / shape.b) };
+						const double g = gradient.length();
+						const double curvature = ((shape.n - 1.0) * std::pow((p.x * p.y), (shape.n - 2.0))
+							/ (shape.a * shape.a * shape.b * shape.b * g * g * g));
+						if ((1.0 + distance * curvature) <= 0.0) break;
+						factor = (distance * curvature / (1.0 + distance * curvature));
+					}
+					// Newton on distance avoids the flat quartic of squared distance
+					// at tangency. Fall back to squared-distance curvature if needed.
+					const double un = u.dot(normal), ut = u.cross(normal);
+					double h = (ut * ut * factor + gap.dot(v));
+					if (h <= 0.0) h += (un * un);
+					if (h <= 0.0) break;
+					const double next = ClampUnit(t - gap.dot(u) / h);
+					if (next == t) break;
+					const auto candidate = Evaluate(next);
+					if (current.distanceSq < candidate.distanceSq) break;
+					current = candidate;
+				}
+			};
+			const auto SupportValue = [&](const Vec2& normal)
+			{
+				const Vec2 v{ Abs(normal.x), Abs(normal.y) };
+				if (not convex) return Max((shape.a * v.x), (shape.b * v.y));
+				if (v.x == 0.0) return (shape.b * v.y);
+				if (v.y == 0.0) return (shape.a * v.x);
+				const bool transpose = (v.x < v.y);
+				const double t = (transpose ? (v.x / v.y) : (v.y / v.x));
+				Vec2 point = (transpose ? *transposedSupport : *support).sample(t, t).first;
+				if (transpose) std::swap(point.x, point.y);
+				return point.dot(v);
+			};
+			struct Node
+			{
+				Bezier part;
+				double lower, upper, boundSq;
+				ClosestPairCandidate sample;
+			};
+			// One root, then at most one additional queued node per split.
+			std::array<Node, MaxSubdivisions + 1> queue;
+			int32 count = 0;
+			const auto Compare = [](const Node& a, const Node& b) noexcept
+			{
+				return ((a.boundSq != b.boundSq) ? (b.boundSq < a.boundSq) : (b.sample.distanceSq < a.sample.distanceSq));
+			};
+			const auto CutoffSq = [&]() noexcept
+			{
+				const double cutoff = Max(0.0, (std::sqrt(best.distanceSq) - 4.0 * tolerance));
+				return (cutoff * cutoff);
+			};
+			const auto Add = [&](const Bezier& part, const double lower, const double upper)
+			{
+				const auto [lo, hi] = detail::BezierControlBounds(part);
+				const Vec2 gap{ Max({ 0.0, (lo.x - shape.a), (-shape.a - hi.x) }),
+					Max({ 0.0, (lo.y - shape.b), (-shape.b - hi.y) }) };
+				double boundSq = gap.lengthSq();
+				if (CutoffSq() <= boundSq) return;
+				if (not convex)
+				{
+					// |x|^n - |y|^n <= |x-y|^n and Holder's inequality bound
+					// distance even inside the concave shape's diamond convex hull.
+					const Vec2 p{ Max({ 0.0, lo.x, -hi.x }), Max({ 0.0, lo.y, -hi.y }) };
+					const double excess = Max(0.0, (std::pow((p.x / shape.a), shape.n) + std::pow((p.y / shape.b), shape.n) - 1.0));
+					const double bound = (holderScale * std::pow(excess, (1.0 / shape.n)));
+					boundSq = Max(boundSq, (bound * bound));
+				}
+				const auto sample = Evaluate((lower + upper) * 0.5);
+				if ((lower == 0.0) && (upper == 1.0)) Refine(best);
+				for (const auto& candidate : { sample, best })
+				{
+					if (candidate.distanceSq == 0.0) continue;
+					Vec2 normal = ((candidate.pointA - candidate.pointB) / std::sqrt(candidate.distanceSq));
+					if (convex)
+					{
+						// The boundary gradient avoids amplifying witness roundoff
+						// by the inverse gap near contact.
+						const Vec2 p = candidate.pointB;
+						normal = Vec2{ std::copysign((std::pow(Abs(p.x / shape.a), (shape.n - 1.0)) / shape.a), p.x),
+							std::copysign((std::pow(Abs(p.y / shape.b), (shape.n - 1.0)) / shape.b), p.y) }.normalized();
+					}
+					const auto points = detail::BezierControlPoints(part);
+					std::array<double, std::tuple_size_v<decltype(points)>> values;
+					for (size_t i = 0; i < points.size(); ++i) values[i] = points[i].dot(normal);
+					double minimum = Min(values.front(), values.back());
+					const auto roots = BezierProjectionStationaryParameters(points, normal);
+					for (size_t i = 0; i < roots.count; ++i)
+					{
+						minimum = Min(minimum, detail::EvaluateBernstein(values, roots.values[i]));
+					}
+					const double bound = Max(0.0, (minimum - SupportValue(normal) - tolerance));
+					boundSq = Max(boundSq, (bound * bound));
+				}
+				if (boundSq < CutoffSq())
+				{
+					queue[count++] = { part, lower, upper, boundSq, sample };
+					std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+				}
+			};
+			Evaluate(0.0);
+			Evaluate(1.0);
+			if (seed) Evaluate(*seed);
+			if (convex)
+			{
+				for (const Vec2& normal : { Vec2{ 1, 0 }, Vec2{ 0, 1 } })
+				{
+					const auto roots = BezierProjectionStationaryParameters(controls, normal);
+					for (size_t i = 0; i < roots.count; ++i) Evaluate(roots.values[i]);
+				}
+			}
+			else
+			{
+				// Cusps can be local minima on separate boundary branches.
+				for (const Vec2& tip : SuperEllipseAxisVertices(shape))
+				{
+					const auto closest = detail::ClosestPointOnBezier(curve, tip);
+					UpdateCandidate(best, closest.point, tip, closest.parameter);
+				}
+			}
+			Add(curve, 0.0, 1.0);
+			for (int32 split = 0; (split < MaxSubdivisions) && count; ++split)
+			{
+				if (CutoffSq() <= queue[0].boundSq) break;
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node node = queue[--count];
+				const auto [left, right] = node.part.split(0.5);
+				const double middle = ((node.lower + node.upper) * 0.5);
+				Add(left, node.lower, middle);
+				Add(right, middle, node.upper);
+			}
+			Refine(best);
+			for (int32 i = 0; (i < 2) && count; ++i)
+			{
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Node node = queue[--count];
+				if (best.distanceSq <= node.boundSq) break;
+				Refine(node.sample);
+			}
+			best.pointA += input.center;
+			best.pointB += input.center;
+			return best;
+		}
+
 		template <class BezierA, class BezierB>
 		void RefineBezierPair(const BezierA& a, const BezierB& b, ClosestPairCandidate& best) noexcept
 		{
@@ -2843,31 +3066,59 @@ namespace s3d
 
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
-		Optional<ClosestPoints2D> TryClosestBezierSuperEllipse(const ShapeA& curve, const ShapeB& shape)
+		Optional<ClosestPoints2D> TryClosestBezierEllipticShape(const ShapeA& curve, const ShapeB& shape)
 		{
-			if constexpr (detail::IsBezier<ShapeA> && std::is_same_v<ShapeB, SuperEllipse>)
+			if constexpr (detail::IsBezier<ShapeA>
+				&& (std::is_same_v<ShapeB, Ellipse> || std::is_same_v<ShapeB, SuperEllipse>))
 			{
-				if ((0.0 < shape.a) && (0.0 < shape.b) && (shape.n != 1.0) && (shape.n != 2.0))
+				if ((shape.a == 0.0) || (shape.b == 0.0)) return none;
+				const SuperEllipse area = [&]()
 				{
-					const auto intersection = detail::ClassifyBezierSuperEllipse(curve, shape);
+					if constexpr (std::is_same_v<ShapeB, Ellipse>) return SuperEllipse{ shape, 2.0 };
+					else return shape;
+				}();
+				if (area.n == 1.0) return none;
+				if ((area.n == 2.0) && (area.a == area.b))
+				{
+					return TryClosestBezierRoundedShape(curve, Circle{ area.center, area.a });
+				}
+				if constexpr (std::is_same_v<ShapeB, Ellipse>)
+				{
+					// SuperEllipse pairs already reduce collinear curves at entry.
+					Line segment;
+					if (detail::TryGetBezierSegment(curve, segment))
+					{
+						return Geometry2D::ClosestPoints(segment, shape);
+					}
+				}
+				Optional<double> seed;
+				if (area.n == 2.0)
+				{
+					const Ellipse ellipse{ area.center, area.axes };
+					if (Geometry2D::Intersects(curve, ellipse))
+					{
+						if (const auto point = FindCommonPoint(curve, ellipse))
+						{
+							return ClosestPoints2D{ *point, *point, 0.0 };
+						}
+					}
+				}
+				else
+				{
+					const auto intersection = detail::ClassifyBezierSuperEllipse(curve, area);
 					if (intersection.kind == detail::BezierIntersectionKind::Contact)
 					{
 						const Vec2 point = curve.pointAt(intersection.parameter);
 						return ClosestPoints2D{ point, point, 0.0 };
 					}
-					// A conservative true cannot establish a common point. Keep the
-					// evaluated boundary pair from the distance approximation instead.
-					auto closest = ClosestPiecePair(BoundaryPiece{ curve }, BoundaryPiece{ shape });
+					// An unresolved predicate supplies a parameter, not a common point.
 					if (intersection.kind == detail::BezierIntersectionKind::Unresolved)
 					{
-						const auto candidate = ClosestPointPiece(curve.pointAt(intersection.parameter), BoundaryPiece{ shape });
-						if (candidate.distanceSq < closest.distanceSq)
-						{
-							closest = candidate;
-						}
+						seed = intersection.parameter;
 					}
-					return ClosestPoints2D{ closest.pointA, closest.pointB, std::sqrt(closest.distanceSq) };
 				}
+				const auto closest = ClosestBezierSuperEllipse(curve, area, seed);
+				return ClosestPoints2D{ closest.pointA, closest.pointB, std::sqrt(closest.distanceSq) };
 			}
 			return none;
 		}
@@ -3050,7 +3301,7 @@ namespace s3d
 				return rounded;
 			}
 
-			if (const auto closest = TryClosestBezierSuperEllipse(a, b))
+			if (const auto closest = TryClosestBezierEllipticShape(a, b))
 			{
 				return closest;
 			}
@@ -3128,7 +3379,7 @@ namespace s3d
 				return rounded->distance;
 			}
 
-			if (const auto closest = TryClosestBezierSuperEllipse(a, b))
+			if (const auto closest = TryClosestBezierEllipticShape(a, b))
 			{
 				return closest->distance;
 			}
@@ -5842,4 +6093,3 @@ namespace s3d
 
 	}
 }
-
