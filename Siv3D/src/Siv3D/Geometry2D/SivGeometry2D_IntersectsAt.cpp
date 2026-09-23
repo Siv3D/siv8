@@ -54,6 +54,7 @@ namespace s3d
 		{
 			Array<Vec2> points;
 			Array<BoundaryPiece> positiveDimensionalComponents;
+			double pointMergeTolerance = PointMergeTolerance;
 		};
 
 		[[nodiscard]]
@@ -63,19 +64,19 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool NearlyEqualCoordinate(const double a, const double b) noexcept
+		bool NearlyEqualCoordinate(const double a, const double b, const double tolerance) noexcept
 		{
-			const double scale = Max({ Abs(a), Abs(b), 1.0 });
+			const double scale = Max(Abs(a), Abs(b));
 			// Solver residual and coordinate rounding are separate error sources.
 			// A translation must not turn the solver tolerance into a world-space radius.
-			return (Abs(a - b) <= Max(PointMergeTolerance, (4.0 * std::numeric_limits<double>::epsilon() * scale)));
+			return (Abs(a - b) <= Max(tolerance, (4.0 * std::numeric_limits<double>::epsilon() * scale)));
 		}
 
 		[[nodiscard]]
-		bool NearlyEqualPoint(const Vec2& a, const Vec2& b) noexcept
+		bool NearlyEqualPoint(const Vec2& a, const Vec2& b, const double tolerance = PointMergeTolerance) noexcept
 		{
-			return NearlyEqualCoordinate(a.x, b.x)
-				&& NearlyEqualCoordinate(a.y, b.y);
+			return NearlyEqualCoordinate(a.x, b.x, tolerance)
+				&& NearlyEqualCoordinate(a.y, b.y, tolerance);
 		}
 
 		[[nodiscard]]
@@ -247,7 +248,7 @@ namespace s3d
 
 				for (const Vec2& existing : result)
 				{
-					if (NearlyEqualPoint(point, existing))
+					if (NearlyEqualPoint(point, existing, accumulator.pointMergeTolerance))
 					{
 						duplicate = true;
 						break;
@@ -474,7 +475,14 @@ namespace s3d
 			}
 			else if (kind == detail::Geometry2DSizedShapeKind::Area)
 			{
-				pieces.emplace_back(shape);
+				if (shape.n == 2.0)
+				{
+					pieces.emplace_back(Ellipse{ shape.center, shape.axes });
+				}
+				else
+				{
+					pieces.emplace_back(shape);
+				}
 			}
 		}
 
@@ -1077,21 +1085,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		double CircleImplicit(const CircleArc& arc, const Vec2& p) noexcept
-		{
-			const Vec2 v = (p - arc.circle.center);
-			return ((v.dot(v) / Square(arc.circle.r)) - 1.0);
-		}
-
-		[[nodiscard]]
-		double EllipseImplicit(const Ellipse& ellipse, const Vec2& p) noexcept
-		{
-			const double x = ((p.x - ellipse.center.x) / ellipse.axes.x);
-			const double y = ((p.y - ellipse.center.y) / ellipse.axes.y);
-			return (x * x + y * y - 1.0);
-		}
-
-		[[nodiscard]]
 		double SuperEllipseImplicit(const SuperEllipse& superEllipse, const Vec2& p) noexcept
 		{
 			const double x = Abs((p.x - superEllipse.center.x) / superEllipse.axes.x);
@@ -1230,6 +1223,129 @@ namespace s3d
 				{
 					AppendPoint(accumulator, point);
 				}
+			}
+		}
+
+		// The normalized squared radius has degree 4 or 6. Its stationary
+		// parameters partition every crossing, including two within one sample
+		// interval, and also supply candidates for tangential contacts.
+		template <class Bezier, class Accept>
+		void ProcessBezierEllipse(IntersectionAccumulator& accumulator, const Bezier& original,
+			const Ellipse& ellipse, Accept&& accept)
+		{
+			const Bezier curve = (detail::BezierLexicographicalLess(original.reversed(), original) ? original.reversed() : original);
+			Bezier local = curve;
+			local.p0 = ((curve.p0 - ellipse.center) / ellipse.axes);
+			local.p1 = ((curve.p1 - ellipse.center) / ellipse.axes);
+			local.p2 = ((curve.p2 - ellipse.center) / ellipse.axes);
+			if constexpr (std::is_same_v<Bezier, Bezier3>)
+			{
+				local.p3 = ((curve.p3 - ellipse.center) / ellipse.axes);
+			}
+			const auto controls = detail::BezierControlPoints(local);
+			double localScale = 1.0, worldScale = Max(ellipse.a, ellipse.b);
+			for (const Vec2& p : controls)
+			{
+				localScale = Max({ localScale, Abs(p.x), Abs(p.y) });
+				worldScale = Max({ worldScale, Abs(p.x * ellipse.a), Abs(p.y * ellipse.b) });
+			}
+			const double tolerance = (2.0 * detail::EllipseContactTolerance * localScale);
+			accumulator.pointMergeTolerance = Min(accumulator.pointMergeTolerance, (detail::EllipseContactTolerance * worldScale));
+			const auto stationary = detail::BezierPointStationaryParameters(controls, Vec2{ 0, 0 });
+			std::array<double, 2 * std::tuple_size_v<decltype(controls)> - 1> parameters{};
+			for (size_t i = 0; i < stationary.count; ++i)
+			{
+				parameters[i + 1] = stationary.values[i];
+			}
+			const size_t count = (stationary.count + 2);
+			parameters[count - 1] = 1.0;
+			const auto Value = [&](const double t)
+			{
+				const Vec2 p = local.pointAt(t);
+				return std::fma(p.x, p.x, std::fma(p.y, p.y, -1.0));
+			};
+			const auto EndpointValue = [&](const double t)
+			{
+				const double value = Value(t);
+				return ((Abs(value) <= tolerance) ? 0.0 : value);
+			};
+			const auto AddAt = [&](const double t)
+			{
+				const Vec2 point = curve.pointAt(t);
+				if (accept(point))
+				{
+					AppendPoint(accumulator, point);
+				}
+			};
+			std::array<double, parameters.size()> values;
+			bool allNearZero = true;
+			for (size_t i = 0; i < count; ++i)
+			{
+				values[i] = EndpointValue(parameters[i]);
+				allNearZero = (allNearZero && (values[i] == 0.0));
+			}
+			if (allNearZero)
+			{
+				accumulator.positiveDimensionalComponents.emplace_back(curve);
+				return;
+			}
+			double previous = values[0];
+			if (previous == 0.0)
+			{
+				AddAt(0.0);
+			}
+			for (size_t i = 1; i < count; ++i)
+			{
+				const double value = values[i];
+				if (value == 0.0)
+				{
+					AddAt(parameters[i]);
+				}
+				else if (((previous < 0.0) && (0.0 < value)) || ((value < 0.0) && (0.0 < previous)))
+				{
+					double lo = parameters[i - 1], hi = parameters[i], flo = previous;
+					double t = ((lo + hi) * 0.5), bestT = t, bestError = std::numeric_limits<double>::infinity();
+					for (int32 iteration = 0; iteration < 32; ++iteration)
+					{
+						const Vec2 p = local.pointAt(t);
+						const double f = std::fma(p.x, p.x, std::fma(p.y, p.y, -1.0));
+						if (Abs(f) < bestError)
+						{
+							bestError = Abs(f);
+							bestT = t;
+						}
+						if (f == 0.0)
+						{
+							break;
+						}
+						if ((f < 0.0) == (flo < 0.0))
+						{
+							lo = t;
+							flo = f;
+						}
+						else
+						{
+							hi = t;
+						}
+						const double next = (t - f / (2.0 * p.dot(local.derivativeAt(t))));
+						if (next == t)
+						{
+							break;
+						}
+						const double candidate = (((lo < next) && (next < hi)) ? next : ((lo + hi) * 0.5));
+						if (candidate == t)
+						{
+							break;
+						}
+						t = candidate;
+					}
+					// Exhausting the refinement budget must not emit an off-boundary point.
+					if (bestError <= tolerance)
+					{
+						AddAt(bestT);
+					}
+				}
+				previous = value;
 			}
 		}
 
@@ -1534,19 +1650,10 @@ namespace s3d
 					[&](const Vec2& p) { return SuperEllipseImplicit(b, p); },
 					[&](const Vec2& p) { return ArcContainsPoint(a, p); }, a);
 			}
-			else if constexpr (std::is_same_v<A, CircleArc> && std::is_same_v<B, Bezier2>)
+			else if constexpr (std::is_same_v<A, CircleArc> && detail::IsBezier<B>)
 			{
-				ProcessCurveImplicit(accumulator,
-					[&](const double t) { return b.pointAt(t); },
-					[&](const Vec2& p) { return CircleImplicit(a, p); },
-					[&](const Vec2& p) { return ArcContainsPoint(a, p); }, b);
-			}
-			else if constexpr (std::is_same_v<A, CircleArc> && std::is_same_v<B, Bezier3>)
-			{
-				ProcessCurveImplicit(accumulator,
-					[&](const double t) { return b.pointAt(t); },
-					[&](const Vec2& p) { return CircleImplicit(a, p); },
-					[&](const Vec2& p) { return ArcContainsPoint(a, p); }, b);
+				ProcessBezierEllipse(accumulator, b, Ellipse{ a.circle.center, a.circle.r, a.circle.r },
+					[&](const Vec2& p) { return ArcContainsPoint(a, p); });
 			}
 			else if constexpr (std::is_same_v<A, Ellipse> && std::is_same_v<B, Ellipse>)
 			{
@@ -1566,19 +1673,9 @@ namespace s3d
 					[&](const Vec2& p) { return SuperEllipseImplicit(b, p); },
 					[](const Vec2&) { return true; }, a);
 			}
-			else if constexpr (std::is_same_v<A, Ellipse> && std::is_same_v<B, Bezier2>)
+			else if constexpr (std::is_same_v<A, Ellipse> && detail::IsBezier<B>)
 			{
-				ProcessCurveImplicit(accumulator,
-					[&](const double t) { return b.pointAt(t); },
-					[&](const Vec2& p) { return EllipseImplicit(a, p); },
-					[](const Vec2&) { return true; }, b);
-			}
-			else if constexpr (std::is_same_v<A, Ellipse> && std::is_same_v<B, Bezier3>)
-			{
-				ProcessCurveImplicit(accumulator,
-					[&](const double t) { return b.pointAt(t); },
-					[&](const Vec2& p) { return EllipseImplicit(a, p); },
-					[](const Vec2&) { return true; }, b);
+				ProcessBezierEllipse(accumulator, b, a, [](const Vec2&) { return true; });
 			}
 			else if constexpr (std::is_same_v<A, SuperEllipse> && std::is_same_v<B, SuperEllipse>)
 			{

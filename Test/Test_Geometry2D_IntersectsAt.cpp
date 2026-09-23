@@ -537,3 +537,73 @@ TEST_CASE("Geometry2D.IntersectsAt.Bezier.GeneralPairs")
 	const Bezier3 cusp{ { 0.25, -0.125 }, { -1.0 / 12, 0.125 }, { -1.0 / 12, -0.125 }, { 0.25, 0.125 } };
 	CheckPair(cusp, Bezier2{ { -1, 1 }, { 0, -1 }, { 1, 1 } }, { { 0, 0 } });
 }
+
+TEST_CASE("Geometry2D.IntersectsAt.Bezier.EllipseBoundary")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckBoundary = [](const auto& curve, const auto& shape, const Ellipse& boundary, const size_t count)
+	{
+		for (const auto& c : { curve, curve.reversed() })
+		{
+			for (const auto& points : { Geometry2D::IntersectsAt(c, shape), Geometry2D::IntersectsAt(shape, c), c.intersectsAt(shape) })
+			{
+				REQUIRE(points.has_value());
+				CHECK(points->size() == count);
+				for (const Vec2& p : *points)
+				{
+					const Vec2 normalized = ((p - boundary.center) / boundary.axes);
+					CHECK(Abs(normalized.lengthSq() - 1.0) < 1.0e-7);
+					CHECK(Geometry2D::Distance(p, curve) <= (Max(boundary.a, boundary.b) * 1.0e-7));
+				}
+			}
+		}
+	};
+	const Bezier2 arch{ { -1, 0 }, { 0, 0.25 }, { 1, 0 } };
+	for (const double scale : { 1.0e-12, 1.0e-6, 1.0, 1.0e6 })
+	{
+		const Vec2 offset = (Vec2{ 13, -7 } * scale);
+		const Bezier2 curve{ arch.p0 * scale + offset, arch.p1 * scale + offset, arch.p2 * scale + offset };
+		const Vec2 center = curve.pointAt(0.371);
+		const Circle circle{ center, (1.0e-5 * scale) };
+		const Ellipse ellipse{ center, (1.0e-4 * scale), (1.0e-5 * scale) };
+		// Both boundary crossings fall within one old sampling interval.
+		CheckBoundary(curve, circle, Ellipse{ center, circle.r, circle.r }, 2);
+		CheckBoundary(Elevate(curve), circle, Ellipse{ center, circle.r, circle.r }, 2);
+		CheckBoundary(curve, ellipse, ellipse, 2);
+		CheckBoundary(Elevate(curve), ellipse, ellipse, 2);
+		CheckBoundary(curve, SuperEllipse{ ellipse, 2 }, ellipse, 2);
+		CheckBoundary(Elevate(curve), SuperEllipse{ ellipse, 2 }, ellipse, 2);
+		const auto points = Geometry2D::IntersectsAt(curve, ellipse);
+		REQUIRE(points.has_value());
+		REQUIRE(points->size() == 2);
+		CHECK(((*points)[0].x - center.x) * ((*points)[1].x - center.x) < 0.0);
+	}
+	for (const double t : { 0.25, 0.371, 0.713 })
+	{
+		const Bezier2 tangent{ { 0, 1 + t * t }, { 0.5, 1 + t * t - t }, { 1, 1 + (1 - t) * (1 - t) } };
+		const Circle circle{ t, 0, 1 };
+		const Ellipse ellipse{ t, 0, 0.25, 1 };
+		CheckBoundary(tangent, circle, Ellipse{ t, 0, 1, 1 }, 1);
+		CheckBoundary(Elevate(tangent), ellipse, ellipse, 1);
+		CheckPointSet(Geometry2D::IntersectsAt(tangent, circle), { { t, 1 } }, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(tangent, ellipse), { { t, 1 } }, 1.0e-10);
+		CHECK(not Geometry2D::IntersectsAt(tangent.movedBy(0, 1.0e-6), circle));
+	}
+	// x=2*T3(u), y=u/10 has six distinct crossings of the unit circle.
+	const Bezier3 six{ { -2, -0.1 }, { 10, -1.0 / 30 }, { -10, 1.0 / 30 }, { 2, 0.1 } };
+	CheckBoundary(six, Circle{ 0, 0, 1 }, Ellipse{ 0, 0, 1, 1 }, 6);
+	CheckBoundary(six, SuperEllipse{ 0, 0, 1, 1, 2 }, Ellipse{ 0, 0, 1, 1 }, 6);
+	CheckBoundary(six, RoundRect{ -1, -1, 2, 2, 1 }, Ellipse{ 0, 0, 1, 1 }, 6);
+	CheckPointSet(Geometry2D::IntersectsAt(Bezier2{ { -2, 0 }, { 0, 0 }, { 2, 0 } }, RoundRect{ -1, -1, 2, 2, 1 }),
+		{ { -1, 0 }, { 1, 0 } });
+	CheckPointSet(Geometry2D::IntersectsAt(Bezier2{ { 1, 0 }, { 2, 2 }, { 3, 0 } }, Circle{ 0, 0, 1 }), { { 1, 0 } });
+	CheckPointSet(Geometry2D::IntersectsAt(arch, Circle{ 0, 0, 2 }), {});
+	CheckPointSet(Geometry2D::IntersectsAt(Bezier2{ { 0, 0 }, { 0, 0 }, { 0, 0 } }, Ellipse{ 0, 0, 1, 2 }), { { 0, 0 } });
+	CHECK(not Geometry2D::IntersectsAt(arch, Circle{ 0, 0, 0 }));
+	CHECK(not Geometry2D::IntersectsAt(arch, Ellipse{ 0, 0, 0, 0 }));
+	CheckPointSet(Geometry2D::IntersectsAt(arch, SuperEllipse{ 0, 0, 0, 1, 2 }), { { 0, 0.125 } });
+	CheckPointSet(Geometry2D::IntersectsAt(Circle{ 0, 0, 1 }, SuperEllipse{ 0, 0, 1, 1, 2 }), {});
+}
