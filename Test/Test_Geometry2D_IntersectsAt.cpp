@@ -684,3 +684,116 @@ TEST_CASE("Geometry2D.IntersectsAt.SmallLinearBoundaryEvents")
 			{ Vec2{ 0.25, 0 } * scale, Vec2{ 0.75, 0 } * scale }, (scale * 1.0e-12));
 	}
 }
+
+TEST_CASE("Geometry2D.IntersectsAt.CurvedBoundaryScale")
+{
+	for (const double scale : { 1.0e-12, 1.0e-6, 1.0, 1.0e6 })
+	{
+		const Vec2 offset = (Vec2{ 13, -7 } * scale);
+		const auto P = [&](const double x, const double y) { return (Vec2{ x, y } * scale + offset); };
+		const double h = std::sqrt(0.75);
+		const Circle circle{ offset, scale }, other{ P(1, 0), scale };
+		CheckPointSet(Geometry2D::IntersectsAt(circle, other), { P(0.5, -h), P(0.5, h) }, (scale * 1.0e-12));
+		CheckPointSet(Geometry2D::IntersectsAt(Ellipse{ offset, 2 * scale, scale }, Ellipse{ P(2, 0), 2 * scale, scale }),
+			{ P(1, -h), P(1, h) }, (scale * 1.0e-12));
+		const Line crossing{ P(-2, 0), P(2, 0) };
+		CheckPointSet(Geometry2D::IntersectsAt(crossing, circle), { P(-1, 0), P(1, 0) }, (scale * 1.0e-12));
+		CheckPointSet(Geometry2D::IntersectsAt(crossing, Ellipse{ offset, scale, 2 * scale }), { P(-1, 0), P(1, 0) }, (scale * 1.0e-12));
+		CheckPointSet(Geometry2D::IntersectsAt(Line{ P(-2, 1), P(2, 1) }, circle), { P(0, 1) }, (scale * 1.0e-12));
+		const RoundRect rounded{ RectF{ offset, 10 * scale, 10 * scale }, 2 * scale };
+		const double x = (2 - std::sqrt(3.0));
+		CheckPointSet(Geometry2D::IntersectsAt(Line{ P(-1, 1), P(11, 1) }, rounded), { P(x, 1), P(10 - x, 1) }, (scale * 1.0e-12));
+		// A shared top-left arc must not suppress a crossing on another boundary.
+		CheckPointSet(Geometry2D::IntersectsAt(rounded, RoundRect{ RectF{ offset, 12 * scale, 6 * scale }, 2 * scale }),
+			{ P(10, 6) }, (scale * 1.0e-12));
+		const SuperEllipse diamond{ offset, scale, scale, 1 };
+		const double small = ((1 - std::sqrt(0.28)) * 0.5), large = (1 - small);
+		Array<Vec2> expected;
+		for (const double sx : { -1.0, 1.0 })
+		{
+			for (const double sy : { -1.0, 1.0 })
+			{
+				expected.push_back(P(sx * small, sy * large));
+				expected.push_back(P(sx * large, sy * small));
+			}
+		}
+		CheckPointSet(Geometry2D::IntersectsAt(diamond, Circle{ offset, 0.8 * scale }), expected, (scale * 1.0e-12));
+		CheckPointSet(Geometry2D::IntersectsAt(Ellipse{ offset, 0.8 * scale, 0.8 * scale }, diamond), expected, (scale * 1.0e-12));
+	}
+	const Vec2 offset{ 1.0e8, -1.0e8 };
+	const RoundRect translated{ RectF{ offset, 0.1, 0.1 }, 0.02 };
+	const double x = (0.02 - std::sqrt(0.0003));
+	CheckPointSet(Geometry2D::IntersectsAt(Line{ offset + Vec2{ -0.01, 0.01 }, offset + Vec2{ 0.11, 0.01 } }, translated),
+		{ offset + Vec2{ x, 0.01 }, offset + Vec2{ 0.1 - x, 0.01 } }, 1.0e-7);
+	const Line longLine{ -1000, 0, 1000, 0 };
+	CheckPointSet(Geometry2D::IntersectsAt(longLine, Circle{ 0.371, 0, 1.0e-5 }),
+		{ { 0.371 - 1.0e-5, 0 }, { 0.371 + 1.0e-5, 0 } }, 1.0e-12);
+}
+
+TEST_CASE("Geometry2D.IntersectsAt.LineSuperEllipse")
+{
+	for (const double n : { 0.25, 0.5, 0.999, 1.001, 1.5, 4.0, 16.0 })
+	{
+		for (const double scale : { 1.0e-12, 1.0e-6, 1.0, 1.0e6 })
+		{
+			const double x = (0.001 * std::pow((1.0 - std::pow((0.123 / 0.124), n)), (1.0 / n)));
+			const SuperEllipse shape{ 0, 0, 0.001 * scale, 0.124 * scale, n };
+			const Line line{ -scale, 0.123 * scale, scale, 0.123 * scale };
+			const Array<Vec2> expected{ Vec2{ -x, 0.123 } * scale, Vec2{ x, 0.123 } * scale };
+			CheckPointSet(Geometry2D::IntersectsAt(line, shape), expected, (scale * 1.0e-13));
+			CheckPointSet(Geometry2D::IntersectsAt(shape, Line{ line.end, line.start }), expected, (scale * 1.0e-13));
+			CheckPointSet(Geometry2D::IntersectsAt(Line{ -scale, 0.124 * scale, scale, 0.124 * scale }, shape),
+				{ { 0, 0.124 * scale } }, (scale * 1.0e-13));
+		}
+	}
+	// A concave boundary can cross a segment four times, with a maximum between the inner roots.
+	const double inner = std::sqrt(0.125);
+	CheckPointSet(Geometry2D::IntersectsAt(Line{ -1, 1.75, 1.75, -1 }, SuperEllipse{ 0, 0, 1, 1, 0.5 }),
+		{ { -0.015625, 0.765625 }, { 0.765625, -0.015625 }, { 0.375 - inner, 0.375 + inner }, { 0.375 + inner, 0.375 - inner } }, 1.0e-12);
+}
+
+TEST_CASE("Geometry2D.IntersectsAt.SuperEllipse.CurvedSearch")
+{
+	for (const double n : { 0.5, 0.75, 1.5, 4.0, 16.0 })
+	{
+		for (const double scale : { 1.0e-6, 1.0, 1.0e6 })
+		{
+			const Bezier2 curve{ Vec2{ -1, 0 } * scale, Vec2{ 0, 0.25 } * scale, Vec2{ 1, 0 } * scale };
+			const Bezier3 cubic{ curve.p0, curve.p0 + (curve.p1 - curve.p0) * (2.0 / 3),
+				curve.p2 + (curve.p1 - curve.p2) * (2.0 / 3), curve.p2 };
+			const SuperEllipse shape{ curve.pointAt(0.371), 1.0e-4 * scale, 1.0e-5 * scale, n };
+			const auto CheckCurve = [&](const auto& c)
+			{
+				CAPTURE(n, scale);
+				const auto points = Geometry2D::IntersectsAt(c, shape);
+				REQUIRE(points.has_value());
+				REQUIRE(points->size() == 2);
+				for (const Vec2& p : *points)
+				{
+					const Vec2 q = ((p - shape.center) / shape.axes);
+					CHECK(Abs(std::pow(Abs(q.x), n) + std::pow(Abs(q.y), n) - 1.0) < 1.0e-7);
+					CHECK(Geometry2D::Distance(p, c) < (scale * 1.0e-12));
+				}
+				CheckPointSet(Geometry2D::IntersectsAt(shape, c), *points, (scale * 1.0e-12));
+				CheckPointSet(Geometry2D::IntersectsAt(c.reversed(), shape), *points, (scale * 1.0e-12));
+			};
+			CheckCurve(curve);
+			CheckCurve(cubic);
+		}
+		const double y = std::pow(1.0 - std::pow(0.5, n), (1.0 / n));
+		const SuperEllipse a{ 0, 0, 1, 1, n }, b{ 1, 0, 1, 1, n };
+		CheckPointSet(Geometry2D::IntersectsAt(a, b), { { 0.5, y }, { 0.5, -y } }, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(b, a), { { 0.5, y }, { 0.5, -y } }, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(a, Circle{ 0, 0, 1 }), { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } }, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(a, Ellipse{ 0, 0, 1, 1 }), { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } }, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(a, RoundRect{ -1, -1, 2, 2, 1 }), { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } }, 1.0e-10);
+		CheckPointSet(Geometry2D::IntersectsAt(a, a), {});
+	}
+	const double u = std::pow(0.5, 0.25), t = 0.371;
+	const Vec2 p{ u, u }, direction{ 1, -1 }, normal{ 1, 1 };
+	const Vec2 start = (p - direction * t + normal * (t * t));
+	const Bezier2 tangent{ start, start + direction * 0.5 - normal * t, p + direction * (1 - t) + normal * ((1 - t) * (1 - t)) };
+	CheckPointSet(Geometry2D::IntersectsAt(tangent, SuperEllipse{ 0, 0, 1, 1, 4 }), { p }, 1.0e-7);
+	CHECK(not Geometry2D::IntersectsAt(tangent.movedBy(normal * 1.0e-5), SuperEllipse{ 0, 0, 1, 1, 4 }));
+	CheckPointSet(Geometry2D::IntersectsAt(Bezier2{ { 0, 1 }, { 0, 0 }, { 1, 0 } }, SuperEllipse{ 0, 0, 1, 1, 0.5 }), {});
+}

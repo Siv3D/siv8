@@ -278,6 +278,7 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier2& a, const Ellipse& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier2& a, const SuperEllipse& b);
 
@@ -338,6 +339,7 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier3& a, const Ellipse& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier3& a, const SuperEllipse& b);
 
@@ -500,6 +502,7 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Circle& a, const Ellipse& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Circle& a, const SuperEllipse& b);
 
@@ -554,6 +557,7 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Ellipse& a, const Ellipse& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Ellipse& a, const SuperEllipse& b);
 
@@ -590,9 +594,11 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const LineString& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const Bezier2& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const Bezier3& b);
 
@@ -602,12 +608,15 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const RectF& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const Circle& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const Ellipse& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const SuperEllipse& b);
 
@@ -617,6 +626,7 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const Quad& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const SuperEllipse& a, const RoundRect& b);
 
@@ -770,6 +780,7 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const RoundRect& a, const Ellipse& b);
 
+		/// @remark n が 1, 2 以外の SuperEllipse と曲線との交点は近似値です。交点を取りこぼし、空の配列を返す場合があります。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const RoundRect& a, const SuperEllipse& b);
 
