@@ -7,6 +7,22 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
+## `Siv3D/include/Siv3D/Geometry2D/`
+
+### 包含判定
+
+- 凹型 SuperEllipse の `Contains(Triangle)` が三角形の外接矩形を判定している。`SuperEllipse{0,0,1,1,0.5}` は `Triangle{{0,0},{0.4,0},{0,0.4}}` を含むが false。同じ領域の Polygon と各辺は true。Quad と線分に縮退した Triangle / Quad にも波及する。既存の線分包含は象限ごとに 64 回探索するため、三辺への単純な置換は避け、線分上の最大値を直接求める共通処理と性能を検証する。
+- 円と同じ領域を持つ Ellipse / SuperEllipse（n = 2）/ RoundRect の包含経路を整理する。同心の半径 100 と 99.999 でも、Circle 同士は true、Ellipse 同士などは外接 128 角形の近似により false。両オペランドの等価形状を既存の処理へ統合し、一般の曲線包含の保守的な近似契約とは分ける。
+
+### 交点取得
+
+- 点に縮退した Polygon と、それを含む MultiPolygon の `IntersectsAt()` が孤立点を落とす。`RectF{0,0,2,2}.asPolygon().scaledFromOrigin(0)` と `Circle{0,0,5}` は交差するが空配列になる。同じ点を表す Triangle は 1 点を返す。境界走査から除かれる点成分を扱い、複数成分の重複排除と共有線分の除外を維持する。
+
+### 公開契約と API 制約
+
+- 共通契約を公開ヘッダの一か所へ集約する。境界を含む判定、空形状と縮退の区別、有効入力条件、`IntersectsAt()` の none / 空配列 / 孤立点、近似の制約を短く記述し、メンバーの重複説明を整理する。`MultiPolygon::contains()` は採用済みの単一要素包含として記述し、「現在の実装では」を除く。`LineString::contains(Vec2)` は既存の頂点検索なので幾何包含と区別する。MultiPolygon の要素間の有効性条件と、辺を共有する構成を使った包含テストも整合させる。
+- `contains()` / `overlaps()` のメンバーテンプレートが無制約で、非対応の組合せも requires 式を通り、本体のインスタンス化で失敗する。自由関数の対応表に合わせた制約と、正負のメンバー可用性テストを追加する。LineString の要素検索 API は維持する。
+
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証
