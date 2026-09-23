@@ -937,9 +937,11 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Circle& a, const Ellipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		double Distance(const Circle& a, const SuperEllipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Circle& a, const SuperEllipse& b);
 
@@ -1039,9 +1041,11 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Ellipse& a, const Ellipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		double Distance(const Ellipse& a, const SuperEllipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Ellipse& a, const SuperEllipse& b);
 
@@ -1141,21 +1145,27 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const RectF& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		double Distance(const SuperEllipse& a, const Circle& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const Circle& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		double Distance(const SuperEllipse& a, const Ellipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const Ellipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		double Distance(const SuperEllipse& a, const SuperEllipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const SuperEllipse& b);
 
@@ -1171,9 +1181,11 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const Quad& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		double Distance(const SuperEllipse& a, const RoundRect& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const RoundRect& b);
 
@@ -1459,9 +1471,11 @@ namespace s3d
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const RoundRect& a, const Ellipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		double Distance(const RoundRect& a, const SuperEllipse& b);
 
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const RoundRect& a, const SuperEllipse& b);
 

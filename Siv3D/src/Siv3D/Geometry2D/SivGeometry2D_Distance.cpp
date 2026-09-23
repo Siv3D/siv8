@@ -2217,7 +2217,7 @@ namespace s3d
 
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
-		Vec2 FindCommonPoint(const ShapeA& a, const ShapeB& b)
+		Optional<Vec2> FindCommonPoint(const ShapeA& a, const ShapeB& b)
 		{
 			if (const auto events = Geometry2D::IntersectsAt(a, b))
 			{
@@ -2303,9 +2303,7 @@ namespace s3d
 				}
 			}
 
-			// Preserve zero distance if numeric errors prevent finding an intersection witness.
-			assert(false);
-			return (not pointsA.isEmpty() ? pointsA.front() : pointsB.front());
+			return none;
 		}
 
 		[[nodiscard]]
@@ -2436,6 +2434,63 @@ namespace s3d
 			return none;
 		}
 
+		// A conservative predicate result without a point continues through the
+		// boundary-distance path. Ordinary predicates need no witness reconstruction.
+		struct AreaCommonPoint
+		{
+			bool tested = false;
+			Optional<Vec2> point;
+		};
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
+		AreaCommonPoint FindSuperEllipseCommonPoint(const ShapeA& a, const ShapeB& b)
+		{
+			constexpr bool Supported = (std::is_same_v<ShapeB, SuperEllipse>
+				&& (std::is_same_v<ShapeA, Circle> || std::is_same_v<ShapeA, Ellipse> || std::is_same_v<ShapeA, SuperEllipse>))
+				|| (std::is_same_v<ShapeA, SuperEllipse> && std::is_same_v<ShapeB, RoundRect>);
+			if constexpr (Supported)
+			{
+				if ((detail::ClassifyGeometry2DSizedShape(a) != detail::Geometry2DSizedShapeKind::Area)
+					|| (detail::ClassifyGeometry2DSizedShape(b) != detail::Geometry2DSizedShapeKind::Area))
+				{
+					return {};
+				}
+				const auto AsArea = [](const auto& shape, const Vec2& otherCenter) -> SuperEllipse
+				{
+					using Shape = std::decay_t<decltype(shape)>;
+					if constexpr (std::is_same_v<Shape, SuperEllipse>)
+					{
+						return shape;
+					}
+					else if constexpr (std::is_same_v<Shape, Circle>)
+					{
+						return { shape.center, shape.r, shape.r, 2.0 };
+					}
+					else if constexpr (std::is_same_v<Shape, Ellipse>)
+					{
+						return { shape, 2.0 };
+					}
+					else
+					{
+						const double radius = detail::GetGeometry2DEffectiveRadius(shape);
+						const RectF core = detail::GetGeometry2DRoundRectCore(shape, radius);
+						return { Vec2{ Clamp(otherCenter.x, core.x, (core.x + core.w)),
+							Clamp(otherCenter.y, core.y, (core.y + core.h)) }, radius, radius, 2.0 };
+					}
+				};
+				const SuperEllipse first = AsArea(a, Vec2{ 0, 0 }), second = AsArea(b, first.center);
+				if (((first.n == 2.0) && (second.n == 2.0)) || (second.a == 0.0))
+				{
+					return {};
+				}
+				Optional<Vec2> common;
+				(void)detail::TestSuperEllipseAreas<true, true>(first, second, &common);
+				return { true, common };
+			}
+			return {};
+		}
+
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ComputeClosestPointsCanonical(const ShapeA& a, const ShapeB& b)
@@ -2460,10 +2515,18 @@ namespace s3d
 				return closest;
 			}
 
-			if (Geometry2D::Intersects(a, b))
+			const auto area = FindSuperEllipseCommonPoint(a, b);
+			if (area.point)
 			{
-				const Vec2 commonPoint = FindCommonPoint(a, b);
-				return ClosestPoints2D{ commonPoint, commonPoint, 0.0 };
+				return ClosestPoints2D{ *area.point, *area.point, 0.0 };
+			}
+
+			if ((not area.tested) && Geometry2D::Intersects(a, b))
+			{
+				if (const auto commonPoint = FindCommonPoint(a, b))
+				{
+					return ClosestPoints2D{ *commonPoint, *commonPoint, 0.0 };
+				}
 			}
 
 			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
@@ -2525,7 +2588,13 @@ namespace s3d
 				return closest->distance;
 			}
 
-			if (Geometry2D::Intersects(a, b))
+			const auto area = FindSuperEllipseCommonPoint(a, b);
+			if (area.point)
+			{
+				return 0.0;
+			}
+
+			if ((not area.tested) && Geometry2D::Intersects(a, b))
 			{
 				return 0.0;
 			}

@@ -1459,3 +1459,105 @@ TEST_CASE("Geometry2D.Distance.Bezier.GeneralSuperEllipse")
 	CHECK(std::isinf(Geometry2D::Distance(arch, SuperEllipse{ 0, 0, 0, 0, 4 })));
 	CHECK(not Geometry2D::ClosestPoints(arch, SuperEllipse{ 0, 0, 0, 0, 4 }));
 }
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.CommonPoints")
+{
+	const auto Support = [](const Vec2& axes, const double n, const Vec2& normal)
+	{
+		const double q = (n / (n - 1.0));
+		const double x = Abs(axes.x * normal.x), y = Abs(axes.y * normal.y), scale = Max(x, y);
+		const double denominator = std::pow(std::pow(x / scale, q) + std::pow(y / scale, q), (1.0 / n));
+		return Vec2{ std::copysign(axes.x * std::pow(x / scale, q - 1.0) / denominator, normal.x),
+			std::copysign(axes.y * std::pow(y / scale, q - 1.0) / denominator, normal.y) };
+	};
+	const auto CheckInside = [](const Vec2& point, const SuperEllipse& shape)
+	{
+		const Vec2 p = ((point - shape.center) / shape.axes);
+		// A spatial allowance also works at concave tips with unbounded implicit derivatives.
+		CHECK((std::pow(Max(0.0, Abs(p.x) - 2.0e-12), shape.n)
+			+ std::pow(Max(0.0, Abs(p.y) - 2.0e-12), shape.n)) <= (1.0 + 1.0e-12));
+	};
+	const auto CheckPair = [&](const auto& a, const auto& b, const SuperEllipse& areaA, const SuperEllipse& areaB)
+	{
+		const auto ab = Geometry2D::ClosestPoints(a, b), ba = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(ab);
+		REQUIRE(ba);
+		CHECK(ab->distance == 0.0);
+		CHECK(ba->distance == 0.0);
+		CHECK(ab->pointA == ab->pointB);
+		CHECK(ba->pointA == ba->pointB);
+		CHECK(Geometry2D::Distance(a, b) == ab->distance);
+		CHECK(Geometry2D::Distance(b, a) == ba->distance);
+		CheckInside(ab->pointA, areaA);
+		CheckInside(ab->pointB, areaB);
+		CheckInside(ba->pointA, areaB);
+		CheckInside(ba->pointB, areaA);
+	};
+	// Oblique tangencies include a case where intersection enumeration misses
+	// the contact and the former representative-point fallback asserted.
+	for (const auto [na, nb] : { std::pair{ 1.01, 1.01 }, { 1.5, 4.0 }, { 4.0, 64.0 }, { 2.0, 4.0 } })
+	{
+		for (const double scale : { 1.0e-6, 1.0, 1.0e6 })
+		{
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				for (const Vec2 direction : { Vec2{ std::cos(0.423), std::sin(0.423) }, Vec2{ 0.6, 0.8 }, Vec2{ 1, 0 } })
+				{
+					for (const double gap : { -1.0e-6, 0.0 })
+					{
+						const Vec2 normal = (direction * sign);
+						const SuperEllipse a{ Vec2{ 7, -11 } * scale, scale, 0.3 * scale, na };
+						const Vec2 center = (a.center + Support(a.axes, na, normal)
+							+ Support(Vec2{ 0.3, 0.7 } * scale, nb, normal) + normal * (gap * scale));
+						const SuperEllipse b{ center, 0.3 * scale, 0.7 * scale, nb };
+						CAPTURE(na, nb, scale, normal, gap);
+						CheckPair(a, b, a, b);
+						if (na == 2.0)
+						{
+							CheckPair(Ellipse{ a.center, a.axes }, b, a, b);
+						}
+					}
+				}
+			}
+		}
+	}
+	for (const double n : { 0.25, 0.5, 0.75, 1.0, 1.5, 4.0 })
+	{
+		const SuperEllipse a{ 0, 0, 1, 1, n };
+		CheckPair(a, SuperEllipse{ 1.25, 0, 0.25, 0.5, 0.5 }, a, SuperEllipse{ 1.25, 0, 0.25, 0.5, 0.5 });
+		CheckPair(a, Circle{ 1.25, 0, 0.25 }, a, SuperEllipse{ 1.25, 0, 0.25, 0.25, 2 });
+		CheckPair(a, RoundRect{ 1, -0.25, 1, 0.5, 0.25 }, a, SuperEllipse{ 1.25, 0, 0.25, 0.25, 2 });
+		CheckPair(a, Circle{ 0, 0, 0.01 }, a, SuperEllipse{ 0, 0, 0.01, 0.01, 2 });
+	}
+	// Equal curvature at an off-axis contact in a concave/convex pair.
+	const SuperEllipse concave{ 0, 0, 1, 1, 0.5 }, circle{ 0.75, 0.75, std::sqrt(0.5), std::sqrt(0.5), 2 };
+	CheckPair(concave, circle, concave, circle);
+	CheckPair(concave, Circle{ circle.center, circle.a }, concave, circle);
+	CheckPair(concave, RoundRect{ (circle.center - circle.axes), circle.axes * 2.0, circle.a }, concave, circle);
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.UnresolvedContact")
+{
+	const SuperEllipse a{ 0, 0, 1.1015102504184453, 71.991196139766672, 0.59369714221657377 };
+	const SuperEllipse b{ 1.3608167100829833, 38.82908854224911, 1.2102148265530634, 0.082438418604875802, 2.2372216082402701 };
+	// An exhausted intersection search does not establish a common point.
+	CHECK(Geometry2D::Intersects(a, b));
+	const auto ab = Geometry2D::ClosestPoints(a, b), ba = Geometry2D::ClosestPoints(b, a);
+	REQUIRE(ab);
+	REQUIRE(ba);
+	CHECK(ab->distance > 0.0);
+	CHECK(ba->distance > 0.0);
+	CHECK(Geometry2D::Distance(a, b) == ab->distance);
+	CHECK(Geometry2D::Distance(b, a) == ba->distance);
+	CheckWitnessConsistency(*ab);
+	CheckWitnessConsistency(*ba);
+	const auto CheckBoundary = [](const Vec2& point, const SuperEllipse& shape)
+	{
+		const Vec2 p = ((point - shape.center) / shape.axes);
+		CHECK(Abs(std::pow(Abs(p.x), shape.n) + std::pow(Abs(p.y), shape.n) - 1.0) < 1.0e-10);
+	};
+	CheckBoundary(ab->pointA, a);
+	CheckBoundary(ab->pointB, b);
+	CheckBoundary(ba->pointA, b);
+	CheckBoundary(ba->pointB, a);
+}

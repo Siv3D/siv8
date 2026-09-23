@@ -454,11 +454,21 @@ namespace s3d::detail
 		}
 	};
 
+	// The area tests work with reflected centers and slightly expanded axes.
+	// Only distance queries request a witness; predicate-only instantiations
+	// discard this reconstruction and its additional profile evaluations.
+	[[nodiscard]]
+	inline Vec2 SuperEllipseCommonPoint(const SuperEllipse& a, const SuperEllipse& b, const Vec2& local) noexcept
+	{
+		return (a.center + Vec2{ std::copysign(local.x, (b.x - a.x)), std::copysign(local.y, (b.y - a.y)) }
+			* (1.0 + SuperEllipseContactTolerance));
+	}
+
 	// Positive-area shapes with n <= 1. Both height functions are convex,
 	// so heightA(x) + heightB(dx - x) has its maximum at a domain endpoint.
-	template <bool IncludeBoundary>
+	template <bool IncludeBoundary, bool FindPoint = false>
 	[[nodiscard]]
-	inline bool TestConcaveSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b) noexcept
+	inline bool TestConcaveSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b, Optional<Vec2>* commonPoint = nullptr) noexcept
 	{
 		Vec2 delta{ Abs(a.x - b.x), Abs(a.y - b.y) };
 		const double limit = (IncludeBoundary ? (1.0 + SuperEllipseContactTolerance) : (1.0 - SuperEllipseContactTolerance));
@@ -469,21 +479,29 @@ namespace s3d::detail
 			return false;
 		}
 		const SuperEllipseProfile p{ a.axes, a.n }, q{ b.axes, b.n };
-		auto TestHeight = [&](const double height) noexcept
+		const auto TestHeight = [&](const double x, const double ha, const double hb) noexcept
 		{
-			return IncludeBoundary ? (delta.y <= height) : (delta.y < height);
+			const bool hit = (IncludeBoundary ? (delta.y <= (ha + hb)) : (delta.y < (ha + hb)));
+			if constexpr (FindPoint)
+			{
+				if (hit)
+				{
+					const double y = ((Max(0.0, (delta.y - hb)) + Min(delta.y, ha)) * 0.5);
+					*commonPoint = SuperEllipseCommonPoint(a, b, Vec2{ x, y });
+				}
+			}
+			return hit;
 		};
-		// Each endpoint puts one profile at its center or horizontal tip.
-		// These two expressions exchange places when the arguments are reversed.
-		return TestHeight((delta.x <= b.a) ? (a.b + q.height(delta.x)) : p.height(delta.x - b.a))
-			|| TestHeight((delta.x <= a.a) ? (b.b + p.height(delta.x)) : q.height(delta.x - a.a));
+		const double left = Max(0.0, (delta.x - b.a)), right = Min(a.a, delta.x);
+		return TestHeight(left, p.height(left), q.height(delta.x - left))
+			|| TestHeight(right, p.height(right), q.height(delta.x - right));
 	}
 
 	// Positive-area shapes with n >= 1. Their center difference must lie in
 	// the Minkowski sum; its boundary is max_x (heightA(x) + heightB(dx - x)).
-	template <bool IncludeBoundary>
+	template <bool IncludeBoundary, bool FindPoint = false>
 	[[nodiscard]]
-	inline bool TestConvexSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b) noexcept
+	inline bool TestConvexSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b, Optional<Vec2>* commonPoint = nullptr) noexcept
 	{
 		Vec2 delta{ Abs(a.x - b.x), Abs(a.y - b.y) };
 		Vec2 aa = a.axes, bb = b.axes;
@@ -501,9 +519,14 @@ namespace s3d::detail
 			|| ((2.0 <= a.n) && (2.0 <= b.n)
 				&& ((nx * nx + ny * ny + 2.0 * SuperEllipseContactTolerance) < 1.0)))
 		{
+			if constexpr (FindPoint)
+			{
+				*commonPoint = SuperEllipseCommonPoint(a, b, (delta * aa / sum));
+			}
 			return true;
 		}
-		if (ny < nx)
+		const bool swapAxes = (ny < nx);
+		if (swapAxes)
 		{
 			std::swap(delta.x, delta.y);
 			std::swap(aa.x, aa.y);
@@ -513,19 +536,37 @@ namespace s3d::detail
 		double an = a.n, bn = b.n;
 		// Use the smaller horizontal axis as the search variable, retaining
 		// precision near its endpoints and identical arithmetic in both orders.
-		if ((bb.x < aa.x) || ((bb.x == aa.x) && ((bb.y < aa.y) || ((bb.y == aa.y) && (bn < an)))))
+		const bool swapShapes = ((bb.x < aa.x) || ((bb.x == aa.x) && ((bb.y < aa.y) || ((bb.y == aa.y) && (bn < an)))));
+		if (swapShapes)
 		{
 			std::swap(aa, bb);
 			std::swap(an, bn);
 		}
 		const SuperEllipseProfile p{ aa, an }, q{ bb, bn };
-		auto TestHeight = [&](const double h) noexcept
+		const auto TestHeight = [&](const double x, const double ha, const double hb) noexcept
 		{
-			return IncludeBoundary ? (delta.y <= h) : (delta.y < h);
+			const bool hit = (IncludeBoundary ? (delta.y <= (ha + hb)) : (delta.y < (ha + hb)));
+			if constexpr (FindPoint)
+			{
+				if (hit)
+				{
+					Vec2 point{ x, ((Max(0.0, (delta.y - hb)) + Min(delta.y, ha)) * 0.5) };
+					if (swapShapes)
+					{
+						point = (delta - point);
+					}
+					if (swapAxes)
+					{
+						std::swap(point.x, point.y);
+					}
+					*commonPoint = SuperEllipseCommonPoint(a, b, point);
+				}
+			}
+			return hit;
 		};
 		double left = Max(0.0, (delta.x - bb.x)), right = Min(aa.x, delta.x);
-		if (TestHeight(Max((p.height(left) + q.height(delta.x - left)),
-			(p.height(right) + q.height(delta.x - right)))))
+		if (TestHeight(left, p.height(left), q.height(delta.x - left))
+			|| TestHeight(right, p.height(right), q.height(delta.x - right)))
 		{
 			return true;
 		}
@@ -547,7 +588,7 @@ namespace s3d::detail
 			}
 			const auto s = p.sample(x), t = q.sample(delta.x - x);
 			const double height = (s.height + t.height);
-			if (TestHeight(height))
+			if (TestHeight(x, s.height, t.height))
 			{
 				return true;
 			}
@@ -676,9 +717,9 @@ namespace s3d::detail
 
 	// Positive-area shapes with a.n < 1 < b.n. The relevant concave arc is
 	// (a.a*t^p, a.b*(1-t)^p), p=1/a.n. Minimize b's implicit value on it.
-	template <bool IncludeBoundary>
+	template <bool IncludeBoundary, bool FindPoint = false>
 	[[nodiscard]]
-	inline bool TestMixedSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b) noexcept
+	inline bool TestMixedSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b, Optional<Vec2>* commonPoint = nullptr) noexcept
 	{
 		Vec2 delta{ Abs(a.x - b.x), Abs(a.y - b.y) };
 		const double limit = (IncludeBoundary ? (1.0 + SuperEllipseContactTolerance) : (1.0 - SuperEllipseContactTolerance));
@@ -690,12 +731,24 @@ namespace s3d::detail
 		}
 		if ((delta.x == 0.0) || (delta.y == 0.0))
 		{
-			return IncludeBoundary ? ((delta.x <= sum.x) && (delta.y <= sum.y))
-				: ((delta.x < sum.x) && (delta.y < sum.y));
+			const bool hit = (IncludeBoundary ? ((delta.x <= sum.x) && (delta.y <= sum.y))
+				: ((delta.x < sum.x) && (delta.y < sum.y)));
+			if constexpr (FindPoint)
+			{
+				if (hit)
+				{
+					*commonPoint = SuperEllipseCommonPoint(a, b, (delta * a.axes / sum));
+				}
+			}
+			return hit;
 		}
 		const double nx = std::pow((delta.x / a.a), a.n), ny = std::pow((delta.y / a.b), a.n);
 		if ((nx + ny) <= 1.0)
 		{
+			if constexpr (FindPoint)
+			{
+				*commonPoint = b.center;
+			}
 			return true;
 		}
 		const SuperEllipseProfile pa{ a.axes, a.n }, pb{ b.axes, b.n };
@@ -705,6 +758,16 @@ namespace s3d::detail
 		// retains precision when one curve is very thin near the other's tip.
 		if (IncludeBoundary ? (delta.y <= height) : (delta.y < height))
 		{
+			if constexpr (FindPoint)
+			{
+				const double left = Max(0.0, (delta.x - b.a)), right = Min(a.a, delta.x);
+				const double ha = pa.height(left), hb = pb.height(delta.x - left);
+				const bool useLeft = (delta.y <= (ha + hb));
+				const double x = (useLeft ? left : right);
+				const double y = ((Max(0.0, (delta.y - (useLeft ? hb : pb.height(delta.x - right))))
+					+ Min(delta.y, (useLeft ? ha : pa.height(right)))) * 0.5);
+				*commonPoint = SuperEllipseCommonPoint(a, b, Vec2{ x, y });
+			}
 			return true;
 		}
 		const double left = Max((1.0 - ny), std::pow((Max(0.0, (delta.x - b.a)) / a.a), a.n));
@@ -716,9 +779,21 @@ namespace s3d::detail
 		const MixedSuperEllipseTerm f{ (delta.x / b.a), (a.a / b.a), (1.0 / a.n), b.n };
 		const MixedSuperEllipseTerm g{ (delta.y / b.b), (a.b / b.b), (1.0 / a.n), b.n };
 		auto Value = [&](const double t) noexcept { return (f.value(t) + g.value(1.0 - t)); };
-		auto Hit = [&](const double v) noexcept { return IncludeBoundary ? (v <= 1.0) : (v < 1.0); };
+		const auto Hit = [&](const double v, const double t) noexcept
+		{
+			const bool hit = (IncludeBoundary ? (v <= 1.0) : (v < 1.0));
+			if constexpr (FindPoint)
+			{
+				if (hit)
+				{
+					*commonPoint = SuperEllipseCommonPoint(a, b,
+						Vec2{ (a.a * std::pow(t, (1.0 / a.n))), (a.b * std::pow(1.0 - t, (1.0 / a.n))) });
+				}
+			}
+			return hit;
+		};
 		auto Separated = [&](const double v) noexcept { return IncludeBoundary ? (1.0 < v) : (1.0 <= v); };
-		if (Hit(Value(left)) || Hit(Value(right)))
+		if (Hit(Value(left), left) || Hit(Value(right), right))
 		{
 			return true;
 		}
@@ -752,7 +827,7 @@ namespace s3d::detail
 			}
 			const auto s = f.sample(middle), t = g.sample(1.0 - middle);
 			const double c0 = (s.value + t.value);
-			if (Hit(c0))
+			if (Hit(c0, middle))
 			{
 				return true;
 			}
@@ -783,7 +858,7 @@ namespace s3d::detail
 							}
 						}
 					}
-					if (Hit(Value(middle + width * minimumAt)))
+					if (Hit(Value(middle + width * minimumAt), (middle + width * minimumAt)))
 					{
 						return true;
 					}
@@ -801,7 +876,7 @@ namespace s3d::detail
 				while (iterations < MaxIterations)
 				{
 					const double h = (fs.value + gs.value), slope = (fs.slope - gs.slope);
-					if (Hit(h))
+					if (Hit(h, x))
 					{
 						return true;
 					}
@@ -847,20 +922,21 @@ namespace s3d::detail
 		return (stackSize && IncludeBoundary);
 	}
 
-	template <bool IncludeBoundary>
+	template <bool IncludeBoundary, bool FindPoint = false>
 	[[nodiscard]]
-	inline bool TestSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b) noexcept
+	inline bool TestSuperEllipseAreas(const SuperEllipse& a, const SuperEllipse& b, Optional<Vec2>* commonPoint = nullptr) noexcept
 	{
+		static_assert(IncludeBoundary || not FindPoint);
 		if ((1.0 <= a.n) && (1.0 <= b.n))
 		{
-			return TestConvexSuperEllipseAreas<IncludeBoundary>(a, b);
+			return TestConvexSuperEllipseAreas<IncludeBoundary, FindPoint>(a, b, commonPoint);
 		}
 		if ((a.n <= 1.0) && (b.n <= 1.0))
 		{
-			return TestConcaveSuperEllipseAreas<IncludeBoundary>(a, b);
+			return TestConcaveSuperEllipseAreas<IncludeBoundary, FindPoint>(a, b, commonPoint);
 		}
-		return (a.n < 1.0) ? TestMixedSuperEllipseAreas<IncludeBoundary>(a, b)
-			: TestMixedSuperEllipseAreas<IncludeBoundary>(b, a);
+		return (a.n < 1.0) ? TestMixedSuperEllipseAreas<IncludeBoundary, FindPoint>(a, b, commonPoint)
+			: TestMixedSuperEllipseAreas<IncludeBoundary, FindPoint>(b, a, commonPoint);
 	}
 
 	// A RoundRect is its core expanded by a disk. For any axis-aligned
