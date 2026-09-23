@@ -348,6 +348,147 @@ TEST_CASE("Geometry2D.Distance.Ellipse.LinearBoundaries")
 	CHECK(not Geometry2D::ClosestPoints(above, Ellipse{ 0, 0, 0, 0 }));
 }
 
+TEST_CASE("Geometry2D.Distance.Ellipse.RoundRectWitnesses")
+{
+	for (const Vec2 axes : { Vec2{ 100, 30 }, Vec2{ 1, 100 } })
+	{
+		for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ 0, 1 }, Vec2{ 0.6, 0.8 }, Vec2{ 1, 0.001 } })
+		{
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				for (const double scale : { 0.001, 1.0, 1000.0 })
+				{
+					const Ellipse ellipse{ (Vec2{ 7, -11 } * scale), (axes * scale) };
+					const Vec2 normal = (direction.normalized() * sign);
+					const Vec2 support = (ellipse.center + ellipse.axes * (ellipse.axes * normal).normalized());
+					for (const double radius : { 0.0, (0.1 * scale), (10.0 * scale) })
+					{
+						for (const double gap : { (-1.0e-7 * scale), 0.0, (1.0e-10 * scale), (1.0e-5 * scale), (0.5 * scale) })
+						{
+							CAPTURE(axes, direction, sign, scale, radius, gap);
+							const Vec2 corner = (support + normal * (radius + gap));
+							const Vec2 extent = (Vec2{ 20, 30 } * scale), far = (corner + sign * extent);
+							const RoundRect rounded{ (Min(corner.x, far.x) - radius), (Min(corner.y, far.y) - radius),
+								(extent.x + 2 * radius), (extent.y + 2 * radius), radius };
+							const auto pair = Geometry2D::ClosestPoints(ellipse, rounded), reversed = Geometry2D::ClosestPoints(rounded, ellipse);
+							REQUIRE(pair);
+							REQUIRE(reversed);
+							const double expected = Max(gap, 0.0), tolerance = (1.0e-10 * scale);
+							CHECK(Abs(pair->distance - expected) <= tolerance);
+							CHECK(Abs(Geometry2D::Distance(ellipse, rounded) - expected) <= tolerance);
+							CHECK(Geometry2D::Distance(rounded, ellipse) == Geometry2D::Distance(ellipse, rounded));
+							CHECK(pair->pointA == reversed->pointB);
+							CHECK(pair->pointB == reversed->pointA);
+							CHECK(((pair->pointA - ellipse.center) / ellipse.axes).lengthSq() <= (1.0 + 1.0e-10));
+							CHECK(Geometry2D::Distance(pair->pointB, rounded) <= tolerance);
+							if (0.0 < gap)
+							{
+								CHECK(pair->distance > 0.0);
+								CHECK(pair->pointA.distanceFrom(support) <= (1.0e-8 * scale));
+								CHECK(pair->pointB.distanceFrom(support + normal * gap) <= (1.0e-8 * scale));
+							}
+							else
+							{
+								CHECK(pair->distance == 0.0);
+								CHECK(pair->pointA == pair->pointB);
+							}
+							CheckWitnessConsistency(*pair, tolerance);
+						}
+					}
+				}
+			}
+		}
+	}
+	const Ellipse ellipse{ 0, 0, 1, 2 };
+	for (const RoundRect rounded : { RoundRect{ 1.1, -5, 10, 10, 100 }, RoundRect{ 1.1, -1, 0, 2, 0 } })
+	{
+		CHECK(Abs(Geometry2D::Distance(ellipse, rounded) - 0.1) <= 1.0e-12);
+		CHECK(Abs(Geometry2D::Distance(SuperEllipse{ ellipse, 0.5 }, rounded) - 0.1) <= 1.0e-12);
+	}
+	CHECK(Geometry2D::Distance(Ellipse{ 0, 0, 0, 2 }, RoundRect{ 3, -1, 2, 2, 0.5 }) == 3.0);
+	CHECK(std::isinf(Geometry2D::Distance(Ellipse{ 0, 0, 0, 0 }, RoundRect{ 3, -1, 2, 2, 0.5 })));
+	CHECK(not Geometry2D::ClosestPoints(ellipse, RoundRect{ 0, 0, 0, 0, 0 }));
+	CHECK(Geometry2D::Distance(ellipse, RoundRect{ -3, -3, 6, 6, 1 }) == 0.0);
+	CHECK(Geometry2D::Distance(ellipse, RoundRect{ -0.1, -0.1, 0.2, 0.2, 0.05 }) == 0.0);
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.DiamondPairs")
+{
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		const SuperEllipse diamond{ (Vec2{ 7, -11 } * scale), (Vec2{ 3, 2 } * scale), 1.0 };
+		for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+		{
+			const Vec2 boundary = (diamond.center + sign * diamond.axes * 0.5);
+			const Vec2 normal = (sign * Vec2{ 2, 3 }.normalized());
+			for (const double n : { 1.01, 2.0, 4.0, 64.0 })
+			{
+				const Vec2 axes = (Vec2{ 0.3, 0.7 } * scale);
+				const Vec2 scaled = (axes * Vec2{ Abs(normal.x), Abs(normal.y) });
+				const double q = (n / (n - 1.0)), m = Max(scaled.x, scaled.y);
+				const double denominator = std::pow((std::pow(scaled.x / m, q) + std::pow(scaled.y / m, q)), (1.0 / n));
+				const Vec2 support = (sign * axes * Vec2{ std::pow(scaled.x / m, (q - 1.0)), std::pow(scaled.y / m, (q - 1.0)) } / denominator);
+				for (const double gap : { (-1.0e-7 * scale), 0.0, (1.0e-10 * scale), (0.1 * scale) })
+				{
+					CAPTURE(n, scale, sign, gap);
+					const SuperEllipse shape{ (boundary + normal * gap + support), axes, n };
+					const auto Check = [&](const auto& other)
+					{
+						const double tolerance = (1.0e-10 * scale);
+						const auto pair = Geometry2D::ClosestPoints(diamond, other), reversed = Geometry2D::ClosestPoints(other, diamond);
+						REQUIRE(pair);
+						REQUIRE(reversed);
+						CHECK(Abs(pair->distance - Max(gap, 0.0)) <= tolerance);
+						CHECK(Abs(Geometry2D::Distance(diamond, other) - Max(gap, 0.0)) <= tolerance);
+						CHECK(Abs(Geometry2D::Distance(other, diamond) - Max(gap, 0.0)) <= tolerance);
+						CHECK(Abs(reversed->distance - pair->distance) <= tolerance);
+						const Vec2 p = ((pair->pointA - diamond.center) / diamond.axes);
+						CHECK((Abs(p.x) + Abs(p.y)) <= (1.0 + 1.0e-10));
+						if (0.0 < gap)
+						{
+							CHECK(pair->distance > 0.0);
+							CHECK(pair->pointA.distanceFrom(boundary) <= (1.0e-8 * scale));
+							CHECK(pair->pointB.distanceFrom(boundary + normal * gap) <= (1.0e-8 * scale));
+						}
+						else
+						{
+							CHECK(pair->distance == 0.0);
+							CHECK(pair->pointA == pair->pointB);
+						}
+						CheckWitnessConsistency(*pair, tolerance);
+					};
+					Check(shape);
+					if (n == 2.0) Check(Ellipse{ shape.center, shape.axes });
+				}
+			}
+		}
+	}
+	const SuperEllipse diamond{ 0, 0, 1, 2, 1 };
+	for (const double n : { 0.25, 0.5, 0.9, 1.0 })
+	{
+		CAPTURE(n);
+		const SuperEllipse other{ 3.1, 0, 2, 1, n };
+		const auto pair = Geometry2D::ClosestPoints(diamond, other);
+		REQUIRE(pair);
+		CHECK(Abs(pair->distance - 0.1) <= 1.0e-12);
+		CHECK(Abs(Geometry2D::Distance(other, diamond) - 0.1) <= 1.0e-12);
+		CHECK(pair->pointA.distanceFrom(Vec2{ 1, 0 }) <= 1.0e-12);
+		CHECK(pair->pointB.distanceFrom(Vec2{ 1.1, 0 }) <= 1.0e-12);
+	}
+	const Vec2 boundary{ 0.04, 0.64 }, normal = Vec2{ 4, 1 }.normalized();
+	const double gap = 1.0e-8;
+	const SuperEllipse besideArc{ (boundary + normal * gap + Vec2{ 0.1, 0 }), Vec2{ 0.1, 0.02 }, 1.0 };
+	const auto pair = Geometry2D::ClosestPoints(SuperEllipse{ 0, 0, 1, 1, 0.5 }, besideArc);
+	REQUIRE(pair);
+	CHECK(Abs(pair->distance - gap) <= 1.0e-12);
+	CHECK(pair->pointA.distanceFrom(boundary) <= 1.0e-10);
+	CHECK(pair->pointB.distanceFrom(boundary + normal * gap) <= 1.0e-10);
+	CheckWitnessConsistency(*pair);
+	CHECK(Geometry2D::Distance(Ellipse{ 0, 0, 0, 2 }, SuperEllipse{ 3, 0, 1, 1, 1 }) == 2.0);
+	CHECK(Geometry2D::Distance(Ellipse{ 0, 0, 1, 2 }, SuperEllipse{ 3, 0, 0, 1, 1 }) == 2.0);
+	CHECK(not Geometry2D::ClosestPoints(Ellipse{ 0, 0, 0, 0 }, diamond));
+}
+
 TEST_CASE("Geometry2D.Distance.SuperEllipse.ConvexPairs")
 {
 	// Construct separated supporting lines with a prescribed normal and gap.

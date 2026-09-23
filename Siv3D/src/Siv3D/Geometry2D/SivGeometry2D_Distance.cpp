@@ -23,6 +23,7 @@
 # include <Siv3D/Geometry2D/IntersectsAt.hpp>
 # include <Siv3D/Geometry2D/Distance.hpp>
 # include "BezierGeometry.hpp"
+# include "EllipseGeometry.hpp"
 # include "PolygonGeometry.hpp"
 # include "SuperEllipseGeometry.hpp"
 
@@ -898,14 +899,20 @@ namespace s3d
 			return result;
 		}
 
+		[[nodiscard]]
+		constexpr std::array<Vec2, 4> SuperEllipseAxisVertices(const SuperEllipse& shape) noexcept
+		{
+			return { Vec2{ (shape.x + shape.a), shape.y }, Vec2{ shape.x, (shape.y + shape.b) },
+				Vec2{ (shape.x - shape.a), shape.y }, Vec2{ shape.x, (shape.y - shape.b) } };
+		}
+
 		// Positive axes and n <= 1; the line is disjoint from the filled shape.
 		// A concave arc cannot have a strict interior minimum of distance to a
 		// disjoint supporting line. Line endpoints and axial tips suffice.
 		[[nodiscard]]
 		ClosestPairCandidate ClosestDisjointLineConcaveSuperEllipse(const Line& line, const SuperEllipse& shape) noexcept
 		{
-			const std::array vertices{ Vec2{ (shape.x + shape.a), shape.y }, Vec2{ shape.x, (shape.y + shape.b) },
-				Vec2{ (shape.x - shape.a), shape.y }, Vec2{ shape.x, (shape.y - shape.b) } };
+			const auto vertices = SuperEllipseAxisVertices(shape);
 			ClosestPairCandidate result;
 			for (size_t i = 0; i < vertices.size(); ++i)
 			{
@@ -959,6 +966,25 @@ namespace s3d
 					return (shape.center + Vec2{ std::copysign(point.x, normal.x), std::copysign(point.y, normal.y) });
 				},
 				[&](const Vec2& point) noexcept { return ClosestDisjointConvexSuperEllipsePair(shape, point); });
+		}
+
+		template <class Shape>
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointShapeDiamond(const Shape& shape, const SuperEllipse& diamond) noexcept
+		{
+			const auto vertices = SuperEllipseAxisVertices(diamond);
+			ClosestPairCandidate result;
+			for (size_t i = 0; i < vertices.size(); ++i)
+			{
+				const Line edge{ vertices[i], vertices[(i + 1) % vertices.size()] };
+				const auto candidate = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<Shape, Ellipse>) return ClosestDisjointLineEllipse(edge, shape);
+					else return ClosestDisjointLineSuperEllipse(edge, shape);
+				}();
+				UpdateCandidate(result, candidate.pointB, candidate.pointA);
+			}
+			return result;
 		}
 
 		template <class Bezier>
@@ -1580,6 +1606,17 @@ namespace s3d
 				if (const auto* line = std::get_if<Line>(&first))
 				{
 					return ClosestDisjointLineSuperEllipse(*line, *superEllipse);
+				}
+				if (superEllipse->n == 1.0)
+				{
+					if (const auto* ellipse = std::get_if<Ellipse>(&first))
+					{
+						return ClosestDisjointShapeDiamond(*ellipse, *superEllipse);
+					}
+					if (const auto* other = std::get_if<SuperEllipse>(&first))
+					{
+						return ClosestDisjointShapeDiamond(*other, *superEllipse);
+					}
 				}
 				if (superEllipse->n <= 1.0)
 				{
@@ -2640,13 +2677,21 @@ namespace s3d
 
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
-		Optional<ClosestPoints2D> TryClosestSuperEllipseSimpleShape(const ShapeA& a, const ShapeB& b)
+		Optional<ClosestPoints2D> TryClosestEllipticSimpleShape(const ShapeA& a, const ShapeB& b)
 		{
 			constexpr bool PointFirst = (std::is_same_v<ShapeA, Point> || std::is_same_v<ShapeA, Vec2>);
-			constexpr bool ShapeFirst = (std::is_same_v<ShapeA, SuperEllipse> && std::is_same_v<ShapeB, RoundRect>);
+			constexpr bool ShapeFirst = ((std::is_same_v<ShapeA, Ellipse> || std::is_same_v<ShapeA, SuperEllipse>)
+				&& std::is_same_v<ShapeB, RoundRect>);
 			if constexpr (ShapeFirst || (std::is_same_v<ShapeB, SuperEllipse> && (PointFirst || std::is_same_v<ShapeA, Circle>)))
 			{
-				const auto& shape = [&]() -> const SuperEllipse&
+				if constexpr (ShapeFirst)
+				{
+					if (detail::ClassifyGeometry2DSizedShape(b) != detail::Geometry2DSizedShapeKind::Area)
+					{
+						return none;
+					}
+				}
+				const auto& shape = [&]() -> const auto&
 				{
 					if constexpr (ShapeFirst) return a;
 					else return b;
@@ -2660,7 +2705,7 @@ namespace s3d
 					if constexpr (ShapeFirst)
 					{
 						// Both shapes are symmetric in each axis. The nearest core point
-						// is the clamp of the SuperEllipse center, including for n < 1.
+						// is the clamp of the ellipse / SuperEllipse center, including for n < 1.
 						const double r = detail::GetGeometry2DEffectiveRadius(b);
 						const RectF core = detail::GetGeometry2DRoundRectCore(b, r);
 						return std::pair{ Vec2{ Clamp(shape.x, core.x, (core.x + core.w)), Clamp(shape.y, core.y, (core.y + core.h)) }, r };
@@ -2674,9 +2719,26 @@ namespace s3d
 						return std::pair{ a.center, a.r };
 					}
 				}();
-				const auto closest = ClosestDisjointPointSuperEllipse(point, shape);
+				const auto closest = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, Ellipse>)
+					{
+						auto result = ClosestDisjointEllipsePair(shape, point);
+						std::swap(result.pointA, result.pointB);
+						return result;
+					}
+					else return ClosestDisjointPointSuperEllipse(point, shape);
+				}();
 				const double distance = std::sqrt(closest.distanceSq);
-				if (distance <= radius)
+				const bool contact = [&]() noexcept
+				{
+					if constexpr (std::is_same_v<std::decay_t<decltype(shape)>, Ellipse>)
+					{
+						return detail::EllipseDistanceWithinRadius<true>(distance, radius, Max({ shape.a, shape.b, radius }));
+					}
+					else return (distance <= radius);
+				}();
+				if (contact)
 				{
 					return ClosestPoints2D{ closest.pointB, closest.pointB, 0.0 };
 				}
@@ -2731,7 +2793,7 @@ namespace s3d
 				}
 			}
 
-			if (const auto closest = TryClosestSuperEllipseSimpleShape(a, b))
+			if (const auto closest = TryClosestEllipticSimpleShape(a, b))
 			{
 				return closest;
 			}
@@ -2806,7 +2868,7 @@ namespace s3d
 				return 0.0;
 			}
 
-			if (const auto closest = TryClosestSuperEllipseSimpleShape(a, b))
+			if (const auto closest = TryClosestEllipticSimpleShape(a, b))
 			{
 				return closest->distance;
 			}
