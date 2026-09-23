@@ -18,6 +18,44 @@ namespace
 		CHECK(Abs(result.pointA.distanceFrom(result.pointB) - result.distance) <= tolerance);
 	}
 
+	void CheckMixedSuperEllipseDistance(const SuperEllipse& a, const SuperEllipse& b,
+		const double expected, const double tolerance)
+	{
+		const auto CheckInside = [](const Vec2& point, const SuperEllipse& shape)
+		{
+			const Vec2 p = ((point - shape.center) / shape.axes);
+			CHECK((std::pow(Max(0.0, Abs(p.x) - 2.0e-12), shape.n)
+				+ std::pow(Max(0.0, Abs(p.y) - 2.0e-12), shape.n)) <= (1.0 + 1.0e-12));
+		};
+		const auto Check = [&](const auto& convex)
+		{
+			const auto ab = Geometry2D::ClosestPoints(a, convex), ba = Geometry2D::ClosestPoints(convex, a);
+			REQUIRE(ab);
+			REQUIRE(ba);
+			CHECK(Abs(ab->distance - expected) <= tolerance);
+			CHECK(ba->distance == ab->distance);
+			CHECK(Geometry2D::Distance(a, convex) == ab->distance);
+			CHECK(Geometry2D::Distance(convex, a) == ab->distance);
+			if (0.0 < expected)
+			{
+				CHECK(ab->distance > 0.0);
+				CHECK(ba->pointA == ab->pointB);
+				CHECK(ba->pointB == ab->pointA);
+			}
+			CheckInside(ab->pointA, a);
+			CheckInside(ab->pointB, b);
+			CheckInside(ba->pointA, b);
+			CheckInside(ba->pointB, a);
+			CheckWitnessConsistency(*ab, tolerance);
+			CheckWitnessConsistency(*ba, tolerance);
+		};
+		Check(b);
+		if (b.n == 2.0)
+		{
+			Check(Ellipse{ b.center, b.axes });
+		}
+	}
+
 	template <class Bezier>
 	void CheckBezierPointDistance(const Bezier& curve, const Vec2& query, const Vec2& expected, const double tolerance = 1e-8)
 	{
@@ -832,6 +870,78 @@ TEST_CASE("Geometry2D.Distance.SuperEllipse.ConcavePairs")
 	CHECK(Geometry2D::Distance(SuperEllipse{ 0, 0, 0, 2, 0.5 }, SuperEllipse{ 3, 0, 1, 1, 0.25 }) == 2.0);
 	CHECK(std::isinf(Geometry2D::Distance(SuperEllipse{ 0, 0, 0, 0, 0.5 }, SuperEllipse{ 3, 0, 1, 1, 0.25 })));
 	CHECK(not Geometry2D::ClosestPoints(SuperEllipse{ 0, 0, 1, 1, 0.5 }, SuperEllipse{ 3, 0, 0, 0, 0.25 }));
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.MixedPairs")
+{
+	for (const double n : { 1.5, 2.0, 4.0, 64.0 })
+	{
+		for (const double scale : { 0.001, 1.0, 1000.0 })
+		{
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				for (const bool transpose : { false, true })
+				{
+					const SuperEllipse a{ (Vec2{ 7, -11 } * scale), scale, scale, 0.5 };
+					const Vec2 point = ((transpose ? Vec2{ 0.64, 0.04 } : Vec2{ 0.04, 0.64 }) * scale);
+					const Vec2 normal = (transpose ? Vec2{ 1, 4 } : Vec2{ 4, 1 }).normalized();
+					const Vec2 axes = ((transpose ? Vec2{ 0.05, 0.1 } : Vec2{ 0.1, 0.05 }) * scale);
+					const Vec2 v = (axes * normal);
+					const double q = (n / (n - 1.0)), m = Max(v.x, v.y);
+					const double divisor = std::pow((std::pow((v.x / m), q) + std::pow((v.y / m), q)), (1.0 / n));
+					const Vec2 support = (axes * Vec2{ std::pow((v.x / m), (q - 1.0)), std::pow((v.y / m), (q - 1.0)) } / divisor);
+					for (const double gap : { -1.0e-8, 0.0, 1.0e-8 })
+					{
+						CAPTURE(n, scale, sign, transpose, gap);
+						const SuperEllipse b{ (a.center + sign * (point + normal * (gap * scale) + support)), axes, n };
+						CheckMixedSuperEllipseDistance(a, b, (Max(0.0, gap) * scale), (1.0e-11 * scale));
+					}
+				}
+			}
+		}
+	}
+	for (const double n : { 0.25, 0.5, 0.9 })
+	{
+		const SuperEllipse a{ 0, 0, 1, 2, n };
+		CheckMixedSuperEllipseDistance(a, SuperEllipse{ 3.25, 0, 2, 1, 4 }, 0.25, 1.0e-12);
+		CheckMixedSuperEllipseDistance(a, SuperEllipse{ 0, 3.25, 2, 1, 2 }, 0.25, 1.0e-12);
+		CheckMixedSuperEllipseDistance(a, SuperEllipse{ 0, 0, 0.01, 0.02, 4 }, 0.0, 1.0e-12);
+	}
+	const SuperEllipse a{ 0, 0, 1, 2, 0.5 };
+	CHECK(std::isinf(Geometry2D::Distance(a, Ellipse{ 3, 0, 0, 0 })));
+	CHECK(not Geometry2D::ClosestPoints(SuperEllipse{ 0, 0, 0, 0, 0.5 }, Ellipse{ 3, 0, 1, 2 }));
+	CHECK(Geometry2D::Distance(SuperEllipse{ 0, 0, 0, 2, 0.5 }, Ellipse{ 3, 0, 1, 2 }) == 2.0);
+	CHECK(Geometry2D::Distance(a, SuperEllipse{ 3, 0, 0, 2, 4 }) == 2.0);
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.MixedPairMinima")
+{
+	// Separate minima missed by coarse seeding, including a thin shape whose
+	// closest point lies near an axial tip. Reference distances use dense search.
+	CheckMixedSuperEllipseDistance(
+		SuperEllipse{ 0, 0, 2.7563086875845366, 1.2434426535424061, 0.36805284783883035 },
+		SuperEllipse{ 0.5048082286360136, 0.7933453398773076, 0.25748797487815833, 0.50768141006027545, 2 },
+		0.11097376672506587, 1.0e-11);
+	CheckMixedSuperEllipseDistance(
+		SuperEllipse{ 0, 0, 5.8406796012664302, 1.5403312861778973, 0.63621451232530046 },
+		SuperEllipse{ 9.7874166499689998, 1.4083116280788432, 7.793208721770033, 0.21742450246262071, 6.7739001647195956 },
+		0.747070075839119, 1.0e-11);
+	CheckMixedSuperEllipseDistance(
+		SuperEllipse{ 0, 0, 0.025502223617786958, 31.913887048438212, 0.48369753025088813 },
+		SuperEllipse{ 0.041105130505651753, 22.651017155391525, 0.032728322746886945, 0.11452966120632972, 2.0800000077166874 },
+		0.0078521372885064101, 1.0e-11);
+	// Affine images of an osculating circle give noncircular ellipses. Near
+	// contact the objective is almost flat, so check distance and membership.
+	for (const double ratio : { 0.1, 2.0, 10.0 })
+	{
+		const Vec2 axes{ 1, ratio }, normal = Vec2{ 1, (1.0 / ratio) }.normalized();
+		const SuperEllipse a{ 0, 0, axes, 0.5 };
+		CheckMixedSuperEllipseDistance(a,
+			SuperEllipse{ (axes * 0.75 + normal * 1.0e-8), (axes * std::sqrt(0.5)), 2 }, 1.0e-8, 1.0e-11);
+	}
+	CheckMixedSuperEllipseDistance(SuperEllipse{ 0, 0, 1, 2, 0.5 },
+		SuperEllipse{ (Vec2{ 0.75, 1.5 } + Vec2{ 1, 0.5 }.normalized() * 0.0001), (Vec2{ 1, 2 } * std::sqrt(0.5)), 2 },
+		9.999766004090694e-5, 1.0e-11);
 }
 
 TEST_CASE("Geometry2D.Distance.SuperEllipse.ConcavePointNeighborhoods")
@@ -1975,6 +2085,10 @@ TEST_CASE("Geometry2D.Distance.SuperEllipse.UnresolvedContact")
 	REQUIRE(ba);
 	CHECK(ab->distance > 0.0);
 	CHECK(ba->distance > 0.0);
+	CHECK(ab->distance < 1.0e-10);
+	CHECK(ba->distance == ab->distance);
+	CHECK(ba->pointA == ab->pointB);
+	CHECK(ba->pointB == ab->pointA);
 	CHECK(Geometry2D::Distance(a, b) == ab->distance);
 	CHECK(Geometry2D::Distance(b, a) == ba->distance);
 	CheckWitnessConsistency(*ab);

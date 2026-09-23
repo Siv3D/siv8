@@ -1042,10 +1042,12 @@ namespace s3d
 		Optional<ClosestPoints2D> ClosestPoints(const Ellipse& a, const Ellipse& b);
 
 		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 距離。凹形状と凸曲線の組み合わせでは近似値で、真の最短距離を過大評価する場合があります。空形状を含む場合は正の無限大。
 		[[nodiscard]]
 		double Distance(const Ellipse& a, const SuperEllipse& b);
 
 		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最近点対と距離。凹形状と凸曲線の組み合わせでは近似値で、大域的な最小距離を与える点対を得られない場合があります。空形状を含む場合は none。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Ellipse& a, const SuperEllipse& b);
 
@@ -1154,18 +1156,22 @@ namespace s3d
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const Circle& b);
 
 		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 距離。凹形状と凸曲線の組み合わせでは近似値で、真の最短距離を過大評価する場合があります。空形状を含む場合は正の無限大。
 		[[nodiscard]]
 		double Distance(const SuperEllipse& a, const Ellipse& b);
 
 		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最近点対と距離。凹形状と凸曲線の組み合わせでは近似値で、大域的な最小距離を与える点対を得られない場合があります。空形状を含む場合は none。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const Ellipse& b);
 
 		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 距離。凹形状と凸曲線の組み合わせでは近似値で、真の最短距離を過大評価する場合があります。空形状を含む場合は正の無限大。
 		[[nodiscard]]
 		double Distance(const SuperEllipse& a, const SuperEllipse& b);
 
 		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最近点対と距離。凹形状と凸曲線の組み合わせでは近似値で、大域的な最小距離を与える点対を得られない場合があります。空形状を含む場合は none。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const SuperEllipse& a, const SuperEllipse& b);
 

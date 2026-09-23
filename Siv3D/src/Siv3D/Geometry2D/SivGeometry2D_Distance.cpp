@@ -763,12 +763,52 @@ namespace s3d
 			return result;
 		}
 
+		// Positive axes and 0 < n < 1. Parameterize each half arc by its larger
+		// normalized coordinate, keeping the normalized profile's slope bounded.
+		struct ConcaveSuperEllipseProfile
+		{
+			Vec2 axes;
+			double n, inverseN, split;
+
+			explicit ConcaveSuperEllipseProfile(const SuperEllipse& shape) noexcept
+				: axes{ shape.axes }, n{ shape.n }, inverseN{ (1.0 / n) }, split{ std::pow(0.5, inverseN) } {}
+
+			[[nodiscard]]
+			double yAt(const double x) const noexcept
+			{
+				return std::pow(Max(0.0, (1.0 - std::pow(x, n))), inverseN);
+			}
+
+			[[nodiscard]]
+			Vec2 pointAt(const double x, const bool transpose) const noexcept
+			{
+				const double y = yAt(x);
+				return (axes * (transpose ? Vec2{ y, x } : Vec2{ x, y }));
+			}
+
+			[[nodiscard]]
+			std::pair<double, double> derivatives(const double x, const double y) const noexcept
+			{
+				const double slope = -std::pow((y / x), (1.0 - n));
+				return { slope, (-(1.0 - n) * slope / (x * std::pow(y, n))) };
+			}
+
+			// Clip the arc to the rectangle between the origin and a first-quadrant point.
+			[[nodiscard]]
+			std::pair<double, double> rangeTo(const Vec2& point, const bool transpose) const noexcept
+			{
+				const Vec2 a = (transpose ? Vec2{ axes.y, axes.x } : axes);
+				const Vec2 p = (transpose ? Vec2{ point.y, point.x } : point);
+				return { Max(split, yAt(Min((p.y / a.y), 1.0))), Min((p.x / a.x), 1.0) };
+			}
+		};
+
 		// Positive axes and 0 < n < 1; the point is outside the filled shape.
 		[[nodiscard]]
 		ClosestPairCandidate ClosestDisjointPointConcaveSuperEllipse(const Vec2& point, const SuperEllipse& shape) noexcept
 		{
 			const Vec2 delta = (point - shape.center), query{ Abs(delta.x), Abs(delta.y) };
-			const double inverseN = (1.0 / shape.n), split = std::pow(0.5, inverseN);
+			const ConcaveSuperEllipseProfile profile{ shape };
 			Vec2 best{ shape.a, 0.0 };
 			double bestDistanceSq = query.distanceFromSq(best);
 			bool bestTranspose = false;
@@ -783,13 +823,6 @@ namespace s3d
 				}
 			};
 			Update(Vec2{ 0.0, shape.b }, true);
-			// Use the larger normalized coordinate directly on each half,
-			// keeping the normalized boundary profile's slope bounded.
-			auto PointAt = [&](const double x, const bool transpose) noexcept
-			{
-				const double y = std::pow(Max(0.0, (1.0 - std::pow(x, shape.n))), inverseN);
-				return (shape.axes * (transpose ? Vec2{ y, x } : Vec2{ x, y }));
-			};
 			struct Interval
 			{
 				Vec2 lower, upper;
@@ -813,16 +846,13 @@ namespace s3d
 			};
 			for (const bool transpose : { false, true })
 			{
-				const Vec2 axes = (transpose ? Vec2{ shape.b, shape.a } : shape.axes);
-				const Vec2 q = (transpose ? Vec2{ query.y, query.x } : query);
 				// A nearest point cannot have either coordinate greater than the query.
-				const double lower = Max(split, std::pow(Max(0.0, (1.0 - std::pow(Min((q.y / axes.y), 1.0), shape.n))), inverseN));
-				const double upper = Min((q.x / axes.x), 1.0);
+				const auto [lower, upper] = profile.rangeTo(query, transpose);
 				if (upper < lower)
 				{
 					continue;
 				}
-				const Vec2 p0 = PointAt(lower, transpose), p1 = PointAt(upper, transpose);
+				const Vec2 p0 = profile.pointAt(lower, transpose), p1 = profile.pointAt(upper, transpose);
 				Update(p0, transpose);
 				Update(p1, transpose);
 				Push(p0, p1, transpose);
@@ -840,7 +870,7 @@ namespace s3d
 				const double middle = (interval.transpose
 					? ((interval.lower.y + interval.upper.y) / (2.0 * shape.b))
 					: ((interval.lower.x + interval.upper.x) / (2.0 * shape.a)));
-				const Vec2 p = PointAt(middle, interval.transpose);
+				const Vec2 p = profile.pointAt(middle, interval.transpose);
 				Update(p, interval.transpose);
 				Push(interval.lower, p, interval.transpose);
 				Push(p, interval.upper, interval.transpose);
@@ -854,13 +884,12 @@ namespace s3d
 			double x = (transpose ? (best.y / shape.b) : (best.x / shape.a));
 			for (int32 iteration = 0; iteration < 8; ++iteration)
 			{
-				const double y = std::pow(Max(0.0, (1.0 - std::pow(x, shape.n))), inverseN);
+				const double y = profile.yAt(x);
 				if ((x == 0.0) || (y == 0.0))
 				{
 					break;
 				}
-				const double slope = -std::pow((y / x), (1.0 - shape.n));
-				const double curvature = (-(1.0 - shape.n) * slope / (x * std::pow(y, shape.n)));
+				const auto [slope, curvature] = profile.derivatives(x, y);
 				const Vec2 gap = (axes * Vec2{ x, y } - q);
 				const double f = (gap.x * axes.x + gap.y * axes.y * slope);
 				const double derivative = (axes.x * axes.x + axes.y * axes.y * slope * slope + gap.y * axes.y * curvature);
@@ -869,12 +898,12 @@ namespace s3d
 					break;
 				}
 				const double next = (x - f / derivative);
-				if (not ((split < next) && (next < 1.0)) || (next == x))
+				if (not ((profile.split < next) && (next < 1.0)) || (next == x))
 				{
 					break;
 				}
 				x = next;
-				Update(PointAt(x, transpose), transpose);
+				Update(profile.pointAt(x, transpose), transpose);
 			}
 			ClosestPairCandidate result;
 			UpdateCandidate(result, point, (shape.center + Vec2{ std::copysign(best.x, delta.x), std::copysign(best.y, delta.y) }));
@@ -897,6 +926,177 @@ namespace s3d
 			auto result = ClosestDisjointConvexSuperEllipsePair(shape, point);
 			std::swap(result.pointA, result.pointB);
 			return result;
+		}
+
+		// Bounded search for positive axes and 0 < a.n < 1 < b.n.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestMixedSuperEllipsePair(const SuperEllipse& a, const SuperEllipse& originalB) noexcept
+		{
+			const Vec2 delta = (originalB.center - a.center);
+			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
+			const SuperEllipse b{ Vec2{ Abs(delta.x), Abs(delta.y) }, originalB.axes, originalB.n };
+			const ConcaveSuperEllipseProfile profile{ a };
+			const double tolerance = (64.0 * std::numeric_limits<double>::epsilon()
+				* Max({ a.a, a.b, b.a, b.b, b.x, b.y }));
+			const ConvexSuperEllipseSupport<> direct{ b.axes, b.n, 1.0 }, swapped{ Vec2{ b.b, b.a }, b.n, 1.0 };
+			const auto SupportB = [&](const Vec2& normal) noexcept
+			{
+				if (normal.x == 0.0) return Vec2{ 0.0, b.b };
+				if (normal.y == 0.0) return Vec2{ b.a, 0.0 };
+				const bool transpose = (normal.x < normal.y);
+				const double t = (transpose ? (normal.x / normal.y) : (normal.y / normal.x));
+				const Vec2 point = (transpose ? swapped : direct).sample(t, t).first;
+				return (transpose ? Vec2{ point.y, point.x } : point);
+			};
+			struct Sample
+			{
+				ClosestPairCandidate pair;
+				Vec2 normal;
+				double support;
+			};
+			ClosestPairCandidate best;
+			double bestX = 1.0;
+			bool bestTranspose = false;
+			const auto Evaluate = [&](const double x, const bool transpose) noexcept
+			{
+				const Vec2 point = profile.pointAt(x, transpose);
+				const Vec2 normalized{ Abs((point.x - b.x) / b.a), Abs((point.y - b.y) / b.b) };
+				ClosestPairCandidate candidate;
+				// A prior intersection search can be unresolved. Only an evaluated
+				// point in both shapes establishes a zero-distance witness here.
+				if ((std::pow(normalized.x, b.n) + std::pow(normalized.y, b.n)) <= 1.0)
+				{
+					UpdateCandidate(candidate, point, point);
+				}
+				else
+				{
+					candidate = ClosestDisjointPointSuperEllipse(point, b);
+				}
+				if (candidate.distanceSq < best.distanceSq)
+				{
+					best = candidate;
+					bestX = x;
+					bestTranspose = transpose;
+				}
+				Vec2 normal{ Max(0.0, (candidate.pointB.x - point.x)), Max(0.0, (candidate.pointB.y - point.y)) };
+				const double length = normal.length();
+				double support = 0.0;
+				if (length != 0.0)
+				{
+					normal /= length;
+					// The point solver may return an interior witness at its limit;
+					// obtain the supporting line from the support function instead.
+					support = (b.center - SupportB(normal)).dot(normal);
+				}
+				return Sample{ candidate, normal, support };
+			};
+			struct Interval
+			{
+				double lower, upper, bound;
+				Sample left, right;
+				bool transpose;
+			};
+			constexpr int32 MaxSubdivisions = 32;
+			std::array<Interval, MaxSubdivisions + 2> queue;
+			size_t count = 0;
+			const auto Compare = [](const Interval& a, const Interval& b) noexcept { return (a.bound > b.bound); };
+			const auto Push = [&](const double lower, const double upper,
+				const Sample& left, const Sample& right, const bool transpose) noexcept
+			{
+				const Vec2 p0 = left.pair.pointA, p1 = right.pair.pointA;
+				Vec2 normal{ Abs(p1.y - p0.y), Abs(p1.x - p0.x) };
+				const double length = normal.length();
+				if (length == 0.0)
+				{
+					return;
+				}
+				normal /= length;
+				// The concave arc is southwest of its chord. The gap to a parallel
+				// supporting line of B bounds the whole interval. Reuse the endpoint
+				// supporting lines too, avoiding weak chord bounds near axial tips.
+				const double bound = Max({ 0.0, ((b.center - SupportB(normal) - p0).dot(normal) - tolerance),
+					(left.support - Max(p0.dot(left.normal), p1.dot(left.normal)) - tolerance),
+					(right.support - Max(p0.dot(right.normal), p1.dot(right.normal)) - tolerance) });
+				if ((bound * bound) < best.distanceSq)
+				{
+					queue[count++] = { lower, upper, (bound * bound), left, right, transpose };
+					std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+				}
+			};
+			Evaluate(1.0, false);
+			Evaluate(1.0, true);
+			for (const bool transpose : { false, true })
+			{
+				// Axis symmetry allows a nearest pair between the two centers.
+				const auto [lower, upper] = profile.rangeTo(b.center, transpose);
+				if (upper < lower)
+				{
+					continue;
+				}
+				const auto left = Evaluate(lower, transpose), right = Evaluate(upper, transpose);
+				Push(lower, upper, left, right, transpose);
+			}
+			for (int32 iteration = 0; (iteration < MaxSubdivisions) && count; ++iteration)
+			{
+				if ((best.distanceSq - queue[0].bound) <= (4.0 * tolerance * (2.0 * std::sqrt(best.distanceSq) + 4.0 * tolerance)))
+				{
+					break;
+				}
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Interval interval = queue[--count];
+				const double middle = (interval.lower + (interval.upper - interval.lower) * 0.5);
+				if (not ((interval.lower < middle) && (middle < interval.upper)))
+				{
+					continue;
+				}
+				const auto sample = Evaluate(middle, interval.transpose);
+				Push(interval.lower, middle, interval.left, sample, interval.transpose);
+				Push(middle, interval.upper, sample, interval.right, interval.transpose);
+			}
+			// Refine the selected minimum using the Hessian of point-to-convex
+			// squared distance. Retain evaluated witnesses if Newton cannot improve.
+			double x = bestX;
+			const bool transpose = bestTranspose;
+			auto current = best;
+			for (int32 iteration = 0; iteration < 8; ++iteration)
+			{
+				const double y = profile.yAt(x);
+				if ((x == 0.0) || (y == 0.0))
+				{
+					break;
+				}
+				const Vec2 gap = (current.pointA - current.pointB);
+				const double distance = gap.length();
+				if (distance == 0.0)
+				{
+					break;
+				}
+				const auto [slope, secondDerivative] = profile.derivatives(x, y);
+				const Vec2 dp = (a.axes * (transpose ? Vec2{ slope, 1.0 } : Vec2{ 1.0, slope }));
+				const Vec2 ddp = (a.axes * (transpose ? Vec2{ secondDerivative, 0.0 } : Vec2{ 0.0, secondDerivative }));
+				const Vec2 uv{ Abs((current.pointB.x - b.x) / b.a), Abs((current.pointB.y - b.y) / b.b) };
+				const Vec2 gradient{ (std::pow(uv.x, (b.n - 1.0)) / b.a), (std::pow(uv.y, (b.n - 1.0)) / b.b) };
+				const double g = gradient.length();
+				const double curvature = ((b.n - 1.0) * std::pow((uv.x * uv.y), (b.n - 2.0))
+					/ (b.a * b.a * b.b * b.b * g * g * g));
+				const Vec2 tangent{ (-gap.y / distance), (gap.x / distance) };
+				const double projection = dp.dot(tangent);
+				const double derivative = (dp.lengthSq() - projection * projection / (1.0 + distance * curvature) + gap.dot(ddp));
+				if (derivative <= 0.0)
+				{
+					break;
+				}
+				const double next = (x - gap.dot(dp) / derivative);
+				if (not ((profile.split < next) && (next < 1.0)) || (next == x))
+				{
+					break;
+				}
+				x = next;
+				current = Evaluate(x, transpose).pair;
+			}
+			best.pointA = (a.center + sign * best.pointA);
+			best.pointB = (a.center + sign * best.pointB);
+			return best;
 		}
 
 		[[nodiscard]]
@@ -1662,6 +1862,16 @@ namespace s3d
 						if (other)
 						{
 							return ClosestDisjointShapeDiamond(*other, *superEllipse);
+						}
+					}
+					else
+					{
+						const auto* ellipse = std::get_if<Ellipse>(&first);
+						if (other || ellipse)
+						{
+							auto result = ClosestMixedSuperEllipsePair(*superEllipse, (other ? *other : SuperEllipse{ *ellipse, 2.0 }));
+							std::swap(result.pointA, result.pointB);
+							return result;
 						}
 					}
 					return none;
