@@ -213,6 +213,10 @@ namespace s3d::detail
 		return result;
 	}
 
+	// Positive axes; the point is outside the filled shape.
+	[[nodiscard]]
+	Vec2 ClosestPointOnSuperEllipseBoundaryFromOutside(const Vec2& point, const SuperEllipse& shape) noexcept;
+
 	// Positive axes and n > 2. Reflection reduces the boundary to one quadrant.
 	// On each half, use the smaller normalized coordinate directly: taking a
 	// fractional power of sin/cos near their zeros loses spatial precision.

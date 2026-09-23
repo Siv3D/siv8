@@ -313,6 +313,13 @@ namespace s3d
 		ClosestBoundaryCandidate ClosestPointPiece(
 			const Vec2& point, const BoundaryPiece& piece)
 		{
+			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (not Geometry2D::Intersects(point, *shape)))
+			{
+				ClosestBoundaryCandidate result;
+				UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundaryFromOutside(point, *shape));
+				return result;
+			}
+
 			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (2.0 < shape->n))
 			{
 				ClosestBoundaryCandidate result;

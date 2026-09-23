@@ -11,7 +11,7 @@
 
 ### 曲線の距離計算
 
-- **離れた曲線間の精度と処理量**: SuperEllipse と点、凹 SuperEllipse（`n < 1`）と直線辺・曲線、菱形（`n == 1`）と楕円・円弧、Bezier と楕円・一般の SuperEllipse（`n != 1`）、楕円・SuperEllipse と円弧には、固定標本・分割と局所探索による `Distance()` / `ClosestPoints()` が残る。接触付近の距離誤差と処理量をまとめて検証し、SuperEllipse の角度からの境界評価も見直す。既存の点・楕円ソルバの再利用、直線辺の厳密な処理、凹曲線向けの探索を比較し、分割数・反復数の増加だけで対応しない。
+- **離れた曲線間の精度と処理量**: 凹 SuperEllipse（`n < 1`）と直線辺・楕円・SuperEllipse、菱形（`n == 1`）と楕円、Bezier と楕円・一般の SuperEllipse（`n != 1`）、楕円と円弧には、固定標本・分割と局所探索による `Distance()` / `ClosestPoints()` が残る。接触付近の距離誤差と処理量をまとめて検証し、SuperEllipse の角度からの境界評価も見直す。既存の点・楕円ソルバの再利用、直線辺の厳密な処理、凹曲線向けの探索を比較し、分割数・反復数の増加だけで対応しない。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`
 

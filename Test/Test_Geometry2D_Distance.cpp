@@ -537,6 +537,92 @@ TEST_CASE("Geometry2D.Distance.SuperEllipse.PointAndLineWitnesses")
 	CheckWitnessConsistency(*pair);
 }
 
+TEST_CASE("Geometry2D.Distance.SuperEllipse.ConcavePointMinima")
+{
+	// For sqrt(x) + sqrt(y) = 1 and query (q, q), the central minimum
+	// splits into two minima at q = 3/4, which reach the tips at q = 1.
+	for (const double q : { 0.25000001, 0.3, 0.7, 0.75, 0.750001, 0.8, 0.9, 1.0, 1.2 })
+	{
+		const double expected = ((q <= 0.75) ? (std::sqrt(2.0) * (q - 0.25))
+			: ((q <= 1.0) ? std::sqrt(2.0 * q - 1.0) : std::hypot(q, (q - 1.0))));
+		for (const double scale : { 1.0e-4, 1.0, 1.0e4 })
+		{
+			const SuperEllipse shape{ (Vec2{ 7, -11 } * scale), scale, scale, 0.5 };
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				CAPTURE(q, scale, sign);
+				const Vec2 point = (shape.center + sign * (q * scale));
+				const auto Check = [&](const auto& target, const double distance)
+				{
+					const auto pair = Geometry2D::ClosestPoints(shape, target), reversed = Geometry2D::ClosestPoints(target, shape);
+					REQUIRE(pair);
+					REQUIRE(reversed);
+					const double tolerance = (1.0e-11 * scale);
+					CHECK(Abs(pair->distance - distance) <= tolerance);
+					CHECK(Abs(Geometry2D::Distance(shape, target) - distance) <= tolerance);
+					CHECK(Geometry2D::Distance(target, shape) == Geometry2D::Distance(shape, target));
+					CHECK(reversed->pointA == pair->pointB);
+					CHECK(reversed->pointB == pair->pointA);
+					const Vec2 p = ((pair->pointA - shape.center) / shape.axes);
+					CHECK(Abs(std::sqrt(Abs(p.x)) + std::sqrt(Abs(p.y)) - 1.0) <= 1.0e-7);
+					CHECK(Geometry2D::Distance(pair->pointB, target) <= tolerance);
+					CheckWitnessConsistency(*pair, tolerance);
+				};
+				Check(point, (expected * scale));
+				Check(Line{ point, point }, (expected * scale));
+				const double gap = (1.0e-8 * scale), radius = (expected * scale - gap);
+				Check(Circle{ point, radius }, gap);
+				const Vec2 extent = (Vec2{ 0.3, 0.7 } * scale), far = (point + sign * extent);
+				for (const double r : { 0.0, radius })
+				{
+					Check(RoundRect{ (Min(point.x, far.x) - r), (Min(point.y, far.y) - r),
+						(extent.x + 2 * r), (extent.y + 2 * r), r }, (expected * scale - r));
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.ConcavePointNeighborhoods")
+{
+	for (const double n : { 0.25, 0.5, 0.9 })
+	{
+		for (const Vec2 axes : { Vec2{ 1, 1 }, Vec2{ 100, 1 }, Vec2{ 1, 100 } })
+		{
+			const SuperEllipse shape{ 0, 0, axes.x, axes.y, n };
+			for (const double t : { 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 0.99 })
+			{
+				const Vec2 normalized{ std::pow(t, (1.0 / n)), std::pow((1.0 - t), (1.0 / n)) };
+				const Vec2 onShape = (axes * normalized);
+				const Vec2 normal = Vec2{ (std::pow(normalized.x, (n - 1.0)) / axes.x),
+					(std::pow(normalized.y, (n - 1.0)) / axes.y) }.normalized();
+				for (const double gap : { 1.0e-10, 1.0e-6 })
+				{
+					CAPTURE(n, axes, t, gap);
+					const Vec2 query = (onShape + normal * gap);
+					const auto pair = Geometry2D::ClosestPoints(query, shape);
+					REQUIRE(pair);
+					CHECK(Abs(pair->distance - gap) <= 1.0e-12);
+					CHECK(Abs(Geometry2D::Distance(query, shape) - gap) <= 1.0e-12);
+					CHECK(pair->pointB.distanceFrom(onShape) <= 1.0e-10);
+					CHECK(pair->pointA == query);
+					CheckWitnessConsistency(*pair, 1.0e-12);
+				}
+			}
+		}
+	}
+	for (const double n : { 0.25, 0.5, 0.9, 1.0, 2.0, 4.0, 64.0 })
+	{
+		CAPTURE(n);
+		const SuperEllipse shape{ 0, 0, 100, 30, n };
+		CHECK(Geometry2D::Distance(Point{ 101, 0 }, shape) == 1.0);
+		CHECK(Geometry2D::Distance(Circle{ 102, 0, 1 }, shape) == 1.0);
+		CHECK(Geometry2D::Distance(shape, RoundRect{ 101, -5, 10, 20, 2 }) == 1.0);
+		CHECK(Geometry2D::Distance(shape, RoundRect{ -5, 31, 20, 10, 2 }) == 1.0);
+		CHECK(Geometry2D::Distance(Vec2{ 0, 0 }, shape) == 0.0);
+	}
+}
+
 TEST_CASE("Geometry2D.Distance.SuperEllipse.LinearBoundaries")
 {
 	for (const double n : { 1.0, 1.25, 2.0, 4.0, 64.0 })

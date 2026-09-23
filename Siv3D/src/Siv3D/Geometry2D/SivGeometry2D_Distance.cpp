@@ -704,7 +704,7 @@ namespace s3d
 			Vec2 bestA, bestB;
 			double lower = 0.0, upper = 1.0, previousStep = 1.0;
 			double t = std::pow(Min((delta.y / delta.x), 1.0), (1.0 / power));
-			const double tolerance = (16.0 * std::numeric_limits<double>::epsilon()
+			const double tolerance = ((IsPoint ? 4.0 : 16.0) * std::numeric_limits<double>::epsilon()
 				* Max({ delta.x, delta.y, a.a, a.b, axesB.x, axesB.y }));
 			bool converged = false;
 			for (int32 iteration = 0; iteration < 32; ++iteration)
@@ -759,6 +759,142 @@ namespace s3d
 				std::swap(bestB.x, bestB.y);
 			}
 			UpdateCandidate(result, (a.center + sign * bestA), (centerB - sign * bestB));
+			return result;
+		}
+
+		// Positive axes and 0 < n < 1; the point is outside the filled shape.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointPointConcaveSuperEllipse(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			const Vec2 delta = (point - shape.center), query{ Abs(delta.x), Abs(delta.y) };
+			const double inverseN = (1.0 / shape.n), split = std::pow(0.5, inverseN);
+			Vec2 best{ shape.a, 0.0 };
+			double bestDistanceSq = query.distanceFromSq(best);
+			bool bestTranspose = false;
+			auto Update = [&](const Vec2& p, const bool transpose) noexcept
+			{
+				const double distanceSq = query.distanceFromSq(p);
+				if (distanceSq <= bestDistanceSq)
+				{
+					best = p;
+					bestDistanceSq = distanceSq;
+					bestTranspose = transpose;
+				}
+			};
+			Update(Vec2{ 0.0, shape.b }, true);
+			// Use the larger normalized coordinate directly on each half,
+			// keeping the normalized boundary profile's slope bounded.
+			auto PointAt = [&](const double x, const bool transpose) noexcept
+			{
+				const double y = std::pow(Max(0.0, (1.0 - std::pow(x, shape.n))), inverseN);
+				return (shape.axes * (transpose ? Vec2{ y, x } : Vec2{ x, y }));
+			};
+			struct Interval
+			{
+				Vec2 lower, upper;
+				double bound;
+				bool transpose;
+			};
+			constexpr int32 MaxSubdivisions = 32;
+			std::array<Interval, MaxSubdivisions + 2> queue;
+			size_t count = 0;
+			const auto Compare = [](const Interval& a, const Interval& b) noexcept { return (a.bound > b.bound); };
+			auto Push = [&](const Vec2& lower, const Vec2& upper, const bool transpose) noexcept
+			{
+				// The clipped arc is southwest of its chord, and the query is
+				// northeast of the entire arc. Distance to the chord is a lower bound.
+				const double bound = ClosestPointOnSegment(query, lower, upper).distanceSq;
+				if (bound < bestDistanceSq)
+				{
+					queue[count++] = { lower, upper, bound, transpose };
+					std::push_heap(queue.begin(), (queue.begin() + count), Compare);
+				}
+			};
+			for (const bool transpose : { false, true })
+			{
+				const Vec2 axes = (transpose ? Vec2{ shape.b, shape.a } : shape.axes);
+				const Vec2 q = (transpose ? Vec2{ query.y, query.x } : query);
+				// A nearest point cannot have either coordinate greater than the query.
+				const double lower = Max(split, std::pow(Max(0.0, (1.0 - std::pow(Min((q.y / axes.y), 1.0), shape.n))), inverseN));
+				const double upper = Min((q.x / axes.x), 1.0);
+				if (upper < lower)
+				{
+					continue;
+				}
+				const Vec2 p0 = PointAt(lower, transpose), p1 = PointAt(upper, transpose);
+				Update(p0, transpose);
+				Update(p1, transpose);
+				Push(p0, p1, transpose);
+			}
+			const double tolerance = (16.0 * std::numeric_limits<double>::epsilon()
+				* Max({ shape.a, shape.b, query.x, query.y }));
+			for (int32 iteration = 0; (iteration < MaxSubdivisions) && count; ++iteration)
+			{
+				std::pop_heap(queue.begin(), (queue.begin() + count), Compare);
+				const Interval interval = queue[--count];
+				if ((bestDistanceSq - interval.bound) <= (tolerance * (2.0 * std::sqrt(bestDistanceSq) + tolerance)))
+				{
+					break;
+				}
+				const double middle = (interval.transpose
+					? ((interval.lower.y + interval.upper.y) / (2.0 * shape.b))
+					: ((interval.lower.x + interval.upper.x) / (2.0 * shape.a)));
+				const Vec2 p = PointAt(middle, interval.transpose);
+				Update(p, interval.transpose);
+				Push(interval.lower, p, interval.transpose);
+				Push(p, interval.upper, interval.transpose);
+			}
+			// Refine the selected minimum without extending the global search budget.
+			// Near an evolute the squared distance can be almost flat; retain the
+			// evaluated boundary point even if Newton cannot improve it.
+			const bool transpose = bestTranspose;
+			const Vec2 axes = (transpose ? Vec2{ shape.b, shape.a } : shape.axes);
+			const Vec2 q = (transpose ? Vec2{ query.y, query.x } : query);
+			double x = (transpose ? (best.y / shape.b) : (best.x / shape.a));
+			for (int32 iteration = 0; iteration < 8; ++iteration)
+			{
+				const double y = std::pow(Max(0.0, (1.0 - std::pow(x, shape.n))), inverseN);
+				if ((x == 0.0) || (y == 0.0))
+				{
+					break;
+				}
+				const double slope = -std::pow((y / x), (1.0 - shape.n));
+				const double curvature = (-(1.0 - shape.n) * slope / (x * std::pow(y, shape.n)));
+				const Vec2 gap = (axes * Vec2{ x, y } - q);
+				const double f = (gap.x * axes.x + gap.y * axes.y * slope);
+				const double derivative = (axes.x * axes.x + axes.y * axes.y * slope * slope + gap.y * axes.y * curvature);
+				if (derivative <= 0.0)
+				{
+					break;
+				}
+				const double next = (x - f / derivative);
+				if (not ((split < next) && (next < 1.0)) || (next == x))
+				{
+					break;
+				}
+				x = next;
+				Update(PointAt(x, transpose), transpose);
+			}
+			ClosestPairCandidate result;
+			UpdateCandidate(result, point, (shape.center + Vec2{ std::copysign(best.x, delta.x), std::copysign(best.y, delta.y) }));
+			return result;
+		}
+
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointPointSuperEllipse(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			if (shape.n < 1.0)
+			{
+				return ClosestDisjointPointConcaveSuperEllipse(point, shape);
+			}
+			if (shape.n == 1.0)
+			{
+				return ClosestPointOnSegment(point,
+					(shape.center + Vec2{ std::copysign(shape.a, (point.x - shape.x)), 0.0 }),
+					(shape.center + Vec2{ 0.0, std::copysign(shape.b, (point.y - shape.y)) }));
+			}
+			auto result = ClosestDisjointConvexSuperEllipsePair(shape, point);
+			std::swap(result.pointA, result.pointB);
 			return result;
 		}
 
@@ -1233,11 +1369,9 @@ namespace s3d
 				return result;
 			}
 
-			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (2.0 < shape->n))
+			if (const auto* shape = std::get_if<SuperEllipse>(&piece))
 			{
-				ClosestPairCandidate result;
-				UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundary(point, *shape));
-				return result;
+				return ClosestDisjointPointSuperEllipse(point, *shape);
 			}
 
 			if (const Line* line = std::get_if<Line>(&piece))
@@ -2493,6 +2627,61 @@ namespace s3d
 
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
+		Optional<ClosestPoints2D> TryClosestSuperEllipseSimpleShape(const ShapeA& a, const ShapeB& b)
+		{
+			constexpr bool PointFirst = (std::is_same_v<ShapeA, Point> || std::is_same_v<ShapeA, Vec2>);
+			constexpr bool ShapeFirst = (std::is_same_v<ShapeA, SuperEllipse> && std::is_same_v<ShapeB, RoundRect>);
+			if constexpr (ShapeFirst || (std::is_same_v<ShapeB, SuperEllipse> && (PointFirst || std::is_same_v<ShapeA, Circle>)))
+			{
+				const auto& shape = [&]() -> const SuperEllipse&
+				{
+					if constexpr (ShapeFirst) return a;
+					else return b;
+				}();
+				if ((shape.a <= 0.0) || (shape.b <= 0.0))
+				{
+					return none;
+				}
+				const auto [point, radius] = [&]()
+				{
+					if constexpr (ShapeFirst)
+					{
+						// Both shapes are symmetric in each axis. The nearest core point
+						// is the clamp of the SuperEllipse center, including for n < 1.
+						const double r = detail::GetGeometry2DEffectiveRadius(b);
+						const RectF core = detail::GetGeometry2DRoundRectCore(b, r);
+						return std::pair{ Vec2{ Clamp(shape.x, core.x, (core.x + core.w)), Clamp(shape.y, core.y, (core.y + core.h)) }, r };
+					}
+					else if constexpr (PointFirst)
+					{
+						return std::pair{ Vec2{ a }, 0.0 };
+					}
+					else
+					{
+						return std::pair{ a.center, a.r };
+					}
+				}();
+				const auto closest = ClosestDisjointPointSuperEllipse(point, shape);
+				const double distance = std::sqrt(closest.distanceSq);
+				if (distance <= radius)
+				{
+					return ClosestPoints2D{ closest.pointB, closest.pointB, 0.0 };
+				}
+				const Vec2 onRoundedShape = (point + (closest.pointB - point) * (radius / distance));
+				if constexpr (ShapeFirst)
+				{
+					return ClosestPoints2D{ closest.pointB, onRoundedShape, (distance - radius) };
+				}
+				else
+				{
+					return ClosestPoints2D{ onRoundedShape, closest.pointB, (distance - radius) };
+				}
+			}
+			return none;
+		}
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
 		Optional<ClosestPoints2D> ComputeClosestPointsCanonical(const ShapeA& a, const ShapeB& b)
 		{
 			if constexpr (detail::IsBezier<ShapeA> && detail::IsBezier<ShapeB>)
@@ -2527,6 +2716,11 @@ namespace s3d
 				{
 					return ClosestPoints2D{ *commonPoint, *commonPoint, 0.0 };
 				}
+			}
+
+			if (const auto closest = TryClosestSuperEllipseSimpleShape(a, b))
+			{
+				return closest;
 			}
 
 			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
@@ -2599,6 +2793,11 @@ namespace s3d
 				return 0.0;
 			}
 
+			if (const auto closest = TryClosestSuperEllipseSimpleShape(a, b))
+			{
+				return closest->distance;
+			}
+
 			const ShapeDistanceData dataA = MakeShapeDistanceData(a);
 			const ShapeDistanceData dataB = MakeShapeDistanceData(b);
 			const ClosestPairCandidate candidate = ComputeDisjointClosestPair(dataA, dataB);
@@ -2621,6 +2820,14 @@ namespace s3d
 					return ComputeDistanceCanonical(a, b);
 				}
 			});
+		}
+	}
+
+	namespace detail
+	{
+		Vec2 ClosestPointOnSuperEllipseBoundaryFromOutside(const Vec2& point, const SuperEllipse& shape) noexcept
+		{
+			return ClosestDisjointPointSuperEllipse(point, shape).pointB;
 		}
 	}
 
