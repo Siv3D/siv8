@@ -32,7 +32,6 @@ namespace s3d
 		inline constexpr double RootTolerance = 1.0e-11;
 		inline constexpr double PointMergeTolerance = 1.0e-9;
 		inline constexpr int32 CurvedRootSamples = 512;
-		inline constexpr int32 BezierPairSegments = 96;
 
 		enum class ArcRegion : uint8
 		{
@@ -188,20 +187,6 @@ namespace s3d
 		bool SameSuperEllipse(const SuperEllipse& a, const SuperEllipse& b) noexcept
 		{
 			return (a.center == b.center) && (a.axes == b.axes) && (a.n == b.n);
-		}
-
-		[[nodiscard]]
-		bool SameBezier(const Bezier2& a, const Bezier2& b) noexcept
-		{
-			return (((a.p0 == b.p0) && (a.p1 == b.p1) && (a.p2 == b.p2))
-				|| ((a.p0 == b.p2) && (a.p1 == b.p1) && (a.p2 == b.p0)));
-		}
-
-		[[nodiscard]]
-		bool SameBezier(const Bezier3& a, const Bezier3& b) noexcept
-		{
-			return (((a.p0 == b.p0) && (a.p1 == b.p1) && (a.p2 == b.p2) && (a.p3 == b.p3))
-				|| ((a.p0 == b.p3) && (a.p1 == b.p2) && (a.p2 == b.p1) && (a.p3 == b.p0)));
 		}
 
 		[[nodiscard]]
@@ -1263,36 +1248,239 @@ namespace s3d
 			}
 		}
 
+		// Work in a canonical, normalized frame so argument order, direction,
+		// and world-space scale do not change the bounded search.
+		void AppendBezierPairPoints(Array<Vec2>& result, Bezier3 a, Bezier3 b)
+		{
+			constexpr double Tolerance = detail::BezierRootTolerance;
+			// Double roots have parameter uncertainty on the order of sqrt(epsilon).
+			constexpr double ParameterMerge = 2.0e-7;
+			constexpr int32 MaxNodes = 64, MaxCorrections = 128;
+			if (detail::BezierLexicographicalLess(a.reversed(), a))
+			{
+				a = a.reversed();
+			}
+			if (detail::BezierLexicographicalLess(b.reversed(), b))
+			{
+				b = b.reversed();
+			}
+			if (detail::BezierLexicographicalLess(b, a))
+			{
+				std::swap(a, b);
+			}
+			const Vec2 origin = a.p0;
+			double scale = 0.0;
+			for (const auto& curve : { a, b })
+			{
+				for (const auto& p : detail::BezierControlPoints(curve))
+				{
+					scale = Max({ scale, Abs(p.x - origin.x), Abs(p.y - origin.y) });
+				}
+			}
+			for (auto* curve : { &a, &b })
+			{
+				curve->p0 = ((curve->p0 - origin) / scale);
+				curve->p1 = ((curve->p1 - origin) / scale);
+				curve->p2 = ((curve->p2 - origin) / scale);
+				curve->p3 = ((curve->p3 - origin) / scale);
+			}
+			const auto SameCurve = [&](const Bezier3& first, const Bezier3& second)
+			{
+				const auto ca = detail::BezierControlPoints(first), cb = detail::BezierControlPoints(second);
+				for (size_t i = 0; i < ca.size(); ++i)
+				{
+					if ((ca[i] - cb[i]).lengthSq() > (Tolerance * Tolerance))
+					{
+						return false;
+					}
+				}
+				return true;
+			};
+			if (SameCurve(a, b))
+			{
+				return;
+			}
+
+			// A common subcurve has matching endpoints and matching reparameterized
+			// control points. Endpoint equality alone is insufficient for a loop.
+			std::array<Vec2, 12> endpointPairs;
+			size_t endpointCount = 0;
+			const auto MatchEndpoint = [&](const Bezier3& curve, const Vec2& point, const double endpoint, const bool swap)
+			{
+				const auto [lo, hi] = detail::BezierControlBounds(curve);
+				const bool useX = ((hi.y - lo.y) <= (hi.x - lo.x));
+				const auto controls = detail::BezierControlPoints(curve);
+				std::array<double, 4> values;
+				for (size_t i = 0; i < 4; ++i)
+				{
+					values[i] = (useX ? (controls[i].x - point.x) : (controls[i].y - point.y));
+				}
+				(void)detail::CheckCubicRootsInUnitInterval(
+					(-values[0] + 3 * values[1] - 3 * values[2] + values[3]),
+					(3 * (values[0] - 2 * values[1] + values[2])), (3 * (values[1] - values[0])), values[0],
+					[&](const double t)
+					{
+						if ((curve.pointAt(t) - point).lengthSq() <= (Tolerance * Tolerance))
+						{
+							endpointPairs[endpointCount++] = (swap ? Vec2{ t, endpoint } : Vec2{ endpoint, t });
+						}
+						return false;
+					});
+			};
+			MatchEndpoint(b, a.p0, 0.0, false);
+			MatchEndpoint(b, a.p3, 1.0, false);
+			MatchEndpoint(a, b.p0, 0.0, true);
+			MatchEndpoint(a, b.p3, 1.0, true);
+			for (size_t i = 0; i < endpointCount; ++i)
+			{
+				for (size_t j = i + 1; j < endpointCount; ++j)
+				{
+					const Vec2 p = endpointPairs[i], q = endpointPairs[j];
+					if ((Abs(p.x - q.x) <= Tolerance) || (Abs(p.y - q.y) <= Tolerance))
+					{
+						continue;
+					}
+					const auto partA = detail::BezierParameterRange(a, Min(p.x, q.x), Max(p.x, q.x));
+					auto partB = detail::BezierParameterRange(b, Min(p.y, q.y), Max(p.y, q.y));
+					if ((p.x < q.x) != (p.y < q.y))
+					{
+						partB = partB.reversed();
+					}
+					if (SameCurve(partA, partB))
+					{
+						return;
+					}
+				}
+			}
+
+			struct Event
+			{
+				double t, s, error;
+				Vec2 point;
+			};
+			std::array<Event, 16> events;
+			size_t eventCount = 0;
+			int32 corrections = 0;
+			const auto Include = [&](double t, double s, const double la, const double ha, const double lb, const double hb)
+			{
+				Event best{ t, s, std::numeric_limits<double>::infinity(), {} };
+				for (int32 iteration = 0; iteration < 20; ++iteration)
+				{
+					const Vec2 pa = a.pointAt(t), pb = b.pointAt(s), delta = (pa - pb);
+					const double error = delta.lengthSq();
+					if (error < best.error)
+					{
+						best = { t, s, error, pa + (pb - pa) * 0.5 };
+					}
+					if ((error == 0.0) || (corrections == MaxCorrections))
+					{
+						break;
+					}
+					const Vec2 u = a.derivativeAt(t), v = b.derivativeAt(s);
+					const double determinant = u.cross(v);
+					if (determinant == 0.0)
+					{
+						break;
+					}
+					++corrections;
+					const double nextT = Clamp(t - delta.cross(v) / determinant, la, ha);
+					const double nextS = Clamp(s - delta.cross(u) / determinant, lb, hb);
+					if ((nextT == t) && (nextS == s))
+					{
+						break;
+					}
+					t = nextT;
+					s = nextS;
+				}
+				if (best.error > (Tolerance * Tolerance))
+				{
+					return false;
+				}
+				for (size_t i = 0; i < eventCount; ++i)
+				{
+					if (((Abs(events[i].t - best.t) <= ParameterMerge) && (Abs(events[i].s - best.s) <= ParameterMerge))
+						|| ((events[i].point - best.point).lengthSq() <= (Tolerance * Tolerance)))
+					{
+						if (best.error < events[i].error)
+						{
+							events[i] = best;
+						}
+						return false;
+					}
+				}
+				if (eventCount < events.size())
+				{
+					events[eventCount++] = best;
+				}
+				return false;
+			};
+			for (size_t i = 0; i < endpointCount; ++i)
+			{
+				Include(endpointPairs[i].x, endpointPairs[i].y, 0, 1, 0, 1);
+			}
+			bool contact = false;
+			(void)detail::SeparateBezierPairByProjection(a, b,
+				[&](const double t, const double s) { return Include(t, s, 0, 1, 0, 1); }, contact);
+			struct Node
+			{
+				Bezier3 a, b;
+				double la, ha, lb, hb;
+			};
+			std::array<Node, MaxNodes + 1> stack;
+			int32 count = 1;
+			stack[0] = { a, b, 0, 1, 0, 1 };
+			for (int32 visit = 0; count && (visit < MaxNodes); ++visit)
+			{
+				Node node = stack[--count];
+				const auto [loA, hiA] = detail::BezierControlBounds(node.a);
+				const auto [loB, hiB] = detail::BezierControlBounds(node.b);
+				if (((hiA.x + Tolerance) < loB.x) || ((hiB.x + Tolerance) < loA.x)
+					|| ((hiA.y + Tolerance) < loB.y) || ((hiB.y + Tolerance) < loA.y))
+				{
+					continue;
+				}
+				const double widthA = (node.ha - node.la), widthB = (node.hb - node.lb);
+				if (not detail::ClipBezierPair(node.a, node.b, node.lb, node.hb)
+					|| not detail::ClipBezierPair(node.b, node.a, node.la, node.ha))
+				{
+					continue;
+				}
+				if (Max(node.ha - node.la, node.hb - node.lb) <= ParameterMerge)
+				{
+					Include((node.la + node.ha) * 0.5, (node.lb + node.hb) * 0.5, node.la, node.ha, node.lb, node.hb);
+					continue;
+				}
+				if (((node.ha - node.la) < (0.8 * widthA)) || ((node.hb - node.lb) < (0.8 * widthB)))
+				{
+					stack[count++] = node;
+				}
+				else if ((hiB - loB).lengthSq() <= (hiA - loA).lengthSq())
+				{
+					const auto [left, right] = node.a.split(0.5);
+					const double middle = (node.la + node.ha) * 0.5;
+					stack[count++] = { right, node.b, middle, node.ha, node.lb, node.hb };
+					stack[count++] = { left, node.b, node.la, middle, node.lb, node.hb };
+				}
+				else
+				{
+					const auto [left, right] = node.b.split(0.5);
+					const double middle = (node.lb + node.hb) * 0.5;
+					stack[count++] = { node.a, right, node.la, node.ha, middle, node.hb };
+					stack[count++] = { node.a, left, node.la, node.ha, node.lb, middle };
+				}
+			}
+			result.reserve(result.size() + eventCount);
+			for (size_t i = 0; i < eventCount; ++i)
+			{
+				result.push_back(origin + events[i].point * scale);
+			}
+		}
+
 		template <class BezierA, class BezierB>
 		void ProcessBezierBezier(IntersectionAccumulator& accumulator, const BezierA& a, const BezierB& b)
 		{
-			if constexpr (std::is_same_v<BezierA, BezierB>)
-			{
-				if (SameBezier(a, b))
-				{
-					accumulator.positiveDimensionalComponents.emplace_back(a);
-					return;
-				}
-			}
-
-			Vec2 a0 = a.pointAt(0.0);
-
-			for (int32 i = 0; i < BezierPairSegments; ++i)
-			{
-				const double at = (static_cast<double>(i + 1) / BezierPairSegments);
-				const Vec2 a1 = a.pointAt(at);
-				Vec2 b0 = b.pointAt(0.0);
-
-				for (int32 j = 0; j < BezierPairSegments; ++j)
-				{
-					const double bt = (static_cast<double>(j + 1) / BezierPairSegments);
-					const Vec2 b1 = b.pointAt(bt);
-					ProcessLineLine(accumulator, Line{ a0, a1 }, Line{ b0, b1 });
-					b0 = b1;
-				}
-
-				a0 = a1;
-			}
+			const auto ca = detail::BezierCubicControlPoints(a), cb = detail::BezierCubicControlPoints(b);
+			AppendBezierPairPoints(accumulator.points, { ca[0], ca[1], ca[2], ca[3] }, { cb[0], cb[1], cb[2], cb[3] });
 		}
 
 		template <class A, class B>
@@ -1516,6 +1704,13 @@ namespace s3d
 				if (not Geometry2D::Intersects(a, b))
 				{
 					return none;
+				}
+
+				if constexpr (detail::IsBezier<std::decay_t<decltype(a)>> && detail::IsBezier<std::decay_t<decltype(b)>>)
+				{
+					IntersectionAccumulator accumulator;
+					ProcessBezierBezier(accumulator, a, b);
+					return std::move(accumulator.points);
 				}
 
 				return EnumerateKnownIntersection(

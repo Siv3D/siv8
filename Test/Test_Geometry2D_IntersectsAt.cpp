@@ -459,3 +459,81 @@ TEST_CASE("Geometry2D.IntersectsAt.Bezier.SimpleGeometry")
 	CheckPair(Elevate(arch), diamond, expected);
 	CheckPair(arch, SuperEllipse{ 0, 0.11, 0.02, 0.01, 1 }, { { 0, 0.1 } });
 }
+
+TEST_CASE("Geometry2D.IntersectsAt.Bezier.GeneralPairs")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const Array<Vec2>& expected, const double scale = 1.0)
+	{
+		for (const auto& aa : { a, a.reversed() })
+		{
+			for (const auto& bb : { b, b.reversed() })
+			{
+				for (const auto& points : { Geometry2D::IntersectsAt(aa, bb), Geometry2D::IntersectsAt(bb, aa) })
+				{
+					CheckPointSet(points, expected, (scale * 1.0e-7));
+					REQUIRE(points.has_value());
+					for (const Vec2& p : *points)
+					{
+						CHECK(Geometry2D::Distance(p, a) <= (scale * 1.0e-11));
+						CHECK(Geometry2D::Distance(p, b) <= (scale * 1.0e-11));
+					}
+				}
+			}
+		}
+	};
+	const auto CheckDegrees = [&](const Bezier2& a, const Bezier2& b, const Array<Vec2>& expected, const double scale)
+	{
+		CheckPair(a, b, expected, scale);
+		CheckPair(a, Elevate(b), expected, scale);
+		CheckPair(Elevate(a), b, expected, scale);
+		CheckPair(Elevate(a), Elevate(b), expected, scale);
+	};
+	const Bezier2 a{ { -1, 0.1 }, { 0, -0.1 }, { 1, 0.1 } };
+	constexpr double X = 0.27;
+	const Bezier2 tangent{ { -1, -0.1 - 0.4 * X - 0.2 * X * X },
+		{ 0, 0.1 - 0.2 * X * X }, { 1, -0.1 + 0.4 * X - 0.2 * X * X } };
+	for (const double scale : { 1.0e-6, 1.0, 1.0e6 })
+	{
+		const Vec2 offset = (Vec2{ 13, -7 } * scale);
+		const auto Transform = [&](const Bezier2& q)
+		{
+			return Bezier2{ q.p0 * scale + offset, q.p1 * scale + offset, q.p2 * scale + offset };
+		};
+		const auto aa = Transform(a), bb = Transform(tangent);
+		CheckDegrees(aa, bb, { Vec2{ X, 0.1 * X * X } * scale + offset }, scale);
+		// Both crossings lie between adjacent samples of the former polyline.
+		const double delta = std::sqrt(5.0e-8);
+		const double x0 = (X - delta), x1 = (X + delta);
+		CheckDegrees(aa, Transform(tangent.movedBy(0, 1.0e-8)),
+			{ Vec2{ x0, 0.1 * x0 * x0 } * scale + offset, Vec2{ x1, 0.1 * x1 * x1 } * scale + offset }, scale);
+		CHECK(not Geometry2D::IntersectsAt(aa, Transform(tangent.movedBy(0, -1.0e-8))));
+		CheckDegrees(aa, aa, {}, scale);
+		CheckDegrees(aa, Transform(a.split(0.371).second), {}, scale);
+		CheckDegrees(aa, Transform(Bezier2{ a.p2, { 2, -1 }, { 3, 1 } }), { aa.p2 }, scale);
+	}
+
+	// A(t)=(T3(u),u), B(s)=(v,T3(v)), u=2t-1, v=2s-1, have nine intersections.
+	const Bezier3 nineA{ { -1, -1 }, { 5, -1.0 / 3 }, { -5, 1.0 / 3 }, { 1, 1 } };
+	const Bezier3 nineB{ { -1, -1 }, { -1.0 / 3, 5 }, { 1.0 / 3, -5 }, { 1, 1 } };
+	Array<Vec2> ninePoints;
+	for (const double u : { -1.0, -std::cos(Math::Pi / 5), -std::cos(Math::Pi / 4), -std::cos(2 * Math::Pi / 5),
+		0.0, std::cos(2 * Math::Pi / 5), std::cos(Math::Pi / 4), std::cos(Math::Pi / 5), 1.0 })
+	{
+		ninePoints.push_back({ (4 * u * u * u - 3 * u), u });
+	}
+	CheckPair(nineA, nineB, ninePoints);
+	// yB(t)-yA(t)=(t-.2)(t-.201)(t-.8), with xA(t)=xB(t)=t.
+	const double d = (-0.2 * 0.201 * 0.8), c = (0.2 * 0.201 + 0.2 * 0.8 + 0.201 * 0.8), b = -(0.2 + 0.201 + 0.8);
+	CheckPair(Bezier2{ { 0, 0 }, { 0.5, 0 }, { 1, 1 } },
+		Bezier3{ { 0, d }, { 1.0 / 3, d + c / 3 }, { 2.0 / 3, d + 2 * c / 3 + (b + 1) / 3 }, { 1, d + c + b + 2 } },
+		{ { 0.2, 0.04 }, { 0.201, 0.040401 }, { 0.8, 0.64 } });
+	const Bezier3 loop{ { 0, 0 }, { 3, 4 }, { -3, 4 }, { 0, 0 } };
+	CheckPair(loop, loop.split(0.371).second, {});
+	CheckPair(loop, Bezier3{ loop.pointAt(0.23), { 4, 2 }, { 2, -1 }, { 4, -3 } }, { loop.pointAt(0.23) });
+	const Bezier3 cusp{ { 0.25, -0.125 }, { -1.0 / 12, 0.125 }, { -1.0 / 12, -0.125 }, { 0.25, 0.125 } };
+	CheckPair(cusp, Bezier2{ { -1, 1 }, { 0, -1 }, { 1, 1 } }, { { 0, 0 } });
+}

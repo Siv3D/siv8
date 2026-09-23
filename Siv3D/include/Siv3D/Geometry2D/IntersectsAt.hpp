@@ -254,9 +254,15 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier2& a, const LineString& b);
 
+		/// @brief Bezier 曲線同士の孤立した交点を近似計算します。
+		/// @remark 近接した交点をまとめたり、計算上限により一部の交点を取得できなかったりする場合があります。
+		/// @return 交点の配列。共有区間がある場合や交点を確認できない場合は空の配列。Intersects() が false の場合は none。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier2& a, const Bezier2& b);
 
+		/// @brief Bezier 曲線同士の孤立した交点を近似計算します。
+		/// @remark 近接した交点をまとめたり、計算上限により一部の交点を取得できなかったりする場合があります。
+		/// @return 交点の配列。共有区間がある場合や交点を確認できない場合は空の配列。Intersects() が false の場合は none。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier2& a, const Bezier3& b);
 
@@ -308,9 +314,15 @@ namespace s3d
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier3& a, const LineString& b);
 
+		/// @brief Bezier 曲線同士の孤立した交点を近似計算します。
+		/// @remark 近接した交点をまとめたり、計算上限により一部の交点を取得できなかったりする場合があります。
+		/// @return 交点の配列。共有区間がある場合や交点を確認できない場合は空の配列。Intersects() が false の場合は none。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier3& a, const Bezier2& b);
 
+		/// @brief Bezier 曲線同士の孤立した交点を近似計算します。
+		/// @remark 近接した交点をまとめたり、計算上限により一部の交点を取得できなかったりする場合があります。
+		/// @return 交点の配列。共有区間がある場合や交点を確認できない場合は空の配列。Intersects() が false の場合は none。
 		[[nodiscard]]
 		Optional<Array<Vec2>> IntersectsAt(const Bezier3& a, const Bezier3& b);
 

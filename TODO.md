@@ -11,7 +11,7 @@
 
 ### 曲線の交点・距離計算
 
-- **曲線の交点・共通点取得**: Bezier 同士や Bezier と曲線境界などの `IntersectsAt()` に残る固定標本・局所探索は、交差判定が正しくても交点を取りこぼしたり、曲線からずれた点を返したりする。`Intersects()` による早期除外と、`ClosestPoints()` の共通点取得への波及を含めて見直す。
+- **曲線の交点・共通点取得**: Bezier と円・楕円・SuperEllipse など、残る曲線境界間の `IntersectsAt()` の固定標本・局所探索は、交差判定が正しくても交点を取りこぼしたり、曲線からずれた点を返したりする。`Intersects()` による早期除外と、`ClosestPoints()` の共通点取得への波及を含めて見直す。
 - **離れた曲線間の精度と処理量**: SuperEllipse と点、凹 SuperEllipse（`n < 1`）と直線辺・曲線、菱形（`n == 1`）と楕円・円弧、Bezier と楕円・一般の SuperEllipse（`n != 1`）、楕円・SuperEllipse と円弧には、固定標本・分割と局所探索による `Distance()` / `ClosestPoints()` が残る。接触付近の距離誤差と処理量をまとめて検証し、SuperEllipse の角度からの境界評価も見直す。既存の点・楕円ソルバの再利用、直線辺の厳密な処理、凹曲線向けの探索を比較し、分割数・反復数の増加だけで対応しない。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`
