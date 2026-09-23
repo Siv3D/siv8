@@ -1377,3 +1377,85 @@ TEST_CASE("Geometry2D.Distance.Bezier.GeneralPairs")
 	CHECK(Geometry2D::Intersects(near, shifted));
 	CheckPair(near, shifted, 1.0e-13, 1.1e-10);
 }
+
+TEST_CASE("Geometry2D.Distance.Bezier.GeneralSuperEllipse")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& curve, const SuperEllipse& shape, const bool contact)
+	{
+		for (const auto& c : { curve, curve.reversed() })
+		{
+			const auto ab = Geometry2D::ClosestPoints(c, shape), ba = Geometry2D::ClosestPoints(shape, c);
+			REQUIRE(ab);
+			REQUIRE(ba);
+			for (const double distance : { ab->distance, ba->distance, Geometry2D::Distance(c, shape), Geometry2D::Distance(shape, c) })
+			{
+				if (contact)
+				{
+					CHECK(distance == 0.0);
+				}
+				else
+				{
+					CHECK(0.1 < distance);
+					CHECK(distance < 0.13);
+				}
+			}
+			CHECK(Geometry2D::Distance(ab->pointA, c) < 1.0e-10);
+			CHECK(Geometry2D::Distance(ba->pointB, c) < 1.0e-10);
+			for (const Vec2& p : { ab->pointB, ba->pointA })
+			{
+				const Vec2 normalized = ((p - shape.center) / shape.axes);
+				CHECK((std::pow(Abs(normalized.x), shape.n) + std::pow(Abs(normalized.y), shape.n)) <= (1.0 + 1.0e-10));
+			}
+			CheckWitnessConsistency(*ab);
+			CheckWitnessConsistency(*ba);
+		}
+	};
+	const Bezier2 arch{ { -1, 0 }, { 0, 0.25 }, { 1, 0 } };
+	for (const double n : { 0.25, 0.5, 1.5, 4.0, 16.0 })
+	{
+		for (const auto& shape : { SuperEllipse{ arch.pointAt(0.371), 0.0001, 0.00001, n },
+			SuperEllipse{ 0, 0.25, 0.125, 0.125, n } })
+		{
+			CheckPair(arch, shape, true);
+			CheckPair(Elevate(arch), shape, true);
+		}
+		const SuperEllipse separate{ 0, 0, 0.02, 0.01, n };
+		CheckPair(arch, separate, false);
+		CheckPair(Elevate(arch), separate, false);
+	}
+	for (const double n : { 0.25, 0.5 })
+	{
+		const Vec2 offset{ 0.003, 0.006 };
+		const auto curve = Elevate(arch).movedBy(offset);
+		const auto tip = SuperEllipse{ 0, 0.25, 0.125, 0.125, n }.movedBy(offset);
+		const auto closest = Geometry2D::ClosestPoints(curve, tip);
+		REQUIRE(closest);
+		CHECK(closest->distance == 0.0);
+		CHECK(closest->pointA.distanceFrom(tip.top()) < 1.0e-14);
+		CHECK(Geometry2D::Distance(curve, tip) == 0.0);
+	}
+
+	// A near tangent exhausts the predicate budget. Preserve an evaluated
+	// positive distance instead of inferring a common point from its true.
+	const Bezier2 near{ { 0.84685981844406344, 1.1005179725195844 },
+		{ 0.91832975846205445, 0.9804672563978607 }, { 1.0264798602082323, 0.8970967020043239 } };
+	const SuperEllipse shape{ 0, 0, 1, 1, 16 };
+	for (const auto& c : { near, near.reversed() })
+	{
+		CHECK(Geometry2D::Intersects(c, shape));
+		const auto closest = Geometry2D::ClosestPoints(c, shape);
+		REQUIRE(closest);
+		CHECK(0.0 < closest->distance);
+		CHECK(closest->distance < 1.0e-9);
+		CHECK(Geometry2D::Distance(c, shape) == closest->distance);
+		CHECK(Geometry2D::Distance(closest->pointA, c) < 1.0e-12);
+		CHECK((std::pow(Abs(closest->pointB.x), 16) + std::pow(Abs(closest->pointB.y), 16)) <= (1.0 + 1.0e-12));
+		CheckWitnessConsistency(*closest);
+	}
+	CHECK(std::isinf(Geometry2D::Distance(arch, SuperEllipse{ 0, 0, 0, 0, 4 })));
+	CHECK(not Geometry2D::ClosestPoints(arch, SuperEllipse{ 0, 0, 0, 0, 4 }));
+}

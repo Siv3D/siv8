@@ -6,12 +6,212 @@
 //-----------------------------------------------
 # pragma once
 # include <array>
+# include "BezierGeometry.hpp"
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/PolynomialSolver.hpp>
 
 namespace s3d::detail
 {
 	inline constexpr double SuperEllipseContactTolerance = (64.0 * 2.2204460492503131e-16);
+
+	struct BezierSuperEllipseIntersection
+	{
+		BezierIntersectionKind kind = BezierIntersectionKind::Separated;
+		double parameter = 0.0;
+	};
+
+	// Positive axes, n != 1, 2, and a genuinely curved Bezier. Point/segment,
+	// diamond, and ellipse reductions belong to the callers.
+	template <class Bezier>
+	[[nodiscard]]
+	BezierSuperEllipseIntersection ClassifyBezierSuperEllipse(const Bezier& original, const SuperEllipse& shape)
+	{
+		constexpr int32 MaxNodes = 64;
+		constexpr double AxisLimit = (1.0 + SuperEllipseContactTolerance);
+		const bool reversed = BezierLexicographicalLess(original.reversed(), original);
+		Bezier curve = (reversed ? original.reversed() : original);
+		const auto Normalize = [&](const Vec2& p) { return ((p - shape.center) / shape.axes / AxisLimit); };
+		curve.p0 = Normalize(curve.p0);
+		curve.p1 = Normalize(curve.p1);
+		curve.p2 = Normalize(curve.p2);
+		if constexpr (std::is_same_v<Bezier, Bezier3>)
+		{
+			curve.p3 = Normalize(curve.p3);
+		}
+		const auto [lower, upper] = BezierControlBounds(curve);
+		BezierSuperEllipseIntersection result;
+		if ((1.0 < lower.x) || (upper.x < -1.0) || (1.0 < lower.y) || (upper.y < -1.0))
+		{
+			return result;
+		}
+		const auto Powers = [&](const Vec2& p)
+		{
+			return Vec2{ std::pow(Abs(p.x), shape.n), std::pow(Abs(p.y), shape.n) };
+		};
+		double bestValue = std::numeric_limits<double>::infinity();
+		const auto TestPoint = [&](const double t)
+		{
+			const double parameter = (reversed ? (1.0 - t) : t);
+			// Verify the witness with the same curve evaluation used by callers.
+			Vec2 p = Normalize(original.pointAt(parameter));
+			if ((1.0 < Abs(p.x)) || (1.0 < Abs(p.y)))
+			{
+				return false;
+			}
+			// At a concave tip, a sub-ulp coordinate error becomes a much
+			// larger implicit-value error after pow(). Use spatial tolerance.
+			if (shape.n < 1.0)
+			{
+				p.x = ((Abs(p.x) <= SuperEllipseContactTolerance) ? 0.0 : p.x);
+				p.y = ((Abs(p.y) <= SuperEllipseContactTolerance) ? 0.0 : p.y);
+			}
+			const Vec2 powers = Powers(p);
+			const double value = (powers.x + powers.y);
+			if (value < bestValue)
+			{
+				bestValue = value;
+				result.parameter = parameter;
+			}
+			if (value <= 1.0)
+			{
+				result = { BezierIntersectionKind::Contact, parameter };
+				return true;
+			}
+			return false;
+		};
+		if (TestPoint(0.0) || TestPoint(1.0) || TestPoint(0.5))
+		{
+			return result;
+		}
+		// Axis crossings find narrow targets without subdividing to their size,
+		// and include the sharp tips of concave SuperEllipses.
+		const auto controls = BezierControlPoints(curve);
+		constexpr size_t Count = std::tuple_size_v<decltype(controls)>;
+		for (const bool useX : { true, false })
+		{
+			std::array<double, Count> coordinates;
+			for (size_t i = 0; i < Count; ++i)
+			{
+				coordinates[i] = (useX ? controls[i].x : controls[i].y);
+			}
+			bool contact;
+			if constexpr (Count == 3)
+			{
+				contact = CheckQuadraticRootsInUnitInterval(
+					(coordinates[0] - 2.0 * coordinates[1] + coordinates[2]),
+					(2.0 * (coordinates[1] - coordinates[0])), coordinates[0], TestPoint);
+			}
+			else
+			{
+				contact = CheckCubicRootsInUnitInterval(
+					(-coordinates[0] + 3.0 * coordinates[1] - 3.0 * coordinates[2] + coordinates[3]),
+					(3.0 * (coordinates[0] - 2.0 * coordinates[1] + coordinates[2])),
+					(3.0 * (coordinates[1] - coordinates[0])), coordinates[0], TestPoint);
+			}
+			if (contact)
+			{
+				return result;
+			}
+		}
+		struct Node
+		{
+			Bezier curve;
+			double lower, upper;
+		};
+		// A visit replaces one node with at most two children.
+		std::array<Node, MaxNodes + 1> stack;
+		int32 count = 1;
+		stack[0] = { curve, 0.0, 1.0 };
+		for (int32 visit = 0; count && (visit < MaxNodes); ++visit)
+		{
+			const Node node = stack[--count];
+			const auto [lo, hi] = BezierControlBounds(node.curve);
+			const Vec2 near{ Max({ 0.0, lo.x, -hi.x }), Max({ 0.0, lo.y, -hi.y }) };
+			if ((1.0 < near.x) || (1.0 < near.y))
+			{
+				continue;
+			}
+			const Vec2 nearPowers = Powers(near);
+			if ((1.0 + 8.0 * SuperEllipseContactTolerance) < (nearPowers.x + nearPowers.y))
+			{
+				continue;
+			}
+			const double middle = ((node.lower + node.upper) * 0.5);
+			if ((visit != 0) && TestPoint(middle))
+			{
+				return result;
+			}
+			Vec2 gradient;
+			double offset;
+			if (1.0 < shape.n)
+			{
+				// A tangent plane is a global lower bound of the convex implicit
+				// function. Clamp its anchor to the target's box before taking powers.
+				const Vec2 midpoint = curve.pointAt(middle);
+				const Vec2 anchor{ Clamp(midpoint.x, -1.0, 1.0), Clamp(midpoint.y, -1.0, 1.0) };
+				const Vec2 powers = Powers(anchor);
+				gradient = { ((anchor.x == 0.0) ? 0.0 : (powers.x / anchor.x)),
+					((anchor.y == 0.0) ? 0.0 : (powers.y / anchor.y)) };
+				offset = ((powers.x + powers.y - 1.0) / shape.n - gradient.dot(anchor));
+			}
+			else
+			{
+				// On either side of an axis, |x|^n is concave, so its endpoint
+				// chord is a lower bound. An interval crossing the axis has bound 0.
+				const auto Chord = [&](const double lo, const double hi, const double near, const double nearPower)
+				{
+					if (near == 0.0)
+					{
+						return std::pair{ 0.0, 0.0 };
+					}
+					const double far = Max(Abs(lo), Abs(hi));
+					if (near == far)
+					{
+						return std::pair{ 0.0, nearPower };
+					}
+					const double slope = ((std::pow(far, shape.n) - nearPower) / (far - near));
+					return std::pair{ ((hi < 0.0) ? -slope : slope), (nearPower - slope * near) };
+				};
+				const auto [gx, bx] = Chord(lo.x, hi.x, near.x, nearPowers.x);
+				const auto [gy, by] = Chord(lo.y, hi.y, near.y, nearPowers.y);
+				gradient = { gx, gy };
+				offset = (bx + by - 1.0);
+			}
+			const auto points = BezierControlPoints(node.curve);
+			std::array<double, Count> projected;
+			double roundingScale = Abs(offset);
+			for (size_t i = 0; i < Count; ++i)
+			{
+				projected[i] = (points[i].dot(gradient) + offset);
+				roundingScale = Max(roundingScale, (Abs(points[i].x * gradient.x) + Abs(points[i].y * gradient.y) + Abs(offset)));
+			}
+			const auto [minimum, parameter] = MinimumBezierValue(projected);
+			if ((8.0 * SuperEllipseContactTolerance * roundingScale) < minimum)
+			{
+				continue;
+			}
+			// The minimizer of the lower bound is also a useful contact candidate.
+			if ((parameter != 0.5) && TestPoint(node.lower + (node.upper - node.lower) * parameter))
+			{
+				return result;
+			}
+			const auto [left, right] = node.curve.split(0.5);
+			// Visit the child containing the bound's minimizer first. A fixed
+			// left-first search can spend the budget just outside a contact.
+			if (parameter <= 0.5)
+			{
+				stack[count++] = { right, middle, node.upper };
+				stack[count++] = { left, node.lower, middle };
+			}
+			else
+			{
+				stack[count++] = { left, node.lower, middle };
+				stack[count++] = { right, middle, node.upper };
+			}
+		}
+		result.kind = (count ? BezierIntersectionKind::Unresolved : BezierIntersectionKind::Separated);
+		return result;
+	}
 
 	// Positive axes and n > 2. Reflection reduces the boundary to one quadrant.
 	// On each half, use the smaller normalized coordinate directly: taking a

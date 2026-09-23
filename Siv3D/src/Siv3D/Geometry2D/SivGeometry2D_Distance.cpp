@@ -1504,18 +1504,25 @@ namespace s3d
 
 			const int32 segmentsA = SegmentCount(pieceA);
 			const int32 segmentsB = SegmentCount(pieceB);
+			// Each target sample is shared by every source segment. In particular,
+			// SuperEllipse boundary powers must not be recomputed in the inner loop.
+			constexpr int32 MaxSegments = Max({ EllipseSegments, SuperEllipseSegments,
+				Bezier2Segments, Bezier3Segments, FullCircleSegments, QuarterCircleSegments, 1 });
+			std::array<Vec2, MaxSegments + 1> pointsB;
+			for (int32 j = 0; j <= segmentsB; ++j)
+			{
+				pointsB[j] = PointAt(pieceB, (static_cast<double>(j) / segmentsB));
+			}
 			ClosestPairCandidate seed;
 			Vec2 a0 = PointAt(pieceA, 0.0);
 
 			for (int32 i = 0; i < segmentsA; ++i)
 			{
 				const Vec2 a1 = PointAt(pieceA, (static_cast<double>(i + 1) / segmentsA));
-				Vec2 b0 = PointAt(pieceB, 0.0);
 
 				for (int32 j = 0; j < segmentsB; ++j)
 				{
-					const Vec2 b1 = PointAt(pieceB, (static_cast<double>(j + 1) / segmentsB));
-					const auto local = ClosestSegmentSegment(a0, a1, b0, b1);
+					const auto local = ClosestSegmentSegment(a0, a1, pointsB[j], pointsB[j + 1]);
 
 					if (local.distanceSq < seed.distanceSq)
 					{
@@ -1523,8 +1530,6 @@ namespace s3d
 						seed.parameterA = ((static_cast<double>(i) + local.parameterA) / segmentsA);
 						seed.parameterB = ((static_cast<double>(j) + local.parameterB) / segmentsB);
 					}
-
-					b0 = b1;
 				}
 
 				a0 = a1;
@@ -2387,7 +2392,7 @@ namespace s3d
 		{
 			const auto intersection = detail::ClassifyBezierPair(a, b);
 			const Vec2 pointA = a.pointAt(intersection.parameterA), pointB = b.pointAt(intersection.parameterB);
-			if (intersection.kind == detail::BezierPairIntersectionKind::Contact)
+			if (intersection.kind == detail::BezierIntersectionKind::Contact)
 			{
 				const Vec2 common = (pointA + (pointB - pointA) * 0.5);
 				return { common, common, 0.0 };
@@ -2398,6 +2403,37 @@ namespace s3d
 			UpdateCandidate(seed, pointA, pointB, intersection.parameterA, intersection.parameterB);
 			const auto closest = ClosestBezierPair(a, b, seed);
 			return { closest.pointA, closest.pointB, std::sqrt(closest.distanceSq) };
+		}
+
+		template <class ShapeA, class ShapeB>
+		[[nodiscard]]
+		Optional<ClosestPoints2D> TryClosestBezierSuperEllipse(const ShapeA& curve, const ShapeB& shape)
+		{
+			if constexpr (detail::IsBezier<ShapeA> && std::is_same_v<ShapeB, SuperEllipse>)
+			{
+				if ((0.0 < shape.a) && (0.0 < shape.b) && (shape.n != 1.0) && (shape.n != 2.0))
+				{
+					const auto intersection = detail::ClassifyBezierSuperEllipse(curve, shape);
+					if (intersection.kind == detail::BezierIntersectionKind::Contact)
+					{
+						const Vec2 point = curve.pointAt(intersection.parameter);
+						return ClosestPoints2D{ point, point, 0.0 };
+					}
+					// A conservative true cannot establish a common point. Keep the
+					// evaluated boundary pair from the distance approximation instead.
+					auto closest = ClosestPiecePair(BoundaryPiece{ curve }, BoundaryPiece{ shape });
+					if (intersection.kind == detail::BezierIntersectionKind::Unresolved)
+					{
+						const auto candidate = ClosestPointPiece(curve.pointAt(intersection.parameter), BoundaryPiece{ shape });
+						if (candidate.distanceSq < closest.distanceSq)
+						{
+							closest = candidate;
+						}
+					}
+					return ClosestPoints2D{ closest.pointA, closest.pointB, std::sqrt(closest.distanceSq) };
+				}
+			}
+			return none;
 		}
 
 		template <class ShapeA, class ShapeB>
@@ -2417,6 +2453,11 @@ namespace s3d
 			if (const auto rounded = TryClosestBezierRoundedShape(a, b))
 			{
 				return rounded;
+			}
+
+			if (const auto closest = TryClosestBezierSuperEllipse(a, b))
+			{
+				return closest;
 			}
 
 			if (Geometry2D::Intersects(a, b))
@@ -2477,6 +2518,11 @@ namespace s3d
 			if (const auto rounded = TryClosestBezierRoundedShape(a, b))
 			{
 				return rounded->distance;
+			}
+
+			if (const auto closest = TryClosestBezierSuperEllipse(a, b))
+			{
+				return closest->distance;
 			}
 
 			if (Geometry2D::Intersects(a, b))

@@ -714,105 +714,24 @@ namespace s3d
 			return (detail::ClosestPointOnBezier(local, Vec2{ 0, 0 }).distanceSq <= 1.0);
 		}
 
-		template <class Fty>
+		template <class Bezier>
 		[[nodiscard]]
-		bool VisitBezier2ApproximateLineSegments(const Bezier2& curve, Fty&& callback, const double maxError = 0.25, const int32 maxDepth = 8)
+		bool IntersectsBezierSuperEllipse(const Bezier& curve, const SuperEllipse& shape)
 		{
-			const double maxErrorSq = (maxError * maxError);
-			const double flatnessK = (4.0 * maxErrorSq);
-			const double kNearlyZeroSq = 1e-12;
-			const int32 depthLimit = Max(0, maxDepth);
-
-			auto Visit = [&](auto&& self, const Bezier2& c, const int32 depth) -> bool
-				{
-					const Vec2 chord = (c.p2 - c.p0);
-					const double chordLenSq = chord.lengthSq();
-
-					if (chordLenSq < kNearlyZeroSq)
-					{
-						const double p0p1LenSq = (c.p1 - c.p0).lengthSq();
-						const double p1p2LenSq = (c.p2 - c.p1).lengthSq();
-						const double ctrlSpanSq = Max(p0p1LenSq, p1p2LenSq);
-
-						if (ctrlSpanSq < kNearlyZeroSq)
-						{
-							return callback(Line{ c.p0, c.p2 });
-						}
-
-						if (depthLimit <= depth)
-						{
-							return (callback(Line{ c.p0, c.p1 }) || callback(Line{ c.p1, c.p2 }));
-						}
-					}
-					else
-					{
-						const Vec2 v = (c.p1 - c.p0);
-						const double cross = chord.cross(v);
-						bool acceptSegment = ((cross * cross) <= (flatnessK * chordLenSq));
-
-						if (acceptSegment)
-						{
-							const double dot = v.dot(chord);
-
-							if ((dot < 0.0) || (chordLenSq < dot))
-							{
-								acceptSegment = false;
-							}
-						}
-
-						if (acceptSegment || (depthLimit <= depth))
-						{
-							return callback(Line{ c.p0, c.p2 });
-						}
-					}
-
-					const auto [left, right] = c.split(0.5);
-					return (self(self, left, (depth + 1)) || self(self, right, (depth + 1)));
-				};
-
-			return Visit(Visit, curve, 0);
-		}
-
-		template <class Shape>
-		[[nodiscard]]
-		bool IntersectsBezier2ApproximateShape(const Bezier2& curve, const Shape& shape)
-		{
-			return VisitBezier2ApproximateLineSegments(curve, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, shape);
-			});
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier2SuperEllipse(const Bezier2& curve, const SuperEllipse& superEllipse)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
-
+			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
 			{
 				return false;
 			}
-
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), curve);
+				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(shape, kind), curve);
 			}
-
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			if (n == 2.0)
+			if (shape.n == 2.0)
 			{
-				return IntersectsBezier2Ellipse(curve, Ellipse{ superEllipse.center, ax, by });
+				return Geometry2D::Intersects(curve, Ellipse{ shape.center, shape.axes });
 			}
-
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), superEllipse.boundingRect()))
-			{
-				return false;
-			}
-
-			return IntersectsBezier2ApproximateShape(curve, superEllipse);
+			return (detail::ClassifyBezierSuperEllipse(curve, shape).kind != detail::BezierIntersectionKind::Separated);
 		}
 
 		[[nodiscard]]
@@ -958,16 +877,6 @@ namespace s3d
 			return IntersectsBezier2PolygonNonEmpty(curve, curveBounds, polygon, polygonBounds);
 		}
 
-		template <class Shape>
-		[[nodiscard]]
-		bool IntersectsBezier3ApproximateShape(const Bezier3& curve, const Shape& shape)
-		{
-			return VisitBezier3ApproximateLineSegments(curve, [&](const Line& segment)
-			{
-				return Geometry2D::Intersects(segment, shape);
-			});
-		}
-
 		[[nodiscard]]
 		bool IntersectsBezier3RectF(const Bezier3& curve, const RectF& rect)
 		{
@@ -1066,105 +975,6 @@ namespace s3d
 			};
 
 			return (detail::ClosestPointOnBezier(local, Vec2{ 0, 0 }).distanceSq <= 1.0);
-		}
-
-		template <class Fty>
-		[[nodiscard]]
-		bool VisitBezier3ApproximateLineSegments(const Bezier3& curve, Fty&& callback, const double maxError = 0.25, const int32 maxDepth = 8)
-		{
-			const double maxErrorSq = (maxError * maxError);
-			const double flatnessK = (4.0 * maxErrorSq);
-			const double kNearlyZeroSq = 1e-12;
-			const int32 depthLimit = Max(0, maxDepth);
-
-			auto Visit = [&](auto&& self, const Bezier3& c, const int32 depth) -> bool
-				{
-					const Vec2 chord = (c.p3 - c.p0);
-					const double chordLenSq = chord.lengthSq();
-
-					if (chordLenSq < kNearlyZeroSq)
-					{
-						const double p0p1LenSq = (c.p1 - c.p0).lengthSq();
-						const double p1p2LenSq = (c.p2 - c.p1).lengthSq();
-						const double p2p3LenSq = (c.p3 - c.p2).lengthSq();
-						const double ctrlSpanSq = Max(Max(p0p1LenSq, p1p2LenSq), p2p3LenSq);
-
-						if (ctrlSpanSq < kNearlyZeroSq)
-						{
-							return callback(Line{ c.p0, c.p3 });
-						}
-
-						if (depthLimit <= depth)
-						{
-							return (callback(Line{ c.p0, c.p1 })
-								|| callback(Line{ c.p1, c.p2 })
-								|| callback(Line{ c.p2, c.p3 }));
-						}
-					}
-					else
-					{
-						const Vec2 v1 = (c.p1 - c.p0);
-						const Vec2 v2 = (c.p2 - c.p0);
-						const double cross1 = chord.cross(v1);
-						const double cross2 = chord.cross(v2);
-						bool acceptSegment = (((cross1 * cross1) <= (flatnessK * chordLenSq))
-							&& ((cross2 * cross2) <= (flatnessK * chordLenSq)));
-
-						if (acceptSegment)
-						{
-							const double dot1 = v1.dot(chord);
-							const double dot2 = v2.dot(chord);
-
-							if ((dot1 < 0.0) || (chordLenSq < dot1)
-								|| (dot2 < 0.0) || (chordLenSq < dot2))
-							{
-								acceptSegment = false;
-							}
-						}
-
-						if (acceptSegment || (depthLimit <= depth))
-						{
-							return callback(Line{ c.p0, c.p3 });
-						}
-					}
-
-					const auto [left, right] = c.split(0.5);
-					return (self(self, left, (depth + 1)) || self(self, right, (depth + 1)));
-				};
-
-			return Visit(Visit, curve, 0);
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier3SuperEllipse(const Bezier3& curve, const SuperEllipse& superEllipse)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				return Geometry2D::Intersects(detail::GetGeometry2DDegenerateSegment(superEllipse, kind), curve);
-			}
-
-			const double ax = superEllipse.axes.x;
-			const double by = superEllipse.axes.y;
-			const double n = superEllipse.n;
-
-			if (n == 2.0)
-			{
-				return IntersectsBezier3Ellipse(curve, Ellipse{ superEllipse.center, ax, by });
-			}
-
-			if (not BoundsIntersectClosed(curve.computeBoundingRect(), superEllipse.boundingRect()))
-			{
-				return false;
-			}
-
-			return IntersectsBezier3ApproximateShape(curve, superEllipse);
 		}
 
 		[[nodiscard]]
@@ -2853,7 +2663,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
 					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier2>)
 				{
-					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierPairIntersectionKind::Separated);
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierIntersectionKind::Separated);
 				}
 				else
 				{
@@ -2869,7 +2679,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
 					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
 				{
-					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierPairIntersectionKind::Separated);
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierIntersectionKind::Separated);
 				}
 				else
 				{
@@ -2915,7 +2725,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
 					&& std::is_same_v<std::decay_t<decltype(b)>, SuperEllipse>)
 				{
-					return IntersectsBezier2SuperEllipse(a, b);
+					return IntersectsBezierSuperEllipse(a, b);
 				}
 				else
 				{
@@ -2985,7 +2795,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier3>
 					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
 				{
-					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierPairIntersectionKind::Separated);
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierIntersectionKind::Separated);
 				}
 				else
 				{
@@ -3021,7 +2831,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier3>
 					&& std::is_same_v<std::decay_t<decltype(b)>, SuperEllipse>)
 				{
-					return IntersectsBezier3SuperEllipse(a, b);
+					return IntersectsBezierSuperEllipse(a, b);
 				}
 				else
 				{

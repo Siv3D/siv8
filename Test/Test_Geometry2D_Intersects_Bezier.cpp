@@ -980,3 +980,62 @@ TEST_CASE("Geometry2D.Intersects.Bezier.GeneralPairs")
 	const Bezier3 cusp{ { 0.25, -0.125 }, { -1.0 / 12, 0.125 }, { -1.0 / 12, -0.125 }, { 0.25, 0.125 } };
 	CheckPair(cusp, Bezier2{ { -1, 1 }, { 0, -1 }, { 1, 1 } }, true);
 }
+
+TEST_CASE("Geometry2D.Intersects.Bezier.GeneralSuperEllipse")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& curve, const SuperEllipse& shape, const bool expected)
+	{
+		for (const auto& c : { curve, curve.reversed() })
+		{
+			CHECK(Geometry2D::Intersects(c, shape) == expected);
+			CHECK(Geometry2D::Intersects(shape, c) == expected);
+		}
+	};
+	const auto CheckDegrees = [&](const Bezier2& q, const SuperEllipse& shape, const bool expected)
+	{
+		CheckPair(q, shape, expected);
+		CheckPair(Elevate(q), shape, expected);
+	};
+	const Bezier2 arch{ { -1, 0 }, { 0, 0.25 }, { 1, 0 } };
+	for (const double n : { 0.25, 0.5, 0.9, 1.1, 1.5, 4.0, 16.0, 64.0 })
+	{
+		for (const double scale : { 1.0e-6, 1.0, 1.0e6 })
+		{
+			const Vec2 offset = (Vec2{ 7, -3 } * scale);
+			const Bezier2 curve{ arch.p0 * scale + offset, arch.p1 * scale + offset, arch.p2 * scale + offset };
+			for (const double t : { 0.0, 0.125, 0.371, 0.5, 0.731, 1.0 })
+			{
+				CheckDegrees(curve, SuperEllipse{ curve.pointAt(t), Vec2{ (1.0 / 1024), (1.0 / 8192) } * scale, n }, true);
+			}
+			CheckDegrees(curve, SuperEllipse{ offset, Vec2{ 0.02, 0.01 } * scale, n }, false);
+		}
+		const SuperEllipse tip{ 0, 0.25, 0.125, 0.125, n };
+		CheckDegrees(arch, tip, true);
+		CheckDegrees(arch, tip.movedBy(0, 1.0e-15), true);
+		CheckDegrees(arch, tip.movedBy(0, 1.0e-8), false);
+		CheckDegrees(arch, tip.movedBy(0, -1.0e-8), true);
+
+		const double x = std::pow(0.5, (1.0 / n));
+		const Vec2 contact{ x, x }, tangent{ (0.2 * x), (-0.2 * x) };
+		const double curvature = Max(1.0, ((1.0 - n) / x + 1.0));
+		const Vec2 bend = (Vec2{ 1, 1 } * (0.04 * x * x * curvature));
+		for (const double t : { 0.125, 0.371, 0.5, 0.731 })
+		{
+			const Bezier2 curve{ contact - tangent * t + bend * (t * t),
+				contact + tangent * (0.5 - t) + bend * (t * t - t),
+				contact + tangent * (1.0 - t) + bend * ((1.0 - t) * (1.0 - t)) };
+			CheckDegrees(curve, SuperEllipse{ 0, 0, 1, 1, n }, true);
+			CheckDegrees(curve.movedBy(1.0e-8, 1.0e-8), SuperEllipse{ 0, 0, 1, 1, n }, false);
+			CheckDegrees(curve.movedBy(-1.0e-8, -1.0e-8), SuperEllipse{ 0, 0, 1, 1, n }, true);
+		}
+		const Bezier3 loop{ { 0, 0 }, { 3, 4 }, { -3, 4 }, { 0, 0 } };
+		CheckPair(loop, SuperEllipse{ loop.pointAt(0.371), 0.001, 0.001, n }, true);
+		CheckPair(loop, SuperEllipse{ 0, -1, 0.1, 0.1, n }, false);
+	}
+	CheckDegrees(arch, SuperEllipse{ 0, 0, 0, 0, 4 }, false);
+	CheckDegrees(arch, SuperEllipse{ 0, 0.125, 0, 1, 4 }, true);
+}

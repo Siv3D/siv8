@@ -334,11 +334,11 @@ namespace s3d::detail
 		return { lower, upper };
 	}
 
-	enum class BezierPairIntersectionKind { Separated, Contact, Unresolved };
+	enum class BezierIntersectionKind { Separated, Contact, Unresolved };
 
 	struct BezierPairIntersection
 	{
-		BezierPairIntersectionKind kind = BezierPairIntersectionKind::Separated;
+		BezierIntersectionKind kind = BezierIntersectionKind::Separated;
 		double parameterA = 0.5, parameterB = 0.5;
 	};
 
@@ -619,7 +619,7 @@ namespace s3d::detail
 		}
 		if (contact)
 		{
-			result.kind = BezierPairIntersectionKind::Contact;
+			result.kind = BezierIntersectionKind::Contact;
 			return result;
 		}
 		struct Node
@@ -643,7 +643,7 @@ namespace s3d::detail
 			}
 			if (CheckContact((node.lowerA + node.upperA) * 0.5, (node.lowerB + node.upperB) * 0.5))
 			{
-				result.kind = BezierPairIntersectionKind::Contact;
+				result.kind = BezierIntersectionKind::Contact;
 				return result;
 			}
 			const double widthA = (node.upperA - node.lowerA), widthB = (node.upperB - node.lowerB);
@@ -671,7 +671,7 @@ namespace s3d::detail
 				stack[count++] = { node.a, left, node.lowerA, node.upperA, node.lowerB, middle };
 			}
 		}
-		result.kind = (count ? BezierPairIntersectionKind::Unresolved : BezierPairIntersectionKind::Separated);
+		result.kind = (count ? BezierIntersectionKind::Unresolved : BezierIntersectionKind::Separated);
 		return result;
 	}
 
@@ -729,6 +729,44 @@ namespace s3d::detail
 			result.parameterB = (1.0 - result.parameterB);
 		}
 		return result;
+	}
+
+	// Minimum value and its parameter for a scalar quadratic/cubic Bezier.
+	template <size_t Count>
+	[[nodiscard]]
+	std::pair<double, double> MinimumBezierValue(const std::array<double, Count>& values)
+	{
+		std::pair<double, double> best = ((values.front() <= values.back())
+			? std::pair{ values.front(), 0.0 } : std::pair{ values.back(), 1.0 });
+		const auto Include = [&](const double t)
+		{
+			const double value = EvaluateBernstein(values, t);
+			if (value < best.first)
+			{
+				best = { value, t };
+			}
+			return false;
+		};
+		if constexpr (Count == 3)
+		{
+			const double curvature = (values[0] - 2.0 * values[1] + values[2]);
+			if (0.0 < curvature)
+			{
+				const double t = ((values[0] - values[1]) / curvature);
+				if ((0.0 < t) && (t < 1.0))
+				{
+					Include(t);
+				}
+			}
+		}
+		else
+		{
+			static_assert(Count == 4);
+			(void)CheckQuadraticRootsInUnitInterval(
+				(-values[0] + 3.0 * values[1] - 3.0 * values[2] + values[3]),
+				(2.0 * (values[0] - 2.0 * values[1] + values[2])), (values[1] - values[0]), Include);
+		}
+		return best;
 	}
 
 	// The image of a collinear Bezier is a segment, including any retracing.
