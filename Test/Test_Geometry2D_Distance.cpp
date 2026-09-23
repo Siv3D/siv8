@@ -623,9 +623,100 @@ TEST_CASE("Geometry2D.Distance.SuperEllipse.ConcavePointNeighborhoods")
 	}
 }
 
+TEST_CASE("Geometry2D.Distance.SuperEllipse.ConcaveLineEndpoints")
+{
+	for (const double n : { 0.25, 0.5, 0.9, 1.0 })
+	{
+		for (const Vec2 axes : { Vec2{ 1, 1 }, Vec2{ 1, 20 }, Vec2{ 20, 1 } })
+		{
+			for (const double scale : { 0.001, 1.0, 1000.0 })
+			{
+				const SuperEllipse shape{ (Vec2{ 7, -11 } * scale), (axes * scale), n };
+				for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+				{
+					const auto BoundaryAndNormal = [&](const double t)
+					{
+						const Vec2 p{ std::pow(t, (1.0 / n)), std::pow((1.0 - t), (1.0 / n)) };
+						const Vec2 normal = Vec2{ (std::pow(p.x, (n - 1.0)) / axes.x), (std::pow(p.y, (n - 1.0)) / axes.y) }.normalized();
+						return std::pair{ (shape.center + sign * shape.axes * p), (sign * normal) };
+					};
+					const auto [first, normal0] = BoundaryAndNormal(0.2);
+					const auto [second, normal1] = BoundaryAndNormal(0.6);
+					for (const double gap : { (1.0e-10 * scale), (1.0e-6 * scale), (0.001 * scale) })
+					{
+						CAPTURE(n, axes, scale, sign, gap);
+						const Vec2 start = (first + normal0 * gap), end = (second + normal1 * (2 * gap));
+						for (const Line line : { Line{ start, end }, Line{ end, start }, Line{ start, start },
+							Line{ start, (start + normal0 * (3 * scale)) } })
+						{
+							const double tolerance = (1.0e-11 * scale);
+							const auto pair = Geometry2D::ClosestPoints(line, shape), reversed = Geometry2D::ClosestPoints(shape, line);
+							REQUIRE(pair);
+							REQUIRE(reversed);
+							CHECK(Abs(pair->distance - gap) <= tolerance);
+							CHECK(Abs(Geometry2D::Distance(line, shape) - gap) <= tolerance);
+							CHECK(Geometry2D::Distance(shape, line) == Geometry2D::Distance(line, shape));
+							CHECK(pair->pointA.distanceFrom(start) <= tolerance);
+							CHECK(pair->pointB.distanceFrom(first) <= (1.0e-9 * scale));
+							CHECK(pair->pointA == reversed->pointB);
+							CHECK(pair->pointB == reversed->pointA);
+							CheckWitnessConsistency(*pair, tolerance);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Distance.SuperEllipse.ConcaveLinearBoundaries")
+{
+	const SuperEllipse shape{ 0, 0, 1, 1, 0.5 };
+	const double gap = 1.0e-8;
+	const Vec2 boundary{ 0.04, 0.64 };
+	const Vec2 start = (boundary + Vec2{ 4, 1 }.normalized() * gap);
+	const Vec2 end = (Vec2{ 0.36, 0.16 } + Vec2{ 2, 3 }.normalized() * (2 * gap));
+	const Quad quad{ start, end, (end + Vec2{ 3, 3 }), (start + Vec2{ 3, 3 }) };
+	const Polygon polygon{ { quad.p0, quad.p1, quad.p2, quad.p3 } };
+	REQUIRE(not polygon.isEmpty());
+	const auto Check = [&](const auto& target)
+	{
+		const auto pair = Geometry2D::ClosestPoints(target, shape), reversed = Geometry2D::ClosestPoints(shape, target);
+		REQUIRE(pair);
+		REQUIRE(reversed);
+		CHECK(Abs(pair->distance - gap) <= 1.0e-12);
+		CHECK(Abs(Geometry2D::Distance(target, shape) - gap) <= 1.0e-12);
+		CHECK(Geometry2D::Distance(shape, target) == Geometry2D::Distance(target, shape));
+		CHECK(pair->pointA.distanceFrom(start) <= 1.0e-12);
+		CHECK(pair->pointB.distanceFrom(boundary) <= 1.0e-10);
+		CHECK(pair->pointA == reversed->pointB);
+		CHECK(pair->pointB == reversed->pointA);
+		CheckWitnessConsistency(*pair, 1.0e-12);
+	};
+	Check(Line{ start, end });
+	Check(LineString{ start, end, quad.p2 });
+	Check(Triangle{ start, end, quad.p2 });
+	Check(quad);
+	Check(polygon);
+	Check(MultiPolygon{ polygon, Rect{ 10, 10, 1, 1 }.asPolygon() });
+
+	const Polygon frame{
+		Array<Vec2>{ { -3, -3 }, { 3, -3 }, { 3, 3 }, { -3, 3 } },
+		Array<Array<Vec2>>{ { { -2, -2 }, { -2, 2 }, { 2, 2 }, { 2, -2 } } }
+	};
+	REQUIRE(not frame.isEmpty());
+	const auto pair = Geometry2D::ClosestPoints(frame, shape);
+	REQUIRE(pair);
+	CHECK(pair->distance == 1.0);
+	CHECK(Geometry2D::Distance(frame, shape) == 1.0);
+	CHECK(Max(Abs(pair->pointA.x), Abs(pair->pointA.y)) == 2.0);
+	CHECK(Geometry2D::Distance(pair->pointB, shape) == 0.0);
+	CheckWitnessConsistency(*pair);
+}
+
 TEST_CASE("Geometry2D.Distance.SuperEllipse.LinearBoundaries")
 {
-	for (const double n : { 1.0, 1.25, 2.0, 4.0, 64.0 })
+	for (const double n : { 0.25, 0.5, 0.9, 1.0, 1.25, 2.0, 4.0, 64.0 })
 	{
 		CAPTURE(n);
 		const SuperEllipse shape{ 0, 0, 100, 30, n };

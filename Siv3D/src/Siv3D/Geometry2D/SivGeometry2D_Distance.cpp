@@ -898,30 +898,43 @@ namespace s3d
 			return result;
 		}
 
+		// Positive axes and n <= 1; the line is disjoint from the filled shape.
+		// A concave arc cannot have a strict interior minimum of distance to a
+		// disjoint supporting line. Line endpoints and axial tips suffice.
 		[[nodiscard]]
-		ClosestPairCandidate ClosestLineDiamond(const Line& line, const SuperEllipse& shape) noexcept
+		ClosestPairCandidate ClosestDisjointLineConcaveSuperEllipse(const Line& line, const SuperEllipse& shape) noexcept
 		{
 			const std::array vertices{ Vec2{ (shape.x + shape.a), shape.y }, Vec2{ shape.x, (shape.y + shape.b) },
 				Vec2{ (shape.x - shape.a), shape.y }, Vec2{ shape.x, (shape.y - shape.b) } };
 			ClosestPairCandidate result;
 			for (size_t i = 0; i < vertices.size(); ++i)
 			{
-				const auto candidate = ClosestSegmentSegment(line.start, line.end, vertices[i], vertices[(i + 1) % vertices.size()]);
-				if (candidate.distanceSq < result.distanceSq)
+				const auto candidate = ClosestPointOnSegment(vertices[i], line.start, line.end);
+				UpdateCandidate(result, candidate.pointB, vertices[i], candidate.parameterB, (i * 0.25));
+			}
+			const std::array endpoints{ line.start, line.end };
+			for (size_t i = 0; i < endpoints.size(); ++i)
+			{
+				const Vec2& point = endpoints[i];
+				const Vec2 boxGap{ Max(0.0, (Abs(point.x - shape.x) - shape.a)), Max(0.0, (Abs(point.y - shape.y) - shape.b)) };
+				// Skip endpoint searches that cannot beat the best tip projection.
+				if (result.distanceSq <= boxGap.lengthSq())
 				{
-					result = candidate;
+					continue;
 				}
+				const auto candidate = ClosestDisjointPointSuperEllipse(point, shape);
+				UpdateCandidate(result, point, candidate.pointB, static_cast<double>(i));
 			}
 			return result;
 		}
 
-		// Positive axes and n >= 1. The caller has excluded intersections.
+		// Positive axes. The caller has excluded intersections.
 		[[nodiscard]]
 		ClosestPairCandidate ClosestDisjointLineSuperEllipse(const Line& line, const SuperEllipse& shape) noexcept
 		{
-			if (shape.n == 1.0)
+			if (shape.n <= 1.0)
 			{
-				return ClosestLineDiamond(line, shape);
+				return ClosestDisjointLineConcaveSuperEllipse(line, shape);
 			}
 			if (shape.n == 2.0)
 			{
@@ -1504,7 +1517,7 @@ namespace s3d
 				{
 					return ClosestDisjointLineEllipse(*lineA, *ellipseB);
 				}
-				if (const SuperEllipse* shapeB = std::get_if<SuperEllipse>(&pieceB); shapeB && (1.0 <= shapeB->n))
+				if (const SuperEllipse* shapeB = std::get_if<SuperEllipse>(&pieceB))
 				{
 					return ClosestDisjointLineSuperEllipse(*lineA, *shapeB);
 				}
@@ -1557,14 +1570,14 @@ namespace s3d
 				}
 			}
 
-			const auto TryConvexSuperEllipsePair = [](const BoundaryPiece& first, const BoundaryPiece& second) -> Optional<ClosestPairCandidate>
+			const auto TrySuperEllipsePair = [](const BoundaryPiece& first, const BoundaryPiece& second) -> Optional<ClosestPairCandidate>
 			{
 				const auto* superEllipse = std::get_if<SuperEllipse>(&second);
 				if (not superEllipse)
 				{
 					return none;
 				}
-				if (const auto* line = std::get_if<Line>(&first); line && (1.0 <= superEllipse->n))
+				if (const auto* line = std::get_if<Line>(&first))
 				{
 					return ClosestDisjointLineSuperEllipse(*line, *superEllipse);
 				}
@@ -1586,11 +1599,11 @@ namespace s3d
 				}
 				return none;
 			};
-			if (const auto result = TryConvexSuperEllipsePair(pieceA, pieceB))
+			if (const auto result = TrySuperEllipsePair(pieceA, pieceB))
 			{
 				return *result;
 			}
-			if (auto result = TryConvexSuperEllipsePair(pieceB, pieceA))
+			if (auto result = TrySuperEllipsePair(pieceB, pieceA))
 			{
 				std::swap(result->pointA, result->pointB);
 				return *result;
