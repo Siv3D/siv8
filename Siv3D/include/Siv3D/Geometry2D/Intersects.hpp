@@ -261,9 +261,15 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const Bezier2& a, const LineString& b);
 
+		/// @brief Bezier 曲線同士の交差を近似判定します。
+		/// @return 交差する場合、または計算の上限内で交差を否定できない場合 true。
+		/// @remark 図形の大きさに対する丸め誤差内の隙間を接触として扱う場合があります。
 		[[nodiscard]]
 		bool Intersects(const Bezier2& a, const Bezier2& b);
 
+		/// @brief Bezier 曲線同士の交差を近似判定します。
+		/// @return 交差する場合、または計算の上限内で交差を否定できない場合 true。
+		/// @remark 図形の大きさに対する丸め誤差内の隙間を接触として扱う場合があります。
 		[[nodiscard]]
 		bool Intersects(const Bezier2& a, const Bezier3& b);
 
@@ -315,9 +321,15 @@ namespace s3d
 		[[nodiscard]]
 		bool Intersects(const Bezier3& a, const LineString& b);
 
+		/// @brief Bezier 曲線同士の交差を近似判定します。
+		/// @return 交差する場合、または計算の上限内で交差を否定できない場合 true。
+		/// @remark 図形の大きさに対する丸め誤差内の隙間を接触として扱う場合があります。
 		[[nodiscard]]
 		bool Intersects(const Bezier3& a, const Bezier2& b);
 
+		/// @brief Bezier 曲線同士の交差を近似判定します。
+		/// @return 交差する場合、または計算の上限内で交差を否定できない場合 true。
+		/// @remark 図形の大きさに対する丸め誤差内の隙間を接触として扱う場合があります。
 		[[nodiscard]]
 		bool Intersects(const Bezier3& a, const Bezier3& b);
 

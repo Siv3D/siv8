@@ -458,22 +458,26 @@ namespace s3d
 		Optional<ClosestPoints2D> ClosestPoints(const Bezier2& a, const LineString& b);
 
 		/// @brief Bezier 曲線間の最短距離を近似計算します。
-		/// @return 最短距離の近似値。離れた曲線では真の最短距離を過大評価する場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最短距離の近似値。丸め誤差内を 0 としたり、真の最短距離を過大評価したりする場合があります。
 		[[nodiscard]]
 		double Distance(const Bezier2& a, const Bezier2& b);
 
 		/// @brief Bezier 曲線間の最近点対を近似計算します。
-		/// @return 最近点対と距離の近似値。離れた曲線では大域的な最小距離を与える点対を得られない場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最近点対と距離の近似値。丸め誤差内は共通点と距離 0 を返す場合があります。大域的な最小距離を与える点対を得られない場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Bezier2& a, const Bezier2& b);
 
 		/// @brief Bezier 曲線間の最短距離を近似計算します。
-		/// @return 最短距離の近似値。離れた曲線では真の最短距離を過大評価する場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最短距離の近似値。丸め誤差内を 0 としたり、真の最短距離を過大評価したりする場合があります。
 		[[nodiscard]]
 		double Distance(const Bezier2& a, const Bezier3& b);
 
 		/// @brief Bezier 曲線間の最近点対を近似計算します。
-		/// @return 最近点対と距離の近似値。離れた曲線では大域的な最小距離を与える点対を得られない場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最近点対と距離の近似値。丸め誤差内は共通点と距離 0 を返す場合があります。大域的な最小距離を与える点対を得られない場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Bezier2& a, const Bezier3& b);
 
@@ -568,22 +572,26 @@ namespace s3d
 		Optional<ClosestPoints2D> ClosestPoints(const Bezier3& a, const LineString& b);
 
 		/// @brief Bezier 曲線間の最短距離を近似計算します。
-		/// @return 最短距離の近似値。離れた曲線では真の最短距離を過大評価する場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最短距離の近似値。丸め誤差内を 0 としたり、真の最短距離を過大評価したりする場合があります。
 		[[nodiscard]]
 		double Distance(const Bezier3& a, const Bezier2& b);
 
 		/// @brief Bezier 曲線間の最近点対を近似計算します。
-		/// @return 最近点対と距離の近似値。離れた曲線では大域的な最小距離を与える点対を得られない場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最近点対と距離の近似値。丸め誤差内は共通点と距離 0 を返す場合があります。大域的な最小距離を与える点対を得られない場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Bezier3& a, const Bezier2& b);
 
 		/// @brief Bezier 曲線間の最短距離を近似計算します。
-		/// @return 最短距離の近似値。離れた曲線では真の最短距離を過大評価する場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最短距離の近似値。丸め誤差内を 0 としたり、真の最短距離を過大評価したりする場合があります。
 		[[nodiscard]]
 		double Distance(const Bezier3& a, const Bezier3& b);
 
 		/// @brief Bezier 曲線間の最近点対を近似計算します。
-		/// @return 最近点対と距離の近似値。離れた曲線では大域的な最小距離を与える点対を得られない場合があります。
+		/// @remark Intersects() が保守的に true を返しても、距離は正になる場合があります。
+		/// @return 最近点対と距離の近似値。丸め誤差内は共通点と距離 0 を返す場合があります。大域的な最小距離を与える点対を得られない場合があります。
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ClosestPoints(const Bezier3& a, const Bezier3& b);
 

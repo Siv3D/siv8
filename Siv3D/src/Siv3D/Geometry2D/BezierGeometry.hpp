@@ -320,6 +320,417 @@ namespace s3d::detail
 		}
 	}
 
+	// Control hulls give bounds without solving coordinate extrema.
+	template <class Bezier>
+	[[nodiscard]]
+	std::pair<Vec2, Vec2> BezierControlBounds(const Bezier& curve) noexcept
+	{
+		Vec2 lower = curve.p0, upper = curve.p0;
+		for (const Vec2& p : BezierControlPoints(curve))
+		{
+			lower = { Min(lower.x, p.x), Min(lower.y, p.y) };
+			upper = { Max(upper.x, p.x), Max(upper.y, p.y) };
+		}
+		return { lower, upper };
+	}
+
+	enum class BezierPairIntersectionKind { Separated, Contact, Unresolved };
+
+	struct BezierPairIntersection
+	{
+		BezierPairIntersectionKind kind = BezierPairIntersectionKind::Separated;
+		double parameterA = 0.5, parameterB = 0.5;
+	};
+
+	template <class Bezier>
+	[[nodiscard]]
+	Bezier BezierParameterRange(const Bezier& curve, const double lower, const double upper) noexcept
+	{
+		if (lower == 0.0)
+		{
+			return curve.split(upper).first;
+		}
+		if (lower == 1.0)
+		{
+			return curve.split(1.0).second;
+		}
+		return curve.split(lower).second.split((upper - lower) / (1.0 - lower)).first;
+	}
+
+	// Clip the target's control graph against a strip containing the reference
+	// curve. All graph edges suffice to bound its convex hull; no allocation.
+	template <class Reference, class Target>
+	[[nodiscard]]
+	bool ClipBezierPair(const Reference& reference, Target& target, double& lower, double& upper) noexcept
+	{
+		const auto a = BezierControlPoints(reference);
+		const auto b = BezierControlPoints(target);
+		const Vec2 direction = (a.back() - a.front());
+		if (direction == Vec2{ 0, 0 })
+		{
+			return true;
+		}
+		double stripLower = 0.0, stripUpper = 0.0;
+		for (const Vec2& p : a)
+		{
+			const double value = direction.cross(p - a.front());
+			stripLower = Min(stripLower, value);
+			stripUpper = Max(stripUpper, value);
+		}
+		// Endpoint distances vanish. Interior Bernstein weights sum to at most
+		// 1/2 for a quadratic and 3/4 for a cubic.
+		constexpr double Weight = (std::is_same_v<Reference, Bezier2> ? 0.5 : 0.75);
+		const double padding = (BezierRootTolerance * (Abs(direction.x) + Abs(direction.y)));
+		stripLower = (stripLower * Weight - padding);
+		stripUpper = (stripUpper * Weight + padding);
+		constexpr size_t Degree = (std::tuple_size_v<decltype(b)> - 1);
+		std::array<double, Degree + 1> values;
+		double lo = 1.0, hi = 0.0;
+		for (size_t i = 0; i <= Degree; ++i)
+		{
+			values[i] = direction.cross(b[i] - a.front());
+			if (InRange(values[i], stripLower, stripUpper))
+			{
+				lo = Min(lo, (static_cast<double>(i) / Degree));
+				hi = Max(hi, (static_cast<double>(i) / Degree));
+			}
+		}
+		for (size_t i = 0; i < Degree; ++i)
+		{
+			for (size_t j = (i + 1); j <= Degree; ++j)
+			{
+				for (const double level : { stripLower, stripUpper })
+				{
+					if (((values[i] < level) && (level < values[j])) || ((values[j] < level) && (level < values[i])))
+					{
+						const double t = ((i + (j - i) * (level - values[i]) / (values[j] - values[i])) / Degree);
+						lo = Min(lo, t);
+						hi = Max(hi, t);
+					}
+				}
+			}
+		}
+		if (hi < lo)
+		{
+			return false;
+		}
+		if ((hi - lo) < 0.9)
+		{
+			const double start = lower, width = (upper - lower);
+			lower = (start + width * lo);
+			upper = (start + width * hi);
+			target = BezierParameterRange(target, lo, hi);
+		}
+		return true;
+	}
+
+	template <class Bezier>
+	[[nodiscard]]
+	std::array<Vec2, 4> BezierCubicControlPoints(const Bezier& curve) noexcept
+	{
+		if constexpr (std::is_same_v<Bezier, Bezier3>)
+		{
+			return BezierControlPoints(curve);
+		}
+		else
+		{
+			return { curve.p0, curve.p0 + (curve.p1 - curve.p0) * (2.0 / 3),
+				curve.p2 + (curve.p1 - curve.p2) * (2.0 / 3), curve.p2 };
+		}
+	}
+
+	// Nearby translated curves need a coupled-parameter bound: separate hulls
+	// can overlap down to tiny subranges even when the curves do not intersect.
+	template <class BezierA, class BezierB, class Check>
+	[[nodiscard]]
+	bool SeparateBezierPairByProjection(const BezierA& a, const BezierB& b, Check&& check, bool& contact)
+	{
+		const auto ca = BezierCubicControlPoints(a), cb = BezierCubicControlPoints(b);
+		Vec2 normal{ 0, 0 };
+		double normalSq = 0.0;
+		for (size_t i = 0; i < 4; ++i)
+		{
+			const Vec2 delta = (ca[i] - cb[i]);
+			if (normalSq < delta.lengthSq())
+			{
+				normal = delta;
+				normalSq = delta.lengthSq();
+			}
+		}
+		if (normalSq == 0.0)
+		{
+			contact = check(0.5, 0.5);
+			return false;
+		}
+		const double tolerance = (BezierRootTolerance * std::sqrt(normalSq));
+		std::array<double, 4> difference;
+		std::array<double, 3> slopes;
+		double projectionError = 0.0, speedB = 0.0;
+		for (size_t i = 0; i < 4; ++i)
+		{
+			difference[i] = (ca[i] - cb[i]).dot(normal);
+			projectionError = Max(projectionError, Abs((ca[i] - cb[i]).cross(normal)));
+			if (i < 3)
+			{
+				slopes[i] = (3.0 * (ca[i + 1] - ca[i]).cross(normal));
+				speedB = Max(speedB, Abs(3.0 * (cb[i + 1] - cb[i]).dot(normal)));
+			}
+		}
+		// The exact quadratic range is much tighter than its control range.
+		double minSlope = Min(slopes[0], slopes[2]), maxSlope = Max(slopes[0], slopes[2]);
+		const double curvature = (slopes[0] - 2.0 * slopes[1] + slopes[2]);
+		if (curvature != 0.0)
+		{
+			const double t = ((slopes[0] - slopes[1]) / curvature);
+			if ((0.0 < t) && (t < 1.0))
+			{
+				const double slope = EvaluateBernstein(slopes, t);
+				minSlope = Min(minSlope, slope);
+				maxSlope = Max(maxSlope, slope);
+			}
+		}
+		double lower = Min(difference[0], difference[3]), upper = Max(difference[0], difference[3]);
+		const double cubic = (-difference[0] + 3.0 * difference[1] - 3.0 * difference[2] + difference[3]);
+		const double quadratic = (difference[0] - 2.0 * difference[1] + difference[2]);
+		const double linear = (difference[1] - difference[0]);
+		contact = CheckQuadraticRootsInUnitInterval(cubic, (2.0 * quadratic), linear, [&](const double t)
+		{
+			const double value = EvaluateBernstein(difference, t);
+			lower = Min(lower, value);
+			upper = Max(upper, value);
+			return ((Abs(value) <= (2.0 * tolerance)) && check(t, t));
+		});
+		if (not contact)
+		{
+			contact = CheckCubicRootsInUnitInterval(cubic, (3.0 * quadratic), (3.0 * linear), difference[0],
+				[&](const double t) { return check(t, t); });
+		}
+		if (contact)
+		{
+			return false;
+		}
+		const double slope = (Max(minSlope, -maxSlope) - 8.0 * tolerance);
+		if (slope <= 0.0)
+		{
+			// Projection extrema also seed contacts with parallel tangents.
+			contact = CheckQuadraticRootsInUnitInterval(curvature, (2.0 * (slopes[1] - slopes[0])), slopes[0],
+				[&](const double t)
+				{
+					const Vec2 delta = (a.pointAt(t) - b.pointAt(t)), velocity = b.derivativeAt(t);
+					const double speedSq = velocity.lengthSq();
+					const double s = ((0.0 < speedSq) ? (t + delta.dot(velocity) / speedSq) : t);
+					return (InRange(s, 0.0, 1.0) && check(t, s));
+				});
+			return false;
+		}
+		// With g(t) = cross(A(t), normal) monotone, A(t) = B(s) requires
+		// |t-s| <= projectionError / min|g'|, hence |dot(A(t)-B(t), normal)|
+		// <= speedB * projectionError / min|g'|. Pad both bounds for roundoff.
+		const double margin = ((projectionError + 4.0 * tolerance) * speedB / slope + 4.0 * tolerance);
+		return ((margin < lower) || (upper < -margin));
+	}
+
+	// Called after point/segment reduction. Coordinates are finite and scale
+	// is nonzero under that precondition. Work and storage are both bounded.
+	template <class BezierA, class BezierB>
+	[[nodiscard]]
+	BezierPairIntersection ClassifyCanonicalBezierPair(const BezierA& originalA, const BezierB& originalB)
+	{
+		constexpr int32 MaxNodes = 64, MaxCorrections = 64;
+		const Vec2 origin = originalA.p0;
+		double scale = 0.0;
+		const auto IncludeScale = [&](const auto& curve)
+		{
+			for (const Vec2& p : BezierControlPoints(curve))
+			{
+				scale = Max({ scale, Abs(p.x - origin.x), Abs(p.y - origin.y) });
+			}
+		};
+		IncludeScale(originalA);
+		IncludeScale(originalB);
+		const auto Normalize = [&](auto curve)
+		{
+			curve.p0 = ((curve.p0 - origin) / scale);
+			curve.p1 = ((curve.p1 - origin) / scale);
+			curve.p2 = ((curve.p2 - origin) / scale);
+			if constexpr (std::is_same_v<decltype(curve), Bezier3>)
+			{
+				curve.p3 = ((curve.p3 - origin) / scale);
+			}
+			return curve;
+		};
+		const BezierA a = Normalize(originalA);
+		const BezierB b = Normalize(originalB);
+		const auto SeparatedBounds = [](const Vec2& la, const Vec2& ha, const Vec2& lb, const Vec2& hb)
+		{
+			return (((ha.x + BezierRootTolerance) < lb.x) || ((hb.x + BezierRootTolerance) < la.x)
+				|| ((ha.y + BezierRootTolerance) < lb.y) || ((hb.y + BezierRootTolerance) < la.y));
+		};
+		const auto [minA, maxA] = BezierControlBounds(a);
+		const auto [minB, maxB] = BezierControlBounds(b);
+		BezierPairIntersection result;
+		if (SeparatedBounds(minA, maxA, minB, maxB))
+		{
+			return result;
+		}
+		int32 corrections = 0;
+		double bestDistanceSq = std::numeric_limits<double>::infinity();
+		const auto CheckContact = [&](double t, double s)
+		{
+			for (int32 iteration = 0; iteration < 8; ++iteration)
+			{
+				const Vec2 delta = (a.pointAt(t) - b.pointAt(s));
+				const double distanceSq = delta.lengthSq();
+				if (distanceSq < bestDistanceSq)
+				{
+					bestDistanceSq = distanceSq;
+					result.parameterA = t;
+					result.parameterB = s;
+				}
+				if (distanceSq <= (BezierRootTolerance * BezierRootTolerance))
+				{
+					return true;
+				}
+				if (corrections == MaxCorrections)
+				{
+					break;
+				}
+				++corrections;
+				const Vec2 u = a.derivativeAt(t), v = b.derivativeAt(s);
+				const double determinant = u.cross(v);
+				if (determinant == 0.0)
+				{
+					break;
+				}
+				const double nextT = (t - delta.cross(v) / determinant), nextS = (s - delta.cross(u) / determinant);
+				if (not InRange(nextT, 0.0, 1.0) || not InRange(nextS, 0.0, 1.0))
+				{
+					break;
+				}
+				t = nextT;
+				s = nextS;
+			}
+			return false;
+		};
+		bool contact = false;
+		if (SeparateBezierPairByProjection(a, b, CheckContact, contact))
+		{
+			return result;
+		}
+		if (contact)
+		{
+			result.kind = BezierPairIntersectionKind::Contact;
+			return result;
+		}
+		struct Node
+		{
+			BezierA a;
+			BezierB b;
+			double lowerA, upperA, lowerB, upperB;
+		};
+		// Each visit adds at most one pending node.
+		std::array<Node, MaxNodes + 1> stack;
+		int32 count = 1;
+		stack[0] = { a, b, 0.0, 1.0, 0.0, 1.0 };
+		for (int32 visit = 0; count && (visit < MaxNodes); ++visit)
+		{
+			Node node = stack[--count];
+			const auto [la, ha] = BezierControlBounds(node.a);
+			const auto [lb, hb] = BezierControlBounds(node.b);
+			if (SeparatedBounds(la, ha, lb, hb))
+			{
+				continue;
+			}
+			if (CheckContact((node.lowerA + node.upperA) * 0.5, (node.lowerB + node.upperB) * 0.5))
+			{
+				result.kind = BezierPairIntersectionKind::Contact;
+				return result;
+			}
+			const double widthA = (node.upperA - node.lowerA), widthB = (node.upperB - node.lowerB);
+			if (not ClipBezierPair(node.a, node.b, node.lowerB, node.upperB)
+				|| not ClipBezierPair(node.b, node.a, node.lowerA, node.upperA))
+			{
+				continue;
+			}
+			if (((node.upperA - node.lowerA) < (0.8 * widthA)) || ((node.upperB - node.lowerB) < (0.8 * widthB)))
+			{
+				stack[count++] = node;
+			}
+			else if ((hb - lb).lengthSq() <= (ha - la).lengthSq())
+			{
+				const auto [left, right] = node.a.split(0.5);
+				const double middle = ((node.lowerA + node.upperA) * 0.5);
+				stack[count++] = { right, node.b, middle, node.upperA, node.lowerB, node.upperB };
+				stack[count++] = { left, node.b, node.lowerA, middle, node.lowerB, node.upperB };
+			}
+			else
+			{
+				const auto [left, right] = node.b.split(0.5);
+				const double middle = ((node.lowerB + node.upperB) * 0.5);
+				stack[count++] = { node.a, right, node.lowerA, node.upperA, middle, node.upperB };
+				stack[count++] = { node.a, left, node.lowerA, node.upperA, node.lowerB, middle };
+			}
+		}
+		result.kind = (count ? BezierPairIntersectionKind::Unresolved : BezierPairIntersectionKind::Separated);
+		return result;
+	}
+
+	template <class Bezier>
+	[[nodiscard]]
+	bool BezierLexicographicalLess(const Bezier& a, const Bezier& b) noexcept
+	{
+		const auto ca = BezierControlPoints(a), cb = BezierControlPoints(b);
+		for (size_t i = 0; i < ca.size(); ++i)
+		{
+			if (ca[i].x != cb[i].x)
+			{
+				return (ca[i].x < cb[i].x);
+			}
+			if (ca[i].y != cb[i].y)
+			{
+				return (ca[i].y < cb[i].y);
+			}
+		}
+		return false;
+	}
+
+	// Canonical orientation/order makes the bounded search symmetric. Map its
+	// best evaluated parameters back for callers that also need actual points.
+	template <class BezierA, class BezierB>
+	[[nodiscard]]
+	BezierPairIntersection ClassifyBezierPair(const BezierA& originalA, const BezierB& originalB)
+	{
+		const bool reverseA = BezierLexicographicalLess(originalA.reversed(), originalA);
+		const bool reverseB = BezierLexicographicalLess(originalB.reversed(), originalB);
+		const BezierA a = (reverseA ? originalA.reversed() : originalA);
+		const BezierB b = (reverseB ? originalB.reversed() : originalB);
+		const bool swap = [&]
+		{
+			if constexpr (std::is_same_v<BezierA, BezierB>)
+			{
+				return BezierLexicographicalLess(b, a);
+			}
+			else
+			{
+				return std::is_same_v<BezierA, Bezier3>;
+			}
+		}();
+		BezierPairIntersection result = (swap ? ClassifyCanonicalBezierPair(b, a) : ClassifyCanonicalBezierPair(a, b));
+		if (swap)
+		{
+			std::swap(result.parameterA, result.parameterB);
+		}
+		if (reverseA)
+		{
+			result.parameterA = (1.0 - result.parameterA);
+		}
+		if (reverseB)
+		{
+			result.parameterB = (1.0 - result.parameterB);
+		}
+		return result;
+	}
+
 	// The image of a collinear Bezier is a segment, including any retracing.
 	template <class Bezier>
 	[[nodiscard]]

@@ -915,3 +915,68 @@ TEST_CASE("Geometry2D.Intersects.Bezier.Diamond")
 	CHECK(not Geometry2D::Intersects(curve, SuperEllipse{ 0, 0, 0, 0, 1 }));
 	CHECK(Geometry2D::Intersects(curve, SuperEllipse{ 0, 0, 0, 1, 1 }));
 }
+
+TEST_CASE("Geometry2D.Intersects.Bezier.GeneralPairs")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const bool expected)
+	{
+		for (const auto& aa : { a, a.reversed() })
+		{
+			for (const auto& bb : { b, b.reversed() })
+			{
+				CHECK(Geometry2D::Intersects(aa, bb) == expected);
+				CHECK(Geometry2D::Intersects(bb, aa) == expected);
+			}
+		}
+	};
+	const auto CheckDegrees = [&](const Bezier2& a, const Bezier2& b, const bool expected)
+	{
+		CheckPair(a, b, expected);
+		CheckPair(a, Elevate(b), expected);
+		CheckPair(Elevate(a), b, expected);
+		CheckPair(Elevate(a), Elevate(b), expected);
+	};
+	const Bezier2 a{ { -1, 0.1 }, { 0, -0.1 }, { 1, 0.1 } };
+	const Bezier2 crossing{ { -1, -0.098 }, { 0, 0.102 }, { 1, -0.098 } };
+	const Bezier2 tangent{ { -1, -0.1 }, { 0, 0.1 }, { 1, -0.1 } };
+	constexpr double X = 0.27;
+	const Bezier2 offCenterTangent{ { -1, -0.1 - 0.4 * X - 0.2 * X * X },
+		{ 0, 0.1 - 0.2 * X * X }, { 1, -0.1 + 0.4 * X - 0.2 * X * X } };
+	for (const double scale : { 1.0e-6, 1.0, 1.0e6 })
+	{
+		for (const Vec2& offset : { Vec2{ 0, 0 }, Vec2{ 13, -7 } * scale })
+		{
+			const auto Transform = [&](const Bezier2& q)
+			{
+				return Bezier2{ q.p0 * scale + offset, q.p1 * scale + offset, q.p2 * scale + offset };
+			};
+			const Bezier2 transformed = Transform(a);
+			CheckDegrees(transformed, Transform(crossing), true);
+			CheckDegrees(transformed, Transform(tangent), true);
+			CheckDegrees(transformed, Transform(offCenterTangent), true);
+			CheckDegrees(transformed, Transform(tangent.movedBy(0, -1.0e-8)), false);
+			CheckDegrees(transformed, Transform(a.movedBy(0, 1.0e-3)), false);
+			CheckDegrees(transformed, transformed, true);
+			CheckDegrees(transformed, Transform(a.split(0.371).second), true);
+		}
+	}
+	for (const double gap : { 1.0e-6, 1.0e-8, 1.0e-12 })
+	{
+		CheckDegrees(a, a.movedBy(0, gap), false);
+	}
+	CheckDegrees(a, a.movedBy(0, 1.0e-15), true);
+	CheckDegrees(a, Bezier2{ a.p2, { 2, -1 }, { 3, 1 } }, true);
+	CheckDegrees(a, a.movedBy(0, 10), false);
+
+	const Bezier3 loop{ { 0, 0 }, { 3, 4 }, { -3, 4 }, { 0, 0 } };
+	CheckPair(loop, loop.reversed(), true);
+	CheckPair(loop, loop.split(0.371).second, true);
+	CheckPair(loop, Bezier3{ loop.pointAt(0.23), { 4, 2 }, { 2, -1 }, { 4, -3 } }, true);
+	// x = (t - 1/2)^2, y = (t - 1/2)^3 has a cusp at the origin.
+	const Bezier3 cusp{ { 0.25, -0.125 }, { -1.0 / 12, 0.125 }, { -1.0 / 12, -0.125 }, { 0.25, 0.125 } };
+	CheckPair(cusp, Bezier2{ { -1, 1 }, { 0, -1 }, { 1, 1 } }, true);
+}

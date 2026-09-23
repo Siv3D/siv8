@@ -109,69 +109,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		constexpr int32 CompareBezierPointLexicographically(const Vec2& a, const Vec2& b) noexcept
-		{
-			if (a.x < b.x)
-			{
-				return -1;
-			}
-
-			if (b.x < a.x)
-			{
-				return 1;
-			}
-
-			if (a.y < b.y)
-			{
-				return -1;
-			}
-
-			if (b.y < a.y)
-			{
-				return 1;
-			}
-
-			return 0;
-		}
-
-		[[nodiscard]]
-		constexpr bool BezierLexicographicalLess(const Bezier2& a, const Bezier2& b) noexcept
-		{
-			if (const int32 order = CompareBezierPointLexicographically(a.p0, b.p0))
-			{
-				return (order < 0);
-			}
-
-			if (const int32 order = CompareBezierPointLexicographically(a.p1, b.p1))
-			{
-				return (order < 0);
-			}
-
-			return (CompareBezierPointLexicographically(a.p2, b.p2) < 0);
-		}
-
-		[[nodiscard]]
-		constexpr bool BezierLexicographicalLess(const Bezier3& a, const Bezier3& b) noexcept
-		{
-			if (const int32 order = CompareBezierPointLexicographically(a.p0, b.p0))
-			{
-				return (order < 0);
-			}
-
-			if (const int32 order = CompareBezierPointLexicographically(a.p1, b.p1))
-			{
-				return (order < 0);
-			}
-
-			if (const int32 order = CompareBezierPointLexicographically(a.p2, b.p2))
-			{
-				return (order < 0);
-			}
-
-			return (CompareBezierPointLexicographically(a.p3, b.p3) < 0);
-		}
-
-		[[nodiscard]]
 		bool CheckBezier2Axis(const Vec2& p, const Bezier2& curve, const bool useX)
 		{
 			const double p0 = (useX ? curve.p0.x : curve.p0.y);
@@ -847,35 +784,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IntersectsBezier2Bezier2Approximate(const Bezier2& a, const Bezier2& b)
-		{
-			if (not BoundsIntersectClosed(a.computeBoundingRect(), b.computeBoundingRect()))
-			{
-				return false;
-			}
-
-			// The approximation direction must not depend on operand order.
-			// Invalid non-finite control points are outside the geometry contract.
-			if (BezierLexicographicalLess(b, a))
-			{
-				return IntersectsBezier2ApproximateShape(b, a);
-			}
-
-			return IntersectsBezier2ApproximateShape(a, b);
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier2Bezier3Approximate(const Bezier2& a, const Bezier3& b)
-		{
-			if (not BoundsIntersectClosed(a.computeBoundingRect(), b.computeBoundingRect()))
-			{
-				return false;
-			}
-
-			return IntersectsBezier2ApproximateShape(a, b);
-		}
-
-		[[nodiscard]]
 		bool IntersectsBezier2SuperEllipse(const Bezier2& curve, const SuperEllipse& superEllipse)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
@@ -1058,24 +966,6 @@ namespace s3d
 			{
 				return Geometry2D::Intersects(segment, shape);
 			});
-		}
-
-		[[nodiscard]]
-		bool IntersectsBezier3Bezier3Approximate(const Bezier3& a, const Bezier3& b)
-		{
-			if (not BoundsIntersectClosed(a.computeBoundingRect(), b.computeBoundingRect()))
-			{
-				return false;
-			}
-
-			// The approximation direction must not depend on operand order.
-			// Invalid non-finite control points are outside the geometry contract.
-			if (BezierLexicographicalLess(b, a))
-			{
-				return IntersectsBezier3ApproximateShape(b, a);
-			}
-
-			return IntersectsBezier3ApproximateShape(a, b);
 		}
 
 		[[nodiscard]]
@@ -2963,7 +2853,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
 					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier2>)
 				{
-					return IntersectsBezier2Bezier2Approximate(a, b);
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierPairIntersectionKind::Separated);
 				}
 				else
 				{
@@ -2979,7 +2869,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier2>
 					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
 				{
-					return IntersectsBezier2Bezier3Approximate(a, b);
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierPairIntersectionKind::Separated);
 				}
 				else
 				{
@@ -3095,7 +2985,7 @@ namespace s3d
 				if constexpr (std::is_same_v<std::decay_t<decltype(a)>, Bezier3>
 					&& std::is_same_v<std::decay_t<decltype(b)>, Bezier3>)
 				{
-					return IntersectsBezier3Bezier3Approximate(a, b);
+					return (detail::ClassifyBezierPair(a, b).kind != detail::BezierPairIntersectionKind::Separated);
 				}
 				else
 				{

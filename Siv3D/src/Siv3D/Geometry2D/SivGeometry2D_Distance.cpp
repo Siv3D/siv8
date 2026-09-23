@@ -1043,7 +1043,7 @@ namespace s3d
 
 		template <class BezierA, class BezierB>
 		[[nodiscard]]
-		ClosestPairCandidate ClosestBezierPair(const BezierA& a, const BezierB& b) noexcept
+		ClosestPairCandidate ClosestBezierPair(const BezierA& a, const BezierB& b, ClosestPairCandidate best = {}) noexcept
 		{
 			constexpr int32 MaxEvaluations = 128;
 			struct Node
@@ -1061,8 +1061,7 @@ namespace s3d
 			{
 				return ((lhs.boundSq != rhs.boundSq) ? (lhs.boundSq > rhs.boundSq) : (lhs.distanceSq > rhs.distanceSq));
 			};
-			ClosestPairCandidate best;
-			double bestDistance = std::numeric_limits<double>::infinity();
+			double bestDistance = std::sqrt(best.distanceSq);
 			double scaleSq = 0.0;
 			for (const Vec2& p : detail::BezierControlPoints(a))
 			{
@@ -1079,18 +1078,8 @@ namespace s3d
 				++evaluations;
 				const auto pointsA = detail::BezierControlPoints(partA);
 				const auto pointsB = detail::BezierControlPoints(partB);
-				const auto Bounds = [](const auto& points) noexcept
-				{
-					Vec2 lower = points.front(), upper = lower;
-					for (const Vec2& p : points)
-					{
-						lower = { Min(lower.x, p.x), Min(lower.y, p.y) };
-						upper = { Max(upper.x, p.x), Max(upper.y, p.y) };
-					}
-					return std::pair{ lower, upper };
-				};
-				const auto [minA, maxA] = Bounds(pointsA);
-				const auto [minB, maxB] = Bounds(pointsB);
+				const auto [minA, maxA] = detail::BezierControlBounds(partA);
+				const auto [minB, maxB] = detail::BezierControlBounds(partB);
 				const Vec2 boxGap{ Max({ 0.0, (minA.x - maxB.x), (minB.x - maxA.x) }),
 					Max({ 0.0, (minA.y - maxB.y), (minB.y - maxA.y) }) };
 				double boundSq = boxGap.lengthSq();
@@ -2392,10 +2381,34 @@ namespace s3d
 			: std::is_same_v<T, Polygon> ? 14
 			: 15;
 
+		template <class BezierA, class BezierB>
+		[[nodiscard]]
+		ClosestPoints2D ClosestBezierPairGeometry(const BezierA& a, const BezierB& b)
+		{
+			const auto intersection = detail::ClassifyBezierPair(a, b);
+			const Vec2 pointA = a.pointAt(intersection.parameterA), pointB = b.pointAt(intersection.parameterB);
+			if (intersection.kind == detail::BezierPairIntersectionKind::Contact)
+			{
+				const Vec2 common = (pointA + (pointB - pointA) * 0.5);
+				return { common, common, 0.0 };
+			}
+			// An unresolved predicate supplies a candidate, never a fabricated
+			// zero distance or a common point from a polyline approximation.
+			ClosestPairCandidate seed;
+			UpdateCandidate(seed, pointA, pointB, intersection.parameterA, intersection.parameterB);
+			const auto closest = ClosestBezierPair(a, b, seed);
+			return { closest.pointA, closest.pointB, std::sqrt(closest.distanceSq) };
+		}
+
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
 		Optional<ClosestPoints2D> ComputeClosestPointsCanonical(const ShapeA& a, const ShapeB& b)
 		{
+			if constexpr (detail::IsBezier<ShapeA> && detail::IsBezier<ShapeB>)
+			{
+				return ClosestBezierPairGeometry(a, b);
+			}
+
 			if (IsEmptyGeometry(a) || IsEmptyGeometry(b))
 			{
 				return none;
@@ -2451,6 +2464,11 @@ namespace s3d
 		[[nodiscard]]
 		double ComputeDistanceCanonical(const ShapeA& a, const ShapeB& b)
 		{
+			if constexpr (detail::IsBezier<ShapeA> && detail::IsBezier<ShapeB>)
+			{
+				return ClosestBezierPairGeometry(a, b).distance;
+			}
+
 			if (IsEmptyGeometry(a) || IsEmptyGeometry(b))
 			{
 				return std::numeric_limits<double>::infinity();

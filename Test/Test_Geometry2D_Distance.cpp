@@ -1323,3 +1323,57 @@ TEST_CASE("Geometry2D.Distance.Bezier.SimpleGeometry")
 		CheckPair(Elevate(arch), diamond, distance);
 	}
 }
+
+TEST_CASE("Geometry2D.Distance.Bezier.GeneralPairs")
+{
+	const auto Elevate = [](const Bezier2& q)
+	{
+		return Bezier3{ q.p0, q.p0 + (q.p1 - q.p0) * (2.0 / 3), q.p2 + (q.p1 - q.p2) * (2.0 / 3), q.p2 };
+	};
+	const auto CheckPair = [](const auto& a, const auto& b, const double lower, const double upper)
+	{
+		for (const auto& aa : { a, a.reversed() })
+		{
+			const auto ab = Geometry2D::ClosestPoints(aa, b), ba = Geometry2D::ClosestPoints(b, aa);
+			REQUIRE(ab);
+			REQUIRE(ba);
+			for (const double distance : { ab->distance, ba->distance, Geometry2D::Distance(aa, b), Geometry2D::Distance(b, aa) })
+			{
+				CHECK(lower <= distance);
+				CHECK(distance <= upper);
+			}
+			CHECK(Geometry2D::Distance(ab->pointA, aa) < 1.0e-11);
+			CHECK(Geometry2D::Distance(ab->pointB, b) < 1.0e-11);
+			CHECK(Geometry2D::Distance(ba->pointB, aa) < 1.0e-11);
+			CHECK(Geometry2D::Distance(ba->pointA, b) < 1.0e-11);
+			CheckWitnessConsistency(*ab);
+			CheckWitnessConsistency(*ba);
+		}
+	};
+	const auto CheckDegrees = [&](const Bezier2& a, const Bezier2& b, const double lower, const double upper)
+	{
+		CheckPair(a, b, lower, upper);
+		CheckPair(a, Elevate(b), lower, upper);
+		CheckPair(Elevate(a), b, lower, upper);
+		CheckPair(Elevate(a), Elevate(b), lower, upper);
+	};
+	const Bezier2 a{ { -1, 0.1 }, { 0, -0.1 }, { 1, 0.1 } };
+	CheckDegrees(a, Bezier2{ { -1, -0.098 }, { 0, 0.102 }, { 1, -0.098 } }, 0.0, 0.0);
+	CheckDegrees(a, Bezier2{ { -1, -0.1 }, { 0, 0.1 }, { 1, -0.1 } }, 0.0, 0.0);
+	CheckDegrees(a, a, 0.0, 0.0);
+	CheckDegrees(a, a.split(0.371).second, 0.0, 0.0);
+	CheckDegrees(a, a.movedBy(0, 1.0e-15), 0.0, 0.0);
+	for (const double gap : { 1.0e-3, 1.0e-8, 1.0e-12 })
+	{
+		// The parabola has |dy/dx| <= 0.2, so its vertical translate is
+		// separated by at least gap / sqrt(1 + 0.2^2), up to roundoff.
+		CheckDegrees(a, a.movedBy(0, gap), (gap / std::sqrt(1.04) - 1.0e-16), (gap + 1.0e-16));
+	}
+
+	// A nearly coincident pair exhausts the predicate budget. Its conservative
+	// true must not manufacture a zero distance or an off-curve common point.
+	const Bezier3 near{ { -83, -28 }, { -80, -49 }, { -90, -30 }, { 82, -33 } };
+	const Bezier3 shifted = near.movedBy(1.0e-10, 0.37e-10);
+	CHECK(Geometry2D::Intersects(near, shifted));
+	CheckPair(near, shifted, 1.0e-13, 1.1e-10);
+}
