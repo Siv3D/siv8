@@ -82,6 +82,7 @@ namespace s3d
 
 		struct HitAccumulator
 		{
+			static constexpr double minDistance = 0.0;
 			double maxDistance = std::numeric_limits<double>::infinity();
 			double bestDistance = std::numeric_limits<double>::infinity();
 			// Defer the origin classification until a hit has been found.
@@ -89,6 +90,11 @@ namespace s3d
 			RayHitCandidate fromInside;
 			bool hasHit = false;
 			Optional<bool> startsInside;
+		};
+
+		struct RangedHitAccumulator : HitAccumulator
+		{
+			double minDistance = 0.0;
 		};
 
 		[[nodiscard]]
@@ -141,10 +147,20 @@ namespace s3d
 				&& (candidate.order < selected.order));
 		}
 
-		void AppendCandidate(HitAccumulator& accumulator,
+		template <class Accumulator>
+		void AppendCandidate(Accumulator& accumulator,
 			const Ray2D& ray, double distance, const Vec2& normal, const size_t order,
 			const RayHitCandidateKind kind = RayHitCandidateKind::IsolatedPoint)
 		{
+			if constexpr (std::is_same_v<Accumulator, RangedHitAccumulator>)
+			{
+				// Do not snap excluded hits forward to a positive lower bound.
+				if (distance < accumulator.minDistance)
+				{
+					return;
+				}
+			}
+
 			const double tolerance = MergeTolerance(distance);
 
 			if ((distance < -tolerance)
@@ -504,7 +520,8 @@ namespace s3d
 			return false;
 		}
 
-		void ProcessBoundaryPiece(HitAccumulator& accumulator,
+		template <class Accumulator>
+		void ProcessBoundaryPiece(Accumulator& accumulator,
 			const Ray2D& ray, const LineBoundary& boundary)
 		{
 			const Vec2 segmentDirection = (boundary.line.end - boundary.line.start);
@@ -531,7 +548,7 @@ namespace s3d
 
 			const double t0 = (boundary.line.start - ray.origin).dot(ray.direction);
 			const double t1 = (boundary.line.end - ray.origin).dot(ray.direction);
-			const double rawOverlapStart = Max(0.0, Min(t0, t1));
+			const double rawOverlapStart = Max(accumulator.minDistance, Min(t0, t1));
 			const double rawOverlapEnd = Max(t0, t1);
 			const double overlapEnd = Min(accumulator.maxDistance, rawOverlapEnd);
 
@@ -554,16 +571,20 @@ namespace s3d
 			return (Abs(point.dot(point) - 1.0) <= (2.0 * detail::EllipseContactTolerance));
 		}
 
-		void ProcessBoundaryPiece(HitAccumulator& accumulator,
+		template <class Accumulator>
+		void ProcessBoundaryPiece(Accumulator& accumulator,
 			const Ray2D& ray, const CircleArcBoundary& boundary)
 		{
 			const Circle& circle = boundary.circle;
 			const Vec2 origin = ((ray.origin - circle.center) / circle.r);
 			if (IsOnUnitCircleBoundary(origin) && ArcContainsPoint(boundary, ray.origin))
 			{
-				AppendCandidate(accumulator, ray, 0.0, origin, boundary.order);
 				accumulator.startsInside = false;
-				return;
+				if constexpr (std::is_same_v<Accumulator, HitAccumulator>)
+				{
+					AppendCandidate(accumulator, ray, 0.0, origin, boundary.order);
+					return;
+				}
 			}
 			detail::VisitUnitCircleLineIntersections(origin, ray.direction, 1.0, [&](const double distance, const Vec2& normalized)
 			{
@@ -576,16 +597,20 @@ namespace s3d
 			});
 		}
 
-		void ProcessBoundaryPiece(HitAccumulator& accumulator,
+		template <class Accumulator>
+		void ProcessBoundaryPiece(Accumulator& accumulator,
 			const Ray2D& ray, const EllipseBoundary& boundary)
 		{
 			const Ellipse& ellipse = boundary.ellipse;
 			const Vec2 origin = ((ray.origin - ellipse.center) / ellipse.axes);
 			if (IsOnUnitCircleBoundary(origin))
 			{
-				AppendCandidate(accumulator, ray, 0.0, (origin / ellipse.axes), boundary.order);
 				accumulator.startsInside = false;
-				return;
+				if constexpr (std::is_same_v<Accumulator, HitAccumulator>)
+				{
+					AppendCandidate(accumulator, ray, 0.0, (origin / ellipse.axes), boundary.order);
+					return;
+				}
 			}
 			const Vec2 direction = (ray.direction / ellipse.axes);
 			detail::VisitUnitCircleLineIntersections(origin, direction, direction.lengthSq(), [&](const double distance, const Vec2& normalized)
@@ -663,7 +688,8 @@ namespace s3d
 			return (position - shape.center);
 		}
 
-		void ProcessBoundaryPiece(HitAccumulator& accumulator,
+		template <class Accumulator>
+		void ProcessBoundaryPiece(Accumulator& accumulator,
 			const Ray2D& ray, const SuperEllipseBoundary& boundary)
 		{
 			double tMin = 0.0;
@@ -723,12 +749,23 @@ namespace s3d
 			}
 		}
 
-		template <class Shape>
+		template <class Accumulator = HitAccumulator, class Shape>
 		[[nodiscard]]
 		Optional<RaycastHit2D> ComputeRaycast(
-			const Ray2D& ray, const Shape& shape, const double maxDistance)
+			const Ray2D& ray, const Shape& shape, const double maxDistance, const double minDistance = 0.0)
 		{
-			if (maxDistance < 0.0)
+			if constexpr (std::is_same_v<Accumulator, RangedHitAccumulator>)
+			{
+				if ((minDistance < 0.0) || (maxDistance < minDistance))
+				{
+					return none;
+				}
+				if (minDistance == 0.0)
+				{
+					return ComputeRaycast(ray, shape, maxDistance);
+				}
+			}
+			else if (maxDistance < 0.0)
 			{
 				return none;
 			}
@@ -748,8 +785,12 @@ namespace s3d
 				}
 			}
 
-			HitAccumulator accumulator;
+			Accumulator accumulator;
 			accumulator.maxDistance = maxDistance;
+			if constexpr (std::is_same_v<Accumulator, RangedHitAccumulator>)
+			{
+				accumulator.minDistance = minDistance;
+			}
 			size_t order = 0;
 			auto Visit = [&](auto boundary)
 			{
@@ -783,9 +824,19 @@ namespace s3d
 			return ComputeRaycast(ray, shape, maxDistance);
 		}
 
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Rect& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
+		}
+
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const RectF& shape, const double maxDistance)
 		{
 			return ComputeRaycast(ray, shape, maxDistance);
+		}
+
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const RectF& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
 		}
 
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Circle& shape, const double maxDistance)
@@ -793,9 +844,19 @@ namespace s3d
 			return ComputeRaycast(ray, shape, maxDistance);
 		}
 
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Circle& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
+		}
+
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Ellipse& shape, const double maxDistance)
 		{
 			return ComputeRaycast(ray, shape, maxDistance);
+		}
+
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Ellipse& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
 		}
 
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const SuperEllipse& shape, const double maxDistance)
@@ -803,9 +864,19 @@ namespace s3d
 			return ComputeRaycast(ray, shape, maxDistance);
 		}
 
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const SuperEllipse& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
+		}
+
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Triangle& shape, const double maxDistance)
 		{
 			return ComputeRaycast(ray, shape, maxDistance);
+		}
+
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Triangle& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
 		}
 
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Quad& shape, const double maxDistance)
@@ -813,9 +884,19 @@ namespace s3d
 			return ComputeRaycast(ray, shape, maxDistance);
 		}
 
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Quad& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
+		}
+
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const RoundRect& shape, const double maxDistance)
 		{
 			return ComputeRaycast(ray, shape, maxDistance);
+		}
+
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const RoundRect& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
 		}
 
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Polygon& shape, const double maxDistance)
@@ -823,9 +904,19 @@ namespace s3d
 			return ComputeRaycast(ray, shape, maxDistance);
 		}
 
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Polygon& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
+		}
+
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const MultiPolygon& shape, const double maxDistance)
 		{
 			return ComputeRaycast(ray, shape, maxDistance);
+		}
+
+		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const MultiPolygon& shape, const double minDistance, const double maxDistance)
+		{
+			return ComputeRaycast<RangedHitAccumulator>(ray, shape, maxDistance, minDistance);
 		}
 	}
 }

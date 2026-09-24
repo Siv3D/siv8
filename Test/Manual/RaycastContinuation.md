@@ -2,8 +2,8 @@
 
 This observes reflection and sliding with the current API. It is not a collision
 response implementation or a regression specification. See the
-[continuation investigation](../../docs/geometry2d/proposals/raycast-continuation.md)
-for interpretation and the unadopted search-range proposal.
+[continuation guide](../../docs/geometry2d/README.md#continuing-a-ray-after-contact)
+for choosing a search range and interpreting the limitations.
 
 ## Execution
 
@@ -23,6 +23,7 @@ for interpretation and the unadopted search-range proposal.
 | Outgoing, inward, and slide at the rectangle boundary | Distance zero. |
 | Hole reflection | Zero before displacement; after a small rightward step, the opposite wall is at x = 7. The concave example reaches the same x. |
 | Hole travel, strategy 0 / 2 | Unchanged position and approximately 8 units remaining when the 8-call cap is reached, including the one-representable-step strategy. |
+| Hole travel, strategy 3 | Completes the same path without moving the origin between queries, using the range overload. |
 | Hole travel, strategy 1 | Completes the 10-unit path near (3, 5). The displaced step is charged to the budget; this is not safe for arbitrary geometry. |
 | Thin member | A step of 1e-6 jumps over the member at x in [1e-7, 2e-7]; a step of 1e-8 retains its entry hit. |
 | Container normal offset | Outward offset re-hits the nearby entry; inward offset reaches the far side near x = -5. |
@@ -41,7 +42,8 @@ query behavior.
   mode 2: continue along a tangent to the returned normal.
 - Strategy 0: unchanged hit position; 1: advance 1e-6 along the new direction;
   2: advance `scale * 1e-8`; 3: advance each moving coordinate one representable
-  step; 4: advance `1e-12 * max(1, scale, abs(x), abs(y))`.
+  step; 4: advance `1e-12 * max(1, scale, abs(x), abs(y))`; 5: retain the
+  origin and search from `scale * 1e-8` using the range overload.
 - Each mode/strategy uses 64 oblique directions and three transverse offsets.
   Counts describe a second query after each successful first hit. `near` means a
   positive distance no greater than `scale * 1e-7`; this is a diagnostic bucket,
@@ -73,13 +75,16 @@ namespace RaycastContinuation
 	{
 		std::string name;
 		std::function<Optional<RaycastHit2D>(const Ray2D&, double)> cast;
+		std::function<Optional<RaycastHit2D>(const Ray2D&, double, double)> castRange;
 	};
 
 	template <class Shape>
 	Target Make(std::string name, const Shape& shape)
 	{
 		return { std::move(name), [shape](const Ray2D& ray, double limit)
-			{ return Geometry2D::Raycast(ray, shape, limit); } };
+			{ return Geometry2D::Raycast(ray, shape, limit); },
+			[shape](const Ray2D& ray, double minimum, double limit)
+			{ return Geometry2D::Raycast(ray, shape, minimum, limit); } };
 	}
 
 	std::vector<Target> Shapes(double scale, Vec2 center)
@@ -178,7 +183,7 @@ namespace RaycastContinuation
 		Record("tangent direction offset", circle, { { 1e-8, -5 }, { 1, 0 } });
 		Record("tangent normal offset", circle, { { 0, -5 - 1e-8 }, { 1, 0 } });
 
-		for (int strategy = 0; strategy < 3; ++strategy)
+		for (int strategy = 0; strategy < 4; ++strategy)
 		{
 			Vec2 position{ 5, 5 }, direction{ -1, 0 };
 			double remaining = 10;
@@ -186,7 +191,9 @@ namespace RaycastContinuation
 			while ((calls < 8) && (0 < remaining))
 			{
 				++calls;
-				const auto hit = hole.cast({ position, direction }, remaining);
+				const auto hit = (strategy == 3)
+					? hole.castRange({ position, direction }, (calls == 1) ? 0.0 : 0.001, remaining)
+					: hole.cast({ position, direction }, remaining);
 				if (not hit)
 				{
 					position += direction * remaining;
@@ -237,7 +244,7 @@ namespace RaycastContinuation
 		for (Vec2 center : { Vec2{ 0, 0 }, Vec2{ 1e4, -2e4 }, Vec2{ 1e8, -2e8 } })
 		for (const auto& target : Shapes(scale, center))
 		for (int mode = 0; mode < 3; ++mode)
-		for (int strategy = 0; strategy < 5; ++strategy)
+		for (int strategy = 0; strategy < 6; ++strategy)
 		{
 			std::array<int, 5> counts{};
 			for (int i = 0; i < 64; ++i)
@@ -260,7 +267,9 @@ namespace RaycastContinuation
 				{
 					origin += direction * (std::max({ 1.0, scale, Abs(origin.x), Abs(origin.y) }) * 1e-12);
 				}
-				const auto next = target.cast({ origin, direction }, 50 * scale);
+				const auto next = (strategy == 5)
+					? target.castRange({ origin, direction }, scale * 1e-8, 50 * scale)
+					: target.cast({ origin, direction }, 50 * scale);
 				if (not next) { ++counts[1]; }
 				else if (next->distance == 0) { ++counts[2]; }
 				else if (next->distance <= scale * 1e-7) { ++counts[3]; }

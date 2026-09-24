@@ -188,5 +188,4 @@ API 名や実装方針は未確定。寸法・配置・配色の変更時に、�
 
 ## Geometry2D / Raycast の継続検索
 
-- [継続検索の調査と追加案](docs/geometry2d/proposals/raycast-continuation.md)に基づき、既存 overload を維持した検索開始距離の指定を検討する。下限の許容誤差・範囲外入力・`startsInside` の意味を決め、通常検索と継続検索の Release 性能を比較してから採用を判断する。
 - 角・点接触・辺に沿うすべりは、検索範囲の追加だけでは解決しない。[再現プログラム](Test/Manual/RaycastContinuation.md)を使い、移動先の許可領域と残距離・反復上限の扱いを決めた利用例を検討する。
