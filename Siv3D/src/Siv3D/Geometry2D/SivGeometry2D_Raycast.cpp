@@ -16,10 +16,11 @@
 # include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
-# include <Siv3D/Geometry2D/IntersectsAt.hpp>
 # include <Siv3D/Geometry2D/SignedDistance.hpp>
 # include <Siv3D/Geometry2D/Raycast.hpp>
+# include "EllipseGeometry.hpp"
 # include "PolygonGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -724,23 +725,43 @@ namespace s3d
 				return;
 			}
 
-			const auto intersections = Geometry2D::IntersectsAt(
-				Line{ ray.origin, ray.pointAt(tMax) }, boundary.superEllipse);
-
-			if (not intersections.has_value())
-			{
-				return;
-			}
-
-			for (const Vec2& position : *intersections)
+			const SuperEllipse& shape = boundary.superEllipse;
+			const Line line{ ray.origin, ray.pointAt(tMax) };
+			const auto Visit = [&](const Vec2& position)
 			{
 				const double distance = (position - ray.origin).dot(ray.direction);
 				AppendCandidate(accumulator, ray, distance,
-					SuperEllipseNormal(boundary.superEllipse, position), boundary.order);
+					SuperEllipseNormal(shape, position), boundary.order);
+				return (not accumulator.hasHit);
+			};
+			if (shape.n == 2.0)
+			{
+				// Prefer the stable roots: the intersection predicate can reject a rounded tangent.
+				const Vec2 origin = ((ray.origin - shape.center) / shape.axes);
+				const Vec2 direction = (ray.direction / shape.axes).normalized();
+				detail::VisitUnitCircleLineIntersections(origin, direction, [&](double, const Vec2& normalized)
+				{
+					return Visit(shape.center + shape.axes * normalized);
+				});
+				if ((not accumulator.hasHit) && (not Geometry2D::Intersects(line, shape)))
+				{
+					return;
+				}
+			}
+			else
+			{
+				if (not Geometry2D::Intersects(line, shape))
+				{
+					return;
+				}
+				detail::VisitLineSuperEllipseIntersections(line, shape, [&](const double t)
+				{
+					return Visit(line.interpolatedPointAt(t));
+				});
 			}
 
-			// A zero-distance boundary hit may be suppressed by a numerical
-			// positive-dimensional classification. Preserve the closed-origin rule.
+			// The origin can be numerically on the boundary even when the
+			// line solver cannot resolve an isolated root in the clipped interval.
 			const double originDistance = Geometry2D::SignedDistance(boundary.superEllipse, ray.origin);
 			accumulator.startsInside = (originDistance < 0.0);
 			if (originDistance == 0.0)

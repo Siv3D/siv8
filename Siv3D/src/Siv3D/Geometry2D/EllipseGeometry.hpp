@@ -6,12 +6,39 @@
 //-----------------------------------------------
 # pragma once
 # include <Siv3D/Ellipse.hpp>
+# include <Siv3D/ListUtility.hpp>
 # include <Siv3D/RectF.hpp>
 
 namespace s3d::detail
 {
 	inline constexpr double EllipseDistanceRootTolerance = (16.0 * 2.2204460492503131e-16);
 	inline constexpr double EllipseContactTolerance = (64.0 * 2.2204460492503131e-16);
+
+	// Unit direction in normalized ellipse coordinates. Visit roots from
+	// negative to positive distance; returning false skips the second root.
+	template <class Visitor>
+	void VisitUnitCircleLineIntersections(const Vec2& origin, const Vec2& unit, Visitor&& visitor)
+	{
+		// The line distance avoids cancellation between large quadratic coefficients.
+		const double normal = std::fma(origin.x, unit.y, (-origin.y * unit.x));
+		const double heightSq = std::fma(-normal, normal, 1.0);
+		const double tolerance = (2.0 * EllipseContactTolerance);
+		if (heightSq < -tolerance)
+		{
+			return;
+		}
+		const double middle = -origin.dot(unit);
+		const double height = ((Abs(heightSq) <= tolerance) ? 0.0 : std::sqrt(heightSq));
+		const Vec2 closest{ (normal * unit.y), (-normal * unit.x) };
+		if (not visitor(middle - height, closest - unit * height))
+		{
+			return;
+		}
+		if (height != 0.0)
+		{
+			visitor(middle + height, closest + unit * height);
+		}
+	}
 
 	// Positive axes and a query in the first quadrant, relative to the center.
 	[[nodiscard]]

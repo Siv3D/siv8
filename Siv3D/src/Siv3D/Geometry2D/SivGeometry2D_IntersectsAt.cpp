@@ -24,6 +24,7 @@
 # include "BezierGeometry.hpp"
 # include "EllipseGeometry.hpp"
 # include "PolygonGeometry.hpp"
+# include "SuperEllipseGeometry.hpp"
 
 namespace s3d
 {
@@ -709,25 +710,11 @@ namespace s3d
 				}
 				return;
 			}
-			// Distance to the supporting line avoids cancellation between large
-			// quadratic coefficients when a long segment crosses a small ellipse.
-			const Vec2 unit = (d / length);
-			const double normal = std::fma(p0.x, unit.y, (-p0.y * unit.x));
-			const double heightSq = std::fma(-normal, normal, 1.0);
-			const double tolerance = (2.0 * detail::EllipseContactTolerance);
-			if (heightSq < -tolerance)
+			detail::VisitUnitCircleLineIntersections(p0, (d / length), [&](const double distance, const Vec2& normalized)
 			{
-				return;
-			}
-			const double middle = (-p0.dot(unit) / length);
-			const double height = ((Abs(heightSq) <= tolerance) ? 0.0 : std::sqrt(heightSq));
-			const double offset = (height / length);
-			const Vec2 closest{ (normal * unit.y), (-normal * unit.x) };
-			AddAt(middle - offset, closest - unit * height);
-			if (offset != 0.0)
-			{
-				AddAt(middle + offset, closest + unit * height);
-			}
+				AddAt((distance / length), normalized);
+				return true;
+			});
 		}
 
 		// On either half of an ellipse, (cos, sin) = (side * (1-t^2), 2t) / (1+t^2),
@@ -1110,98 +1097,13 @@ namespace s3d
 			{
 				std::swap(line.start, line.end);
 			}
-			const Vec2 p0 = ((line.start - shape.center) / shape.axes);
-			const Vec2 p1 = ((line.end - shape.center) / shape.axes);
-			const Vec2 d = (p1 - p0);
 			SetPointMergeScale(accumulator, Max({ shape.a, shape.b,
 				Abs(line.end.x - line.start.x), Abs(line.end.y - line.start.y) }));
-			std::array<double, 5> parameters{ 0.0 };
-			size_t count = 1;
-			const auto Include = [&](const double t)
+			detail::VisitLineSuperEllipseIntersections(line, shape, [&](const double t)
 			{
-				if ((0.0 < t) && (t < 1.0))
-				{
-					parameters[count++] = t;
-				}
-			};
-			if (d.x != 0.0)
-			{
-				Include(-p0.x / d.x);
-			}
-			if (d.y != 0.0)
-			{
-				Include(-p0.y / d.y);
-			}
-			// On a quadrant the implicit function is convex (n>1) or concave
-			// (n<1). Its sole stationary point has |x/y|^(n-1)=|dy/dx|.
-			// Choose the ratio <=1 before pow, including exponents near one.
-			if ((d.x != 0.0) && (d.y != 0.0))
-			{
-				const bool smallerX = (Abs(d.x) <= Abs(d.y));
-				const double slope = (smallerX ? (d.x / d.y) : (d.y / d.x));
-				const double ratio = -std::copysign(std::pow(Abs(slope), (1.0 / Abs(shape.n - 1.0))), slope);
-				const Vec2 axis = ((smallerX == (1.0 < shape.n)) ? Vec2{ 1, ratio } : Vec2{ ratio, 1 });
-				const double cross = d.cross(axis);
-				if (cross != 0.0)
-				{
-					Include(-p0.cross(axis) / cross);
-				}
-			}
-			parameters[count++] = 1.0;
-			std::sort(parameters.begin(), parameters.begin() + count);
-			const double tolerance = detail::EllipseContactTolerance;
-			const auto Value = [&](const double t)
-			{
-				const double x = Abs(std::fma(d.x, t, p0.x));
-				const double y = Abs(std::fma(d.y, t, p0.y));
-				return (std::pow(x, shape.n) + std::pow(y, shape.n) - 1.0);
-			};
-			const auto EndpointValue = [&](const double t)
-			{
-				const double x = Abs(std::fma(d.x, t, p0.x));
-				const double y = Abs(std::fma(d.y, t, p0.y));
-				// Test a spatial band; implicit-value error alone is unsuitable at a concave tip.
-				const double lower = (std::pow(Max(0.0, x - tolerance), shape.n) + std::pow(Max(0.0, y - tolerance), shape.n));
-				const double upper = (std::pow(x + tolerance, shape.n) + std::pow(y + tolerance, shape.n));
-				return ((lower <= 1.0) && (1.0 <= upper)) ? 0.0 : Value(t);
-			};
-			double previous = EndpointValue(parameters[0]);
-			if (previous == 0.0)
-			{
-				AppendPoint(accumulator, line.start);
-			}
-			for (size_t i = 1; i < count; ++i)
-			{
-				const double value = EndpointValue(parameters[i]);
-				if (value == 0.0)
-				{
-					AppendPoint(accumulator, line.interpolatedPointAt(parameters[i]));
-				}
-				else if (((previous < 0.0) && (0.0 < value)) || ((value < 0.0) && (0.0 < previous)))
-				{
-					double lo = parameters[i - 1], hi = parameters[i];
-					for (int32 iteration = 0; iteration < 48; ++iteration)
-					{
-						const double middle = ((lo + hi) * 0.5);
-						const double f = Value(middle);
-						if ((f == 0.0) || (middle == lo) || (middle == hi))
-						{
-							lo = hi = middle;
-							break;
-						}
-						if ((f < 0.0) == (previous < 0.0))
-						{
-							lo = middle;
-						}
-						else
-						{
-							hi = middle;
-						}
-					}
-					AppendPoint(accumulator, line.interpolatedPointAt((lo + hi) * 0.5));
-				}
-				previous = value;
-			}
+				AppendPoint(accumulator, line.interpolatedPointAt(t));
+				return true;
+			});
 		}
 
 		template <class Bezier>

@@ -14,6 +14,112 @@ namespace s3d::detail
 {
 	inline constexpr double SuperEllipseContactTolerance = (64.0 * 2.2204460492503131e-16);
 
+	// Positive axes and n != 1. Visit boundary parameters in line order;
+	// returning false stops before solving subsequent monotone intervals.
+	template <class Visitor>
+	void VisitLineSuperEllipseIntersections(const Line& line, const SuperEllipse& shape, Visitor&& visitor)
+	{
+		const Vec2 p0 = ((line.start - shape.center) / shape.axes);
+		const Vec2 p1 = ((line.end - shape.center) / shape.axes);
+		const Vec2 d = (p1 - p0);
+		std::array<double, 5> parameters{ 0.0 };
+		size_t count = 1;
+		const auto Include = [&](const double t)
+		{
+			if ((0.0 < t) && (t < 1.0))
+			{
+				parameters[count++] = t;
+			}
+		};
+		if (d.x != 0.0)
+		{
+			Include(-p0.x / d.x);
+		}
+		if (d.y != 0.0)
+		{
+			Include(-p0.y / d.y);
+		}
+		// On a quadrant the implicit function is convex (n>1) or concave
+		// (n<1). Its sole stationary point has |x/y|^(n-1)=|dy/dx|.
+		// Choose the ratio <=1 before pow, including exponents near one.
+		if ((d.x != 0.0) && (d.y != 0.0))
+		{
+			const bool smallerX = (Abs(d.x) <= Abs(d.y));
+			const double slope = (smallerX ? (d.x / d.y) : (d.y / d.x));
+			const double ratio = -std::copysign(std::pow(Abs(slope), (1.0 / Abs(shape.n - 1.0))), slope);
+			const Vec2 axis = ((smallerX == (1.0 < shape.n)) ? Vec2{ 1, ratio } : Vec2{ ratio, 1 });
+			const double cross = d.cross(axis);
+			if (cross != 0.0)
+			{
+				Include(-p0.cross(axis) / cross);
+			}
+		}
+		parameters[count++] = 1.0;
+		std::sort(parameters.begin(), parameters.begin() + count);
+		const double tolerance = SuperEllipseContactTolerance;
+		const auto Value = [&](const double t)
+		{
+			const double x = Abs(std::fma(d.x, t, p0.x));
+			const double y = Abs(std::fma(d.y, t, p0.y));
+			return (std::pow(x, shape.n) + std::pow(y, shape.n) - 1.0);
+		};
+		const auto EndpointValue = [&](const double t)
+		{
+			const double x = Abs(std::fma(d.x, t, p0.x));
+			const double y = Abs(std::fma(d.y, t, p0.y));
+			// Test a spatial band; implicit-value error alone is unsuitable at a concave tip.
+			const double lower = (std::pow(Max(0.0, x - tolerance), shape.n) + std::pow(Max(0.0, y - tolerance), shape.n));
+			const double upper = (std::pow(x + tolerance, shape.n) + std::pow(y + tolerance, shape.n));
+			return ((lower <= 1.0) && (1.0 <= upper)) ? 0.0 : Value(t);
+		};
+		double previous = EndpointValue(parameters[0]);
+		if (previous == 0.0)
+		{
+			if (not visitor(0.0))
+			{
+				return;
+			}
+		}
+		for (size_t i = 1; i < count; ++i)
+		{
+			const double value = EndpointValue(parameters[i]);
+			if (value == 0.0)
+			{
+				if (not visitor(parameters[i]))
+				{
+					return;
+				}
+			}
+			else if (((previous < 0.0) && (0.0 < value)) || ((value < 0.0) && (0.0 < previous)))
+			{
+				double lo = parameters[i - 1], hi = parameters[i];
+				for (int32 iteration = 0; iteration < 48; ++iteration)
+				{
+					const double middle = ((lo + hi) * 0.5);
+					const double f = Value(middle);
+					if ((f == 0.0) || (middle == lo) || (middle == hi))
+					{
+						lo = hi = middle;
+						break;
+					}
+					if ((f < 0.0) == (previous < 0.0))
+					{
+						lo = middle;
+					}
+					else
+					{
+						hi = middle;
+					}
+				}
+				if (not visitor((lo + hi) * 0.5))
+				{
+					return;
+				}
+			}
+			previous = value;
+		}
+	}
+
 	struct BezierSuperEllipseIntersection
 	{
 		BezierIntersectionKind kind = BezierIntersectionKind::Separated;

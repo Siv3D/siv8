@@ -164,6 +164,78 @@ TEST_CASE("Geometry2D.Raycast.SuperEllipse.AxisBoundary")
 	}
 }
 
+TEST_CASE("Geometry2D.Raycast.SuperEllipse.ConcaveFirstHit")
+{
+	const double inner = std::sqrt(0.125);
+	const std::array<Vec2, 4> roots{
+		Vec2{ -0.015625, 0.765625 }, Vec2{ 0.375 - inner, 0.375 + inner },
+		Vec2{ 0.375 + inner, 0.375 - inner }, Vec2{ 0.765625, -0.015625 }
+	};
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		const SuperEllipse shape{ (Vec2{ 7, -11 } * scale), SizeF{ scale, scale }, 0.5 };
+		for (const bool reversed : { false, true })
+		{
+			const Vec2 direction = (reversed ? Vec2{ -1, 1 } : Vec2{ 1, -1 }).normalized();
+			for (size_t i = 0; i < roots.size(); ++i)
+			{
+				const Vec2 root = roots[reversed ? (3 - i) : i];
+				const Vec2 point = (shape.center + root * scale);
+				const Vec2 normal = Vec2{
+					std::copysign(1.0 / std::sqrt(Abs(root.x)), root.x),
+					std::copysign(1.0 / std::sqrt(Abs(root.y)), root.y) }.normalized();
+				const double distance = (0.01 * scale);
+				const Ray2D ray{ (point - direction * distance), direction };
+				CAPTURE(scale, reversed, i);
+				CheckHit(Geometry2D::Raycast(ray, shape), ray, point, normal, distance, (i % 2 == 1));
+				CHECK(not Geometry2D::Raycast(ray, shape, distance * 0.9));
+				CheckHit(Geometry2D::Raycast(ray, shape, distance), ray, point, normal, distance, (i % 2 == 1));
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.SuperEllipse.TangentAndBoundaryOrigin")
+{
+	for (const double n : { 0.5, 0.9, 1.1, 1.5, 2.0, 4.0, 64.0 })
+	{
+		const SuperEllipse shape{ Vec2{ 7, -11 }, SizeF{ 5, 3 }, n };
+		const double coordinate = std::pow(0.5, (1.0 / n));
+		const Vec2 point = (shape.center + shape.axes * coordinate);
+		const Vec2 normal = Vec2{ 1.0 / shape.a, 1.0 / shape.b }.normalized();
+		const Vec2 tangent = Vec2{ shape.a, -shape.b }.normalized();
+		for (const Vec2 direction : { tangent, -tangent })
+		{
+			CAPTURE(n, direction);
+			const Ray2D ray{ (point - direction * 0.25), direction };
+			CheckHit(Geometry2D::Raycast(ray, shape, 0.5), ray, point, normal, 0.25, (n < 1.0));
+			CHECK(not Geometry2D::Raycast(ray, shape, 0.2));
+		}
+		for (const Vec2 direction : { normal, -normal, tangent })
+		{
+			const Ray2D ray{ point, direction };
+			CheckHit(Geometry2D::Raycast(ray, shape), ray, point, normal, 0.0, false);
+			CheckHit(Geometry2D::Raycast(ray, shape, 0.0), ray, point, normal, 0.0, false);
+		}
+		const Ray2D miss{ (point + normal * 0.001), tangent };
+		if (1.0 < n)
+		{
+			CHECK(not Geometry2D::Raycast(miss, shape));
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.SuperEllipse.BoundaryOriginWithoutResolvedRoot")
+{
+	const SuperEllipse shape{ Vec2{ 7, -11 }, SizeF{ 0.05, 0.03 }, 0.25 };
+	const double t = 0.65;
+	const Vec2 point = (shape.center + shape.axes * Vec2{ std::pow(t, 4.0), std::pow(1.0 - t, 4.0) });
+	const Vec2 normal = Vec2{ std::pow(t, -3.0) / shape.a, std::pow(1.0 - t, -3.0) / shape.b }.normalized();
+	const Vec2 origin = (point - normal * 1.0e-14);
+	const Ray2D ray{ origin, Vec2{ -normal.y, normal.x } };
+	CheckHit(Geometry2D::Raycast(ray, shape, 0.01), ray, origin, normal, 0.0, false);
+}
+
 TEST_CASE("Geometry2D.Raycast.PolygonalShapes")
 {
 	{

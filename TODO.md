@@ -9,9 +9,13 @@
 
 ## `Siv3D/include/Siv3D/Geometry2D/`
 
-### SuperEllipse の Raycast
+### 円・楕円と直線の接触判定
 
-- `Raycast()` は `IntersectsAt(Line, SuperEllipse)` から交点配列を取得する。最初のヒットを求める用途での配列確保・全交点列挙の負荷を計測し、交点計算を重複させずに候補を逐次受け取れるか検討する。凹形状の複数交点、接触、境界上の始点を含めて比較する。
+- `Raycast()` の円弧・楕円の二次方程式では、接触時の正の丸め誤差が 2 個の交点として扱われる。円でも境界始点のヒットを失う例がある。例: `Ellipse{ 7, -11, 5, 3 }` の境界点 `center + axes * Sqrt(0.5)` から `Vec2{ 5, -3 }` 方向、距離上限 `0` の Raycast が `none` になる。`Intersects(Line, Ellipse)` にも接触を落とす例があり、`n == 2` の SuperEllipse と交点取得にも波及する。安定した直線・楕円の共通交点計算を利用できるか、`Circle` / `Ellipse` / `RoundRect` の Raycast、直線との交差判定、境界始点と実行時間をまとめて検証する。
+
+### 距離・交点計算の一時的な境界配列
+
+- `SignedDistance()` / `ClosestPointOnBoundary()` は、Polygon 系以外の図形で境界片を一時配列に格納する。SuperEllipse の Raycast でも始点分類のために 1 回の確保が残る。`Distance()` / `ClosestPoints()` / `IntersectsAt()` の共通境界処理も含め、図形ごとの追加修正を繰り返さずに直接走査できる設計と実行時間を検証する。
 
 ### 距離・Raycast の公開契約
 
