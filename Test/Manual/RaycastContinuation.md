@@ -4,6 +4,8 @@ This observes reflection and sliding with the current API. It is not a collision
 response implementation or a regression specification. See the
 [continuation guide](../../docs/geometry2d/README.md#continuing-a-ray-after-contact)
 for choosing a search range and interpreting the limitations.
+For a complete movement policy in a restricted scene, use the
+[reflection and sliding example](RaycastResponse.md).
 
 ## Execution
 

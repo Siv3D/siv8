@@ -36,3 +36,23 @@ zero, a tiny positive distance, or no immediate hit. Normal displacement require
 choosing the allowed side (container interior versus solid obstacle exterior),
 and a tangent displacement can remain in a curve's contact band. See the diagnostic
 for examples rather than treating one displacement size as a general solution.
+
+## Reflection and sliding
+
+The [reflection and sliding example](../../Test/Manual/RaycastResponse.md) moves a
+point among stationary axis-aligned rectangular walls. It demonstrates corner
+reflection, tangential motion, point-touching obstacles, thin walls, and a bounded
+contact loop. It is separate from the numerical query diagnostic above.
+
+For this movement policy, query from distance zero and use the known rectangle
+faces to decide whether the point would enter a wall. Collect all simultaneous
+blocking faces before changing velocity: reflect every blocked component, or
+remove it for sliding. Departing and tangent contacts with a convex rectangle can
+be skipped for the current straight segment. Recheck all walls after changing
+direction so a different wall at the same position remains visible.
+
+The sample accounts for elapsed time at every hit, keeps the last contact position
+when the iteration budget is exhausted, and exposes unused time. Its rectangle-specific contact logic
+and scene tolerance should not be copied unchanged to arbitrary polygons, curved
+surfaces, or bodies with radius. The manual defines those limits and the chosen
+behavior at a blocked touching vertex.
