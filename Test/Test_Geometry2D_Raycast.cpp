@@ -129,6 +129,90 @@ TEST_CASE("Geometry2D.Raycast.CircleEllipseSuperEllipse")
 	}
 }
 
+TEST_CASE("Geometry2D.Raycast.RoundShapes.Contact")
+{
+	const auto Check = [](const auto& shape, const Vec2& point, const Vec2& normal,
+		const Vec2& tangent, const double scale)
+	{
+		const double tolerance = (1.0e-8 * scale);
+		for (const Vec2 direction : { normal, -normal, tangent, -tangent })
+		{
+			const Ray2D ray{ point, direction };
+			CheckHit(Geometry2D::Raycast(ray, shape), ray, point, normal, 0.0, false, tolerance);
+			CheckHit(Geometry2D::Raycast(ray, shape, 0.0), ray, point, normal, 0.0, false, tolerance);
+		}
+		for (const Vec2 direction : { tangent, -tangent })
+		{
+			const double distance = (0.5 * scale);
+			const Ray2D ray{ (point - direction * distance), direction };
+			CheckHit(Geometry2D::Raycast(ray, shape), ray, point, normal, distance, false, tolerance);
+			CheckHit(Geometry2D::Raycast(ray, shape, distance), ray, point, normal, distance, false, tolerance);
+			CHECK(not Geometry2D::Raycast(ray, shape, distance * 0.9));
+			CHECK(not Geometry2D::Raycast(Ray2D{ (ray.origin + normal * (1.0e-6 * scale)), direction }, shape));
+			const auto crossing = Geometry2D::Raycast(Ray2D{ (ray.origin - normal * (1.0e-6 * scale)), direction }, shape);
+			REQUIRE(crossing);
+			CHECK(crossing->distance < distance);
+		}
+	};
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		const Vec2 center = (Vec2{ 7, -11 } * scale);
+		for (const double angle : { 0.01, 0.37, 0.9, 2.2, 4.3 })
+		{
+			CAPTURE(scale, angle);
+			const Vec2 unit{ std::cos(angle), std::sin(angle) };
+			const Circle circle{ center, (5.0 * scale) };
+			Check(circle, (center + unit * circle.r), unit, Vec2{ -unit.y, unit.x }, scale);
+			const Ellipse ellipse{ center, (5.0 * scale), (3.0 * scale) };
+			const Vec2 point = (center + unit * ellipse.axes);
+			const Vec2 normal = (unit / ellipse.axes).normalized();
+			const Vec2 tangent = (Vec2{ -unit.y, unit.x } * ellipse.axes).normalized();
+			Check(ellipse, point, normal, tangent, scale);
+			Check(SuperEllipse{ ellipse, 2.0 }, point, normal, tangent, scale);
+		}
+		const RoundRect rounded{ RectF{ center, SizeF{ 16.0 * scale, 12.0 * scale } }, (3.0 * scale) };
+		for (const Vec2 sign : { Vec2{ -1, -1 }, Vec2{ 1, -1 }, Vec2{ 1, 1 }, Vec2{ -1, 1 } })
+		{
+			const Vec2 arcCenter = (center + Vec2{ ((sign.x < 0) ? 3.0 : 13.0), ((sign.y < 0) ? 3.0 : 9.0) } * scale);
+			const Vec2 normal = (Vec2{ std::cos(0.37), std::sin(0.37) } * sign);
+			Check(rounded, (arcCenter + normal * rounded.r), normal, Vec2{ -normal.y, normal.x }, scale);
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.RoundShapes.ContactBand")
+{
+	const auto Check = [](const auto& shape, const Vec2& point, const Vec2& tangent)
+	{
+		const auto near = Geometry2D::Raycast(Ray2D{ (point * (1.0 + 2.0e-15)), tangent }, shape, 0.0);
+		REQUIRE(near);
+		CHECK(near->distance == 0.0);
+		CHECK(not near->startsInside);
+		CHECK(not Geometry2D::Raycast(Ray2D{ (point * (1.0 + 1.0e-12)), tangent }, shape));
+		CHECK(not Geometry2D::Raycast(Ray2D{ (point * (1.0 - 1.0e-12)), tangent }, shape, 0.0));
+	};
+	for (const double scale : { 0.01, 1.0, 100.0 })
+	{
+		CAPTURE(scale);
+		const Circle circle{ 0, 0, (5.0 * scale) };
+		Check(circle, (Vec2{ 0.6, 0.8 } * circle.r), Vec2{ -0.8, 0.6 });
+		const Ellipse ellipse{ 0, 0, (5.0 * scale), (3.0 * scale) };
+		const Vec2 point = (Vec2{ 0.6, 0.8 } * ellipse.axes);
+		const Vec2 tangent = (Vec2{ -0.8, 0.6 } * ellipse.axes).normalized();
+		Check(ellipse, point, tangent);
+		Check(SuperEllipse{ ellipse, 2.0 }, point, tangent);
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.RoundShapes.DistantOrigin")
+{
+	const Ray2D ray{ Vec2{ -1.0e8, 0 }, Vec2{ 1, 0 } };
+	CheckHit(Geometry2D::Raycast(ray, Circle{ 0, 0, 1 }), ray, Vec2{ -1, 0 }, Vec2{ -1, 0 }, (1.0e8 - 1.0), false);
+	CheckHit(Geometry2D::Raycast(ray, Ellipse{ 0, 0, 2, 1 }), ray, Vec2{ -2, 0 }, Vec2{ -1, 0 }, (1.0e8 - 2.0), false);
+	CHECK(not Geometry2D::Raycast(Ray2D{ Vec2{ -1.0e8, 1.001 }, Vec2{ 1, 0 } }, Circle{ 0, 0, 1 }));
+	CHECK(not Geometry2D::Raycast(Ray2D{ Vec2{ -1.0e8, 1.001 }, Vec2{ 1, 0 } }, Ellipse{ 0, 0, 2, 1 }));
+}
+
 TEST_CASE("Geometry2D.Raycast.SuperEllipse.InteriorCenter")
 {
 	for (const double n : { 0.25, 0.5, 0.9, 1.1, 1.5, 1.99, 2.01, 4.0, 64.0 })

@@ -6,37 +6,41 @@
 //-----------------------------------------------
 # pragma once
 # include <Siv3D/Ellipse.hpp>
+# include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/RectF.hpp>
 
 namespace s3d::detail
 {
 	inline constexpr double EllipseDistanceRootTolerance = (16.0 * 2.2204460492503131e-16);
-	inline constexpr double EllipseContactTolerance = (64.0 * 2.2204460492503131e-16);
 
-	// Unit direction in normalized ellipse coordinates. Visit roots from
-	// negative to positive distance; returning false skips the second root.
+	// Nonzero direction and its squared length in normalized ellipse coordinates.
+	// Visit roots in increasing line parameter; false skips the second root.
 	template <class Visitor>
-	void VisitUnitCircleLineIntersections(const Vec2& origin, const Vec2& unit, Visitor&& visitor)
+	void VisitUnitCircleLineIntersections(const Vec2& origin, const Vec2& direction,
+		const double lengthSq, Visitor&& visitor)
 	{
 		// The line distance avoids cancellation between large quadratic coefficients.
-		const double normal = std::fma(origin.x, unit.y, (-origin.y * unit.x));
-		const double heightSq = std::fma(-normal, normal, 1.0);
-		const double tolerance = (2.0 * EllipseContactTolerance);
+		const double cross = std::fma(origin.x, direction.y, (-origin.y * direction.x));
+		const double heightSq = std::fma(-cross, cross, lengthSq);
+		const double tolerance = (2.0 * EllipseContactTolerance * lengthSq);
 		if (heightSq < -tolerance)
 		{
 			return;
 		}
-		const double middle = -origin.dot(unit);
+		const double middle = -origin.dot(direction);
 		const double height = ((Abs(heightSq) <= tolerance) ? 0.0 : std::sqrt(heightSq));
-		const Vec2 closest{ (normal * unit.y), (-normal * unit.x) };
-		if (not visitor(middle - height, closest - unit * height))
+		const double inverseLengthSq = (1.0 / lengthSq);
+		const double normal = (cross * inverseLengthSq);
+		const Vec2 closest{ (normal * direction.y), (-normal * direction.x) };
+		const Vec2 offset = (direction * (height * inverseLengthSq));
+		if (not visitor((middle - height) * inverseLengthSq, closest - offset))
 		{
 			return;
 		}
 		if (height != 0.0)
 		{
-			visitor(middle + height, closest + unit * height);
+			visitor((middle + height) * inverseLengthSq, closest + offset);
 		}
 	}
 

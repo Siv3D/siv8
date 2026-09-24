@@ -324,6 +324,12 @@ namespace s3d
 				return;
 			}
 
+			if (shape.n == 2.0)
+			{
+				visitor(EllipseBoundary{ Ellipse{ shape.center, shape.axes } });
+				return;
+			}
+
 			visitor(SuperEllipseBoundary{ shape });
 		}
 
@@ -542,88 +548,51 @@ namespace s3d
 			}
 		}
 
+		[[nodiscard]]
+		bool IsOnUnitCircleBoundary(const Vec2& point) noexcept
+		{
+			return (Abs(point.dot(point) - 1.0) <= (2.0 * detail::EllipseContactTolerance));
+		}
+
 		void ProcessBoundaryPiece(HitAccumulator& accumulator,
 			const Ray2D& ray, const CircleArcBoundary& boundary)
 		{
-			const Vec2 offset = (ray.origin - boundary.circle.center);
-			const double b = (2.0 * offset.dot(ray.direction));
-			const double c = (offset.dot(offset) - boundary.circle.r * boundary.circle.r);
-			double discriminant = std::fma(b, b, (-4.0 * c));
-			const double tolerance = (RootTolerance * (Abs(b * b) + Abs(4.0 * c) + 1.0));
-
-			if (discriminant < -tolerance)
+			const Circle& circle = boundary.circle;
+			const Vec2 origin = ((ray.origin - circle.center) / circle.r);
+			if (IsOnUnitCircleBoundary(origin) && ArcContainsPoint(boundary, ray.origin))
 			{
+				AppendCandidate(accumulator, ray, 0.0, origin, boundary.order);
+				accumulator.startsInside = false;
 				return;
 			}
-
-			if (discriminant < 0.0)
+			detail::VisitUnitCircleLineIntersections(origin, ray.direction, 1.0, [&](const double distance, const Vec2& normalized)
 			{
-				discriminant = 0.0;
-			}
-
-			const double root = std::sqrt(discriminant);
-			const std::array<double, 2> roots{
-				((-b - root) * 0.5),
-				((-b + root) * 0.5)
-			};
-
-			for (const double distance : roots)
-			{
-				const Vec2 position = ray.pointAt(distance);
-
+				const Vec2 position = (circle.center + normalized * circle.r);
 				if (ArcContainsPoint(boundary, position))
 				{
-					AppendCandidate(accumulator, ray, distance,
-						(position - boundary.circle.center), boundary.order);
+					AppendCandidate(accumulator, ray, (distance * circle.r), normalized, boundary.order);
 				}
-			}
+				return true;
+			});
 		}
 
 		void ProcessBoundaryPiece(HitAccumulator& accumulator,
 			const Ray2D& ray, const EllipseBoundary& boundary)
 		{
 			const Ellipse& ellipse = boundary.ellipse;
-			const Vec2 p{
-				((ray.origin.x - ellipse.center.x) / ellipse.axes.x),
-				((ray.origin.y - ellipse.center.y) / ellipse.axes.y)
-			};
-			const Vec2 d{
-				(ray.direction.x / ellipse.axes.x),
-				(ray.direction.y / ellipse.axes.y)
-			};
-			const double a = d.dot(d);
-			const double b = (2.0 * p.dot(d));
-			const double c = (p.dot(p) - 1.0);
-			double discriminant = std::fma(b, b, (-4.0 * a * c));
-			const double tolerance = (RootTolerance * (Abs(b * b) + Abs(4.0 * a * c) + 1.0));
-
-			if (discriminant < -tolerance)
+			const Vec2 origin = ((ray.origin - ellipse.center) / ellipse.axes);
+			if (IsOnUnitCircleBoundary(origin))
 			{
+				AppendCandidate(accumulator, ray, 0.0, (origin / ellipse.axes), boundary.order);
+				accumulator.startsInside = false;
 				return;
 			}
-
-			if (discriminant < 0.0)
+			const Vec2 direction = (ray.direction / ellipse.axes);
+			detail::VisitUnitCircleLineIntersections(origin, direction, direction.lengthSq(), [&](const double distance, const Vec2& normalized)
 			{
-				discriminant = 0.0;
-			}
-
-			const double root = std::sqrt(discriminant);
-			const double denominator = (2.0 * a);
-			const std::array<double, 2> roots{
-				((-b - root) / denominator),
-				((-b + root) / denominator)
-			};
-
-			for (const double distance : roots)
-			{
-				const Vec2 position = ray.pointAt(distance);
-				const Vec2 relative = (position - ellipse.center);
-				const Vec2 gradient{
-					(relative.x / (ellipse.axes.x * ellipse.axes.x)),
-					(relative.y / (ellipse.axes.y * ellipse.axes.y))
-				};
-				AppendCandidate(accumulator, ray, distance, gradient, boundary.order);
-			}
+				AppendCandidate(accumulator, ray, distance, (normalized / ellipse.axes), boundary.order);
+				return (not accumulator.hasHit);
+			});
 		}
 
 		[[nodiscard]]
@@ -734,31 +703,14 @@ namespace s3d
 					SuperEllipseNormal(shape, position), boundary.order);
 				return (not accumulator.hasHit);
 			};
-			if (shape.n == 2.0)
+			if (not Geometry2D::Intersects(line, shape))
 			{
-				// Prefer the stable roots: the intersection predicate can reject a rounded tangent.
-				const Vec2 origin = ((ray.origin - shape.center) / shape.axes);
-				const Vec2 direction = (ray.direction / shape.axes).normalized();
-				detail::VisitUnitCircleLineIntersections(origin, direction, [&](double, const Vec2& normalized)
-				{
-					return Visit(shape.center + shape.axes * normalized);
-				});
-				if ((not accumulator.hasHit) && (not Geometry2D::Intersects(line, shape)))
-				{
-					return;
-				}
+				return;
 			}
-			else
+			detail::VisitLineSuperEllipseIntersections(line, shape, [&](const double t)
 			{
-				if (not Geometry2D::Intersects(line, shape))
-				{
-					return;
-				}
-				detail::VisitLineSuperEllipseIntersections(line, shape, [&](const double t)
-				{
-					return Visit(line.interpolatedPointAt(t));
-				});
-			}
+				return Visit(line.interpolatedPointAt(t));
+			});
 
 			// The origin can be numerically on the boundary even when the
 			// line solver cannot resolve an isolated root in the clipped interval.

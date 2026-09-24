@@ -688,7 +688,7 @@ namespace s3d
 			const Vec2 p0 = ((line.start - ellipse.center) / ellipse.axes);
 			const Vec2 p1 = ((line.end - ellipse.center) / ellipse.axes);
 			const Vec2 d = (p1 - p0);
-			const double length = d.length();
+			const double lengthSq = d.lengthSq();
 			SetPointMergeScale(accumulator, Max({ ellipse.a, ellipse.b,
 				Abs(line.end.x - line.start.x), Abs(line.end.y - line.start.y) }));
 			const auto AddAt = [&](const double t, const Vec2& normalized)
@@ -702,7 +702,7 @@ namespace s3d
 					}
 				}
 			};
-			if (length == 0.0)
+			if (lengthSq == 0.0)
 			{
 				if (PointOnEllipseBoundary(line.start, ellipse))
 				{
@@ -710,9 +710,9 @@ namespace s3d
 				}
 				return;
 			}
-			detail::VisitUnitCircleLineIntersections(p0, (d / length), [&](const double distance, const Vec2& normalized)
+			detail::VisitUnitCircleLineIntersections(p0, d, lengthSq, [&](const double t, const Vec2& normalized)
 			{
-				AddAt((distance / length), normalized);
+				AddAt(t, normalized);
 				return true;
 			});
 		}

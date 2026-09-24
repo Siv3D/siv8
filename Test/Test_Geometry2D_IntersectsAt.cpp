@@ -165,6 +165,41 @@ TEST_CASE("Geometry2D.IntersectsAt.Circle")
 	CHECK(identical->empty());
 }
 
+TEST_CASE("Geometry2D.IntersectsAt.RoundShapes.LineContact")
+{
+	const auto Check = [](const auto& shape, const Vec2& point, const Vec2& normal,
+		const Vec2& tangent, const double scale)
+	{
+		const double tolerance = (1.0e-9 * scale);
+		for (const Line line : { Line{ (point - tangent * scale), (point + tangent * scale) },
+			Line{ point, (point + tangent * scale) }, Line{ point, point } })
+		{
+			CheckPointSet(Geometry2D::IntersectsAt(line, shape), { point }, tolerance);
+			CheckPointSet(Geometry2D::IntersectsAt(shape, Line{ line.end, line.start }), { point }, tolerance);
+			CHECK(not Geometry2D::IntersectsAt(line.movedBy(normal * (1.0e-6 * scale)), shape));
+		}
+	};
+	for (const double scale : { 0.001, 1.0, 1000.0 })
+	{
+		const Vec2 center = (Vec2{ 7, -11 } * scale);
+		for (const double angle : { 0.01, 0.37, 0.9, 2.2, 4.3 })
+		{
+			CAPTURE(scale, angle);
+			const Vec2 unit{ std::cos(angle), std::sin(angle) };
+			const Circle circle{ center, (5.0 * scale) };
+			Check(circle, (center + unit * circle.r), unit, Vec2{ -unit.y, unit.x }, scale);
+			const Ellipse ellipse{ center, (5.0 * scale), (3.0 * scale) };
+			Check(ellipse, (center + unit * ellipse.axes), (unit / ellipse.axes).normalized(),
+				(Vec2{ -unit.y, unit.x } * ellipse.axes).normalized(), scale);
+			const RoundRect rounded{ RectF{ (center - Vec2{ circle.r, circle.r }), SizeF{ 16 * scale, 12 * scale } }, circle.r };
+			if ((unit.x < 0.0) && (unit.y < 0.0))
+			{
+				Check(rounded, (center + unit * circle.r), unit, Vec2{ -unit.y, unit.x }, scale);
+			}
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.IntersectsAt.PolygonalBoundaries")
 {
 	const Polygon square{ Array<Vec2>{

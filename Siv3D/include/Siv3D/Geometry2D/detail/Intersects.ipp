@@ -74,19 +74,20 @@ namespace s3d
 				return false;
 			}
 
+			const double radiusSq = (r * r * (1.0 + 2.0 * EllipseContactTolerance));
 			const double lengthSq = d.dot(d);
 
 			if (lengthSq == 0.0)
 			{
 				const Vec2 v = (segment.start - center);
-				return (v.dot(v) <= (r * r));
+				return (v.dot(v) <= radiusSq);
 			}
 
 			double t = ((center - segment.start).dot(d) / lengthSq);
 			t = Clamp(t, t0, t1);
 
 			const Vec2 v = ((segment.start + d * t) - center);
-			return (v.dot(v) <= (r * r));
+			return (v.dot(v) <= radiusSq);
 		}
 
 		// The following helpers assume valid non-empty / positive-area input.
@@ -182,74 +183,50 @@ namespace s3d
 				|| Geometry2D::Intersects(segment, Line{ Vec2{ left, bottom }, Vec2{ left, top } }));
 		}
 
-		template <bool IncludeBoundary = true>
+		template <bool IncludeBoundary>
 		[[nodiscard]]
-		constexpr bool IntersectsLineCircleArea(const Line& segment, const Circle& circle) noexcept
+		constexpr bool IntersectsLineDiskArea(const Vec2& p0, const Vec2& p1, const double radiusSq) noexcept
 		{
-			const double radiusSq = (circle.r * circle.r);
-			auto ContainsEndpoint = [&](const Vec2& point) constexpr noexcept
-			{
-				const double distanceSq = point.distanceFromSq(circle.center);
-				return IncludeBoundary ? (distanceSq <= radiusSq) : (distanceSq < radiusSq);
-			};
-			if (ContainsEndpoint(segment.start) || ContainsEndpoint(segment.end))
-			{
-				return true;
-			}
-
-			const Vec2 d = (segment.end - segment.start);
-			const double lengthSq = d.dot(d);
-
-			if (lengthSq == 0.0)
-			{
-				return false;
-			}
-
-			const Vec2 f = (circle.center - segment.start);
-			const double tNumerator = f.dot(d);
-
-			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
-			{
-				return false;
-			}
-
-			const double cross = d.cross(f);
-			return IncludeBoundary ? ((cross * cross) <= (radiusSq * lengthSq))
-				: ((cross * cross) < (radiusSq * lengthSq));
-		}
-
-		template <bool IncludeBoundary = true>
-		[[nodiscard]]
-		constexpr bool IntersectsLineEllipseArea(const Line& segment, const Ellipse& ellipse) noexcept
-		{
-			const double ax = ellipse.axes.x;
-			const double by = ellipse.axes.y;
-			const Vec2 p0{ ((segment.start.x - ellipse.center.x) / ax), ((segment.start.y - ellipse.center.y) / by) };
-			const Vec2 p1{ ((segment.end.x - ellipse.center.x) / ax), ((segment.end.y - ellipse.center.y) / by) };
-
-			if (IncludeBoundary ? ((p0.dot(p0) <= 1.0) || (p1.dot(p1) <= 1.0))
-				: ((p0.dot(p0) < 1.0) || (p1.dot(p1) < 1.0)))
+			// Use the same spatial contact band as the normalized circle root solver.
+			constexpr double factor = (IncludeBoundary ? (1.0 + 2.0 * EllipseContactTolerance) : (1.0 - 2.0 * EllipseContactTolerance));
+			const double limit = (radiusSq * factor);
+			if (IncludeBoundary ? ((p0.dot(p0) <= limit) || (p1.dot(p1) <= limit))
+				: ((p0.dot(p0) < limit) || (p1.dot(p1) < limit)))
 			{
 				return true;
 			}
 
 			const Vec2 d = (p1 - p0);
 			const double lengthSq = d.dot(d);
-
 			if (lengthSq == 0.0)
 			{
 				return false;
 			}
-
 			const double tNumerator = -p0.dot(d);
-
 			if ((tNumerator < 0.0) || (lengthSq < tNumerator))
 			{
 				return false;
 			}
 
 			const double cross = d.cross(p0);
-			return IncludeBoundary ? ((cross * cross) <= lengthSq) : ((cross * cross) < lengthSq);
+			return IncludeBoundary ? ((cross * cross) <= (limit * lengthSq))
+				: ((cross * cross) < (limit * lengthSq));
+		}
+
+		template <bool IncludeBoundary = true>
+		[[nodiscard]]
+		constexpr bool IntersectsLineCircleArea(const Line& segment, const Circle& circle) noexcept
+		{
+			return IntersectsLineDiskArea<IncludeBoundary>((segment.start - circle.center),
+				(segment.end - circle.center), (circle.r * circle.r));
+		}
+
+		template <bool IncludeBoundary = true>
+		[[nodiscard]]
+		constexpr bool IntersectsLineEllipseArea(const Line& segment, const Ellipse& ellipse) noexcept
+		{
+			return IntersectsLineDiskArea<IncludeBoundary>(((segment.start - ellipse.center) / ellipse.axes),
+				((segment.end - ellipse.center) / ellipse.axes), 1.0);
 		}
 
 		[[nodiscard]]
