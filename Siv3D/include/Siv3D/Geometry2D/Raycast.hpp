@@ -24,6 +24,23 @@ namespace s3d
 
 	namespace Geometry2D
 	{
+		/// @defgroup geometry2d_raycast レイと境界の最初のヒット
+		/// @brief Raycast() の共通契約。
+		/// @pre 図形は @ref geometry2d_queries の入力条件に従い、ray は有限の始点と単位方向ベクトルを持つ必要があります。
+		/// @pre maxDistance は有限値または Math::Inf を指定します。
+		/// @return 最初のヒット情報。範囲内にヒットがない、対象が面積を持たない、または maxDistance が負の場合は none。
+		///
+		/// 検索範囲は始点から [0, maxDistance] です（両端を含む）。MultiPolygon では面積を持つ要素だけを対象にします。
+		/// 内部から出発するレイは最初に境界へ達する位置を返します。始点が境界上なら、向きによらず距離 0、startsInside は false です。
+		/// 接するだけの場合もヒットし、境界の辺に沿う場合は共有区間の最初の位置を返します。
+		/// Polygon の穴の輪郭も対象で、穴の内部からのレイは外部からのレイとして扱います。
+		/// 法線は図形の外側へ向き、穴では穴の内部へ向きます。角・尖点など法線が一意でない箇所での選び方は未規定です。
+		///
+		/// @par 数値計算
+		/// SuperEllipse のヒット位置は数値近似です。接触や検索範囲の端のごく近傍もヒットとみなす場合があります。
+		/// 返す距離は [0, maxDistance] に収まります。境界近傍の始点は startsInside が false になる場合があります。
+		/// @{
+
 		template <class Shape>
 		Optional<RaycastHit2D> Raycast(const Ray2D&, const Shape&, double) = delete;
 
@@ -51,21 +68,12 @@ namespace s3d
 		[[nodiscard]]
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const RoundRect& shape, double maxDistance = Math::Inf);
 
-		/// @brief レイと多角形の境界との最初のヒットを取得します。
-		/// @param ray レイ
-		/// @param shape 多角形
-		/// @param maxDistance レイ始点からの最大距離
-		/// @return ヒット情報。多角形が面積を持たない場合、または指定範囲内にヒットがない場合は none
 		[[nodiscard]]
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const Polygon& shape, double maxDistance = Math::Inf);
 
-		/// @brief レイと複数の多角形の境界との最初のヒットを取得します。
-		/// @param ray レイ
-		/// @param shape 複数の多角形
-		/// @param maxDistance レイ始点からの最大距離
-		/// @return ヒット情報。指定範囲内にヒットがない場合は none
-		/// @remark 空または点・線分に縮退した要素は、ヒットと startsInside の判定から除外します。
 		[[nodiscard]]
 		Optional<RaycastHit2D> Raycast(const Ray2D& ray, const MultiPolygon& shape, double maxDistance = Math::Inf);
+
+		/// @}
 	}
 }

@@ -14,12 +14,17 @@
 
 namespace s3d
 {
+	/// @brief 最近点対とその距離
+	/// @see @ref geometry2d_distance
 	struct ClosestPoints2D
 	{
+		/// @brief ClosestPoints(a, b) の a 上の点
 		Vec2 pointA;
 		
+		/// @brief ClosestPoints(a, b) の b 上の点
 		Vec2 pointB;
 		
+		/// @brief 点対間の距離
 		double distance = 0.0;
 	};
 }

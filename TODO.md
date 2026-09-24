@@ -7,12 +7,6 @@
 - 実装とテストが完了したトピックは、このファイルから削除します。
 - 完了項目の履歴は残さず、未完了項目だけを維持します。
 
-## `Siv3D/include/Siv3D/Geometry2D/`
-
-### 距離・Raycast の公開契約
-
-- `Distance()` / `ClosestPoints()` / `SignedDistance()` / `ClosestPointOnBoundary()` / `Raycast()` の共通説明を公開ヘッダに整理する。空・縮退、最近点が一意でない場合、境界上の始点、距離上限、近似の制約を実装・テストと照合し、交差・包含判定の共通契約との重複を避ける。
-
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証
