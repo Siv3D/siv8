@@ -41,6 +41,7 @@ namespace s3d
 	/// @remark 向きは Geometry2D::IsClockwise() で判定できます。単純な非退化輪郭の向きだけを変える場合は頂点列を reverse() します。これは自己交差や重複点の修復にはなりません。
 	/// @remark 構築前に Validate() を使うと WrongOrientation、SelfIntersections などの失敗理由を調べられます。Correct() は形状を修復し、複数の多角形を返す場合があります。Loft などで頂点の対応を保ちたい場合、Correct() による修復を単なる向きの反転の代用にしないでください。
 	/// @remark 拡縮で点・線分に縮退しても、空の Polygon にはなりません。
+	/// @remark 変形後も面積を持つ場合は、外周・穴の向きを維持します。向きが反転する拡縮では、各輪郭の先頭頂点を保って残りの頂点順を反転します。
 	/// @code
 	/// const Polygon polygon{ Array<Vec2>{
 	///     { 0.0, 0.0 }, { 1.0, 0.0 }, { 1.0, 1.0 }, { 0.0, 1.0 }
@@ -280,6 +281,7 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 多角形のすべての頂点を返します。
+		/// @remark 描画用の頂点配列です。outer() と inners() を連結した順序とは限りません。拡縮による反転でもこの配列順は変わりません。
 		/// @return 多角形のすべての頂点
 		[[nodiscard]]
 		const Array<Float2>& vertices() const noexcept;

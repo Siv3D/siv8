@@ -311,3 +311,29 @@ TEST_CASE("Geometry2D.Raycast.PolygonAreaAfterScaling")
 			Vec2{ 0, 5 }, Vec2{ -1, 0 }, 5.0, false);
 	}
 }
+
+TEST_CASE("Geometry2D.Raycast.PolygonReflection")
+{
+	const Polygon source{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 6, 6 }, { 6, 14 }, { 14, 14 }, { 14, 6 } } }
+	};
+	for (const Vec2 scale : { Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+	{
+		CAPTURE(scale);
+		auto Check = [&](const auto& shape)
+		{
+			const Ray2D outside{ Vec2{ -5, 10 }, Vec2{ 1, 0 } };
+			CheckHit(Geometry2D::Raycast(outside, shape), outside,
+				Vec2{ 0, 10 }, Vec2{ -1, 0 }, 5.0, false);
+			const Ray2D hole{ Vec2{ 10, 10 }, Vec2{ -1, 0 } };
+			CheckHit(Geometry2D::Raycast(hole, shape), hole,
+				Vec2{ 6, 10 }, Vec2{ 1, 0 }, 4.0, false);
+			const Ray2D inside{ Vec2{ 2, 10 }, Vec2{ 1, 0 } };
+			CheckHit(Geometry2D::Raycast(inside, shape), inside,
+				Vec2{ 6, 10 }, Vec2{ 1, 0 }, 4.0, true);
+		};
+		Check(source.scaledFrom(Vec2{ 10, 10 }, scale));
+		Check(MultiPolygon{ Polygon{}, source }.scaledFrom(Vec2{ 10, 10 }, scale));
+	}
+}

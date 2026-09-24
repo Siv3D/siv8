@@ -138,6 +138,106 @@ TEST_CASE("Polygon.generated_rings.boolean_operations")
 	}
 }
 
+TEST_CASE("Polygon.scale.winding_and_mesh")
+{
+	const Polygon donut = MakePolygonWithHole();
+	Array<Float2> vertices = donut.vertices().reversed();
+	Array<TriangleIndex> indices = donut.indices();
+	const auto last = static_cast<TriangleIndex::value_type>(vertices.size() - 1);
+	for (auto& t : indices)
+	{
+		t = { static_cast<TriangleIndex::value_type>(last - t.i0),
+			static_cast<TriangleIndex::value_type>(last - t.i1),
+			static_cast<TriangleIndex::value_type>(last - t.i2) };
+	}
+	std::rotate(indices.begin(), indices.begin() + 1, indices.end());
+	const Polygon suppliedMesh{ donut.outer(), donut.inners(), vertices, indices, donut.boundingRect() };
+	const Vec2 pivot{ 7, 9 };
+
+	for (const Polygon& source : { donut, suppliedMesh })
+	{
+		for (const Vec2 scale : { Vec2{ -2, 3 }, Vec2{ 2, -3 }, Vec2{ -2, -3 }, Vec2{ 2, 3 } })
+		{
+			CAPTURE(scale);
+			const Array<Polygon> results{
+				source.scaledFromOrigin(scale), Polygon{ source }.scaledFromOrigin(scale.x, scale.y),
+				source.scaledFrom(pivot, scale), Polygon{ source }.scaledFrom(pivot, scale.x, scale.y)
+			};
+			for (size_t i = 0; i < results.size(); ++i)
+			{
+				CAPTURE(i);
+				const Polygon& result = results[i];
+				const Vec2 center = ((i < 2) ? Vec2{ 0, 0 } : pivot);
+				CheckPolygonRings(result, source.holeCount());
+				CHECK(result.outer().front() == (center + (source.outer().front() - center) * scale));
+				CHECK(result.inners().front().front() == (center + (source.inners().front().front() - center) * scale));
+				CHECK(result.area() == Test::Approx(source.area() * 6.0));
+				CHECK(result.boundingRect() == Geometry2D::BoundingRect(result.outer()));
+				REQUIRE(result.vertices().size() == source.vertices().size());
+				for (size_t j = 0; j < result.vertices().size(); ++j)
+				{
+					CHECK(result.vertices()[j] == (Float2{ center } + (source.vertices()[j] - Float2{ center }) * Float2{ scale }));
+				}
+				REQUIRE(result.triangleCount() == source.triangleCount());
+				for (size_t j = 0; j < result.triangleCount(); ++j)
+				{
+					const auto a = source.indices()[j];
+					const auto b = result.indices()[j];
+					CHECK((Array{ a.i0, a.i1, a.i2 }.sorted() == Array{ b.i0, b.i1, b.i2 }.sorted()));
+					const Triangle triangle = result.triangleAtIndex(j);
+					CHECK(0.0 < (triangle.p1 - triangle.p0).cross(triangle.p2 - triangle.p0));
+				}
+			}
+		}
+		const Polygon restored = source.scaledFrom(pivot, Vec2{ -1, 1 }).scaledFrom(pivot, Vec2{ -1, 1 });
+		CHECK(restored.outer() == source.outer());
+		CHECK(restored.inners() == source.inners());
+		CHECK(restored.vertices() == source.vertices());
+		CheckTriangleIndices(restored, source);
+		CheckPolygonRings(source.scaledFromOrigin(-2.0), source.holeCount());
+		CheckPolygonRings(source.scaledFrom(pivot, -2.0), source.holeCount());
+	}
+}
+
+TEST_CASE("Polygon.scale.reflection_operations")
+{
+	for (const Polygon& source : { RectF{ 0, 0, 20, 20 }.asPolygon(), MakePolygonWithHole() })
+	{
+		for (const Vec2 scale : { Vec2{ -1, 1 }, Vec2{ 1, -1 } })
+		{
+			CAPTURE(scale);
+			const Polygon polygon = source.scaledFrom(Vec2{ 10, 10 }, scale);
+			CheckPolygonRings(polygon, source.holeCount());
+			const Polygon rebuilt{ polygon.outer(), polygon.inners() };
+			CHECK(rebuilt.area() == source.area());
+			CHECK(Geometry2D::Or(polygon, RectF{ 1, 1, 2, 2 }).area() == source.area());
+			CHECK(Geometry2D::And(polygon, RectF{ 0, 0, 20, 20 }).area() == source.area());
+			CHECK(polygon.computeMiterBufferPolygon(1.0).area() == Test::Approx(source.hasHoles() ? 448.0 : 484.0));
+			const MultiPolygon multi = MultiPolygon{ Polygon{}, source }.scaledFrom(Vec2{ 10, 10 }, scale);
+			REQUIRE(multi.size() == 2);
+			CHECK(multi[0].isEmpty());
+			CheckPolygonRings(multi[1], source.holeCount());
+			CHECK(Geometry2D::Or(multi, RectF{ 1, 1, 2, 2 }.asPolygon()).area() == source.area());
+		}
+	}
+}
+
+TEST_CASE("Polygon.scale.zero_and_empty")
+{
+	const Polygon source = MakePolygonWithHole();
+	const Vec2 pivot{ 7, 9 };
+	for (const Vec2 scale : { Vec2{ 0, -2 }, Vec2{ -2, 0 }, Vec2{ -0.0, -2 }, Vec2{ 0, 0 } })
+	{
+		CAPTURE(scale);
+		CHECK(Polygon{}.scaledFromOrigin(scale).isEmpty());
+		CHECK(Polygon{}.scaledFrom(pivot, scale).isEmpty());
+		const Polygon collapsed = source.scaledFrom(pivot, scale);
+		CHECK(not collapsed.isEmpty());
+		CHECK(collapsed.area() == 0.0);
+		CHECK(collapsed.intersects(pivot + (source.outer().front() - pivot) * scale));
+	}
+}
+
 TEST_CASE("Polygon.generated_rings.buffers_and_simplification")
 {
 	const Polygon donut = MakePolygonWithHole();

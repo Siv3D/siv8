@@ -114,6 +114,32 @@ namespace s3d
 			return bounds;
 		}
 
+		void ReverseWindingIfReflected(PolygonData& polygon, Array<TriangleIndex>& indices, const Vec2 scale) noexcept
+		{
+			if (not (((scale.x < 0.0) && (0.0 < scale.y))
+				|| ((0.0 < scale.x) && (scale.y < 0.0))))
+			{
+				return;
+			}
+
+			auto ReverseRing = [](Array<Vec2>& ring)
+			{
+				if (1 < ring.size())
+				{
+					std::reverse((ring.begin() + 1), ring.end());
+				}
+			};
+			ReverseRing(polygon.outer);
+			for (auto& inner : polygon.inners)
+			{
+				ReverseRing(inner);
+			}
+			for (auto& triangle : indices)
+			{
+				triangle.flip();
+			}
+		}
+
 		struct PolygonIntegral
 		{
 			double area2x = 0.0;
@@ -590,7 +616,8 @@ namespace s3d
 		{
 			point *= sf;
 		}
-		
+
+		ReverseWindingIfReflected(m_polygon, m_indices, s);
 		m_boundingRect = NormalizeScaledBounds(m_boundingRect.scaledFrom(Vec2{ 0, 0 }, s));
 	}
 
@@ -658,7 +685,8 @@ namespace s3d
 		{
 			point = (posF + (point - posF) * sf);
 		}
-		
+
+		ReverseWindingIfReflected(m_polygon, m_indices, s);
 		m_boundingRect = NormalizeScaledBounds(m_boundingRect.scaledFrom(pos, s));
 	}
 
