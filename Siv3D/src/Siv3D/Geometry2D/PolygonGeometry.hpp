@@ -307,6 +307,18 @@ namespace s3d::detail
 		return Matches();
 	}
 
+	[[nodiscard]]
+	inline bool TryGetPolygonPoint(const Polygon& polygon, Vec2& point) noexcept
+	{
+		const RectF& bounds = polygon.boundingRect();
+		if ((bounds.w == 0.0) && (bounds.h == 0.0) && (not polygon.isEmpty()))
+		{
+			point = polygon.outer().front();
+			return true;
+		}
+		return false;
+	}
+
 	template <class Piece>
 	using BoundarySource = std::variant<Array<Piece>, std::span<const Vec2>, std::span<const Polygon>>;
 
@@ -356,10 +368,9 @@ namespace s3d::detail
 						if constexpr (IncludePointPolygons)
 						{
 							// A zero-scale polygon retains one point, regardless of its vertex count.
-							const RectF& bounds = polygon.boundingRect();
-							if ((bounds.w == 0.0) && (bounds.h == 0.0) && (not polygon.isEmpty()))
+							Vec2 point;
+							if (TryGetPolygonPoint(polygon, point))
 							{
-								const Vec2& point = polygon.outer().front();
 								if (predicate(Piece{ Line{ point, point } }))
 								{
 									return true;

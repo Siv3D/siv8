@@ -9,10 +9,6 @@
 
 ## `Siv3D/include/Siv3D/Geometry2D/`
 
-### 交点取得
-
-- 点に縮退した Polygon と、それを含む MultiPolygon の `IntersectsAt()` が孤立点を落とす。`RectF{0,0,2,2}.asPolygon().scaledFromOrigin(0)` と `Circle{0,0,5}` は交差するが空配列になる。同じ点を表す Triangle は 1 点を返す。境界走査から除かれる点成分を扱い、複数成分の重複排除と共有線分の除外を維持する。
-
 ### 公開契約と API 制約
 
 - 共通契約を公開ヘッダの一か所へ集約する。境界を含む判定、空形状と縮退の区別、有効入力条件、`IntersectsAt()` の none / 空配列 / 孤立点、近似の制約を短く記述し、メンバーの重複説明を整理する。`MultiPolygon::contains()` は採用済みの単一要素包含として記述し、「現在の実装では」を除く。`LineString::contains(Vec2)` は既存の頂点検索なので幾何包含と区別する。MultiPolygon の要素間の有効性条件と、辺を共有する構成を使った包含テストも整合させる。

@@ -353,6 +353,12 @@ namespace s3d
 			return false;
 		}
 
+		[[nodiscard]]
+		bool TryGetPointGeometry(const Polygon& shape, Vec2& point) noexcept
+		{
+			return detail::TryGetPolygonPoint(shape, point);
+		}
+
 		template <class Shape>
 		[[nodiscard]]
 		bool TryGetPointGeometry(const Shape&, Vec2&) noexcept
@@ -1840,6 +1846,37 @@ namespace s3d
 			}
 		}
 
+		template <class Shape>
+		void AppendPointPolygonIntersections(IntersectionAccumulator& accumulator,
+			const MultiPolygon& polygons, const Shape& other)
+		{
+			const size_t first = accumulator.points.size();
+			for (const Polygon& polygon : polygons)
+			{
+				Vec2 point;
+				if (detail::TryGetPolygonPoint(polygon, point) && Geometry2D::Intersects(point, other))
+				{
+					AppendPoint(accumulator, point);
+				}
+			}
+
+			// A point belonging to another member's area or segment is not an
+			// isolated component. Any boundary event there is enumerated separately.
+			for (const Polygon& polygon : polygons)
+			{
+				if (accumulator.points.size() == first)
+				{
+					break;
+				}
+				Vec2 point;
+				if ((not polygon.isEmpty()) && (not detail::TryGetPolygonPoint(polygon, point)))
+				{
+					accumulator.points.erase(std::remove_if((accumulator.points.begin() + first), accumulator.points.end(),
+						[&](const Vec2& candidate) { return Geometry2D::Intersects(candidate, polygon); }), accumulator.points.end());
+				}
+			}
+		}
+
 		struct ShapeIntersectionData
 		{
 			Optional<Vec2> pointGeometry;
@@ -1868,7 +1905,7 @@ namespace s3d
 
 		[[nodiscard]]
 		Array<Vec2> EnumerateKnownIntersection(
-			const ShapeIntersectionData& a, const ShapeIntersectionData& b)
+			const ShapeIntersectionData& a, const ShapeIntersectionData& b, IntersectionAccumulator& accumulator)
 		{
 			if (a.pointGeometry)
 			{
@@ -1879,8 +1916,6 @@ namespace s3d
 			{
 				return Array<Vec2>{ *b.pointGeometry };
 			}
-
-			IntersectionAccumulator accumulator;
 
 			(void)detail::AnyBoundaryPiece(a.boundaryPieces, [&](const BoundaryPiece& pieceA)
 				{
@@ -1916,8 +1951,26 @@ namespace s3d
 					return std::move(accumulator.points);
 				}
 
-				return EnumerateKnownIntersection(
-					MakeShapeIntersectionData(a), MakeShapeIntersectionData(b));
+				const auto dataA = MakeShapeIntersectionData(a);
+				const auto dataB = MakeShapeIntersectionData(b);
+				IntersectionAccumulator accumulator;
+				constexpr bool MultiA = std::is_same_v<std::decay_t<decltype(a)>, MultiPolygon>;
+				constexpr bool MultiB = std::is_same_v<std::decay_t<decltype(b)>, MultiPolygon>;
+				if constexpr (MultiA || MultiB)
+				{
+					if ((not dataA.pointGeometry) && (not dataB.pointGeometry))
+					{
+						if constexpr (MultiA)
+						{
+							AppendPointPolygonIntersections(accumulator, a, b);
+						}
+						if constexpr (MultiB)
+						{
+							AppendPointPolygonIntersections(accumulator, b, a);
+						}
+					}
+				}
+				return EnumerateKnownIntersection(dataA, dataB, accumulator);
 			});
 		}
 	}

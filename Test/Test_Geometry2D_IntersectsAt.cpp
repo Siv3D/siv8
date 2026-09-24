@@ -797,3 +797,93 @@ TEST_CASE("Geometry2D.IntersectsAt.SuperEllipse.CurvedSearch")
 	CHECK(not Geometry2D::IntersectsAt(tangent.movedBy(normal * 1.0e-5), SuperEllipse{ 0, 0, 1, 1, 4 }));
 	CheckPointSet(Geometry2D::IntersectsAt(Bezier2{ { 0, 1 }, { 0, 0 }, { 1, 0 } }, SuperEllipse{ 0, 0, 1, 1, 0.5 }), {});
 }
+
+namespace
+{
+	template <class A, class B>
+	void CheckPointSetBothWays(const A& a, const B& b, const Array<Vec2>& expected)
+	{
+		CheckPointSet(Geometry2D::IntersectsAt(a, b), expected);
+		CheckPointSet(Geometry2D::IntersectsAt(b, a), expected);
+		CheckPointSet(a.intersectsAt(b), expected);
+		CheckPointSet(b.intersectsAt(a), expected);
+	}
+}
+
+TEST_CASE("Geometry2D.IntersectsAt.PointPolygon.shapes_and_empty")
+{
+	const Polygon origin = RectF{ 0, 0, 2, 2 }.asPolygon().scaledFromOrigin(0);
+	REQUIRE_FALSE(origin.isEmpty());
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 32, -64 } })
+	{
+		CAPTURE(offset);
+		const Polygon point = origin.movedBy(offset);
+		auto Check = [&](const auto& shape)
+		{
+			CheckPointSetBothWays(point, shape, { offset });
+			CheckPointSetBothWays(MultiPolygon{ Polygon{}, point }, shape, { offset });
+		};
+		Check(offset);
+		Check(Point{ static_cast<int32>(offset.x), static_cast<int32>(offset.y) });
+		Check(Line{ offset + Vec2{ -2, 0 }, offset + Vec2{ 2, 0 } });
+		Check(LineString{ offset + Vec2{ -2, 0 }, offset, offset + Vec2{ 2, 0 } });
+		Check(Bezier2{ offset + Vec2{ -2, 1 }, offset + Vec2{ 0, -1 }, offset + Vec2{ 2, 1 } });
+		Check(Bezier3{ offset + Vec2{ -2, 0 }, offset + Vec2{ -1, 1 }, offset + Vec2{ 1, -1 }, offset + Vec2{ 2, 0 } });
+		Check(Rect{ static_cast<int32>(offset.x) - 5, static_cast<int32>(offset.y) - 3, 10, 6 });
+		Check(RectF{ offset - Vec2{ 5, 3 }, 10, 6 });
+		Check(Circle{ offset, 5 });
+		Check(Circle{ offset + Vec2{ 5, 0 }, 5 }); // Boundary point
+		Check(Ellipse{ offset, 5, 3 });
+		Check(SuperEllipse{ offset, 5, 3, 0.5 });
+		Check(Triangle{ offset + Vec2{ -5, -3 }, offset + Vec2{ 5, -3 }, offset + Vec2{ 0, 3 } });
+		Check(RectF{ offset - Vec2{ 5, 3 }, 10, 6 }.asQuad());
+		Check(RoundRect{ RectF{ offset - Vec2{ 5, 3 }, 10, 6 }, 1 });
+		Check(RectF{ offset - Vec2{ 5, 3 }, 10, 6 }.asPolygon());
+		Check(point);
+		Check(MultiPolygon{ point, point });
+		for (const auto& shape : { Polygon{}, origin.movedBy(offset + Vec2{ 1, 0 }) })
+		{
+			CHECK_FALSE(point.intersectsAt(shape).has_value());
+			CHECK_FALSE(shape.intersectsAt(point).has_value());
+		}
+		CHECK_FALSE(point.intersectsAt(Circle{ offset, 0 }).has_value());
+		CHECK_FALSE(point.intersectsAt(Circle{ offset + Vec2{ 10, 0 }, 2 }).has_value());
+		CHECK_FALSE(MultiPolygon{ Polygon{}, Polygon{} }.intersectsAt(point).has_value());
+	}
+}
+
+TEST_CASE("Geometry2D.IntersectsAt.PointPolygon.mixed_components")
+{
+	const Polygon point = RectF{ 0, 0, 2, 2 }.asPolygon().scaledFromOrigin(0);
+	const Polygon crossing = RectF{ 4, -1, 2, 2 }.asPolygon();
+	const MultiPolygon mixed{ Polygon{}, point, point, point.movedBy(-5, 0), point.movedBy(20, 0), crossing };
+	CheckPointSetBothWays(mixed, Circle{ 0, 0, 5 },
+		{ { 0, 0 }, { -5, 0 }, { std::sqrt(24.0), -1 }, { std::sqrt(24.0), 1 } });
+	const MultiPolygon other{ point, point.movedBy(-5, 0), point.movedBy(30, 0) };
+	CheckPointSetBothWays(mixed, other, { { 0, 0 }, { -5, 0 } });
+	CHECK_FALSE(MultiPolygon{ point.movedBy(20, 0) }.intersectsAt(Circle{ 0, 0, 5 }).has_value());
+
+	const Polygon donut{ { { -4, -4 }, { 4, -4 }, { 4, 4 }, { -4, 4 } },
+		{ { { -1, -1 }, { -1, 1 }, { 1, 1 }, { 1, -1 } } } };
+	CHECK_FALSE(point.intersectsAt(donut).has_value());
+	CheckPointSetBothWays(MultiPolygon{ donut, point }, Circle{ 0, 0, 0.5 }, { { 0, 0 } });
+	CheckPointSetBothWays(donut.scaledFromOrigin(0), Circle{ 0, 0, 1 }, { { 0, 0 } });
+}
+
+TEST_CASE("Geometry2D.IntersectsAt.PointPolygon.connected_points_and_shared_segments")
+{
+	const Polygon point = RectF{ 0, 0, 2, 2 }.asPolygon().scaledFromOrigin(0);
+	const Polygon area = RectF{ 0, 0, 2, 2 }.asPolygon();
+	// A point touching an area component does not add an isolated event.
+	CheckPointSetBothWays(MultiPolygon{ point, area }, Circle{ 0, 0, 10 }, {});
+	const Polygon segment = area.scaledFromOrigin(1, 0);
+	CheckPointSetBothWays(MultiPolygon{ point.movedBy(1, 0), segment }, Circle{ 0, 0, 10 }, {});
+	CheckPointSetBothWays(MultiPolygon{ segment, point.movedBy(1, 0), point.movedBy(3, 0) },
+		Line{ { 0, 0 }, { 4, 0 } }, { { 3, 0 } });
+	// Keep an isolated component while suppressing the common edge and its endpoints.
+	const MultiPolygon a{ area, point, point.movedBy(5, 1) };
+	const MultiPolygon b{ RectF{ 0, -2, 2, 2 }.asPolygon(), point, point.movedBy(5, 1) };
+	CheckPointSetBothWays(a, b, { { 5, 1 } });
+	// Filtering the second operand must not erase candidates contributed by the first.
+	CheckPointSetBothWays(MultiPolygon{ point, point.movedBy(5, 1) }, b, { { 0, 0 }, { 5, 1 } });
+}
