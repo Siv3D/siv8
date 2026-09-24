@@ -170,3 +170,141 @@ TEST_CASE("Geometry2D.Contains.SuperEllipse.holes_and_empty_shapes")
 		CHECK_FALSE(circle.contains(SuperEllipse{ 0, 0, 0, 5, n }));
 	}
 }
+
+TEST_CASE("Geometry2D.Contains.SuperEllipse.concave_triangles_and_quads")
+{
+	for (const Vec2 axes : { Vec2{ 1, 1 }, Vec2{ 8, 2 } })
+	{
+		for (const Vec2 center : { Vec2{ 0, 0 }, Vec2{ 32, -64 } })
+		{
+			const SuperEllipse shape{ center, axes.x, axes.y, 0.5 };
+			for (const double signX : { -1.0, 1.0 })
+			{
+				for (const double signY : { -1.0, 1.0 })
+				{
+					CAPTURE(axes, center, signX, signY);
+					auto PointAt = [&](const double x, const double y)
+					{
+						return (center + axes * Vec2{ signX * x, signY * y });
+					};
+					const Vec2 a = PointAt(0.4, 0);
+					const Vec2 b = PointAt(0, 0.4);
+					const Triangle triangle{ center, a, b };
+					CHECK(shape.contains(triangle));
+					CHECK(shape.contains(Triangle{ b, a, center }));
+					CHECK(shape.contains(triangle.asPolygon()));
+					CHECK_FALSE(shape.contains(PointAt(0.4, 0.4))); // Bounding-box corner outside
+					const Quad quad{ a, b, PointAt(-0.4, 0), PointAt(0, -0.4) };
+					CHECK(shape.contains(quad));
+					CHECK(shape.contains(Quad{ quad.p3, quad.p2, quad.p1, quad.p0 }));
+					CHECK(shape.contains(quad.asPolygon()));
+					const Quad concave{ center, a, PointAt(0.05, 0.05), b };
+					CHECK(shape.contains(concave));
+					CHECK(shape.contains(Quad{ concave.p1, concave.p2, concave.p3, concave.p0 }));
+					// Every vertex is inside, but the sloping edge crosses the exterior.
+					CHECK_FALSE(shape.contains(Triangle{ center, PointAt(0.6, 0), PointAt(0, 0.6) }));
+					CHECK_FALSE(shape.contains(Quad{ PointAt(0.6, 0), PointAt(0, 0.6), PointAt(-0.6, 0), PointAt(0, -0.6) }));
+					// The same segment represented by a line, triangle, or quad.
+					for (const double extent : { 0.4, 0.6 })
+					{
+						const Vec2 p = PointAt(extent, 0);
+						const Vec2 q = PointAt(0, extent);
+						CHECK(shape.contains(Line{ p, q }) == (extent < 0.5));
+						CHECK(shape.contains(Triangle{ p, q, p.lerp(q, 0.5) }) == (extent < 0.5));
+						CHECK(shape.contains(Quad{ p, q, q, p }) == (extent < 0.5));
+					}
+					CHECK(shape.contains(Triangle{ a, a, a }));
+					CHECK(shape.contains(Quad{ a, a, a, a }));
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Contains.SuperEllipse.concave_line_tangency")
+{
+	for (const double n : { 0.125, 0.5, 0.9, 0.999 })
+	{
+		for (const double weight : { 0.125, 0.25, 0.5, 0.875 })
+		{
+			// The line X/a + Y/b = 1 touches the unit superellipse at
+			// (weight^(1/n), (1-weight)^(1/n)).
+			const double a = std::pow(weight, ((1.0 - n) / n));
+			const double b = std::pow((1.0 - weight), ((1.0 - n) / n));
+			for (const Vec2 center : { Vec2{ 0, 0 }, Vec2{ 8, -16 } })
+			{
+				const SuperEllipse shape{ center, 2, 4, n };
+				for (const double gap : { -1.0e-6, 0.0, 1.0e-6 })
+				{
+					CAPTURE(n, weight, center, gap);
+					for (const double signX : { -1.0, 1.0 })
+					{
+						for (const double signY : { -1.0, 1.0 })
+						{
+							const Vec2 p = (center + Vec2{ signX * 2 * a * (1 + gap), 0 });
+							const Vec2 q = (center + Vec2{ 0, signY * 4 * b * (1 + gap) });
+							CHECK(shape.contains(Line{ p, q }) == (gap <= 0));
+							CHECK(shape.contains(Line{ q, p }) == (gap <= 0));
+							CHECK(shape.contains(Triangle{ center, p, q }) == (gap <= 0));
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Contains.SuperEllipse.concave_line_axis_crossings")
+{
+	const SuperEllipse shape{ 0, 0, 1, 1, 0.5 };
+	const Line contained[] = {
+		{ { -1, 0 }, { 1, 0 } }, { { 0, -1 }, { 0, 1 } },
+		{ { -0.5, 0.01 }, { 0.5, 0.01 } },
+		{ { 0.01, -0.5 }, { 0.01, 0.5 } },
+		{ { -0.2, -0.2 }, { 0.2, 0.2 } },
+		{ { -0.04, 0.54 }, { 0.54, -0.04 } }, // Two axis crossings, interior contact
+		{ { 0.1, 0.1 }, { 0.1, 0.1 } },
+	};
+	for (const Line& line : contained)
+	{
+		CAPTURE(line);
+		CHECK(shape.contains(line));
+		CHECK(shape.contains(Line{ line.end, line.start }));
+	}
+	CHECK_FALSE(shape.contains(Line{ { -0.01, 0.55 }, { 0.55, -0.01 } }));
+	CHECK_FALSE(shape.contains(Line{ { 0, 0 }, { 0.4, 0.4 } }));
+	CHECK_FALSE(shape.contains(Line{ { 0.4, 0.4 }, { 0.4, 0.4 } }));
+	CHECK(shape.contains(LineString{ { -0.04, 0.54 }, { 0.54, -0.04 }, { 0, 0 } }));
+	CHECK_FALSE(shape.contains(LineString{ { -0.01, 0.55 }, { 0.55, -0.01 } }));
+	CHECK_FALSE(shape.contains(LineString{}));
+	CHECK(shape.contains(RectF{ -0.1, -0.1, 0.2, 0.2 }));
+	CHECK_FALSE(shape.contains(RectF{ -0.3, -0.3, 0.6, 0.6 }));
+}
+
+TEST_CASE("Geometry2D.Contains.SuperEllipse.polyline_empty_degenerate_and_convex")
+{
+	for (const double n : { 0.5, 1.0, 2.0, 4.0 })
+	{
+		CAPTURE(n);
+		const Triangle triangle{ { 0, 0 }, { 0.25, 0 }, { 0, 0.25 } };
+		const Quad quad{ { 0.25, 0 }, { 0, 0.25 }, { -0.25, 0 }, { 0, -0.25 } };
+		const SuperEllipse empty{ 0, 0, 0, 0, n };
+		CHECK_FALSE(empty.contains(Line{ { 0, 0 }, { 0, 0 } }));
+		CHECK_FALSE(empty.contains(triangle));
+		CHECK_FALSE(empty.contains(quad));
+		for (const Vec2 tip : { Vec2{ 1, 0 }, Vec2{ 0, 1 } })
+		{
+			const SuperEllipse segment{ 0, 0, tip.x, tip.y, n };
+			CHECK(segment.contains(Line{ -tip, tip }));
+			CHECK(segment.contains(Triangle{ -tip, tip, Vec2{ 0, 0 } }));
+			CHECK(segment.contains(Quad{ -tip, tip, tip, -tip }));
+			CHECK_FALSE(segment.contains(triangle));
+			CHECK_FALSE(segment.contains(quad));
+		}
+		const SuperEllipse shape{ 0, 0, 1, 1, n };
+		CHECK(shape.contains(triangle));
+		CHECK(shape.contains(quad));
+		CHECK_FALSE(shape.contains(triangle.movedBy(3, 0)));
+		CHECK_FALSE(shape.contains(quad.movedBy(3, 0)));
+	}
+}

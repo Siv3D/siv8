@@ -11,7 +11,6 @@
 
 ### 包含判定
 
-- 凹型 SuperEllipse の `Contains(Triangle)` が三角形の外接矩形を判定している。`SuperEllipse{0,0,1,1,0.5}` は `Triangle{{0,0},{0.4,0},{0,0.4}}` を含むが false。同じ領域の Polygon と各辺は true。Quad と線分に縮退した Triangle / Quad にも波及する。既存の線分包含は象限ごとに 64 回探索するため、三辺への単純な置換は避け、線分上の最大値を直接求める共通処理と性能を検証する。
 - 円と同じ領域を持つ Ellipse / SuperEllipse（n = 2）/ RoundRect の包含経路を整理する。同心の半径 100 と 99.999 でも、Circle 同士は true、Ellipse 同士などは外接 128 角形の近似により false。両オペランドの等価形状を既存の処理へ統合し、一般の曲線包含の保守的な近似契約とは分ける。
 
 ### 交点取得

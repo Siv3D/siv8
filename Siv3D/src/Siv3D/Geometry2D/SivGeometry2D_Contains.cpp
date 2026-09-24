@@ -23,7 +23,6 @@ namespace s3d
 	namespace
 	{
 		inline constexpr int32 CurvedContainmentSegments = 128;
-		inline constexpr int32 SuperEllipseSearchIterations = 64;
 		inline constexpr double TwoPi = 6.2831853071795864769252867665590058;
 		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
 
@@ -409,115 +408,130 @@ namespace s3d
 				});
 		}
 
+		// Endpoints are already contained; coordinates are normalized by the axes.
 		[[nodiscard]]
-		double SuperEllipseValueAt(
-			const SuperEllipse& superEllipse, const Line& segment, const double t) noexcept
+		bool ContainsNonConvexSuperEllipseSegmentInterior(Vec2 a, Vec2 b, const double n) noexcept
 		{
-			const Vec2 p = (segment.start + (segment.end - segment.start) * t);
-			const double x = Abs((p.x - superEllipse.center.x) / superEllipse.axes.x);
-			const double y = Abs((p.y - superEllipse.center.y) / superEllipse.axes.y);
-			return (std::pow(x, superEllipse.n) + std::pow(y, superEllipse.n));
-		}
-
-		[[nodiscard]]
-		bool ContainsLineNonConvexSuperEllipse(
-			const SuperEllipse& superEllipse, const Line& segment) noexcept
-		{
-			if ((not Geometry2D::Contains(superEllipse, segment.start))
-				|| (not Geometry2D::Contains(superEllipse, segment.end)))
+			if ((b.x < a.x) || ((b.x == a.x) && (b.y < a.y)))
 			{
-				return false;
+				std::swap(a, b);
 			}
 
-			if (segment.start == segment.end)
+			Vec2 d = (b - a);
+
+			if (Abs(d.x) < Abs(d.y))
+			{
+				std::swap(a.x, a.y);
+				std::swap(b.x, b.y);
+				std::swap(d.x, d.y);
+			}
+
+			if (d.y == 0.0)
 			{
 				return true;
 			}
 
-			std::array<double, 4> breaks{ 0.0, 1.0, 0.0, 0.0 };
-			size_t count = 2;
-			const Vec2 d = (segment.end - segment.start);
+			// For 0 < n < 1, axis crossings are minima. The only possible interior
+			// maximum satisfies y = -sign(slope) * |slope|^(1 / (1 - n)) * x.
+			const double slope = (d.y / d.x);
+			const double ratio = std::copysign(std::pow(Abs(slope), (1.0 / (1.0 - n))), slope);
+			const double x = ((slope * a.x - a.y) / (slope + ratio));
 
-			auto AddAxisCrossing = [&](const double start, const double delta, const double center) noexcept
+			if ((x <= Min(a.x, b.x)) || (Max(a.x, b.x) <= x))
 			{
-				if (delta == 0.0)
+				return true;
+			}
+
+			// Use the stationary relation to avoid cancellation near an axis.
+			const double y = (-ratio * x);
+			return ((std::pow(Abs(x), n) + std::pow(Abs(y), n)) <= (1.0 + 64.0 * DoubleEpsilon));
+		}
+
+		template <bool CloseRing, size_t N>
+		[[nodiscard]]
+		bool ContainsSuperEllipsePolyline(const SuperEllipse& superEllipse, std::array<Vec2, N> points) noexcept
+		{
+			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
+
+			if (kind == detail::Geometry2DSizedShapeKind::Empty)
+			{
+				return false;
+			}
+
+			if (detail::IsGeometry2DSegment(kind) || (1.0 <= superEllipse.n))
+			{
+				for (const Vec2& point : points)
 				{
-					return;
+					if (not Geometry2D::Contains(superEllipse, point))
+					{
+						return false;
+					}
 				}
 
-				const double t = ((center - start) / delta);
+				return true;
+			}
 
-				if ((0.0 < t) && (t < 1.0))
-				{
-					breaks[count++] = t;
-				}
-			};
+			Vec2 bounds{ 0, 0 };
 
-			AddAxisCrossing(segment.start.x, d.x, superEllipse.center.x);
-			AddAxisCrossing(segment.start.y, d.y, superEllipse.center.y);
-			std::sort(breaks.begin(), breaks.begin() + count);
-
-			size_t uniqueCount = 1;
-
-			for (size_t i = 1; i < count; ++i)
+			for (Vec2& point : points)
 			{
-				if (breaks[i] != breaks[uniqueCount - 1])
+				point = ((point - superEllipse.center) / superEllipse.axes);
+
+				if constexpr (CloseRing)
 				{
-					breaks[uniqueCount++] = breaks[i];
+					bounds.x = Max(bounds.x, Abs(point.x));
+					bounds.y = Max(bounds.y, Abs(point.y));
 				}
 			}
 
-			const double tolerance = (64.0 * DoubleEpsilon);
-
-			for (size_t i = 0; i < (uniqueCount - 1); ++i)
+			if constexpr (CloseRing)
 			{
-				double left = breaks[i];
-				double right = breaks[i + 1];
-
-				for (int32 iteration = 0; iteration < SuperEllipseSearchIterations; ++iteration)
+				if ((1.0 < bounds.x) || (1.0 < bounds.y))
 				{
-					const double third = ((right - left) / 3.0);
-					const double m0 = (left + third);
-					const double m1 = (right - third);
+					return false;
+				}
 
-					if (SuperEllipseValueAt(superEllipse, segment, m0)
-						< SuperEllipseValueAt(superEllipse, segment, m1))
+				// If the bounding box is contained, no edge maximum needs evaluation.
+				if ((std::pow(bounds.x, superEllipse.n) + std::pow(bounds.y, superEllipse.n)) <= 1.0)
+				{
+					return true;
+				}
+			}
+
+			for (const Vec2& point : points)
+			{
+				if constexpr (not CloseRing)
+				{
+					if ((1.0 < Abs(point.x)) || (1.0 < Abs(point.y)))
 					{
-						left = m0;
-					}
-					else
-					{
-						right = m1;
+						return false;
 					}
 				}
 
-				const double maximum = Max({
-					SuperEllipseValueAt(superEllipse, segment, breaks[i]),
-					SuperEllipseValueAt(superEllipse, segment, breaks[i + 1]),
-					SuperEllipseValueAt(superEllipse, segment, (left + right) * 0.5)
-				});
-
-				if ((1.0 + tolerance) < maximum)
+				if (1.0 < (std::pow(Abs(point.x), superEllipse.n) + std::pow(Abs(point.y), superEllipse.n)))
 				{
 					return false;
 				}
 			}
 
-			return true;
-		}
+			for (size_t i = 1; i < N; ++i)
+			{
+				if (not ContainsNonConvexSuperEllipseSegmentInterior(points[i - 1], points[i], superEllipse.n))
+				{
+					return false;
+				}
+			}
 
-		[[nodiscard]]
-		bool ContainsTriangleNonConvexSuperEllipse(
-			const SuperEllipse& superEllipse, const Triangle& triangle) noexcept
-		{
-			const RectF bounds = triangle.boundingRect();
-			const double right = (bounds.pos.x + bounds.size.x);
-			const double bottom = (bounds.pos.y + bounds.size.y);
-
-			return Geometry2D::Contains(superEllipse, bounds.pos)
-				&& Geometry2D::Contains(superEllipse, Vec2{ right, bounds.pos.y })
-				&& Geometry2D::Contains(superEllipse, Vec2{ right, bottom })
-				&& Geometry2D::Contains(superEllipse, Vec2{ bounds.pos.x, bottom });
+			// Any exterior point has a ray to infinity outside the superellipse,
+			// so a closed boundary inside it cannot enclose an exterior point.
+			if constexpr (CloseRing)
+			{
+				return ContainsNonConvexSuperEllipseSegmentInterior(points.back(), points.front(), superEllipse.n);
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		[[nodiscard]]
@@ -961,19 +975,7 @@ namespace s3d
 
 		bool Contains(const SuperEllipse& a, const Line& b) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(a);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind) || (1.0 <= a.n))
-			{
-				return Contains(a, b.start) && Contains(a, b.end);
-			}
-
-			return ContainsLineNonConvexSuperEllipse(a, b);
+			return ContainsSuperEllipsePolyline<false>(a, std::array{ b.start, b.end });
 		}
 
 		bool Contains(const SuperEllipse& a, const LineString& b) noexcept
@@ -1014,26 +1016,12 @@ namespace s3d
 
 		bool Contains(const SuperEllipse& a, const Triangle& b) noexcept
 		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(a);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return false;
-			}
-
-			if (detail::IsGeometry2DSegment(kind) || (1.0 <= a.n))
-			{
-				return Contains(a, b.p0)
-					&& Contains(a, b.p1)
-					&& Contains(a, b.p2);
-			}
-
-			return ContainsTriangleNonConvexSuperEllipse(a, b);
+			return ContainsSuperEllipsePolyline<true>(a, std::array{ b.p0, b.p1, b.p2 });
 		}
 
 		bool Contains(const SuperEllipse& a, const Quad& b) noexcept
 		{
-			return ContainsQuadByDecomposition(a, b);
+			return ContainsSuperEllipsePolyline<true>(a, std::array{ b.p0, b.p1, b.p2, b.p3 });
 		}
 
 		bool Contains(const SuperEllipse& a, const RoundRect& b) noexcept
