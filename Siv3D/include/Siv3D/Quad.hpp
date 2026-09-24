@@ -28,6 +28,8 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 凸四角形
+	/// @remark 幾何判定では、凸な境界に沿って頂点を並べます。時計回り・反時計回りの両方を扱い、面積を保つ隣接頂点の共線も許容します。凹形状・自己交差・境界順でない入力の結果は保証しません。
+	/// @remark 縮退は、`{ A, B, C, C }`, `{ A, B, B, C }`, `{ A, A, B, C }`, `{ A, B, C, A }` を三角形 ABC、`{ A, B, B, A }`, `{ A, A, B, B }` を線分 AB、`{ A, A, A, A }` を点 A として扱います。その他の縮退の結果は保証しません。
 	struct Quad
 	{
 		/// @brief 四角形の座標を表現する型
@@ -806,6 +808,7 @@ namespace s3d
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -820,6 +823,7 @@ namespace s3d
 		/// @tparam Shape2DType `Geometry2D::Overlaps(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 			requires detail::SupportsOverlaps<Quad, Shape2DType>
 		[[nodiscard]]
@@ -835,6 +839,7 @@ namespace s3d
 		/// @tparam Shape2DType `Geometry2D::Contains(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 			requires detail::SupportsContains<Quad, Shape2DType>
 		[[nodiscard]]
@@ -846,10 +851,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @brief 別の図形との孤立した交点を返します。
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
-		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		/// @return 交点の配列、または none。空配列を含む返り値の意味は @ref geometry2d_intersection_points を参照。
 		template <class Shape2DType>
 		[[nodiscard]]
 		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;

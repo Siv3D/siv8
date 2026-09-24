@@ -19,6 +19,8 @@
 
 namespace s3d
 {
+	/// @brief 複数の多角形
+	/// @remark 幾何判定に使う場合、面積を持つ要素同士の内部は重ねず、境界の共有は有限個の点に限ります。辺を共有する構成の判定結果は保証しません。
 	/// @remark 要素を所有します。ポインタ・イテレータ・span の取得は左辺値に限定され、元の要素の寿命と無効化規則に従います。
 	/// @remark 右辺値の要素アクセスは値を返し、const 右辺値からの借用はできません。
 	class MultiPolygon
@@ -2301,6 +2303,7 @@ namespace s3d
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -2315,6 +2318,7 @@ namespace s3d
 		/// @tparam Shape2DType `Geometry2D::Overlaps(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 			requires detail::SupportsOverlaps<MultiPolygon, Shape2DType>
 		[[nodiscard]]
@@ -2326,11 +2330,11 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の図形を完全に含んでいるかを返します。
+		/// @brief 一つの要素が別の図形全体を含んでいるかを返します。
 		/// @tparam Shape2DType `Geometry2D::Contains(*this, other)` が呼び出せる型
 		/// @param other 別の図形
-		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
-		/// @remark 制約: 現在の実装では、複数の要素にまたがって完全に含まれる図形に対して false を返します。
+		/// @return いずれか一つの要素が other 全体を含む場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 			requires detail::SupportsContains<MultiPolygon, Shape2DType>
 		[[nodiscard]]
@@ -2342,10 +2346,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @brief 別の図形との孤立した交点を返します。
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
-		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		/// @return 交点の配列、または none。空配列を含む返り値の意味は @ref geometry2d_intersection_points を参照。
 		template <class Shape2DType>
 		[[nodiscard]]
 		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;

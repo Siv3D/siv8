@@ -152,7 +152,6 @@ TEST_CASE("Geometry2D.Contains.SuperEllipse.holes_and_empty_shapes")
 	CHECK(outsideHole.contains(shape));
 	CHECK(MultiPolygon{ Polygon{}, diamond }.contains(shape));
 	CHECK_FALSE(MultiPolygon{ centralHole }.contains(shape));
-	CHECK_FALSE(MultiPolygon{ RectF{ -5, -5, 5, 10 }.asPolygon(), RectF{ 0, -5, 5, 10 }.asPolygon() }.contains(shape));
 	CHECK(shape.contains(shape));
 	CHECK(shape.contains(SuperEllipse{ 0, 0, 0.5, 0.5, 0.25 }));
 	CHECK_FALSE(Circle{ 0, 0, 0 }.contains(shape));
@@ -169,6 +168,33 @@ TEST_CASE("Geometry2D.Contains.SuperEllipse.holes_and_empty_shapes")
 		CHECK(circle.contains(SuperEllipse{ 0, 0, 0, 4, n }));
 		CHECK_FALSE(circle.contains(SuperEllipse{ 0, 0, 0, 5, n }));
 	}
+}
+
+TEST_CASE("Geometry2D.Contains.MultiPolygon.single_member")
+{
+	const Polygon left = RectF{ 0, 0, 4, 4 }.asPolygon();
+	const Polygon right = RectF{ 8, 0, 4, 4 }.asPolygon();
+	const MultiPolygon container{ Polygon{}, left, right };
+	const MultiPolygon target{ Polygon{}, RectF{ 1, 1, 2, 2 }.asPolygon(), RectF{ 9, 1, 2, 2 }.asPolygon() };
+	auto Check = [](const auto& a, const auto& b, const bool expected)
+	{
+		CHECK(Geometry2D::Contains(a, b) == expected);
+		CHECK(a.contains(b) == expected);
+	};
+	Check(container, left, true);
+	Check(container, right, true);
+	Check(container, target, false);
+	Check(container, container, false);
+	Check(MultiPolygon{ RectF{ 0, 0, 12, 4 }.asPolygon() }, target, true);
+	Check(container, MultiPolygon{ Polygon{}, left }, true);
+	Check(container, MultiPolygon{ Polygon{} }, false);
+	Check(MultiPolygon{ Polygon{} }, left, false);
+
+	// The segment is covered by the union of two point-touching members,
+	// but neither member alone contains it.
+	const MultiPolygon touching{ RectF{ 0, 0, 2, 2 }.asPolygon(), RectF{ 2, 2, 2, 2 }.asPolygon() };
+	Check(touching, Vec2{ 2, 2 }, true);
+	Check(touching, Line{ Vec2{ 1, 1 }, Vec2{ 3, 3 } }, false);
 }
 
 TEST_CASE("Geometry2D.Contains.SuperEllipse.concave_triangles_and_quads")

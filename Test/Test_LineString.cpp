@@ -397,6 +397,9 @@ TEST_CASE("LineString.contains")
 	const LineString line{ Vec2{ 0, 0 }, Vec2{ 1, 1 }, Vec2{ 0, 0 }, Vec2{ 2, 0 } };
 	CHECK(line.contains(Vec2{ 1, 1 }));
 	CHECK_FALSE(line.contains(Vec2{ 9, 9 }));
+	CHECK_FALSE(line.contains(Vec2{ 0.5, 0.5 }));
+	CHECK(line.intersects(Vec2{ 0.5, 0.5 }));
+	CHECK_FALSE(LineString{}.contains(Vec2{ 0, 0 }));
 }
 
 TEST_CASE("LineString.contains_if")

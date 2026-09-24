@@ -27,6 +27,39 @@ namespace s3d
 {
 	namespace Geometry2D
 	{
+		/// @defgroup geometry2d_queries 図形の交差・包含判定
+		/// @brief Intersects(), Overlaps(), Contains(), IntersectsAt() と対応するメンバー関数の共通契約。
+		///
+		/// | 関数 | 判定の意味 |
+		/// |---|---|
+		/// | Intersects(a, b) | 境界を含め、共通する点があるか。接触だけでも true。 |
+		/// | Overlaps(a, b) | 共通部分が正の面積を持つか。点・線分での接触は false。 |
+		/// | Contains(a, b) | 境界を含め、b 全体が a に収まるか。 |
+		/// | IntersectsAt(a, b) | @ref geometry2d_intersection_points を参照。 |
+		///
+		/// Contains() の左辺が MultiPolygon の場合は、いずれか一つの要素が右辺全体を含む必要があります。
+		/// 右辺も MultiPolygon の場合、その空でない全要素が左辺の同じ一要素に収まる必要があります。
+		/// LineString::contains() はこの包含判定ではなく、格納された頂点の検索です。
+		///
+		/// @par 有効な入力
+		/// 座標・パラメータは有限値、幅・高さ・半径は非負、SuperEllipse::n は正である必要があります。
+		/// Quad, Polygon, MultiPolygon は各型の頂点順序・要素構成の条件にも従います。有効でない入力の判定結果は保証しません。
+		/// LineString は隣接頂点を結ぶ折れ線であり、末尾から先頭への辺は自動では追加しません。
+		/// RoundRect の角丸半径は、幅と高さの小さい方の半分を上限として扱います。
+		///
+		/// @par 空形状と縮退
+		/// どちらかが空なら、Intersects(), Overlaps(), Contains() は false、IntersectsAt() は none を返します。
+		/// 空形状は、半径 0 の Circle、縦横の寸法がともに 0 の Rect / RectF / Ellipse / SuperEllipse / RoundRect、
+		/// 頂点のない LineString、空の Polygon、空でない要素を持たない MultiPolygon です。RoundRect は rect の寸法で判断します。
+		/// 上記の縦横の寸法の片方だけが 0 の場合は線分です。長さ 0 の Line、1 頂点の LineString、
+		/// 面積 0 の Triangle、および各型で認められた Quad / Polygon の縮退は、空ではなく点・線分として判定します。
+		/// MultiPolygon の空要素は無視するため、幾何的な空と MultiPolygon::isEmpty() は一致しない場合があります。
+		///
+		/// @par 数値判定
+		/// 曲線を含む Contains() は組み合わせにより近似判定となり、完全に含まれていても false を返すことがあります。
+		/// Intersects() / Overlaps() の許容誤差と近似判定の制約は、各オーバーロードの説明を参照してください。
+		/// @{
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Intersects(Point, _)
@@ -930,6 +963,8 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Intersects(const MultiPolygon& a, const MultiPolygon& b) noexcept;
+
+		/// @}
 	}
 }
 

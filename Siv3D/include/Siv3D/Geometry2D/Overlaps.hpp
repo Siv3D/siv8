@@ -17,6 +17,9 @@ namespace s3d
 {
 	namespace Geometry2D
 	{
+		/// @addtogroup geometry2d_queries
+		/// @{
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Overlaps(Rect, _)
@@ -390,5 +393,7 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Overlaps(const MultiPolygon& a, const MultiPolygon& b) noexcept;
+
+		/// @}
 	}
 }

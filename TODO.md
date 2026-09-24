@@ -13,10 +13,6 @@
 
 - 一般の SuperEllipse（`n != 1 / 2`）の内部点に対する `SignedDistance()` / `ClosestPointOnBoundary()` は分割・反復探索を使う。凹形状・凸形状をまとめて計測し、精度と上限処理量を維持しながら探索回数を減らせるか調査する。内部からの Raycast も同じ処理を使う。
 
-### 公開契約
-
-- 共通契約を公開ヘッダの一か所へ集約する。境界を含む判定、空形状と縮退の区別、有効入力条件、`IntersectsAt()` の none / 空配列 / 孤立点、近似の制約を短く記述し、メンバーの重複説明を整理する。`MultiPolygon::contains()` は採用済みの単一要素包含として記述し、「現在の実装では」を除く。`LineString::contains(Vec2)` は既存の頂点検索なので幾何包含と区別する。MultiPolygon の要素間の有効性条件と、辺を共有する構成を使った包含テストも整合させる。
-
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
 ### 数値変換と入力検証

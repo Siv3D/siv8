@@ -36,6 +36,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 多角形（穴をもつことも可能）
+	/// @remark 幾何判定では outer() と inners() の頂点座標が表す領域を使います。外周と穴の境界を含み、穴の内部は含みません。
 	/// @remark 外周は、末尾から先頭へ戻る辺を含む符号付き面積の 2 倍 `Σ(x[i] * y[i+1] - x[i+1] * y[i])` が正になる順序で指定します。画面座標では時計回りに見える順序です。
 	/// @remark 各穴は、同じ式の値が負になる順序で指定します。画面座標では反時計回りに見える順序です。各輪郭では先頭頂点を末尾に重複させません。
 	/// @remark 向きは Geometry2D::IsClockwise() で判定できます。単純な非退化輪郭の向きだけを変える場合は頂点列を reverse() します。これは自己交差や重複点の修復にはなりません。
@@ -923,7 +924,7 @@ namespace s3d
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
 		/// @return 別の図形と交差している場合 true, それ以外の場合は false
-		/// @remark outer() と inners() の頂点座標が表す領域で判定します。外周と穴の境界を含み、穴の内部は含みません。
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 		[[nodiscard]]
 		constexpr bool intersects(const Shape2DType& other) const;
@@ -938,6 +939,7 @@ namespace s3d
 		/// @tparam Shape2DType `Geometry2D::Overlaps(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 			requires detail::SupportsOverlaps<Polygon, Shape2DType>
 		[[nodiscard]]
@@ -953,7 +955,7 @@ namespace s3d
 		/// @tparam Shape2DType `Geometry2D::Contains(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
-		/// @remark outer() と inners() の頂点座標が表す領域で判定します。外周と穴の境界を含み、穴の内部は含みません。
+		/// @see @ref geometry2d_queries
 		template <class Shape2DType>
 			requires detail::SupportsContains<Polygon, Shape2DType>
 		[[nodiscard]]
@@ -965,10 +967,10 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 別の図形と点で交差している場合、その座標を返します。
+		/// @brief 別の図形との孤立した交点を返します。
 		/// @tparam Shape2DType 別の図形の型
 		/// @param other 別の図形
-		/// @return 別の図形と点で交差している場合、その座標の配列を返します。交差が存在しても、一次元以上の共有部分しかない場合は空の配列を返します。交差していない場合は none を返します。
+		/// @return 交点の配列、または none。空配列を含む返り値の意味は @ref geometry2d_intersection_points を参照。
 		template <class Shape2DType>
 		[[nodiscard]]
 		Optional<Array<Vec2>> intersectsAt(const Shape2DType& other) const;

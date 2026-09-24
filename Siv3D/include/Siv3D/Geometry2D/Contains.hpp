@@ -17,6 +17,9 @@ namespace s3d
 {
 	namespace Geometry2D
 	{
+		/// @addtogroup geometry2d_queries
+		/// @{
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	Contains(Rect, _)
@@ -496,5 +499,7 @@ namespace s3d
 
 		[[nodiscard]]
 		bool Contains(const MultiPolygon& a, const MultiPolygon& b) noexcept;
+
+		/// @}
 	}
 }
