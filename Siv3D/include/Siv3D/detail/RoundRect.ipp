@@ -761,6 +761,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsOverlaps<RoundRect, Shape2DType>
 	constexpr bool RoundRect::overlaps(const Shape2DType& other) const
 	{
 		return Geometry2D::Overlaps(*this, other);
@@ -773,6 +774,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsContains<RoundRect, Shape2DType>
 	constexpr bool RoundRect::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);

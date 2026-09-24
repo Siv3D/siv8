@@ -726,6 +726,7 @@
 		F93BD762300FB0F100B3542E /* Ray2D.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD761300FB0F100B3542E /* Ray2D.ipp */; };
 		F93BD780300FB11A00B3542E /* JitterEndpointMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD775300FB11A00B3542E /* JitterEndpointMode.hpp */; };
 		F93BD781300FB11A00B3542E /* Geometry2DCommon.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD76F300FB11A00B3542E /* Geometry2DCommon.hpp */; };
+		76E45A65CA184704AB3ADC0E /* Geometry2DConcepts.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BABDF702AED04FE58DFEA5F0 /* Geometry2DConcepts.hpp */; };
 		F93BD782300FB11A00B3542E /* JitterEndpointSettings.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD776300FB11A00B3542E /* JitterEndpointSettings.hpp */; };
 		F93BD783300FB11A00B3542E /* Intersects.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD771300FB11A00B3542E /* Intersects.hpp */; };
 		F93BD784300FB11A00B3542E /* Contains.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F93BD76C300FB11A00B3542E /* Contains.hpp */; };
@@ -781,6 +782,7 @@
 		F93BD7DE300FB21400B3542E /* Test_Geometry2D_IntersectsAt_Symmetry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7CA300FB21400B3542E /* Test_Geometry2D_IntersectsAt_Symmetry.cpp */; };
 		F93BD7DF300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7CE300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp */; };
 		F93BD7E0300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7CC300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp */; };
+		E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0FD5A99A48BD46F9B3ADA741 /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp */; };
 		F93BD7E1300FB21400B3542E /* Test_Geometry2D_Raycast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7CF300FB21400B3542E /* Test_Geometry2D_Raycast.cpp */; };
 		D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A413 /* Test_Bezier.cpp */; };
 		F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */; };
@@ -4138,6 +4140,7 @@
 		F93BD76D300FB11A00B3542E /* ConvexHull.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ConvexHull.hpp; sourceTree = "<group>"; };
 		F93BD76E300FB11A00B3542E /* Distance.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Distance.hpp; sourceTree = "<group>"; };
 		F93BD76F300FB11A00B3542E /* Geometry2DCommon.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Geometry2DCommon.hpp; sourceTree = "<group>"; };
+		BABDF702AED04FE58DFEA5F0 /* Geometry2DConcepts.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Geometry2DConcepts.hpp; sourceTree = "<group>"; };
 		F93BD770300FB11A00B3542E /* Geometry2DPointVectorFwd.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Geometry2DPointVectorFwd.hpp; sourceTree = "<group>"; };
 		F93BD771300FB11A00B3542E /* Intersects.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Intersects.hpp; sourceTree = "<group>"; };
 		F93BD772300FB11A00B3542E /* IntersectsAt.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IntersectsAt.hpp; sourceTree = "<group>"; };
@@ -4185,6 +4188,7 @@
 		F93BD7CA300FB21400B3542E /* Test_Geometry2D_IntersectsAt_Symmetry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_IntersectsAt_Symmetry.cpp; sourceTree = "<group>"; };
 		F93BD7CB300FB21400B3542E /* Test_Geometry2D_Overlaps.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Overlaps.cpp; sourceTree = "<group>"; };
 		F93BD7CC300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Overlaps_Availability.cpp; sourceTree = "<group>"; };
+		0FD5A99A48BD46F9B3ADA741 /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp; sourceTree = "<group>"; };
 		F93BD7CD300FB21400B3542E /* Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp; sourceTree = "<group>"; };
 		F93BD7CE300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Overlaps_Symmetry.cpp; sourceTree = "<group>"; };
 		F93BD7CF300FB21400B3542E /* Test_Geometry2D_Raycast.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Raycast.cpp; sourceTree = "<group>"; };
@@ -7048,6 +7052,7 @@
 				F93BD7CA300FB21400B3542E /* Test_Geometry2D_IntersectsAt_Symmetry.cpp */,
 				F93BD7C7300FB21400B3542E /* Test_Geometry2D_IntersectsAt.cpp */,
 				F93BD7CC300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp */,
+				0FD5A99A48BD46F9B3ADA741 /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp */,
 				F93BD7CD300FB21400B3542E /* Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp */,
 				F93BD7CE300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp */,
 				F93BD7CB300FB21400B3542E /* Test_Geometry2D_Overlaps.cpp */,
@@ -9790,6 +9795,7 @@
 				F93BD76D300FB11A00B3542E /* ConvexHull.hpp */,
 				F93BD76E300FB11A00B3542E /* Distance.hpp */,
 				F93BD76F300FB11A00B3542E /* Geometry2DCommon.hpp */,
+				BABDF702AED04FE58DFEA5F0 /* Geometry2DConcepts.hpp */,
 				F93BD770300FB11A00B3542E /* Geometry2DPointVectorFwd.hpp */,
 				F93BD771300FB11A00B3542E /* Intersects.hpp */,
 				F93BD772300FB11A00B3542E /* IntersectsAt.hpp */,
@@ -14587,6 +14593,7 @@
 				F986FFEB2BCFBB53006A4C0F /* SkBmpDecoder.h in Headers */,
 				F93BD780300FB11A00B3542E /* JitterEndpointMode.hpp in Headers */,
 				F93BD781300FB11A00B3542E /* Geometry2DCommon.hpp in Headers */,
+				76E45A65CA184704AB3ADC0E /* Geometry2DConcepts.hpp in Headers */,
 				F93BD782300FB11A00B3542E /* JitterEndpointSettings.hpp in Headers */,
 				F93BD783300FB11A00B3542E /* Intersects.hpp in Headers */,
 				F93BD784300FB11A00B3542E /* Contains.hpp in Headers */,
@@ -16778,6 +16785,7 @@
 				F93BD7DE300FB21400B3542E /* Test_Geometry2D_IntersectsAt_Symmetry.cpp in Sources */,
 				F93BD7DF300FB21400B3542E /* Test_Geometry2D_Overlaps_Symmetry.cpp in Sources */,
 				F93BD7E0300FB21400B3542E /* Test_Geometry2D_Overlaps_Availability.cpp in Sources */,
+				E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */,
 				F93BD7E1300FB21400B3542E /* Test_Geometry2D_Raycast.cpp in Sources */,
 				D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */,
 				F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */,

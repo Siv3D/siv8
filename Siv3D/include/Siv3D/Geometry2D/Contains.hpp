@@ -10,15 +10,11 @@
 //-----------------------------------------------
 
 # pragma once
-# include "../Common.hpp"
-# include "../2DShapes.hpp"
-# include "Geometry2DCommon.hpp"
+# include "../Concepts.hpp"
+# include "../2DShapesFwd.hpp"
 
 namespace s3d
 {
-	class Polygon;
-	class MultiPolygon;
-
 	namespace Geometry2D
 	{
 		////////////////////////////////////////////////////////////////

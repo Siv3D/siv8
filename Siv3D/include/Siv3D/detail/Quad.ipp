@@ -606,6 +606,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsOverlaps<Quad, Shape2DType>
 	constexpr bool Quad::overlaps(const Shape2DType& other) const
 	{
 		return Geometry2D::Overlaps(*this, other);
@@ -618,6 +619,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsContains<Quad, Shape2DType>
 	constexpr bool Quad::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);

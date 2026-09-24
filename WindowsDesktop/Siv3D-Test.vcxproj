@@ -59,6 +59,7 @@
     <ClCompile Include="..\Test\Test_Geometry2D_Intersects_Symmetry.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Availability.cpp" />
+    <ClCompile Include="..\Test\Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_CurvedAreaShapes.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Overlaps_Symmetry.cpp" />
     <ClCompile Include="..\Test\Test_Geometry2D_Raycast.cpp" />

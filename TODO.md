@@ -9,10 +9,9 @@
 
 ## `Siv3D/include/Siv3D/Geometry2D/`
 
-### 公開契約と API 制約
+### 公開契約
 
 - 共通契約を公開ヘッダの一か所へ集約する。境界を含む判定、空形状と縮退の区別、有効入力条件、`IntersectsAt()` の none / 空配列 / 孤立点、近似の制約を短く記述し、メンバーの重複説明を整理する。`MultiPolygon::contains()` は採用済みの単一要素包含として記述し、「現在の実装では」を除く。`LineString::contains(Vec2)` は既存の頂点検索なので幾何包含と区別する。MultiPolygon の要素間の有効性条件と、辺を共有する構成を使った包含テストも整合させる。
-- `contains()` / `overlaps()` のメンバーテンプレートが無制約で、非対応の組合せも requires 式を通り、本体のインスタンス化で失敗する。自由関数の対応表に合わせた制約と、正負のメンバー可用性テストを追加する。LineString の要素検索 API は維持する。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`
 

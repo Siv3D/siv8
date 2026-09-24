@@ -1786,6 +1786,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsOverlaps<MultiPolygon, Shape2DType>
 	constexpr bool MultiPolygon::overlaps(const Shape2DType& other) const
 	{
 		return Geometry2D::Overlaps(*this, other);
@@ -1798,6 +1799,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	template <class Shape2DType>
+		requires detail::SupportsContains<MultiPolygon, Shape2DType>
 	constexpr bool MultiPolygon::contains(const Shape2DType& other) const
 	{
 		return Geometry2D::Contains(*this, other);

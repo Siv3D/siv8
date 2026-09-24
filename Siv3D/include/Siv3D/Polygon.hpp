@@ -13,6 +13,7 @@
 # include <memory>
 # include "Array.hpp"
 # include "Common.hpp"
+# include "Geometry2D/Geometry2DConcepts.hpp"
 # include "Optional.hpp"
 # include "PointVector.hpp"
 # include "2DShapes.hpp"
@@ -932,10 +933,11 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の図形と交差する領域が面積を持つかを返します。
-		/// @tparam Shape2DType 別の図形の型
+		/// @tparam Shape2DType `Geometry2D::Overlaps(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形と交差する領域が面積を持つ場合 true, それ以外の場合は false
 		template <class Shape2DType>
+			requires detail::SupportsOverlaps<Polygon, Shape2DType>
 		[[nodiscard]]
 		constexpr bool overlaps(const Shape2DType& other) const;
 
@@ -946,11 +948,12 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 別の図形を完全に含んでいるかを返します。
-		/// @tparam Shape2DType 別の図形の型
+		/// @tparam Shape2DType `Geometry2D::Contains(*this, other)` が呼び出せる型
 		/// @param other 別の図形
 		/// @return 別の図形を完全に含んでいる場合 true, それ以外の場合は false
 		/// @remark outer() と inners() の頂点座標が表す領域で判定します。外周と穴の境界を含み、穴の内部は含みません。
 		template <class Shape2DType>
+			requires detail::SupportsContains<Polygon, Shape2DType>
 		[[nodiscard]]
 		constexpr bool contains(const Shape2DType& other) const;
 
