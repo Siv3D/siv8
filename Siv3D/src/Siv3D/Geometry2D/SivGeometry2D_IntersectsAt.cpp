@@ -218,10 +218,10 @@ namespace s3d
 		[[nodiscard]]
 		Array<Vec2> FinalizePoints(IntersectionAccumulator&& accumulator)
 		{
-			Array<Vec2> result;
-			result.reserve(accumulator.points.size());
+			auto& points = accumulator.points;
+			size_t count = 0;
 
-			for (const Vec2& point : accumulator.points)
+			for (const Vec2 point : points)
 			{
 				bool belongsToPositiveDimensionalComponent = false;
 
@@ -241,7 +241,7 @@ namespace s3d
 
 				bool duplicate = false;
 
-				for (const Vec2& existing : result)
+				for (const Vec2& existing : std::span<const Vec2>{ points.data(), count })
 				{
 					if (NearlyEqualPoint(point, existing, accumulator.pointMergeTolerance))
 					{
@@ -252,11 +252,12 @@ namespace s3d
 
 				if (not duplicate)
 				{
-					result.push_back(point);
+					points[count++] = point;
 				}
 			}
 
-			return result;
+			points.resize(count);
+			return std::move(points);
 		}
 
 		[[nodiscard]]

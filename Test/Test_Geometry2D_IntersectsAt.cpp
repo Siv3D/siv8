@@ -242,6 +242,21 @@ TEST_CASE("Geometry2D.IntersectsAt.LineStringDeduplication")
 	CHECK(identical->empty());
 }
 
+TEST_CASE("Geometry2D.IntersectsAt.SharedSegmentsAndRepeatedCrossings")
+{
+	const Line line{ { -4, 0 }, { 4, 0 } };
+	const LineString path{
+		{ -3, -1 }, { -3, 0 }, { -2, 0 }, { -2, -1 },
+		{ 0, -1 }, { 0, 1 }, { 0, -1 },
+		{ 1, -1 }, { 1, 1 }, { 1, -1 },
+		{ 2, -1 }, { 2, 1 }, { 2, 0 }, { 3, 0 }, { 3, 1 }
+	};
+	CheckPointSet(Geometry2D::IntersectsAt(line, path), { { 0, 0 }, { 1, 0 } });
+	CheckPointSet(Geometry2D::IntersectsAt(path, line), { { 0, 0 }, { 1, 0 } });
+	CheckPointSet(Geometry2D::IntersectsAt(Line{ { -3, 0 }, { -2, 0 } }, path), {});
+	CHECK_FALSE(Geometry2D::IntersectsAt(Line{ { -4, 2 }, { 4, 2 } }, path).has_value());
+}
+
 TEST_CASE("Geometry2D.IntersectsAt.CurvedBoundaries")
 {
 	CheckPointSet(Geometry2D::IntersectsAt(

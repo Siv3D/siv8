@@ -2625,204 +2625,155 @@ namespace s3d
 		{
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Point& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Point& shape, Predicate&& predicate)
 		{
-			points.push_back(Vec2{ shape });
+			return predicate(Vec2{ shape });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Vec2& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Vec2& shape, Predicate&& predicate)
 		{
-			points.push_back(shape);
+			return predicate(shape);
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Line& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Line& shape, Predicate&& predicate)
 		{
-			points.push_back(shape.start);
-			points.push_back(shape.end);
-			points.push_back(shape.start.lerp(shape.end, 0.5));
+			return predicate(shape.start) || predicate(shape.end)
+				|| predicate(shape.start.lerp(shape.end, 0.5));
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const LineString& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const LineString& shape, Predicate&& predicate)
 		{
 			for (const Vec2& point : shape)
 			{
-				points.push_back(point);
+				if (predicate(point)) return true;
 			}
 
 			for (size_t i = 0; (i + 1) < shape.size(); ++i)
 			{
-				points.push_back(shape[i].lerp(shape[i + 1], 0.5));
+				if (predicate(shape[i].lerp(shape[i + 1], 0.5))) return true;
 			}
+			return false;
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Bezier2& shape)
+		template <class Bezier, class Predicate> requires detail::IsBezier<Bezier>
+		bool AnyRepresentativePoint(const Bezier& shape, Predicate&& predicate)
 		{
 			for (const double t : { 0.0, 0.25, 0.5, 0.75, 1.0 })
 			{
-				points.push_back(shape.pointAt(t));
+				if (predicate(shape.pointAt(t))) return true;
 			}
+			return false;
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Bezier3& shape)
-		{
-			for (const double t : { 0.0, 0.25, 0.5, 0.75, 1.0 })
-			{
-				points.push_back(shape.pointAt(t));
-			}
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const RectF& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const RectF& shape, Predicate&& predicate)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
+			if (kind == detail::Geometry2DSizedShapeKind::Empty) return false;
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
+				return AnyRepresentativePoint(detail::GetGeometry2DDegenerateSegment(shape, kind), predicate);
 			}
 
-			const double left = shape.pos.x;
-			const double top = shape.pos.y;
-			const double right = (left + shape.size.x);
-			const double bottom = (top + shape.size.y);
-			points.push_back(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 });
-			points.push_back(Vec2{ left, top });
-			points.push_back(Vec2{ right, top });
-			points.push_back(Vec2{ right, bottom });
-			points.push_back(Vec2{ left, bottom });
+			const double left = shape.pos.x, top = shape.pos.y;
+			const double right = (left + shape.size.x), bottom = (top + shape.size.y);
+			return predicate(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 })
+				|| predicate(Vec2{ left, top }) || predicate(Vec2{ right, top })
+				|| predicate(Vec2{ right, bottom }) || predicate(Vec2{ left, bottom });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Rect& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Rect& shape, Predicate&& predicate)
 		{
-			AppendRepresentativePoints(points, RectF{ shape });
+			return AnyRepresentativePoint(RectF{ shape }, predicate);
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Circle& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Circle& shape, Predicate&& predicate)
 		{
-			if (IsEmptyGeometry(shape))
-			{
-				return;
-			}
-
-			points.push_back(shape.center);
-			points.push_back(shape.center + Vec2{ shape.r, 0.0 });
-			points.push_back(shape.center + Vec2{ -shape.r, 0.0 });
-			points.push_back(shape.center + Vec2{ 0.0, shape.r });
-			points.push_back(shape.center + Vec2{ 0.0, -shape.r });
+			if (IsEmptyGeometry(shape)) return false;
+			return predicate(shape.center)
+				|| predicate(shape.center + Vec2{ shape.r, 0.0 })
+				|| predicate(shape.center + Vec2{ -shape.r, 0.0 })
+				|| predicate(shape.center + Vec2{ 0.0, shape.r })
+				|| predicate(shape.center + Vec2{ 0.0, -shape.r });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Ellipse& shape)
+		template <class Shape, class Predicate>
+			requires (std::is_same_v<Shape, Ellipse> || std::is_same_v<Shape, SuperEllipse>)
+		bool AnyRepresentativePoint(const Shape& shape, Predicate&& predicate)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
+			if (kind == detail::Geometry2DSizedShapeKind::Empty) return false;
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
+				return AnyRepresentativePoint(detail::GetGeometry2DDegenerateSegment(shape, kind), predicate);
 			}
 
-			points.push_back(shape.center);
-			points.push_back(shape.center + Vec2{ shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ -shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ 0.0, shape.axes.y });
-			points.push_back(shape.center + Vec2{ 0.0, -shape.axes.y });
+			return predicate(shape.center)
+				|| predicate(shape.center + Vec2{ shape.axes.x, 0.0 })
+				|| predicate(shape.center + Vec2{ -shape.axes.x, 0.0 })
+				|| predicate(shape.center + Vec2{ 0.0, shape.axes.y })
+				|| predicate(shape.center + Vec2{ 0.0, -shape.axes.y });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const SuperEllipse& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Triangle& shape, Predicate&& predicate)
+		{
+			return predicate(shape.p0) || predicate(shape.p1) || predicate(shape.p2)
+				|| predicate((shape.p0 + shape.p1 + shape.p2) / 3.0);
+		}
+
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Quad& shape, Predicate&& predicate)
+		{
+			return predicate(shape.p0) || predicate(shape.p1) || predicate(shape.p2) || predicate(shape.p3)
+				|| predicate((shape.p0 + shape.p1 + shape.p2) / 3.0)
+				|| predicate((shape.p0 + shape.p2 + shape.p3) / 3.0);
+		}
+
+		template <class Predicate>
+		bool AnyRepresentativePoint(const RoundRect& shape, Predicate&& predicate)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
+			if (kind == detail::Geometry2DSizedShapeKind::Empty) return false;
 			if (detail::IsGeometry2DSegment(kind))
 			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
+				return AnyRepresentativePoint(detail::GetGeometry2DDegenerateSegment(shape, kind), predicate);
 			}
 
-			points.push_back(shape.center);
-			points.push_back(shape.center + Vec2{ shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ -shape.axes.x, 0.0 });
-			points.push_back(shape.center + Vec2{ 0.0, shape.axes.y });
-			points.push_back(shape.center + Vec2{ 0.0, -shape.axes.y });
+			const double left = shape.rect.pos.x, top = shape.rect.pos.y;
+			const double right = (left + shape.rect.size.x), bottom = (top + shape.rect.size.y);
+			return predicate(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 })
+				|| predicate(Vec2{ (left + right) * 0.5, top })
+				|| predicate(Vec2{ right, (top + bottom) * 0.5 })
+				|| predicate(Vec2{ (left + right) * 0.5, bottom })
+				|| predicate(Vec2{ left, (top + bottom) * 0.5 });
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const Triangle& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const Polygon& shape, Predicate&& predicate)
 		{
-			points.push_back(shape.p0);
-			points.push_back(shape.p1);
-			points.push_back(shape.p2);
-			points.push_back((shape.p0 + shape.p1 + shape.p2) / 3.0);
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const Quad& shape)
-		{
-			points.push_back(shape.p0);
-			points.push_back(shape.p1);
-			points.push_back(shape.p2);
-			points.push_back(shape.p3);
-			points.push_back((shape.p0 + shape.p1 + shape.p2) / 3.0);
-			points.push_back((shape.p0 + shape.p2 + shape.p3) / 3.0);
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const RoundRect& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendRepresentativePoints(points, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double left = shape.rect.pos.x;
-			const double top = shape.rect.pos.y;
-			const double right = (left + shape.rect.size.x);
-			const double bottom = (top + shape.rect.size.y);
-			points.push_back(Vec2{ (left + right) * 0.5, (top + bottom) * 0.5 });
-			points.push_back(Vec2{ (left + right) * 0.5, top });
-			points.push_back(Vec2{ right, (top + bottom) * 0.5 });
-			points.push_back(Vec2{ (left + right) * 0.5, bottom });
-			points.push_back(Vec2{ left, (top + bottom) * 0.5 });
-		}
-
-		void AppendRepresentativePoints(Array<Vec2>& points, const Polygon& shape)
-		{
-			if (shape.isEmpty())
-			{
-				return;
-			}
-
+			if (shape.isEmpty()) return false;
 			for (const Vec2& point : shape.outer())
 			{
-				points.push_back(point);
+				if (predicate(point)) return true;
 			}
+			return false;
 		}
 
-		void AppendRepresentativePoints(Array<Vec2>& points, const MultiPolygon& shape)
+		template <class Predicate>
+		bool AnyRepresentativePoint(const MultiPolygon& shape, Predicate&& predicate)
 		{
 			for (const auto& polygon : shape)
 			{
-				AppendRepresentativePoints(points, polygon);
+				if (AnyRepresentativePoint(polygon, predicate)) return true;
 			}
+			return false;
 		}
 
 		// 呼び出し側で空形状を除外してから、必要な経路だけで作る。
@@ -2846,58 +2797,58 @@ namespace s3d
 			return data;
 		}
 
-		template <class Shape>
-		[[nodiscard]]
-		Array<Vec2> MakeRepresentativePoints(const Shape& shape)
-		{
-			Vec2 point;
-			if (TryGetPointGeometry(shape, point))
-			{
-				return { point };
-			}
-
-			Array<Vec2> points;
-			AppendRepresentativePoints(points, shape);
-			return points;
-		}
-
 		template <class ShapeA, class ShapeB>
 		[[nodiscard]]
 		Optional<Vec2> FindCommonPoint(const ShapeA& a, const ShapeB& b)
 		{
-			if (const auto events = Geometry2D::IntersectsAt(a, b))
+			const auto VisitPoints = [](const auto& shape, auto&& predicate)
 			{
-				if (not events->isEmpty())
-				{
-					return events->front();
-				}
-			}
-
-			auto TestPoints = [&](const Array<Vec2>& points) -> Optional<Vec2>
+				Vec2 point;
+				if (TryGetPointGeometry(shape, point)) return predicate(point);
+				return AnyRepresentativePoint(shape, predicate);
+			};
+			const auto IsCommonPoint = [&](const Vec2& point)
 			{
-				for (const Vec2& point : points)
+				return Geometry2D::Intersects(point, a) && Geometry2D::Intersects(point, b);
+			};
+			const auto TestFirstPoint = [&](const auto& shape) -> Optional<Vec2>
+			{
+				Optional<Vec2> common;
+				(void)VisitPoints(shape, [&](const Vec2& point)
 				{
-					if (Geometry2D::Intersects(point, a)
-						&& Geometry2D::Intersects(point, b))
-					{
-						return point;
-					}
-				}
-
-				return none;
+					if (IsCommonPoint(point)) common = point;
+					return true;
+				});
+				return common;
 			};
 
-			const Array<Vec2> pointsA = MakeRepresentativePoints(a);
-			if (const auto point = TestPoints(pointsA))
+			// Bound the extra work before intersection enumeration, even for large polygons.
+			if (const auto point = TestFirstPoint(a)) return point;
+			if (const auto point = TestFirstPoint(b)) return point;
+
+			if (const auto events = Geometry2D::IntersectsAt(a, b); events && (not events->isEmpty()))
 			{
-				return *point;
+				return events->front();
 			}
 
-			const Array<Vec2> pointsB = MakeRepresentativePoints(b);
-			if (const auto point = TestPoints(pointsB))
+			// Only the first 12 representatives participate in the interpolation fallback.
+			using RepresentativePoints = boost::container::static_vector<Vec2, 12>;
+			const auto TestPoints = [&](const auto& shape, RepresentativePoints& points) -> Optional<Vec2>
 			{
-				return *point;
-			}
+				Optional<Vec2> common;
+				(void)VisitPoints(shape, [&](const Vec2& point)
+				{
+					if (points.size() < points.capacity()) points.push_back(point);
+					if (not IsCommonPoint(point)) return false;
+					common = point;
+					return true;
+				});
+				return common;
+			};
+
+			RepresentativePoints pointsA, pointsB;
+			if (const auto point = TestPoints(a, pointsA)) return point;
+			if (const auto point = TestPoints(b, pointsB)) return point;
 
 			auto TestBoundary = [](const auto& source, const auto& other) -> Optional<Vec2>
 			{
@@ -2928,8 +2879,8 @@ namespace s3d
 				return *point;
 			}
 
-			const size_t countA = std::min(pointsA.size(), static_cast<size_t>(12));
-			const size_t countB = std::min(pointsB.size(), static_cast<size_t>(12));
+			const size_t countA = pointsA.size();
+			const size_t countB = pointsB.size();
 
 			for (size_t i = 0; i < countA; ++i)
 			{

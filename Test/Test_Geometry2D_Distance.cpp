@@ -1761,6 +1761,41 @@ TEST_CASE("Geometry2D.Distance.Polygon.intersection_and_containment_witnesses")
 	CHECK(not Geometry2D::ClosestPoints(polygon, MultiPolygon{ Polygon{} }));
 }
 
+TEST_CASE("Geometry2D.Distance.CommonPoints.Representatives")
+{
+	const auto CheckCommon = [](const auto& a, const auto& b)
+	{
+		const auto ab = Geometry2D::ClosestPoints(a, b), ba = Geometry2D::ClosestPoints(b, a);
+		REQUIRE(ab);
+		REQUIRE(ba);
+		CHECK(ab->distance == 0.0);
+		CHECK(ba->distance == 0.0);
+		CHECK(ab->pointA == ab->pointB);
+		CHECK(ba->pointA == ba->pointB);
+		CHECK(Geometry2D::Intersects(ab->pointA, a));
+		CHECK(Geometry2D::Intersects(ab->pointA, b));
+		CHECK(Geometry2D::Intersects(ba->pointA, a));
+		CHECK(Geometry2D::Intersects(ba->pointA, b));
+	};
+	const Polygon donut{
+		Array<Vec2>{ { 0, 0 }, { 20, 0 }, { 20, 20 }, { 0, 20 } },
+		Array<Array<Vec2>>{ { { 6, 6 }, { 6, 14 }, { 14, 14 }, { 14, 6 } } }
+	};
+	// The rectangle's center is in the hole; its corners belong to the polygon.
+	CheckCommon(RectF{ 5, 5, 10, 10 }, donut);
+	CheckCommon(Circle{ 2, 2, 1 }, donut);
+	CheckCommon(MultiPolygon{ Polygon{}, donut }, RectF{ 1, 1, 2, 2 });
+	CheckCommon(RectF{ 0, 4, 10, 2 }, RectF{ 4, 0, 2, 10 });
+	CheckCommon(Circle{ 0, 0, 2 }, Circle{ 3, 0, 2 });
+
+	LineString path;
+	for (int32 x = -20; x <= 2; ++x) path.emplace_back(x, 0);
+	// The common points lie beyond the first 12 vertices, along a shared boundary.
+	CheckCommon(path, RectF{ 0, 0, 10, 10 });
+	CHECK(Geometry2D::Distance(RectF{ 7, 7, 2, 2 }, donut) == 1.0);
+	CHECK_FALSE(Geometry2D::ClosestPoints(Polygon{}, donut).has_value());
+}
+
 TEST_CASE("Geometry2D.Distance.Polygon.point_collapse")
 {
 	const Polygon source{
