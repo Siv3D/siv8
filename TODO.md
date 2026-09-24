@@ -185,3 +185,8 @@ API 名や実装方針は未確定。寸法・配置・配色の変更時に、�
 - 開いた格子曲面の公開契約は未確定。[格子曲面の試作案](docs/mesh3d/proposals/open-grid-surface.md)を基に、出力領域の再利用、対角線、UV、hard edge、HeightField との共有範囲を検討する。閉曲面・極点・自己交差修復を同時に扱わない。
 - 面の材質割り当ては v0.8 の作業対象から外し、v0.8.1 以降に再評価する。再開時は [面ごとの材質設計案](docs/mesh3d/proposals/face-materials.md) の比較ケースで内部表現を評価する。三角形への割り当てと generator の面役割を分離し、形状差し替え時と bake / export の契約を決めてから公開型を追加する。
 - 軸からのフレーム生成、誤差による分割数指定、形状登録と部品追加の一体化は保留する。既存の quaternion / quality API とサンプルのヘルパーで不足する根拠を先に確認する。Builder の暗黙の失敗状態は追加しない。
+
+## Geometry2D / Raycast の継続検索
+
+- [継続検索の調査と追加案](docs/geometry2d/proposals/raycast-continuation.md)に基づき、既存 overload を維持した検索開始距離の指定を検討する。下限の許容誤差・範囲外入力・`startsInside` の意味を決め、通常検索と継続検索の Release 性能を比較してから採用を判断する。
+- 角・点接触・辺に沿うすべりは、検索範囲の追加だけでは解決しない。[再現プログラム](Test/Manual/RaycastContinuation.md)を使い、移動先の許可領域と残距離・反復上限の扱いを決めた利用例を検討する。
