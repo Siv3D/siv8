@@ -24,7 +24,7 @@
 # include <Siv3D/Geometry2D/Distance.hpp>
 # include "BezierGeometry.hpp"
 # include "EllipseGeometry.hpp"
-# include "PolygonGeometry.hpp"
+# include "BoundaryGeometry.hpp"
 # include "SuperEllipseGeometry.hpp"
 
 namespace s3d
@@ -40,20 +40,8 @@ namespace s3d
 		inline constexpr int32 ParameterRefinementIterations = 80;
 		inline constexpr double ParameterTolerance = 2.0e-15;
 
-		enum class ArcRegion : uint8
-		{
-			Full,
-			TopLeft,
-			TopRight,
-			BottomRight,
-			BottomLeft,
-		};
-
-		struct CircleArc
-		{
-			Circle circle;
-			ArcRegion region = ArcRegion::Full;
-		};
+		using detail::ArcRegion;
+		using detail::CircleArc;
 
 		using BoundaryPiece = std::variant<Line, CircleArc, Ellipse, SuperEllipse, Bezier2, Bezier3>;
 
@@ -2399,232 +2387,6 @@ namespace s3d
 			return false;
 		}
 
-		[[nodiscard]]
-		Line TriangleDegenerateExtent(const Triangle& triangle) noexcept
-		{
-			const double d01 = triangle.p0.distanceFromSq(triangle.p1);
-			const double d12 = triangle.p1.distanceFromSq(triangle.p2);
-			const double d20 = triangle.p2.distanceFromSq(triangle.p0);
-
-			if ((d12 <= d01) && (d20 <= d01))
-			{
-				return Line{ triangle.p0, triangle.p1 };
-			}
-
-			if (d20 <= d12)
-			{
-				return Line{ triangle.p1, triangle.p2 };
-			}
-
-			return Line{ triangle.p2, triangle.p0 };
-		}
-
-		void AppendLinePiece(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Line& line)
-		{
-			if (line.start != line.end)
-			{
-				pieces.emplace_back(line);
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Line& shape)
-		{
-			AppendLinePiece(pieces, shape);
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Bezier2& shape)
-		{
-			pieces.emplace_back(shape);
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Bezier3& shape)
-		{
-			pieces.emplace_back(shape);
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const RectF& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double left = shape.pos.x;
-			const double top = shape.pos.y;
-			const double right = (left + shape.size.x);
-			const double bottom = (top + shape.size.y);
-			const Vec2 tl{ left, top };
-			const Vec2 tr{ right, top };
-			const Vec2 br{ right, bottom };
-			const Vec2 bl{ left, bottom };
-			AppendLinePiece(pieces, Line{ tl, tr });
-			AppendLinePiece(pieces, Line{ tr, br });
-			AppendLinePiece(pieces, Line{ br, bl });
-			AppendLinePiece(pieces, Line{ bl, tl });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Rect& shape)
-		{
-			AppendBoundaryPieces(pieces, RectF{ shape });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Circle& shape)
-		{
-			if (detail::ClassifyGeometry2DSizedShape(shape) == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(CircleArc{ shape, ArcRegion::Full });
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Ellipse& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-			}
-			else if (kind == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(shape);
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const SuperEllipse& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-			}
-			else if (kind == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(shape);
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Triangle& shape)
-		{
-			if ((shape.p1 - shape.p0).cross(shape.p2 - shape.p0) == 0.0)
-			{
-				AppendLinePiece(pieces, TriangleDegenerateExtent(shape));
-				return;
-			}
-
-			AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-			AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-			AppendLinePiece(pieces, Line{ shape.p2, shape.p0 });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Quad& shape)
-		{
-			const double twiceArea = (shape.p0.cross(shape.p1)
-				+ shape.p1.cross(shape.p2)
-				+ shape.p2.cross(shape.p3)
-				+ shape.p3.cross(shape.p0));
-
-			if (twiceArea != 0.0)
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-				AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-				AppendLinePiece(pieces, Line{ shape.p2, shape.p3 });
-				AppendLinePiece(pieces, Line{ shape.p3, shape.p0 });
-				return;
-			}
-
-			if ((shape.p1 == shape.p2) && (shape.p3 == shape.p0))
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-				return;
-			}
-
-			if ((shape.p0 == shape.p1) && (shape.p2 == shape.p3))
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p2 });
-				return;
-			}
-
-			if (shape.p2 == shape.p3)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p2 });
-				return;
-			}
-
-			if (shape.p1 == shape.p2)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p3 });
-				return;
-			}
-
-			if (shape.p0 == shape.p1)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p2, shape.p3 });
-				return;
-			}
-
-			if (shape.p3 == shape.p0)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p2 });
-				return;
-			}
-
-			AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-			AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-			AppendLinePiece(pieces, Line{ shape.p2, shape.p3 });
-			AppendLinePiece(pieces, Line{ shape.p3, shape.p0 });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const RoundRect& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double r = detail::GetGeometry2DEffectiveRadius(shape);
-
-			if (r == 0.0)
-			{
-				AppendBoundaryPieces(pieces, shape.rect);
-				return;
-			}
-
-			const double left = shape.rect.pos.x;
-			const double top = shape.rect.pos.y;
-			const double right = (left + shape.rect.size.x);
-			const double bottom = (top + shape.rect.size.y);
-			AppendLinePiece(pieces, Line{ Vec2{ left + r, top }, Vec2{ right - r, top } });
-			AppendLinePiece(pieces, Line{ Vec2{ right, top + r }, Vec2{ right, bottom - r } });
-			AppendLinePiece(pieces, Line{ Vec2{ right - r, bottom }, Vec2{ left + r, bottom } });
-			AppendLinePiece(pieces, Line{ Vec2{ left, bottom - r }, Vec2{ left, top + r } });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, top + r }, r }, ArcRegion::TopLeft });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, top + r }, r }, ArcRegion::TopRight });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, bottom - r }, r }, ArcRegion::BottomRight });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft });
-		}
-
-		template <class Shape>
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>&, const Shape&)
-		{
-		}
-
 		template <class Predicate>
 		bool AnyRepresentativePoint(const Point& shape, Predicate&& predicate)
 		{
@@ -2791,7 +2553,11 @@ namespace s3d
 			else
 			{
 				data.boundaryPieces = detail::MakeBoundarySource<BoundaryPiece>(shape,
-					[&](auto& pieces) { AppendBoundaryPieces(pieces, shape); });
+					[&](auto& pieces)
+					{
+						auto Append = [&](const auto& primitive) { pieces.emplace_back(primitive); };
+						detail::VisitBoundaryPieces(Append, shape);
+					});
 			}
 
 			return data;

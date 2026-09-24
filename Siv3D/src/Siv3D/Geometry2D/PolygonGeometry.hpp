@@ -5,8 +5,6 @@
 // Licensed under the MIT License.
 //-----------------------------------------------
 # pragma once
-# include <variant>
-# include <boost/container/static_vector.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/LineString.hpp>
@@ -327,88 +325,5 @@ namespace s3d::detail
 			return true;
 		}
 		return false;
-	}
-
-	// RoundRect needs at most four segments and four arcs; variable-size shapes are borrowed.
-	template <class Piece>
-	using BoundaryPieceBuffer = boost::container::static_vector<Piece, 8>;
-
-	template <class Piece>
-	using BoundarySource = std::variant<BoundaryPieceBuffer<Piece>, std::span<const Vec2>, std::span<const Polygon>>;
-
-	template <class Piece, class Shape, class Append>
-	[[nodiscard]]
-	BoundarySource<Piece> MakeBoundarySource(const Shape& shape, Append&& append)
-	{
-		if constexpr (std::is_same_v<Shape, LineString>)
-		{
-			return std::span<const Vec2>{ shape };
-		}
-		else if constexpr (std::is_same_v<Shape, Polygon>)
-		{
-			return std::span<const Polygon>{ &shape, 1 };
-		}
-		else if constexpr (std::is_same_v<Shape, MultiPolygon>)
-		{
-			return std::span<const Polygon>{ shape.data(), shape.size() };
-		}
-		else
-		{
-			BoundaryPieceBuffer<Piece> pieces;
-			append(pieces);
-			return pieces;
-		}
-	}
-
-	template <bool IncludePointPolygons = false, class Piece, class Predicate>
-	[[nodiscard]]
-	bool AnyBoundaryPiece(const BoundarySource<Piece>& source, Predicate&& predicate)
-	{
-		auto TestEdge = [&](const Line& edge)
-		{
-			return (edge.start != edge.end) && predicate(Piece{ edge });
-		};
-		return std::visit([&](const auto& pieces)
-			{
-				using Source = std::decay_t<decltype(pieces)>;
-				if constexpr (std::is_same_v<Source, std::span<const Vec2>>)
-				{
-					return AnyPolylineSegment<false>(pieces, TestEdge);
-				}
-				else if constexpr (std::is_same_v<Source, std::span<const Polygon>>)
-				{
-					for (const auto& polygon : pieces)
-					{
-						if constexpr (IncludePointPolygons)
-						{
-							// A zero-scale polygon retains one point, regardless of its vertex count.
-							Vec2 point;
-							if (TryGetPolygonPoint(polygon, point))
-							{
-								if (predicate(Piece{ Line{ point, point } }))
-								{
-									return true;
-								}
-								continue;
-							}
-						}
-						if (AnyPolygonEdge(polygon, TestEdge))
-						{
-							return true;
-						}
-					}
-				}
-				else
-				{
-					for (const Piece& piece : pieces)
-					{
-						if (predicate(piece))
-						{
-							return true;
-						}
-					}
-				}
-				return false;
-			}, source);
 	}
 }

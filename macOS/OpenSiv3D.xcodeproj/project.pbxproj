@@ -917,6 +917,7 @@
 		D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D94C71C8E32144768219A411 /* BezierGeometry.hpp */; };
 		F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */; };
 		0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FD27361D562242F4A48719CB /* PolygonGeometry.hpp */; };
+		106F7DC3B40441CE8CD8BB9C /* BoundaryGeometry.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0AD900A8EA1C43CFBF25D254 /* BoundaryGeometry.hpp */; };
 		F95289C72B9FEA0D00222F45 /* GLFW.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F95289C42B9FEA0D00222F45 /* GLFW.hpp */; };
 		F9528A872BA018CF00222F45 /* WindowTitle.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9528A852BA018CE00222F45 /* WindowTitle.hpp */; };
 		F9528A882BA018CF00222F45 /* WindowTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9528A862BA018CF00222F45 /* WindowTitle.cpp */; };
@@ -4321,6 +4322,7 @@
 		D94C71C8E32144768219A411 /* BezierGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BezierGeometry.hpp; sourceTree = "<group>"; };
 		F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SuperEllipseGeometry.hpp; sourceTree = "<group>"; };
 		FD27361D562242F4A48719CB /* PolygonGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolygonGeometry.hpp; sourceTree = "<group>"; };
+		0AD900A8EA1C43CFBF25D254 /* BoundaryGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BoundaryGeometry.hpp; sourceTree = "<group>"; };
 		F95289C42B9FEA0D00222F45 /* GLFW.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GLFW.hpp; sourceTree = "<group>"; };
 		F9528A852BA018CE00222F45 /* WindowTitle.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WindowTitle.hpp; sourceTree = "<group>"; };
 		F9528A862BA018CF00222F45 /* WindowTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WindowTitle.cpp; sourceTree = "<group>"; };
@@ -9826,6 +9828,7 @@
 				D94C71C8E32144768219A411 /* BezierGeometry.hpp */,
 				F97CCFC8827646F1B9607E65 /* SuperEllipseGeometry.hpp */,
 				FD27361D562242F4A48719CB /* PolygonGeometry.hpp */,
+				0AD900A8EA1C43CFBF25D254 /* BoundaryGeometry.hpp */,
 				F93BD7A3300FB1B200B3542E /* SivGeometry2D_Intersects.cpp */,
 				F93BD7A4300FB1B200B3542E /* SivGeometry2D_IntersectsAt.cpp */,
 				F93BD7A5300FB1B200B3542E /* SivGeometry2D_IsClockwise.cpp */,
@@ -16056,6 +16059,7 @@
 				D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */,
 				F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */,
 				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
+				106F7DC3B40441CE8CD8BB9C /* BoundaryGeometry.hpp in Headers */,
 				F98605672BD203D4006A4C0F /* muParserTemplateMagic.h in Headers */,
 				F9070D152B9F175100383E4D /* WindowStyle.hpp in Headers */,
 				F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */,

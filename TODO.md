@@ -9,10 +9,6 @@
 
 ## `Siv3D/include/Siv3D/Geometry2D/`
 
-### 境界生成の共有化・直接走査
-
-- 1 回だけ境界を走査する `SignedDistance()` / `ClosestPointOnBoundary()` の直接処理を、重複する境界生成処理の共有化と合わせて検討する。距離・交点の二重走査では、内側の境界を毎回作り直さない設計を保つ。共有化の際も、SuperEllipse の `n = 1, 2` の分解方法や点に縮退した Polygon の扱いを一律に揃えない。
-
 ### 距離・Raycast の公開契約
 
 - `Distance()` / `ClosestPoints()` / `SignedDistance()` / `ClosestPointOnBoundary()` / `Raycast()` の共通説明を公開ヘッダに整理する。空・縮退、最近点が一意でない場合、境界上の始点、距離上限、近似の制約を実装・テストと照合し、交差・包含判定の共通契約との重複を避ける。

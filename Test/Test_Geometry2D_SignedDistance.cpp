@@ -356,6 +356,39 @@ TEST_CASE("Geometry2D.SignedDistance.RoundRect")
 		std::sqrt(8.0) - 2.0, 1.0e-9));
 }
 
+TEST_CASE("Geometry2D.SignedDistance.RoundRect.BoundaryNormals")
+{
+	const RectF rect{ 3, -7, 14, 10 };
+	for (const double radius : { 2.0, 5.0, 20.0 })
+	{
+		const RoundRect shape{ rect, radius };
+		const double r = Min(radius, 5.0);
+		const double diagonal = std::sqrt(0.5);
+		const std::array<std::pair<Vec2, Vec2>, 8> samples = {{
+			{ { 10, -7 }, { 0, -1 } },
+			{ { 17, -2 }, { 1, 0 } },
+			{ { 10, 3 }, { 0, 1 } },
+			{ { 3, -2 }, { -1, 0 } },
+			{ Vec2{ 3 + r, -7 + r } + Vec2{ -diagonal, -diagonal } * r, { -diagonal, -diagonal } },
+			{ Vec2{ 17 - r, -7 + r } + Vec2{ diagonal, -diagonal } * r, { diagonal, -diagonal } },
+			{ Vec2{ 17 - r, 3 - r } + Vec2{ diagonal, diagonal } * r, { diagonal, diagonal } },
+			{ Vec2{ 3 + r, 3 - r } + Vec2{ -diagonal, diagonal } * r, { -diagonal, diagonal } },
+		}};
+		for (const auto& [boundary, normal] : samples)
+		{
+			for (const double offset : { -0.5, 0.0, 0.5 })
+			{
+				CAPTURE(radius, boundary, offset);
+				const Vec2 query = (boundary + normal * offset);
+				const auto closest = Geometry2D::ClosestPointOnBoundary(shape, query);
+				REQUIRE(closest.has_value());
+				CHECK(closest->distanceFrom(boundary) < 1.0e-12);
+				CHECK(Near(Geometry2D::SignedDistance(shape, query), offset, 1.0e-12));
+			}
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.SignedDistance.Polygon_Hole")
 {
 	const Polygon polygon{

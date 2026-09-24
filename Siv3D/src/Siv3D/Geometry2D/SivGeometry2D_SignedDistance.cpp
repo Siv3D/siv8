@@ -10,7 +10,6 @@
 //
 //-----------------------------------------------
 
-# include <variant>
 # include <Siv3D/ListUtility.hpp>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Polygon.hpp>
@@ -18,7 +17,7 @@
 # include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/SignedDistance.hpp>
-# include "PolygonGeometry.hpp"
+# include "BoundaryGeometry.hpp"
 # include "EllipseGeometry.hpp"
 # include "SuperEllipseGeometry.hpp"
 
@@ -30,35 +29,13 @@ namespace s3d
 		inline constexpr double TwoPi = (2.0 * Pi);
 		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
 
-		enum class ArcRegion : uint8
-		{
-			Full,
-			TopLeft,
-			TopRight,
-			BottomRight,
-			BottomLeft,
-		};
-
-		struct CircleArc
-		{
-			Circle circle;
-			ArcRegion region = ArcRegion::Full;
-		};
-
-		using BoundaryPiece = std::variant<Line, CircleArc, Ellipse, SuperEllipse>;
+		using detail::ArcRegion;
+		using detail::CircleArc;
 
 		struct ClosestBoundaryCandidate
 		{
 			Vec2 point{ 0.0, 0.0 };
 			double distanceSq = std::numeric_limits<double>::infinity();
-		};
-
-		struct BoundaryData
-		{
-			bool empty = true;
-			bool hasPositiveArea = false;
-			Optional<Vec2> pointBoundary;
-			detail::BoundarySource<BoundaryPiece> pieces;
 		};
 
 		[[nodiscard]]
@@ -163,44 +140,49 @@ namespace s3d
 
 		[[nodiscard]]
 		ClosestBoundaryCandidate ClosestPointPiece(
-			const Vec2& point, const BoundaryPiece& piece)
+			const Vec2& point, const Line& line)
 		{
-			if (const auto* ellipse = std::get_if<Ellipse>(&piece))
-			{
-				ClosestBoundaryCandidate result;
-				UpdateCandidate(result, point, detail::ClosestPointOnEllipseBoundary(point, *ellipse));
-				return result;
-			}
+			return ClosestPointOnSegment(point, line.start, line.end);
+		}
 
-			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && ((shape->n == 1.0) || (shape->n == 2.0)))
-			{
-				ClosestBoundaryCandidate result;
-				const Vec2 closest = (shape->n == 1.0)
-					? detail::ClosestPointOnDiamondBoundary(point, *shape)
-					: detail::ClosestPointOnEllipseBoundary(point, Ellipse{ shape->center, shape->axes });
-				UpdateCandidate(result, point, closest);
-				return result;
-			}
+		[[nodiscard]]
+		ClosestBoundaryCandidate ClosestPointPiece(
+			const Vec2& point, const CircleArc& arc)
+		{
+			return ClosestPointCircleArc(point, arc);
+		}
 
-			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (not Geometry2D::Intersects(point, *shape)))
-			{
-				ClosestBoundaryCandidate result;
-				UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundaryFromOutside(point, *shape));
-				return result;
-			}
-
-			if (const Line* line = std::get_if<Line>(&piece))
-			{
-				return ClosestPointOnSegment(point, line->start, line->end);
-			}
-
-			if (const CircleArc* arc = std::get_if<CircleArc>(&piece))
-			{
-				return ClosestPointCircleArc(point, *arc);
-			}
-
+		[[nodiscard]]
+		ClosestBoundaryCandidate ClosestPointPiece(
+			const Vec2& point, const Ellipse& ellipse)
+		{
 			ClosestBoundaryCandidate result;
-			UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundaryFromInside(point, std::get<SuperEllipse>(piece)));
+			UpdateCandidate(result, point, detail::ClosestPointOnEllipseBoundary(point, ellipse));
+			return result;
+		}
+
+		[[nodiscard]]
+		ClosestBoundaryCandidate ClosestPointPiece(
+			const Vec2& point, const SuperEllipse& shape)
+		{
+			ClosestBoundaryCandidate result;
+
+			if ((shape.n == 1.0) || (shape.n == 2.0))
+			{
+				const Vec2 closest = (shape.n == 1.0)
+					? detail::ClosestPointOnDiamondBoundary(point, shape)
+					: detail::ClosestPointOnEllipseBoundary(point, Ellipse{ shape.center, shape.axes });
+				UpdateCandidate(result, point, closest);
+			}
+			else if (not Geometry2D::Intersects(point, shape))
+			{
+				UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundaryFromOutside(point, shape));
+			}
+			else
+			{
+				UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundaryFromInside(point, shape));
+			}
+
 			return result;
 		}
 
@@ -387,251 +369,21 @@ namespace s3d
 			return false;
 		}
 
-		[[nodiscard]]
-		Line TriangleDegenerateExtent(const Triangle& triangle) noexcept
-		{
-			const double d01 = triangle.p0.distanceFromSq(triangle.p1);
-			const double d12 = triangle.p1.distanceFromSq(triangle.p2);
-			const double d20 = triangle.p2.distanceFromSq(triangle.p0);
-
-			if ((d12 <= d01) && (d20 <= d01))
-			{
-				return Line{ triangle.p0, triangle.p1 };
-			}
-
-			if (d20 <= d12)
-			{
-				return Line{ triangle.p1, triangle.p2 };
-			}
-
-			return Line{ triangle.p2, triangle.p0 };
-		}
-
-		void AppendLinePiece(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Line& line)
-		{
-			if (line.start != line.end)
-			{
-				pieces.emplace_back(line);
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const RectF& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double left = shape.pos.x;
-			const double top = shape.pos.y;
-			const double right = (left + shape.size.x);
-			const double bottom = (top + shape.size.y);
-			const Vec2 tl{ left, top };
-			const Vec2 tr{ right, top };
-			const Vec2 br{ right, bottom };
-			const Vec2 bl{ left, bottom };
-			AppendLinePiece(pieces, Line{ tl, tr });
-			AppendLinePiece(pieces, Line{ tr, br });
-			AppendLinePiece(pieces, Line{ br, bl });
-			AppendLinePiece(pieces, Line{ bl, tl });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Rect& shape)
-		{
-			AppendBoundaryPieces(pieces, RectF{ shape });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Circle& shape)
-		{
-			if (detail::ClassifyGeometry2DSizedShape(shape) == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(CircleArc{ shape, ArcRegion::Full });
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Ellipse& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-			}
-			else if (kind == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(shape);
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const SuperEllipse& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-			}
-			else if (kind == detail::Geometry2DSizedShapeKind::Area)
-			{
-				pieces.emplace_back(shape);
-			}
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Triangle& shape)
-		{
-			if ((shape.p1 - shape.p0).cross(shape.p2 - shape.p0) == 0.0)
-			{
-				AppendLinePiece(pieces, TriangleDegenerateExtent(shape));
-				return;
-			}
-
-			AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-			AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-			AppendLinePiece(pieces, Line{ shape.p2, shape.p0 });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Quad& shape)
-		{
-			const double twiceArea = (shape.p0.cross(shape.p1)
-				+ shape.p1.cross(shape.p2)
-				+ shape.p2.cross(shape.p3)
-				+ shape.p3.cross(shape.p0));
-
-			if (twiceArea != 0.0)
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-				AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-				AppendLinePiece(pieces, Line{ shape.p2, shape.p3 });
-				AppendLinePiece(pieces, Line{ shape.p3, shape.p0 });
-				return;
-			}
-
-			if ((shape.p1 == shape.p2) && (shape.p3 == shape.p0))
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-				return;
-			}
-
-			if ((shape.p0 == shape.p1) && (shape.p2 == shape.p3))
-			{
-				AppendLinePiece(pieces, Line{ shape.p0, shape.p2 });
-				return;
-			}
-
-			if (shape.p2 == shape.p3)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p2 });
-				return;
-			}
-
-			if (shape.p1 == shape.p2)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p3 });
-				return;
-			}
-
-			if (shape.p0 == shape.p1)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p2, shape.p3 });
-				return;
-			}
-
-			if (shape.p3 == shape.p0)
-			{
-				AppendBoundaryPieces(pieces, Triangle{ shape.p0, shape.p1, shape.p2 });
-				return;
-			}
-
-			AppendLinePiece(pieces, Line{ shape.p0, shape.p1 });
-			AppendLinePiece(pieces, Line{ shape.p1, shape.p2 });
-			AppendLinePiece(pieces, Line{ shape.p2, shape.p3 });
-			AppendLinePiece(pieces, Line{ shape.p3, shape.p0 });
-		}
-
-		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const RoundRect& shape)
-		{
-			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
-
-			if (kind == detail::Geometry2DSizedShapeKind::Empty)
-			{
-				return;
-			}
-
-			if (detail::IsGeometry2DSegment(kind))
-			{
-				AppendLinePiece(pieces, detail::GetGeometry2DDegenerateSegment(shape, kind));
-				return;
-			}
-
-			const double r = detail::GetGeometry2DEffectiveRadius(shape);
-
-			if (r == 0.0)
-			{
-				AppendBoundaryPieces(pieces, shape.rect);
-				return;
-			}
-
-			const double left = shape.rect.pos.x;
-			const double top = shape.rect.pos.y;
-			const double right = (left + shape.rect.size.x);
-			const double bottom = (top + shape.rect.size.y);
-			AppendLinePiece(pieces, Line{ Vec2{ left + r, top }, Vec2{ right - r, top } });
-			AppendLinePiece(pieces, Line{ Vec2{ right, top + r }, Vec2{ right, bottom - r } });
-			AppendLinePiece(pieces, Line{ Vec2{ right - r, bottom }, Vec2{ left + r, bottom } });
-			AppendLinePiece(pieces, Line{ Vec2{ left, bottom - r }, Vec2{ left, top + r } });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, top + r }, r }, ArcRegion::TopLeft });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, top + r }, r }, ArcRegion::TopRight });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ right - r, bottom - r }, r }, ArcRegion::BottomRight });
-			pieces.emplace_back(CircleArc{ Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft });
-		}
-
 		template <class Shape>
 		[[nodiscard]]
-		BoundaryData MakeBoundaryData(const Shape& shape)
-		{
-			BoundaryData data;
-
-			if (IsEmptyGeometry(shape))
-			{
-				return data;
-			}
-
-			data.empty = false;
-			data.hasPositiveArea = HasPositiveArea(shape);
-			Vec2 point;
-
-			if (TryGetPointBoundary(shape, point))
-			{
-				data.pointBoundary = point;
-				return data;
-			}
-
-			data.pieces = detail::MakeBoundarySource<BoundaryPiece>(shape,
-				[&](auto& pieces) { AppendBoundaryPieces(pieces, shape); });
-			return data;
-		}
-
-		[[nodiscard]]
 		ClosestBoundaryCandidate ComputeClosestBoundaryPoint(
-			const BoundaryData& data, const Vec2& point)
+			const Shape& shape, const Vec2& point)
 		{
 			ClosestBoundaryCandidate best;
+			Vec2 pointBoundary;
 
-			if (data.pointBoundary)
+			if (TryGetPointBoundary(shape, pointBoundary))
 			{
-				UpdateCandidate(best, point, *data.pointBoundary);
+				UpdateCandidate(best, point, pointBoundary);
 				return best;
 			}
 
-			(void)detail::AnyBoundaryPiece<true>(data.pieces, [&](const BoundaryPiece& piece)
+			auto Visit = [&](const auto& piece)
 			{
 				const auto candidate = ClosestPointPiece(point, piece);
 
@@ -639,8 +391,8 @@ namespace s3d
 				{
 					best = candidate;
 				}
-				return false;
-			});
+			};
+			detail::VisitBoundaryPieces(Visit, shape);
 
 			return best;
 		}
@@ -664,14 +416,12 @@ namespace s3d
 		Optional<Vec2> ComputeClosestPointOnBoundary(
 			const Shape& shape, const Vec2& point)
 		{
-			const BoundaryData data = MakeBoundaryData(shape);
-
-			if (data.empty)
+			if (IsEmptyGeometry(shape))
 			{
 				return none;
 			}
 
-			const ClosestBoundaryCandidate candidate = ComputeClosestBoundaryPoint(data, point);
+			const ClosestBoundaryCandidate candidate = ComputeClosestBoundaryPoint(shape, point);
 			assert(std::isfinite(candidate.distanceSq));
 			return candidate.point;
 		}
@@ -680,14 +430,12 @@ namespace s3d
 		[[nodiscard]]
 		double ComputeSignedDistance(const Shape& shape, const Vec2& point)
 		{
-			const BoundaryData data = MakeBoundaryData(shape);
-
-			if (data.empty)
+			if (IsEmptyGeometry(shape))
 			{
 				return std::numeric_limits<double>::infinity();
 			}
 
-			const ClosestBoundaryCandidate candidate = ComputeClosestBoundaryPoint(data, point);
+			const ClosestBoundaryCandidate candidate = ComputeClosestBoundaryPoint(shape, point);
 			assert(std::isfinite(candidate.distanceSq));
 			const double distance = std::sqrt(Max(0.0, candidate.distanceSq));
 
@@ -696,7 +444,7 @@ namespace s3d
 				return 0.0;
 			}
 
-			if (not data.hasPositiveArea)
+			if (not HasPositiveArea(shape))
 			{
 				return distance;
 			}

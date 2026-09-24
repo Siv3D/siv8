@@ -1088,6 +1088,7 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BezierGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\SuperEllipseGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PolygonGeometry.hpp" />
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BoundaryGeometry.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\CPrint.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\IPrint.hpp" />
     <ClInclude Include="..\Siv3D\src\Siv3D\Print\PrintFont.hpp" />

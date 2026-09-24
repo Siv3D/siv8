@@ -4152,6 +4152,9 @@
     <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\PolygonGeometry.hpp">
       <Filter>src\Siv3D\Geometry2D</Filter>
     </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Geometry2D\BoundaryGeometry.hpp">
+      <Filter>src\Siv3D\Geometry2D</Filter>
+    </ClInclude>
     <ClInclude Include="..\Siv3D\src\ThirdParty\Earcut\earcut.hpp">
       <Filter>src\ThirdParty\Earcut</Filter>
     </ClInclude>
