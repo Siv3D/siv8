@@ -829,15 +829,7 @@ namespace s3d
 			}
 
 			const auto rings = detail::GetPolygonRings(polygon);
-			if (rings.outer.size() < 3)
-			{
-				return false;
-			}
-
-			// Any non-collinear corner establishes area; winding is not needed here.
-			if ((detail::PolygonCross((rings.outer.front() - rings.outer.back()),
-				(rings.outer[1] - rings.outer.front())) == 0.0)
-				&& (detail::PolygonRingOrientation(rings.outer, &polygonBounds) == 0))
+			if (not detail::PolygonRingHasArea(rings.outer, polygonBounds))
 			{
 				return false;
 			}

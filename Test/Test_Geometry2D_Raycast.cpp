@@ -243,3 +243,71 @@ TEST_CASE("Geometry2D.Raycast.EmptyAndRuntimeDegeneration")
 	CHECK(not Geometry2D::Raycast(ray, Polygon{}).has_value());
 	CHECK(not Geometry2D::Raycast(ray, MultiPolygon{}).has_value());
 }
+
+TEST_CASE("Geometry2D.Raycast.PolygonCollapse")
+{
+	const Polygon source{
+		Array<Vec2>{ { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } },
+		Array<Array<Vec2>>{ { { 3, 3 }, { 3, 7 }, { 7, 7 }, { 7, 3 } } }
+	};
+	for (const Vec2 scale : { Vec2{ 0, 0 }, Vec2{ 0, 1 }, Vec2{ 1, 0 } })
+	{
+		for (const double angle : { 0.0, 0.5 })
+		{
+			CAPTURE(scale, angle);
+			const Polygon collapsed = source.scaledFrom(Vec2{ 5, 5 }, scale).rotatedAt(Vec2{ 5, 5 }, angle);
+			REQUIRE(not collapsed.isEmpty());
+			for (const Ray2D ray : {
+				Ray2D{ Vec2{ -5, 5 }, Vec2{ 1, 0 } },
+				Ray2D{ Vec2{ 5, -5 }, Vec2{ 0, 1 } },
+				Ray2D{ Vec2{ 5, 5 }, Vec2{ 1, 0 } } })
+			{
+				CHECK(not Geometry2D::Raycast(ray, collapsed));
+				CHECK(not Geometry2D::Raycast(ray, MultiPolygon{ Polygon{}, collapsed }));
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.MultiPolygonCollapse")
+{
+	const Polygon source = RectF{ 0, 0, 10, 10 }.asPolygon();
+	const Polygon segment = source.scaledFromOrigin(Vec2{ 0, 1 });
+	const Polygon point = source.scaledFrom(Vec2{ 0, 5 }, 0.0);
+	const Polygon target = source.movedBy(20, 0);
+	const Ray2D ray{ Vec2{ -5, 5 }, Vec2{ 1, 0 } };
+
+	for (const auto& multi : {
+		MultiPolygon{ segment, point, Polygon{}, target },
+		MultiPolygon{ target, Polygon{}, point, segment } })
+	{
+		CheckHit(Geometry2D::Raycast(ray, multi), ray,
+			Vec2{ 20, 5 }, Vec2{ -1, 0 }, 25.0, false);
+		CHECK(not Geometry2D::Raycast(ray, multi, 24.0));
+	}
+
+	const Ray2D inside{ Vec2{ 5, 5 }, Vec2{ 1, 0 } };
+	const Polygon internalSegment = source.scaledFrom(inside.origin, Vec2{ 0, 1 });
+	const Polygon internalPoint = source.scaledFrom(inside.origin, 0.0);
+	for (const Polygon& collapsed : { internalSegment, internalPoint })
+	{
+		for (const auto& multi : { MultiPolygon{ collapsed, source }, MultiPolygon{ source, collapsed } })
+		{
+			CheckHit(Geometry2D::Raycast(inside, multi), inside,
+				Vec2{ 10, 5 }, Vec2{ 1, 0 }, 5.0, true);
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.PolygonAreaAfterScaling")
+{
+	const Polygon source{ Array<Vec2>{ { 0, 5 }, { 0, 0 }, { 10, 0 }, { 10, 10 }, { 0, 10 } } };
+	const Ray2D ray{ Vec2{ -5, 5 }, Vec2{ 1, 0 } };
+	for (const double scale : { 1.0, 1.0e-10 })
+	{
+		CAPTURE(scale);
+		const Polygon polygon = source.scaledFromOrigin(Vec2{ scale, 1 });
+		CheckHit(Geometry2D::Raycast(ray, polygon), ray,
+			Vec2{ 0, 5 }, Vec2{ -1, 0 }, 5.0, false);
+	}
+}

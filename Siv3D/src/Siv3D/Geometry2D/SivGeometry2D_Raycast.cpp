@@ -14,9 +14,11 @@
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/Geometry2D/Geometry2DCommon.hpp>
+# include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/IntersectsAt.hpp>
 # include <Siv3D/Geometry2D/SignedDistance.hpp>
 # include <Siv3D/Geometry2D/Raycast.hpp>
+# include "PolygonGeometry.hpp"
 
 namespace s3d
 {
@@ -332,9 +334,17 @@ namespace s3d
 				Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft, pieces.size() });
 		}
 
+		[[nodiscard]]
+		bool HasPositiveArea(const Polygon& shape) noexcept
+		{
+			const RectF& bounds = shape.boundingRect();
+			return (0.0 < bounds.w) && (0.0 < bounds.h)
+				&& detail::PolygonRingHasArea(shape.outer(), bounds);
+		}
+
 		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Polygon& shape)
 		{
-			if (shape.isEmpty())
+			if (not HasPositiveArea(shape))
 			{
 				return;
 			}
@@ -416,18 +426,20 @@ namespace s3d
 				== detail::Geometry2DSizedShapeKind::Area);
 		}
 
+		template <class Shape>
 		[[nodiscard]]
-		bool HasPositiveArea(const Polygon& shape) noexcept
+		bool IsRayOriginInside(const Shape& shape, const Vec2& origin)
 		{
-			return (not shape.isEmpty());
+			return (Geometry2D::SignedDistance(shape, origin) < 0.0);
 		}
 
 		[[nodiscard]]
-		bool HasPositiveArea(const MultiPolygon& shape) noexcept
+		bool IsRayOriginInside(const MultiPolygon& shape, const Vec2& origin)
 		{
 			for (const auto& polygon : shape)
 			{
-				if (not polygon.isEmpty())
+				if (Geometry2D::Intersects(origin, polygon.boundingRect())
+					&& HasPositiveArea(polygon) && IsRayOriginInside(polygon, origin))
 				{
 					return true;
 				}
@@ -771,9 +783,12 @@ namespace s3d
 				return none;
 			}
 
-			if (not HasPositiveArea(shape))
+			if constexpr (not (std::is_same_v<Shape, Polygon> || std::is_same_v<Shape, MultiPolygon>))
 			{
-				return none;
+				if (not HasPositiveArea(shape))
+				{
+					return none;
+				}
 			}
 
 			Array<BoundaryPiece> pieces;
@@ -797,7 +812,7 @@ namespace s3d
 				return none;
 			}
 
-			const bool startsInside = (Geometry2D::SignedDistance(shape, ray.origin) < 0.0);
+			const bool startsInside = IsRayOriginInside(shape, ray.origin);
 			const RayHitCandidate selected = SelectCandidate(accumulator, ray, startsInside);
 
 			return RaycastHit2D{

@@ -172,6 +172,15 @@ namespace s3d::detail
 		return (lhs - rhs);
 	}
 
+	[[nodiscard]]
+	inline bool PolygonRingHasArea(const std::span<const Vec2> ring, const RectF& bounds) noexcept
+	{
+		// Any non-collinear corner establishes area; winding is not needed here.
+		return (3 <= ring.size())
+			&& ((PolygonCross((ring.front() - ring.back()), (ring[1] - ring.front())) != 0.0)
+				|| (PolygonRingOrientation(ring, &bounds) != 0));
+	}
+
 	// Sweep along the segment. Crossings toggle the interior parity; collinear
 	// edges cover closed boundary intervals. Equal vertex events are grouped
 	// exactly, so small gaps and holes are never merged by a tolerance.
