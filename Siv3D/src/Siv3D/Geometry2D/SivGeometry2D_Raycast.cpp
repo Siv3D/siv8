@@ -9,7 +9,8 @@
 //
 //-----------------------------------------------
 
-# include <variant>
+# include <array>
+# include <span>
 # include <Siv3D/2DShapes.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/MultiPolygon.hpp>
@@ -63,12 +64,6 @@ namespace s3d
 			size_t order = 0;
 		};
 
-		using BoundaryPiece = std::variant<
-			LineBoundary,
-			CircleArcBoundary,
-			EllipseBoundary,
-			SuperEllipseBoundary>;
-
 		enum class RayHitCandidateKind : uint8
 		{
 			IsolatedPoint,
@@ -88,7 +83,11 @@ namespace s3d
 		{
 			double maxDistance = std::numeric_limits<double>::infinity();
 			double bestDistance = std::numeric_limits<double>::infinity();
-			Array<RayHitCandidate> candidates;
+			// Defer the origin classification until a hit has been found.
+			RayHitCandidate fromOutside;
+			RayHitCandidate fromInside;
+			bool hasHit = false;
+			Optional<bool> startsInside;
 		};
 
 		[[nodiscard]]
@@ -122,6 +121,25 @@ namespace s3d
 			return (CandidateMergeFactor * Max(1.0, Abs(distance)));
 		}
 
+		[[nodiscard]]
+		bool PreferCandidate(const RayHitCandidate& candidate, const RayHitCandidate& selected,
+			const Ray2D& ray, const bool startsInside) noexcept
+		{
+			// A shared boundary interval takes precedence over an adjacent vertex.
+			if (candidate.kind != selected.kind)
+			{
+				return (candidate.kind == RayHitCandidateKind::BoundaryOverlap);
+			}
+
+			const double selectedDot = ray.direction.dot(selected.normal);
+			const double candidateDot = ray.direction.dot(candidate.normal);
+			const bool betterFacing = startsInside
+				? (selectedDot < candidateDot)
+				: (candidateDot < selectedDot);
+			return betterFacing || ((Abs(candidateDot - selectedDot) <= RootTolerance)
+				&& (candidate.order < selected.order));
+		}
+
 		void AppendCandidate(HitAccumulator& accumulator,
 			const Ray2D& ray, double distance, const Vec2& normal, const size_t order,
 			const RayHitCandidateKind kind = RayHitCandidateKind::IsolatedPoint)
@@ -144,30 +162,36 @@ namespace s3d
 				distance = accumulator.maxDistance;
 			}
 
-			const Vec2 unitNormal = NormalizeOrZero(normal);
+			const bool replace = (not accumulator.hasHit)
+				|| (distance < (accumulator.bestDistance - MergeTolerance(accumulator.bestDistance)));
+			if ((not replace) && (MergeTolerance(accumulator.bestDistance) < Abs(distance - accumulator.bestDistance)))
+			{
+				return;
+			}
 
+			const Vec2 unitNormal = NormalizeOrZero(normal);
 			if (unitNormal == Vec2{ 0.0, 0.0 })
 			{
 				return;
 			}
 
-			if (accumulator.candidates.isEmpty())
+			const RayHitCandidate candidate{ ray.pointAt(distance), unitNormal, distance, order, kind };
+			if (replace)
 			{
 				accumulator.bestDistance = distance;
-			}
-			else if (distance < (accumulator.bestDistance - MergeTolerance(accumulator.bestDistance)))
-			{
-				accumulator.bestDistance = distance;
-				accumulator.candidates.clear();
-			}
-			else if (MergeTolerance(accumulator.bestDistance) < Abs(distance - accumulator.bestDistance))
-			{
+				accumulator.fromOutside = accumulator.fromInside = candidate;
+				accumulator.hasHit = true;
 				return;
 			}
 
-			accumulator.candidates.push_back(RayHitCandidate{
-				ray.pointAt(distance), unitNormal, distance, order, kind
-				});
+			if (PreferCandidate(candidate, accumulator.fromOutside, ray, false))
+			{
+				accumulator.fromOutside = candidate;
+			}
+			if (PreferCandidate(candidate, accumulator.fromInside, ray, true))
+			{
+				accumulator.fromInside = candidate;
+			}
 		}
 
 		[[nodiscard]]
@@ -195,7 +219,7 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		double SignedTwiceArea(const Array<Vec2>& ring) noexcept
+		double SignedTwiceArea(const std::span<const Vec2> ring) noexcept
 		{
 			double result = 0.0;
 
@@ -207,7 +231,8 @@ namespace s3d
 			return result;
 		}
 
-		void AppendLineBoundary(Array<BoundaryPiece>& pieces,
+		template <class Visitor>
+		void VisitLineBoundary(Visitor& visitor,
 			const Vec2& start, const Vec2& end, const Vec2& outwardNormal)
 		{
 			if (start == end)
@@ -215,13 +240,14 @@ namespace s3d
 				return;
 			}
 
-			pieces.emplace_back(LineBoundary{
-				Line{ start, end }, NormalizeOrZero(outwardNormal), pieces.size()
+			visitor(LineBoundary{
+				Line{ start, end }, outwardNormal
 				});
 		}
 
-		void AppendOrderedRing(Array<BoundaryPiece>& pieces,
-			const Array<Vec2>& ring, const bool materialIsOnLeft)
+		template <class Visitor>
+		void VisitOrderedRing(Visitor& visitor,
+			const std::span<const Vec2> ring, const bool materialIsOnLeft)
 		{
 			if (ring.size() < 2)
 			{
@@ -233,12 +259,13 @@ namespace s3d
 				const Vec2 start = ring[i];
 				const Vec2 end = ring[(i + 1) % ring.size()];
 				const Vec2 edge = (end - start);
-				AppendLineBoundary(pieces, start, end,
+				VisitLineBoundary(visitor, start, end,
 					materialIsOnLeft ? RightNormal(edge) : LeftNormal(edge));
 			}
 		}
 
-		void AppendFreeWindingRing(Array<BoundaryPiece>& pieces, const Array<Vec2>& ring)
+		template <class Visitor>
+		void VisitFreeWindingRing(Visitor& visitor, const std::span<const Vec2> ring)
 		{
 			if (ring.size() < 2)
 			{
@@ -246,71 +273,79 @@ namespace s3d
 			}
 
 			const bool materialIsOnLeft = (0.0 < SignedTwiceArea(ring));
-			AppendOrderedRing(pieces, ring, materialIsOnLeft);
+			VisitOrderedRing(visitor, ring, materialIsOnLeft);
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const RectF& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const RectF& shape)
 		{
 			const double left = shape.pos.x;
 			const double top = shape.pos.y;
 			const double right = (left + shape.size.x);
 			const double bottom = (top + shape.size.y);
 
-			AppendLineBoundary(pieces, Vec2{ left, top }, Vec2{ right, top }, Vec2{ 0.0, -1.0 });
-			AppendLineBoundary(pieces, Vec2{ right, top }, Vec2{ right, bottom }, Vec2{ 1.0, 0.0 });
-			AppendLineBoundary(pieces, Vec2{ right, bottom }, Vec2{ left, bottom }, Vec2{ 0.0, 1.0 });
-			AppendLineBoundary(pieces, Vec2{ left, bottom }, Vec2{ left, top }, Vec2{ -1.0, 0.0 });
+			VisitLineBoundary(visitor, Vec2{ left, top }, Vec2{ right, top }, Vec2{ 0.0, -1.0 });
+			VisitLineBoundary(visitor, Vec2{ right, top }, Vec2{ right, bottom }, Vec2{ 1.0, 0.0 });
+			VisitLineBoundary(visitor, Vec2{ right, bottom }, Vec2{ left, bottom }, Vec2{ 0.0, 1.0 });
+			VisitLineBoundary(visitor, Vec2{ left, bottom }, Vec2{ left, top }, Vec2{ -1.0, 0.0 });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Rect& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const Rect& shape)
 		{
-			AppendBoundaryPieces(pieces, RectF{ shape });
+			VisitBoundaryPieces(visitor, RectF{ shape });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Circle& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const Circle& shape)
 		{
-			pieces.emplace_back(CircleArcBoundary{ shape, ArcRegion::Full, pieces.size() });
+			visitor(CircleArcBoundary{ shape, ArcRegion::Full });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Ellipse& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const Ellipse& shape)
 		{
-			pieces.emplace_back(EllipseBoundary{ shape, pieces.size() });
+			visitor(EllipseBoundary{ shape });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const SuperEllipse& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const SuperEllipse& shape)
 		{
 			if (shape.n == 1.0)
 			{
-				const Array<Vec2> diamond{
+				const std::array<Vec2, 4> diamond{
 					shape.center + Vec2{ 0.0, -shape.axes.y },
 					shape.center + Vec2{ shape.axes.x, 0.0 },
 					shape.center + Vec2{ 0.0, shape.axes.y },
 					shape.center + Vec2{ -shape.axes.x, 0.0 },
 				};
-				AppendFreeWindingRing(pieces, diamond);
+				VisitFreeWindingRing(visitor, diamond);
 				return;
 			}
 
-			pieces.emplace_back(SuperEllipseBoundary{ shape, pieces.size() });
+			visitor(SuperEllipseBoundary{ shape });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Triangle& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const Triangle& shape)
 		{
-			AppendFreeWindingRing(pieces, Array<Vec2>{ shape.p0, shape.p1, shape.p2 });
+			VisitFreeWindingRing(visitor, std::array{ shape.p0, shape.p1, shape.p2 });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Quad& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const Quad& shape)
 		{
-			AppendFreeWindingRing(pieces, Array<Vec2>{ shape.p0, shape.p1, shape.p2, shape.p3 });
+			VisitFreeWindingRing(visitor, std::array{ shape.p0, shape.p1, shape.p2, shape.p3 });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const RoundRect& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const RoundRect& shape)
 		{
 			const double r = detail::GetGeometry2DEffectiveRadius(shape);
 
 			if (r == 0.0)
 			{
-				AppendBoundaryPieces(pieces, shape.rect);
+				VisitBoundaryPieces(visitor, shape.rect);
 				return;
 			}
 
@@ -319,19 +354,19 @@ namespace s3d
 			const double right = (left + shape.rect.size.x);
 			const double bottom = (top + shape.rect.size.y);
 
-			AppendLineBoundary(pieces, Vec2{ left + r, top }, Vec2{ right - r, top }, Vec2{ 0.0, -1.0 });
-			AppendLineBoundary(pieces, Vec2{ right, top + r }, Vec2{ right, bottom - r }, Vec2{ 1.0, 0.0 });
-			AppendLineBoundary(pieces, Vec2{ right - r, bottom }, Vec2{ left + r, bottom }, Vec2{ 0.0, 1.0 });
-			AppendLineBoundary(pieces, Vec2{ left, bottom - r }, Vec2{ left, top + r }, Vec2{ -1.0, 0.0 });
+			VisitLineBoundary(visitor, Vec2{ left + r, top }, Vec2{ right - r, top }, Vec2{ 0.0, -1.0 });
+			VisitLineBoundary(visitor, Vec2{ right, top + r }, Vec2{ right, bottom - r }, Vec2{ 1.0, 0.0 });
+			VisitLineBoundary(visitor, Vec2{ right - r, bottom }, Vec2{ left + r, bottom }, Vec2{ 0.0, 1.0 });
+			VisitLineBoundary(visitor, Vec2{ left, bottom - r }, Vec2{ left, top + r }, Vec2{ -1.0, 0.0 });
 
-			pieces.emplace_back(CircleArcBoundary{
-				Circle{ Vec2{ left + r, top + r }, r }, ArcRegion::TopLeft, pieces.size() });
-			pieces.emplace_back(CircleArcBoundary{
-				Circle{ Vec2{ right - r, top + r }, r }, ArcRegion::TopRight, pieces.size() });
-			pieces.emplace_back(CircleArcBoundary{
-				Circle{ Vec2{ right - r, bottom - r }, r }, ArcRegion::BottomRight, pieces.size() });
-			pieces.emplace_back(CircleArcBoundary{
-				Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft, pieces.size() });
+			visitor(CircleArcBoundary{
+				Circle{ Vec2{ left + r, top + r }, r }, ArcRegion::TopLeft });
+			visitor(CircleArcBoundary{
+				Circle{ Vec2{ right - r, top + r }, r }, ArcRegion::TopRight });
+			visitor(CircleArcBoundary{
+				Circle{ Vec2{ right - r, bottom - r }, r }, ArcRegion::BottomRight });
+			visitor(CircleArcBoundary{
+				Circle{ Vec2{ left + r, bottom - r }, r }, ArcRegion::BottomLeft });
 		}
 
 		[[nodiscard]]
@@ -342,7 +377,8 @@ namespace s3d
 				&& detail::PolygonRingHasArea(shape.outer(), bounds);
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Polygon& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const Polygon& shape)
 		{
 			if (not HasPositiveArea(shape))
 			{
@@ -352,19 +388,20 @@ namespace s3d
 			// Valid Siv3D Polygon contours are oriented with material on the left
 			// in the screen-space coordinate system. Therefore the right normal is
 			// material-outward for both the outer contour and hole contours.
-			AppendOrderedRing(pieces, shape.outer(), true);
+			VisitOrderedRing(visitor, shape.outer(), true);
 
 			for (const auto& inner : shape.inners())
 			{
-				AppendOrderedRing(pieces, inner, true);
+				VisitOrderedRing(visitor, inner, true);
 			}
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const MultiPolygon& shape)
+		template <class Visitor>
+		void VisitBoundaryPieces(Visitor& visitor, const MultiPolygon& shape)
 		{
 			for (const auto& polygon : shape)
 			{
-				AppendBoundaryPieces(pieces, polygon);
+				VisitBoundaryPieces(visitor, polygon);
 			}
 		}
 
@@ -430,6 +467,18 @@ namespace s3d
 		[[nodiscard]]
 		bool IsRayOriginInside(const Shape& shape, const Vec2& origin)
 		{
+			if constexpr (std::is_same_v<Shape, Polygon>)
+			{
+				if (not Geometry2D::Intersects(origin, shape.boundingRect()))
+				{
+					return false;
+				}
+			}
+			else if (not Geometry2D::Intersects(origin, shape))
+			{
+				return false;
+			}
+			// Retain SignedDistance's numerical boundary tolerance for interior points.
 			return (Geometry2D::SignedDistance(shape, origin) < 0.0);
 		}
 
@@ -439,7 +488,7 @@ namespace s3d
 			for (const auto& polygon : shape)
 			{
 				if (Geometry2D::Intersects(origin, polygon.boundingRect())
-					&& HasPositiveArea(polygon) && IsRayOriginInside(polygon, origin))
+					&& HasPositiveArea(polygon) && (Geometry2D::SignedDistance(polygon, origin) < 0.0))
 				{
 					return true;
 				}
@@ -448,7 +497,7 @@ namespace s3d
 			return false;
 		}
 
-		void ProcessRayLine(HitAccumulator& accumulator,
+		void ProcessBoundaryPiece(HitAccumulator& accumulator,
 			const Ray2D& ray, const LineBoundary& boundary)
 		{
 			const Vec2 segmentDirection = (boundary.line.end - boundary.line.start);
@@ -463,7 +512,7 @@ namespace s3d
 				if (InRange(segmentParameter, -RootTolerance, (1.0 + RootTolerance)))
 				{
 					AppendCandidate(accumulator, ray, distance,
-						boundary.outwardNormal, boundary.order);
+						NormalizeOrZero(boundary.outwardNormal), boundary.order);
 				}
 				return;
 			}
@@ -485,14 +534,14 @@ namespace s3d
 					(MergeTolerance(rawOverlapStart) < (rawOverlapEnd - rawOverlapStart));
 
 				AppendCandidate(accumulator, ray, rawOverlapStart,
-					boundary.outwardNormal, boundary.order,
+					NormalizeOrZero(boundary.outwardNormal), boundary.order,
 					hasPositiveLengthOverlap
 					? RayHitCandidateKind::BoundaryOverlap
 					: RayHitCandidateKind::IsolatedPoint);
 			}
 		}
 
-		void ProcessRayCircleArc(HitAccumulator& accumulator,
+		void ProcessBoundaryPiece(HitAccumulator& accumulator,
 			const Ray2D& ray, const CircleArcBoundary& boundary)
 		{
 			const Vec2 offset = (ray.origin - boundary.circle.center);
@@ -529,7 +578,7 @@ namespace s3d
 			}
 		}
 
-		void ProcessRayEllipse(HitAccumulator& accumulator,
+		void ProcessBoundaryPiece(HitAccumulator& accumulator,
 			const Ray2D& ray, const EllipseBoundary& boundary)
 		{
 			const Ellipse& ellipse = boundary.ellipse;
@@ -644,7 +693,7 @@ namespace s3d
 			return (position - shape.center);
 		}
 
-		void ProcessRaySuperEllipse(HitAccumulator& accumulator,
+		void ProcessBoundaryPiece(HitAccumulator& accumulator,
 			const Ray2D& ray, const SuperEllipseBoundary& boundary)
 		{
 			double tMin = 0.0;
@@ -665,7 +714,9 @@ namespace s3d
 
 			if (tMax == 0.0)
 			{
-				if (Geometry2D::SignedDistance(boundary.superEllipse, ray.origin) == 0.0)
+				const double originDistance = Geometry2D::SignedDistance(boundary.superEllipse, ray.origin);
+				accumulator.startsInside = (originDistance < 0.0);
+				if (originDistance == 0.0)
 				{
 					AppendCandidate(accumulator, ray, 0.0,
 						SuperEllipseNormal(boundary.superEllipse, ray.origin), boundary.order);
@@ -690,80 +741,13 @@ namespace s3d
 
 			// A zero-distance boundary hit may be suppressed by a numerical
 			// positive-dimensional classification. Preserve the closed-origin rule.
-			if (Geometry2D::SignedDistance(boundary.superEllipse, ray.origin) == 0.0)
+			const double originDistance = Geometry2D::SignedDistance(boundary.superEllipse, ray.origin);
+			accumulator.startsInside = (originDistance < 0.0);
+			if (originDistance == 0.0)
 			{
 				AppendCandidate(accumulator, ray, 0.0,
 					SuperEllipseNormal(boundary.superEllipse, ray.origin), boundary.order);
 			}
-		}
-
-		void ProcessBoundaryPiece(HitAccumulator& accumulator,
-			const Ray2D& ray, const BoundaryPiece& piece)
-		{
-			std::visit([&](const auto& boundary)
-			{
-				using T = std::decay_t<decltype(boundary)>;
-
-				if constexpr (std::is_same_v<T, LineBoundary>)
-				{
-					ProcessRayLine(accumulator, ray, boundary);
-				}
-				else if constexpr (std::is_same_v<T, CircleArcBoundary>)
-				{
-					ProcessRayCircleArc(accumulator, ray, boundary);
-				}
-				else if constexpr (std::is_same_v<T, EllipseBoundary>)
-				{
-					ProcessRayEllipse(accumulator, ray, boundary);
-				}
-				else
-				{
-					ProcessRaySuperEllipse(accumulator, ray, boundary);
-				}
-			}, piece);
-		}
-
-		[[nodiscard]]
-		RayHitCandidate SelectCandidate(const HitAccumulator& accumulator,
-			const Ray2D& ray, const bool startsInside) noexcept
-		{
-			RayHitCandidate selected = accumulator.candidates.front();
-			double selectedDot = ray.direction.dot(selected.normal);
-
-			for (size_t i = 1; i < accumulator.candidates.size(); ++i)
-			{
-				const RayHitCandidate& candidate = accumulator.candidates[i];
-
-				// When the ray shares a positive-length interval with a straight
-				// boundary, the hit belongs to that boundary feature even if the
-				// beginning of the interval is also an adjacent vertex. Preserve
-				// the overlapping boundary's normal instead of applying the generic
-				// non-smooth vertex facing rule.
-				if (candidate.kind != selected.kind)
-				{
-					if (candidate.kind == RayHitCandidateKind::BoundaryOverlap)
-					{
-						selected = candidate;
-						selectedDot = ray.direction.dot(selected.normal);
-					}
-
-					continue;
-				}
-
-				const double candidateDot = ray.direction.dot(candidate.normal);
-				const bool betterFacing = startsInside
-					? (selectedDot < candidateDot)
-					: (candidateDot < selectedDot);
-				const bool equalFacing = (Abs(candidateDot - selectedDot) <= RootTolerance);
-
-				if (betterFacing || (equalFacing && (candidate.order < selected.order)))
-				{
-					selected = candidate;
-					selectedDot = candidateDot;
-				}
-			}
-
-			return selected;
 		}
 
 		template <class Shape>
@@ -791,29 +775,24 @@ namespace s3d
 				}
 			}
 
-			Array<BoundaryPiece> pieces;
-			AppendBoundaryPieces(pieces, shape);
-
-			if (pieces.isEmpty())
-			{
-				return none;
-			}
-
 			HitAccumulator accumulator;
 			accumulator.maxDistance = maxDistance;
-
-			for (const BoundaryPiece& piece : pieces)
+			size_t order = 0;
+			auto Visit = [&](auto boundary)
 			{
-				ProcessBoundaryPiece(accumulator, ray, piece);
-			}
+				boundary.order = order++;
+				ProcessBoundaryPiece(accumulator, ray, boundary);
+			};
+			VisitBoundaryPieces(Visit, shape);
 
-			if (accumulator.candidates.isEmpty())
+			if (not accumulator.hasHit)
 			{
 				return none;
 			}
 
-			const bool startsInside = IsRayOriginInside(shape, ray.origin);
-			const RayHitCandidate selected = SelectCandidate(accumulator, ray, startsInside);
+			const bool startsInside = accumulator.startsInside.has_value()
+				? *accumulator.startsInside : IsRayOriginInside(shape, ray.origin);
+			const RayHitCandidate& selected = startsInside ? accumulator.fromInside : accumulator.fromOutside;
 
 			return RaycastHit2D{
 				selected.position,

@@ -337,3 +337,67 @@ TEST_CASE("Geometry2D.Raycast.PolygonReflection")
 		Check(MultiPolygon{ Polygon{}, source }.scaledFrom(Vec2{ 10, 10 }, scale));
 	}
 }
+
+TEST_CASE("Geometry2D.Raycast.CoincidentCandidates")
+{
+	const RectF rect{ 0, 0, 10, 10 };
+	for (const Vec2 offset : { Vec2{ 2, 1 }, Vec2{ 1, 2 }, Vec2{ 1, 1 } })
+	{
+		CAPTURE(offset);
+		const Vec2 entryNormal = (offset.y < offset.x) ? Vec2{ -1, 0 } : Vec2{ 0, -1 };
+		const Vec2 exitNormal = (offset.x < offset.y) ? Vec2{ 0, 1 } : Vec2{ 1, 0 };
+		const Ray2D outside{ -offset, offset };
+		CheckHit(Geometry2D::Raycast(outside, rect), outside,
+			Vec2{ 0, 0 }, entryNormal, offset.length(), false);
+		const Ray2D inside{ (Vec2{ 10, 10 } - offset), offset };
+		CheckHit(Geometry2D::Raycast(inside, rect), inside,
+			Vec2{ 10, 10 }, exitNormal, offset.length(), true);
+	}
+
+	// The overlapping edge may be visited before or after its adjacent edges.
+	for (const double y : { 0.0, 10.0 })
+	{
+		const Ray2D ray{ Vec2{ -5, y }, Vec2{ 1, 0 } };
+		CheckHit(Geometry2D::Raycast(ray, rect, 5.0), ray,
+			Vec2{ 0, y }, Vec2{ 0, (y == 0.0) ? -1.0 : 1.0 }, 5.0, false);
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.NearestMemberOrder")
+{
+	const Polygon near = RectF{ 0, 0, 10, 10 }.asPolygon();
+	const Polygon far = Triangle{ Vec2{ 20, 0 }, Vec2{ 30, 0 }, Vec2{ 30, 10 } }.asPolygon();
+	for (const auto& multi : { MultiPolygon{ near, far }, MultiPolygon{ far, near } })
+	{
+		const Ray2D outside{ Vec2{ -5, 5 }, Vec2{ 1, 0 } };
+		CheckHit(Geometry2D::Raycast(outside, multi), outside,
+			Vec2{ 0, 5 }, Vec2{ -1, 0 }, 5.0, false);
+		CHECK(not Geometry2D::Raycast(outside, multi, 4.0));
+		const Ray2D inside{ Vec2{ 5, 5 }, Vec2{ 1, 0 } };
+		CheckHit(Geometry2D::Raycast(inside, multi), inside,
+			Vec2{ 10, 5 }, Vec2{ 1, 0 }, 5.0, true);
+	}
+}
+
+TEST_CASE("Geometry2D.Raycast.StartsInsideNearBoundary")
+{
+	auto Check = [](const auto& shape)
+	{
+		for (const double inset : { -1.0e-7, -1.0e-11, 0.0, 1.0e-11, 1.0e-7 })
+		{
+			CAPTURE(inset);
+			const Ray2D ray{ Vec2{ (10000 + inset), 10005 }, Vec2{ 1, 0 } };
+			const auto hit = Geometry2D::Raycast(ray, shape);
+			REQUIRE(hit.has_value());
+			CHECK(hit->startsInside == (1.0e-10 < inset));
+		}
+	};
+	const RectF rect{ 10000, 10000, 10, 10 };
+	Check(rect);
+	Check(Circle{ Vec2{ 10005, 10005 }, 5 });
+	Check(Ellipse{ Vec2{ 10005, 10005 }, 5, 3 });
+	Check(SuperEllipse{ Vec2{ 10005, 10005 }, SizeF{ 5, 3 }, 4 });
+	Check(RoundRect{ rect, 2 });
+	Check(rect.asPolygon());
+	Check(MultiPolygon{ rect.asPolygon() });
+}
