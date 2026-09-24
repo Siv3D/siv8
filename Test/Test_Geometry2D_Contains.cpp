@@ -308,3 +308,127 @@ TEST_CASE("Geometry2D.Contains.SuperEllipse.polyline_empty_degenerate_and_convex
 		CHECK_FALSE(shape.contains(quad.movedBy(3, 0)));
 	}
 }
+
+namespace
+{
+	template <class Function>
+	void ForEachCircleRepresentation(const Circle& circle, const Function& function)
+	{
+		function(circle);
+		function(Ellipse{ circle.center, circle.r, circle.r });
+		function(SuperEllipse{ circle.center, circle.r, circle.r, 2 });
+		const RectF bounds{ (circle.center - Vec2{ circle.r, circle.r }), (2 * circle.r), (2 * circle.r) };
+		function(RoundRect{ bounds, circle.r });
+		function(RoundRect{ bounds, (2 * circle.r) }); // Clamped corner radius
+	}
+}
+
+TEST_CASE("Geometry2D.Contains.circular_representations")
+{
+	struct TestCase
+	{
+		Vec2 offset;
+		double radius;
+		bool expected;
+	};
+	const TestCase cases[] = {
+		{ { 0, 0 }, 100, true },
+		{ { 0, 0 }, 99.999, true },
+		{ { 0, 0 }, 100.001, false },
+		{ { 30, 40 }, 50, true },
+		{ { 30, 40 }, 49.999, true },
+		{ { 30, 40 }, 50.001, false },
+		{ { 100, 0 }, 1, false },
+		{ { 200, 0 }, 100, false },
+		{ { 300, 0 }, 1, false },
+		{ { 0, 0 }, 0, false },
+	};
+	for (const double scale : { 0.125, 1.0, 8.0 })
+	{
+		for (const Vec2 center : { Vec2{ 0, 0 }, Vec2{ 32, -64 } })
+		{
+			ForEachCircleRepresentation(Circle{ center, (100 * scale) }, [&](const auto& container)
+			{
+				for (const auto& test : cases)
+				{
+					CAPTURE(scale, center, test.offset, test.radius, container);
+					ForEachCircleRepresentation(Circle{ (center + test.offset * scale), (test.radius * scale) }, [&](const auto& target)
+					{
+						CAPTURE(target);
+						CHECK(Geometry2D::Contains(container, target) == test.expected);
+						CHECK(container.contains(target) == test.expected);
+					});
+				}
+			});
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.Contains.circular_representations.empty_and_segments")
+{
+	ForEachCircleRepresentation(Circle{ 0, 0, 0 }, [&](const auto& empty)
+	{
+		ForEachCircleRepresentation(Circle{ 0, 0, 0 }, [&](const auto& target)
+		{
+			CHECK_FALSE(empty.contains(target));
+		});
+		ForEachCircleRepresentation(Circle{ 0, 0, 10 }, [&](const auto& target)
+		{
+			CHECK_FALSE(empty.contains(target));
+		});
+	});
+	ForEachCircleRepresentation(Circle{ 0, 0, 10 }, [&](const auto& container)
+	{
+		for (const Vec2 direction : { Vec2{ 1, 0 }, Vec2{ 0, 1 } })
+		{
+			for (const double extent : { 10.0, 10.001 })
+			{
+				const Vec2 tip = (direction * extent);
+				const Ellipse ellipse{ Vec2{ 0, 0 }, tip };
+				const SuperEllipse superEllipse{ ellipse, 2 };
+				const RoundRect roundRect{ RectF{ -tip, (2 * tip.x), (2 * tip.y) }, 3 };
+				CAPTURE(container, direction, extent);
+				CHECK(container.contains(ellipse) == (extent == 10.0));
+				CHECK(container.contains(superEllipse) == (extent == 10.0));
+				CHECK(container.contains(roundRect) == (extent == 10.0));
+				CHECK_FALSE(ellipse.contains(container));
+				CHECK_FALSE(superEllipse.contains(container));
+				CHECK_FALSE(roundRect.contains(container));
+			}
+		}
+	});
+}
+
+TEST_CASE("Geometry2D.Contains.circular_representations.non_circular_shapes")
+{
+	const Circle circle{ 0, 0, 10 };
+	ForEachCircleRepresentation(circle, [&](const auto& equivalent)
+	{
+		auto Check = [&](const auto& other)
+		{
+			CAPTURE(equivalent, other);
+			CHECK(equivalent.contains(other) == circle.contains(other));
+			CHECK(other.contains(equivalent) == other.contains(circle));
+		};
+		Check(Ellipse{ 0, 0, 20, 5 });
+		Check(Ellipse{ 0, 0, 5, 20 });
+		Check(SuperEllipse{ 0, 0, 10, 10, 0.5 });
+		Check(SuperEllipse{ 0, 0, 10, 10, 4 });
+		Check(RoundRect{ -20, -5, 40, 10, 5 });
+		Check(RoundRect{ -10, -10, 20, 20, 0 });
+		Check(RectF{ -12, -12, 24, 24 }.asPolygon());
+		Check(Triangle{ { 0, -30 }, { 30, 30 }, { -30, 30 } });
+		// These shapes have equal extents but are not circular.
+		CHECK_FALSE(equivalent.contains(SuperEllipse{ 0, 0, 10, 10, 4 }));
+		CHECK_FALSE(equivalent.contains(RoundRect{ -10, -10, 20, 20, 0 }));
+		CHECK_FALSE(SuperEllipse{ 0, 0, 10, 10, 0.5 }.contains(equivalent));
+	});
+
+	// n == 2 also reduces non-circular superellipses to ellipses.
+	const Ellipse ellipse{ 4, -8, 10, 5 };
+	const SuperEllipse superEllipse{ ellipse, 2 };
+	CHECK(ellipse.contains(superEllipse));
+	CHECK(superEllipse.contains(ellipse));
+	CHECK_FALSE(ellipse.contains(SuperEllipse{ 4, -8, 10.001, 5, 2 }));
+	CHECK_FALSE(superEllipse.contains(Ellipse{ 4, -8, 10.001, 5 }));
+}

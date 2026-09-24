@@ -257,6 +257,13 @@ namespace s3d
 			return Geometry2D::Contains(container, Triangle{ center, previous, first });
 		}
 
+		[[nodiscard]]
+		bool IsCircularRoundRect(const RoundRect& roundRect) noexcept
+		{
+			return (roundRect.rect.w == roundRect.rect.h)
+				&& ((roundRect.rect.w * 0.5) <= roundRect.r);
+		}
+
 		template <class Container>
 		[[nodiscard]]
 		bool ContainsCircleByApproximation(const Container& container, const Circle& circle) noexcept
@@ -277,6 +284,11 @@ namespace s3d
 		[[nodiscard]]
 		bool ContainsEllipseByApproximation(const Container& container, const Ellipse& ellipse) noexcept
 		{
+			if (ellipse.axes.x == ellipse.axes.y)
+			{
+				return Geometry2D::Contains(container, Circle{ ellipse.center, ellipse.axes.x });
+			}
+
 			const auto kind = detail::ClassifyGeometry2DSizedShape(ellipse);
 
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
@@ -304,6 +316,11 @@ namespace s3d
 		bool ContainsSuperEllipseByApproximation(
 			const Container& container, const SuperEllipse& superEllipse) noexcept
 		{
+			if (superEllipse.n == 2.0)
+			{
+				return Geometry2D::Contains(container, Ellipse{ superEllipse.center, superEllipse.axes });
+			}
+
 			const auto kind = detail::ClassifyGeometry2DSizedShape(superEllipse);
 
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
@@ -371,6 +388,11 @@ namespace s3d
 		bool ContainsRoundRectByApproximation(
 			const Container& container, const RoundRect& roundRect) noexcept
 		{
+			if (IsCircularRoundRect(roundRect))
+			{
+				return Geometry2D::Contains(container, Circle{ roundRect.rect.center(), (roundRect.rect.w * 0.5) });
+			}
+
 			const auto kind = detail::ClassifyGeometry2DSizedShape(roundRect);
 
 			if (kind == detail::Geometry2DSizedShapeKind::Empty)
@@ -406,6 +428,52 @@ namespace s3d
 						+ halfCoreHeight * Abs(normal.y)
 						+ radius);
 				});
+		}
+
+		template <class Container, class Shape>
+		[[nodiscard]]
+		bool ContainsCurvedShape(const Container& container, const Shape& shape) noexcept
+		{
+			// Reduce the container before approximating the target. Each delegation
+			// removes a representation: SuperEllipse -> Ellipse -> Circle, RoundRect -> Circle.
+			if constexpr (std::is_same_v<Container, Ellipse>)
+			{
+				if (container.axes.x == container.axes.y)
+				{
+					return Geometry2D::Contains(Circle{ container.center, container.axes.x }, shape);
+				}
+			}
+			else if constexpr (std::is_same_v<Container, SuperEllipse>)
+			{
+				if (container.n == 2.0)
+				{
+					return Geometry2D::Contains(Ellipse{ container.center, container.axes }, shape);
+				}
+			}
+			else if constexpr (std::is_same_v<Container, RoundRect>)
+			{
+				if (IsCircularRoundRect(container))
+				{
+					return Geometry2D::Contains(Circle{ container.rect.center(), (container.rect.w * 0.5) }, shape);
+				}
+			}
+
+			if constexpr (std::is_same_v<Shape, Circle>)
+			{
+				return ContainsCircleByApproximation(container, shape);
+			}
+			else if constexpr (std::is_same_v<Shape, Ellipse>)
+			{
+				return ContainsEllipseByApproximation(container, shape);
+			}
+			else if constexpr (std::is_same_v<Shape, SuperEllipse>)
+			{
+				return ContainsSuperEllipseByApproximation(container, shape);
+			}
+			else
+			{
+				return ContainsRoundRectByApproximation(container, shape);
+			}
 		}
 
 		// Endpoints are already contained; coordinates are normalized by the axes.
@@ -828,17 +896,12 @@ namespace s3d
 
 		bool Contains(const Circle& a, const Ellipse& b) noexcept
 		{
-			if (b.axes.x == b.axes.y)
-			{
-				return Contains(a, Circle{ b.center, b.axes.x });
-			}
-
-			return ContainsEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Circle& a, const SuperEllipse& b) noexcept
 		{
-			return ContainsSuperEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Circle& a, const Triangle& b) noexcept
@@ -855,7 +918,7 @@ namespace s3d
 
 		bool Contains(const Circle& a, const RoundRect& b) noexcept
 		{
-			return ContainsRoundRectByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Circle& a, const Polygon& b) noexcept
@@ -906,12 +969,7 @@ namespace s3d
 
 		bool Contains(const Ellipse& a, const Circle& b) noexcept
 		{
-			if (a.axes.x == a.axes.y)
-			{
-				return Contains(Circle{ a.center, a.axes.x }, b);
-			}
-
-			return ContainsCircleByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const Ellipse& b) noexcept
@@ -922,12 +980,12 @@ namespace s3d
 			}
 
 			return SameEllipse(a, b)
-				|| ContainsEllipseByApproximation(a, b);
+				|| ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const SuperEllipse& b) noexcept
 		{
-			return ContainsSuperEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const Triangle& b) noexcept
@@ -944,7 +1002,7 @@ namespace s3d
 
 		bool Contains(const Ellipse& a, const RoundRect& b) noexcept
 		{
-			return ContainsRoundRectByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const Ellipse& a, const Polygon& b) noexcept
@@ -995,12 +1053,12 @@ namespace s3d
 
 		bool Contains(const SuperEllipse& a, const Circle& b) noexcept
 		{
-			return ContainsCircleByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const Ellipse& b) noexcept
 		{
-			return ContainsEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const SuperEllipse& b) noexcept
@@ -1011,7 +1069,7 @@ namespace s3d
 			}
 
 			return SameSuperEllipse(a, b)
-				|| ContainsSuperEllipseByApproximation(a, b);
+				|| ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const Triangle& b) noexcept
@@ -1026,7 +1084,7 @@ namespace s3d
 
 		bool Contains(const SuperEllipse& a, const RoundRect& b) noexcept
 		{
-			return ContainsRoundRectByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const SuperEllipse& a, const Polygon& b) noexcept
@@ -1243,17 +1301,17 @@ namespace s3d
 
 		bool Contains(const RoundRect& a, const Circle& b) noexcept
 		{
-			return ContainsCircleByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const Ellipse& b) noexcept
 		{
-			return ContainsEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const SuperEllipse& b) noexcept
 		{
-			return ContainsSuperEllipseByApproximation(a, b);
+			return ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const Triangle& b) noexcept
@@ -1276,7 +1334,7 @@ namespace s3d
 			}
 
 			return SameRoundRect(a, b)
-				|| ContainsRoundRectByApproximation(a, b);
+				|| ContainsCurvedShape(a, b);
 		}
 
 		bool Contains(const RoundRect& a, const Polygon& b) noexcept

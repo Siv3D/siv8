@@ -9,10 +9,6 @@
 
 ## `Siv3D/include/Siv3D/Geometry2D/`
 
-### 包含判定
-
-- 円と同じ領域を持つ Ellipse / SuperEllipse（n = 2）/ RoundRect の包含経路を整理する。同心の半径 100 と 99.999 でも、Circle 同士は true、Ellipse 同士などは外接 128 角形の近似により false。両オペランドの等価形状を既存の処理へ統合し、一般の曲線包含の保守的な近似契約とは分ける。
-
 ### 交点取得
 
 - 点に縮退した Polygon と、それを含む MultiPolygon の `IntersectsAt()` が孤立点を落とす。`RectF{0,0,2,2}.asPolygon().scaledFromOrigin(0)` と `Circle{0,0,5}` は交差するが空配列になる。同じ点を表す Triangle は 1 点を返す。境界走査から除かれる点成分を扱い、複数成分の重複排除と共有線分の除外を維持する。
