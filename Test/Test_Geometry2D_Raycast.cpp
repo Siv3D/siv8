@@ -129,6 +129,20 @@ TEST_CASE("Geometry2D.Raycast.CircleEllipseSuperEllipse")
 	}
 }
 
+TEST_CASE("Geometry2D.Raycast.SuperEllipse.InteriorCenter")
+{
+	for (const double n : { 0.25, 0.5, 0.9, 1.1, 1.5, 1.99, 2.01, 4.0, 64.0 })
+	{
+		const SuperEllipse shape{ Vec2{ 7, -11 }, SizeF{ 5, 3 }, n };
+		const auto hit = Geometry2D::Raycast(Ray2D{ shape.center, Vec2{ 1, 0 } }, shape);
+		CAPTURE(n);
+		REQUIRE(hit);
+		CHECK(hit->startsInside);
+		CHECK(Near(hit->distance, 5.0));
+		CHECK(hit->position.distanceFrom(shape.center + Vec2{ 5, 0 }) < 1.0e-9);
+	}
+}
+
 TEST_CASE("Geometry2D.Raycast.SuperEllipse.AxisBoundary")
 {
 	for (const double n : { 4.0, 8.0, 16.0, 64.0 })

@@ -28,9 +28,6 @@ namespace s3d
 	{
 		inline constexpr double Pi = 3.1415926535897932384626433832795029;
 		inline constexpr double TwoPi = (2.0 * Pi);
-		inline constexpr int32 SuperEllipseSegments = 192;
-		inline constexpr int32 ParameterRefinementIterations = 80;
-		inline constexpr double ParameterTolerance = 2.0e-15;
 		inline constexpr double DoubleEpsilon = 2.2204460492503131e-16;
 
 		enum class ArcRegion : uint8
@@ -54,7 +51,6 @@ namespace s3d
 		{
 			Vec2 point{ 0.0, 0.0 };
 			double distanceSq = std::numeric_limits<double>::infinity();
-			double parameter = 0.0;
 		};
 
 		struct BoundaryData
@@ -72,8 +68,7 @@ namespace s3d
 		}
 
 		void UpdateCandidate(ClosestBoundaryCandidate& best,
-			const Vec2& query, const Vec2& boundaryPoint,
-			const double parameter = 0.0) noexcept
+			const Vec2& query, const Vec2& boundaryPoint) noexcept
 		{
 			const double distanceSq = query.distanceFromSq(boundaryPoint);
 
@@ -81,19 +76,7 @@ namespace s3d
 			{
 				best.point = boundaryPoint;
 				best.distanceSq = distanceSq;
-				best.parameter = parameter;
 			}
-		}
-
-		[[nodiscard]]
-		double NormalizeParameter(double t) noexcept
-		{
-			t -= std::floor(t);
-			if (t < 0.0)
-			{
-				t += 1.0;
-			}
-			return t;
 		}
 
 		[[nodiscard]]
@@ -142,18 +125,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		Vec2 PointAt(const SuperEllipse& primitive, const double t) noexcept
-		{
-			const double angle = (TwoPi * NormalizeParameter(t));
-			const double c = std::cos(angle);
-			const double s = std::sin(angle);
-			const double exponent = (2.0 / primitive.n);
-			const double x = std::copysign(std::pow(Abs(c), exponent), c);
-			const double y = std::copysign(std::pow(Abs(s), exponent), s);
-			return (primitive.center + Vec2{ primitive.axes.x * x, primitive.axes.y * y });
-		}
-
-		[[nodiscard]]
 		ClosestBoundaryCandidate ClosestPointOnSegment(
 			const Vec2& point, const Vec2& start, const Vec2& end) noexcept
 		{
@@ -167,7 +138,7 @@ namespace s3d
 				t = ClampUnit(((point - start).dot(direction) / lengthSq));
 			}
 
-			UpdateCandidate(result, point, (start + direction * t), t);
+			UpdateCandidate(result, point, (start + direction * t));
 			return result;
 		}
 
@@ -185,52 +156,9 @@ namespace s3d
 				UpdateCandidate(result, point, closest);
 			}
 
-			UpdateCandidate(result, point, PointAt(arc, 0.0), 0.0);
-			UpdateCandidate(result, point, PointAt(arc, 1.0), 1.0);
+			UpdateCandidate(result, point, PointAt(arc, 0.0));
+			UpdateCandidate(result, point, PointAt(arc, 1.0));
 			return result;
-		}
-
-		[[nodiscard]]
-		ClosestBoundaryCandidate RefinePointPiece(
-			const Vec2& point, const SuperEllipse& piece,
-			double parameter, double step)
-		{
-			ClosestBoundaryCandidate best;
-			parameter = NormalizeParameter(parameter);
-			UpdateCandidate(best, point, PointAt(piece, parameter), parameter);
-
-			for (int32 iteration = 0; iteration < ParameterRefinementIterations; ++iteration)
-			{
-				bool improved = false;
-
-				for (const double direction : { -1.0, 1.0 })
-				{
-					const double candidateParameter = NormalizeParameter(parameter + direction * step);
-					const Vec2 candidatePoint = PointAt(piece, candidateParameter);
-					const double candidateDistanceSq = point.distanceFromSq(candidatePoint);
-
-					if (candidateDistanceSq < best.distanceSq)
-					{
-						best.point = candidatePoint;
-						best.distanceSq = candidateDistanceSq;
-						best.parameter = candidateParameter;
-						parameter = candidateParameter;
-						improved = true;
-					}
-				}
-
-				if (not improved)
-				{
-					step *= 0.5;
-
-					if (step <= ParameterTolerance)
-					{
-						break;
-					}
-				}
-			}
-
-			return best;
 		}
 
 		[[nodiscard]]
@@ -261,13 +189,6 @@ namespace s3d
 				return result;
 			}
 
-			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (2.0 < shape->n))
-			{
-				ClosestBoundaryCandidate result;
-				UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundary(point, *shape));
-				return result;
-			}
-
 			if (const Line* line = std::get_if<Line>(&piece))
 			{
 				return ClosestPointOnSegment(point, line->start, line->end);
@@ -278,27 +199,9 @@ namespace s3d
 				return ClosestPointCircleArc(point, *arc);
 			}
 
-			const auto& curve = std::get<SuperEllipse>(piece);
-			constexpr int32 segments = SuperEllipseSegments;
-			ClosestBoundaryCandidate seed;
-			Vec2 previous = PointAt(curve, 0.0);
-
-			for (int32 i = 0; i < segments; ++i)
-			{
-				const double t1 = (static_cast<double>(i + 1) / segments);
-				const Vec2 current = PointAt(curve, t1);
-				const auto local = ClosestPointOnSegment(point, previous, current);
-
-				if (local.distanceSq < seed.distanceSq)
-				{
-					seed = local;
-					seed.parameter = ((static_cast<double>(i) + local.parameter) / segments);
-				}
-
-				previous = current;
-			}
-
-			return RefinePointPiece(point, curve, seed.parameter, (2.0 / segments));
+			ClosestBoundaryCandidate result;
+			UpdateCandidate(result, point, detail::ClosestPointOnSuperEllipseBoundaryFromInside(point, std::get<SuperEllipse>(piece)));
+			return result;
 		}
 
 		[[nodiscard]]

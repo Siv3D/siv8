@@ -267,6 +267,66 @@ TEST_CASE("Geometry2D.SignedDistance.SuperEllipse.Center")
 	}
 }
 
+TEST_CASE("Geometry2D.SignedDistance.SuperEllipse.InteriorBelowTwo")
+{
+	const Vec2 center{ 7, -11 };
+	for (const double n : { 0.25, 0.5, 0.9, 1.1, 1.5, 1.99 })
+	{
+		const SuperEllipse symmetric{ center, SizeF{ 5, 5 }, n };
+		const double centerDistance = (5.0 * std::sqrt(2.0) * std::pow(0.5, (1.0 / n)));
+		CHECK(Near(Geometry2D::SignedDistance(symmetric, center), -centerDistance, 1.0e-12));
+		for (const Vec2 axes : { Vec2{ 5, 3 }, Vec2{ 80, 5 }, Vec2{ 3, 200 } })
+		{
+			const SuperEllipse shape{ center, axes, n };
+			for (const double t : { 0.2, 0.5, 0.8 })
+			{
+				const Vec2 normalized{ std::pow(t, (1.0 / n)), std::pow((1.0 - t), (1.0 / n)) };
+				for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+				{
+					CAPTURE(n, axes, t, sign);
+					const Vec2 boundary = (center + sign * axes * normalized);
+					const Vec2 normal = (sign * Vec2{ (std::pow(normalized.x, (n - 1.0)) / axes.x),
+						(std::pow(normalized.y, (n - 1.0)) / axes.y) }).normalized();
+					const double gap = (1.0e-6 * Min(axes.x, axes.y));
+					const Vec2 query = (boundary - normal * gap);
+					const auto closest = Geometry2D::ClosestPointOnBoundary(shape, query);
+					REQUIRE(closest);
+					CHECK(closest->distanceFrom(boundary) <= (1.0e-8 * Max(axes.x, axes.y)));
+					CHECK(Near(closest->distanceFrom(query), gap, (1.0e-12 * Max(axes.x, axes.y))));
+					CHECK(Near(Geometry2D::SignedDistance(shape, query), -gap, (1.0e-12 * Max(axes.x, axes.y))));
+					CHECK(Geometry2D::SignedDistance(shape, boundary) == 0.0);
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.SignedDistance.SuperEllipse.ThinInteriorAxis")
+{
+	// The axis tip and an off-axis minimum lie in the same sampling interval.
+	for (const double n : { 2.001, 2.01, 2.1 })
+	{
+		for (const bool transpose : { false, true })
+		{
+			const Vec2 axes{ 0.01, 100 };
+			const double x = 0.015;
+			const double y = std::pow((1.0 - std::pow(x, n)), (1.0 / n));
+			const Vec2 boundary = (axes * Vec2{ x, y });
+			const Vec2 normal = Vec2{ (std::pow(x, (n - 1.0)) / axes.x),
+				(std::pow(y, (n - 1.0)) / axes.y) }.normalized();
+			const double gap = (boundary.x / normal.x);
+			const Vec2 query{ 0, (boundary.y - gap * normal.y) };
+			const auto Swap = [&](const Vec2& v) { return (transpose ? Vec2{ v.y, v.x } : v); };
+			const SuperEllipse shape{ Vec2{ 0, 0 }, Swap(axes), n };
+			const auto closest = Geometry2D::ClosestPointOnBoundary(shape, Swap(query));
+			CAPTURE(n, transpose);
+			REQUIRE(closest);
+			CHECK(Near(closest->distanceFrom(Swap(query)), gap, 1.0e-10));
+			CHECK(Near(Geometry2D::SignedDistance(shape, Swap(query)), -gap, 1.0e-10));
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.SignedDistance.Triangle_Quad")
 {
 	const Triangle triangle{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 0, 10 } };

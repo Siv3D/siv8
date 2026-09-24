@@ -231,11 +231,48 @@ namespace s3d::detail
 	[[nodiscard]]
 	Vec2 ClosestPointOnSuperEllipseBoundaryFromOutside(const Vec2& point, const SuperEllipse& shape) noexcept;
 
-	// Positive axes and n > 2. Reflection reduces the boundary to one quadrant.
-	// On each half, use the smaller normalized coordinate directly: taking a
-	// fractional power of sin/cos near their zeros loses spatial precision.
+	// Safeguarded Newton iteration for a negative-to-positive stationary-point
+	// bracket. Sample returns (f, f') and retains evaluated boundary witnesses.
+	template <class Sample>
+	void RefineSuperEllipseBoundaryMinimum(double lower, double upper, Sample&& sample) noexcept
+	{
+		double t = ((lower + upper) * 0.5);
+		for (int32 iteration = 0; iteration < 64; ++iteration)
+		{
+			const auto [f, derivative] = sample(t);
+			if (f == 0.0)
+			{
+				break;
+			}
+			if (f < 0.0)
+			{
+				lower = t;
+			}
+			else
+			{
+				upper = t;
+			}
+			double next = (t - f / derivative);
+			if (next == t)
+			{
+				break;
+			}
+			if (not ((lower < next) && (next < upper)))
+			{
+				next = ((lower + upper) * 0.5);
+			}
+			if ((next == lower) || (next == upper))
+			{
+				break;
+			}
+			t = next;
+		}
+	}
+
+	// Positive axes, n != 1, 2, and an interior/boundary query. Reflection
+	// reduces the boundary to the query's quadrant.
 	[[nodiscard]]
-	inline Vec2 ClosestPointOnSuperEllipseBoundary(const Vec2& point, const SuperEllipse& shape) noexcept
+	inline Vec2 ClosestPointOnSuperEllipseBoundaryFromInside(const Vec2& point, const SuperEllipse& shape) noexcept
 	{
 		const Vec2 delta = (point - shape.center);
 		const Vec2 query{ Abs(delta.x), Abs(delta.y) };
@@ -262,16 +299,72 @@ namespace s3d::detail
 		}
 
 		const double inverseN = (1.0 / shape.n);
+		if (shape.n < 2.0)
+		{
+			// Write the arc as (a*t^p, b*(1-t)^p), p = 1/n. A nearest point
+			// has both coordinates >= the query, which bounds t. Squared distance
+			// is convex on this interval: for p >= 1 both coordinate gaps are
+			// nonnegative; for 1/2 < p < 1 expand each squared gap into powers.
+			double lower = std::pow((query.x / shape.a), shape.n);
+			double upper = (1.0 - std::pow((query.y / shape.b), shape.n));
+			auto PointAt = [&](const double t) noexcept
+			{
+				return Vec2{ (shape.a * std::pow(t, inverseN)),
+					(shape.b * std::pow((1.0 - t), inverseN)) };
+			};
+			Update(PointAt(lower));
+			Update(PointAt(upper));
+			if (not (lower < upper) || (bestDistanceSq == 0.0))
+			{
+				return Result();
+			}
+			RefineSuperEllipseBoundaryMinimum(lower, upper, [&](const double t) noexcept
+			{
+				const Vec2 candidate = PointAt(t);
+				Update(candidate);
+				const Vec2 gap = (candidate - query);
+				const Vec2 slope{ (candidate.x / t), (candidate.y / (1.0 - t)) };
+				const double f = (gap.x * slope.x - gap.y * slope.y);
+				const Vec2 curvatureFactor = ((2.0 * inverseN - 1.0) * candidate + (1.0 - inverseN) * query);
+				const double derivative = (curvatureFactor.x * slope.x / t + curvatureFactor.y * slope.y / (1.0 - t));
+				return std::pair{ f, derivative };
+			});
+			return Result();
+		}
+
+		// For n > 2 the center's nearest boundary point is a shorter-axis tip.
+		if (query == Vec2{ 0.0, 0.0 })
+		{
+			return Result();
+		}
+		// On each half, use the smaller normalized coordinate directly: taking a
+		// fractional power of sin/cos near their zeros loses spatial precision.
 		const double split = std::pow(0.5, inverseN);
 		constexpr int32 Segments = 24;
 		for (const bool transpose : { false, true })
 		{
 			const Vec2 axes = (transpose ? Vec2{ shape.b, shape.a } : shape.axes);
-			auto PointAt = [&](const double t) noexcept
+			const Vec2 q = (transpose ? Vec2{ query.y, query.x } : query);
+			// This half arc is entirely above y = b*split. Skip it when even
+			// that lower bound cannot improve the best boundary witness.
+			const double gap = Max(0.0, (axes.y * split - q.y));
+			if (bestDistanceSq <= (gap * gap))
 			{
-				const Vec2 p{ (axes.x * split * t), (axes.y * std::pow((1.0 - 0.5 * std::pow(t, shape.n)), inverseN)) };
-				return (transpose ? Vec2{ p.y, p.x } : p);
+				continue;
+			}
+			const double width = (axes.x * split);
+			auto Sample = [&](const double t) noexcept
+			{
+				const double power = (0.5 * std::pow(t, shape.n));
+				const double remainder = (1.0 - power);
+				const Vec2 p{ (width * t), (axes.y * std::pow(remainder, inverseN)) };
+				const double slope = ((t == 0.0) ? 0.0 : (-p.y * power / (t * remainder)));
+				const double curvature = ((t == 0.0) ? 0.0 : (slope * (shape.n - 1.0) / (t * remainder)));
+				const double f = ((p.x - q.x) * width + (p.y - q.y) * slope);
+				const double derivative = (width * width + slope * slope + (p.y - q.y) * curvature);
+				return std::pair{ (transpose ? Vec2{ p.y, p.x } : p), Vec2{ f, derivative } };
 			};
+			auto PointAt = [&](const double t) noexcept { return Sample(t).first; };
 			// This also retains a query lying on a numerically flat part of the boundary.
 			Update(PointAt(Clamp(((transpose ? query.y : query.x) / (axes.x * split)), 0.0, 1.0)));
 			if (bestDistanceSq == 0.0)
@@ -297,6 +390,20 @@ namespace s3d::detail
 				}
 				double lo = (static_cast<double>(Max(0, (i - 1))) / Segments);
 				double hi = (static_cast<double>(Min(Segments, (i + 1))) / Segments);
+				const double lowerSlope = Sample(lo).second.x;
+				const double upperSlope = Sample(hi).second.x;
+				if ((lowerSlope < 0.0) && (0.0 < upperSlope))
+				{
+					RefineSuperEllipseBoundaryMinimum(lo, hi, [&](const double t) noexcept
+					{
+						const auto [candidate, derivatives] = Sample(t);
+						Update(candidate);
+						return std::pair{ derivatives.x, derivatives.y };
+					});
+					continue;
+				}
+				// A tip can share its sampling interval with another minimum on a
+				// thin shape. Keep the value-based search when slopes do not bracket it.
 				constexpr double Fraction = 0.3819660112501051518;
 				double left = (lo + Fraction * (hi - lo)), right = (hi - Fraction * (hi - lo));
 				double leftValue = Update(PointAt(left)), rightValue = Update(PointAt(right));

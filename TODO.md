@@ -9,9 +9,13 @@
 
 ## `Siv3D/include/Siv3D/Geometry2D/`
 
-### 境界への最短距離
+### SuperEllipse の Raycast
 
-- 一般の SuperEllipse（`n != 1 / 2`）の内部点に対する `SignedDistance()` / `ClosestPointOnBoundary()` は分割・反復探索を使う。凹形状・凸形状をまとめて計測し、精度と上限処理量を維持しながら探索回数を減らせるか調査する。内部からの Raycast も同じ処理を使う。
+- `Raycast()` は `IntersectsAt(Line, SuperEllipse)` から交点配列を取得する。最初のヒットを求める用途での配列確保・全交点列挙の負荷を計測し、交点計算を重複させずに候補を逐次受け取れるか検討する。凹形状の複数交点、接触、境界上の始点を含めて比較する。
+
+### 距離・Raycast の公開契約
+
+- `Distance()` / `ClosestPoints()` / `SignedDistance()` / `ClosestPointOnBoundary()` / `Raycast()` の共通説明を公開ヘッダに整理する。空・縮退、最近点が一意でない場合、境界上の始点、距離上限、近似の制約を実装・テストと照合し、交差・包含判定の共通契約との重複を避ける。
 
 ## `Siv3D/include/Siv3D/JSON.hpp`
 
