@@ -396,6 +396,8 @@ TEST_CASE("Geometry2D.Raycast.StartsInsideNearBoundary")
 	Check(rect);
 	Check(Circle{ Vec2{ 10005, 10005 }, 5 });
 	Check(Ellipse{ Vec2{ 10005, 10005 }, 5, 3 });
+	Check(SuperEllipse{ Vec2{ 10005, 10005 }, SizeF{ 5, 3 }, 1 });
+	Check(SuperEllipse{ Vec2{ 10005, 10005 }, SizeF{ 5, 3 }, 2 });
 	Check(SuperEllipse{ Vec2{ 10005, 10005 }, SizeF{ 5, 3 }, 4 });
 	Check(RoundRect{ rect, 2 });
 	Check(rect.asPolygon());

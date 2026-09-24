@@ -462,24 +462,20 @@ namespace s3d
 			return best;
 		}
 
-		// A positive-area ellipse and a disjoint ellipse or point. Reflect into
-		// one quadrant and solve for the normal joining their closest points.
-		template <class ShapeB>
 		[[nodiscard]]
-		ClosestPairCandidate ClosestDisjointEllipsePair(const Ellipse& a, const ShapeB& b) noexcept
+		ClosestPairCandidate ClosestDisjointEllipsePair(const Ellipse& ellipse, const Vec2& point) noexcept
 		{
-			constexpr bool IsPoint = std::is_same_v<ShapeB, Vec2>;
-			const auto [centerB, initialAxesB] = [&]() noexcept
-			{
-				if constexpr (IsPoint)
-				{
-					return std::pair{ b, Vec2{ 0, 0 } };
-				}
-				else
-				{
-					return std::pair{ b.center, b.axes };
-				}
-			}();
+			ClosestPairCandidate result;
+			UpdateCandidate(result, detail::ClosestPointOnEllipseBoundary(point, ellipse), point);
+			return result;
+		}
+
+		// Disjoint positive-area ellipses. Reflect into one quadrant and solve
+		// for the normal joining their closest points.
+		[[nodiscard]]
+		ClosestPairCandidate ClosestDisjointEllipsePair(const Ellipse& a, const Ellipse& b) noexcept
+		{
+			const Vec2 centerB = b.center, initialAxesB = b.axes;
 			Vec2 delta = (centerB - a.center);
 			const Vec2 sign{ std::copysign(1.0, delta.x), std::copysign(1.0, delta.y) };
 			delta = { Abs(delta.x), Abs(delta.y) };
@@ -497,19 +493,8 @@ namespace s3d
 				const double k = (axes.x * (axes.y / h));
 				return std::pair{ Vec2{ (axes.x / h * axes.x), (axes.y * t / h * axes.y) }, (k * k / h) };
 			};
-			const auto SupportB = [&](const Vec2& axes, const double t) noexcept
-			{
-				if constexpr (IsPoint)
-				{
-					return std::pair{ Vec2{ 0, 0 }, 0.0 };
-				}
-				else
-				{
-					return Support(axes, t);
-				}
-			};
 			Vec2 axesA = a.axes, axesB = initialAxesB;
-			const Vec2 diagonalGap = (delta - (Support(axesA, 1.0).first + SupportB(axesB, 1.0).first));
+			const Vec2 diagonalGap = (delta - (Support(axesA, 1.0).first + Support(axesB, 1.0).first));
 			const bool transpose = (diagonalGap.x < diagonalGap.y);
 			if (transpose)
 			{
@@ -529,7 +514,7 @@ namespace s3d
 			for (int32 iteration = 0; iteration < 64; ++iteration)
 			{
 				const auto [supportA, derivativeA] = Support(axesA, t);
-				const auto [supportB, derivativeB] = SupportB(axesB, t);
+				const auto [supportB, derivativeB] = Support(axesB, t);
 				pointA = supportA;
 				pointB = supportB;
 				const Vec2 gap = (delta - (pointA + pointB));
@@ -919,9 +904,9 @@ namespace s3d
 			}
 			if (shape.n == 1.0)
 			{
-				return ClosestPointOnSegment(point,
-					(shape.center + Vec2{ std::copysign(shape.a, (point.x - shape.x)), 0.0 }),
-					(shape.center + Vec2{ 0.0, std::copysign(shape.b, (point.y - shape.y)) }));
+				ClosestPairCandidate result;
+				UpdateCandidate(result, point, detail::ClosestPointOnDiamondBoundary(point, shape));
+				return result;
 			}
 			auto result = ClosestDisjointConvexSuperEllipsePair(shape, point);
 			std::swap(result.pointA, result.pointB);

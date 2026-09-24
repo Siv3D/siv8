@@ -213,6 +213,20 @@ namespace s3d::detail
 		return result;
 	}
 
+	// Positive axes and n == 1. Reflection selects a nearest edge for interior
+	// queries as well; axis queries may have more than one closest boundary point.
+	[[nodiscard]]
+	inline Vec2 ClosestPointOnDiamondBoundary(const Vec2& point, const SuperEllipse& shape) noexcept
+	{
+		const Vec2 delta = (point - shape.center);
+		const Vec2 query{ Abs(delta.x), Abs(delta.y) };
+		const Vec2 start{ shape.a, 0.0 };
+		const Vec2 edge{ -shape.a, shape.b };
+		const double t = Clamp(((query - start).dot(edge) / edge.lengthSq()), 0.0, 1.0);
+		const Vec2 closest = (start + edge * t);
+		return (shape.center + Vec2{ std::copysign(closest.x, delta.x), std::copysign(closest.y, delta.y) });
+	}
+
 	// Positive axes; the point is outside the filled shape.
 	[[nodiscard]]
 	Vec2 ClosestPointOnSuperEllipseBoundaryFromOutside(const Vec2& point, const SuperEllipse& shape) noexcept;

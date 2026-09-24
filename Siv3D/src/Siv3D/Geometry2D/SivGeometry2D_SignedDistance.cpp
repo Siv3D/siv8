@@ -19,6 +19,7 @@
 # include <Siv3D/Geometry2D/Intersects.hpp>
 # include <Siv3D/Geometry2D/SignedDistance.hpp>
 # include "PolygonGeometry.hpp"
+# include "EllipseGeometry.hpp"
 # include "SuperEllipseGeometry.hpp"
 
 namespace s3d
@@ -27,7 +28,6 @@ namespace s3d
 	{
 		inline constexpr double Pi = 3.1415926535897932384626433832795029;
 		inline constexpr double TwoPi = (2.0 * Pi);
-		inline constexpr int32 EllipseSegments = 160;
 		inline constexpr int32 SuperEllipseSegments = 192;
 		inline constexpr int32 ParameterRefinementIterations = 80;
 		inline constexpr double ParameterTolerance = 2.0e-15;
@@ -86,39 +86,14 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		bool IsClosedPiece(const BoundaryPiece& piece) noexcept
+		double NormalizeParameter(double t) noexcept
 		{
-			return std::visit([](const auto& primitive) noexcept
+			t -= std::floor(t);
+			if (t < 0.0)
 			{
-				using T = std::decay_t<decltype(primitive)>;
-
-				if constexpr (std::is_same_v<T, CircleArc>)
-				{
-					return (primitive.region == ArcRegion::Full);
-				}
-				else
-				{
-					return std::is_same_v<T, Ellipse> || std::is_same_v<T, SuperEllipse>;
-				}
-			}, piece);
-		}
-
-		[[nodiscard]]
-		double NormalizeParameter(const BoundaryPiece& piece, double t) noexcept
-		{
-			if (IsClosedPiece(piece))
-			{
-				t -= std::floor(t);
-
-				if (t < 0.0)
-				{
-					t += 1.0;
-				}
-
-				return t;
+				t += 1.0;
 			}
-
-			return ClampUnit(t);
+			return t;
 		}
 
 		[[nodiscard]]
@@ -158,12 +133,6 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		Vec2 PointAt(const Line& primitive, const double t) noexcept
-		{
-			return primitive.start.lerp(primitive.end, t);
-		}
-
-		[[nodiscard]]
 		Vec2 PointAt(const CircleArc& primitive, const double t) noexcept
 		{
 			const auto [beginAngle, endAngle] = ArcAngleRange(primitive.region);
@@ -173,60 +142,15 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		Vec2 PointAt(const Ellipse& primitive, const double t) noexcept
-		{
-			const double angle = (TwoPi * t);
-			return (primitive.center + Vec2{
-				primitive.axes.x * std::cos(angle),
-				primitive.axes.y * std::sin(angle)
-			});
-		}
-
-		[[nodiscard]]
 		Vec2 PointAt(const SuperEllipse& primitive, const double t) noexcept
 		{
-			const double angle = (TwoPi * t);
+			const double angle = (TwoPi * NormalizeParameter(t));
 			const double c = std::cos(angle);
 			const double s = std::sin(angle);
 			const double exponent = (2.0 / primitive.n);
 			const double x = std::copysign(std::pow(Abs(c), exponent), c);
 			const double y = std::copysign(std::pow(Abs(s), exponent), s);
 			return (primitive.center + Vec2{ primitive.axes.x * x, primitive.axes.y * y });
-		}
-
-		[[nodiscard]]
-		Vec2 PointAt(const BoundaryPiece& piece, const double t)
-		{
-			return std::visit([&](const auto& primitive)
-			{
-				return PointAt(primitive, NormalizeParameter(piece, t));
-			}, piece);
-		}
-
-		[[nodiscard]]
-		int32 SegmentCount(const BoundaryPiece& piece) noexcept
-		{
-			return std::visit([](const auto& primitive) noexcept -> int32
-			{
-				using T = std::decay_t<decltype(primitive)>;
-
-				if constexpr (std::is_same_v<T, Line>)
-				{
-					return 1;
-				}
-				else if constexpr (std::is_same_v<T, CircleArc>)
-				{
-					return 1;
-				}
-				else if constexpr (std::is_same_v<T, Ellipse>)
-				{
-					return EllipseSegments;
-				}
-				else
-				{
-					return SuperEllipseSegments;
-				}
-			}, piece);
 		}
 
 		[[nodiscard]]
@@ -268,11 +192,11 @@ namespace s3d
 
 		[[nodiscard]]
 		ClosestBoundaryCandidate RefinePointPiece(
-			const Vec2& point, const BoundaryPiece& piece,
+			const Vec2& point, const SuperEllipse& piece,
 			double parameter, double step)
 		{
 			ClosestBoundaryCandidate best;
-			parameter = NormalizeParameter(piece, parameter);
+			parameter = NormalizeParameter(parameter);
 			UpdateCandidate(best, point, PointAt(piece, parameter), parameter);
 
 			for (int32 iteration = 0; iteration < ParameterRefinementIterations; ++iteration)
@@ -281,7 +205,7 @@ namespace s3d
 
 				for (const double direction : { -1.0, 1.0 })
 				{
-					const double candidateParameter = NormalizeParameter(piece, parameter + direction * step);
+					const double candidateParameter = NormalizeParameter(parameter + direction * step);
 					const Vec2 candidatePoint = PointAt(piece, candidateParameter);
 					const double candidateDistanceSq = point.distanceFromSq(candidatePoint);
 
@@ -313,6 +237,23 @@ namespace s3d
 		ClosestBoundaryCandidate ClosestPointPiece(
 			const Vec2& point, const BoundaryPiece& piece)
 		{
+			if (const auto* ellipse = std::get_if<Ellipse>(&piece))
+			{
+				ClosestBoundaryCandidate result;
+				UpdateCandidate(result, point, detail::ClosestPointOnEllipseBoundary(point, *ellipse));
+				return result;
+			}
+
+			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && ((shape->n == 1.0) || (shape->n == 2.0)))
+			{
+				ClosestBoundaryCandidate result;
+				const Vec2 closest = (shape->n == 1.0)
+					? detail::ClosestPointOnDiamondBoundary(point, *shape)
+					: detail::ClosestPointOnEllipseBoundary(point, Ellipse{ shape->center, shape->axes });
+				UpdateCandidate(result, point, closest);
+				return result;
+			}
+
 			if (const auto* shape = std::get_if<SuperEllipse>(&piece); shape && (not Geometry2D::Intersects(point, *shape)))
 			{
 				ClosestBoundaryCandidate result;
@@ -337,14 +278,15 @@ namespace s3d
 				return ClosestPointCircleArc(point, *arc);
 			}
 
-			const int32 segments = SegmentCount(piece);
+			const auto& curve = std::get<SuperEllipse>(piece);
+			constexpr int32 segments = SuperEllipseSegments;
 			ClosestBoundaryCandidate seed;
-			Vec2 previous = PointAt(piece, 0.0);
+			Vec2 previous = PointAt(curve, 0.0);
 
 			for (int32 i = 0; i < segments; ++i)
 			{
 				const double t1 = (static_cast<double>(i + 1) / segments);
-				const Vec2 current = PointAt(piece, t1);
+				const Vec2 current = PointAt(curve, t1);
 				const auto local = ClosestPointOnSegment(point, previous, current);
 
 				if (local.distanceSq < seed.distanceSq)
@@ -356,7 +298,7 @@ namespace s3d
 				previous = current;
 			}
 
-			return RefinePointPiece(point, piece, seed.parameter, (2.0 / segments));
+			return RefinePointPiece(point, curve, seed.parameter, (2.0 / segments));
 		}
 
 		[[nodiscard]]

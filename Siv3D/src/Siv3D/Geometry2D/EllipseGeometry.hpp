@@ -13,102 +13,113 @@ namespace s3d::detail
 	inline constexpr double EllipseDistanceRootTolerance = (16.0 * 2.2204460492503131e-16);
 	inline constexpr double EllipseContactTolerance = (64.0 * 2.2204460492503131e-16);
 
+	// Positive axes and a query in the first quadrant, relative to the center.
+	[[nodiscard]]
+	inline Vec2 ClosestPointOnEllipseBoundaryInFirstQuadrant(Vec2 query, Vec2 axes) noexcept
+	{
+		if (axes.x == axes.y)
+		{
+			const double length = std::hypot(query.x, query.y);
+			return (length == 0.0) ? Vec2{ axes.x, 0.0 } : (query * (axes.x / length));
+		}
+
+		const bool transpose = (axes.x < axes.y);
+		if (transpose)
+		{
+			std::swap(axes.x, axes.y);
+			std::swap(query.x, query.y);
+		}
+
+		Vec2 closest;
+		if (query.y == 0.0)
+		{
+			// On the major axis, the closest point need not be an axis endpoint.
+			const double cutoff = ((axes.x - axes.y) * (1.0 + axes.y / axes.x));
+			if (query.x < cutoff)
+			{
+				const double u = (query.x / cutoff);
+				closest = { (axes.x * u), (axes.y * std::sqrt((1.0 - u) * (1.0 + u))) };
+			}
+			else
+			{
+				closest = { axes.x, 0.0 };
+			}
+		}
+		else if (query.x == 0.0)
+		{
+			closest = { 0.0, axes.y };
+		}
+		else
+		{
+			const double scale = Max({ axes.x, query.x, query.y });
+			const double a = (axes.x / scale), b = (axes.y / scale);
+			const double ax = (a * (query.x / scale)), by = (b * (query.y / scale));
+			const double gap = ((a - b) * (a + b));
+			// Set mu = lambda + b^2 in the Lagrange-multiplier equation:
+			// (a*x/(mu + a^2 - b^2))^2 + (b*y/mu)^2 = 1.
+			// It decreases strictly for mu > 0, for both interior and exterior queries.
+			// The shift avoids subtracting nearly equal numbers near the major axis.
+			double lower = Max(by, (ax - gap));
+			double upper = std::hypot(ax, by);
+			double mu = lower;
+			for (int32 i = 0; i < 64; ++i)
+			{
+				const double da = (mu + gap);
+				const double ux = (ax / da), uy = (by / mu);
+				const double f = ((ux * ux) + (uy * uy) - 1.0);
+				if (Abs(f) <= EllipseDistanceRootTolerance)
+				{
+					break;
+				}
+				if (0.0 < f)
+				{
+					lower = mu;
+				}
+				else
+				{
+					upper = mu;
+				}
+				const double derivative = (-2.0 * (((ux * ux) / da) + ((uy * uy) / mu)));
+				const double newton = (mu - f / derivative);
+				mu = ((lower < newton) && (newton < upper)) ? newton : ((lower + upper) * 0.5);
+			}
+			closest = { (axes.x * (ax / (mu + gap))), (axes.y * (by / mu)) };
+		}
+		return transpose ? Vec2{ closest.y, closest.x } : closest;
+	}
+
+	// Positive axes. The query may be inside, outside, or on the boundary.
+	[[nodiscard]]
+	inline Vec2 ClosestPointOnEllipseBoundary(const Vec2& point, const Ellipse& ellipse) noexcept
+	{
+		const Vec2 delta = (point - ellipse.center);
+		const Vec2 closest = ClosestPointOnEllipseBoundaryInFirstQuadrant(Vec2{ Abs(delta.x), Abs(delta.y) }, ellipse.axes);
+		return (ellipse.center + Vec2{ std::copysign(closest.x, delta.x), std::copysign(closest.y, delta.y) });
+	}
+
 	[[nodiscard]]
 	inline double DistancePointEllipse(const Vec2& p, const Ellipse& ellipse) noexcept
 	{
-		const double ax = ellipse.axes.x;
-		const double by = ellipse.axes.y;
-		const double x = Abs(p.x - ellipse.center.x);
-		const double y = Abs(p.y - ellipse.center.y);
-
-		const double nx = (x / ax);
-		const double ny = (y / by);
-
-		if (((nx * nx) + (ny * ny)) <= 1.0)
+		const Vec2 query{ Abs(p.x - ellipse.center.x), Abs(p.y - ellipse.center.y) };
+		const Vec2 normalized = (query / ellipse.axes);
+		if (normalized.lengthSq() <= 1.0)
 		{
 			return 0.0;
 		}
-
-		if (y == 0.0)
+		if (query.y == 0.0)
 		{
-			return (x - ax);
+			return (query.x - ellipse.axes.x);
 		}
-
-		if (x == 0.0)
+		if (query.x == 0.0)
 		{
-			return (y - by);
+			return (query.y - ellipse.axes.y);
 		}
-
-		// For an outside point, the closest ellipse point is obtained from the
-		// unique non-negative Lagrange multiplier lambda satisfying
-		//   (a*x/(lambda+a^2))^2 + (b*y/(lambda+b^2))^2 = 1.
-		// The left-hand side is strictly decreasing, so a bracketed Newton step
-		// cannot converge to the wrong stationary point as the angle-based
-		// unbracketed Newton iteration can.
-		const double scale = Max({ ax, by, x, y });
-		const double a = (ax / scale);
-		const double b = (by / scale);
-		const double px = (x / scale);
-		const double py = (y / scale);
-		const double aa = (a * a);
-		const double bb = (b * b);
-
-		double lower = 0.0;
-		double upper = 1.0;
-
-		const double ux0 = (px / a);
-		const double uy0 = (py / b);
-		const double f0 = ((ux0 * ux0) + (uy0 * uy0) - 1.0);
-		const double df0 = (-2.0 * (((ux0 * ux0) / aa) + ((uy0 * uy0) / bb)));
-		const double initialNewton = (-f0 / df0);
-		double lambda = (((0.0 < initialNewton) && (initialNewton < 1.0)) ? initialNewton : 0.5);
-
-		// With the normalization above, lambda = 1 is always outside the root:
-		// each squared term is at most 1/4. Newton from lambda = 0 gives a
-		// useful lower-side initial estimate, and every later step remains bracketed.
-		for (int32 i = 0; i < 64; ++i)
+		if (ellipse.axes.x == ellipse.axes.y)
 		{
-			const double da = (lambda + aa);
-			const double db = (lambda + bb);
-			const double ux = ((a * px) / da);
-			const double uy = ((b * py) / db);
-			const double f = ((ux * ux) + (uy * uy) - 1.0);
-
-			if (Abs(f) <= EllipseDistanceRootTolerance)
-			{
-				lower = lambda;
-				upper = lambda;
-				break;
-			}
-
-			if (0.0 < f)
-			{
-				lower = lambda;
-			}
-			else
-			{
-				upper = lambda;
-			}
-
-			const double df = (-2.0 * (((ux * ux) / da) + ((uy * uy) / db)));
-			const double newton = (lambda - (f / df));
-
-			if ((lower < newton) && (newton < upper))
-			{
-				lambda = newton;
-			}
-			else
-			{
-				lambda = ((lower + upper) * 0.5);
-			}
+			return (std::hypot(query.x, query.y) - ellipse.axes.x);
 		}
-
-		lambda = ((lower + upper) * 0.5);
-
-		const double closestX = ((aa * px) / (lambda + aa));
-		const double closestY = ((bb * py) / (lambda + bb));
-
-		return (scale * std::hypot((px - closestX), (py - closestY)));
+		const Vec2 closest = ClosestPointOnEllipseBoundaryInFirstQuadrant(query, ellipse.axes);
+		return std::hypot((query.x - closest.x), (query.y - closest.y));
 	}
 
 	template <bool IncludeBoundary>

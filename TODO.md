@@ -11,7 +11,7 @@
 
 ### 境界への最短距離
 
-- `SignedDistance()` / `ClosestPointOnBoundary()` は楕円や内部点からの `n == 1 / 2` の SuperEllipse にも分割・反復探索を使い、内部からの Raycast の主な処理時間になっている。菱形・円・楕円に帰着できる場合をまとめて専用処理へ整理する。既存の距離計算との共有を検討し、中心・軸上・接触付近の最近点と数値誤差の扱いを検証する。一般の SuperEllipse の探索変更は分けて判断する。
+- 一般の SuperEllipse（`n != 1 / 2`）の内部点に対する `SignedDistance()` / `ClosestPointOnBoundary()` は分割・反復探索を使う。凹形状・凸形状をまとめて計測し、精度と上限処理量を維持しながら探索回数を減らせるか調査する。内部からの Raycast も同じ処理を使う。
 
 ### 公開契約
 

@@ -8,6 +8,7 @@
 //-----------------------------------------------
 
 # include "Siv3DTest.hpp"
+# include <array>
 # include <cmath>
 # include <limits>
 # include <Siv3D/Geometry2D/Distance.hpp>
@@ -93,6 +94,108 @@ TEST_CASE("Geometry2D.SignedDistance.Ellipse_SuperEllipse")
 	const Ellipse segment{ Vec2{ 0, 0 }, 0, 5 };
 	CHECK(Near(Geometry2D::SignedDistance(segment, Vec2{ 2, 0 }), 2.0));
 	CHECK(Geometry2D::SignedDistance(segment, Vec2{ 0, 2 }) == 0.0);
+}
+
+TEST_CASE("Geometry2D.SignedDistance.Ellipse.AxisClosestPoints")
+{
+	for (const bool transpose : { false, true })
+	{
+		const Vec2 center{ 7, -11 };
+		const Ellipse ellipse{ center, (transpose ? Vec2{ 3, 5 } : Vec2{ 5, 3 }) };
+		const std::array<Vec2, 4> points{ Vec2{ 0, 0 }, Vec2{ 2, 0 }, Vec2{ 4, 0 }, Vec2{ 7, 0 } };
+		const std::array<Vec2, 4> expected{ Vec2{ 0, 3 }, Vec2{ 25.0 / 8, 3 * std::sqrt(39.0) / 8 }, Vec2{ 5, 0 }, Vec2{ 5, 0 } };
+		const std::array<double, 4> distances{ -3.0, -std::sqrt(6.75), -1.0, 2.0 };
+		for (size_t i = 0; i < points.size(); ++i)
+		{
+			CAPTURE(transpose, i);
+			const Vec2 point = (center + (transpose ? points[i].yx() : points[i]));
+			const Vec2 boundary = (center + (transpose ? expected[i].yx() : expected[i]));
+			auto Check = [&](const auto& shape)
+			{
+				const auto closest = Geometry2D::ClosestPointOnBoundary(shape, point);
+				REQUIRE(closest);
+				const Vec2 delta = (*closest - center);
+				CHECK(Vec2{ Abs(delta.x), Abs(delta.y) }.distanceFrom(boundary - center) < 1.0e-12);
+				CHECK(Near(Geometry2D::SignedDistance(shape, point), distances[i], 1.0e-12));
+			};
+			Check(ellipse);
+			Check(SuperEllipse{ ellipse, 2.0 });
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.SignedDistance.Ellipse.NormalOffsets")
+{
+	const Vec2 center{ 7, -11 };
+	for (const Vec2 axes : { Vec2{ 5, 3 }, Vec2{ 3, 5 }, Vec2{ 5, 5 }, Vec2{ 1000, 1 }, Vec2{ 1, 1000 }, Vec2{ 5, 4.999999999 } })
+	{
+		const Ellipse ellipse{ center, axes };
+		for (const double angle : { 0.0, 1.0e-8, 0.01, 0.4, 0.9, (Math::HalfPi - 1.0e-8), Math::HalfPi })
+		{
+			const Vec2 unit{ std::cos(angle), std::sin(angle) };
+			const double tangentLength = std::hypot((axes.x * unit.y), (axes.y * unit.x));
+			const double curvatureRadius = (tangentLength * tangentLength * tangentLength / (axes.x * axes.y));
+			const double gap = (0.01 * Min({ axes.x, axes.y, curvatureRadius }));
+			const double tolerance = (1.0e-11 * Max(axes.x, axes.y));
+			for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+			{
+				const Vec2 boundary = (center + sign * axes * unit);
+				const Vec2 normal = (sign * unit / axes).normalized();
+				for (const double offset : { -gap, 0.0, gap })
+				{
+					CAPTURE(axes, angle, sign, offset);
+					const Vec2 point = (boundary + normal * offset);
+					auto Check = [&](const auto& shape)
+					{
+						const auto closest = Geometry2D::ClosestPointOnBoundary(shape, point);
+						REQUIRE(closest);
+						CHECK(closest->distanceFrom(boundary) <= tolerance);
+						const double distance = Geometry2D::SignedDistance(shape, point);
+						CHECK(Near(distance, offset, tolerance));
+						if (offset == 0.0)
+						{
+							CHECK(distance == 0.0);
+							CHECK(not std::signbit(distance));
+						}
+						if (0.0 < offset)
+						{
+							const auto pair = Geometry2D::ClosestPoints(shape, point);
+							REQUIRE(pair);
+							CHECK(pair->pointA.distanceFrom(*closest) <= tolerance);
+							CHECK(Near(pair->distance, offset, tolerance));
+						}
+					};
+					Check(ellipse);
+					Check(SuperEllipse{ ellipse, 2.0 });
+				}
+			}
+		}
+	}
+}
+
+TEST_CASE("Geometry2D.SignedDistance.Diamond")
+{
+	const Vec2 center{ 7, -11 };
+	const SuperEllipse diamond{ center, SizeF{ 4, 3 }, 1.0 };
+	for (const Vec2 sign : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+	{
+		const Vec2 boundary = (center + sign * Vec2{ 2, 1.5 });
+		const Vec2 normal = (sign * Vec2{ 0.6, 0.8 });
+		for (const double offset : { -0.5, 0.0, 0.5 })
+		{
+			const Vec2 point = (boundary + normal * offset);
+			const auto closest = Geometry2D::ClosestPointOnBoundary(diamond, point);
+			REQUIRE(closest);
+			CHECK(closest->distanceFrom(boundary) < 1.0e-12);
+			CHECK(Near(Geometry2D::SignedDistance(diamond, point), offset, 1.0e-12));
+		}
+	}
+	CHECK(Near(Geometry2D::SignedDistance(diamond, center), -2.4, 1.0e-12));
+	const auto centerClosest = Geometry2D::ClosestPointOnBoundary(diamond, center);
+	REQUIRE(centerClosest);
+	CHECK(Near(centerClosest->distanceFrom(center), 2.4, 1.0e-12));
+	CHECK(Geometry2D::SignedDistance(diamond, center + Vec2{ 4, 0 }) == 0.0);
+	CHECK(Geometry2D::ClosestPointOnBoundary(diamond, center + Vec2{ 5, 0 }) == (center + Vec2{ 4, 0 }));
 }
 
 TEST_CASE("Geometry2D.SignedDistance.SuperEllipse.AxisAndNeighborhood")
