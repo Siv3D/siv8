@@ -387,7 +387,7 @@ namespace s3d
 			return Line{ triangle.p2, triangle.p0 };
 		}
 
-		void AppendLinePiece(Array<BoundaryPiece>& pieces, const Line& line)
+		void AppendLinePiece(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Line& line)
 		{
 			if (line.start != line.end)
 			{
@@ -395,22 +395,22 @@ namespace s3d
 			}
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Line& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Line& shape)
 		{
 			AppendLinePiece(pieces, shape);
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Bezier2& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Bezier2& shape)
 		{
 			pieces.emplace_back(shape);
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Bezier3& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Bezier3& shape)
 		{
 			pieces.emplace_back(shape);
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const RectF& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const RectF& shape)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
 
@@ -439,12 +439,12 @@ namespace s3d
 			AppendLinePiece(pieces, Line{ bl, tl });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Rect& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Rect& shape)
 		{
 			AppendBoundaryPieces(pieces, RectF{ shape });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Circle& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Circle& shape)
 		{
 			if (detail::ClassifyGeometry2DSizedShape(shape) == detail::Geometry2DSizedShapeKind::Area)
 			{
@@ -452,7 +452,7 @@ namespace s3d
 			}
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Ellipse& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Ellipse& shape)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
 
@@ -466,7 +466,7 @@ namespace s3d
 			}
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const SuperEllipse& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const SuperEllipse& shape)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
 
@@ -494,7 +494,7 @@ namespace s3d
 			}
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Triangle& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Triangle& shape)
 		{
 			const double cross = (shape.p1 - shape.p0).cross(shape.p2 - shape.p0);
 
@@ -509,7 +509,7 @@ namespace s3d
 			AppendLinePiece(pieces, Line{ shape.p2, shape.p0 });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const Quad& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const Quad& shape)
 		{
 			const double twiceArea = (shape.p0.cross(shape.p1)
 				+ shape.p1.cross(shape.p2)
@@ -569,7 +569,7 @@ namespace s3d
 			AppendLinePiece(pieces, Line{ shape.p3, shape.p0 });
 		}
 
-		void AppendBoundaryPieces(Array<BoundaryPiece>& pieces, const RoundRect& shape)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>& pieces, const RoundRect& shape)
 		{
 			const auto kind = detail::ClassifyGeometry2DSizedShape(shape);
 
@@ -607,7 +607,7 @@ namespace s3d
 		}
 
 		template <class Shape>
-		void AppendBoundaryPieces(Array<BoundaryPiece>&, const Shape&)
+		void AppendBoundaryPieces(detail::BoundaryPieceBuffer<BoundaryPiece>&, const Shape&)
 		{
 		}
 

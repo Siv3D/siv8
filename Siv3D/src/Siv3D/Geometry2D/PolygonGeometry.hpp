@@ -6,6 +6,7 @@
 //-----------------------------------------------
 # pragma once
 # include <variant>
+# include <boost/container/static_vector.hpp>
 # include <Siv3D/Polygon.hpp>
 # include <Siv3D/MultiPolygon.hpp>
 # include <Siv3D/LineString.hpp>
@@ -328,8 +329,12 @@ namespace s3d::detail
 		return false;
 	}
 
+	// RoundRect needs at most four segments and four arcs; variable-size shapes are borrowed.
 	template <class Piece>
-	using BoundarySource = std::variant<Array<Piece>, std::span<const Vec2>, std::span<const Polygon>>;
+	using BoundaryPieceBuffer = boost::container::static_vector<Piece, 8>;
+
+	template <class Piece>
+	using BoundarySource = std::variant<BoundaryPieceBuffer<Piece>, std::span<const Vec2>, std::span<const Polygon>>;
 
 	template <class Piece, class Shape, class Append>
 	[[nodiscard]]
@@ -349,7 +354,7 @@ namespace s3d::detail
 		}
 		else
 		{
-			Array<Piece> pieces;
+			BoundaryPieceBuffer<Piece> pieces;
 			append(pieces);
 			return pieces;
 		}
