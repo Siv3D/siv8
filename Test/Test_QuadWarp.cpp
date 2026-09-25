@@ -337,9 +337,7 @@ TEST_CASE("QuadWarp.pattern_curves_and_text")
 		CHECK(actual.metrics.triangleCount == reference.metrics.triangleCount + count * 2);
 	}
 	// Use the rasterized glyph as an ordinary texture: the effect must keep the outer warp.
-	const auto glyphs = font.getGlyphs(U"A");
-	REQUIRE(glyphs.size() == 1);
-	const auto& glyph = glyphs.front();
+	const auto glyph = font.getGlyph(U'A');
 	REQUIRE(glyph.texture.texture);
 	REQUIRE(glyph.texture.size.x > 0);
 	REQUIRE(glyph.texture.size.y > 0);

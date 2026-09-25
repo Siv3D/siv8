@@ -132,6 +132,7 @@
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
     <ClCompile Include="..\Test\Test_Pattern.cpp" />
     <ClCompile Include="..\Test\Test_MSDFFont.cpp" />
+    <ClCompile Include="..\Test\Test_FontGlyph.cpp" />
     <ClCompile Include="..\Test\Test_D3D11Device.cpp">
       <AdditionalIncludeDirectories>$(SolutionDir)..\Siv3D\src;$(SolutionDir)..\Siv3D\src\Siv3D-Platform\WindowsDesktop;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>

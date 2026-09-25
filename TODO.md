@@ -186,7 +186,3 @@ API 名や実装方針は未確定。寸法・配置・配色の変更時に、�
 - 開いた格子曲面の公開契約は未確定。[格子曲面の試作案](docs/mesh3d/proposals/open-grid-surface.md)を基に、出力領域の再利用、対角線、UV、hard edge、HeightField との共有範囲を検討する。閉曲面・極点・自己交差修復を同時に扱わない。
 - 面の材質割り当ては v0.8 の作業対象から外し、v0.8.1 以降に再評価する。再開時は [面ごとの材質設計案](docs/mesh3d/proposals/face-materials.md) の比較ケースで内部表現を評価する。三角形への割り当てと generator の面役割を分離し、形状差し替え時と bake / export の契約を決めてから公開型を追加する。
 - 軸からのフレーム生成、誤差による分割数指定、形状登録と部品追加の一体化は保留する。既存の quaternion / quality API とサンプルのヘルパーで不足する根拠を先に確認する。Builder の暗黙の失敗状態は追加しない。
-
-## Font
-
-- `CFont::getGlyphByGlyphIndex()` の `ResolvedGlyph{ glyphIndex, 0 }` はフィールド順（fontIndex, glyphIndex）と逆になっている。未キャッシュ文字の `Font::getGlyph()` がキャッシュを作らず無効な領域を返す経路を修正し、単一文字取得の回帰テストを追加する。

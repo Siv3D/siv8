@@ -524,7 +524,11 @@ namespace s3d
 	{
 		const auto& font = m_fonts[handleID];
 		auto& cache = font->getGlyphCache();
-		cache.preload(*font, Array<ResolvedGlyph>{ ResolvedGlyph{ glyphIndex, 0 } }, readingDirection);
+		cache.preload(*font, Array<ResolvedGlyph>{ ResolvedGlyph{
+			.fontIndex = 0,
+			.glyphIndex = glyphIndex,
+			.pos = 0
+		} }, readingDirection);
 		const auto& [glyphInfo, textureRegion] = cache.getGlyph(glyphIndex, readingDirection);
 		Glyph glyph{ glyphInfo };
 		glyph.codePoint = 0; // 逆引きは不可能（1 つのグリフが複数のコードポイントを持つ場合があるため）
