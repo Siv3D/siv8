@@ -17,7 +17,7 @@ struct PSInput
 
 struct VSConstants2D
 {
-	float2x4 g_transform;
+	float3x4 g_transform;
 	float4 g_colorMul;
 };
 
@@ -37,11 +37,9 @@ struct PSEffectConstants2D
 	float4 g_patternBackgroundColor;
 	// Type-specific payload, decoded by the selected pattern shader.
 	float4 g_patternExtraParams;
-	float3x3 g_quadWarpInvHomography;
-	float4 g_quadWarpUVTransform;
 };
 
-static_assert(sizeof(PSEffectConstants2D) == 128, "PSEffectConstants2D layout must match the CPU buffer");
+static_assert(sizeof(PSEffectConstants2D) == 64, "PSEffectConstants2D layout must match the CPU buffer");
 
 inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transform)
 {
@@ -51,9 +49,10 @@ inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transfo
 	return (translation + (position.x * basisX) + (position.y * basisY));
 }
 
-inline float4 s3d_positionTransform(const float2 position, const float2x4 transform)
+inline float4 s3d_positionTransform(const float2 position, const float3x4 transform)
 {
-	return float4(s3d_transformPoint2D(position, transform), 0.0f, 1.0f);
+	const float4 clip = transform * float3(position, 1.0f);
+	return float4(clip.xy, 0.0f, clip.w);
 }
 
 inline float4 s3d_premultiplyAlpha(float4 color)
@@ -90,19 +89,7 @@ PSInput VS_Shape(	uint vertexID [[vertex_id]],
 	return result;
 }
 
-vertex
-PSInput VS_QuadWarp(	uint vertexID [[vertex_id]],
-						constant VSInput* vertices,
-						constant VSConstants2D* c0)
-{
-	PSInput result;
-	result.position	= s3d_positionTransform(vertices[vertexID].position, c0->g_transform);
-	result.colorPMA	= s3d_premultiplyAlpha(vertices[vertexID].color * c0->g_colorMul);
-	result.uv		= vertices[vertexID].position;
-	return result;
-}
-
-// Keep the pattern interface independent of quad-warp interpolation.
+// Pass drawing coordinates for perspective-correct pattern interpolation.
 vertex
 PSInput VS_Pattern(	uint vertexID [[vertex_id]],
 					constant VSInput* vertices,
@@ -129,18 +116,6 @@ float4 PS_Texture(	PSInput input [[stage_in]],
 					sampler sampler0 [[sampler(0)]])
 {
 	return s3d_textureColor(input.colorPMA, texture0.sample(sampler0, input.uv), c0);
-}
-
-fragment
-float4 PS_QuadWarp(	PSInput input [[stage_in]],
-					constant PSConstants2D* c0 [[buffer(0)]],
-					constant PSEffectConstants2D* c1 [[buffer(1)]],
-					texture2d<float> texture0 [[texture(0)]],
-					sampler sampler0 [[sampler(0)]])
-{
-	const float3 t = (c1->g_quadWarpInvHomography * float3(input.uv, 1.0f));
-	const float2 uv = ((t.xy / t.z) * c1->g_quadWarpUVTransform.xy + c1->g_quadWarpUVTransform.zw);
-	return s3d_textureColor(input.colorPMA, texture0.sample(sampler0, uv), c0);
 }
 
 ////////////////////////////////////////////////////////////////

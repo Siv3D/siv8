@@ -43,7 +43,8 @@
 ## Renderer2D / 組み込みシェーダ最適化
 
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
-- QuadWarp の VS 移動は専用補間と定数管理、custom VS / PS 混在時の互換性を先に設計する。Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
+- ScopedQuadWarp2D: Windows で起動時コンパイルを実行して `2d.vs` / `2d_pattern.vs` と関連 PS の配布バイナリを再生成し、定数配置・関連テスト・全自動テストを検証する。macOS の実行結果とは別に確認する。
+- Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
 - Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。
 
@@ -185,3 +186,7 @@ API 名や実装方針は未確定。寸法・配置・配色の変更時に、�
 - 開いた格子曲面の公開契約は未確定。[格子曲面の試作案](docs/mesh3d/proposals/open-grid-surface.md)を基に、出力領域の再利用、対角線、UV、hard edge、HeightField との共有範囲を検討する。閉曲面・極点・自己交差修復を同時に扱わない。
 - 面の材質割り当ては v0.8 の作業対象から外し、v0.8.1 以降に再評価する。再開時は [面ごとの材質設計案](docs/mesh3d/proposals/face-materials.md) の比較ケースで内部表現を評価する。三角形への割り当てと generator の面役割を分離し、形状差し替え時と bake / export の契約を決めてから公開型を追加する。
 - 軸からのフレーム生成、誤差による分割数指定、形状登録と部品追加の一体化は保留する。既存の quaternion / quality API とサンプルのヘルパーで不足する根拠を先に確認する。Builder の暗黙の失敗状態は追加しない。
+
+## Font
+
+- `CFont::getGlyphByGlyphIndex()` の `ResolvedGlyph{ glyphIndex, 0 }` はフィールド順（fontIndex, glyphIndex）と逆になっている。未キャッシュ文字の `Font::getGlyph()` がキャッシュを作らず無効な領域を返す経路を修正し、単一文字取得の回帰テストを追加する。

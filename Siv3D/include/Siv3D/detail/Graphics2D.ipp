@@ -50,6 +50,8 @@ namespace s3d
 			void SetLocalTransform(const Mat3x2& transform);
 
 			void SetCameraTransform(const Mat3x2& transform);
+
+			void SetQuadWarpTransform(const Mat3x3& transform);
 		}
 
 	}

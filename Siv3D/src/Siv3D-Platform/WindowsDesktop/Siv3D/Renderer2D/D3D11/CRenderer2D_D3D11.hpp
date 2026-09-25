@@ -370,17 +370,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	addQuadWarp
-		//
-		////////////////////////////////////////////////////////////////
-
-		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) override;
-
-		void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4]) override;
-
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	flush
 		//
 		////////////////////////////////////////////////////////////////
@@ -521,6 +510,9 @@ namespace s3d
 
 		void setCameraTransform(const Mat3x2& matrix) override;
 
+		const Mat3x3& getQuadWarpTransform() const override;
+		void setQuadWarpTransform(const Mat3x3& matrix) override;
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	getRMSScaling
@@ -569,15 +561,11 @@ namespace s3d
 		{
 			VertexShader::IDType vsShape;
 
-			VertexShader::IDType vsQuadWarp;
-
 			VertexShader::IDType vsPattern;
 
 			PixelShader::IDType psShape;
 
 			PixelShader::IDType psTexture;
-
-			PixelShader::IDType psQuadWarp;
 
 			PixelShader::IDType psLineDot;
 

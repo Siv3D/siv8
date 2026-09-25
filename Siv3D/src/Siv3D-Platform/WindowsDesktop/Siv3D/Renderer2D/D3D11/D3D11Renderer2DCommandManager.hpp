@@ -20,7 +20,7 @@
 # include <Siv3D/SamplerState.hpp>
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
-# include <Siv3D/Mat3x2.hpp>
+# include <Siv3D/Mat3x3.hpp>
 # include <Siv3D/Graphics.hpp>
 # include <Siv3D/Texture.hpp>
 # include <Siv3D/Renderer/D3D11/D3D11.hpp>
@@ -59,10 +59,6 @@ namespace s3d
 		void pushColorAdd(const Float3& color);
 		const Float3& getColorAdd(uint32 index) const;
 		const Float3& getCurrentColorAdd() const;
-
-		void pushQuadWarpParameter(const std::array<Float4, 3>& color);
-		const std::array<Float4, 3>& getQuadWarpParameter(uint32 index) const;
-		const std::array<Float4, 3>& getQuadWarpParameter() const;
 
 		void pushPatternParameter(const std::array<Float4, 4>& patternParameter);
 		const std::array<Float4, 4>& getPatternParameter(uint32 index) const;
@@ -110,8 +106,11 @@ namespace s3d
 		void pushCameraTransform(const Mat3x2& camera);
 		const Mat3x2& getCurrentCameraTransform() const;
 
-		const Mat3x2& getCombinedTransform(uint32 index) const;
-		const Mat3x2& getCurrentCombinedTransform() const;
+		const Mat3x3& getCombinedTransform(uint32 index) const;
+		const Mat3x3& getCurrentCombinedTransform() const;
+		void pushQuadWarpTransform(const Mat3x3& warp);
+		const Mat3x3& getCurrentQuadWarpTransform() const;
+
 		float getCurrentRMSScaling() const noexcept;
 
 		void pushVSTextureUnbind(uint32 slot);
@@ -125,6 +124,9 @@ namespace s3d
 		const std::array<Texture::IDType, Graphics::TextureSlotCount>& getCurrentPSTextures() const;
 
 	private:
+
+		void updateAffineTransform();
+		void updateTransform();
 
 		ConstantBuffer2DCommands m_constantBuffers;
 
@@ -142,8 +144,6 @@ namespace s3d
 			Array<Float4> colorMuls					= { Float4{ 1.0f, 1.0f, 1.0f, 1.0f } };
 			
 			Array<Float3> colorAdds					= { Float3{ 0.0f, 0.0f, 0.0f } };
-
-			Array<std::array<Float4, 3>> quadWarpParameters	= { std::array<Float4, 3>{ Float4{ 0.0f, 0.0f, 1.0f, 0.0f }, Float4{ 1.0f, 1.0f, 0.0f, 1.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } } };
 
 			Array<std::array<Float4, 4>> patternParameters	= { std::array<Float4, 4>{} };
 
@@ -165,7 +165,7 @@ namespace s3d
 
 			Array<PixelShader::IDType> pixelShaders;
 
-			Array<Mat3x2> combinedTransforms		= { Mat3x2::Identity() };
+			Array<Mat3x3> combinedTransforms		= { Mat3x3::Identity() };
 
 			std::array<Array<Texture::IDType>, Graphics::TextureSlotCount> vsTextures = MakeDefaultTextures();
 
@@ -180,8 +180,6 @@ namespace s3d
 			Float4 colorMul						= Float4{ 1.0f, 1.0f, 1.0f, 1.0f };
 			
 			Float3 colorAdd						= Float3{ 0.0f, 0.0f, 0.0f };
-
-			std::array<Float4, 3> quadWarpParameter	= { Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f }, Float4{ 0.0f, 0.0f, 0.0f, 0.0f } };
 
 			std::array<Float4, 4> patternParameter{};
 		
@@ -207,7 +205,11 @@ namespace s3d
 			
 			Mat3x2 cameraTransform				= Mat3x2::Identity();
 			
-			Mat3x2 combinedTransform			= Mat3x2::Identity();
+			Mat3x2 affineTransform = Mat3x2::Identity();
+
+			Mat3x3 quadWarpTransform = Mat3x3::Identity();
+
+			Mat3x3 combinedTransform			= Mat3x3::Identity();
 
 			float rmsScaling					= 1.0f;
 

@@ -127,6 +127,8 @@
     <ClCompile Include="..\Test\Test_Smooth.cpp" />
     <ClCompile Include="..\Test\Test_Quaternion.cpp" />
     <ClCompile Include="..\Test\Test_Mat3x2.cpp" />
+    <ClCompile Include="..\Test\Test_Mat3x3.cpp" />
+    <ClCompile Include="..\Test\Test_QuadWarp.cpp" />
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
     <ClCompile Include="..\Test\Test_Pattern.cpp" />
     <ClCompile Include="..\Test\Test_MSDFFont.cpp" />

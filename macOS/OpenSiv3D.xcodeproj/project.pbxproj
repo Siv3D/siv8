@@ -17,6 +17,8 @@
 		9FF0D4D197374BE4BF710520 /* Quaternion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 0D15A455331848599026324A /* Quaternion.hpp */; };
 		A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F41030A5000000000002 /* Test_Quaternion.cpp */; };
 		5F6B30571A8B487F8EDD0E68 /* Test_Mat3x2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */; };
+		8BE058AFFF786F7654F81743 /* Test_QuadWarp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2398C4F19741DF4FC7A7B014 /* Test_QuadWarp.cpp */; };
+		088E1A2CAC7A8EAF8546CE9D /* Test_Mat3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */; };
 		63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */; };
 		7FDD8DF2077848B08664D6C6 /* Test_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */; };
 		274DAAE4D4F84549B306E8E5 /* Test_MSDFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70D17B3F399D431B9A98A55C /* Test_MSDFFont.cpp */; };
@@ -1121,7 +1123,9 @@
 		F9712A2F2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */; };
 		F9712A312C254DBB0049CC26 /* FmtOptional.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A302C254DBB0049CC26 /* FmtOptional.hpp */; };
 		F9712A332C2550010049CC26 /* ScopedViewport2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */; };
+		37C087F1A38D0BB48EB7A454 /* ScopedQuadWarp2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 46AC920291AD444937BE6E6B /* ScopedQuadWarp2D.hpp */; };
 		F9712A362C25501C0049CC26 /* SivScopedViewport2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */; };
+		5D3C73CCA8DC9C9997D36362 /* SivScopedQuadWarp2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C224C34DFA94D88428B6C2F2 /* SivScopedQuadWarp2D.cpp */; };
 		F9712A392C2572C60049CC26 /* ScopedColorAdd2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A372C2572C60049CC26 /* ScopedColorAdd2D.hpp */; };
 		F9712A3A2C2572C60049CC26 /* ScopedColorMul2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */; };
 		F9712A3F2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F9712A3B2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp */; };
@@ -3360,6 +3364,8 @@
 		982422B376D849EEBEB93524 /* SimdFloat4.ipp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimdFloat4.ipp; sourceTree = "<group>"; };
 		A5D4F41030A5000000000002 /* Test_Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Quaternion.cpp; sourceTree = "<group>"; };
 		4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mat3x2.cpp; sourceTree = "<group>"; };
+		2398C4F19741DF4FC7A7B014 /* Test_QuadWarp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_QuadWarp.cpp; sourceTree = "<group>"; };
+		1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mat3x3.cpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
 		1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Pattern.cpp; sourceTree = "<group>"; };
 		70D17B3F399D431B9A98A55C /* Test_MSDFFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MSDFFont.cpp; sourceTree = "<group>"; };
@@ -4527,7 +4533,9 @@
 		F9712A2D2C252EFE0049CC26 /* SivScopedScissorRect2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedScissorRect2D.cpp; sourceTree = "<group>"; };
 		F9712A302C254DBB0049CC26 /* FmtOptional.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FmtOptional.hpp; sourceTree = "<group>"; };
 		F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedViewport2D.hpp; sourceTree = "<group>"; };
+		46AC920291AD444937BE6E6B /* ScopedQuadWarp2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedQuadWarp2D.hpp; sourceTree = "<group>"; };
 		F9712A342C25501C0049CC26 /* SivScopedViewport2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedViewport2D.cpp; sourceTree = "<group>"; };
+		C224C34DFA94D88428B6C2F2 /* SivScopedQuadWarp2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedQuadWarp2D.cpp; sourceTree = "<group>"; };
 		F9712A372C2572C60049CC26 /* ScopedColorAdd2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedColorAdd2D.hpp; sourceTree = "<group>"; };
 		F9712A382C2572C60049CC26 /* ScopedColorMul2D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ScopedColorMul2D.hpp; sourceTree = "<group>"; };
 		F9712A3B2C2572DF0049CC26 /* SivScopedColorAdd2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SivScopedColorAdd2D.cpp; sourceTree = "<group>"; };
@@ -7105,6 +7113,8 @@
 				A5D4F4A030A5000000000002 /* Test_Cylindrical.cpp */,
 				A5D4F4B030A5000000000002 /* Test_Spherical.cpp */,
 				4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */,
+				2398C4F19741DF4FC7A7B014 /* Test_QuadWarp.cpp */,
+				1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */,
 				D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */,
 				1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */,
 				70D17B3F399D431B9A98A55C /* Test_MSDFFont.cpp */,
@@ -8094,6 +8104,7 @@
 				F9712A412C2599090049CC26 /* ScopedRenderStates2D.hpp */,
 				F9712A2B2C252EEA0049CC26 /* ScopedScissorRect2D.hpp */,
 				F9712A322C2550010049CC26 /* ScopedViewport2D.hpp */,
+				46AC920291AD444937BE6E6B /* ScopedQuadWarp2D.hpp */,
 				F9070C1E2B9F175000383E4D /* ScopeExit.hpp */,
 				F9ED45C92CC2B08F006BA10F /* ScreenCapture.hpp */,
 				F91D413B2F5DA80500E7FEEF /* SelectFolderDialogOptions.hpp */,
@@ -8917,6 +8928,7 @@
 				F9712A442C25991C0049CC26 /* ScopedRenderStates2D */,
 				F9712A2E2C252EFE0049CC26 /* ScopedScissorRect2D */,
 				F9712A352C25501C0049CC26 /* ScopedViewport2D */,
+				1BE1135F07680679E7EFCA57 /* ScopedQuadWarp2D */,
 				F9ED45C32CC2B06D006BA10F /* ScreenCapture */,
 				F99881A92F5587F800C8991D /* Serial */,
 				F934BD802BF880A10003EAD5 /* Shader */,
@@ -10559,6 +10571,16 @@
 			path = ScopedViewport2D;
 			sourceTree = "<group>";
 		};
+
+		1BE1135F07680679E7EFCA57 /* ScopedQuadWarp2D */ = {
+			isa = PBXGroup;
+			children = (
+				C224C34DFA94D88428B6C2F2 /* SivScopedQuadWarp2D.cpp */,
+			);
+			path = ScopedQuadWarp2D;
+			sourceTree = "<group>";
+		};
+
 		F9712A3C2C2572DF0049CC26 /* ScopedColorAdd2D */ = {
 			isa = PBXGroup;
 			children = (
@@ -15093,6 +15115,7 @@
 				F933ACFA2E54A2BA005624D7 /* MSDFGlyph.hpp in Headers */,
 				F95122542CB8239800151291 /* ClosedLineString.hpp in Headers */,
 				F9712A332C2550010049CC26 /* ScopedViewport2D.hpp in Headers */,
+				37C087F1A38D0BB48EB7A454 /* ScopedQuadWarp2D.hpp in Headers */,
 				F98603152BCFBB54006A4C0F /* SkOpSegment.h in Headers */,
 				F980C4AC2C0F6DFB00A86B68 /* PipelineStateDesc.hpp in Headers */,
 				F98600442BCFBB53006A4C0F /* SkStrokeRec.h in Headers */,
@@ -16688,6 +16711,8 @@
 				A5D4F4A030A5000000000001 /* Test_Cylindrical.cpp in Sources */,
 				A5D4F4B030A5000000000001 /* Test_Spherical.cpp in Sources */,
 				5F6B30571A8B487F8EDD0E68 /* Test_Mat3x2.cpp in Sources */,
+				8BE058AFFF786F7654F81743 /* Test_QuadWarp.cpp in Sources */,
+				088E1A2CAC7A8EAF8546CE9D /* Test_Mat3x3.cpp in Sources */,
 				63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */,
 				7FDD8DF2077848B08664D6C6 /* Test_Pattern.cpp in Sources */,
 				274DAAE4D4F84549B306E8E5 /* Test_MSDFFont.cpp in Sources */,
@@ -16894,6 +16919,7 @@
 				F980C49F2C04B6DB00A86B68 /* Renderer2DFactory.mm in Sources */,
 				F9070DB22B9F175E00383E4D /* SivBlob.cpp in Sources */,
 				F9712A362C25501C0049CC26 /* SivScopedViewport2D.cpp in Sources */,
+				5D3C73CCA8DC9C9997D36362 /* SivScopedQuadWarp2D.cpp in Sources */,
 				F97203242BF09E80000E21DD /* RendererFactory.mm in Sources */,
 				F95122532CB8239800151291 /* ClosedLineString.cpp in Sources */,
 				F9838AD62BFF793C001EB6C5 /* SceneUtility.cpp in Sources */,

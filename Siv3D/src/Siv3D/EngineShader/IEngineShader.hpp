@@ -20,7 +20,6 @@ namespace s3d
 	{
 		FullScreenTriangle,
 		Shape2D,
-		QuadWarp,
 		Pattern2D,
 	};
 
@@ -29,7 +28,6 @@ namespace s3d
 		FullScreenTriangle,
 		Shape2D,
 		Texture2D,
-		QuadWarp,
 		LineDot,
 		LineDash,
 		LineLongDash,

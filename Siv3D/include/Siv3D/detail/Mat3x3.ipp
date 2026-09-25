@@ -27,6 +27,25 @@ namespace s3d
 		, _21{ m21 }, _22{ m22 }, _23{ m23 }
 		, _31{ m31 }, _32{ m32 }, _33{ m33 } {}
 
+	constexpr Mat3x3::Mat3x3(const Mat3x2& matrix) noexcept
+		: Mat3x3{ matrix._11, matrix._12, 0.0f, matrix._21, matrix._22, 0.0f,
+			matrix._31, matrix._32, 1.0f } {}
+
+	constexpr Mat3x3 Mat3x3::operator *(const Mat3x3& rhs) const noexcept
+	{
+		return {
+			(_11 * rhs._11) + (_12 * rhs._21) + (_13 * rhs._31),
+			(_11 * rhs._12) + (_12 * rhs._22) + (_13 * rhs._32),
+			(_11 * rhs._13) + (_12 * rhs._23) + (_13 * rhs._33),
+			(_21 * rhs._11) + (_22 * rhs._21) + (_23 * rhs._31),
+			(_21 * rhs._12) + (_22 * rhs._22) + (_23 * rhs._32),
+			(_21 * rhs._13) + (_22 * rhs._23) + (_23 * rhs._33),
+			(_31 * rhs._11) + (_32 * rhs._21) + (_33 * rhs._31),
+			(_31 * rhs._12) + (_32 * rhs._22) + (_33 * rhs._32),
+			(_31 * rhs._13) + (_32 * rhs._23) + (_33 * rhs._33)
+		};
+	}
+
 	////////////////////////////////////////////////////////////////
 	//
 	//	hash

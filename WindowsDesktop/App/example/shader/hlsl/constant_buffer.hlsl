@@ -32,7 +32,7 @@ struct PSInput
 
 cbuffer VSConstants2D : register(b0)
 {
-	row_major float2x4 g_transform;
+	row_major float3x4 g_transform;
 	float4 g_colorMul;
 }
 
@@ -45,17 +45,10 @@ cbuffer PSConstants2D : register(b0)
 	float4 g_sdfShadowColorPMA;
 }
 
-inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transform)
+inline float4 s3d_positionTransform(const float2 position, const float3x4 transform)
 {
-	const float2 translation = transform._13_14;
-	const float2 basisX = transform._11_12;
-	const float2 basisY = transform._21_22;
-	return (translation + (position.x * basisX) + (position.y * basisY));
-}
-
-inline float4 s3d_positionTransform(const float2 position, const float2x4 transform)
-{
-	return float4(s3d_transformPoint2D(position, transform), transform._23_24);
+	const float4 clip = mul(float3(position, 1.0f), transform);
+	return float4(clip.xy, 0.0f, clip.w);
 }
 
 inline float4 s3d_premultiplyAlpha(const float4 color)

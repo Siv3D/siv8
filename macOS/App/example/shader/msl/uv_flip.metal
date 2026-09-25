@@ -32,21 +32,14 @@ struct PSInput
 
 struct VSConstants2D
 {
-	float2x4 g_transform;
+	float3x4 g_transform;
 	float4 g_colorMul;
 };
 
-inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transform)
+inline float4 s3d_positionTransform(const float2 position, const float3x4 transform)
 {
-	const float2 translation = transform[0].zw;
-	const float2 basisX = transform[0].xy;
-	const float2 basisY = transform[1].xy;
-	return (translation + (position.x * basisX) + (position.y * basisY));
-}
-
-inline float4 s3d_positionTransform(const float2 position, const float2x4 transform)
-{
-	return float4(s3d_transformPoint2D(position, transform), 0.0f, 1.0f);
+	const float4 clip = transform * float3(position, 1.0f);
+	return float4(clip.xy, 0.0f, clip.w);
 }
 
 inline float4 s3d_premultiplyAlpha(float4 color)

@@ -28,7 +28,7 @@ struct PSInput
 
 cbuffer VSConstants2D : register(b0)
 {
-	row_major float2x4 g_transform;
+	row_major float3x4 g_transform;
 	float4 g_colorMul;
 }
 
@@ -48,8 +48,6 @@ cbuffer PSEffectConstants2D : register(b1)
 	float4 g_patternBackgroundColor;
 	// Type-specific payload, decoded by the selected pattern shader.
 	float4 g_patternExtraParams;
-	row_major float3x3 g_quadWarpInvHomography;
-	float4 g_quadWarpUVTransform;
 }
 
 inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transform)
@@ -60,9 +58,10 @@ inline float2 s3d_transformPoint2D(const float2 position, const float2x4 transfo
 	return (translation + (position.x * basisX) + (position.y * basisY));
 }
 
-inline float4 s3d_positionTransform(const float2 position, const float2x4 transform)
+inline float4 s3d_positionTransform(const float2 position, const float3x4 transform)
 {
-	return float4(s3d_transformPoint2D(position, transform), transform._23_24);
+	const float4 clip = mul(float3(position, 1.0f), transform);
+	return float4(clip.xy, 0.0f, clip.w);
 }
 
 inline float4 s3d_premultiplyAlpha(const float4 color)
@@ -96,16 +95,7 @@ PSInput VS_Shape(VSInput input)
 	return result;
 }
 
-PSInput VS_QuadWarp(VSInput input)
-{
-	PSInput result;
-	result.position	= s3d_positionTransform(input.position, g_transform);
-	result.colorPMA = s3d_premultiplyAlpha(input.color * g_colorMul);
-	result.uv		= input.position;
-	return result;
-}
-
-// Keep the pattern interface independent of quad-warp interpolation.
+// Pass drawing coordinates for perspective-correct pattern interpolation.
 PSInput VS_Pattern(VSInput input)
 {
 	PSInput result;
@@ -123,13 +113,6 @@ float4 PS_Shape(PSInput input) : SV_TARGET
 float4 PS_Texture(PSInput input) : SV_TARGET
 {
 	return s3d_textureColor(input.colorPMA, g_texture0.Sample(g_sampler0, input.uv));
-}
-
-float4 PS_QuadWarp(PSInput input) : SV_TARGET
-{
-	const float3 t = mul(float3(input.uv, 1.0f), g_quadWarpInvHomography);
-	const float2 uv = ((t.xy / t.z) * g_quadWarpUVTransform.xy + g_quadWarpUVTransform.zw);
-	return s3d_textureColor(input.colorPMA, g_texture0.Sample(g_sampler0, uv));
 }
 
 ////////////////////////////////////////////////////////////////

@@ -18,10 +18,20 @@ namespace s3d
 {
 	struct VSConstants2D
 	{
-		Float4 transform[2] = { { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f } };
+		Float4 transform[3] = {};
 		
 		Float4 colorMul{ 1.0f, 1.0f, 1.0f, 1.0f };
+
+		void setTransform(const Mat3x3& matrix)
+		{
+			transform[0] = { matrix._11, matrix._12, 0.0f, matrix._13 };
+			transform[1] = { matrix._21, matrix._22, 0.0f, matrix._23 };
+			transform[2] = { matrix._31, matrix._32, 0.0f, matrix._33 };
+		}
 	};
+
+	static_assert(sizeof(VSConstants2D) == 64);
+	static_assert(offsetof(VSConstants2D, colorMul) == 48);
 
 	struct PSConstants2D
 	{
@@ -53,10 +63,6 @@ namespace s3d
 
 		Float4 patternExtraParams{ 0.0f, 0.0f, 0.0f, 0.0f };
 
-		Float4 quadWarpInvHomography[3] = { { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 0.0f } };
-
-		Float4 quadWarpUVTransform;
-
 		void setPattern(const std::array<Float4, 4>& params)
 		{
 			patternUVTransform[0]	= params[0];
@@ -65,12 +71,5 @@ namespace s3d
 			patternExtraParams		= params[3];
 		}
 
-		void setQuadWarp(const Mat3x3& mat, const Float4& uvTransform)
-		{
-			quadWarpInvHomography[0]	= { mat._11, mat._12, mat._13, 0.0f };
-			quadWarpInvHomography[1]	= { mat._21, mat._22, mat._23, 0.0f };
-			quadWarpInvHomography[2]	= { mat._31, mat._32, mat._33, 0.0f };
-			quadWarpUVTransform			= uvTransform;
-		}
 	};
 }

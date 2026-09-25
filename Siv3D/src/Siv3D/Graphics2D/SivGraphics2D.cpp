@@ -213,6 +213,11 @@ namespace s3d
 			return SIV3D_ENGINE(Renderer2D)->getCameraTransform();
 		}
 
+		const Mat3x3& GetQuadWarpTransform()
+		{
+			return SIV3D_ENGINE(Renderer2D)->getQuadWarpTransform();
+		}
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	GetRMSScaling
@@ -359,6 +364,11 @@ namespace s3d
 			void SetCameraTransform(const Mat3x2& transform)
 			{
 				SIV3D_ENGINE(Renderer2D)->setCameraTransform(transform);
+			}
+
+			void SetQuadWarpTransform(const Mat3x3& transform)
+			{
+				SIV3D_ENGINE(Renderer2D)->setQuadWarpTransform(transform);
 			}
 		}
 	}

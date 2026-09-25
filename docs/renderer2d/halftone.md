@@ -20,7 +20,7 @@ spacing, radii, origin, and transition endpoints without adding unused settings
 or fragment branches to ordinary dots. It converts to the same
 [PatternParameters](../../Siv3D/include/Siv3D/Pattern/PatternParameters.hpp), so
 existing shape drawing overloads and the Pattern vertex shader can be reused.
-QuadWarp keeps its independent interface and calculations.
+Projective drawing uses the common vertex position transform.
 
 The first implementation uses a fixed smoothstep profile. Profile selection,
 other motifs, and a reusable public field type are future design questions, not
@@ -98,7 +98,7 @@ a center rather than a cell corner. Negative cells use floor, not truncation.
 | Background / vertex color | Existing color path |
 
 The radius is doubled because `repeat` spans -1 to 1 across a cell. All four
-Float4 values still occupy 64 bytes. Effect constants remain 128 bytes; vertices,
+Float4 values still occupy 64 bytes. Effect constants occupy 64 bytes; vertices,
 interpolators, command payload types, and buffer bindings do not grow.
 The conversion requires finite inputs satisfying the header's preconditions;
 it does not add exceptional-input guards to the drawing path.

@@ -27,8 +27,6 @@ namespace s3d
 
 		ColorAdd,
 
-		QuadWarpParameters,
-		
 		PatternParameters,
 
 		BlendState,

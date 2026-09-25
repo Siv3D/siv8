@@ -24,6 +24,7 @@ namespace s3d
 {
 	struct TextStyle;
 	struct Mat3x2;
+	struct Mat3x3;
 
 	namespace Graphics2D
 	{
@@ -184,6 +185,11 @@ namespace s3d
 		[[nodiscard]]
 		const Mat3x2& GetCameraTransform();
 
+		/// @brief 現在適用されている射影変換を返します。
+		/// @return スコープで合成された射影変換。Local と Camera は含みません。
+		[[nodiscard]]
+		const Mat3x3& GetQuadWarpTransform();
+
 		////////////////////////////////////////////////////////////////
 		//
 		//	GetRMSScaling
@@ -193,6 +199,7 @@ namespace s3d
 		/// @brief 現在のローカル座標変換と 2D カメラ座標変換を合成した行列の RMS 拡大率を返します。
 		/// @return 合成行列の Mat3x2::rmsScaling() の値。線形部分がゼロの場合は 0
 		/// @remark 等方スケールでは、線幅をこの値で割ることで画面上の太さを補正できます。非一様スケールやせん断では近似になります。
+		/// @remark ScopedQuadWarp2D の射影変換は含みません。
 		/// @remark 戻り値が 0 の場合は、線幅やパターンの補正に逆数を使用できません。
 		[[nodiscard]]
 		float GetRMSScaling() noexcept;

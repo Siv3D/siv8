@@ -280,14 +280,14 @@ namespace
 # endif
 # if SIV3D_PLATFORM(WINDOWS)
 		const std::string vertexSource = "cbuffer C : register(b13) { float4 values[" + std::to_string(Count) + R"(]; }
-cbuffer V : register(b0) { row_major float2x4 transform; float4 colorMul; }
+cbuffer V : register(b0) { row_major float3x4 transform; float4 colorMul; }
 struct Input { float2 pos : POSITION; float2 uv : TEXCOORD0; float4 color : COLOR0; };
 struct Output { float4 pos : SV_POSITION; float4 color : COLOR0; float2 uv : TEXCOORD0; };
 Output VS(Input input)
 {
     float2 p = input.pos + values[0].xy + values[)" + std::to_string(Count - 1) + R"(].xy;
     Output result;
-    result.pos = float4(transform._13_14 + p.x * transform._11_12 + p.y * transform._21_22, 0, 1);
+    result.pos = mul(float3(p, 1), transform);
     result.color = input.color * colorMul;
     result.color.rgb *= result.color.a;
     result.uv = input.uv;
@@ -296,7 +296,7 @@ Output VS(Input input)
 		const VertexShader vs = VertexShader::HLSL(vertexSource, U"VS");
 # else
 		const std::string vertexSource = "#include <metal_stdlib>\nusing namespace metal;\nstruct C { float4 values[" + std::to_string(Count) + R"(]; };
-struct V { float2x4 transform; float4 colorMul; };
+struct V { float3x4 transform; float4 colorMul; };
 struct Input { float2 pos; float2 uv; float4 color; };
 struct Output { float4 pos [[position]]; float4 color; float2 uv; };
 vertex Output VS(uint id [[vertex_id]], constant Input* vertices [[buffer(0)]],
@@ -304,7 +304,7 @@ vertex Output VS(uint id [[vertex_id]], constant Input* vertices [[buffer(0)]],
 {
     float2 p = vertices[id].pos + c.values[0].xy + c.values[)" + std::to_string(Count - 1) + R"(].xy;
     Output result;
-    result.pos = float4(v.transform[0].zw + p.x * v.transform[0].xy + p.y * v.transform[1].xy, 0, 1);
+    result.pos = (v.transform * float3(p, 1));
     result.color = vertices[id].color * v.colorMul;
     result.color.rgb *= result.color.a;
     result.uv = vertices[id].uv;

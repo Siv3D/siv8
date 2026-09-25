@@ -1,5 +1,10 @@
 # ScopedCustomShader2D
 
+The standard VS constants use the 64-byte layout described in
+[Scoped projective drawing](../../docs/renderer2d/quad-warp.md#vertex-shader-interface).
+Custom vertex shaders must preserve homogeneous W.
+
+
 This program compares file-based custom shaders with built-in 2D rendering on
 Windows (D3D11) and macOS (Metal). Pages 1–3 use the standard vertex/pixel constant
 buffers; page 4 also supplies custom constants at slot 2. Textures and samplers

@@ -32,9 +32,9 @@ pixel. Strong minification or a very short wavelength can alias.
 
 ## Payload and shader integration
 
-The [64-byte Pattern payload](pattern-payload.md) and 128-byte effect buffer are
-unchanged. Conversion precomputes coefficients once; no new draw overload,
-vertex shader, command field, or QuadWarp change is required.
+The [64-byte Pattern payload](pattern-payload.md) fills the 64-byte effect buffer.
+Conversion precomputes coefficients once; Wave uses the shared Pattern vertex
+shader and command storage.
 
 | Payload | Meaning |
 | --- | --- |

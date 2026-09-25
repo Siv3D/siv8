@@ -97,7 +97,7 @@ namespace s3d
 
 	struct CommandState
 	{
-		Mat3x2 transform = Mat3x2::Identity();
+		Mat3x3 transform = Mat3x3::Identity();
 
 		Mat3x2 screenMat = Mat3x2::Identity();
 		
@@ -134,11 +134,9 @@ namespace s3d
 		}
 
 		m_engineShader.vsShape				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Shape2D).id();
-		m_engineShader.vsQuadWarp			= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::QuadWarp).id();
 		m_engineShader.vsPattern				= SIV3D_ENGINE(EngineShader)->getVS(EngineVS::Pattern2D).id();
 		m_engineShader.psShape				= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Shape2D).id();
 		m_engineShader.psTexture			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::Texture2D).id();
-		m_engineShader.psQuadWarp			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::QuadWarp).id();
 		m_engineShader.psLineDot			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDot).id();
 		m_engineShader.psLineDash			= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineDash).id();
 		m_engineShader.psLineLongDash		= SIV3D_ENGINE(EngineShader)->getPS(EnginePS::LineLongDash).id();
@@ -1578,66 +1576,6 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	addQuadWarp
-	//
-	////////////////////////////////////////////////////////////////
-
-	void CRenderer2D_Metal::addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color)
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, color))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
-			}
-
-			const std::array<Float4, 3> quadWarpParams =
-			{
-				Float4{ quad.p[0], quad.p[1] },
-				Float4{ quad.p[2], quad.p[3] },
-				Float4{ (uv.right - uv.left), (uv.bottom - uv.top), uv.left, uv.top }
-			};
-			m_commandManager.pushQuadWarpParameter(quadWarpParams);
-
-			m_commandManager.pushPSTexture(0, texture);
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	void CRenderer2D_Metal::addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4])
-	{
-		if (const auto indexCount = Vertex2DBuilder::BuildTexturedQuad(std::bind_front(&CRenderer2D_Metal::createBuffer, this), quad, uv, colors))
-		{
-			if (not m_currentCustomShader.vs)
-			{
-				m_commandManager.pushEngineVS(m_engineShader.vsQuadWarp);
-			}
-
-			if (not m_currentCustomShader.ps)
-			{
-				m_commandManager.pushEnginePS(m_engineShader.psQuadWarp);
-			}
-
-			const std::array<Float4, 3> quadWarpParams =
-			{
-				Float4{ quad.p[0], quad.p[1] },
-				Float4{ quad.p[2], quad.p[3] },
-				Float4{ (uv.right - uv.left), (uv.bottom - uv.top), uv.left, uv.top }
-			};
-			m_commandManager.pushQuadWarpParameter(quadWarpParams);
-
-			m_commandManager.pushPSTexture(0, texture);
-			m_commandManager.pushDraw(indexCount);
-		}
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
 	//	setConstantBuffer
 	//
 	////////////////////////////////////////////////////////////////
@@ -1821,15 +1759,6 @@ namespace s3d
 						LOG_COMMAND(fmt::format("ColorAdd[{}] {}", command.index, colorAdd));
 						break;
 					}
-				case MetalRenderer2DCommandType::QuadWarpParameters:
-					{
-						const auto& quadWarpParameter = m_commandManager.getQuadWarpParameter(command.index);
-						const Quad quad{ quadWarpParameter[0].xy(), quadWarpParameter[0].zw(), quadWarpParameter[1].xy(), quadWarpParameter[1].zw() };
-						const Mat3x3 mat = Mat3x3::Homography(quad).inverse();
-						m_psEffectConstants->setQuadWarp(mat, quadWarpParameter[2]);			
-						LOG_COMMAND(fmt::format("QuadWarpParameters[{}]", command.index));
-						break;
-					}
 				case MetalRenderer2DCommandType::PatternParameters:
 					{
 						const auto& patternParameter = m_commandManager.getPatternParameter(command.index);
@@ -1920,9 +1849,7 @@ namespace s3d
 						renderCommandEncoder->setViewport(vp);
 	
 						commandState.screenMat = Mat3x2::Screen(vp.width, vp.height);
-						const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
-						m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
-						m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+						m_vsConstants->setTransform(commandState.transform * Mat3x3{ commandState.screenMat });
 						
 						LOG_COMMAND(fmt::format("Viewport[{}] ({}, {}, {}, {})", command.index, vp.originX, vp.originY, vp.width, vp.height));
 						break;
@@ -1973,11 +1900,9 @@ namespace s3d
 				case MetalRenderer2DCommandType::Transform:
 					{
 						commandState.transform = m_commandManager.getCombinedTransform(command.index);
-						const Mat3x2 matrix = (commandState.transform * commandState.screenMat);
-						m_vsConstants->transform[0].set(matrix._11, matrix._12, matrix._31, matrix._32);
-						m_vsConstants->transform[1].set(matrix._21, matrix._22, 0.0f, 1.0f);
+						m_vsConstants->setTransform(commandState.transform * Mat3x3{ commandState.screenMat });
 
-						LOG_COMMAND(U"Transform[{}] {}"_fmt(command.index, matrix));
+						LOG_COMMAND(U"Transform[{}] {}"_fmt(command.index, commandState.transform));
 						break;
 					}
 				case MetalRenderer2DCommandType::VSTexture0:
@@ -2257,6 +2182,16 @@ namespace s3d
 	void CRenderer2D_Metal::setCameraTransform(const Mat3x2& matrix)
 	{
 		m_commandManager.pushCameraTransform(matrix);
+	}
+
+	const Mat3x3& CRenderer2D_Metal::getQuadWarpTransform() const
+	{
+		return m_commandManager.getCurrentQuadWarpTransform();
+	}
+
+	void CRenderer2D_Metal::setQuadWarpTransform(const Mat3x3& matrix)
+	{
+		m_commandManager.pushQuadWarpTransform(matrix);
 	}
 
 	////////////////////////////////////////////////////////////////

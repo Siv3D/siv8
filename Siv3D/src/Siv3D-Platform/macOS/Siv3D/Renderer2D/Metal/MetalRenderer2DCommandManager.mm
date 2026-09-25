@@ -95,7 +95,6 @@ namespace s3d
 			//m_nullDraws.clear();
 			m_buffer.colorMuls = { m_buffer.colorMuls.back() };
 			m_buffer.colorAdds = { m_buffer.colorAdds.back() };
-			m_buffer.quadWarpParameters	= { m_buffer.quadWarpParameters.back() };
 			m_buffer.patternParameters	= { m_buffer.patternParameters.back() };
 			m_buffer.blendStates = { m_buffer.blendStates.back() };
 			m_buffer.rasterizerStates = { m_buffer.rasterizerStates.back() };
@@ -135,9 +134,6 @@ namespace s3d
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::ColorAdd, 0);
 			m_current.colorAdd = m_buffer.colorAdds.front();
-
-			m_commands.emplace_back(MetalRenderer2DCommandType::QuadWarpParameters, 0);
-			m_current.quadWarpParameter = m_buffer.quadWarpParameters.front();
 
 			m_commands.emplace_back(MetalRenderer2DCommandType::PatternParameters, 0);
 			m_current.patternParameter = m_buffer.patternParameters.front();
@@ -240,12 +236,6 @@ namespace s3d
 		{
 			m_commands.emplace_back(MetalRenderer2DCommandType::ColorAdd, static_cast<uint32>(m_buffer.colorAdds.size()));
 			m_buffer.colorAdds.push_back(m_current.colorAdd);
-		}
-		
-		if (m_stateTracker.has(MetalRenderer2DCommandType::QuadWarpParameters))
-		{
-			m_commands.emplace_back(MetalRenderer2DCommandType::QuadWarpParameters, static_cast<uint32>(m_buffer.quadWarpParameters.size()));
-			m_buffer.quadWarpParameters.push_back(m_current.quadWarpParameter);
 		}
 
 		if (m_stateTracker.has(MetalRenderer2DCommandType::PatternParameters))
@@ -505,47 +495,6 @@ namespace s3d
 	const Float3& MetalRenderer2DCommandManager::getCurrentColorAdd() const
 	{
 		return m_current.colorAdd;
-	}
-
-	////////////////////////////////////////////////////////////////
-	//
-	//	pushQuadWarpParameter, getQuadWarpParameter, getQuadWarpParameter
-	//
-	////////////////////////////////////////////////////////////////
-
-	void MetalRenderer2DCommandManager::pushQuadWarpParameter(const std::array<Float4, 3>& params)
-	{
-		constexpr auto Command = MetalRenderer2DCommandType::QuadWarpParameters;
-		auto& current = m_current.quadWarpParameter;
-		auto& buffer = m_buffer.quadWarpParameters;
-		
-		if (not m_stateTracker.has(Command))
-		{
-			if (params != current)
-			{
-				current = params;
-				m_stateTracker.set(Command);
-			}
-		}
-		else
-		{
-			if (params == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			current = params;
-		}
-	}
-
-	const std::array<Float4, 3>& MetalRenderer2DCommandManager::getQuadWarpParameter(const uint32 index) const
-	{
-		return m_buffer.quadWarpParameters[index];
-	}
-	
-	const std::array<Float4, 3>& MetalRenderer2DCommandManager::getQuadWarpParameter() const
-	{
-		return m_current.quadWarpParameter;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -1026,33 +975,12 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushLocalTransform(const Mat3x2& local)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::Transform;
-		auto& currentLocal = m_current.localTransform;
-		auto& currentCombined = m_current.combinedTransform;
-		auto& buffer = m_buffer.combinedTransforms;
-		const Mat3x2 combinedTransform = (local * m_current.cameraTransform);
-
-		if (not m_stateTracker.has(Command))
+		if (local == m_current.localTransform)
 		{
-			if (local != currentLocal)
-			{
-				currentLocal = local;
-				currentCombined = combinedTransform;
-				m_current.rmsScaling = combinedTransform.rmsScaling();
-				m_stateTracker.set(Command);
-			}
+			return;
 		}
-		else
-		{
-			if (combinedTransform == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			currentLocal = local;
-			currentCombined = combinedTransform;
-			m_current.rmsScaling = combinedTransform.rmsScaling();
-		}
+		m_current.localTransform = local;
+		updateAffineTransform();
 	}
 
 	const Mat3x2& MetalRenderer2DCommandManager::getCurrentLocalTransform() const
@@ -1068,33 +996,12 @@ namespace s3d
 
 	void MetalRenderer2DCommandManager::pushCameraTransform(const Mat3x2& camera)
 	{
-		constexpr auto Command = MetalRenderer2DCommandType::Transform;
-		auto& currentCamera = m_current.cameraTransform;
-		auto& currentCombined = m_current.combinedTransform;
-		auto& buffer = m_buffer.combinedTransforms;
-		const Mat3x2 combinedTransform = (m_current.localTransform * camera);
-
-		if (not m_stateTracker.has(Command))
+		if (camera == m_current.cameraTransform)
 		{
-			if (camera != currentCamera)
-			{
-				currentCamera = camera;
-				currentCombined = combinedTransform;
-				m_current.rmsScaling = combinedTransform.rmsScaling();
-				m_stateTracker.set(Command);
-			}
+			return;
 		}
-		else
-		{
-			if (combinedTransform == buffer.back())
-			{
-				m_stateTracker.clear(Command);
-			}
-
-			currentCamera = camera;
-			currentCombined = combinedTransform;
-			m_current.rmsScaling = combinedTransform.rmsScaling();
-		}
+		m_current.cameraTransform = camera;
+		updateAffineTransform();
 	}
 
 	const Mat3x2& MetalRenderer2DCommandManager::getCurrentCameraTransform() const
@@ -1104,16 +1011,52 @@ namespace s3d
 
 	////////////////////////////////////////////////////////////////
 	//
-	//	getCombinedTransform, getCurrentCombinedTransform
+	//	QuadWarp and combined transforms
 	//
 	////////////////////////////////////////////////////////////////
 
-	const Mat3x2& MetalRenderer2DCommandManager::getCombinedTransform(const uint32 index) const
+	void MetalRenderer2DCommandManager::pushQuadWarpTransform(const Mat3x3& warp)
+	{
+		if (warp == m_current.quadWarpTransform)
+		{
+			return;
+		}
+		m_current.quadWarpTransform = warp;
+		updateTransform();
+	}
+
+	const Mat3x3& MetalRenderer2DCommandManager::getCurrentQuadWarpTransform() const
+	{
+		return m_current.quadWarpTransform;
+	}
+
+	void MetalRenderer2DCommandManager::updateAffineTransform()
+	{
+		m_current.affineTransform = (m_current.localTransform * m_current.cameraTransform);
+		m_current.rmsScaling = m_current.affineTransform.rmsScaling();
+		updateTransform();
+	}
+
+	void MetalRenderer2DCommandManager::updateTransform()
+	{
+		constexpr auto Command = MetalRenderer2DCommandType::Transform;
+		m_current.combinedTransform = (Mat3x3{ m_current.affineTransform } * m_current.quadWarpTransform);
+		if (m_current.combinedTransform == m_buffer.combinedTransforms.back())
+		{
+			m_stateTracker.clear(Command);
+		}
+		else
+		{
+			m_stateTracker.set(Command);
+		}
+	}
+
+	const Mat3x3& MetalRenderer2DCommandManager::getCombinedTransform(const uint32 index) const
 	{
 		return m_buffer.combinedTransforms[index];
 	}
 
-	const Mat3x2& MetalRenderer2DCommandManager::getCurrentCombinedTransform() const
+	const Mat3x3& MetalRenderer2DCommandManager::getCurrentCombinedTransform() const
 	{
 		return m_current.combinedTransform;
 	}

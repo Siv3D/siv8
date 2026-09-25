@@ -5,6 +5,8 @@ Release scope: Renderer2D の組み込みシェーダ。公開 API・カスタ�
 維持する局所変更を先に評価し、描画側の状態管理・補間インターフェース・画質を
 変える案は別段階で扱う。D3D11 と Metal の調査結果をこの文書に集約する。
 
+旧 QuadWarp 専用経路の案は [Scoped projective drawing](../quad-warp.md) に置き換えた。
+
 ## 統合判断
 
 初期評価の順序は **A2 Truchet、A1 Pattern の ColorAdd、A4 影なし MSDF**。
@@ -21,7 +23,6 @@ DXBC 照合と、Windows / macOS の関連テスト・全自動テストは完�
 | ソース・Windows 配布バイナリへ適用済み | A2 Truchet の距離式 | hash と AA を維持。両ホストの円弧境界・配置・状態復帰テストも通過 |
 | ソース・Windows 配布バイナリへ適用済み | A1 Pattern の ColorAdd | 全 11 種の色合成テストを両ホストで通過。Metal の限定描画比較では最大 1/255 のチャンネル差 |
 | ソース・Windows 配布バイナリへ適用済み | A4 影なし MSDF | 通常・Outline の除算を集約。影付き・Print を含むアトラス寸法テストも両ホストで通過 |
-| 次段階の設計・試作 | B1 QuadWarp | 大面積描画で期待できるが、補間成分と VS 定数管理が増える |
 | D3D11 固有の計測候補 | B2 Truchet の分岐 | DXBC は現行で hash を常時計算。Metal AIR には既に条件分岐がある |
 | 保留 | A3 Triangle の skew | Metal の式共通化でも境界に大きな色差を確認。画質判断を先に行う |
 | 保留 | M1 Weave の微分共有 | Metal AIR の重複を除けるが、画像は bit 単位で一致しない。D3D11 の差と実効性能は未確認 |
@@ -44,13 +45,10 @@ DXBC 照合と、Windows / macOS の関連テスト・全自動テストは完�
    まとめて行ってよく、対象エントリーポイントを TODO に記録する。既存の Pattern / Renderer2D テストを使い、
    実フォントの描画検証が必要なら専用のテストに置く。各変更の境界比較と両ホストの
    全自動テストが通った段階で採用判断する。中間命令の減少だけで高速化を宣言しない。
-3. **B1 QuadWarp の責務を設計する。** 専用の float3 補間と VS への定数供給を先に整理し、
-   custom VS / PS の片側差し替えを含めた互換性を決める。行列積の VS 移動と UV scale / offset
-   の行列合成は別差分にする。小 quad の悪化と CPU 状態更新の費用も採否に含める。
-4. **バックエンド固有の費用を独立して評価する。** D3D11 の B2 はまず `[branch]` を試し、
+3. **バックエンド固有の費用を独立して評価する。** D3D11 の B2 はまず `[branch]` を試し、
    配置別 PS の増設はその結果を見て判断する。Windows の起動時 HLSL 再生成と Metal の
    初回 PSO 生成は別の問題として計測し、後述の生成・キャッシュ手順を設計する。
-5. **保留案は必要性と画質の合意を得てから進める。** Triangle、Weave、half、PolkaDot / MSDF
+4. **保留案は必要性と画質の合意を得てから進める。** Triangle、Weave、half、PolkaDot / MSDF
    の AA 方針変更を局所最適化へ混ぜない。Pattern UV や CPU 前計算も、先行変更後に
    残った負荷を根拠に再評価する。
 
@@ -121,7 +119,7 @@ Shadow・OutlineShadow・Print の vector fdiv は 2 のまま。
 
 ### Metal 固有の候補
 
-- **頂点配列のアドレス空間。** `VS_Shape` / `VS_QuadWarp` / `VS_Pattern` の
+- **頂点配列のアドレス空間。** `VS_Shape` / `VS_Pattern` の
   `constant VSInput*` は vertex ID ごとに異なる項目を読む。
   `const device VSInput*` はアクセス方法に適するが、予備比較では明確な速度差はなかった。
   定数バッファは同じ理由で device へ変更しない。
@@ -151,7 +149,6 @@ GPU の実行時間、消費電力、実レジスタ数、occupancy の改善を
 | A2. Truchet の距離を二乗値で比較 | 59 → 57 slots、scalar sqrt が 3 → 2 | 配置・seed・AA 式を維持できる |
 | A3. Triangle の skew を中心とオフセットに分解 | 34 → 31 slots、仮想 temp は 4 → 3 | Metal の境界差を踏まえ初期実装から外す |
 | A4. 影なし MSDF の除算をまとめる | 通常 18 → 17、Outline 20 → 19。vector div が 2 → 1 | Shadow/Print は改善しない。精度差を確認 |
-| B1. QuadWarp の同次座標を VS へ移す | PS 9 → 6、VS 8 → 10。UV 変換を行列に合成する追加案では PS 5 | varying が float2 → float3。VS 定数の管理が必要 |
 | B2. Truchet の uniform branch / 配置別専用化 | 現行は全配置でハッシュ命令を実行。定数専用化では Random 52、Uniform 33、Alternating 39 slots | 分岐またはシェーダ数の増加と比較する |
 | B3. Pattern 背景色の CPU 前計算 | 調べた 4 種で各 3 slots 減 | 複数の状態に依存。A1 と削減量が重なる |
 | B4. Pattern UV の VS 前計算 | 調べた 4 種で PS が各 2～3 slots 減 | カスタムシェーダとの互換性が最大の制約 |
@@ -301,39 +298,6 @@ Glow は `MSDF_Init` を使わず、この案の対象外。
 未完了の描画 A/B・実行時間の評価は TODO で追跡する。
 
 ## B. 描画側との協調が必要な案
-
-### B1. QuadWarp の同次座標だけを VS へ移す
-
-対象: `VS_QuadWarp` / `PS_QuadWarp` と
-[D3D11 Renderer2D](../../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/Renderer2D/D3D11/CRenderer2D_D3D11.cpp)
-の `flush()`、`QuadWarpParameters`。
-
-現行 VS は描画座標 `float2` を渡し、PS が 3 × 3 逆 homography を掛ける。
-VS で `mul(float3(input.position, 1), H)` を求め、結果の `float3` を補間し、
-PS では **補間した後で** `t.xy / t.z` を計算する。
-線形写像と補間は交換できるが、除算とは交換できない。
-最終 UV を VS で除算して単純補間する変更は別物で、射影マッピングを壊す。
-
-実験では PS 9 → 6、VS 8 → 10 slots。
-さらに `s = g_quadWarpUVTransform.xy`、`o = g_quadWarpUVTransform.zw` を使い、
-CPU 側で行列の列を `H'u = s.x * Hu + o.x * Hz`、
-`H'v = s.y * Hv + o.y * Hz`、`H'z = Hz` と合成すると、
-PS の UV scale / offset の mad も除ける。この PS 単体の実験は 5 slots。
-
-必要な設計変更:
-
-- effect buffer は現在 PS の b1 のみに bind される。同じ内容を VS へ渡す方法と、
-  カスタム VS の定数スロット・復帰の扱いを決める。
-- varying は float2 → float3。同じ TEXCOORD レジスタ内でも補間成分は 1 つ増える。
-  ピクセルが少ない小 quad では、VS と補間の増加が削減を上回る可能性がある。
-- shape / texture / Pattern の共通 `PSInput` を一括変更せず、QuadWarp 用の境界を作る。
-  `SV_POSITION.w` を変更すると頂点色の補間にも影響するので、現行の位置出力を維持する。
-- 大きい座標や斜めの強い quad、UV region、四色 tint、transform / viewport、
-  custom VS または PS の片側差し替えを比較する。浮動小数点では数学的等価性だけで
-  seam が消えることや画像が一致することは保証できない。
-
-[Pattern 座標設計](../pattern-coordinates.md) で VS_Pattern と VS_QuadWarp を
-独立させた境界を活用できる。
 
 ### B2. Truchet の通常配置で不要な hash を省く
 

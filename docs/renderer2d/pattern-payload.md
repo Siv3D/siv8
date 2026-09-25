@@ -27,24 +27,20 @@ color travels through vertices, and pattern type selects the pixel shader.
 Typed patterns leave unused additional components zero. The packing return type
 is `std::array<Float4, 4>`.
 
-The shader effect structure groups all Pattern fields in its first 64 bytes and
-all QuadWarp fields in its second 64 bytes:
+The shader effect structure contains the 64-byte Pattern record:
 
 | Effect constant field | Byte offset | Bytes |
 | --- | ---: | ---: |
 | patternUVTransform | 0 | 32 |
 | patternBackgroundColor | 32 | 16 |
 | patternExtraParams | 48 | 16 |
-| quadWarpInvHomography | 64 | 48 |
-| quadWarpUVTransform | 112 | 16 |
-| Total | | 128 |
+| Total | | 64 |
 
 [PSEffectConstants2D::setPattern](../../Siv3D/src/Siv3D/Renderer2D/Renderer2DCommon.hpp)
-maps all four packed vectors to the first 64 bytes of the effect buffer.
-`setQuadWarp` does not modify pattern fields. Both HLSL and Metal declarations
+maps all four packed vectors to the effect buffer. Both HLSL and Metal declarations
 place `g_patternExtraParams` immediately after `g_patternBackgroundColor`.
-D3D11 binds the effect buffer to pixel-shader slot b1. No QuadWarp storage is
-aliased, and its shader calculations and vertex interface are independent.
+D3D11 binds the effect buffer to pixel-shader slot b1.
+[Scoped projective drawing](quad-warp.md) uses the vertex transform constants.
 
 ## Shader-side interpretation
 
@@ -75,10 +71,10 @@ the seed from the numeric halves described in [Truchet](truchet.md#deterministic
 the named Random and Alternating constants match `Pattern::Truchet::Layout`.
 Uniform keeps the original tile orientation.
 
-## Shared XY transform
+## Pattern XY transform
 
-Within each backend, `s3d_transformPoint2D` supplies the XY calculation for both
-`s3d_positionTransform` and `Pattern_UVTransform`. The packed matrix components
+Within each backend, `s3d_transformPoint2D` supplies the affine XY calculation for
+`Pattern_UVTransform`. The packed matrix components
 have the following roles:
 
 | Local name | CPU matrix components | HLSL access | Metal access |
@@ -91,11 +87,9 @@ The expression keeps the order `translation + position.x * basisX + position.y *
 Only these six components enter the XY result; the Pattern parameters in the
 remaining two components stay available to their consuming pixel shaders.
 
-The vertex-position wrapper supplies Z/W separately: HLSL reads
-`transform._23_24`, while Metal uses `(0, 1)`. The CPU's built-in vertex transform
-also stores `(0, 1)` in those positions. Pattern UV conversion remains in the
-pixel shader, using the original drawing-position varying and the existing
-effect-buffer layout.
+Vertex positions use the separate homogeneous transform described in
+[Scoped projective drawing](quad-warp.md#vertex-shader-interface). Pattern UV
+conversion remains in the pixel shader using perspective-correct drawing positions.
 
 ## Color composition
 
@@ -129,7 +123,7 @@ only `extraParams` creates a pattern-state transition; identical values still
 batch. Returning to a pattern with unused extras restores zero, including across
 frames.
 
-Each pattern record uses 64 bytes. Both backends submit the full 128-byte effect
+Each pattern record uses 64 bytes. Both backends submit the full 64-byte effect
 buffer when it is dirty. Vertex size, vertex attributes, and the number of
 interpolators are unchanged by the storage extension. Existing built-in pattern
 fragment calculations are also unchanged. These are layout and operation facts,
@@ -147,7 +141,7 @@ FontPrint, then Wave, Ripple, Weave, and Truchet.
 [CEngineShader_D3D11::init](../../Siv3D/src/Siv3D-Platform/WindowsDesktop/Siv3D/EngineShader/D3D11/CEngineShader_D3D11.cpp)
 contains the startup HLSL compilation block and loads the tracked `.vs`/`.ps`
 assets by path. When changing HLSL, regenerate affected bytecode on Windows
-through that block. An effect-layout change also affects QuadWarp; rebuild all
+through that block. After an effect-layout change, rebuild all
 listed entry points so no binary retains an old layout. Preserve shader assets
 as binary data. The Windows SDK's `fxc /dumpbin` can inspect reflected offsets.
 
@@ -164,8 +158,6 @@ incomplete Windows reports or illegal-instruction failures, follow the
 
 - Four-vector packing, zero defaults, preservation under singular/reflected UV
   mappings, and fixed shader field offsets.
-- Pattern updates preserve QuadWarp fields, and QuadWarp updates preserve all
-  pattern fields.
 - HLSL and Metal diagnostic pixel shaders read byte offset 48 and use all four
   components. The sequence zero/A/A/B/A/zero verifies restoration, state changes,
   and batching when only the additional vector differs. A QuadWarp draw and a

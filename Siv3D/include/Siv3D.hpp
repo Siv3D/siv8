@@ -1676,6 +1676,7 @@
 
 // 2D 描画のビューポートスコープ | Viewport scope for 2D rendering
 # include <Siv3D/ScopedViewport2D.hpp>
+# include <Siv3D/ScopedQuadWarp2D.hpp>
 
 // 2D 描画の座標変換スコープ | Coordinate transformation scope for 2D rendering
 # include <Siv3D/Transformer2D.hpp>

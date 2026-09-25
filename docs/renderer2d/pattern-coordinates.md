@@ -47,12 +47,10 @@ vertex position in drawing coordinates
 The existing 2D vertex shader output already has a `float2 uv` varying. A vertex
 shader for this path puts the untransformed vertex position there, while the
 six pattern fragment shaders read it instead of the fragment's target position.
-`VS_Pattern` forwards drawing positions for patterns. `VS_QuadWarp` retains its
-own entry point and renderer selection. Their forwarding code is currently the
-same, but their interfaces remain independent so quad-warp calculations can be
-moved between shader stages without changing the pattern path. Reconsider
-integration only after quad-warp optimization establishes its final interface.
-Normal texture UV forwarding stays on the normal shape/texture vertex shader path.
+`VS_Pattern` forwards drawing positions for perspective-correct interpolation.
+Normal texture UV forwarding stays on the shape/texture vertex shader path.
+Both paths use the homogeneous position transform for
+[scoped projective drawing](quad-warp.md).
 
 This needs no new vertex attribute, larger vertex buffer, additional interpolator,
 inverse transform, or per-pixel inverse calculation. The existing affine UV
@@ -81,7 +79,7 @@ vertex path and pack pattern parameters without RMS scaling. The command buffer
 does not need a new pattern-coordinate state or a cache of inverse transforms.
 
 Both renderers use parameterless packing and the separate `Pattern2D` vertex
-shader slot. `QuadWarp` keeps its own slot and shader selection. RMS remains in
+shader slot. Projective drawing uses the common vertex position helper. RMS remains in
 geometry subdivision and line-width calculations, outside pattern parameter
 packing.
 

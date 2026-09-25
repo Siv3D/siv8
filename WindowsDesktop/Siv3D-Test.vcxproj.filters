@@ -190,6 +190,12 @@
     <ClCompile Include="..\Test\Test_Mat3x2.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_Mat3x3.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_QuadWarp.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp">
       <Filter>Test</Filter>
     </ClCompile>

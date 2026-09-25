@@ -105,14 +105,14 @@ TEST_CASE("Renderer2D.pipeline_shader_blend_restore")
 #include <metal_stdlib>
 using namespace metal;
 struct Vertex { float2 pos; float2 uv; float4 color; };
-struct VSConstants { float2x4 transform; float4 colorMul; };
+struct VSConstants { float3x4 transform; float4 colorMul; };
 struct Varying { float4 position [[position]]; float4 colorPMA; float2 uv; };
 vertex Varying Shift(uint id [[vertex_id]], constant Vertex* vertices [[buffer(0)]],
                     constant VSConstants& c [[buffer(1)]])
 {
     const float2 pos = vertices[id].pos + float2(20, 0);
     Varying result;
-    result.position = float4(c.transform[0].zw + pos.x * c.transform[0].xy + pos.y * c.transform[1].xy, 0, 1);
+    result.position = (c.transform * float3(pos, 1));
     result.colorPMA = vertices[id].color * c.colorMul;
     result.colorPMA.rgb *= result.colorPMA.a;
     result.uv = vertices[id].uv;

@@ -30,6 +30,7 @@ namespace s3d
 	struct RasterizerState;
 	struct SamplerState;
 	struct Mat3x2;
+	struct Mat3x3;
 	enum class LineCap : uint8;
 	struct PatternParameters;
 
@@ -173,12 +174,6 @@ namespace s3d
 
 		virtual void addMesh2D(const Texture& texture, std::span<const Vertex2D> vertices, std::span<const TriangleIndex> indices, const Optional<Float2>& offset) = 0;
 
-
-		virtual void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4& color) = 0;
-
-		virtual void addQuadWarp(const Texture& texture, const FloatRect& uv, const FloatQuad& quad, const Float4(&colors)[4]) = 0;
-
-
 		virtual void setConstantBuffer(ShaderStage stage, uint32 slot, const void* data, size_t size) = 0;
 
 		virtual uint32 beginConstantBufferScope(ShaderStage stage, uint32 slot, const void* data, size_t size) = 0;
@@ -239,6 +234,9 @@ namespace s3d
 		virtual const Mat3x2& getCameraTransform() const = 0;
 
 		virtual void setCameraTransform(const Mat3x2& matrix) = 0;
+
+		virtual const Mat3x3& getQuadWarpTransform() const = 0;
+		virtual void setQuadWarpTransform(const Mat3x3& matrix) = 0;
 
 		virtual float getRMSScaling() const noexcept = 0;
 

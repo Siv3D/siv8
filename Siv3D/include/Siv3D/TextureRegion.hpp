@@ -356,41 +356,6 @@ namespace s3d
 
 		////////////////////////////////////////////////////////////////
 		//
-		//	drawQuadWarp
-		//
-		////////////////////////////////////////////////////////////////
-
-		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
-		/// @param quad パース変形の形状
-		/// @param diffuse 描画時に乗算する色
-		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
-		bool drawQuadWarp(const Quad& quad, const ColorF& diffuse = Palette::White) const;
-
-		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
-		/// @param quad パース変形の形状
-		/// @param topLeftColor 描画時に左上の頂点に乗算する色
-		/// @param topRightColor 描画時に右上の頂点に乗算する色
-		/// @param bottomRightColor 描画時に右下の頂点に乗算する色
-		/// @param bottomLeftColor 描画時に左下の頂点に乗算する色
-		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
-		bool drawQuadWarp(const Quad& quad, const ColorF& topLeftColor, const ColorF& topRightColor, const ColorF& bottomRightColor, const ColorF& bottomLeftColor) const;
-
-		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
-		/// @param quad パース変形の形状
-		/// @param topColor 描画時に上側の頂点に乗算する色
-		/// @param bottomColor 描画時に下側の頂点に乗算する色
-		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
-		bool drawQuadWarp(const Quad& quad, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
-
-		/// @brief 指定した四角形にパース変形して部分テクスチャを描画します。
-		/// @param quad パース変形の形状
-		/// @param leftColor 描画時に左側の頂点に乗算する色
-		/// @param rightColor 描画時に右側の頂点に乗算する色
-		/// @return 不正な（凸でない）四角形の場合 false, それ以外の場合 true
-		bool drawQuadWarp(const Quad& quad, Arg::left_<ColorF> leftColor, Arg::right_<ColorF> rightColor) const;
-
-		////////////////////////////////////////////////////////////////
-		//
 		//	mirrored
 		//
 		////////////////////////////////////////////////////////////////

@@ -61,19 +61,13 @@ TEST_CASE("PatternParameters.packing")
 
 TEST_CASE("PatternParameters.effect_constants")
 {
-	static_assert(sizeof(PSEffectConstants2D) == 128);
+	static_assert(sizeof(PSEffectConstants2D) == 64);
 	static_assert(offsetof(PSEffectConstants2D, patternUVTransform) == 0);
 	static_assert(offsetof(PSEffectConstants2D, patternBackgroundColor) == 32);
 	static_assert(offsetof(PSEffectConstants2D, patternExtraParams) == 48);
-	static_assert(offsetof(PSEffectConstants2D, quadWarpInvHomography) == 64);
-	static_assert(offsetof(PSEffectConstants2D, quadWarpUVTransform) == 112);
 
 	PSEffectConstants2D constants{};
 	CHECK(constants.patternExtraParams == Float4{ 0, 0, 0, 0 });
-	const Mat3x3 homography{ 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	const Float4 quadUV{ 0.25f, 0.5f, 0.75f, 1.0f };
-	constants.setQuadWarp(homography, quadUV);
-	const auto quadState = constants;
 	const PatternParameters pattern{
 		.backgroundColor = { 0.2f, 0.3f, 0.4f, 0.5f },
 		.uvTransform = { 2, 3, 4, 5, 6, 7 },
@@ -83,17 +77,6 @@ TEST_CASE("PatternParameters.effect_constants")
 	};
 	const auto packed = pattern.toFloat4Array();
 	constants.setPattern(packed);
-	CHECK(constants.patternUVTransform[0] == packed[0]);
-	CHECK(constants.patternUVTransform[1] == packed[1]);
-	CHECK(constants.patternBackgroundColor == packed[2]);
-	CHECK(constants.patternExtraParams == packed[3]);
-	for (size_t i = 0; i < 3; ++i)
-	{
-		CHECK(constants.quadWarpInvHomography[i] == quadState.quadWarpInvHomography[i]);
-	}
-	CHECK(constants.quadWarpUVTransform == quadState.quadWarpUVTransform);
-
-	constants.setQuadWarp(Mat3x3::Identity(), Float4{ 1, 1, 0, 0 });
 	CHECK(constants.patternUVTransform[0] == packed[0]);
 	CHECK(constants.patternUVTransform[1] == packed[1]);
 	CHECK(constants.patternBackgroundColor == packed[2]);
@@ -1549,6 +1532,21 @@ TEST_CASE("Pattern.pattern_and_color_state_restore")
 	}
 }
 
+namespace
+{
+	void DrawWarpedTexture(const Texture& texture, const Quad& target)
+	{
+		const Quad source = RectF{ 0, 0, texture.size() }.asQuad();
+		const Mat3x2 affine = (Graphics2D::GetLocalTransform() * Graphics2D::GetCameraTransform());
+		const auto warp = Mat3x3::TryHomography(
+			Quad{ affine.transformPoint(source.p0), affine.transformPoint(source.p1), affine.transformPoint(source.p2), affine.transformPoint(source.p3) },
+			Quad{ affine.transformPoint(target.p0), affine.transformPoint(target.p1), affine.transformPoint(target.p2), affine.transformPoint(target.p3) });
+		REQUIRE(warp);
+		const ScopedQuadWarp2D scopedWarp{ *warp };
+		texture.draw();
+	}
+}
+
 TEST_CASE("Pattern.batch_boundaries_and_mixed_shaders")
 {
 	Image pixels{ 2, 2, Palette::Red };
@@ -1566,7 +1564,7 @@ TEST_CASE("Pattern.batch_boundaries_and_mixed_shaders")
 		Circle{ 190, 32, 28 }.draw(pattern);
 		RectF{ 240, 0, 40, 40 }.draw(Palette::Blue);
 		const Quad quad{ 300, 0, 360, 10, 350, 64, 310, 56 };
-		REQUIRE(texture.drawQuadWarp(quad));
+		DrawWarpedTexture(texture, quad);
 		Circle{ 40, 120, 28 }.drawArc(LineCap::Round, 0, 270_deg, 8, 8, pattern);
 		LineString{ Vec2{ 100, 100 }, Vec2{ 160, 140 }, Vec2{ 220, 100 } }
 			.draw(LineCap::Round, 16, pattern);
@@ -1604,7 +1602,7 @@ TEST_CASE("Pattern.batch_boundaries_and_mixed_shaders")
 				{
 					RectF{ 60, y, 32, 32 }.draw(Palette::Red);
 					texture.resized(32, 32).draw(100, y);
-					REQUIRE(texture.drawQuadWarp(Quad{ 140, y, 172, y, 172, y + 32, 140, y + 32 }));
+					DrawWarpedTexture(texture, Quad{ 140, y, 172, y, 172, y + 32, 140, y + 32 });
 				}
 			}
 		});
@@ -1665,7 +1663,7 @@ fragment float4 ReadExtra(Varying input [[stage_in]], constant float4* effects [
 					RectF{ 20.0 + i * 70, 20, 60, 60 }.draw(pattern);
 				}
 			}
-			REQUIRE(texture.drawQuadWarp(Quad{ 20, 130, 80, 135, 75, 185, 25, 180 }));
+			DrawWarpedTexture(texture, Quad{ 20, 130, 80, 135, 75, 185, 25, 180 });
 			const ScopedCustomShader2D shader{ ps };
 			pattern.extraParams = a;
 			RectF{ 100, 130, 60, 60 }.draw(pattern);
@@ -1707,13 +1705,13 @@ TEST_CASE("Pattern.custom_shader_contract")
 # if SIV3D_PLATFORM(WINDOWS)
 	const std::string source = R"(
 struct Vertex { float2 position : POSITION; float2 uv : TEXCOORD0; float4 color : COLOR0; };
-cbuffer Constants : register(b0) { row_major float2x4 transform; float4 colorMul; };
+cbuffer Constants : register(b0) { row_major float3x4 transform; float4 colorMul; };
 struct Varying { float4 position : SV_POSITION; float4 colorPMA : COLOR0; float2 uv : TEXCOORD0; };
 Varying ShiftPattern(Vertex input)
 {
     const float2 pos = input.position + float2(23, 0);
     Varying result;
-    result.position = float4(transform[0].zw + pos.x * transform[0].xy + pos.y * transform[1].xy, 0, 1);
+    result.position = mul(float3(pos, 1), transform);
     result.colorPMA = input.color * colorMul;
     result.colorPMA.rgb *= result.colorPMA.a;
     result.uv = input.position;
@@ -1731,14 +1729,14 @@ float4 Coordinates(Varying input) : SV_TARGET
 #include <metal_stdlib>
 using namespace metal;
 struct Vertex { float2 pos; float2 uv; float4 color; };
-struct Constants { float2x4 transform; float4 colorMul; };
+struct Constants { float3x4 transform; float4 colorMul; };
 struct Varying { float4 position [[position]]; float4 colorPMA; float2 uv; };
 vertex Varying ShiftPattern(uint id [[vertex_id]], constant Vertex* vertices [[buffer(0)]],
                            constant Constants& c [[buffer(1)]])
 {
     const float2 pos = vertices[id].pos + float2(23, 0);
     Varying result;
-    result.position = float4(c.transform[0].zw + pos.x * c.transform[0].xy + pos.y * c.transform[1].xy, 0, 1);
+    result.position = (c.transform * float3(pos, 1));
     result.colorPMA = vertices[id].color * c.colorMul;
     result.colorPMA.rgb *= result.colorPMA.a;
     result.uv = vertices[id].pos;
