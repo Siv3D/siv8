@@ -111,6 +111,40 @@ Engine sources are excluded; platform-specific engine membership is intentional.
 The [registration checker](../../tools/check_test_projects.py) has `--self-test`;
 it does not compile Windows code.
 
+### Isolated Image checks on macOS
+
+Run [run-image-checks.sh](../../tools/run-image-checks.sh) outside the sandbox:
+
+```sh
+./tools/run-image-checks.sh
+./tools/run-image-checks.sh /tmp/siv8-image-checks
+./tools/run-image-checks.sh /tmp/siv8-image-checks-x86 x86_64
+```
+
+The first optional argument selects the output directory; otherwise the script
+creates and prints a temporary directory. The second selects `arm64` or `x86_64`
+and defaults to the host architecture. Running an x86_64 build on Apple Silicon
+requires Rosetta. The directory retains the instrumented executable
+and may be removed after inspection. The checker compiles the real Image sources
+and [Image tests](../../Test/Test_Image.cpp) with AddressSanitizer and
+UndefinedBehaviorSanitizer, without starting the engine. It checks pixel-count
+boundaries, writes beyond the logical image, storage reuse, and alignment. The
+normal engine tests use only Image's public API. In the isolated build, the test
+translation unit includes the SIMD implementation `.cpp` directly, so it can also
+check individual kernels without exporting them or adding an engine header.
+The kernels retain internal linkage in an unnamed namespace. SSE fallback tests
+also run on AVX2-capable CPUs; only kernels available on the executing architecture
+are tested. The x86_64 build uses
+SSE4.2 as its baseline and enables AVX2 only for the AVX2 kernel functions. AVX2
+tests run only when the executing CPU supports them.
+
+The isolated executable additionally replaces `posix_memalign` at link time.
+A scoped, thread-local probe records allocation requests or returns `ENOMEM` to
+verify that allocation failure preserves the image. The probe is compiled only
+when the script supplies `SIV3D_IMAGE_ALLOCATION_TEST`; the engine and its normal
+test application contain no allocation override. These checks supplement the full
+engine suite and do not verify the Windows allocator or MemorySanitizer behavior.
+
 ### MSVC warnings in tests
 
 Compare clean test-application builds in both Release and Debug with the existing

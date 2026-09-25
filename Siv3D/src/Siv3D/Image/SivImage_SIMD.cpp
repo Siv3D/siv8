@@ -13,6 +13,13 @@
 # include <Siv3D/CPUInfo.hpp>
 # include <Siv3D/SIMD.hpp>
 
+// Keep ISA selection local to this implementation file.
+# if SIV3D_INTRINSIC(SSE) && (defined(__clang__) || defined(__GNUC__))
+# define SIV3D_IMAGE_TARGET_AVX2 __attribute__((target("avx2")))
+# else
+# define SIV3D_IMAGE_TARGET_AVX2
+# endif
+
 namespace s3d
 {
 	namespace
@@ -66,7 +73,7 @@ namespace s3d
 
 		static void PremultiplyAlpha_SSE41(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((pixelCount + 3) / (sizeof(__m128i) / sizeof(Color)) / 2);
+			const size_t loopCount = (pixelCount / 8);
 			uint32* p = reinterpret_cast<uint32*>(pixels);
 
 			const __m128i mask_ff00 = _mm_set1_epi16(static_cast<short>(0xFF00));
@@ -117,11 +124,13 @@ namespace s3d
 				_mm_store_si128(ptr, abgr);
 				_mm_store_si128(ptr + 1, ABGR);
 			}
+
+			PremultiplyAlpha_plain((pixels + loopCount * 8), (pixelCount % 8));
 		}
 
-		static void PremultiplyAlpha_AVX2(Color* pixels, const size_t pixelCount)
+		SIV3D_IMAGE_TARGET_AVX2 static void PremultiplyAlpha_AVX2(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((pixelCount + 7) / (sizeof(__m256i) / sizeof(Color)));
+			const size_t loopCount = (pixelCount / 8);
 			uint32* p = reinterpret_cast<uint32*>(pixels);
 
 			const __m256i mask_alpha_color_odd_255 = _mm256_set1_epi32(static_cast<int>(0xff000000));
@@ -173,6 +182,8 @@ namespace s3d
 
 				_mm256_store_si256(ptr, color);
 			}
+
+			PremultiplyAlpha_plain((pixels + loopCount * 8), (pixelCount % 8));
 		}
 
 	# endif
@@ -241,7 +252,7 @@ namespace s3d
 
 		static void UnpremultiplyAlpha_SSE41(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((pixelCount + 3) / 4);
+			const size_t loopCount = (pixelCount / 4);
 
 			uint32_t* p = reinterpret_cast<uint32_t*>(pixels);
 
@@ -296,11 +307,13 @@ namespace s3d
 
 				_mm_store_si128(ptr, result);
 			}
+
+			UnpremultiplyAlpha_plain((pixels + loopCount * 4), (pixelCount % 4));
 		}
 
-		static void UnpremultiplyAlpha_AVX2(Color* pixels, const size_t pixelCount)
+		SIV3D_IMAGE_TARGET_AVX2 static void UnpremultiplyAlpha_AVX2(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((pixelCount + 7) / 8);
+			const size_t loopCount = (pixelCount / 8);
 
 			uint32_t* p = reinterpret_cast<uint32_t*>(pixels);
 
@@ -309,7 +322,12 @@ namespace s3d
 			const __m256i bias = _mm256_set1_epi32(0x00008000);
 			const __m256i max_255 = _mm256_set1_epi32(255);
 
-			auto Unpremul8 = [bias, max_255](__m256i c, __m256i invQ16) -> __m256i
+			auto Unpremul8 = [bias, max_255](__m256i c, __m256i invQ16)
+			# if defined(__clang__) || defined(__GNUC__)
+				// A lambda does not inherit the enclosing function's target attribute.
+				__attribute__((target("avx2")))
+			# endif
+				-> __m256i
 			{
 				// c:      0..255
 				// invQ16: round((255 << 16) / a), or 0 when a == 0
@@ -373,6 +391,8 @@ namespace s3d
 
 				_mm256_store_si256(ptr, result);
 			}
+
+			UnpremultiplyAlpha_plain((pixels + loopCount * 8), (pixelCount % 8));
 		}
 
 	# endif
@@ -401,7 +421,7 @@ namespace s3d
 
 		static void BGRAtoRGBA_NEON(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((pixelCount + 7) / 8);
+			const size_t loopCount = (pixelCount / 8);
 			uint8* ptr = reinterpret_cast<uint8*>(pixels);
 			const uint8* const end = reinterpret_cast<const uint8*>(pixels + loopCount * 8);
 			
@@ -417,6 +437,8 @@ namespace s3d
 
 				vst4_u8(reinterpret_cast<uint8_t*>(ptr), rgba);
 			}
+
+			BGRAtoRGBA_plain((pixels + loopCount * 8), (pixelCount % 8));
 		}
 			
 	# endif
@@ -425,7 +447,7 @@ namespace s3d
 
 		static void BGRAtoRGBA_SSSE3(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = (((pixelCount + 7) / 8) * 2);
+			const size_t loopCount = ((pixelCount / 8) * 2);
 			const __m128i mask = ::_mm_set_epi8(15, 12, 13, 14, 11, 8, 9, 10, 7, 4, 5, 6, 3, 0, 1, 2);
 			
 			for (__m128i* ptr = reinterpret_cast<__m128i*>(pixels), *end = (ptr + loopCount); ptr != end; ptr += 2)
@@ -439,11 +461,13 @@ namespace s3d
 				::_mm_store_si128(ptr, t1);
 				::_mm_store_si128(ptr + 1, t2);
 			}
+
+			BGRAtoRGBA_plain((pixels + loopCount * 4), (pixelCount % 8));
 		}
 
-		static void BGRAtoRGBA_AVX2(Color* pixels, const size_t pixelCount)
+		SIV3D_IMAGE_TARGET_AVX2 static void BGRAtoRGBA_AVX2(Color* pixels, const size_t pixelCount)
 		{
-			const size_t loopCount = ((pixelCount + 7) / 8);
+			const size_t loopCount = (pixelCount / 8);
 			const __m256i mask = ::_mm256_setr_epi8(
 				2, 1, 0, 3, 6, 5, 4, 7, 
 				10, 9, 8, 11, 14, 13, 12, 15,
@@ -457,6 +481,8 @@ namespace s3d
 				t = ::_mm256_shuffle_epi8(t, mask);
 				::_mm256_store_si256(ptr, t);
 			}
+
+			BGRAtoRGBA_plain((pixels + loopCount * 8), (pixelCount % 8));
 		}
 
 	# endif
@@ -550,3 +576,5 @@ namespace s3d
 		return BGRAtoRGBA_plain(m_pixels.data(), m_pixels.size());
 	}
 }
+
+# undef SIV3D_IMAGE_TARGET_AVX2
