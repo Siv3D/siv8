@@ -331,19 +331,20 @@ namespace
 	void CheckSuperEllipsePolygonal(const SuperEllipse& shape, const Triangle& triangle,
 		const bool overlaps, const bool intersects)
 	{
-		auto Check = [&](const auto& other)
+		auto Check = [&](const char* shapeType, const auto& other)
 		{
+			CAPTURE(shapeType);
 			CHECK(Geometry2D::Overlaps(shape, other) == overlaps);
 			CHECK(Geometry2D::Overlaps(other, shape) == overlaps);
 			CHECK(Geometry2D::Intersects(shape, other) == intersects);
 			CHECK(Geometry2D::Intersects(other, shape) == intersects);
 		};
-		Check(triangle);
-		Check(Quad{ triangle.p0, triangle.p1, triangle.p2, triangle.p2 });
+		Check("Triangle", triangle);
+		Check("Quad", Quad{ triangle.p0, triangle.p1, triangle.p2, triangle.p2 });
 		const Polygon polygon = triangle.asPolygon();
 		REQUIRE(not polygon.isEmpty());
-		Check(polygon);
-		Check(MultiPolygon{ Polygon{}, polygon });
+		Check("Polygon", polygon);
+		Check("MultiPolygon", MultiPolygon{ Polygon{}, polygon });
 	}
 }
 

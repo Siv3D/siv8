@@ -156,6 +156,62 @@ TEST_CASE("Geometry2D.Overlaps.Quad")
 	CHECK(not Geometry2D::Overlaps(quad, pointCollapse));
 }
 
+TEST_CASE("Geometry2D.Overlaps.Quad.small_translated")
+{
+	constexpr double step = 0.000244140625;
+	for (const Vec2 offset : { Vec2{ 0, 0 }, Vec2{ 134217728, -134217728 }, Vec2{ 1.0e10, -1.0e10 } })
+	{
+		const RectF bounds{ offset - Vec2{ 2, 2 }, 4, 4 };
+		const Polygon polygon = bounds.asPolygon();
+		REQUIRE(not polygon.isEmpty());
+		for (const Vec2 reflection : { Vec2{ 1, 1 }, Vec2{ -1, 1 }, Vec2{ 1, -1 }, Vec2{ -1, -1 } })
+		{
+			auto At = [&](const Vec2& point) { return (point * reflection + offset); };
+			const Vec2 a = At({ 0, 0 });
+			const Vec2 b = At({ step, 0 });
+			const Vec2 c = At({ step, step });
+			const Vec2 d = At({ 0, step });
+			CAPTURE(offset, reflection);
+			auto Check = [&](const Quad& quad, const bool expected)
+			{
+				CAPTURE(quad, expected);
+				auto CheckPair = [&](const char* shapeType, const auto& other)
+				{
+					CAPTURE(shapeType);
+					CHECK(Geometry2D::Overlaps(quad, other) == expected);
+					CHECK(Geometry2D::Overlaps(other, quad) == expected);
+				};
+				CheckPair("RectF", bounds);
+				CheckPair("Circle", Circle{ offset, 2 });
+				CheckPair("Ellipse", Ellipse{ offset, 2, 3 });
+				CheckPair("SuperEllipse", SuperEllipse{ offset, 2, 3, 4 });
+				CheckPair("Triangle", Triangle{ bounds.tl(), bounds.tr(), offset + Vec2{ 0, 2 } });
+				CheckPair("Quad", Quad{ bounds.tl(), bounds.tr(), bounds.br(), bounds.bl() });
+				CheckPair("RoundRect", RoundRect{ bounds, 1 });
+				CheckPair("Polygon", polygon);
+				CheckPair("MultiPolygon", MultiPolygon{ polygon });
+			};
+			Check(Quad{ a, b, c, d }, true);
+			Check(Quad{ a, b, c, c }, true);
+			Check(Quad{ a, b, b, c }, true);
+			Check(Quad{ a, a, b, c }, true);
+			Check(Quad{ a, b, c, a }, true);
+			Check(Quad{ a, b, b, a }, false);
+			Check(Quad{ a, a, b, b }, false);
+			Check(Quad{ a, a, a, a }, false);
+			const Vec2 e = At({ 0.1, -0.3 });
+			const Vec2 f = At({ 0.7, 0.2 });
+			Check(Quad{ e, f, f, e }, false);
+			Check(Quad{ e, e, f, f }, false);
+
+			const Quad square{ a, b, c, d };
+			CHECK(Geometry2D::Overlaps(square, square));
+			CHECK_FALSE(Geometry2D::Overlaps(square, square.movedBy(step * reflection.x, 0)));
+			CHECK_FALSE(Geometry2D::Overlaps(square, square.movedBy(2 * step * reflection.x, 0)));
+		}
+	}
+}
+
 TEST_CASE("Geometry2D.Overlaps.Polygon_MultiPolygon")
 {
 	const Polygon polygon{ Array<Vec2>{ Vec2{ 0, 0 }, Vec2{ 10, 0 }, Vec2{ 10, 10 }, Vec2{ 0, 10 } } };

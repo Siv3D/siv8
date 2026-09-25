@@ -60,15 +60,10 @@ namespace s3d
 		}
 
 		[[nodiscard]]
-		constexpr bool HasPositiveArea(const Quad& quad) noexcept
+		bool HasPositiveArea(const Quad& quad) noexcept
 		{
-			const double twiceArea =
-				quad.p0.cross(quad.p1)
-				+ quad.p1.cross(quad.p2)
-				+ quad.p2.cross(quad.p3)
-				+ quad.p3.cross(quad.p0);
-
-			return (twiceArea != 0.0);
+			// Use coordinate differences to avoid cancellation after translation.
+			return (detail::PolygonCross((quad.p2 - quad.p0), (quad.p3 - quad.p1)) != 0.0);
 		}
 
 		[[nodiscard]]
