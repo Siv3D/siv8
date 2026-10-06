@@ -3060,7 +3060,6 @@
 		F9D41B872C56057700290998 /* PatternType.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7D2C56057700290998 /* PatternType.hpp */; };
 		F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F9D41B7E2C56057700290998 /* PolkaDot.hpp */; };
 		C94BD36A8015474EA6324EE1 /* Halftone.hpp in Headers */ = {isa = PBXBuildFile; fileRef = C94BD36A8015474EA6324EE2 /* Halftone.hpp */; };
-		D845EB69276147C8B56FC101 /* Wave.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D845EB69276147C8B56FC102 /* Wave.hpp */; };
 		E928752BE27A427C911BFA01 /* Ripple.hpp in Headers */ = {isa = PBXBuildFile; fileRef = E928752BE27A427C911BFA02 /* Ripple.hpp */; };
 		AC39F10246D748B290BDF001 /* Weave.hpp in Headers */ = {isa = PBXBuildFile; fileRef = AC39F10246D748B290BDF002 /* Weave.hpp */; };
 		BE294983A7514B508DCCB001 /* Truchet.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BE294983A7514B508DCCB002 /* Truchet.hpp */; };
@@ -15561,7 +15560,6 @@
 				F980C41E2C004B3000A86B68 /* MSAASampleCount.hpp in Headers */,
 				F9D41B882C56057700290998 /* PolkaDot.hpp in Headers */,
 				C94BD36A8015474EA6324EE1 /* Halftone.hpp in Headers */,
-				D845EB69276147C8B56FC101 /* Wave.hpp in Headers */,
 				E928752BE27A427C911BFA01 /* Ripple.hpp in Headers */,
 				AC39F10246D748B290BDF001 /* Weave.hpp in Headers */,
 				BE294983A7514B508DCCB001 /* Truchet.hpp in Headers */,
