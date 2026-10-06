@@ -77,4 +77,4 @@ These dependencies are used by the test executable only.
 
 Name | Version
 --- | ---
-[Catch2](https://github.com/catchorg/Catch2/releases/tag/v3.16.0) | v3.16.0
+[Catch2](https://github.com/catchorg/Catch2) | v3.16.0
