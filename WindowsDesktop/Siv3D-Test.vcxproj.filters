@@ -199,6 +199,12 @@
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_CursorTransform.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Test\Test_Transformer2D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Pattern.cpp">
       <Filter>Test</Filter>
     </ClCompile>

@@ -24,7 +24,7 @@ namespace s3d
 	////////////////////////////////////////////////////////////////
 
 	/// @brief 2D 座標変換スコープオブジェクト
-	/// @remark このオブジェクトが存在するスコープでは、2D 描画とマウスカーソル座標に、指定した座標変換行列が適用されます。
+	/// @remark スコープ内の 2D 描画を変換し、必要に応じてカーソル座標を補正します。破棄時に以前の状態を復元します。
 	class Transformer2D
 	{
 	public:
@@ -63,14 +63,14 @@ namespace s3d
 
 		/// @brief 2D 座標変換スコープオブジェクトを作成します。
 		/// @param transform 2D 描画に適用する座標変換行列
-		/// @param transformCursor transform をマウスカーソル座標にも適用する場合 `TransformCursor::Yes`, それ以外の場合は `TransformCursor::No`
+		/// @param transformCursor カーソル座標を transform の変換前の座標系で取得する場合 `TransformCursor::Yes`, カーソル変換を変更しない場合 `TransformCursor::No`
 		/// @param target 適用方法
 		[[nodiscard]]
 		explicit Transformer2D(const Mat3x2& transform, TransformCursor transformCursor = TransformCursor::No, Target target = Target::PushLocal);
 
 		/// @brief 2D 座標変換スコープオブジェクトを作成します。
 		/// @param graphics2DTransform 2D 描画に適用する座標変換行列
-		/// @param cursorTransform マウスカーソル座標に適用する座標変換行列
+		/// @param cursorTransform カーソル補正に使う順方向の座標変換行列。座標取得時は合成行列の逆変換を使用します。
 		/// @param target 適用方法
 		[[nodiscard]]
 		Transformer2D(const Mat3x2& graphics2DTransform, const Mat3x2& cursorTransform, Target target = Target::PushLocal);

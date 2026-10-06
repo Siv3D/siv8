@@ -28,11 +28,13 @@ namespace s3d
 			
 		Mat3x2 allInv		= Mat3x2::Identity();
 
-		void setLocal(const Mat3x2& matrix) noexcept;
+		bool setLocal(const Mat3x2& matrix) noexcept;
 
-		void setCamera(const Mat3x2& matrix) noexcept;
+		bool setCamera(const Mat3x2& matrix) noexcept;
 
-		void setBaseWindow(const std::pair<double, RectF>& letterboxComposition) noexcept;
+		bool setBaseWindow(const std::pair<double, RectF>& letterboxComposition) noexcept;
+
+	private:
 
 		void updateAll() noexcept;
 	};

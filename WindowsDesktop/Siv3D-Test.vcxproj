@@ -130,6 +130,8 @@
     <ClCompile Include="..\Test\Test_Mat3x3.cpp" />
     <ClCompile Include="..\Test\Test_QuadWarp.cpp" />
     <ClCompile Include="..\Test\Test_Graphics2DScaling.cpp" />
+    <ClCompile Include="..\Test\Test_CursorTransform.cpp" />
+    <ClCompile Include="..\Test\Test_Transformer2D.cpp" />
     <ClCompile Include="..\Test\Test_Pattern.cpp" />
     <ClCompile Include="..\Test\Test_MSDFFont.cpp" />
     <ClCompile Include="..\Test\Test_FontGlyph.cpp" />

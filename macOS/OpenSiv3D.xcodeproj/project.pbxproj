@@ -20,6 +20,8 @@
 		8BE058AFFF786F7654F81743 /* Test_QuadWarp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2398C4F19741DF4FC7A7B014 /* Test_QuadWarp.cpp */; };
 		088E1A2CAC7A8EAF8546CE9D /* Test_Mat3x3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */; };
 		63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */; };
+		BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */; };
+		B41EA25ECAF34CDFB4344D5A /* Test_CursorTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC898E0475004477BD7D4CD6 /* Test_CursorTransform.cpp */; };
 		7FDD8DF2077848B08664D6C6 /* Test_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */; };
 		274DAAE4D4F84549B306E8E5 /* Test_MSDFFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 70D17B3F399D431B9A98A55C /* Test_MSDFFont.cpp */; };
 		BDED970258CDCB36956064F8 /* Test_FontGlyph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49B271520CBD0A5ACF08FF2B /* Test_FontGlyph.cpp */; };
@@ -3368,6 +3370,8 @@
 		2398C4F19741DF4FC7A7B014 /* Test_QuadWarp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_QuadWarp.cpp; sourceTree = "<group>"; };
 		1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mat3x3.cpp; sourceTree = "<group>"; };
 		D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Graphics2DScaling.cpp; sourceTree = "<group>"; };
+		BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Transformer2D.cpp; sourceTree = "<group>"; };
+		AC898E0475004477BD7D4CD6 /* Test_CursorTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_CursorTransform.cpp; sourceTree = "<group>"; };
 		1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Pattern.cpp; sourceTree = "<group>"; };
 		70D17B3F399D431B9A98A55C /* Test_MSDFFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_MSDFFont.cpp; sourceTree = "<group>"; };
 		49B271520CBD0A5ACF08FF2B /* Test_FontGlyph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_FontGlyph.cpp; sourceTree = "<group>"; };
@@ -7118,6 +7122,8 @@
 				2398C4F19741DF4FC7A7B014 /* Test_QuadWarp.cpp */,
 				1F7EDA0CBBD6FD59A5CAC880 /* Test_Mat3x3.cpp */,
 				D9F637C94FFA43FFA52F17B0 /* Test_Graphics2DScaling.cpp */,
+				BF484E95C9CB48F3A63E97CF /* Test_Transformer2D.cpp */,
+				AC898E0475004477BD7D4CD6 /* Test_CursorTransform.cpp */,
 				1DF23788EB944FF09F3D88D4 /* Test_Pattern.cpp */,
 				70D17B3F399D431B9A98A55C /* Test_MSDFFont.cpp */,
 				49B271520CBD0A5ACF08FF2B /* Test_FontGlyph.cpp */,
@@ -16717,6 +16723,8 @@
 				8BE058AFFF786F7654F81743 /* Test_QuadWarp.cpp in Sources */,
 				088E1A2CAC7A8EAF8546CE9D /* Test_Mat3x3.cpp in Sources */,
 				63D0EF0156114F15BD644040 /* Test_Graphics2DScaling.cpp in Sources */,
+				BF0DBDAAA07441748AE5EEE2 /* Test_Transformer2D.cpp in Sources */,
+				B41EA25ECAF34CDFB4344D5A /* Test_CursorTransform.cpp in Sources */,
 				7FDD8DF2077848B08664D6C6 /* Test_Pattern.cpp in Sources */,
 				274DAAE4D4F84549B306E8E5 /* Test_MSDFFont.cpp in Sources */,
 				BDED970258CDCB36956064F8 /* Test_FontGlyph.cpp in Sources */,

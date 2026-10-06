@@ -13,22 +13,41 @@
 
 namespace s3d
 {
-	void CursorTransform::setLocal(const Mat3x2& matrix) noexcept
+	bool CursorTransform::setLocal(const Mat3x2& matrix) noexcept
 	{
+		if (local == matrix)
+		{
+			return false;
+		}
+
 		local = matrix;
 		updateAll();
+		return true;
 	}
 
-	void CursorTransform::setCamera(const Mat3x2& matrix) noexcept
+	bool CursorTransform::setCamera(const Mat3x2& matrix) noexcept
 	{
+		if (camera == matrix)
+		{
+			return false;
+		}
+
 		camera = matrix;
 		updateAll();
+		return true;
 	}
 
-	void CursorTransform::setBaseWindow(const std::pair<double, RectF>& letterboxComposition) noexcept
+	bool CursorTransform::setBaseWindow(const std::pair<double, RectF>& letterboxComposition) noexcept
 	{
-		baseWindow = Mat3x2::Scale(letterboxComposition.first).translated(letterboxComposition.second.pos);
+		const Mat3x2 matrix = Mat3x2::Scale(letterboxComposition.first).translated(letterboxComposition.second.pos);
+		if (baseWindow == matrix)
+		{
+			return false;
+		}
+
+		baseWindow = matrix;
 		updateAll();
+		return true;
 	}
 
 	void CursorTransform::updateAll() noexcept
