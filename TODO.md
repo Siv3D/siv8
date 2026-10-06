@@ -40,10 +40,17 @@
 - Caps Lock の物理的な押下とロック状態の公開契約を分けて検討する。Fn / Globe は通常のキーイベントと同じではなく、`flagsChanged:` と OS のショートカット設定を含めた設計が必要。単にトークンを追加して対応済みとはしない。
 - 1 フレーム内の押下・解放の取りこぼし対策は、イベント蓄積と `down()` / `up()` の同時成立の契約を決めてから行う。入力ソース変更後のキー名更新、IME の文字入力、メディア・輝度キーの収集も別途設計する。
 
+## `Siv3D/include/Siv3D/ScreenCapture.hpp`
+
+### 保存先パスの契約
+
+- `SaveCurrentFrame(U"/private/tmp/shot0.png")` が、macOS で `~/Pictures/Screenshot//private/tmp/shot0.png` に保存される。現在の `CScreenCapture.cpp` の保存処理は設定済みディレクトリと引数を単純連結し、公開ヘッダは引数を「ファイル名」としている。絶対パスをそのまま使うか、保存先からの相対指定に限定して絶対パスを拒否するか、既存利用との互換性を含めて決める。
+- ファイル名・相対サブディレクトリ・絶対パス・末尾区切りのない保存先・空の引数の扱いを整理し、Doxygen と専用の保存先テストを揃える。空の引数は現在、ファイル保存を伴わないキャプチャ要求として使われるため、その用途を維持する。Windows のドライブ文字・UNC パスは Windows 上で確認する。
+
 ## Renderer2D / 組み込みシェーダ最適化
 
 - [D3D11 / Metal 統合計画](docs/renderer2d/proposals/shader-optimization-plan.md)の初期 3 段階（A2 Truchet、A1 Pattern 色加算、A4 MSDF 除算）は、D3D11 の変更前後の描画 A/B、両バックエンドの GPU 時間評価を残している。中間命令の削減を実行時間の改善率とみなさず、描画比較と安定した反復計測を踏まえて最終判断する。新たな最適化の着手前には方針・変更箇所・期待結果を説明して承認を得る。
-- ScopedQuadWarp2D: Windows で起動時コンパイルを実行して `2d.vs` / `2d_pattern.vs` と関連 PS の配布バイナリを再生成し、定数配置・関連テスト・全自動テストを検証する。macOS の実行結果とは別に確認する。
+- ScopedQuadWarp2D: Windows で起動時コンパイルを実行して `2d.vs` / `2d_pattern.vs` と関連 PS の配布バイナリを再生成し、定数配置・関連テスト・全自動テストを検証する。[ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) の固定姿勢・Space 比較も確認する。引き継いだ目視結果は macOS Debug のみで、Windows の描画検証を代替しない。
 - Truchet の配置分岐は D3D11 の `[branch]` を先に測り、Metal に同じ変更が必要とは仮定しない。
 - Triangle の skew 共通化と Weave の微分共有は画質差を評価してから判断する。Pattern UV の VS 移動、背景色・MSDF 寸法の CPU 前計算、Metal の half / アドレス空間変更は、残る負荷と互換性・状態管理の費用を根拠に再評価する。
 - Windows の通常起動の全シェーダ再コンパイルを外す場合は、配布バイナリの生成・更新漏れを防ぐ手順を同時に整える。Metal の初回 PSO 費用は別途計測し、頻出組み合わせの事前生成、必要なら Binary Archive を検討する。
@@ -73,6 +80,13 @@
 - DirectXMath の `XMQuaternionSquad()` と `XMQuaternionSquadSetup()` の利用を前提にする。
 - 単位クォータニオンの事前条件、符号の選択、補間係数をクランプするかを明文化する。
 - 出力参照形式にするか、制御点を保持する専用型を導入するかを決める。
+
+## `Siv3D/include/Siv3D/Mat3x3.hpp`
+
+### 3D 回転した平面の射影行列生成
+
+- [ポストカードの手動テスト](Test/Manual/ScopedQuadWarp2D.md) では、矩形を Quaternion で回転し、四隅を透視投影して `TryHomography()` に渡す処理を呼び出し側で組み立てている。矩形・3D 回転・焦点距離・表示中心から行列を生成するヘルパーの必要性を評価する。API 名・配置・採用は未決定で、具体案は `docs/renderer2d/proposals/` にまとめて採否を判断する。
+- `ScopedQuadWarp2D` の描画状態管理と行列生成の責務を分け、回転中心、座標系・回転順、焦点距離、同次座標 W が 0 以下になる場合や退化時の失敗契約を決める。四隅からホモグラフィを解く方法と回転・射影から直接行列を作る方法を、計算量と既存 API の再利用の観点で比較する。頻繁に呼ばれる処理へ例外入力対策を追加する場合は事前に承認を得る。
 
 ## `Siv3D/include/Siv3D/Mat4x4.hpp`
 
