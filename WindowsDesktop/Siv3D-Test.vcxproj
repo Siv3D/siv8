@@ -129,6 +129,7 @@
     <ClCompile Include="..\Test\Test_ScopeExit.cpp" />
     <ClCompile Include="..\Test\Test_Smooth.cpp" />
     <ClCompile Include="..\Test\Test_Quaternion.cpp" />
+    <ClCompile Include="..\Test\Test_RandomVec3.cpp" />
     <ClCompile Include="..\Test\Test_Mat3x2.cpp" />
     <ClCompile Include="..\Test\Test_Mat3x3.cpp" />
     <ClCompile Include="..\Test\Test_QuadWarp.cpp" />

@@ -58,6 +58,7 @@
 		A5CA1E9EBCFD4A949D025DA1 /* Test_MappedMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 927C51C0C4914367BB10A3E9 /* Test_MappedMemory.cpp */; };
 		A5D4F40030A5000000000001 /* Test_SimdFloat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */; };
 		A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F41030A5000000000002 /* Test_Quaternion.cpp */; };
+		D8F8E9C715334147BBBDCD2B /* Test_RandomVec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B326556F96D34F0A81DE7B33 /* Test_RandomVec3.cpp */; };
 		A5D4F42030A5000000000001 /* Test_Mat4x4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F42030A5000000000002 /* Test_Mat4x4.cpp */; };
 		A5D4F43030A5000000000001 /* Test_Mesh3DBoxShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F43030A5000000000002 /* Test_Mesh3DBoxShell.cpp */; };
 		A5D4F44030A5000000000001 /* Test_Mesh3DBoxFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A5D4F44030A5000000000002 /* Test_Mesh3DBoxFrame.cpp */; };
@@ -2559,7 +2560,9 @@
 		F98605EE2BE61564006A4C0F /* RandomColor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605EA2BE61563006A4C0F /* RandomColor.hpp */; };
 		F98605EF2BE61564006A4C0F /* RandomPoint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605EB2BE61564006A4C0F /* RandomPoint.hpp */; };
 		F98605F02BE61564006A4C0F /* RandomVec2.hpp in Headers */ = {isa = PBXBuildFile; fileRef = F98605EC2BE61564006A4C0F /* RandomVec2.hpp */; };
+		E345BB1358FE4D6D8C41D0A0 /* RandomVec3.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 8EA19ECF820B4CCEB333DC9B /* RandomVec3.hpp */; };
 		F98605F82BE61586006A4C0F /* RandomVec2.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F12BE61586006A4C0F /* RandomVec2.ipp */; };
+		E60B33AC5BA743C5842BC7FB /* RandomVec3.ipp in Headers */ = {isa = PBXBuildFile; fileRef = BA60C449559A46E5A69415F0 /* RandomVec3.ipp */; };
 		F98605F92BE61586006A4C0F /* RandomColor.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F22BE61586006A4C0F /* RandomColor.ipp */; };
 		F98605FA2BE61586006A4C0F /* RandomVec4.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F32BE61586006A4C0F /* RandomVec4.ipp */; };
 		F98605FB2BE61586006A4C0F /* Line.ipp in Headers */ = {isa = PBXBuildFile; fileRef = F98605F42BE61586006A4C0F /* Line.ipp */; };
@@ -3409,6 +3412,7 @@
 		A403899099D54D8E9C9D0A6C /* Test_MetalFrameErrors.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Test_MetalFrameErrors.cpp; sourceTree = "<group>"; };
 		A5D4F40030A5000000000002 /* Test_SimdFloat4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_SimdFloat4.cpp; sourceTree = "<group>"; };
 		A5D4F41030A5000000000002 /* Test_Quaternion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Quaternion.cpp; sourceTree = "<group>"; };
+		B326556F96D34F0A81DE7B33 /* Test_RandomVec3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_RandomVec3.cpp; sourceTree = "<group>"; };
 		A5D4F42030A5000000000002 /* Test_Mat4x4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mat4x4.cpp; sourceTree = "<group>"; };
 		A5D4F43030A5000000000002 /* Test_Mesh3DBoxShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DBoxShell.cpp; sourceTree = "<group>"; };
 		A5D4F44030A5000000000002 /* Test_Mesh3DBoxFrame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Mesh3DBoxFrame.cpp; sourceTree = "<group>"; };
@@ -5095,7 +5099,9 @@
 		F98605EA2BE61563006A4C0F /* RandomColor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomColor.hpp; sourceTree = "<group>"; };
 		F98605EB2BE61564006A4C0F /* RandomPoint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomPoint.hpp; sourceTree = "<group>"; };
 		F98605EC2BE61564006A4C0F /* RandomVec2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec2.hpp; sourceTree = "<group>"; };
+		8EA19ECF820B4CCEB333DC9B /* RandomVec3.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec3.hpp; sourceTree = "<group>"; };
 		F98605F12BE61586006A4C0F /* RandomVec2.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec2.ipp; sourceTree = "<group>"; };
+		BA60C449559A46E5A69415F0 /* RandomVec3.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec3.ipp; sourceTree = "<group>"; };
 		F98605F22BE61586006A4C0F /* RandomColor.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomColor.ipp; sourceTree = "<group>"; };
 		F98605F32BE61586006A4C0F /* RandomVec4.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RandomVec4.ipp; sourceTree = "<group>"; };
 		F98605F42BE61586006A4C0F /* Line.ipp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Line.ipp; sourceTree = "<group>"; };
@@ -7159,6 +7165,7 @@
 				F9528B812BBC164800222F45 /* Test_ScopeExit.cpp */,
 				F9A000042FC0000000000001 /* Test_Smooth.cpp */,
 				A5D4F41030A5000000000002 /* Test_Quaternion.cpp */,
+				B326556F96D34F0A81DE7B33 /* Test_RandomVec3.cpp */,
 				A5D4F4A030A5000000000002 /* Test_Cylindrical.cpp */,
 				A5D4F4B030A5000000000002 /* Test_Spherical.cpp */,
 				4EC317F48291429EB673AEA0 /* Test_Mat3x2.cpp */,
@@ -7692,6 +7699,7 @@
 				F9070B992B9F175000383E4D /* RandomDuration.ipp */,
 				F98605F52BE61586006A4C0F /* RandomPoint.ipp */,
 				F98605F12BE61586006A4C0F /* RandomVec2.ipp */,
+				BA60C449559A46E5A69415F0 /* RandomVec3.ipp */,
 				F98605F32BE61586006A4C0F /* RandomVec4.ipp */,
 				F97E6DB42D7A89F10066E408 /* RangeFormatter.ipp */,
 				F980C4332C00D2DF00A86B68 /* RasterizerState.ipp */,
@@ -8126,6 +8134,7 @@
 				F9070C1B2B9F175000383E4D /* RandomDuration.hpp */,
 				F98605EB2BE61564006A4C0F /* RandomPoint.hpp */,
 				F98605EC2BE61564006A4C0F /* RandomVec2.hpp */,
+				8EA19ECF820B4CCEB333DC9B /* RandomVec3.hpp */,
 				F98605E92BE61563006A4C0F /* RandomVec4.hpp */,
 				F9E7945E2C198133002615BA /* RangeConcepts.hpp */,
 				F97E6DB22D7A89CF0066E408 /* RangeFormatter.hpp */,
@@ -15433,6 +15442,7 @@
 				F98601FE2BCFBB53006A4C0F /* SkMipmap.h in Headers */,
 				F98602FA2BCFBB54006A4C0F /* SkOpts_RestoreTarget.h in Headers */,
 				F98605F02BE61564006A4C0F /* RandomVec2.hpp in Headers */,
+				E345BB1358FE4D6D8C41D0A0 /* RandomVec3.hpp in Headers */,
 				F986044D2BCFBB54006A4C0F /* SkSLVariableReference.h in Headers */,
 				F986001F2BCFBB53006A4C0F /* SkImageGenerator.h in Headers */,
 				F986018D2BCFBB53006A4C0F /* SkCompressedDataUtils.h in Headers */,
@@ -15581,6 +15591,7 @@
 				F986F82B2BC7B00A006A4C0F /* INISection.hpp in Headers */,
 				F9F00A402CC7F5FB0097C165 /* PolygonBuffer.hpp in Headers */,
 				F98605F82BE61586006A4C0F /* RandomVec2.ipp in Headers */,
+				E60B33AC5BA743C5842BC7FB /* RandomVec3.ipp in Headers */,
 				F934BD9F2BFA59320003EAD5 /* HLSL.hpp in Headers */,
 				F986024C2BCFBB54006A4C0F /* SkRectPriv.h in Headers */,
 				F980C4952C04B43300A86B68 /* FloatRect.ipp in Headers */,
@@ -16722,6 +16733,7 @@
 				F9A000012FC0000000000001 /* Test_HSV.cpp in Sources */,
 				F9A000032FC0000000000001 /* Test_Smooth.cpp in Sources */,
 				A5D4F41030A5000000000001 /* Test_Quaternion.cpp in Sources */,
+				D8F8E9C715334147BBBDCD2B /* Test_RandomVec3.cpp in Sources */,
 				A5D4F4A030A5000000000001 /* Test_Cylindrical.cpp in Sources */,
 				A5D4F4B030A5000000000001 /* Test_Spherical.cpp in Sources */,
 				5F6B30571A8B487F8EDD0E68 /* Test_Mat3x2.cpp in Sources */,

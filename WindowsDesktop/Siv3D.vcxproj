@@ -414,6 +414,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomDuration.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomPoint.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec2.ipp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec3.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RandomVec4.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RasterizerState.ipp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\detail\RasterizerStateBuilder.ipp" />
@@ -632,6 +633,7 @@
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomDuration.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomPoint.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec2.hpp" />
+    <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec3.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RandomVec4.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RangeConcepts.hpp" />
     <ClInclude Include="..\Siv3D\include\Siv3D\RasterizerState.hpp" />
