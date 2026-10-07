@@ -19,14 +19,35 @@ namespace s3d
 	//
 	////////////////////////////////////////////////////////////////
 
+	constexpr MemoryReader::MemoryReader(MemoryReader&& other) noexcept
+		: m_blob{ std::move(other.m_blob) }
+		, m_pos{ std::exchange(other.m_pos, 0) } {}
+
 	inline MemoryReader::MemoryReader(const void* data, const size_t size_bytes)
 		: m_blob{ data, size_bytes } {}
 
-	constexpr MemoryReader::MemoryReader(const Blob& blob) noexcept
+	constexpr MemoryReader::MemoryReader(const Blob& blob)
 		: m_blob{ blob } {}
 
 	constexpr MemoryReader::MemoryReader(Blob&& blob) noexcept
 		: m_blob{ std::move(blob) } {}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	operator =
+	//
+	////////////////////////////////////////////////////////////////
+
+	constexpr MemoryReader& MemoryReader::operator =(MemoryReader&& other) noexcept
+	{
+		if (this != std::addressof(other))
+		{
+			m_blob = std::move(other.m_blob);
+			m_pos = std::exchange(other.m_pos, 0);
+		}
+
+		return *this;
+	}
 
 	////////////////////////////////////////////////////////////////
 	//
@@ -102,7 +123,7 @@ namespace s3d
 
 	constexpr int64 MemoryReader::skip(const int64 offset)
 	{
-		return (m_pos = Clamp<int64>((m_pos + offset), 0, m_blob.ssize()));
+		return (m_pos += Clamp<int64>(offset, -m_pos, (m_blob.ssize() - m_pos)));
 	}
 
 	////////////////////////////////////////////////////////////////

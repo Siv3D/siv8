@@ -295,6 +295,9 @@
     <ClCompile Include="..\Test\Test_Blob.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="..\Test\Test_MemoryReader.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
     <ClCompile Include="..\Test\Test_Wave.cpp">
       <Filter>Test</Filter>
     </ClCompile>

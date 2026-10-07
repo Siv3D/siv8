@@ -98,7 +98,7 @@ namespace s3d
 
 	constexpr int64 MemoryViewReader::skip(const int64 offset)
 	{
-		return (m_pos = Clamp<int64>((m_pos + offset), 0, m_size));
+		return (m_pos += Clamp<int64>(offset, -m_pos, (m_size - m_pos)));
 	}
 
 	////////////////////////////////////////////////////////////////
