@@ -13,26 +13,11 @@
 # include <Siv3D/LineCap.hpp>
 # include <Siv3D/FloatFormatter.hpp>
 # include <Siv3D/Geometry2D/BezierGeometry.hpp>
+# include "Bezier3ArcLength.hpp"
+# include "Bezier3Flatten.hpp"
 
 namespace s3d
 {
-	namespace
-	{
-		constexpr double GL5_X[5] =
-		{
-			0.0,
-			-0.5384693101056831,  0.5384693101056831,
-			-0.9061798459386640,  0.9061798459386640
-		};
-
-		constexpr double GL5_W[5] =
-		{
-			0.5688888888888889,
-			0.4786286704993665,  0.4786286704993665,
-			0.2369268850561891,  0.2369268850561891
-		};
-	}
-
 	////////////////////////////////////////////////////////////////
 	//
 	//	tangentAt
@@ -116,17 +101,7 @@ namespace s3d
 
 	double Bezier3::computeLength() const noexcept
 	{
-		constexpr int32 N = 32;
-		double sum = 0.0;
-
-		for (int32 i = 0; i < N; ++i)
-		{
-			const double a = (static_cast<double>(i) / N);
-			const double b = (static_cast<double>(i + 1) / N);
-			sum += integrateSpeed(a, b);
-		}
-
-		return sum;
+		return detail::BuildBezier3ArcLengthTable(*this).length();
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -137,106 +112,11 @@ namespace s3d
 
 	double Bezier3::computeTAtDistance(const double distanceFromStart) const noexcept
 	{
-		constexpr int32 N = 32;
-		constexpr double invN = (1.0 / static_cast<double>(N));
-
-		// 端の扱い
 		if (distanceFromStart <= 0.0)
 		{
 			return 0.0;
 		}
-
-		// 累積弧長テーブル
-		double cum[N + 1]{};
-
-		for (int32 i = 0; i < N; ++i)
-		{
-			const double a = (static_cast<double>(i) * invN);
-			const double b = (static_cast<double>(i + 1) * invN);
-			cum[i + 1] = (cum[i] + integrateSpeed(a, b));
-		}
-
-		const double total = cum[N];
-		if (!(total > 0.0))
-		{
-			return 0.0; // 退化（ほぼ長さ 0）
-		}
-
-		if (distanceFromStart >= total)
-		{
-			return 1.0;
-		}
-
-		// distanceFromStart が入る区間を探す（cum[i] <= s < cum[i+1]）
-		int32 seg = 0;
-		{
-			int32 lo = 0, hi = N;
-			while (lo < hi)
-			{
-				const int32 mid = (lo + hi) >> 1;
-				if (cum[mid] < distanceFromStart) lo = mid + 1;
-				else              hi = mid;
-			}
-			seg = (lo > 0) ? (lo - 1) : 0;
-			if (seg >= N) seg = N - 1;
-		}
-
-		const double a = (static_cast<double>(seg) * invN);
-		const double b = (static_cast<double>(seg + 1) * invN);
-		const double segLen = (cum[seg + 1] - cum[seg]);
-
-		// 初期推定（区間内線形補間）
-		double t = (0.5 * (a + b));
-		if (0.0 < segLen)
-		{
-			const double u = ((distanceFromStart - cum[seg]) / segLen); // 0..1
-			t = (a + (b - a) * Clamp(u, 0.0, 1.0));
-		}
-
-		// 収束条件（相対＋絶対）
-		const double tol = (1e-6 * total + 1e-9);
-
-		// bracket
-		double loT = a;
-		double hiT = b;
-
-		// 保証付き Newton（区間外に出たら二分へフォールバック）
-		constexpr int32 maxIter = 12;
-		constexpr double fpEps = 1e-12;
-
-		for (int32 it = 0; it < maxIter; ++it)
-		{
-			t = Clamp(t, loT, hiT);
-
-			// L(t) = cum[seg] + ∫[a,t] |B'(u)| du
-			const double Lt = (cum[seg] + integrateSpeed(a, t));
-			const double f = (Lt - distanceFromStart);
-
-			if (Abs(f) <= tol)
-			{
-				return t;
-			}
-
-			// bracket update
-			if (f < 0.0) loT = t;
-			else         hiT = t;
-
-			const double fp = speed(t);
-
-			double tNew = (0.5 * (loT + hiT)); // fallback
-			if (fpEps < fp)
-			{
-				tNew = t - (f / fp);
-				if (!(tNew > loT && tNew < hiT))
-				{
-					tNew = (0.5 * (loT + hiT));
-				}
-			}
-
-			t = tNew;
-		}
-
-		return Clamp(t, a, b);
+		return detail::Bezier3TAtDistance(*this, detail::BuildBezier3ArcLengthTable(*this), distanceFromStart);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -309,134 +189,10 @@ namespace s3d
 
 	LineString Bezier3::toLineStringAdaptive(const double maxError, const int32 maxDepth) const
 	{
-		LineString polyline;
-		polyline.reserve(65);
-
-		polyline.push_back(p0);
-		Vec2 lastPushed = p0;
-
-		const double kNearlyZeroSq = 1e-12;
-		const double maxErrorSq = (maxError * maxError);
-		const int32  depthLimit = Max(0, maxDepth);
-
-		// 平坦度判定の閾値（ (cross^2) <= (error^2*|chord|^2) ）
-		// ※ Bezier2 版は係数 4 を使っているが、Bezier3 は制御点が2つなので安全側に 4 を維持
-		const double flatnessK = (4.0 * maxErrorSq);
-
-		// 極短区間の早期終了
-		const double shortSegmentSq = (maxErrorSq * 0.25);
-
-		auto PushUnique = [&](const Vec2& p)
-		{
-			if (lastPushed != p)
-			{
-				polyline.push_back(p);
-				lastPushed = p;
-			}
-		};
-
-		auto SubdivideFlatten = [&](auto&& self, const Bezier3& curve, const int32 depth) -> void
-		{
-			const Vec2   chord = (curve.p3 - curve.p0);
-			const double chordLenSq = chord.lengthSq();
-
-			// ケースA: 弦がほぼゼロ長（p0 ≒ p3）
-			if (chordLenSq < kNearlyZeroSq)
-			{
-				const double p0p1LenSq = (curve.p1 - curve.p0).lengthSq();
-				const double p1p2LenSq = (curve.p2 - curve.p1).lengthSq();
-				const double p2p3LenSq = (curve.p3 - curve.p2).lengthSq();
-				const double ctrlSpanSq = Max({ p0p1LenSq, p1p2LenSq, p2p3LenSq });
-
-				// 4点ともほぼ同一点なら退化
-				if (ctrlSpanSq < kNearlyZeroSq)
-				{
-					PushUnique(curve.p3);
-					return;
-				}
-
-				// 深さ上限に達しているなら制御点を残して潰れを防ぐ
-				if (depthLimit <= depth)
-				{
-					PushUnique(curve.p1);
-					PushUnique(curve.p2);
-					PushUnique(curve.p3);
-					return;
-				}
-
-				// 弦がほぼゼロなので平坦度判定は不安定：とにかく分割（t=0.5）
-				const Vec2 p01 = ((curve.p0 + curve.p1) * 0.5);
-				const Vec2 p12 = ((curve.p1 + curve.p2) * 0.5);
-				const Vec2 p23 = ((curve.p2 + curve.p3) * 0.5);
-				const Vec2 p012 = ((p01 + p12) * 0.5);
-				const Vec2 p123 = ((p12 + p23) * 0.5);
-				const Vec2 p0123 = ((p012 + p123) * 0.5);
-
-				self(self, Bezier3{ curve.p0, p01,  p012,  p0123 }, (depth + 1));
-				self(self, Bezier3{ p0123,    p123, p23,   curve.p3 }, (depth + 1));
-				return;
-			}
-
-			// ケースB: 通常の平坦度判定
-			// p1, p2 の弦からのズレを cross で評価（最大のものを採用）
-			const Vec2 v1 = (curve.p1 - curve.p0);
-			const Vec2 v2 = (curve.p2 - curve.p0);
-
-			const double cross1 = chord.cross(v1);
-			const double cross2 = chord.cross(v2);
-
-			double maxCrossAbsSq = (cross1 * cross1);
-			maxCrossAbsSq = Max(maxCrossAbsSq, (cross2 * cross2));
-
-			bool acceptSegment = (maxCrossAbsSq <= (flatnessK * chordLenSq));
-
-			if (acceptSegment)
-			{
-				// 両制御点の射影が弦区間 [p0,p3] に収まることを確認（折り返し/ループ対策）
-				const double dot1 = v1.dot(chord);
-				const double dot2 = v2.dot(chord);
-
-				if ((dot1 < 0.0) || (chordLenSq < dot1) || (dot2 < 0.0) || (chordLenSq < dot2))
-				{
-					acceptSegment = false;
-				}
-			}
-
-			// 平坦とみなせる、または深さ上限に達しているなら p3 を採用
-			if (acceptSegment || (depthLimit <= depth))
-			{
-				PushUnique(curve.p3);
-				return;
-			}
-
-			// 追加の早期終了：弦＋制御多角形が極短ならこれ以上分割しない
-			const double p0p1LenSq = (curve.p1 - curve.p0).lengthSq();
-			const double p1p2LenSq = (curve.p2 - curve.p1).lengthSq();
-			const double p2p3LenSq = (curve.p3 - curve.p2).lengthSq();
-
-			if ((chordLenSq <= shortSegmentSq)
-				&& (p0p1LenSq <= shortSegmentSq)
-				&& (p1p2LenSq <= shortSegmentSq)
-				&& (p2p3LenSq <= shortSegmentSq))
-			{
-				PushUnique(curve.p3);
-				return;
-			}
-
-			// 分割（De Casteljau 法で t=0.5 の中点分割）
-			const Vec2 p01 = ((curve.p0 + curve.p1) * 0.5);
-			const Vec2 p12 = ((curve.p1 + curve.p2) * 0.5);
-			const Vec2 p23 = ((curve.p2 + curve.p3) * 0.5);
-			const Vec2 p012 = ((p01 + p12) * 0.5);
-			const Vec2 p123 = ((p12 + p23) * 0.5);
-			const Vec2 p0123 = ((p012 + p123) * 0.5);
-
-			self(self, Bezier3{ curve.p0, p01,  p012,  p0123 }, (depth + 1));
-			self(self, Bezier3{ p0123,    p123, p23,   curve.p3 }, (depth + 1));
-		};
-
-		SubdivideFlatten(SubdivideFlatten, *this, 0);
-		return polyline;
+		LineString result;
+		result.push_back(p0);
+		detail::AppendBezier3Polyline(result, *this, (maxError * maxError), Max(0, maxDepth));
+		return result;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -803,33 +559,6 @@ namespace s3d
 	//	(private function)
 	//
 	////////////////////////////////////////////////////////////////
-
-	double Bezier3::speed(double t) const noexcept
-	{
-		t = Clamp(t, 0.0, 1.0);
-		return derivativeAt(t).length();
-	}
-
-	double Bezier3::integrateSpeed(double a, double b) const noexcept
-	{
-		a = Clamp(a, 0.0, 1.0);
-		b = Clamp(b, 0.0, 1.0);
-		if (b <= a)
-		{
-			return 0.0;
-		}
-
-		const double m = (0.5 * (a + b));
-		const double h = (0.5 * (b - a));
-
-		double local = 0.0;
-		for (int32 k = 0; k < 5; ++k)
-		{
-			local += GL5_W[k] * speed(m + h * GL5_X[k]);
-		}
-
-		return (h * local);
-	}
 
 	void Bezier3::ThrowControlPointAtIndexOutOfRange()
 	{

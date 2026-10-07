@@ -9391,4 +9391,49 @@
       <Filter>include\ThirdParty\libcpprime\internal</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Siv3D\include\Siv3D\CatmullRomParameterization.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\DistanceMode.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SplineLocation.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\SplineClosestPoint.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Spline2D.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\include\Siv3D\Spline2DMeasure.hpp">
+      <Filter>include\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Bezier3\Bezier3ArcLength.hpp">
+      <Filter>src\Siv3D\Bezier3</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Siv3D\src\Siv3D\Bezier3\Bezier3Flatten.hpp">
+      <Filter>src\Siv3D\Bezier3</Filter>
+    </ClInclude>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Spline2D\SivSpline2D.cpp">
+      <Filter>src\Siv3D\Spline2D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Siv3D\src\Siv3D\Spline2DMeasure\SivSpline2DMeasure.cpp">
+      <Filter>src\Siv3D\Spline2DMeasure</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src\Siv3D\Spline2D">
+      <UniqueIdentifier>{65574824-711a-530d-9859-87979ac7a7af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Siv3D\Spline2DMeasure">
+      <UniqueIdentifier>{6fa47cb9-e72e-5b09-a4d2-3a47d2428e7e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Siv3D\include\Siv3D\detail\Bezier3ArcLengthTable.hpp">
+      <Filter>include\Siv3D\detail</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

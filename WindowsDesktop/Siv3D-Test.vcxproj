@@ -316,4 +316,7 @@
   <ItemGroup>
     <ClInclude Include="..\Test\Mesh3DLoftExamples.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Test\Test_Spline2D.cpp" />
+  </ItemGroup>
 </Project>

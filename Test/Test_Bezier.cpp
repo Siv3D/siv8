@@ -7,6 +7,47 @@
 
 # include "Siv3DTest.hpp"
 
+TEST_CASE("Bezier3.ArcLength.DistanceAndStationaryPoints")
+{
+	const Bezier3 nonlinear{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 100, 0 } };
+	CHECK(Abs(nonlinear.computeLength() - 100) < 1e-10);
+	CHECK(nonlinear.computeTAtDistance(-10) == 0);
+	CHECK(nonlinear.computeTAtDistance(110) == 1);
+	for (const double distance : { 0.001, 1.0, 12.5, 50.0, 99.0 })
+	{
+		CAPTURE(distance);
+		CHECK(nonlinear.computePointAtDistance(distance).distanceFrom({ distance, 0 }) < 1e-7);
+	}
+	const Bezier3 constant{ { 3, 7 }, { 3, 7 }, { 3, 7 }, { 3, 7 } };
+	CHECK(constant.computeLength() == 0);
+	CHECK(constant.computeTAtDistance(50) == 0);
+	CHECK(constant.computePointAtDistance(50) == Vec2{ 3, 7 });
+	const Bezier3 reversing{ { 0, 0 }, { 100, 0 }, { -100, 0 }, { 0, 0 } };
+	const double extremum = (50 / std::sqrt(3.0));
+	CHECK(Abs(reversing.computeLength() - 4 * extremum) < 1e-7);
+	for (const double distance : { extremum, 2 * extremum, 3 * extremum })
+	{
+		CAPTURE(distance);
+		const double x = ((distance <= extremum) ? distance : ((distance <= 3 * extremum) ? (2 * extremum - distance) : (distance - 4 * extremum)));
+		CHECK(reversing.computePointAtDistance(distance).distanceFrom({ x, 0 }) < 1e-7);
+	}
+	const auto rotated = Bezier3{ reversing.p0.rotated(0.7), reversing.p1.rotated(0.7), reversing.p2.rotated(0.7), reversing.p3.rotated(0.7) };
+	CHECK(rotated.computePointAtDistance(extremum).distanceFrom(Vec2{ extremum, 0 }.rotated(0.7)) < 1e-7);
+}
+
+TEST_CASE("Bezier3.Flattening.LoopsAndDepthLimit")
+{
+	const Bezier3 loop{ { 0, 0 }, { 100, 100 }, { -100, 100 }, { 0, 0 } };
+	const auto polyline = loop.toLineStringAdaptive(0.1, 12);
+	CHECK(polyline.size() > 20);
+	CHECK(polyline.front() == loop.p0);
+	CHECK(polyline.back() == loop.p3);
+	CHECK(loop.toLineStringAdaptive(0.1, 0).size() == 1);
+	CHECK(loop.toLineStringAdaptive(0.1, -1).size() == 1);
+	const Bezier3 nonlinear{ { 0, 0 }, { 0, 0 }, { 0, 0 }, { 100, 0 } };
+	CHECK(nonlinear.toLineStringAdaptive().size() == 2);
+}
+
 namespace
 {
 	template <class Bezier>

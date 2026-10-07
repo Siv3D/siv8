@@ -3330,6 +3330,18 @@
 		FA0000053000000000000005 /* GridConnectivity.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FA0000063000000000000006 /* GridConnectivity.hpp */; };
 		FCCD4144ABA44516BDF2F728 /* Test_Keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63D90B4A33ED4AC68FAFC5EB /* Test_Keyboard.cpp */; settings = {COMPILER_FLAGS = "-DNO_S3D_USING -I$(SRCROOT)/../Siv3D/src -I$(SRCROOT)/../Siv3D/src/Siv3D-Platform/macOS -I$(SRCROOT)/../Siv3D/src/ThirdParty"; }; };
 		FEFEB7EF231D4AD7A8CC5188 /* Mat4x4.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 16BB937774E643DBA6B83738 /* Mat4x4.hpp */; };
+		C807E27B19605BA1AC1CAE56 /* CatmullRomParameterization.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 78A65A26AAC752F098C330FB /* CatmullRomParameterization.hpp */; };
+		804D71DB399A5A8C81C8DC92 /* DistanceMode.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B1CD250F515F5CADA9E87562 /* DistanceMode.hpp */; };
+		8FB55925766A5CC09E16949C /* SplineLocation.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 606ABDE3B0065A1196232621 /* SplineLocation.hpp */; };
+		970D24B65F7550F6BD64CB0E /* SplineClosestPoint.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 2547DFC77F6555D390A3A7EA /* SplineClosestPoint.hpp */; };
+		3FA585E51ED15AFBA91EC567 /* Spline2D.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 54ADA66A6B90504E884E75A4 /* Spline2D.hpp */; };
+		5197F145663A5AA58FCA2D81 /* Spline2DMeasure.hpp in Headers */ = {isa = PBXBuildFile; fileRef = D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */; };
+		D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */ = {isa = PBXBuildFile; fileRef = A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */; };
+		8110BEBA215559F5868148E6 /* Bezier3Flatten.hpp in Headers */ = {isa = PBXBuildFile; fileRef = BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */; };
+		80C6B809C0C15293B1B86674 /* SivSpline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B36132FB7EF0533CA8786838 /* SivSpline2D.cpp */; };
+		5435E1B72EC85F4384FF1602 /* SivSpline2DMeasure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */; };
+		BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */; };
+		F605D23DEB4752D7A70E78DF /* Bezier3ArcLengthTable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -6808,6 +6820,18 @@
 		FCC102E0FB5E496F6092D89B /* Mesh3DRound.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh3DRound.cpp; sourceTree = "<group>"; };
 		FD27361D562242F4A48719CB /* PolygonGeometry.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PolygonGeometry.hpp; sourceTree = "<group>"; };
 		FE107313882C438D856EB76E /* Test_Geometry2D_Contains.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Geometry2D_Contains.cpp; sourceTree = "<group>"; };
+		78A65A26AAC752F098C330FB /* CatmullRomParameterization.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CatmullRomParameterization.hpp; sourceTree = "<group>"; };
+		B1CD250F515F5CADA9E87562 /* DistanceMode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DistanceMode.hpp; sourceTree = "<group>"; };
+		606ABDE3B0065A1196232621 /* SplineLocation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SplineLocation.hpp; sourceTree = "<group>"; };
+		2547DFC77F6555D390A3A7EA /* SplineClosestPoint.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SplineClosestPoint.hpp; sourceTree = "<group>"; };
+		54ADA66A6B90504E884E75A4 /* Spline2D.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2D.hpp; sourceTree = "<group>"; };
+		D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Spline2DMeasure.hpp; sourceTree = "<group>"; };
+		A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3ArcLength.hpp; sourceTree = "<group>"; };
+		BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3Flatten.hpp; sourceTree = "<group>"; };
+		B36132FB7EF0533CA8786838 /* SivSpline2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSpline2D.cpp; sourceTree = "<group>"; };
+		C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SivSpline2DMeasure.cpp; sourceTree = "<group>"; };
+		6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Test_Spline2D.cpp; sourceTree = "<group>"; };
+		96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bezier3ArcLengthTable.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -7159,6 +7183,7 @@
 				F90702C22B9DAEB900383E4D /* Test_NamedParameter.cpp */,
 				F90702C32B9DAEB900383E4D /* Test_Platform.cpp */,
 				D94C71C8E32144768219A413 /* Test_Bezier.cpp */,
+				6D087DA32FD15C08B46ADD88 /* Test_Spline2D.cpp */,
 				F93BD7D3300FB21400B3542E /* Test_PolynomialSolver.cpp */,
 				F90702C42B9DAEB900383E4D /* Test_PRNG.cpp */,
 				F97E6DB62D7A8A1F0066E408 /* Test_RangeFormatter.cpp */,
@@ -7555,6 +7580,7 @@
 				F998813B2F40B4EB00C8991D /* Bezier2.ipp */,
 				F99881592F40B5B900C8991D /* Bezier2Walker.ipp */,
 				F998813D2F40B4F600C8991D /* Bezier3.ipp */,
+				96549A558B775BB68DB9363F /* Bezier3ArcLengthTable.hpp */,
 				F998815B2F40B5C200C8991D /* Bezier3Walker.ipp */,
 				F9528B442BB69D8500222F45 /* BigFloat.ipp */,
 				F9070B672B9F175000383E4D /* BigInt.ipp */,
@@ -8182,6 +8208,12 @@
 				F9712A542C289A5C0049CC26 /* Smooth.hpp */,
 				F9070C222B9F175000383E4D /* SpecialFolder.hpp */,
 				F998815F2F40B5FD00C8991D /* Spline.hpp */,
+				D4808E81C56257D9A36FFCF4 /* Spline2DMeasure.hpp */,
+				54ADA66A6B90504E884E75A4 /* Spline2D.hpp */,
+				2547DFC77F6555D390A3A7EA /* SplineClosestPoint.hpp */,
+				606ABDE3B0065A1196232621 /* SplineLocation.hpp */,
+				B1CD250F515F5CADA9E87562 /* DistanceMode.hpp */,
+				78A65A26AAC752F098C330FB /* CatmullRomParameterization.hpp */,
 				F9070C232B9F175000383E4D /* Step.hpp */,
 				F9528B832BBC5D3100222F45 /* Step2D.hpp */,
 				F9528B932BBC76D300222F45 /* Step3D.hpp */,
@@ -8777,6 +8809,8 @@
 				F99881402F40B51200C8991D /* Bezier2 */,
 				F99881502F40B57800C8991D /* Bezier2Walker */,
 				F99881432F40B51A00C8991D /* Bezier3 */,
+				8DFE8130A9A85A54AF7C822F /* Spline2DMeasure */,
+				BDD0300C0DBA55D4989EBB45 /* Spline2D */,
 				F99881532F40B57F00C8991D /* Bezier3Walker */,
 				F9528B4A2BB69EAD00222F45 /* BigFloat */,
 				F9070D1B2B9F175E00383E4D /* BigInt */,
@@ -13462,6 +13496,8 @@
 			isa = PBXGroup;
 			children = (
 				F99881422F40B51A00C8991D /* SivBezier3.cpp */,
+				BF4E1635A4E55C2CBC859BD7 /* Bezier3Flatten.hpp */,
+				A9EF4609AC5C5A2D97DED53B /* Bezier3ArcLength.hpp */,
 			);
 			path = Bezier3;
 			sourceTree = "<group>";
@@ -14532,6 +14568,22 @@
 			path = AssetMonitor;
 			sourceTree = "<group>";
 		};
+		BDD0300C0DBA55D4989EBB45 /* Spline2D */ = {
+			isa = PBXGroup;
+			children = (
+				B36132FB7EF0533CA8786838 /* SivSpline2D.cpp */,
+			);
+			path = Spline2D;
+			sourceTree = "<group>";
+		};
+		8DFE8130A9A85A54AF7C822F /* Spline2DMeasure */ = {
+			isa = PBXGroup;
+			children = (
+				C02E3A28EA495DBDA4836427 /* SivSpline2DMeasure.cpp */,
+			);
+			path = Spline2DMeasure;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -14784,6 +14836,12 @@
 				EC170320833E474F89914FC1 /* SimdFloat4.hpp in Headers */,
 				F98600062BCFBB53006A4C0F /* SkColor.h in Headers */,
 				F99881602F40B5FD00C8991D /* Spline.hpp in Headers */,
+				5197F145663A5AA58FCA2D81 /* Spline2DMeasure.hpp in Headers */,
+				3FA585E51ED15AFBA91EC567 /* Spline2D.hpp in Headers */,
+				970D24B65F7550F6BD64CB0E /* SplineClosestPoint.hpp in Headers */,
+				8FB55925766A5CC09E16949C /* SplineLocation.hpp in Headers */,
+				804D71DB399A5A8C81C8DC92 /* DistanceMode.hpp in Headers */,
+				C807E27B19605BA1AC1CAE56 /* CatmullRomParameterization.hpp in Headers */,
 				F98602412BCFBB54006A4C0F /* SkRecordDraw.h in Headers */,
 				F96F95EA2C359E390033353E /* InputDeviceType.hpp in Headers */,
 				F98600662BCFBB53006A4C0F /* SkShaderMaskFilter.h in Headers */,
@@ -14888,6 +14946,7 @@
 				F9070C7F2B9F175000383E4D /* TextEncoding.ipp in Headers */,
 				F986FA7D2BCFB53B006A4C0F /* fterrdef.h in Headers */,
 				F998813E2F40B4F600C8991D /* Bezier3.ipp in Headers */,
+				F605D23DEB4752D7A70E78DF /* Bezier3ArcLengthTable.hpp in Headers */,
 				F986037B2BCFBB54006A4C0F /* SkOTTable_head.h in Headers */,
 				F9070C8A2B9F175000383E4D /* Vector2D.ipp in Headers */,
 				F98603D42BCFBB54006A4C0F /* SkSLHLSLCodeGenerator.h in Headers */,
@@ -16105,6 +16164,8 @@
 				C562574CE0654E65806F83B9 /* TriangleFan.hpp in Headers */,
 				5935A2DC86CB4A5290598C0E /* EllipseGeometry.hpp in Headers */,
 				D94C71C8E32144768219A410 /* BezierGeometry.hpp in Headers */,
+				8110BEBA215559F5868148E6 /* Bezier3Flatten.hpp in Headers */,
+				D4F4B04304BB5B96BA14B2A5 /* Bezier3ArcLength.hpp in Headers */,
 				F733206E367442F2A524CA1D /* SuperEllipseGeometry.hpp in Headers */,
 				0F98E8EB38FE483393C287A8 /* PolygonGeometry.hpp in Headers */,
 				106F7DC3B40441CE8CD8BB9C /* BoundaryGeometry.hpp in Headers */,
@@ -16849,6 +16910,7 @@
 				E6F7B68BD64B40F18082170A /* Test_Geometry2D_ContainsOverlaps_MemberAvailability.cpp in Sources */,
 				F93BD7E1300FB21400B3542E /* Test_Geometry2D_Raycast.cpp in Sources */,
 				D94C71C8E32144768219A412 /* Test_Bezier.cpp in Sources */,
+				BEB1E5DAA4695135A279DC26 /* Test_Spline2D.cpp in Sources */,
 				F93BD7E2300FB21400B3542E /* Test_PolynomialSolver.cpp in Sources */,
 				F93BD7E3300FB21400B3542E /* Test_Geometry2D_Distance.cpp in Sources */,
 				1D34916E87204B5A936108CE /* Test_Geometry2D_Contains.cpp in Sources */,
@@ -17326,6 +17388,8 @@
 				F93BD7BE300FB1C300B3542E /* SivRay2D.cpp in Sources */,
 				F9070E552B9F176B00383E4D /* SivFileSystem_macOS.mm in Sources */,
 				F99881442F40B51A00C8991D /* SivBezier3.cpp in Sources */,
+				5435E1B72EC85F4384FF1602 /* SivSpline2DMeasure.cpp in Sources */,
+				80C6B809C0C15293B1B86674 /* SivSpline2D.cpp in Sources */,
 				F99882012F58091000C8991D /* OSCMessageDetail.cpp in Sources */,
 				F99882032F58091000C8991D /* SivOSCMessage.cpp in Sources */,
 				F99882042F58091000C8991D /* OSCReceiverDetail.cpp in Sources */,

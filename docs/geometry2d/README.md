@@ -5,6 +5,12 @@ API contracts live in the public headers, including
 [distance queries](../../Siv3D/include/Siv3D/Geometry2D/Distance.hpp), and
 [boundary distance queries](../../Siv3D/include/Siv3D/Geometry2D/SignedDistance.hpp).
 
+## Spline paths
+
+[Spline paths](splines.md) explains reusable curves, distance-based movement,
+ownership, drawing buffers, and the interactive gallery for `Spline2D` and
+`Spline2DMeasure`.
+
 ## Continuing a ray after contact
 
 Use `Raycast(ray, shape, minDistance, maxDistance)` to continue searching the same

@@ -514,4 +514,9 @@
       <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Test\Test_Spline2D.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>

@@ -940,8 +940,13 @@
 
 # include <Siv3D/Spline.hpp>
 
-//// Catmull-Rom スプライン曲線 | Catmull-Rom spline curves
-//# include <Siv3D/Spline2D.hpp>
+// 複数区間の曲線と距離による検索 | Spline paths and distance queries
+# include <Siv3D/CatmullRomParameterization.hpp>
+# include <Siv3D/DistanceMode.hpp>
+# include <Siv3D/SplineLocation.hpp>
+# include <Siv3D/SplineClosestPoint.hpp>
+# include <Siv3D/Spline2D.hpp>
+# include <Siv3D/Spline2DMeasure.hpp>
 
 // float 型の長方形 | Rectangle (float)
 # include <Siv3D/FloatRect.hpp>

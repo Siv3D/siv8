@@ -361,8 +361,8 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 指定した長さになる位置のパラメータ t を計算します。
-		/// @param distanceFromStart 始点からの長さ
-		/// @return パラメータ t（0.0 ～ 1.0）
+		/// @param distanceFromStart 始点から曲線に沿って測った距離。有限の値。
+		/// @return パラメータ t の近似値（0.0 ～ 1.0）。負の距離は 0、全長以上は 1。長さ 0 の曲線では 0。
 		[[nodiscard]]
 		double computeTAtDistance(double distanceFromStart) const noexcept;
 
@@ -372,9 +372,9 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief 始点からの長さが length になる位置の座標を計算します。
-		/// @param distanceFromStart 始点からの長さ
-		/// @return 座標
+		/// @brief 始点から指定した距離にある曲線上の座標を計算します。
+		/// @param distanceFromStart 始点から曲線に沿って測った距離。有限の値。
+		/// @return 座標の近似値。負の距離は始点、全長以上は終点。長さ 0 の曲線では始点。
 		[[nodiscard]]
 		position_type computePointAtDistance(double distanceFromStart) const noexcept;
 
@@ -421,9 +421,10 @@ namespace s3d
 		////////////////////////////////////////////////////////////////
 
 		/// @brief 誤差に応じて適応的に分割した LineString を返します。
-		/// @param maxError 許容誤差
-		/// @param maxDepth 最大再帰深度
-		/// @return LineString
+		/// @param maxError 折れ線とのずれの目安。座標と同じ単位の、0 以上の有限の値。
+		/// @param maxDepth 最大分割深さ。0 以下は始点と終点だけを使います。
+		/// @return 折れ線。隣り合う同じ座標は 1 点にまとめます。
+		/// @remark 分割上限に達した部分では maxError を超えるずれが残る場合があります。
 		LineString toLineStringAdaptive(double maxError = 0.48, int32 maxDepth = 5) const;
 
 		////////////////////////////////////////////////////////////////
@@ -839,12 +840,6 @@ namespace s3d
 		friend void Formatter(FormatData& formatData, const Bezier3& value);
 
 	private:
-
-		/// @brief パラメータ t における速度（|B'(t)|）を返します。
-		double speed(double t) const noexcept;
-
-		/// @brief 区間 [a, b] の速度を数値積分して弧長を求めます。
-		double integrateSpeed(double a, double b) const noexcept;
 
 		/// @brief controlPointAtIndex() の範囲外アクセス時に例外を送出します。
 		[[noreturn]]
