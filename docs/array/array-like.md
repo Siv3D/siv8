@@ -46,9 +46,10 @@ to a variable before borrowing from it.
 | `Wave` | `get_if`, `take`, `drop`, and `slice` use stereo frames. Derived waves preserve the sample rate, including empty results. |
 | `Grid`, `Image` | `get_if(Point)` and `get_if(y, x)` use two-dimensional coordinates and return `nullptr` outside the bounds. Row, column, and rectangular operations retain their spatial meaning. |
 
-On mutable rvalues, sequence slicing and filtering reuse the owner's storage.
-On lvalues they return an independent result. `take` and `drop` clamp their count;
-`slice` requires the complete requested interval to exist. Predicate exceptions
+Sequence operations on lvalues return an independent result. Storage reuse on
+mutable rvalues depends on the operation: `Blob::take` and `Blob::drop` reuse the
+owner's storage, while `Blob::slice` returns a separate copy. `take` and `drop`
+clamp their count; `slice` requires the complete requested interval to exist. Predicate exceptions
 propagate to the caller; an in-place operation may have partially changed the
 contents before an exception.
 

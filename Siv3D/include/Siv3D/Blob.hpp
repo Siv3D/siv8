@@ -74,13 +74,15 @@ namespace s3d
 		explicit Blob(FilePathView path);
 
 		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
-		/// @param reader Reader オブジェクト
+		/// @param reader 所有権を移す Reader オブジェクト。nullptr の場合は空になります。
+		/// @remark Reader は構築処理の終了時に破棄されます。
 		[[nodiscard]]
 		explicit Blob(std::unique_ptr<IReader> reader);
 
 		/// @brief Reader オブジェクト経由でバイナリデータを作成します。
 		/// @tparam Reader Reader オブジェクトの型
-		/// @param reader Reader オブジェクト
+		/// @param reader ムーブ元の Reader オブジェクト
+		/// @remark ムーブ先の Reader は構築処理の終了時に破棄されます。
 		template <ReaderObject Reader>
 		[[nodiscard]]
 		explicit Blob(Reader&& reader);
@@ -144,7 +146,7 @@ namespace s3d
 
 		/// @brief 他の Blob からデータをムーブします。
 		/// @param other ムーブ元の Blob
-		constexpr void assign(Blob&& other);
+		constexpr void assign(Blob&& other) noexcept;
 
 		/// @brief メモリ上のデータをコピーします。
 		/// @param src コピーするデータの先頭ポインタ
@@ -155,9 +157,9 @@ namespace s3d
 		/// @param data コピーするデータ
 		constexpr void assign(const Array<Byte>& data);
 
-		/// @brief バイナリデータをムーブしてバイナリデータを作成します。
+		/// @brief バイナリデータをムーブして置き換えます。
 		/// @param data ムーブするデータ
-		constexpr void assign(Array<Byte>&& data);
+		constexpr void assign(Array<Byte>&& data) noexcept;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -552,20 +554,22 @@ namespace s3d
 
 		/// @brief バイナリデータの部分配列を指す span を返します。
 		/// @param pos 部分配列の開始位置
-		/// @param count 部分配列の要素数
+		/// @param count 部分配列の要素数。std::dynamic_extent（既定値）の場合は末尾まで。
+		/// @pre pos <= size() であり、count が std::dynamic_extent でない場合は count <= size() - pos であること。
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<Byte> subspan(size_type pos, size_type count) & noexcept;
+		constexpr std::span<Byte> subspan(size_type pos, size_type count = std::dynamic_extent) & noexcept;
 
 		/// @brief バイナリデータの部分配列を指す span を返します。
 		/// @param pos 部分配列の開始位置
-		/// @param count 部分配列の要素数
+		/// @param count 部分配列の要素数。std::dynamic_extent（既定値）の場合は末尾まで。
+		/// @pre pos <= size() であり、count が std::dynamic_extent でない場合は count <= size() - pos であること。
 		/// @return 部分配列を指す span
 		[[nodiscard]]
-		constexpr std::span<const Byte> subspan(size_type pos, size_type count) const& noexcept;
+		constexpr std::span<const Byte> subspan(size_type pos, size_type count = std::dynamic_extent) const& noexcept;
 
 		/// @brief const 右辺値からの借用を禁止します。
-		void subspan(size_type pos, size_type count) const&& = delete;
+		void subspan(size_type pos, size_type count = std::dynamic_extent) const&& = delete;
 
 		////////////////////////////////////////////////////////////////
 		//
@@ -605,23 +609,33 @@ namespace s3d
 		//
 		////////////////////////////////////////////////////////////////
 
-		/// @brief index から末尾までを返します。範囲外の位置では std::out_of_range を送出します。
-		/// @remark 個数と位置の単位はバイトです。右辺値では元の記憶領域を再利用します。
+		/// @brief index から末尾までのバイトをコピーした Blob を返します。
+		/// @param index 開始位置（バイト）
+		/// @return 指定範囲を所有する Blob。index == size() の場合は空。
+		/// @throws std::out_of_range index > size() の場合
 		[[nodiscard]]
 		constexpr Blob slice(size_type index) const&;
 
-		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
-		/// @remark 元の記憶領域を再利用します。
+		/// @brief index から末尾までのバイトをコピーした Blob を返します。
+		/// @param index 開始位置（バイト）
+		/// @return 指定範囲を所有する Blob。index == size() の場合は空。
+		/// @throws std::out_of_range index > size() の場合
 		[[nodiscard]]
 		constexpr Blob slice(size_type index) &&;
 
-		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
-		/// @remark 個数と位置の単位はバイトです。右辺値では元の記憶領域を再利用します。
+		/// @brief 指定範囲のバイトをコピーした Blob を返します。
+		/// @param index 開始位置（バイト）
+		/// @param length バイト数
+		/// @return 指定範囲を所有する Blob。length == 0 の場合は空。
+		/// @throws std::out_of_range index > size() または length > size() - index の場合
 		[[nodiscard]]
 		constexpr Blob slice(size_type index, size_type length) const&;
 
-		/// @brief 指定した範囲を返します。不正な範囲では std::out_of_range を送出します。
-		/// @remark 元の記憶領域を再利用します。
+		/// @brief 指定範囲のバイトをコピーした Blob を返します。
+		/// @param index 開始位置（バイト）
+		/// @param length バイト数
+		/// @return 指定範囲を所有する Blob。length == 0 の場合は空。
+		/// @throws std::out_of_range index > size() または length > size() - index の場合
 		[[nodiscard]]
 		constexpr Blob slice(size_type index, size_type length) &&;
 
@@ -709,6 +723,8 @@ namespace s3d
 	private:
 
 		base_type m_data;
+
+		bool readFromReader(IReader& reader);
 	};
 }
 

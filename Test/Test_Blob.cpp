@@ -10,14 +10,20 @@
 # include <ranges>
 # include <sstream>
 # include <stdexcept>
+# include <type_traits>
+# include <utility>
 
 namespace
 {
 	constexpr std::array<Byte, 6> BlobBytes{ Byte{ 0 }, Byte{ 1 }, Byte{ 127 }, Byte{ 128 }, Byte{ 254 }, Byte{ 255 } };
 	constexpr size_t MaxBlobSize = std::numeric_limits<size_t>::max();
 
+	template <class T>
+	concept HasTailSubspan = requires(T&& value) { std::forward<T>(value).subspan(0); };
+
 	struct ReaderProbe
 	{
+		int moves = 0;
 		int readCalls = 0;
 		int64 requestedSize = 0;
 		int64 finalPosition = 0;
@@ -32,20 +38,34 @@ namespace
 
 		ProbedBlobReader(ReaderProbe& probe, const int64 readLimit, const bool throws = false)
 			: MemoryViewReader{ BlobBytes.data(), BlobBytes.size() }
-			, m_probe{ probe }
+			, m_probe{ &probe }
 			, m_readLimit{ readLimit }
 			, m_throws{ throws } {}
 
+		ProbedBlobReader(const ProbedBlobReader&) = delete;
+
+		ProbedBlobReader(ProbedBlobReader&& other) noexcept
+			: MemoryViewReader{ std::move(other) }
+			, m_probe{ std::exchange(other.m_probe, nullptr) }
+			, m_readLimit{ other.m_readLimit }
+			, m_throws{ other.m_throws }
+		{
+			++m_probe->moves;
+		}
+
 		~ProbedBlobReader() override
 		{
-			m_probe.finalPosition = getPos();
-			m_probe.destroyed = true;
+			if (m_probe)
+			{
+				m_probe->finalPosition = getPos();
+				m_probe->destroyed = true;
+			}
 		}
 
 		int64 read(void* dst, const int64 size) override
 		{
-			++m_probe.readCalls;
-			m_probe.requestedSize = size;
+			++m_probe->readCalls;
+			m_probe->requestedSize = size;
 			if (m_throws)
 			{
 				throw std::runtime_error{ "Blob test reader failure" };
@@ -55,9 +75,19 @@ namespace
 
 	private:
 
-		ReaderProbe& m_probe;
+		ReaderProbe* m_probe;
 		int64 m_readLimit;
 		bool m_throws;
+	};
+
+	class StackBlobReader : public ProbedBlobReader
+	{
+	public:
+
+		using ProbedBlobReader::ProbedBlobReader;
+
+		// A concrete Reader must not require an allocation for the Reader itself.
+		static void* operator new(size_t) = delete;
 	};
 }
 
@@ -172,6 +202,9 @@ TEST_CASE("Blob.copy_assignment_and_storage_reuse")
 
 TEST_CASE("Blob.move_assignment_transfers_storage")
 {
+	static_assert(noexcept(std::declval<Blob&>().assign(std::declval<Blob&&>())));
+	static_assert(noexcept(std::declval<Blob&>().assign(std::declval<Array<Byte>&&>())));
+
 	for (const bool useAssign : { false, true })
 	{
 		CAPTURE(useAssign);
@@ -259,6 +292,15 @@ TEST_CASE("Blob.resize_clear_release_and_swap")
 
 TEST_CASE("Blob.iterators_and_subspan_alias_storage")
 {
+	static_assert(HasTailSubspan<Blob&>);
+	static_assert(HasTailSubspan<const Blob&>);
+	static_assert(not HasTailSubspan<Blob>);
+	static_assert(not HasTailSubspan<const Blob>);
+	static_assert(std::same_as<decltype(std::declval<Blob&>().subspan(0)), std::span<Byte>>);
+	static_assert(std::same_as<decltype(std::declval<const Blob&>().subspan(0)), std::span<const Byte>>);
+	static_assert(noexcept(std::declval<Blob&>().subspan(0)));
+	static_assert(noexcept(std::declval<const Blob&>().subspan(0)));
+
 	Blob blob{ BlobBytes.data(), BlobBytes.size() };
 	const Blob& view = blob;
 	CHECK(std::ranges::equal(view, BlobBytes));
@@ -279,6 +321,19 @@ TEST_CASE("Blob.iterators_and_subspan_alias_storage")
 	CHECK(view.get_if(MaxBlobSize) == nullptr);
 	CHECK(blob.get_if(MaxBlobSize) == nullptr);
 	CHECK(view.asArray().data() == blob.data());
+	for (size_t pos = 0; pos <= blob.size(); ++pos)
+	{
+		CAPTURE(pos);
+		CHECK(blob.subspan(pos).size() == (blob.size() - pos));
+		CHECK(blob.subspan(pos).data() == (blob.data() + pos));
+		CHECK(std::ranges::equal(view.subspan(pos), view.subspan(pos, view.size() - pos)));
+	}
+	blob.subspan(3)[0] = Byte{ 40 };
+	CHECK(view[3] == Byte{ 40 });
+	const Blob empty;
+	CHECK(empty.subspan(0).empty());
+	blob.clear();
+	CHECK(blob.subspan(0).empty());
 }
 
 TEST_CASE("Blob.insert_and_external_append")
@@ -438,6 +493,43 @@ TEST_CASE("Blob.reader_construction")
 	CHECK(owned == expected);
 	CHECK(probe.destroyed);
 	CHECK(probe.finalPosition == 6);
+}
+
+TEST_CASE("Blob.concrete_reader_move_and_lifetime")
+{
+	static_assert(not std::is_copy_constructible_v<StackBlobReader>);
+	for (const int64 position : { int64{ 0 }, int64{ 1 }, int64{ 6 } })
+	{
+		for (const int64 limit : { int64{ 0 }, int64{ 2 }, int64{ 6 } })
+		{
+			CAPTURE(position, limit);
+			ReaderProbe probe;
+			StackBlobReader reader{ probe, limit };
+			REQUIRE(reader.setPos(position) == position);
+			const Blob blob{ std::move(reader) };
+			CHECK(probe.moves == 1);
+			CHECK(probe.destroyed); // The moved-to Reader is already gone while the source is alive.
+			CHECK(probe.readCalls == 1);
+			CHECK(probe.requestedSize == 6);
+			CHECK(probe.finalPosition == Min(position + limit, int64{ 6 }));
+			if ((position == 0) && (limit == 6))
+			{
+				CHECK(std::ranges::equal(blob, BlobBytes));
+			}
+			else
+			{
+				CHECK(blob.empty());
+			}
+		}
+	}
+
+	ReaderProbe probe;
+	StackBlobReader reader{ probe, 6, true };
+	CHECK_THROWS_AS((void) Blob{ std::move(reader) }, std::runtime_error);
+	CHECK(probe.moves == 1);
+	CHECK(probe.destroyed);
+	CHECK(probe.readCalls == 1);
+	CHECK(probe.finalPosition == 0);
 }
 
 TEST_CASE("Blob.reader_short_read_and_exception")

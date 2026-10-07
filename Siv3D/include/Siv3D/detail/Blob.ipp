@@ -27,7 +27,10 @@ namespace s3d
 
 	template <ReaderObject Reader>
 	Blob::Blob(Reader&& reader)
-		: Blob{ std::make_unique<Reader>(std::forward<Reader>(reader)) } {}
+	{
+		Reader ownedReader{ std::forward<Reader>(reader) };
+		readFromReader(ownedReader);
+	}
 
 	inline Blob::Blob(const void* src, const size_type sizeBytes)
 		: m_data(static_cast<const Byte*>(src), (static_cast<const Byte*>(src) + sizeBytes)) {}
@@ -82,7 +85,7 @@ namespace s3d
 		m_data = other.m_data;
 	}
 
-	constexpr void Blob::assign(Blob&& other)
+	constexpr void Blob::assign(Blob&& other) noexcept
 	{
 		m_data = std::move(other.m_data);
 	}
@@ -97,7 +100,7 @@ namespace s3d
 		m_data = data;
 	}
 
-	constexpr void Blob::assign(Array<Byte>&& data)
+	constexpr void Blob::assign(Array<Byte>&& data) noexcept
 	{
 		m_data = std::move(data);
 	}

@@ -29,18 +29,10 @@ namespace s3d
 	}
 
 	Blob::Blob(std::unique_ptr<IReader> reader)
-		: m_data(reader ? reader->size() : 0)
 	{
-		if (not reader)
+		if (reader)
 		{
-			return;
-		}
-
-		const int64 readSize = reader->read(m_data.data(), m_data.size_bytes());
-
-		if (m_data.size() != static_cast<size_type>(readSize))
-		{
-			m_data.clear();
+			readFromReader(*reader);
 		}
 	}
 		
@@ -59,17 +51,7 @@ namespace s3d
 			return false;
 		}
 
-		m_data.resize(reader.size());
-
-		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
-
-		if (m_data.size() != static_cast<size_type>(readSize))
-		{
-			m_data.clear();
-			return false;
-		}
-
-		return true;
+		return readFromReader(reader);
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -120,5 +102,26 @@ namespace s3d
 	void Blob::base64(Base64Value& dst) const
 	{
 		dst.encodeFromBlob(*this);
+	}
+
+	////////////////////////////////////////////////////////////////
+	//
+	//	(private function)
+	//
+	////////////////////////////////////////////////////////////////
+
+	bool Blob::readFromReader(IReader& reader)
+	{
+		m_data.resize(reader.size());
+
+		const int64 readSize = reader.read(m_data.data(), m_data.size_bytes());
+
+		if (m_data.size() != static_cast<size_type>(readSize))
+		{
+			m_data.clear();
+			return false;
+		}
+
+		return true;
 	}
 }
