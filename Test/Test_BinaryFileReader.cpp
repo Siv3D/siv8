@@ -17,6 +17,37 @@
 # include <winioctl.h>
 # endif
 
+TEST_CASE("BinaryFileReader.reject_directory_and_reopen")
+{
+	const auto directory = Test::OutputPath(U"binaryreader/directory/");
+	const auto path = Test::OutputPath(U"binaryreader/directory/bytes.bin");
+	REQUIRE(FileSystem::CreateDirectories(directory));
+	BinaryFileReader reader;
+	CHECK_FALSE(reader.open(directory));
+	CHECK_FALSE(reader.isOpen());
+	CHECK(reader.size() == 0);
+	CHECK(reader.getPos() == 0);
+	CHECK(reader.path().isEmpty());
+	{
+		BinaryFileWriter writer{ path };
+		REQUIRE(writer.isOpen());
+		REQUIRE(writer.write("abc", 3) == 3);
+	}
+	for (int attempt = 0; attempt < 2; ++attempt)
+	{
+		CAPTURE(attempt);
+		REQUIRE(reader.open(path));
+		char value = 0;
+		REQUIRE(reader.read(value));
+		CHECK(value == 'a');
+		CHECK_FALSE(reader.open(directory));
+		CHECK_FALSE(reader.isOpen());
+		CHECK(reader.size() == 0);
+		CHECK(reader.getPos() == 0);
+		CHECK(reader.path().isEmpty());
+	}
+}
+
 TEST_CASE("BinaryFileReader")
 {
 	constexpr int64 FileSize = (32768 * sizeof(uint32));
